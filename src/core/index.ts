@@ -21,7 +21,7 @@ export type { Direction } from './geometry';
 export { roadPath, roadPiece } from './roads';
 export type { RoadKind, RoadPiece, RoadPieceName } from './roads';
 export { missingRoadTiles, roadBuildCost } from './roadCost';
-export { GOODS, MATERIALS, durationOf, isGood, isMaterial, producibleItems, recipeOf } from './items';
+export { GOODS, MATERIALS, durationOf, isGood, isMaterial, producibleItems, recipeOf, unlockCitizensOf } from './items';
 export type { GoodId, GoodSpec, ItemId, MaterialId } from './items';
 export { buyableParcels, isInsideMap, parcelPrice } from './parcels';
 export { marketPoints, marketQuote } from './market';
@@ -32,3 +32,5 @@ export { citizensOf, totalCitizens, utilityCapacity, utilityDemand } from './cit
 export type { UtilityTotals } from './city';
 export { HOME_TIERS, TAX, UTILITY_CAPACITY } from './economy';
 export { taxDue } from './production';
+export { isItemUnlocked, nextUnlock } from './unlocks';
+export type { Unlock } from './unlocks';

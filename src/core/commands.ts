@@ -7,6 +7,7 @@ import { utilityCapacity, utilityDemand, type UtilityTotals } from './city';
 import { HOME_TIERS, MAX_SLOTS, SHOP, TAX, SLOT_PRICES, STORAGE_UPGRADE_COSTS } from './economy';
 import { GOODS, isGood, isMaterial, producibleItems, recipeOf, type GoodId } from './items';
 import { marketQuote } from './market';
+import { isItemUnlocked } from './unlocks';
 import { isAdjacentToOwned, isInsideMap, isOwned, parcelPrice } from './parcels';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from './occupancy';
 import { autoRotation, frontTouchesRoad, placementIssue } from './placement';
@@ -61,7 +62,8 @@ export type ErrorKey =
   | 'error.parcelNotAdjacent'
   | 'error.notEnoughPower'
   | 'error.notEnoughWater'
-  | 'error.utilityInUse';
+  | 'error.utilityInUse'
+  | 'error.itemLocked';
 
 export interface CommandError {
   key: ErrorKey;
@@ -211,6 +213,7 @@ function queueProduction(state: GameState, buildingId: number, item: string, now
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
   if (!(isMaterial(item) || isGood(item)) || !producibleItems(building.type).includes(item)) return fail('error.cannotProduce');
+  if (!isItemUnlocked(state, item)) return fail('error.itemLocked');
   if (building.queue.length >= building.slotCount) return fail('error.queueFull');
   const materials = { ...state.storage.materials };
   for (const [material, needed] of Object.entries(recipeOf(item))) {
