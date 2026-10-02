@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
+import { useStore } from 'zustand';
 import { t } from '../i18n/t';
-import { useUi } from './hooks';
+import { toastStore } from '../store/toastStore';
 
 const TOAST_DURATION_MS = 3000;
 
 export function Toast() {
-  const toast = useUi((store) => store.toast);
-  const dismiss = useUi((store) => store.dismissToast);
+  const toast = useStore(toastStore, (store) => store.toast);
+  const dismiss = useStore(toastStore, (store) => store.dismiss);
 
   useEffect(() => {
     if (!toast) return;

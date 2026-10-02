@@ -64,6 +64,16 @@ export class GameScene {
     this.ghostLayer.set(ghost);
   }
 
+  project(x: number, y: number, z: number): { x: number; y: number; visible: boolean } {
+    const point = new THREE.Vector3(x, y, z).project(this.controller.camera);
+    const rect = this.canvas.getBoundingClientRect();
+    return {
+      x: ((point.x + 1) / 2) * rect.width + rect.left,
+      y: ((1 - point.y) / 2) * rect.height + rect.top,
+      visible: point.z >= -1 && point.z <= 1,
+    };
+  }
+
   focusOnTile(tile: Coord): void {
     this.controller.focusOn(tile.x + 0.5, tile.y + 0.5);
   }

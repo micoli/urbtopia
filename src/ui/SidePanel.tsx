@@ -1,6 +1,8 @@
 import { placementCost, GAME_CONFIG } from '../core';
 import { t } from '../i18n/t';
 import { useGame, useUi } from './hooks';
+import { ProductionPanel } from './ProductionPanel';
+import { StorehousePanel } from './StorehousePanel';
 
 export function SidePanel() {
   const selectedId = useUi((store) => store.selectedBuildingId);
@@ -19,6 +21,8 @@ export function SidePanel() {
           ✗
         </button>
       </header>
+      {building.slotCount > 0 ? <ProductionPanel building={building} /> : null}
+      {building.type === 'storehouse' ? <StorehousePanel /> : null}
       <div className="side-panel-actions">
         <button type="button" onClick={moveSelected}>
           {t('panel.move')}

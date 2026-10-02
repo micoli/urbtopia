@@ -10,16 +10,17 @@ export interface BuildingSpec {
   footprint: Footprint;
   cost: number;
   requiresRoad: boolean;
+  initialSlots: number;
 }
 
 export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
-  workshop: { footprint: { width: 2, depth: 2 }, cost: 100, requiresRoad: true },
-  factory: { footprint: { width: 2, depth: 2 }, cost: 250, requiresRoad: true },
-  shop: { footprint: { width: 1, depth: 1 }, cost: 300, requiresRoad: true },
-  storehouse: { footprint: { width: 2, depth: 2 }, cost: 400, requiresRoad: true },
-  home: { footprint: { width: 1, depth: 1 }, cost: 150, requiresRoad: true },
-  powerPlant: { footprint: { width: 1, depth: 1 }, cost: 250, requiresRoad: false },
-  waterTower: { footprint: { width: 1, depth: 1 }, cost: 200, requiresRoad: false },
+  workshop: { footprint: { width: 2, depth: 2 }, cost: 100, requiresRoad: true, initialSlots: 2 },
+  factory: { footprint: { width: 2, depth: 2 }, cost: 250, requiresRoad: true, initialSlots: 2 },
+  shop: { footprint: { width: 1, depth: 1 }, cost: 300, requiresRoad: true, initialSlots: 0 },
+  storehouse: { footprint: { width: 2, depth: 2 }, cost: 400, requiresRoad: true, initialSlots: 0 },
+  home: { footprint: { width: 1, depth: 1 }, cost: 150, requiresRoad: true, initialSlots: 0 },
+  powerPlant: { footprint: { width: 1, depth: 1 }, cost: 250, requiresRoad: false, initialSlots: 0 },
+  waterTower: { footprint: { width: 1, depth: 1 }, cost: 200, requiresRoad: false, initialSlots: 0 },
 };
 
 export function footprintOf(type: BuildingType, rotation: number): Footprint {
@@ -34,6 +35,10 @@ export function footprintTiles(building: { type: BuildingType; x: number; y: num
     for (let dx = 0; dx < width; dx++) tiles.push({ x: building.x + dx, y: building.y + dy });
   }
   return tiles;
+}
+
+export function createBuilding(id: number, type: BuildingType, x: number, y: number, rotation: Rotation): Building {
+  return { id, type, x, y, rotation, slotCount: BUILDING_SPECS[type].initialSlots, queue: [] };
 }
 
 export function placementCost(type: BuildingType): number {

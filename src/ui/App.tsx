@@ -1,4 +1,5 @@
 import { CameraButtons } from './CameraButtons';
+import { CollectBadges } from './CollectBadges';
 import { ConfirmPad } from './ConfirmPad';
 import { Dock } from './Dock';
 import { Flyout } from './Flyout';
@@ -10,6 +11,7 @@ export function App() {
   return (
     <>
       <SceneCanvas />
+      <CollectBadges />
       <Dock />
       <Flyout />
       <SidePanel />

@@ -1,7 +1,8 @@
 import { createStore } from 'zustand/vanilla';
-import { footprintTiles, type Coord, type ErrorKey, type Rotation } from '../core';
+import { footprintTiles, type Coord, type Rotation } from '../core';
 import { confirmTool, evaluateTool, type Evaluation, type Tool } from '../tools/tools';
 import { gameStore } from './gameStore';
+import { toastStore } from './toastStore';
 
 export type Flyout = 'build' | 'roads' | null;
 
@@ -11,7 +12,6 @@ export interface UiStore {
   centerTile: Coord;
   selectedBuildingId: number | null;
   flyout: Flyout;
-  toast: ErrorKey | null;
   evaluation: Evaluation | null;
   openFlyout: (flyout: Flyout) => void;
   chooseTool: (tool: Tool) => void;
@@ -23,7 +23,6 @@ export interface UiStore {
   select: (id: number | null) => void;
   sellSelected: () => void;
   moveSelected: () => void;
-  dismissToast: () => void;
 }
 
 const INITIAL_CENTER: Coord = { x: 64, y: 64 };
@@ -45,7 +44,6 @@ export const uiStore = createStore<UiStore>((set, get) => {
     centerTile: INITIAL_CENTER,
     selectedBuildingId: null,
     flyout: null,
-    toast: null,
     evaluation: null,
     openFlyout: (flyout) => set({ flyout: get().flyout === flyout ? null : flyout }),
     chooseTool: (tool) => {
@@ -63,9 +61,8 @@ export const uiStore = createStore<UiStore>((set, get) => {
       const { tool, evaluation, centerTile } = get();
       if (!tool || !evaluation) return;
       const outcome = confirmTool(tool, centerTile, evaluation);
-      if (!outcome.command && !evaluation.valid && tool.kind !== 'road') return set({ toast: evaluation.issue });
+      if (!outcome.command && !evaluation.valid && evaluation.issue) return toastStore.getState().show(evaluation.issue);
       if (outcome.command) gameStore.getState().send(outcome.command);
-      set({ toast: outcome.command ? (gameStore.getState().lastError?.key ?? null) : null });
       reevaluate({ tool: outcome.nextTool, rotation: outcome.nextTool?.kind === 'building' ? get().rotation : null });
     },
     setCenterTile: (tile) => reevaluate({ centerTile: tile }),
@@ -79,7 +76,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       const id = get().selectedBuildingId;
       if (id === null) return;
       gameStore.getState().send({ type: 'SellBuilding', id });
-      set({ selectedBuildingId: null, toast: gameStore.getState().lastError?.key ?? null });
+      set({ selectedBuildingId: null });
     },
     moveSelected: () => {
       const id = get().selectedBuildingId;
@@ -87,7 +84,6 @@ export const uiStore = createStore<UiStore>((set, get) => {
       set({ selectedBuildingId: null });
       reevaluate({ tool: { kind: 'move', buildingId: id }, rotation: null });
     },
-    dismissToast: () => set({ toast: null }),
   };
 });
 

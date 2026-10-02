@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { newGame } from '../core';
+import { createBuilding, newGame } from '../core';
 import { chunkKeyOf, renderItemsOf } from './renderItems';
 
 describe('renderItemsOf', () => {
@@ -11,7 +11,7 @@ describe('renderItemsOf', () => {
   });
 
   it('turns a building by quarter turns', () => {
-    const rotated = { ...state, roads: [], buildings: [{ id: 9, type: 'factory' as const, x: 10, y: 20, rotation: 1 as const }] };
+    const rotated = { ...state, roads: [], buildings: [createBuilding(9, 'factory', 10, 20, 1)] };
     expect(renderItemsOf(rotated)).toEqual([{ model: 'industrial/building-b', x: 11, z: 21, rotation: 1 }]);
   });
 });

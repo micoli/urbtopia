@@ -1,3 +1,4 @@
+import { createBuilding } from './buildingSpecs';
 import { GAME_CONFIG } from './config';
 import { hashSeed } from './random';
 import { generateSeed } from './seed';
@@ -18,7 +19,8 @@ export function newGame(options: NewGameOptions): GameState {
     lastSeen: options.now,
     nextId: firstEntityId + startingBuildings.length,
     ownedParcels: startingParcels.map((parcel) => ({ ...parcel })),
-    buildings: startingBuildings.map((building, index) => ({ ...building, id: firstEntityId + index })),
+    buildings: startingBuildings.map((building, index) => createBuilding(firstEntityId + index, building.type, building.x, building.y, building.rotation)),
+    storage: { materials: {}, goods: {} },
     roads: Array.from({ length: startingRoadRow.toX - startingRoadRow.fromX + 1 }, (_, index) => ({
       x: startingRoadRow.fromX + index,
       y: startingRoadRow.y,

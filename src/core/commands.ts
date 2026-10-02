@@ -1,13 +1,16 @@
-import { BUILDING_SPECS, placementCost } from './buildingSpecs';
+import { BUILDING_SPECS, createBuilding, placementCost } from './buildingSpecs';
 import { GAME_CONFIG } from './config';
 import type { Coord } from './coord';
 import type { GameEvent } from './events';
 import { tileKey } from './geometry';
+import { isMaterial, producibleItems } from './items';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from './occupancy';
 import { autoRotation, frontTouchesRoad, placementIssue } from './placement';
+import { isIdle, newQueueEntry, restartRunningProduction } from './production';
 import { roadBuildCost, missingRoadTiles } from './roadCost';
 import { roadPath } from './roads';
-import type { Building, BuildingType, GameState, Rotation } from './state';
+import { hasStorehouse, isStorageEmpty, storageCapacity, storageUsed } from './storage';
+import type { BuildingType, GameState, QueueEntry, Rotation } from './state';
 
 export type Command =
   | { readonly type: 'BuildRoad'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
@@ -15,6 +18,8 @@ export type Command =
   | { readonly type: 'PlaceRoundabout'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoad'; readonly x: number; readonly y: number }
   | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
+  | { readonly type: 'Collect'; readonly buildingId: number }
   | { readonly type: 'SellBuilding'; readonly id: number }
   | { readonly type: 'MoveBuilding'; readonly id: number; readonly x: number; readonly y: number; readonly rotation?: Rotation };
 
@@ -28,7 +33,13 @@ export type ErrorKey =
   | 'error.notEnoughUrbs'
   | 'error.lastRoadOfBuilding'
   | 'error.noRoadHere'
-  | 'error.invalidCrossing';
+  | 'error.invalidCrossing'
+  | 'error.cannotProduce'
+  | 'error.queueFull'
+  | 'error.nothingToCollect'
+  | 'error.noStorehouse'
+  | 'error.storageFull'
+  | 'error.storehouseNotEmpty';
 
 export interface CommandError {
   key: ErrorKey;
@@ -42,7 +53,7 @@ export function isError(outcome: CommandOutcome): outcome is CommandError {
 
 const fail = (key: ErrorKey): CommandError => ({ key });
 
-export function handleCommand(state: GameState, command: Command): CommandOutcome {
+export function handleCommand(state: GameState, command: Command, now: number): CommandOutcome {
   switch (command.type) {
     case 'BuildRoad':
       return buildRoad(state, command.from, command.to, command.horizontalFirst ?? true);
@@ -54,10 +65,14 @@ export function handleCommand(state: GameState, command: Command): CommandOutcom
       return demolishRoad(state, { x: command.x, y: command.y });
     case 'PlaceBuilding':
       return placeBuilding(state, command.buildingType, command.x, command.y, command.rotation);
+    case 'QueueProduction':
+      return queueProduction(state, command.buildingId, command.item, now);
+    case 'Collect':
+      return collect(state, command.buildingId);
     case 'SellBuilding':
       return sellBuilding(state, command.id);
     case 'MoveBuilding':
-      return moveBuilding(state, command.id, command.x, command.y, command.rotation);
+      return moveBuilding(state, command.id, command.x, command.y, command.rotation, now);
     default:
       return fail('error.unknownCommand');
   }
@@ -126,7 +141,7 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
   const rotation = requestedRotation ?? autoRotation(state, type, x, y);
   const issue = placementIssue(state, type, x, y, rotation);
   if (issue) return fail(issue);
-  const building: Building = { id: state.nextId, type, x, y, rotation };
+  const building = createBuilding(state.nextId, type, x, y, rotation);
   return {
     state: { ...state, urbs: state.urbs - placementCost(type), nextId: state.nextId + 1, buildings: [...state.buildings, building] },
     events: [{ type: 'BuildingPlaced', id: building.id }],
@@ -136,6 +151,7 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
 function sellBuilding(state: GameState, id: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === id);
   if (!building) return fail('error.unknownBuilding');
+  if (building.type === 'storehouse' && !isStorageEmpty(state.storage)) return fail('error.storehouseNotEmpty');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
   return {
     state: { ...state, urbs: state.urbs + refund, buildings: state.buildings.filter((candidate) => candidate !== building) },
@@ -143,7 +159,7 @@ function sellBuilding(state: GameState, id: number): CommandOutcome {
   };
 }
 
-function moveBuilding(state: GameState, id: number, x: number, y: number, requestedRotation?: Rotation): CommandOutcome {
+function moveBuilding(state: GameState, id: number, x: number, y: number, requestedRotation: Rotation | undefined, now: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === id);
   if (!building) return fail('error.unknownBuilding');
   const without: GameState = { ...state, buildings: state.buildings.filter((candidate) => candidate !== building) };
@@ -151,7 +167,52 @@ function moveBuilding(state: GameState, id: number, x: number, y: number, reques
   const issue = placementIssue(without, building.type, x, y, rotation, { isMove: true });
   if (issue) return fail(issue);
   return {
-    state: { ...state, buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, x, y, rotation } : candidate)) },
+    state: { ...state, buildings: state.buildings.map((candidate) => (candidate === building ? restartRunningProduction({ ...building, x, y, rotation }, now) : candidate)) },
     events: [{ type: 'BuildingMoved', id }],
+  };
+}
+
+function queueProduction(state: GameState, buildingId: number, item: string, now: number): CommandOutcome {
+  const building = state.buildings.find((candidate) => candidate.id === buildingId);
+  if (!building) return fail('error.unknownBuilding');
+  if (!isMaterial(item) || !producibleItems(building.type).includes(item)) return fail('error.cannotProduce');
+  if (building.queue.length >= building.slotCount) return fail('error.queueFull');
+  const entry = newQueueEntry(item, now, isIdle(building));
+  return {
+    state: { ...state, buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, queue: [...building.queue, entry] } : candidate)) },
+    events: [],
+  };
+}
+
+function collect(state: GameState, buildingId: number): CommandOutcome {
+  const building = state.buildings.find((candidate) => candidate.id === buildingId);
+  if (!building) return fail('error.unknownBuilding');
+  if (!building.queue.some((entry) => entry.done)) return fail('error.nothingToCollect');
+  if (!hasStorehouse(state)) return fail('error.noStorehouse');
+
+  const capacity = storageCapacity(state);
+  let used = storageUsed(state.storage).materials;
+  const materials = { ...state.storage.materials };
+  const remaining: QueueEntry[] = [];
+  let collected = 0;
+  for (const entry of building.queue) {
+    if (!entry.done || used >= capacity.materials) {
+      remaining.push(entry);
+      continue;
+    }
+    materials[entry.item] = (materials[entry.item] ?? 0) + 1;
+    used += 1;
+    collected += 1;
+  }
+  if (collected === 0) return fail('error.storageFull');
+  const events: GameEvent[] = [{ type: 'ItemsCollected', buildingId }];
+  if (remaining.some((entry) => entry.done)) events.push({ type: 'StorageFull', buildingId });
+  return {
+    state: {
+      ...state,
+      storage: { ...state.storage, materials },
+      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, queue: remaining } : candidate)),
+    },
+    events,
   };
 }
