@@ -1,0 +1,165 @@
+import * as THREE from 'three';
+
+const ISO_PITCH = Math.atan(1 / Math.SQRT2);
+const ZOOM_MIN = 16;
+const ZOOM_MAX = 90;
+const TWIST_SNAP = (35 * Math.PI) / 180;
+const KEY_PAN_SPEED = 14;
+const YAW_EASING = 12;
+
+export class CameraController {
+  readonly camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -500, 500);
+  private focus = { x: 64, z: 64 };
+  private zoom = 36;
+  private yaw = Math.PI / 4;
+  private yawTarget = Math.PI / 4;
+  private pointers = new Map<number, { x: number; y: number }>();
+  private lastPinchDistance = 0;
+  private lastPinchAngle = 0;
+  private twist = 0;
+  private keys = new Set<string>();
+  private abort = new AbortController();
+
+  constructor(
+    private canvas: HTMLCanvasElement,
+    private bounds: { min: number; max: number },
+  ) {
+    this.bindInput();
+    this.apply();
+  }
+
+  get center(): { x: number; z: number } {
+    return { ...this.focus };
+  }
+
+  rotate(quarterTurns: number): void {
+    this.yawTarget += (quarterTurns * Math.PI) / 2;
+  }
+
+  resize(): void {
+    this.apply();
+  }
+
+  update(deltaSeconds: number): void {
+    this.applyKeys(deltaSeconds);
+    const difference = this.yawTarget - this.yaw;
+    if (Math.abs(difference) > 1e-4) {
+      this.yaw += difference * Math.min(1, YAW_EASING * deltaSeconds);
+      this.apply();
+    }
+  }
+
+  dispose(): void {
+    this.abort.abort();
+  }
+
+  private panByScreen(dx: number, dy: number): void {
+    const scale = 1 / this.zoom;
+    const cos = Math.cos(this.yaw);
+    const sin = Math.sin(this.yaw);
+    this.focus.x -= (dx * cos + dy * sin * Math.SQRT2) * scale;
+    this.focus.z -= (-dx * sin + dy * cos * Math.SQRT2) * scale;
+    this.clampFocus();
+    this.apply();
+  }
+
+  private applyKeys(deltaSeconds: number): void {
+    const horizontal = Number(this.keys.has('d') || this.keys.has('arrowright')) - Number(this.keys.has('a') || this.keys.has('arrowleft'));
+    const vertical = Number(this.keys.has('s') || this.keys.has('arrowdown')) - Number(this.keys.has('w') || this.keys.has('arrowup'));
+    if (!horizontal && !vertical) return;
+    const step = KEY_PAN_SPEED * deltaSeconds * this.zoom;
+    this.panByScreen(-horizontal * step, -vertical * step);
+  }
+
+  private zoomBy(factor: number): void {
+    this.zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, this.zoom * factor));
+    this.apply();
+  }
+
+  private clampFocus(): void {
+    this.focus.x = Math.min(this.bounds.max, Math.max(this.bounds.min, this.focus.x));
+    this.focus.z = Math.min(this.bounds.max, Math.max(this.bounds.min, this.focus.z));
+  }
+
+  private apply(): void {
+    const { camera, canvas, zoom, yaw, focus } = this;
+    const width = canvas.clientWidth || 1;
+    const height = canvas.clientHeight || 1;
+    camera.left = -width / zoom / 2;
+    camera.right = width / zoom / 2;
+    camera.top = height / zoom / 2;
+    camera.bottom = -height / zoom / 2;
+    const distance = 100;
+    camera.position.set(
+      focus.x + Math.sin(yaw) * Math.cos(ISO_PITCH) * distance,
+      Math.sin(ISO_PITCH) * distance,
+      focus.z + Math.cos(yaw) * Math.cos(ISO_PITCH) * distance,
+    );
+    camera.lookAt(focus.x, 0, focus.z);
+    camera.updateProjectionMatrix();
+  }
+
+  private bindInput(): void {
+    const { signal } = this.abort;
+    const { canvas } = this;
+    canvas.addEventListener('pointerdown', (event) => this.onPointerDown(event), { signal });
+    canvas.addEventListener('pointermove', (event) => this.onPointerMove(event), { signal });
+    canvas.addEventListener('pointerup', (event) => this.onPointerEnd(event), { signal });
+    canvas.addEventListener('pointercancel', (event) => this.onPointerEnd(event), { signal });
+    canvas.addEventListener('wheel', (event) => this.zoomBy(event.deltaY < 0 ? 1.1 : 0.9), { signal, passive: true });
+    window.addEventListener('keydown', (event) => this.onKey(event, true), { signal });
+    window.addEventListener('keyup', (event) => this.onKey(event, false), { signal });
+  }
+
+  private onKey(event: KeyboardEvent, pressed: boolean): void {
+    const key = event.key.toLowerCase();
+    if (pressed && key === 'q') return this.rotate(-1);
+    if (pressed && key === 'e') return this.rotate(1);
+    if (pressed) this.keys.add(key);
+    else this.keys.delete(key);
+  }
+
+  private onPointerDown(event: PointerEvent): void {
+    this.canvas.setPointerCapture(event.pointerId);
+    this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    this.lastPinchDistance = 0;
+    this.twist = 0;
+  }
+
+  private onPointerEnd(event: PointerEvent): void {
+    this.pointers.delete(event.pointerId);
+    this.lastPinchDistance = 0;
+    this.twist = 0;
+  }
+
+  private onPointerMove(event: PointerEvent): void {
+    const pointer = this.pointers.get(event.pointerId);
+    if (!pointer) return;
+    const dx = event.clientX - pointer.x;
+    const dy = event.clientY - pointer.y;
+    pointer.x = event.clientX;
+    pointer.y = event.clientY;
+    if (this.pointers.size === 1) return this.panByScreen(dx, dy);
+    if (this.pointers.size === 2) this.onTwoFingers();
+  }
+
+  private onTwoFingers(): void {
+    const [a, b] = [...this.pointers.values()];
+    if (!a || !b) return;
+    const distance = Math.hypot(a.x - b.x, a.y - b.y);
+    const angle = Math.atan2(b.y - a.y, b.x - a.x);
+    if (this.lastPinchDistance) {
+      this.zoomBy(distance / this.lastPinchDistance);
+      this.twist += normalizeAngle(angle - this.lastPinchAngle);
+    }
+    this.lastPinchDistance = distance;
+    this.lastPinchAngle = angle;
+    if (Math.abs(this.twist) < TWIST_SNAP) return;
+    this.rotate(this.twist > 0 ? -1 : 1);
+    this.twist = 0;
+  }
+}
+
+function normalizeAngle(angle: number): number {
+  return Math.atan2(Math.sin(angle), Math.cos(angle));
+}
