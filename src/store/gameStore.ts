@@ -2,6 +2,7 @@ import { createStore } from 'zustand/vanilla';
 import { advance, dispatch, newGame, type Command, type CommandError, type GameState } from '../core';
 import { saveSession } from '../persistence/instance';
 import type { LoadResult } from '../persistence/saveSession';
+import { readOnlyStore } from './readOnlyStore';
 import { toastKeyForEvents, toastStore } from './toastStore';
 
 export type Change = 'command' | 'tick' | 'reset';
@@ -22,6 +23,7 @@ export function createGameStore(initial: GameState) {
     lastError: null,
     lastChange: 'reset',
     send: (command) => {
+      if (readOnlyStore.getState().readOnly) return;
       const result = dispatch(get().state, command, Date.now());
       if (!result.ok) {
         toastStore.getState().show(result.error.key);
@@ -32,6 +34,7 @@ export function createGameStore(initial: GameState) {
       set({ state: result.state, lastError: null, lastChange: 'command' });
     },
     tick: (tickNow) => {
+      if (readOnlyStore.getState().readOnly) return;
       const result = advance(get().state, tickNow);
       const toast = toastKeyForEvents(result.events);
       if (toast) toastStore.getState().show(toast);

@@ -1,6 +1,6 @@
 import type { GameState } from '../core';
-import { parseEnvelope, serializeEnvelope, type ParseFailure } from './envelope';
-import { SAVE_KEY, SaveQuotaError, type SaveStore } from './saveStore';
+import { CURRENT_VERSION, parseEnvelope, readVersion, serializeEnvelope, type ParseFailure, type ParseOptions } from './envelope';
+import { BACKUP_KEY, SAVE_KEY, SaveQuotaError, type SaveStore } from './saveStore';
 
 export type LoadResult =
   | { kind: 'none' }
@@ -12,13 +12,20 @@ export type SaveOutcome = { ok: true } | { ok: false; reason: 'locked' | 'quota'
 export class SaveSession {
   private locked = false;
 
-  constructor(private store: SaveStore) {}
+  constructor(
+    private store: SaveStore,
+    private options: ParseOptions = {},
+  ) {}
 
   load(): LoadResult {
     const raw = this.store.get(SAVE_KEY);
     if (raw === null) return { kind: 'none' };
-    const result = parseEnvelope(raw);
-    if (result.ok) return { kind: 'loaded', state: result.state, savedAt: result.savedAt };
+    const result = parseEnvelope(raw, this.options);
+    if (result.ok) {
+      const version = readVersion(raw) ?? CURRENT_VERSION;
+      if (version < (this.options.currentVersion ?? CURRENT_VERSION)) this.store.put(BACKUP_KEY, raw);
+      return { kind: 'loaded', state: result.state, savedAt: result.savedAt };
+    }
     this.locked = true;
     return { kind: 'failed', reason: result.reason, raw };
   }
@@ -32,6 +39,11 @@ export class SaveSession {
       if (error instanceof SaveQuotaError) return { ok: false, reason: 'quota' };
       throw error;
     }
+  }
+
+  backupNow(): void {
+    const raw = this.store.get(SAVE_KEY);
+    if (raw !== null && parseEnvelope(raw, this.options).ok) this.store.put(BACKUP_KEY, raw);
   }
 
   unlock(): void {

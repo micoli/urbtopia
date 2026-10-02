@@ -1,19 +1,34 @@
-import { useState } from 'react';
+import { useRef, useState, type ChangeEvent } from 'react';
+import { exportCurrentCity } from '../persistence/exportCity';
 import { saveSession } from '../persistence/instance';
+import { importCity } from '../persistence/transfer';
 import { t } from '../i18n/t';
+import { dialogStore } from '../store/dialogStore';
 import { gameStore } from '../store/gameStore';
+import { toastStore } from '../store/toastStore';
 import { useUi } from './hooks';
 
 export function MenuPanel() {
   const open = useUi((store) => store.menuOpen);
   const toggle = useUi((store) => store.toggleMenu);
   const [confirming, setConfirming] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
   if (!open) return null;
 
   const startNewGame = () => {
     saveSession.unlock();
     gameStore.getState().newGame(Date.now());
     setConfirming(false);
+    toggle();
+  };
+
+  const onFileChosen = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    const result = importCity(await file.text(), saveSession, Date.now());
+    if (!result.ok) return toastStore.getState().show(`import.${result.reason}`);
+    dialogStore.getState().setPendingImport(result.state);
     toggle();
   };
 
@@ -26,6 +41,13 @@ export function MenuPanel() {
         </button>
       </header>
       <div className="side-panel-actions">
+        <button type="button" onClick={exportCurrentCity}>
+          {t('menu.export')}
+        </button>
+        <button type="button" onClick={() => fileInput.current?.click()}>
+          {t('menu.import')}
+        </button>
+        <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={onFileChosen} />
         {confirming ? (
           <>
             <p>{t('menu.newGameConfirm')}</p>

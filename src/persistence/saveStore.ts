@@ -1,4 +1,5 @@
 export const SAVE_KEY = 'urbtopia-save';
+export const BACKUP_KEY = 'urbtopia-save-backup';
 
 export class SaveQuotaError extends Error {}
 

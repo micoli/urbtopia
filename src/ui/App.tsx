@@ -2,6 +2,11 @@ import { CameraButtons } from './CameraButtons';
 import { CollectBadges } from './CollectBadges';
 import { ConfirmPad } from './ConfirmPad';
 import { ConfirmSaleDialog } from './ConfirmSaleDialog';
+import { ExportReminder } from './ExportReminder';
+import { ImportConfirmDialog } from './ImportConfirmDialog';
+import { ReadOnlyBanner } from './ReadOnlyBanner';
+import { RecoveryScreen } from './RecoveryScreen';
+import { SaveFailedDialog } from './SaveFailedDialog';
 import { Dock } from './Dock';
 import { Flyout } from './Flyout';
 import { MarketPanel } from './MarketPanel';
@@ -25,7 +30,12 @@ export function App() {
       <MarketPanel />
       <MenuPanel />
       <ConfirmPad />
+      <ReadOnlyBanner />
+      <ExportReminder />
       <ConfirmSaleDialog />
+      <ImportConfirmDialog />
+      <SaveFailedDialog />
+      <RecoveryScreen />
       <Toast />
       <CameraButtons />
     </>
