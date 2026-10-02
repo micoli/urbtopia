@@ -1,10 +1,6 @@
 import type { GameEvent } from './events';
-import { MATERIALS, type ItemId } from './items';
+import { durationOf, type ItemId } from './items';
 import type { Building, GameState, QueueEntry } from './state';
-
-export function durationOf(item: ItemId): number {
-  return MATERIALS[item].durationMs;
-}
 
 export function newQueueEntry(item: ItemId, now: number, isIdle: boolean): QueueEntry {
   return { item, duration: durationOf(item), startedAt: isIdle ? now : null, done: false };

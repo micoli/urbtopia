@@ -1,5 +1,5 @@
 import type { Coord } from './coord';
-import type { ItemId, MaterialId } from './items';
+import type { GoodId, ItemId, MaterialId } from './items';
 import type { RoadKind } from './roads';
 
 export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'waterTower';
@@ -25,7 +25,7 @@ export interface Building extends Coord {
 
 export interface Storage {
   materials: Partial<Record<MaterialId, number>>;
-  goods: Partial<Record<string, number>>;
+  goods: Partial<Record<GoodId, number>>;
 }
 
 export interface RoadTile extends Coord {
@@ -41,6 +41,7 @@ export interface GameState {
   ownedParcels: ParcelCoord[];
   buildings: Building[];
   storage: Storage;
+  storehouseLevel: number;
   roads: RoadTile[];
   roundabouts: Coord[];
 }

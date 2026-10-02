@@ -21,6 +21,7 @@ export function newGame(options: NewGameOptions): GameState {
     ownedParcels: startingParcels.map((parcel) => ({ ...parcel })),
     buildings: startingBuildings.map((building, index) => createBuilding(firstEntityId + index, building.type, building.x, building.y, building.rotation)),
     storage: { materials: {}, goods: {} },
+    storehouseLevel: 0,
     roads: Array.from({ length: startingRoadRow.toX - startingRoadRow.fromX + 1 }, (_, index) => ({
       x: startingRoadRow.fromX + index,
       y: startingRoadRow.y,

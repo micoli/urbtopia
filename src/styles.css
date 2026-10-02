@@ -340,3 +340,17 @@ button {
   color: #08140d;
   font-weight: 700;
 }
+
+.slot-buy {
+  width: 100%;
+  min-height: var(--tap);
+  margin-top: 8px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+}
+
+.slot-actions {
+  flex-wrap: wrap;
+}

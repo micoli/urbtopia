@@ -1,3 +1,4 @@
+import { STORAGE_UPGRADE_BONUS } from './economy';
 import type { GameState, Storage } from './state';
 
 export const STORAGE_BASE_CAPACITY = { materials: 20, goods: 40 };
@@ -8,7 +9,10 @@ export function hasStorehouse(state: GameState): boolean {
 
 export function storageCapacity(state: GameState): { materials: number; goods: number } {
   if (!hasStorehouse(state)) return { materials: 0, goods: 0 };
-  return { ...STORAGE_BASE_CAPACITY };
+  return {
+    materials: STORAGE_BASE_CAPACITY.materials + state.storehouseLevel * STORAGE_UPGRADE_BONUS.materials,
+    goods: STORAGE_BASE_CAPACITY.goods + state.storehouseLevel * STORAGE_UPGRADE_BONUS.goods,
+  };
 }
 
 function sum(record: Partial<Record<string, number>>): number {

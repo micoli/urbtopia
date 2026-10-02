@@ -1,4 +1,4 @@
-import { producibleItems, type Building } from '../core';
+import { MAX_SLOTS, SLOT_PRICES, producibleItems, recipeOf, type Building, type ItemId } from '../core';
 import { t } from '../i18n/t';
 import { formatDuration } from './formatDuration';
 import { useGame } from './hooks';
@@ -14,6 +14,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
   const hasFreeSlot = building.queue.length < building.slotCount;
   const hasReadyOutput = building.queue.some((entry) => entry.done);
   const send = gameStore.getState().send;
+  const slotPrice = building.slotCount < MAX_SLOTS ? SLOT_PRICES[building.slotCount + 1] : undefined;
 
   return (
     <section className="production">
@@ -40,9 +41,15 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
           {items.map((item) => (
             <button key={item} type="button" onClick={() => send({ type: 'QueueProduction', buildingId: building.id, item })}>
               + {t(`item.${item}`)}
+              {recipeLabel(item)}
             </button>
           ))}
         </div>
+      ) : null}
+      {slotPrice !== undefined ? (
+        <button type="button" className="slot-buy" onClick={() => send({ type: 'BuySlot', buildingId: building.id })}>
+          {t('panel.buySlot')} ({slotPrice} {t('stat.urbs')})
+        </button>
       ) : null}
       {hasReadyOutput ? (
         <button type="button" className="collect-button" onClick={() => send({ type: 'Collect', buildingId: building.id })}>
@@ -51,4 +58,9 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
       ) : null}
     </section>
   );
+}
+
+function recipeLabel(item: ItemId): string {
+  const parts = Object.entries(recipeOf(item)).map(([material, amount]) => `${amount} ${t(`item.${material as 'wood' | 'stone'}`)}`);
+  return parts.length > 0 ? ` (${parts.join(', ')})` : '';
 }

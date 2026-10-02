@@ -3,7 +3,8 @@ import { GAME_CONFIG } from './config';
 import type { Coord } from './coord';
 import type { GameEvent } from './events';
 import { tileKey } from './geometry';
-import { isMaterial, producibleItems } from './items';
+import { MAX_SLOTS, SLOT_PRICES, STORAGE_UPGRADE_COSTS } from './economy';
+import { isGood, isMaterial, producibleItems, recipeOf } from './items';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from './occupancy';
 import { autoRotation, frontTouchesRoad, placementIssue } from './placement';
 import { isIdle, newQueueEntry, restartRunningProduction } from './production';
@@ -20,6 +21,8 @@ export type Command =
   | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
+  | { readonly type: 'BuySlot'; readonly buildingId: number }
+  | { readonly type: 'UpgradeStorehouse' }
   | { readonly type: 'SellBuilding'; readonly id: number }
   | { readonly type: 'MoveBuilding'; readonly id: number; readonly x: number; readonly y: number; readonly rotation?: Rotation };
 
@@ -39,7 +42,10 @@ export type ErrorKey =
   | 'error.nothingToCollect'
   | 'error.noStorehouse'
   | 'error.storageFull'
-  | 'error.storehouseNotEmpty';
+  | 'error.storehouseNotEmpty'
+  | 'error.missingMaterials'
+  | 'error.maxSlots'
+  | 'error.maxLevel';
 
 export interface CommandError {
   key: ErrorKey;
@@ -69,6 +75,10 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return queueProduction(state, command.buildingId, command.item, now);
     case 'Collect':
       return collect(state, command.buildingId);
+    case 'BuySlot':
+      return buySlot(state, command.buildingId);
+    case 'UpgradeStorehouse':
+      return upgradeStorehouse(state);
     case 'SellBuilding':
       return sellBuilding(state, command.id);
     case 'MoveBuilding':
@@ -154,7 +164,7 @@ function sellBuilding(state: GameState, id: number): CommandOutcome {
   if (building.type === 'storehouse' && !isStorageEmpty(state.storage)) return fail('error.storehouseNotEmpty');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
   return {
-    state: { ...state, urbs: state.urbs + refund, buildings: state.buildings.filter((candidate) => candidate !== building) },
+    state: { ...state, urbs: state.urbs + refund, storehouseLevel: building.type === 'storehouse' ? 0 : state.storehouseLevel, buildings: state.buildings.filter((candidate) => candidate !== building) },
     events: [{ type: 'BuildingSold', id }],
   };
 }
@@ -175,11 +185,21 @@ function moveBuilding(state: GameState, id: number, x: number, y: number, reques
 function queueProduction(state: GameState, buildingId: number, item: string, now: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
-  if (!isMaterial(item) || !producibleItems(building.type).includes(item)) return fail('error.cannotProduce');
+  if (!(isMaterial(item) || isGood(item)) || !producibleItems(building.type).includes(item)) return fail('error.cannotProduce');
   if (building.queue.length >= building.slotCount) return fail('error.queueFull');
+  const materials = { ...state.storage.materials };
+  for (const [material, needed] of Object.entries(recipeOf(item))) {
+    const available = materials[material as keyof typeof materials] ?? 0;
+    if (available < needed) return fail('error.missingMaterials');
+    materials[material as keyof typeof materials] = available - needed;
+  }
   const entry = newQueueEntry(item, now, isIdle(building));
   return {
-    state: { ...state, buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, queue: [...building.queue, entry] } : candidate)) },
+    state: {
+      ...state,
+      storage: { ...state.storage, materials },
+      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, queue: [...building.queue, entry] } : candidate)),
+    },
     events: [],
   };
 }
@@ -191,17 +211,20 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
   if (!hasStorehouse(state)) return fail('error.noStorehouse');
 
   const capacity = storageCapacity(state);
-  let used = storageUsed(state.storage).materials;
+  const used = storageUsed(state.storage);
   const materials = { ...state.storage.materials };
+  const goods = { ...state.storage.goods };
   const remaining: QueueEntry[] = [];
   let collected = 0;
   for (const entry of building.queue) {
-    if (!entry.done || used >= capacity.materials) {
+    const compartment = isMaterial(entry.item) ? 'materials' : 'goods';
+    if (!entry.done || used[compartment] >= capacity[compartment]) {
       remaining.push(entry);
       continue;
     }
-    materials[entry.item] = (materials[entry.item] ?? 0) + 1;
-    used += 1;
+    if (isMaterial(entry.item)) materials[entry.item] = (materials[entry.item] ?? 0) + 1;
+    else goods[entry.item] = (goods[entry.item] ?? 0) + 1;
+    used[compartment] += 1;
     collected += 1;
   }
   if (collected === 0) return fail('error.storageFull');
@@ -210,9 +233,34 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
   return {
     state: {
       ...state,
-      storage: { ...state.storage, materials },
+      storage: { materials, goods },
       buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, queue: remaining } : candidate)),
     },
     events,
   };
+}
+
+function buySlot(state: GameState, buildingId: number): CommandOutcome {
+  const building = state.buildings.find((candidate) => candidate.id === buildingId);
+  if (!building) return fail('error.unknownBuilding');
+  if (producibleItems(building.type).length === 0) return fail('error.cannotProduce');
+  if (building.slotCount >= MAX_SLOTS) return fail('error.maxSlots');
+  const price = SLOT_PRICES[building.slotCount + 1] ?? 0;
+  if (state.urbs < price) return fail('error.notEnoughUrbs');
+  return {
+    state: {
+      ...state,
+      urbs: state.urbs - price,
+      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, slotCount: building.slotCount + 1 } : candidate)),
+    },
+    events: [],
+  };
+}
+
+function upgradeStorehouse(state: GameState): CommandOutcome {
+  if (!hasStorehouse(state)) return fail('error.noStorehouse');
+  const cost = STORAGE_UPGRADE_COSTS[state.storehouseLevel];
+  if (cost === undefined) return fail('error.maxLevel');
+  if (state.urbs < cost) return fail('error.notEnoughUrbs');
+  return { state: { ...state, urbs: state.urbs - cost, storehouseLevel: state.storehouseLevel + 1 }, events: [] };
 }
