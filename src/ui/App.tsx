@@ -1,6 +1,7 @@
 import { CameraButtons } from './CameraButtons';
 import { CollectBadges } from './CollectBadges';
 import { ConfirmPad } from './ConfirmPad';
+import { ConfirmSaleDialog } from './ConfirmSaleDialog';
 import { Dock } from './Dock';
 import { Flyout } from './Flyout';
 import { MarketPanel } from './MarketPanel';
@@ -20,6 +21,7 @@ export function App() {
       <SidePanel />
       <MarketPanel />
       <ConfirmPad />
+      <ConfirmSaleDialog />
       <Toast />
       <CameraButtons />
     </>

@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import { footprintTiles, type Coord, type Rotation } from '../core';
+import { footprintTiles, isStorageEmpty, type Coord, type Rotation } from '../core';
 import { confirmTool, evaluateTool, type Evaluation, type Tool } from '../tools/tools';
 import { gameStore } from './gameStore';
 import { toastStore } from './toastStore';
@@ -13,6 +13,7 @@ export interface UiStore {
   selectedBuildingId: number | null;
   flyout: Flyout;
   marketOpen: boolean;
+  pendingSaleId: number | null;
   evaluation: Evaluation | null;
   openFlyout: (flyout: Flyout) => void;
   toggleMarket: () => void;
@@ -24,6 +25,8 @@ export interface UiStore {
   tapTile: (tile: Coord) => void;
   select: (id: number | null) => void;
   sellSelected: () => void;
+  confirmSale: () => void;
+  cancelSale: () => void;
   moveSelected: () => void;
 }
 
@@ -47,6 +50,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     selectedBuildingId: null,
     flyout: null,
     marketOpen: false,
+    pendingSaleId: null,
     evaluation: null,
     openFlyout: (flyout) => set({ flyout: get().flyout === flyout ? null : flyout }),
     toggleMarket: () => {
@@ -82,9 +86,21 @@ export const uiStore = createStore<UiStore>((set, get) => {
     sellSelected: () => {
       const id = get().selectedBuildingId;
       if (id === null) return;
+      const game = gameStore.getState().state;
+      const building = game.buildings.find((candidate) => candidate.id === id);
+      const needsConfirmation = building && ((building.type === 'home' && building.tier >= 3) || (building.type === 'storehouse' && !isStorageEmpty(game.storage)));
+      if (needsConfirmation) return set({ pendingSaleId: id });
       gameStore.getState().send({ type: 'SellBuilding', id });
       set({ selectedBuildingId: null });
     },
+    confirmSale: () => {
+      const id = get().pendingSaleId;
+      set({ pendingSaleId: null });
+      if (id === null) return;
+      gameStore.getState().send({ type: 'SellBuilding', id });
+      set({ selectedBuildingId: null });
+    },
+    cancelSale: () => set({ pendingSaleId: null }),
     moveSelected: () => {
       const id = get().selectedBuildingId;
       if (id === null) return;

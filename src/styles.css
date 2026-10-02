@@ -436,3 +436,41 @@ button {
 .stat-tight {
   color: #ffd23f;
 }
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 30;
+}
+
+.dialog {
+  width: min(360px, 90vw);
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--panel-bg);
+  color: var(--panel-fg);
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.dialog-actions button {
+  min-height: var(--tap);
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.14);
+  color: inherit;
+}
+
+.dialog-actions .dialog-danger {
+  background: var(--danger);
+  color: #fff;
+}
