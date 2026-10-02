@@ -20,3 +20,4 @@ export { DIRECTIONS, DIRECTION_VECTORS, frontDirection, neighbour, tileKey } fro
 export type { Direction } from './geometry';
 export { roadPath, roadPiece } from './roads';
 export type { RoadKind, RoadPiece, RoadPieceName } from './roads';
+export { missingRoadTiles, roadBuildCost } from './roadCost';

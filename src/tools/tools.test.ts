@@ -1,0 +1,100 @@
+import { describe, expect, it } from 'vitest';
+import { newGame, type GameState } from '../core';
+import { confirmTool, evaluateTool, type Tool } from './tools';
+
+const state: GameState = newGame({ seed: 'amber-fox-4821', now: 0 });
+
+const shopTool: Tool = { kind: 'building', buildingType: 'shop' };
+
+describe('building tool', () => {
+  it('shows a valid ghost turned toward the adjacent road and the placement command', () => {
+    const evaluation = evaluateTool(shopTool, { state, tile: { x: 56, y: 57 }, rotation: null });
+    expect(evaluation.valid).toBe(true);
+    expect(evaluation.rotation).toBe(2);
+    expect(evaluation.cost).toBe(300);
+    expect(evaluation.command).toEqual({ type: 'PlaceBuilding', buildingType: 'shop', x: 56, y: 57, rotation: 2 });
+  });
+
+  it('explains why a ghost is invalid', () => {
+    const evaluation = evaluateTool(shopTool, { state, tile: { x: 70, y: 70 }, rotation: null });
+    expect(evaluation.valid).toBe(false);
+    expect(evaluation.issue).toBe('error.needsRoad');
+  });
+
+  it('respects a rotation chosen by the player', () => {
+    const evaluation = evaluateTool(shopTool, { state, tile: { x: 56, y: 57 }, rotation: 0 });
+    expect(evaluation.rotation).toBe(0);
+    expect(evaluation.issue).toBe('error.needsRoad');
+  });
+
+  it('covers the whole footprint of a large building', () => {
+    const evaluation = evaluateTool({ kind: 'building', buildingType: 'storehouse' }, { state, tile: { x: 56, y: 59 }, rotation: null });
+    expect(evaluation.ghost.tiles).toHaveLength(4);
+  });
+});
+
+describe('road tool', () => {
+  it('first asks for a start tile, without a command', () => {
+    const evaluation = evaluateTool({ kind: 'road', start: null, horizontalFirst: true }, { state, tile: { x: 62, y: 58 }, rotation: null });
+    expect(evaluation.command).toBeNull();
+    expect(evaluation.ghost.tiles).toEqual([{ x: 62, y: 58 }]);
+  });
+
+  it('then previews the L path with the cost of the missing tiles', () => {
+    const evaluation = evaluateTool(
+      { kind: 'road', start: { x: 62, y: 58 }, horizontalFirst: false },
+      { state, tile: { x: 62, y: 60 }, rotation: null },
+    );
+    expect(evaluation.ghost.tiles).toHaveLength(3);
+    expect(evaluation.cost).toBe(4);
+    expect(evaluation.command).toMatchObject({ type: 'BuildRoad', from: { x: 62, y: 58 }, to: { x: 62, y: 60 } });
+  });
+});
+
+describe('other tools', () => {
+  it('previews a 3x3 roundabout', () => {
+    const evaluation = evaluateTool({ kind: 'roundabout' }, { state, tile: { x: 70, y: 70 }, rotation: null });
+    expect(evaluation.ghost.tiles).toHaveLength(9);
+    expect(evaluation.valid).toBe(true);
+  });
+
+  it('refuses a crossing where there is no road', () => {
+    const evaluation = evaluateTool({ kind: 'crossing' }, { state, tile: { x: 70, y: 70 }, rotation: null });
+    expect(evaluation.issue).toBe('error.noRoadHere');
+  });
+
+  it('previews moving a building with its own footprint', () => {
+    const evaluation = evaluateTool({ kind: 'move', buildingId: 1 }, { state, tile: { x: 56, y: 59 }, rotation: null });
+    expect(evaluation.ghost.tiles).toHaveLength(4);
+    expect(evaluation.command).toMatchObject({ type: 'MoveBuilding', id: 1, x: 56, y: 59 });
+  });
+});
+
+describe('confirmTool', () => {
+  it('sends the command of a valid evaluation and keeps the tool active', () => {
+    const evaluation = evaluateTool(shopTool, { state, tile: { x: 56, y: 57 }, rotation: null });
+    expect(confirmTool(shopTool, { x: 56, y: 57 }, evaluation)).toEqual({ command: evaluation.command, nextTool: shopTool });
+  });
+
+  it('does nothing for an invalid evaluation', () => {
+    const evaluation = evaluateTool(shopTool, { state, tile: { x: 70, y: 70 }, rotation: null });
+    expect(confirmTool(shopTool, { x: 70, y: 70 }, evaluation)).toEqual({ command: null, nextTool: shopTool });
+  });
+
+  it('stores the start tile of a road, then builds it and starts over', () => {
+    const start: Tool = { kind: 'road', start: null, horizontalFirst: true };
+    const first = confirmTool(start, { x: 62, y: 58 }, evaluateTool(start, { state, tile: { x: 62, y: 58 }, rotation: null }));
+    expect(first.command).toBeNull();
+    expect(first.nextTool).toEqual({ kind: 'road', start: { x: 62, y: 58 }, horizontalFirst: true });
+
+    const second = confirmTool(first.nextTool!, { x: 62, y: 60 }, evaluateTool(first.nextTool!, { state, tile: { x: 62, y: 60 }, rotation: null }));
+    expect(second.command).toMatchObject({ type: 'BuildRoad' });
+    expect(second.nextTool).toEqual({ kind: 'road', start: null, horizontalFirst: true });
+  });
+
+  it('ends a move after it succeeds', () => {
+    const tool: Tool = { kind: 'move', buildingId: 1 };
+    const evaluation = evaluateTool(tool, { state, tile: { x: 56, y: 59 }, rotation: null });
+    expect(confirmTool(tool, { x: 56, y: 59 }, evaluation).nextTool).toBeNull();
+  });
+});

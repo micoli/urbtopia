@@ -31,3 +31,225 @@ body,
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.85);
 }
+
+:root {
+  --dock-width: 64px;
+  --panel-bg: rgba(24, 28, 40, 0.92);
+  --panel-fg: #f4f6fb;
+  --accent: #35d07f;
+  --danger: #e5484d;
+  --tap: 48px;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.dock {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--dock-width);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 4px;
+  background: var(--panel-bg);
+  color: var(--panel-fg);
+  z-index: 10;
+}
+
+.dock-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dock-stat-value {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.dock-stat-label {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.dock-button {
+  min-height: var(--tap);
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  font-size: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.dock-button span {
+  font-size: 10px;
+}
+
+.dock-button[aria-pressed='true'] {
+  background: var(--accent);
+  color: #08140d;
+}
+
+.flyout {
+  position: fixed;
+  left: var(--dock-width);
+  top: 0;
+  bottom: 0;
+  width: min(220px, 55vw);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  overflow-y: auto;
+  background: var(--panel-bg);
+  color: var(--panel-fg);
+  z-index: 9;
+}
+
+.flyout-item {
+  min-height: var(--tap);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  text-align: left;
+}
+
+.flyout-cost {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.side-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: min(240px, 60vw);
+  padding: 12px;
+  background: var(--panel-bg);
+  color: var(--panel-fg);
+  z-index: 9;
+}
+
+.side-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.side-panel-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.panel-close {
+  width: var(--tap);
+  height: var(--tap);
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+}
+
+.side-panel-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.side-panel-actions button {
+  min-height: var(--tap);
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+}
+
+.confirm-pad {
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 8;
+}
+
+.confirm-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 70vw;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: var(--panel-bg);
+  color: var(--panel-fg);
+  font-size: 13px;
+  text-align: center;
+}
+
+.confirm-info:empty {
+  display: none;
+}
+
+.confirm-issue {
+  color: #ff9ea1;
+}
+
+.confirm-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.pad-button {
+  width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 14px;
+  font-size: 26px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.pad-confirm {
+  background: var(--accent);
+}
+
+.pad-cancel {
+  background: var(--danger);
+  color: white;
+}
+
+.pad-button:disabled {
+  opacity: 0.4;
+}
+
+.toast {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: var(--panel-bg);
+  color: var(--panel-fg);
+  z-index: 20;
+}

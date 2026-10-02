@@ -1,0 +1,141 @@
+import {
+  BUILDING_SPECS,
+  autoRotation,
+  dispatch,
+  footprintOf,
+  footprintTiles,
+  frontDirection,
+  placementCost,
+  roadBuildCost,
+  roadPath,
+  roundaboutTiles,
+  type BuildingType,
+  type Command,
+  type Coord,
+  type Direction,
+  type ErrorKey,
+  type GameState,
+  type Rotation,
+} from '../core';
+
+export type Tool =
+  | { kind: 'building'; buildingType: BuildingType }
+  | { kind: 'move'; buildingId: number }
+  | { kind: 'road'; start: Coord | null; horizontalFirst: boolean }
+  | { kind: 'crossing' }
+  | { kind: 'roundabout' }
+  | { kind: 'demolishRoad' };
+
+export interface ToolContext {
+  state: GameState;
+  tile: Coord;
+  rotation: Rotation | null;
+}
+
+export interface GhostSpec {
+  tiles: Coord[];
+  valid: boolean;
+  front: { x: number; z: number; direction: Direction } | null;
+}
+
+export interface Evaluation {
+  ghost: GhostSpec;
+  valid: boolean;
+  issue: ErrorKey | null;
+  command: Command | null;
+  cost: number | null;
+  rotation: Rotation | null;
+}
+
+export interface Confirmation {
+  command: Command | null;
+  nextTool: Tool | null;
+}
+
+function dryRun(state: GameState, command: Command): ErrorKey | null {
+  const result = dispatch(state, command, state.lastSeen);
+  return result.ok ? null : result.error.key;
+}
+
+function evaluation(tiles: Coord[], command: Command | null, state: GameState, extra: Partial<Evaluation> = {}): Evaluation {
+  const issue = command ? dryRun(state, command) : null;
+  const valid = command !== null && issue === null;
+  return {
+    ghost: { tiles, valid, front: null },
+    valid,
+    issue,
+    command,
+    cost: null,
+    rotation: null,
+    ...extra,
+  };
+}
+
+function frontMarker(type: BuildingType, tile: Coord, rotation: Rotation): GhostSpec['front'] {
+  const { width, depth } = footprintOf(type, rotation);
+  const direction = frontDirection(rotation);
+  const centerX = tile.x + width / 2;
+  const centerZ = tile.y + depth / 2;
+  const reach: Record<Direction, { x: number; z: number }> = {
+    N: { x: 0, z: -depth / 2 },
+    S: { x: 0, z: depth / 2 },
+    W: { x: -width / 2, z: 0 },
+    E: { x: width / 2, z: 0 },
+  };
+  return { x: centerX + reach[direction].x, z: centerZ + reach[direction].z, direction };
+}
+
+export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext): Evaluation {
+  switch (tool.kind) {
+    case 'building':
+      return evaluateBuilding(state, tool.buildingType, tile, rotation, { type: 'PlaceBuilding', buildingType: tool.buildingType }, placementCost(tool.buildingType));
+    case 'move': {
+      const building = state.buildings.find((candidate) => candidate.id === tool.buildingId);
+      if (!building) return evaluation([tile], null, state);
+      return evaluateBuilding(state, building.type, tile, rotation, { type: 'MoveBuilding', id: building.id }, 0);
+    }
+    case 'road':
+      return evaluateRoad(state, tool, tile);
+    case 'crossing':
+      return evaluation([tile], { type: 'PlaceCrossing', x: tile.x, y: tile.y }, state);
+    case 'roundabout':
+      return evaluation(roundaboutTiles(tile), { type: 'PlaceRoundabout', x: tile.x, y: tile.y }, state);
+    case 'demolishRoad':
+      return evaluation([tile], { type: 'DemolishRoad', x: tile.x, y: tile.y }, state);
+  }
+}
+
+function evaluateBuilding(
+  state: GameState,
+  type: BuildingType,
+  tile: Coord,
+  requestedRotation: Rotation | null,
+  base: { type: 'PlaceBuilding'; buildingType: BuildingType } | { type: 'MoveBuilding'; id: number },
+  cost: number,
+): Evaluation {
+  const reference =
+    base.type === 'MoveBuilding' ? { ...state, buildings: state.buildings.filter((building) => building.id !== base.id) } : state;
+  const rotation = requestedRotation ?? autoRotation(reference, type, tile.x, tile.y);
+  const command: Command = { ...base, x: tile.x, y: tile.y, rotation };
+  const tiles = footprintTiles({ type, x: tile.x, y: tile.y, rotation });
+  const result = evaluation(tiles, command, state, { cost, rotation });
+  if (BUILDING_SPECS[type].requiresRoad) result.ghost.front = frontMarker(type, tile, rotation);
+  return result;
+}
+
+function evaluateRoad(state: GameState, tool: Extract<Tool, { kind: 'road' }>, tile: Coord): Evaluation {
+  if (!tool.start) {
+    return { ghost: { tiles: [tile], valid: true, front: null }, valid: true, issue: null, command: null, cost: null, rotation: null };
+  }
+  const path = roadPath(tool.start, tile, tool.horizontalFirst);
+  const command: Command = { type: 'BuildRoad', from: tool.start, to: tile, horizontalFirst: tool.horizontalFirst };
+  return evaluation(path, command, state, { cost: roadBuildCost(state, path) });
+}
+
+export function confirmTool(tool: Tool, tile: Coord, current: Evaluation): Confirmation {
+  if (tool.kind === 'road' && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
+  if (!current.valid) return { command: null, nextTool: tool };
+  if (tool.kind === 'move') return { command: current.command, nextTool: null };
+  if (tool.kind === 'road') return { command: current.command, nextTool: { ...tool, start: null } };
+  return { command: current.command, nextTool: tool };
+}

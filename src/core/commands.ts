@@ -5,6 +5,7 @@ import type { GameEvent } from './events';
 import { tileKey } from './geometry';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from './occupancy';
 import { autoRotation, frontTouchesRoad, placementIssue } from './placement';
+import { roadBuildCost, missingRoadTiles } from './roadCost';
 import { roadPath } from './roads';
 import type { Building, BuildingType, GameState, Rotation } from './state';
 
@@ -65,11 +66,10 @@ export function handleCommand(state: GameState, command: Command): CommandOutcom
 function buildRoad(state: GameState, from: Coord, to: Coord, horizontalFirst: boolean): CommandOutcome {
   const path = roadPath(from, to, horizontalFirst);
   if (!path.every((tile) => isInsideOwnedParcels(state, tile))) return fail('error.outsideOwnedParcels');
-  const roadKeys = new Set(state.roads.map(tileKey));
   const blocked = occupiedTiles(state);
-  const missing = path.filter((tile) => !roadKeys.has(tileKey(tile)));
+  const missing = missingRoadTiles(state, path);
   if (missing.some((tile) => blocked.has(tileKey(tile)))) return fail('error.tilesOccupied');
-  const cost = missing.length * GAME_CONFIG.roadCostPerTile;
+  const cost = roadBuildCost(state, path);
   if (state.urbs < cost) return fail('error.notEnoughUrbs');
   return {
     state: { ...state, urbs: state.urbs - cost, roads: [...state.roads, ...missing.map((tile) => ({ ...tile, kind: 'road' as const }))] },

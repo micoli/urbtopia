@@ -6,6 +6,8 @@ const ZOOM_MAX = 90;
 const TWIST_SNAP = (35 * Math.PI) / 180;
 const KEY_PAN_SPEED = 14;
 const YAW_EASING = 12;
+const TAP_SLOP_PX = 8;
+const TAP_MAX_MS = 400;
 
 export class CameraController {
   readonly camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -500, 500);
@@ -18,6 +20,8 @@ export class CameraController {
   private lastPinchAngle = 0;
   private twist = 0;
   private keys = new Set<string>();
+  private gesture = { startX: 0, startY: 0, startTime: 0, moved: false, multiTouch: false };
+  onTap: (clientX: number, clientY: number) => void = () => {};
   private abort = new AbortController();
 
   constructor(
@@ -30,6 +34,12 @@ export class CameraController {
 
   get center(): { x: number; z: number } {
     return { ...this.focus };
+  }
+
+  focusOn(x: number, z: number): void {
+    this.focus = { x, z };
+    this.clampFocus();
+    this.apply();
   }
 
   rotate(quarterTurns: number): void {
@@ -120,14 +130,27 @@ export class CameraController {
   }
 
   private onPointerDown(event: PointerEvent): void {
-    this.canvas.setPointerCapture(event.pointerId);
+    try {
+      this.canvas.setPointerCapture(event.pointerId);
+    } catch {
+      // Synthetic pointers cannot be captured; gestures still work without capture.
+    }
     this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     this.lastPinchDistance = 0;
     this.twist = 0;
+    if (this.pointers.size === 1) {
+      this.gesture = { startX: event.clientX, startY: event.clientY, startTime: performance.now(), moved: false, multiTouch: false };
+    } else {
+      this.gesture.multiTouch = true;
+    }
   }
 
   private onPointerEnd(event: PointerEvent): void {
+    const wasSingle = this.pointers.size === 1 && event.type === 'pointerup';
+    const { startX, startY, startTime, moved, multiTouch } = this.gesture;
+    const isTap = wasSingle && !moved && !multiTouch && performance.now() - startTime < TAP_MAX_MS;
     this.pointers.delete(event.pointerId);
+    if (isTap) this.onTap(startX, startY);
     this.lastPinchDistance = 0;
     this.twist = 0;
   }
@@ -135,6 +158,7 @@ export class CameraController {
   private onPointerMove(event: PointerEvent): void {
     const pointer = this.pointers.get(event.pointerId);
     if (!pointer) return;
+    if (Math.hypot(event.clientX - this.gesture.startX, event.clientY - this.gesture.startY) > TAP_SLOP_PX) this.gesture.moved = true;
     const dx = event.clientX - pointer.x;
     const dy = event.clientY - pointer.y;
     pointer.x = event.clientX;
