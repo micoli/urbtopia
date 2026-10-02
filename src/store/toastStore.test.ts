@@ -16,6 +16,10 @@ describe('toastKeyForEvents', () => {
     expect(toastKeyForEvents([{ type: 'ProductionCompleted', buildingId: 1, item: 'wood', at: 0 }])).toBe('event.productionCompleted');
   });
 
+  it('announces an upgraded Home', () => {
+    expect(toastKeyForEvents([{ type: 'HomeUpgraded', buildingId: 1, tier: 2 }])).toBe('event.homeUpgraded');
+  });
+
   it('stays silent for events that need no toast', () => {
     expect(toastKeyForEvents([{ type: 'BuildingPlaced', id: 1 }])).toBeNull();
     expect(toastKeyForEvents([])).toBeNull();
