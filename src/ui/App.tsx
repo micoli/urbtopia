@@ -5,6 +5,7 @@ import { ConfirmSaleDialog } from './ConfirmSaleDialog';
 import { Dock } from './Dock';
 import { Flyout } from './Flyout';
 import { MarketPanel } from './MarketPanel';
+import { NextUnlock } from './NextUnlock';
 import { ParcelTags } from './ParcelTags';
 import { SceneCanvas } from './SceneCanvas';
 import { SidePanel } from './SidePanel';
@@ -17,6 +18,7 @@ export function App() {
       <CollectBadges />
       <ParcelTags />
       <Dock />
+      <NextUnlock />
       <Flyout />
       <SidePanel />
       <MarketPanel />

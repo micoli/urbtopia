@@ -1,4 +1,4 @@
-import { MAX_SLOTS, SLOT_PRICES, producibleItems, recipeOf, type Building, type ItemId } from '../core';
+import { MAX_SLOTS, SLOT_PRICES, isItemUnlocked, producibleItems, recipeOf, unlockCitizensOf, type Building, type ItemId, type MaterialId } from '../core';
 import { t } from '../i18n/t';
 import { formatDuration } from './formatDuration';
 import { useGame } from './hooks';
@@ -9,7 +9,8 @@ interface ProductionPanelProps {
 }
 
 export function ProductionPanel({ building }: ProductionPanelProps) {
-  const now = useGame((store) => store.state.lastSeen);
+  const state = useGame((store) => store.state);
+  const now = state.lastSeen;
   const items = producibleItems(building.type);
   const hasFreeSlot = building.queue.length < building.slotCount;
   const hasReadyOutput = building.queue.some((entry) => entry.done);
@@ -38,12 +39,18 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
       </ol>
       {hasFreeSlot ? (
         <div className="slot-actions">
-          {items.map((item) => (
-            <button key={item} type="button" onClick={() => send({ type: 'QueueProduction', buildingId: building.id, item })}>
-              + {t(`item.${item}`)}
-              {recipeLabel(item)}
-            </button>
-          ))}
+          {items.map((item) =>
+            isItemUnlocked(state, item) ? (
+              <button key={item} type="button" onClick={() => send({ type: 'QueueProduction', buildingId: building.id, item })}>
+                + {t(`item.${item}`)}
+                {recipeLabel(item)}
+              </button>
+            ) : (
+              <button key={item} type="button" disabled>
+                🔒 {t(`item.${item}`)} ({unlockCitizensOf(item)} {t('stat.citizens')})
+              </button>
+            ),
+          )}
         </div>
       ) : null}
       {slotPrice !== undefined ? (
@@ -61,6 +68,6 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
 }
 
 function recipeLabel(item: ItemId): string {
-  const parts = Object.entries(recipeOf(item)).map(([material, amount]) => `${amount} ${t(`item.${material as 'wood' | 'stone'}`)}`);
+  const parts = Object.entries(recipeOf(item)).map(([material, amount]) => `${amount} ${t(`item.${material as MaterialId}`)}`);
   return parts.length > 0 ? ` (${parts.join(', ')})` : '';
 }
