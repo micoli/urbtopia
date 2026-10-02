@@ -142,6 +142,9 @@ export const MESSAGES = {
   'lang.en': 'English',
   'lang.fr': 'Français',
   'radial.open': 'Open the menu',
+  'camera.rotateLeft': 'Rotate left',
+  'camera.rotateRight': 'Rotate right',
+  'tool.perTile': 'per tile',
 } as const;
 
 export type MessageKey = keyof typeof MESSAGES;

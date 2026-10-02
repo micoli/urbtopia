@@ -144,4 +144,7 @@ export const FR: Record<MessageKey, string> = {
   'lang.en': 'English',
   'lang.fr': 'Français',
   'radial.open': 'Ouvrir le menu',
+  'camera.rotateLeft': 'Pivoter à gauche',
+  'camera.rotateRight': 'Pivoter à droite',
+  'tool.perTile': 'par tuile',
 };

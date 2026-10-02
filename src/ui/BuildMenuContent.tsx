@@ -27,7 +27,7 @@ export function BuildMenuContent() {
   }
 
   const roadTools: { label: string; cost?: string; tool: Tool }[] = [
-    { label: t('tool.road'), cost: `${GAME_CONFIG.roadCostPerTile} / tile`, tool: { kind: 'road', start: null, horizontalFirst: true } },
+    { label: t('tool.road'), cost: `${GAME_CONFIG.roadCostPerTile} ${t('tool.perTile')}`, tool: { kind: 'road', start: null, horizontalFirst: true } },
     { label: t('tool.crossing'), cost: `${GAME_CONFIG.crossingCost} ${t('stat.urbs')}`, tool: { kind: 'crossing' } },
     { label: t('tool.roundabout'), cost: `${GAME_CONFIG.roundaboutCost} ${t('stat.urbs')}`, tool: { kind: 'roundabout' } },
     { label: t('tool.demolishRoad'), tool: { kind: 'demolishRoad' } },
