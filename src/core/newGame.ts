@@ -10,7 +10,7 @@ export interface NewGameOptions {
 
 export function newGame(options: NewGameOptions): GameState {
   const seed = options.seed ?? generateSeed(options.now);
-  const { firstEntityId, startingBuildings, startingParcels, startingUrbs } = GAME_CONFIG;
+  const { firstEntityId, startingBuildings, startingParcels, startingRoadRow, startingUrbs } = GAME_CONFIG;
   return {
     seed,
     rngState: hashSeed(seed),
@@ -18,6 +18,12 @@ export function newGame(options: NewGameOptions): GameState {
     lastSeen: options.now,
     nextId: firstEntityId + startingBuildings.length,
     ownedParcels: startingParcels.map((parcel) => ({ ...parcel })),
-    buildings: startingBuildings.map((building, index) => ({ ...building, id: firstEntityId + index, rotation: 0 })),
+    buildings: startingBuildings.map((building, index) => ({ ...building, id: firstEntityId + index })),
+    roads: Array.from({ length: startingRoadRow.toX - startingRoadRow.fromX + 1 }, (_, index) => ({
+      x: startingRoadRow.fromX + index,
+      y: startingRoadRow.y,
+      kind: 'road' as const,
+    })),
+    roundabouts: [],
   };
 }

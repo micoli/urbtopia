@@ -1,22 +1,33 @@
 import type { Coord } from './coord';
-import type { Building, BuildingType } from './state';
+import type { Building, BuildingType, Rotation } from './state';
 
 export interface Footprint {
   width: number;
   depth: number;
 }
 
-export const BUILDING_FOOTPRINTS: Record<BuildingType, Footprint> = {
-  workshop: { width: 2, depth: 2 },
-  factory: { width: 2, depth: 2 },
+export interface BuildingSpec {
+  footprint: Footprint;
+  cost: number;
+  requiresRoad: boolean;
+}
+
+export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
+  workshop: { footprint: { width: 2, depth: 2 }, cost: 100, requiresRoad: true },
+  factory: { footprint: { width: 2, depth: 2 }, cost: 250, requiresRoad: true },
+  shop: { footprint: { width: 1, depth: 1 }, cost: 300, requiresRoad: true },
+  storehouse: { footprint: { width: 2, depth: 2 }, cost: 400, requiresRoad: true },
+  home: { footprint: { width: 1, depth: 1 }, cost: 150, requiresRoad: true },
+  powerPlant: { footprint: { width: 1, depth: 1 }, cost: 250, requiresRoad: false },
+  waterTower: { footprint: { width: 1, depth: 1 }, cost: 200, requiresRoad: false },
 };
 
 export function footprintOf(type: BuildingType, rotation: number): Footprint {
-  const { width, depth } = BUILDING_FOOTPRINTS[type];
+  const { width, depth } = BUILDING_SPECS[type].footprint;
   return rotation % 2 === 0 ? { width, depth } : { width: depth, depth: width };
 }
 
-export function footprintTiles(building: Pick<Building, 'type' | 'x' | 'y' | 'rotation'>): Coord[] {
+export function footprintTiles(building: { type: BuildingType; x: number; y: number; rotation: Rotation | number }): Coord[] {
   const { width, depth } = footprintOf(building.type, building.rotation);
   const tiles: Coord[] = [];
   for (let dy = 0; dy < depth; dy++) {
@@ -24,3 +35,9 @@ export function footprintTiles(building: Pick<Building, 'type' | 'x' | 'y' | 'ro
   }
   return tiles;
 }
+
+export function placementCost(type: BuildingType): number {
+  return BUILDING_SPECS[type].cost;
+}
+
+export type { Building };

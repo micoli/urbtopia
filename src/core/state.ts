@@ -1,13 +1,20 @@
 import type { Coord } from './coord';
+import type { RoadKind } from './roads';
 
-export type BuildingType = 'workshop' | 'factory';
+export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'waterTower';
+
+export type Rotation = 0 | 1 | 2 | 3;
 
 export type ParcelCoord = Coord;
 
 export interface Building extends Coord {
   id: number;
   type: BuildingType;
-  rotation: 0 | 1 | 2 | 3;
+  rotation: Rotation;
+}
+
+export interface RoadTile extends Coord {
+  kind: RoadKind;
 }
 
 export interface GameState {
@@ -18,4 +25,6 @@ export interface GameState {
   nextId: number;
   ownedParcels: ParcelCoord[];
   buildings: Building[];
+  roads: RoadTile[];
+  roundabouts: Coord[];
 }

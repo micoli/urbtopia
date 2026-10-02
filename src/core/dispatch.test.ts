@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { dispatch, newGame } from './index';
+import { dispatch, newGame, type Command } from './index';
+
+const unknownCommand = { type: 'DoesNotExist' } as unknown as Command;
 
 const NOW = 1_700_000_000_000;
 
 describe('dispatch', () => {
   it('returns a typed error with a message key for an unknown command, without throwing', () => {
     const state = newGame({ seed: 'amber-fox-4821', now: NOW });
-    const result = dispatch(state, { type: 'DoesNotExist' }, NOW);
+    const result = dispatch(state, unknownCommand, NOW);
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.error.key).toBe('error.unknownCommand');
@@ -16,7 +18,7 @@ describe('dispatch', () => {
   it('does not mutate the input state', () => {
     const state = newGame({ seed: 'amber-fox-4821', now: NOW });
     const snapshot = structuredClone(state);
-    dispatch(state, { type: 'DoesNotExist' }, NOW + 1000);
+    dispatch(state, unknownCommand, NOW + 1000);
     expect(state).toEqual(snapshot);
   });
 });
