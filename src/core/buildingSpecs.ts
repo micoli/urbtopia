@@ -1,4 +1,5 @@
 import type { Coord } from './coord';
+import { HOME_FOOTPRINTS } from './economy';
 import type { Building, BuildingType, Rotation, ShopStack } from './state';
 
 export interface Footprint {
@@ -23,13 +24,13 @@ export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
   waterTower: { footprint: { width: 1, depth: 1 }, cost: 200, requiresRoad: false, initialSlots: 0 },
 };
 
-export function footprintOf(type: BuildingType, rotation: number): Footprint {
-  const { width, depth } = BUILDING_SPECS[type].footprint;
+export function footprintOf(type: BuildingType, rotation: number, tier = 1): Footprint {
+  const { width, depth } = (type === 'home' ? HOME_FOOTPRINTS[tier - 1] : undefined) ?? BUILDING_SPECS[type].footprint;
   return rotation % 2 === 0 ? { width, depth } : { width: depth, depth: width };
 }
 
-export function footprintTiles(building: { type: BuildingType; x: number; y: number; rotation: Rotation | number }): Coord[] {
-  const { width, depth } = footprintOf(building.type, building.rotation);
+export function footprintTiles(building: { type: BuildingType; x: number; y: number; rotation: Rotation | number; tier?: number }): Coord[] {
+  const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
   const tiles: Coord[] = [];
   for (let dy = 0; dy < depth; dy++) {
     for (let dx = 0; dx < width; dx++) tiles.push({ x: building.x + dx, y: building.y + dy });

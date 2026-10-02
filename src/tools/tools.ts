@@ -84,8 +84,8 @@ function evaluation(tiles: Coord[], command: Command | null, state: GameState, e
   };
 }
 
-function frontMarker(type: BuildingType, tile: Coord, rotation: Rotation): GhostSpec['front'] {
-  const { width, depth } = footprintOf(type, rotation);
+function frontMarker(type: BuildingType, tile: Coord, rotation: Rotation, tier: number): GhostSpec['front'] {
+  const { width, depth } = footprintOf(type, rotation, tier);
   const direction = frontDirection(rotation);
   const centerX = tile.x + width / 2;
   const centerZ = tile.y + depth / 2;
@@ -105,7 +105,7 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
     case 'move': {
       const building = state.buildings.find((candidate) => candidate.id === tool.buildingId);
       if (!building) return evaluation([tile], null, state);
-      return evaluateBuilding(state, building.type, tile, rotation, { type: 'MoveBuilding', id: building.id }, 0);
+      return evaluateBuilding(state, building.type, tile, rotation, { type: 'MoveBuilding', id: building.id }, 0, building.tier);
     }
     case 'road':
       return evaluateRoad(state, tool, tile);
@@ -127,14 +127,15 @@ function evaluateBuilding(
   requestedRotation: Rotation | null,
   base: { type: 'PlaceBuilding'; buildingType: BuildingType } | { type: 'MoveBuilding'; id: number },
   cost: number,
+  tier = 1,
 ): Evaluation {
   const reference =
     base.type === 'MoveBuilding' ? { ...state, buildings: state.buildings.filter((building) => building.id !== base.id) } : state;
-  const rotation = requestedRotation ?? autoRotation(reference, type, tile.x, tile.y);
+  const rotation = requestedRotation ?? autoRotation(reference, type, tile.x, tile.y, tier);
   const command: Command = { ...base, x: tile.x, y: tile.y, rotation };
-  const tiles = footprintTiles({ type, x: tile.x, y: tile.y, rotation });
+  const tiles = footprintTiles({ type, x: tile.x, y: tile.y, rotation, tier });
   const result = evaluation(tiles, command, state, { cost, rotation });
-  if (BUILDING_SPECS[type].requiresRoad) result.ghost.front = frontMarker(type, tile, rotation);
+  if (BUILDING_SPECS[type].requiresRoad) result.ghost.front = frontMarker(type, tile, rotation, tier);
   return result;
 }
 

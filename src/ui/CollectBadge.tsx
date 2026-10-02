@@ -14,7 +14,7 @@ export function CollectBadge({ building, label }: CollectBadgeProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const { width, depth } = footprintOf(building.type, building.rotation);
+    const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
     let handle = 0;
     const place = () => {
       const element = ref.current;
@@ -27,7 +27,7 @@ export function CollectBadge({ building, label }: CollectBadgeProps) {
     };
     handle = requestAnimationFrame(place);
     return () => cancelAnimationFrame(handle);
-  }, [building.x, building.y, building.type, building.rotation]);
+  }, [building.x, building.y, building.type, building.rotation, building.tier]);
 
   return (
     <button

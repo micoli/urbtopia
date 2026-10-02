@@ -4,7 +4,7 @@ import type { Coord } from './coord';
 import type { GameEvent } from './events';
 import { tileKey } from './geometry';
 import { utilityCapacity, utilityDemand, type UtilityTotals } from './city';
-import { HOME_TIERS, MAX_SLOTS, SHOP, TAX, SLOT_PRICES, STORAGE_UPGRADE_COSTS } from './economy';
+import { HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, MAX_SLOTS, SHOP, TAX, SLOT_PRICES, STORAGE_UPGRADE_COSTS } from './economy';
 import { GOODS, isGood, isMaterial, producibleItems, recipeOf, type GoodId } from './items';
 import { marketQuote } from './market';
 import { isItemUnlocked } from './unlocks';
@@ -27,6 +27,7 @@ export type Command =
   | { readonly type: 'Collect'; readonly buildingId: number }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
   | { readonly type: 'SellToMarket'; readonly good: GoodId; readonly quantity: number }
+  | { readonly type: 'UpgradeHome'; readonly buildingId: number }
   | { readonly type: 'BuyParcel'; readonly x: number; readonly y: number }
   | { readonly type: 'BuySlot'; readonly buildingId: number }
   | { readonly type: 'UpgradeStorehouse' }
@@ -63,7 +64,9 @@ export type ErrorKey =
   | 'error.notEnoughPower'
   | 'error.notEnoughWater'
   | 'error.utilityInUse'
-  | 'error.itemLocked';
+  | 'error.itemLocked'
+  | 'error.notAHome'
+  | 'error.maxTier';
 
 export interface CommandError {
   key: ErrorKey;
@@ -97,6 +100,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return stockShop(state, command.buildingId, command.good, now);
     case 'SellToMarket':
       return sellToMarket(state, command.good, command.quantity, now);
+    case 'UpgradeHome':
+      return upgradeHome(state, command.buildingId);
     case 'BuyParcel':
       return buyParcel(state, { x: command.x, y: command.y });
     case 'BuySlot':
@@ -165,7 +170,7 @@ function demolishRoad(state: GameState, tile: Coord): CommandOutcome {
     roundabouts: !road && roundabout ? state.roundabouts.filter((center) => center !== roundabout) : state.roundabouts,
   };
   const orphaned = next.buildings.some(
-    (building) => BUILDING_SPECS[building.type].requiresRoad && !frontTouchesRoad(next, building.type, building.x, building.y, building.rotation),
+    (building) => BUILDING_SPECS[building.type].requiresRoad && !frontTouchesRoad(next, building.type, building.x, building.y, building.rotation, building.tier),
   );
   if (orphaned) return fail('error.lastRoadOfBuilding');
   return { state: next, events: [] };
@@ -200,8 +205,8 @@ function moveBuilding(state: GameState, id: number, x: number, y: number, reques
   const building = state.buildings.find((candidate) => candidate.id === id);
   if (!building) return fail('error.unknownBuilding');
   const without: GameState = { ...state, buildings: state.buildings.filter((candidate) => candidate !== building) };
-  const rotation = requestedRotation ?? autoRotation(without, building.type, x, y);
-  const issue = placementIssue(without, building.type, x, y, rotation, { isMove: true });
+  const rotation = requestedRotation ?? autoRotation(without, building.type, x, y, building.tier);
+  const issue = placementIssue(without, building.type, x, y, rotation, { isMove: true, tier: building.tier });
   if (issue) return fail(issue);
   return {
     state: { ...state, buildings: state.buildings.map((candidate) => (candidate === building ? restartRunningProduction({ ...building, x, y, rotation }, now) : candidate)) },
@@ -389,5 +394,43 @@ function collectTax(state: GameState, building: Building): CommandOutcome {
       buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, taxCitizenMs: remainder } : candidate)),
     },
     events: [{ type: 'ItemsCollected', buildingId: building.id }],
+  };
+}
+
+function upgradeHome(state: GameState, buildingId: number): CommandOutcome {
+  const building = state.buildings.find((candidate) => candidate.id === buildingId);
+  if (!building) return fail('error.unknownBuilding');
+  if (building.type !== 'home') return fail('error.notAHome');
+  if (building.tier >= MAX_HOME_TIER) return fail('error.maxTier');
+  const nextTier = building.tier + 1;
+  const footprintIssue = placementIssue(state, 'home', building.x, building.y, building.rotation, {
+    ignoreBuildingId: building.id,
+    isMove: true,
+    tier: nextTier,
+  });
+  if (footprintIssue) return fail(footprintIssue);
+
+  const cost = HOME_UPGRADE_COSTS[nextTier];
+  if (!cost) return fail('error.maxTier');
+  if (state.urbs < cost.urbs) return fail('error.notEnoughUrbs');
+  const goods = { ...state.storage.goods };
+  for (const [good, amount] of Object.entries(cost.goods)) {
+    const available = goods[good as GoodId] ?? 0;
+    if (available < amount) return fail('error.missingGoods');
+    goods[good as GoodId] = available - amount;
+  }
+  const before = tierDemand(building.tier);
+  const after = tierDemand(nextTier);
+  const utilityIssue = utilityIssueFor(state, { power: after.power - before.power, water: after.water - before.water });
+  if (utilityIssue) return fail(utilityIssue);
+
+  return {
+    state: {
+      ...state,
+      urbs: state.urbs - cost.urbs,
+      storage: { ...state.storage, goods },
+      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, tier: nextTier } : candidate)),
+    },
+    events: [{ type: 'HomeUpgraded', buildingId, tier: nextTier }],
   };
 }

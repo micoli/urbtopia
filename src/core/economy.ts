@@ -1,3 +1,5 @@
+import type { GoodId } from './items';
+
 export const MAX_SLOTS = 5;
 
 export const SLOT_PRICES: Record<number, number> = { 3: 500, 4: 1500, 5: 4000 };
@@ -29,3 +31,22 @@ export const HOME_TIERS: readonly { citizens: number; power: number; water: numb
 export const UTILITY_CAPACITY = { powerPlant: 12, waterTower: 12 };
 
 export const TAX = { urbsPerCitizenPerHour: 1, capHours: 8, hourMs: 3_600_000 };
+
+export const HOME_FOOTPRINTS: readonly { width: number; depth: number }[] = [
+  { width: 1, depth: 1 },
+  { width: 2, depth: 1 },
+  { width: 2, depth: 1 },
+  { width: 2, depth: 1 },
+  { width: 2, depth: 2 },
+  { width: 2, depth: 2 },
+];
+
+export const HOME_UPGRADE_COSTS: Record<number, { urbs: number; goods: Partial<Record<GoodId, number>> }> = {
+  2: { urbs: 150, goods: { planks: 3 } },
+  3: { urbs: 400, goods: { bricks: 4, planks: 2 } },
+  4: { urbs: 1000, goods: { tiles: 4, bricks: 3 } },
+  5: { urbs: 2500, goods: { tools: 4, tiles: 3 } },
+  6: { urbs: 6000, goods: { glass: 4, circuits: 3 } },
+};
+
+export const MAX_HOME_TIER = 6;

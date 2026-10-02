@@ -17,6 +17,20 @@ export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
   waterTower: 'industrial/water-tower',
 };
 
+const HOME_MODELS = [
+  'suburban/building-type-k',
+  'suburban/building-type-h',
+  'suburban/building-type-a',
+  'suburban/building-type-b',
+  'suburban/building-type-f',
+  'suburban/building-type-n',
+];
+
+function modelOf(type: BuildingType, tier: number): string {
+  if (type === 'home') return HOME_MODELS[tier - 1] ?? MODEL_BY_BUILDING.home;
+  return MODEL_BY_BUILDING[type];
+}
+
 export function renderItemsOf(state: GameState): RenderItem[] {
   return [...buildingItems(state), ...roadItems(state)];
 }
@@ -32,9 +46,9 @@ function roadItems(state: GameState): RenderItem[] {
 
 function buildingItems(state: GameState): RenderItem[] {
   return state.buildings.map((building) => {
-    const { width, depth } = footprintOf(building.type, building.rotation);
+    const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
     return {
-      model: MODEL_BY_BUILDING[building.type],
+      model: modelOf(building.type, building.tier),
       x: building.x + width / 2,
       z: building.y + depth / 2,
       rotation: building.rotation,

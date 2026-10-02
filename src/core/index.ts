@@ -30,7 +30,7 @@ export { STORAGE_BASE_CAPACITY, hasStorehouse, isStorageEmpty, storageCapacity, 
 export { createBuilding } from './buildingSpecs';
 export { citizensOf, totalCitizens, utilityCapacity, utilityDemand } from './city';
 export type { UtilityTotals } from './city';
-export { HOME_TIERS, TAX, UTILITY_CAPACITY } from './economy';
+export { HOME_FOOTPRINTS, HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, TAX, UTILITY_CAPACITY } from './economy';
 export { taxDue } from './production';
 export { isItemUnlocked, nextUnlock } from './unlocks';
 export type { Unlock } from './unlocks';
