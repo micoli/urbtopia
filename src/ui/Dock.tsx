@@ -1,5 +1,6 @@
 import { t } from '../i18n/t';
 import { useGame, useUi } from './hooks';
+import { CityStats } from './CityStats';
 import { UrbsStat } from './UrbsStat';
 
 export function Dock() {
@@ -13,6 +14,7 @@ export function Dock() {
   return (
     <nav className="dock">
       <UrbsStat />
+      <CityStats />
       <button type="button" className="dock-button" aria-pressed={flyout === 'build'} onClick={() => openFlyout('build')}>
         🏗
         <span>{t('dock.build')}</span>

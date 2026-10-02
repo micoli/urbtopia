@@ -9,6 +9,6 @@ export interface AdvanceResult {
 
 export function advance(state: GameState, now: number): AdvanceResult {
   const effectiveNow = Math.max(now, state.lastSeen);
-  const produced = advanceProduction(state, effectiveNow);
+  const produced = advanceProduction(state, effectiveNow, effectiveNow - state.lastSeen);
   return { state: { ...produced.state, lastSeen: effectiveNow }, events: produced.events };
 }

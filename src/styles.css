@@ -421,3 +421,18 @@ button {
   pointer-events: none;
   z-index: 4;
 }
+
+.city-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 2px;
+  font-size: 11px;
+  text-align: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.stat-tight {
+  color: #ffd23f;
+}

@@ -34,6 +34,8 @@ export interface Building extends Coord {
   slotCount: number;
   queue: QueueEntry[];
   stacks: ShopStack[];
+  tier: number;
+  taxCitizenMs: number;
 }
 
 export interface Storage {

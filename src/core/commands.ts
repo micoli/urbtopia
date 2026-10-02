@@ -3,13 +3,14 @@ import { GAME_CONFIG } from './config';
 import type { Coord } from './coord';
 import type { GameEvent } from './events';
 import { tileKey } from './geometry';
-import { MAX_SLOTS, SHOP, SLOT_PRICES, STORAGE_UPGRADE_COSTS } from './economy';
+import { utilityCapacity, utilityDemand, type UtilityTotals } from './city';
+import { HOME_TIERS, MAX_SLOTS, SHOP, TAX, SLOT_PRICES, STORAGE_UPGRADE_COSTS } from './economy';
 import { GOODS, isGood, isMaterial, producibleItems, recipeOf, type GoodId } from './items';
 import { marketQuote } from './market';
 import { isAdjacentToOwned, isInsideMap, isOwned, parcelPrice } from './parcels';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from './occupancy';
 import { autoRotation, frontTouchesRoad, placementIssue } from './placement';
-import { isIdle, newQueueEntry, restartRunningProduction } from './production';
+import { isIdle, newQueueEntry, restartRunningProduction, taxDue } from './production';
 import { roadBuildCost, missingRoadTiles } from './roadCost';
 import { roadPath } from './roads';
 import { hasStorehouse, isStorageEmpty, storageCapacity, storageUsed } from './storage';
@@ -57,7 +58,10 @@ export type ErrorKey =
   | 'error.invalidQuantity'
   | 'error.outsideMap'
   | 'error.parcelOwned'
-  | 'error.parcelNotAdjacent';
+  | 'error.parcelNotAdjacent'
+  | 'error.notEnoughPower'
+  | 'error.notEnoughWater'
+  | 'error.utilityInUse';
 
 export interface CommandError {
   key: ErrorKey;
@@ -170,6 +174,8 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
   const issue = placementIssue(state, type, x, y, rotation);
   if (issue) return fail(issue);
   const building = createBuilding(state.nextId, type, x, y, rotation);
+  const utilityIssue = type === 'home' ? utilityIssueFor(state, tierDemand(1)) : null;
+  if (utilityIssue) return fail(utilityIssue);
   return {
     state: { ...state, urbs: state.urbs - placementCost(type), nextId: state.nextId + 1, buildings: [...state.buildings, building] },
     events: [{ type: 'BuildingPlaced', id: building.id }],
@@ -180,6 +186,7 @@ function sellBuilding(state: GameState, id: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === id);
   if (!building) return fail('error.unknownBuilding');
   if (building.type === 'storehouse' && !isStorageEmpty(state.storage)) return fail('error.storehouseNotEmpty');
+  if ((building.type === 'powerPlant' || building.type === 'waterTower') && !canLoseUtility(state, building.type)) return fail('error.utilityInUse');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
   return {
     state: { ...state, urbs: state.urbs + refund, storehouseLevel: building.type === 'storehouse' ? 0 : state.storehouseLevel, buildings: state.buildings.filter((candidate) => candidate !== building) },
@@ -226,6 +233,7 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
   if (building.type === 'shop') return collectShopEarnings(state, building);
+  if (building.type === 'home') return collectTax(state, building);
   if (!building.queue.some((entry) => entry.done)) return fail('error.nothingToCollect');
   if (!hasStorehouse(state)) return fail('error.noStorehouse');
 
@@ -345,4 +353,38 @@ function buyParcel(state: GameState, parcel: Coord): CommandOutcome {
   const price = parcelPrice(state);
   if (state.urbs < price) return fail('error.notEnoughUrbs');
   return { state: { ...state, urbs: state.urbs - price, ownedParcels: [...state.ownedParcels, parcel] }, events: [] };
+}
+
+function tierDemand(tier: number): UtilityTotals {
+  const spec = HOME_TIERS[tier - 1];
+  return { power: spec?.power ?? 0, water: spec?.water ?? 0 };
+}
+
+function utilityIssueFor(state: GameState, extra: UtilityTotals): ErrorKey | null {
+  const capacity = utilityCapacity(state);
+  const demand = utilityDemand(state);
+  if (demand.power + extra.power > capacity.power) return 'error.notEnoughPower';
+  if (demand.water + extra.water > capacity.water) return 'error.notEnoughWater';
+  return null;
+}
+
+function canLoseUtility(state: GameState, type: 'powerPlant' | 'waterTower'): boolean {
+  const remaining: GameState = { ...state, buildings: state.buildings.filter((candidate, index, all) => candidate.type !== type || index !== all.findIndex((b) => b.type === type)) };
+  const capacity = utilityCapacity(remaining);
+  const demand = utilityDemand(remaining);
+  return type === 'powerPlant' ? capacity.power >= demand.power : capacity.water >= demand.water;
+}
+
+function collectTax(state: GameState, building: Building): CommandOutcome {
+  const due = taxDue(building);
+  if (due === 0) return fail('error.nothingToCollect');
+  const remainder = building.taxCitizenMs - due * TAX.hourMs;
+  return {
+    state: {
+      ...state,
+      urbs: state.urbs + due,
+      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, taxCitizenMs: remainder } : candidate)),
+    },
+    events: [{ type: 'ItemsCollected', buildingId: building.id }],
+  };
 }

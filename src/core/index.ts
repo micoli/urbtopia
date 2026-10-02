@@ -28,3 +28,7 @@ export { marketPoints, marketQuote } from './market';
 export { MARKET, MAX_SLOTS, SHOP, SLOT_PRICES, STORAGE_UPGRADE_BONUS, STORAGE_UPGRADE_COSTS } from './economy';
 export { STORAGE_BASE_CAPACITY, hasStorehouse, isStorageEmpty, storageCapacity, storageUsed } from './storage';
 export { createBuilding } from './buildingSpecs';
+export { citizensOf, totalCitizens, utilityCapacity, utilityDemand } from './city';
+export type { UtilityTotals } from './city';
+export { HOME_TIERS, TAX, UTILITY_CAPACITY } from './economy';
+export { taxDue } from './production';

@@ -1,6 +1,7 @@
 import { placementCost, GAME_CONFIG } from '../core';
 import { t } from '../i18n/t';
 import { useGame, useUi } from './hooks';
+import { HomePanel } from './HomePanel';
 import { ProductionPanel } from './ProductionPanel';
 import { ShopPanel } from './ShopPanel';
 import { StorehousePanel } from './StorehousePanel';
@@ -23,6 +24,7 @@ export function SidePanel() {
         </button>
       </header>
       {building.type === 'workshop' || building.type === 'factory' ? <ProductionPanel building={building} /> : null}
+      {building.type === 'home' ? <HomePanel building={building} /> : null}
       {building.type === 'shop' ? <ShopPanel building={building} /> : null}
       {building.type === 'storehouse' ? <StorehousePanel /> : null}
       <div className="side-panel-actions">

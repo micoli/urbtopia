@@ -1,4 +1,5 @@
-import { SHOP } from './economy';
+import { citizensOf } from './city';
+import { SHOP, TAX } from './economy';
 import type { GameEvent } from './events';
 import { GOODS } from './items';
 import { durationOf, type ItemId } from './items';
@@ -54,10 +55,21 @@ function advanceShop(building: Building, now: number): Building {
   return { ...building, stacks: building.stacks.map((stack) => advanceStack(stack, now)) };
 }
 
-export function advanceProduction(state: GameState, now: number): { state: GameState; events: GameEvent[] } {
+function advanceHome(building: Building, elapsedMs: number): Building {
+  if (building.type !== 'home' || elapsedMs <= 0) return building;
+  const citizens = citizensOf(building.tier);
+  const cap = citizens * TAX.capHours * TAX.hourMs;
+  return { ...building, taxCitizenMs: Math.min(cap, building.taxCitizenMs + citizens * elapsedMs) };
+}
+
+export function taxDue(building: Building): number {
+  return Math.floor((building.taxCitizenMs * TAX.urbsPerCitizenPerHour) / TAX.hourMs);
+}
+
+export function advanceProduction(state: GameState, now: number, elapsedMs: number): { state: GameState; events: GameEvent[] } {
   const results = state.buildings.map((building) => {
     const produced = advanceBuilding(building, now);
-    return { ...produced, building: advanceShop(produced.building, now) };
+    return { ...produced, building: advanceHome(advanceShop(produced.building, now), elapsedMs) };
   });
   const events = results.flatMap((result) => result.events).sort((a, b) => ('at' in a && 'at' in b ? a.at - b.at : 0));
   return { state: { ...state, buildings: results.map((result) => result.building) }, events };
