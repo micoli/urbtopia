@@ -1,0 +1,90 @@
+:root { --bg: rgba(24, 30, 44, 0.88); --fg: #fff; --accent: #ffd23f; --ok: #2e9e4f; --bad: #d64545; --tap: 44px; font-family: system-ui, sans-serif; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #9ec5e8; overscroll-behavior: none; }
+.scene { position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; display: block; }
+button { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid #fff3; border-radius: 10px; min-height: var(--tap); min-width: var(--tap); padding: 0 12px; cursor: pointer; }
+button:disabled { opacity: 0.4; }
+button.on { background: var(--accent); color: #222; }
+.ui { z-index: 6; position: fixed; inset: 0; pointer-events: none; color: var(--fg); padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+.ui > *, .anchored > * { pointer-events: auto; }
+.chip { background: var(--bg); border-radius: 999px; padding: 8px 12px; white-space: nowrap; font-size: 14px; }
+.chip.big { font-weight: 700; font-size: 16px; }
+.chip.dim { opacity: 0.85; }
+.toast { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: var(--bad); color: #fff; padding: 8px 14px; border-radius: 8px; z-index: 50; }
+.switcher { position: fixed; bottom: 4px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; align-items: center; gap: 6px; background: #000; color: #fff; padding: 2px 6px; border-radius: 999px; font: 11px monospace; opacity: 0.85; }
+.switcher button { min-height: 28px; min-width: 28px; padding: 0; background: #333; }
+
+.anchored { position: fixed; left: 0; top: 0; z-index: 5; pointer-events: none; will-change: transform; }
+.badge { border-radius: 50%; width: var(--tap); height: var(--tap); padding: 0; font-size: 22px; background: #fff; border: 3px solid var(--accent); animation: bob 1s ease-in-out infinite alternate; }
+@keyframes bob { to { margin-top: -6px; } }
+
+.confirm-pad { display: flex; align-items: center; gap: 10px; background: var(--bg); border-radius: 14px; padding: 8px; }
+.pad-info { display: flex; flex-direction: column; flex: 1; min-width: 90px; text-align: center; }
+.pad-info .bad { color: #ff8a8a; }
+.pad-ok { background: var(--ok); width: 64px; font-size: 24px; }
+.pad-cancel { background: var(--bad); width: 64px; font-size: 20px; }
+
+.details { background: var(--bg); border-radius: 14px; padding: 12px; min-width: 220px; }
+.details p { margin: 6px 0 10px; opacity: 0.85; }
+.details-head { display: flex; justify-content: space-between; align-items: center; }
+.details-actions { display: flex; gap: 8px; }
+.details-actions button { flex: 1; }
+.danger { background: #7a2b2b; }
+.icon-btn { background: transparent; border: 0; min-width: var(--tap); }
+
+.camera-buttons { position: fixed; display: flex; flex-direction: column; gap: 6px; }
+.camera-buttons button { font-size: 20px; padding: 0; }
+
+/* A: top/bottom bars + bottom sheet */
+.a-top { position: absolute; top: 6px; left: 6px; right: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+.a-camera { right: 8px; top: 120px; }
+.a-tabs { position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 6px 6px 38px; background: var(--bg); }
+.a-tabs button { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 20px; }
+.a-tabs small { font-size: 11px; }
+.a-sheet { position: absolute; left: 6px; right: 6px; bottom: 108px; background: transparent; }
+.a-sheet.build { background: var(--bg); border-radius: 14px; padding: 8px; }
+.a-cats { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 8px; }
+.a-cats button { flex: none; }
+.a-items { display: flex; gap: 8px; overflow-x: auto; }
+.a-items button { flex: none; min-width: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 64px; }
+.a-items span { font-size: 12px; opacity: 0.8; }
+@media (min-width: 1024px) {
+  .a-tabs { left: 50%; right: auto; transform: translateX(-50%); width: 420px; border-radius: 14px 14px 0 0; }
+  .a-sheet { left: auto; right: 12px; bottom: 108px; width: 360px; }
+  .a-sheet.build .a-items { flex-wrap: wrap; }
+  .a-camera { right: 12px; top: 70px; }
+}
+
+/* B: minimal + radial */
+.b-pill { position: absolute; top: 8px; left: 8px; border-radius: 999px; font-weight: 700; }
+.b-stats { position: absolute; top: 60px; left: 8px; background: var(--bg); border-radius: 12px; padding: 10px 14px; display: grid; gap: 6px; font-size: 14px; }
+.b-camera { right: 8px; bottom: 170px; }
+.b-confirm { position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%); }
+.b-fab { position: absolute; right: 12px; bottom: 48px; width: 60px; height: 60px; border-radius: 50%; font-size: 30px; background: var(--accent); color: #222; }
+.b-popover-anchor { }
+.b-popover { transform: translateY(-4px); }
+.radial-backdrop { position: fixed; inset: 0; pointer-events: auto; background: #0004; z-index: 20; }
+.radial { position: absolute; width: 0; height: 0; }
+.radial > button { position: absolute; transform: translate(-50%, -50%); }
+.radial-hub { width: 56px; height: 56px; border-radius: 50%; }
+.radial-node { width: 74px; height: 74px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 22px; padding: 0; }
+.radial-node small { font-size: 10px; }
+.radial-node.item { font-size: 12px; background: #274b8f; }
+
+/* C: left dock + side panel */
+.c-rail { position: absolute; left: 0; top: 0; bottom: 0; width: 64px; background: var(--bg); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px 4px; overflow-y: auto; }
+.c-rail button { width: 52px; font-size: 22px; padding: 0; background: #fff1; }
+.c-rail hr { width: 80%; border: 0; border-top: 1px solid #fff3; margin: 2px 0; }
+.c-stat { display: flex; flex-direction: column; align-items: center; font-size: 16px; position: relative; padding-bottom: 4px; }
+.c-stat b { font-size: 11px; }
+.c-stat i { position: absolute; bottom: 0; left: 0; height: 3px; background: var(--accent); }
+.c-flyout { position: absolute; left: 64px; top: 0; bottom: 0; width: 170px; background: var(--bg); padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+.c-flyout button { display: flex; flex-direction: column; min-height: 56px; justify-content: center; align-items: flex-start; }
+.c-flyout span { font-size: 12px; opacity: 0.8; }
+.c-side { position: absolute; right: 8px; top: 8px; width: 240px; }
+.c-confirm { position: absolute; right: 8px; bottom: 44px; }
+.c-camera { right: 8px; top: 50%; transform: translateY(-50%); }
+@media (max-width: 600px) {
+  .c-side { right: 4px; left: 72px; top: auto; bottom: 44px; width: auto; }
+  .c-confirm { left: 72px; right: 4px; }
+}
