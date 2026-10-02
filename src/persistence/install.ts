@@ -27,7 +27,8 @@ export function installPersistence(): () => void {
   });
 
   const onVisibility = () => {
-    if (document.visibilityState === 'hidden') autosave.flush();
+    if (document.visibilityState === 'hidden') return autosave.flush();
+    gameStore.getState().tick(Date.now());
   };
   document.addEventListener('visibilitychange', onVisibility);
   window.addEventListener('pagehide', autosave.flush);

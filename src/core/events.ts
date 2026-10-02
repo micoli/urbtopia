@@ -8,4 +8,5 @@ export type GameEvent =
   | { readonly type: 'ProductionCompleted'; readonly buildingId: number; readonly item: ItemId; readonly at: number }
   | { readonly type: 'ItemsCollected'; readonly buildingId: number }
   | { readonly type: 'HomeUpgraded'; readonly buildingId: number; readonly tier: number }
+  | { readonly type: 'OfflineTimeCapped'; readonly forfeitedMs: number }
   | { readonly type: 'StorageFull'; readonly buildingId: number };

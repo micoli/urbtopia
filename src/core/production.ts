@@ -83,3 +83,16 @@ export function restartRunningProduction(building: Building, now: number): Build
     queue: building.queue.map((entry, index) => (index === runningIndex ? { ...entry, startedAt: now } : entry)),
   };
 }
+
+export function shiftRunningTimers(state: GameState, shiftMs: number): GameState {
+  const market = Object.fromEntries(Object.entries(state.market).map(([good, price]) => [good, { ...price, updatedAt: price.updatedAt + shiftMs }]));
+  return {
+    ...state,
+    market,
+    buildings: state.buildings.map((building) => ({
+      ...building,
+      queue: building.queue.map((entry) => (entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + shiftMs })),
+      stacks: building.stacks.map((stack) => (stack.nextSaleAt === null ? stack : { ...stack, nextSaleAt: stack.nextSaleAt + shiftMs })),
+    })),
+  };
+}

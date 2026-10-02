@@ -42,6 +42,7 @@ export const MESSAGES = {
   'error.noStorehouse': 'Build a Storehouse first.',
   'error.storageFull': 'The Storehouse is full.',
   'error.storehouseNotEmpty': 'Empty the Storehouse before selling it.',
+  'event.offlineTimeCapped': 'You were away for more than 48 h: the extra time was not counted.',
   'event.productionCompleted': 'Production completed.',
   'event.storageFull': 'The Storehouse is full: some output is still waiting.',
   'item.wood': 'Wood',
