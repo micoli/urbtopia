@@ -10,6 +10,7 @@ export function Dock() {
   const chooseTool = useUi((store) => store.chooseTool);
   const marketOpen = useUi((store) => store.marketOpen);
   const toggleMarket = useUi((store) => store.toggleMarket);
+  const toggleMenu = useUi((store) => store.toggleMenu);
   const marketUnlocked = useGame((store) => store.state.marketUnlocked);
   return (
     <nav className="dock">
@@ -30,6 +31,10 @@ export function Dock() {
       <button type="button" className="dock-button" aria-pressed={marketOpen} disabled={!marketUnlocked} onClick={toggleMarket}>
         💱
         <span>{t('dock.market')}</span>
+      </button>
+      <button type="button" className="dock-button" onClick={toggleMenu}>
+        ⚙
+        <span>{t('dock.menu')}</span>
       </button>
     </nav>
   );

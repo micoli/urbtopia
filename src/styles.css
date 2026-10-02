@@ -490,3 +490,8 @@ button {
 .slot-actions button:disabled {
   opacity: 0.45;
 }
+
+.side-panel-actions .dialog-danger {
+  background: var(--danger);
+  color: #fff;
+}

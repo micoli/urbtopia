@@ -1,18 +1,26 @@
 import { createStore } from 'zustand/vanilla';
 import { advance, dispatch, newGame, type Command, type CommandError, type GameState } from '../core';
+import { saveSession } from '../persistence/instance';
+import type { LoadResult } from '../persistence/saveSession';
 import { toastKeyForEvents, toastStore } from './toastStore';
+
+export type Change = 'command' | 'tick' | 'reset';
 
 export interface GameStore {
   state: GameState;
   lastError: CommandError | null;
+  lastChange: Change;
   send: (command: Command) => void;
   tick: (now: number) => void;
+  replaceState: (state: GameState, change?: Change) => void;
+  newGame: (now: number) => void;
 }
 
-export function createGameStore(now: number) {
+export function createGameStore(initial: GameState) {
   return createStore<GameStore>((set, get) => ({
-    state: newGame({ now }),
+    state: initial,
     lastError: null,
+    lastChange: 'reset',
     send: (command) => {
       const result = dispatch(get().state, command, Date.now());
       if (!result.ok) {
@@ -21,15 +29,22 @@ export function createGameStore(now: number) {
       }
       const toast = toastKeyForEvents(result.events);
       if (toast) toastStore.getState().show(toast);
-      set({ state: result.state, lastError: null });
+      set({ state: result.state, lastError: null, lastChange: 'command' });
     },
     tick: (tickNow) => {
       const result = advance(get().state, tickNow);
       const toast = toastKeyForEvents(result.events);
       if (toast) toastStore.getState().show(toast);
-      set({ state: result.state });
+      set({ state: result.state, lastChange: 'tick' });
     },
+    replaceState: (state, change = 'reset') => set({ state, lastError: null, lastChange: change }),
+    newGame: (now) => set({ state: newGame({ now }), lastError: null, lastChange: 'reset' }),
   }));
 }
 
-export const gameStore = createGameStore(Date.now());
+export const bootResult: LoadResult = saveSession.load();
+
+const startedAt = Date.now();
+const initialState = bootResult.kind === 'loaded' ? bootResult.state : newGame({ now: startedAt });
+
+export const gameStore = createGameStore(initialState);

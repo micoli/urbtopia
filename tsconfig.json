@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "isolatedModules": true,
+    "resolveJsonModule": true,
     "types": ["vite/client"]
   },
   "include": ["src", "vite.config.ts", "eslint.config.js"]

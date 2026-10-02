@@ -5,6 +5,7 @@ import { ConfirmSaleDialog } from './ConfirmSaleDialog';
 import { Dock } from './Dock';
 import { Flyout } from './Flyout';
 import { MarketPanel } from './MarketPanel';
+import { MenuPanel } from './MenuPanel';
 import { NextUnlock } from './NextUnlock';
 import { ParcelTags } from './ParcelTags';
 import { SceneCanvas } from './SceneCanvas';
@@ -22,6 +23,7 @@ export function App() {
       <Flyout />
       <SidePanel />
       <MarketPanel />
+      <MenuPanel />
       <ConfirmPad />
       <ConfirmSaleDialog />
       <Toast />

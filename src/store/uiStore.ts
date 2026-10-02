@@ -13,10 +13,12 @@ export interface UiStore {
   selectedBuildingId: number | null;
   flyout: Flyout;
   marketOpen: boolean;
+  menuOpen: boolean;
   pendingSaleId: number | null;
   evaluation: Evaluation | null;
   openFlyout: (flyout: Flyout) => void;
   toggleMarket: () => void;
+  toggleMenu: () => void;
   chooseTool: (tool: Tool) => void;
   cancelTool: () => void;
   rotate: () => void;
@@ -50,9 +52,11 @@ export const uiStore = createStore<UiStore>((set, get) => {
     selectedBuildingId: null,
     flyout: null,
     marketOpen: false,
+    menuOpen: false,
     pendingSaleId: null,
     evaluation: null,
     openFlyout: (flyout) => set({ flyout: get().flyout === flyout ? null : flyout }),
+    toggleMenu: () => set({ menuOpen: !get().menuOpen, flyout: null }),
     toggleMarket: () => {
       if (!gameStore.getState().state.marketUnlocked) return toastStore.getState().show('error.marketLocked');
       set({ marketOpen: !get().marketOpen, flyout: null });

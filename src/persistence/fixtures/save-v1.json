@@ -1,0 +1,171 @@
+{
+  "format": "urbtopia-save",
+  "version": 1,
+  "savedAt": 1700000030000,
+  "state": {
+    "seed": "amber-fox-4821",
+    "rngState": 3508666930,
+    "urbs": 4000,
+    "lastSeen": 1700000030000,
+    "nextId": 7,
+    "ownedParcels": [
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 4
+      }
+    ],
+    "buildings": [
+      {
+        "id": 1,
+        "type": "workshop",
+        "x": 54,
+        "y": 56,
+        "rotation": 2,
+        "slotCount": 2,
+        "queue": [
+          {
+            "item": "wood",
+            "duration": 60000,
+            "startedAt": 1700000000000,
+            "done": false
+          }
+        ],
+        "stacks": [],
+        "tier": 0,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 2,
+        "type": "factory",
+        "x": 60,
+        "y": 56,
+        "rotation": 2,
+        "slotCount": 2,
+        "queue": [],
+        "stacks": [],
+        "tier": 0,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 3,
+        "type": "storehouse",
+        "x": 56,
+        "y": 59,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 0,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 4,
+        "type": "powerPlant",
+        "x": 70,
+        "y": 70,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 0,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 5,
+        "type": "waterTower",
+        "x": 72,
+        "y": 70,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 0,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 6,
+        "type": "home",
+        "x": 53,
+        "y": 57,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 180000
+      }
+    ],
+    "storage": {
+      "materials": {},
+      "goods": {}
+    },
+    "storehouseLevel": 0,
+    "marketUnlocked": false,
+    "market": {},
+    "roads": [
+      {
+        "x": 53,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 54,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 55,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 56,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 57,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 58,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 59,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 60,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 61,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 62,
+        "y": 58,
+        "kind": "road"
+      }
+    ],
+    "roundabouts": []
+  }
+}
