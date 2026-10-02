@@ -70,6 +70,23 @@ describe('other tools', () => {
   });
 });
 
+describe('parcel tool', () => {
+  it('targets the Parcel under the centre tile and hints at every buyable Parcel', () => {
+    const evaluation = evaluateTool({ kind: 'parcel' }, { state, tile: { x: 40, y: 56 }, rotation: null });
+    expect(evaluation.command).toEqual({ type: 'BuyParcel', x: 2, y: 3 });
+    expect(evaluation.valid).toBe(true);
+    expect(evaluation.cost).toBe(300);
+    expect(evaluation.ghost.rects.filter((rect) => rect.tone === 'hint')).toHaveLength(8);
+    expect(evaluation.ghost.rects.find((rect) => rect.tone === 'target')).toMatchObject({ x: 32, y: 48, width: 16, depth: 16 });
+  });
+
+  it('explains why a Parcel cannot be bought', () => {
+    const evaluation = evaluateTool({ kind: 'parcel' }, { state, tile: { x: 10, y: 10 }, rotation: null });
+    expect(evaluation.valid).toBe(false);
+    expect(evaluation.issue).toBe('error.parcelNotAdjacent');
+  });
+});
+
 describe('confirmTool', () => {
   it('sends the command of a valid evaluation and keeps the tool active', () => {
     const evaluation = evaluateTool(shopTool, { state, tile: { x: 56, y: 57 }, rotation: null });

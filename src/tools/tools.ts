@@ -1,5 +1,8 @@
 import {
   BUILDING_SPECS,
+  GAME_CONFIG,
+  buyableParcels,
+  parcelPrice,
   autoRotation,
   dispatch,
   footprintOf,
@@ -24,7 +27,8 @@ export type Tool =
   | { kind: 'road'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'crossing' }
   | { kind: 'roundabout' }
-  | { kind: 'demolishRoad' };
+  | { kind: 'demolishRoad' }
+  | { kind: 'parcel' };
 
 export interface ToolContext {
   state: GameState;
@@ -32,8 +36,17 @@ export interface ToolContext {
   rotation: Rotation | null;
 }
 
+export interface GhostRect {
+  x: number;
+  y: number;
+  width: number;
+  depth: number;
+  tone: 'target' | 'hint';
+}
+
 export interface GhostSpec {
   tiles: Coord[];
+  rects: GhostRect[];
   valid: boolean;
   front: { x: number; z: number; direction: Direction } | null;
 }
@@ -61,7 +74,7 @@ function evaluation(tiles: Coord[], command: Command | null, state: GameState, e
   const issue = command ? dryRun(state, command) : null;
   const valid = command !== null && issue === null;
   return {
-    ghost: { tiles, valid, front: null },
+    ghost: { tiles, rects: [], valid, front: null },
     valid,
     issue,
     command,
@@ -102,6 +115,8 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
       return evaluation(roundaboutTiles(tile), { type: 'PlaceRoundabout', x: tile.x, y: tile.y }, state);
     case 'demolishRoad':
       return evaluation([tile], { type: 'DemolishRoad', x: tile.x, y: tile.y }, state);
+    case 'parcel':
+      return evaluateParcel(state, tile);
   }
 }
 
@@ -123,9 +138,18 @@ function evaluateBuilding(
   return result;
 }
 
+function evaluateParcel(state: GameState, tile: Coord): Evaluation {
+  const size = GAME_CONFIG.parcelSizeInTiles;
+  const parcel = { x: Math.floor(tile.x / size), y: Math.floor(tile.y / size) };
+  const result = evaluation([], { type: 'BuyParcel', x: parcel.x, y: parcel.y }, state, { cost: parcelPrice(state) });
+  const hints = buyableParcels(state).map((candidate) => ({ x: candidate.x * size, y: candidate.y * size, width: size, depth: size, tone: 'hint' as const }));
+  result.ghost.rects = [...hints, { x: parcel.x * size, y: parcel.y * size, width: size, depth: size, tone: 'target' }];
+  return result;
+}
+
 function evaluateRoad(state: GameState, tool: Extract<Tool, { kind: 'road' }>, tile: Coord): Evaluation {
   if (!tool.start) {
-    return { ghost: { tiles: [tile], valid: true, front: null }, valid: true, issue: null, command: null, cost: null, rotation: null };
+    return { ghost: { tiles: [tile], rects: [], valid: true, front: null }, valid: true, issue: null, command: null, cost: null, rotation: null };
   }
   const path = roadPath(tool.start, tile, tool.horizontalFirst);
   const command: Command = { type: 'BuildRoad', from: tool.start, to: tile, horizontalFirst: tool.horizontalFirst };

@@ -5,6 +5,8 @@ import { UrbsStat } from './UrbsStat';
 export function Dock() {
   const flyout = useUi((store) => store.flyout);
   const openFlyout = useUi((store) => store.openFlyout);
+  const tool = useUi((store) => store.tool);
+  const chooseTool = useUi((store) => store.chooseTool);
   const marketOpen = useUi((store) => store.marketOpen);
   const toggleMarket = useUi((store) => store.toggleMarket);
   const marketUnlocked = useGame((store) => store.state.marketUnlocked);
@@ -18,6 +20,10 @@ export function Dock() {
       <button type="button" className="dock-button" aria-pressed={flyout === 'roads'} onClick={() => openFlyout('roads')}>
         🛣
         <span>{t('dock.roads')}</span>
+      </button>
+      <button type="button" className="dock-button" aria-pressed={tool?.kind === 'parcel'} onClick={() => chooseTool({ kind: 'parcel' })}>
+        🗺
+        <span>{t('dock.parcels')}</span>
       </button>
       <button type="button" className="dock-button" aria-pressed={marketOpen} disabled={!marketUnlocked} onClick={toggleMarket}>
         💱

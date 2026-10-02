@@ -23,6 +23,7 @@ export type { RoadKind, RoadPiece, RoadPieceName } from './roads';
 export { missingRoadTiles, roadBuildCost } from './roadCost';
 export { GOODS, MATERIALS, durationOf, isGood, isMaterial, producibleItems, recipeOf } from './items';
 export type { GoodId, GoodSpec, ItemId, MaterialId } from './items';
+export { buyableParcels, isInsideMap, parcelPrice } from './parcels';
 export { marketPoints, marketQuote } from './market';
 export { MARKET, MAX_SLOTS, SHOP, SLOT_PRICES, STORAGE_UPGRADE_BONUS, STORAGE_UPGRADE_COSTS } from './economy';
 export { STORAGE_BASE_CAPACITY, hasStorehouse, isStorageEmpty, storageCapacity, storageUsed } from './storage';

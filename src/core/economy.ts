@@ -14,3 +14,5 @@ export const MARKET = {
   pointsLostPerUnit: 5,
   recoveryMs: 60 * 60_000,
 };
+
+export const PARCEL_PRICING = { base: 300, factor: 1.12, roundTo: 10 };

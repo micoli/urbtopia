@@ -6,6 +6,7 @@ import { tileKey } from './geometry';
 import { MAX_SLOTS, SHOP, SLOT_PRICES, STORAGE_UPGRADE_COSTS } from './economy';
 import { GOODS, isGood, isMaterial, producibleItems, recipeOf, type GoodId } from './items';
 import { marketQuote } from './market';
+import { isAdjacentToOwned, isInsideMap, isOwned, parcelPrice } from './parcels';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from './occupancy';
 import { autoRotation, frontTouchesRoad, placementIssue } from './placement';
 import { isIdle, newQueueEntry, restartRunningProduction } from './production';
@@ -24,6 +25,7 @@ export type Command =
   | { readonly type: 'Collect'; readonly buildingId: number }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
   | { readonly type: 'SellToMarket'; readonly good: GoodId; readonly quantity: number }
+  | { readonly type: 'BuyParcel'; readonly x: number; readonly y: number }
   | { readonly type: 'BuySlot'; readonly buildingId: number }
   | { readonly type: 'UpgradeStorehouse' }
   | { readonly type: 'SellBuilding'; readonly id: number }
@@ -52,7 +54,10 @@ export type ErrorKey =
   | 'error.notAShop'
   | 'error.missingGoods'
   | 'error.marketLocked'
-  | 'error.invalidQuantity';
+  | 'error.invalidQuantity'
+  | 'error.outsideMap'
+  | 'error.parcelOwned'
+  | 'error.parcelNotAdjacent';
 
 export interface CommandError {
   key: ErrorKey;
@@ -86,6 +91,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return stockShop(state, command.buildingId, command.good, now);
     case 'SellToMarket':
       return sellToMarket(state, command.good, command.quantity, now);
+    case 'BuyParcel':
+      return buyParcel(state, { x: command.x, y: command.y });
     case 'BuySlot':
       return buySlot(state, command.buildingId);
     case 'UpgradeStorehouse':
@@ -329,4 +336,13 @@ function sellToMarket(state: GameState, good: GoodId, quantity: number, now: num
     },
     events: [],
   };
+}
+
+function buyParcel(state: GameState, parcel: Coord): CommandOutcome {
+  if (!isInsideMap(parcel)) return fail('error.outsideMap');
+  if (isOwned(state, parcel)) return fail('error.parcelOwned');
+  if (!isAdjacentToOwned(state, parcel)) return fail('error.parcelNotAdjacent');
+  const price = parcelPrice(state);
+  if (state.urbs < price) return fail('error.notEnoughUrbs');
+  return { state: { ...state, urbs: state.urbs - price, ownedParcels: [...state.ownedParcels, parcel] }, events: [] };
 }

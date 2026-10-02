@@ -3,6 +3,7 @@ import type { GhostSpec } from '../tools/tools';
 
 const VALID_COLOR = 0x35d07f;
 const INVALID_COLOR = 0xe5484d;
+const HINT_COLOR = 0xffd23f;
 const FRONT_ROTATION: Record<string, number> = { N: 0, W: Math.PI / 2, S: Math.PI, E: -Math.PI / 2 };
 
 export class GhostLayer {
@@ -10,6 +11,7 @@ export class GhostLayer {
   private tileGeometry = new THREE.PlaneGeometry(0.92, 0.92);
   private arrowGeometry = new THREE.ConeGeometry(0.28, 0.6, 3);
   private validMaterial = new THREE.MeshBasicMaterial({ color: VALID_COLOR, transparent: true, opacity: 0.6, depthTest: false });
+  private hintMaterial = new THREE.MeshBasicMaterial({ color: HINT_COLOR, transparent: true, opacity: 0.25, depthTest: false });
   private invalidMaterial = new THREE.MeshBasicMaterial({ color: INVALID_COLOR, transparent: true, opacity: 0.6, depthTest: false });
 
   constructor() {
@@ -17,9 +19,16 @@ export class GhostLayer {
   }
 
   set(ghost: GhostSpec | null): void {
-    this.root.clear();
+    this.disposeChildren();
     if (!ghost) return;
     const material = ghost.valid ? this.validMaterial : this.invalidMaterial;
+    for (const rect of ghost.rects) {
+      const plane = new THREE.Mesh(new THREE.PlaneGeometry(rect.width - 0.3, rect.depth - 0.3), rect.tone === 'hint' ? this.hintMaterial : material);
+      plane.rotation.x = -Math.PI / 2;
+      plane.position.set(rect.x + rect.width / 2, 0.04, rect.y + rect.depth / 2);
+      plane.renderOrder = rect.tone === 'hint' ? 8 : 9;
+      this.root.add(plane);
+    }
     for (const tile of ghost.tiles) {
       const mesh = new THREE.Mesh(this.tileGeometry, material);
       mesh.rotation.x = -Math.PI / 2;
@@ -36,8 +45,17 @@ export class GhostLayer {
     this.root.add(arrow);
   }
 
-  dispose(): void {
+  private disposeChildren(): void {
+    for (const child of this.root.children) {
+      const mesh = child as THREE.Mesh;
+      if (mesh.geometry !== this.tileGeometry && mesh.geometry !== this.arrowGeometry) mesh.geometry.dispose();
+    }
     this.root.clear();
+  }
+
+  dispose(): void {
+    this.disposeChildren();
+    this.hintMaterial.dispose();
     this.tileGeometry.dispose();
     this.arrowGeometry.dispose();
     this.validMaterial.dispose();

@@ -407,3 +407,17 @@ button {
 .dock-button:disabled {
   opacity: 0.4;
 }
+
+.parcel-tag {
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(255, 210, 63, 0.95);
+  color: #2a2000;
+  font-weight: 700;
+  font-size: 14px;
+  pointer-events: none;
+  z-index: 4;
+}
