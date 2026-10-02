@@ -10,6 +10,6 @@
 - [x] Placement valid only if the whole footprint is inside owned Parcels, tiles are free, and (for Home, Shop, Factory, Workshop, Storehouse) a front-edge tile touches a road; Power plant and Water tower need no road
 - [x] Auto-orientation toward the adjacent road, with a manual rotate override
 - [x] Sell refunds 75 % of placement cost; demolishing a building's only road is refused with an explicit message
-- [x] Moving a building is free and resets its running production
-- [x] Selling a Storehouse is refused if remaining capacity would be below stock
+- [x] Moving a building is free (resetting its running production is deferred to ticket 15, there is no production yet)
+- [ ] Selling a Storehouse is refused if remaining capacity would be below stock (deferred to ticket 15, there is no stock yet)
 - [x] Core tests cover every refusal reason via `dispatch`
