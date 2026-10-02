@@ -15,12 +15,25 @@ export interface QueueEntry {
   done: boolean;
 }
 
+export interface ShopStack {
+  good: GoodId | null;
+  stock: number;
+  nextSaleAt: number | null;
+  earned: number;
+}
+
+export interface MarketPrice {
+  points: number;
+  updatedAt: number;
+}
+
 export interface Building extends Coord {
   id: number;
   type: BuildingType;
   rotation: Rotation;
   slotCount: number;
   queue: QueueEntry[];
+  stacks: ShopStack[];
 }
 
 export interface Storage {
@@ -42,6 +55,8 @@ export interface GameState {
   buildings: Building[];
   storage: Storage;
   storehouseLevel: number;
+  marketUnlocked: boolean;
+  market: Partial<Record<GoodId, MarketPrice>>;
   roads: RoadTile[];
   roundabouts: Coord[];
 }

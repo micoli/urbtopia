@@ -1,10 +1,13 @@
 import { t } from '../i18n/t';
-import { useUi } from './hooks';
+import { useGame, useUi } from './hooks';
 import { UrbsStat } from './UrbsStat';
 
 export function Dock() {
   const flyout = useUi((store) => store.flyout);
   const openFlyout = useUi((store) => store.openFlyout);
+  const marketOpen = useUi((store) => store.marketOpen);
+  const toggleMarket = useUi((store) => store.toggleMarket);
+  const marketUnlocked = useGame((store) => store.state.marketUnlocked);
   return (
     <nav className="dock">
       <UrbsStat />
@@ -15,6 +18,10 @@ export function Dock() {
       <button type="button" className="dock-button" aria-pressed={flyout === 'roads'} onClick={() => openFlyout('roads')}>
         🛣
         <span>{t('dock.roads')}</span>
+      </button>
+      <button type="button" className="dock-button" aria-pressed={marketOpen} disabled={!marketUnlocked} onClick={toggleMarket}>
+        💱
+        <span>{t('dock.market')}</span>
       </button>
     </nav>
   );

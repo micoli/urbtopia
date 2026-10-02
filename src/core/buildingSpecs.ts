@@ -1,5 +1,5 @@
 import type { Coord } from './coord';
-import type { Building, BuildingType, Rotation } from './state';
+import type { Building, BuildingType, Rotation, ShopStack } from './state';
 
 export interface Footprint {
   width: number;
@@ -16,7 +16,7 @@ export interface BuildingSpec {
 export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
   workshop: { footprint: { width: 2, depth: 2 }, cost: 100, requiresRoad: true, initialSlots: 2 },
   factory: { footprint: { width: 2, depth: 2 }, cost: 250, requiresRoad: true, initialSlots: 2 },
-  shop: { footprint: { width: 1, depth: 1 }, cost: 300, requiresRoad: true, initialSlots: 0 },
+  shop: { footprint: { width: 1, depth: 1 }, cost: 300, requiresRoad: true, initialSlots: 3 },
   storehouse: { footprint: { width: 2, depth: 2 }, cost: 400, requiresRoad: true, initialSlots: 0 },
   home: { footprint: { width: 1, depth: 1 }, cost: 150, requiresRoad: true, initialSlots: 0 },
   powerPlant: { footprint: { width: 1, depth: 1 }, cost: 250, requiresRoad: false, initialSlots: 0 },
@@ -37,8 +37,14 @@ export function footprintTiles(building: { type: BuildingType; x: number; y: num
   return tiles;
 }
 
+export function emptyStack(): ShopStack {
+  return { good: null, stock: 0, nextSaleAt: null, earned: 0 };
+}
+
 export function createBuilding(id: number, type: BuildingType, x: number, y: number, rotation: Rotation): Building {
-  return { id, type, x, y, rotation, slotCount: BUILDING_SPECS[type].initialSlots, queue: [] };
+  const slotCount = BUILDING_SPECS[type].initialSlots;
+  const stacks = type === 'shop' ? Array.from({ length: slotCount }, emptyStack) : [];
+  return { id, type, x, y, rotation, slotCount, queue: [], stacks };
 }
 
 export function placementCost(type: BuildingType): number {

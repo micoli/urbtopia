@@ -1,17 +1,18 @@
-import { BUILDING_SPECS, createBuilding, placementCost } from './buildingSpecs';
+import { BUILDING_SPECS, createBuilding, emptyStack, placementCost } from './buildingSpecs';
 import { GAME_CONFIG } from './config';
 import type { Coord } from './coord';
 import type { GameEvent } from './events';
 import { tileKey } from './geometry';
-import { MAX_SLOTS, SLOT_PRICES, STORAGE_UPGRADE_COSTS } from './economy';
-import { isGood, isMaterial, producibleItems, recipeOf } from './items';
+import { MAX_SLOTS, SHOP, SLOT_PRICES, STORAGE_UPGRADE_COSTS } from './economy';
+import { GOODS, isGood, isMaterial, producibleItems, recipeOf, type GoodId } from './items';
+import { marketQuote } from './market';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from './occupancy';
 import { autoRotation, frontTouchesRoad, placementIssue } from './placement';
 import { isIdle, newQueueEntry, restartRunningProduction } from './production';
 import { roadBuildCost, missingRoadTiles } from './roadCost';
 import { roadPath } from './roads';
 import { hasStorehouse, isStorageEmpty, storageCapacity, storageUsed } from './storage';
-import type { BuildingType, GameState, QueueEntry, Rotation } from './state';
+import type { Building, BuildingType, GameState, QueueEntry, Rotation } from './state';
 
 export type Command =
   | { readonly type: 'BuildRoad'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
@@ -21,6 +22,8 @@ export type Command =
   | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
+  | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
+  | { readonly type: 'SellToMarket'; readonly good: GoodId; readonly quantity: number }
   | { readonly type: 'BuySlot'; readonly buildingId: number }
   | { readonly type: 'UpgradeStorehouse' }
   | { readonly type: 'SellBuilding'; readonly id: number }
@@ -45,7 +48,11 @@ export type ErrorKey =
   | 'error.storehouseNotEmpty'
   | 'error.missingMaterials'
   | 'error.maxSlots'
-  | 'error.maxLevel';
+  | 'error.maxLevel'
+  | 'error.notAShop'
+  | 'error.missingGoods'
+  | 'error.marketLocked'
+  | 'error.invalidQuantity';
 
 export interface CommandError {
   key: ErrorKey;
@@ -75,6 +82,10 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return queueProduction(state, command.buildingId, command.item, now);
     case 'Collect':
       return collect(state, command.buildingId);
+    case 'StockShop':
+      return stockShop(state, command.buildingId, command.good, now);
+    case 'SellToMarket':
+      return sellToMarket(state, command.good, command.quantity, now);
     case 'BuySlot':
       return buySlot(state, command.buildingId);
     case 'UpgradeStorehouse':
@@ -207,6 +218,7 @@ function queueProduction(state: GameState, buildingId: number, item: string, now
 function collect(state: GameState, buildingId: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
+  if (building.type === 'shop') return collectShopEarnings(state, building);
   if (!building.queue.some((entry) => entry.done)) return fail('error.nothingToCollect');
   if (!hasStorehouse(state)) return fail('error.noStorehouse');
 
@@ -234,6 +246,7 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
     state: {
       ...state,
       storage: { materials, goods },
+      marketUnlocked: state.marketUnlocked || Object.values(goods).some((amount) => (amount ?? 0) > 0),
       buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, queue: remaining } : candidate)),
     },
     events,
@@ -243,7 +256,7 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
 function buySlot(state: GameState, buildingId: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
-  if (producibleItems(building.type).length === 0) return fail('error.cannotProduce');
+  if (BUILDING_SPECS[building.type].initialSlots === 0) return fail('error.cannotProduce');
   if (building.slotCount >= MAX_SLOTS) return fail('error.maxSlots');
   const price = SLOT_PRICES[building.slotCount + 1] ?? 0;
   if (state.urbs < price) return fail('error.notEnoughUrbs');
@@ -251,7 +264,7 @@ function buySlot(state: GameState, buildingId: number): CommandOutcome {
     state: {
       ...state,
       urbs: state.urbs - price,
-      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, slotCount: building.slotCount + 1 } : candidate)),
+      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, slotCount: building.slotCount + 1, stacks: building.type === 'shop' ? [...building.stacks, emptyStack()] : building.stacks } : candidate)),
     },
     events: [],
   };
@@ -263,4 +276,57 @@ function upgradeStorehouse(state: GameState): CommandOutcome {
   if (cost === undefined) return fail('error.maxLevel');
   if (state.urbs < cost) return fail('error.notEnoughUrbs');
   return { state: { ...state, urbs: state.urbs - cost, storehouseLevel: state.storehouseLevel + 1 }, events: [] };
+}
+
+function collectShopEarnings(state: GameState, building: Building): CommandOutcome {
+  const earned = building.stacks.reduce((total, stack) => total + stack.earned, 0);
+  if (earned === 0) return fail('error.nothingToCollect');
+  return {
+    state: {
+      ...state,
+      urbs: state.urbs + earned,
+      buildings: state.buildings.map((candidate) =>
+        candidate === building ? { ...building, stacks: building.stacks.map((stack) => ({ ...stack, earned: 0 })) } : candidate,
+      ),
+    },
+    events: [{ type: 'ItemsCollected', buildingId: building.id }],
+  };
+}
+
+function stockShop(state: GameState, buildingId: number, good: GoodId, now: number): CommandOutcome {
+  const building = state.buildings.find((candidate) => candidate.id === buildingId);
+  if (!building) return fail('error.unknownBuilding');
+  if (building.type !== 'shop' || !(good in GOODS)) return fail('error.notAShop');
+  const slotIndex = building.stacks.findIndex((stack) => stack.stock === 0);
+  if (slotIndex === -1) return fail('error.queueFull');
+  const available = state.storage.goods[good] ?? 0;
+  if (available < SHOP.stackSize) return fail('error.missingGoods');
+  const stacks = building.stacks.map((stack, index) =>
+    index === slotIndex ? { ...stack, good, stock: SHOP.stackSize, nextSaleAt: now + SHOP.saleIntervalMs } : stack,
+  );
+  return {
+    state: {
+      ...state,
+      storage: { ...state.storage, goods: { ...state.storage.goods, [good]: available - SHOP.stackSize } },
+      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, stacks } : candidate)),
+    },
+    events: [],
+  };
+}
+
+function sellToMarket(state: GameState, good: GoodId, quantity: number, now: number): CommandOutcome {
+  if (!state.marketUnlocked) return fail('error.marketLocked');
+  if (!Number.isInteger(quantity) || quantity <= 0 || !(good in GOODS)) return fail('error.invalidQuantity');
+  const available = state.storage.goods[good] ?? 0;
+  if (available < quantity) return fail('error.missingGoods');
+  const quote = marketQuote(state, good, quantity, now);
+  return {
+    state: {
+      ...state,
+      urbs: state.urbs + quote.total,
+      storage: { ...state.storage, goods: { ...state.storage.goods, [good]: available - quantity } },
+      market: { ...state.market, [good]: { points: quote.endPoints, updatedAt: now } },
+    },
+    events: [],
+  };
 }

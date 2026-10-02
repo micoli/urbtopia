@@ -7,10 +7,10 @@ const BADGE_HEIGHT = 1.8;
 
 interface CollectBadgeProps {
   building: Building;
-  readyCount: number;
+  label: string;
 }
 
-export function CollectBadge({ building, readyCount }: CollectBadgeProps) {
+export function CollectBadge({ building, label }: CollectBadgeProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export function CollectBadge({ building, readyCount }: CollectBadgeProps) {
       className="collect-badge"
       onClick={() => gameStore.getState().send({ type: 'Collect', buildingId: building.id })}
     >
-      ✓ {readyCount}
+      {label}
     </button>
   );
 }
