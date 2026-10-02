@@ -1,43 +1,28 @@
-import { CameraButtons } from './CameraButtons';
-import { CollectBadges } from './CollectBadges';
-import { ConfirmPad } from './ConfirmPad';
-import { ConfirmSaleDialog } from './ConfirmSaleDialog';
-import { ExportReminder } from './ExportReminder';
-import { ImportConfirmDialog } from './ImportConfirmDialog';
-import { ReadOnlyBanner } from './ReadOnlyBanner';
-import { RecoveryScreen } from './RecoveryScreen';
-import { SaveFailedDialog } from './SaveFailedDialog';
-import { Dock } from './Dock';
-import { Flyout } from './Flyout';
-import { MarketPanel } from './MarketPanel';
-import { MenuPanel } from './MenuPanel';
-import { NextUnlock } from './NextUnlock';
-import { ParcelTags } from './ParcelTags';
+import { Fragment, useEffect } from 'react';
+import { useStore } from 'zustand';
+import { prefsStore } from '../i18n/prefsStore';
+import { LayoutA } from './LayoutA';
+import { LayoutB } from './LayoutB';
+import { LayoutC } from './LayoutC';
+import { Overlays } from './Overlays';
 import { SceneCanvas } from './SceneCanvas';
-import { SidePanel } from './SidePanel';
-import { Toast } from './Toast';
 
 export function App() {
+  const language = useStore(prefsStore, (store) => store.language);
+  const layout = useStore(prefsStore, (store) => store.layout);
+
+  useEffect(() => {
+    document.documentElement.dataset.layout = layout;
+    document.documentElement.lang = language;
+  }, [layout, language]);
+
   return (
     <>
       <SceneCanvas />
-      <CollectBadges />
-      <ParcelTags />
-      <Dock />
-      <NextUnlock />
-      <Flyout />
-      <SidePanel />
-      <MarketPanel />
-      <MenuPanel />
-      <ConfirmPad />
-      <ReadOnlyBanner />
-      <ExportReminder />
-      <ConfirmSaleDialog />
-      <ImportConfirmDialog />
-      <SaveFailedDialog />
-      <RecoveryScreen />
-      <Toast />
-      <CameraButtons />
+      <Fragment key={language}>
+        <Overlays />
+        {layout === 'A' ? <LayoutA /> : layout === 'B' ? <LayoutB /> : <LayoutC />}
+      </Fragment>
     </>
   );
 }

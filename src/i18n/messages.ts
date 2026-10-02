@@ -133,6 +133,15 @@ export const MESSAGES = {
   'panel.stock': 'Stock',
   'panel.materials': 'Materials',
   'panel.goods': 'Goods',
+  'prefs.title': 'Preferences',
+  'prefs.language': 'Language',
+  'prefs.layout': 'Interface layout',
+  'prefs.layout.C': 'Side dock',
+  'prefs.layout.A': 'Bars',
+  'prefs.layout.B': 'Minimal',
+  'lang.en': 'English',
+  'lang.fr': 'Français',
+  'radial.open': 'Open the menu',
 } as const;
 
 export type MessageKey = keyof typeof MESSAGES;
