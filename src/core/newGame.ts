@@ -1,20 +1,23 @@
 import { GAME_CONFIG } from './config';
 import { hashSeed } from './random';
+import { generateSeed } from './seed';
 import type { GameState } from './state';
 
 export interface NewGameOptions {
-  seed: string;
+  seed?: string;
   now: number;
 }
 
-export function newGame({ seed, now }: NewGameOptions): GameState {
+export function newGame(options: NewGameOptions): GameState {
+  const seed = options.seed ?? generateSeed(options.now);
+  const { firstEntityId, startingBuildings, startingParcels, startingUrbs } = GAME_CONFIG;
   return {
     seed,
     rngState: hashSeed(seed),
-    urbs: GAME_CONFIG.startingUrbs,
-    lastSeen: now,
-    nextId: GAME_CONFIG.startingBuildings.length + 1,
-    ownedParcels: GAME_CONFIG.startingParcels.map((p) => ({ ...p })),
-    buildings: GAME_CONFIG.startingBuildings.map((b, index) => ({ id: index + 1, rotation: 0, ...b })),
+    urbs: startingUrbs,
+    lastSeen: options.now,
+    nextId: firstEntityId + startingBuildings.length,
+    ownedParcels: startingParcels.map((parcel) => ({ ...parcel })),
+    buildings: startingBuildings.map((building, index) => ({ ...building, id: firstEntityId + index, rotation: 0 })),
   };
 }

@@ -1,10 +1,7 @@
+import type { GameEvent } from './events';
 import type { GameState } from './state';
 
 export interface Command {
-  readonly type: string;
-}
-
-export interface GameEvent {
   readonly type: string;
 }
 

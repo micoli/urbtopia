@@ -1,8 +1,11 @@
 export { advance } from './advance';
 export type { AdvanceResult } from './advance';
 export { dispatch } from './dispatch';
-export type { Command, CommandError, DispatchResult, GameEvent } from './dispatch';
+export type { Command, CommandError, DispatchResult } from './dispatch';
+export type { GameEvent } from './events';
 export { newGame } from './newGame';
 export type { NewGameOptions } from './newGame';
-export { generateSeed, hashSeed, nextRandom } from './random';
+export { hashSeed, nextRandom } from './random';
+export { generateSeed } from './seed';
+export type { Coord } from './coord';
 export type { Building, BuildingType, GameState, ParcelCoord } from './state';

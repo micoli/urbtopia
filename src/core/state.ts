@@ -1,16 +1,13 @@
+import type { Coord } from './coord';
+
 export type BuildingType = 'workshop' | 'factory';
 
-export interface Building {
+export type ParcelCoord = Coord;
+
+export interface Building extends Coord {
   id: number;
   type: BuildingType;
-  x: number;
-  y: number;
   rotation: 0 | 1 | 2 | 3;
-}
-
-export interface ParcelCoord {
-  x: number;
-  y: number;
 }
 
 export interface GameState {

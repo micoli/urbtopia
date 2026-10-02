@@ -35,6 +35,12 @@ describe('newGame', () => {
     expect(state.lastSeen).toBe(NOW);
   });
 
+  it('generates a text Seed when none is given, deterministically from the starting time', () => {
+    const generated = newGame({ now: NOW });
+    expect(generated.seed).toMatch(/^[a-z]+-[a-z]+-\d{4}$/);
+    expect(newGame({ now: NOW }).seed).toBe(generated.seed);
+  });
+
   it('is deterministic for a given Seed', () => {
     expect(newGame({ seed: 'amber-fox-4821', now: NOW })).toEqual(state);
   });

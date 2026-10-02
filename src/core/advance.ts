@@ -1,4 +1,4 @@
-import type { GameEvent } from './dispatch';
+import type { GameEvent } from './events';
 import type { GameState } from './state';
 
 export interface AdvanceResult {
