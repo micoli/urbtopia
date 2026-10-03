@@ -4,7 +4,7 @@ import { useGame, useUi, useReadOnly } from './hooks';
 import { guideOf } from './tutorialGuide';
 
 export interface NavAction {
-  id: 'build' | 'roads' | 'parcels' | 'market' | 'codex' | 'menu' | 'undo';
+  id: 'build' | 'roads' | 'parcels' | 'market' | 'stats' | 'codex' | 'menu' | 'undo';
   icon: string;
   image?: string;
   label: string;
@@ -29,6 +29,8 @@ export function useNavActions(): NavAction[] {
   const tool = useUi((store) => store.tool);
   const marketOpen = useUi((store) => store.marketOpen);
   const menuOpen = useUi((store) => store.menuOpen);
+  const statsOpen = useUi(store => store.statsOpen);
+  const toggleStats = useUi(store => store.toggleStats);
   const codexOpen = useUi(store => store.codexOpen);
   const openCodex = useUi(store => store.openCodex);
   const openFlyout = useUi((store) => store.openFlyout);
@@ -43,8 +45,9 @@ export function useNavActions(): NavAction[] {
     { id: 'roads', icon: '🛣', image: 'roads.png', label: t('dock.roads'), pressed: flyout === 'roads', disabled: false, guided: guidedFlyout === 'roads', onClick: () => openFlyout('roads') },
     { id: 'parcels', icon: '🗺', image: 'map.png', label: t('dock.parcels'), pressed: tool?.kind === 'parcel', disabled: false, guided: false, onClick: () => chooseTool({ kind: 'parcel' }) },
     { id: 'market', icon: '💱', image: 'market.png', label: t('dock.market'), pressed: marketOpen, disabled: !marketUnlocked, guided: false, onClick: toggleMarket },
-    { id: 'codex', icon: '📖', label: t('codex.title'), pressed: codexOpen, disabled: false, guided: false, onClick: () => openCodex() },
-    { id: 'menu', icon: '⚙', label: t('dock.menu'), pressed: menuOpen, disabled: false, guided: false, onClick: toggleMenu },
+    { id: 'stats', icon: '📊', image: 'town-management.png', label: t('eco.title'), pressed: statsOpen, disabled: false, guided: false, onClick: toggleStats },
+    { id: 'codex', icon: '📖', image: 'codex.png', label: t('codex.title'), pressed: codexOpen, disabled: false, guided: false, onClick: () => openCodex() },
+    { id: 'menu', icon: '⚙', image: 'settings.png', label: t('dock.menu'), pressed: menuOpen, disabled: false, guided: false, onClick: toggleMenu },
   ];
   if (touch) actions.push({ id: 'undo', icon: '↶', label: t('action.undo'), pressed: false, disabled: !canUndo || readOnly, guided: false, onClick: undo });
   return actions;

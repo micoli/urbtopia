@@ -74,7 +74,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     statsOpen: false,
     toggleStats: () => {
       if (!get().statsOpen) get().cancelTool();
-      set({ statsOpen: !get().statsOpen, flyout: null });
+      set({ statsOpen: !get().statsOpen, flyout: null, menuOpen: false, marketOpen: false });
     },
     marketOpen: false,
     menuOpen: false,

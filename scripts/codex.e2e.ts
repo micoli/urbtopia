@@ -14,7 +14,8 @@ for (const layout of ['A', 'B', 'C']) {
         if (layout === 'B') await page.getByRole('button', { name: 'Ouvrir le menu' }).click();
         const shortcut = page.locator('[data-action="codex"]');
         await expect(shortcut).toBeVisible();
-        await expect(shortcut).toContainText('📖');
+        await expect(shortcut.locator('img')).toHaveAttribute('src', /\/assets\/icons\/codex\.png$/);
+        await expect(page.locator('[data-action="menu"] img')).toHaveAttribute('src', /\/assets\/icons\/settings\.png$/);
         await shortcut.click();
         const dialog = page.getByRole('dialog', { name: 'Codex' });
         await expect(dialog).toBeVisible();
