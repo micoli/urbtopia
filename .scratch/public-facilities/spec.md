@@ -14,7 +14,7 @@ Status: ready-for-agent
 
 ## Domain rules
 
-- A Public facility has no Tier and no operating cost; it only has a construction cost in Urbs.
+- A Public facility has no operating cost and a construction cost in Urbs. It evolves through four Tiers that raise its capacity (×1, ×1.5, ×2, ×3) for an Urbs-only upgrade cost; the Town hall, with unlimited capacity, does not evolve.
 - Service coverage covers a square of side 2 × radius centered on the facility, with corners rounded by 3 tiles and no road requirement. Each facility serves at most its Citizen capacity, nearest Homes first. Town hall and university cover the whole city.
 - The town hall is unique. Universities can be built multiple times; each adds city-wide capacity.
 - Well-being remains a single per-Home indicator:
@@ -39,7 +39,7 @@ Status: ready-for-agent
 
 | Facility | Unlock (Citizens) | Urbs | Radius | Capacity | Footprint |
 | --- | ---: | ---: | ---: | ---: | --- |
-| School | 15 | 300 | 16 | 200 | 2×2 |
+| School | 15 | 300 | 16 | 300 | 2×2 |
 | Community hall | 32 | 150 | 6 | 150 | 1×1 |
 | Middle school | 60 | 600 | 10 | 400 | 2×2 |
 | High school | 100 | 1 000 | 12 | 600 | 3×2 |

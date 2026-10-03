@@ -372,4 +372,8 @@ export const FR: Record<MessageKey, string> = {
   "home.reason.none": "aucun construit",
   "home.reason.outOfReach": "hors de portée",
   "home.reason.capacityFull": "à portée, capacité saturée",
+  "facility.reach": "Portée (cases)",
+  "facility.capacity": "Capacité (citoyens)",
+  "facility.served": "Servis",
+  "facility.unlimited": "illimitée",
 };

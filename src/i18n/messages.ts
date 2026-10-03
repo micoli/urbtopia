@@ -370,6 +370,10 @@ export const MESSAGES = {
   "home.reason.none": "none built",
   "home.reason.outOfReach": "out of reach",
   "home.reason.capacityFull": "in reach, capacity full",
+  "facility.reach": "Reach (tiles)",
+  "facility.capacity": "Capacity (Citizens)",
+  "facility.served": "Served",
+  "facility.unlimited": "unlimited",
 } as const;
 
 export type MessageKey = keyof typeof MESSAGES;

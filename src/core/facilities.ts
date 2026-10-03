@@ -30,7 +30,7 @@ export interface FacilitySpec {
 const power = 2;
 
 export const FACILITIES: Record<FacilityType, FacilitySpec> = {
-  school: { category: 'education', unlockCitizens: 15, cost: 300, radius: 16, capacity: 200, footprint: { width: 2, depth: 2 }, power, water: 0 },
+  school: { category: 'education', unlockCitizens: 15, cost: 300, radius: 16, capacity: 300, footprint: { width: 2, depth: 2 }, power, water: 0 },
   communityHall: { category: 'culture', unlockCitizens: 32, cost: 150, radius: 6, capacity: 150, footprint: { width: 1, depth: 1 }, power, water: 0 },
   middleSchool: { category: 'education', unlockCitizens: 60, cost: 600, radius: 10, capacity: 400, footprint: { width: 2, depth: 2 }, power, water: 0 },
   highSchool: { category: 'education', unlockCitizens: 100, cost: 1000, radius: 12, capacity: 600, footprint: { width: 3, depth: 2 }, power, water: 0 },
@@ -78,4 +78,21 @@ export function isWithinReach(dx: number, dy: number, radius: number): boolean {
   const inset = radius - REACH_CORNER_RADIUS;
   if (x <= inset || y <= inset) return true;
   return (x - inset) ** 2 + (y - inset) ** 2 <= REACH_CORNER_RADIUS ** 2;
+}
+
+export const FACILITY_TIER_CAPACITY: readonly number[] = [1, 1.5, 2, 3];
+
+const FACILITY_UPGRADE_COST_FACTORS: readonly number[] = [0.6, 1.2, 2.4];
+
+export function facilityCapacity(type: FacilityType, tier: number): number | null {
+  const base = FACILITIES[type].capacity;
+  if (base === null) return null;
+  return base * (FACILITY_TIER_CAPACITY[tier - 1] ?? 1);
+}
+
+export function facilityUpgradeCosts(type: FacilityType): Record<number, { urbs: number; goods: Record<string, never> }> {
+  if (FACILITIES[type].capacity === null) return {};
+  return Object.fromEntries(
+    FACILITY_UPGRADE_COST_FACTORS.map((factor, index) => [index + 2, { urbs: Math.round((FACILITIES[type].cost * factor) / 10) * 10, goods: {} }]),
+  );
 }

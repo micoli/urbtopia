@@ -65,7 +65,7 @@ The satisfaction of a Home's Citizens, raised by nearby Green spaces and Public 
 _Avoid_: Happiness, bonheur, mood, attractiveness
 
 **Public facility**:
-A building that serves Citizens with a public service in a Service category, at no operating cost. It has no Tier.
+A building that serves Citizens with a public service in a Service category, at no operating cost. Its Tier raises its Citizen capacity; the Town hall has no Tier.
 _Avoid_: Civic building, public service, amenity
 
 **Service category**:

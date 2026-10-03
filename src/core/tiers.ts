@@ -8,6 +8,7 @@ import {
   type ProductionTier,
   type UpgradeCostSpec,
 } from './economy';
+import { FACILITY_TYPES, facilityUpgradeCosts } from './facilities';
 import type { Building, BuildingType } from './state';
 
 export type UpgradeCost = UpgradeCostSpec;
@@ -25,11 +26,13 @@ const UPGRADE_COSTS: Partial<Record<BuildingType, Record<number, UpgradeCost>>> 
   powerPlant: UTILITY_UPGRADE_COSTS.powerPlant,
   coalPlant: COAL_UPGRADE_COSTS,
   waterTower: UTILITY_UPGRADE_COSTS.waterTower,
+  ...Object.fromEntries(FACILITY_TYPES.map((type) => [type, facilityUpgradeCosts(type)])),
 };
 
 export function maxTierOf(type: BuildingType): number {
   const costs = UPGRADE_COSTS[type];
-  return costs ? Math.max(...Object.keys(costs).map(Number)) : 1;
+  const tiers = Object.keys(costs ?? {}).map(Number);
+  return tiers.length ? Math.max(...tiers) : 1;
 }
 
 export function upgradeCostOf(type: BuildingType, tier: number): UpgradeCost | undefined {

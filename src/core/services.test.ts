@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FACILITIES, uncoveredReason, advance, isWithinReach, categoryCoverageRatio, createBuilding, dispatch, homeBenefits, missingServices, newGame, serviceCoverage, type Building, type Command, type GameState } from './index';
+import { FACILITIES, facilityCapacity, uncoveredReason, advance, isWithinReach, categoryCoverageRatio, createBuilding, dispatch, homeBenefits, missingServices, newGame, serviceCoverage, type Building, type Command, type GameState } from './index';
 import { ECOLOGY } from './ecology';
 
 const H = ECOLOGY.hourMs;
@@ -8,6 +8,35 @@ const city = (buildings: Building[], extra: Partial<GameState> = {}): GameState 
   ...newGame({ seed: 'services', now: 0 }), buildings, nextId: 100, urbs: 1_000_000, tutorial: null, roads: Array.from({ length: 32 }, (_, index) => ({ x: 48 + index, y: 49, kind: 'road' as const })), adaptationUntil: 0, ...extra,
 });
 const coveredIds = (state: GameState, type: Building['type']) => [...serviceCoverage(state)].filter(([, types]) => types.has(type as never)).map(([id]) => id);
+
+describe('Facility evolutions', () => {
+  it('starts the School at 300 Citizens and raises capacity with each Tier', () => {
+    expect([1, 2, 3, 4].map((tier) => facilityCapacity('school', tier))).toEqual([300, 450, 600, 900]);
+    expect(facilityCapacity('townHall', 1)).toBeNull();
+  });
+
+  it('serves more Homes when the School is upgraded', () => {
+    const homes = [2, 3, 4, 5].map((x, index) => b(10 + index, 'home', x, 0, { tier: 6 }));
+    const base = city([b(1, 'school', 0), ...homes]);
+    const upgraded = city([b(1, 'school', 0, 0, { tier: 3 }), ...homes]);
+    expect(coveredIds(base, 'school')).toHaveLength(2);
+    expect(coveredIds(upgraded, 'school')).toHaveLength(4);
+  });
+
+  it('upgrades a facility for Urbs only, up to Tier 4, but never the Town hall', () => {
+    const state = city([b(2, 'school', 0), b(3, 'townHall', 10)]);
+    const send = (id: number, from: GameState) => dispatch(from, { type: 'UpgradeBuilding', buildingId: id }, 0);
+    const first = send(2, state);
+    expect(first.ok && state.urbs - first.state.urbs).toBe(180);
+    let current = state;
+    for (let step = 0; step < 3; step++) current = (send(2, current) as { state: GameState }).state;
+    expect(current.buildings.find((x) => x.id === 2)?.tier).toBe(4);
+    const capped = send(2, current);
+    expect(!capped.ok && capped.error.key).toBe('error.maxTier');
+    const hall = send(3, state);
+    expect(!hall.ok && hall.error.key).toBe('error.maxTier');
+  });
+});
 
 describe('Service reach', () => {
   it('is a square of twice the radius with corners rounded by 3 tiles', () => {
@@ -49,7 +78,7 @@ describe('Service coverage', () => {
   });
 
   it('serves the nearest Homes first until capacity is used', () => {
-    const homes = [4, 2, 6, 3, 5].map((x, index) => b(10 + index, 'home', x, 0, { tier: 5 }));
+    const homes = [4, 2, 6, 3, 5].map((x, index) => b(10 + index, 'home', x, 0, { tier: 6 }));
     const state = city([b(1, 'school', 0), ...homes]);
     expect(coveredIds(state, 'school').sort()).toEqual([11, 13]);
   });
