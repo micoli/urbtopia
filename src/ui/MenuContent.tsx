@@ -13,6 +13,7 @@ import { PreferencesContent } from './PreferencesContent';
 export function MenuContent() {
   const toggle = useUi((store) => store.toggleMenu);
   const [confirming, setConfirming] = useState(false);
+  const skipTime = (hours: number) => gameStore.getState().send({ type: 'SkipTime', hours });
   const fileInput = useRef<HTMLInputElement>(null);
   const { canInstall, install } = useInstallPrompt();
   const startNewGame = () => {
@@ -46,6 +47,14 @@ export function MenuContent() {
             {t('menu.install')}
           </button>
         ) : null}
+        <div className="prefs-group">
+          <button type="button" onClick={() => skipTime(12)}>
+            {t('menu.skip12')}
+          </button>
+          <button type="button" onClick={() => skipTime(24)}>
+            {t('menu.skip24')}
+          </button>
+        </div>
         <button type="button" onClick={exportCurrentCity}>
           {t('menu.export')}
         </button>

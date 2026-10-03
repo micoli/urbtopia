@@ -75,6 +75,8 @@ export const MESSAGES = {
   'menu.newGameConfirm': 'Start a new city? The current one will be erased.',
   'error.saveFailed': 'Could not save: the browser storage is full.',
   'menu.install': 'Install the app',
+  'menu.skip12': '+12 h',
+  'menu.skip24': '+24 h',
   'menu.version': 'Build',
   'menu.export': 'Export the city',
   'menu.import': 'Import a city',

@@ -1,4 +1,5 @@
 import { BUILDING_SPECS, createBuilding, emptyStack, placementCost } from './buildingSpecs';
+import { advance } from './advance';
 import { GAME_CONFIG } from './config';
 import type { Coord } from './coord';
 import type { GameEvent } from './events';
@@ -11,11 +12,13 @@ import { isItemUnlocked } from './unlocks';
 import { isAdjacentToOwned, isInsideMap, isOwned, parcelPrice } from './parcels';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from './occupancy';
 import { autoRotation, frontTouchesRoad, placementIssue } from './placement';
-import { isIdle, newQueueEntry, restartRunningProduction, taxDue } from './production';
+import { isIdle, newQueueEntry, restartRunningProduction, shiftRunningTimers, taxDue } from './production';
 import { roadBuildCost, missingRoadTiles } from './roadCost';
 import { roadPath } from './roads';
 import { hasStorehouse, isStorageEmpty, storageCapacity, storageUsed } from './storage';
 import type { Building, BuildingType, GameState, QueueEntry, Rotation } from './state';
+
+const HOUR_MS = 60 * 60 * 1000;
 
 export type Command =
   | { readonly type: 'BuildRoad'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
@@ -32,7 +35,8 @@ export type Command =
   | { readonly type: 'BuySlot'; readonly buildingId: number }
   | { readonly type: 'UpgradeStorehouse' }
   | { readonly type: 'SellBuilding'; readonly id: number }
-  | { readonly type: 'MoveBuilding'; readonly id: number; readonly x: number; readonly y: number; readonly rotation?: Rotation };
+  | { readonly type: 'MoveBuilding'; readonly id: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'SkipTime'; readonly hours: number };
 
 export type ErrorKey =
   | 'error.unknownCommand'
@@ -112,9 +116,17 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return sellBuilding(state, command.id);
     case 'MoveBuilding':
       return moveBuilding(state, command.id, command.x, command.y, command.rotation, now);
+    case 'SkipTime':
+      return skipTime(state, command.hours, now);
     default:
       return fail('error.unknownCommand');
   }
+}
+
+function skipTime(state: GameState, hours: number, now: number): CommandOutcome {
+  const skippedMs = hours * HOUR_MS;
+  const earlier = { ...shiftRunningTimers(state, -skippedMs), lastSeen: state.lastSeen - skippedMs };
+  return advance(earlier, now);
 }
 
 function buildRoad(state: GameState, from: Coord, to: Coord, horizontalFirst: boolean): CommandOutcome {
