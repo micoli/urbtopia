@@ -1,4 +1,5 @@
 import { dialogStore } from '../store/dialogStore';
+import { exportCurrentCity } from '../persistence/exportCity';
 
 const UPDATE_CHECK_MS = 60 * 1000;
 
@@ -11,6 +12,7 @@ export function registerServiceWorker(): void {
 
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!hadController) return;
+    exportCurrentCity();
     dialogStore.getState().setUpdateReady(true);
   });
 
