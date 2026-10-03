@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advance, categoryCoverageRatio, createBuilding, dispatch, homeBenefits, missingServices, newGame, serviceCoverage, type Building, type Command, type GameState } from './index';
+import { FACILITIES, advance, isWithinReach, categoryCoverageRatio, createBuilding, dispatch, homeBenefits, missingServices, newGame, serviceCoverage, type Building, type Command, type GameState } from './index';
 import { ECOLOGY } from './ecology';
 
 const H = ECOLOGY.hourMs;
@@ -9,9 +9,24 @@ const city = (buildings: Building[], extra: Partial<GameState> = {}): GameState 
 });
 const coveredIds = (state: GameState, type: Building['type']) => [...serviceCoverage(state)].filter(([, types]) => types.has(type as never)).map(([id]) => id);
 
+describe('Service reach', () => {
+  it('is a square of twice the radius with corners rounded by 3 tiles', () => {
+    expect(isWithinReach(16, 0, 16)).toBe(true);
+    expect(isWithinReach(16, 13, 16)).toBe(true);
+    expect(isWithinReach(17, 0, 16)).toBe(false);
+    expect(isWithinReach(16, 16, 16)).toBe(false);
+    expect(isWithinReach(15, 15, 16)).toBe(true);
+    expect(isWithinReach(-15.5, 15.5, 16)).toBe(false);
+  });
+
+  it('gives the School radius 16 and Fire and Police stations radius 18', () => {
+    expect([FACILITIES.school.radius, FACILITIES.fireStation.radius, FACILITIES.policeStation.radius]).toEqual([16, 18, 18]);
+  });
+});
+
 describe('Service coverage', () => {
-  it('covers Homes within the Manhattan radius only', () => {
-    const state = city([b(1, 'school', 0), b(2, 'home', 6), b(3, 'home', 12)]);
+  it('covers Homes within the rounded square reach only', () => {
+    const state = city([b(1, 'school', 0), b(2, 'home', 6), b(3, 'home', 40)]);
     expect(coveredIds(state, 'school')).toEqual([2]);
   });
 

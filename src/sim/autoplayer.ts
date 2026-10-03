@@ -8,6 +8,7 @@ import {
   buildingDistance,
   createBuilding,
   footprintTiles,
+  isHomeInReach,
   missingServices,
   occupiedTiles,
   serviceCoverage,
@@ -131,8 +132,9 @@ function nearestServiceSpot(state: GameState, type: FacilityType, home: Building
         const issue = placementIssue(state, type, x, y, rotation);
         if (issue === 'error.notEnoughUrbs') return 'poor';
         if (issue !== null) continue;
-        const distance = buildingDistance(createBuilding(0, type, x, y, rotation), home);
-        if ((radius !== null && distance > radius) || (best && best.distance <= distance)) continue;
+        const probe = createBuilding(0, type, x, y, rotation);
+        const distance = buildingDistance(probe, home);
+        if ((radius !== null && !isHomeInReach(probe, home, radius)) || (best && best.distance <= distance)) continue;
         best = { x, y, rotation, distance };
       }
     }

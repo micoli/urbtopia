@@ -15,7 +15,7 @@ Status: ready-for-agent
 ## Domain rules
 
 - A Public facility has no Tier and no operating cost; it only has a construction cost in Urbs.
-- Service coverage uses Manhattan distance from the facility, with no road requirement. Each facility serves at most its Citizen capacity, nearest Homes first. Town hall and university cover the whole city.
+- Service coverage covers a square of side 2 × radius centered on the facility, with corners rounded by 3 tiles and no road requirement. Each facility serves at most its Citizen capacity, nearest Homes first. Town hall and university cover the whole city.
 - The town hall is unique. Universities can be built multiple times; each adds city-wide capacity.
 - Well-being remains a single per-Home indicator:
   - +10 per covered Service category, with diminishing returns and the existing 100-point limit. Different Culture facilities stack with diminishing returns.
@@ -39,14 +39,14 @@ Status: ready-for-agent
 
 | Facility | Unlock (Citizens) | Urbs | Radius | Capacity | Footprint |
 | --- | ---: | ---: | ---: | ---: | --- |
-| School | 15 | 300 | 8 | 200 | 2×2 |
+| School | 15 | 300 | 16 | 200 | 2×2 |
 | Community hall | 32 | 150 | 6 | 150 | 1×1 |
 | Middle school | 60 | 600 | 10 | 400 | 2×2 |
 | High school | 100 | 1 000 | 12 | 600 | 3×2 |
 | Hospital | 100 | 1 500 | 14 | 800 | 3×3 |
 | Town hall | 160 | 2 000 | city | unlimited | 3×2 |
-| Fire station | 160 | 1 000 | 12 | 800 | 2×2 |
-| Police station | 160 | 1 000 | 12 | 800 | 2×2 |
+| Fire station | 160 | 1 000 | 18 | 800 | 2×2 |
+| Police station | 160 | 1 000 | 18 | 800 | 2×2 |
 | Theater | 250 | 800 | 10 | 500 | 2×2 |
 | University | 400 | 3 000 | city | 2 000 | 3×3 |
 | Concert hall | 600 | 2 000 | 14 | 1 200 | 3×3 |

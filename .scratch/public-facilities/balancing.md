@@ -9,3 +9,5 @@ Initial values come from `spec.md` and live in `src/core/facilities.ts`. Adjustm
 - **Missing services:** −10 each, capped at −40, suspended during the Adaptation period. Tax multiplier is `1 + Well-being / 500`.
 - **Version 7 saves** get `adaptationUntil = max(existing, lastSeen + 24 h)`.
 - **Autoplayer** builds the missing facility on demand near the blocked Home (roads at y = 64 and y = 74 for service sites).
+
+- **Reach is a rounded square**, not a Manhattan diamond: side 2 × radius, corners rounded by 3 tiles. Radii raised to 16 (School) and 18 (Fire and Police stations).

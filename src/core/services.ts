@@ -1,7 +1,7 @@
 import { createBuilding } from './buildingSpecs';
 import { citizensOf } from './city';
-import { distance } from './ecology';
-import { FACILITIES, FACILITY_TYPES, SERVICE_CATEGORIES, facilitiesOfCategory, requiredServices, type FacilityType, type ServiceCategory, type ServiceKey } from './facilities';
+import { centerOf, distance } from './ecology';
+import { FACILITIES, FACILITY_TYPES, SERVICE_CATEGORIES, facilitiesOfCategory, isWithinReach, requiredServices, type FacilityType, type ServiceCategory, type ServiceKey } from './facilities';
 import type { Building, GameState, Rotation } from './state';
 
 export type ServiceCoverage = ReadonlyMap<number, ReadonlySet<FacilityType>>;
@@ -20,6 +20,12 @@ function serve(covered: Set<number>, homes: Building[], capacity: number, distan
   }
 }
 
+export function isHomeInReach(facility: Building, home: Building, radius: number): boolean {
+  const from = centerOf(facility);
+  const to = centerOf(home);
+  return isWithinReach(to.x - from.x, to.y - from.y, radius);
+}
+
 function coveredHomes(type: FacilityType, facilities: Building[], homes: Building[]): Set<number> {
   const { radius, capacity } = FACILITIES[type];
   const covered = new Set<number>();
@@ -29,7 +35,7 @@ function coveredHomes(type: FacilityType, facilities: Building[], homes: Buildin
     return covered;
   }
   for (const facility of facilities) {
-    const reachable = homes.filter(home => distance(facility, home) <= radius);
+    const reachable = homes.filter(home => isHomeInReach(facility, home, radius));
     serve(covered, reachable, capacity ?? Infinity, new Map(reachable.map(home => [home.id, distance(facility, home)])));
   }
   return covered;

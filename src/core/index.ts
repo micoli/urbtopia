@@ -53,8 +53,8 @@ export type { TransitLine, TransitMode, TransitTile, TransitVehicle, TransitVehi
 export { NATURE_FAMILIES, NATURE_MODELS, NATURE_TYPES, natureModelOf, greenProfileOf } from './nature';
 export type { NatureType, NatureFamily } from './nature';
 
-export { FACILITIES, FACILITY_TYPES, SERVICE_CATEGORIES, SERVICES, REQUIRED_SERVICES, facilitiesOfCategory, isFacilityType, requiredServices } from './facilities';
+export { FACILITIES, FACILITY_TYPES, isWithinReach, SERVICE_CATEGORIES, SERVICES, REQUIRED_SERVICES, facilitiesOfCategory, isFacilityType, requiredServices } from './facilities';
 export type { FacilitySpec, FacilityType, ServiceCategory, ServiceKey } from './facilities';
-export { categoryCoverageRatio, coveredCategories, homesLackingRequiredServices, isServiceCovered, missingServices, previewFacilityCoverage, serviceCoverage } from './services';
+export { isHomeInReach, categoryCoverageRatio, coveredCategories, homesLackingRequiredServices, isServiceCovered, missingServices, previewFacilityCoverage, serviceCoverage } from './services';
 export type { ServiceCoverage } from './services';
 export { facilitiesUnlockedBetween } from './unlocks';

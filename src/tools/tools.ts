@@ -10,6 +10,7 @@ import {
   footprintOf,
   footprintTiles,
   isFacilityType,
+  isWithinReach,
   previewFacilityCoverage,
   frontDirection,
   placementCost,
@@ -181,7 +182,7 @@ function rangeTiles(type: FacilityType, tile: Coord, rotation: Rotation): Coord[
   for (let dy = -reach - depth; dy <= reach + depth; dy++) {
     for (let dx = -reach - width; dx <= reach + width; dx++) {
       const candidate = { x: Math.floor(center.x) + dx, y: Math.floor(center.y) + dy };
-      if (Math.abs(candidate.x + 0.5 - center.x) + Math.abs(candidate.y + 0.5 - center.y) <= radius) range.push(candidate);
+      if (isWithinReach(candidate.x + 0.5 - center.x, candidate.y + 0.5 - center.y, radius)) range.push(candidate);
     }
   }
   return range;

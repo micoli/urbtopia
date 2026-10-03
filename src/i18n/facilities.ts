@@ -59,7 +59,7 @@ const categoryNames: Record<ServiceCategory, readonly [string, string]> = {
 
 function coverageSentence(type: FacilityType, index: number): string {
   const { radius, capacity, cost, unlockCitizens } = FACILITIES[type];
-  const reach = radius === null ? ['Covers the whole city', 'Couvre toute la ville'][index] : [`Radius ${radius} tiles`, `Rayon ${radius} cases`][index];
+  const reach = radius === null ? ['Covers the whole city', 'Couvre toute la ville'][index] : [`Square reach of ${2 * radius} tiles`, `Portée carrée de ${2 * radius} cases`][index];
   const served = capacity === null ? ['unlimited capacity', 'capacité illimitée'][index] : [`capacity ${capacity} Citizens`, `capacité ${capacity} citoyens`][index];
   const tail = [`unlocks at ${unlockCitizens} Citizens, costs ${cost} Urbs, no operating cost.`, `se débloque à ${unlockCitizens} citoyens, coûte ${cost} Urbs, sans coût de fonctionnement.`][index];
   return `${reach}, ${served}; ${tail}`;

@@ -73,7 +73,7 @@ The family of service a Public facility provides: Education, Administration, Cul
 _Avoid_: Department, sector
 
 **Service coverage**:
-The state of a Home being served by a Public facility of a Service category: within the facility's radius and inside its Citizen capacity, nearest Homes first. The Home that crosses the capacity is still served, so a single large Home can always be covered. Some facilities cover the whole city. Missing coverage lowers Well-being and can block Home Tier upgrades.
+The state of a Home being served by a Public facility of a Service category: within the facility's reach (a square of twice its radius with corners rounded by 3 tiles) and inside its Citizen capacity, nearest Homes first. The Home that crosses the capacity is still served, so a single large Home can always be covered. Some facilities cover the whole city. Missing coverage lowers Well-being and can block Home Tier upgrades.
 _Avoid_: Service range, zone
 
 **Vehicle**:
