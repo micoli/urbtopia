@@ -15,6 +15,12 @@ export interface BuildingSpec {
 }
 
 export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
+  tree: { footprint: { width: 1, depth: 1 }, cost: 40, requiresRoad: false, initialSlots: 0 },
+  park: { footprint: { width: 2, depth: 2 }, cost: 120, requiresRoad: false, initialSlots: 0 },
+  solar: { footprint: { width: 2, depth: 2 }, cost: 400, requiresRoad: false, initialSlots: 0 },
+  battery: { footprint: { width: 1, depth: 1 }, cost: 350, requiresRoad: false, initialSlots: 0 },
+  backup: { footprint: { width: 2, depth: 2 }, cost: 500, requiresRoad: false, initialSlots: 0 },
+  busStop: { footprint: { width: 1, depth: 1 }, cost: 60, requiresRoad: true, initialSlots: 0 },
   workshop: { footprint: { width: 2, depth: 2 }, cost: 100, requiresRoad: true, initialSlots: 2 },
   factory: { footprint: { width: 2, depth: 2 }, cost: 250, requiresRoad: true, initialSlots: 2 },
   shop: { footprint: { width: 1, depth: 1 }, cost: 300, requiresRoad: true, initialSlots: 3 },

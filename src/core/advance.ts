@@ -1,7 +1,10 @@
+import { ECOLOGY, homePower, greenBenefits } from './ecology';
+import { energyStats } from './energy';
+import { transportStats } from './transport';
 import { GAME_CONFIG } from './config';
 import type { GameEvent } from './events';
 import { advanceProduction, shiftRunningTimers } from './production';
-import type { GameState } from './state';
+import type { Building, GameState } from './state';
 import { progressTutorial } from './tutorial';
 
 export interface AdvanceResult {
@@ -23,6 +26,63 @@ export function advance(state: GameState, now: number): AdvanceResult {
 }
 
 function replay(state: GameState, until: number): AdvanceResult {
-  const produced = advanceProduction(state, until, until - state.lastSeen);
-  return { state: progressTutorial({ ...produced.state, lastSeen: until }), events: produced.events };
+  let current = state;
+  const events: GameEvent[] = [];
+  while (current.lastSeen < until) {
+    const now = current.lastSeen;
+    const overdue = current.buildings.some(b => b.queue.some(q => !q.done && q.startedAt !== null && q.startedAt + q.duration <= now) || b.stacks.some(stack => stack.stock > 0 && stack.nextSaleAt !== null && stack.nextSaleAt <= now));
+    if (overdue) {
+      const caught = advanceProduction(current, now, 0);
+      current = caught.state;
+      events.push(...caught.events);
+    }
+    const energy = energyStats(current, now), transport = transportStats(current);
+    let end = Math.min(until, (Math.floor((now + (current.timeOffset ?? 0)) / ECOLOGY.hourMs) + 1) * ECOLOGY.hourMs - (current.timeOffset ?? 0));
+    if ((current.adaptationUntil ?? 0) > now) end = Math.min(end, current.adaptationUntil!);
+    const batteryEnds = new Map<number, number>();
+    for (const battery of current.buildings.filter(b => b.type === 'battery')) {
+      const rate = energy.batteryRates.get(battery.id) ?? 0;
+      if (Math.abs(rate) < 1e-9) continue;
+      const remaining = rate > 0 ? ECOLOGY.batteryCapacity - (battery.storedEnergy ?? 0) : battery.storedEnergy ?? 0;
+      const boundary = now + remaining / Math.abs(rate) * ECOLOGY.hourMs;
+      batteryEnds.set(battery.id, boundary);
+      end = Math.min(end, boundary);
+    }
+    const adapting = now < (current.adaptationUntil ?? 0);
+    const ratio = adapting ? 1 : energy.economicRatio;
+    if (ratio > 0) for (const b of current.buildings) {
+      const running = b.queue.find(q => !q.done && q.startedAt !== null);
+      if (running?.startedAt != null) end = Math.min(end, now + Math.max(0, running.duration - (now - running.startedAt)) / ratio);
+      for (const stack of b.stacks) if (stack.nextSaleAt !== null && stack.stock > 0) end = Math.min(end, now + Math.max(0, stack.nextSaleAt - now) / ratio);
+    }
+    const cost = energy.costPerHour + transport.costPerHour;
+    const budgetEnd = cost > 0 ? now + current.urbs / cost * ECOLOGY.hourMs : Infinity;
+    end = Math.min(end, budgetEnd);
+    const elapsed = end - now;
+    if (elapsed <= 0) {
+      current = {
+        ...current, urbs: budgetEnd <= now ? 0 : current.urbs,
+        buildings: current.buildings.map(b => updateBattery(b, energy.batteryRates.get(b.id) ?? 0, batteryEnds.get(b.id), now, 0))
+      };
+      continue;
+    }
+    const homeRatios = new Map(current.buildings.filter(b => b.type === 'home').map(b => [b.id,
+    (adapting ? 1 : homePower(b) > 0 ? (energy.supplied.get(b.id) ?? 0) / homePower(b) : 1) * (1 + greenBenefits(current, b).wellbeing / 1000)]));
+    const produced = advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios);
+    events.push(...produced.events);
+    current = {
+      ...produced.state, lastSeen: end, urbs: end === budgetEnd ? 0 : Math.max(0, current.urbs - cost * elapsed / ECOLOGY.hourMs),
+      buildings: produced.state.buildings.map(b => updateBattery(b, energy.batteryRates.get(b.id) ?? 0, batteryEnds.get(b.id), end, elapsed))
+    };
+  }
+  return { state: progressTutorial(current), events };
+}
+
+function updateBattery(building: Building, rate: number, boundary: number | undefined, now: number, elapsedMs: number): Building {
+  if (building.type !== 'battery') return building;
+  const atBoundary = boundary !== undefined && boundary <= now;
+  const storedEnergy = atBoundary
+    ? rate > 0 ? ECOLOGY.batteryCapacity : 0
+    : Math.max(0, Math.min(ECOLOGY.batteryCapacity, (building.storedEnergy ?? 0) + rate * elapsedMs / ECOLOGY.hourMs));
+  return { ...building, storedEnergy };
 }

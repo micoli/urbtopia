@@ -1,3 +1,5 @@
+import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from './ecology';
+import { routeForLine } from './transport';
 import { BUILDING_SPECS, createBuilding, emptyStack, placementCost } from './buildingSpecs';
 import { advance } from './advance';
 import { GAME_CONFIG } from './config';
@@ -29,7 +31,11 @@ export type Command =
   | { readonly type: 'PlaceRoundabout'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoad'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoadPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
-  | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation; readonly solar?: boolean }
+  | { readonly type: 'EquipHome'; readonly buildingId: number; readonly equipment: 'solar' | 'insulation' }
+  | { readonly type: 'SetBusLine'; readonly id?: number; readonly stops: number[] }
+  | { readonly type: 'DeleteBusLine'; readonly id: number }
+  | { readonly type: 'DismissEcology' }
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
@@ -78,7 +84,9 @@ export type ErrorKey =
   | 'error.tierTooLow'
   | 'error.maxTier'
   | 'error.tutorialLocked'
-  | 'error.nothingToSkip';
+  | 'error.nothingToSkip'
+  | 'error.invalidBusLine'
+  | 'error.alreadyEquipped';
 
 export interface CommandError {
   key: ErrorKey;
@@ -106,7 +114,15 @@ export function handleCommand(state: GameState, command: Command, now: number): 
     case 'DemolishRoadPath':
       return demolishRoad(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
     case 'PlaceBuilding':
-      return placeBuilding(state, command.buildingType, command.x, command.y, command.rotation);
+      return placeBuilding(state, command.buildingType, command.x, command.y, command.rotation, command.solar);
+    case 'EquipHome':
+      return equipHome(state, command.buildingId, command.equipment);
+    case 'SetBusLine':
+      return setBusLine(state, command.id, command.stops);
+    case 'DeleteBusLine':
+      return { state: { ...state, busLines: (state.busLines ?? []).filter(line => line.id !== command.id) }, events: [] };
+    case 'DismissEcology':
+      return { state: { ...state, ecologyDismissed: true }, events: [] };
     case 'QueueProduction':
       return queueProduction(state, command.buildingId, command.item, now);
     case 'Collect':
@@ -137,6 +153,7 @@ export function handleCommand(state: GameState, command: Command, now: number): 
 }
 
 function skipTime(state: GameState, hours: number, now: number): CommandOutcome {
+  if (!Number.isFinite(hours) || hours <= 0 || hours * HOUR_MS > Number.MAX_SAFE_INTEGER) return fail('error.invalidQuantity');
   return skipMs(state, hours * HOUR_MS, now);
 }
 
@@ -153,7 +170,7 @@ function skipTutorial(state: GameState): CommandOutcome {
 }
 
 function skipMs(state: GameState, skippedMs: number, now: number): CommandOutcome {
-  const earlier = { ...shiftRunningTimers(state, -skippedMs), lastSeen: state.lastSeen - skippedMs };
+  const earlier = { ...shiftRunningTimers(state, -skippedMs), lastSeen: state.lastSeen - skippedMs, ...(state.adaptationUntil === undefined ? {} : { adaptationUntil: state.adaptationUntil - skippedMs }), timeOffset: (state.timeOffset ?? 0) + skippedMs };
   return advance(earlier, now);
 }
 
@@ -211,21 +228,25 @@ function demolishRoad(state: GameState, tiles: Coord[]): CommandOutcome {
     roundabouts: state.roundabouts.filter((center) => !roundabouts.includes(center)),
   };
   const orphaned = next.buildings.some(
-    (building) => BUILDING_SPECS[building.type].requiresRoad && !frontTouchesRoad(next, building.type, building.x, building.y, building.rotation, building.tier),
+    (building) => building.type !== 'busStop' && BUILDING_SPECS[building.type].requiresRoad && !frontTouchesRoad(next, building.type, building.x, building.y, building.rotation, building.tier),
   );
   if (orphaned) return fail('error.lastRoadOfBuilding');
   return { state: next, events: [] };
 }
 
-function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, requestedRotation?: Rotation): CommandOutcome {
+function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, requestedRotation?: Rotation, solar = false): CommandOutcome {
+  if (citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < 15)) return fail('error.itemLocked');
+  if (solar && type !== 'home') return fail('error.cannotProduce');
+  const extraCost = solar ? ECOLOGY.solarCost : 0;
   const rotation = requestedRotation ?? autoRotation(state, type, x, y);
   const issue = placementIssue(state, type, x, y, rotation);
   if (issue) return fail(issue);
-  const building = createBuilding(state.nextId, type, x, y, rotation);
+  if (state.urbs < placementCost(type) + extraCost) return fail('error.notEnoughUrbs');
+  const building = { ...createBuilding(state.nextId, type, x, y, rotation), ...(solar ? { solar: true } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
   const utilityIssue = type === 'home' ? utilityIssueFor(state, tierDemand(1)) : null;
   if (utilityIssue) return fail(utilityIssue);
   return {
-    state: { ...state, urbs: state.urbs - placementCost(type), nextId: state.nextId + 1, buildings: [...state.buildings, building] },
+    state: { ...state, urbs: state.urbs - placementCost(type) - extraCost, nextId: state.nextId + 1, buildings: [...state.buildings, building] },
     events: [{ type: 'BuildingPlaced', id: building.id }],
   };
 }
@@ -409,7 +430,7 @@ function tierDemand(tier: number): UtilityTotals {
 function utilityIssueFor(state: GameState, extra: UtilityTotals): ErrorKey | null {
   const capacity = utilityCapacity(state);
   const demand = utilityDemand(state);
-  if (demand.power + extra.power > capacity.power) return 'error.notEnoughPower';
+
   if (demand.water + extra.water > capacity.water) return 'error.notEnoughWater';
   return null;
 }
@@ -418,7 +439,7 @@ function canLoseUtility(state: GameState, sold: Building): boolean {
   const remaining: GameState = { ...state, buildings: state.buildings.filter((candidate) => candidate !== sold) };
   const capacity = utilityCapacity(remaining);
   const demand = utilityDemand(remaining);
-  return sold.type === 'powerPlant' ? capacity.power >= demand.power : capacity.water >= demand.water;
+  return sold.type === 'powerPlant' || capacity.water >= demand.water;
 }
 
 function collectTax(state: GameState, building: Building): CommandOutcome {
@@ -475,4 +496,23 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
     },
     events: [{ type: 'BuildingUpgraded', buildingId, tier: nextTier }],
   };
+}
+
+function equipHome(state: GameState, id: number, equipment: 'solar' | 'insulation'): CommandOutcome {
+  const home = state.buildings.find(b => b.id === id);
+  if (!home || home.type !== 'home') return fail('error.unknownBuilding');
+  const field = equipment === 'solar' ? 'solar' : 'insulated';
+  if (home[field]) return fail('error.alreadyEquipped');
+  if (citizenCount(state) < (equipment === 'solar' ? 15 : 6)) return fail('error.itemLocked');
+  const cost = (equipment === 'solar' ? ECOLOGY.solarCost : ECOLOGY.insulationCost) * home.tier;
+  if (state.urbs < cost) return fail('error.notEnoughUrbs');
+  return { state: { ...state, urbs: state.urbs - cost, buildings: state.buildings.map(b => b.id === id ? { ...b, [field]: true } : b) }, events: [] };
+}
+
+function setBusLine(state: GameState, id: number | undefined, stops: number[]): CommandOutcome {
+  if (citizenCount(state) < 32) return fail('error.itemLocked');
+  if (id !== undefined && !(state.busLines ?? []).some(line => line.id === id)) return fail('error.invalidBusLine');
+  const line = { id: id ?? state.nextId, stops };
+  if (!routeForLine(state, line)) return fail('error.invalidBusLine');
+  return { state: { ...state, nextId: id === undefined ? state.nextId + 1 : state.nextId, busLines: [...(state.busLines ?? []).filter(l => l.id !== line.id), line] }, events: [] };
 }

@@ -65,14 +65,14 @@ describe('UpgradeBuilding on a Home', () => {
     }
     expect(homeOf(state)?.tier).toBe(8);
     expect(totalCitizens(state)).toBe(400);
-    expect(utilityDemand(state)).toEqual({ power: 40, water: 40 });
+    expect(utilityDemand(state)).toEqual({ power: 43, water: 40 });
   });
 
   it('houses 250 Citizens at Tier 7 and keeps the 2x2 footprint of Tiers 5 to 8', () => {
     let state = withHome;
     for (let tier = 2; tier <= 7; tier++) state = succeed(state, upgrade);
     expect(totalCitizens(state)).toBe(250);
-    expect(utilityDemand(state)).toEqual({ power: 25, water: 25 });
+    expect(utilityDemand(state)).toEqual({ power: 28, water: 25 });
     expect(footprintTiles(homeOf(state)!)).toHaveLength(4);
   });
 
@@ -87,15 +87,15 @@ describe('UpgradeBuilding on a Home', () => {
     expect(failureKey({ ...withHome, storage: { materials: {}, goods: { planks: 2 } } }, upgrade)).toBe('error.missingGoods');
   });
 
-  it('is refused when the new Demand would exceed Capacity', () => {
+  it('retains the water capacity limit when electricity Demand can exceed generation', () => {
     const tight = succeed(initial, { type: 'PlaceBuilding', buildingType: 'powerPlant', x: 70, y: 70 });
     let state: GameState = { ...tight, urbs: 1_000_000, storage: rich.storage };
     state = succeed(state, { type: 'PlaceBuilding', buildingType: 'waterTower', x: 72, y: 70 });
     state = succeed(state, { type: 'PlaceBuilding', buildingType: 'home', x: 56, y: 59 });
     const homeId = state.buildings.find((b) => b.type === 'home')?.id ?? 0;
     for (let tier = 2; tier <= 5; tier++) state = succeed(state, { type: 'UpgradeBuilding', buildingId: homeId });
-    expect(utilityDemand(state).power).toBe(10);
-    expect(failureKey(state, { type: 'UpgradeBuilding', buildingId: homeId })).toBe('error.notEnoughPower');
+    expect(utilityDemand(state).power).toBe(13);
+    expect(failureKey(state, { type: 'UpgradeBuilding', buildingId: homeId })).toBe('error.notEnoughWater');
   });
 
   it('refuses a building that has no Tier to reach', () => {

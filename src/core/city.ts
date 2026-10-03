@@ -1,3 +1,5 @@
+import { homePower, economicPower } from './ecology';
+import { energyStats } from './energy';
 import { HOME_TIERS, UTILITY_CAPACITY } from './economy';
 import type { GameState } from './state';
 
@@ -17,15 +19,16 @@ export function totalCitizens(state: GameState): number {
 export function utilityCapacity(state: GameState): UtilityTotals {
   const total = (type: 'powerPlant' | 'waterTower') =>
     state.buildings.reduce((sum, building) => sum + (building.type === type ? (UTILITY_CAPACITY[type][building.tier - 1] ?? 0) : 0), 0);
-  return { power: total('powerPlant'), water: total('waterTower') };
+  const energy = energyStats(state);
+  return { power: energy.solar + energy.wind + energy.backup, water: total('waterTower') };
 }
 
 export function utilityDemand(state: GameState): UtilityTotals {
   return state.buildings.reduce<UtilityTotals>(
     (total, building) => {
-      if (building.type !== 'home') return total;
+      if (building.type !== 'home') return { ...total, power: total.power + economicPower(building) };
       const tier = HOME_TIERS[building.tier - 1];
-      return { power: total.power + (tier?.power ?? 0), water: total.water + (tier?.water ?? 0) };
+      return { power: total.power + homePower(building), water: total.water + (tier?.water ?? 0) };
     },
     { power: 0, water: 0 },
   );

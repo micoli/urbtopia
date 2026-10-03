@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { dispatch, newGame, utilityCapacity, utilityDemand, type Command } from './index';
+import { energyStats, dispatch, newGame, utilityCapacity, utilityDemand, type Command } from './index';
 
 const T0 = 1_700_000_000_000;
 
@@ -15,7 +15,7 @@ const commandArb: fc.Arbitrary<Command> = fc.oneof(
 );
 
 describe('utility invariant', () => {
-  it('never lets Demand exceed Capacity, whatever the valid commands played', () => {
+  it('preserves water capacity and bounded energy allocation under valid commands', () => {
     fc.assert(
       fc.property(fc.array(commandArb, { maxLength: 60 }), (commands) => {
         let state = { ...newGame({ seed: 'amber-fox-4821', now: T0 }), urbs: 1_000_000 };
@@ -24,7 +24,10 @@ describe('utility invariant', () => {
           if (result.ok) state = result.state;
           const capacity = utilityCapacity(state);
           const demand = utilityDemand(state);
-          expect(demand.power).toBeLessThanOrEqual(capacity.power);
+          const energy = energyStats(state);
+          expect(energy.unmet).toBeGreaterThanOrEqual(-1e-9);
+          expect([...energy.supplied.values()].reduce((n,x)=>n+x,0)).toBeLessThanOrEqual(energy.demand + 1e-9);
+          expect([...energy.supplied.values()].reduce((n,x)=>n+x,0) + energy.unmet).toBeCloseTo(energy.demand);
           expect(demand.water).toBeLessThanOrEqual(capacity.water);
         }
       }),

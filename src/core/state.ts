@@ -3,7 +3,7 @@ import type { GoodId, ItemId, MaterialId } from './items';
 import type { RoadKind } from './roads';
 import type { TutorialStep } from './tutorial';
 
-export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'waterTower' | 'silo' | 'vault';
+export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'waterTower' | 'silo' | 'vault' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop';
 
 export type Rotation = 0 | 1 | 2 | 3;
 
@@ -38,6 +38,9 @@ export interface Building extends Coord {
   stacks: ShopStack[];
   tier: number;
   taxCitizenMs: number;
+  insulated?: boolean;
+  solar?: boolean;
+  storedEnergy?: number;
 }
 
 export interface Storage {
@@ -49,7 +52,16 @@ export interface RoadTile extends Coord {
   kind: RoadKind;
 }
 
+export interface BusLine {
+  id: number;
+  stops: number[];
+}
+
 export interface GameState {
+  timeOffset?: number;
+  busLines?: BusLine[];
+  adaptationUntil?: number;
+  ecologyDismissed?: boolean;
   seed: string;
   rngState: number;
   urbs: number;

@@ -2,7 +2,7 @@ import { GAME_CONFIG, GOODS, MATERIALS, TUTORIAL_STEPS, type GameState, type Tut
 
 type Json = Record<string, unknown>;
 
-const BUILDING_TYPES = ['workshop', 'factory', 'shop', 'storehouse', 'home', 'powerPlant', 'waterTower', 'silo', 'vault'];
+const BUILDING_TYPES = ['workshop', 'factory', 'shop', 'storehouse', 'home', 'powerPlant', 'waterTower', 'silo', 'vault', 'tree', 'park', 'solar', 'battery', 'backup', 'busStop'];
 const ROAD_KINDS = ['road', 'crossing'];
 
 const isRecord = (value: unknown): value is Json => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -55,7 +55,10 @@ function isBuilding(value: unknown): boolean {
     isArrayOf(value.queue, isQueueEntry) &&
     isArrayOf(value.stacks, isStack) &&
     isInt(value.tier, 1, 8) &&
-    isNonNegative(value.taxCitizenMs)
+    isNonNegative(value.taxCitizenMs) &&
+    (value.insulated === undefined || (value.type === 'home' && typeof value.insulated === 'boolean')) &&
+    (value.solar === undefined || (value.type === 'home' && typeof value.solar === 'boolean')) &&
+    (value.storedEnergy === undefined || (value.type === 'battery' && isNonNegative(value.storedEnergy) && value.storedEnergy <= 24))
   );
 }
 
@@ -82,5 +85,18 @@ export function validateGameState(value: unknown): GameState | null {
     isArrayOf(value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string)) &&
     isArrayOf(value.roundabouts, (center) => isCoord(center)) &&
     (value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep));
-  return valid ? (value as unknown as GameState) : null;
+  if (!valid) return null;
+  if (value.timeOffset !== undefined && (!isNonNegative(value.timeOffset) || value.timeOffset > Number.MAX_SAFE_INTEGER)) return null;
+  if (value.adaptationUntil !== undefined && !isNumber(value.adaptationUntil)) return null;
+  if (value.ecologyDismissed !== undefined && typeof value.ecologyDismissed !== 'boolean') return null;
+  if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&
+    isArrayOf(line.stops, id => isInt(id, 0)) && (line.stops as number[]).length >= 2 &&
+    new Set(line.stops as number[]).size === (line.stops as number[]).length)) return null;
+  const state = value as unknown as GameState;
+  const ids = [...state.buildings.map(b => b.id), ...(state.busLines ?? []).map(l => l.id)];
+  if (new Set(ids).size !== ids.length || ids.some(id => id >= state.nextId)) return null;
+  for (const line of state.busLines ?? []) {
+    if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && b.type === 'busStop')))) return null;
+  }
+  return state;
 }

@@ -39,3 +39,8 @@ export { isItemUnlocked, nextUnlock } from './unlocks';
 export type { Unlock } from './unlocks';
 export { TUTORIAL_STEPS, tutorialAllows, tutorialSkipMs } from './tutorial';
 export type { TutorialStep } from './tutorial';
+
+export { ECOLOGY, ECOLOGY_UNLOCKS, homePower, economicPower, greenBenefits, cityGreenBenefits } from './ecology';
+export { energyStats, productionFactors } from './energy';
+export { transportStats, routeForLine } from './transport';
+export type { BusLine } from './state';

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advance, dispatch, newGame, storageCapacity, utilityCapacity, type Command, type GameState } from './index';
+import { advance, dispatch, energyStats, newGame, productionFactors, storageCapacity, utilityCapacity, type Command, type GameState } from './index';
 
 const T0 = 1_700_000_000_000;
 const MINUTE = 60_000;
@@ -76,23 +76,28 @@ describe('Utility Tiers', () => {
   const plantState = succeed(rich, { type: 'PlaceBuilding', buildingType: 'powerPlant', x: 50, y: 70 });
   const plantId = plantState.buildings.find((b) => b.type === 'powerPlant')?.id ?? 0;
 
-  it('raises Capacity to 24 then 40', () => {
+  it('scales current wind output by nominal Capacity of 24 then 40', () => {
     const tier2 = succeed(plantState, upgrade(plantId));
-    expect(utilityCapacity(tier2).power).toBe(24);
-    expect(utilityCapacity(succeed(tier2, upgrade(plantId))).power).toBe(40);
+    expect(utilityCapacity(tier2).power).toBe(24 * productionFactors(tier2.lastSeen).wind);
+    const tier3 = succeed(tier2, upgrade(plantId));
+    expect(utilityCapacity(tier3).power).toBe(40 * productionFactors(tier3.lastSeen).wind);
   });
 
   it('stops at Tier 3', () => {
     expect(failureKey(upgradeTimes(plantState, plantId, 2), upgrade(plantId))).toBe('error.maxTier');
   });
 
-  it('refuses to sell a plant when the remaining Capacity would not cover Demand', () => {
+  it('allows selling plants even when remaining generation cannot cover Demand', () => {
     const second = succeed(upgradeTimes(plantState, plantId, 1), { type: 'PlaceBuilding', buildingType: 'powerPlant', x: 52, y: 70 });
     const secondId = second.buildings.filter((b) => b.type === 'powerPlant')[1]?.id ?? 0;
     const water = succeed(second, { type: 'PlaceBuilding', buildingType: 'waterTower', x: 54, y: 70 });
     const withHome = succeed(water, { type: 'PlaceBuilding', buildingType: 'home', x: 56, y: 57 });
     const loaded: GameState = { ...withHome, buildings: withHome.buildings.map((b) => (b.type === 'home' ? { ...b, tier: 6 } : b)) };
-    expect(failureKey(loaded, { type: 'SellBuilding', id: plantId })).toBe('error.utilityInUse');
+    const sold = succeed(loaded, { type: 'SellBuilding', id: plantId });
+    expect(energyStats(sold).unmet).toBeGreaterThan(0);
+    const withoutPlants = succeed(sold, { type: 'SellBuilding', id: secondId });
+    expect(utilityCapacity(withoutPlants).power).toBe(0);
+    expect(energyStats(withoutPlants).unmet).toBe(energyStats(withoutPlants).demand);
     expect(failureKey(loaded, { type: 'SellBuilding', id: secondId })).toBeNull();
   });
 });

@@ -322,6 +322,8 @@ export function playTurn(player: Player): number {
   collectAll(player);
   const blocked = new Set<number>();
   for (let action = 0; action < MAX_ACTIONS_PER_TURN; action++) {
+    const state = player.state();
+    if ((totalCitizens(state) > 0 || state.lastSeen >= (state.adaptationUntil ?? 0)) && ensureUtility(player,'both')) continue;
     if (!buildNext(player) && !upgradeNext(player, blocked) && !buySlots(player)) break;
   }
   const { missing, reserved } = goodsNeeded(player.state());

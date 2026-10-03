@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { advance, dispatch, newGame, totalCitizens, utilityCapacity, utilityDemand, type Command, type GameState } from './index';
+import { advance, dispatch, energyStats, newGame, productionFactors, totalCitizens, utilityCapacity, utilityDemand, type Command, type GameState } from './index';
 
 const T0 = 1_700_000_000_000;
 const HOUR = 3_600_000;
@@ -23,13 +23,14 @@ const withHome = succeed(powered, place('home', 56, 57));
 const HOME_ID = withHome.buildings.find((b) => b.type === 'home')?.id ?? 0;
 
 describe('utilities', () => {
-  it('give 12 Capacity each, as global pools', () => {
-    expect(utilityCapacity(powered)).toEqual({ power: 12, water: 12 });
+  it('gives current wind output and a global water pool', () => {
+    expect(utilityCapacity(powered)).toEqual({ power: 12 * productionFactors(powered.lastSeen).wind, water: 12 });
     expect(utilityCapacity(initial)).toEqual({ power: 0, water: 0 });
   });
 
-  it('are used by Homes according to their Tier', () => {
-    expect(utilityDemand(withHome)).toEqual({ power: 1, water: 1 });
+  it('includes economic demand and Homes according to their Tier', () => {
+    expect(utilityDemand(initial)).toEqual({ power: 3, water: 0 });
+    expect(utilityDemand(withHome)).toEqual({ power: 4, water: 1 });
     expect(totalCitizens(withHome)).toBe(6);
   });
 });
@@ -43,36 +44,44 @@ describe('Home placement', () => {
     expect(state.urbs).toBe(0);
   });
 
-  it('is refused without power or without water', () => {
-    expect(failureKey({ ...initial, urbs: 10_000 }, place('home', 56, 57))).toBe('error.notEnoughPower');
+  it('requires water and allows an electricity deficit', () => {
+    const onlyWater = succeed({ ...initial, urbs: 10_000 }, place('waterTower', 72, 70));
+    const unpoweredHome = succeed(onlyWater, place('home', 56, 57));
+    expect(utilityCapacity(unpoweredHome).power).toBe(0);
+    expect(energyStats(unpoweredHome).unmet).toBe(4);
     const onlyPower = succeed({ ...initial, urbs: 10_000 }, place('powerPlant', 70, 70));
     expect(failureKey(onlyPower, place('home', 56, 57))).toBe('error.notEnoughWater');
   });
 
-  it('is refused once Demand would exceed Capacity', () => {
+  it('is refused once water Demand would exceed Capacity', () => {
     const full: GameState = { ...powered };
     let state = full;
     const spots = [...Array.from({ length: 10 }, (_, index) => [53 + index, 59]), [56, 57], [57, 57]];
     for (const [x, y] of spots) state = succeed(state, place('home', x ?? 0, y ?? 0));
-    expect(utilityDemand(state).power).toBe(12);
-    expect(failureKey(state, place('home', 58, 57))).toBe('error.notEnoughPower');
+    expect(utilityDemand(state)).toEqual({ power: 15, water: 12 });
+    expect(utilityDemand(state).power).toBeGreaterThan(utilityCapacity(state).power);
+    expect(failureKey(state, place('home', 58, 57))).toBe('error.notEnoughWater');
   });
 });
 
 describe('selling utilities', () => {
-  it('is refused when the remaining Capacity would fall below Demand', () => {
+  it('allows selling the last plant but preserves water supply', () => {
     const plant = withHome.buildings.find((b) => b.type === 'powerPlant');
     const secondPlant = succeed(withHome, place('powerPlant', 74, 70));
     expect(failureKey(secondPlant, { type: 'SellBuilding', id: plant?.id ?? 0 })).toBeNull();
     const lonely: GameState = { ...withHome };
-    expect(failureKey(lonely, { type: 'SellBuilding', id: plant?.id ?? 0 })).toBe('error.utilityInUse');
+    const sold = succeed(lonely, { type: 'SellBuilding', id: plant?.id ?? 0 });
+    expect(utilityCapacity(sold).power).toBe(0);
+    expect(energyStats(sold).unmet).toBe(4);
+    const tower = lonely.buildings.find((b) => b.type === 'waterTower');
+    expect(failureKey(lonely, { type: 'SellBuilding', id: tower?.id ?? 0 })).toBe('error.utilityInUse');
   });
 
   it('is allowed when nothing is in use, and moving keeps the Capacity', () => {
     const plant = powered.buildings.find((b) => b.type === 'powerPlant');
     expect(failureKey(powered, { type: 'SellBuilding', id: plant?.id ?? 0 })).toBeNull();
     const moved = succeed(withHome, { type: 'MoveBuilding', id: plant?.id ?? 0, x: 74, y: 70 });
-    expect(utilityCapacity(moved).power).toBe(12);
+    expect(utilityCapacity(moved)).toEqual(utilityCapacity(withHome));
   });
 });
 

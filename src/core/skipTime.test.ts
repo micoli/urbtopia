@@ -46,7 +46,8 @@ describe('SkipTime', () => {
   it('leaves the clock on now, so the game keeps running in real time afterwards', () => {
     const skipped = succeed(queued, { type: 'SkipTime', hours: 24 }, T0);
     expect(skipped.lastSeen).toBe(T0);
-    const next = succeed(skipped, { type: 'QueueProduction', buildingId: WORKSHOP_ID, item: 'wood' }, T0);
+    const supplied = succeed({ ...skipped, urbs: 10_000 }, place('powerPlant',70,70),T0);
+    const next = succeed(supplied, { type: 'QueueProduction', buildingId: WORKSHOP_ID, item: 'wood' }, T0);
     expect(queueOf(advance(next, T0 + MINUTE).state).map((entry) => entry.done)).toEqual([true, true]);
   });
 

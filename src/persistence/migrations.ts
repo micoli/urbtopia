@@ -16,7 +16,13 @@ function addQueueQuantity(state: unknown): unknown {
   return { ...rest, buildings: buildings.map((building) => ({ ...building, queue: building.queue.map((entry) => ({ ...entry, quantity: 1 })) })) };
 }
 
-export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity };
+function addEcology(state: unknown): unknown {
+  const value = state as { lastSeen: number; buildings: { type: string; tier: number }[] };
+  return { ...value, busLines: [], adaptationUntil: value.lastSeen + 24 * 3_600_000,
+    buildings: value.buildings.map(b => b.type === 'home' && b.tier === 4 ? { ...b, solar: true } : b) };
+}
+
+export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology };
 
 export function migrate(state: unknown, fromVersion: number, toVersion: number, steps: Record<number, MigrationStep> = MIGRATIONS): unknown {
   let current = state;
