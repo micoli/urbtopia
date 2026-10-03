@@ -1,6 +1,6 @@
 # 04: Complete Education
 
-**What to build:** The player can build a Middle school, a High school and a University (none of them gates a Home Tier and only raise Well-being).
+**What to build:** The player can build a Middle school, a High school and a University. None of them gates a Home Tier; they only raise Well-being.
 
 **Blocked by:** 02
 

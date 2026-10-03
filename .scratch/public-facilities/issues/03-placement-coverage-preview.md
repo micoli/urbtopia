@@ -6,6 +6,6 @@
 
 **Status:** done
 
-- [ ] Placement shows the facility radius.
+- [ ] Placement shows the facility reach (orange, 25 % opacity). Selecting a built facility shows it too.
 - [ ] Homes that would be covered are highlighted, respecting capacity and nearest-first order.
 - [ ] City-wide facilities show a city-wide indication instead of a radius.

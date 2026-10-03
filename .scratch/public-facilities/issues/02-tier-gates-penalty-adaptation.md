@@ -6,7 +6,7 @@
 
 **Status:** done
 
-- [ ] A required-services table per Home Tier exists; each requirement stays required for every higher Tier. This ticket fills only Tier 3 → School.
+- [ ] A required-services table per Home Tier exists; each requirement stays required for every higher Tier. This ticket fills only Tier 3 → School. Later tickets add Hospital (Tier 5) and Town hall, Fire station, Police station (Tier 6).
 - [ ] A Home cannot upgrade to a Tier unless every service that Tier requires covers it; the Home panel shows the blocking reason.
 - [ ] A Home whose current Tier requires a missing service loses 10 Well-being per missing service, capped at −40.
 - [ ] Losing coverage, including through a capacity overflow after a neighbor's upgrade, never downgrades a Home.
