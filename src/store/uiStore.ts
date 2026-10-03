@@ -26,11 +26,11 @@ export interface UiStore {
   chooseTool: (tool: Tool) => void;
   cancelTool: () => void;
   rotate: () => void;
-  confirm: () => void;
+  confirm: (keepTool?: boolean) => void;
   setCenterTile: (tile: Coord) => void;
   setPointerKind: (kind: PointerKind) => void;
   hoverTile: (tile: Coord) => void;
-  clickTile: (tile: Coord) => void;
+  clickTile: (tile: Coord, keepTool?: boolean) => void;
   tapTile: (tile: Coord) => void;
   select: (id: number | null) => void;
   sellSelected: () => void;
@@ -81,10 +81,10 @@ export const uiStore = createStore<UiStore>((set, get) => {
       if (evaluation?.rotation == null) return;
       reevaluate({ rotation: ((evaluation.rotation + 1) % 4) as Rotation });
     },
-    confirm: () => {
+    confirm: (keepTool = false) => {
       const { tool, evaluation, pointerKind, hovered, centerTile } = get();
       if (!tool || !evaluation) return;
-      const outcome = confirmTool(tool, aimTile(pointerKind, hovered, centerTile), evaluation);
+      const outcome = confirmTool(tool, aimTile(pointerKind, hovered, centerTile), evaluation, keepTool);
       if (!outcome.command && !evaluation.valid && evaluation.issue) return toastStore.getState().show(evaluation.issue);
       if (outcome.command) gameStore.getState().send(outcome.command);
       reevaluate({ tool: outcome.nextTool, rotation: outcome.nextTool?.kind === 'building' ? get().rotation : null });
@@ -98,9 +98,9 @@ export const uiStore = createStore<UiStore>((set, get) => {
       if (hovered?.x === tile.x && hovered.y === tile.y) return;
       reevaluate({ hovered: tile });
     },
-    clickTile: (tile) => {
+    clickTile: (tile, keepTool = false) => {
       reevaluate({ hovered: tile });
-      get().confirm();
+      get().confirm(keepTool);
     },
     tapTile: (tile) => {
       if (get().tool) return;

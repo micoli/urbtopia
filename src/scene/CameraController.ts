@@ -33,7 +33,7 @@ export class CameraController {
   private twist = 0;
   private keys = new Map<string, number>();
   private gesture = { startX: 0, startY: 0, startTime: 0, moved: false, multiTouch: false };
-  onTap: (clientX: number, clientY: number) => void = () => {};
+  onTap: (clientX: number, clientY: number, shiftKey: boolean) => void = () => {};
   onMouseMove: (clientX: number, clientY: number) => void = () => {};
   onPointerKind: (pointerType: string) => void = () => {};
   onSecondaryClick: () => void = () => {};
@@ -199,7 +199,7 @@ export class CameraController {
     const { startX, startY, startTime, moved, multiTouch } = this.gesture;
     const isTap = wasSingle && !moved && !multiTouch && performance.now() - startTime < TAP_MAX_MS;
     this.pointers.delete(event.pointerId);
-    if (isTap) this.onTap(startX, startY);
+    if (isTap) this.onTap(startX, startY, event.shiftKey);
     this.lastPinchDistance = 0;
     this.twist = 0;
   }

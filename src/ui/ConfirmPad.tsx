@@ -28,7 +28,7 @@ export function ConfirmPad() {
         <button type="button" className="pad-button" aria-label={t('pad.rotate')} disabled={!canRotate} onClick={rotate}>
           ⟳
         </button>
-        <button type="button" className="pad-button pad-confirm" aria-label={t('pad.confirm')} disabled={!canConfirm} onClick={confirm}>
+        <button type="button" className="pad-button pad-confirm" aria-label={t('pad.confirm')} disabled={!canConfirm} onClick={() => confirm()}>
           ✓
         </button>
       </div>

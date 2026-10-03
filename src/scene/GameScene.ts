@@ -15,7 +15,7 @@ const GROUND_SIZE = MAP_TILES * 3;
 const SELECTION_COLOR = 0x4da3ff;
 
 export interface SceneHandlers {
-  onTap: (tile: Coord) => void;
+  onTap: (tile: Coord, shiftKey: boolean) => void;
   onCenterTileChange: (tile: Coord) => void;
   onMouseMove: (tile: Coord) => void;
   onPointerKind: (pointerType: string) => void;
@@ -61,7 +61,7 @@ export class GameScene {
     this.scene.add(sun, new THREE.AmbientLight(0xffffff, 1.2), this.buildGround(), this.parcels, this.world.root, this.traffic.root, this.selectionLayer.root, this.ghostLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
-    this.controller.onTap = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onTap(tile));
+    this.controller.onTap = (clientX, clientY, shiftKey) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onTap(tile, shiftKey));
     this.controller.onMouseMove = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onMouseMove(tile));
     this.controller.onPointerKind = (pointerType) => this.handlers.onPointerKind(pointerType);
     this.controller.onSecondaryClick = () => this.handlers.onSecondaryClick();

@@ -93,6 +93,17 @@ describe('confirmTool', () => {
     expect(confirmTool(shopTool, { x: 56, y: 57 }, evaluation)).toEqual({ command: evaluation.command, nextTool: null });
   });
 
+  it('keeps the building tool when asked to, so that several can be placed in a row', () => {
+    const evaluation = evaluateTool(shopTool, { state, tile: { x: 56, y: 57 }, rotation: null });
+    expect(confirmTool(shopTool, { x: 56, y: 57 }, evaluation, true)).toEqual({ command: evaluation.command, nextTool: shopTool });
+  });
+
+  it('never keeps a move going, whatever is asked', () => {
+    const tool: Tool = { kind: 'move', buildingId: 1 };
+    const evaluation = evaluateTool(tool, { state, tile: { x: 56, y: 59 }, rotation: null });
+    expect(confirmTool(tool, { x: 56, y: 59 }, evaluation, true).nextTool).toBeNull();
+  });
+
   it('does nothing for an invalid evaluation', () => {
     const evaluation = evaluateTool(shopTool, { state, tile: { x: 70, y: 70 }, rotation: null });
     expect(confirmTool(shopTool, { x: 70, y: 70 }, evaluation)).toEqual({ command: null, nextTool: shopTool });

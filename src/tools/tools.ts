@@ -167,10 +167,11 @@ function evaluateRoad(state: GameState, tool: Extract<Tool, { kind: 'road' }>, t
   return evaluation(path, command, state, { cost: roadBuildCost(state, path) });
 }
 
-export function confirmTool(tool: Tool, tile: Coord, current: Evaluation): Confirmation {
+export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTool = false): Confirmation {
   if (tool.kind === 'road' && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
   if (!current.valid) return { command: null, nextTool: tool };
   if (tool.kind === 'road') return { command: current.command, nextTool: { ...tool, start: null } };
-  if (tool.kind === 'move' || tool.kind === 'building') return { command: current.command, nextTool: null };
+  if (tool.kind === 'building') return { command: current.command, nextTool: keepTool ? tool : null };
+  if (tool.kind === 'move') return { command: current.command, nextTool: null };
   return { command: current.command, nextTool: tool };
 }
