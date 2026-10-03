@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { BUILDING_SPECS, ECOLOGY, ECOLOGY_UNLOCKS, TRANSIT, maxTierOf, type BuildingType } from '../core';
+import { BUILDING_SPECS, FACILITIES, FACILITY_TYPES, ECOLOGY, ECOLOGY_UNLOCKS, TRANSIT, maxTierOf, type BuildingType } from '../core';
 import { CODEX_ENTRIES, codexImageKey, HOME_COLOR_VARIANTS, validateCodex, validateCodexManifest } from './catalog';
 import { ROAD_CONSTRUCTIONS } from './construction';
 import { codexSnapshot } from './snapshot';
+import { MESSAGES } from '../i18n/messages';
+import { FR } from '../i18n/fr';
 import { modelOfBuilding, renderItemsOf } from '../scene/renderItems';
 
 describe('codex coverage gate', () => {
@@ -22,6 +24,19 @@ describe('codex coverage gate', () => {
       expect(renderItemsOf(codexSnapshot(entry!.id, 1))[0]?.model).toBe(model);
     }
     expect(CODEX_ENTRIES.some(entry => /nature-.*detailed/i.test(entry.id))).toBe(false);
+  });
+
+  it('documents every Public facility in both languages with its unlock threshold', () => {
+    for (const type of FACILITY_TYPES) {
+      const entry = CODEX_ENTRIES.find(item => item.id === type);
+      expect(entry?.section, type).toBe('build.publicFacilities');
+      expect(entry?.unlockCitizens).toBe(FACILITIES[type].unlockCitizens);
+      for (const language of [MESSAGES, FR]) {
+        expect(language[entry!.name].trim()).not.toBe('');
+        expect(language[entry!.description].trim()).not.toBe('');
+        expect(language[`event.unlocked.${type}`].trim()).not.toBe('');
+      }
+    }
   });
 
   it('requires a complete page for every constructible, including locked objects', () => {

@@ -1,3 +1,4 @@
+import type { FacilityType } from './facilities';
 import type { ItemId } from './items';
 
 export type GameEvent =
@@ -9,4 +10,5 @@ export type GameEvent =
   | { readonly type: 'ItemsCollected'; readonly buildingId: number }
   | { readonly type: 'BuildingUpgraded'; readonly buildingId: number; readonly tier: number }
   | { readonly type: 'OfflineTimeCapped'; readonly forfeitedMs: number }
-  | { readonly type: 'StorageFull'; readonly buildingId: number };
+  | { readonly type: 'StorageFull'; readonly buildingId: number }
+  | { readonly type: 'FacilityUnlocked'; readonly facility: FacilityType };

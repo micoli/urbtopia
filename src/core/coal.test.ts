@@ -113,13 +113,13 @@ describe('local coal pollution and affordability', () => {
     expect(homeBenefits({ ...state, urbs: 0 }, home).wellbeing).toBe(0);
   });
 
-  it('caps overlapping penalties and reduces base Tax by at most 2%', () => {
+  it('caps overlapping penalties and reduces base Tax by at most 4%', () => {
     const home = building(1, 'home', 0, { tier: 8 });
-    const state = city([home, building(2, 'coalPlant', 3), building(3, 'coalPlant', 4), building(4, 'coalPlant', 5), building(5, 'coalPlant', 6)]);
+    const state = city([home, building(2, 'coalPlant', 3), building(3, 'coalPlant', 4), building(4, 'coalPlant', 5), building(5, 'coalPlant', 6)], { adaptationUntil: 2 * H });
     expect(homeBenefits(state, home).wellbeing).toBe(-20);
     expect(cityBenefits(state).wellbeing).toBe(-20);
     const next = advance(state, H).state;
-    expect(taxDue(next.buildings[0]!)).toBe(392);
+    expect(taxDue(next.buildings[0]!)).toBe(384);
     expect(next.urbs).toBeCloseTo(state.urbs - 2);
     expect(energyStats(state).coalEmissions).toBe(80);
   });
@@ -136,7 +136,7 @@ describe('local coal pollution and affordability', () => {
     const state = city([building(1, 'home'), building(2, 'coalPlant', 3)], { urbs: 0.025 });
     const next = advance(state, H).state;
     expect(next.urbs).toBe(0);
-    expect(next.buildings[0]?.taxCitizenMs).toBeCloseTo(6 * H / 2 * (1 - 10 / 12 / 1000));
+    expect(next.buildings[0]?.taxCitizenMs).toBeCloseTo(6 * H / 2 * (1 - 10 / 12 / 500));
     expect(energyStats(next).coal).toBe(0);
     const collected = dispatch(next, { type: 'Collect', buildingId: 1 }, H);
     expect(collected.ok).toBe(true);

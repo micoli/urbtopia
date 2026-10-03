@@ -16,12 +16,12 @@ describe('coal save compatibility', () => {
     expect(energyStats(loaded.state).coal).toBe(0);
   });
 
-  it('migrates a frozen version-5 transit city without changing its state', () => {
+  it('migrates a frozen version-5 transit city without changing it beyond a service Adaptation period', () => {
     const loaded = parseEnvelope(JSON.stringify(saveV5));
-    expect(loaded).toEqual({ ok: true, state: saveV5.state, savedAt: saveV5.savedAt });
+    expect(loaded).toEqual({ ok: true, state: { ...saveV5.state, adaptationUntil: Math.max(saveV5.state.adaptationUntil, saveV5.state.lastSeen + 24 * 3_600_000) }, savedAt: saveV5.savedAt });
     if (!loaded.ok) return;
-    expect(JSON.parse(serializeEnvelope(loaded.state, loaded.savedAt)).version).toBe(7);
-    expect(CURRENT_VERSION).toBe(7);
+    expect(JSON.parse(serializeEnvelope(loaded.state, loaded.savedAt)).version).toBe(8);
+    expect(CURRENT_VERSION).toBe(8);
     expect(parseEnvelope(serializeEnvelope(loaded.state, loaded.savedAt))).toEqual(loaded);
   });
 

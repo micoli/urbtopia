@@ -1,4 +1,5 @@
 import { totalCitizens } from './city';
+import { FACILITIES, FACILITY_TYPES, type FacilityType } from './facilities';
 import { GOODS, MATERIALS, unlockCitizensOf, type ItemId } from './items';
 import type { GameState } from './state';
 
@@ -19,4 +20,10 @@ export function nextUnlock(state: GameState): Unlock | null {
   const next = thresholds[0];
   if (next === undefined) return null;
   return { citizens: next, items: ALL_ITEMS.filter((item) => unlockCitizensOf(item) === next) };
+}
+
+export function facilitiesUnlockedBetween(before: GameState, after: GameState): FacilityType[] {
+  const from = totalCitizens(before);
+  const to = totalCitizens(after);
+  return FACILITY_TYPES.filter(type => FACILITIES[type].unlockCitizens > from && FACILITIES[type].unlockCitizens <= to);
 }

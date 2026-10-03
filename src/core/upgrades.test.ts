@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { dispatch, footprintTiles, newGame, totalCitizens, utilityDemand, type Command, type GameState } from './index';
+import { createBuilding, dispatch, footprintTiles, newGame, totalCitizens, utilityDemand, type Command, type GameState } from './index';
+import { ALL_FACILITIES_DEMAND, withAllServices } from './testSupport';
 
 const T0 = 1_700_000_000_000;
 
@@ -31,6 +32,7 @@ function cityWithUtilities(): GameState {
 }
 
 const withHome = succeed(cityWithUtilities(), { type: 'PlaceBuilding', buildingType: 'home', x: 56, y: 59 });
+const served = withAllServices(withHome, { x: 56, y: 59 });
 const HOME_ID = withHome.buildings.find((b) => b.type === 'home')?.id ?? 0;
 const upgrade: Command = { type: 'UpgradeBuilding', buildingId: HOME_ID };
 const homeOf = (state: GameState) => state.buildings.find((b) => b.id === HOME_ID);
@@ -54,7 +56,7 @@ describe('UpgradeBuilding on a Home', () => {
       [15000, { steel: 4, cement: 4 }],
       [40000, { crystal: 3, jewelry: 3 }],
     ];
-    let state = withHome;
+    let state = served;
     for (const [urbs, goods] of costs) {
       const before = state;
       state = succeed(state, upgrade);
@@ -65,19 +67,19 @@ describe('UpgradeBuilding on a Home', () => {
     }
     expect(homeOf(state)?.tier).toBe(8);
     expect(totalCitizens(state)).toBe(400);
-    expect(utilityDemand(state)).toEqual({ power: 43, water: 40 });
+    expect(utilityDemand(state)).toEqual({ power: 43 + ALL_FACILITIES_DEMAND.power, water: 40 + ALL_FACILITIES_DEMAND.water });
   });
 
   it('houses 250 Citizens at Tier 7 and keeps the 2x2 footprint of Tiers 5 to 8', () => {
-    let state = withHome;
+    let state = served;
     for (let tier = 2; tier <= 7; tier++) state = succeed(state, upgrade);
     expect(totalCitizens(state)).toBe(250);
-    expect(utilityDemand(state)).toEqual({ power: 28, water: 25 });
+    expect(utilityDemand(state)).toEqual({ power: 28 + ALL_FACILITIES_DEMAND.power, water: 25 + ALL_FACILITIES_DEMAND.water });
     expect(footprintTiles(homeOf(state)!)).toHaveLength(4);
   });
 
   it('stops at Tier 8', () => {
-    let state = withHome;
+    let state = served;
     for (let tier = 2; tier <= 8; tier++) state = succeed(state, upgrade);
     expect(failureKey(state, upgrade)).toBe('error.maxTier');
   });
@@ -93,8 +95,9 @@ describe('UpgradeBuilding on a Home', () => {
     state = succeed(state, { type: 'PlaceBuilding', buildingType: 'waterTower', x: 72, y: 70 });
     state = succeed(state, { type: 'PlaceBuilding', buildingType: 'home', x: 56, y: 59 });
     const homeId = state.buildings.find((b) => b.type === 'home')?.id ?? 0;
+    state = withAllServices(state, { x: 56, y: 59 });
     for (let tier = 2; tier <= 5; tier++) state = succeed(state, { type: 'UpgradeBuilding', buildingId: homeId });
-    expect(utilityDemand(state).power).toBe(13);
+    expect(utilityDemand(state).power).toBe(13 + ALL_FACILITIES_DEMAND.power);
     expect(failureKey(state, { type: 'UpgradeBuilding', buildingId: homeId })).toBe('error.notEnoughWater');
   });
 
@@ -119,6 +122,13 @@ describe('UpgradeBuilding on a Home', () => {
     expect(blocked.urbs).toBe(withHome.urbs);
     expect(blocked.storage.goods).toEqual(withHome.storage.goods);
     expect(homeOf(blocked)?.tier).toBe(1);
+  });
+
+  it('refuses a Tier whose required services do not cover the Home', () => {
+    const atTierTwo = succeed(withHome, upgrade);
+    expect(failureKey(atTierTwo, upgrade)).toBe('error.serviceRequired');
+    const withSchool = { ...atTierTwo, nextId: atTierTwo.nextId + 1, buildings: [...atTierTwo.buildings, createBuilding(atTierTwo.nextId, 'school', 56, 63, 0)] };
+    expect(succeed(withSchool, upgrade).buildings.find((b) => b.id === HOME_ID)?.tier).toBe(3);
   });
 
   it('is not refunded when the Home is sold', () => {

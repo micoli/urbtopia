@@ -6,8 +6,11 @@ import {
   parcelPrice,
   autoRotation,
   dispatch,
+  FACILITIES,
   footprintOf,
   footprintTiles,
+  isFacilityType,
+  previewFacilityCoverage,
   frontDirection,
   placementCost,
   roadBuildCost,
@@ -18,6 +21,7 @@ import {
   type Coord,
   type Direction,
   type ErrorKey,
+  type FacilityType,
   type GameState,
   type HomeColorVariant,
   type Rotation,
@@ -51,6 +55,7 @@ export interface GhostSpec {
   rects: GhostRect[];
   valid: boolean;
   front: { x: number; z: number; direction: Direction } | null;
+  range?: Coord[];
 }
 
 export interface Evaluation {
@@ -60,6 +65,7 @@ export interface Evaluation {
   command: Command | null;
   cost: number | null;
   rotation: Rotation | null;
+  coverage?: { cityWide: boolean; homes: number };
 }
 
 export interface Confirmation {
@@ -148,7 +154,30 @@ function evaluateBuilding(
   const tiles = footprintTiles({ type, x: tile.x, y: tile.y, rotation, tier });
   const result = evaluation(tiles, command, state, { cost, rotation });
   if (BUILDING_SPECS[type].requiresRoad) result.ghost.front = frontMarker(type, tile, rotation, tier);
+  if (isFacilityType(type)) addCoveragePreview(result, reference, type, tile, rotation);
   return result;
+}
+
+function addCoveragePreview(result: Evaluation, state: GameState, type: FacilityType, tile: Coord, rotation: Rotation): void {
+  const { radius } = FACILITIES[type];
+  const covered = previewFacilityCoverage(state, type, tile.x, tile.y, rotation);
+  result.coverage = { cityWide: radius === null, homes: covered.length };
+  result.ghost.rects = covered.map((home) => {
+    const { width, depth } = footprintOf(home.type, home.rotation, home.tier);
+    return { x: home.x, y: home.y, width, depth, tone: 'hint' as const };
+  });
+  if (radius === null) return;
+  const { width, depth } = footprintOf(type, rotation);
+  const center = { x: tile.x + width / 2, y: tile.y + depth / 2 };
+  const reach = Math.ceil(radius);
+  const range: Coord[] = [];
+  for (let dy = -reach - depth; dy <= reach + depth; dy++) {
+    for (let dx = -reach - width; dx <= reach + width; dx++) {
+      const candidate = { x: Math.floor(center.x) + dx, y: Math.floor(center.y) + dy };
+      if (Math.abs(candidate.x + 0.5 - center.x) + Math.abs(candidate.y + 0.5 - center.y) <= radius) range.push(candidate);
+    }
+  }
+  result.ghost.range = range;
 }
 
 function evaluateParcel(state: GameState, tile: Coord): Evaluation {

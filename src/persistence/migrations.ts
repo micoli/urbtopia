@@ -22,7 +22,12 @@ function addEcology(state: unknown): unknown {
     buildings: value.buildings.map(b => b.type === 'home' && b.tier === 4 ? { ...b, solar: true } : b) };
 }
 
-export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state };
+function startServiceAdaptation(state: unknown): unknown {
+  const value = state as { lastSeen: number; adaptationUntil?: number };
+  return { ...value, adaptationUntil: Math.max(value.adaptationUntil ?? 0, value.lastSeen + 24 * 3_600_000) };
+}
+
+export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state, 7: startServiceAdaptation };
 
 export function migrate(state: unknown, fromVersion: number, toVersion: number, steps: Record<number, MigrationStep> = MIGRATIONS): unknown {
   let current = state;

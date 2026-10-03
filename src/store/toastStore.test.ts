@@ -16,6 +16,10 @@ describe('toastKeyForEvents', () => {
     expect(toastKeyForEvents([{ type: 'ProductionCompleted', buildingId: 1, item: 'wood', at: 0 }])).toBe('event.productionCompleted');
   });
 
+  it('announces a newly unlocked Public facility before the upgrade message', () => {
+    expect(toastKeyForEvents([{ type: 'BuildingUpgraded', buildingId: 1, tier: 2 }, { type: 'FacilityUnlocked', facility: 'school' }])).toBe('event.unlocked.school');
+  });
+
   it('announces an upgraded building', () => {
     expect(toastKeyForEvents([{ type: 'BuildingUpgraded', buildingId: 1, tier: 2 }])).toBe('event.buildingUpgraded');
   });

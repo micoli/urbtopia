@@ -35,7 +35,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'commercial',
     url: 'https://kenney.nl/media/pages/assets/city-kit-commercial/a742d900eb-1753115042/kenney_city-kit-commercial_2.1.zip',
     archive: 'kenney_city-kit-commercial_2.1.zip',
-    files: ['building-a'],
+    files: ['building-a', 'building-b', 'building-d', 'building-e', 'building-f', 'building-g', 'building-i', 'building-j', 'building-k', 'building-l', 'building-m', 'building-n', 'detail-awning', 'detail-awning-wide', 'detail-overhang', 'detail-overhang-wide', 'detail-parasol-a', 'detail-parasol-b'],
   },
   {
     name: 'suburban',
@@ -54,7 +54,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'cars',
     url: 'https://kenney.nl/media/pages/assets/car-kit/1a312ec241-1775131960/kenney_car-kit.zip',
     archive: 'kenney_car-kit.zip',
-    files: ['sedan', 'sedan-sports', 'hatchback-sports', 'suv', 'suv-luxury', 'taxi', 'van'],
+    files: ['sedan', 'sedan-sports', 'hatchback-sports', 'suv', 'suv-luxury', 'taxi', 'van', 'ambulance', 'firetruck', 'police'],
   },
   {
     name: 'nature',

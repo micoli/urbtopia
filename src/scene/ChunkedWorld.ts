@@ -31,7 +31,7 @@ export class ChunkedWorld {
 
   private syncChunk(key: string, items: RenderItem[]): void {
     const signature = items
-      .map((item) => `${item.model}@${item.textureVariant ?? ''}:${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.lengthScale ?? 1}`)
+      .map((item) => `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}:${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.lengthScale ?? 1},${item.scale ?? 1}`)
       .sort()
       .join('|');
     if (this.chunks.get(key)?.signature === signature) return;
@@ -55,27 +55,29 @@ export class ChunkedWorld {
     const group = new THREE.Group();
     const byModel = new Map<string, RenderItem[]>();
     for (const item of items) {
-      const key = `${item.model}@${item.textureVariant ?? ''}`;
+      const key = `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}`;
       byModel.set(key, [...(byModel.get(key) ?? []), item]);
     }
 
     const placement = new THREE.Matrix4();
     const lengthScale = new THREE.Matrix4();
+    const uniformScale = new THREE.Matrix4();
     const combined = new THREE.Matrix4();
     for (const [key, modelItems] of byModel) {
       const separator = key.lastIndexOf('@');
       const model = key.slice(0, separator);
-      const variant = key.slice(separator + 1);
+      const [variant = '', tint = ''] = key.slice(separator + 1).split('#');
       const fit = fitMatrixOf(model);
       this.library.get(model).traverse((node) => {
         const mesh = node as THREE.Mesh;
         if (!mesh.isMesh) return;
-        const material = variant ? this.library.withTextureVariant(mesh.material, variant as 'a' | 'b' | 'c') : mesh.material;
+        const textured = variant ? this.library.withTextureVariant(mesh.material, variant as 'a' | 'b' | 'c') : mesh.material;
+        const material = tint ? this.library.withTint(textured, Number(tint)) : textured;
         const instanced = new THREE.InstancedMesh(mesh.geometry, material, modelItems.length);
         modelItems.forEach((item, index) => {
           const elevation = item.roofBase ? new THREE.Box3().setFromObject(this.library.get(item.roofBase)).applyMatrix4(fitMatrixOf(item.roofBase)).max.y : item.elevation ?? 0;
           placement.makeRotationY((item.rotation * Math.PI) / 2).setPosition(item.x, elevation, item.z);
-          combined.copy(placement).multiply(lengthScale.makeScale(1, 1, item.lengthScale ?? 1)).multiply(fit).multiply(mesh.matrixWorld);
+          combined.copy(placement).multiply(lengthScale.makeScale(1, 1, item.lengthScale ?? 1)).multiply(uniformScale.makeScale(item.scale ?? 1, item.scale ?? 1, item.scale ?? 1)).multiply(fit).multiply(mesh.matrixWorld);
           instanced.setMatrixAt(index, combined);
         });
         instanced.computeBoundingSphere();

@@ -1,4 +1,4 @@
-import { dispatch, newGame, type BuildingType, type Command, type GameState } from '../core';
+import { dispatch, footprintOf, newGame, type BuildingType, type Command, type GameState } from '../core';
 
 export const EVOLVED_CITY_NOW = 1_790_000_000_000;
 
@@ -48,7 +48,20 @@ export function buildEvolvedCity(): GameState {
     [50, 59, 8], [52, 59, 8], [54, 59, 7], [66, 59, 6], [68, 59, 6], [70, 59, 5], [72, 59, 5],
     [50, 69, 4], [52, 69, 4], [54, 69, 3], [56, 69, 2], [58, 69, 2],
   ];
-  for (const [x, y, tier] of homeTiers) place('home', x, y, tier);
+  const homeIds = homeTiers.map(([x, y]) => place('home', x, y));
+  state = { ...state, buildings: state.buildings.map((building) => {
+    const index = homeIds.indexOf(building.id);
+    return index === -1 ? building : { ...building, tier: homeTiers[index]![2] };
+  }) };
+  run({ type: 'BuildRoad', from: { x: 49, y: 65 }, to: { x: 78, y: 65 } });
+  const facilityRoadY = 65;
+  const facilities: [BuildingType, number][] = [
+    ['school', 50], ['middleSchool', 53], ['highSchool', 56], ['hospital', 59], ['townHall', 63], ['fireStation', 66], ['policeStation', 69], ['university', 72], ['communityHall', 78],
+  ];
+  for (const [type, x] of facilities) {
+    const { depth } = footprintOf(type, 2);
+    run({ type: 'PlaceBuilding', buildingType: type, x, y: facilityRoadY - depth, rotation: 2 });
+  }
 
   for (const id of [...workshops.slice(0, 3), ...factories.slice(0, 3)]) for (let s = 3; s <= 5; s++) run({ type: 'BuySlot', buildingId: id });
   for (const id of [workshops[0]!, factories[0]!]) for (let s = 6; s <= 8; s++) run({ type: 'BuySlot', buildingId: id });

@@ -1,3 +1,4 @@
+import { FACILITIES, FACILITY_TYPES, type FacilityType } from './facilities';
 import { NATURE_FAMILIES, NATURE_MODELS, type NatureType } from './nature';
 import type { Coord } from './coord';
 import { HOME_FOOTPRINTS } from './economy';
@@ -20,8 +21,14 @@ const natureSpecs = Object.fromEntries(NATURE_MODELS.map(([type, , family]) => {
   return [type, { footprint: { width: profile.size, depth: profile.size }, cost: profile.cost, requiresRoad: false, initialSlots: 0 }];
 })) as Record<NatureType, BuildingSpec>;
 
+const facilitySpecs = Object.fromEntries(FACILITY_TYPES.map(type => {
+  const { footprint, cost } = FACILITIES[type];
+  return [type, { footprint, cost, requiresRoad: true, initialSlots: 0 }];
+})) as Record<FacilityType, BuildingSpec>;
+
 export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
   ...natureSpecs,
+  ...facilitySpecs,
   tree: { footprint: { width: 1, depth: 1 }, cost: 40, requiresRoad: false, initialSlots: 0 },
   park: { footprint: { width: 2, depth: 2 }, cost: 120, requiresRoad: false, initialSlots: 0 },
   solar: { footprint: { width: 2, depth: 2 }, cost: 400, requiresRoad: false, initialSlots: 0 },

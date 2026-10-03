@@ -1,6 +1,8 @@
+import { facilityMessages } from './facilities';
 import { natureMessages } from './nature';
 export const MESSAGES = {
   ...natureMessages('en'),
+  ...facilityMessages('en'),
   'building.brtStation': "BRT station",
   'building.railStation': "Railway station",
   'tool.brt': "BRT corridor",
@@ -79,7 +81,7 @@ export const MESSAGES = {
   'eco.energyHelp': 'Save energy first. Solar varies with daylight; wind is predictable. Batteries shift renewable surplus into deficits. Homes get priority; shortages slow economic activity.',
   'eco.cost': 'Operating Urbs/hour',
   'eco.adaptation': 'Adaptation hours remaining',
-  'eco.adaptationHelp': 'New electricity constraints are phased in. During adaptation, shortages do not reduce Tax or production. Check your forecast before the deadline.',
+  'eco.adaptationHelp': 'New electricity and service constraints are phased in. During adaptation, shortages and missing services do not reduce Tax, production or Well-being. Check your forecast before the deadline.',
   'eco.emissions': 'Impact units/hour',
   'eco.temperature': 'City temperature',
   'eco.temperatureOptimum': 'Optimum: 26 °C',
@@ -350,6 +352,22 @@ export const MESSAGES = {
   'camera.rotateLeft': 'Rotate left',
   'camera.rotateRight': 'Rotate right',
   'tool.perTile': 'per tile',
+  "build.publicFacilities": "Public facilities",
+  "error.townHallExists": "Only one Town hall can be built.",
+  "error.serviceRequired": "This Home needs the required public services before it can be upgraded.",
+  "home.services": "Services",
+  "home.servicesCovered": "Covered",
+  "home.servicesMissing": "Not covered",
+  "home.servicesNone": "None",
+  "home.upgradeBlocked": "Upgrade blocked, required services missing",
+  "eco.servicePenalty": "Missing services penalty",
+  "eco.serviceBonus": "Public services bonus",
+  "service.culture.any": "a Culture facility",
+  "placement.cityWide": "Covers the whole city",
+  "placement.covers": "Homes covered",
+  "stats.services": "Services",
+  "stats.servicesHelp": "Share of Citizens covered by at least one facility of each Service category.",
+  "stats.servicesSuggest": "Some Homes lack services required by their Tier. Build:",
 } as const;
 
 export type MessageKey = keyof typeof MESSAGES;

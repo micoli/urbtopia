@@ -4,12 +4,13 @@ import { frontDirection, neighbour, tileKey } from './geometry';
 import { isInsideOwnedParcels, isRoadLike, occupiedTiles } from './occupancy';
 import type { BuildingType, GameState, Rotation } from './state';
 
-export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.storehouseExists' | 'error.siloExists' | 'error.vaultExists' | 'error.notEnoughUrbs';
+export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.storehouseExists' | 'error.siloExists' | 'error.vaultExists' | 'error.townHallExists' | 'error.notEnoughUrbs';
 
 const UNIQUE_BUILDING_ERRORS: Partial<Record<BuildingType, PlacementIssue>> = {
   storehouse: 'error.storehouseExists',
   silo: 'error.siloExists',
   vault: 'error.vaultExists',
+  townHall: 'error.townHallExists',
 };
 
 const ROTATIONS: readonly Rotation[] = [0, 1, 2, 3];

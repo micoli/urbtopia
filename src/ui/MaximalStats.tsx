@@ -5,6 +5,7 @@ import { gameStore } from '../store/gameStore';
 import { useGame, useUi } from './hooks';
 import { TransitPanel } from './TransitPanel';
 import { BusLinesPanel } from './BusLinesPanel';
+import { ServicesSection } from './ServicesSection';
 import type { MessageKey } from '../i18n/messages';
 
 export function MaximalStats() {
@@ -45,7 +46,7 @@ export function MaximalStats() {
   const citizens = totalCitizens(state);
   const navigation: [string, string, MessageKey][] = [
     ['production', '▦', 'eco.production'], ['energy', '⚡', 'eco.energy'],
-    ['nature', '♧', 'build.greenSpaces'], ['transport', '↔', 'eco.transport'],
+    ['nature', '♧', 'build.greenSpaces'], ['services', '✚', 'stats.services'], ['transport', '↔', 'eco.transport'],
   ];
   return <div className="dialog-backdrop city-management-backdrop" onClick={event => { if (event.target === event.currentTarget) toggle(); }}>
     <div className="eco-dashboard" ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="eco-heading">
@@ -89,6 +90,7 @@ export function MaximalStats() {
         <h3>{t('stat.water')}</h3>
         <p>{utilityDemand(state).water} / {utilityCapacity(state).water}</p>
       </section>
+      <ServicesSection state={state} />
       <section id="eco-nature"><p>{t('build.greenSpaces')}: {state.buildings.filter(b => greenProfileOf(b.type)).length}</p><h3><span aria-hidden="true">♧</span> {t('build.greenSpaces')}</h3><dl>{([['eco.cooling', green.cooling], ['eco.biodiversity', green.biodiversity], ['eco.wellbeing', green.wellbeing], ['eco.greenCoverage', green.covered]] as [MessageKey, number][]).map(([key, value]) => <div key={key}><dt>{t(key)}</dt><dd>{value.toFixed(1)}{key === 'eco.greenCoverage' ? '' : ' / 100'}</dd></div>)}</dl><p>{t('eco.greenHelp')}</p>{green.covered < totalCitizens(state) && <p>{t('eco.adviceGreen')}</p>}</section>
       <section><h3>{t('eco.wellbeing')}</h3><p>{t('eco.coalPenalty')}: −{green.pollutionPenalty.toFixed(1)}</p><p>{t('eco.coalPollutionHelp')}</p></section>
       <section><h3>{t('eco.emissions')}</h3><p>{t('eco.activity')}: {climate.activityEmissions.toFixed(1)} · {t('eco.coal')}: {energy.coalEmissions.toFixed(1)} · {t('eco.backup')}: {energy.backupEmissions.toFixed(1)} · {t('eco.mobility')}: {transport.emissions.toFixed(1)}</p><p>{t('eco.temperatureHelp')}</p></section>

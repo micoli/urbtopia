@@ -1,5 +1,5 @@
-import { useId, useState, type ReactNode } from 'react';
-import { TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, totalCitizens, placementCost } from '../core';
+import { Fragment, useId, useState, type ReactNode } from 'react';
+import { TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, isFacilityType, totalCitizens, placementCost } from '../core';
 import { t } from '../i18n/t';
 import type { Tool } from '../tools/tools';
 import { FlyoutItem } from './FlyoutItem';
@@ -12,6 +12,8 @@ import { codexImageKey, type CodexId } from '../codex/catalog';
 import { useCodexManifest } from './useCodexManifest';
 import type { HomeColorVariant } from '../core';
 import { HOME_COLOR_VARIANTS, readHomeColor, writeHomeColor } from './homeColor';
+
+const categoryOf = (type: string | undefined) => (type !== undefined && isFacilityType(type) ? FACILITIES[type].category : null);
 
 export function BuildMenuContent() {
   const citizens = useGame(store => totalCitizens(store.state));
@@ -60,9 +62,10 @@ export function BuildMenuContent() {
                     <span>{t(`build.homeColor.${variant}`)}</span>
                   </button>)}
                 </div>}
-                {section.types.map(type => (
+                {section.types.map((type, index) => (
+                  <Fragment key={type}>
+                  {isFacilityType(type) && FACILITIES[type].category !== categoryOf(section.types[index - 1]) && <h4 className="build-category">{t(`service.${FACILITIES[type].category}`)}</h4>}
                   <FlyoutItem
-                    key={type}
                     label={t(`building.${type}`)}
                     cost={<UrbsAmount value={placementCost(type)} />}
                     guided={guide.buildings.includes(type)}
@@ -71,6 +74,7 @@ export function BuildMenuContent() {
                     preview={previewOf(type)}
                     onInfo={() => openCodex(type)}
                   />
+                  </Fragment>
                 ))}
                 {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true, colorVariant: homeColor })} codexId="solarHome" preview={previewOf('solarHome')} onInfo={() => openCodex('solarHome')} />}
               </div>

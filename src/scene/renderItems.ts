@@ -1,7 +1,8 @@
-import { GAME_CONFIG, footprintOf, roadExits, roadPiece, type Building, type BuildingType, type GameState } from '../core';
+import { FACILITIES, FACILITY_TYPES, GAME_CONFIG, footprintOf, isFacilityType, roadExits, roadPiece, type Building, type BuildingType, type FacilityType, type GameState, type ServiceCategory } from '../core';
 import { NATURE_MODELS, type NatureType } from '../core/nature';
 import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
+import { SERVICE_VEHICLE_MODELS } from './serviceTrip';
 
 export interface RenderItem {
   model: string;
@@ -12,6 +13,8 @@ export interface RenderItem {
   lengthScale?: number;
   roofBase?: string;
   textureVariant?: 'a' | 'b' | 'c';
+  scale?: number;
+  tint?: number;
 }
 
 export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
@@ -34,7 +37,46 @@ export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
   brtStation: 'roads/road-sign-empty',
   railStation: 'industrial/building-q',
   busStop: 'roads/road-sign-empty',
+  school: 'commercial/building-d',
+  middleSchool: 'commercial/building-f',
+  highSchool: 'commercial/building-g',
+  university: 'commercial/building-n',
+  townHall: 'commercial/building-m',
+  communityHall: 'commercial/building-b',
+  theater: 'commercial/building-k',
+  concertHall: 'commercial/building-l',
+  hospital: 'commercial/building-i',
+  fireStation: 'commercial/building-e',
+  policeStation: 'commercial/building-j',
 };
+
+const FACILITY_DETAILS: Record<FacilityType, string> = {
+  school: 'commercial/detail-awning',
+  middleSchool: 'commercial/detail-overhang',
+  highSchool: 'commercial/detail-awning-wide',
+  university: 'commercial/detail-overhang-wide',
+  townHall: 'commercial/detail-awning-wide',
+  communityHall: 'commercial/detail-parasol-a',
+  theater: 'commercial/detail-overhang-wide',
+  concertHall: 'commercial/detail-awning',
+  hospital: 'commercial/detail-parasol-b',
+  fireStation: 'commercial/detail-overhang',
+  policeStation: 'commercial/detail-awning',
+};
+
+const CATEGORY_TINTS: Record<ServiceCategory, number> = {
+  education: 0xb4d0ff,
+  administration: 0xf2e2b4,
+  culture: 0xe0c8ff,
+  health: 0xffc8c8,
+  safety: 0xc4f0cb,
+};
+
+export function facilityScale(building: Pick<Building, 'type'>): number {
+  if (!isFacilityType(building.type)) return 1;
+  const { width, depth } = FACILITIES[building.type].footprint;
+  return (width + depth) / 2;
+}
 
 const FACTORY_MODELS = ['industrial/building-b', 'industrial/building-e', 'industrial/building-f', 'industrial/building-l', 'industrial/building-c'];
 
@@ -63,7 +105,7 @@ const RAIL_MODELS = ['trains/railroad-straight', 'trains/railroad-corner-small']
 
 const ROAD_MODELS = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout'].map((piece) => `roads/road-${piece}`);
 
-export const MODEL_KEYS: readonly string[] = [...new Set([...Object.values(MODEL_BY_BUILDING), ...FACTORY_MODELS, ...COAL_MODELS, ...STOREHOUSE_MODELS, ...HOME_MODELS, ...SOLAR_HOME_MODELS, ROOF_PANEL_MODEL, SOLAR_PANEL_MODEL, ...ROAD_MODELS, ...RAIL_MODELS, ...TRAIN_MODELS, ...VEHICLE_MODELS, BUS_MODEL])];
+export const MODEL_KEYS: readonly string[] = [...new Set([...Object.values(MODEL_BY_BUILDING), ...FACTORY_MODELS, ...COAL_MODELS, ...STOREHOUSE_MODELS, ...HOME_MODELS, ...SOLAR_HOME_MODELS, ...FACILITY_TYPES.map(type => FACILITY_DETAILS[type]), ROOF_PANEL_MODEL, SOLAR_PANEL_MODEL, ...ROAD_MODELS, ...RAIL_MODELS, ...TRAIN_MODELS, ...VEHICLE_MODELS, ...Object.values(SERVICE_VEHICLE_MODELS), BUS_MODEL])];
 
 export function modelOf(type: BuildingType, tier: number): string {
   if (type === 'home') return HOME_MODELS[tier - 1] ?? MODEL_BY_BUILDING.home;
@@ -87,7 +129,7 @@ let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; items: RenderItem
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   return a.length === b.length && a.every((item, index) => {
     const other = b[index] as RenderItem;
-    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant;
+    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.scale === other.scale && item.tint === other.tint;
   });
 }
 
@@ -124,6 +166,11 @@ function buildingItems(state: GameState): RenderItem[] {
     const rotation = building.rotation;
     const model = modelOfBuilding(building);
     const items: RenderItem[] = [{ model, x, z, rotation, ...(building.type === 'home' && building.colorVariant && building.colorVariant !== 'default' ? { textureVariant: building.colorVariant } : {}) }];
+    if (isFacilityType(building.type)) {
+      const scale = facilityScale(building);
+      items[0] = { ...items[0]!, scale, tint: CATEGORY_TINTS[FACILITIES[building.type].category] };
+      items.push({ model: FACILITY_DETAILS[building.type], x, z, rotation, scale });
+    }
     if (building.type === 'park') {
       items.push({ model: 'suburban/tree-small', x: x - width / 4, z: z - depth / 4, rotation });
       items.push({ model: 'suburban/tree-small', x: x + width / 4, z: z + depth / 4, rotation });

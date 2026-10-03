@@ -1,5 +1,6 @@
 import { NATURE_MODELS, NATURE_FAMILIES, greenProfileOf, natureModelOf } from './nature';
 import { footprintOf } from './buildingSpecs';
+import { FACILITIES, FACILITY_TYPES, isFacilityType } from './facilities';
 import { HOME_TIERS } from './economy';
 import type { Building, BuildingType, GameState } from './state';
 
@@ -13,6 +14,7 @@ export const ECOLOGY = {
 
 export const ECOLOGY_UNLOCKS: Partial<Record<BuildingType, number>> = {
   ...Object.fromEntries(NATURE_MODELS.map(([type, , family]) => [type, NATURE_FAMILIES[family].unlock])),
+  ...Object.fromEntries(FACILITY_TYPES.map(type => [type, FACILITIES[type].unlockCitizens])),
   brtStation: 200, railStation: 600, tree: 6, park: 15, solar: 32, battery: 32, backup: 32, busStop: 32,
 };
 
@@ -38,6 +40,7 @@ export function economicPower(b: Building): number {
   if (b.type === 'workshop') return b.tier;
   if (b.type === 'factory') return 2 * b.tier;
   if (b.type === 'shop') return 0.5;
+  if (isFacilityType(b.type)) return FACILITIES[b.type].power;
   return 0;
 }
 

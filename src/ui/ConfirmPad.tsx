@@ -21,6 +21,7 @@ export function ConfirmPad() {
       <div className="confirm-info">
         {needsStart ? <span>{t(tool.kind === 'road' ? 'pad.roadStart' : 'pad.demolishStart')}</span> : null}
         {tool.kind === 'parcel' && !evaluation.valid && !evaluation.issue ? <span>{t('pad.parcelHint')}</span> : null}
+        {evaluation.coverage ? <span>{evaluation.coverage.cityWide ? `${t('placement.cityWide')} · ` : ''}{t('placement.covers')}: {evaluation.coverage.homes}</span> : null}
         {evaluation.cost ? (
           <span className="confirm-cost">
             <UrbsAmount value={evaluation.cost} />

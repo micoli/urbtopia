@@ -1,8 +1,10 @@
+import { facilityMessages } from './facilities';
 import { natureMessages } from './nature';
 import type { MessageKey } from './messages';
 
 export const FR: Record<MessageKey, string> = {
   ...natureMessages('fr'),
+  ...facilityMessages('fr'),
   'eco.temperature': 'Température de la ville',
   'eco.temperatureOptimum': 'Optimum : 26 °C',
   'eco.temperatureHelp': 'Optimum : 26 °C, maximum : 40 °C. Chaque tranche de 10 unités d’impact/heure ajoute 1 °C. Les espaces verts proches des logements atténuent cette hausse selon leur score de refroidissement.',
@@ -84,7 +86,7 @@ export const FR: Record<MessageKey, string> = {
   'eco.energyHelp': 'Économise d’abord l’énergie. Le solaire varie avec le jour ; le vent est prévisible. Les batteries reportent les surplus vers les déficits. Les logements sont prioritaires ; les pénuries ralentissent l’activité.',
   'eco.cost': 'Urbs d’exploitation/heure',
   'eco.adaptation': 'Heures d’adaptation restantes',
-  'eco.adaptationHelp': 'Les contraintes électriques arrivent progressivement. Durant l’adaptation, les pénuries ne réduisent ni les taxes ni la production. Vérifie les prévisions avant l’échéance.',
+  'eco.adaptationHelp': 'Les contraintes d’électricité et de services arrivent progressivement. Durant l’adaptation, les pénuries et les services manquants ne réduisent ni les taxes, ni la production, ni le bien-être. Vérifie les prévisions avant l’échéance.',
   'eco.emissions': 'Unités d’impact/heure',
   'eco.activity': 'Activité économique',
   'eco.mobility': 'Mobilité',
@@ -352,4 +354,20 @@ export const FR: Record<MessageKey, string> = {
   'camera.rotateLeft': 'Pivoter à gauche',
   'camera.rotateRight': 'Pivoter à droite',
   'tool.perTile': 'par tuile',
+  "build.publicFacilities": "Équipements publics",
+  "error.townHallExists": "Un seul hôtel de ville peut être construit.",
+  "error.serviceRequired": "Ce logement a besoin des services publics requis avant de pouvoir être amélioré.",
+  "home.services": "Services",
+  "home.servicesCovered": "Couverts",
+  "home.servicesMissing": "Non couverts",
+  "home.servicesNone": "Aucun",
+  "home.upgradeBlocked": "Amélioration bloquée, services requis manquants",
+  "eco.servicePenalty": "Pénalité de services manquants",
+  "eco.serviceBonus": "Bonus des services publics",
+  "service.culture.any": "un équipement culturel",
+  "placement.cityWide": "Couvre toute la ville",
+  "placement.covers": "Logements couverts",
+  "stats.services": "Services",
+  "stats.servicesHelp": "Part des citoyens couverts par au moins un équipement de chaque catégorie de service.",
+  "stats.servicesSuggest": "Certains logements manquent de services requis par leur niveau. Construisez :",
 };

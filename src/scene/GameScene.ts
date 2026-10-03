@@ -10,7 +10,8 @@ import { GhostLayer } from './GhostLayer';
 import { createTendedGroundTexture, createWildGroundTexture, TENDED_TEXTURE_TILES, WILD_TEXTURE_TILES } from './groundTextures';
 import { fitMatrixOf } from './modelFit';
 import { ModelLibrary } from './modelLibrary';
-import { modelOfBuilding, renderItemsOf } from './renderItems';
+import { facilityScale, modelOfBuilding, renderItemsOf } from './renderItems';
+import { ServiceVehicleLayer } from './ServiceVehicleLayer';
 import { TrafficLayer } from './TrafficLayer';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
@@ -39,6 +40,7 @@ export class GameScene {
   private selectedId: number | null = null;
   private ecologicalState: GameState | null = null;
   private traffic = new TrafficLayer(this.library);
+  private serviceVehicles = new ServiceVehicleLayer(this.library);
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   private lastCenterTile = '';
@@ -67,7 +69,7 @@ export class GameScene {
     this.scene.background = new THREE.Color(0x9ec5e8);
     const sun = new THREE.DirectionalLight(0xffffff, 2.2);
     sun.position.set(20, 40, 10);
-    this.scene.add(sun, new THREE.AmbientLight(0xffffff, 1.2), this.buildGround(), this.parcels, this.world.root, this.ecologyLayer.root, this.traffic.root, this.selectionLayer.root, this.ghostLayer.root);
+    this.scene.add(sun, new THREE.AmbientLight(0xffffff, 1.2), this.buildGround(), this.parcels, this.world.root, this.ecologyLayer.root, this.traffic.root, this.serviceVehicles.root, this.selectionLayer.root, this.ghostLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.controller.onTap = (clientX, clientY, shiftKey) =>
@@ -91,6 +93,7 @@ export class GameScene {
 
   setTrafficEnabled(enabled: boolean): void {
     this.traffic.setEnabled(enabled);
+    this.serviceVehicles.setEnabled(enabled);
   }
 
   setGhost(ghost: GhostSpec | null): void {
@@ -140,6 +143,7 @@ export class GameScene {
     this.ghostLayer.dispose();
     this.selectionLayer.dispose();
     this.traffic.dispose();
+    this.serviceVehicles.dispose();
     this.ecologyLayer.dispose();
     this.renderer.dispose();
   }
@@ -157,6 +161,7 @@ export class GameScene {
         this.world.sync(items);
         this.syncParcels(state);
         this.traffic.sync(state);
+        this.serviceVehicles.sync(state);
         this.markReady();
       }
     } finally {
@@ -201,7 +206,7 @@ export class GameScene {
     const rect = this.canvas.getBoundingClientRect();
     const pointer = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
     this.raycaster.setFromCamera(pointer, this.controller.camera);
-    return pickBuilding(this.raycaster.ray, buildingBoxes(this.currentBuildings, (building) => this.heightOf(modelOfBuilding(building))));
+    return pickBuilding(this.raycaster.ray, buildingBoxes(this.currentBuildings, (building) => this.heightOf(modelOfBuilding(building)) * facilityScale(building)));
   }
 
   private heightOf(model: string): number {
@@ -243,6 +248,7 @@ export class GameScene {
     this.ecologyLayer.update(delta);
     this.traffic.priorityTiles = this.ecologyLayer.transit.priorityTiles;
     this.traffic.update(delta, this.controller.camera);
+    this.serviceVehicles.update(delta);
     this.renderer.render(this.scene, this.controller.camera);
     this.frameHandle = requestAnimationFrame(this.frame);
   };

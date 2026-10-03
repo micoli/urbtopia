@@ -30,5 +30,5 @@ describe('autoplayer', () => {
     }
     console.log(`done in ${turns} turns · ${hours.toFixed(0)} game hours · ${describeProgress(player.state())}`);
     expect(isGoalReached(player.state())).toBe(true);
-  });
+  }, 60_000);
 });

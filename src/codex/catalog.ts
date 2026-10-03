@@ -1,5 +1,5 @@
 import { NATURE_MODELS, type NatureType, type NatureFamily } from '../core/nature';
-import { BUILDING_SPECS, ECOLOGY, ECOLOGY_UNLOCKS, maxTierOf, type BuildingType } from '../core';
+import { BUILDING_SPECS, ECOLOGY, ECOLOGY_UNLOCKS, FACILITY_TYPES, maxTierOf, type BuildingType, type FacilityType } from '../core';
 import { MESSAGES, type MessageKey } from '../i18n/messages';
 import { FR } from '../i18n/fr';
 import { BUILDING_SECTIONS, type BuildSection } from './buildingSections';
@@ -13,6 +13,7 @@ export type CodexSection = BuildSection | 'codex.roads';
 
 const DESCRIPTIONS = {
   ...Object.fromEntries(NATURE_MODELS.map(([type, , family]) => [type, `codex.description.nature.${family}`])) as Record<NatureType, `codex.description.nature.${NatureFamily}`>,
+  ...Object.fromEntries(FACILITY_TYPES.map(type => [type, `codex.description.${type}`])) as Record<FacilityType, `codex.description.${FacilityType}`>,
   home: 'codex.description.home',
   solarHome: 'codex.description.solarHome',
   workshop: 'codex.description.workshop',

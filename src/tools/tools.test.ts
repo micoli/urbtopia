@@ -33,6 +33,29 @@ describe('building tool', () => {
   });
 });
 
+describe('Public facility tool', () => {
+  const homes = [createBuilding(10, 'home', 56, 59, 0), createBuilding(11, 'home', 60, 59, 0), createBuilding(12, 'home', 75, 59, 0)];
+  const served: GameState = { ...state, nextId: 20, buildings: [...state.buildings, ...homes] };
+  const evaluate = (buildingType: 'school' | 'townHall') => evaluateTool({ kind: 'building', buildingType }, { state: served, tile: { x: 56, y: 61 }, rotation: 0 });
+
+  it('previews the radius and highlights the Homes it would cover', () => {
+    const evaluation = evaluate('school');
+    expect(evaluation.coverage).toEqual({ cityWide: false, homes: 2 });
+    expect(evaluation.ghost.rects.map((rect) => rect.x).sort()).toEqual([56, 60]);
+    expect(evaluation.ghost.range?.length).toBeGreaterThan(100);
+  });
+
+  it('shows a city-wide indication without a radius', () => {
+    const evaluation = evaluate('townHall');
+    expect(evaluation.coverage).toEqual({ cityWide: true, homes: 3 });
+    expect(evaluation.ghost.range).toBeUndefined();
+  });
+
+  it('does not preview coverage for other buildings', () => {
+    expect(evaluateTool(shopTool, { state, tile: { x: 56, y: 57 }, rotation: null }).coverage).toBeUndefined();
+  });
+});
+
 describe('road tool', () => {
   it('first asks for a start tile, without a command', () => {
     const evaluation = evaluateTool({ kind: 'road', start: null, horizontalFirst: true }, { state, tile: { x: 62, y: 58 }, rotation: null });

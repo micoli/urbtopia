@@ -55,6 +55,15 @@ export class ModelLibrary {
     return Array.isArray(source) ? source.map(replace) : replace(source);
   }
 
+  withTint(source: THREE.Material | THREE.Material[], tint: number): THREE.Material | THREE.Material[] {
+    const replace = (material: THREE.Material): THREE.Material => {
+      const clone = material.clone() as THREE.MeshStandardMaterial;
+      clone.color.setHex(tint);
+      return clone;
+    };
+    return Array.isArray(source) ? source.map(replace) : replace(source);
+  }
+
   private load(key: string): Promise<void> {
     if (this.models.has(key)) return Promise.resolve();
     const inFlight = this.pending.get(key);

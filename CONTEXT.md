@@ -60,9 +60,29 @@ _Avoid_: Consumption, load
 A resident of a Home. The number of Citizens depends on the Home's tier and drives Tax and utility demand.
 _Avoid_: Inhabitant, resident, sim
 
+**Well-being**:
+The satisfaction of a Home's Citizens, raised by nearby Green spaces and Public facility coverage, lowered by coal pollution and missing services. It modulates the Home's Tax.
+_Avoid_: Happiness, bonheur, mood, attractiveness
+
+**Public facility**:
+A building that serves Citizens with a public service in a Service category, at no operating cost. It has no Tier.
+_Avoid_: Civic building, public service, amenity
+
+**Service category**:
+The family of service a Public facility provides: Education, Administration, Culture, Health or Safety.
+_Avoid_: Department, sector
+
+**Service coverage**:
+The state of a Home being served by a Public facility of a Service category: within the facility's radius and inside its Citizen capacity, nearest Homes first. The Home that crosses the capacity is still served, so a single large Home can always be covered. Some facilities cover the whole city. Missing coverage lowers Well-being and can block Home Tier upgrades.
+_Avoid_: Service range, zone
+
 **Vehicle**:
 A visual automobile that drives along the roads. Its presence follows mobility needs after public transport usage; individual Vehicles are not saved.
 _Avoid_: Car, automobile
+
+**Service vehicle**:
+A visual ambulance, fire truck or police car that leaves its Public facility by road towards covered Homes. It has no gameplay effect and is not saved.
+_Avoid_: Emergency, incident, Transit fleet
 
 **Traffic**:
 The set of Vehicles on the roads, whose size follows Citizens who do not use public transport.
@@ -149,7 +169,7 @@ An ordered set of road-connected Bus stops, with operating costs and usage drive
 _Avoid_: Individual Citizen journey, decorative Traffic
 
 **Adaptation period**:
-The announced grace period during which new electricity shortages do not penalize production or Tax.
+The announced grace period during which new electricity shortages or newly required Service coverage do not penalize production, Tax or Well-being.
 _Avoid_: Permanent exemption, free energy
 
 **BRT corridor**:

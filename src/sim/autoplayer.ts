@@ -1,9 +1,18 @@
 import {
+  FACILITIES,
   GOODS,
   MATERIALS,
   SHOP,
   SLOT_PRICES,
   autoRotation,
+  buildingDistance,
+  createBuilding,
+  footprintTiles,
+  missingServices,
+  occupiedTiles,
+  serviceCoverage,
+  tileKey,
+  type FacilityType,
   isItemUnlocked,
   marketPoints,
   maxTierOf,
@@ -23,6 +32,7 @@ import {
   type BuildingType,
   type Command,
   type Coord,
+  type Rotation,
   type GameState,
   type GoodId,
   type ItemId,
@@ -66,7 +76,15 @@ const SLOTS: Partial<Record<BuildingType, Coord[]>> = {
   waterTower: row(50, 59, 78, 1),
 };
 
+const ROTATIONS: readonly Rotation[] = [0, 1, 2, 3];
+
+const RESERVED_TILES = new Set(
+  Object.values(SLOTS).flatMap((slots) => slots.flatMap((slot) => [0, 1].flatMap((dx) => [0, 1].map((dy) => tileKey({ x: slot.x + dx, y: slot.y + dy }))))),
+);
+
 const ROADS = {
+  northServices: { from: { x: 49, y: 64 }, to: { x: 78, y: 64 }, horizontalFirst: true },
+  southServices: { from: { x: 49, y: 74 }, to: { x: 78, y: 74 }, horizontalFirst: true },
   main: { from: { x: 49, y: 58 }, to: { x: 78, y: 58 }, horizontalFirst: true },
   link: { from: { x: 49, y: 58 }, to: { x: 49, y: 68 }, horizontalFirst: false },
   second: { from: { x: 49, y: 68 }, to: { x: 78, y: 68 }, horizontalFirst: true },
@@ -84,7 +102,7 @@ function targetCount(state: GameState, type: BuildingType): number {
   const stage = topHomeTier(state);
   if (type === 'storehouse') return 1;
   if (type === 'workshop' || type === 'factory') return Math.min(4, 2 + Math.floor(stage / 2));
-  if (type === 'home') return Math.min(8, 1 + stage);
+  if (type === 'home') return Math.min(12, 3 + stage);
   if (type === 'shop') return stage >= 2 ? Math.min(3, stage - 1) : 0;
   return 0;
 }
@@ -99,6 +117,46 @@ function build(player: Player, type: BuildingType): 'built' | 'poor' | 'none' {
     return player.send({ type: 'PlaceBuilding', buildingType: type, x: slot.x, y: slot.y, rotation }) === null ? 'built' : 'none';
   }
   return 'none';
+}
+
+function nearestServiceSpot(state: GameState, type: FacilityType, home: Building): { x: number; y: number; rotation: Rotation } | 'poor' | null {
+  const { radius } = FACILITIES[type];
+  let best: { x: number; y: number; rotation: Rotation; distance: number } | null = null;
+  const occupied = occupiedTiles(state);
+  for (let y = 50; y <= 77; y++) {
+    for (let x = 49; x <= 78; x++) {
+      for (const rotation of ROTATIONS) {
+        const tiles = footprintTiles({ type, x, y, rotation }).map(tileKey);
+        if (tiles.some((key) => RESERVED_TILES.has(key) || occupied.has(key))) continue;
+        const issue = placementIssue(state, type, x, y, rotation);
+        if (issue === 'error.notEnoughUrbs') return 'poor';
+        if (issue !== null) continue;
+        const distance = buildingDistance(createBuilding(0, type, x, y, rotation), home);
+        if ((radius !== null && distance > radius) || (best && best.distance <= distance)) continue;
+        best = { x, y, rotation, distance };
+      }
+    }
+  }
+  return best;
+}
+
+const exhaustedSpots = new WeakMap<Player, Set<string>>();
+
+function provideService(player: Player, home: Building): boolean {
+  const state = player.state();
+  const [missing] = missingServices(serviceCoverage(state), home, home.tier + 1);
+  if (!missing) return false;
+  const type: FacilityType = missing === 'culture' ? 'communityHall' : missing;
+  if (state.urbs < FACILITIES[type].cost) return false;
+  const exhausted = exhaustedSpots.get(player) ?? new Set<string>();
+  exhaustedSpots.set(player, exhausted);
+  const layout = `${type}:${home.id}:${state.buildings.length}:${state.roads.length}`;
+  if (exhausted.has(layout)) return false;
+  const spot = nearestServiceSpot(state, type, home);
+  if (spot === 'poor') return false;
+  if (spot === null) exhausted.add(layout);
+  if (spot) return player.send({ type: 'PlaceBuilding', buildingType: type, x: spot.x, y: spot.y, rotation: spot.rotation }) === null;
+  return (['northServices', 'southServices'] as const).some((which) => !hasRoadRow(state, ROADS[which].from.y) && buildRoads(player, which));
 }
 
 function buildRoads(player: Player, which: keyof typeof ROADS): boolean {
@@ -190,7 +248,13 @@ function canAfford(state: GameState, candidate: Candidate): boolean {
 function upgradeNext(player: Player, blocked: Set<number>): boolean {
   const state = player.state();
   for (const candidate of upgradeCandidates(state)) {
-    if (blocked.has(candidate.building.id) || !canAfford(state, candidate)) continue;
+    if (blocked.has(candidate.building.id)) continue;
+    if (candidate.building.type === 'home' && lacksServices(state, candidate.building)) {
+      if (provideService(player, candidate.building)) return true;
+      blocked.add(candidate.building.id);
+      continue;
+    }
+    if (!canAfford(state, candidate)) continue;
     const error = player.send({ type: 'UpgradeBuilding', buildingId: candidate.building.id });
     if (error === null) return true;
     if (error === 'error.notEnoughPower' && ensureUtility(player, 'power')) return true;
@@ -198,6 +262,10 @@ function upgradeNext(player: Player, blocked: Set<number>): boolean {
     blocked.add(candidate.building.id);
   }
   return false;
+}
+
+function lacksServices(state: GameState, home: Building): boolean {
+  return missingServices(serviceCoverage(state), home, home.tier + 1).length > 0;
 }
 
 function buySlots(player: Player): boolean {
@@ -223,7 +291,8 @@ type Needs = Partial<Record<GoodId, number>>;
 function goodsNeeded(state: GameState): { missing: Needs; reserved: Needs } {
   const missing: Needs = {};
   const reserved: Needs = {};
-  for (const candidate of upgradeCandidates(state).slice(0, NEED_LOOKAHEAD)) {
+  const ready = upgradeCandidates(state).filter((candidate) => candidate.building.type !== 'home' || !lacksServices(state, candidate.building));
+  for (const candidate of ready.slice(0, NEED_LOOKAHEAD)) {
     for (const [good, amount] of Object.entries(candidate.goods) as [GoodId, number][]) {
       reserved[good] = (reserved[good] ?? 0) + amount;
       missing[good] = Math.max(0, (reserved[good] ?? 0) - (state.storage.goods[good] ?? 0));

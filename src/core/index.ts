@@ -40,9 +40,9 @@ export type { Unlock } from './unlocks';
 export { TUTORIAL_STEPS, tutorialAllows, tutorialSkipMs } from './tutorial';
 export type { TutorialStep } from './tutorial';
 
-export { ECOLOGY, ECOLOGY_UNLOCKS, homePower, economicPower, greenSpaceCoverage, greenBenefits, cityGreenBenefits } from './ecology';
+export { ECOLOGY, ECOLOGY_UNLOCKS, distance as buildingDistance, homePower, economicPower, greenSpaceCoverage, greenBenefits, cityGreenBenefits } from './ecology';
 export { energyStats, productionFactors } from './energy';
-export { homeBenefits, cityBenefits } from './wellbeing';
+export { homeBenefits, cityBenefits, isAdapting, wellbeingTaxFactor } from './wellbeing';
 export { climateStats } from './climate';
 export { transportStats, routeForLine } from './transport';
 export type { BusLine } from './state';
@@ -52,3 +52,9 @@ export type { TransitLine, TransitMode, TransitTile, TransitVehicle, TransitVehi
 
 export { NATURE_FAMILIES, NATURE_MODELS, NATURE_TYPES, natureModelOf, greenProfileOf } from './nature';
 export type { NatureType, NatureFamily } from './nature';
+
+export { FACILITIES, FACILITY_TYPES, SERVICE_CATEGORIES, SERVICES, REQUIRED_SERVICES, facilitiesOfCategory, isFacilityType, requiredServices } from './facilities';
+export type { FacilitySpec, FacilityType, ServiceCategory, ServiceKey } from './facilities';
+export { categoryCoverageRatio, coveredCategories, homesLackingRequiredServices, isServiceCovered, missingServices, previewFacilityCoverage, serviceCoverage } from './services';
+export type { ServiceCoverage } from './services';
+export { facilitiesUnlockedBetween } from './unlocks';

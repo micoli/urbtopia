@@ -1,6 +1,6 @@
 {
   "format": "urbtopia-save",
-  "version": 7,
+  "version": 8,
   "savedAt": 1790000000000,
   "state": {
     "brtRoads": [],
@@ -13,7 +13,7 @@
     "rngState": 3424803721,
     "urbs": 48250,
     "lastSeen": 1790000000000,
-    "nextId": 42,
+    "nextId": 51,
     "ownedParcels": [
       {
         "x": 3,
@@ -706,6 +706,114 @@
         "stacks": [],
         "tier": 2,
         "taxCitizenMs": 0
+      },
+      {
+        "id": 42,
+        "type": "school",
+        "x": 50,
+        "y": 63,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 43,
+        "type": "middleSchool",
+        "x": 53,
+        "y": 63,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 44,
+        "type": "highSchool",
+        "x": 56,
+        "y": 63,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 45,
+        "type": "hospital",
+        "x": 59,
+        "y": 62,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 46,
+        "type": "townHall",
+        "x": 63,
+        "y": 63,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 47,
+        "type": "fireStation",
+        "x": 66,
+        "y": 63,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 48,
+        "type": "policeStation",
+        "x": 69,
+        "y": 63,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 49,
+        "type": "university",
+        "x": 72,
+        "y": 62,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 50,
+        "type": "communityHall",
+        "x": 78,
+        "y": 64,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
       }
     ],
     "storage": {
@@ -1078,6 +1186,151 @@
       {
         "x": 49,
         "y": 67,
+        "kind": "road"
+      },
+      {
+        "x": 50,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 51,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 52,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 53,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 54,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 55,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 56,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 57,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 58,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 59,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 60,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 61,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 62,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 63,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 64,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 65,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 66,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 67,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 68,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 69,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 70,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 71,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 72,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 73,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 74,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 75,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 76,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 77,
+        "y": 65,
+        "kind": "road"
+      },
+      {
+        "x": 78,
+        "y": 65,
         "kind": "road"
       }
     ],

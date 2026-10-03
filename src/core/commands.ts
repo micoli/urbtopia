@@ -15,6 +15,8 @@ import { isItemUnlocked } from './unlocks';
 import { withStartingCity } from './newGame';
 import { tutorialAllows, tutorialSkipMs } from './tutorial';
 import { isAdjacentToOwned, isInsideMap, isOwned, parcelPrice } from './parcels';
+import { FACILITIES, isFacilityType } from './facilities';
+import { missingServices, serviceCoverage } from './services';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from './occupancy';
 import { autoRotation, frontTouchesRoad, placementIssue } from './placement';
 import { newQueueEntry, restartRunningProduction, shiftRunningTimers, taxDue } from './production';
@@ -68,6 +70,8 @@ export type ErrorKey =
   | 'error.storehouseExists'
   | 'error.siloExists'
   | 'error.vaultExists'
+  | 'error.townHallExists'
+  | 'error.serviceRequired'
   | 'error.notEnoughUrbs'
   | 'error.lastRoadOfBuilding'
   | 'error.noRoadHere'
@@ -266,7 +270,7 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
   if (issue) return fail(issue);
   if (state.urbs < placementCost(type) + extraCost) return fail('error.notEnoughUrbs');
   const building = { ...createBuilding(state.nextId, type, x, y, rotation), ...(solar ? { solar: true } : {}), ...(type === 'home' && colorVariant ? { colorVariant } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
-  const utilityIssue = type === 'home' ? utilityIssueFor(state, tierDemand(1)) : null;
+  const utilityIssue = type === 'home' ? utilityIssueFor(state, tierDemand(1)) : isFacilityType(type) ? utilityIssueFor(state, { power: 0, water: FACILITIES[type].water }) : null;
   if (utilityIssue) return fail(utilityIssue);
   return {
     state: { ...state, urbs: state.urbs - placementCost(type) - extraCost, nextId: state.nextId + 1, buildings: [...state.buildings, building] },
@@ -494,6 +498,7 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
   const cost = upgradeCostOf(building.type, nextTier);
   if (!cost) return fail('error.maxTier');
   const isHome = building.type === 'home';
+  if (isHome && missingServices(serviceCoverage(state), building, nextTier).length > 0) return fail('error.serviceRequired');
   if (isHome) {
     const footprintIssue = placementIssue(state, 'home', building.x, building.y, building.rotation, {
       ignoreBuildingId: building.id,
