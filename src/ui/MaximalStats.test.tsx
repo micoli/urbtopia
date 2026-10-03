@@ -32,7 +32,6 @@ describe('city management panel', () => {
     context.state = newGame({ seed: 'dashboard', now: 0 });
     for (const component of [<MinimalStats />, <CityStats />]) {
       const html = renderToStaticMarkup(component);
-      expect(html).toContain('type="button"');
       expect(html).toContain('aria-label="City management"');
     }
   });

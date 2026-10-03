@@ -1,6 +1,6 @@
 import { totalCitizens, utilityCapacity, utilityDemand } from '../core';
 import { t } from '../i18n/t';
-import { useGame, useUi } from './hooks';
+import { useGame } from './hooks';
 import { GameClock } from './GameClock';
 
 function utilityStatus(demand: number, capacity: number): string {
@@ -11,7 +11,6 @@ function utilityStatus(demand: number, capacity: number): string {
 }
 
 export function CityStats() {
-  const toggleStats = useUi(s => s.toggleStats);
   const state = useGame((store) => store.state);
   const capacity = utilityCapacity(state);
   const demand = utilityDemand(state);
@@ -20,7 +19,7 @@ export function CityStats() {
   const powerLabel = `${t('stat.power')}: ${powerDemand}/${powerCapacity}`;
   const waterLabel = `${t('stat.water')}: ${demand.water}/${capacity.water}`;
   return (
-    <button type="button" className="city-stats" aria-label={t('eco.title')} onClick={toggleStats}>
+    <div className="city-stats" aria-label={t('eco.title')}>
       <GameClock />
       <div title={t('stat.citizens')}>👥 {totalCitizens(state)}</div>
       <div title={powerLabel} aria-label={powerLabel} className={utilityStatus(demand.power, capacity.power)}>
@@ -29,6 +28,6 @@ export function CityStats() {
       <div title={waterLabel} aria-label={waterLabel} className={utilityStatus(demand.water, capacity.water)}>
         💧 {demand.water}
       </div>
-    </button>
+    </div>
   );
 }
