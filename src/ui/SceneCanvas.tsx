@@ -4,6 +4,7 @@ import { prefsStore } from '../i18n/prefsStore';
 import { gameStore } from '../store/gameStore';
 import { sceneHandle } from '../store/sceneHandle';
 import { uiStore } from '../store/uiStore';
+import { pointerKindOf } from '../tools/aim';
 import { selectionGhost } from '../tools/tools';
 import { hideSplash } from './splash';
 
@@ -17,10 +18,15 @@ export function SceneCanvas() {
     sceneHandle.current = scene;
     scene.setHandlers({
       onTap: (tile) => {
-        if (uiStore.getState().tool) return scene.focusOnTile(tile);
-        uiStore.getState().tapTile(tile);
+        const ui = uiStore.getState();
+        if (ui.tool && ui.pointerKind === 'mouse') return ui.clickTile(tile);
+        if (ui.tool) return scene.focusOnTile(tile);
+        ui.tapTile(tile);
       },
       onCenterTileChange: (tile) => uiStore.getState().setCenterTile(tile),
+      onMouseMove: (tile) => uiStore.getState().hoverTile(tile),
+      onPointerKind: (pointerType) => uiStore.getState().setPointerKind(pointerKindOf(pointerType)),
+      onSecondaryClick: () => uiStore.getState().cancelTool(),
     });
     void scene.ready.then(hideSplash);
     scene.setState(gameStore.getState().state);

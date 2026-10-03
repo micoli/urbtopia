@@ -10,10 +10,9 @@ export function ConfirmPad() {
   const rotate = useUi((store) => store.rotate);
   const needsStart = tool?.kind === 'road' && tool.start === null;
   const canConfirm = Boolean(evaluation?.valid) || needsStart;
-  useConfirmKeys({ active: Boolean(tool && evaluation), canConfirm, onConfirm: confirm, onCancel: cancelTool });
+  const canRotate = tool?.kind === 'road' ? tool.start !== null : evaluation?.rotation != null;
+  useConfirmKeys({ active: Boolean(tool && evaluation), canConfirm, canRotate, onConfirm: confirm, onRotate: rotate, onCancel: cancelTool });
   if (!tool || !evaluation) return null;
-
-  const canRotate = tool.kind === 'road' ? tool.start !== null : evaluation.rotation !== null;
   return (
     <div className="confirm-pad">
       <div className="confirm-info">

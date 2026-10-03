@@ -4,7 +4,9 @@ import { confirmKeyAction } from './confirmKeys';
 interface ConfirmKeys {
   active: boolean;
   canConfirm?: boolean;
+  canRotate?: boolean;
   onConfirm: () => void;
+  onRotate?: () => void;
   onCancel: () => void;
 }
 
@@ -13,18 +15,19 @@ function isTyping(target: EventTarget | null): boolean {
   return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName);
 }
 
-export function useConfirmKeys({ active, canConfirm = true, onConfirm, onCancel }: ConfirmKeys): void {
+export function useConfirmKeys({ active, canConfirm = true, canRotate = false, onConfirm, onRotate = () => {}, onCancel }: ConfirmKeys): void {
   useEffect(() => {
     if (!active) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      const action = confirmKeyAction({ key: event.key, repeat: event.repeat, typing: isTyping(event.target) }, canConfirm);
+      const action = confirmKeyAction({ key: event.key, repeat: event.repeat, typing: isTyping(event.target) }, canConfirm, canRotate);
       if (!action) return;
       event.preventDefault();
       event.stopPropagation();
       if (action === 'confirm') return onConfirm();
+      if (action === 'rotate') return onRotate();
       onCancel();
     };
     window.addEventListener('keydown', onKeyDown, { capture: true });
     return () => window.removeEventListener('keydown', onKeyDown, { capture: true });
-  }, [active, canConfirm, onConfirm, onCancel]);
+  }, [active, canConfirm, canRotate, onConfirm, onRotate, onCancel]);
 }

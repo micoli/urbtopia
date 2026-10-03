@@ -32,4 +32,10 @@ describe('confirmKeyAction', () => {
     expect(press('a')).toBeNull();
     expect(press(' ')).toBeNull();
   });
+
+  it('rotates with R only when the tool can rotate', () => {
+    expect(confirmKeyAction({ key: 'r', repeat: false, typing: false }, true, true)).toBe('rotate');
+    expect(confirmKeyAction({ key: 'R', repeat: false, typing: false }, true, true)).toBe('rotate');
+    expect(confirmKeyAction({ key: 'r', repeat: false, typing: false }, true, false)).toBeNull();
+  });
 });

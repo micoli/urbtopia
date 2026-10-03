@@ -34,6 +34,9 @@ export class CameraController {
   private keys = new Map<string, number>();
   private gesture = { startX: 0, startY: 0, startTime: 0, moved: false, multiTouch: false };
   onTap: (clientX: number, clientY: number) => void = () => {};
+  onMouseMove: (clientX: number, clientY: number) => void = () => {};
+  onPointerKind: (pointerType: string) => void = () => {};
+  onSecondaryClick: () => void = () => {};
   private abort = new AbortController();
 
   constructor(
@@ -147,6 +150,7 @@ export class CameraController {
     canvas.addEventListener('pointermove', (event) => this.onPointerMove(event), { signal });
     canvas.addEventListener('pointerup', (event) => this.onPointerEnd(event), { signal });
     canvas.addEventListener('pointercancel', (event) => this.onPointerEnd(event), { signal });
+    canvas.addEventListener('contextmenu', (event) => this.onContextMenu(event), { signal });
     canvas.addEventListener('wheel', (event) => this.zoomBy(event.deltaY < 0 ? 1.1 : 0.9), { signal, passive: true });
     window.addEventListener('keydown', (event) => this.onKey(event, true), { signal });
     window.addEventListener('keyup', (event) => this.onKey(event, false), { signal });
@@ -167,7 +171,14 @@ export class CameraController {
     this.moveFocus(direction.x, direction.z);
   }
 
+  private onContextMenu(event: MouseEvent): void {
+    event.preventDefault();
+    this.onSecondaryClick();
+  }
+
   private onPointerDown(event: PointerEvent): void {
+    this.onPointerKind(event.pointerType);
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
     try {
       this.canvas.setPointerCapture(event.pointerId);
     } catch {
@@ -194,6 +205,10 @@ export class CameraController {
   }
 
   private onPointerMove(event: PointerEvent): void {
+    if (event.pointerType === 'mouse') {
+      this.onPointerKind(event.pointerType);
+      this.onMouseMove(event.clientX, event.clientY);
+    }
     const pointer = this.pointers.get(event.pointerId);
     if (!pointer) return;
     if (Math.hypot(event.clientX - this.gesture.startX, event.clientY - this.gesture.startY) > TAP_SLOP_PX) this.gesture.moved = true;

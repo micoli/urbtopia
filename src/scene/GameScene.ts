@@ -17,6 +17,9 @@ const SELECTION_COLOR = 0x4da3ff;
 export interface SceneHandlers {
   onTap: (tile: Coord) => void;
   onCenterTileChange: (tile: Coord) => void;
+  onMouseMove: (tile: Coord) => void;
+  onPointerKind: (pointerType: string) => void;
+  onSecondaryClick: () => void;
 }
 
 export class GameScene {
@@ -32,7 +35,13 @@ export class GameScene {
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   private lastCenterTile = '';
-  private handlers: SceneHandlers = { onTap: () => {}, onCenterTileChange: () => {} };
+  private handlers: SceneHandlers = {
+    onTap: () => {},
+    onCenterTileChange: () => {},
+    onMouseMove: () => {},
+    onPointerKind: () => {},
+    onSecondaryClick: () => {},
+  };
   private ownedSignature = '';
   private controller: CameraController;
   private latest: GameState | null = null;
@@ -52,7 +61,10 @@ export class GameScene {
     this.scene.add(sun, new THREE.AmbientLight(0xffffff, 1.2), this.buildGround(), this.parcels, this.world.root, this.traffic.root, this.selectionLayer.root, this.ghostLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
-    this.controller.onTap = (clientX, clientY) => this.handleTap(clientX, clientY);
+    this.controller.onTap = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onTap(tile));
+    this.controller.onMouseMove = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onMouseMove(tile));
+    this.controller.onPointerKind = (pointerType) => this.handlers.onPointerKind(pointerType);
+    this.controller.onSecondaryClick = () => this.handlers.onSecondaryClick();
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
     this.resize();
@@ -165,13 +177,13 @@ export class GameScene {
     }
   }
 
-  private handleTap(clientX: number, clientY: number): void {
+  private withTileAt(clientX: number, clientY: number, use: (tile: Coord) => void): void {
     const rect = this.canvas.getBoundingClientRect();
     const pointer = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
     this.raycaster.setFromCamera(pointer, this.controller.camera);
     const hit = this.raycaster.ray.intersectPlane(this.groundPlane, new THREE.Vector3());
     if (!hit) return;
-    this.handlers.onTap({ x: Math.floor(hit.x), y: Math.floor(hit.z) });
+    use({ x: Math.floor(hit.x), y: Math.floor(hit.z) });
   }
 
   private resize(): void {

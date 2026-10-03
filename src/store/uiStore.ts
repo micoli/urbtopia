@@ -1,5 +1,6 @@
 import { createStore } from 'zustand/vanilla';
 import { canRemoveStorage, footprintTiles, isStorageType, type Coord, type Rotation } from '../core';
+import { aimTile, type PointerKind } from '../tools/aim';
 import { confirmTool, evaluateTool, type Evaluation, type Tool } from '../tools/tools';
 import { gameStore } from './gameStore';
 import { sceneHandle } from './sceneHandle';
@@ -11,6 +12,8 @@ export interface UiStore {
   tool: Tool | null;
   rotation: Rotation | null;
   centerTile: Coord;
+  pointerKind: PointerKind;
+  hovered: Coord | null;
   selectedBuildingId: number | null;
   flyout: Flyout;
   marketOpen: boolean;
@@ -25,6 +28,9 @@ export interface UiStore {
   rotate: () => void;
   confirm: () => void;
   setCenterTile: (tile: Coord) => void;
+  setPointerKind: (kind: PointerKind) => void;
+  hoverTile: (tile: Coord) => void;
+  clickTile: (tile: Coord) => void;
   tapTile: (tile: Coord) => void;
   select: (id: number | null) => void;
   sellSelected: () => void;
@@ -41,15 +47,17 @@ function evaluate(tool: Tool | null, tile: Coord, rotation: Rotation | null): Ev
 }
 
 export const uiStore = createStore<UiStore>((set, get) => {
-  const reevaluate = (patch: Partial<Pick<UiStore, 'tool' | 'rotation' | 'centerTile'>> = {}) => {
+  const reevaluate = (patch: Partial<Pick<UiStore, 'tool' | 'rotation' | 'centerTile' | 'pointerKind' | 'hovered'>> = {}) => {
     const merged = { ...get(), ...patch };
-    set({ ...patch, evaluation: evaluate(merged.tool, merged.centerTile, merged.rotation) });
+    set({ ...patch, evaluation: evaluate(merged.tool, aimTile(merged.pointerKind, merged.hovered, merged.centerTile), merged.rotation) });
   };
 
   return {
     tool: null,
     rotation: null,
     centerTile: INITIAL_CENTER,
+    pointerKind: 'touch',
+    hovered: null,
     selectedBuildingId: null,
     flyout: null,
     marketOpen: false,
@@ -74,14 +82,26 @@ export const uiStore = createStore<UiStore>((set, get) => {
       reevaluate({ rotation: ((evaluation.rotation + 1) % 4) as Rotation });
     },
     confirm: () => {
-      const { tool, evaluation, centerTile } = get();
+      const { tool, evaluation, pointerKind, hovered, centerTile } = get();
       if (!tool || !evaluation) return;
-      const outcome = confirmTool(tool, centerTile, evaluation);
+      const outcome = confirmTool(tool, aimTile(pointerKind, hovered, centerTile), evaluation);
       if (!outcome.command && !evaluation.valid && evaluation.issue) return toastStore.getState().show(evaluation.issue);
       if (outcome.command) gameStore.getState().send(outcome.command);
       reevaluate({ tool: outcome.nextTool, rotation: outcome.nextTool?.kind === 'building' ? get().rotation : null });
     },
     setCenterTile: (tile) => reevaluate({ centerTile: tile }),
+    setPointerKind: (kind) => {
+      if (kind !== get().pointerKind) reevaluate({ pointerKind: kind });
+    },
+    hoverTile: (tile) => {
+      const { hovered } = get();
+      if (hovered?.x === tile.x && hovered.y === tile.y) return;
+      reevaluate({ hovered: tile });
+    },
+    clickTile: (tile) => {
+      reevaluate({ hovered: tile });
+      get().confirm();
+    },
     tapTile: (tile) => {
       if (get().tool) return;
       const building = gameStore.getState().state.buildings.find((candidate) => footprintTiles(candidate).some((t) => t.x === tile.x && t.y === tile.y));
@@ -113,12 +133,12 @@ export const uiStore = createStore<UiStore>((set, get) => {
       const tile = { x: building.x, y: building.y };
       set({ selectedBuildingId: null });
       sceneHandle.current?.focusOnTile(tile);
-      reevaluate({ tool: { kind: 'move', buildingId: building.id }, rotation: null, centerTile: tile });
+      reevaluate({ tool: { kind: 'move', buildingId: building.id }, rotation: null, centerTile: tile, hovered: null });
     },
   };
 });
 
 gameStore.subscribe(() => {
-  const { tool, centerTile, rotation } = uiStore.getState();
-  uiStore.setState({ evaluation: evaluate(tool, centerTile, rotation) });
+  const { tool, centerTile, pointerKind, hovered, rotation } = uiStore.getState();
+  uiStore.setState({ evaluation: evaluate(tool, aimTile(pointerKind, hovered, centerTile), rotation) });
 });
