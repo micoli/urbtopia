@@ -20,6 +20,7 @@ export const MESSAGES = {
   'pad.cancel': 'Cancel',
   'pad.rotate': 'Rotate',
   'pad.roadStart': 'Pick the start of the road, then confirm',
+  'pad.demolishStart': 'Pick the start of the section to demolish, then confirm',
   'panel.close': 'Close',
   'sale.confirm': 'Sell this building? Upgrades and stored items are not refunded.',
   'sale.yes': 'Sell',

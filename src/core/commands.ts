@@ -28,6 +28,7 @@ export type Command =
   | { readonly type: 'PlaceCrossing'; readonly x: number; readonly y: number }
   | { readonly type: 'PlaceRoundabout'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoad'; readonly x: number; readonly y: number }
+  | { readonly type: 'DemolishRoadPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
@@ -101,7 +102,9 @@ export function handleCommand(state: GameState, command: Command, now: number): 
     case 'PlaceRoundabout':
       return placeRoundabout(state, { x: command.x, y: command.y });
     case 'DemolishRoad':
-      return demolishRoad(state, { x: command.x, y: command.y });
+      return demolishRoad(state, [{ x: command.x, y: command.y }]);
+    case 'DemolishRoadPath':
+      return demolishRoad(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
     case 'PlaceBuilding':
       return placeBuilding(state, command.buildingType, command.x, command.y, command.rotation);
     case 'QueueProduction':
@@ -197,14 +200,15 @@ function placeRoundabout(state: GameState, center: Coord): CommandOutcome {
   };
 }
 
-function demolishRoad(state: GameState, tile: Coord): CommandOutcome {
-  const roundabout = state.roundabouts.find((center) => roundaboutTiles(center).some((t) => t.x === tile.x && t.y === tile.y));
-  const road = state.roads.find((candidate) => candidate.x === tile.x && candidate.y === tile.y);
-  if (!road && !roundabout) return fail('error.noRoadHere');
+function demolishRoad(state: GameState, tiles: Coord[]): CommandOutcome {
+  const isTarget = (candidate: Coord) => tiles.some((tile) => tile.x === candidate.x && tile.y === candidate.y);
+  const roundabouts = state.roundabouts.filter((center) => roundaboutTiles(center).some(isTarget));
+  const roads = state.roads.filter(isTarget);
+  if (roads.length === 0 && roundabouts.length === 0) return fail('error.noRoadHere');
   const next: GameState = {
     ...state,
-    roads: road ? state.roads.filter((candidate) => candidate !== road) : state.roads,
-    roundabouts: !road && roundabout ? state.roundabouts.filter((center) => center !== roundabout) : state.roundabouts,
+    roads: state.roads.filter((candidate) => !roads.includes(candidate)),
+    roundabouts: state.roundabouts.filter((center) => !roundabouts.includes(center)),
   };
   const orphaned = next.buildings.some(
     (building) => BUILDING_SPECS[building.type].requiresRoad && !frontTouchesRoad(next, building.type, building.x, building.y, building.rotation, building.tier),

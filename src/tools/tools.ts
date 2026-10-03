@@ -27,7 +27,7 @@ export type Tool =
   | { kind: 'road'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'crossing' }
   | { kind: 'roundabout' }
-  | { kind: 'demolishRoad' }
+  | { kind: 'demolishRoad'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'parcel' };
 
 export interface ToolContext {
@@ -124,7 +124,7 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
     case 'roundabout':
       return evaluation(roundaboutTiles(tile), { type: 'PlaceRoundabout', x: tile.x, y: tile.y }, state);
     case 'demolishRoad':
-      return evaluation([tile], { type: 'DemolishRoad', x: tile.x, y: tile.y }, state);
+      return evaluateDemolishRoad(state, tool, tile);
     case 'parcel':
       return evaluateParcel(state, tile);
   }
@@ -167,10 +167,17 @@ function evaluateRoad(state: GameState, tool: Extract<Tool, { kind: 'road' }>, t
   return evaluation(path, command, state, { cost: roadBuildCost(state, path) });
 }
 
+function evaluateDemolishRoad(state: GameState, tool: Extract<Tool, { kind: 'demolishRoad' }>, tile: Coord): Evaluation {
+  if (!tool.start) return evaluation([tile], null, state);
+  const path = roadPath(tool.start, tile, tool.horizontalFirst);
+  return evaluation(path, { type: 'DemolishRoadPath', from: tool.start, to: tile, horizontalFirst: tool.horizontalFirst }, state);
+}
+
 export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTool = false): Confirmation {
-  if (tool.kind === 'road' && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
+  const isPathTool = tool.kind === 'road' || tool.kind === 'demolishRoad';
+  if (isPathTool && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
   if (!current.valid) return { command: null, nextTool: tool };
-  if (tool.kind === 'road') return { command: current.command, nextTool: { ...tool, start: null } };
+  if (isPathTool) return { command: current.command, nextTool: { ...tool, start: null } };
   if (tool.kind === 'building') return { command: current.command, nextTool: keepTool ? tool : null };
   if (tool.kind === 'move') return { command: current.command, nextTool: null };
   return { command: current.command, nextTool: tool };

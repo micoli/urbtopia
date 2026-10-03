@@ -22,6 +22,7 @@ export const FR: Record<MessageKey, string> = {
   'pad.cancel': 'Annuler',
   'pad.rotate': 'Pivoter',
   'pad.roadStart': 'Choisissez le début de la route, puis confirmez',
+  'pad.demolishStart': 'Choisissez le début du tronçon à démolir, puis confirmez',
   'panel.close': 'Fermer',
   'sale.confirm': 'Vendre ce bâtiment ? Les améliorations et les objets stockés ne sont pas remboursés.',
   'sale.yes': 'Vendre',

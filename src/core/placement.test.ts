@@ -127,6 +127,12 @@ describe('DemolishRoad', () => {
   it('refuses to demolish where there is no road', () => {
     expect(failureKey(initial, { type: 'DemolishRoad', x: 70, y: 70 })).toBe('error.noRoadHere');
   });
+
+  it('removes every road tile along a two-point path', () => {
+    const state = succeed(initial, { type: 'DemolishRoadPath', from: { x: 54, y: 58 }, to: { x: 54, y: 58 } });
+    expect(state.roads.some((tile) => tile.x === 54 && tile.y === 58)).toBe(false);
+    expect(failureKey(initial, { type: 'DemolishRoadPath', from: { x: 70, y: 70 }, to: { x: 72, y: 70 } })).toBe('error.noRoadHere');
+  });
 });
 
 describe('MoveBuilding', () => {

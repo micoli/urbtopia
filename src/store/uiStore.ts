@@ -78,7 +78,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     cancelTool: () => reevaluate({ tool: null, rotation: null }),
     rotate: () => {
       const { tool, evaluation } = get();
-      if (tool?.kind === 'road') return reevaluate({ tool: { ...tool, horizontalFirst: !tool.horizontalFirst } });
+      if (tool?.kind === 'road' || tool?.kind === 'demolishRoad') return reevaluate({ tool: { ...tool, horizontalFirst: !tool.horizontalFirst } });
       if (evaluation?.rotation == null) return;
       reevaluate({ rotation: ((evaluation.rotation + 1) % 4) as Rotation });
     },

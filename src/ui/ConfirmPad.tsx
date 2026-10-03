@@ -10,15 +10,16 @@ export function ConfirmPad() {
   const confirm = useUi((store) => store.confirm);
   const cancelTool = useUi((store) => store.cancelTool);
   const rotate = useUi((store) => store.rotate);
-  const needsStart = tool?.kind === 'road' && tool.start === null;
+  const isPathTool = tool?.kind === 'road' || tool?.kind === 'demolishRoad';
+  const needsStart = isPathTool && tool.start === null;
   const canConfirm = Boolean(evaluation?.valid) || needsStart;
-  const canRotate = tool?.kind === 'road' ? tool.start !== null : evaluation?.rotation != null;
+  const canRotate = isPathTool ? tool.start !== null : evaluation?.rotation != null;
   useConfirmKeys({ active: Boolean(tool && evaluation), canConfirm, canRotate, onConfirm: confirm, onRotate: rotate, onCancel: cancelTool });
   if (!tool || !evaluation) return null;
   return (
     <div className="confirm-pad">
       <div className="confirm-info">
-        {needsStart ? <span>{t('pad.roadStart')}</span> : null}
+        {needsStart ? <span>{t(tool.kind === 'road' ? 'pad.roadStart' : 'pad.demolishStart')}</span> : null}
         {tool.kind === 'parcel' && !evaluation.valid && !evaluation.issue ? <span>{t('pad.parcelHint')}</span> : null}
         {evaluation.cost ? (
           <span className="confirm-cost">

@@ -35,7 +35,7 @@ export function BuildMenuContent() {
     { label: t('tool.road'), cost: `${GAME_CONFIG.roadCostPerTile} ${t('tool.perTile')}`, tool: { kind: 'road', start: null, horizontalFirst: true } },
     { label: t('tool.crossing'), cost: <UrbsAmount value={GAME_CONFIG.crossingCost} />, tool: { kind: 'crossing' } },
     { label: t('tool.roundabout'), cost: <UrbsAmount value={GAME_CONFIG.roundaboutCost} />, tool: { kind: 'roundabout' } },
-    { label: t('tool.demolishRoad'), tool: { kind: 'demolishRoad' } },
+    { label: t('tool.demolishRoad'), tool: { kind: 'demolishRoad', start: null, horizontalFirst: true } },
   ];
   return (
     <>
