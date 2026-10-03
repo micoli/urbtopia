@@ -31,7 +31,7 @@ export class ChunkedWorld {
 
   private syncChunk(key: string, items: RenderItem[]): void {
     const signature = items
-      .map((item) => `${item.model}@${item.x},${item.z},${item.rotation}`)
+      .map((item) => `${item.model}@${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''}`)
       .sort()
       .join('|');
     if (this.chunks.get(key)?.signature === signature) return;
@@ -65,7 +65,8 @@ export class ChunkedWorld {
         if (!mesh.isMesh) return;
         const instanced = new THREE.InstancedMesh(mesh.geometry, mesh.material, modelItems.length);
         modelItems.forEach((item, index) => {
-          placement.makeRotationY((item.rotation * Math.PI) / 2).setPosition(item.x, 0, item.z);
+          const elevation = item.roofBase ? new THREE.Box3().setFromObject(this.library.get(item.roofBase)).applyMatrix4(fitMatrixOf(item.roofBase)).max.y : item.elevation ?? 0;
+          placement.makeRotationY((item.rotation * Math.PI) / 2).setPosition(item.x, elevation, item.z);
           combined.multiplyMatrices(placement, fit).multiply(mesh.matrixWorld);
           instanced.setMatrixAt(index, combined);
         });

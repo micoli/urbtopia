@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { hashSeed, nextRandom, totalCitizens, type Coord, type GameState } from '../core';
+import { hashSeed, nextRandom, totalCitizens, transportStats, type Coord, type GameState } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { buildRoadGraph, emptyRoadGraph, type RoadGraph } from './roadGraph';
 import { targetVehicleCount } from './trafficTarget';
@@ -52,7 +52,7 @@ export class TrafficLayer {
   sync(state: GameState): void {
     if (state.seed !== this.seed) this.reset(state.seed);
     if (state.roads !== this.roads || state.roundabouts !== this.roundabouts) this.rebuildGraph(state);
-    this.target = targetVehicleCount({ citizens: totalCitizens(state), roadTiles: this.roadTiles.length, touch: this.touch });
+    this.target = targetVehicleCount({ citizens: Math.max(0,totalCitizens(state)-transportStats(state).riders), roadTiles: this.roadTiles.length, touch: this.touch });
   }
 
   update(deltaSeconds: number, camera: THREE.Camera): void {
