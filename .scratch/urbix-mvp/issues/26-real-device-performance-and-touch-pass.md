@@ -6,12 +6,12 @@
 
 **Status:** ready-for-human
 
-- [ ] On a real phone, a city using most of the 128x128 map holds 60 fps at normal zoom and acceptable fps at maximum zoom-out (budget from ADR 0001: 47 fps measured at 250x250)
+- [x] On a real phone, a city using most of the 128x128 map holds 60 fps at normal zoom and acceptable fps at maximum zoom-out (budget from ADR 0001: 47 fps measured at 250x250) (see 2026-10-03 adb measurement)
 - [ ] Touch gestures verified on a real phone: one-finger pan, pinch, two-finger 90 degree twist snap
 - [ ] HUD layout C checked on screens under 600 px: enough map visible next to the dock and flyout; otherwise a phone-specific adjustment is ticketed
 - [ ] Layouts A and B checked on phone and tablet
 - [ ] Decision recorded on distance LOD and on shadows (enable only if needed)
-- [ ] Device model recorded with the measurements
+- [x] Device model recorded with the measurements
 - [ ] Findings appended to this file under `## Comments`
 
 ## Comments
@@ -101,3 +101,22 @@ For each: map area visible next to dock/flyout (< 600 px: enough?), nothing clip
 Found and fixed: `renderItemsOf` took ~1.2 s on this city (O(n²) `roadExits`, recomputed on every state change); now ~10 ms, and cached while buildings and roads are unchanged. Before the fix the page was frozen at x4.
 
 Still to look at: the once-per-second stall (likely the tick path with 37k Citizens).
+
+2026-10-03, real-device measurement over adb + CDP (script-driven, no hands on the phone):
+
+- Device: Samsung SM-F766B, Android 16, Chrome 154, 1080x2520 @ DPR 3 (360x699 CSS px), 120 Hz panel, battery 71 %, 32 C. Production build (`vite build` + `vite preview`), via `adb reverse`.
+- City: 7504 buildings, 5675 road tiles, 37530 Citizens, all 64 Parcels, Vehicles on. Fresh load, 12 s settle, 8 s per scenario, 5 min total.
+
+| Scenario | avg fps | p95 frame | worst frame | frames > 50 ms |
+|---|---|---|---|---|
+| Normal zoom, idle | 58.7 | 16.9 ms | 34 ms | 0 |
+| Normal zoom, key pan | 59.2 | 16.8 ms | 34 ms | 0 |
+| Max zoom-out, idle | 59.3 | 16.8 ms | 33 ms | 0 |
+| Max zoom-out, key pan | 59.7 | 16.8 ms | 33 ms | 0 |
+
+- Chrome paces `requestAnimationFrame` at 60 Hz when idle; the overlay read 98 fps right after a burst of `adb input swipe` pans, so there is headroom above 60. JS heap 23 MB.
+- No once-per-second stall on the device (it showed on the Mac under CPU throttling before the `renderItemsOf` fix).
+- Recommendation: distance LOD not needed, shadows stay off (the budget holds without them). Owner to confirm the decision.
+- Layout C at 360 CSS px: the dock takes about a fifth of the width and the map stays readable (screenshot checked). Not tested by hand.
+
+Still open (needs hands on the phone): one-finger pan feel, pinch, two-finger 90 degree twist, layouts A and B, tablet, FR/EN overflow, export/import on device.
