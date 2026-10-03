@@ -54,6 +54,7 @@ export type ErrorKey =
   | 'error.unknownBuilding'
   | 'error.outsideOwnedParcels'
   | 'error.tilesOccupied'
+  | 'error.homeExpansionBlocked'
   | 'error.needsRoad'
   | 'error.storehouseExists'
   | 'error.siloExists'
@@ -470,6 +471,7 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
       isMove: true,
       tier: nextTier,
     });
+    if (footprintIssue === 'error.tilesOccupied') return fail('error.homeExpansionBlocked');
     if (footprintIssue) return fail(footprintIssue);
   }
 

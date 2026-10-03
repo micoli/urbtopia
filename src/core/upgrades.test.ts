@@ -107,7 +107,18 @@ describe('UpgradeBuilding on a Home', () => {
     const upgraded = succeed(withHome, upgrade);
     expect(footprintTiles(homeOf(upgraded)!)).toHaveLength(2);
     const blocked = succeed(withHome, { type: 'PlaceBuilding', buildingType: 'powerPlant', x: 57, y: 59 });
-    expect(failureKey(blocked, upgrade)).toBe('error.tilesOccupied');
+    expect(failureKey(blocked, upgrade)).toBe('error.homeExpansionBlocked');
+  });
+
+  it('explains when a road blocks expansion without charging for the upgrade', () => {
+    const blocked: GameState = { ...withHome, roads: [...withHome.roads, { x: 57, y: 59, kind: 'road' }] };
+    const result = dispatch(blocked, upgrade, T0);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error.key).toBe('error.homeExpansionBlocked');
+    expect(blocked.urbs).toBe(withHome.urbs);
+    expect(blocked.storage.goods).toEqual(withHome.storage.goods);
+    expect(homeOf(blocked)?.tier).toBe(1);
   });
 
   it('is not refunded when the Home is sold', () => {

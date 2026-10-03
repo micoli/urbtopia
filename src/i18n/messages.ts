@@ -103,6 +103,7 @@ export const MESSAGES = {
   'error.unknownBuilding': 'This building does not exist.',
   'error.outsideOwnedParcels': 'Outside your Parcels.',
   'error.tilesOccupied': 'This place is already taken.',
+  'error.homeExpansionBlocked': 'This Home needs more space to upgrade. A road or building blocks its expansion: clear that space or move the Home.',
   'error.needsRoad': 'The front of this building must touch a road.',
   'error.storehouseExists': 'You already have a Storehouse.',
   'error.notEnoughUrbs': 'Not enough {U}.',

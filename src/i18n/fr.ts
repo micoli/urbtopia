@@ -105,6 +105,7 @@ export const FR: Record<MessageKey, string> = {
   'error.unknownBuilding': "Ce bâtiment n'existe pas.",
   'error.outsideOwnedParcels': 'En dehors de vos parcelles.',
   'error.tilesOccupied': 'Cet emplacement est déjà occupé.',
+  'error.homeExpansionBlocked': "Ce logement doit s’agrandir pour évoluer. Une route ou un bâtiment occupe l’espace nécessaire : libérez cet espace ou déplacez le logement.",
   'error.needsRoad': "La façade de ce bâtiment doit toucher une route.",
   'error.storehouseExists': 'Vous avez déjà un entrepôt.',
   'error.notEnoughUrbs': 'Pas assez de {U}.',
