@@ -5,6 +5,17 @@ const ZOOM_MIN = 16;
 const ZOOM_MAX = 90;
 const TWIST_SNAP = (35 * Math.PI) / 180;
 const KEY_PAN_SPEED = 14;
+const KEY_HOLD_DELAY = 0.3;
+const KEY_DIRECTIONS: Record<string, { x: number; z: number }> = {
+  arrowup: { x: 0, z: -1 },
+  w: { x: 0, z: -1 },
+  arrowdown: { x: 0, z: 1 },
+  s: { x: 0, z: 1 },
+  arrowleft: { x: -1, z: 0 },
+  a: { x: -1, z: 0 },
+  arrowright: { x: 1, z: 0 },
+  d: { x: 1, z: 0 },
+};
 const YAW_EASING = 12;
 const TAP_SLOP_PX = 8;
 const TAP_MAX_MS = 400;
@@ -19,7 +30,7 @@ export class CameraController {
   private lastPinchDistance = 0;
   private lastPinchAngle = 0;
   private twist = 0;
-  private keys = new Set<string>();
+  private keys = new Map<string, number>();
   private gesture = { startX: 0, startY: 0, startTime: 0, moved: false, multiTouch: false };
   onTap: (clientX: number, clientY: number) => void = () => {};
   private abort = new AbortController();
@@ -74,15 +85,23 @@ export class CameraController {
   }
 
   private applyKeys(deltaSeconds: number): void {
-    const horizontal = Number(this.keys.has('d') || this.keys.has('arrowright')) - Number(this.keys.has('a') || this.keys.has('arrowleft'));
-    const vertical = Number(this.keys.has('s') || this.keys.has('arrowdown')) - Number(this.keys.has('w') || this.keys.has('arrowup'));
-    if (!horizontal && !vertical) return;
-    const step = KEY_PAN_SPEED * deltaSeconds;
-    const gridYaw = Math.PI / 4 + Math.round((this.yawTarget - Math.PI / 4) / (Math.PI / 2)) * (Math.PI / 2);
-    const cos = Math.cos(gridYaw);
-    const sin = Math.sin(gridYaw);
-    this.focus.x += (horizontal * (cos + sin) + vertical * (sin - cos)) * (step / Math.SQRT2);
-    this.focus.z += (horizontal * (-sin + cos) + vertical * (cos + sin)) * (step / Math.SQRT2);
+    let x = 0;
+    let z = 0;
+    for (const [key, heldSeconds] of this.keys) {
+      this.keys.set(key, heldSeconds + deltaSeconds);
+      const direction = KEY_DIRECTIONS[key];
+      if (!direction || heldSeconds < KEY_HOLD_DELAY) continue;
+      x += direction.x;
+      z += direction.z;
+    }
+    if (!x && !z) return;
+    const step = (KEY_PAN_SPEED * deltaSeconds) / Math.hypot(x, z);
+    this.moveFocus(x * step, z * step);
+  }
+
+  private moveFocus(x: number, z: number): void {
+    this.focus.x += x;
+    this.focus.z += z;
     this.clampFocus();
     this.apply();
   }
@@ -125,14 +144,21 @@ export class CameraController {
     canvas.addEventListener('wheel', (event) => this.zoomBy(event.deltaY < 0 ? 1.1 : 0.9), { signal, passive: true });
     window.addEventListener('keydown', (event) => this.onKey(event, true), { signal });
     window.addEventListener('keyup', (event) => this.onKey(event, false), { signal });
+    window.addEventListener('blur', () => this.keys.clear(), { signal });
   }
 
   private onKey(event: KeyboardEvent, pressed: boolean): void {
     const key = event.key.toLowerCase();
     if (pressed && key === 'q') return this.rotate(-1);
     if (pressed && key === 'e') return this.rotate(1);
-    if (pressed) this.keys.add(key);
-    else this.keys.delete(key);
+    if (!pressed) {
+      this.keys.delete(key);
+      return;
+    }
+    const direction = KEY_DIRECTIONS[key];
+    if (!direction || event.repeat || this.keys.has(key)) return;
+    this.keys.set(key, 0);
+    this.moveFocus(direction.x, direction.z);
   }
 
   private onPointerDown(event: PointerEvent): void {
