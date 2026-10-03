@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
-import { App } from './ui/App';
-import { installFpsOverlay, isFpsOverlayRequested } from './ui/fpsOverlay';
-import { hideSplashAfterFailsafe } from './ui/splash';
+import { App } from './ui/layout/App';
+import { installFpsOverlay, isFpsOverlayRequested } from './ui/system/fpsOverlay';
+import { hideSplashAfterFailsafe } from './ui/system/splash';
 import { installPersistence } from './persistence/install';
 import { registerServiceWorker } from './pwa/registerServiceWorker';
 import { gameStore, isSimulation } from './store/gameStore';

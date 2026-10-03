@@ -1,5 +1,5 @@
 import { DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, type Building, type BuildingType, type FacilityType, type GameState, type ServiceCategory } from '../core';
-import { NATURE_MODELS, type NatureType } from '../core/nature';
+import { NATURE_MODELS, type NatureType } from '../core/environment/nature';
 import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
 import { SERVICE_VEHICLE_MODELS } from './serviceTrip';

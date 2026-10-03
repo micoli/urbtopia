@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { NATURE_MODELS, type NatureFamily } from '../core/nature';
+import { NATURE_MODELS, type NatureFamily } from '../core/environment/nature';
 
 const familiesByModel = new Map<string, NatureFamily>(NATURE_MODELS.map(([, model, family]) => [model, family]));
 const limits: Record<NatureFamily, { width: number; height: number }> = {

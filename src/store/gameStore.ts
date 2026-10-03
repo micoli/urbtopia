@@ -1,6 +1,6 @@
 import { createStore } from 'zustand/vanilla';
 import { advance, dispatch, newGame, type Command, type CommandError, type GameState } from '../core';
-import { restoreDeletion, type DeletionUndo } from '../core/undo';
+import { restoreDeletion, type DeletionUndo } from '../core/engine/undo';
 import { saveSession } from '../persistence/instance';
 import type { LoadResult } from '../persistence/saveSession';
 import { isSimulationRequested } from '../sim/simulationFlag';

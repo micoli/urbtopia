@@ -1,4 +1,4 @@
-import { NATURE_MODELS, type NatureType, type NatureFamily } from '../core/nature';
+import { NATURE_MODELS, type NatureType, type NatureFamily } from '../core/environment/nature';
 import { BUILDING_SPECS, ECOLOGY, ECOLOGY_UNLOCKS, FACILITY_TYPES, maxTierOf, type BuildingType, type FacilityType } from '../core';
 import { MESSAGES, type MessageKey } from '../i18n/messages';
 import { FR } from '../i18n/fr';

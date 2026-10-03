@@ -1,4 +1,4 @@
-import { NATURE_MODELS } from '../src/core/nature.ts';
+import { NATURE_MODELS } from '../src/core/environment/nature.ts';
 
 const natureFiles = (pack: string) => NATURE_MODELS.filter(([, model]) => model.startsWith(`${pack}/`)).map(([, model]) => model.slice(pack.length + 1));
 

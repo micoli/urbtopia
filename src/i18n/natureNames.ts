@@ -1,4 +1,4 @@
-import type { NatureType } from '../core/nature';
+import type { NatureType } from '../core/environment/nature';
 
 export const NATURE_NAMES = {
   "nature-cactus-short": ["Cactus short", "Cactus court"],

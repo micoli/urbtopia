@@ -1,7 +1,7 @@
 import { TransitLayer } from './TransitLayer';
 import * as THREE from 'three';
 import { energyStats, greenProfileOf, transportStats, footprintOf, tileKey, type GameState } from '../core';
-import { centerOf } from '../core/ecology';
+import { centerOf } from '../core/environment/ecology';
 import type { ModelLibrary } from './modelLibrary';
 import { poseOf } from './vehicleMotion';
 import { BUS_MODEL } from './busModel';

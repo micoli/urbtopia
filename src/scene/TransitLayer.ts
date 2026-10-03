@@ -2,7 +2,7 @@ import type { ModelLibrary } from './modelLibrary';
 import { TRAIN_MODELS } from './renderItems';
 import * as THREE from 'three';
 import { networkTiles, neighbour, tileKey, type GameState, type TransitVehicleKind } from '../core';
-import type { transitServices } from '../core/transitService';
+import type { transitServices } from '../core/transit/transitService';
 
 type Service = ReturnType<typeof transitServices>[number];
 

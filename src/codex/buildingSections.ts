@@ -1,4 +1,4 @@
-import { NATURE_TYPES } from '../core/nature';
+import { NATURE_TYPES } from '../core/environment/nature';
 import { FACILITIES, FACILITY_TYPES, SERVICE_CATEGORIES, type BuildingType } from '../core';
 
 const PUBLIC_FACILITY_TYPES = SERVICE_CATEGORIES.flatMap(category => FACILITY_TYPES.filter(type => FACILITIES[type].category === category));

@@ -1,5 +1,5 @@
 import { NATURE_NAMES } from './natureNames';
-import { NATURE_MODELS, NATURE_FAMILIES, type NatureFamily, type NatureType } from '../core/nature';
+import { NATURE_MODELS, NATURE_FAMILIES, type NatureFamily, type NatureType } from '../core/environment/nature';
 
 type NatureMessageKey = `building.${NatureType}` | `codex.description.nature.${NatureFamily}`;
 

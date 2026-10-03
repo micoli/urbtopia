@@ -1,0 +1,63 @@
+import { footprintTiles } from '../buildings/buildingSpecs';
+import { GAME_CONFIG } from '../engine/config';
+import type { Coord } from './coord';
+import { DIRECTIONS, DIRECTION_VECTORS, neighbour, tileKey, type Direction } from './geometry';
+import type { GameState } from '../engine/state';
+
+export function roundaboutTiles(center: Coord): Coord[] {
+  const radius = Math.floor(GAME_CONFIG.roundaboutSize / 2);
+  const tiles: Coord[] = [];
+  for (let dy = -radius; dy <= radius; dy++) {
+    for (let dx = -radius; dx <= radius; dx++) tiles.push({ x: center.x + dx, y: center.y + dy });
+  }
+  return tiles;
+}
+
+export function occupiedTiles(state: GameState, ignoreBuildingId?: number): Set<string> {
+  const occupied = new Set<string>();
+  for (const building of state.buildings) {
+    if (building.id === ignoreBuildingId) continue;
+    for (const tile of footprintTiles(building)) occupied.add(tileKey(tile));
+  }
+  for (const tile of [...(state.brtRoads ?? []), ...(state.rails ?? [])]) occupied.add(tileKey(tile));
+  for (const road of state.roads) occupied.add(tileKey(road));
+  for (const center of state.roundabouts) {
+    for (const tile of roundaboutTiles(center)) occupied.add(tileKey(tile));
+  }
+  return occupied;
+}
+
+export function isInsideOwnedParcels(state: GameState, tile: Coord): boolean {
+  const size = GAME_CONFIG.parcelSizeInTiles;
+  const parcelX = Math.floor(tile.x / size);
+  const parcelY = Math.floor(tile.y / size);
+  return state.ownedParcels.some((parcel) => parcel.x === parcelX && parcel.y === parcelY);
+}
+
+const roadKeysCache = new WeakMap<GameState['roads'], Set<string>>();
+
+function roadKeysOf(state: GameState): Set<string> {
+  const cached = roadKeysCache.get(state.roads);
+  if (cached) return cached;
+  const keys = new Set(state.roads.map(tileKey));
+  roadKeysCache.set(state.roads, keys);
+  return keys;
+}
+
+export function isRoadLike(state: GameState, tile: Coord): boolean {
+  if (roadKeysOf(state).has(tileKey(tile))) return true;
+  return state.roundabouts.some((center) => roundaboutTiles(center).some((t) => t.x === tile.x && t.y === tile.y));
+}
+
+function isRoundaboutExit(state: GameState, tile: Coord, towardTile: Direction): boolean {
+  const vector = DIRECTION_VECTORS[towardTile];
+  return state.roundabouts.some((center) => tile.x === center.x - vector.x && tile.y === center.y - vector.y);
+}
+
+export function roadExits(state: GameState, tile: Coord): Direction[] {
+  const roadKeys = roadKeysOf(state);
+  return DIRECTIONS.filter((direction) => {
+    const next = neighbour(tile, direction);
+    return roadKeys.has(tileKey(next)) || isRoundaboutExit(state, next, direction);
+  });
+}

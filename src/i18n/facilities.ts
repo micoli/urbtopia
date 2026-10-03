@@ -1,4 +1,4 @@
-import { FACILITIES, FACILITY_TYPES, MAX_FACILITY_TIER, facilityCapacity, SERVICE_CATEGORIES, type FacilityType, type ServiceCategory } from '../core/facilities';
+import { FACILITIES, FACILITY_TYPES, MAX_FACILITY_TIER, facilityCapacity, SERVICE_CATEGORIES, type FacilityType, type ServiceCategory } from '../core/services/facilities';
 
 type FacilityMessageKey = `building.${FacilityType}` | `codex.description.${FacilityType}` | `event.unlocked.${FacilityType}` | `service.${ServiceCategory}`;
 
