@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { fitMatrixOf } from './modelFit';
 import type { ModelLibrary } from './modelLibrary';
 import { chunkKeyOf, type RenderItem } from './renderItems';
 
@@ -55,13 +56,14 @@ export class ChunkedWorld {
     const placement = new THREE.Matrix4();
     const combined = new THREE.Matrix4();
     for (const [model, modelItems] of byModel) {
+      const fit = fitMatrixOf(model);
       this.library.get(model).traverse((node) => {
         const mesh = node as THREE.Mesh;
         if (!mesh.isMesh) return;
         const instanced = new THREE.InstancedMesh(mesh.geometry, mesh.material, modelItems.length);
         modelItems.forEach((item, index) => {
           placement.makeRotationY((item.rotation * Math.PI) / 2).setPosition(item.x, 0, item.z);
-          combined.multiplyMatrices(placement, mesh.matrixWorld);
+          combined.multiplyMatrices(placement, fit).multiply(mesh.matrixWorld);
           instanced.setMatrixAt(index, combined);
         });
         instanced.computeBoundingSphere();
