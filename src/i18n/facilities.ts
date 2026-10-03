@@ -1,4 +1,4 @@
-import { FACILITIES, FACILITY_TYPES, SERVICE_CATEGORIES, type FacilityType, type ServiceCategory } from '../core/facilities';
+import { FACILITIES, FACILITY_TYPES, MAX_FACILITY_TIER, facilityCapacity, SERVICE_CATEGORIES, type FacilityType, type ServiceCategory } from '../core/facilities';
 
 type FacilityMessageKey = `building.${FacilityType}` | `codex.description.${FacilityType}` | `event.unlocked.${FacilityType}` | `service.${ServiceCategory}`;
 
@@ -58,11 +58,16 @@ const categoryNames: Record<ServiceCategory, readonly [string, string]> = {
 };
 
 function coverageSentence(type: FacilityType, index: number): string {
-  const { radius, capacity, cost, unlockCitizens } = FACILITIES[type];
+  const { radius, cost, unlockCitizens, power, water } = FACILITIES[type];
+  const top = facilityCapacity(type, MAX_FACILITY_TIER);
+  const base = facilityCapacity(type, 1);
   const reach = radius === null ? ['Covers the whole city', 'Couvre toute la ville'][index] : [`Square reach of ${2 * radius} tiles`, `Portée carrée de ${2 * radius} cases`][index];
-  const served = capacity === null ? ['unlimited capacity', 'capacité illimitée'][index] : [`capacity ${capacity} Citizens (upgradable)`, `capacité ${capacity} citoyens (évolutive)`][index];
+  const served = base === null
+    ? ['unlimited capacity', 'capacité illimitée'][index]
+    : [`capacity ${base} Citizens, up to ${top} at Tier ${MAX_FACILITY_TIER}`, `capacité ${base} citoyens, jusqu’à ${top} au niveau ${MAX_FACILITY_TIER}`][index];
+  const demand = [`demand ${power} power${water ? ` and ${water} water` : ''}`, `consomme ${power} d’électricité${water ? ` et ${water} d’eau` : ''}`][index];
   const tail = [`unlocks at ${unlockCitizens} Citizens, costs ${cost} Urbs, no operating cost.`, `se débloque à ${unlockCitizens} citoyens, coûte ${cost} Urbs, sans coût de fonctionnement.`][index];
-  return `${reach}, ${served}; ${tail}`;
+  return `${reach}, ${served}; ${demand}; ${tail}`;
 }
 
 export function facilityMessages(language: 'en' | 'fr'): Record<FacilityMessageKey, string> {

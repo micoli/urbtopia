@@ -82,6 +82,8 @@ export function isWithinReach(dx: number, dy: number, radius: number): boolean {
 
 export const FACILITY_TIER_CAPACITY: readonly number[] = [1, 1.5, 2, 3, 4, 5.5, 7, 9];
 
+export const MAX_FACILITY_TIER = FACILITY_TIER_CAPACITY.length;
+
 const FACILITY_UPGRADE_COST_FACTORS: readonly number[] = [0.6, 1.2, 2.4, 4, 6, 9, 13];
 
 export function facilityCapacity(type: FacilityType, tier: number): number | null {

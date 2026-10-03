@@ -39,6 +39,21 @@ describe('codex coverage gate', () => {
     }
   });
 
+  it('states reach, capacity range, demand, unlock and cost in each Public facility description', () => {
+    for (const type of FACILITY_TYPES) {
+      const spec = FACILITIES[type];
+      const entry = CODEX_ENTRIES.find(item => item.id === type)!;
+      const english = MESSAGES[entry.description];
+      expect(english).toContain(spec.radius === null ? 'whole city' : `${2 * spec.radius} tiles`);
+      expect(english).toContain(`${spec.unlockCitizens} Citizens`);
+      expect(english).toContain(`${spec.cost} Urbs`);
+      expect(english).toContain(spec.capacity === null ? 'unlimited' : `Tier 8`);
+      expect(english).toContain(`demand ${spec.power} power`);
+      expect(FR[entry.description]).toContain(`${spec.cost} Urbs`);
+    }
+    expect(MESSAGES['codex.description.hospital']).toContain('2 water');
+  });
+
   it('requires a complete page for every constructible, including locked objects', () => {
     expect(() => validateCodex()).not.toThrow();
     const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...ROAD_CONSTRUCTIONS.map(item => item.id)];
