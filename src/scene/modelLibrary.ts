@@ -1,7 +1,7 @@
 import { fitNatureModel } from './natureModelFit';
 import { fitRailCorner } from './railModelFit';
 import * as THREE from 'three';
-import { RED_CROSS_MODEL } from './renderItems';
+import { GARAGE_DOOR_MODEL, RED_CROSS_MODEL } from './renderItems';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class ModelLibrary {
@@ -85,8 +85,9 @@ export class ModelLibrary {
 
   private load(key: string): Promise<void> {
     if (this.models.has(key)) return Promise.resolve();
-    if (key === RED_CROSS_MODEL) {
-      this.models.set(key, buildRedCross());
+    const procedural = key === RED_CROSS_MODEL ? buildRedCross : key === GARAGE_DOOR_MODEL ? buildGarageDoor : null;
+    if (procedural) {
+      this.models.set(key, procedural());
       return Promise.resolve();
     }
     const inFlight = this.pending.get(key);
@@ -107,6 +108,20 @@ function buildRedCross(): THREE.Object3D {
   const group = new THREE.Group();
   for (const [width, height] of [[0.5, 0.15], [0.15, 0.5]] as const) {
     group.add(new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.03), material));
+  }
+  group.updateMatrixWorld(true);
+  return group;
+}
+
+function buildGarageDoor(): THREE.Object3D {
+  const group = new THREE.Group();
+  const panel = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.36, 0.03), new THREE.MeshStandardMaterial({ color: 0xe6e6e6 }));
+  group.add(panel);
+  const slat = new THREE.MeshStandardMaterial({ color: 0x7d7d7d });
+  for (const y of [-0.12, -0.04, 0.04, 0.12]) {
+    const line = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.015, 0.035), slat);
+    line.position.y = y;
+    group.add(line);
   }
   group.updateMatrixWorld(true);
   return group;

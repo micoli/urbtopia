@@ -15,7 +15,7 @@ export interface RenderItem {
   textureVariant?: 'a' | 'b' | 'c';
   footprint?: number;
   recolor?: number;
-  decal?: { x: number; z: number };
+  decal?: { x: number; z: number; lateral?: number; height?: number };
   fitModel?: string;
   tint?: number;
 }
@@ -76,6 +76,11 @@ const CATEGORY_TINTS: Record<ServiceCategory, number> = {
 };
 
 export const RED_CROSS_MODEL = 'procedural/red-cross';
+export const GARAGE_DOOR_MODEL = 'procedural/garage-door';
+export const PROCEDURAL_MODELS: readonly string[] = [RED_CROSS_MODEL, GARAGE_DOOR_MODEL];
+
+const GARAGE_DOOR_SPACING = 0.6;
+const GARAGE_DOOR_HEIGHT = 0.27;
 
 const FACILITY_RECOLORS: Partial<Record<FacilityType, number>> = {
   hospital: 0xffffff,
@@ -83,7 +88,7 @@ const FACILITY_RECOLORS: Partial<Record<FacilityType, number>> = {
   policeStation: 0x2f5fd0,
 };
 
-const FOOTPRINT_BOOST: Partial<Record<FacilityType, number>> = { townHall: 1.3 };
+const FOOTPRINT_BOOST: Partial<Record<FacilityType, number>> = { townHall: 1.3, fireStation: 1.6 };
 
 export function facilityFootprint(building: Pick<Building, 'type'>): number | null {
   if (!isFacilityType(building.type)) return null;
@@ -142,7 +147,7 @@ let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; items: RenderItem
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   return a.length === b.length && a.every((item, index) => {
     const other = b[index] as RenderItem;
-    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.recolor === other.recolor && item.decal?.x === other.decal?.x && item.decal?.z === other.decal?.z && item.tint === other.tint;
+    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.recolor === other.recolor && item.decal?.x === other.decal?.x && item.decal?.z === other.decal?.z && item.decal?.lateral === other.decal?.lateral && item.tint === other.tint;
   });
 }
 
@@ -177,6 +182,14 @@ function redCrossItems(x: number, z: number, rotation: number, footprint: number
   return faces.map((face) => ({ model: RED_CROSS_MODEL, x, z, rotation, footprint, fitModel, decal: { x: face.x, z: face.y } }));
 }
 
+function garageDoorItems(x: number, z: number, rotation: number, footprint: number, fitModel: string): RenderItem[] {
+  const front = DIRECTION_VECTORS[frontDirection(rotation)];
+  return [-1, 0, 1].map((slot) => ({
+    model: GARAGE_DOOR_MODEL, x, z, rotation, footprint, fitModel,
+    decal: { x: front.x, z: front.y, lateral: slot * GARAGE_DOOR_SPACING, height: GARAGE_DOOR_HEIGHT },
+  }));
+}
+
 function buildingItems(state: GameState): RenderItem[] {
   return state.buildings.flatMap((building) => {
     const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
@@ -191,6 +204,7 @@ function buildingItems(state: GameState): RenderItem[] {
       items[0] = { ...items[0]!, footprint, fitModel: model, ...(recolor === undefined ? { tint: CATEGORY_TINTS[FACILITIES[building.type].category] } : { recolor }) };
       items.push({ model: FACILITY_DETAILS[building.type], x, z, rotation, footprint, fitModel: model });
       if (building.type === 'hospital') items.push(...redCrossItems(x, z, rotation, footprint, model));
+      if (building.type === 'fireStation') items.push(...garageDoorItems(x, z, rotation, footprint, model));
     }
     if (building.type === 'park') {
       items.push({ model: 'suburban/tree-small', x: x - width / 4, z: z - depth / 4, rotation });

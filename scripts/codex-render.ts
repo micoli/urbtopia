@@ -4,11 +4,11 @@ import { codexSnapshot } from '../src/codex/snapshot';
 import { ChunkedWorld } from '../src/scene/ChunkedWorld';
 import { EcologyLayer } from '../src/scene/EcologyLayer';
 import { ModelLibrary } from '../src/scene/modelLibrary';
-import { MODEL_KEYS, RED_CROSS_MODEL, renderItemsOf } from '../src/scene/renderItems';
+import { MODEL_KEYS, PROCEDURAL_MODELS, renderItemsOf } from '../src/scene/renderItems';
 
 validateCodex();
 const library = new ModelLibrary();
-await library.ensure([...MODEL_KEYS, RED_CROSS_MODEL]);
+await library.ensure([...MODEL_KEYS, ...PROCEDURAL_MODELS]);
 await library.ensureTextureVariants(['a', 'b', 'c']);
 const canvas = document.querySelector('canvas')!;
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });

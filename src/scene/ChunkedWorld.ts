@@ -34,7 +34,7 @@ export class ChunkedWorld {
 
   private syncChunk(key: string, items: RenderItem[]): void {
     const signature = items
-      .map((item) => `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}#${item.recolor ?? ''}#${item.decal?.x ?? ''}${item.decal?.z ?? ''}:${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.lengthScale ?? 1},${item.footprint ?? 0}`)
+      .map((item) => `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}#${item.recolor ?? ''}#${item.decal?.x ?? ''}${item.decal?.z ?? ''}${item.decal?.lateral ?? ''}:${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.lengthScale ?? 1},${item.footprint ?? 0}`)
       .sort()
       .join('|');
     if (this.chunks.get(key)?.signature === signature) return;
@@ -53,7 +53,8 @@ export class ChunkedWorld {
     const sizeZ = (box.max.z - box.min.z) * horizontal;
     const quarterTurn = item.rotation % 2 === 1;
     const reach = (Math.abs(decal.x) * (quarterTurn ? sizeZ : sizeX) + Math.abs(decal.z) * (quarterTurn ? sizeX : sizeZ)) / 2;
-    const position = new THREE.Vector3(item.x + decal.x * (reach + DECAL_OFFSET), box.max.y * vertical * DECAL_HEIGHT, item.z + decal.z * (reach + DECAL_OFFSET));
+    const lateral = (decal.lateral ?? 0) * horizontal;
+    const position = new THREE.Vector3(item.x + decal.x * (reach + DECAL_OFFSET) + decal.z * lateral, box.max.y * vertical * (decal.height ?? DECAL_HEIGHT), item.z + decal.z * (reach + DECAL_OFFSET) - decal.x * lateral);
     return target.makeRotationY(Math.atan2(decal.x, decal.z)).setPosition(position).multiply(new THREE.Matrix4().makeScale(horizontal, horizontal, horizontal));
   }
 
