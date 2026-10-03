@@ -37,6 +37,7 @@ npm run dev      # http://localhost:5173, prepares models and codex previews fir
 | `npm run assets:prototypes` | Copy the models the prototypes load |
 | `npm run codex:generate` | Generate static codex images; append `-- --force` to regenerate |
 | `npm run test:codex` | Browser checks against a production build, including mobile and offline access |
+| `npm run test:codex:images` | CI check that every codex image exists in the production build and is served |
 
 `dev` and `build` prepare models and codex previews first. Models come from the archives committed in `assets/kenney/`; the preview generator uses local Chromium and reuses unchanged output. After installing dependencies and Chromium, these steps work offline.
 

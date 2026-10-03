@@ -97,7 +97,7 @@ for (const layout of ['A', 'B', 'C']) {
   }
 }
 
-test('every codex page and evolution has a generated image in the deployed build', async ({ request }) => {
+test('every codex page and evolution has a generated image in the deployed build', { tag: '@images' }, async ({ request }) => {
   const response = await request.get('/codex/manifest.json');
   expect(response.ok()).toBe(true);
   const manifest = await response.json() as CodexManifest;
@@ -113,10 +113,15 @@ test('every codex page and evolution has a generated image in the deployed build
       expect(image.ok(), `${entry.id}, level ${level}`).toBe(true);
     }
   }
+});
+
+test('codex previews are included in the offline cache', async ({ request }) => {
+  const response = await request.get('/codex/manifest.json');
+  const manifest = await response.json() as CodexManifest;
   const worker = await request.get('/sw.js');
   const source = await worker.text();
   expect(source).toContain('./codex/manifest.json');
-  for (const file of visited) expect(source).toContain(`./codex/${file}`);
+  for (const file of new Set(Object.values(manifest.images))) expect(source).toContain(`./codex/${file}`);
 });
 
 test('codex previews remain available offline after PWA installation', async ({ page, context }) => {

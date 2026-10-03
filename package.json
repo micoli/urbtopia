@@ -15,6 +15,7 @@
     "prebuild": "npm run assets && npm run codex:generate",
     "codex:generate": "node scripts/generate-codex.ts",
     "test:codex": "playwright test",
+    "test:codex:images": "playwright test --grep @images",
     "assets:fetch": "node scripts/fetch-assets.ts",
     "assets:prototypes": "node scripts/prototype-assets.ts",
     "preview": "vite preview"
