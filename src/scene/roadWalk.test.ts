@@ -39,3 +39,15 @@ describe('chooseNextTile', () => {
     expect(chooseNextTile(alone, { x: 8, y: 8 }, null, 0.5)).toEqual({ x: 8, y: 8 });
   });
 });
+
+describe('chooseNextTile on a roundabout', () => {
+  const state: GameState = { ...newGame({ now: 0, seed: 'test' }), roads: [{ x: 8, y: 10, kind: 'road' }], roundabouts: [{ x: 10, y: 10 }] };
+  const graph = buildRoadGraph(state);
+  const arrivingFromAbove = { x: 9, y: 9 };
+  const sideMiddle = { x: 9, y: 10 };
+
+  it('leaves by the side road or keeps circling depending on the random value', () => {
+    expect(chooseNextTile(graph, sideMiddle, arrivingFromAbove, 0.1)).toEqual({ x: 9, y: 11 });
+    expect(chooseNextTile(graph, sideMiddle, arrivingFromAbove, 0.9)).toEqual({ x: 8, y: 10 });
+  });
+});

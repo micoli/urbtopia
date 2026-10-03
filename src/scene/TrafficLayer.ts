@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { hashSeed, nextRandom, totalCitizens, type Coord, type GameState } from '../core';
 import type { ModelLibrary } from './modelLibrary';
-import { buildRoadGraph, type RoadGraph } from './roadGraph';
+import { buildRoadGraph, emptyRoadGraph, type RoadGraph } from './roadGraph';
 import { targetVehicleCount } from './trafficTarget';
 import { VEHICLE_MODELS } from './vehicleModels';
 import { advanceVehicle, isOnRoad, poseOf, startVehicle, type Vehicle } from './vehicleMotion';
@@ -22,7 +22,7 @@ export class TrafficLayer {
   readonly root = new THREE.Group();
   private models: ModelMeshes[] = [];
   private vehicles: Vehicle[] = [];
-  private graph: RoadGraph = new Map();
+  private graph: RoadGraph = emptyRoadGraph();
   private roadTiles: Coord[] = [];
   private roads: GameState['roads'] | null = null;
   private roundabouts: GameState['roundabouts'] | null = null;
