@@ -1015,3 +1015,23 @@ textarea {
   top: env(safe-area-inset-top, 0);
   bottom: auto;
 }
+
+button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg); }
+.eco-dashboard { width: min(850px, calc(100vw - 24px)); max-height: calc(100dvh - 32px); overflow: auto; background: #f7faf4; color: #203126; border-radius: 16px; padding: 20px; box-shadow: 0 12px 60px #0005; }
+.eco-dashboard header { display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: -20px; padding: 12px 0; background: #f7faf4; z-index: 1; }
+.eco-dashboard section { border-top: 1px solid #b9cfbf; padding: 12px 0; }
+.eco-dashboard h2, .eco-dashboard h3 { margin: 0 0 10px; }
+.eco-dashboard p { line-height: 1.5; }
+.eco-dashboard button { padding: 9px 12px; margin: 4px; min-height: 44px; cursor: pointer; }
+.eco-dashboard button:disabled { opacity: .5; cursor: default; }
+.eco-dashboard table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.eco-dashboard td, .eco-dashboard th { text-align: left; padding: 8px; border-bottom: 1px solid #dae5dc; }
+.eco-dashboard dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
+.eco-dashboard dl div { background: #e7f0e8; padding: 10px; border-radius: 8px; }
+.eco-dashboard dd { margin: 4px 0 0; font-weight: bold; }
+.eco-counts, .eco-stop-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.eco-counts span { padding: 6px; background: #e7f0e8; border-radius: 6px; }
+.eco-line { border: 1px solid #b9cfbf; border-radius: 8px; padding: 10px; margin: 8px 0; }
+.eco-dashboard aside { border-left: 4px solid #b28a22; padding: 10px; background: #fff7dd; }
+.eco-dashboard :focus-visible { outline: 3px solid #26774e; outline-offset: 3px; }
+@media (max-width: 600px) { .eco-dashboard { padding: 12px; } .eco-dashboard header { top: -12px; } .eco-dashboard table { font-size: .75rem; } }

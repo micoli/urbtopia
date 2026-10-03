@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { GAME_CONFIG, placementCost, type BuildingType } from '../core';
+import { ECOLOGY_UNLOCKS, ECOLOGY, totalCitizens, GAME_CONFIG, placementCost, type BuildingType } from '../core';
 import { t } from '../i18n/t';
 import type { Tool } from '../tools/tools';
 import { FlyoutItem } from './FlyoutItem';
@@ -7,9 +7,10 @@ import { useGame, useUi } from './hooks';
 import { guideOf } from './tutorialGuide';
 import { UrbsAmount } from './UrbsAmount';
 
-const BUILDING_ORDER: BuildingType[] = ['workshop', 'factory', 'shop', 'storehouse', 'silo', 'vault', 'home', 'powerPlant', 'waterTower'];
+const BUILDING_ORDER: BuildingType[] = ['workshop', 'factory', 'shop', 'storehouse', 'silo', 'vault', 'home', 'powerPlant', 'waterTower', 'tree', 'park', 'solar', 'battery', 'backup', 'busStop'];
 
 export function BuildMenuContent() {
+  const citizens = useGame(store => totalCitizens(store.state));
   const flyout = useUi((store) => store.flyout);
   const chooseTool = useUi((store) => store.chooseTool);
   const guide = guideOf(useGame((store) => store.state.tutorial));
@@ -18,7 +19,8 @@ export function BuildMenuContent() {
   if (flyout === 'build') {
     return (
       <>
-        {BUILDING_ORDER.map((type) => (
+        {citizens >= 15 && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true })} />}
+        {BUILDING_ORDER.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0)).map((type) => (
           <FlyoutItem
             key={type}
             label={t(`building.${type}`)}

@@ -1,3 +1,4 @@
+import { EcologicalBuildingPanel } from './EcologicalBuildingPanel';
 import { GAME_CONFIG, isStorageType, placementCost } from '../core';
 import { t } from '../i18n/t';
 import { HomePanel } from './HomePanel';
@@ -30,6 +31,7 @@ export function SelectionContent() {
       {building.type === 'shop' ? <ShopPanel building={building} /> : null}
       {isStorageType(building.type) ? <StoragePanel building={building} /> : null}
       {building.type === 'powerPlant' || building.type === 'waterTower' ? <UtilityPanel building={building} type={building.type} /> : null}
+      {['tree','park','solar','battery','backup','busStop'].includes(building.type) || (building.type === 'home' && building.solar) ? <EcologicalBuildingPanel building={building} /> : null}
       <div className="side-panel-actions">
         <button type="button" onClick={moveSelected}>
           {t('panel.move')}

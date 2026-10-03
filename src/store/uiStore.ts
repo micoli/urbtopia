@@ -17,6 +17,8 @@ export interface UiStore {
   hovered: Coord | null;
   selectedBuildingId: number | null;
   flyout: Flyout;
+  statsOpen: boolean;
+  toggleStats: () => void;
   marketOpen: boolean;
   menuOpen: boolean;
   pendingSaleId: number | null;
@@ -61,6 +63,11 @@ export const uiStore = createStore<UiStore>((set, get) => {
     hovered: null,
     selectedBuildingId: null,
     flyout: null,
+    statsOpen: false,
+    toggleStats: () => {
+      if (!get().statsOpen) get().cancelTool();
+      set({ statsOpen: !get().statsOpen, flyout: null });
+    },
     marketOpen: false,
     menuOpen: false,
     pendingSaleId: null,

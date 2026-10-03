@@ -32,7 +32,10 @@ export function SceneCanvas() {
     scene.setState(gameStore.getState().state);
     scene.setGhost(uiStore.getState().evaluation?.ghost ?? null);
     scene.setTrafficEnabled(prefsStore.getState().traffic);
-    const showSelection = () => scene.setSelection(selectionGhost(gameStore.getState().state, uiStore.getState().selectedBuildingId));
+    const showSelection = () => {
+      scene.setSelection(selectionGhost(gameStore.getState().state, uiStore.getState().selectedBuildingId));
+      scene.setEcologicalSelection(uiStore.getState().selectedBuildingId);
+    };
     showSelection();
     const unsubscribeGame = gameStore.subscribe((store) => {
       scene.setState(store.state);
