@@ -1,9 +1,10 @@
+import type { Direction } from './geometry';
 import type { Coord } from './coord';
 import type { GoodId, ItemId, MaterialId } from './items';
 import type { RoadKind } from './roads';
 import type { TutorialStep } from './tutorial';
 
-export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'waterTower' | 'silo' | 'vault' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop';
+export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'waterTower' | 'silo' | 'vault' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop' | 'brtStation' | 'railStation';
 
 export type Rotation = 0 | 1 | 2 | 3;
 
@@ -57,7 +58,28 @@ export interface BusLine {
   stops: number[];
 }
 
+export type TransitMode = 'bus' | 'brt' | 'rail';
+export type TransitVehicleKind = 'brtElectric' | 'trainElectric' | 'trainCoal';
+export interface TransitVehicle {
+  id: number;
+  kind: TransitVehicleKind;
+  purchasePrice: number;
+  lineId?: number;
+}
+export interface TransitLine extends BusLine {
+  mode: 'brt' | 'rail';
+  peakHeadway: number;
+  offPeakHeadway: number;
+}
+export interface TransitTile extends Coord {
+  exits: Direction[];
+}
+
 export interface GameState {
+  brtRoads?: TransitTile[];
+  rails?: TransitTile[];
+  transitLines?: TransitLine[];
+  transitFleet?: TransitVehicle[];
   timeOffset?: number;
   busLines?: BusLine[];
   adaptationUntil?: number;

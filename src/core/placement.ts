@@ -22,6 +22,8 @@ export function frontTiles(type: BuildingType, x: number, y: number, rotation: R
 }
 
 export function frontTouchesRoad(state: GameState, type: BuildingType, x: number, y: number, rotation: Rotation, tier = 1): boolean {
+  const network = type === 'brtStation' ? state.brtRoads : type === 'railStation' ? state.rails : undefined;
+  if (type === 'brtStation' || type === 'railStation') return frontTiles(type, x, y, rotation, tier).some(tile => (network ?? []).some(p => tileKey(p) === tileKey(tile)));
   return frontTiles(type, x, y, rotation, tier).some((tile) => isRoadLike(state, tile));
 }
 

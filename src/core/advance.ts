@@ -36,7 +36,7 @@ function replay(state: GameState, until: number): AdvanceResult {
       current = caught.state;
       events.push(...caught.events);
     }
-    const energy = energyStats(current, now), transport = transportStats(current);
+    const energy = energyStats(current, now), transport = transportStats(current, now);
     let end = Math.min(until, (Math.floor((now + (current.timeOffset ?? 0)) / ECOLOGY.hourMs) + 1) * ECOLOGY.hourMs - (current.timeOffset ?? 0));
     if ((current.adaptationUntil ?? 0) > now) end = Math.min(end, current.adaptationUntil!);
     const batteryEnds = new Map<number, number>();
@@ -58,10 +58,12 @@ function replay(state: GameState, until: number): AdvanceResult {
     const cost = energy.costPerHour + transport.costPerHour;
     const budgetEnd = cost > 0 ? now + current.urbs / cost * ECOLOGY.hourMs : Infinity;
     end = Math.min(end, budgetEnd);
+    const coalEnd = transport.coalPerHour > 0 ? now + (current.storage.materials.coal ?? 0) / transport.coalPerHour * ECOLOGY.hourMs : Infinity;
+    end = Math.min(end, coalEnd);
     const elapsed = end - now;
     if (elapsed <= 0) {
       current = {
-        ...current, urbs: budgetEnd <= now ? 0 : current.urbs,
+        ...current, storage: coalEnd <= now ? { ...current.storage, materials: { ...current.storage.materials, coal: 0 } } : current.storage, urbs: budgetEnd <= now ? 0 : current.urbs,
         buildings: current.buildings.map(b => updateBattery(b, energy.batteryRates.get(b.id) ?? 0, batteryEnds.get(b.id), now, 0))
       };
       continue;
@@ -71,7 +73,7 @@ function replay(state: GameState, until: number): AdvanceResult {
     const produced = advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios);
     events.push(...produced.events);
     current = {
-      ...produced.state, lastSeen: end, urbs: end === budgetEnd ? 0 : Math.max(0, current.urbs - cost * elapsed / ECOLOGY.hourMs),
+      ...produced.state, storage: transport.coalPerHour > 0 ? { ...produced.state.storage, materials: { ...produced.state.storage.materials, coal: end === coalEnd ? 0 : remainingCoal(current, transport.coalPerHour, elapsed) } } : produced.state.storage, lastSeen: end, urbs: end === budgetEnd ? 0 : Math.max(0, current.urbs - cost * elapsed / ECOLOGY.hourMs),
       buildings: produced.state.buildings.map(b => updateBattery(b, energy.batteryRates.get(b.id) ?? 0, batteryEnds.get(b.id), end, elapsed))
     };
   }
@@ -85,4 +87,9 @@ function updateBattery(building: Building, rate: number, boundary: number | unde
     ? rate > 0 ? ECOLOGY.batteryCapacity : 0
     : Math.max(0, Math.min(ECOLOGY.batteryCapacity, (building.storedEnergy ?? 0) + rate * elapsedMs / ECOLOGY.hourMs));
   return { ...building, storedEnergy };
+}
+
+function remainingCoal(state: GameState, rate: number, elapsed: number): number {
+  const remaining = (state.storage.materials.coal ?? 0) - rate * elapsed / ECOLOGY.hourMs;
+  return remaining < 1e-9 ? 0 : remaining;
 }

@@ -44,3 +44,6 @@ export { ECOLOGY, ECOLOGY_UNLOCKS, homePower, economicPower, greenBenefits, city
 export { energyStats, productionFactors } from './energy';
 export { transportStats, routeForLine } from './transport';
 export type { BusLine } from './state';
+
+export { TRANSIT, networkTiles, networkNeighbours, validNetworkCrossings, extendNetwork } from './transitNetwork';
+export type { TransitLine, TransitMode, TransitTile, TransitVehicle, TransitVehicleKind } from './state';

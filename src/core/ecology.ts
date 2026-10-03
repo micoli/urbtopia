@@ -9,7 +9,7 @@ export const ECOLOGY = {
 };
 
 export const ECOLOGY_UNLOCKS: Partial<Record<BuildingType, number>> = {
-  tree: 6, park: 15, solar: 32, battery: 32, backup: 32, busStop: 32,
+  brtStation: 200, railStation: 600, tree: 6, park: 15, solar: 32, battery: 32, backup: 32, busStop: 32,
 };
 
 export function citizenCount(state: GameState): number {

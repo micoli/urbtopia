@@ -20,6 +20,8 @@ export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
   solar: { footprint: { width: 2, depth: 2 }, cost: 400, requiresRoad: false, initialSlots: 0 },
   battery: { footprint: { width: 1, depth: 1 }, cost: 350, requiresRoad: false, initialSlots: 0 },
   backup: { footprint: { width: 2, depth: 2 }, cost: 500, requiresRoad: false, initialSlots: 0 },
+  brtStation: { footprint: { width: 1, depth: 1 }, cost: 180, requiresRoad: true, initialSlots: 0 },
+  railStation: { footprint: { width: 2, depth: 1 }, cost: 600, requiresRoad: true, initialSlots: 0 },
   busStop: { footprint: { width: 1, depth: 1 }, cost: 60, requiresRoad: true, initialSlots: 0 },
   workshop: { footprint: { width: 2, depth: 2 }, cost: 100, requiresRoad: true, initialSlots: 2 },
   factory: { footprint: { width: 2, depth: 2 }, cost: 250, requiresRoad: true, initialSlots: 2 },

@@ -1,8 +1,12 @@
 {
   "format": "urbtopia-save",
-  "version": 4,
+  "version": 5,
   "savedAt": 1790000000000,
   "state": {
+    "brtRoads": [],
+    "rails": [],
+    "transitLines": [],
+    "transitFleet": [],
     "busLines": [],
     "adaptationUntil": 1790086400000,
     "seed": "golden-owl-1752",

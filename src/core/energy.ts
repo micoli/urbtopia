@@ -1,3 +1,4 @@
+import { transitServices } from './transitService';
 import { ECOLOGY, distance, economicPower, homePower } from './ecology';
 import { UTILITY_CAPACITY } from './economy';
 import type { Building, GameState } from './state';
@@ -12,6 +13,8 @@ export function productionFactors(now: number) {
 }
 
 export function energyStats(state: GameState, now = state.lastSeen) {
+  const transitDemand = transitServices(state, now).reduce((n, line) => n + line.powerDemand, 0);
+  let transitSupplied: number;
   const buildings = [...state.buildings].sort((a, b) => a.id - b.id);
   const homes = buildings.filter(b => b.type === 'home'), economic = buildings.filter(b => economicPower(b) > 0);
   const factors = productionFactors(now + (state.timeOffset ?? 0));
@@ -46,6 +49,7 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   };
   let grid = [...surplus.values()].reduce((n, x) => n + x, 0);
   grid -= distribute(homes, grid); grid -= distribute(economic, grid);
+  transitSupplied = Math.min(grid, transitDemand); grid -= transitSupplied;
   const beforeGrid = [...surplus.values()].reduce((n, x) => n + x, 0);
   for (const source of generation) surplus.set(source.id, beforeGrid > 0 ? (surplus.get(source.id) ?? 0) * grid / beforeGrid : 0);
   const batteries = buildings.filter(b => b.type === 'battery');
@@ -56,6 +60,8 @@ export function energyStats(state: GameState, now = state.lastSeen) {
     const discharge = (battery.storedEnergy ?? 0) > 1e-9 ? Math.min(ECOLOGY.batteryRate, missing) : 0;
     let used = distribute(nearby.filter(b => b.type === 'home'), discharge);
     used += distribute(nearby.filter(b => b.type !== 'home'), discharge - used);
+    const transitDischarge = (battery.storedEnergy ?? 0) > 1e-9 ? Math.min(ECOLOGY.batteryRate - used, transitDemand - transitSupplied) : 0;
+    transitSupplied += transitDischarge; used += transitDischarge;
     batteryRates.set(battery.id, -used);
     if (used > 0 || grid <= 0 || (battery.storedEnergy ?? 0) >= ECOLOGY.batteryCapacity - 1e-9) continue;
     let charge = 0;
@@ -65,17 +71,19 @@ export function energyStats(state: GameState, now = state.lastSeen) {
     }
     batteryRates.set(battery.id, charge); grid -= charge;
   }
-  const missing = [...need.values()].reduce((n, x) => n + x, 0);
+  const missing = [...need.values()].reduce((n, x) => n + x, 0) + transitDemand - transitSupplied;
   const backup = state.urbs > 1e-9 ? Math.min(missing, buildings.filter(b => b.type === 'backup').length * ECOLOGY.backupCapacity) : 0;
   let backed = distribute(homes, backup); backed += distribute(economic, backup - backed);
-  const demand = homes.reduce((n, b) => n + homePower(b), 0) + economic.reduce((n, b) => n + economicPower(b), 0);
+  const transitBackup = Math.min(backup - backed, transitDemand - transitSupplied);
+  transitSupplied += transitBackup; backed += transitBackup;
+  const demand = homes.reduce((n, b) => n + homePower(b), 0) + economic.reduce((n, b) => n + economicPower(b), 0) + transitDemand;
   const economicDemand = economic.reduce((n, b) => n + economicPower(b), 0);
   const economicSupplied = economic.reduce((n, b) => n + (supplied.get(b.id) ?? 0), 0);
   const solar = generation.filter(b => b.type !== 'powerPlant').reduce((n, b) => n + output(b), 0);
   const wind = generation.filter(b => b.type === 'powerPlant').reduce((n, b) => n + output(b), 0);
   return {
-    demand, solar, wind, backup: backed, supplied, transfers, batteryRates, surplus: grid,
-    unmet: [...need.values()].reduce((n, x) => n + x, 0), economicRatio: economicDemand > 0 ? economicSupplied / economicDemand : 1,
+    demand, transitDemand, transitSupplied, transitRatio: transitDemand > 0 ? transitSupplied / transitDemand : 1, solar, wind, backup: backed, supplied, transfers, batteryRates, surplus: grid,
+    unmet: [...need.values()].reduce((n, x) => n + x, 0) + transitDemand - transitSupplied, economicRatio: economicDemand > 0 ? economicSupplied / economicDemand : 1,
     costPerHour: backed * ECOLOGY.backupCost, emissions: backed * 2,
     stored: batteries.reduce((n, b) => n + (b.storedEnergy ?? 0), 0), storageCapacity: batteries.length * ECOLOGY.batteryCapacity
   };

@@ -14,6 +14,7 @@ export interface NewGameOptions {
 export function newGame(options: NewGameOptions): GameState {
   const seed = options.seed ?? generateSeed(options.now);
   const empty: GameState = {
+    brtRoads: [], rails: [], transitLines: [], transitFleet: [],
     busLines: [],
     adaptationUntil: options.now + 24 * 3_600_000,
     seed,

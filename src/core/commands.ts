@@ -1,3 +1,4 @@
+import { TRANSIT, extendNetwork, networkTiles, validNetworkCrossings } from './transitNetwork';
 import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from './ecology';
 import { routeForLine } from './transport';
 import { BUILDING_SPECS, createBuilding, emptyStack, placementCost } from './buildingSpecs';
@@ -21,11 +22,18 @@ import { roadBuildCost, missingRoadTiles } from './roadCost';
 import { roadPath } from './roads';
 import { maxTierOf, productionTierOf, upgradeCostOf } from './tiers';
 import { canRemoveStorage, hasStorage, isStorageType, storageCapacity, storageUsed } from './storage';
-import type { Building, BuildingType, GameState, QueueEntry, Rotation } from './state';
+import type { Building, BuildingType, GameState, QueueEntry, Rotation, TransitLine, TransitVehicleKind } from './state';
 
 const HOUR_MS = 60 * 60 * 1000;
 
 export type Command =
+  | { readonly type: 'BuildTransit'; readonly mode: 'brt' | 'rail'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
+  | { readonly type: 'DemolishTransit'; readonly mode: 'brt' | 'rail'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
+  | { readonly type: 'SetTransitLine'; readonly id?: number; readonly mode: 'brt' | 'rail'; readonly stops: number[]; readonly peakHeadway: number; readonly offPeakHeadway: number }
+  | { readonly type: 'DeleteTransitLine'; readonly id: number }
+  | { readonly type: 'BuyTransitVehicle'; readonly kind: TransitVehicleKind }
+  | { readonly type: 'SellTransitVehicle'; readonly id: number }
+  | { readonly type: 'AssignTransitVehicle'; readonly id: number; readonly lineId?: number }
   | { readonly type: 'BuildRoad'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'PlaceCrossing'; readonly x: number; readonly y: number }
   | { readonly type: 'PlaceRoundabout'; readonly x: number; readonly y: number }
@@ -104,6 +112,14 @@ const fail = (key: ErrorKey): CommandError => ({ key });
 export function handleCommand(state: GameState, command: Command, now: number): CommandOutcome {
   if (!tutorialAllows(state, command)) return fail('error.tutorialLocked');
   switch (command.type) {
+    case 'BuildTransit':
+    case 'DemolishTransit':
+    case 'SetTransitLine':
+    case 'DeleteTransitLine':
+    case 'BuyTransitVehicle':
+    case 'SellTransitVehicle':
+    case 'AssignTransitVehicle':
+      return transitCommand(state, command);
     case 'BuildRoad':
       return buildRoad(state, command.from, command.to, command.horizontalFirst ?? true);
     case 'PlaceCrossing':
@@ -180,9 +196,12 @@ function buildRoad(state: GameState, from: Coord, to: Coord, horizontalFirst: bo
   if (!path.every((tile) => isInsideOwnedParcels(state, tile))) return fail('error.outsideOwnedParcels');
   const blocked = occupiedTiles(state);
   const missing = missingRoadTiles(state, path);
-  if (missing.some((tile) => blocked.has(tileKey(tile)))) return fail('error.tilesOccupied');
+  const dedicated = new Set([...(state.brtRoads ?? []), ...(state.rails ?? [])].map(tileKey));
+  if (missing.some((tile) => blocked.has(tileKey(tile)) && !dedicated.has(tileKey(tile)))) return fail('error.tilesOccupied');
   const cost = roadBuildCost(state, path);
   if (state.urbs < cost) return fail('error.notEnoughUrbs');
+  const proposed = { ...state, roads: [...state.roads, ...missing.map(tile => ({ ...tile, kind: 'road' as const }))] };
+  if (!validNetworkCrossings(proposed)) return fail('error.invalidCrossing');
   return {
     state: { ...state, urbs: state.urbs - cost, roads: [...state.roads, ...missing.map((tile) => ({ ...tile, kind: 'road' as const }))] },
     events: [{ type: 'RoadBuilt', tiles: missing.length }],
@@ -229,7 +248,7 @@ function demolishRoad(state: GameState, tiles: Coord[]): CommandOutcome {
     roundabouts: state.roundabouts.filter((center) => !roundabouts.includes(center)),
   };
   const orphaned = next.buildings.some(
-    (building) => building.type !== 'busStop' && BUILDING_SPECS[building.type].requiresRoad && !frontTouchesRoad(next, building.type, building.x, building.y, building.rotation, building.tier),
+    (building) => !['busStop', 'brtStation', 'railStation'].includes(building.type) && BUILDING_SPECS[building.type].requiresRoad && !frontTouchesRoad(next, building.type, building.x, building.y, building.rotation, building.tier),
   );
   if (orphaned) return fail('error.lastRoadOfBuilding');
   return { state: next, events: [] };
@@ -517,4 +536,45 @@ function setBusLine(state: GameState, id: number | undefined, stops: number[]): 
   const line = { id: id ?? state.nextId, stops };
   if (!routeForLine(state, line)) return fail('error.invalidBusLine');
   return { state: { ...state, nextId: id === undefined ? state.nextId + 1 : state.nextId, busLines: [...(state.busLines ?? []).filter(l => l.id !== line.id), line] }, events: [] };
+}
+
+function transitCommand(state: GameState, command: Extract<Command, { type: 'BuildTransit' | 'DemolishTransit' | 'SetTransitLine' | 'DeleteTransitLine' | 'BuyTransitVehicle' | 'SellTransitVehicle' | 'AssignTransitVehicle' }>): CommandOutcome {
+  const lines = state.transitLines ?? [], fleet = state.transitFleet ?? [];
+  if (command.type === 'BuildTransit') {
+    if (citizenCount(state) < TRANSIT[command.mode].unlock) return fail('error.itemLocked');
+    const result = extendNetwork(state, command.mode, command.from, command.to, command.horizontalFirst ?? true);
+    if ('key' in result) return result;
+    if (state.urbs < result.cost) return fail('error.notEnoughUrbs');
+    return { state: { ...state, urbs: state.urbs - result.cost, [command.mode === 'brt' ? 'brtRoads' : 'rails']: result.tiles }, events: [] };
+  }
+  if (command.type === 'DemolishTransit') {
+    if (![command.from.x, command.from.y, command.to.x, command.to.y].every(n => Number.isSafeInteger(n) && n >= 0) || !isInsideOwnedParcels(state, command.from) || !isInsideOwnedParcels(state, command.to)) return fail('error.outsideOwnedParcels');
+    const targets = new Set(roadPath(command.from, command.to, command.horizontalFirst ?? true).map(tileKey));
+    const tiles = networkTiles(state, command.mode).filter(p => !targets.has(tileKey(p)));
+    if (tiles.length === networkTiles(state, command.mode).length) return fail('error.noRoadHere');
+    return { state: { ...state, [command.mode === 'brt' ? 'brtRoads' : 'rails']: tiles }, events: [] };
+  }
+  if (command.type === 'DeleteTransitLine') return { state: { ...state, transitLines: lines.filter(l => l.id !== command.id), transitFleet: fleet.map(v => v.lineId === command.id ? { ...v, lineId: undefined } : v) }, events: [] };
+  if (command.type === 'SetTransitLine') {
+    if (citizenCount(state) < TRANSIT[command.mode].unlock) return fail('error.itemLocked');
+    if (![command.peakHeadway, command.offPeakHeadway].every(n => Number.isFinite(n) && n > 0 && n <= 60)) return fail('error.invalidQuantity');
+    if (command.mode === 'brt' && (command.peakHeadway < 5 || command.peakHeadway > 10 || command.offPeakHeadway < 10 || command.offPeakHeadway > 15)) return fail('error.invalidQuantity');
+    if (command.id !== undefined && !lines.some(l => l.id === command.id && l.mode === command.mode)) return fail('error.invalidBusLine');
+    const line: TransitLine = { id: command.id ?? state.nextId, mode: command.mode, stops: command.stops, peakHeadway: command.peakHeadway, offPeakHeadway: command.offPeakHeadway };
+    if (!routeForLine(state, line)) return fail('error.invalidBusLine');
+    return { state: { ...state, nextId: command.id === undefined ? state.nextId + 1 : state.nextId, transitLines: [...lines.filter(l => l.id !== line.id), line] }, events: [] };
+  }
+  if (command.type === 'BuyTransitVehicle') {
+    if (!(command.kind in TRANSIT) || !['brtElectric', 'trainElectric', 'trainCoal'].includes(command.kind)) return fail('error.invalidQuantity');
+    const spec = TRANSIT[command.kind];
+    if (citizenCount(state) < TRANSIT[command.kind === 'brtElectric' ? 'brt' : 'rail'].unlock) return fail('error.itemLocked');
+    if (state.urbs < spec.price) return fail('error.notEnoughUrbs');
+    return { state: { ...state, urbs: state.urbs - spec.price, nextId: state.nextId + 1, transitFleet: [...fleet, { id: state.nextId, kind: command.kind, purchasePrice: spec.price }] }, events: [] };
+  }
+  const vehicle = fleet.find(v => v.id === command.id);
+  if (!vehicle) return fail('error.invalidQuantity');
+  if (command.type === 'SellTransitVehicle') return { state: { ...state, urbs: state.urbs + vehicle.purchasePrice / 2, transitFleet: fleet.filter(v => v.id !== vehicle.id) }, events: [] };
+  const line = lines.find(l => l.id === command.lineId);
+  if (command.lineId !== undefined && (!line || (line.mode === 'brt') !== (vehicle.kind === 'brtElectric'))) return fail('error.invalidBusLine');
+  return { state: { ...state, transitFleet: fleet.map(v => v.id === vehicle.id ? { ...v, lineId: command.lineId } : v) }, events: [] };
 }

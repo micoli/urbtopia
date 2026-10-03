@@ -2,7 +2,7 @@ import { GAME_CONFIG, GOODS, MATERIALS, TUTORIAL_STEPS, type GameState, type Tut
 
 type Json = Record<string, unknown>;
 
-const BUILDING_TYPES = ['workshop', 'factory', 'shop', 'storehouse', 'home', 'powerPlant', 'waterTower', 'silo', 'vault', 'tree', 'park', 'solar', 'battery', 'backup', 'busStop'];
+const BUILDING_TYPES = ['workshop', 'factory', 'shop', 'storehouse', 'home', 'powerPlant', 'waterTower', 'silo', 'vault', 'tree', 'park', 'solar', 'battery', 'backup', 'busStop', 'brtStation', 'railStation'];
 const ROAD_KINDS = ['road', 'crossing'];
 
 const isRecord = (value: unknown): value is Json => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -15,7 +15,7 @@ const isArrayOf = (value: unknown, check: (item: unknown) => boolean): boolean =
 const isCoord = (value: unknown, max = Number.MAX_SAFE_INTEGER): boolean => isRecord(value) && isInt(value.x, 0, max) && isInt(value.y, 0, max);
 
 function isAmountRecord(value: unknown, validKeys: string[]): boolean {
-  return isRecord(value) && Object.entries(value).every(([key, amount]) => validKeys.includes(key) && isInt(amount, 0));
+  return isRecord(value) && Object.entries(value).every(([key, amount]) => validKeys.includes(key) && (key === 'coal' ? isNonNegative(amount) : isInt(amount, 0)));
 }
 
 const itemIds = [...Object.keys(MATERIALS), ...Object.keys(GOODS)];
@@ -92,11 +92,31 @@ export function validateGameState(value: unknown): GameState | null {
   if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&
     isArrayOf(line.stops, id => isInt(id, 0)) && (line.stops as number[]).length >= 2 &&
     new Set(line.stops as number[]).size === (line.stops as number[]).length)) return null;
+  for (const key of ['brtRoads', 'rails']) {
+    if (value[key] === undefined) continue;
+    if (!isArrayOf(value[key], p => isRecord(p) && isCoord(p) && isArrayOf(p.exits, d => ['N', 'E', 'S', 'W'].includes(d as string)) && new Set(p.exits as string[]).size === (p.exits as string[]).length)) return null;
+    const tiles = value[key] as { x: number; y: number }[];
+    if (new Set(tiles.map(p => `${p.x}:${p.y}`)).size !== tiles.length) return null;
+  }
+  if (value.transitLines !== undefined && !isArrayOf(value.transitLines, l => isRecord(l) && isInt(l.id, 1) && ['brt', 'rail'].includes(l.mode as string) &&
+    isArrayOf(l.stops, id => isInt(id, 0)) && (l.stops as number[]).length >= 2 && new Set(l.stops as number[]).size === (l.stops as number[]).length &&
+    isNumber(l.peakHeadway) && isNumber(l.offPeakHeadway) && l.peakHeadway > 0 && l.offPeakHeadway > 0 && l.peakHeadway <= 60 && l.offPeakHeadway <= 60 &&
+    (l.mode !== 'brt' || (l.peakHeadway >= 5 && l.peakHeadway <= 10 && l.offPeakHeadway >= 10 && l.offPeakHeadway <= 15)))) return null;
+  if (value.transitFleet !== undefined && !isArrayOf(value.transitFleet, v => isRecord(v) && isInt(v.id, 1) && ['brtElectric', 'trainElectric', 'trainCoal'].includes(v.kind as string) && isNonNegative(v.purchasePrice) && (v.lineId === undefined || isInt(v.lineId, 1)))) return null;
   const state = value as unknown as GameState;
-  const ids = [...state.buildings.map(b => b.id), ...(state.busLines ?? []).map(l => l.id)];
+  const ids = [...state.buildings.map(b => b.id), ...(state.busLines ?? []).map(l => l.id), ...(state.transitLines ?? []).map(l => l.id), ...(state.transitFleet ?? []).map(v => v.id)];
   if (new Set(ids).size !== ids.length || ids.some(id => id >= state.nextId)) return null;
   for (const line of state.busLines ?? []) {
     if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && b.type === 'busStop')))) return null;
+  }
+  for (const line of state.transitLines ?? []) {
+    const type = line.mode === 'brt' ? 'brtStation' : 'railStation';
+    if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && b.type === type)))) return null;
+  }
+  for (const vehicle of state.transitFleet ?? []) {
+    if (vehicle.lineId === undefined) continue;
+    const line = state.transitLines?.find(l => l.id === vehicle.lineId);
+    if (!line || (line.mode === 'brt') !== (vehicle.kind === 'brtElectric')) return null;
   }
   return state;
 }

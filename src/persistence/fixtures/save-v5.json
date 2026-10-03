@@ -1,0 +1,274 @@
+{
+  "format": "urbtopia-save",
+  "version": 5,
+  "savedAt": 1700000030000,
+  "state": {
+    "seed": "amber-fox-4821",
+    "rngState": 3508666930,
+    "urbs": 4000,
+    "lastSeen": 1700000030000,
+    "nextId": 100,
+    "ownedParcels": [
+      {
+        "x": 0,
+        "y": 0
+      },
+      {
+        "x": 1,
+        "y": 0
+      }
+    ],
+    "buildings": [
+      {
+        "id": 1,
+        "type": "railStation",
+        "x": 0,
+        "y": 1,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 2,
+        "type": "railStation",
+        "x": 20,
+        "y": 1,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      }
+    ],
+    "storage": {
+      "materials": {
+        "coal": 0.25
+      },
+      "goods": {}
+    },
+    "marketUnlocked": false,
+    "market": {},
+    "roads": [],
+    "roundabouts": [],
+    "tutorial": null,
+    "adaptationUntil": 1700086430000,
+    "timeOffset": 10800000,
+    "ecologyDismissed": false,
+    "busLines": [],
+    "brtRoads": [],
+    "transitLines": [
+      {
+        "id": 3,
+        "mode": "rail",
+        "stops": [
+          1,
+          2
+        ],
+        "peakHeadway": 5,
+        "offPeakHeadway": 10
+      }
+    ],
+    "transitFleet": [
+      {
+        "id": 4,
+        "kind": "trainElectric",
+        "purchasePrice": 2400,
+        "lineId": 3
+      },
+      {
+        "id": 5,
+        "kind": "trainCoal",
+        "purchasePrice": 1600,
+        "lineId": 3
+      }
+    ],
+    "rails": [
+      {
+        "x": 0,
+        "y": 0,
+        "exits": [
+          "E"
+        ]
+      },
+      {
+        "x": 1,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 2,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 3,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 4,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 5,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 6,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 7,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 8,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 10,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 11,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 12,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 13,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 14,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 15,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 16,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 17,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 18,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 19,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 20,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 21,
+        "y": 0,
+        "exits": [
+          "W",
+          "E"
+        ]
+      },
+      {
+        "x": 22,
+        "y": 0,
+        "exits": [
+          "W"
+        ]
+      }
+    ]
+  }
+}
