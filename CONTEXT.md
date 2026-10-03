@@ -148,6 +148,42 @@ _Avoid_: Individual Citizen journey, decorative Traffic
 The announced grace period during which new electricity shortages do not penalize production or Tax.
 _Avoid_: Permanent exemption, free energy
 
+**BRT corridor**:
+A dedicated infrastructure for bus rapid transit, separate from the ordinary road network. A crossing with a Road does not connect the two networks.
+_Avoid_: Ordinary Road, Bus line
+
+**Railway**:
+Transport infrastructure on which Trains run, independently of their propulsion type.
+_Avoid_: Electric Railway, Coal Railway
+
+**Train**:
+A rail vehicle purchased by the city through City Management, with electric or coal propulsion.
+_Avoid_: Railway, Traffic Vehicle
+
+**Transit fleet**:
+The city's purchased BRT vehicles and Trains, which can be assigned to transport lines. Each vehicle belongs to at most one line at a time.
+_Avoid_: Traffic, Bus line
+
+**Transfer**:
+A change between public transport lines during a Citizen's journey, including changes between ordinary buses, BRT and Trains.
+_Avoid_: Infrastructure crossing, Network connection
+
+**Headway**:
+The interval between successive vehicles serving a transport line.
+_Avoid_: Vehicle speed, Journey duration
+
+**BRT station**:
+An accessible stop served by electric BRT vehicles on a BRT corridor. Nearby public transport stops can provide Transfers.
+_Avoid_: Bus stop, Railway station
+
+**Railway station**:
+A passenger stop on a Railway, served by Trains assigned to Railway lines.
+_Avoid_: BRT station, Freight terminal
+
+**Transit itinerary**:
+A public transport journey linking a Home to an activity through one or more lines, with at most two Transfers.
+_Avoid_: Infrastructure route, Individual Citizen simulation
+
 ## Naming rules
 
 - Common words are kept for Materials and Goods; invention is reserved for brand-like terms (game name, currency, market).
