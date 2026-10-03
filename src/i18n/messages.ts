@@ -106,7 +106,6 @@ export const MESSAGES = {
   'menu.reload': 'Reload',
   'menu.install': 'Install the app',
   'menu.skip12': '+12 h',
-  'menu.skip24': '+24 h',
   'menu.version': 'Build',
   'menu.export': 'Export the city',
   'menu.import': 'Import a city',

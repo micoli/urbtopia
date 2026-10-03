@@ -55,9 +55,6 @@ export function MenuContent() {
           <button type="button" onClick={() => skipTime(12)}>
             {t('menu.skip12')}
           </button>
-          <button type="button" onClick={() => skipTime(24)}>
-            {t('menu.skip24')}
-          </button>
         </div>
         <button type="button" onClick={exportCurrentCity}>
           {t('menu.export')}

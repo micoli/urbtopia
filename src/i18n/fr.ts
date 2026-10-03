@@ -106,7 +106,6 @@ export const FR: Record<MessageKey, string> = {
   'menu.newGameConfirm': 'Commencer une nouvelle ville ? La ville actuelle sera effacée.',
   'error.saveFailed': "Sauvegarde impossible : le stockage du navigateur est plein.",
   'menu.skip12': '+12 h',
-  'menu.skip24': '+24 h',
   'menu.reload': 'Recharger',
   'menu.install': "Installer l'application",
   'menu.version': 'Version',
