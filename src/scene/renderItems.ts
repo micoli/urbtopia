@@ -1,4 +1,5 @@
 import { GAME_CONFIG, footprintOf, roadExits, roadPiece, type BuildingType, type GameState } from '../core';
+import { VEHICLE_MODELS } from './vehicleModels';
 
 export interface RenderItem {
   model: string;
@@ -28,7 +29,7 @@ const HOME_MODELS = [
 
 const ROAD_MODELS = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout'].map((piece) => `roads/road-${piece}`);
 
-export const MODEL_KEYS: readonly string[] = [...new Set([...Object.values(MODEL_BY_BUILDING), ...HOME_MODELS, ...ROAD_MODELS])];
+export const MODEL_KEYS: readonly string[] = [...new Set([...Object.values(MODEL_BY_BUILDING), ...HOME_MODELS, ...ROAD_MODELS, ...VEHICLE_MODELS])];
 
 function modelOf(type: BuildingType, tier: number): string {
   if (type === 'home') return HOME_MODELS[tier - 1] ?? MODEL_BY_BUILDING.home;

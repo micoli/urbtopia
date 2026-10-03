@@ -42,6 +42,12 @@ export const ASSET_PACKS: AssetPack[] = [
     archive: 'kenney_city-kit-industrial_2.0.zip',
     files: ['building-a', 'building-b', 'building-h', 'water-tower', 'windmill'],
   },
+  {
+    name: 'cars',
+    url: 'https://kenney.nl/media/pages/assets/car-kit/1a312ec241-1775131960/kenney_car-kit.zip',
+    archive: 'kenney_car-kit.zip',
+    files: ['sedan', 'sedan-sports', 'hatchback-sports', 'suv', 'suv-luxury', 'taxi', 'van'],
+  },
 ];
 
 export const MODELS_DIR = 'public/models';

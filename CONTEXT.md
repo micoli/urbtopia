@@ -52,6 +52,14 @@ _Avoid_: Consumption, load
 A resident of a Home. The number of Citizens depends on the Home's tier and drives Tax and utility demand.
 _Avoid_: Inhabitant, resident, sim
 
+**Vehicle**:
+A purely decorative car that drives along the roads. It has no effect on the simulation and is not saved.
+_Avoid_: Car, automobile
+
+**Traffic**:
+The set of Vehicles on the roads, whose size follows the city's total Citizens.
+_Avoid_: Flow, cars
+
 **Power plant**:
 A building that supplies power capacity to the city.
 _Avoid_: Generator, energy station
