@@ -51,6 +51,15 @@ describe('Public facility tool', () => {
     expect(evaluation.ghost.range).toBeUndefined();
   });
 
+  it('shows the radius of a selected Public facility, but not of a city-wide one', () => {
+    const school = createBuilding(20, 'school', 56, 61, 0);
+    const hall = createBuilding(21, 'townHall', 60, 61, 0);
+    const withFacilities: GameState = { ...served, nextId: 30, buildings: [...served.buildings, school, hall] };
+    expect(selectionGhost(withFacilities, 20)?.range?.length).toBeGreaterThan(100);
+    expect(selectionGhost(withFacilities, 21)?.range).toBeUndefined();
+    expect(selectionGhost(withFacilities, 10)?.range).toBeUndefined();
+  });
+
   it('does not preview coverage for other buildings', () => {
     expect(evaluateTool(shopTool, { state, tile: { x: 56, y: 57 }, rotation: null }).coverage).toBeUndefined();
   });

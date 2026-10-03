@@ -113,7 +113,8 @@ export function selectionGhost(state: GameState, buildingId: number | null): Gho
   if (!building) return null;
   const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
   const rect: GhostRect = { x: building.x - SELECTION_MARGIN, y: building.y - SELECTION_MARGIN, width: width + 2 * SELECTION_MARGIN, depth: depth + 2 * SELECTION_MARGIN, tone: 'target' };
-  return { tiles: [], rects: [rect], valid: true, front: null };
+  const range = isFacilityType(building.type) ? rangeTiles(building.type, building, building.rotation) : [];
+  return { tiles: [], rects: [rect], valid: true, front: null, ...(range.length ? { range } : {}) };
 }
 
 export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext): Evaluation {
@@ -167,6 +168,12 @@ function addCoveragePreview(result: Evaluation, state: GameState, type: Facility
     return { x: home.x, y: home.y, width, depth, tone: 'hint' as const };
   });
   if (radius === null) return;
+  result.ghost.range = rangeTiles(type, tile, rotation);
+}
+
+function rangeTiles(type: FacilityType, tile: Coord, rotation: Rotation): Coord[] {
+  const radius = FACILITIES[type].radius;
+  if (radius === null) return [];
   const { width, depth } = footprintOf(type, rotation);
   const center = { x: tile.x + width / 2, y: tile.y + depth / 2 };
   const reach = Math.ceil(radius);
@@ -177,7 +184,7 @@ function addCoveragePreview(result: Evaluation, state: GameState, type: Facility
       if (Math.abs(candidate.x + 0.5 - center.x) + Math.abs(candidate.y + 0.5 - center.y) <= radius) range.push(candidate);
     }
   }
-  result.ghost.range = range;
+  return range;
 }
 
 function evaluateParcel(state: GameState, tile: Coord): Evaluation {
