@@ -14,7 +14,7 @@ export function UtilityPanel({ building, type }: UtilityPanelProps) {
   return (
     <section className="production">
       <h3>
-        {t('home.tier')} {building.tier}
+          <strong>{t('home.tier')}</strong> {building.tier}
       </h3>
       <p>
         {type === 'powerPlant' ? `⚡ ${t('stat.power')}` : `💧 ${t('stat.water')}`}: {type === 'powerPlant' ? ((UTILITY_CAPACITY[type][building.tier - 1] ?? 0) * wind).toFixed(1) : UTILITY_CAPACITY[type][building.tier - 1] ?? 0}

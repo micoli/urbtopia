@@ -15,9 +15,9 @@ export function FacilityPanel({ building }: FacilityPanelProps) {
   const served = state.buildings.reduce((total, home) => total + (home.type === 'home' && coverage.get(home.id)?.has(building.type) ? citizensOf(home.tier) : 0), 0);
   return (
     <section className="production">
-      <h3>{t('home.tier')} {building.tier}</h3>
-      <p>{t('facility.reach')}: {radius === null ? t('placement.cityWide') : `${2 * radius} × ${2 * radius}`}</p>
-      <p>{t('facility.capacity')}: {capacity === null ? t('facility.unlimited') : capacity} · {t('facility.served')}: {served}</p>
+        <h3><strong>{t('home.tier')}</strong> {building.tier}</h3>
+        <p><strong>{t('facility.reach')}</strong>: {radius === null ? t('placement.cityWide') : `${2 * radius} × ${2 * radius}`}</p>
+        <p><strong>{t('facility.capacity')}</strong>: {capacity === null ? t('facility.unlimited') : capacity} · {t('facility.served')}: {served}</p>
       <UpgradeSection building={building} />
     </section>
   );

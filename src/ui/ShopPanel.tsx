@@ -25,7 +25,7 @@ export function ShopPanel({ building }: ShopPanelProps) {
                   {t(`item.${stack.good}`)} × {stack.stock}
                 </span>
                 <span>
-                  {t('shop.earned')}: {stack.earned}
+                    <strong>{t('shop.earned')}</strong>: {stack.earned}
                 </span>
               </>
             ) : (
