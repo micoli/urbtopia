@@ -3,6 +3,9 @@ import { facilityScaleOf, fitMatrixOf } from './modelFit';
 import type { ModelLibrary } from './modelLibrary';
 import { chunkKeyOf, type RenderItem } from './renderItems';
 
+const DECAL_OFFSET = 0.02;
+const DECAL_HEIGHT = 0.45;
+
 interface Chunk {
   signature: string;
   group: THREE.Group;
@@ -31,7 +34,7 @@ export class ChunkedWorld {
 
   private syncChunk(key: string, items: RenderItem[]): void {
     const signature = items
-      .map((item) => `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}:${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.lengthScale ?? 1},${item.footprint ?? 0}`)
+      .map((item) => `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}#${item.recolor ?? ''}#${item.decal?.x ?? ''}${item.decal?.z ?? ''}:${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.lengthScale ?? 1},${item.footprint ?? 0}`)
       .sort()
       .join('|');
     if (this.chunks.get(key)?.signature === signature) return;
@@ -39,6 +42,19 @@ export class ChunkedWorld {
     const group = this.buildChunk(items);
     this.root.add(group);
     this.chunks.set(key, { signature, group });
+  }
+
+  private decalMatrix(item: RenderItem, target: THREE.Matrix4): THREE.Matrix4 {
+    const { decal, fitModel, footprint } = item;
+    if (!decal || !fitModel || !footprint) return target.identity();
+    const box = new THREE.Box3().setFromObject(this.library.get(fitModel)).applyMatrix4(fitMatrixOf(fitModel));
+    const { horizontal, vertical } = facilityScaleOf(box, footprint);
+    const sizeX = (box.max.x - box.min.x) * horizontal;
+    const sizeZ = (box.max.z - box.min.z) * horizontal;
+    const quarterTurn = item.rotation % 2 === 1;
+    const reach = (Math.abs(decal.x) * (quarterTurn ? sizeZ : sizeX) + Math.abs(decal.z) * (quarterTurn ? sizeX : sizeZ)) / 2;
+    const position = new THREE.Vector3(item.x + decal.x * (reach + DECAL_OFFSET), box.max.y * vertical * DECAL_HEIGHT, item.z + decal.z * (reach + DECAL_OFFSET));
+    return target.makeRotationY(Math.atan2(decal.x, decal.z)).setPosition(position).multiply(new THREE.Matrix4().makeScale(horizontal, horizontal, horizontal));
   }
 
   private facilityScaleMatrix(item: RenderItem, target: THREE.Matrix4): THREE.Matrix4 {
@@ -62,7 +78,7 @@ export class ChunkedWorld {
     const group = new THREE.Group();
     const byModel = new Map<string, RenderItem[]>();
     for (const item of items) {
-      const key = `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}`;
+      const key = `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}#${item.recolor ?? ''}#${item.decal ? 'decal' : ''}`;
       byModel.set(key, [...(byModel.get(key) ?? []), item]);
     }
 
@@ -73,15 +89,17 @@ export class ChunkedWorld {
     for (const [key, modelItems] of byModel) {
       const separator = key.lastIndexOf('@');
       const model = key.slice(0, separator);
-      const [variant = '', tint = ''] = key.slice(separator + 1).split('#');
+      const [variant = '', tint = '', recolor = ''] = key.slice(separator + 1).split('#');
       const fit = fitMatrixOf(model);
       this.library.get(model).traverse((node) => {
         const mesh = node as THREE.Mesh;
         if (!mesh.isMesh) return;
         const textured = variant ? this.library.withTextureVariant(mesh.material, variant as 'a' | 'b' | 'c') : mesh.material;
-        const material = tint ? this.library.withTint(textured, Number(tint)) : textured;
+        const tinted = tint ? this.library.withTint(textured, Number(tint)) : textured;
+        const material = recolor ? this.library.withRecolor(tinted, Number(recolor)) : tinted;
         const instanced = new THREE.InstancedMesh(mesh.geometry, material, modelItems.length);
         modelItems.forEach((item, index) => {
+          if (item.decal) return instanced.setMatrixAt(index, this.decalMatrix(item, combined).multiply(mesh.matrixWorld));
           const elevation = item.roofBase ? new THREE.Box3().setFromObject(this.library.get(item.roofBase)).applyMatrix4(fitMatrixOf(item.roofBase)).max.y : item.elevation ?? 0;
           placement.makeRotationY((item.rotation * Math.PI) / 2).setPosition(item.x, elevation, item.z);
           combined.copy(placement).multiply(lengthScale.makeScale(1, 1, item.lengthScale ?? 1)).multiply(this.facilityScaleMatrix(item, facilityMatrix)).multiply(fit).multiply(mesh.matrixWorld);

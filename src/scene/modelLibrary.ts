@@ -1,6 +1,7 @@
 import { fitNatureModel } from './natureModelFit';
 import { fitRailCorner } from './railModelFit';
 import * as THREE from 'three';
+import { RED_CROSS_MODEL } from './renderItems';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class ModelLibrary {
@@ -64,8 +65,30 @@ export class ModelLibrary {
     return Array.isArray(source) ? source.map(replace) : replace(source);
   }
 
+  withRecolor(source: THREE.Material | THREE.Material[], color: number): THREE.Material | THREE.Material[] {
+    const target = new THREE.Color(color);
+    const replace = (material: THREE.Material): THREE.Material => {
+      const clone = material.clone() as THREE.MeshStandardMaterial;
+      clone.onBeforeCompile = (shader) => {
+        shader.fragmentShader = shader.fragmentShader.replace(
+          '#include <map_fragment>',
+          `#include <map_fragment>
+          float recolorLight = clamp(dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114)) / 0.75, 0.0, 1.15);
+          diffuseColor.rgb = vec3(${target.r.toFixed(3)}, ${target.g.toFixed(3)}, ${target.b.toFixed(3)}) * recolorLight;`,
+        );
+      };
+      clone.customProgramCacheKey = () => `recolor-${color}`;
+      return clone;
+    };
+    return Array.isArray(source) ? source.map(replace) : replace(source);
+  }
+
   private load(key: string): Promise<void> {
     if (this.models.has(key)) return Promise.resolve();
+    if (key === RED_CROSS_MODEL) {
+      this.models.set(key, buildRedCross());
+      return Promise.resolve();
+    }
     const inFlight = this.pending.get(key);
     if (inFlight) return inFlight;
     const promise = this.loader.loadAsync(`${import.meta.env.BASE_URL}models/${key}.glb`).then((gltf) => {
@@ -77,4 +100,14 @@ export class ModelLibrary {
     this.pending.set(key, promise);
     return promise;
   }
+}
+
+function buildRedCross(): THREE.Object3D {
+  const material = new THREE.MeshStandardMaterial({ color: 0xd62828 });
+  const group = new THREE.Group();
+  for (const [width, height] of [[0.5, 0.15], [0.15, 0.5]] as const) {
+    group.add(new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.03), material));
+  }
+  group.updateMatrixWorld(true);
+  return group;
 }

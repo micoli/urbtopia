@@ -1,4 +1,4 @@
-import { FACILITIES, FACILITY_TYPES, GAME_CONFIG, footprintOf, isFacilityType, roadExits, roadPiece, type Building, type BuildingType, type FacilityType, type GameState, type ServiceCategory } from '../core';
+import { DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, type Building, type BuildingType, type FacilityType, type GameState, type ServiceCategory } from '../core';
 import { NATURE_MODELS, type NatureType } from '../core/nature';
 import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
@@ -14,6 +14,8 @@ export interface RenderItem {
   roofBase?: string;
   textureVariant?: 'a' | 'b' | 'c';
   footprint?: number;
+  recolor?: number;
+  decal?: { x: number; z: number };
   fitModel?: string;
   tint?: number;
 }
@@ -47,7 +49,7 @@ export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
   theater: 'commercial/building-b',
   concertHall: 'commercial/building-n',
   hospital: 'commercial/building-i',
-  fireStation: 'commercial/building-e',
+  fireStation: 'industrial/building-s',
   policeStation: 'commercial/building-j',
 };
 
@@ -73,10 +75,20 @@ const CATEGORY_TINTS: Record<ServiceCategory, number> = {
   safety: 0xc4f0cb,
 };
 
+export const RED_CROSS_MODEL = 'procedural/red-cross';
+
+const FACILITY_RECOLORS: Partial<Record<FacilityType, number>> = {
+  hospital: 0xffffff,
+  fireStation: 0xd9322b,
+  policeStation: 0x2f5fd0,
+};
+
+const FOOTPRINT_BOOST: Partial<Record<FacilityType, number>> = { townHall: 1.3 };
+
 export function facilityFootprint(building: Pick<Building, 'type'>): number | null {
   if (!isFacilityType(building.type)) return null;
   const { width, depth } = FACILITIES[building.type].footprint;
-  return (width + depth) / 2;
+  return ((width + depth) / 2) * (FOOTPRINT_BOOST[building.type] ?? 1);
 }
 
 const FACTORY_MODELS = ['industrial/building-b', 'industrial/building-e', 'industrial/building-f', 'industrial/building-l', 'industrial/building-c'];
@@ -130,7 +142,7 @@ let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; items: RenderItem
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   return a.length === b.length && a.every((item, index) => {
     const other = b[index] as RenderItem;
-    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.tint === other.tint;
+    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.recolor === other.recolor && item.decal?.x === other.decal?.x && item.decal?.z === other.decal?.z && item.tint === other.tint;
   });
 }
 
@@ -159,6 +171,12 @@ function roadItems(state: GameState): RenderItem[] {
   return [...tiles, ...roundabouts];
 }
 
+function redCrossItems(x: number, z: number, rotation: number, footprint: number, fitModel: string): RenderItem[] {
+  const front = DIRECTION_VECTORS[frontDirection(rotation)];
+  const faces = [front, { x: front.y, y: -front.x }, { x: -front.y, y: front.x }];
+  return faces.map((face) => ({ model: RED_CROSS_MODEL, x, z, rotation, footprint, fitModel, decal: { x: face.x, z: face.y } }));
+}
+
 function buildingItems(state: GameState): RenderItem[] {
   return state.buildings.flatMap((building) => {
     const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
@@ -169,8 +187,10 @@ function buildingItems(state: GameState): RenderItem[] {
     const items: RenderItem[] = [{ model, x, z, rotation, ...(building.type === 'home' && building.colorVariant && building.colorVariant !== 'default' ? { textureVariant: building.colorVariant } : {}) }];
     if (isFacilityType(building.type)) {
       const footprint = facilityFootprint(building)!;
-      items[0] = { ...items[0]!, footprint, fitModel: model, tint: CATEGORY_TINTS[FACILITIES[building.type].category] };
+      const recolor = FACILITY_RECOLORS[building.type];
+      items[0] = { ...items[0]!, footprint, fitModel: model, ...(recolor === undefined ? { tint: CATEGORY_TINTS[FACILITIES[building.type].category] } : { recolor }) };
       items.push({ model: FACILITY_DETAILS[building.type], x, z, rotation, footprint, fitModel: model });
+      if (building.type === 'hospital') items.push(...redCrossItems(x, z, rotation, footprint, model));
     }
     if (building.type === 'park') {
       items.push({ model: 'suburban/tree-small', x: x - width / 4, z: z - depth / 4, rotation });
