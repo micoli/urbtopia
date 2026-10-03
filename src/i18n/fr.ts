@@ -213,6 +213,7 @@ export const FR: Record<MessageKey, string> = {
   'stat.citizens': 'Habitants',
   'stat.power': 'Électricité',
   'stat.water': 'Eau',
+  'stat.time': 'Heure du jour',
   'home.tier': 'Niveau',
   'home.citizens': 'Habitants',
   'home.tax': 'Impôts à récupérer',

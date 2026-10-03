@@ -41,4 +41,14 @@ describe('city management panel', () => {
     context.statsOpen = false;
     expect(renderToStaticMarkup(<MaximalStats />)).toBe('');
   });
+
+  it('shows the simulation clock in both HUD entry points, including skipped time', () => {
+    context.state = { ...newGame({ seed: 'dashboard', now: 23 * 3_600_000 + 30 * 60_000 }), timeOffset: 2 * 3_600_000 };
+    for (const component of [<MinimalStats />, <CityStats />]) {
+      const html = renderToStaticMarkup(component);
+      expect(html).toContain('class="game-clock"');
+      expect(html).toContain('dateTime="01:30"');
+      expect(html).toContain('01:30');
+    }
+  });
 });

@@ -211,6 +211,7 @@ export const MESSAGES = {
   'stat.citizens': 'Citizens',
   'stat.power': 'Power',
   'stat.water': 'Water',
+  'stat.time': 'Time of day',
   'home.tier': 'Tier',
   'home.citizens': 'Citizens',
   'home.tax': 'Tax due',

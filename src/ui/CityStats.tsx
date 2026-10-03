@@ -1,6 +1,7 @@
 import { totalCitizens, utilityCapacity, utilityDemand } from '../core';
 import { t } from '../i18n/t';
 import { useGame, useUi } from './hooks';
+import { GameClock } from './GameClock';
 
 function utilityStatus(demand: number, capacity: number): string {
   if (demand === 0) return 'utility-normal';
@@ -20,6 +21,7 @@ export function CityStats() {
   const waterLabel = `${t('stat.water')}: ${demand.water}/${capacity.water}`;
   return (
     <button type="button" className="city-stats" aria-label={t('eco.title')} onClick={toggleStats}>
+      <GameClock />
       <div title={t('stat.citizens')}>👥 {totalCitizens(state)}</div>
       <div title={powerLabel} aria-label={powerLabel} className={utilityStatus(demand.power, capacity.power)}>
         ⚡ {powerDemand}

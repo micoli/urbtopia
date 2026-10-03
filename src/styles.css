@@ -777,6 +777,11 @@ button {
   background: none;
 }
 
+.game-clock {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
 .bottom-bar {
   position: fixed;
   left: 0;
