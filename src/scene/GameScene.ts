@@ -5,12 +5,12 @@ import type { Coord } from '../core';
 import type { GhostSpec } from '../tools/tools';
 import { ChunkedWorld } from './ChunkedWorld';
 import { GhostLayer } from './GhostLayer';
+import { createTendedGroundTexture, createWildGroundTexture, TENDED_TEXTURE_TILES, WILD_TEXTURE_TILES } from './groundTextures';
 import { ModelLibrary } from './modelLibrary';
 import { renderItemsOf } from './renderItems';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
-const UNOWNED_COLOR = 0x6f8f5a;
-const OWNED_COLOR = 0x92c36f;
+const GROUND_SIZE = MAP_TILES * 3;
 
 export interface SceneHandlers {
   onTap: (tile: Coord) => void;
@@ -23,6 +23,7 @@ export class GameScene {
   private library = new ModelLibrary();
   private world = new ChunkedWorld(this.library);
   private parcels = new THREE.Group();
+  private tendedMaterial = this.buildTendedMaterial();
   private ghostLayer = new GhostLayer();
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -114,10 +115,19 @@ export class GameScene {
   }
 
   private buildGround(): THREE.Mesh {
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(MAP_TILES, MAP_TILES), new THREE.MeshStandardMaterial({ color: UNOWNED_COLOR }));
+    const texture = createWildGroundTexture();
+    texture.repeat.set(GROUND_SIZE / WILD_TEXTURE_TILES, GROUND_SIZE / WILD_TEXTURE_TILES);
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(GROUND_SIZE, GROUND_SIZE), new THREE.MeshStandardMaterial({ map: texture }));
     ground.rotation.x = -Math.PI / 2;
     ground.position.set(MAP_TILES / 2, -0.02, MAP_TILES / 2);
     return ground;
+  }
+
+  private buildTendedMaterial(): THREE.MeshStandardMaterial {
+    const texture = createTendedGroundTexture();
+    const repeat = GAME_CONFIG.parcelSizeInTiles / TENDED_TEXTURE_TILES;
+    texture.repeat.set(repeat, repeat);
+    return new THREE.MeshStandardMaterial({ map: texture });
   }
 
   private syncParcels(state: GameState): void {
@@ -129,9 +139,8 @@ export class GameScene {
       (child as THREE.Mesh).geometry.dispose();
     }
     const size = GAME_CONFIG.parcelSizeInTiles;
-    const material = new THREE.MeshStandardMaterial({ color: OWNED_COLOR });
     for (const parcel of state.ownedParcels) {
-      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size - 0.1, size - 0.1), material);
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size - 0.1, size - 0.1), this.tendedMaterial);
       mesh.rotation.x = -Math.PI / 2;
       mesh.position.set(parcel.x * size + size / 2, -0.01, parcel.y * size + size / 2);
       this.parcels.add(mesh);
