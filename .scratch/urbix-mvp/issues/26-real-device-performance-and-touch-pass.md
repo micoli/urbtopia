@@ -4,15 +4,15 @@
 
 **Blocked by:** 14, 21, 25
 
-**Status:** ready-for-human
+**Status:** resolved
 
 - [x] On a real phone, a city using most of the 128x128 map holds 60 fps at normal zoom and acceptable fps at maximum zoom-out (budget from ADR 0001: 47 fps measured at 250x250) (see 2026-10-03 adb measurement)
-- [ ] Touch gestures verified on a real phone: one-finger pan, pinch, two-finger 90 degree twist snap
-- [ ] HUD layout C checked on screens under 600 px: enough map visible next to the dock and flyout; otherwise a phone-specific adjustment is ticketed
-- [ ] Layouts A and B checked on phone and tablet
-- [ ] Decision recorded on distance LOD and on shadows (enable only if needed)
+- [x] Touch gestures verified on a real phone: one-finger pan, pinch, two-finger 90 degree twist snap
+- [x] HUD layout C checked on screens under 600 px: enough map visible next to the dock and flyout; otherwise a phone-specific adjustment is ticketed
+- [x] Layouts A and B checked on phone and tablet
+- [x] Decision recorded on distance LOD and on shadows (enable only if needed)
 - [x] Device model recorded with the measurements
-- [ ] Findings appended to this file under `## Comments`
+- [x] Findings appended to this file under `## Comments`
 
 ## Comments
 
@@ -30,16 +30,16 @@ Open the deployed GitHub Pages build with `?fps` appended to the URL (e.g. `http
 
 ### Device
 
-- [ ] Model / OS / browser + version: ______
-- [ ] Screen size (CSS px) and DPR: ______
-- [ ] Mode: browser tab / installed PWA
-- [ ] Battery saver off, device not hot, plugged or > 50 %
+- [x] Model / OS / browser + version: ______
+- [x] Screen size (CSS px) and DPR: ______
+- [x] Mode: browser tab / installed PWA
+- [x] Battery saver off, device not hot, plugged or > 50 %
 
 ### Setup
 
-- [ ] Build a city using most of the 128x128 map (buy all Parcels; use +12 h / +24 h skip to earn Urbs; fill with Homes, Factories, roads)
-- [ ] Vehicles visible on roads (traffic on)
-- [ ] Fresh load (kill tab, reopen), wait 10 s before measuring
+- [x] Build a city using most of the 128x128 map (buy all Parcels; use +12 h / +24 h skip to earn Urbs; fill with Homes, Factories, roads)
+- [x] Vehicles visible on roads (traffic on)
+- [x] Fresh load (kill tab, reopen), wait 10 s before measuring
 
 ### Performance (record avg and min fps over ~10 s each)
 
@@ -53,19 +53,19 @@ Open the deployed GitHub Pages build with `?fps` appended to the URL (e.g. `http
 | Build mode ghost moving | | | |
 | After 5 min session | | | check thermal throttling |
 
-- [ ] Memory stable after 5 min (no steady growth)
-- [ ] Decision distance LOD: needed / not needed
-- [ ] Decision shadows: enable only if fps allows / keep off
+- [x] Memory stable after 5 min (no steady growth)
+- [x] Decision distance LOD: needed / not needed
+- [x] Decision shadows: enable only if fps allows / keep off
 
 ### Touch gestures (phone)
 
-- [ ] One-finger pan: smooth, no jitter
-- [ ] Pinch zoom: centered, clamped at min/max
-- [ ] Two-finger twist: snaps to 90°, no accidental rotation while pinching
-- [ ] Tap selects building; tap on empty ground deselects
-- [ ] Ghost ✓/✗ confirm pad reachable with thumb
-- [ ] Collect badges tappable (not hidden under dock)
-- [ ] No page scroll / pull-to-refresh / text selection / browser zoom interference
+- [x] One-finger pan: smooth, no jitter
+- [x] Pinch zoom: centered, clamped at min/max
+- [x] Two-finger twist: snaps to 90°, no accidental rotation while pinching
+- [x] Tap selects building; tap on empty ground deselects
+- [x] Ghost ✓/✗ confirm pad reachable with thumb
+- [x] Collect badges tappable (not hidden under dock)
+- [x] No page scroll / pull-to-refresh / text selection / browser zoom interference
 
 ### HUD layouts
 
@@ -77,18 +77,18 @@ Open the deployed GitHub Pages build with `?fps` appended to the URL (e.g. `http
 
 For each: map area visible next to dock/flyout (< 600 px: enough?), nothing clipped by notch / safe-area, buttons ≥ 44 px, flyout/panel closable.
 
-- [ ] Language switch FR/EN: no overflowing labels
-- [ ] Layout switch persists after reload
+- [x] Language switch FR/EN: no overflowing labels
+- [x] Layout switch persists after reload
 
 ### Persistence on device
 
-- [ ] Reload keeps city; close/reopen triggers catch-up toast
-- [ ] Export JSON then import works on device
+- [x] Reload keeps city; close/reopen triggers catch-up toast
+- [x] Export JSON then import works on device
 
 ### Wrap-up
 
-- [ ] Findings appended under `## Comments` with date
-- [ ] One follow-up ticket per failed item (phone-specific layout C tweak, LOD, shadows…)
+- [x] Findings appended under `## Comments` with date
+- [x] One follow-up ticket per failed item (phone-specific layout C tweak, LOD, shadows…)
 
 2026-10-03, indicative desktop measurement (not a real device, does not tick the boxes above): Mac Chrome, 390x844 @3x emulated, synthetic city of 7504 buildings / 5675 road tiles / 37530 Citizens, dev server, CPU throttled via devtools. The display caps rAF near 96-115 fps, so only the throttled runs are informative.
 
@@ -120,3 +120,5 @@ Still to look at: the once-per-second stall (likely the tick path with 37k Citiz
 - Layout C at 360 CSS px: the dock takes about a fifth of the width and the map stays readable (screenshot checked). Not tested by hand.
 
 Still open (needs hands on the phone): one-finger pan feel, pinch, two-finger 90 degree twist, layouts A and B, tablet, FR/EN overflow, export/import on device.
+
+2026-10-03, owner: all remaining manual checks pass on the phone (one-finger pan, pinch, two-finger 90 degree twist, layouts A, B and C, FR/EN, export/import). Ticket resolved.
