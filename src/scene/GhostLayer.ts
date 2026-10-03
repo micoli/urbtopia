@@ -4,7 +4,7 @@ import type { GhostSpec } from '../tools/tools';
 const VALID_COLOR = 0x35d07f;
 const INVALID_COLOR = 0xe5484d;
 const HINT_COLOR = 0xffd23f;
-const RANGE_COLOR = 0x4da3ff;
+const RANGE_COLOR = 0xff9500;
 const FRONT_ROTATION: Record<string, number> = { N: 0, W: Math.PI / 2, S: Math.PI, E: -Math.PI / 2 };
 
 export class GhostLayer {
@@ -13,7 +13,7 @@ export class GhostLayer {
   private arrowGeometry = new THREE.ConeGeometry(0.28, 0.6, 3);
   private validMaterial = new THREE.MeshBasicMaterial({ color: VALID_COLOR, transparent: true, opacity: 0.6, depthTest: false });
   private hintMaterial = new THREE.MeshBasicMaterial({ color: HINT_COLOR, transparent: true, opacity: 0.25, depthTest: false });
-  private rangeMaterial = new THREE.MeshBasicMaterial({ color: RANGE_COLOR, transparent: true, opacity: 0.2, depthTest: false });
+  private rangeMaterial = new THREE.MeshBasicMaterial({ color: RANGE_COLOR, transparent: true, opacity: 0.25, depthTest: false });
   private invalidMaterial = new THREE.MeshBasicMaterial({ color: INVALID_COLOR, transparent: true, opacity: 0.6, depthTest: false });
 
   constructor(validColor = VALID_COLOR, { underBuildings = false } = {}) {
