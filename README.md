@@ -36,6 +36,10 @@ npm run dev      # http://localhost:5173, extracts the 3D models first
 
 `dev` and `build` run `npm run assets` first. It works offline: it only reads the archives committed in `assets/kenney/`.
 
+## Deployment
+
+Every push to `main` runs the checks (type-check, lint, tests), builds, and deploys `dist/` to GitHub Pages with [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). The site is served at `https://micoli.github.io/urbtopia/`; the build uses relative paths, so any sub-path works. GitHub Pages must be set to the **GitHub Actions** source in the repository settings (Settings, Pages, Build and deployment).
+
 ## How it is built
 
 TypeScript, Vite, three.js (imperative, chunked instancing), React for the HUD only, Zustand between them, Vitest.
