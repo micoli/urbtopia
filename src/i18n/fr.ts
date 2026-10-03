@@ -1,6 +1,8 @@
+import { natureMessages } from './nature';
 import type { MessageKey } from './messages';
 
 export const FR: Record<MessageKey, string> = {
+  ...natureMessages('fr'),
   'eco.temperature': 'Température de la ville',
   'eco.temperatureOptimum': 'Optimum : 26 °C',
   'eco.temperatureHelp': 'Optimum : 26 °C, maximum : 40 °C. Chaque tranche de 10 unités d’impact/heure ajoute 1 °C. Les espaces verts proches des logements atténuent cette hausse selon leur score de refroidissement.',
@@ -51,7 +53,7 @@ export const FR: Record<MessageKey, string> = {
   'eco.biodiversity': 'Biodiversité',
   'eco.wellbeing': 'Bien-être / attractivité',
   'eco.greenCoverage': 'Habitants proches des espaces verts',
-  'eco.greenHelp': 'Les arbres et parcs proches améliorent le confort et les taxes jusqu’à 10 %. Les espaces reliés apportent un bonus ; les bénéfices supplémentaires diminuent. Ils ne compensent pas les émissions.',
+  'eco.greenHelp': 'La végétation proche améliore la fraîcheur, la biodiversité, le bien-être et les impôts jusqu’à 10 %. La végétation connectée apporte un bonus, avec un rendement décroissant. Rochers, troncs et souches favorisent la biodiversité près de la végétation. Ces bénéfices ne compensent jamais les émissions.',
   'eco.production': 'Production et efficacité',
   'eco.nominal': 'Unités nominales/heure',
   'eco.effective': 'Unités effectives/heure',

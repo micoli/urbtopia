@@ -1,3 +1,7 @@
+import { NATURE_MODELS } from '../src/core/nature.ts';
+
+const natureFiles = (pack: string) => NATURE_MODELS.filter(([, model]) => model.startsWith(`${pack}/`)).map(([, model]) => model.slice(pack.length + 1));
+
 export interface AssetPack {
   name: string;
   url: string;
@@ -55,13 +59,13 @@ export const ASSET_PACKS: AssetPack[] = [
     colormap: false,
     url: 'https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip',
     archive: 'kenney_nature-kit.zip',
-    files: [],
+    files: natureFiles('nature'),
   },
   {
     name: 'mini-forest',
     url: 'https://kenney.nl/media/pages/assets/mini-forest/44a89aed7f-1784024079/kenney_mini-forest_1.0.zip',
     archive: 'kenney_mini-forest_1.0.zip',
-    files: [],
+    files: natureFiles('mini-forest'),
   },
   {
     name: 'graveyard',
@@ -79,7 +83,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'pirate',
     url: 'https://kenney.nl/media/pages/assets/pirate-kit/e6d4bb1525-1771333093/kenney_pirate-kit.zip',
     archive: 'kenney_pirate-kit.zip',
-    files: [],
+    files: natureFiles('pirate'),
   },
   {
     name: 'watercraft',

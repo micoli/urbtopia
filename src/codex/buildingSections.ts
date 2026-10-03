@@ -1,3 +1,4 @@
+import { NATURE_TYPES } from '../core/nature';
 import type { BuildingType } from '../core';
 
 export const BUILDING_SECTIONS = [
@@ -5,7 +6,7 @@ export const BUILDING_SECTIONS = [
   { title: 'build.production', types: ['workshop', 'factory', 'shop'] },
   { title: 'build.storage', types: ['storehouse', 'silo', 'vault'] },
   { title: 'build.utilities', types: ['powerPlant', 'coalPlant', 'waterTower', 'solar', 'battery', 'backup'] },
-  { title: 'build.greenSpaces', types: ['tree', 'park'] },
+  { title: 'build.greenSpaces', types: ['tree', 'park', ...NATURE_TYPES] },
   { title: 'build.transport', types: ['busStop', 'brtStation', 'railStation'] },
 ] as const satisfies readonly { title: string; types: readonly BuildingType[] }[];
 

@@ -1,3 +1,4 @@
+import { NATURE_MODELS, NATURE_FAMILIES, greenProfileOf, natureModelOf } from './nature';
 import { footprintOf } from './buildingSpecs';
 import { HOME_TIERS } from './economy';
 import type { Building, BuildingType, GameState } from './state';
@@ -11,6 +12,7 @@ export const ECOLOGY = {
 };
 
 export const ECOLOGY_UNLOCKS: Partial<Record<BuildingType, number>> = {
+  ...Object.fromEntries(NATURE_MODELS.map(([type, , family]) => [type, NATURE_FAMILIES[family].unlock])),
   brtStation: 200, railStation: 600, tree: 6, park: 15, solar: 32, battery: 32, backup: 32, busStop: 32,
 };
 
@@ -39,22 +41,34 @@ export function economicPower(b: Building): number {
   return 0;
 }
 
+function greenSpacesTouch(a: Building, b: Building): boolean {
+  const p = centerOf(a), q = centerOf(b);
+  const f = footprintOf(a.type, a.rotation), g = footprintOf(b.type, b.rotation);
+  const dx = Math.abs(p.x - q.x), dy = Math.abs(p.y - q.y);
+  return (dx === (f.width + g.width) / 2 && dy < (f.depth + g.depth) / 2) ||
+    (dy === (f.depth + g.depth) / 2 && dx < (f.width + g.width) / 2);
+}
+
 export function greenBenefits(state: GameState, home: Building) {
-  const spaces = state.buildings.filter(b => b.type === 'tree' || b.type === 'park');
-  let weight = 0;
+  const spaces = state.buildings.filter(b => greenProfileOf(b.type));
+  const vegetation = spaces.filter(b => natureModelOf(b.type)?.[2] !== 'habitat');
+  const weight = { cooling: 0, biodiversity: 0, wellbeing: 0 };
   for (const b of spaces) {
-    if (distance(b, home) > (b.type === 'tree' ? 4 : 6)) continue;
-    const f = footprintOf(b.type, b.rotation), p = centerOf(b);
-    const connected = spaces.some(other => {
-      if (other.id === b.id) return false;
-      const q = centerOf(other), g = footprintOf(other.type, other.rotation);
-      const dx = Math.abs(p.x - q.x), dy = Math.abs(p.y - q.y);
-      return (dx === (f.width + g.width) / 2 && dy < (f.depth + g.depth) / 2) ||
-        (dy === (f.depth + g.depth) / 2 && dx < (f.width + g.width) / 2);
-    });
-    weight += (b.type === 'tree' ? 1 : 3) * (connected ? 1.2 : 1);
+    const profile = greenProfileOf(b.type)!;
+    if (distance(b, home) > profile.radius) continue;
+    const habitat = natureModelOf(b.type)?.[2] === 'habitat';
+    if (habitat && !vegetation.some(other => distance(b, other) <= 2)) continue;
+    const connected = !habitat && vegetation.some(other => other.id !== b.id && greenSpacesTouch(b, other));
+    const bonus = connected ? 1.2 : 1;
+    weight.cooling += profile.cooling * bonus;
+    weight.biodiversity += profile.biodiversity * bonus;
+    weight.wellbeing += profile.wellbeing * bonus;
   }
-  return { cooling: 100 * weight / (weight + 4), biodiversity: 100 * weight / (weight + 6), wellbeing: 100 * weight / (weight + 5) };
+  return {
+    cooling: 100 * weight.cooling / (weight.cooling + 4),
+    biodiversity: 100 * weight.biodiversity / (weight.biodiversity + 6),
+    wellbeing: 100 * weight.wellbeing / (weight.wellbeing + 5),
+  };
 }
 
 export function cityGreenBenefits(state: GameState) {

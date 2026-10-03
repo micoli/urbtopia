@@ -1,3 +1,4 @@
+import { NATURE_FAMILIES, NATURE_MODELS, type NatureType } from './nature';
 import type { Coord } from './coord';
 import { HOME_FOOTPRINTS } from './economy';
 import type { Building, BuildingType, Rotation, ShopStack } from './state';
@@ -14,7 +15,13 @@ export interface BuildingSpec {
   initialSlots: number;
 }
 
+const natureSpecs = Object.fromEntries(NATURE_MODELS.map(([type, , family]) => {
+  const profile = NATURE_FAMILIES[family];
+  return [type, { footprint: { width: profile.size, depth: profile.size }, cost: profile.cost, requiresRoad: false, initialSlots: 0 }];
+})) as Record<NatureType, BuildingSpec>;
+
 export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
+  ...natureSpecs,
   tree: { footprint: { width: 1, depth: 1 }, cost: 40, requiresRoad: false, initialSlots: 0 },
   park: { footprint: { width: 2, depth: 2 }, cost: 120, requiresRoad: false, initialSlots: 0 },
   solar: { footprint: { width: 2, depth: 2 }, cost: 400, requiresRoad: false, initialSlots: 0 },

@@ -1,10 +1,11 @@
+import type { NatureType } from './nature';
 import type { Direction } from './geometry';
 import type { Coord } from './coord';
 import type { GoodId, ItemId, MaterialId } from './items';
 import type { RoadKind } from './roads';
 import type { TutorialStep } from './tutorial';
 
-export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'coalPlant' | 'waterTower' | 'silo' | 'vault' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop' | 'brtStation' | 'railStation';
+export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'coalPlant' | 'waterTower' | 'silo' | 'vault' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop' | 'brtStation' | 'railStation' | NatureType;
 
 export type Rotation = 0 | 1 | 2 | 3;
 

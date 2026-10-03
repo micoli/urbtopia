@@ -102,6 +102,20 @@ describe('ecological energy accounting', () => {
 });
 
 describe('green spaces and equipment', () => {
+  it('gives natural vegetation strong local benefits and bounds habitat benefits', () => {
+    const home = b(1, 'home', 0), tree = b(2, 'nature-tree-oak', 1), rock = b(3, 'mini-forest-rocks-low', 2);
+    const legacy = greenBenefits(city([home, b(4, 'tree', 1)]), home);
+    const planted = greenBenefits(city([home, tree]), home);
+    expect(planted.cooling).toBeGreaterThan(legacy.cooling);
+    expect(planted.wellbeing).toBeGreaterThan(legacy.wellbeing);
+    expect(greenBenefits(city([home, rock]), home)).toEqual({ cooling: 0, biodiversity: 0, wellbeing: 0 });
+    const habitat = greenBenefits(city([home, tree, rock]), home);
+    expect(habitat.biodiversity).toBeGreaterThan(planted.biodiversity);
+    expect(habitat.cooling).toBe(planted.cooling);
+    expect(habitat.wellbeing).toBe(planted.wellbeing);
+    expect(greenBenefits(city([home, b(2, 'nature-tree-oak', 100)]), home).wellbeing).toBe(0);
+  });
+
   it('advances energy cycles and adaptation when time is skipped', () => {
     const s = { ...city([b(1, 'home', 0)], 12 * H), adaptationUntil: 36 * H };
     const result = dispatch(s, { type: 'SkipTime', hours: 6 }, s.lastSeen);
@@ -117,6 +131,33 @@ describe('green spaces and equipment', () => {
     expect(two.wellbeing).toBeGreaterThan(one.wellbeing);
     expect(two.wellbeing).toBeLessThan(2 * one.wellbeing);
     expect(greenBenefits(city([home, b(2, 'park', 100)]), home).wellbeing).toBe(0);
+  });
+  it('unlocks families by Citizens and recalculates benefits after moving or selling', () => {
+    const home = b(1, 'home', 55, 57);
+    const start = city([home]);
+    const locked = dispatch(start, { type: 'PlaceBuilding', buildingType: 'nature-flower-redA', x: 56, y: 57 }, start.lastSeen);
+    expect(locked.ok).toBe(false);
+    if (!locked.ok) expect(locked.error.key).toBe('error.itemLocked');
+    const placed = dispatch(start, { type: 'PlaceBuilding', buildingType: 'nature-tree-oak', x: 56, y: 57 }, start.lastSeen);
+    expect(placed.ok).toBe(true);
+    if (!placed.ok) return;
+    expect(placed.state.urbs).toBe(start.urbs - 60);
+    expect(greenBenefits(placed.state, home).wellbeing).toBeGreaterThan(25);
+    const id = placed.state.buildings.at(-1)!.id;
+    const moved = dispatch(placed.state, { type: 'MoveBuilding', id, x: 63, y: 63 }, start.lastSeen);
+    expect(moved.ok).toBe(true);
+    if (!moved.ok) return;
+    expect(greenBenefits(moved.state, home).wellbeing).toBe(0);
+    const sold = dispatch(moved.state, { type: 'SellBuilding', id }, start.lastSeen);
+    expect(sold.ok).toBe(true);
+    if (!sold.ok) return;
+    expect(sold.state.buildings.some(b => b.id === id)).toBe(false);
+    expect(sold.state.urbs).toBeGreaterThan(moved.state.urbs);
+    const grown = { ...start, buildings: [{ ...home, tier: 3 }] };
+    expect(dispatch(grown, { type: 'PlaceBuilding', buildingType: 'nature-flower-redA', x: 57, y: 57 }, grown.lastSeen).ok).toBe(true);
+    const shrunk = { ...placed.state, buildings: placed.state.buildings.filter(b => b.type !== 'home') };
+    expect(dispatch(shrunk, { type: 'PlaceBuilding', buildingType: 'nature-tree-oak', x: 57, y: 57 }, shrunk.lastSeen).ok).toBe(false);
+    expect(dispatch(shrunk, { type: 'MoveBuilding', id, x: 57, y: 57 }, shrunk.lastSeen).ok).toBe(true);
   });
   it('charges insulation once and preserves it on a Home', () => {
     const s = city([b(1, 'home', 55, 57), b(2, 'waterTower', 70)]);

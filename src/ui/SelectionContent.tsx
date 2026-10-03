@@ -1,6 +1,6 @@
 import { EcologicalBuildingPanel } from './EcologicalBuildingPanel';
 import { CoalPlantPanel } from './CoalPlantPanel';
-import { GAME_CONFIG, isStorageType, placementCost } from '../core';
+import { GAME_CONFIG, greenProfileOf, isStorageType, placementCost } from '../core';
 import { t } from '../i18n/t';
 import { HomePanel } from './HomePanel';
 import { useUi } from './hooks';
@@ -33,7 +33,7 @@ export function SelectionContent() {
       {isStorageType(building.type) ? <StoragePanel building={building} /> : null}
       {building.type === 'powerPlant' || building.type === 'waterTower' ? <UtilityPanel building={building} type={building.type} /> : null}
       {building.type === 'coalPlant' ? <CoalPlantPanel building={building} /> : null}
-      {['tree','park','solar','battery','backup','busStop','brtStation','railStation'].includes(building.type) || (building.type === 'home' && building.solar) ? <EcologicalBuildingPanel building={building} /> : null}
+      {greenProfileOf(building.type) || ['solar','battery','backup','busStop','brtStation','railStation'].includes(building.type) || (building.type === 'home' && building.solar) ? <EcologicalBuildingPanel building={building} /> : null}
       <div className="side-panel-actions">
         <button type="button" onClick={moveSelected}>
           {t('panel.move')}

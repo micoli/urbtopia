@@ -49,3 +49,6 @@ export type { BusLine } from './state';
 
 export { TRANSIT, networkTiles, networkNeighbours, validNetworkCrossings, extendNetwork } from './transitNetwork';
 export type { TransitLine, TransitMode, TransitTile, TransitVehicle, TransitVehicleKind } from './state';
+
+export { NATURE_FAMILIES, NATURE_MODELS, NATURE_TYPES, natureModelOf, greenProfileOf } from './nature';
+export type { NatureType, NatureFamily } from './nature';

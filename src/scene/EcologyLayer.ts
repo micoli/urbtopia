@@ -1,6 +1,6 @@
 import { TransitLayer } from './TransitLayer';
 import * as THREE from 'three';
-import { energyStats, transportStats, footprintOf, tileKey, type GameState } from '../core';
+import { energyStats, greenProfileOf, transportStats, footprintOf, tileKey, type GameState } from '../core';
 import { centerOf } from '../core/ecology';
 import type { ModelLibrary } from './modelLibrary';
 import { poseOf } from './vehicleMotion';
@@ -55,7 +55,7 @@ export class EcologyLayer {
       const source = state.buildings.find(b => b.id === transfer.from), target = state.buildings.find(b => b.id === transfer.to);
       if (source && target) this.path([centerOf(source), centerOf(target)]);
     }
-    const radius = ['busStop', 'brtStation', 'railStation'].includes(selected.type) ? 6 : selected.type === 'battery' ? 8 : selected.type === 'park' ? 6 : selected.type === 'tree' ? 4 : selected.solar ? 6 : 0;
+    const radius = ['busStop', 'brtStation', 'railStation'].includes(selected.type) ? 6 : selected.type === 'battery' ? 8 : greenProfileOf(selected.type)?.radius ?? (selected.solar ? 6 : 0);
     if (radius) {
       const p = centerOf(selected);
       this.path([{ x: p.x - radius, y: p.y }, { x: p.x, y: p.y - radius }, { x: p.x + radius, y: p.y }, { x: p.x, y: p.y + radius }, { x: p.x - radius, y: p.y }]);

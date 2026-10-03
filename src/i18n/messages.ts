@@ -1,4 +1,6 @@
+import { natureMessages } from './nature';
 export const MESSAGES = {
+  ...natureMessages('en'),
   'building.brtStation': "BRT station",
   'building.railStation': "Railway station",
   'tool.brt': "BRT corridor",
@@ -46,7 +48,7 @@ export const MESSAGES = {
   'eco.biodiversity': 'Biodiversity',
   'eco.wellbeing': 'Well-being / attractiveness',
   'eco.greenCoverage': 'Citizens near green spaces',
-  'eco.greenHelp': 'Nearby trees and parks improve comfort and Tax by up to 10%. Connected spaces help; extra spaces have diminishing returns. They do not cancel emissions.',
+  'eco.greenHelp': 'Nearby vegetation improves cooling, biodiversity, well-being and Tax by up to 10%. Connected vegetation helps, with diminishing returns. Rocks, logs and stumps support biodiversity near vegetation. These benefits never cancel emissions.',
   'eco.production': 'Production and efficiency',
   'eco.nominal': 'Nominal units/hour',
   'eco.effective': 'Effective units/hour',

@@ -1,8 +1,7 @@
-import { GAME_CONFIG, GOODS, MATERIALS, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
+import { BUILDING_SPECS, GAME_CONFIG, GOODS, MATERIALS, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
 
 type Json = Record<string, unknown>;
 
-const BUILDING_TYPES = ['workshop', 'factory', 'shop', 'storehouse', 'home', 'powerPlant', 'coalPlant', 'waterTower', 'silo', 'vault', 'tree', 'park', 'solar', 'battery', 'backup', 'busStop', 'brtStation', 'railStation'];
 const ROAD_KINDS = ['road', 'crossing'];
 
 const isRecord = (value: unknown): value is Json => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -47,7 +46,7 @@ function isBuilding(value: unknown): boolean {
     isRecord(value) &&
     isInt(value.id, 0) &&
     typeof value.type === 'string' &&
-    BUILDING_TYPES.includes(value.type) &&
+    Object.hasOwn(BUILDING_SPECS, value.type) &&
     isInt(value.x, 0) &&
     isInt(value.y, 0) &&
     isInt(value.rotation, 0, 3) &&

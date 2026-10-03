@@ -137,7 +137,7 @@ A dispatchable polluting source that supplies deficits at an operating cost in U
 _Avoid_: Wind turbine, free power
 
 **Green space**:
-A tree or small park whose proximity and connections improve cooling, biodiversity and citizen well-being, with diminishing returns.
+A natural element or small park that supports nearby cooling, biodiversity or Citizen well-being, with diminishing returns. Vegetation provides comfort; rocks, logs and stumps support biodiversity near vegetation.
 _Avoid_: Carbon offset, universal pollution compensation
 
 **Bus stop**:

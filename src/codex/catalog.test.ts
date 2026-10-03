@@ -6,6 +6,24 @@ import { codexSnapshot } from './snapshot';
 import { modelOfBuilding, renderItemsOf } from '../scene/renderItems';
 
 describe('codex coverage gate', () => {
+  it('offers natural models from all three packs with Citizen unlocks', () => {
+    const expected = [
+      ['nature-tree-oak', 'nature/tree_oak', 6],
+      ['nature-flower-purpleA', 'nature/flower_purpleA', 15],
+      ['pirate-palm-bend', 'pirate/palm-bend', 60],
+      ['pirate-grass', 'pirate/grass', 6],
+      ['mini-forest-tree', 'mini-forest/tree', 32],
+      ['mini-forest-rocks-low', 'mini-forest/rocks-low', 15],
+    ] as const;
+    for (const [id, model, threshold] of expected) {
+      const entry = CODEX_ENTRIES.find(entry => entry.id === id);
+      expect(entry, id).toBeDefined();
+      expect(entry?.unlockCitizens).toBe(threshold);
+      expect(renderItemsOf(codexSnapshot(entry!.id, 1))[0]?.model).toBe(model);
+    }
+    expect(CODEX_ENTRIES.some(entry => /nature-.*detailed/i.test(entry.id))).toBe(false);
+  });
+
   it('requires a complete page for every constructible, including locked objects', () => {
     expect(() => validateCodex()).not.toThrow();
     const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...ROAD_CONSTRUCTIONS.map(item => item.id)];

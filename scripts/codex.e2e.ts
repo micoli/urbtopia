@@ -1,3 +1,5 @@
+import { createBuilding, newGame } from '../src/core';
+import { serializeEnvelope } from '../src/persistence/envelope';
 import { expect, test } from '@playwright/test';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -144,4 +146,33 @@ test('codex previews remain available offline after PWA installation', async ({ 
     const responses = await Promise.all(sources.map(source => fetch(source)));
     return responses.every(response => response.ok);
   }, sources)).toBe(true);
+});
+
+test('natural construction and Codex share Citizen unlocks and real previews', async ({ page }) => {
+  const state = newGame({ seed: 'nature-browser', now: Date.now() });
+  state.buildings.push(createBuilding(state.nextId++, 'home', 60, 60, 0));
+  await page.addInitScript(save => {
+    localStorage.setItem('urbtopia-save', save);
+    localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' }));
+  }, serializeEnvelope(state, state.lastSeen));
+  await page.goto('/');
+  await expect(page.locator('#splash')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Construire', exact: true }).click();
+  await page.getByRole('button', { name: 'Espaces verts', exact: true }).click();
+  const treeInfo = page.locator('[data-codex-id="nature-tree-oak"]');
+  await expect(treeInfo).toBeVisible();
+  await expect(page.locator('[data-codex-id="pirate-grass"]')).toBeVisible();
+  await expect(page.locator('[data-codex-id="nature-flower-purpleA"]')).toHaveCount(0);
+  await expect(page.locator('[data-codex-id="pirate-palm-bend"]')).toHaveCount(0);
+  await treeInfo.click();
+  const dialog = page.getByRole('dialog', { name: 'Codex' });
+  await expect(dialog.getByRole('heading', { name: 'Arbre chêne', exact: true })).toBeVisible();
+  await expect(dialog.getByText('Disponible', { exact: true })).toBeVisible();
+  await expect(dialog.getByText('Disponible à partir de 6 habitants', { exact: true })).toBeVisible();
+  const image = dialog.locator('img');
+  await expect(image).toHaveCount(1);
+  await expect.poll(() => image.evaluate(node => (node as HTMLImageElement).naturalWidth)).toBe(512);
+  await dialog.getByRole('button', { name: 'palmier courbé · Pirate', exact: true }).click();
+  await expect(dialog.getByText('Verrouillé', { exact: true })).toBeVisible();
+  await expect(dialog.getByText('Disponible à partir de 60 habitants', { exact: true })).toBeVisible();
 });

@@ -1,3 +1,4 @@
+import { fitNatureModel } from './natureModelFit';
 import { fitRailCorner } from './railModelFit';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -26,6 +27,7 @@ export class ModelLibrary {
     const inFlight = this.pending.get(key);
     if (inFlight) return inFlight;
     const promise = this.loader.loadAsync(`${import.meta.env.BASE_URL}models/${key}.glb`).then((gltf) => {
+      fitNatureModel(gltf.scene, key);
       if (key === 'trains/railroad-corner-small') fitRailCorner(gltf.scene);
       gltf.scene.updateMatrixWorld(true);
       this.models.set(key, gltf.scene);

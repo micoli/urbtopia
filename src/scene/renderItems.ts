@@ -1,4 +1,5 @@
 import { GAME_CONFIG, footprintOf, roadExits, roadPiece, type Building, type BuildingType, type GameState } from '../core';
+import { NATURE_MODELS, type NatureType } from '../core/nature';
 import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
 
@@ -13,6 +14,7 @@ export interface RenderItem {
 }
 
 export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
+  ...Object.fromEntries(NATURE_MODELS.map(([type, model]) => [type, model])) as Record<NatureType, string>,
   workshop: 'industrial/building-h',
   factory: 'industrial/building-b',
   shop: 'commercial/building-a',
