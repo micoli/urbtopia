@@ -1,48 +1,57 @@
-import type { ReactNode } from 'react';
-import { TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, totalCitizens, GAME_CONFIG, placementCost, type BuildingType } from '../core';
+import { useId, useState, type ReactNode } from 'react';
+import { TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, totalCitizens, GAME_CONFIG, placementCost } from '../core';
 import { t } from '../i18n/t';
-import type { MessageKey } from '../i18n/messages';
 import type { Tool } from '../tools/tools';
 import { FlyoutItem } from './FlyoutItem';
 import { useGame, useUi } from './hooks';
 import { guideOf } from './tutorialGuide';
 import { UrbsAmount } from './UrbsAmount';
-
-const BUILDING_SECTIONS: { title: MessageKey; types: BuildingType[] }[] = [
-  { title: 'build.housing', types: ['home'] },
-  { title: 'build.production', types: ['workshop', 'factory', 'shop'] },
-  { title: 'build.storage', types: ['storehouse', 'silo', 'vault'] },
-  { title: 'build.utilities', types: ['powerPlant', 'waterTower', 'solar', 'battery', 'backup'] },
-  { title: 'build.greenSpaces', types: ['tree', 'park'] },
-  { title: 'build.transport', types: ['busStop', 'brtStation', 'railStation'] },
-];
+import { BUILDING_SECTIONS, readBuildSection, writeBuildSection, type BuildSection } from './buildMenuSections';
 
 export function BuildMenuContent() {
   const citizens = useGame(store => totalCitizens(store.state));
   const flyout = useUi((store) => store.flyout);
   const chooseTool = useUi((store) => store.chooseTool);
   const guide = guideOf(useGame((store) => store.state.tutorial));
+  const [openSection, setOpenSection] = useState<BuildSection>(readBuildSection);
+  const menuId = useId();
   if (!flyout) return null;
 
   if (flyout === 'build') {
+    const visibleSections = BUILDING_SECTIONS.map(section => ({
+      ...section,
+      types: section.types.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0)),
+    })).filter(section => section.types.length);
+    const activeSection = visibleSections.some(section => section.title === openSection) ? openSection : visibleSections[0]?.title;
+    const selectSection = (section: BuildSection) => {
+      if (activeSection === section) return;
+      setOpenSection(section);
+      writeBuildSection(section);
+    };
     return (
       <>
-        {BUILDING_SECTIONS.map(section => {
-          const types = section.types.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0));
-          if (!types.length) return null;
+        {visibleSections.map(section => {
+          const expanded = activeSection === section.title;
+          const sectionId = `${menuId}-${section.title}`;
           return (
             <section className="build-section" key={section.title} aria-label={t(section.title)}>
-              <h3>{t(section.title)}</h3>
-              {types.map(type => (
-                <FlyoutItem
-                  key={type}
-                  label={t(`building.${type}`)}
-                  cost={<UrbsAmount value={placementCost(type)} />}
-                  guided={guide.buildings.includes(type)}
-                  onChoose={() => chooseTool({ kind: 'building', buildingType: type })}
-                />
-              ))}
-              {section.title === 'build.housing' && citizens >= 15 && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true })} />}
+              <h3>
+                <button type="button" className="build-section-toggle" id={`${sectionId}-toggle`} aria-expanded={expanded} aria-disabled={expanded} aria-controls={sectionId} data-guided={section.types.some(type => guide.buildings.includes(type))} onClick={() => selectSection(section.title)}>
+                  <span>{t(section.title)}</span>
+                </button>
+              </h3>
+              <div className="build-section-items" id={sectionId} aria-labelledby={`${sectionId}-toggle`} hidden={!expanded}>
+                {section.types.map(type => (
+                  <FlyoutItem
+                    key={type}
+                    label={t(`building.${type}`)}
+                    cost={<UrbsAmount value={placementCost(type)} />}
+                    guided={guide.buildings.includes(type)}
+                    onChoose={() => chooseTool({ kind: 'building', buildingType: type })}
+                  />
+                ))}
+                {section.title === 'build.housing' && citizens >= 15 && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true })} />}
+              </div>
             </section>
           );
         })}

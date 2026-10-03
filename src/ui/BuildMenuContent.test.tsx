@@ -1,9 +1,10 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BUILDING_SPECS, createBuilding, newGame, type GameState } from '../core';
 import { prefsStore } from '../i18n/prefsStore';
 import { t } from '../i18n/t';
 import { BuildMenuContent } from './BuildMenuContent';
+import { BUILD_SECTION_KEY, readBuildSection, writeBuildSection } from './buildMenuSections';
 
 const context = vi.hoisted(() => ({ state: null as GameState | null, flyout: 'build' }));
 vi.mock('./hooks', () => ({
@@ -11,7 +12,15 @@ vi.mock('./hooks', () => ({
   useUi: (selector: (store: { flyout: string; chooseTool: () => void }) => unknown) => selector({ flyout: context.flyout, chooseTool: () => {} }),
 }));
 
-afterEach(() => { prefsStore.getState().setLanguage('en'); context.flyout = 'build'; });
+beforeEach(() => {
+  const storage = new Map<string, string>();
+  vi.stubGlobal('localStorage', {
+    getItem: (key: string) => storage.get(key) ?? null,
+    setItem: (key: string, value: string) => storage.set(key, value),
+  });
+});
+
+afterEach(() => { prefsStore.getState().setLanguage('en'); context.flyout = 'build'; vi.unstubAllGlobals(); });
 
 describe('build menu sections', () => {
   it.each(['en', 'fr'] as const)('groups every building once and keeps solar Homes with housing in %s', language => {
@@ -49,5 +58,51 @@ describe('build menu sections', () => {
     const html = renderToStaticMarkup(<BuildMenuContent />);
     expect(html).toContain(t('tool.road'));
     expect(html).not.toContain('build-section');
+  });
+
+  it('opens only the first section by default', () => {
+    context.state = newGame({ seed: 'build-menu', now: 0 });
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    const sections = html.match(/<section\b[^>]*>[\s\S]*?<\/section>/g) ?? [];
+    expect(sections[0]).toContain('aria-expanded="true"');
+    expect(sections[0]).toContain('aria-disabled="true"');
+    expect(sections[0]).not.toContain('hidden=""');
+    expect(html).not.toContain('▾');
+    expect(html).not.toContain('▸');
+    for (const section of sections.slice(1)) {
+      expect(section).toContain('aria-expanded="false"');
+      expect(section).toContain('hidden=""');
+    }
+  });
+
+  it('restores the last opened section on a new render', () => {
+    context.state = newGame({ seed: 'build-menu', now: 0 });
+    writeBuildSection('build.storage');
+    expect(localStorage.getItem(BUILD_SECTION_KEY)).toBe('build.storage');
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    const sections = html.match(/<section\b[^>]*>[\s\S]*?<\/section>/g) ?? [];
+    expect(sections[2]).toContain('aria-expanded="true"');
+    expect(sections[2]).not.toContain('hidden=""');
+    expect(html.match(/aria-expanded="true"/g)).toHaveLength(1);
+  });
+
+  it('falls back to housing when the saved section is locked or invalid', () => {
+    context.state = newGame({ seed: 'build-menu', now: 0 });
+    for (const stored of ['build.transport', 'unknown']) {
+      localStorage.setItem(BUILD_SECTION_KEY, stored);
+      const html = renderToStaticMarkup(<BuildMenuContent />);
+      const firstSection = html.match(/<section\b[^>]*>[\s\S]*?<\/section>/)?.[0];
+      expect(firstSection).toContain('aria-expanded="true"');
+      expect(html.match(/aria-expanded="true"/g)).toHaveLength(1);
+    }
+  });
+
+  it('works when localStorage is unavailable', () => {
+    vi.stubGlobal('localStorage', {
+      getItem: () => { throw new Error('Unavailable'); },
+      setItem: () => { throw new Error('Unavailable'); },
+    });
+    expect(readBuildSection()).toBe('build.housing');
+    expect(() => writeBuildSection('build.storage')).not.toThrow();
   });
 });
