@@ -3,8 +3,8 @@ import { energyStats, transportStats, footprintOf, type GameState } from '../cor
 import { centerOf } from '../core/ecology';
 import type { ModelLibrary } from './modelLibrary';
 import { poseOf } from './vehicleMotion';
+import { BUS_MODEL } from './busModel';
 
-const BUS_MODEL = 'trains/train-electric-subway-a';
 const BUS_LENGTH = 0.72;
 
 export class EcologyLayer {
