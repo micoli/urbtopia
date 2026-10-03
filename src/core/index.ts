@@ -56,5 +56,6 @@ export type { NatureType, NatureFamily } from './nature';
 export { FACILITIES, FACILITY_TYPES, isWithinReach, SERVICE_CATEGORIES, SERVICES, REQUIRED_SERVICES, facilitiesOfCategory, isFacilityType, requiredServices } from './facilities';
 export type { FacilitySpec, FacilityType, ServiceCategory, ServiceKey } from './facilities';
 export { isHomeInReach, categoryCoverageRatio, coveredCategories, homesLackingRequiredServices, isServiceCovered, missingServices, previewFacilityCoverage, serviceCoverage } from './services';
-export type { ServiceCoverage } from './services';
+export { uncoveredReason } from './services';
+export type { ServiceCoverage, UncoveredReason } from './services';
 export { facilitiesUnlockedBetween } from './unlocks';

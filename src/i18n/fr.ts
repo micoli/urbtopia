@@ -369,4 +369,7 @@ export const FR: Record<MessageKey, string> = {
   "stats.services": "Services",
   "stats.servicesHelp": "Part des citoyens couverts par au moins un équipement de chaque catégorie de service.",
   "stats.servicesSuggest": "Certains logements manquent de services requis par leur niveau. Construisez :",
+  "home.reason.none": "aucun construit",
+  "home.reason.outOfReach": "hors de portée",
+  "home.reason.capacityFull": "à portée, capacité saturée",
 };

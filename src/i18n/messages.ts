@@ -367,6 +367,9 @@ export const MESSAGES = {
   "stats.services": "Services",
   "stats.servicesHelp": "Share of Citizens covered by at least one facility of each Service category.",
   "stats.servicesSuggest": "Some Homes lack services required by their Tier. Build:",
+  "home.reason.none": "none built",
+  "home.reason.outOfReach": "out of reach",
+  "home.reason.capacityFull": "in reach, capacity full",
 } as const;
 
 export type MessageKey = keyof typeof MESSAGES;

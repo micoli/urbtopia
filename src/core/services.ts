@@ -55,6 +55,16 @@ export function serviceCoverage(state: GameState): ServiceCoverage {
   return result;
 }
 
+export type UncoveredReason = 'none' | 'outOfReach' | 'capacityFull';
+
+export function uncoveredReason(state: GameState, home: Building, type: FacilityType): UncoveredReason {
+  const facilities = state.buildings.filter(building => building.type === type);
+  if (!facilities.length) return 'none';
+  const { radius } = FACILITIES[type];
+  if (radius !== null && !facilities.some(facility => isHomeInReach(facility, home, radius))) return 'outOfReach';
+  return 'capacityFull';
+}
+
 export function isServiceCovered(coverage: ServiceCoverage, homeId: number, key: ServiceKey): boolean {
   const covered = coverage.get(homeId);
   if (!covered) return false;

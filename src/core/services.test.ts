@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FACILITIES, advance, isWithinReach, categoryCoverageRatio, createBuilding, dispatch, homeBenefits, missingServices, newGame, serviceCoverage, type Building, type Command, type GameState } from './index';
+import { FACILITIES, uncoveredReason, advance, isWithinReach, categoryCoverageRatio, createBuilding, dispatch, homeBenefits, missingServices, newGame, serviceCoverage, type Building, type Command, type GameState } from './index';
 import { ECOLOGY } from './ecology';
 
 const H = ECOLOGY.hourMs;
@@ -35,6 +35,17 @@ describe('Service coverage', () => {
     const at = (id: number, x: number, y: number) => b(id, 'home', x, y);
     const state = city([school, at(2, 15, 0), at(3, 20, 0), at(4, 0, 15), at(5, 16, 16), at(6, 13, 13)]);
     expect(coveredIds(state, 'school').sort((a, c) => a - c)).toEqual([2, 4, 6]);
+  });
+
+  it('explains why a Home is not covered', () => {
+    const near = b(2, 'home', 3, 0, { tier: 8 });
+    const crowded = b(3, 'home', 2, 0, { tier: 8 });
+    const far = b(4, 'home', 60, 0);
+    const state = city([b(1, 'school', 0), near, crowded, far]);
+    expect(uncoveredReason(state, far, 'school')).toBe('outOfReach');
+    expect(uncoveredReason(state, near, 'hospital')).toBe('none');
+    const uncovered = [near, crowded].find(home => !serviceCoverage(state).get(home.id)?.has('school'))!;
+    expect(uncoveredReason(state, uncovered, 'school')).toBe('capacityFull');
   });
 
   it('serves the nearest Homes first until capacity is used', () => {
