@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { keyDirectionForYaw } from './cameraKeys';
 
 const ISO_PITCH = Math.atan(1 / Math.SQRT2);
 const ZOOM_MIN = 16;
@@ -89,7 +90,7 @@ export class CameraController {
     let z = 0;
     for (const [key, heldSeconds] of this.keys) {
       this.keys.set(key, heldSeconds + deltaSeconds);
-      const direction = KEY_DIRECTIONS[key];
+      const direction = this.keyDirection(key);
       if (!direction || heldSeconds < KEY_HOLD_DELAY) continue;
       x += direction.x;
       z += direction.z;
@@ -97,6 +98,11 @@ export class CameraController {
     if (!x && !z) return;
     const step = (KEY_PAN_SPEED * deltaSeconds) / Math.hypot(x, z);
     this.moveFocus(x * step, z * step);
+  }
+
+  private keyDirection(key: string): { x: number; z: number } | undefined {
+    const direction = KEY_DIRECTIONS[key];
+    return direction && keyDirectionForYaw(direction, this.yawTarget);
   }
 
   private moveFocus(x: number, z: number): void {
@@ -155,7 +161,7 @@ export class CameraController {
       this.keys.delete(key);
       return;
     }
-    const direction = KEY_DIRECTIONS[key];
+    const direction = this.keyDirection(key);
     if (!direction || event.repeat || this.keys.has(key)) return;
     this.keys.set(key, 0);
     this.moveFocus(direction.x, direction.z);
