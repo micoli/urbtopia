@@ -52,6 +52,12 @@ for (const layout of ['A', 'B', 'C']) {
           expect(viewport.width - bounds!.x - bounds!.width).toBe(3);
           expect(viewport.height - bounds!.y - bounds!.height).toBe(3);
         }
+        if (layout === 'B') {
+          const bounds = await page.locator('.sheet').boundingBox();
+          const viewport = page.viewportSize()!;
+          expect(viewport.width - bounds!.x - bounds!.width).toBeGreaterThanOrEqual(3);
+          expect(viewport.height - bounds!.y - bounds!.height).toBe(3);
+        }
         const settingsShortcut = page.locator('.side-panel-actions [data-action="codex"]');
         await settingsShortcut.click();
         await expect(dialog).toBeVisible();

@@ -963,9 +963,12 @@ button {
 }
 
 [data-layout='B'] .sheet {
+  box-sizing: border-box;
   padding-bottom: 12px;
+  bottom: 3px;
   left: calc(50% + 40px);
-  width: min(520px, calc(100% - 80px));
+  width: min(520px, calc(100% - 86px));
+  border-radius: 16px;
 }
 
 [data-layout='B'] .camera-buttons {
