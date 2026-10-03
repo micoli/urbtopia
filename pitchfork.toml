@@ -1,0 +1,20 @@
+namespace = "ur"
+
+[settings.web]
+auto_start = true
+bind_port = 3120
+bind_address = "0.0.0.0"
+
+[daemons.dev]
+run = "npm run dev -- --host --port 5175 --strictPort"
+dir = "."
+ready_http = "http://localhost:5175/"
+boot_start = false
+retry = false
+
+[daemons.asset-viewer]
+run = "npm run dev -- --host --port 5181 --strictPort"
+dir = "prototypes/asset-viewer"
+ready_http = "http://localhost:5181/"
+boot_start = false
+retry = false
