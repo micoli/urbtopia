@@ -8,7 +8,8 @@ import { guideOf } from './tutorialGuide';
 import { UrbsAmount } from './UrbsAmount';
 import { BUILDING_SECTIONS, readBuildSection, writeBuildSection, type BuildSection } from './buildMenuSections';
 import { ROAD_CONSTRUCTIONS } from '../codex/construction';
-import type { CodexId } from '../codex/catalog';
+import { codexImageKey, type CodexId } from '../codex/catalog';
+import { useCodexManifest } from './useCodexManifest';
 
 export function BuildMenuContent() {
   const citizens = useGame(store => totalCitizens(store.state));
@@ -18,6 +19,11 @@ export function BuildMenuContent() {
   const guide = guideOf(useGame((store) => store.state.tutorial));
   const [openSection, setOpenSection] = useState<BuildSection>(readBuildSection);
   const menuId = useId();
+  const { manifest } = useCodexManifest();
+  const previewOf = (id: CodexId) => {
+    const image = manifest?.images[codexImageKey(id, 1)];
+    return image ? `${import.meta.env.BASE_URL}codex/${image}` : undefined;
+  };
   if (!flyout) return null;
 
   if (flyout === 'build') {
@@ -52,10 +58,11 @@ export function BuildMenuContent() {
                     guided={guide.buildings.includes(type)}
                     onChoose={() => chooseTool({ kind: 'building', buildingType: type })}
                     codexId={type}
+                    preview={previewOf(type)}
                     onInfo={() => openCodex(type)}
                   />
                 ))}
-                {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true })} codexId="solarHome" onInfo={() => openCodex('solarHome')} />}
+                {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true })} codexId="solarHome" preview={previewOf('solarHome')} onInfo={() => openCodex('solarHome')} />}
               </div>
             </section>
           );
@@ -77,7 +84,7 @@ export function BuildMenuContent() {
   return (
     <>
       {roadTools.map((item) => (
-        <FlyoutItem key={item.label} label={item.label} cost={item.cost} guided={guide.road && item.tool.kind === 'road'} onChoose={() => chooseTool(item.tool)} codexId={item.codexId} onInfo={item.codexId ? () => openCodex(item.codexId) : undefined} />
+        <FlyoutItem key={item.label} label={item.label} cost={item.cost} guided={guide.road && item.tool.kind === 'road'} onChoose={() => chooseTool(item.tool)} codexId={item.codexId} preview={item.codexId ? previewOf(item.codexId) : undefined} onInfo={item.codexId ? () => openCodex(item.codexId) : undefined} />
       ))}
     </>
   );

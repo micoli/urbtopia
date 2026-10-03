@@ -179,6 +179,8 @@ button {
 .flyout-row .flyout-item { flex: 1; min-width: 0; }
 .flyout-info {
   flex: 0 0 var(--tap);
+  padding: 0;
+  overflow: hidden;
   min-height: var(--tap);
   border: 0;
   border-radius: 10px;
@@ -188,6 +190,8 @@ button {
   font-weight: 700;
   cursor: pointer;
 }
+
+.flyout-info img { display: block; width: var(--tap); height: var(--tap); object-fit: contain; }
 
 .build-section {
   display: flex;

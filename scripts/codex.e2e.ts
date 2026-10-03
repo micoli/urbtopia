@@ -71,6 +71,10 @@ for (const layout of ['A', 'B', 'C']) {
         await page.getByRole('button', { name: 'Construire', exact: true }).click();
         await page.getByRole('button', { name: 'Production et commerce', exact: true }).click();
         const workshopInfo = page.getByRole('button', { name: 'À propos de Atelier', exact: true });
+        const manifestResponse = await page.request.get('/codex/manifest.json');
+        const manifest = await manifestResponse.json() as CodexManifest;
+        await expect(workshopInfo.locator('img')).toHaveAttribute('src', `./codex/${manifest.images['workshop:1']}`);
+        await expect(workshopInfo).not.toHaveText('?');
         await workshopInfo.click();
         await expect(dialog.getByRole('heading', { name: 'Atelier', exact: true })).toBeVisible();
         await expect(page.locator('.confirm-pad')).toHaveCount(0);
@@ -79,6 +83,7 @@ for (const layout of ['A', 'B', 'C']) {
         if (layout === 'B') await page.getByRole('button', { name: 'Ouvrir le menu' }).click();
         await page.getByRole('button', { name: 'Routes', exact: true }).click();
         const roadInfo = page.getByRole('button', { name: 'À propos de Route', exact: true });
+        await expect(roadInfo.locator('img')).toHaveAttribute('src', `./codex/${manifest.images['road:1']}`);
         await roadInfo.click();
         await expect(dialog.getByRole('heading', { name: 'Route', exact: true })).toBeVisible();
         await dialog.getByRole('button', { name: 'Fermer', exact: true }).click();

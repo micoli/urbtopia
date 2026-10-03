@@ -1,8 +1,9 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { CODEX_ENTRIES, CODEX_SECTIONS, validateCodexManifest, type CodexId, type CodexManifest } from '../codex/catalog';
+import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexId } from '../codex/catalog';
 import { t } from '../i18n/t';
 import { useUi } from './hooks';
 import { CodexEntryContent } from './CodexEntryContent';
+import { useCodexManifest } from './useCodexManifest';
 
 export function CodexPanel() {
   const close = useUi(store => store.closeCodex);
@@ -13,9 +14,7 @@ export function CodexPanel() {
   const heading = useId();
   const [selected, setSelected] = useState<CodexId>(initialEntry);
   const [showDetail, setShowDetail] = useState(initialDetail);
-  const [manifest, setManifest] = useState<CodexManifest | null>(null);
-  const [failed, setFailed] = useState(false);
-  const [attempt, setAttempt] = useState(0);
+  const { manifest, failed, retry } = useCodexManifest();
   const entry = CODEX_ENTRIES.find(entry => entry.id === selected)!;
   const detail = useRef<HTMLElement>(null);
 
@@ -43,18 +42,6 @@ export function CodexPanel() {
     detail.current?.scrollTo(0, 0);
     detail.current?.focus();
   }, [selected, showDetail]);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    void fetch(`${import.meta.env.BASE_URL}codex/manifest.json`, { signal: controller.signal })
-      .then(response => {
-        if (!response.ok) throw new Error(`Codex manifest: ${response.status}`);
-        return response.json() as Promise<CodexManifest>;
-      })
-      .then(data => { validateCodexManifest(data); setManifest(data); })
-      .catch(() => { if (!controller.signal.aborted) setFailed(true); });
-    return () => controller.abort();
-  }, [attempt]);
 
   const select = (id: CodexId) => {
     setSelected(id);
@@ -84,7 +71,7 @@ export function CodexPanel() {
             requestAnimationFrame(() => dialog.current?.querySelector<HTMLButtonElement>('.codex-list [aria-current="true"]')?.focus());
           }}>{t('codex.back')}</button>
           <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />
-          {!manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><button type="button" onClick={() => { setFailed(false); setAttempt(attempt + 1); }}>{t('codex.retry')}</button></div> : <p role="status">{t('codex.loading')}</p>)}
+          {!manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><button type="button" onClick={retry}>{t('codex.retry')}</button></div> : <p role="status">{t('codex.loading')}</p>)}
         </article>
       </div>
     </dialog>
