@@ -12,10 +12,12 @@ export interface DialogStore {
   pendingImport: GameState | null;
   recovery: RecoveryInfo | null;
   exportReminder: boolean;
+  updateReady: boolean;
   setSaveFailed: (open: boolean) => void;
   setPendingImport: (state: GameState | null) => void;
   setRecovery: (recovery: RecoveryInfo | null) => void;
   setExportReminder: (open: boolean) => void;
+  setUpdateReady: (ready: boolean) => void;
 }
 
 export const dialogStore = createStore<DialogStore>((set) => ({
@@ -23,8 +25,10 @@ export const dialogStore = createStore<DialogStore>((set) => ({
   pendingImport: null,
   recovery: null,
   exportReminder: false,
+  updateReady: false,
   setSaveFailed: (saveFailed) => set({ saveFailed }),
   setPendingImport: (pendingImport) => set({ pendingImport }),
   setRecovery: (recovery) => set({ recovery }),
   setExportReminder: (exportReminder) => set({ exportReminder }),
+  setUpdateReady: (updateReady) => set({ updateReady }),
 }));

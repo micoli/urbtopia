@@ -646,6 +646,11 @@ button {
   z-index: 6;
 }
 
+.update-prompt {
+  bottom: 140px;
+  z-index: 7;
+}
+
 .banner button,
 .reminder button {
   min-height: 40px;

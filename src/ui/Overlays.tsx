@@ -10,6 +10,7 @@ import { RecoveryScreen } from './RecoveryScreen';
 import { SaveFailedDialog } from './SaveFailedDialog';
 import { Toast } from './Toast';
 import { TutorialBanner } from './TutorialBanner';
+import { UpdatePrompt } from './UpdatePrompt';
 import { WorkingIndicators } from './WorkingIndicators';
 
 export function Overlays() {
@@ -21,6 +22,7 @@ export function Overlays() {
       <ConfirmPad />
       <ReadOnlyBanner />
       <ExportReminder />
+      <UpdatePrompt />
       <ConfirmSaleDialog />
       <ImportConfirmDialog />
       <SaveFailedDialog />

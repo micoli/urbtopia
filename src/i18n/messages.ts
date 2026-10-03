@@ -132,6 +132,8 @@ export const MESSAGES = {
   'saveFailed.close': 'Close',
   'reminder.text': 'You have not exported your city for a while.',
   'reminder.dismiss': 'Later',
+  'update.text': 'A new version is available.',
+  'update.reload': 'Reload',
   'error.notEnoughPower': 'Not enough power: build a Power plant.',
   'error.notEnoughWater': 'Not enough water: build a Water tower.',
   'error.utilityInUse': 'The city still needs this Capacity.',
