@@ -16,7 +16,13 @@ export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
   home: 'suburban/building-type-k',
   powerPlant: 'industrial/windmill',
   waterTower: 'industrial/water-tower',
+  silo: 'industrial/building-p',
+  vault: 'industrial/building-s',
 };
+
+const FACTORY_MODELS = ['industrial/building-b', 'industrial/building-e', 'industrial/building-f', 'industrial/building-l', 'industrial/building-c'];
+
+const STOREHOUSE_MODELS = ['industrial/building-a', 'industrial/building-a', 'industrial/building-a', 'industrial/building-q', 'industrial/building-q', 'industrial/building-q'];
 
 const HOME_MODELS = [
   'suburban/building-type-k',
@@ -25,14 +31,18 @@ const HOME_MODELS = [
   'suburban/building-type-b',
   'suburban/building-type-f',
   'suburban/building-type-n',
+  'suburban/building-type-t',
+  'suburban/building-type-m',
 ];
 
 const ROAD_MODELS = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout'].map((piece) => `roads/road-${piece}`);
 
-export const MODEL_KEYS: readonly string[] = [...new Set([...Object.values(MODEL_BY_BUILDING), ...HOME_MODELS, ...ROAD_MODELS, ...VEHICLE_MODELS])];
+export const MODEL_KEYS: readonly string[] = [...new Set([...Object.values(MODEL_BY_BUILDING), ...FACTORY_MODELS, ...STOREHOUSE_MODELS, ...HOME_MODELS, ...ROAD_MODELS, ...VEHICLE_MODELS])];
 
 function modelOf(type: BuildingType, tier: number): string {
   if (type === 'home') return HOME_MODELS[tier - 1] ?? MODEL_BY_BUILDING.home;
+  if (type === 'factory') return FACTORY_MODELS[tier - 1] ?? MODEL_BY_BUILDING.factory;
+  if (type === 'storehouse') return STOREHOUSE_MODELS[tier - 1] ?? MODEL_BY_BUILDING.storehouse;
   return MODEL_BY_BUILDING[type];
 }
 

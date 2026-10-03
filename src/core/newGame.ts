@@ -22,7 +22,6 @@ export function newGame(options: NewGameOptions): GameState {
     ownedParcels: GAME_CONFIG.startingParcels.map((parcel) => ({ ...parcel })),
     buildings: [],
     storage: { materials: {}, goods: {} },
-    storehouseLevel: 0,
     marketUnlocked: false,
     market: {},
     roads: [],

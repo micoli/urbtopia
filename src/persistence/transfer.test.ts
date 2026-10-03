@@ -37,7 +37,7 @@ describe('backup', () => {
 
   it('is made before a migration touches an old save', () => {
     store.put(SAVE_KEY, JSON.stringify(fixtureV1));
-    const migrating = new SaveSession(store, { currentVersion: 2, steps: { 1: (value) => value } });
+    const migrating = new SaveSession(store);
     expect(migrating.load()).toMatchObject({ kind: 'loaded' });
     expect(store.get(BACKUP_KEY)).toBe(JSON.stringify(fixtureV1));
   });

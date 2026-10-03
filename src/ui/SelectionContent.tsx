@@ -1,11 +1,12 @@
-import { GAME_CONFIG, placementCost } from '../core';
+import { GAME_CONFIG, isStorageType, placementCost } from '../core';
 import { t } from '../i18n/t';
 import { HomePanel } from './HomePanel';
 import { useUi } from './hooks';
 import { ProductionPanel } from './ProductionPanel';
 import { ShopPanel } from './ShopPanel';
-import { StorehousePanel } from './StorehousePanel';
+import { StoragePanel } from './StoragePanel';
 import { useSelectedBuilding } from './useSelectedBuilding';
+import { UtilityPanel } from './UtilityPanel';
 
 export function SelectionContent() {
   const building = useSelectedBuilding();
@@ -26,7 +27,8 @@ export function SelectionContent() {
       {building.type === 'workshop' || building.type === 'factory' ? <ProductionPanel building={building} /> : null}
       {building.type === 'home' ? <HomePanel building={building} /> : null}
       {building.type === 'shop' ? <ShopPanel building={building} /> : null}
-      {building.type === 'storehouse' ? <StorehousePanel /> : null}
+      {isStorageType(building.type) ? <StoragePanel building={building} /> : null}
+      {building.type === 'powerPlant' || building.type === 'waterTower' ? <UtilityPanel building={building} type={building.type} /> : null}
       <div className="side-panel-actions">
         <button type="button" onClick={moveSelected}>
           {t('panel.move')}

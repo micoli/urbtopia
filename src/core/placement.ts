@@ -4,7 +4,13 @@ import { frontDirection, neighbour, tileKey } from './geometry';
 import { isInsideOwnedParcels, isRoadLike, occupiedTiles } from './occupancy';
 import type { BuildingType, GameState, Rotation } from './state';
 
-export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.storehouseExists' | 'error.notEnoughUrbs';
+export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.storehouseExists' | 'error.siloExists' | 'error.vaultExists' | 'error.notEnoughUrbs';
+
+const UNIQUE_BUILDING_ERRORS: Partial<Record<BuildingType, PlacementIssue>> = {
+  storehouse: 'error.storehouseExists',
+  silo: 'error.siloExists',
+  vault: 'error.vaultExists',
+};
 
 const ROTATIONS: readonly Rotation[] = [0, 1, 2, 3];
 
@@ -44,7 +50,8 @@ export function placementIssue(
   if (tiles.some((tile) => occupied.has(tileKey(tile)))) return 'error.tilesOccupied';
   if (BUILDING_SPECS[type].requiresRoad && !frontTouchesRoad(state, type, x, y, rotation, tier)) return 'error.needsRoad';
   if (isMove) return null;
-  if (type === 'storehouse' && state.buildings.some((building) => building.type === 'storehouse')) return 'error.storehouseExists';
+  const existsError = UNIQUE_BUILDING_ERRORS[type];
+  if (existsError && state.buildings.some((building) => building.type === type)) return existsError;
   if (state.urbs < placementCost(type)) return 'error.notEnoughUrbs';
   return null;
 }

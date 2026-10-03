@@ -1,8 +1,9 @@
-import { MAX_SLOTS, SLOT_PRICES, isItemUnlocked, producibleItems, recipeOf, unlockCitizensOf, type Building, type ItemId, type MaterialId } from '../core';
+import { SLOT_PRICES, isItemUnlocked, minTierOf, producibleItems, productionTierOf, recipeOf, unlockCitizensOf, type Building, type ItemId, type MaterialId } from '../core';
 import { t } from '../i18n/t';
 import { formatDuration } from './formatDuration';
 import { useGame } from './hooks';
 import { gameStore } from '../store/gameStore';
+import { UpgradeSection } from './UpgradeSection';
 
 interface ProductionPanelProps {
   building: Building;
@@ -15,11 +16,21 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
   const hasFreeSlot = building.queue.length < building.slotCount;
   const hasReadyOutput = building.queue.some((entry) => entry.done);
   const send = gameStore.getState().send;
-  const slotPrice = building.slotCount < MAX_SLOTS ? SLOT_PRICES[building.slotCount + 1] : undefined;
+  const slotPrice = building.slotCount < productionTierOf(building).maxSlots ? SLOT_PRICES[building.slotCount + 1] : undefined;
+
+  function lockLabel(item: ItemId): string {
+    const conditions = [
+      ...(isItemUnlocked(state, item) ? [] : [`${unlockCitizensOf(item)} ${t('stat.citizens')}`]),
+      ...(building.tier >= minTierOf(item) ? [] : [`${t('home.tier')} ${minTierOf(item)}`]),
+    ];
+    return conditions.join(' · ');
+  }
 
   return (
     <section className="production">
-      <h3>{t('panel.queue')}</h3>
+      <h3>
+        {t('panel.queue')} · {t('home.tier')} {building.tier}
+      </h3>
       <ol className="slots">
         {Array.from({ length: building.slotCount }, (_, index) => {
           const entry = building.queue[index];
@@ -40,14 +51,14 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
       {hasFreeSlot ? (
         <div className="slot-actions">
           {items.map((item) =>
-            isItemUnlocked(state, item) ? (
+            isItemUnlocked(state, item) && building.tier >= minTierOf(item) ? (
               <button key={item} type="button" onClick={() => send({ type: 'QueueProduction', buildingId: building.id, item })}>
                 + {t(`item.${item}`)}
                 {recipeLabel(item)}
               </button>
             ) : (
               <button key={item} type="button" disabled>
-                🔒 {t(`item.${item}`)} ({unlockCitizensOf(item)} {t('stat.citizens')})
+                🔒 {t(`item.${item}`)} ({lockLabel(item)})
               </button>
             ),
           )}
@@ -58,6 +69,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
           {t('panel.buySlot')} ({slotPrice} {t('stat.urbs')})
         </button>
       ) : null}
+      <UpgradeSection building={building} />
       {hasReadyOutput ? (
         <button type="button" className="collect-button" onClick={() => send({ type: 'Collect', buildingId: building.id })}>
           {t('panel.collect')}

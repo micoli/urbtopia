@@ -1,6 +1,22 @@
 export type MigrationStep = (state: unknown) => unknown;
 
-export const MIGRATIONS: Record<number, MigrationStep> = {};
+function toPerBuildingTier(state: unknown): unknown {
+  const { storehouseLevel, buildings, ...rest } = state as { storehouseLevel: number; buildings: { type: string; tier: number }[] };
+  return {
+    ...rest,
+    buildings: buildings.map((building) => {
+      if (building.type === 'home') return building;
+      return { ...building, tier: building.type === 'storehouse' ? storehouseLevel + 1 : 1 };
+    }),
+  };
+}
+
+function addQueueQuantity(state: unknown): unknown {
+  const { buildings, ...rest } = state as { buildings: { queue: object[] }[] };
+  return { ...rest, buildings: buildings.map((building) => ({ ...building, queue: building.queue.map((entry) => ({ ...entry, quantity: 1 })) })) };
+}
+
+export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity };
 
 export function migrate(state: unknown, fromVersion: number, toVersion: number, steps: Record<number, MigrationStep> = MIGRATIONS): unknown {
   let current = state;

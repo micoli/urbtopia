@@ -30,7 +30,7 @@ const queueOf = (state: GameState, id = WORKSHOP_ID) => state.buildings.find((b)
 describe('QueueProduction', () => {
   it('starts a Material right away in an idle Workshop', () => {
     const state = succeed(initial, queueWood(), T0);
-    expect(queueOf(state)).toEqual([{ item: 'wood', duration: MINUTE, startedAt: T0, done: false }]);
+    expect(queueOf(state)).toEqual([{ item: 'wood', duration: MINUTE, startedAt: T0, done: false, quantity: 1 }]);
   });
 
   it('keeps a second Material waiting behind the first', () => {
@@ -134,7 +134,7 @@ describe('Storehouse rules', () => {
     const queued = succeed(withStorehouse, queueWood(), T0);
     const stocked = succeed(queued, collect(), T0 + MINUTE);
     const storehouse = stocked.buildings.find((b) => b.type === 'storehouse');
-    expect(failureKey(stocked, { type: 'SellBuilding', id: storehouse?.id ?? 0 }, T0 + MINUTE)).toBe('error.storehouseNotEmpty');
+    expect(failureKey(stocked, { type: 'SellBuilding', id: storehouse?.id ?? 0 }, T0 + MINUTE)).toBe('error.storageInUse');
     expect(failureKey(withStorehouse, { type: 'SellBuilding', id: storehouse?.id ?? 0 }, T0)).toBeNull();
   });
 });

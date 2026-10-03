@@ -22,6 +22,8 @@ export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
   home: { footprint: { width: 1, depth: 1 }, cost: 150, requiresRoad: true, initialSlots: 0 },
   powerPlant: { footprint: { width: 1, depth: 1 }, cost: 250, requiresRoad: false, initialSlots: 0 },
   waterTower: { footprint: { width: 1, depth: 1 }, cost: 200, requiresRoad: false, initialSlots: 0 },
+  silo: { footprint: { width: 2, depth: 1 }, cost: 300, requiresRoad: true, initialSlots: 0 },
+  vault: { footprint: { width: 2, depth: 1 }, cost: 300, requiresRoad: true, initialSlots: 0 },
 };
 
 export function footprintOf(type: BuildingType, rotation: number, tier = 1): Footprint {
@@ -45,7 +47,7 @@ export function emptyStack(): ShopStack {
 export function createBuilding(id: number, type: BuildingType, x: number, y: number, rotation: Rotation): Building {
   const slotCount = BUILDING_SPECS[type].initialSlots;
   const stacks = type === 'shop' ? Array.from({ length: slotCount }, emptyStack) : [];
-  return { id, type, x, y, rotation, slotCount, queue: [], stacks, tier: type === 'home' ? 1 : 0, taxCitizenMs: 0 };
+  return { id, type, x, y, rotation, slotCount, queue: [], stacks, tier: 1, taxCitizenMs: 0 };
 }
 
 export function placementCost(type: BuildingType): number {

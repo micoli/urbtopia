@@ -62,7 +62,13 @@ describe('nextUnlock', () => {
     expect(nextUnlock(withCitizens(36))).toEqual({ citizens: 80, items: ['metal', 'tools'] });
   });
 
+  it('announces the late-game items after 200 Citizens', () => {
+    expect(nextUnlock(withCitizens(204))).toEqual({ citizens: 350, items: ['sand', 'cement'] });
+    expect(nextUnlock(withCitizens(354))).toEqual({ citizens: 600, items: ['coal', 'steel'] });
+    expect(nextUnlock(withCitizens(606))).toEqual({ citizens: 1000, items: ['gold', 'jewelry', 'crystal'] });
+  });
+
   it('returns null once everything is unlocked', () => {
-    expect(nextUnlock(withCitizens(204))).toBeNull();
+    expect(nextUnlock(withCitizens(1008))).toBeNull();
   });
 });

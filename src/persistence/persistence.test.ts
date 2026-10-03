@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { newGame, type GameState } from '../core';
+import { newGame, storageCapacity, type GameState } from '../core';
 import fixtureV1 from './fixtures/save-v1.json';
+import fixtureV2 from './fixtures/save-v2.json';
+import fixtureV3 from './fixtures/save-v3.json';
 import { CURRENT_VERSION, FORMAT, parseEnvelope, serializeEnvelope } from './envelope';
 import { MemorySaveStore, SAVE_KEY } from './saveStore';
 import { SaveSession } from './saveSession';
@@ -14,7 +16,7 @@ const state = newGame({ seed: 'amber-fox-4821', now: T0 });
 describe('validateGameState', () => {
   it('accepts a fresh game and a played game', () => {
     expect(validateGameState(state)).not.toBeNull();
-    expect(validateGameState(fixtureV1.state)).not.toBeNull();
+    expect(validateGameState(fixtureV3.state)).not.toBeNull();
   });
 
   it.each([
@@ -44,6 +46,24 @@ describe('envelope', () => {
     expect(result).toEqual({ ok: true, state, savedAt: T0 });
   });
 
+  it('loads the frozen version 3 fixture', () => {
+    const result = parseEnvelope(JSON.stringify(fixtureV3));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.state.seed).toBe('amber-fox-4821');
+  });
+
+  it('loads the frozen version 2 fixture, giving queued items a quantity of 1', () => {
+    const result = parseEnvelope(JSON.stringify(fixtureV2));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.state.buildings.flatMap((b) => b.queue).every((entry) => entry.quantity === 1)).toBe(true);
+  });
+
+  it('reads the seed of the frozen version 2 fixture', () => {
+    const result = parseEnvelope(JSON.stringify(fixtureV2));
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.state.seed).toBe('amber-fox-4821');
+  });
+
   it('loads the frozen version 1 fixture', () => {
     const result = parseEnvelope(JSON.stringify(fixtureV1));
     expect(result.ok).toBe(true);
@@ -58,6 +78,30 @@ describe('envelope', () => {
     ['a missing envelope field', JSON.stringify({ format: FORMAT, state }), 'wrong-format'],
   ])('refuses %s', (_label, text, reason) => {
     expect(parseEnvelope(text)).toEqual({ ok: false, reason });
+  });
+});
+
+describe('migration from version 1', () => {
+  const v1State = fixtureV1.state as Record<string, unknown> & { buildings: { type: string; tier: number }[] };
+  const load = (storehouseLevel: number) => {
+    const result = parseEnvelope(JSON.stringify({ ...fixtureV1, state: { ...v1State, storehouseLevel } }));
+    if (!result.ok) throw new Error(result.reason);
+    return result.state;
+  };
+
+  it('gives every non-Home building Tier 1 and keeps the Home Tiers', () => {
+    const loaded = load(0);
+    const originals = v1State.buildings;
+    loaded.buildings.slice(0, originals.length).forEach((building, index) => {
+      expect(building.tier).toBe(originals[index]?.type === 'home' ? originals[index]?.tier : 1);
+    });
+  });
+
+  it('turns the global Storehouse level into the Storehouse Tier, keeping its capacity', () => {
+    const loaded = load(3);
+    expect(loaded.buildings.find((b) => b.type === 'storehouse')?.tier).toBe(4);
+    expect(storageCapacity(loaded)).toEqual({ materials: 50, goods: 100 });
+    expect('storehouseLevel' in loaded).toBe(false);
   });
 });
 

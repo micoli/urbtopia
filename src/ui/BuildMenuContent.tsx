@@ -5,7 +5,7 @@ import { FlyoutItem } from './FlyoutItem';
 import { useGame, useUi } from './hooks';
 import { guideOf } from './tutorialGuide';
 
-const BUILDING_ORDER: BuildingType[] = ['workshop', 'factory', 'shop', 'storehouse', 'home', 'powerPlant', 'waterTower'];
+const BUILDING_ORDER: BuildingType[] = ['workshop', 'factory', 'shop', 'storehouse', 'silo', 'vault', 'home', 'powerPlant', 'waterTower'];
 
 export function BuildMenuContent() {
   const flyout = useUi((store) => store.flyout);

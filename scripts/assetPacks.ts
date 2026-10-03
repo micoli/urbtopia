@@ -34,13 +34,13 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'suburban',
     url: 'https://kenney.nl/media/pages/assets/city-kit-suburban/2c871b7af2-1745479373/kenney_city-kit-suburban_20.zip',
     archive: 'kenney_city-kit-suburban_20.zip',
-    files: ['building-type-a', 'building-type-b', 'building-type-f', 'building-type-h', 'building-type-k', 'building-type-n'],
+    files: ['building-type-a', 'building-type-b', 'building-type-f', 'building-type-h', 'building-type-k', 'building-type-m', 'building-type-n', 'building-type-t'],
   },
   {
     name: 'industrial',
     url: 'https://kenney.nl/media/pages/assets/city-kit-industrial/0ec35b139d-1788171848/kenney_city-kit-industrial_2.0.zip',
     archive: 'kenney_city-kit-industrial_2.0.zip',
-    files: ['building-a', 'building-b', 'building-h', 'water-tower', 'windmill'],
+    files: ['building-a', 'building-b', 'building-c', 'building-e', 'building-f', 'building-h', 'building-l', 'building-p', 'building-q', 'building-s', 'water-tower', 'windmill'],
   },
   {
     name: 'cars',

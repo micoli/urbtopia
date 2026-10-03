@@ -4,9 +4,11 @@ import type { GameEvent } from './events';
 import { GOODS } from './items';
 import { durationOf, type ItemId } from './items';
 import type { Building, GameState, QueueEntry, ShopStack } from './state';
+import { productionTierOf } from './tiers';
 
-export function newQueueEntry(item: ItemId, now: number, isIdle: boolean): QueueEntry {
-  return { item, duration: durationOf(item), startedAt: isIdle ? now : null, done: false };
+export function newQueueEntry(building: Building, item: ItemId, now: number): QueueEntry {
+  const { durationFactor, yield: quantity } = productionTierOf(building);
+  return { item, duration: Math.round(durationOf(item) * durationFactor), startedAt: isIdle(building) ? now : null, done: false, quantity };
 }
 
 export function isIdle(building: Building): boolean {

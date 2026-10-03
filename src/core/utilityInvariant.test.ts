@@ -11,7 +11,7 @@ const commandArb: fc.Arbitrary<Command> = fc.oneof(
   spotArb.map(({ x, y }): Command => ({ type: 'PlaceBuilding', buildingType: 'powerPlant', x, y })),
   spotArb.map(({ x, y }): Command => ({ type: 'PlaceBuilding', buildingType: 'waterTower', x, y })),
   fc.integer({ min: 1, max: 40 }).map((id): Command => ({ type: 'SellBuilding', id })),
-  fc.integer({ min: 1, max: 40 }).map((id): Command => ({ type: 'UpgradeHome', buildingId: id })),
+  fc.integer({ min: 1, max: 40 }).map((id): Command => ({ type: 'UpgradeBuilding', buildingId: id })),
 );
 
 describe('utility invariant', () => {

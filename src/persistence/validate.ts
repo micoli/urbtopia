@@ -2,7 +2,7 @@ import { GAME_CONFIG, GOODS, MATERIALS, TUTORIAL_STEPS, type GameState, type Tut
 
 type Json = Record<string, unknown>;
 
-const BUILDING_TYPES = ['workshop', 'factory', 'shop', 'storehouse', 'home', 'powerPlant', 'waterTower'];
+const BUILDING_TYPES = ['workshop', 'factory', 'shop', 'storehouse', 'home', 'powerPlant', 'waterTower', 'silo', 'vault'];
 const ROAD_KINDS = ['road', 'crossing'];
 
 const isRecord = (value: unknown): value is Json => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -27,7 +27,8 @@ function isQueueEntry(value: unknown): boolean {
     itemIds.includes(value.item) &&
     isNonNegative(value.duration) &&
     (value.startedAt === null || isNumber(value.startedAt)) &&
-    typeof value.done === 'boolean'
+    typeof value.done === 'boolean' &&
+    isInt(value.quantity, 1)
   );
 }
 
@@ -50,10 +51,10 @@ function isBuilding(value: unknown): boolean {
     isInt(value.x, 0) &&
     isInt(value.y, 0) &&
     isInt(value.rotation, 0, 3) &&
-    isInt(value.slotCount, 0, 5) &&
+    isInt(value.slotCount, 0, 8) &&
     isArrayOf(value.queue, isQueueEntry) &&
     isArrayOf(value.stacks, isStack) &&
-    isInt(value.tier, 0, 6) &&
+    isInt(value.tier, 1, 8) &&
     isNonNegative(value.taxCitizenMs)
   );
 }
@@ -76,7 +77,6 @@ export function validateGameState(value: unknown): GameState | null {
     isRecord(value.storage) &&
     isAmountRecord(value.storage.materials, Object.keys(MATERIALS)) &&
     isAmountRecord(value.storage.goods, Object.keys(GOODS)) &&
-    isInt(value.storehouseLevel, 0, 5) &&
     typeof value.marketUnlocked === 'boolean' &&
     isMarket(value.market) &&
     isArrayOf(value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string)) &&

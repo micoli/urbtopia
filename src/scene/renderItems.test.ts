@@ -16,6 +16,26 @@ describe('renderItemsOf', () => {
   });
 });
 
+describe('renderItemsOf Tier models', () => {
+  const modelAt = (type: 'factory' | 'storehouse' | 'silo' | 'vault', tier: number) => {
+    const building = { ...createBuilding(9, type, 10, 20, 0), tier };
+    return renderItemsOf({ ...newGame({ seed: 'amber-fox-4821', now: 0 }), roads: [], buildings: [building] })[0]?.model;
+  };
+
+  it('gives each Factory Tier its own model', () => {
+    const models = [1, 2, 3, 4, 5].map((tier) => modelAt('factory', tier));
+    expect(new Set(models).size).toBe(5);
+  });
+
+  it('switches the Storehouse model from Tier 4', () => {
+    expect(modelAt('storehouse', 3)).not.toBe(modelAt('storehouse', 4));
+  });
+
+  it('shows the Silo and the Vault with models of their own', () => {
+    expect(new Set([modelAt('storehouse', 1), modelAt('silo', 1), modelAt('vault', 1)]).size).toBe(3);
+  });
+});
+
 describe('renderItemsOf caching', () => {
   const state = newGame({ seed: 'amber-fox-4821', now: 0 });
 

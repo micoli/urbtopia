@@ -3,7 +3,7 @@ import type { GoodId, ItemId, MaterialId } from './items';
 import type { RoadKind } from './roads';
 import type { TutorialStep } from './tutorial';
 
-export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'waterTower';
+export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'waterTower' | 'silo' | 'vault';
 
 export type Rotation = 0 | 1 | 2 | 3;
 
@@ -14,6 +14,7 @@ export interface QueueEntry {
   duration: number;
   startedAt: number | null;
   done: boolean;
+  quantity: number;
 }
 
 export interface ShopStack {
@@ -57,7 +58,6 @@ export interface GameState {
   ownedParcels: ParcelCoord[];
   buildings: Building[];
   storage: Storage;
-  storehouseLevel: number;
   marketUnlocked: boolean;
   market: Partial<Record<GoodId, MarketPrice>>;
   roads: RoadTile[];

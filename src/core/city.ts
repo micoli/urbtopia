@@ -15,8 +15,9 @@ export function totalCitizens(state: GameState): number {
 }
 
 export function utilityCapacity(state: GameState): UtilityTotals {
-  const count = (type: 'powerPlant' | 'waterTower') => state.buildings.filter((building) => building.type === type).length;
-  return { power: count('powerPlant') * UTILITY_CAPACITY.powerPlant, water: count('waterTower') * UTILITY_CAPACITY.waterTower };
+  const total = (type: 'powerPlant' | 'waterTower') =>
+    state.buildings.reduce((sum, building) => sum + (building.type === type ? (UTILITY_CAPACITY[type][building.tier - 1] ?? 0) : 0), 0);
+  return { power: total('powerPlant'), water: total('waterTower') };
 }
 
 export function utilityDemand(state: GameState): UtilityTotals {

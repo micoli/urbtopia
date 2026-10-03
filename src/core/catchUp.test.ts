@@ -81,7 +81,7 @@ describe('Catch-up beyond the cap', () => {
     const slow: GameState = {
       ...city,
       buildings: city.buildings.map((b) =>
-        b.id === 1 ? { ...b, queue: [{ item: 'wood', duration: 60 * HOUR, startedAt: T0, done: false }] } : b,
+        b.id === 1 ? { ...b, queue: [{ item: 'wood', duration: 60 * HOUR, startedAt: T0, done: false, quantity: 1 }] } : b,
       ),
     };
     const { state } = advance(slow, T0 + 100 * HOUR);

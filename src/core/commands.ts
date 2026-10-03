@@ -5,8 +5,8 @@ import type { Coord } from './coord';
 import type { GameEvent } from './events';
 import { tileKey } from './geometry';
 import { utilityCapacity, utilityDemand, type UtilityTotals } from './city';
-import { HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, MAX_SLOTS, SHOP, TAX, SLOT_PRICES, STORAGE_UPGRADE_COSTS } from './economy';
-import { GOODS, isGood, isMaterial, producibleItems, recipeOf, type GoodId } from './items';
+import { HOME_TIERS, MAX_SLOTS, SHOP, TAX, SLOT_PRICES } from './economy';
+import { GOODS, isGood, isMaterial, minTierOf, producibleItems, recipeOf, type GoodId } from './items';
 import { marketQuote } from './market';
 import { isItemUnlocked } from './unlocks';
 import { withStartingCity } from './newGame';
@@ -14,10 +14,11 @@ import { tutorialAllows, tutorialSkipMs } from './tutorial';
 import { isAdjacentToOwned, isInsideMap, isOwned, parcelPrice } from './parcels';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from './occupancy';
 import { autoRotation, frontTouchesRoad, placementIssue } from './placement';
-import { isIdle, newQueueEntry, restartRunningProduction, shiftRunningTimers, taxDue } from './production';
+import { newQueueEntry, restartRunningProduction, shiftRunningTimers, taxDue } from './production';
 import { roadBuildCost, missingRoadTiles } from './roadCost';
 import { roadPath } from './roads';
-import { hasStorehouse, isStorageEmpty, storageCapacity, storageUsed } from './storage';
+import { maxTierOf, productionTierOf, upgradeCostOf } from './tiers';
+import { canRemoveStorage, hasStorage, isStorageType, storageCapacity, storageUsed } from './storage';
 import type { Building, BuildingType, GameState, QueueEntry, Rotation } from './state';
 
 const HOUR_MS = 60 * 60 * 1000;
@@ -32,10 +33,9 @@ export type Command =
   | { readonly type: 'Collect'; readonly buildingId: number }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
   | { readonly type: 'SellToMarket'; readonly good: GoodId; readonly quantity: number }
-  | { readonly type: 'UpgradeHome'; readonly buildingId: number }
+  | { readonly type: 'UpgradeBuilding'; readonly buildingId: number }
   | { readonly type: 'BuyParcel'; readonly x: number; readonly y: number }
   | { readonly type: 'BuySlot'; readonly buildingId: number }
-  | { readonly type: 'UpgradeStorehouse' }
   | { readonly type: 'SellBuilding'; readonly id: number }
   | { readonly type: 'MoveBuilding'; readonly id: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'SkipTime'; readonly hours: number }
@@ -49,6 +49,8 @@ export type ErrorKey =
   | 'error.tilesOccupied'
   | 'error.needsRoad'
   | 'error.storehouseExists'
+  | 'error.siloExists'
+  | 'error.vaultExists'
   | 'error.notEnoughUrbs'
   | 'error.lastRoadOfBuilding'
   | 'error.noRoadHere'
@@ -58,10 +60,9 @@ export type ErrorKey =
   | 'error.nothingToCollect'
   | 'error.noStorehouse'
   | 'error.storageFull'
-  | 'error.storehouseNotEmpty'
+  | 'error.storageInUse'
   | 'error.missingMaterials'
   | 'error.maxSlots'
-  | 'error.maxLevel'
   | 'error.notAShop'
   | 'error.missingGoods'
   | 'error.marketLocked'
@@ -73,7 +74,7 @@ export type ErrorKey =
   | 'error.notEnoughWater'
   | 'error.utilityInUse'
   | 'error.itemLocked'
-  | 'error.notAHome'
+  | 'error.tierTooLow'
   | 'error.maxTier'
   | 'error.tutorialLocked'
   | 'error.nothingToSkip';
@@ -111,14 +112,12 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return stockShop(state, command.buildingId, command.good, now);
     case 'SellToMarket':
       return sellToMarket(state, command.good, command.quantity, now);
-    case 'UpgradeHome':
-      return upgradeHome(state, command.buildingId);
+    case 'UpgradeBuilding':
+      return upgradeBuilding(state, command.buildingId);
     case 'BuyParcel':
       return buyParcel(state, { x: command.x, y: command.y });
     case 'BuySlot':
       return buySlot(state, command.buildingId);
-    case 'UpgradeStorehouse':
-      return upgradeStorehouse(state);
     case 'SellBuilding':
       return sellBuilding(state, command.id);
     case 'MoveBuilding':
@@ -230,11 +229,11 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
 function sellBuilding(state: GameState, id: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === id);
   if (!building) return fail('error.unknownBuilding');
-  if (building.type === 'storehouse' && !isStorageEmpty(state.storage)) return fail('error.storehouseNotEmpty');
-  if ((building.type === 'powerPlant' || building.type === 'waterTower') && !canLoseUtility(state, building.type)) return fail('error.utilityInUse');
+  if (isStorageType(building.type) && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
+  if ((building.type === 'powerPlant' || building.type === 'waterTower') && !canLoseUtility(state, building)) return fail('error.utilityInUse');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
   return {
-    state: { ...state, urbs: state.urbs + refund, storehouseLevel: building.type === 'storehouse' ? 0 : state.storehouseLevel, buildings: state.buildings.filter((candidate) => candidate !== building) },
+    state: { ...state, urbs: state.urbs + refund, buildings: state.buildings.filter((candidate) => candidate !== building) },
     events: [{ type: 'BuildingSold', id }],
   };
 }
@@ -257,6 +256,7 @@ function queueProduction(state: GameState, buildingId: number, item: string, now
   if (!building) return fail('error.unknownBuilding');
   if (!(isMaterial(item) || isGood(item)) || !producibleItems(building.type).includes(item)) return fail('error.cannotProduce');
   if (!isItemUnlocked(state, item)) return fail('error.itemLocked');
+  if (building.tier < minTierOf(item)) return fail('error.tierTooLow');
   if (building.queue.length >= building.slotCount) return fail('error.queueFull');
   const materials = { ...state.storage.materials };
   for (const [material, needed] of Object.entries(recipeOf(item))) {
@@ -264,7 +264,7 @@ function queueProduction(state: GameState, buildingId: number, item: string, now
     if (available < needed) return fail('error.missingMaterials');
     materials[material as keyof typeof materials] = available - needed;
   }
-  const entry = newQueueEntry(item, now, isIdle(building));
+  const entry = newQueueEntry(building, item, now);
   return {
     state: {
       ...state,
@@ -281,7 +281,7 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
   if (building.type === 'shop') return collectShopEarnings(state, building);
   if (building.type === 'home') return collectTax(state, building);
   if (!building.queue.some((entry) => entry.done)) return fail('error.nothingToCollect');
-  if (!hasStorehouse(state)) return fail('error.noStorehouse');
+  if (!hasStorage(state)) return fail('error.noStorehouse');
 
   const capacity = storageCapacity(state);
   const used = storageUsed(state.storage);
@@ -291,13 +291,13 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
   let collected = 0;
   for (const entry of building.queue) {
     const compartment = isMaterial(entry.item) ? 'materials' : 'goods';
-    if (!entry.done || used[compartment] >= capacity[compartment]) {
+    if (!entry.done || used[compartment] + entry.quantity > capacity[compartment]) {
       remaining.push(entry);
       continue;
     }
-    if (isMaterial(entry.item)) materials[entry.item] = (materials[entry.item] ?? 0) + 1;
-    else goods[entry.item] = (goods[entry.item] ?? 0) + 1;
-    used[compartment] += 1;
+    if (isMaterial(entry.item)) materials[entry.item] = (materials[entry.item] ?? 0) + entry.quantity;
+    else goods[entry.item] = (goods[entry.item] ?? 0) + entry.quantity;
+    used[compartment] += entry.quantity;
     collected += 1;
   }
   if (collected === 0) return fail('error.storageFull');
@@ -314,11 +314,15 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
   };
 }
 
+function maxSlotsOf(building: Building): number {
+  return building.type === 'shop' ? MAX_SLOTS : productionTierOf(building).maxSlots;
+}
+
 function buySlot(state: GameState, buildingId: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
   if (BUILDING_SPECS[building.type].initialSlots === 0) return fail('error.cannotProduce');
-  if (building.slotCount >= MAX_SLOTS) return fail('error.maxSlots');
+  if (building.slotCount >= maxSlotsOf(building)) return fail('error.maxSlots');
   const price = SLOT_PRICES[building.slotCount + 1] ?? 0;
   if (state.urbs < price) return fail('error.notEnoughUrbs');
   return {
@@ -329,14 +333,6 @@ function buySlot(state: GameState, buildingId: number): CommandOutcome {
     },
     events: [],
   };
-}
-
-function upgradeStorehouse(state: GameState): CommandOutcome {
-  if (!hasStorehouse(state)) return fail('error.noStorehouse');
-  const cost = STORAGE_UPGRADE_COSTS[state.storehouseLevel];
-  if (cost === undefined) return fail('error.maxLevel');
-  if (state.urbs < cost) return fail('error.notEnoughUrbs');
-  return { state: { ...state, urbs: state.urbs - cost, storehouseLevel: state.storehouseLevel + 1 }, events: [] };
 }
 
 function collectShopEarnings(state: GameState, building: Building): CommandOutcome {
@@ -414,11 +410,11 @@ function utilityIssueFor(state: GameState, extra: UtilityTotals): ErrorKey | nul
   return null;
 }
 
-function canLoseUtility(state: GameState, type: 'powerPlant' | 'waterTower'): boolean {
-  const remaining: GameState = { ...state, buildings: state.buildings.filter((candidate, index, all) => candidate.type !== type || index !== all.findIndex((b) => b.type === type)) };
+function canLoseUtility(state: GameState, sold: Building): boolean {
+  const remaining: GameState = { ...state, buildings: state.buildings.filter((candidate) => candidate !== sold) };
   const capacity = utilityCapacity(remaining);
   const demand = utilityDemand(remaining);
-  return type === 'powerPlant' ? capacity.power >= demand.power : capacity.water >= demand.water;
+  return sold.type === 'powerPlant' ? capacity.power >= demand.power : capacity.water >= demand.water;
 }
 
 function collectTax(state: GameState, building: Building): CommandOutcome {
@@ -435,21 +431,23 @@ function collectTax(state: GameState, building: Building): CommandOutcome {
   };
 }
 
-function upgradeHome(state: GameState, buildingId: number): CommandOutcome {
+function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
-  if (building.type !== 'home') return fail('error.notAHome');
-  if (building.tier >= MAX_HOME_TIER) return fail('error.maxTier');
+  if (building.tier >= maxTierOf(building.type)) return fail('error.maxTier');
   const nextTier = building.tier + 1;
-  const footprintIssue = placementIssue(state, 'home', building.x, building.y, building.rotation, {
-    ignoreBuildingId: building.id,
-    isMove: true,
-    tier: nextTier,
-  });
-  if (footprintIssue) return fail(footprintIssue);
-
-  const cost = HOME_UPGRADE_COSTS[nextTier];
+  const cost = upgradeCostOf(building.type, nextTier);
   if (!cost) return fail('error.maxTier');
+  const isHome = building.type === 'home';
+  if (isHome) {
+    const footprintIssue = placementIssue(state, 'home', building.x, building.y, building.rotation, {
+      ignoreBuildingId: building.id,
+      isMove: true,
+      tier: nextTier,
+    });
+    if (footprintIssue) return fail(footprintIssue);
+  }
+
   if (state.urbs < cost.urbs) return fail('error.notEnoughUrbs');
   const goods = { ...state.storage.goods };
   for (const [good, amount] of Object.entries(cost.goods)) {
@@ -457,10 +455,12 @@ function upgradeHome(state: GameState, buildingId: number): CommandOutcome {
     if (available < amount) return fail('error.missingGoods');
     goods[good as GoodId] = available - amount;
   }
-  const before = tierDemand(building.tier);
-  const after = tierDemand(nextTier);
-  const utilityIssue = utilityIssueFor(state, { power: after.power - before.power, water: after.water - before.water });
-  if (utilityIssue) return fail(utilityIssue);
+  if (isHome) {
+    const before = tierDemand(building.tier);
+    const after = tierDemand(nextTier);
+    const utilityIssue = utilityIssueFor(state, { power: after.power - before.power, water: after.water - before.water });
+    if (utilityIssue) return fail(utilityIssue);
+  }
 
   return {
     state: {
@@ -469,6 +469,6 @@ function upgradeHome(state: GameState, buildingId: number): CommandOutcome {
       storage: { ...state.storage, goods },
       buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, tier: nextTier } : candidate)),
     },
-    events: [{ type: 'HomeUpgraded', buildingId, tier: nextTier }],
+    events: [{ type: 'BuildingUpgraded', buildingId, tier: nextTier }],
   };
 }

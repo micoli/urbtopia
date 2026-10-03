@@ -26,7 +26,7 @@ describe('Factory production', () => {
   it('turns 2 Wood into Planks in 2 minutes, taking the Materials at once', () => {
     const state = succeed(stocked, { type: 'QueueProduction', buildingId: FACTORY_ID, item: 'planks' });
     expect(state.storage.materials).toEqual({ wood: 3, stone: 5 });
-    expect(factoryQueue(state)).toEqual([{ item: 'planks', duration: 2 * MINUTE, startedAt: T0, done: false }]);
+    expect(factoryQueue(state)).toEqual([{ item: 'planks', duration: 2 * MINUTE, startedAt: T0, done: false, quantity: 1 }]);
   });
 
   it('turns 2 Stone and 1 Wood into Bricks in 4 minutes', () => {
@@ -97,10 +97,11 @@ describe('BuySlot', () => {
   });
 });
 
-describe('UpgradeStorehouse', () => {
-  const upgrade: Command = { type: 'UpgradeStorehouse' };
+describe('UpgradeBuilding on the Storehouse', () => {
+  const storehouseId = withStorehouse.buildings.find((b) => b.type === 'storehouse')?.id ?? 0;
+  const upgrade: Command = { type: 'UpgradeBuilding', buildingId: storehouseId };
 
-  it('adds 10 Materials and 20 Goods of capacity per level, for 300, 800, 2,000, 5,000 and 12,000 Urbs', () => {
+  it('adds 10 Materials and 20 Goods of capacity per Tier, for 300, 800, 2,000, 5,000 and 12,000 Urbs', () => {
     let state: GameState = { ...withStorehouse, urbs: 100_000 };
     const prices = [];
     for (let level = 1; level <= 5; level++) {
@@ -113,20 +114,23 @@ describe('UpgradeStorehouse', () => {
     expect(storageCapacity(state)).toEqual({ materials: 70, goods: 140 });
   });
 
-  it('stops after five upgrades', () => {
-    const maxed: GameState = { ...withStorehouse, urbs: 100_000, storehouseLevel: 5 };
-    expect(failureKey(maxed, upgrade)).toBe('error.maxLevel');
+  it('stops at Tier 6', () => {
+    const maxed: GameState = {
+      ...withStorehouse,
+      urbs: 100_000,
+      buildings: withStorehouse.buildings.map((b) => (b.id === storehouseId ? { ...b, tier: 6 } : b)),
+    };
+    expect(failureKey(maxed, upgrade)).toBe('error.maxTier');
   });
 
-  it('needs a Storehouse and enough Urbs', () => {
-    expect(failureKey({ ...initial, urbs: 100_000 }, upgrade)).toBe('error.noStorehouse');
+  it('needs enough Urbs', () => {
     expect(failureKey({ ...withStorehouse, urbs: 10 }, upgrade)).toBe('error.notEnoughUrbs');
   });
 
-  it('loses its upgrades when the empty Storehouse is sold', () => {
-    const upgraded = succeed({ ...withStorehouse, urbs: 1000 }, upgrade);
-    const storehouse = upgraded.buildings.find((b) => b.type === 'storehouse');
-    const sold = succeed(upgraded, { type: 'SellBuilding', id: storehouse?.id ?? 0 });
-    expect(sold.storehouseLevel).toBe(0);
+  it('loses its upgrades when the empty Storehouse is sold and rebuilt', () => {
+    const upgraded = succeed({ ...withStorehouse, urbs: 5000 }, upgrade);
+    const sold = succeed(upgraded, { type: 'SellBuilding', id: storehouseId });
+    const rebuilt = succeed(sold, { type: 'PlaceBuilding', buildingType: 'storehouse', x: 56, y: 59 });
+    expect(storageCapacity(rebuilt)).toEqual({ materials: 20, goods: 40 });
   });
 });

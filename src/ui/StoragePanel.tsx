@@ -1,20 +1,23 @@
-import { STORAGE_UPGRADE_COSTS, storageCapacity, storageUsed, type GoodId, type MaterialId } from '../core';
+import { storageCapacity, storageUsed, type Building, type GoodId, type MaterialId } from '../core';
 import { t } from '../i18n/t';
-import { gameStore } from '../store/gameStore';
 import { useGame } from './hooks';
+import { UpgradeSection } from './UpgradeSection';
 
-export function StorehousePanel() {
+interface StoragePanelProps {
+  building: Building;
+}
+
+export function StoragePanel({ building }: StoragePanelProps) {
   const state = useGame((store) => store.state);
   const capacity = storageCapacity(state);
   const used = storageUsed(state.storage);
   const materials = Object.entries(state.storage.materials).filter(([, amount]) => (amount ?? 0) > 0);
   const goods = Object.entries(state.storage.goods).filter(([, amount]) => (amount ?? 0) > 0);
-  const upgradeCost = STORAGE_UPGRADE_COSTS[state.storehouseLevel];
 
   return (
     <section className="storehouse">
       <h3>
-        {t('panel.stock')} · {t('panel.level')} {state.storehouseLevel}
+        {t('panel.stock')} · {t('panel.level')} {building.tier}
       </h3>
       <p>
         {t('panel.materials')}: {used.materials}/{capacity.materials}
@@ -36,11 +39,7 @@ export function StorehousePanel() {
           </li>
         ))}
       </ul>
-      {upgradeCost !== undefined ? (
-        <button type="button" className="slot-buy" onClick={() => gameStore.getState().send({ type: 'UpgradeStorehouse' })}>
-          {t('panel.upgrade')} ({upgradeCost} {t('stat.urbs')})
-        </button>
-      ) : null}
+      <UpgradeSection building={building} />
     </section>
   );
 }

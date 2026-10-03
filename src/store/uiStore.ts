@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import { footprintTiles, isStorageEmpty, type Coord, type Rotation } from '../core';
+import { canRemoveStorage, footprintTiles, isStorageType, type Coord, type Rotation } from '../core';
 import { confirmTool, evaluateTool, type Evaluation, type Tool } from '../tools/tools';
 import { gameStore } from './gameStore';
 import { sceneHandle } from './sceneHandle';
@@ -93,7 +93,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       if (id === null) return;
       const game = gameStore.getState().state;
       const building = game.buildings.find((candidate) => candidate.id === id);
-      const needsConfirmation = building && ((building.type === 'home' && building.tier >= 3) || (building.type === 'storehouse' && !isStorageEmpty(game.storage)));
+      const needsConfirmation = building && ((building.type === 'home' && building.tier >= 3) || (isStorageType(building.type) && !canRemoveStorage(game, building.id)));
       if (needsConfirmation) return set({ pendingSaleId: id });
       gameStore.getState().send({ type: 'SellBuilding', id });
       set({ selectedBuildingId: null });
