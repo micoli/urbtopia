@@ -14,7 +14,7 @@ Two buttons in the menu, +12 h and +24 h, that move the game forward by 12 or 24
 
 ## Seam under test
 
-`dispatch(state, { type: 'SkipTime', hours }, now)`: production completes and can be collected, `lastSeen` stays on `now` so the game keeps running in real time, a Home accumulates its Tax up to the 8 hour cap. The two menu buttons are not tested automatically. Shop sales are not covered by a dedicated test.
+`dispatch(state, { type: 'SkipTime', hours }, now)`: production completes and can be collected, `lastSeen` stays on `now` so the game keeps running in real time, a Home accumulates its Tax up to the 8 hour cap. Shops are covered too: everything on sale is sold and the earnings can be collected, a restocked stack keeps its normal pace, and a short skip sells only what it allows and brings the next sale closer by the skipped time. The two menu buttons are not tested automatically.
 
 ## Acceptance criteria
 
