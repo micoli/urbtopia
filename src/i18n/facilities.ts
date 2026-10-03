@@ -25,11 +25,11 @@ const texts: Record<FacilityType, { name: readonly [string, string]; help: reado
   },
   communityHall: {
     name: ['Community hall', 'Salle des fêtes'],
-    help: ['A small Culture facility for nearby Citizens. Different Culture facilities stack their Well-being.', 'Un petit équipement culturel pour les citoyens proches. Les équipements culturels différents cumulent leur bien-être.'],
+    help: ['A small Culture facility for nearby Citizens. Optional: different Culture facilities stack their Well-being.', 'Un petit équipement culturel pour les citoyens proches. Facultatif : les équipements culturels différents cumulent leur bien-être.'],
   },
   theater: {
     name: ['Theater', 'Théâtre'],
-    help: ['A Culture facility for nearby Citizens. Different Culture facilities stack their Well-being.', 'Un équipement culturel pour les citoyens proches. Les équipements culturels différents cumulent leur bien-être.'],
+    help: ['A Culture facility for nearby Citizens. Optional: different Culture facilities stack their Well-being.', 'Un équipement culturel pour les citoyens proches. Facultatif : les équipements culturels différents cumulent leur bien-être.'],
   },
   concertHall: {
     name: ['Concert hall', 'Salle de concert'],
