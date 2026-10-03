@@ -33,6 +33,7 @@ export class CameraController {
   private twist = 0;
   private keys = new Map<string, number>();
   private gesture = { startX: 0, startY: 0, startTime: 0, moved: false, multiTouch: false };
+  private pendingTap: { x: number; y: number; shiftKey: boolean } | null = null;
   onTap: (clientX: number, clientY: number, shiftKey: boolean) => void = () => {};
   onMouseMove: (clientX: number, clientY: number) => void = () => {};
   onPointerKind: (pointerType: string) => void = () => {};
@@ -150,6 +151,7 @@ export class CameraController {
     canvas.addEventListener('pointermove', (event) => this.onPointerMove(event), { signal });
     canvas.addEventListener('pointerup', (event) => this.onPointerEnd(event), { signal });
     canvas.addEventListener('pointercancel', (event) => this.onPointerEnd(event), { signal });
+    canvas.addEventListener('click', () => this.onClick(), { signal });
     canvas.addEventListener('contextmenu', (event) => this.onContextMenu(event), { signal });
     canvas.addEventListener('wheel', (event) => this.zoomBy(event.deltaY < 0 ? 1.1 : 0.9), { signal, passive: true });
     window.addEventListener('keydown', (event) => this.onKey(event, true), { signal });
@@ -178,6 +180,7 @@ export class CameraController {
   }
 
   private onPointerDown(event: PointerEvent): void {
+    this.pendingTap = null;
     this.onPointerKind(event.pointerType);
     if (event.pointerType === 'mouse' && event.button !== 0) return;
     try {
@@ -200,9 +203,16 @@ export class CameraController {
     const { startX, startY, startTime, moved, multiTouch } = this.gesture;
     const isTap = wasSingle && !moved && !multiTouch && performance.now() - startTime < TAP_MAX_MS;
     this.pointers.delete(event.pointerId);
-    if (isTap) this.onTap(startX, startY, event.shiftKey);
+    this.pendingTap = isTap ? { x: startX, y: startY, shiftKey: event.shiftKey } : null;
     this.lastPinchDistance = 0;
     this.twist = 0;
+  }
+
+  private onClick(): void {
+    const tap = this.pendingTap;
+    this.pendingTap = null;
+    if (!tap) return;
+    this.onTap(tap.x, tap.y, tap.shiftKey);
   }
 
   private onPointerMove(event: PointerEvent): void {

@@ -16,6 +16,7 @@
     "codex:generate": "node scripts/generate-codex.ts",
     "test:codex": "playwright test",
     "test:codex:images": "playwright test --grep @images",
+    "test:gameplay": "playwright test --config playwright.gameplay.config.ts",
     "assets:fetch": "node scripts/fetch-assets.ts",
     "assets:prototypes": "node scripts/prototype-assets.ts",
     "preview": "vite preview"
