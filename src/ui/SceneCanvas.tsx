@@ -5,6 +5,7 @@ import { gameStore } from '../store/gameStore';
 import { sceneHandle } from '../store/sceneHandle';
 import { uiStore } from '../store/uiStore';
 import { selectionGhost } from '../tools/tools';
+import { hideSplash } from './splash';
 
 export function SceneCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -21,6 +22,7 @@ export function SceneCanvas() {
       },
       onCenterTileChange: (tile) => uiStore.getState().setCenterTile(tile),
     });
+    void scene.ready.then(hideSplash);
     scene.setState(gameStore.getState().state);
     scene.setGhost(uiStore.getState().evaluation?.ghost ?? null);
     scene.setTrafficEnabled(prefsStore.getState().traffic);

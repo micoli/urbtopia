@@ -2,6 +2,8 @@ import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from '
 import { join, relative } from 'node:path';
 import type { Plugin } from 'vite';
 
+const SPLASH_FILES = ['splash-paysage.jpeg', 'splash-portrait.jpeg'];
+
 export function listFiles(directory: string): string[] {
   if (!existsSync(directory)) return [];
   return readdirSync(directory).flatMap((name) => {
@@ -21,7 +23,7 @@ export function stampServiceWorker(buildId: string): Plugin {
     apply: 'build',
     writeBundle(options) {
       const outDir = options.dir ?? 'dist';
-      const models = listFiles(join(outDir, 'models')).map((file) => `./${relative(outDir, file).split('\\').join('/')}`);
+      const models = [...listFiles(join(outDir, 'models')), ...SPLASH_FILES.map((file) => join(outDir, file)).filter(existsSync)].map((file) => `./${relative(outDir, file).split('\\').join('/')}`);
       const target = join(outDir, 'sw.js');
       writeFileSync(target, stampSource(readFileSync(target, 'utf8'), buildId, models));
     },

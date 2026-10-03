@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { App } from './ui/App';
 import { installFpsOverlay, isFpsOverlayRequested } from './ui/fpsOverlay';
+import { hideSplashAfterFailsafe } from './ui/splash';
 import { installPersistence } from './persistence/install';
 import { registerServiceWorker } from './pwa/registerServiceWorker';
 import { gameStore, isSimulation } from './store/gameStore';
@@ -19,5 +20,7 @@ if (root) createRoot(root).render(<App />);
 if (isFpsOverlayRequested(window.location.search)) installFpsOverlay();
 
 if (import.meta.env.DEV && isSimulation) void import('./sim/installSimulation').then((module) => module.installSimulation());
+
+hideSplashAfterFailsafe();
 
 registerServiceWorker();

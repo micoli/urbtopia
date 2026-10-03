@@ -38,6 +38,8 @@ export class GameScene {
   private latest: GameState | null = null;
   private syncing = false;
   private frameHandle = 0;
+  private markReady: () => void = () => {};
+  readonly ready = new Promise<void>((resolve) => (this.markReady = resolve));
   private lastFrame = performance.now();
   private resizeObserver: ResizeObserver;
 
@@ -123,6 +125,7 @@ export class GameScene {
         this.world.sync(items);
         this.syncParcels(state);
         this.traffic.sync(state);
+        this.markReady();
       }
     } finally {
       this.syncing = false;
