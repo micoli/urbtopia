@@ -166,13 +166,13 @@ test('natural construction and Codex share Citizen unlocks and real previews', a
   await expect(page.locator('[data-codex-id="pirate-palm-bend"]')).toHaveCount(0);
   await treeInfo.click();
   const dialog = page.getByRole('dialog', { name: 'Codex' });
-  await expect(dialog.getByRole('heading', { name: 'Arbre chêne', exact: true })).toBeVisible();
+  await expect(dialog.getByRole('heading', { name: 'Chêne', exact: true })).toBeVisible();
   await expect(dialog.getByText('Disponible', { exact: true })).toBeVisible();
   await expect(dialog.getByText('Disponible à partir de 6 habitants', { exact: true })).toBeVisible();
   const image = dialog.locator('img');
   await expect(image).toHaveCount(1);
   await expect.poll(() => image.evaluate(node => (node as HTMLImageElement).naturalWidth)).toBe(512);
-  await dialog.getByRole('button', { name: 'palmier courbé · Pirate', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Palmier courbé · Pirate', exact: true }).click();
   await expect(dialog.getByText('Verrouillé', { exact: true })).toBeVisible();
   await expect(dialog.getByText('Disponible à partir de 60 habitants', { exact: true })).toBeVisible();
 });

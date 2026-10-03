@@ -49,6 +49,17 @@ function greenSpacesTouch(a: Building, b: Building): boolean {
     (dy === (f.depth + g.depth) / 2 && dx < (f.width + g.width) / 2);
 }
 
+export function greenSpaceCoverage(state: GameState, space: Building): number {
+  const profile = greenProfileOf(space.type);
+  if (!profile) return 0;
+  const habitat = natureModelOf(space.type)?.[2] === 'habitat';
+  if (habitat && !state.buildings.some(b => greenProfileOf(b.type) && natureModelOf(b.type)?.[2] !== 'habitat' && distance(space, b) <= 2)) return 0;
+  return state.buildings.reduce((count, b) => {
+    if (b.type !== 'home' || distance(space, b) > profile.radius) return count;
+    return count + (HOME_TIERS[b.tier - 1]?.citizens ?? 0);
+  }, 0);
+}
+
 export function greenBenefits(state: GameState, home: Building) {
   const spaces = state.buildings.filter(b => greenProfileOf(b.type));
   const vegetation = spaces.filter(b => natureModelOf(b.type)?.[2] !== 'habitat');

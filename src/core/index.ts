@@ -40,7 +40,7 @@ export type { Unlock } from './unlocks';
 export { TUTORIAL_STEPS, tutorialAllows, tutorialSkipMs } from './tutorial';
 export type { TutorialStep } from './tutorial';
 
-export { ECOLOGY, ECOLOGY_UNLOCKS, homePower, economicPower, greenBenefits, cityGreenBenefits } from './ecology';
+export { ECOLOGY, ECOLOGY_UNLOCKS, homePower, economicPower, greenSpaceCoverage, greenBenefits, cityGreenBenefits } from './ecology';
 export { energyStats, productionFactors } from './energy';
 export { homeBenefits, cityBenefits } from './wellbeing';
 export { climateStats } from './climate';

@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { advance, createBuilding, dispatch, ECOLOGY, energyStats, greenBenefits, newGame, transportStats, type Building, type GameState } from './index';
+import { advance, createBuilding, dispatch, ECOLOGY, energyStats, greenSpaceCoverage, greenBenefits, newGame, transportStats, type Building, type GameState } from './index';
 import { parseEnvelope, serializeEnvelope } from '../persistence/envelope';
 import currentSave from '../persistence/fixtures/save-v4.json';
 import oldSave from '../persistence/fixtures/save-v3.json';
@@ -131,6 +131,15 @@ describe('green spaces and equipment', () => {
     expect(two.wellbeing).toBeGreaterThan(one.wellbeing);
     expect(two.wellbeing).toBeLessThan(2 * one.wellbeing);
     expect(greenBenefits(city([home, b(2, 'park', 100)]), home).wellbeing).toBe(0);
+  });
+  it('counts only Citizens within a natural element range and requires vegetation for habitats', () => {
+    const home = b(1, 'home', 0), farHome = b(2, 'home', 50);
+    const tree = b(3, 'nature-tree-oak', 1), rock = b(4, 'mini-forest-rocks-low', 2);
+    const state = city([home, farHome, tree, rock]);
+    expect(greenSpaceCoverage(state, tree)).toBe(6);
+    expect(greenSpaceCoverage(state, rock)).toBe(6);
+    expect(greenSpaceCoverage(city([home, rock]), rock)).toBe(0);
+    expect(greenSpaceCoverage(state, farHome)).toBe(0);
   });
   it('unlocks families by Citizens and recalculates benefits after moving or selling', () => {
     const home = b(1, 'home', 55, 57);

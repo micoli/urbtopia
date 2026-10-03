@@ -1,6 +1,7 @@
 # Nature elements
 
 Status: ready-for-agent
+Completion: completed
 
 ## Confirmed scope
 
@@ -45,7 +46,7 @@ Implementation was requested with the following initial balancing choices. Value
 - Family variants unlock together. Availability follows the current Citizen count; if population falls, existing elements remain usable, movable and sellable, but new placement locks again.
 - Vegetation touching other vegetation receives the existing 20% connectivity bonus. Rocks, logs and stumps contribute only when vegetation is within Manhattan distance two; they do not increase vegetation connectivity.
 - Each indicator keeps the existing diminishing-return formula and its 100-point limit. The Tax benefit remains capped at 10%; nature never cancels emissions.
-- Retain existing trees and composed parks for saved-city compatibility; new construction is individual.
+- Existing trees and composed parks remain constructible and compatible with saved cities; every new natural model is placed individually.
 - Include every non-detailed Nature Kit tree, flowers, grass, bushes, cactus, lilies, mushrooms, rocks, stones, logs and non-detailed stumps. Terrain/cliff/river modules and manufactured props are outside this individual-element feature.
 - Mini Forest contributes its two trees, plant, grass patch and four rock/stone models.
 - Pirate contributes its two standard palms and all five grass models; detailed palms are omitted to keep the selected style consistent.
@@ -58,7 +59,7 @@ Implementation was requested with the following initial balancing choices. Value
 - Public test seams confirmed by the user: placement/move/sale commands, ecological benefit calculations, save serialization/loading and Codex catalog.
 - TDD checks cover three-pack Codex coverage, stronger local benefits, habitat proximity, unlocks and save version compatibility.
 - Every natural model is covered by a save round-trip test.
-- Final full-suite, build and two-axis review results will be recorded at delivery.
+- Final verification passed: 583 unit/property tests, 10 browser tests, typechecking, lint and production build. Both review axes have no remaining findings. See [delivery validation](validation.md).
 
 ## Sources
 
