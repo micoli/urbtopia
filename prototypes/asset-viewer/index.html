@@ -7,11 +7,13 @@
 <style>
   html,body{margin:0;height:100%;overflow:hidden;background:#cfd8e3;font:12px monospace}
   #app{display:grid;grid-template-columns:150px 1fr 230px;grid-template-rows:auto 1fr;height:100%}
-  @media (max-width:800px){#app{grid-template-columns:1fr;grid-template-rows:auto 25% 40% 1fr}#bar,#list,#view,#side{grid-column:1}}
+  @media (max-width:800px){#app{grid-template-columns:1fr;grid-template-rows:auto 25% 40% 1fr}#bar,#assets,#view,#side{grid-column:1}}
   #bar{grid-column:1/4;background:#222;color:#fff;padding:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
   #bar button{font:inherit;padding:4px 8px}
   #bar button.on{background:#fc0}
-  #list{overflow:auto;background:#fff;border-right:1px solid #888}
+  #assets{display:flex;flex-direction:column;min-height:0;background:#fff;border-right:1px solid #888}
+  #assets input{margin:6px;min-width:0;font:inherit;padding:4px}
+  #list{overflow:auto;flex:1}
   #list div{padding:3px 6px;cursor:pointer;display:flex;justify-content:space-between}
   #list div:hover{background:#eef}
   #list div.sel{background:#fc0}
@@ -29,7 +31,7 @@
 <body>
 <div id="app">
   <div id="bar"></div>
-  <div id="list"></div>
+  <div id="assets"><input id="list-search" type="search" placeholder="Filter this pack" aria-label="Filter this pack" /><div id="list" tabindex="0" aria-label="Assets"></div></div>
   <div id="view"><canvas id="c"></canvas><div id="legend">RED = +X &nbsp; BLUE = +Z (grey strip = -Z = street side by convention) &nbsp; drag: orbit, wheel: zoom</div></div>
   <div id="side"></div>
 </div>

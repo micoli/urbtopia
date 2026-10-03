@@ -23,6 +23,29 @@ let pack = Object.keys(PACKS)[0]
 let current = ''
 let rot = 0
 let overview = false
+let globalSearch = ''
+let listSearch = ''
+let renderVersion = 0
+const assets = Object.entries(PACKS).flatMap(([pack, names]) => names.map(name => ({ pack, name })))
+
+function visibleAssets() {
+  const query = globalSearch.trim().toLowerCase()
+  const filter = listSearch.trim().toLowerCase()
+  return assets.filter(asset => (query ? key(asset.pack, asset.name).toLowerCase().includes(query) : asset.pack === pack)
+    && asset.name.toLowerCase().includes(filter))
+}
+
+function selectAsset(p: string, name: string) {
+  pack = p
+  current = name
+  rot = 0
+  overview = false
+  renderBar()
+  resetCam()
+  renderList()
+  void render()
+  document.querySelector('#list .sel')?.scrollIntoView({ block: 'nearest' })
+}
 
 const canvas = document.getElementById('c') as HTMLCanvasElement
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
@@ -86,9 +109,10 @@ function dirVec(d: Dir) {
   return new THREE.Vector3(d === '+X' ? 1 : d === '-X' ? -1 : 0, 0, d === '+Z' ? 1 : d === '-Z' ? -1 : 0)
 }
 
-async function place(p: string, n: string, at: THREE.Vector3, rotY: number, withGrid: boolean) {
+async function place(p: string, n: string, at: THREE.Vector3, rotY: number, withGrid: boolean, version?: number) {
   const g = new THREE.Group()
   const model = (await load(p, n)).clone(true)
+  if (version !== undefined && version !== renderVersion) return
   g.add(model)
   const { w, d } = footprint(p, n)
   const nt = notes[key(p, n)] ?? {}
@@ -126,12 +150,14 @@ async function place(p: string, n: string, at: THREE.Vector3, rotY: number, with
 }
 
 async function render() {
+  const version = ++renderVersion
   clearStage()
   const names = PACKS[pack]
   if (overview) {
     const cols = Math.ceil(Math.sqrt(names.length))
     for (let i = 0; i < names.length; i++) {
-      await place(pack, names[i], new THREE.Vector3((i % cols) * 3, 0, Math.floor(i / cols) * 3), 0, false)
+      await place(pack, names[i], new THREE.Vector3((i % cols) * 3, 0, Math.floor(i / cols) * 3), 0, false, version)
+      if (version !== renderVersion) return
     }
     const c = (cols * 3) / 2
     controls.target.set(c, 0, c)
@@ -140,8 +166,9 @@ async function render() {
     resize()
     controls.update()
   } else if (current) {
-    await place(pack, current, new THREE.Vector3(0, 0, 0), (rot * Math.PI) / 2, true)
+    await place(pack, current, new THREE.Vector3(0, 0, 0), (rot * Math.PI) / 2, true, version)
   }
+  if (version !== renderVersion) return
   renderSide()
   renderList()
 }
@@ -149,6 +176,14 @@ async function render() {
 function renderBar() {
   const bar = document.getElementById('bar')!
   bar.innerHTML = ''
+  const search = document.createElement('input')
+  search.id = 'global-search'
+  search.type = 'search'
+  search.placeholder = 'Search all assets'
+  search.setAttribute('aria-label', 'Search all assets')
+  search.value = globalSearch
+  search.oninput = () => { globalSearch = search.value; renderList() }
+  bar.appendChild(search)
   for (const p of Object.keys(PACKS)) {
     const b = document.createElement('button')
     b.textContent = p
@@ -181,12 +216,18 @@ function resetCam() {
 function renderList() {
   const list = document.getElementById('list')!
   list.innerHTML = ''
-  for (const n of PACKS[pack]) {
+  const results = visibleAssets()
+  if (!results.length) list.textContent = 'No assets found'
+  for (const { pack: p, name: n } of results) {
     const d = document.createElement('div')
-    const nt = notes[key(pack, n)]
-    d.className = (n === current ? 'sel ' : '') + (nt?.role && nt.role !== 'unassigned' ? 'done' : '')
-    d.innerHTML = `<span>${n}</span><span>${nt?.front && nt.front !== 'none' ? nt.front : ''}</span>`
-    d.onclick = () => { current = n; rot = 0; overview = false; renderBar(); resetCam(); render() }
+    const nt = notes[key(p, n)]
+    d.className = (p === pack && n === current ? 'sel ' : '') + (nt?.role && nt.role !== 'unassigned' ? 'done' : '')
+    const label = document.createElement('span')
+    label.textContent = globalSearch.trim() ? key(p, n) : n
+    const front = document.createElement('span')
+    front.textContent = nt?.front && nt.front !== 'none' ? nt.front : ''
+    d.append(label, front)
+    d.onclick = () => { selectAsset(p, n); list.focus() }
     list.appendChild(d)
   }
 }
@@ -291,6 +332,26 @@ function resize() {
   cam.updateProjectionMatrix()
 }
 addEventListener('resize', resize)
+document.getElementById('list-search')!.addEventListener('input', (event) => {
+  listSearch = (event.target as HTMLInputElement).value
+  renderList()
+})
+addEventListener('keydown', (event) => {
+  if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return
+  const target = event.target as HTMLElement
+  const isSearch = target.id === 'global-search' || target.id === 'list-search'
+  if (!isSearch && target.closest('input, select, textarea, [contenteditable]')) return
+  const results = visibleAssets()
+  if (!results.length) return
+  event.preventDefault()
+  const index = results.findIndex(asset => asset.pack === pack && asset.name === current)
+  const next = index < 0 ? (event.key === 'ArrowDown' ? 0 : results.length - 1)
+    : Math.max(0, Math.min(results.length - 1, index + (event.key === 'ArrowDown' ? 1 : -1)))
+  const asset = results[next]
+  if (index === next && !overview) return
+  selectAsset(asset.pack, asset.name)
+  if (isSearch) document.getElementById(target.id)?.focus()
+})
 canvas.addEventListener('wheel', (e) => { e.preventDefault(); zoom = Math.min(30, Math.max(0.5, zoom * (e.deltaY > 0 ? 1.1 : 0.9))); resize() }, { passive: false })
 controls.enableZoom = false
 
