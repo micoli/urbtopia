@@ -7,6 +7,7 @@ import { ShopPanel } from './ShopPanel';
 import { StoragePanel } from './StoragePanel';
 import { useSelectedBuilding } from './useSelectedBuilding';
 import { UtilityPanel } from './UtilityPanel';
+import {UrbsAmount} from "./UrbsAmount.tsx";
 
 export function SelectionContent() {
   const building = useSelectedBuilding();
@@ -34,7 +35,7 @@ export function SelectionContent() {
           {t('panel.move')}
         </button>
         <button type="button" onClick={sellSelected}>
-          {t('panel.sell')} (+{refund})
+          ❌ +<UrbsAmount value={refund}/>
         </button>
       </div>
     </>
