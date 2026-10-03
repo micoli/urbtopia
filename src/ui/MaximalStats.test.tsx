@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createBuilding, newGame, type GameState } from '../core';
+import { climateStats, createBuilding, newGame, type GameState } from '../core';
 import { prefsStore } from '../i18n/prefsStore';
 import { MaximalStats } from './MaximalStats';
 import { MinimalStats } from './MinimalStats';
@@ -34,6 +34,19 @@ describe('city management panel', () => {
       const html = renderToStaticMarkup(component);
       expect(html).toContain('aria-label="City management"');
     }
+  });
+  it.each(['en', 'fr'] as const)('shows the same city temperature in the minimal HUD and management panel in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    context.state = { ...newGame({ seed: 'temperature', now: 0 }), buildings: [createBuilding(1, 'factory', 0, 0, 0)] };
+    const temperature = climateStats(context.state).temperature.toFixed(1);
+    const label = language === 'fr' ? 'Température de la ville' : 'City temperature';
+    const minimal = renderToStaticMarkup(<MinimalStats />);
+    const maximal = renderToStaticMarkup(<MaximalStats />);
+    expect(minimal).toContain(`aria-label="${label}: ${temperature} °C"`);
+    expect(minimal).toContain('🌡️');
+    expect(maximal).toContain(`<strong>${temperature} <small>°C</small></strong>`);
+    expect(maximal).toContain(label);
+    expect(maximal).toContain(language === 'fr' ? 'Optimum : 26 °C' : 'Optimum: 26 °C');
   });
   it('does not mount the dialog when closed', () => {
     context.state = newGame({ seed: 'dashboard', now: 0 });

@@ -927,6 +927,7 @@ button {
   position: fixed;
   top: 12px;
   left: 12px;
+  max-width: calc(100vw - 24px);
   padding: 6px 12px;
   border-radius: 14px;
   background: var(--panel-bg);
@@ -1145,7 +1146,8 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .eco-dashboard p { margin: 10px 0; color: var(--eco-muted); line-height: 1.6; font-size: 13px; overflow-wrap: anywhere; }
 .eco-dashboard .eco-units { margin: 16px 0; font-size: 11px; }
 
-.eco-overview { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 22px 0 18px; }
+.eco-overview { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 22px 0 18px; }
+.city-temperature { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .eco-dashboard .eco-overview > :is(div, button) {
   display: flex;
   align-items: center;

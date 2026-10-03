@@ -1,6 +1,9 @@
 import type { MessageKey } from './messages';
 
 export const FR: Record<MessageKey, string> = {
+  'eco.temperature': 'Température de la ville',
+  'eco.temperatureOptimum': 'Optimum : 26 °C',
+  'eco.temperatureHelp': 'Optimum : 26 °C, maximum : 40 °C. Chaque tranche de 10 unités d’impact/heure ajoute 1 °C. Les espaces verts proches des logements atténuent cette hausse selon leur score de refroidissement.',
   'building.brtStation': "Station BHNS",
   'building.railStation': "Gare ferroviaire",
   'tool.brt': "Voie BHNS",

@@ -3,6 +3,7 @@ import { HOME_TIERS } from './economy';
 import type { Building, BuildingType, GameState } from './state';
 
 export const ECOLOGY = {
+  optimalTemperature: 26, maxTemperature: 40, temperaturePerEmission: 0.1,
   hourMs: 3_600_000, solarCost: 180, solarUnlockCitizens: 15, insulationCost: 80, sharingRadius: 6,
   batteryCapacity: 24, batteryRate: 12, batteryRadius: 8, backupCapacity: 24,
   backupCost: 0.5, busCost: 2, stopRadius: 6, lineCapacity: 120,

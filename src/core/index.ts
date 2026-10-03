@@ -43,6 +43,7 @@ export type { TutorialStep } from './tutorial';
 export { ECOLOGY, ECOLOGY_UNLOCKS, homePower, economicPower, greenBenefits, cityGreenBenefits } from './ecology';
 export { energyStats, productionFactors } from './energy';
 export { homeBenefits, cityBenefits } from './wellbeing';
+export { climateStats } from './climate';
 export { transportStats, routeForLine } from './transport';
 export type { BusLine } from './state';
 
