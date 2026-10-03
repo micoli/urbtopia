@@ -7,5 +7,5 @@ export default defineConfig({
   base: './',
   define: { __BUILD_ID__: JSON.stringify(BUILD_ID) },
   plugins: [stampServiceWorker(BUILD_ID)],
-  test: { environment: 'node', include: ['src/**/*.test.ts', 'build/**/*.test.ts'] },
+  test: { environment: 'node', include: ['src/**/*.test.ts', 'build/**/*.test.ts', 'scripts/**/*.test.ts'] },
 });

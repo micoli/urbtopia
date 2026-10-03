@@ -26,6 +26,10 @@ const HOME_MODELS = [
   'suburban/building-type-n',
 ];
 
+const ROAD_MODELS = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout'].map((piece) => `roads/road-${piece}`);
+
+export const MODEL_KEYS: readonly string[] = [...new Set([...Object.values(MODEL_BY_BUILDING), ...HOME_MODELS, ...ROAD_MODELS])];
+
 function modelOf(type: BuildingType, tier: number): string {
   if (type === 'home') return HOME_MODELS[tier - 1] ?? MODEL_BY_BUILDING.home;
   return MODEL_BY_BUILDING[type];
