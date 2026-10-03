@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { App } from './ui/App';
 import { installPersistence } from './persistence/install';
+import { registerServiceWorker } from './pwa/registerServiceWorker';
 import { gameStore } from './store/gameStore';
 import './styles.css';
 
@@ -11,3 +12,5 @@ installPersistence();
 
 const root = document.getElementById('app');
 if (root) createRoot(root).render(<App />);
+
+registerServiceWorker();

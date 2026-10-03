@@ -1,0 +1,15 @@
+{
+  "name": "Urbtopia",
+  "short_name": "Urbtopia",
+  "description": "A solo isometric city builder: produce, sell and grow your city.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#181c28",
+  "theme_color": "#181c28",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

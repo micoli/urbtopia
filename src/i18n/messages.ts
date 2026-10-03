@@ -74,6 +74,8 @@ export const MESSAGES = {
   'menu.newGame': 'New game',
   'menu.newGameConfirm': 'Start a new city? The current one will be erased.',
   'error.saveFailed': 'Could not save: the browser storage is full.',
+  'menu.install': 'Install the app',
+  'menu.version': 'Build',
   'menu.export': 'Export the city',
   'menu.import': 'Import a city',
   'import.invalid-json': 'This file is not a valid save.',

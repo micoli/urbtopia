@@ -7,12 +7,14 @@ import { dialogStore } from '../store/dialogStore';
 import { gameStore } from '../store/gameStore';
 import { toastStore } from '../store/toastStore';
 import { useUi } from './hooks';
+import { useInstallPrompt } from '../pwa/useInstallPrompt';
 import { PreferencesContent } from './PreferencesContent';
 
 export function MenuContent() {
   const toggle = useUi((store) => store.toggleMenu);
   const [confirming, setConfirming] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
+  const { canInstall, install } = useInstallPrompt();
   const startNewGame = () => {
     saveSession.unlock();
     gameStore.getState().newGame(Date.now());
@@ -39,6 +41,11 @@ export function MenuContent() {
         </button>
       </header>
       <div className="side-panel-actions">
+        {canInstall ? (
+          <button type="button" className="dialog-primary" onClick={install}>
+            {t('menu.install')}
+          </button>
+        ) : null}
         <button type="button" onClick={exportCurrentCity}>
           {t('menu.export')}
         </button>
@@ -63,6 +70,9 @@ export function MenuContent() {
         )}
       </div>
       <PreferencesContent />
+      <small className="build-id">
+        {t('menu.version')} {__BUILD_ID__}
+      </small>
     </>
   );
 }

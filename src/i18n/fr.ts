@@ -76,6 +76,8 @@ export const FR: Record<MessageKey, string> = {
   'menu.newGame': 'Nouvelle partie',
   'menu.newGameConfirm': 'Commencer une nouvelle ville ? La ville actuelle sera effacée.',
   'error.saveFailed': "Sauvegarde impossible : le stockage du navigateur est plein.",
+  'menu.install': "Installer l'application",
+  'menu.version': 'Version',
   'menu.export': 'Exporter la ville',
   'menu.import': 'Importer une ville',
   'import.invalid-json': "Ce fichier n'est pas une sauvegarde valide.",

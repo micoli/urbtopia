@@ -755,3 +755,15 @@ textarea {
   -webkit-user-select: text;
   user-select: text;
 }
+
+.build-id {
+  display: block;
+  margin-top: 12px;
+  opacity: 0.5;
+  font-size: 11px;
+}
+
+.side-panel-actions .dialog-primary {
+  background: var(--accent);
+  color: #08140d;
+}
