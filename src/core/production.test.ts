@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { advance, dispatch, newGame, type Command, type GameState } from './index';
+import { advance, dispatch, isWorking, newGame, type Command, type GameState } from './index';
 
 const T0 = 1_700_000_000_000;
 const SECOND = 1000;
@@ -150,5 +150,25 @@ describe('MoveBuilding', () => {
     const finished = advance(succeed(initial, queueWood(), T0), T0 + MINUTE).state;
     const moved = succeed(finished, { type: 'MoveBuilding', id: WORKSHOP_ID, x: 56, y: 59 }, T0 + 2 * MINUTE);
     expect(queueOf(moved)[0]).toMatchObject({ done: true });
+  });
+});
+
+describe('isWorking', () => {
+  const workshop = (state: GameState) => state.buildings.find((b) => b.id === WORKSHOP_ID)!;
+
+  it('is false for a building that has nothing to make', () => {
+    expect(isWorking(workshop(initial))).toBe(false);
+  });
+
+  it('is true while a production is running, and false once it is done', () => {
+    const queued = succeed(withStorehouse, queueWood(), T0);
+    expect(isWorking(workshop(queued))).toBe(true);
+    expect(isWorking(workshop(advance(queued, T0 + 2 * MINUTE).state))).toBe(false);
+  });
+
+  it('is true for a Shop that is selling and false once its stack is sold', () => {
+    const shop = { ...initial.buildings[0]!, type: 'shop' as const, stacks: [{ good: 'planks' as const, stock: 2, nextSaleAt: T0 + 1000, earned: 0 }] };
+    expect(isWorking(shop)).toBe(true);
+    expect(isWorking({ ...shop, stacks: [{ good: 'planks' as const, stock: 0, nextSaleAt: null, earned: 28 }] })).toBe(false);
   });
 });

@@ -15,6 +15,11 @@ export function isIdle(building: Building): boolean {
   return building.queue.every((entry) => entry.done);
 }
 
+export function isWorking(building: Building): boolean {
+  if (building.stacks.some((stack) => stack.stock > 0 && stack.nextSaleAt !== null)) return true;
+  return building.queue.some((entry) => !entry.done && entry.startedAt !== null);
+}
+
 interface Advanced {
   building: Building;
   events: GameEvent[];

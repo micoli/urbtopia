@@ -10,10 +10,12 @@ import { RecoveryScreen } from './RecoveryScreen';
 import { SaveFailedDialog } from './SaveFailedDialog';
 import { Toast } from './Toast';
 import { TutorialBanner } from './TutorialBanner';
+import { WorkingIndicators } from './WorkingIndicators';
 
 export function Overlays() {
   return (
     <>
+      <WorkingIndicators />
       <CollectBadges />
       <ParcelTags />
       <ConfirmPad />

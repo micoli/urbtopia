@@ -304,6 +304,40 @@ button {
   }
 }
 
+.working-indicator {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(24, 28, 40, 0.85);
+  color: #ffd23f;
+  font-size: 18px;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.working-gear {
+  display: block;
+  animation: gear-spin 2.4s linear infinite;
+}
+
+@keyframes gear-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .working-gear {
+    animation: none;
+  }
+}
+
 .production,
 .storehouse {
   margin-top: 12px;
