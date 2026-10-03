@@ -9,6 +9,8 @@ import { HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, MAX_SLOTS, SHOP, TAX, SL
 import { GOODS, isGood, isMaterial, producibleItems, recipeOf, type GoodId } from './items';
 import { marketQuote } from './market';
 import { isItemUnlocked } from './unlocks';
+import { withStartingCity } from './newGame';
+import { tutorialAllows, tutorialSkipMs } from './tutorial';
 import { isAdjacentToOwned, isInsideMap, isOwned, parcelPrice } from './parcels';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from './occupancy';
 import { autoRotation, frontTouchesRoad, placementIssue } from './placement';
@@ -36,7 +38,9 @@ export type Command =
   | { readonly type: 'UpgradeStorehouse' }
   | { readonly type: 'SellBuilding'; readonly id: number }
   | { readonly type: 'MoveBuilding'; readonly id: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
-  | { readonly type: 'SkipTime'; readonly hours: number };
+  | { readonly type: 'SkipTime'; readonly hours: number }
+  | { readonly type: 'SkipTutorialStep' }
+  | { readonly type: 'SkipTutorial' };
 
 export type ErrorKey =
   | 'error.unknownCommand'
@@ -70,7 +74,9 @@ export type ErrorKey =
   | 'error.utilityInUse'
   | 'error.itemLocked'
   | 'error.notAHome'
-  | 'error.maxTier';
+  | 'error.maxTier'
+  | 'error.tutorialLocked'
+  | 'error.nothingToSkip';
 
 export interface CommandError {
   key: ErrorKey;
@@ -85,6 +91,7 @@ export function isError(outcome: CommandOutcome): outcome is CommandError {
 const fail = (key: ErrorKey): CommandError => ({ key });
 
 export function handleCommand(state: GameState, command: Command, now: number): CommandOutcome {
+  if (!tutorialAllows(state, command)) return fail('error.tutorialLocked');
   switch (command.type) {
     case 'BuildRoad':
       return buildRoad(state, command.from, command.to, command.horizontalFirst ?? true);
@@ -118,13 +125,32 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return moveBuilding(state, command.id, command.x, command.y, command.rotation, now);
     case 'SkipTime':
       return skipTime(state, command.hours, now);
+    case 'SkipTutorialStep':
+      return skipTutorialStep(state, now);
+    case 'SkipTutorial':
+      return skipTutorial(state);
     default:
       return fail('error.unknownCommand');
   }
 }
 
 function skipTime(state: GameState, hours: number, now: number): CommandOutcome {
-  const skippedMs = hours * HOUR_MS;
+  return skipMs(state, hours * HOUR_MS, now);
+}
+
+function skipTutorialStep(state: GameState, now: number): CommandOutcome {
+  const skippedMs = tutorialSkipMs(state, now);
+  if (skippedMs === null) return fail('error.nothingToSkip');
+  return skipMs(state, skippedMs, now);
+}
+
+function skipTutorial(state: GameState): CommandOutcome {
+  if (state.tutorial === null) return { state, events: [] };
+  const untouched = state.buildings.length === 0 && state.roads.length === 0;
+  return { state: untouched ? withStartingCity(state) : { ...state, tutorial: null }, events: [] };
+}
+
+function skipMs(state: GameState, skippedMs: number, now: number): CommandOutcome {
   const earlier = { ...shiftRunningTimers(state, -skippedMs), lastSeen: state.lastSeen - skippedMs };
   return advance(earlier, now);
 }

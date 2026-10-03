@@ -92,6 +92,14 @@ _Avoid_: Offline progress, sync
 The moment a Material, Good or building becomes available, triggered when the city's total Citizens reach a set threshold.
 _Avoid_: Level up, tech tree, research
 
+**Tutorial**:
+The guided sequence of steps played at the start of a new game, where the player places the first buildings to lay a solid base. It can be skipped at any time.
+_Avoid_: Onboarding, intro, walkthrough
+
+**Time skip**:
+The player action that advances game time by a set number of hours or up to the end of a Tutorial step.
+_Avoid_: Time warp, fast-forward
+
 **Seed**:
 The text code generated for each game that fixes all of its chance-based outcomes.
 _Avoid_: Random key, map code

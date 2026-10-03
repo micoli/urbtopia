@@ -2,6 +2,7 @@ import { GAME_CONFIG } from './config';
 import type { GameEvent } from './events';
 import { advanceProduction, shiftRunningTimers } from './production';
 import type { GameState } from './state';
+import { progressTutorial } from './tutorial';
 
 export interface AdvanceResult {
   state: GameState;
@@ -23,5 +24,5 @@ export function advance(state: GameState, now: number): AdvanceResult {
 
 function replay(state: GameState, until: number): AdvanceResult {
   const produced = advanceProduction(state, until, until - state.lastSeen);
-  return { state: { ...produced.state, lastSeen: until }, events: produced.events };
+  return { state: progressTutorial({ ...produced.state, lastSeen: until }), events: produced.events };
 }

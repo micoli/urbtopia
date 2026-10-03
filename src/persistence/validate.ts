@@ -1,4 +1,4 @@
-import { GAME_CONFIG, GOODS, MATERIALS, type GameState } from '../core';
+import { GAME_CONFIG, GOODS, MATERIALS, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -80,6 +80,7 @@ export function validateGameState(value: unknown): GameState | null {
     typeof value.marketUnlocked === 'boolean' &&
     isMarket(value.market) &&
     isArrayOf(value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string)) &&
-    isArrayOf(value.roundabouts, (center) => isCoord(center));
+    isArrayOf(value.roundabouts, (center) => isCoord(center)) &&
+    (value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep));
   return valid ? (value as unknown as GameState) : null;
 }

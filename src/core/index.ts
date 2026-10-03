@@ -34,3 +34,5 @@ export { HOME_FOOTPRINTS, HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, TAX, UT
 export { taxDue } from './production';
 export { isItemUnlocked, nextUnlock } from './unlocks';
 export type { Unlock } from './unlocks';
+export { TUTORIAL_STEPS, tutorialAllows, tutorialSkipMs } from './tutorial';
+export type { TutorialStep } from './tutorial';

@@ -166,6 +166,7 @@
         "kind": "road"
       }
     ],
-    "roundabouts": []
+    "roundabouts": [],
+    "tutorial": null
   }
 }

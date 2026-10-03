@@ -34,4 +34,5 @@ export const GAME_CONFIG = {
   roundaboutSize: 3,
   sellRefundRatio: 0.75,
   offlineCapMs: 48 * 60 * 60 * 1000,
+  tutorial: { startingUrbs: 2000, startingWood: 10 },
 };

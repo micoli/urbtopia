@@ -1,6 +1,7 @@
 import type { Coord } from './coord';
 import type { GoodId, ItemId, MaterialId } from './items';
 import type { RoadKind } from './roads';
+import type { TutorialStep } from './tutorial';
 
 export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'waterTower';
 
@@ -61,4 +62,5 @@ export interface GameState {
   market: Partial<Record<GoodId, MarketPrice>>;
   roads: RoadTile[];
   roundabouts: Coord[];
+  tutorial: TutorialStep | null;
 }

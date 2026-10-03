@@ -2,6 +2,7 @@ import { advance } from './advance';
 import { handleCommand, isError, type Command, type CommandError } from './commands';
 import type { GameEvent } from './events';
 import type { GameState } from './state';
+import { progressTutorial } from './tutorial';
 
 export type DispatchResult =
   | { ok: true; state: GameState; events: GameEvent[] }
@@ -11,5 +12,5 @@ export function dispatch(state: GameState, command: Command, now: number): Dispa
   const advanced = advance(state, now);
   const outcome = handleCommand(advanced.state, command, advanced.state.lastSeen);
   if (isError(outcome)) return { ok: false, error: outcome, state };
-  return { ok: true, state: outcome.state, events: [...advanced.events, ...outcome.events] };
+  return { ok: true, state: progressTutorial(outcome.state), events: [...advanced.events, ...outcome.events] };
 }
