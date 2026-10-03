@@ -1,0 +1,7 @@
+# Local renewable energy and coverage-based public transport
+
+Accepted. The ecological city specification replaces the MVP global electricity hard cap and decorative-only mobility model. Local solar self-consumption and sharing precede city-network supply, neighborhood storage and polluting backup; shortages prioritize Homes while economic buildings share remaining power proportionally. Water retains its hard-cap rules. Separate explained game indicators expose tradeoffs without pretending to be scientific measurements.
+
+The pure injected-clock core integrates at source-cycle, storage, operating-budget, adaptation and production boundaries so live ticks and catch-up agree. A persisted time offset advances generation cycles when Time skip keeps the wall clock unchanged. Save version 4 stores only equipment, battery energy, ordered Bus line stops, adaptation deadlines and objective dismissal; version-3 cities retain their buildings and receive an adaptation period.
+
+Bus usage derives from Homes and activity locations covered by distinct connected stops, deduplicated across lines. Road edits disable disconnected lines without deleting their configuration. Individual Citizen journeys were rejected to keep the simulation understandable and bounded; scene buses and Vehicles remain visual projections. Initial prices and formulas live in `.scratch/ecological-city/balancing.md` and are tunable independently of these allocation rules.

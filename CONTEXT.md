@@ -41,7 +41,7 @@ A specialized storage that adds capacity to the Goods compartment only. Only one
 _Avoid_: Cellar, depot
 
 **Home**:
-A residential building with six Tiers (1 to 6) that houses citizens and upgrades by consuming Goods.
+A residential building with eight Tiers (1 to 8) that houses citizens and upgrades by consuming Goods.
 _Avoid_: House, residence, dwelling
 
 **Tier**:
@@ -53,7 +53,7 @@ The amount of power or water a Power plant or Water tower supplies to the whole 
 _Avoid_: Output, supply
 
 **Demand**:
-The amount of power and water the Homes of the city require, set by their Tier. Total Demand can never exceed total Capacity.
+The amount of power and water the city requires: Homes need power and water according to their Tier, and economic buildings also need power. Electricity Demand can exceed available production, reducing service; water Demand cannot exceed water Capacity.
 _Avoid_: Consumption, load
 
 **Citizen**:
@@ -61,15 +61,15 @@ A resident of a Home. The number of Citizens depends on the Home's tier and driv
 _Avoid_: Inhabitant, resident, sim
 
 **Vehicle**:
-A purely decorative car that drives along the roads. It has no effect on the simulation and is not saved.
+A visual automobile that drives along the roads. Its presence follows mobility needs after public transport usage; individual Vehicles are not saved.
 _Avoid_: Car, automobile
 
 **Traffic**:
-The set of Vehicles on the roads, whose size follows the city's total Citizens.
+The set of Vehicles on the roads, whose size follows Citizens who do not use public transport.
 _Avoid_: Flow, cars
 
 **Power plant**:
-A building that supplies power capacity to the city.
+A wind-powered building that supplies variable renewable energy to the city. Backup generation is a separate polluting option.
 _Avoid_: Generator, energy station
 
 **Water tower**:
@@ -111,6 +111,42 @@ _Avoid_: Time warp, fast-forward
 **Seed**:
 The text code generated for each game that fixes all of its chance-based outcomes.
 _Avoid_: Random key, map code
+
+**Solar Home**:
+A Home equipped with panels that first cover its own power Demand and can share surplus with nearby Homes.
+_Avoid_: Solar house, solar residence
+
+**Insulation**:
+A paid Home improvement that reduces power Demand independently of solar equipment.
+_Avoid_: Energy generation, Home Tier
+
+**Solar installation**:
+A standalone neighborhood building that produces power from daylight and occupies land.
+_Avoid_: Solar Home, generator
+
+**Neighborhood battery**:
+A building that stores nearby renewable surplus and supplies nearby demand during deficits.
+_Avoid_: Power plant, energy generator
+
+**Backup Power plant**:
+A dispatchable polluting source that supplies deficits at an operating cost in Urbs.
+_Avoid_: Wind turbine, free power
+
+**Green space**:
+A tree or small park whose proximity and connections improve cooling, biodiversity and citizen well-being, with diminishing returns.
+_Avoid_: Carbon offset, universal pollution compensation
+
+**Bus stop**:
+A visible roadside sign marking a public-transport stop that covers nearby Homes and activity locations.
+_Avoid_: Road STOP sign, station
+
+**Bus line**:
+An ordered set of road-connected Bus stops, with operating costs and usage driven by useful residential and activity coverage.
+_Avoid_: Individual Citizen journey, decorative Traffic
+
+**Adaptation period**:
+The announced grace period during which new electricity shortages do not penalize production or Tax.
+_Avoid_: Permanent exemption, free energy
 
 ## Naming rules
 

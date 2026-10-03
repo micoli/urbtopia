@@ -1,5 +1,6 @@
 # Urbtopia MVP
 
+Ecological city update: electricity allocation and transport behavior are superseded by [ADR 0005](../../docs/adr/0005-local-energy-and-coverage-based-mobility.md); historical MVP decisions below are retained for context.
 Status: ready-for-agent
 
 Source: wayfinder map `.scratch/urbix-mvp/map.md` and resolved tickets 01 to 10. Vocabulary from `CONTEXT.md`. Decisions recorded in ADR 0001, 0002, 0003. All numbers are starting values for a later balancing pass.
