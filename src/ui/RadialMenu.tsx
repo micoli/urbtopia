@@ -13,9 +13,10 @@ export function RadialMenu() {
     <div className="radial">
       {open
         ? actions.map((action, index) => {
-            const angle = (index / (actions.length - 1)) * (Math.PI / 2);
-            const x = Math.cos(angle) * RADIUS_PX;
-            const y = -Math.sin(angle) * RADIUS_PX;
+            const navigationCount = actions.filter((candidate) => candidate.id !== 'undo').length;
+            const angle = (index / (navigationCount - 1)) * (Math.PI / 2);
+            const x = action.id === 'undo' ? 0 : Math.cos(angle) * RADIUS_PX;
+            const y = action.id === 'undo' ? -RADIUS_PX + 64 : -Math.sin(angle) * RADIUS_PX;
             return (
               <button
                 key={action.id}

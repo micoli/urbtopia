@@ -1,6 +1,7 @@
 import type { MessageKey } from './messages';
 
 export const FR: Record<MessageKey, string> = {
+  'action.undo': 'Annuler la suppression',
   'stat.urbs': 'Urbs',
   'dock.build': 'Construire',
   'dock.roads': 'Routes',

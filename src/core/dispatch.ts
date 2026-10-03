@@ -2,15 +2,16 @@ import { advance } from './advance';
 import { handleCommand, isError, type Command, type CommandError } from './commands';
 import type { GameEvent } from './events';
 import type { GameState } from './state';
+import { captureDeletion, type DeletionUndo } from './undo';
 import { progressTutorial } from './tutorial';
 
 export type DispatchResult =
-  | { ok: true; state: GameState; events: GameEvent[] }
+  | { ok: true; state: GameState; events: GameEvent[]; undo: DeletionUndo | null }
   | { ok: false; error: CommandError; state: GameState };
 
 export function dispatch(state: GameState, command: Command, now: number): DispatchResult {
   const advanced = advance(state, now);
   const outcome = handleCommand(advanced.state, command, advanced.state.lastSeen);
   if (isError(outcome)) return { ok: false, error: outcome, state };
-  return { ok: true, state: progressTutorial(outcome.state), events: [...advanced.events, ...outcome.events] };
+  return { ok: true, state: progressTutorial(outcome.state), events: [...advanced.events, ...outcome.events], undo: captureDeletion(advanced.state, outcome.state, command) };
 }

@@ -6,7 +6,7 @@ export function BottomBar() {
   return (
     <nav className="bottom-bar">
       {actions.map((action) => (
-        <button key={action.id} type="button" className="bottom-bar-button" aria-pressed={action.pressed} disabled={action.disabled} data-guided={action.guided} onClick={action.onClick}>
+        <button key={action.id} data-action={action.id} type="button" className="bottom-bar-button" aria-pressed={action.pressed} disabled={action.disabled} data-guided={action.guided} onClick={action.onClick}>
           <span aria-hidden="true">
             <NavIcon action={action} />
           </span>

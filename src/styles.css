@@ -791,6 +791,15 @@ button {
   font-size: 20px;
 }
 
+.bottom-bar:has([data-action='undo']) {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.bottom-bar-button[data-action='undo'] {
+  grid-column: 5;
+}
+
 .bottom-bar-button span:last-child {
   font-size: 10px;
 }
@@ -825,6 +834,14 @@ button {
 
 [data-layout='A'] .confirm-pad {
   bottom: 76px;
+}
+
+[data-layout='A']:has(.bottom-bar [data-action='undo']) .sheet {
+  padding-bottom: calc(76px + var(--tap));
+}
+
+[data-layout='A']:has(.bottom-bar [data-action='undo']) .confirm-pad {
+  bottom: calc(76px + var(--tap));
 }
 
 /* Layout B: minimal with radial menu */

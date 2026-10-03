@@ -1,4 +1,5 @@
 export const MESSAGES = {
+  'action.undo': 'Undo deletion',
   'stat.urbs': 'Urbs',
   'dock.build': 'Build',
   'dock.roads': 'Roads',
