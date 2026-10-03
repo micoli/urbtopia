@@ -8,9 +8,9 @@ import { buildingBoxes, pickBuilding } from './buildingPicking';
 import { ChunkedWorld } from './ChunkedWorld';
 import { GhostLayer } from './GhostLayer';
 import { createTendedGroundTexture, createWildGroundTexture, TENDED_TEXTURE_TILES, WILD_TEXTURE_TILES } from './groundTextures';
-import { fitMatrixOf } from './modelFit';
+import { facilityScaleOf, fitMatrixOf } from './modelFit';
 import { ModelLibrary } from './modelLibrary';
-import { facilityScale, modelOfBuilding, renderItemsOf } from './renderItems';
+import { facilityFootprint, modelOfBuilding, renderItemsOf } from './renderItems';
 import { ServiceVehicleLayer } from './ServiceVehicleLayer';
 import { TrafficLayer } from './TrafficLayer';
 
@@ -206,7 +206,15 @@ export class GameScene {
     const rect = this.canvas.getBoundingClientRect();
     const pointer = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
     this.raycaster.setFromCamera(pointer, this.controller.camera);
-    return pickBuilding(this.raycaster.ray, buildingBoxes(this.currentBuildings, (building) => this.heightOf(modelOfBuilding(building)) * facilityScale(building)));
+    return pickBuilding(this.raycaster.ray, buildingBoxes(this.currentBuildings, (building) => this.buildingHeight(building)));
+  }
+
+  private buildingHeight(building: Building): number {
+    const model = modelOfBuilding(building);
+    const footprint = facilityFootprint(building);
+    if (footprint === null || !this.library.has(model)) return this.heightOf(model);
+    const box = new THREE.Box3().setFromObject(this.library.get(model)).applyMatrix4(fitMatrixOf(model));
+    return box.max.y * facilityScaleOf(box, footprint).vertical;
   }
 
   private heightOf(model: string): number {

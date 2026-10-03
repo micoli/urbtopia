@@ -21,3 +21,12 @@ export function fitMatrixOf(model: string): THREE.Matrix4 {
   if (!fit) return IDENTITY;
   return new THREE.Matrix4().makeScale(fit.scale, fit.scale, fit.scale).multiply(new THREE.Matrix4().makeTranslation(-fit.centerX, 0, -fit.centerZ));
 }
+
+const FOOTPRINT_FILL = 0.9;
+const HEIGHT_GROWTH = 0.3;
+
+export function facilityScaleOf(box: THREE.Box3, footprint: number): { horizontal: number; vertical: number } {
+  const width = Math.max(box.max.x - box.min.x, box.max.z - box.min.z);
+  const horizontal = (footprint * FOOTPRINT_FILL) / width;
+  return { horizontal, vertical: horizontal <= 1 ? horizontal : 1 + HEIGHT_GROWTH * (horizontal - 1) };
+}

@@ -35,7 +35,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'commercial',
     url: 'https://kenney.nl/media/pages/assets/city-kit-commercial/a742d900eb-1753115042/kenney_city-kit-commercial_2.1.zip',
     archive: 'kenney_city-kit-commercial_2.1.zip',
-    files: ['building-a', 'building-b', 'building-d', 'building-e', 'building-f', 'building-g', 'building-i', 'building-j', 'building-k', 'building-l', 'building-m', 'building-n', 'detail-awning', 'detail-awning-wide', 'detail-overhang', 'detail-overhang-wide', 'detail-parasol-a', 'detail-parasol-b'],
+    files: ['building-a', 'building-b', 'building-d', 'building-e', 'building-f', 'building-g', 'building-i', 'building-j', 'building-k', 'building-l', 'building-n', 'detail-awning', 'detail-awning-wide', 'detail-overhang', 'detail-overhang-wide', 'detail-parasol-a', 'detail-parasol-b'],
   },
   {
     name: 'suburban',

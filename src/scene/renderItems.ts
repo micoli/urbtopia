@@ -13,7 +13,8 @@ export interface RenderItem {
   lengthScale?: number;
   roofBase?: string;
   textureVariant?: 'a' | 'b' | 'c';
-  scale?: number;
+  footprint?: number;
+  fitModel?: string;
   tint?: number;
 }
 
@@ -40,11 +41,11 @@ export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
   school: 'commercial/building-d',
   middleSchool: 'commercial/building-f',
   highSchool: 'commercial/building-g',
-  university: 'commercial/building-n',
-  townHall: 'commercial/building-m',
-  communityHall: 'commercial/building-b',
-  theater: 'commercial/building-k',
-  concertHall: 'commercial/building-l',
+  university: 'commercial/building-l',
+  townHall: 'commercial/building-k',
+  communityHall: 'commercial/building-a',
+  theater: 'commercial/building-b',
+  concertHall: 'commercial/building-n',
   hospital: 'commercial/building-i',
   fireStation: 'commercial/building-e',
   policeStation: 'commercial/building-j',
@@ -72,8 +73,8 @@ const CATEGORY_TINTS: Record<ServiceCategory, number> = {
   safety: 0xc4f0cb,
 };
 
-export function facilityScale(building: Pick<Building, 'type'>): number {
-  if (!isFacilityType(building.type)) return 1;
+export function facilityFootprint(building: Pick<Building, 'type'>): number | null {
+  if (!isFacilityType(building.type)) return null;
   const { width, depth } = FACILITIES[building.type].footprint;
   return (width + depth) / 2;
 }
@@ -129,7 +130,7 @@ let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; items: RenderItem
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   return a.length === b.length && a.every((item, index) => {
     const other = b[index] as RenderItem;
-    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.scale === other.scale && item.tint === other.tint;
+    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.tint === other.tint;
   });
 }
 
@@ -167,9 +168,9 @@ function buildingItems(state: GameState): RenderItem[] {
     const model = modelOfBuilding(building);
     const items: RenderItem[] = [{ model, x, z, rotation, ...(building.type === 'home' && building.colorVariant && building.colorVariant !== 'default' ? { textureVariant: building.colorVariant } : {}) }];
     if (isFacilityType(building.type)) {
-      const scale = facilityScale(building);
-      items[0] = { ...items[0]!, scale, tint: CATEGORY_TINTS[FACILITIES[building.type].category] };
-      items.push({ model: FACILITY_DETAILS[building.type], x, z, rotation, scale });
+      const footprint = facilityFootprint(building)!;
+      items[0] = { ...items[0]!, footprint, fitModel: model, tint: CATEGORY_TINTS[FACILITIES[building.type].category] };
+      items.push({ model: FACILITY_DETAILS[building.type], x, z, rotation, footprint, fitModel: model });
     }
     if (building.type === 'park') {
       items.push({ model: 'suburban/tree-small', x: x - width / 4, z: z - depth / 4, rotation });
