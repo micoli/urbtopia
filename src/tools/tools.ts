@@ -160,7 +160,7 @@ function evaluateRoad(state: GameState, tool: Extract<Tool, { kind: 'road' }>, t
 export function confirmTool(tool: Tool, tile: Coord, current: Evaluation): Confirmation {
   if (tool.kind === 'road' && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
   if (!current.valid) return { command: null, nextTool: tool };
-  if (tool.kind === 'move') return { command: current.command, nextTool: null };
   if (tool.kind === 'road') return { command: current.command, nextTool: { ...tool, start: null } };
+  if (tool.kind === 'move' || tool.kind === 'building') return { command: current.command, nextTool: null };
   return { command: current.command, nextTool: tool };
 }

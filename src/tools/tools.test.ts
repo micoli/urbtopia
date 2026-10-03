@@ -88,9 +88,9 @@ describe('parcel tool', () => {
 });
 
 describe('confirmTool', () => {
-  it('sends the command of a valid evaluation and keeps the tool active', () => {
+  it('sends the command of a valid evaluation and leaves the building tool', () => {
     const evaluation = evaluateTool(shopTool, { state, tile: { x: 56, y: 57 }, rotation: null });
-    expect(confirmTool(shopTool, { x: 56, y: 57 }, evaluation)).toEqual({ command: evaluation.command, nextTool: shopTool });
+    expect(confirmTool(shopTool, { x: 56, y: 57 }, evaluation)).toEqual({ command: evaluation.command, nextTool: null });
   });
 
   it('does nothing for an invalid evaluation', () => {
