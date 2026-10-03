@@ -1141,6 +1141,8 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .codex-dialog :focus-visible { outline: 3px solid #75c6ff; outline-offset: -3px; }
 .codex-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; }
 .codex-header h2 { margin: 0; }
+.codex-header-actions { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.codex-header-actions .panel-close { flex-shrink: 0; }
 .codex-body { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 0; flex: 1; }
 .codex-list, .codex-detail { overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 16px; }
 .codex-list { border-right: 1px solid rgba(255, 255, 255, 0.15); }
@@ -1165,6 +1167,6 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   .codex-list { border-right: 0; }
   .codex-body[data-detail='false'] .codex-detail,
   .codex-body[data-detail='true'] .codex-list { display: none; }
-  .codex-back { display: block; margin-bottom: 16px; padding: 8px 12px; border: 0; border-radius: 8px; background: rgba(255, 255, 255, 0.12); color: inherit; }
+  .codex-back { display: block; padding: 8px 12px; border: 0; border-radius: 8px; background: rgba(255, 255, 255, 0.12); color: inherit; }
   .codex-gallery { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
 }

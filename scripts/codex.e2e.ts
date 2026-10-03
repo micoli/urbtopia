@@ -27,7 +27,11 @@ for (const layout of ['A', 'B', 'C']) {
           const bounds = await dialog.boundingBox();
           expect(bounds!.x).toBeGreaterThanOrEqual(12);
           expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(378);
-          await dialog.getByRole('button', { name: 'Retour à la liste' }).click();
+          const back = dialog.locator('.codex-header').getByRole('button', { name: 'Retour à la liste' });
+          const backBounds = await back.boundingBox();
+          const closeBounds = await dialog.getByRole('button', { name: 'Fermer', exact: true }).boundingBox();
+          expect(backBounds!.x + backBounds!.width).toBeLessThanOrEqual(closeBounds!.x);
+          await back.click();
           await expect(dialog.getByRole('button', { name: 'Logement', exact: true })).toBeFocused();
         }
         await dialog.getByRole('button', { name: 'Gare ferroviaire', exact: true }).click();

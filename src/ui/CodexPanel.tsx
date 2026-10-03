@@ -52,7 +52,13 @@ export function CodexPanel() {
     <dialog className="codex-dialog" ref={dialog} role="dialog" aria-labelledby={heading} aria-modal="true" onCancel={event => { event.preventDefault(); close(); }} onKeyDown={event => event.stopPropagation()}>
       <header className="codex-header">
         <h2 id={heading}>{t('codex.title')}</h2>
-        <button type="button" className="panel-close" aria-label={t('panel.close')} onClick={close}>✕</button>
+        <div className="codex-header-actions">
+          {showDetail && <button type="button" className="codex-back" onClick={() => {
+            setShowDetail(false);
+            requestAnimationFrame(() => dialog.current?.querySelector<HTMLButtonElement>('.codex-list [aria-current="true"]')?.focus());
+          }}>{t('codex.back')}</button>}
+          <button type="button" className="panel-close" aria-label={t('panel.close')} onClick={close}>✕</button>
+        </div>
       </header>
       <div className="codex-body" data-detail={showDetail}>
         <nav className="codex-list" aria-label={t('codex.title')}>
@@ -66,10 +72,6 @@ export function CodexPanel() {
           ))}
         </nav>
         <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(entry.name)}>
-          <button type="button" className="codex-back" onClick={() => {
-            setShowDetail(false);
-            requestAnimationFrame(() => dialog.current?.querySelector<HTMLButtonElement>('.codex-list [aria-current="true"]')?.focus());
-          }}>{t('codex.back')}</button>
           <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />
           {!manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><button type="button" onClick={retry}>{t('codex.retry')}</button></div> : <p role="status">{t('codex.loading')}</p>)}
         </article>
