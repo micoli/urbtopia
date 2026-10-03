@@ -113,7 +113,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       const tile = { x: building.x, y: building.y };
       set({ selectedBuildingId: null });
       sceneHandle.current?.focusOnTile(tile);
-      reevaluate({ tool: { kind: 'move', buildingId: building.id }, rotation: building.rotation, centerTile: tile });
+      reevaluate({ tool: { kind: 'move', buildingId: building.id }, rotation: null, centerTile: tile });
     },
   };
 });

@@ -116,6 +116,18 @@ describe('confirmTool', () => {
   });
 });
 
+describe('move tool', () => {
+  const workshop = state.buildings.find((building) => building.type === 'workshop');
+  const move: Tool = { kind: 'move', buildingId: workshop?.id ?? 0 };
+
+  it('turns the building toward the closest road, on either side of it', () => {
+    const above = evaluateTool(move, { state, tile: { x: 54, y: 56 }, rotation: null });
+    const below = evaluateTool(move, { state, tile: { x: 54, y: 59 }, rotation: null });
+    expect(above.valid && below.valid).toBe(true);
+    expect(below.rotation).not.toBe(above.rotation);
+  });
+});
+
 describe('selectionGhost', () => {
   it('surrounds the whole footprint of the selected building with a margin', () => {
     const workshop = state.buildings.find((building) => building.type === 'workshop');
