@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src build scripts",
     "test": "vitest run",
+    "saves:update": "UPDATE_SAVES=1 vitest run src/saves",
     "assets": "node scripts/install-assets.ts",
     "predev": "npm run assets",
     "prebuild": "npm run assets",
