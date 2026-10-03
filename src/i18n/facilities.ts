@@ -9,7 +9,7 @@ const texts: Record<FacilityType, { name: readonly [string, string]; help: reado
   },
   middleSchool: {
     name: ['Middle school', 'Collège'],
-    help: ['Continues the education of nearby Citizens. Required for Home Tier 4.', 'Poursuit l’éducation des citoyens proches. Requis pour les logements de niveau 4.'],
+    help: ['Continues the education of nearby Citizens. Optional: it raises Well-being.', 'Poursuit l’éducation des citoyens proches. Facultatif : il augmente le bien-être.'],
   },
   highSchool: {
     name: ['High school', 'Lycée'],
@@ -17,7 +17,7 @@ const texts: Record<FacilityType, { name: readonly [string, string]; help: reado
   },
   university: {
     name: ['University', 'Université'],
-    help: ['Serves the whole city; several Universities add their capacity. Required for Home Tier 7.', 'Dessert toute la ville ; plusieurs universités additionnent leur capacité. Requise pour les logements de niveau 7.'],
+    help: ['Serves the whole city; several Universities add their capacity. Optional: it raises Well-being.', 'Dessert toute la ville ; plusieurs universités additionnent leur capacité. Facultative : elle augmente le bien-être.'],
   },
   townHall: {
     name: ['Town hall', 'Hôtel de ville'],
@@ -33,7 +33,7 @@ const texts: Record<FacilityType, { name: readonly [string, string]; help: reado
   },
   concertHall: {
     name: ['Concert hall', 'Salle de concert'],
-    help: ['A large Culture facility. Home Tier 8 needs coverage by at least one Culture facility.', 'Un grand équipement culturel. Les logements de niveau 8 exigent la couverture d’au moins un équipement culturel.'],
+    help: ['A large Culture facility. Optional: it raises Well-being.', 'Un grand équipement culturel. Facultatif : il augmente le bien-être.'],
   },
   hospital: {
     name: ['Hospital', 'Hôpital'],

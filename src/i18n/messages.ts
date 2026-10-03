@@ -362,7 +362,6 @@ export const MESSAGES = {
   "home.upgradeBlocked": "Upgrade blocked, required services missing",
   "eco.servicePenalty": "Missing services penalty",
   "eco.serviceBonus": "Public services bonus",
-  "service.culture.any": "a Culture facility",
   "placement.cityWide": "Covers the whole city",
   "placement.covers": "Homes covered",
   "stats.services": "Services",

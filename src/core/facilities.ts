@@ -55,18 +55,15 @@ export function facilitiesOfCategory(category: ServiceCategory): FacilityType[] 
   return FACILITY_TYPES.filter(type => FACILITIES[type].category === category);
 }
 
-export type ServiceKey = FacilityType | 'culture';
+export type ServiceKey = FacilityType;
 
-export const REQUIRED_SERVICES: Readonly<Record<number, readonly ServiceKey[]>> = {
+export const REQUIRED_SERVICES: Readonly<Record<number, readonly FacilityType[]>> = {
   3: ['school'],
-  4: ['middleSchool'],
   5: ['highSchool', 'hospital'],
   6: ['townHall', 'fireStation', 'policeStation'],
-  7: ['university'],
-  8: ['culture'],
 };
 
-export function requiredServices(tier: number): ServiceKey[] {
+export function requiredServices(tier: number): FacilityType[] {
   return Object.entries(REQUIRED_SERVICES).flatMap(([from, keys]) => (tier >= Number(from) ? keys : []));
 }
 

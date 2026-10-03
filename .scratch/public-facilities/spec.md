@@ -22,16 +22,13 @@ Status: ready-for-agent
   - −10 per missing required service, with the total penalty capped at −40.
   - Green space benefits and coal pollution penalties remain unchanged.
 - Tax multiplier becomes `1 + Well-being / 500`, which gives roughly −8% to +20%. The previous scale was `/1000`.
-- Required services per Home Tier. Each service stays required for every higher Tier:
+- Required services per Home Tier. Each service stays required for every higher Tier. Middle school, University and Culture facilities are optional: they only raise Well-being:
 
 | Home Tier | Newly required |
 | ---: | --- |
 | 3 | School |
-| 4 | Middle school |
 | 5 | High school, hospital |
 | 6 | Town hall, fire station, police station |
-| 7 | University |
-| 8 | At least one Culture facility |
 
 - A Home can upgrade to a Tier only when every service required by that Tier covers it.
 - A missing service causes a penalty only when the Home's current Tier requires it.

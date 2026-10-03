@@ -52,7 +52,6 @@ export function serviceCoverage(state: GameState): ServiceCoverage {
 export function isServiceCovered(coverage: ServiceCoverage, homeId: number, key: ServiceKey): boolean {
   const covered = coverage.get(homeId);
   if (!covered) return false;
-  if (key === 'culture') return facilitiesOfCategory('culture').some(type => covered.has(type));
   return covered.has(key);
 }
 

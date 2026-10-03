@@ -364,7 +364,6 @@ export const FR: Record<MessageKey, string> = {
   "home.upgradeBlocked": "Amélioration bloquée, services requis manquants",
   "eco.servicePenalty": "Pénalité de services manquants",
   "eco.serviceBonus": "Bonus des services publics",
-  "service.culture.any": "un équipement culturel",
   "placement.cityWide": "Couvre toute la ville",
   "placement.covers": "Logements couverts",
   "stats.services": "Services",

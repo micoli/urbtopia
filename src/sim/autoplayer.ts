@@ -146,7 +146,7 @@ function provideService(player: Player, home: Building): boolean {
   const state = player.state();
   const [missing] = missingServices(serviceCoverage(state), home, home.tier + 1);
   if (!missing) return false;
-  const type: FacilityType = missing === 'culture' ? 'communityHall' : missing;
+  const type: FacilityType = missing;
   if (state.urbs < FACILITIES[type].cost) return false;
   const exhausted = exhaustedSpots.get(player) ?? new Set<string>();
   exhaustedSpots.set(player, exhausted);
