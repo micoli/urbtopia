@@ -91,7 +91,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'trains',
     url: 'https://kenney.nl/media/pages/assets/train-kit/cf8521d625-1727040883/kenney_train-kit.zip',
     archive: 'kenney_train-kit.zip',
-    files: [],
+    files: ['train-electric-subway-a'],
   },
 ];
 

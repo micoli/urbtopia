@@ -35,7 +35,7 @@ export class GameScene {
   private tendedMaterial = this.buildTendedMaterial();
   private ghostLayer = new GhostLayer();
   private selectionLayer = new GhostLayer(SELECTION_COLOR, { underBuildings: true });
-  private ecologyLayer = new EcologyLayer();
+  private ecologyLayer = new EcologyLayer(this.library);
   private selectedId: number | null = null;
   private ecologicalState: GameState | null = null;
   private traffic = new TrafficLayer(this.library);

@@ -1,6 +1,11 @@
 import * as THREE from 'three';
 import { energyStats, transportStats, footprintOf, type GameState } from '../core';
 import { centerOf } from '../core/ecology';
+import type { ModelLibrary } from './modelLibrary';
+import { poseOf } from './vehicleMotion';
+
+const BUS_MODEL = 'trains/train-electric-subway-a';
+const BUS_LENGTH = 0.72;
 
 export class EcologyLayer {
   readonly root = new THREE.Group();
@@ -8,12 +13,13 @@ export class EcologyLayer {
   private overlay = new THREE.Group();
   private signs = new THREE.Group();
   private signature = '';
+  private disposed = false;
   private buses: { mesh: THREE.Group; route: { x: number; y: number; }[]; phase: number; }[] = [];
   private signTexture: THREE.CanvasTexture;
   private signMaterial: THREE.SpriteMaterial;
   private lineMaterial = new THREE.LineBasicMaterial({ color: 0x28ca8c });
 
-  constructor() {
+  constructor(private library: ModelLibrary) {
     const canvas = document.createElement('canvas'); canvas.width = 128; canvas.height = 128;
     const ctx = canvas.getContext('2d')!;
     ctx.fillStyle = '#1761ae'; ctx.fillRect(0, 0, 128, 128);
@@ -21,13 +27,14 @@ export class EcologyLayer {
     this.signTexture = new THREE.CanvasTexture(canvas);
     this.signMaterial = new THREE.SpriteMaterial({ map: this.signTexture });
     this.root.add(this.busRoot, this.overlay, this.signs);
+    void this.loadBusModel();
   }
 
   sync(state: GameState, selectedId: number | null) {
     const stats = transportStats(state);
     const signature = JSON.stringify({ stops: state.buildings.filter(b => b.type === 'busStop').map(b => [b.id, b.x, b.y]), lines: stats.lines.map(l => [l.id, l.active, l.route]) });
     if (signature !== this.signature) {
-      this.signature = signature; this.clear(this.busRoot); this.clear(this.signs); this.buses = [];
+      this.signature = signature; this.busRoot.clear(); this.clear(this.signs); this.buses = [];
       for (const stop of state.buildings.filter(b => b.type === 'busStop')) {
         const sign = new THREE.Sprite(this.signMaterial); sign.position.set(stop.x + .5, 1.1, stop.y + .5); sign.scale.set(.55, .55, 1); this.signs.add(sign);
       }
@@ -63,24 +70,47 @@ export class EcologyLayer {
       bus.phase = (bus.phase + Math.max(0, delta) * 1.5) % (2 * length);
       const offset = bus.phase <= length ? bus.phase : 2 * length - bus.phase;
       const index = Math.min(length - 1, Math.floor(offset)), f = offset - index, a = bus.route[index]!, b = bus.route[index + 1]!;
-      bus.mesh.position.set(a.x + .5 + (b.x - a.x) * f, .09, a.y + .5 + (b.y - a.y) * f);
-      bus.mesh.rotation.y = Math.atan2(b.x - a.x, b.y - a.y) + (bus.phase > length ? Math.PI : 0);
+      const returning = bus.phase > length;
+      const from = returning ? b : a, to = returning ? a : b;
+      const previous = bus.route[returning ? index + 2 : index - 1];
+      const heading = previous ? { x: from.x - previous.x, y: from.y - previous.y } : { x: to.x - from.x, y: to.y - from.y };
+      const pose = poseOf({ from, to, heading, progress: returning ? 1 - f : f, model: 0, speed: 1.5 });
+      bus.mesh.position.set(pose.x, .09, pose.z);
+      bus.mesh.rotation.y = pose.yaw;
     }
   }
 
-  dispose() { this.clear(this.busRoot); this.clear(this.overlay); this.signTexture.dispose(); this.signMaterial.dispose(); this.lineMaterial.dispose(); }
+  dispose() { this.disposed = true; this.busRoot.clear(); this.clear(this.overlay); this.signTexture.dispose(); this.signMaterial.dispose(); this.lineMaterial.dispose(); }
 
   private path(points: { x: number; y: number ;}[]) {
     const geometry = new THREE.BufferGeometry().setFromPoints(points.map(p => new THREE.Vector3(p.x, .08, p.y)));
     this.overlay.add(new THREE.Line(geometry, this.lineMaterial));
   }
 
+  private async loadBusModel(): Promise<void> {
+    await this.library.ensure([BUS_MODEL]);
+    if (this.disposed) return;
+    for (const bus of this.buses) {
+      if (bus.mesh.children.length === 0) bus.mesh.add(this.createBusModel());
+    }
+  }
+
   private makeBus() {
     const bus = new THREE.Group();
-    const body = new THREE.Mesh(new THREE.BoxGeometry(.28, .25, .72), new THREE.MeshStandardMaterial({ color: 0x1761ae })); body.position.y = .17; bus.add(body);
-    const windows = new THREE.Mesh(new THREE.BoxGeometry(.285, .1, .54), new THREE.MeshStandardMaterial({ color: 0xbce6f5 })); windows.position.y = .22; bus.add(windows);
-    for (const x of [-.14, .14]) for (const z of [-.22, .22]) { const wheel = new THREE.Mesh(new THREE.CylinderGeometry(.07, .07, .035, 10), new THREE.MeshStandardMaterial({ color: 0x24292b })); wheel.rotation.z = Math.PI / 2; wheel.position.set(x, .07, z); bus.add(wheel); }
+    if (this.library.has(BUS_MODEL)) bus.add(this.createBusModel());
     return bus;
+  }
+
+  private createBusModel(): THREE.Object3D {
+    const model = this.library.get(BUS_MODEL).clone(true);
+    const bounds = new THREE.Box3().setFromObject(model);
+    const center = bounds.getCenter(new THREE.Vector3());
+    const scale = BUS_LENGTH / bounds.getSize(new THREE.Vector3()).z;
+    const fitted = new THREE.Group();
+    fitted.scale.setScalar(scale);
+    model.position.sub(new THREE.Vector3(center.x, bounds.min.y, center.z));
+    fitted.add(model);
+    return fitted;
   }
 
   private clear(group: THREE.Group) {
