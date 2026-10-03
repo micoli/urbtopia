@@ -1,6 +1,10 @@
 html,
 body,
 #app {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
   margin: 0;
   height: 100%;
   overflow: hidden;
@@ -744,4 +748,10 @@ button {
 [data-layout='B'] .camera-buttons {
   top: 12px;
   bottom: auto;
+}
+
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
 }
