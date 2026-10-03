@@ -30,6 +30,13 @@ describe('Service coverage', () => {
     expect(coveredIds(state, 'school')).toEqual([2]);
   });
 
+  it('applies the larger School reach to Homes', () => {
+    const school = b(1, 'school', 0, 0);
+    const at = (id: number, x: number, y: number) => b(id, 'home', x, y);
+    const state = city([school, at(2, 15, 0), at(3, 20, 0), at(4, 0, 15), at(5, 16, 16), at(6, 13, 13)]);
+    expect(coveredIds(state, 'school').sort((a, c) => a - c)).toEqual([2, 4, 6]);
+  });
+
   it('serves the nearest Homes first until capacity is used', () => {
     const homes = [4, 2, 6, 3, 5].map((x, index) => b(10 + index, 'home', x, 0, { tier: 5 }));
     const state = city([b(1, 'school', 0), ...homes]);
