@@ -9,6 +9,7 @@ import { toastStore } from '../store/toastStore';
 import { useUi } from './hooks';
 import { useInstallPrompt } from '../pwa/useInstallPrompt';
 import { PreferencesContent } from './PreferencesContent';
+import { useConfirmKeys } from './useConfirmKeys';
 
 export function MenuContent() {
   const toggle = useUi((store) => store.toggleMenu);
@@ -22,6 +23,8 @@ export function MenuContent() {
     setConfirming(false);
     toggle();
   };
+
+  useConfirmKeys({ active: confirming, onConfirm: startNewGame, onCancel: () => setConfirming(false) });
 
   const onFileChosen = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

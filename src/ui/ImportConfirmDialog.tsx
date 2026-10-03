@@ -3,18 +3,20 @@ import { t } from '../i18n/t';
 import { dialogStore } from '../store/dialogStore';
 import { gameStore } from '../store/gameStore';
 import { useDialogs } from './hooks';
+import { useConfirmKeys } from './useConfirmKeys';
 
 export function ImportConfirmDialog() {
   const pending = useDialogs((store) => store.pendingImport);
-  if (!pending) return null;
-
   const close = () => dialogStore.getState().setPendingImport(null);
   const replace = () => {
+    if (!pending) return;
     saveSession.unlock();
     gameStore.getState().replaceState(pending);
     saveSession.save(pending, Date.now());
     close();
   };
+  useConfirmKeys({ active: pending !== null, onConfirm: replace, onCancel: close });
+  if (!pending) return null;
 
   return (
     <div className="dialog-backdrop" role="dialog" aria-modal="true">

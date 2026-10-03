@@ -1,5 +1,6 @@
 import { t } from '../i18n/t';
 import { useUi } from './hooks';
+import { useConfirmKeys } from './useConfirmKeys';
 
 export function ConfirmPad() {
   const tool = useUi((store) => store.tool);
@@ -7,11 +8,12 @@ export function ConfirmPad() {
   const confirm = useUi((store) => store.confirm);
   const cancelTool = useUi((store) => store.cancelTool);
   const rotate = useUi((store) => store.rotate);
+  const needsStart = tool?.kind === 'road' && tool.start === null;
+  const canConfirm = Boolean(evaluation?.valid) || needsStart;
+  useConfirmKeys({ active: Boolean(tool && evaluation), canConfirm, onConfirm: confirm, onCancel: cancelTool });
   if (!tool || !evaluation) return null;
 
   const canRotate = tool.kind === 'road' ? tool.start !== null : evaluation.rotation !== null;
-  const needsStart = tool.kind === 'road' && tool.start === null;
-  const canConfirm = evaluation.valid || needsStart;
   return (
     <div className="confirm-pad">
       <div className="confirm-info">

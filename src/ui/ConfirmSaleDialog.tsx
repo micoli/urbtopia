@@ -1,10 +1,12 @@
 import { t } from '../i18n/t';
 import { useUi } from './hooks';
+import { useConfirmKeys } from './useConfirmKeys';
 
 export function ConfirmSaleDialog() {
   const pending = useUi((store) => store.pendingSaleId);
   const confirmSale = useUi((store) => store.confirmSale);
   const cancelSale = useUi((store) => store.cancelSale);
+  useConfirmKeys({ active: pending !== null, onConfirm: confirmSale, onCancel: cancelSale });
   if (pending === null) return null;
 
   return (
