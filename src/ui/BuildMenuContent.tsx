@@ -1,13 +1,21 @@
 import type { ReactNode } from 'react';
 import { TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, totalCitizens, GAME_CONFIG, placementCost, type BuildingType } from '../core';
 import { t } from '../i18n/t';
+import type { MessageKey } from '../i18n/messages';
 import type { Tool } from '../tools/tools';
 import { FlyoutItem } from './FlyoutItem';
 import { useGame, useUi } from './hooks';
 import { guideOf } from './tutorialGuide';
 import { UrbsAmount } from './UrbsAmount';
 
-const BUILDING_ORDER: BuildingType[] = ['workshop', 'factory', 'shop', 'storehouse', 'silo', 'vault', 'home', 'powerPlant', 'waterTower', 'tree', 'park', 'solar', 'battery', 'backup', 'busStop', 'brtStation', 'railStation'];
+const BUILDING_SECTIONS: { title: MessageKey; types: BuildingType[] }[] = [
+  { title: 'build.housing', types: ['home'] },
+  { title: 'build.production', types: ['workshop', 'factory', 'shop'] },
+  { title: 'build.storage', types: ['storehouse', 'silo', 'vault'] },
+  { title: 'build.utilities', types: ['powerPlant', 'waterTower', 'solar', 'battery', 'backup'] },
+  { title: 'build.greenSpaces', types: ['tree', 'park'] },
+  { title: 'build.transport', types: ['busStop', 'brtStation', 'railStation'] },
+];
 
 export function BuildMenuContent() {
   const citizens = useGame(store => totalCitizens(store.state));
@@ -19,16 +27,25 @@ export function BuildMenuContent() {
   if (flyout === 'build') {
     return (
       <>
-        {citizens >= 15 && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true })} />}
-        {BUILDING_ORDER.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0)).map((type) => (
-          <FlyoutItem
-            key={type}
-            label={t(`building.${type}`)}
-            cost={<UrbsAmount value={placementCost(type)} />}
-            guided={guide.buildings.includes(type)}
-            onChoose={() => chooseTool({ kind: 'building', buildingType: type })}
-          />
-        ))}
+        {BUILDING_SECTIONS.map(section => {
+          const types = section.types.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0));
+          if (!types.length) return null;
+          return (
+            <section className="build-section" key={section.title} aria-label={t(section.title)}>
+              <h3>{t(section.title)}</h3>
+              {types.map(type => (
+                <FlyoutItem
+                  key={type}
+                  label={t(`building.${type}`)}
+                  cost={<UrbsAmount value={placementCost(type)} />}
+                  guided={guide.buildings.includes(type)}
+                  onChoose={() => chooseTool({ kind: 'building', buildingType: type })}
+                />
+              ))}
+              {section.title === 'build.housing' && citizens >= 15 && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true })} />}
+            </section>
+          );
+        })}
       </>
     );
   }
