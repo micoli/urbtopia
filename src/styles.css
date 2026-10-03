@@ -839,3 +839,17 @@ textarea {
   background: var(--accent);
   color: #08140d;
 }
+
+.tutorial-handle {
+  cursor: grab;
+  touch-action: none;
+  padding-bottom: 6px;
+}
+
+.tutorial-handle:active {
+  cursor: grabbing;
+}
+
+.tutorial-banner {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
