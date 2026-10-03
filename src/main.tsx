@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import { App } from './ui/App';
+import { installFpsOverlay, isFpsOverlayRequested } from './ui/fpsOverlay';
 import { installPersistence } from './persistence/install';
 import { registerServiceWorker } from './pwa/registerServiceWorker';
 import { gameStore } from './store/gameStore';
@@ -12,5 +13,7 @@ installPersistence();
 
 const root = document.getElementById('app');
 if (root) createRoot(root).render(<App />);
+
+if (isFpsOverlayRequested(window.location.search)) installFpsOverlay();
 
 registerServiceWorker();

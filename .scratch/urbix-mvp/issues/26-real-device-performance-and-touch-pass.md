@@ -26,7 +26,7 @@ Still open, because nothing was measured or recorded:
 
 ## Measurement checklist
 
-No FPS counter ships in the app. Measure with remote devtools: Android = Chrome `chrome://inspect` + Performance panel (FPS meter / "Rendering > Frame Rendering Stats"); iOS = Safari Web Inspector (Timelines > Frames) via Mac. Test on the deployed GitHub Pages build, not dev server.
+Open the deployed GitHub Pages build with `?fps` appended to the URL (e.g. `https://<host>/urbix/?fps`). A green overlay at the bottom centre shows: current fps, min fps since start, session average, worst frame (ms) in the last second. Tap the overlay to reset min and average before each scenario. Remote devtools (Android `chrome://inspect`, iOS Safari Web Inspector) are optional, for memory checks. Test the deployed build, not the dev server.
 
 ### Device
 
