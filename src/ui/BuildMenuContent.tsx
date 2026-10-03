@@ -1,5 +1,5 @@
 import { useId, useState, type ReactNode } from 'react';
-import { TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, totalCitizens, GAME_CONFIG, placementCost } from '../core';
+import { TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, totalCitizens, placementCost } from '../core';
 import { t } from '../i18n/t';
 import type { Tool } from '../tools/tools';
 import { FlyoutItem } from './FlyoutItem';
@@ -7,11 +7,14 @@ import { useGame, useUi } from './hooks';
 import { guideOf } from './tutorialGuide';
 import { UrbsAmount } from './UrbsAmount';
 import { BUILDING_SECTIONS, readBuildSection, writeBuildSection, type BuildSection } from './buildMenuSections';
+import { ROAD_CONSTRUCTIONS } from '../codex/construction';
+import type { CodexId } from '../codex/catalog';
 
 export function BuildMenuContent() {
   const citizens = useGame(store => totalCitizens(store.state));
   const flyout = useUi((store) => store.flyout);
   const chooseTool = useUi((store) => store.chooseTool);
+  const openCodex = useUi(store => store.openCodex);
   const guide = guideOf(useGame((store) => store.state.tutorial));
   const [openSection, setOpenSection] = useState<BuildSection>(readBuildSection);
   const menuId = useId();
@@ -48,9 +51,11 @@ export function BuildMenuContent() {
                     cost={<UrbsAmount value={placementCost(type)} />}
                     guided={guide.buildings.includes(type)}
                     onChoose={() => chooseTool({ kind: 'building', buildingType: type })}
+                    codexId={type}
+                    onInfo={() => openCodex(type)}
                   />
                 ))}
-                {section.title === 'build.housing' && citizens >= 15 && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true })} />}
+                {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true })} codexId="solarHome" onInfo={() => openCodex('solarHome')} />}
               </div>
             </section>
           );
@@ -59,21 +64,20 @@ export function BuildMenuContent() {
     );
   }
 
-  const roadTools: { label: string; cost?: ReactNode; tool: Tool }[] = [
-    { label: t('tool.road'), cost: `${GAME_CONFIG.roadCostPerTile} ${t('tool.perTile')}`, tool: { kind: 'road', start: null, horizontalFirst: true } },
-    { label: t('tool.crossing'), cost: <UrbsAmount value={GAME_CONFIG.crossingCost} />, tool: { kind: 'crossing' } },
-    { label: t('tool.roundabout'), cost: <UrbsAmount value={GAME_CONFIG.roundaboutCost} />, tool: { kind: 'roundabout' } },
+  const roadTools: { label: string; cost?: ReactNode; tool: Tool; codexId?: CodexId }[] = [
+    ...ROAD_CONSTRUCTIONS.filter(item => item.unlockCitizens === 0).map(item => ({ label: t(item.name), cost: item.perTile ? `${item.cost} ${t('tool.perTile')}` : <UrbsAmount value={item.cost} />, tool: item.tool, codexId: item.id })),
     { label: t('tool.demolishRoad'), tool: { kind: 'demolishRoad', start: null, horizontalFirst: true } },
   ];
   for (const mode of ['brt', 'rail'] as const) {
     if (citizens < TRANSIT[mode].unlock) continue;
-    roadTools.push({ label: t(`tool.${mode}`), cost: `${TRANSIT[mode].tileCost} ${t('tool.perTile')}`, tool: { kind: 'road', mode, start: null, horizontalFirst: true } });
+    const construction = ROAD_CONSTRUCTIONS.find(item => item.id === mode)!;
+    roadTools.push({ label: t(construction.name), cost: `${construction.cost} ${t('tool.perTile')}`, tool: construction.tool, codexId: construction.id });
     roadTools.push({ label: t(mode === 'brt' ? 'tool.demolishBrt' : 'tool.demolishRail'), tool: { kind: 'demolishRoad', mode, start: null, horizontalFirst: true } });
   }
   return (
     <>
       {roadTools.map((item) => (
-        <FlyoutItem key={item.label} label={item.label} cost={item.cost} guided={guide.road && item.tool.kind === 'road'} onChoose={() => chooseTool(item.tool)} />
+        <FlyoutItem key={item.label} label={item.label} cost={item.cost} guided={guide.road && item.tool.kind === 'road'} onChoose={() => chooseTool(item.tool)} codexId={item.codexId} onInfo={item.codexId ? () => openCodex(item.codexId) : undefined} />
       ))}
     </>
   );

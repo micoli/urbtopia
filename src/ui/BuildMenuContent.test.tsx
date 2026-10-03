@@ -39,7 +39,9 @@ describe('build menu sections', () => {
     expect(sections[5]).toContain(t('building.railStation'));
     for (const type of Object.keys(BUILDING_SPECS) as (keyof typeof BUILDING_SPECS)[]) {
       expect(html.split(`<span>${t(`building.${type}`)}</span>`)).toHaveLength(2);
+      expect(html).toContain(`data-codex-id="${type}"`);
     }
+    expect(html).toContain('data-codex-id="solarHome"');
   });
 
   it('hides locked buildings and empty sections at the start of a city', () => {
