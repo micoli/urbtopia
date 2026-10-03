@@ -7,6 +7,7 @@ import { dialogStore } from '../store/dialogStore';
 import { gameStore } from '../store/gameStore';
 import { toastStore } from '../store/toastStore';
 import { useUi } from './hooks';
+import { reloadApp } from '../pwa/reloadApp';
 import { useInstallPrompt } from '../pwa/useInstallPrompt';
 import { PreferencesContent } from './PreferencesContent';
 import { useConfirmKeys } from './useConfirmKeys';
@@ -63,6 +64,9 @@ export function MenuContent() {
         </button>
         <button type="button" onClick={() => fileInput.current?.click()}>
           {t('menu.import')}
+        </button>
+        <button type="button" onClick={() => void reloadApp()}>
+          {t('menu.reload')}
         </button>
         <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={onFileChosen} />
         {confirming ? (

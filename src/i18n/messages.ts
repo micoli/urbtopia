@@ -103,6 +103,7 @@ export const MESSAGES = {
   'menu.newGame': 'New game',
   'menu.newGameConfirm': 'Start a new city? The current one will be erased.',
   'error.saveFailed': 'Could not save: the browser storage is full.',
+  'menu.reload': 'Reload',
   'menu.install': 'Install the app',
   'menu.skip12': '+12 h',
   'menu.skip24': '+24 h',
