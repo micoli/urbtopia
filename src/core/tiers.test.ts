@@ -46,6 +46,19 @@ describe('Workshop Tiers', () => {
     expect(find(queued, WORKSHOP_ID)?.queue[0]?.duration).toBe(45_000);
   });
 
+  it('preserves purchased Slots and queued Materials when upgrading to Tier 2', () => {
+    let state = succeed(withStorehouse, { type: 'BuySlot', buildingId: WORKSHOP_ID });
+    for (let count = 0; count < 3; count++) {
+      state = succeed(state, { type: 'QueueProduction', buildingId: WORKSHOP_ID, item: 'wood' });
+    }
+    const before = find(state, WORKSHOP_ID)!;
+    const upgraded = succeed(state, upgrade(WORKSHOP_ID));
+    expect(find(upgraded, WORKSHOP_ID)).toMatchObject({ tier: 2, slotCount: 3, queue: before.queue });
+    const collected = succeed(advance(upgraded, T0 + 3 * MINUTE).state, { type: 'Collect', buildingId: WORKSHOP_ID }, T0 + 3 * MINUTE);
+    expect(find(collected, WORKSHOP_ID)?.slotCount).toBe(3);
+    expect(collected.storage.materials.wood).toBe(3);
+  });
+
   it('raises the Slot ceiling from 5 to 8 at Tier 3', () => {
     let state: GameState = { ...upgradeTimes(withStorehouse, WORKSHOP_ID, 1) };
     for (let slots = 3; slots <= 5; slots++) state = succeed(state, { type: 'BuySlot', buildingId: WORKSHOP_ID });
