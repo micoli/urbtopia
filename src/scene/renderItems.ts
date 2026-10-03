@@ -36,13 +36,30 @@ function modelOf(type: BuildingType, tier: number): string {
   return MODEL_BY_BUILDING[type];
 }
 
-let lastItems: { buildings: GameState['buildings']; roads: GameState['roads']; roundabouts: GameState['roundabouts']; items: RenderItem[] } | null = null;
+let lastBuildingItems: RenderItem[] = [];
+let lastRoadItems: { roads: GameState['roads']; roundabouts: GameState['roundabouts']; items: RenderItem[] } | null = null;
+let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; items: RenderItem[] } | null = null;
+
+function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
+  return a.length === b.length && a.every((item, index) => {
+    const other = b[index] as RenderItem;
+    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation;
+  });
+}
 
 export function renderItemsOf(state: GameState): RenderItem[] {
-  const { buildings, roads, roundabouts } = state;
-  if (lastItems && lastItems.buildings === buildings && lastItems.roads === roads && lastItems.roundabouts === roundabouts) return lastItems.items;
-  const items = [...buildingItems(state), ...roadItems(state)];
-  lastItems = { buildings, roads, roundabouts, items };
+  const builtBuildings = buildingItems(state);
+  const buildings = sameItems(builtBuildings, lastBuildingItems) ? lastBuildingItems : builtBuildings;
+  lastBuildingItems = buildings;
+
+  if (lastRoadItems?.roads !== state.roads || lastRoadItems.roundabouts !== state.roundabouts) {
+    lastRoadItems = { roads: state.roads, roundabouts: state.roundabouts, items: roadItems(state) };
+  }
+  const roads = lastRoadItems.items;
+
+  if (lastItems && lastItems.buildings === buildings && lastItems.roads === roads) return lastItems.items;
+  const items = [...buildings, ...roads];
+  lastItems = { buildings, roads, items };
   return items;
 }
 

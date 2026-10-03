@@ -100,7 +100,7 @@ For each: map area visible next to dock/flyout (< 600 px: enough?), nothing clip
 
 Found and fixed: `renderItemsOf` took ~1.2 s on this city (O(n²) `roadExits`, recomputed on every state change); now ~10 ms, and cached while buildings and roads are unchanged. Before the fix the page was frozen at x4.
 
-Still to look at: the once-per-second stall (likely the tick path with 37k Citizens).
+Once-per-second stall: cause was `ChunkedWorld.sync` rebuilding its chunk signatures (~35 ms per tick at x1) because each tick replaces the `buildings` array. `renderItemsOf` now returns the same items when buildings are visually unchanged, and `ChunkedWorld.sync` returns early on identical items: 214 ms to 0.1 ms over 6 s. Re-measured on the Mac at CPU x6: 97-119 fps, worst frame 17-50 ms (was 80-91 fps, 260-290 ms).
 
 2026-10-03, real-device measurement over adb + CDP (script-driven, no hands on the phone):
 

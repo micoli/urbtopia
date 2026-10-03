@@ -24,6 +24,18 @@ describe('renderItemsOf caching', () => {
     expect(renderItemsOf({ ...state, urbs: state.urbs + 1 })).toBe(items);
   });
 
+  it('reuses the items when the buildings are replaced by identical copies', () => {
+    const items = renderItemsOf(state);
+    expect(renderItemsOf({ ...state, buildings: state.buildings.map((building) => ({ ...building, taxCitizenMs: 5 })) })).toBe(items);
+  });
+
+  it('rebuilds the items when a building is upgraded', () => {
+    const home = createBuilding(9, 'home', 10, 20, 0);
+    const base = { ...state, buildings: [home] };
+    const items = renderItemsOf(base);
+    expect(renderItemsOf({ ...base, buildings: [{ ...home, tier: 2 }] })).not.toBe(items);
+  });
+
   it('rebuilds the items when the roads change', () => {
     const items = renderItemsOf(state);
     const longer = { ...state, roads: [...state.roads, { x: 63, y: 58, kind: 'road' as const }] };

@@ -11,10 +11,13 @@ interface Chunk {
 export class ChunkedWorld {
   readonly root = new THREE.Group();
   private chunks = new Map<string, Chunk>();
+  private lastItems: RenderItem[] | null = null;
 
   constructor(private library: ModelLibrary) {}
 
   sync(items: RenderItem[]): void {
+    if (items === this.lastItems) return;
+    this.lastItems = items;
     const byChunk = new Map<string, RenderItem[]>();
     for (const item of items) {
       const key = chunkKeyOf(item.x, item.z);
