@@ -23,6 +23,7 @@ export function RadialMenu() {
                 aria-label={action.label}
                 aria-pressed={action.pressed}
                 disabled={action.disabled}
+                data-guided={action.guided}
                 style={{ transform: `translate(${x}px, ${y}px)` }}
                 onClick={() => {
                   setOpen(false);
@@ -34,7 +35,7 @@ export function RadialMenu() {
             );
           })
         : null}
-      <button type="button" className="radial-fab" aria-label={t('radial.open')} aria-expanded={open} onClick={() => setOpen(!open)}>
+      <button type="button" className="radial-fab" aria-label={t('radial.open')} aria-expanded={open} data-guided={!open && actions.some((action) => action.guided)} onClick={() => setOpen(!open)}>
         {open ? '✗' : '☰'}
       </button>
     </div>

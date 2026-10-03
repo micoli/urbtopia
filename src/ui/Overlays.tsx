@@ -9,6 +9,7 @@ import { ReadOnlyBanner } from './ReadOnlyBanner';
 import { RecoveryScreen } from './RecoveryScreen';
 import { SaveFailedDialog } from './SaveFailedDialog';
 import { Toast } from './Toast';
+import { TutorialBanner } from './TutorialBanner';
 
 export function Overlays() {
   return (
@@ -23,6 +24,7 @@ export function Overlays() {
       <SaveFailedDialog />
       <RecoveryScreen />
       <Toast />
+      <TutorialBanner />
       <CameraButtons />
     </>
   );

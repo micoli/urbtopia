@@ -2,13 +2,15 @@ import { GAME_CONFIG, placementCost, type BuildingType } from '../core';
 import { t } from '../i18n/t';
 import type { Tool } from '../tools/tools';
 import { FlyoutItem } from './FlyoutItem';
-import { useUi } from './hooks';
+import { useGame, useUi } from './hooks';
+import { guideOf } from './tutorialGuide';
 
 const BUILDING_ORDER: BuildingType[] = ['workshop', 'factory', 'shop', 'storehouse', 'home', 'powerPlant', 'waterTower'];
 
 export function BuildMenuContent() {
   const flyout = useUi((store) => store.flyout);
   const chooseTool = useUi((store) => store.chooseTool);
+  const guide = guideOf(useGame((store) => store.state.tutorial));
   if (!flyout) return null;
 
   if (flyout === 'build') {
@@ -19,6 +21,7 @@ export function BuildMenuContent() {
             key={type}
             label={t(`building.${type}`)}
             cost={`${placementCost(type)} ${t('stat.urbs')}`}
+            guided={guide.buildings.includes(type)}
             onChoose={() => chooseTool({ kind: 'building', buildingType: type })}
           />
         ))}
@@ -35,7 +38,7 @@ export function BuildMenuContent() {
   return (
     <>
       {roadTools.map((item) => (
-        <FlyoutItem key={item.label} label={item.label} cost={item.cost} onChoose={() => chooseTool(item.tool)} />
+        <FlyoutItem key={item.label} label={item.label} cost={item.cost} guided={guide.road && item.tool.kind === 'road'} onChoose={() => chooseTool(item.tool)} />
       ))}
     </>
   );

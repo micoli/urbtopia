@@ -5,6 +5,10 @@ import type { LoadResult } from '../persistence/saveSession';
 import { readOnlyStore } from './readOnlyStore';
 import { toastKeyForEvents, toastStore } from './toastStore';
 
+function announceTutorialEnd(before: GameState, after: GameState) {
+  if (before.tutorial === 'tax' && after.tutorial === null) toastStore.getState().show('tutorial.done');
+}
+
 export type Change = 'command' | 'tick' | 'reset';
 
 export interface GameStore {
@@ -31,6 +35,7 @@ export function createGameStore(initial: GameState) {
       }
       const toast = toastKeyForEvents(result.events);
       if (toast) toastStore.getState().show(toast);
+      announceTutorialEnd(get().state, result.state);
       set({ state: result.state, lastError: null, lastChange: 'command' });
     },
     tick: (tickNow) => {
@@ -38,16 +43,17 @@ export function createGameStore(initial: GameState) {
       const result = advance(get().state, tickNow);
       const toast = toastKeyForEvents(result.events);
       if (toast) toastStore.getState().show(toast);
+      announceTutorialEnd(get().state, result.state);
       set({ state: result.state, lastChange: 'tick' });
     },
     replaceState: (state, change = 'reset') => set({ state, lastError: null, lastChange: change }),
-    newGame: (now) => set({ state: newGame({ now }), lastError: null, lastChange: 'reset' }),
+    newGame: (now) => set({ state: newGame({ now, tutorial: true }), lastError: null, lastChange: 'reset' }),
   }));
 }
 
 export const bootResult: LoadResult = saveSession.load();
 
 const startedAt = Date.now();
-const initialState = bootResult.kind === 'loaded' ? bootResult.state : newGame({ now: startedAt });
+const initialState = bootResult.kind === 'loaded' ? bootResult.state : newGame({ now: startedAt, tutorial: true });
 
 export const gameStore = createGameStore(initialState);
