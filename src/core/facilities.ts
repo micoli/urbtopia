@@ -80,9 +80,9 @@ export function isWithinReach(dx: number, dy: number, radius: number): boolean {
   return (x - inset) ** 2 + (y - inset) ** 2 <= REACH_CORNER_RADIUS ** 2;
 }
 
-export const FACILITY_TIER_CAPACITY: readonly number[] = [1, 1.5, 2, 3];
+export const FACILITY_TIER_CAPACITY: readonly number[] = [1, 1.5, 2, 3, 4, 5.5, 7, 9];
 
-const FACILITY_UPGRADE_COST_FACTORS: readonly number[] = [0.6, 1.2, 2.4];
+const FACILITY_UPGRADE_COST_FACTORS: readonly number[] = [0.6, 1.2, 2.4, 4, 6, 9, 13];
 
 export function facilityCapacity(type: FacilityType, tier: number): number | null {
   const base = FACILITIES[type].capacity;

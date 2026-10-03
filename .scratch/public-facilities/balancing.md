@@ -12,4 +12,4 @@ Initial values come from `spec.md` and live in `src/core/facilities.ts`. Adjustm
 
 - **Reach is a rounded square**, not a Manhattan diamond: side 2 × radius, corners rounded by 3 tiles. Radii raised to 16 (School) and 18 (Fire and Police stations).
 
-- **Capacity and evolutions:** the School starts at 300 Citizens. Every capacity-limited facility evolves through Tiers 1 to 4 with capacity ×1, ×1.5, ×2, ×3. Upgrade costs (Urbs only) are 60 %, 120 % and 240 % of the construction cost. The Town hall (unlimited) has no evolution.
+- **Capacity and evolutions:** the School starts at 300 Citizens. Every capacity-limited facility evolves through Tiers 1 to 8 with capacity ×1, ×1.5, ×2, ×3, ×4, ×5.5, ×7, ×9. Upgrade costs (Urbs only) are 60 %, 120 %, 240 %, 400 %, 600 %, 900 % and 1300 % of the construction cost. The Town hall (unlimited) has no evolution.

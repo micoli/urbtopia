@@ -11,7 +11,7 @@ const coveredIds = (state: GameState, type: Building['type']) => [...serviceCove
 
 describe('Facility evolutions', () => {
   it('starts the School at 300 Citizens and raises capacity with each Tier', () => {
-    expect([1, 2, 3, 4].map((tier) => facilityCapacity('school', tier))).toEqual([300, 450, 600, 900]);
+    expect([1, 2, 3, 4, 5, 6, 7, 8].map((tier) => facilityCapacity('school', tier))).toEqual([300, 450, 600, 900, 1200, 1650, 2100, 2700]);
     expect(facilityCapacity('townHall', 1)).toBeNull();
   });
 
@@ -23,14 +23,14 @@ describe('Facility evolutions', () => {
     expect(coveredIds(upgraded, 'school')).toHaveLength(4);
   });
 
-  it('upgrades a facility for Urbs only, up to Tier 4, but never the Town hall', () => {
+  it('upgrades a facility for Urbs only, up to Tier 8, but never the Town hall', () => {
     const state = city([b(2, 'school', 0), b(3, 'townHall', 10)]);
     const send = (id: number, from: GameState) => dispatch(from, { type: 'UpgradeBuilding', buildingId: id }, 0);
     const first = send(2, state);
     expect(first.ok && state.urbs - first.state.urbs).toBe(180);
     let current = state;
-    for (let step = 0; step < 3; step++) current = (send(2, current) as { state: GameState }).state;
-    expect(current.buildings.find((x) => x.id === 2)?.tier).toBe(4);
+    for (let step = 0; step < 7; step++) current = (send(2, current) as { state: GameState }).state;
+    expect(current.buildings.find((x) => x.id === 2)?.tier).toBe(8);
     const capped = send(2, current);
     expect(!capped.ok && capped.error.key).toBe('error.maxTier');
     const hall = send(3, state);
@@ -183,7 +183,7 @@ describe('Tier gates', () => {
     const home = b(2, 'home', 2, 0, { tier: 4 });
     const state = city([home, b(1, 'school', 0), b(3, 'middleSchool', 0, 4)]);
     const lost = advance({ ...state, buildings: state.buildings.filter(x => x.type === 'home') }, 2 * H).state;
-    expect(lost.buildings.find(x => x.id === 2)?.tier).toBe(4);
+    expect(lost.buildings.find(x => x.id === 2)?.tier).toBe(8);
     expect(homeBenefits(lost, lost.buildings[0]!).wellbeing).toBe(-10);
   });
 });
