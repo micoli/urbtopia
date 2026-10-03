@@ -58,9 +58,21 @@ button {
   flex-direction: column;
   gap: 8px;
   padding: 8px 4px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: none;
   background: var(--panel-bg);
   color: var(--panel-fg);
   z-index: 10;
+}
+
+.dock::-webkit-scrollbar {
+  display: none;
+}
+
+.dock > * {
+  flex-shrink: 0;
 }
 
 .dock-stat {
@@ -115,9 +127,15 @@ button {
   gap: 6px;
   padding: 8px;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   background: var(--panel-bg);
   color: var(--panel-fg);
   z-index: 9;
+}
+
+.flyout > * {
+  flex-shrink: 0;
 }
 
 .flyout-item {
@@ -146,6 +164,9 @@ button {
   bottom: 0;
   width: min(240px, 60vw);
   padding: 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   background: var(--panel-bg);
   color: var(--panel-fg);
   z-index: 9;
@@ -370,6 +391,8 @@ button {
   color: var(--panel-fg);
   z-index: 9;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .market-list {
