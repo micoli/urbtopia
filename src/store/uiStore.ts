@@ -2,6 +2,7 @@ import { createStore } from 'zustand/vanilla';
 import { footprintTiles, isStorageEmpty, type Coord, type Rotation } from '../core';
 import { confirmTool, evaluateTool, type Evaluation, type Tool } from '../tools/tools';
 import { gameStore } from './gameStore';
+import { sceneHandle } from './sceneHandle';
 import { toastStore } from './toastStore';
 
 export type Flyout = 'build' | 'roads' | null;
@@ -107,9 +108,12 @@ export const uiStore = createStore<UiStore>((set, get) => {
     cancelSale: () => set({ pendingSaleId: null }),
     moveSelected: () => {
       const id = get().selectedBuildingId;
-      if (id === null) return;
+      const building = gameStore.getState().state.buildings.find((candidate) => candidate.id === id);
+      if (!building) return;
+      const tile = { x: building.x, y: building.y };
       set({ selectedBuildingId: null });
-      reevaluate({ tool: { kind: 'move', buildingId: id }, rotation: null });
+      sceneHandle.current?.focusOnTile(tile);
+      reevaluate({ tool: { kind: 'move', buildingId: building.id }, rotation: building.rotation, centerTile: tile });
     },
   };
 });
