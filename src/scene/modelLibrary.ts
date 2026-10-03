@@ -22,6 +22,8 @@ export class ModelLibrary {
       if (pending) return pending.then(() => undefined);
       const loading = this.textureLoader.loadAsync(`${import.meta.env.BASE_URL}models/suburban/Textures/variation-${variant}.png`).then(texture => {
         texture.colorSpace = THREE.SRGBColorSpace;
+        texture.flipY = false;
+        texture.needsUpdate = true;
         this.variants.set(variant, texture);
         this.pendingVariants.delete(variant);
         return texture;
