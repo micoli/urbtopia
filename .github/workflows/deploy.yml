@@ -27,7 +27,9 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
+      - run: npx playwright install --with-deps chromium
       - run: npm run build
+      - run: npm run test:codex
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

@@ -1,0 +1,102 @@
+import { BUILDING_SPECS, ECOLOGY, ECOLOGY_UNLOCKS, maxTierOf, type BuildingType } from '../core';
+import { MESSAGES, type MessageKey } from '../i18n/messages';
+import { FR } from '../i18n/fr';
+import { BUILDING_SECTIONS, type BuildSection } from './buildingSections';
+import { ROAD_CONSTRUCTIONS, type RoadConstructionId } from './construction';
+
+export type CodexId = BuildingType | 'solarHome' | RoadConstructionId;
+export type CodexSection = BuildSection | 'codex.roads';
+
+const DESCRIPTIONS = {
+  home: 'codex.description.home',
+  solarHome: 'codex.description.solarHome',
+  workshop: 'codex.description.workshop',
+  factory: 'codex.description.factory',
+  shop: 'codex.description.shop',
+  storehouse: 'codex.description.storehouse',
+  silo: 'codex.description.silo',
+  vault: 'codex.description.vault',
+  powerPlant: 'codex.description.powerPlant',
+  waterTower: 'codex.description.waterTower',
+  tree: 'codex.description.tree',
+  park: 'codex.description.park',
+  solar: 'codex.description.solar',
+  battery: 'codex.description.battery',
+  backup: 'codex.description.backup',
+  busStop: 'codex.description.busStop',
+  brtStation: 'codex.description.brtStation',
+  railStation: 'codex.description.railStation',
+  road: 'codex.description.road',
+  crossing: 'codex.description.crossing',
+  roundabout: 'codex.description.roundabout',
+  brt: 'codex.description.brt',
+  rail: 'codex.description.rail',
+} as const satisfies Record<CodexId, MessageKey>;
+
+export interface CodexEntry {
+  id: CodexId;
+  section: CodexSection;
+  name: MessageKey;
+  description: MessageKey;
+  unlockCitizens: number;
+  levels: readonly number[];
+}
+
+export interface CodexManifest {
+  fingerprint: string;
+  images: Record<string, string>;
+}
+
+const levelsOf = (type: BuildingType) => Array.from({ length: maxTierOf(type) }, (_, i) => i + 1);
+
+export const CODEX_SECTIONS: readonly CodexSection[] = [...BUILDING_SECTIONS.map(section => section.title), 'codex.roads'];
+
+export const CODEX_ENTRIES: readonly CodexEntry[] = [
+  ...BUILDING_SECTIONS.flatMap(section => {
+    const entries: CodexEntry[] = section.types.map(type => ({
+      id: type, section: section.title, name: `building.${type}`, description: DESCRIPTIONS[type],
+      unlockCitizens: ECOLOGY_UNLOCKS[type] ?? 0, levels: levelsOf(type),
+    }));
+    if (section.title === 'build.housing') entries.push({
+      id: 'solarHome', section: section.title, name: 'eco.solarHome', description: DESCRIPTIONS.solarHome,
+      unlockCitizens: ECOLOGY.solarUnlockCitizens, levels: levelsOf('home'),
+    });
+    return entries;
+  }),
+  ...ROAD_CONSTRUCTIONS.map(item => ({
+    id: item.id, section: 'codex.roads' as const, name: item.name, description: DESCRIPTIONS[item.id],
+    unlockCitizens: item.unlockCitizens, levels: [1],
+  })),
+];
+
+export function codexImageKey(id: CodexId, level: number): string {
+  return `${id}:${level}`;
+}
+
+export function validateCodex(entries: readonly CodexEntry[] = CODEX_ENTRIES): void {
+  const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...ROAD_CONSTRUCTIONS.map(item => item.id)];
+  if (entries.length !== expected.length || expected.some(id => entries.filter(entry => entry.id === id).length !== 1)) {
+    throw new Error('Every constructible must have exactly one codex entry');
+  }
+  for (const entry of entries) {
+    if (!CODEX_SECTIONS.includes(entry.section)) throw new Error(`Missing codex section: ${entry.id}`);
+    for (const key of [entry.name, entry.section, entry.description]) {
+      if (!MESSAGES[key]?.trim() || !FR[key]?.trim()) throw new Error(`Missing codex translation: ${key}`);
+    }
+    const buildingType = entry.id === 'solarHome' ? 'home' : entry.id;
+    const levels = buildingType in BUILDING_SPECS ? levelsOf(buildingType as BuildingType) : [1];
+    if (JSON.stringify(entry.levels) !== JSON.stringify(levels)) throw new Error(`Missing codex levels: ${entry.id}`);
+    if (!Number.isInteger(entry.unlockCitizens) || entry.unlockCitizens < 0) throw new Error(`Invalid codex unlock: ${entry.id}`);
+  }
+}
+
+export function validateCodexManifest(manifest: CodexManifest): void {
+  validateCodex();
+  if (!manifest.fingerprint || !manifest.images) throw new Error('Invalid codex manifest');
+  for (const entry of CODEX_ENTRIES) {
+    for (const level of entry.levels) {
+      const image = manifest.images[codexImageKey(entry.id, level)];
+      if (!image || !/^[a-zA-Z0-9-]+\.png$/.test(image)) throw new Error(`Missing codex image: ${entry.id}, level ${level}`);
+    }
+  }
+}

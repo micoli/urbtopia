@@ -12,6 +12,7 @@ The vocabulary used in code and docs (Urbs, Workshop, Factory, Parcel, Catch-upâ
 - Real-time progress, caught up in one pass when you come back (up to 48 hours).
 - Installable web app (Android and others) that updates itself and works offline.
 - French and English, three interchangeable HUD layouts, touch first (pan, pinch, two-finger rotation).
+- Codex of every constructible, grouped by section, with descriptions, population unlocks and a rendered gallery of every Tier.
 - Local save with automatic backup, JSON export and import, recovery screen, single active tab.
 
 ## Getting started
@@ -20,7 +21,8 @@ Requires Node.js 22.18 or newer (the scripts run TypeScript directly) and npm.
 
 ```sh
 npm install
-npm run dev      # http://localhost:5173, extracts the 3D models first
+mise install npm:playwright  # installs the pinned CLI and Chromium
+npm run dev      # http://localhost:5173, prepares models and codex previews first
 ```
 
 | Command | What it does |
@@ -33,8 +35,12 @@ npm run dev      # http://localhost:5173, extracts the 3D models first
 | `npm run assets` | Extract the 3D models from the versioned archives into `public/models` |
 | `npm run assets:fetch` | Refresh the archives from kenney.nl (see [Assets](#assets)) |
 | `npm run assets:prototypes` | Copy the models the prototypes load |
+| `npm run codex:generate` | Generate static codex images; append `-- --force` to regenerate |
+| `npm run test:codex` | Browser checks against a production build, including mobile and offline access |
 
-`dev` and `build` run `npm run assets` first. It works offline: it only reads the archives committed in `assets/kenney/`.
+`dev` and `build` prepare models and codex previews first. Models come from the archives committed in `assets/kenney/`; the preview generator uses local Chromium and reuses unchanged output. After installing dependencies and Chromium, these steps work offline.
+
+The codex catalog is checked against every building in `BUILDING_SPECS` and every network tool in the shared construction registry. Adding a constructible requires a section, French and English descriptions, and a preview for every Tier. Missing entries, translations, models or generated images block CI and deployment. CI checks image availability only, without checking pixels, dimensions or visual accuracy. Generated images and their manifest live in `public/codex/`, are excluded from Git, and are included in the offline cache.
 
 ## Deployment
 

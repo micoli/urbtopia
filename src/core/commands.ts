@@ -255,7 +255,7 @@ function demolishRoad(state: GameState, tiles: Coord[]): CommandOutcome {
 }
 
 function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, requestedRotation?: Rotation, solar = false): CommandOutcome {
-  if (citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < 15)) return fail('error.itemLocked');
+  if (citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < ECOLOGY.solarUnlockCitizens)) return fail('error.itemLocked');
   if (solar && type !== 'home') return fail('error.cannotProduce');
   const extraCost = solar ? ECOLOGY.solarCost : 0;
   const rotation = requestedRotation ?? autoRotation(state, type, x, y);
@@ -524,7 +524,7 @@ function equipHome(state: GameState, id: number, equipment: 'solar' | 'insulatio
   if (!home || home.type !== 'home') return fail('error.unknownBuilding');
   const field = equipment === 'solar' ? 'solar' : 'insulated';
   if (home[field]) return fail('error.alreadyEquipped');
-  if (citizenCount(state) < (equipment === 'solar' ? 15 : 6)) return fail('error.itemLocked');
+  if (citizenCount(state) < (equipment === 'solar' ? ECOLOGY.solarUnlockCitizens : 6)) return fail('error.itemLocked');
   const cost = (equipment === 'solar' ? ECOLOGY.solarCost : ECOLOGY.insulationCost) * home.tier;
   if (state.urbs < cost) return fail('error.notEnoughUrbs');
   return { state: { ...state, urbs: state.urbs - cost, buildings: state.buildings.map(b => b.id === id ? { ...b, [field]: true } : b) }, events: [] };

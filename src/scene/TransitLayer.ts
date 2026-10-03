@@ -97,7 +97,8 @@ export class TransitLayer {
       instanced.computeBoundingSphere();
       return instanced;
     });
-    this.clear(this.tracks); this.tracks.add(...instances);
+    this.clear(this.tracks);
+    if (instances.length) this.tracks.add(...instances);
     const stations = new THREE.Group(); stations.name = 'stations'; this.tracks.add(stations);
   }
 

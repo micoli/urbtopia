@@ -31,7 +31,7 @@ export function HomePanel({ building }: HomePanelProps) {
       {(['insulation', 'solar'] as const).map(equipment => {
         const installed = equipment === 'solar' ? building.solar : building.insulated;
         const cost = (equipment === 'solar' ? ECOLOGY.solarCost : ECOLOGY.insulationCost) * building.tier;
-        return <button type="button" key={equipment} disabled={installed || state.urbs < cost || totalCitizens(state) < (equipment === 'solar' ? 15 : 6)} onClick={() => gameStore.getState().send({ type: 'EquipHome', buildingId: building.id, equipment })}>
+        return <button type="button" key={equipment} disabled={installed || state.urbs < cost || totalCitizens(state) < (equipment === 'solar' ? ECOLOGY.solarUnlockCitizens : 6)} onClick={() => gameStore.getState().send({ type: 'EquipHome', buildingId: building.id, equipment })}>
           {t(equipment === 'solar' ? 'eco.retrofit' : 'eco.insulate')} · {installed ? t('eco.installed') : `${cost} Urbs`}
         </button>;
       })}
