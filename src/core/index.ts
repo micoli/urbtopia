@@ -31,7 +31,7 @@ export { canRemoveStorage, hasStorage, isStorageEmpty, isStorageType, storageCap
 export { createBuilding } from './buildingSpecs';
 export { citizensOf, totalCitizens, utilityCapacity, utilityDemand } from './city';
 export type { UtilityTotals } from './city';
-export { HOME_FOOTPRINTS, HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, TAX, UTILITY_CAPACITY } from './economy';
+export { HOME_FOOTPRINTS, HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, TAX, UTILITY_CAPACITY, COAL_CAPACITY } from './economy';
 export { isWorking, taxDue, workProgress } from './production';
 export { maxTierOf, productionTierOf, upgradeCostOf } from './tiers';
 export type { UpgradeCost } from './tiers';
@@ -42,6 +42,7 @@ export type { TutorialStep } from './tutorial';
 
 export { ECOLOGY, ECOLOGY_UNLOCKS, homePower, economicPower, greenBenefits, cityGreenBenefits } from './ecology';
 export { energyStats, productionFactors } from './energy';
+export { homeBenefits, cityBenefits } from './wellbeing';
 export { transportStats, routeForLine } from './transport';
 export type { BusLine } from './state';
 

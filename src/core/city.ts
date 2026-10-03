@@ -20,7 +20,7 @@ export function utilityCapacity(state: GameState): UtilityTotals {
   const total = (type: 'powerPlant' | 'waterTower') =>
     state.buildings.reduce((sum, building) => sum + (building.type === type ? (UTILITY_CAPACITY[type][building.tier - 1] ?? 0) : 0), 0);
   const energy = energyStats(state);
-  return { power: energy.solar + energy.wind + energy.backup, water: total('waterTower') };
+  return { power: energy.solar + energy.wind + energy.coal + energy.backup, water: total('waterTower') };
 }
 
 export function utilityDemand(state: GameState): UtilityTotals {

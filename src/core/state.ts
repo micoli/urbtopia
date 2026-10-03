@@ -4,7 +4,7 @@ import type { GoodId, ItemId, MaterialId } from './items';
 import type { RoadKind } from './roads';
 import type { TutorialStep } from './tutorial';
 
-export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'waterTower' | 'silo' | 'vault' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop' | 'brtStation' | 'railStation';
+export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'coalPlant' | 'waterTower' | 'silo' | 'vault' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop' | 'brtStation' | 'railStation';
 
 export type Rotation = 0 | 1 | 2 | 3;
 
@@ -42,6 +42,7 @@ export interface Building extends Coord {
   insulated?: boolean;
   solar?: boolean;
   storedEnergy?: number;
+  coalEnabled?: boolean;
 }
 
 export interface Storage {

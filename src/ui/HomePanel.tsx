@@ -1,4 +1,4 @@
-import { ECOLOGY, homePower, greenBenefits, totalCitizens, HOME_TIERS, citizensOf, taxDue, type Building } from '../core';
+import { ECOLOGY, homePower, homeBenefits, totalCitizens, HOME_TIERS, citizensOf, taxDue, type Building } from '../core';
 import { t } from '../i18n/t';
 import { gameStore } from '../store/gameStore';
 import { useGame } from './hooks';
@@ -10,7 +10,7 @@ interface HomePanelProps {
 
 export function HomePanel({ building }: HomePanelProps) {
   const state = useGame(s => s.state);
-  const benefits = greenBenefits(state, building);
+  const benefits = homeBenefits(state, building);
   const spec = HOME_TIERS[building.tier - 1];
   const due = taxDue(building);
   return (
@@ -28,6 +28,7 @@ export function HomePanel({ building }: HomePanelProps) {
         {t('home.tax')}: {due}
       </p>
       <p>{t('eco.saved')}: {((spec?.power ?? 0) - homePower(building)).toFixed(1)} · {t('eco.wellbeing')}: {benefits.wellbeing.toFixed(1)}</p>
+      {benefits.pollutionPenalty > 0 && <p>{t('eco.coalPenalty')}: −{benefits.pollutionPenalty.toFixed(1)} · {t('eco.coalPollutionHelp')}</p>}
       {(['insulation', 'solar'] as const).map(equipment => {
         const installed = equipment === 'solar' ? building.solar : building.insulated;
         const cost = (equipment === 'solar' ? ECOLOGY.solarCost : ECOLOGY.insulationCost) * building.tier;

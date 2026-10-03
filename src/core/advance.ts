@@ -1,4 +1,5 @@
-import { ECOLOGY, homePower, greenBenefits } from './ecology';
+import { ECOLOGY, homePower } from './ecology';
+import { homeBenefits } from './wellbeing';
 import { energyStats } from './energy';
 import { transportStats } from './transport';
 import { GAME_CONFIG } from './config';
@@ -69,7 +70,7 @@ function replay(state: GameState, until: number): AdvanceResult {
       continue;
     }
     const homeRatios = new Map(current.buildings.filter(b => b.type === 'home').map(b => [b.id,
-    (adapting ? 1 : homePower(b) > 0 ? (energy.supplied.get(b.id) ?? 0) / homePower(b) : 1) * (1 + greenBenefits(current, b).wellbeing / 1000)]));
+    (adapting ? 1 : homePower(b) > 0 ? (energy.supplied.get(b.id) ?? 0) / homePower(b) : 1) * (1 + homeBenefits(current, b, energy.coalRates).wellbeing / 1000)]));
     const produced = advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios);
     events.push(...produced.events);
     current = {

@@ -2,7 +2,7 @@ import { GAME_CONFIG, GOODS, MATERIALS, TUTORIAL_STEPS, type GameState, type Tut
 
 type Json = Record<string, unknown>;
 
-const BUILDING_TYPES = ['workshop', 'factory', 'shop', 'storehouse', 'home', 'powerPlant', 'waterTower', 'silo', 'vault', 'tree', 'park', 'solar', 'battery', 'backup', 'busStop', 'brtStation', 'railStation'];
+const BUILDING_TYPES = ['workshop', 'factory', 'shop', 'storehouse', 'home', 'powerPlant', 'coalPlant', 'waterTower', 'silo', 'vault', 'tree', 'park', 'solar', 'battery', 'backup', 'busStop', 'brtStation', 'railStation'];
 const ROAD_KINDS = ['road', 'crossing'];
 
 const isRecord = (value: unknown): value is Json => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -54,10 +54,11 @@ function isBuilding(value: unknown): boolean {
     isInt(value.slotCount, 0, 8) &&
     isArrayOf(value.queue, isQueueEntry) &&
     isArrayOf(value.stacks, isStack) &&
-    isInt(value.tier, 1, 8) &&
+    isInt(value.tier, 1, value.type === 'coalPlant' ? 4 : 8) &&
     isNonNegative(value.taxCitizenMs) &&
     (value.insulated === undefined || (value.type === 'home' && typeof value.insulated === 'boolean')) &&
     (value.solar === undefined || (value.type === 'home' && typeof value.solar === 'boolean')) &&
+    (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&
     (value.storedEnergy === undefined || (value.type === 'battery' && isNonNegative(value.storedEnergy) && value.storedEnergy <= 24))
   );
 }

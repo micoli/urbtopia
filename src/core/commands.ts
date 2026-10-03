@@ -41,6 +41,7 @@ export type Command =
   | { readonly type: 'DemolishRoadPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation; readonly solar?: boolean }
   | { readonly type: 'EquipHome'; readonly buildingId: number; readonly equipment: 'solar' | 'insulation' }
+  | { readonly type: 'SetCoalEnabled'; readonly buildingId: number; readonly enabled: boolean }
   | { readonly type: 'SetBusLine'; readonly id?: number; readonly stops: number[] }
   | { readonly type: 'DeleteBusLine'; readonly id: number }
   | { readonly type: 'DismissEcology' }
@@ -134,6 +135,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return placeBuilding(state, command.buildingType, command.x, command.y, command.rotation, command.solar);
     case 'EquipHome':
       return equipHome(state, command.buildingId, command.equipment);
+    case 'SetCoalEnabled':
+      return setCoalEnabled(state, command.buildingId, command.enabled);
     case 'SetBusLine':
       return setBusLine(state, command.id, command.stops);
     case 'DeleteBusLine':
@@ -269,6 +272,13 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
     state: { ...state, urbs: state.urbs - placementCost(type) - extraCost, nextId: state.nextId + 1, buildings: [...state.buildings, building] },
     events: [{ type: 'BuildingPlaced', id: building.id }],
   };
+}
+
+function setCoalEnabled(state: GameState, id: number, enabled: boolean): CommandOutcome {
+  const building = state.buildings.find(b => b.id === id);
+  if (!building) return fail('error.unknownBuilding');
+  if (building.type !== 'coalPlant') return fail('error.cannotProduce');
+  return { state: { ...state, buildings: state.buildings.map(b => b === building ? { ...b, coalEnabled: enabled } : b) }, events: [] };
 }
 
 function sellBuilding(state: GameState, id: number): CommandOutcome {

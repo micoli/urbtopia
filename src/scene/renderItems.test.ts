@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, newGame } from '../core';
-import { railItems, chunkKeyOf, renderItemsOf } from './renderItems';
+import { MODEL_KEYS, modelOf, railItems, chunkKeyOf, renderItemsOf } from './renderItems';
 
 describe('renderItemsOf', () => {
   const state = newGame({ seed: 'amber-fox-4821', now: 0 });
@@ -17,6 +17,15 @@ describe('renderItemsOf', () => {
 });
 
 describe('renderItemsOf Tier models', () => {
+  it('renders the four coal chimney evolutions and preloads every model', () => {
+    const models = ['chimney-basic', 'chimney-small', 'chimney-medium', 'chimney-large'].map(model => `industrial/${model}`);
+    for (const [i, model] of models.entries()) {
+      const building = { ...createBuilding(9, 'coalPlant', 10, 20, 1), tier: i + 1 };
+      expect(modelOf('coalPlant', i + 1)).toBe(model);
+      expect(MODEL_KEYS).toContain(model);
+      expect(renderItemsOf({ ...newGame({ seed: 'coal-models', now: 0 }), roads: [], buildings: [building] })).toEqual([{ model, x: 10.5, z: 20.5, rotation: 1 }]);
+    }
+  });
   const modelAt = (type: 'factory' | 'storehouse' | 'silo' | 'vault', tier: number) => {
     const building = { ...createBuilding(9, type, 10, 20, 0), tier };
     return renderItemsOf({ ...newGame({ seed: 'amber-fox-4821', now: 0 }), roads: [], buildings: [building] })[0]?.model;

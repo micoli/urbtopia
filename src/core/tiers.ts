@@ -1,5 +1,6 @@
 import {
   HOME_UPGRADE_COSTS,
+  COAL_UPGRADE_COSTS,
   PRODUCTION_TIERS,
   PRODUCTION_UPGRADE_COSTS,
   STORAGE_TIERS,
@@ -22,6 +23,7 @@ const UPGRADE_COSTS: Partial<Record<BuildingType, Record<number, UpgradeCost>>> 
   silo: storageCosts('silo'),
   vault: storageCosts('vault'),
   powerPlant: UTILITY_UPGRADE_COSTS.powerPlant,
+  coalPlant: COAL_UPGRADE_COSTS,
   waterTower: UTILITY_UPGRADE_COSTS.waterTower,
 };
 

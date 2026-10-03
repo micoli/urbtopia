@@ -69,8 +69,12 @@ The set of Vehicles on the roads, whose size follows Citizens who do not use pub
 _Avoid_: Flow, cars
 
 **Power plant**:
-A wind-powered building that supplies variable renewable energy to the city. Backup generation is a separate polluting option.
+A building that supplies power to the city, using wind or coal. Backup generation is a separate service role.
 _Avoid_: Generator, energy station
+
+**Coal Power plant**:
+A polluting Power plant that supplies stable power from coal and reduces nearby Citizen well-being. It allows the player to power an entire city with coal.
+_Avoid_: Wind turbine, Factory
 
 **Water tower**:
 A building that supplies water capacity to the city.

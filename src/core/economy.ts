@@ -70,6 +70,14 @@ export const UTILITY_CAPACITY: Record<'powerPlant' | 'waterTower', readonly numb
   waterTower: [12, 24, 40],
 };
 
+export const COAL_CAPACITY: readonly number[] = [12, 24, 40, 64];
+
+export const COAL_UPGRADE_COSTS: Record<number, UpgradeCostSpec> = {
+  2: { urbs: 300, goods: {} },
+  3: { urbs: 900, goods: {} },
+  4: { urbs: 1800, goods: {} },
+};
+
 export const UTILITY_UPGRADE_COSTS: Record<'powerPlant' | 'waterTower', Record<number, UpgradeCostSpec>> = {
   powerPlant: { 2: { urbs: 500, goods: { bricks: 3 } }, 3: { urbs: 1500, goods: { tools: 3 } } },
   waterTower: { 2: { urbs: 400, goods: { bricks: 3 } }, 3: { urbs: 1200, goods: { tools: 3 } } },

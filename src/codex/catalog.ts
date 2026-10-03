@@ -17,6 +17,7 @@ const DESCRIPTIONS = {
   silo: 'codex.description.silo',
   vault: 'codex.description.vault',
   powerPlant: 'codex.description.powerPlant',
+  coalPlant: 'codex.description.coalPlant',
   waterTower: 'codex.description.waterTower',
   tree: 'codex.description.tree',
   park: 'codex.description.park',

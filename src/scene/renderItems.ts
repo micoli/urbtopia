@@ -19,6 +19,7 @@ export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
   storehouse: 'industrial/building-a',
   home: 'suburban/building-type-k',
   powerPlant: 'industrial/windmill',
+  coalPlant: 'industrial/chimney-basic',
   waterTower: 'industrial/water-tower',
   silo: 'industrial/building-p',
   vault: 'industrial/building-s',
@@ -33,6 +34,8 @@ export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
 };
 
 const FACTORY_MODELS = ['industrial/building-b', 'industrial/building-e', 'industrial/building-f', 'industrial/building-l', 'industrial/building-c'];
+
+const COAL_MODELS = ['industrial/chimney-basic', 'industrial/chimney-small', 'industrial/chimney-medium', 'industrial/chimney-large'];
 
 const STOREHOUSE_MODELS = ['industrial/building-a', 'industrial/building-a', 'industrial/building-a', 'industrial/building-q', 'industrial/building-q', 'industrial/building-q'];
 
@@ -57,11 +60,12 @@ const RAIL_MODELS = ['trains/railroad-straight', 'trains/railroad-corner-small']
 
 const ROAD_MODELS = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout'].map((piece) => `roads/road-${piece}`);
 
-export const MODEL_KEYS: readonly string[] = [...new Set([...Object.values(MODEL_BY_BUILDING), ...FACTORY_MODELS, ...STOREHOUSE_MODELS, ...HOME_MODELS, ...SOLAR_HOME_MODELS, ROOF_PANEL_MODEL, SOLAR_PANEL_MODEL, ...ROAD_MODELS, ...RAIL_MODELS, ...TRAIN_MODELS, ...VEHICLE_MODELS, BUS_MODEL])];
+export const MODEL_KEYS: readonly string[] = [...new Set([...Object.values(MODEL_BY_BUILDING), ...FACTORY_MODELS, ...COAL_MODELS, ...STOREHOUSE_MODELS, ...HOME_MODELS, ...SOLAR_HOME_MODELS, ROOF_PANEL_MODEL, SOLAR_PANEL_MODEL, ...ROAD_MODELS, ...RAIL_MODELS, ...TRAIN_MODELS, ...VEHICLE_MODELS, BUS_MODEL])];
 
 export function modelOf(type: BuildingType, tier: number): string {
   if (type === 'home') return HOME_MODELS[tier - 1] ?? MODEL_BY_BUILDING.home;
   if (type === 'factory') return FACTORY_MODELS[tier - 1] ?? MODEL_BY_BUILDING.factory;
+  if (type === 'coalPlant') return COAL_MODELS[tier - 1] ?? MODEL_BY_BUILDING.coalPlant;
   if (type === 'storehouse') return STOREHOUSE_MODELS[tier - 1] ?? MODEL_BY_BUILDING.storehouse;
   return MODEL_BY_BUILDING[type];
 }

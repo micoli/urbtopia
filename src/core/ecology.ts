@@ -6,6 +6,7 @@ export const ECOLOGY = {
   hourMs: 3_600_000, solarCost: 180, solarUnlockCitizens: 15, insulationCost: 80, sharingRadius: 6,
   batteryCapacity: 24, batteryRate: 12, batteryRadius: 8, backupCapacity: 24,
   backupCost: 0.5, busCost: 2, stopRadius: 6, lineCapacity: 120,
+  coalCost: 0.05, coalEmissions: 2, coalPollutionRadius: 6, coalWellbeingPenalty: 10, coalWellbeingCap: 20,
 };
 
 export const ECOLOGY_UNLOCKS: Partial<Record<BuildingType, number>> = {

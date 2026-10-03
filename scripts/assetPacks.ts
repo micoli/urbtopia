@@ -42,7 +42,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'industrial',
     url: 'https://kenney.nl/media/pages/assets/city-kit-industrial/0ec35b139d-1788171848/kenney_city-kit-industrial_2.0.zip',
     archive: 'kenney_city-kit-industrial_2.0.zip',
-    files: ['building-a', 'building-b', 'building-c', 'building-e', 'building-f', 'building-h', 'building-l', 'building-p', 'building-q', 'building-s', 'water-tower', 'windmill', 'building-d', 'shipping-container-a', 'solar-panel-flat', 'solar-panel-landscape', 'solar-panel-landscape-group'],
+    files: ['building-a', 'building-b', 'building-c', 'building-e', 'building-f', 'building-h', 'building-l', 'building-p', 'building-q', 'building-s', 'water-tower', 'windmill', 'chimney-basic', 'chimney-small', 'chimney-medium', 'chimney-large', 'building-d', 'shipping-container-a', 'solar-panel-flat', 'solar-panel-landscape', 'solar-panel-landscape-group'],
   },
   {
     name: 'cars',
