@@ -43,11 +43,24 @@ export function MaximalStats() {
     ['eco.objectiveInsulate', homes.some(b => b.insulated)], ['eco.objectiveGreen', green.covered > 0],
     ['eco.objectiveShare', energy.transfers.length > 0], ['eco.objectiveBattery', energy.stored > 0], ['eco.objectiveBus', transport.riders > 0],
   ];
-  return <div className="dialog-backdrop" onClick={event => { if (event.target === event.currentTarget) toggle(); }}>
+  const citizens = totalCitizens(state);
+  const navigation: [string, string, MessageKey][] = [
+    ['production', '▦', 'eco.production'], ['energy', '⚡', 'eco.energy'],
+    ['nature', '♧', 'building.park'], ['transport', '↔', 'eco.transport'],
+  ];
+  return <div className="dialog-backdrop city-management-backdrop" onClick={event => { if (event.target === event.currentTarget) toggle(); }}>
     <div className="eco-dashboard" ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="eco-heading">
-      <header><h2 id="eco-heading">{t('eco.title')} · 👥 {totalCitizens(state)}</h2><button type="button" aria-label={t('panel.close')} onClick={toggle}>✕</button></header>
-      <p>{t('eco.units')}</p>
-      <section><h3>{t('eco.production')}</h3><div className="eco-counts">{countTypes.map(type => <span key={type}>{t(`building.${type}`)}: {state.buildings.filter(b => b.type === type).length}{totalCitizens(state) < (ECOLOGY_UNLOCKS[type] ?? 0) && <small> · {t('eco.locked')}: {ECOLOGY_UNLOCKS[type]}</small>}</span>)}</div>
+      <header className="eco-header"><img src={`${import.meta.env.BASE_URL}assets/icons/town-management.png`} alt="" /><h2 id="eco-heading">{t('eco.title')}</h2><button type="button" aria-label={t('panel.close')} onClick={toggle}>✕</button></header>
+      <div className="eco-overview">
+        <div><span aria-hidden="true">👥</span><div><span>{t('stat.citizens')}</span><strong>{citizens}</strong></div></div>
+        <div data-warning={energy.unmet > 0}><span aria-hidden="true">⚡</span><div><span>{t('eco.energy')}</span><strong>{Math.max(0, energy.demand - energy.unmet).toFixed(1)} <small>/ {energy.demand.toFixed(1)}</small></strong></div></div>
+        <div><span aria-hidden="true">♧</span><div><span>{t('eco.wellbeing')}</span><strong>{green.wellbeing.toFixed(0)} <small>/ 100</small></strong></div></div>
+        <button type="button" aria-controls="eco-transport" onClick={() => panel.current?.querySelector('#eco-transport')?.scrollIntoView({ block: 'start', behavior: 'smooth' })}><span aria-hidden="true">↔</span><span className="eco-overview-value"><span>{t('eco.riders')}</span><strong>{transport.riders.toFixed(1)}</strong></span></button>
+      </div>
+      <nav className="eco-navigation" aria-label={t('eco.title')}>{navigation.map(([id, icon, label]) => <button type="button" key={id} onClick={() => panel.current?.querySelector(`#eco-${id}`)?.scrollIntoView({ block: 'start', behavior: 'smooth' })}><span aria-hidden="true">{icon}</span>{t(label)}</button>)}</nav>
+      <p className="eco-units">{t('eco.units')}</p>
+      <div className="eco-sections">
+      <section id="eco-production" className="eco-wide"><h3><span aria-hidden="true">▦</span> {t('eco.production')}</h3><div className="eco-counts">{countTypes.map(type => <span key={type} data-locked={citizens < (ECOLOGY_UNLOCKS[type] ?? 0)}><span>{t(`building.${type}`)}</span><strong>{state.buildings.filter(b => b.type === type).length}</strong>{citizens < (ECOLOGY_UNLOCKS[type] ?? 0) && <small>◇ {t('eco.locked')}: {ECOLOGY_UNLOCKS[type]}</small>}</span>)}</div>
         <p>{t('eco.productionHelp')}</p>
         <table><thead><tr><th>{t('eco.production')}</th><th>{t('eco.nominal')}</th><th>{t('eco.effective')}</th></tr></thead><tbody>
           {(['workshop', 'factory'] as const).flatMap(type => producibleItems(type).map(item => {
@@ -61,8 +74,8 @@ export function MaximalStats() {
           }))}</tbody></table>
         <p>{t('eco.slots')}: {state.buildings.reduce((n, b) => n + b.queue.length, 0)} / {state.buildings.reduce((n, b) => n + b.slotCount, 0)}</p>
       </section>
-      <section>
-        <h3>{t('eco.energy')}</h3>
+      <section id="eco-energy" className="eco-wide">
+        <h3><span aria-hidden="true">⚡</span> {t('eco.energy')}</h3>
         <dl>
             {rows.map(([key, value]) => <div key={key}><dt>{t(key)}</dt><dd>{typeof value === 'number' ? value.toFixed(1) : value}</dd></div>)}
         </dl>
@@ -76,11 +89,12 @@ export function MaximalStats() {
         <h3>{t('stat.water')}</h3>
         <p>{utilityDemand(state).water} / {utilityCapacity(state).water}</p>
       </section>
-      <section><h3>{t('building.park')}</h3><dl>{([['eco.cooling', green.cooling], ['eco.biodiversity', green.biodiversity], ['eco.wellbeing', green.wellbeing], ['eco.greenCoverage', green.covered]] as [MessageKey, number][]).map(([key, value]) => <div key={key}><dt>{t(key)}</dt><dd>{value.toFixed(1)}{key === 'eco.greenCoverage' ? '' : ' / 100'}</dd></div>)}</dl><p>{t('eco.greenHelp')}</p>{green.covered < totalCitizens(state) && <p>{t('eco.adviceGreen')}</p>}</section>
+      <section id="eco-nature"><h3><span aria-hidden="true">♧</span> {t('building.park')}</h3><dl>{([['eco.cooling', green.cooling], ['eco.biodiversity', green.biodiversity], ['eco.wellbeing', green.wellbeing], ['eco.greenCoverage', green.covered]] as [MessageKey, number][]).map(([key, value]) => <div key={key}><dt>{t(key)}</dt><dd>{value.toFixed(1)}{key === 'eco.greenCoverage' ? '' : ' / 100'}</dd></div>)}</dl><p>{t('eco.greenHelp')}</p>{green.covered < totalCitizens(state) && <p>{t('eco.adviceGreen')}</p>}</section>
       <section><h3>{t('eco.wellbeing')}</h3><p>{t('eco.coalPenalty')}: −{green.pollutionPenalty.toFixed(1)}</p><p>{t('eco.coalPollutionHelp')}</p></section>
       <section><h3>{t('eco.emissions')}</h3><p>{t('eco.activity')}: {activityEmissions.toFixed(1)} · {t('eco.coal')}: {energy.coalEmissions.toFixed(1)} · {t('eco.backup')}: {energy.backupEmissions.toFixed(1)} · {t('eco.mobility')}: {transport.emissions.toFixed(1)}</p></section>
-      <section><h3>{t('eco.transport')}</h3><p>{t('eco.coverage')}: {transport.covered} · {t('eco.riders')}: {transport.riders.toFixed(1)} · {t('eco.cost')}: {transport.costPerHour}</p><p>{t('eco.transportHelp')}</p>{transport.lines.some(l => l.active && !l.riders) && <p>{t('eco.adviceBus')}</p>}<BusLinesPanel /><TransitPanel /></section>
-      {!state.ecologyDismissed && <section><h3>{t('eco.objectives')}</h3>{objectives.map(([key, done]) => <p key={key}>{done ? '✓' : '○'} {t(key)}</p>)}<button type="button" onClick={() => gameStore.getState().send({ type: 'DismissEcology' })}>{t('eco.dismiss')}</button></section>}
+      <section id="eco-transport" className="eco-wide"><h3><span aria-hidden="true">↔</span> {t('eco.transport')}</h3><p>{t('eco.coverage')}: {transport.covered} · {t('eco.riders')}: {transport.riders.toFixed(1)} · {t('eco.cost')}: {transport.costPerHour}</p><p>{t('eco.transportHelp')}</p>{transport.lines.some(l => l.active && !l.riders) && <p>{t('eco.adviceBus')}</p>}<BusLinesPanel /><TransitPanel /></section>
+      {!state.ecologyDismissed && <section className="eco-wide eco-objectives"><h3>{t('eco.objectives')}</h3>{objectives.map(([key, done]) => <p key={key} data-complete={done}>{done ? '✓' : '○'} {t(key)}</p>)}<button type="button" className="eco-primary" onClick={() => gameStore.getState().send({ type: 'DismissEcology' })}>{t('eco.dismiss')}</button></section>}
+      </div>
     </div>
   </div>;
 }

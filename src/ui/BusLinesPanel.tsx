@@ -31,6 +31,6 @@ export function BusLinesPanel() {
       </button>)}</div>
     <button type="button" onClick={() => setStops([])}>{t('eco.clearStops')}</button>
     {editing !== undefined && <button type="button" onClick={reset}>{t('pad.cancel')}</button>}
-    <button type="button" disabled={stops.length < 2} onClick={save}>{t('eco.saveLine')}</button>
+    <button type="button" className="eco-primary" disabled={stops.length < 2} onClick={save}>{t('eco.saveLine')}</button>
   </section>;
 }

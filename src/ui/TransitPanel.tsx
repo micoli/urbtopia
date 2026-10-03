@@ -4,6 +4,7 @@ import { t } from '../i18n/t';
 import { gameStore } from '../store/gameStore';
 import { useGame } from './hooks';
 import { TransitFleetPanel } from './TransitFleetPanel';
+import { NumberStepper } from './NumberStepper';
 
 export function TransitPanel() {
   const state = useGame(s => s.state);
@@ -36,11 +37,11 @@ export function TransitPanel() {
     <p>{t('eco.selectedStops')}: {stops.join(' → ') || '—'}</p>
     <div className="eco-stop-buttons">{state.buildings.filter(b => b.type === (mode === 'brt' ? 'brtStation' : 'railStation')).map(stop =>
       <button type="button" key={stop.id} disabled={stops.includes(stop.id)} onClick={() => setStops(current => [...current, stop.id])}>{t(`building.${stop.type}`)} #{stop.id} ({stop.x}, {stop.y})</button>)}</div>
-    <label>{t('transit.peak')} <input type="number" min={mode === 'brt' ? 5 : 1} max={mode === 'brt' ? 10 : 60} value={peak} onChange={e => setPeak(Number(e.target.value))} /></label>
-    <label>{t('transit.offPeak')} <input type="number" min={mode === 'brt' ? 10 : 1} max={mode === 'brt' ? 15 : 60} value={offPeak} onChange={e => setOffPeak(Number(e.target.value))} /></label>
+    <NumberStepper label={t('transit.peak')} min={mode === 'brt' ? 5 : 1} max={mode === 'brt' ? 10 : 60} value={peak} onChange={setPeak} />
+    <NumberStepper label={t('transit.offPeak')} min={mode === 'brt' ? 10 : 1} max={mode === 'brt' ? 15 : 60} value={offPeak} onChange={setOffPeak} />
     <button type="button" onClick={() => setStops([])}>{t('eco.clearStops')}</button>
     <button type="button" onClick={reset}>{t('pad.cancel')}</button>
-    <button type="button" disabled={stops.length < 2 || totalCitizens(state) < TRANSIT[mode].unlock} onClick={save}>{t('eco.saveLine')}</button>
+    <button type="button" className="eco-primary" disabled={stops.length < 2 || totalCitizens(state) < TRANSIT[mode].unlock} onClick={save}>{t('eco.saveLine')}</button>
     <TransitFleetPanel />
   </section>;
 }
