@@ -183,7 +183,7 @@ describe('Tier gates', () => {
     const home = b(2, 'home', 2, 0, { tier: 4 });
     const state = city([home, b(1, 'school', 0), b(3, 'middleSchool', 0, 4)]);
     const lost = advance({ ...state, buildings: state.buildings.filter(x => x.type === 'home') }, 2 * H).state;
-    expect(lost.buildings.find(x => x.id === 2)?.tier).toBe(8);
+    expect(lost.buildings.find(x => x.id === 2)?.tier).toBe(4);
     expect(homeBenefits(lost, lost.buildings[0]!).wellbeing).toBe(-10);
   });
 });
