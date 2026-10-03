@@ -6,6 +6,7 @@ import { confirmTool, evaluateTool, type Evaluation, type Tool } from '../tools/
 import { gameStore } from './gameStore';
 import { sceneHandle } from './sceneHandle';
 import { toastStore } from './toastStore';
+import type { CodexId } from '../codex/catalog';
 
 export type Flyout = 'build' | 'roads' | null;
 
@@ -21,6 +22,13 @@ export interface UiStore {
   toggleStats: () => void;
   marketOpen: boolean;
   menuOpen: boolean;
+  codexOpen: boolean;
+  codexFromMenu: boolean;
+  codexFromFlyout: Flyout;
+  codexEntryId: CodexId;
+  codexShowDetail: boolean;
+  openCodex: (entry?: CodexId) => void;
+  closeCodex: () => void;
   pendingSaleId: number | null;
   evaluation: Evaluation | null;
   openFlyout: (flyout: Flyout) => void;
@@ -70,6 +78,16 @@ export const uiStore = createStore<UiStore>((set, get) => {
     },
     marketOpen: false,
     menuOpen: false,
+    codexOpen: false,
+    codexFromMenu: false,
+    codexFromFlyout: null,
+    codexEntryId: 'home',
+    codexShowDetail: false,
+    openCodex: (entry) => {
+      get().cancelTool();
+      set({ codexOpen: true, codexFromMenu: get().menuOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined, menuOpen: false, marketOpen: false, statsOpen: false, flyout: null, selectedBuildingId: null });
+    },
+    closeCodex: () => set({ codexOpen: false, menuOpen: get().codexFromMenu, flyout: get().codexFromFlyout, codexFromMenu: false, codexFromFlyout: null }),
     pendingSaleId: null,
     evaluation: null,
     openFlyout: (flyout) => set({ flyout: get().flyout === flyout ? null : flyout }),

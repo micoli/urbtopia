@@ -3,7 +3,7 @@ import { t } from '../i18n/t';
 import { NavIcon } from './NavIcon';
 import { useNavActions } from './useNavActions';
 
-const RADIUS_PX = 160;
+const RADIUS_PX = 184;
 
 export function RadialMenu() {
   const [open, setOpen] = useState(false);
@@ -20,6 +20,7 @@ export function RadialMenu() {
             return (
               <button
                 key={action.id}
+                data-action={action.id}
                 type="button"
                 className="radial-item"
                 aria-label={action.label}

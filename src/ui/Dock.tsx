@@ -10,7 +10,7 @@ export function Dock() {
       <UrbsStat />
       <CityStats />
       {actions.map((action) => (
-        <button key={action.id} type="button" className="dock-button" aria-pressed={action.pressed} disabled={action.disabled} data-guided={action.guided} onClick={action.onClick}>
+        <button key={action.id} data-action={action.id} type="button" className="dock-button" aria-label={action.label} aria-pressed={action.pressed} disabled={action.disabled} data-guided={action.guided} onClick={action.onClick}>
           <NavIcon action={action} />
           <span>{action.label}</span>
         </button>

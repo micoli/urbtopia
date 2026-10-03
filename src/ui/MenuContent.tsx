@@ -14,6 +14,7 @@ import { useConfirmKeys } from './useConfirmKeys';
 
 export function MenuContent() {
   const toggle = useUi((store) => store.toggleMenu);
+  const openCodex = useUi((store) => store.openCodex);
   const [confirming, setConfirming] = useState(false);
   const skipTime = (hours: number) => {
     gameStore.getState().send({ type: 'SkipTime', hours });
@@ -49,6 +50,9 @@ export function MenuContent() {
         </button>
       </header>
       <div className="side-panel-actions">
+        <button type="button" data-action="codex" onClick={() => openCodex()}>
+          {t('codex.title')}
+        </button>
         {canInstall ? (
           <button type="button" className="dialog-primary" onClick={install}>
             {t('menu.install')}

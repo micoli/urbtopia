@@ -12,7 +12,7 @@ export function useUndoKeys(): void {
       const target = event.target;
       if (target instanceof HTMLElement && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return;
       const dialogs = dialogStore.getState();
-      if (dialogs.pendingImport || dialogs.recovery || dialogs.saveFailed || uiStore.getState().statsOpen || uiStore.getState().pendingSaleId !== null) return;
+      if (dialogs.pendingImport || dialogs.recovery || dialogs.saveFailed || uiStore.getState().statsOpen || uiStore.getState().codexOpen || uiStore.getState().pendingSaleId !== null) return;
       if (readOnlyStore.getState().readOnly || !gameStore.getState().deletionUndo) return;
       event.preventDefault();
       gameStore.getState().undo();

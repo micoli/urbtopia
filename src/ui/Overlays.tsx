@@ -1,4 +1,5 @@
 import { MaximalStats } from './MaximalStats';
+import { CodexDialog } from './CodexDialog';
 import { CameraButtons } from './CameraButtons';
 import { CollectBadges } from './CollectBadges';
 import { ConfirmPad } from './ConfirmPad';
@@ -18,6 +19,7 @@ export function Overlays() {
   return (
     <>
       <MaximalStats />
+      <CodexDialog />
       <WorkingIndicators />
       <CollectBadges />
       <ParcelTags />
