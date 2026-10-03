@@ -173,6 +173,7 @@ export const MESSAGES = {
   'prefs.layout.C': 'Side dock',
   'prefs.layout.A': 'Bars',
   'prefs.layout.B': 'Minimal',
+  'prefs.confirmSale': 'Confirm before selling a building',
   'prefs.traffic': 'Traffic',
   'lang.en': 'English',
   'lang.fr': 'Français',

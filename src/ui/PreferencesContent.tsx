@@ -9,7 +9,8 @@ export function PreferencesContent() {
   const language = useStore(prefsStore, (store) => store.language);
   const layout = useStore(prefsStore, (store) => store.layout);
   const traffic = useStore(prefsStore, (store) => store.traffic);
-  const { setLanguage, setLayout, setTraffic } = prefsStore.getState();
+  const confirmSale = useStore(prefsStore, (store) => store.confirmSale);
+  const { setLanguage, setLayout, setTraffic, setConfirmSale } = prefsStore.getState();
 
   return (
     <section className="prefs">
@@ -31,6 +32,10 @@ export function PreferencesContent() {
       <label className="prefs-toggle">
         <input type="checkbox" checked={traffic} onChange={(event) => setTraffic(event.target.checked)} />
         {t('prefs.traffic')}
+      </label>
+      <label className="prefs-toggle">
+        <input type="checkbox" checked={confirmSale} onChange={(event) => setConfirmSale(event.target.checked)} />
+        {t('prefs.confirmSale')}
       </label>
     </section>
   );

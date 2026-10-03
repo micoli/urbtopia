@@ -7,6 +7,7 @@ export interface Prefs {
   language: Language;
   layout: Layout;
   traffic: boolean;
+  confirmSale: boolean;
 }
 
 export const PREFS_KEY = 'urbtopia-prefs';
@@ -19,7 +20,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -27,6 +28,7 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       language: LANGUAGES.includes(parsed.language as Language) ? (parsed.language as Language) : fallback.language,
       layout: LAYOUTS.includes(parsed.layout as Layout) ? (parsed.layout as Layout) : fallback.layout,
       traffic: typeof parsed.traffic === 'boolean' ? parsed.traffic : fallback.traffic,
+      confirmSale: typeof parsed.confirmSale === 'boolean' ? parsed.confirmSale : fallback.confirmSale,
     };
   } catch {
     return fallback;
@@ -41,9 +43,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic }: Prefs): void {
+function writeStored({ language, layout, traffic, confirmSale }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -53,6 +55,7 @@ export interface PrefsStore extends Prefs {
   setLanguage: (language: Language) => void;
   setLayout: (layout: Layout) => void;
   setTraffic: (traffic: boolean) => void;
+  setConfirmSale: (confirmSale: boolean) => void;
 }
 
 const browserLanguage = typeof navigator === 'undefined' ? undefined : navigator.language;
@@ -69,6 +72,10 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   },
   setTraffic: (traffic) => {
     set({ traffic });
+    writeStored(get());
+  },
+  setConfirmSale: (confirmSale) => {
+    set({ confirmSale });
     writeStored(get());
   },
 }));

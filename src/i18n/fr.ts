@@ -175,6 +175,7 @@ export const FR: Record<MessageKey, string> = {
   'prefs.layout.C': 'Barre latérale',
   'prefs.layout.A': 'Barres',
   'prefs.layout.B': 'Minimale',
+  'prefs.confirmSale': 'Confirmer avant de vendre un bâtiment',
   'prefs.traffic': 'Trafic',
   'lang.en': 'English',
   'lang.fr': 'Français',

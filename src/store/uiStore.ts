@@ -1,5 +1,6 @@
 import { createStore } from 'zustand/vanilla';
-import { canRemoveStorage, footprintTiles, isStorageType, type Coord, type Rotation } from '../core';
+import { footprintTiles, type Coord, type Rotation } from '../core';
+import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
 import { confirmTool, evaluateTool, type Evaluation, type Tool } from '../tools/tools';
 import { gameStore } from './gameStore';
@@ -111,10 +112,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     sellSelected: () => {
       const id = get().selectedBuildingId;
       if (id === null) return;
-      const game = gameStore.getState().state;
-      const building = game.buildings.find((candidate) => candidate.id === id);
-      const needsConfirmation = building && ((building.type === 'home' && building.tier >= 3) || (isStorageType(building.type) && !canRemoveStorage(game, building.id)));
-      if (needsConfirmation) return set({ pendingSaleId: id });
+      if (prefsStore.getState().confirmSale) return set({ pendingSaleId: id });
       gameStore.getState().send({ type: 'SellBuilding', id });
       set({ selectedBuildingId: null });
     },
