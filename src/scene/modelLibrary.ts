@@ -10,6 +10,10 @@ export class ModelLibrary {
     await Promise.all([...new Set(keys)].map((key) => this.load(key)));
   }
 
+  has(key: string): boolean {
+    return this.models.has(key);
+  }
+
   get(key: string): THREE.Object3D {
     const model = this.models.get(key);
     if (!model) throw new Error(`Model not loaded: ${key}`);

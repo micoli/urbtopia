@@ -17,11 +17,11 @@ export function SceneCanvas() {
     const scene = new GameScene(canvas);
     sceneHandle.current = scene;
     scene.setHandlers({
-      onTap: (tile, shiftKey) => {
+      onTap: (tile, shiftKey, buildingId) => {
         const ui = uiStore.getState();
         if (ui.tool && ui.pointerKind === 'mouse') return ui.clickTile(tile, shiftKey);
         if (ui.tool) return scene.focusOnTile(tile);
-        ui.tapTile(tile);
+        ui.tapTile(tile, buildingId);
       },
       onCenterTileChange: (tile) => uiStore.getState().setCenterTile(tile),
       onMouseMove: (tile) => uiStore.getState().hoverTile(tile),

@@ -39,7 +39,7 @@ const ROAD_MODELS = ['square', 'end', 'straight', 'bend', 'intersection', 'cross
 
 export const MODEL_KEYS: readonly string[] = [...new Set([...Object.values(MODEL_BY_BUILDING), ...FACTORY_MODELS, ...STOREHOUSE_MODELS, ...HOME_MODELS, ...ROAD_MODELS, ...VEHICLE_MODELS])];
 
-function modelOf(type: BuildingType, tier: number): string {
+export function modelOf(type: BuildingType, tier: number): string {
   if (type === 'home') return HOME_MODELS[tier - 1] ?? MODEL_BY_BUILDING.home;
   if (type === 'factory') return FACTORY_MODELS[tier - 1] ?? MODEL_BY_BUILDING.factory;
   if (type === 'storehouse') return STOREHOUSE_MODELS[tier - 1] ?? MODEL_BY_BUILDING.storehouse;

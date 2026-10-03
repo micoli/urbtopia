@@ -1,21 +1,24 @@
 import * as THREE from 'three';
-import { GAME_CONFIG, type GameState } from '../core';
+import { GAME_CONFIG, type Building, type GameState } from '../core';
 import { CameraController } from './CameraController';
 import type { Coord } from '../core';
 import type { GhostSpec } from '../tools/tools';
+import { buildingBoxes, pickBuilding } from './buildingPicking';
 import { ChunkedWorld } from './ChunkedWorld';
 import { GhostLayer } from './GhostLayer';
 import { createTendedGroundTexture, createWildGroundTexture, TENDED_TEXTURE_TILES, WILD_TEXTURE_TILES } from './groundTextures';
+import { fitMatrixOf } from './modelFit';
 import { ModelLibrary } from './modelLibrary';
-import { renderItemsOf } from './renderItems';
+import { modelOf, renderItemsOf } from './renderItems';
 import { TrafficLayer } from './TrafficLayer';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
 const GROUND_SIZE = MAP_TILES * 3;
 const SELECTION_COLOR = 0x4da3ff;
+const FALLBACK_HEIGHT = 1.5;
 
 export interface SceneHandlers {
-  onTap: (tile: Coord, shiftKey: boolean) => void;
+  onTap: (tile: Coord, shiftKey: boolean, buildingId: number | null) => void;
   onCenterTileChange: (tile: Coord) => void;
   onMouseMove: (tile: Coord) => void;
   onPointerKind: (pointerType: string) => void;
@@ -45,6 +48,8 @@ export class GameScene {
   private ownedSignature = '';
   private controller: CameraController;
   private latest: GameState | null = null;
+  private currentBuildings: readonly Building[] = [];
+  private modelHeights = new Map<string, number>();
   private syncing = false;
   private frameHandle = 0;
   private markReady: () => void = () => {};
@@ -61,7 +66,8 @@ export class GameScene {
     this.scene.add(sun, new THREE.AmbientLight(0xffffff, 1.2), this.buildGround(), this.parcels, this.world.root, this.traffic.root, this.selectionLayer.root, this.ghostLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
-    this.controller.onTap = (clientX, clientY, shiftKey) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onTap(tile, shiftKey));
+    this.controller.onTap = (clientX, clientY, shiftKey) =>
+      this.withTileAt(clientX, clientY, (tile) => this.handlers.onTap(tile, shiftKey, this.pickBuildingAt(clientX, clientY)));
     this.controller.onMouseMove = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onMouseMove(tile));
     this.controller.onPointerKind = (pointerType) => this.handlers.onPointerKind(pointerType);
     this.controller.onSecondaryClick = () => this.handlers.onSecondaryClick();
@@ -112,6 +118,7 @@ export class GameScene {
 
   setState(state: GameState): void {
     this.latest = state;
+    this.currentBuildings = state.buildings;
     void this.drain();
   }
 
@@ -175,6 +182,22 @@ export class GameScene {
       mesh.position.set(parcel.x * size + size / 2, -0.01, parcel.y * size + size / 2);
       this.parcels.add(mesh);
     }
+  }
+
+  private pickBuildingAt(clientX: number, clientY: number): number | null {
+    const rect = this.canvas.getBoundingClientRect();
+    const pointer = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+    this.raycaster.setFromCamera(pointer, this.controller.camera);
+    return pickBuilding(this.raycaster.ray, buildingBoxes(this.currentBuildings, (building) => this.heightOf(modelOf(building.type, building.tier))));
+  }
+
+  private heightOf(model: string): number {
+    const cached = this.modelHeights.get(model);
+    if (cached !== undefined) return cached;
+    if (!this.library.has(model)) return FALLBACK_HEIGHT;
+    const box = new THREE.Box3().setFromObject(this.library.get(model)).applyMatrix4(fitMatrixOf(model));
+    this.modelHeights.set(model, box.max.y);
+    return box.max.y;
   }
 
   private withTileAt(clientX: number, clientY: number, use: (tile: Coord) => void): void {

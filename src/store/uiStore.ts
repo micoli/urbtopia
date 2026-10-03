@@ -31,7 +31,7 @@ export interface UiStore {
   setPointerKind: (kind: PointerKind) => void;
   hoverTile: (tile: Coord) => void;
   clickTile: (tile: Coord, keepTool?: boolean) => void;
-  tapTile: (tile: Coord) => void;
+  tapTile: (tile: Coord, buildingId?: number | null) => void;
   select: (id: number | null) => void;
   sellSelected: () => void;
   confirmSale: () => void;
@@ -102,10 +102,10 @@ export const uiStore = createStore<UiStore>((set, get) => {
       reevaluate({ hovered: tile });
       get().confirm(keepTool);
     },
-    tapTile: (tile) => {
+    tapTile: (tile, buildingId = null) => {
       if (get().tool) return;
       const building = gameStore.getState().state.buildings.find((candidate) => footprintTiles(candidate).some((t) => t.x === tile.x && t.y === tile.y));
-      set({ selectedBuildingId: building?.id ?? null, flyout: null });
+      set({ selectedBuildingId: buildingId ?? building?.id ?? null, flyout: null });
     },
     select: (id) => set({ selectedBuildingId: id }),
     sellSelected: () => {
