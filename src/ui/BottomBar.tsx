@@ -1,3 +1,4 @@
+import { NavIcon } from './NavIcon';
 import { useNavActions } from './useNavActions';
 
 export function BottomBar() {
@@ -6,7 +7,9 @@ export function BottomBar() {
     <nav className="bottom-bar">
       {actions.map((action) => (
         <button key={action.id} type="button" className="bottom-bar-button" aria-pressed={action.pressed} disabled={action.disabled} data-guided={action.guided} onClick={action.onClick}>
-          <span aria-hidden="true">{action.icon}</span>
+          <span aria-hidden="true">
+            <NavIcon action={action} />
+          </span>
           <span>{action.label}</span>
         </button>
       ))}

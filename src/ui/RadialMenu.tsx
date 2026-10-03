@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { t } from '../i18n/t';
+import { NavIcon } from './NavIcon';
 import { useNavActions } from './useNavActions';
 
 const RADIUS_PX = 160;
@@ -30,7 +31,7 @@ export function RadialMenu() {
                   action.onClick();
                 }}
               >
-                {action.icon}
+                <NavIcon action={action} />
               </button>
             );
           })

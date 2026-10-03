@@ -107,6 +107,24 @@ button {
   justify-content: center;
 }
 
+.nav-icon {
+  display: block;
+  height: 30px;
+  max-width: 44px;
+  width: auto;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.radial-item .nav-icon {
+  height: 36px;
+}
+
+.bottom-bar-button .nav-icon {
+  height: 26px;
+}
+
 .dock-button span {
   font-size: 10px;
 }

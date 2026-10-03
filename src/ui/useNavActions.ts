@@ -5,6 +5,7 @@ import { guideOf } from './tutorialGuide';
 export interface NavAction {
   id: 'build' | 'roads' | 'parcels' | 'market' | 'menu';
   icon: string;
+  image?: string;
   label: string;
   pressed: boolean;
   disabled: boolean;
@@ -25,10 +26,10 @@ export function useNavActions(): NavAction[] {
   const guidedFlyout = guideOf(useGame((store) => store.state.tutorial)).flyout;
 
   return [
-    { id: 'build', icon: '🏗', label: t('dock.build'), pressed: flyout === 'build', disabled: false, guided: guidedFlyout === 'build', onClick: () => openFlyout('build') },
-    { id: 'roads', icon: '🛣', label: t('dock.roads'), pressed: flyout === 'roads', disabled: false, guided: guidedFlyout === 'roads', onClick: () => openFlyout('roads') },
-    { id: 'parcels', icon: '🗺', label: t('dock.parcels'), pressed: tool?.kind === 'parcel', disabled: false, guided: false, onClick: () => chooseTool({ kind: 'parcel' }) },
-    { id: 'market', icon: '💱', label: t('dock.market'), pressed: marketOpen, disabled: !marketUnlocked, guided: false, onClick: toggleMarket },
+    { id: 'build', icon: '🏗', image: 'bulldozer.png', label: t('dock.build'), pressed: flyout === 'build', disabled: false, guided: guidedFlyout === 'build', onClick: () => openFlyout('build') },
+    { id: 'roads', icon: '🛣', image: 'roads.png', label: t('dock.roads'), pressed: flyout === 'roads', disabled: false, guided: guidedFlyout === 'roads', onClick: () => openFlyout('roads') },
+    { id: 'parcels', icon: '🗺', image: 'map.png', label: t('dock.parcels'), pressed: tool?.kind === 'parcel', disabled: false, guided: false, onClick: () => chooseTool({ kind: 'parcel' }) },
+    { id: 'market', icon: '💱', image: 'market.png', label: t('dock.market'), pressed: marketOpen, disabled: !marketUnlocked, guided: false, onClick: toggleMarket },
     { id: 'menu', icon: '⚙', label: t('dock.menu'), pressed: menuOpen, disabled: false, guided: false, onClick: toggleMenu },
   ];
 }
