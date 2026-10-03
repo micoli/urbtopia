@@ -29,15 +29,23 @@ A building that sells Goods to citizens for Urbs.
 _Avoid_: Store, boutique
 
 **Storehouse**:
-The storage that holds Materials and Goods, with a limited capacity.
+The general storage that holds Materials and Goods, with a limited capacity. Only one can be built; it has Tiers that raise its capacity.
 _Avoid_: Warehouse, depot, inventory
 
+**Silo**:
+A specialized storage that adds capacity to the Materials compartment only. Only one can be built; it has Tiers.
+_Avoid_: Granary, bin
+
+**Vault**:
+A specialized storage that adds capacity to the Goods compartment only. Only one can be built; it has Tiers.
+_Avoid_: Cellar, depot
+
 **Home**:
-A residential building with six tiers (1 to 6) that houses citizens and upgrades by consuming Goods.
+A residential building with six Tiers (1 to 6) that houses citizens and upgrades by consuming Goods.
 _Avoid_: House, residence, dwelling
 
 **Tier**:
-The level (1 to 6) of a Home. A higher Tier houses more Citizens and has a higher Demand.
+The level of an upgradable building (Home, Workshop, Factory, Storehouse, Power plant, Water tower). A higher Tier improves the building: a Home houses more Citizens and has a higher Demand; a Workshop or Factory produces faster, gains Slots, yields more per cycle and can produce exclusive Materials or Goods.
 _Avoid_: Level, grade
 
 **Capacity**:
