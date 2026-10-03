@@ -41,7 +41,6 @@ function selectAsset(p: string, name: string) {
   rot = 0
   overview = false
   renderBar()
-  resetCam()
   renderList()
   void render()
   document.querySelector('#list .sel')?.scrollIntoView({ block: 'nearest' })
@@ -159,16 +158,11 @@ async function render() {
       await place(pack, names[i], new THREE.Vector3((i % cols) * 3, 0, Math.floor(i / cols) * 3), 0, false, version)
       if (version !== renderVersion) return
     }
-    const c = (cols * 3) / 2
-    controls.target.set(c, 0, c)
-    cam.position.set(c + 6, 6, c + 6)
-    zoom = cols * 1.6
-    resize()
-    controls.update()
   } else if (current) {
     await place(pack, current, new THREE.Vector3(0, 0, 0), (rot * Math.PI) / 2, true, version)
   }
   if (version !== renderVersion) return
+  resetCam()
   renderSide()
   renderList()
 }
@@ -193,7 +187,7 @@ function renderBar() {
   }
   const ov = document.createElement('button')
   ov.textContent = overview ? 'single' : 'overview (all in pack)'
-  ov.onclick = () => { overview = !overview; if (!overview) { resetCam() } renderBar(); render() }
+  ov.onclick = () => { overview = !overview; renderBar(); render() }
   bar.appendChild(ov)
   const r = document.createElement('button')
   r.textContent = 'rotate 90 (game rotation)'
@@ -206,9 +200,17 @@ function renderBar() {
 }
 
 function resetCam() {
-  controls.target.set(0, 0.5, 0)
-  cam.position.set(6, 6, 6)
-  zoom = 1.2
+  const box = new THREE.Box3().setFromObject(stage)
+  if (box.isEmpty()) return
+  const sphere = box.getBoundingSphere(new THREE.Sphere())
+  const view = document.getElementById('view')!
+  const aspect = view.clientWidth / Math.max(1, view.clientHeight)
+  const radius = Math.max(0.1, sphere.radius)
+  controls.target.copy(sphere.center)
+  cam.position.copy(sphere.center).add(new THREE.Vector3(1, 1, 1).normalize().multiplyScalar(radius * 3))
+  cam.zoom = 1
+  cam.far = Math.max(200, radius * 6)
+  zoom = radius * 1.1 / Math.min(1, Math.max(0.01, aspect))
   resize()
   controls.update()
 }
@@ -357,7 +359,6 @@ controls.enableZoom = false
 
 current = PACKS[pack][0]
 renderBar()
-resetCam()
 await render()
 ;(function loop() { controls.update(); renderer.render(scene, cam); requestAnimationFrame(loop) })()
 
