@@ -16,6 +16,21 @@ describe('renderItemsOf', () => {
   });
 });
 
+describe('renderItemsOf caching', () => {
+  const state = newGame({ seed: 'amber-fox-4821', now: 0 });
+
+  it('reuses the items while buildings and roads are unchanged', () => {
+    const items = renderItemsOf(state);
+    expect(renderItemsOf({ ...state, urbs: state.urbs + 1 })).toBe(items);
+  });
+
+  it('rebuilds the items when the roads change', () => {
+    const items = renderItemsOf(state);
+    const longer = { ...state, roads: [...state.roads, { x: 63, y: 58, kind: 'road' as const }] };
+    expect(renderItemsOf(longer)).not.toBe(items);
+  });
+});
+
 describe('road items', () => {
   const state = newGame({ seed: 'amber-fox-4821', now: 0 });
 

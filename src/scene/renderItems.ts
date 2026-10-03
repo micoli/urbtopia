@@ -36,8 +36,14 @@ function modelOf(type: BuildingType, tier: number): string {
   return MODEL_BY_BUILDING[type];
 }
 
+let lastItems: { buildings: GameState['buildings']; roads: GameState['roads']; roundabouts: GameState['roundabouts']; items: RenderItem[] } | null = null;
+
 export function renderItemsOf(state: GameState): RenderItem[] {
-  return [...buildingItems(state), ...roadItems(state)];
+  const { buildings, roads, roundabouts } = state;
+  if (lastItems && lastItems.buildings === buildings && lastItems.roads === roads && lastItems.roundabouts === roundabouts) return lastItems.items;
+  const items = [...buildingItems(state), ...roadItems(state)];
+  lastItems = { buildings, roads, roundabouts, items };
+  return items;
 }
 
 function roadItems(state: GameState): RenderItem[] {

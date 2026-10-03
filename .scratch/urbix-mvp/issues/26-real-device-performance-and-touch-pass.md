@@ -89,3 +89,15 @@ For each: map area visible next to dock/flyout (< 600 px: enough?), nothing clip
 
 - [ ] Findings appended under `## Comments` with date
 - [ ] One follow-up ticket per failed item (phone-specific layout C tweak, LOD, shadows…)
+
+2026-10-03, indicative desktop measurement (not a real device, does not tick the boxes above): Mac Chrome, 390x844 @3x emulated, synthetic city of 7504 buildings / 5675 road tiles / 37530 Citizens, dev server, CPU throttled via devtools. The display caps rAF near 96-115 fps, so only the throttled runs are informative.
+
+| CPU | normal zoom (idle / pan) | max zoom-out (idle / pan) | stall once per second |
+|---|---|---|---|
+| x1 | 116 / 115 fps | 116 / 116 fps | ~50 ms |
+| x4 | 102 / 101 fps | 86 / 89 fps | ~170 ms |
+| x6 | 91 / 90 fps | 80 / 82 fps | ~260-290 ms |
+
+Found and fixed: `renderItemsOf` took ~1.2 s on this city (O(n²) `roadExits`, recomputed on every state change); now ~10 ms, and cached while buildings and roads are unchanged. Before the fix the page was frozen at x4.
+
+Still to look at: the once-per-second stall (likely the tick path with 37k Citizens).

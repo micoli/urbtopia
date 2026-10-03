@@ -33,8 +33,18 @@ export function isInsideOwnedParcels(state: GameState, tile: Coord): boolean {
   return state.ownedParcels.some((parcel) => parcel.x === parcelX && parcel.y === parcelY);
 }
 
+const roadKeysCache = new WeakMap<GameState['roads'], Set<string>>();
+
+function roadKeysOf(state: GameState): Set<string> {
+  const cached = roadKeysCache.get(state.roads);
+  if (cached) return cached;
+  const keys = new Set(state.roads.map(tileKey));
+  roadKeysCache.set(state.roads, keys);
+  return keys;
+}
+
 export function isRoadLike(state: GameState, tile: Coord): boolean {
-  if (state.roads.some((road) => road.x === tile.x && road.y === tile.y)) return true;
+  if (roadKeysOf(state).has(tileKey(tile))) return true;
   return state.roundabouts.some((center) => roundaboutTiles(center).some((t) => t.x === tile.x && t.y === tile.y));
 }
 
@@ -44,8 +54,9 @@ function isRoundaboutExit(state: GameState, tile: Coord, towardTile: Direction):
 }
 
 export function roadExits(state: GameState, tile: Coord): Direction[] {
+  const roadKeys = roadKeysOf(state);
   return DIRECTIONS.filter((direction) => {
     const next = neighbour(tile, direction);
-    return state.roads.some((road) => road.x === next.x && road.y === next.y) || isRoundaboutExit(state, next, direction);
+    return roadKeys.has(tileKey(next)) || isRoundaboutExit(state, next, direction);
   });
 }
