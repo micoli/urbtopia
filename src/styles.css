@@ -561,6 +561,18 @@ button {
   color: #ffd23f;
 }
 
+.utility-normal {
+  color: var(--accent);
+}
+
+.utility-warning {
+  color: #ffa940;
+}
+
+.utility-critical {
+  color: var(--danger);
+}
+
 .dialog-backdrop {
   position: fixed;
   inset: 0;
