@@ -8,6 +8,8 @@ interface ModelFit {
 
 const MODEL_FIT: Record<string, ModelFit> = {
   'industrial/building-h': { scale: 1.45, centerX: -0.58, centerZ: 0.28 },
+  'suburban/tree-small': { scale: 1.5, centerX: 0, centerZ: 0 },
+  'suburban/tree-large': { scale: 1.5, centerX: 0, centerZ: 0 },
 };
 
 const IDENTITY = new THREE.Matrix4();
