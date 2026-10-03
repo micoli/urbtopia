@@ -4,7 +4,7 @@
 
 **Blocked by:** 14
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] The map is 128x128 tiles, 8x8 Parcels; the player can buy only Parcels adjacent to an owned Parcel
 - [x] Cost is 300 Urbs x 1.12^n (n = Parcels bought so far), rounded to ten, from a data table

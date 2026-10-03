@@ -4,7 +4,7 @@
 
 **Blocked by:** 14
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] All UI strings come from FR and EN catalogs; core errors and events expose message keys, not text
 - [x] "Urbtopia" and "Urbs" are identical in both languages

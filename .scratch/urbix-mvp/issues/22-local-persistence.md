@@ -4,7 +4,7 @@
 
 **Blocked by:** 17
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] `SaveStore` interface (get/put/remove) with a localStorage implementation
 - [x] Envelope `{ format: "urbtopia-save", version, savedAt, state }`; state holds lists only; derived data is rebuilt on load

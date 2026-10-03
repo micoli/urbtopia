@@ -4,7 +4,7 @@
 
 **Blocked by:** 22
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Export downloads `urbtopia-<seed>-<date>.json` using the same envelope
 - [x] Import: file picker, parse, format check, migrate, validate, confirmation "replace current city?"; previous save goes to the backup slot first; follows the reopen path (`advance`, 48 h cap, clock clamp)

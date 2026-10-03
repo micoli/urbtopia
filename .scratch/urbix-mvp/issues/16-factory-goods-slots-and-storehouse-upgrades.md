@@ -4,7 +4,7 @@
 
 **Blocked by:** 15
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Factory consumes Materials from the Storehouse and produces Planks (2 Wood, 2 min) and Bricks (2 Stone + 1 Wood, 4 min); any Factory produces any unlocked recipe
 - [x] Queueing is refused with a clear message if Materials are missing

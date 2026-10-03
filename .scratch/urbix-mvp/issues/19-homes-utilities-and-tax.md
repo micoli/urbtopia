@@ -4,7 +4,7 @@
 
 **Blocked by:** 17
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Home placed at Tier 1 for 150 Urbs (6 Citizens, Demand 1 power and 1 water); Power plant 250 Urbs and Water tower 200 Urbs, each Capacity 12, no road required, no radius
 - [x] Power and water are global pools; Demand and Capacity are two separate data entries

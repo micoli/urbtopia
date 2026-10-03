@@ -4,7 +4,7 @@
 
 **Blocked by:** 20
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Start open: Wood, Stone, Planks, Bricks and all base buildings
 - [x] 30 Citizens unlocks Clay and Tiles; 80 unlocks Metal and Tools; 200 unlocks Silicon, Glass and Circuits

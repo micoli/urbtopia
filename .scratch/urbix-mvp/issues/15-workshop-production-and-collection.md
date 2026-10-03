@@ -4,7 +4,7 @@
 
 **Blocked by:** 14
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Workshop has a FIFO queue of 2 Slots; a Slot stores `startedAt` and `duration`; Wood (1 min) and Stone (2 min) available
 - [x] `advance(now)` completes Slots at `startedAt + duration`; finished output waits on the building until collected

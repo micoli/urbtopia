@@ -4,7 +4,7 @@
 
 **Blocked by:** 11
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] The pre-placed Workshop and Factory render with the correct footprint and front direction (-Z at rotation 0)
 - [x] Ground and owned Parcels render; owned and unowned land are visually distinct

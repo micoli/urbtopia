@@ -4,7 +4,7 @@
 
 **Blocked by:** 13
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Picking an item places a ghost at screen centre; panning moves it; tapping a tile recentres it
 - [x] Ghost is green when valid and red when invalid, with the refusal reason shown

@@ -4,7 +4,7 @@
 
 **Blocked by:** 12
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Roads drawn as an L-shaped drag with total cost (fixed cost per tile); pieces chosen automatically from the neighbour mask using the 8 catalog pieces; roundabout (3x3) and crossing are separate tools
 - [x] Placement valid only if the whole footprint is inside owned Parcels, tiles are free, and (for Home, Shop, Factory, Workshop, Storehouse) a front-edge tile touches a road; Power plant and Water tower need no road

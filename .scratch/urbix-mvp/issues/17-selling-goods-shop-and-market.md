@@ -4,7 +4,7 @@
 
 **Blocked by:** 16
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Shop has 3 Slots; each takes a stack of 5 units of one Good from the Storehouse; citizens buy 1 unit per 45 s at 100 % of base value
 - [x] Shop earnings accumulate (capped at one stack's value per Slot) and are collected by hand through a collect badge

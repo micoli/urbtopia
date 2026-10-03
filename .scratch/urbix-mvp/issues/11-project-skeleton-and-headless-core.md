@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] `npm run dev`, `build` and `test` work
 - [x] A lint rule forbids importing `three`, React and DOM APIs, and `Math.random()` / `Date.now()`, inside the core folder

@@ -4,7 +4,7 @@
 
 **Blocked by:** 17, 22
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Live play calls `advance(now)` at 1 Hz; reopen and `visibilitychange` to visible call it once over the whole gap
 - [x] The gap is replayed event by event in chronological order: Slot completion, Storehouse limits, Shop sales and Market recovery behave as in live play

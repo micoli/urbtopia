@@ -4,7 +4,7 @@
 
 **Blocked by:** 19
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Upgrade is instant and one Tier at a time; Goods are taken from the Storehouse; new Citizens appear immediately
 - [x] Tiers 1 to 6 house 6, 15, 32, 60, 100, 160 Citizens with Demand 1, 2, 3, 6, 10, 16
