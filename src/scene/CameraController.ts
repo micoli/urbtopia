@@ -77,8 +77,14 @@ export class CameraController {
     const horizontal = Number(this.keys.has('d') || this.keys.has('arrowright')) - Number(this.keys.has('a') || this.keys.has('arrowleft'));
     const vertical = Number(this.keys.has('s') || this.keys.has('arrowdown')) - Number(this.keys.has('w') || this.keys.has('arrowup'));
     if (!horizontal && !vertical) return;
-    const step = KEY_PAN_SPEED * deltaSeconds * this.zoom;
-    this.panByScreen(-horizontal * step, -vertical * step);
+    const step = KEY_PAN_SPEED * deltaSeconds;
+    const gridYaw = Math.PI / 4 + Math.round((this.yawTarget - Math.PI / 4) / (Math.PI / 2)) * (Math.PI / 2);
+    const cos = Math.cos(gridYaw);
+    const sin = Math.sin(gridYaw);
+    this.focus.x += (horizontal * (cos + sin) + vertical * (sin - cos)) * (step / Math.SQRT2);
+    this.focus.z += (horizontal * (-sin + cos) + vertical * (cos + sin)) * (step / Math.SQRT2);
+    this.clampFocus();
+    this.apply();
   }
 
   private zoomBy(factor: number): void {
