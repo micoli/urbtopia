@@ -15,6 +15,16 @@ export function isIdle(building: Building): boolean {
   return building.queue.every((entry) => entry.done);
 }
 
+export function workProgress(building: Building, now: number): number | null {
+  const running = building.queue.find((entry) => !entry.done && entry.startedAt !== null);
+  if (running?.startedAt != null) return clamp01((now - running.startedAt) / running.duration);
+  const nextSales = building.stacks.flatMap((stack) => (stack.stock > 0 && stack.nextSaleAt !== null ? [stack.nextSaleAt] : []));
+  if (nextSales.length === 0) return null;
+  return clamp01(1 - (Math.min(...nextSales) - now) / SHOP.saleIntervalMs);
+}
+
+const clamp01 = (value: number): number => Math.min(1, Math.max(0, value));
+
 export function isWorking(building: Building): boolean {
   if (building.stacks.some((stack) => stack.stock > 0 && stack.nextSaleAt !== null)) return true;
   return building.queue.some((entry) => !entry.done && entry.startedAt !== null);

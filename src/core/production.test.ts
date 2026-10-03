@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { advance, dispatch, isWorking, newGame, type Command, type GameState } from './index';
+import { advance, dispatch, isWorking, newGame, workProgress, type Command, type GameState } from './index';
 
 const T0 = 1_700_000_000_000;
 const SECOND = 1000;
@@ -170,5 +170,26 @@ describe('isWorking', () => {
     const shop = { ...initial.buildings[0]!, type: 'shop' as const, stacks: [{ good: 'planks' as const, stock: 2, nextSaleAt: T0 + 1000, earned: 0 }] };
     expect(isWorking(shop)).toBe(true);
     expect(isWorking({ ...shop, stacks: [{ good: 'planks' as const, stock: 0, nextSaleAt: null, earned: 28 }] })).toBe(false);
+  });
+});
+
+describe('workProgress', () => {
+  const workshop = (state: GameState) => state.buildings.find((b) => b.id === WORKSHOP_ID)!;
+
+  it('is null when nothing is going on', () => {
+    expect(workProgress(workshop(initial), T0)).toBeNull();
+  });
+
+  it('follows the running production from 0 to 1', () => {
+    const queued = succeed(withStorehouse, queueStone(), T0);
+    expect(workProgress(workshop(queued), T0)).toBe(0);
+    expect(workProgress(workshop(queued), T0 + MINUTE)).toBeCloseTo(0.5);
+    expect(workProgress(workshop(queued), T0 + 5 * MINUTE)).toBe(1);
+  });
+
+  it('follows the time to the next sale in a Shop', () => {
+    const shop = { ...initial.buildings[0]!, type: 'shop' as const, stacks: [{ good: 'planks' as const, stock: 2, nextSaleAt: T0 + 45 * SECOND, earned: 0 }] };
+    expect(workProgress(shop, T0)).toBeCloseTo(0);
+    expect(workProgress(shop, T0 + 22.5 * SECOND)).toBeCloseTo(0.5);
   });
 });

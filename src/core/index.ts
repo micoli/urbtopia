@@ -32,7 +32,7 @@ export { createBuilding } from './buildingSpecs';
 export { citizensOf, totalCitizens, utilityCapacity, utilityDemand } from './city';
 export type { UtilityTotals } from './city';
 export { HOME_FOOTPRINTS, HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, TAX, UTILITY_CAPACITY } from './economy';
-export { isWorking, taxDue } from './production';
+export { isWorking, taxDue, workProgress } from './production';
 export { maxTierOf, productionTierOf, upgradeCostOf } from './tiers';
 export type { UpgradeCost } from './tiers';
 export { isItemUnlocked, nextUnlock } from './unlocks';
