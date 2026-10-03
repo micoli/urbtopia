@@ -1,5 +1,7 @@
 import { t } from '../i18n/t';
+import { CurrencyText } from './CurrencyText';
 import { useUi } from './hooks';
+import { UrbsAmount } from './UrbsAmount';
 import { useConfirmKeys } from './useConfirmKeys';
 
 export function ConfirmPad() {
@@ -18,8 +20,16 @@ export function ConfirmPad() {
       <div className="confirm-info">
         {needsStart ? <span>{t('pad.roadStart')}</span> : null}
         {tool.kind === 'parcel' && !evaluation.valid && !evaluation.issue ? <span>{t('pad.parcelHint')}</span> : null}
-        {evaluation.cost ? <span className="confirm-cost">{evaluation.cost} {t('stat.urbs')}</span> : null}
-        {evaluation.issue ? <span className="confirm-issue">{t(evaluation.issue)}</span> : null}
+        {evaluation.cost ? (
+          <span className="confirm-cost">
+            <UrbsAmount value={evaluation.cost} />
+          </span>
+        ) : null}
+        {evaluation.issue ? (
+          <span className="confirm-issue">
+            <CurrencyText text={t(evaluation.issue)} />
+          </span>
+        ) : null}
       </div>
       <div className="confirm-buttons">
         <button type="button" className="pad-button pad-cancel" aria-label={t('pad.cancel')} onClick={cancelTool}>

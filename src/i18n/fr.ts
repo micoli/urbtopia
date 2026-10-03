@@ -36,7 +36,7 @@ export const FR: Record<MessageKey, string> = {
   'error.tilesOccupied': 'Cet emplacement est déjà occupé.',
   'error.needsRoad': "La façade de ce bâtiment doit toucher une route.",
   'error.storehouseExists': 'Vous avez déjà un entrepôt.',
-  'error.notEnoughUrbs': "Pas assez d'Urbs.",
+  'error.notEnoughUrbs': 'Pas assez de {U}.',
   'error.lastRoadOfBuilding': "C'est la seule route d'un bâtiment.",
   'error.noRoadHere': "Il n'y a pas de route ici.",
   'error.invalidCrossing': 'Un passage piéton demande une route droite.',

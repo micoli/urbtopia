@@ -34,7 +34,7 @@ export const MESSAGES = {
   'error.tilesOccupied': 'This place is already taken.',
   'error.needsRoad': 'The front of this building must touch a road.',
   'error.storehouseExists': 'You already have a Storehouse.',
-  'error.notEnoughUrbs': 'Not enough Urbs.',
+  'error.notEnoughUrbs': 'Not enough {U}.',
   'error.lastRoadOfBuilding': 'This is the only road of a building.',
   'error.noRoadHere': 'There is no road here.',
   'error.invalidCrossing': 'A crossing needs a straight road.',

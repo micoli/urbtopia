@@ -22,7 +22,9 @@ describe('catalogs', () => {
 
   it('translate plain statements instead of copying the English text', () => {
     expect(FR['panel.close']).not.toBe(MESSAGES['panel.close']);
-    expect(FR['error.notEnoughUrbs']).toContain('Urbs');
+    expect(FR['error.notEnoughUrbs']).toContain('Pas assez');
+    expect(FR['error.notEnoughUrbs']).toContain('{U}');
+    expect(MESSAGES['error.notEnoughUrbs']).toContain('{U}');
   });
 });
 

@@ -1,9 +1,11 @@
+import type { ReactNode } from 'react';
 import { GAME_CONFIG, placementCost, type BuildingType } from '../core';
 import { t } from '../i18n/t';
 import type { Tool } from '../tools/tools';
 import { FlyoutItem } from './FlyoutItem';
 import { useGame, useUi } from './hooks';
 import { guideOf } from './tutorialGuide';
+import { UrbsAmount } from './UrbsAmount';
 
 const BUILDING_ORDER: BuildingType[] = ['workshop', 'factory', 'shop', 'storehouse', 'silo', 'vault', 'home', 'powerPlant', 'waterTower'];
 
@@ -20,7 +22,7 @@ export function BuildMenuContent() {
           <FlyoutItem
             key={type}
             label={t(`building.${type}`)}
-            cost={`${placementCost(type)} ${t('stat.urbs')}`}
+            cost={<UrbsAmount value={placementCost(type)} />}
             guided={guide.buildings.includes(type)}
             onChoose={() => chooseTool({ kind: 'building', buildingType: type })}
           />
@@ -29,10 +31,10 @@ export function BuildMenuContent() {
     );
   }
 
-  const roadTools: { label: string; cost?: string; tool: Tool }[] = [
+  const roadTools: { label: string; cost?: ReactNode; tool: Tool }[] = [
     { label: t('tool.road'), cost: `${GAME_CONFIG.roadCostPerTile} ${t('tool.perTile')}`, tool: { kind: 'road', start: null, horizontalFirst: true } },
-    { label: t('tool.crossing'), cost: `${GAME_CONFIG.crossingCost} ${t('stat.urbs')}`, tool: { kind: 'crossing' } },
-    { label: t('tool.roundabout'), cost: `${GAME_CONFIG.roundaboutCost} ${t('stat.urbs')}`, tool: { kind: 'roundabout' } },
+    { label: t('tool.crossing'), cost: <UrbsAmount value={GAME_CONFIG.crossingCost} />, tool: { kind: 'crossing' } },
+    { label: t('tool.roundabout'), cost: <UrbsAmount value={GAME_CONFIG.roundaboutCost} />, tool: { kind: 'roundabout' } },
     { label: t('tool.demolishRoad'), tool: { kind: 'demolishRoad' } },
   ];
   return (

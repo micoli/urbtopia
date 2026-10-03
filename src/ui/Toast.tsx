@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useStore } from 'zustand';
 import { t } from '../i18n/t';
 import { toastStore } from '../store/toastStore';
+import { CurrencyText } from './CurrencyText';
 
 const TOAST_DURATION_MS = 3000;
 
@@ -18,7 +19,7 @@ export function Toast() {
   if (!toast) return null;
   return (
     <div className="toast" role="status">
-      {t(toast)}
+      <CurrencyText text={t(toast)} />
     </div>
   );
 }

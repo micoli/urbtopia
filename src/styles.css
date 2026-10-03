@@ -304,6 +304,26 @@ button {
   }
 }
 
+.urbs-symbol {
+  display: inline-block;
+  font-weight: 800;
+  color: #ffc21a;
+  text-shadow:
+    -1px -1px 0 #7a5200,
+    1px -1px 0 #7a5200,
+    -1px 1px 0 #7a5200,
+    1px 1px 0 #7a5200,
+    0 0 6px rgba(255, 194, 26, 0.55);
+}
+
+.dock-stat-label .urbs-symbol {
+  font-size: 15px;
+}
+
+.urbs-amount {
+  white-space: nowrap;
+}
+
 .working-indicator {
   position: fixed;
   left: 0;

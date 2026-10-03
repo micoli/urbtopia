@@ -1,6 +1,8 @@
+import type { ReactNode } from 'react';
+
 interface FlyoutItemProps {
   label: string;
-  cost?: string;
+  cost?: ReactNode;
   guided?: boolean;
   onChoose: () => void;
 }

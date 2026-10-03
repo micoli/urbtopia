@@ -4,6 +4,7 @@ import { formatDuration } from './formatDuration';
 import { useGame } from './hooks';
 import { gameStore } from '../store/gameStore';
 import { UpgradeSection } from './UpgradeSection';
+import { UrbsAmount } from './UrbsAmount';
 
 interface ProductionPanelProps {
   building: Building;
@@ -66,7 +67,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
       ) : null}
       {slotPrice !== undefined ? (
         <button type="button" className="slot-buy" onClick={() => send({ type: 'BuySlot', buildingId: building.id })}>
-          {t('panel.buySlot')} ({slotPrice} {t('stat.urbs')})
+          {t('panel.buySlot')} (<UrbsAmount value={slotPrice} />)
         </button>
       ) : null}
       <UpgradeSection building={building} />

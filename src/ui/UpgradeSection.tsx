@@ -1,7 +1,9 @@
+import { Fragment } from 'react';
 import { maxTierOf, upgradeCostOf, type Building, type GoodId } from '../core';
 import { t } from '../i18n/t';
 import { gameStore } from '../store/gameStore';
 import { useGame } from './hooks';
+import { UrbsAmount } from './UrbsAmount';
 
 interface UpgradeSectionProps {
   building: Building;
@@ -14,21 +16,27 @@ export function UpgradeSection({ building }: UpgradeSectionProps) {
   if (!cost) return null;
 
   const missing = [
-    ...(urbs < cost.urbs ? [`${cost.urbs - urbs} ${t('stat.urbs')}`] : []),
+    ...(urbs < cost.urbs ? [<UrbsAmount key="urbs" value={cost.urbs - urbs} />] : []),
     ...Object.entries(cost.goods).flatMap(([good, amount]) => {
       const lacking = amount - (goods[good as GoodId] ?? 0);
-      return lacking > 0 ? [`${lacking} ${t(`item.${good as GoodId}`)}`] : [];
+      return lacking > 0 ? [<Fragment key={good}>{`${lacking} ${t(`item.${good as GoodId}`)}`}</Fragment>] : [];
     }),
   ];
   return (
     <>
       <p>
-        {t('home.upgrade')}: {cost.urbs} {t('stat.urbs')}
+        {t('home.upgrade')}: <UrbsAmount value={cost.urbs} />
         {Object.entries(cost.goods).map(([good, amount]) => ` + ${amount} ${t(`item.${good as GoodId}`)}`)}
       </p>
       {missing.length > 0 ? (
         <p className="stat-tight">
-          {t('home.missing')}: {missing.join(', ')}
+          {t('home.missing')}:{' '}
+          {missing.map((item, index) => (
+            <Fragment key={index}>
+              {index > 0 ? ', ' : null}
+              {item}
+            </Fragment>
+          ))}
         </p>
       ) : null}
       <button type="button" className="collect-button" onClick={() => gameStore.getState().send({ type: 'UpgradeBuilding', buildingId: building.id })}>
