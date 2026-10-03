@@ -535,6 +535,13 @@ button {
   font-weight: 700;
 }
 
+.collect-button:disabled {
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .slot-buy {
   width: 100%;
   min-height: var(--tap);
