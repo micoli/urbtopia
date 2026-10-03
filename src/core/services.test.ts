@@ -125,9 +125,9 @@ describe('Tier gates', () => {
     expect(run(rich([home, ...school, b(3, 'highSchool', 0, 4), b(4, 'hospital', 0, 8)])).ok).toBe(true);
   });
 
-  it('does not require a Middle school, a University or Culture', () => {
+  it('does not require a Middle school, a High school, a University or Culture', () => {
     const home = b(2, 'home', 2, 0, { tier: 7 });
-    const required = ['school', 'highSchool', 'hospital', 'townHall', 'fireStation', 'policeStation'] as const;
+    const required = ['school', 'hospital', 'townHall', 'fireStation', 'policeStation'] as const;
     const services = required.map((type, index) => b(10 + index, type, 0, 4 + index));
     expect(missingServices(serviceCoverage(city([home, ...services])), home, 8)).toEqual([]);
   });

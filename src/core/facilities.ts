@@ -59,7 +59,7 @@ export type ServiceKey = FacilityType;
 
 export const REQUIRED_SERVICES: Readonly<Record<number, readonly FacilityType[]>> = {
   3: ['school'],
-  5: ['highSchool', 'hospital'],
+  5: ['hospital'],
   6: ['townHall', 'fireStation', 'policeStation'],
 };
 

@@ -13,7 +13,7 @@ const texts: Record<FacilityType, { name: readonly [string, string]; help: reado
   },
   highSchool: {
     name: ['High school', 'Lycée'],
-    help: ['Prepares nearby Citizens for higher studies. Required for Home Tier 5.', 'Prépare les citoyens proches aux études supérieures. Requis pour les logements de niveau 5.'],
+    help: ['Prepares nearby Citizens for higher studies. Optional: it raises Well-being.', 'Prépare les citoyens proches aux études supérieures. Facultatif : il augmente le bien-être.'],
   },
   university: {
     name: ['University', 'Université'],
