@@ -22,7 +22,7 @@ try {
     for (const [packName, selection] of Object.entries(packs)) {
       const pack = ASSET_PACKS.find((candidate) => candidate.name === packName);
       if (!pack) throw new Error(`Unknown pack ${packName}`);
-      const files = extractPack(new Uint8Array(readFileSync(join(ARCHIVES_DIR, pack.archive))), selection);
+      const files = extractPack(new Uint8Array(readFileSync(join(ARCHIVES_DIR, pack.archive))), selection, pack.colormap);
       for (const file of files) {
         const target = join(modelsDir, packName, file.path);
         mkdirSync(dirname(target), { recursive: true });

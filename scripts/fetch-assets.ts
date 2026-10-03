@@ -14,7 +14,7 @@ try {
   for (const pack of ASSET_PACKS) {
     console.log(`↓ ${pack.archive}`);
     const archive = await download(pack.url);
-    extractPack(archive, pack.files);
+    extractPack(archive, pack.files, pack.colormap);
     writeFileSync(join(ARCHIVES_DIR, pack.archive), archive);
   }
   console.log('Archives refreshed in assets/kenney. Run `npm run assets -- --force` to extract them, then commit.');

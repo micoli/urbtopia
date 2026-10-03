@@ -1,3 +1,5 @@
+import { ASSET_PACKS } from './assetPacks.ts';
+
 export type Selection = string[] | 'all';
 
 export interface PrototypeAssets {
@@ -13,7 +15,7 @@ const letters = (first: string, last: string) =>
 export const PROTOTYPE_ASSETS: PrototypeAssets[] = [
   {
     prototype: 'asset-viewer',
-    packs: { roads: 'all', commercial: 'all', suburban: 'all', industrial: 'all' },
+    packs: Object.fromEntries(ASSET_PACKS.map(({ name }) => [name, 'all' as const])),
     manifest: true,
   },
   {

@@ -34,8 +34,8 @@ describe('versioned archives', () => {
   it.each(ASSET_PACKS)('contain every model wanted from the $name pack, so installing needs no network', (pack) => {
     const path = join(ARCHIVES_DIR, pack.archive);
     expect(existsSync(path), path).toBe(true);
-    const files = extractPack(new Uint8Array(readFileSync(path)), pack.files);
-    expect(files.map((file) => file.path)).toContain('Textures/colormap.png');
+    const files = extractPack(new Uint8Array(readFileSync(path)), pack.files, pack.colormap);
+    if (pack.colormap !== false) expect(files.map((file) => file.path)).toContain('Textures/colormap.png');
     expect(files.filter((file) => file.path.endsWith('.glb'))).toHaveLength(pack.files.length);
   });
 });
@@ -69,5 +69,11 @@ describe('extractPack', () => {
   it('fails clearly when a wanted model is missing or there is no colour map', () => {
     expect(() => extractPack(archive, ['building-a', 'building-q'])).toThrow('building-q');
     expect(() => extractPack(zipSync({ 'Models/GLB format/building-a.glb': bytes('a') }), ['building-a'])).toThrow('colormap');
+  });
+
+  it('extracts models without an external colour map when the pack does not require one', () => {
+    const archive = zipSync({ 'Models/GLTF format/tree.glb': bytes('tree') });
+    expect(extractPack(archive, 'all', false).map((file) => file.path)).toEqual(['tree.glb']);
+    expect(() => extractPack(archive, ['missing'], false)).toThrow('missing.glb');
   });
 });

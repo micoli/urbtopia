@@ -67,7 +67,7 @@ The product spec and the work breakdown live in [`.scratch/urbix-mvp`](.scratch/
 
 ## Assets
 
-The 3D models come from the Kenney City Kits and Car Kit (see [Credits](#credits)). The original archives are versioned in `assets/kenney/`, so installing and building never need the network. `npm run assets` extracts only the models the scene uses into `public/models`, which is generated and ignored by git.
+The 3D models come from Kenney asset packs (see [Credits](#credits)). The original archives are versioned in `assets/kenney/`, so installing and building never need the network. `npm run assets` extracts only the models the scene uses into `public/models`, which is generated and ignored by git. `npm run assets:prototypes` makes all registered packs available in the asset viewer, including packs with no models selected for the game.
 
 To update the archives, run `npm run assets:fetch`. The download links contain a hash that changes with each Kenney release: if one fails, copy the new link from the pack page into `scripts/assetPacks.ts`. Archives are validated before they replace the old ones. Then run `npm run assets -- --force` and commit the new archives.
 
@@ -82,6 +82,13 @@ The [`prototypes`](prototypes) folder holds three throwaway prototypes (render b
 - [City Kit (Suburban)](https://kenney.nl/assets/city-kit-suburban) 2.0
 - [City Kit (Industrial)](https://kenney.nl/assets/city-kit-industrial) 2.0
 - [Car Kit](https://kenney.nl/assets/car-kit) 3.1
+- [Nature Kit](https://kenney.nl/assets/nature-kit) 1.0
+- [Mini Forest](https://kenney.nl/assets/mini-forest) 1.0
+- [Graveyard Kit](https://kenney.nl/assets/graveyard-kit) 5.0
+- [Holiday Kit](https://kenney.nl/assets/holiday-kit) 2.0
+- [Pirate Kit](https://kenney.nl/assets/pirate-kit) 2.1
+- [Watercraft Kit](https://kenney.nl/assets/watercraft-kit) 2.1
+- [Train Kit](https://kenney.nl/assets/train-kit) 1.1
 
 Each archive in `assets/kenney/` includes its original `License.txt`. Research notes on the packs are in [`docs/research/kenney-city-kits.md`](docs/research/kenney-city-kits.md).
 

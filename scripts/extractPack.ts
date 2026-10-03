@@ -7,9 +7,9 @@ export interface ExtractedFile {
 
 const baseName = (path: string) => path.slice(path.lastIndexOf('/') + 1);
 
-// Keeps the wanted GLB models and the colour map they reference, laid out as `<name>.glb` and `Textures/colormap.png`.
+// Keeps GLB models and their external colour map when required.
 // Some packs ship the colour map only next to the FBX models, so those are used as a fallback.
-export function extractPack(zip: Uint8Array, files: string[] | 'all'): ExtractedFile[] {
+export function extractPack(zip: Uint8Array, files: string[] | 'all', colormap = true): ExtractedFile[] {
   const wanted = files === 'all' ? null : new Set(files.map((file) => `${file}.glb`));
   const entries = unzipSync(zip, {
     filter: ({ name }) => (name.endsWith('.glb') && (wanted === null || wanted.has(baseName(name)))) || name.endsWith('/Textures/colormap.png'),
@@ -22,10 +22,10 @@ export function extractPack(zip: Uint8Array, files: string[] | 'all'): Extracted
 
   const missing = [...(wanted ?? [])].filter((file) => !models.some((path) => baseName(path) === file));
   if (missing.length > 0) throw new Error(`Missing in the archive: ${missing.join(', ')}`);
-  if (!texture) throw new Error('No Textures/colormap.png in the archive');
+  if (colormap && !texture) throw new Error('No Textures/colormap.png in the archive');
 
   return [
     ...models.map((path) => ({ path: baseName(path), data: entries[path] as Uint8Array })),
-    { path: 'Textures/colormap.png', data: entries[texture] as Uint8Array },
+    ...(texture ? [{ path: 'Textures/colormap.png', data: entries[texture] as Uint8Array }] : []),
   ];
 }
