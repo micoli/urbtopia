@@ -1052,3 +1052,7 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .eco-dashboard aside { border-left: 4px solid #b28a22; padding: 10px; background: #fff7dd; }
 .eco-dashboard :focus-visible { outline: 3px solid #26774e; outline-offset: 3px; }
 @media (max-width: 600px) { .eco-dashboard { padding: 12px; } .eco-dashboard header { top: -12px; } .eco-dashboard table { font-size: .75rem; } }
+
+.transit-panel label { display: block; margin: 12px 0; }
+.transit-panel input { width: 5rem; min-height: 36px; padding: 4px 8px; margin-left: 8px; }
+.transit-panel select { max-width: 100%; min-height: 40px; padding: 6px; margin: 4px; }

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { hashSeed, nextRandom, totalCitizens, transportStats, type Coord, type GameState } from '../core';
+import { hashSeed, nextRandom, totalCitizens, transportStats, tileKey, type Coord, type GameState } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { buildRoadGraph, emptyRoadGraph, type RoadGraph } from './roadGraph';
 import { targetVehicleCount } from './trafficTarget';
@@ -20,6 +20,7 @@ interface ModelMeshes {
 
 export class TrafficLayer {
   readonly root = new THREE.Group();
+  priorityTiles: ReadonlySet<string> = new Set();
   private models: ModelMeshes[] = [];
   private vehicles: Vehicle[] = [];
   private graph: RoadGraph = emptyRoadGraph();
@@ -120,7 +121,7 @@ export class TrafficLayer {
   }
 
   private moveVehicles(deltaSeconds: number): void {
-    this.vehicles = this.vehicles.filter((vehicle) => advanceVehicle(this.graph, vehicle, deltaSeconds, this.random));
+    this.vehicles = this.vehicles.filter((vehicle) => (vehicle.progress < .5 && this.priorityTiles.has(tileKey(vehicle.to))) || advanceVehicle(this.graph, vehicle, deltaSeconds, this.random));
   }
 
   private adjustCount(): void {

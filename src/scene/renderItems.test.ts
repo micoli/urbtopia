@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, newGame } from '../core';
-import { chunkKeyOf, renderItemsOf } from './renderItems';
+import { railItems, chunkKeyOf, renderItemsOf } from './renderItems';
 
 describe('renderItemsOf', () => {
   const state = newGame({ seed: 'amber-fox-4821', now: 0 });
@@ -79,4 +79,15 @@ describe('chunkKeyOf', () => {
     expect(chunkKeyOf(15.5, 0.2)).toBe('0,0');
     expect(chunkKeyOf(16, 31.9)).toBe('1,1');
   });
+});
+
+it('uses Kenney railway models for straights, corners and branch arms', () => {
+  const state = newGame({ seed: 'rail-models', now: 0 });
+  expect(railItems({ ...state, rails: [{ x: 0, y: 0, exits: ['E', 'W'] }] })).toMatchObject([{ model: 'trains/railroad-straight', rotation: 1 }]);
+  for (const [exits, rotation] of [[['N', 'W'], 0], [['W', 'S'], 1], [['S', 'E'], 2], [['E', 'N'], 3]] as const) {
+    expect(railItems({ ...state, rails: [{ x: 0, y: 0, exits: [...exits] }] })).toMatchObject([{ model: 'trains/railroad-corner-small', rotation }]);
+  }
+  expect(railItems({ ...state, rails: [{ x: 0, y: 0, exits: ['N', 'E', 'W'] }] })).toHaveLength(3);
+  const before = renderItemsOf(state);
+  expect(renderItemsOf({ ...state, rails: [{ x: 0, y: 0, exits: ['E', 'W'] }] })).not.toBe(before);
 });

@@ -31,7 +31,7 @@ export class ChunkedWorld {
 
   private syncChunk(key: string, items: RenderItem[]): void {
     const signature = items
-      .map((item) => `${item.model}@${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''}`)
+      .map((item) => `${item.model}@${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.lengthScale ?? 1}`)
       .sort()
       .join('|');
     if (this.chunks.get(key)?.signature === signature) return;
@@ -57,6 +57,7 @@ export class ChunkedWorld {
     for (const item of items) byModel.set(item.model, [...(byModel.get(item.model) ?? []), item]);
 
     const placement = new THREE.Matrix4();
+    const lengthScale = new THREE.Matrix4();
     const combined = new THREE.Matrix4();
     for (const [model, modelItems] of byModel) {
       const fit = fitMatrixOf(model);
@@ -67,7 +68,7 @@ export class ChunkedWorld {
         modelItems.forEach((item, index) => {
           const elevation = item.roofBase ? new THREE.Box3().setFromObject(this.library.get(item.roofBase)).applyMatrix4(fitMatrixOf(item.roofBase)).max.y : item.elevation ?? 0;
           placement.makeRotationY((item.rotation * Math.PI) / 2).setPosition(item.x, elevation, item.z);
-          combined.multiplyMatrices(placement, fit).multiply(mesh.matrixWorld);
+          combined.copy(placement).multiply(lengthScale.makeScale(1, 1, item.lengthScale ?? 1)).multiply(fit).multiply(mesh.matrixWorld);
           instanced.setMatrixAt(index, combined);
         });
         instanced.computeBoundingSphere();

@@ -1,4 +1,5 @@
 import {
+  extendNetwork,
   BUILDING_SPECS,
   GAME_CONFIG,
   buyableParcels,
@@ -24,10 +25,10 @@ import {
 export type Tool =
   | { kind: 'building'; buildingType: BuildingType; solar?: boolean }
   | { kind: 'move'; buildingId: number }
-  | { kind: 'road'; start: Coord | null; horizontalFirst: boolean }
+  | { kind: 'road'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'crossing' }
   | { kind: 'roundabout' }
-  | { kind: 'demolishRoad'; start: Coord | null; horizontalFirst: boolean }
+  | { kind: 'demolishRoad'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'parcel' };
 
 export interface ToolContext {
@@ -163,6 +164,10 @@ function evaluateRoad(state: GameState, tool: Extract<Tool, { kind: 'road' }>, t
     return { ghost: { tiles: [tile], rects: [], valid: true, front: null }, valid: true, issue: null, command: null, cost: null, rotation: null };
   }
   const path = roadPath(tool.start, tile, tool.horizontalFirst);
+  if (tool.mode) {
+    const result = extendNetwork(state, tool.mode, tool.start, tile, tool.horizontalFirst);
+    return evaluation(path, { type: 'BuildTransit', mode: tool.mode, from: tool.start, to: tile, horizontalFirst: tool.horizontalFirst }, state, { cost: 'cost' in result ? result.cost : null });
+  }
   const command: Command = { type: 'BuildRoad', from: tool.start, to: tile, horizontalFirst: tool.horizontalFirst };
   return evaluation(path, command, state, { cost: roadBuildCost(state, path) });
 }
@@ -170,6 +175,7 @@ function evaluateRoad(state: GameState, tool: Extract<Tool, { kind: 'road' }>, t
 function evaluateDemolishRoad(state: GameState, tool: Extract<Tool, { kind: 'demolishRoad' }>, tile: Coord): Evaluation {
   if (!tool.start) return evaluation([tile], null, state);
   const path = roadPath(tool.start, tile, tool.horizontalFirst);
+  if (tool.mode) return evaluation(path, { type: 'DemolishTransit', mode: tool.mode, from: tool.start, to: tile, horizontalFirst: tool.horizontalFirst }, state);
   return evaluation(path, { type: 'DemolishRoadPath', from: tool.start, to: tile, horizontalFirst: tool.horizontalFirst }, state);
 }
 

@@ -240,6 +240,7 @@ export class GameScene {
     this.controller.update(delta);
     this.notifyCenterTile();
     this.ecologyLayer.update(delta);
+    this.traffic.priorityTiles = this.ecologyLayer.transit.priorityTiles;
     this.traffic.update(delta, this.controller.camera);
     this.renderer.render(this.scene, this.controller.camera);
     this.frameHandle = requestAnimationFrame(this.frame);

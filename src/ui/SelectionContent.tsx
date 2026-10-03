@@ -31,7 +31,7 @@ export function SelectionContent() {
       {building.type === 'shop' ? <ShopPanel building={building} /> : null}
       {isStorageType(building.type) ? <StoragePanel building={building} /> : null}
       {building.type === 'powerPlant' || building.type === 'waterTower' ? <UtilityPanel building={building} type={building.type} /> : null}
-      {['tree','park','solar','battery','backup','busStop'].includes(building.type) || (building.type === 'home' && building.solar) ? <EcologicalBuildingPanel building={building} /> : null}
+      {['tree','park','solar','battery','backup','busStop','brtStation','railStation'].includes(building.type) || (building.type === 'home' && building.solar) ? <EcologicalBuildingPanel building={building} /> : null}
       <div className="side-panel-actions">
         <button type="button" onClick={moveSelected}>
           {t('panel.move')}

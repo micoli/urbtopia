@@ -8,6 +8,7 @@ export interface RenderItem {
   z: number;
   rotation: number;
   elevation?: number;
+  lengthScale?: number;
   roofBase?: string;
 }
 
@@ -26,6 +27,8 @@ export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
   solar: 'industrial/solar-panel-landscape-group',
   battery: 'industrial/shipping-container-a',
   backup: 'industrial/building-d',
+  brtStation: 'roads/road-sign-empty',
+  railStation: 'industrial/building-q',
   busStop: 'roads/road-sign-empty',
 };
 
@@ -48,9 +51,13 @@ const SOLAR_HOME_MODELS = ['suburban/building-type-j', 'suburban/building-type-u
 const ROOF_PANEL_MODEL = 'industrial/solar-panel-flat';
 const SOLAR_PANEL_MODEL = 'industrial/solar-panel-landscape';
 
+export const TRAIN_MODELS = ['trains/train-electric-city-a', 'trains/train-electric-city-b', 'trains/train-locomotive-a', 'trains/train-locomotive-passenger-a'];
+
+const RAIL_MODELS = ['trains/railroad-straight', 'trains/railroad-corner-small'];
+
 const ROAD_MODELS = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout'].map((piece) => `roads/road-${piece}`);
 
-export const MODEL_KEYS: readonly string[] = [...new Set([...Object.values(MODEL_BY_BUILDING), ...FACTORY_MODELS, ...STOREHOUSE_MODELS, ...HOME_MODELS, ...SOLAR_HOME_MODELS, ROOF_PANEL_MODEL, SOLAR_PANEL_MODEL, ...ROAD_MODELS, ...VEHICLE_MODELS, BUS_MODEL])];
+export const MODEL_KEYS: readonly string[] = [...new Set([...Object.values(MODEL_BY_BUILDING), ...FACTORY_MODELS, ...STOREHOUSE_MODELS, ...HOME_MODELS, ...SOLAR_HOME_MODELS, ROOF_PANEL_MODEL, SOLAR_PANEL_MODEL, ...ROAD_MODELS, ...RAIL_MODELS, ...TRAIN_MODELS, ...VEHICLE_MODELS, BUS_MODEL])];
 
 export function modelOf(type: BuildingType, tier: number): string {
   if (type === 'home') return HOME_MODELS[tier - 1] ?? MODEL_BY_BUILDING.home;
@@ -67,13 +74,13 @@ export function modelOfBuilding(building: Building): string {
 }
 
 let lastBuildingItems: RenderItem[] = [];
-let lastRoadItems: { roads: GameState['roads']; roundabouts: GameState['roundabouts']; items: RenderItem[] } | null = null;
+let lastRoadItems: { roads: GameState['roads']; roundabouts: GameState['roundabouts']; rails: GameState['rails']; items: RenderItem[] } | null = null;
 let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; items: RenderItem[] } | null = null;
 
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   return a.length === b.length && a.every((item, index) => {
     const other = b[index] as RenderItem;
-    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase;
+    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.lengthScale === other.lengthScale;
   });
 }
 
@@ -82,8 +89,8 @@ export function renderItemsOf(state: GameState): RenderItem[] {
   const buildings = sameItems(builtBuildings, lastBuildingItems) ? lastBuildingItems : builtBuildings;
   lastBuildingItems = buildings;
 
-  if (lastRoadItems?.roads !== state.roads || lastRoadItems.roundabouts !== state.roundabouts) {
-    lastRoadItems = { roads: state.roads, roundabouts: state.roundabouts, items: roadItems(state) };
+  if (lastRoadItems?.roads !== state.roads || lastRoadItems.roundabouts !== state.roundabouts || lastRoadItems.rails !== state.rails) {
+    lastRoadItems = { roads: state.roads, roundabouts: state.roundabouts, rails: state.rails, items: [...roadItems(state), ...railItems(state)] };
   }
   const roads = lastRoadItems.items;
 
@@ -124,4 +131,23 @@ function buildingItems(state: GameState): RenderItem[] {
 export function chunkKeyOf(x: number, z: number): string {
   const size = GAME_CONFIG.parcelSizeInTiles;
   return `${Math.floor(x / size)},${Math.floor(z / size)}`;
+}
+
+export function railItems(state: GameState): RenderItem[] {
+  return (state.rails ?? []).flatMap(tile => {
+    const base = { x: tile.x + .5, z: tile.y + .5, elevation: .035 };
+    const straight = 'trains/railroad-straight', corner = 'trains/railroad-corner-small';
+    const exits = tile.exits;
+    if (exits.length <= 1 || (exits.length === 2 && ((exits.includes('E') && exits.includes('W')) || (exits.includes('N') && exits.includes('S'))))) {
+      return [{ ...base, model: straight, rotation: exits.includes('E') || exits.includes('W') ? 1 : 0 }];
+    }
+    if (exits.length === 2) {
+      const pairs = [['N', 'W'], ['W', 'S'], ['S', 'E'], ['E', 'N']];
+      const rotation = pairs.findIndex(pair => pair.every(d => exits.includes(d as typeof exits[number])));
+      return [{ ...base, model: corner, rotation }];
+    }
+    return exits.map(d => ({ ...base, model: straight, lengthScale: .5,
+      x: base.x + (d === 'E' ? .25 : d === 'W' ? -.25 : 0), z: base.z + (d === 'S' ? .25 : d === 'N' ? -.25 : 0),
+      rotation: d === 'E' || d === 'W' ? 1 : 0 }));
+  });
 }

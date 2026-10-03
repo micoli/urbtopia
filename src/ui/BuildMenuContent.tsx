@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ECOLOGY_UNLOCKS, ECOLOGY, totalCitizens, GAME_CONFIG, placementCost, type BuildingType } from '../core';
+import { TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, totalCitizens, GAME_CONFIG, placementCost, type BuildingType } from '../core';
 import { t } from '../i18n/t';
 import type { Tool } from '../tools/tools';
 import { FlyoutItem } from './FlyoutItem';
@@ -7,7 +7,7 @@ import { useGame, useUi } from './hooks';
 import { guideOf } from './tutorialGuide';
 import { UrbsAmount } from './UrbsAmount';
 
-const BUILDING_ORDER: BuildingType[] = ['workshop', 'factory', 'shop', 'storehouse', 'silo', 'vault', 'home', 'powerPlant', 'waterTower', 'tree', 'park', 'solar', 'battery', 'backup', 'busStop'];
+const BUILDING_ORDER: BuildingType[] = ['workshop', 'factory', 'shop', 'storehouse', 'silo', 'vault', 'home', 'powerPlant', 'waterTower', 'tree', 'park', 'solar', 'battery', 'backup', 'busStop', 'brtStation', 'railStation'];
 
 export function BuildMenuContent() {
   const citizens = useGame(store => totalCitizens(store.state));
@@ -39,6 +39,11 @@ export function BuildMenuContent() {
     { label: t('tool.roundabout'), cost: <UrbsAmount value={GAME_CONFIG.roundaboutCost} />, tool: { kind: 'roundabout' } },
     { label: t('tool.demolishRoad'), tool: { kind: 'demolishRoad', start: null, horizontalFirst: true } },
   ];
+  for (const mode of ['brt', 'rail'] as const) {
+    if (citizens < TRANSIT[mode].unlock) continue;
+    roadTools.push({ label: t(`tool.${mode}`), cost: `${TRANSIT[mode].tileCost} ${t('tool.perTile')}`, tool: { kind: 'road', mode, start: null, horizontalFirst: true } });
+    roadTools.push({ label: t(mode === 'brt' ? 'tool.demolishBrt' : 'tool.demolishRail'), tool: { kind: 'demolishRoad', mode, start: null, horizontalFirst: true } });
+  }
   return (
     <>
       {roadTools.map((item) => (

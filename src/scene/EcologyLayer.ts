@@ -1,5 +1,6 @@
+import { TransitLayer } from './TransitLayer';
 import * as THREE from 'three';
-import { energyStats, transportStats, footprintOf, type GameState } from '../core';
+import { energyStats, transportStats, footprintOf, tileKey, type GameState } from '../core';
 import { centerOf } from '../core/ecology';
 import type { ModelLibrary } from './modelLibrary';
 import { poseOf } from './vehicleMotion';
@@ -8,6 +9,7 @@ import { BUS_MODEL } from './busModel';
 const BUS_LENGTH = 0.72;
 
 export class EcologyLayer {
+  readonly transit: TransitLayer;
   readonly root = new THREE.Group();
   private busRoot = new THREE.Group();
   private overlay = new THREE.Group();
@@ -20,25 +22,27 @@ export class EcologyLayer {
   private lineMaterial = new THREE.LineBasicMaterial({ color: 0x28ca8c });
 
   constructor(private library: ModelLibrary) {
+    this.transit = new TransitLayer(library);
     const canvas = document.createElement('canvas'); canvas.width = 128; canvas.height = 128;
     const ctx = canvas.getContext('2d')!;
     ctx.fillStyle = '#1761ae'; ctx.fillRect(0, 0, 128, 128);
     ctx.fillStyle = '#fff'; ctx.font = 'bold 48px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('BUS', 64, 88);
     this.signTexture = new THREE.CanvasTexture(canvas);
     this.signMaterial = new THREE.SpriteMaterial({ map: this.signTexture });
-    this.root.add(this.busRoot, this.overlay, this.signs);
+    this.root.add(this.busRoot, this.overlay, this.signs, this.transit.root);
     void this.loadBusModel();
   }
 
   sync(state: GameState, selectedId: number | null) {
     const stats = transportStats(state);
+    this.transit.sync(state, stats.lines);
     const signature = JSON.stringify({ stops: state.buildings.filter(b => b.type === 'busStop').map(b => [b.id, b.x, b.y]), lines: stats.lines.map(l => [l.id, l.active, l.route]) });
     if (signature !== this.signature) {
       this.signature = signature; this.busRoot.clear(); this.clear(this.signs); this.buses = [];
       for (const stop of state.buildings.filter(b => b.type === 'busStop')) {
         const sign = new THREE.Sprite(this.signMaterial); sign.position.set(stop.x + .5, 1.1, stop.y + .5); sign.scale.set(.55, .55, 1); this.signs.add(sign);
       }
-      for (const line of stats.lines) {
+      for (const line of stats.lines.filter(l => l.mode === 'bus')) {
         if (!line.active || !line.route) continue;
         const bus = this.makeBus(); this.busRoot.add(bus); this.buses.push({ mesh: bus, route: line.route, phase: line.id % 5 });
       }
@@ -51,7 +55,7 @@ export class EcologyLayer {
       const source = state.buildings.find(b => b.id === transfer.from), target = state.buildings.find(b => b.id === transfer.to);
       if (source && target) this.path([centerOf(source), centerOf(target)]);
     }
-    const radius = selected.type === 'busStop' ? 6 : selected.type === 'battery' ? 8 : selected.type === 'park' ? 6 : selected.type === 'tree' ? 4 : selected.solar ? 6 : 0;
+    const radius = ['busStop', 'brtStation', 'railStation'].includes(selected.type) ? 6 : selected.type === 'battery' ? 8 : selected.type === 'park' ? 6 : selected.type === 'tree' ? 4 : selected.solar ? 6 : 0;
     if (radius) {
       const p = centerOf(selected);
       this.path([{ x: p.x - radius, y: p.y }, { x: p.x, y: p.y - radius }, { x: p.x + radius, y: p.y }, { x: p.x, y: p.y + radius }, { x: p.x - radius, y: p.y }]);
@@ -65,9 +69,14 @@ export class EcologyLayer {
   }
 
   update(delta: number) {
+    this.transit.update(delta);
     for (const bus of this.buses) {
       const length = bus.route.length - 1; if (length < 1) continue;
-      bus.phase = (bus.phase + Math.max(0, delta) * 1.5) % (2 * length);
+      const returningBefore = bus.phase > length;
+      const before = returningBefore ? 2 * length - bus.phase : bus.phase;
+      const approach = bus.route[returningBefore ? Math.floor(before) : Math.ceil(before)];
+      const yielding = approach && this.transit.priorityTiles.has(tileKey(approach));
+      bus.phase = (bus.phase + (yielding ? 0 : Math.max(0, delta)) * 1.5) % (2 * length);
       const offset = bus.phase <= length ? bus.phase : 2 * length - bus.phase;
       const index = Math.min(length - 1, Math.floor(offset)), f = offset - index, a = bus.route[index]!, b = bus.route[index + 1]!;
       const returning = bus.phase > length;
@@ -80,7 +89,7 @@ export class EcologyLayer {
     }
   }
 
-  dispose() { this.disposed = true; this.busRoot.clear(); this.clear(this.overlay); this.signTexture.dispose(); this.signMaterial.dispose(); this.lineMaterial.dispose(); }
+  dispose() { this.transit.dispose(); this.disposed = true; this.busRoot.clear(); this.clear(this.overlay); this.signTexture.dispose(); this.signMaterial.dispose(); this.lineMaterial.dispose(); }
 
   private path(points: { x: number; y: number ;}[]) {
     const geometry = new THREE.BufferGeometry().setFromPoints(points.map(p => new THREE.Vector3(p.x, .08, p.y)));
