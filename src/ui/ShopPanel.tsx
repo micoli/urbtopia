@@ -34,6 +34,7 @@ export function ShopPanel({ building }: ShopPanelProps) {
           </li>
         ))}
       </ol>
+      {hasFreeSlot && stockable.length === 0 ? <p className="hint">{t('shop.needGoods')}</p> : null}
       {hasFreeSlot ? (
         <div className="slot-actions">
           {stockable.map((good) => (

@@ -325,6 +325,7 @@ export const FR: Record<MessageKey, string> = {
   'market.empty': "Aucun produit dans l'entrepôt.",
   'shop.stock': 'Stock',
   'shop.earned': 'Gagné',
+  'shop.needGoods': "Emplacement libre : il faut au moins 5 unités d'un produit dans l'entrepôt pour approvisionner cette boutique.",
   'shop.units': 'unités',
   'panel.buySlot': 'Acheter un emplacement',
   'panel.upgrade': 'Améliorer',

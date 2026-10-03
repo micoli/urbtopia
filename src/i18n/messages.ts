@@ -323,6 +323,7 @@ export const MESSAGES = {
   'market.empty': 'No Goods in the Storehouse.',
   'shop.stock': 'Stock',
   'shop.earned': 'Earned',
+  'shop.needGoods': 'Free slot: the Storehouse needs at least 5 units of a Good to supply this shop.',
   'shop.units': 'units',
   'panel.buySlot': 'Buy a Slot',
   'panel.upgrade': 'Upgrade',
