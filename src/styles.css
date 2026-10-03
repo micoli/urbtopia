@@ -854,7 +854,8 @@ textarea {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
-.fps-overlay {
+.fps-overlay,
+.sim-overlay {
   position: fixed;
   left: 50%;
   bottom: env(safe-area-inset-bottom, 0);
@@ -866,4 +867,9 @@ textarea {
   color: #7CFC00;
   font: 12px/1.4 monospace;
   white-space: nowrap;
+}
+
+.sim-overlay {
+  top: env(safe-area-inset-top, 0);
+  bottom: auto;
 }

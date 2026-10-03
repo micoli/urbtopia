@@ -2,6 +2,7 @@ import { createStore } from 'zustand/vanilla';
 import { advance, dispatch, newGame, type Command, type CommandError, type GameState } from '../core';
 import { saveSession } from '../persistence/instance';
 import type { LoadResult } from '../persistence/saveSession';
+import { isSimulationRequested } from '../sim/simulationFlag';
 import { readOnlyStore } from './readOnlyStore';
 import { toastKeyForEvents, toastStore } from './toastStore';
 
@@ -51,9 +52,12 @@ export function createGameStore(initial: GameState) {
   }));
 }
 
-export const bootResult: LoadResult = saveSession.load();
+export const isSimulation = isSimulationRequested(window.location.search);
+
+export const bootResult: LoadResult = isSimulation ? { kind: 'none' } : saveSession.load();
 
 const startedAt = Date.now();
-const initialState = bootResult.kind === 'loaded' ? bootResult.state : newGame({ now: startedAt, tutorial: true });
+const freshGame = () => newGame({ now: startedAt, tutorial: !isSimulation });
+const initialState = bootResult.kind === 'loaded' ? bootResult.state : freshGame();
 
 export const gameStore = createGameStore(initialState);
