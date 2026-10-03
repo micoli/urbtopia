@@ -15,7 +15,7 @@ export type { NewGameOptions } from './newGame';
 export { hashSeed, nextRandom } from './random';
 export { generateSeed } from './seed';
 export type { Coord } from './coord';
-export type { Building, BuildingType, GameState, ParcelCoord, MarketPrice, QueueEntry, RoadTile, Rotation, ShopStack, Storage } from './state';
+export type { Building, BuildingType, GameState, HomeColorVariant, ParcelCoord, MarketPrice, QueueEntry, RoadTile, Rotation, ShopStack, Storage } from './state';
 export { DIRECTIONS, DIRECTION_VECTORS, frontDirection, neighbour, tileKey } from './geometry';
 export type { Direction } from './geometry';
 export { roadPath, roadPiece } from './roads';

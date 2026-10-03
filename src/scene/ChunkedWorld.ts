@@ -31,7 +31,7 @@ export class ChunkedWorld {
 
   private syncChunk(key: string, items: RenderItem[]): void {
     const signature = items
-      .map((item) => `${item.model}@${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.lengthScale ?? 1}`)
+      .map((item) => `${item.model}@${item.textureVariant ?? ''}:${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.lengthScale ?? 1}`)
       .sort()
       .join('|');
     if (this.chunks.get(key)?.signature === signature) return;
@@ -54,17 +54,24 @@ export class ChunkedWorld {
   private buildChunk(items: RenderItem[]): THREE.Group {
     const group = new THREE.Group();
     const byModel = new Map<string, RenderItem[]>();
-    for (const item of items) byModel.set(item.model, [...(byModel.get(item.model) ?? []), item]);
+    for (const item of items) {
+      const key = `${item.model}@${item.textureVariant ?? ''}`;
+      byModel.set(key, [...(byModel.get(key) ?? []), item]);
+    }
 
     const placement = new THREE.Matrix4();
     const lengthScale = new THREE.Matrix4();
     const combined = new THREE.Matrix4();
-    for (const [model, modelItems] of byModel) {
+    for (const [key, modelItems] of byModel) {
+      const separator = key.lastIndexOf('@');
+      const model = key.slice(0, separator);
+      const variant = key.slice(separator + 1);
       const fit = fitMatrixOf(model);
       this.library.get(model).traverse((node) => {
         const mesh = node as THREE.Mesh;
         if (!mesh.isMesh) return;
-        const instanced = new THREE.InstancedMesh(mesh.geometry, mesh.material, modelItems.length);
+        const material = variant ? this.library.withTextureVariant(mesh.material, variant as 'a' | 'b' | 'c') : mesh.material;
+        const instanced = new THREE.InstancedMesh(mesh.geometry, material, modelItems.length);
         modelItems.forEach((item, index) => {
           const elevation = item.roofBase ? new THREE.Box3().setFromObject(this.library.get(item.roofBase)).applyMatrix4(fitMatrixOf(item.roofBase)).max.y : item.elevation ?? 0;
           placement.makeRotationY((item.rotation * Math.PI) / 2).setPosition(item.x, elevation, item.z);

@@ -8,6 +8,7 @@ import type { TutorialStep } from './tutorial';
 export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'coalPlant' | 'waterTower' | 'silo' | 'vault' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop' | 'brtStation' | 'railStation' | NatureType;
 
 export type Rotation = 0 | 1 | 2 | 3;
+export type HomeColorVariant = 'default' | 'a' | 'b' | 'c';
 
 export type ParcelCoord = Coord;
 
@@ -42,6 +43,7 @@ export interface Building extends Coord {
   taxCitizenMs: number;
   insulated?: boolean;
   solar?: boolean;
+  colorVariant?: HomeColorVariant;
   storedEnergy?: number;
   coalEnabled?: boolean;
 }

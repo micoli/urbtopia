@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BUILDING_SPECS, ECOLOGY, ECOLOGY_UNLOCKS, TRANSIT, maxTierOf, type BuildingType } from '../core';
-import { CODEX_ENTRIES, codexImageKey, validateCodex, validateCodexManifest } from './catalog';
+import { CODEX_ENTRIES, codexImageKey, HOME_COLOR_VARIANTS, validateCodex, validateCodexManifest } from './catalog';
 import { ROAD_CONSTRUCTIONS } from './construction';
 import { codexSnapshot } from './snapshot';
 import { modelOfBuilding, renderItemsOf } from '../scene/renderItems';
@@ -51,7 +51,10 @@ describe('codex coverage gate', () => {
   });
 
   it('blocks a manifest when any level image is missing', () => {
-    const images = Object.fromEntries(CODEX_ENTRIES.flatMap(entry => entry.levels.map(level => [codexImageKey(entry.id, level), 'preview.png'])));
+    const images = Object.fromEntries(CODEX_ENTRIES.flatMap(entry => entry.levels.flatMap(level => {
+      const colors = entry.id === 'home' || entry.id === 'solarHome' ? HOME_COLOR_VARIANTS : [undefined];
+      return colors.map(color => [codexImageKey(entry.id, level, color), 'preview.png']);
+    })));
     expect(() => validateCodexManifest({ fingerprint: 'test', images })).not.toThrow();
     for (const key of Object.keys(images)) {
       const incomplete = { ...images };

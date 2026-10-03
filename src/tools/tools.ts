@@ -19,11 +19,12 @@ import {
   type Direction,
   type ErrorKey,
   type GameState,
+  type HomeColorVariant,
   type Rotation,
 } from '../core';
 
 export type Tool =
-  | { kind: 'building'; buildingType: BuildingType; solar?: boolean }
+  | { kind: 'building'; buildingType: BuildingType; solar?: boolean; colorVariant?: HomeColorVariant }
   | { kind: 'move'; buildingId: number }
   | { kind: 'road'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'crossing' }
@@ -112,7 +113,7 @@ export function selectionGhost(state: GameState, buildingId: number | null): Gho
 export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext): Evaluation {
   switch (tool.kind) {
     case 'building':
-      return evaluateBuilding(state, tool.buildingType, tile, rotation, { type: 'PlaceBuilding', buildingType: tool.buildingType, solar: tool.solar }, placementCost(tool.buildingType) + (tool.solar ? 180 : 0));
+      return evaluateBuilding(state, tool.buildingType, tile, rotation, { type: 'PlaceBuilding', buildingType: tool.buildingType, solar: tool.solar, colorVariant: tool.colorVariant }, placementCost(tool.buildingType) + (tool.solar ? 180 : 0));
     case 'move': {
       const building = state.buildings.find((candidate) => candidate.id === tool.buildingId);
       if (!building) return evaluation([tile], null, state);
@@ -136,7 +137,7 @@ function evaluateBuilding(
   type: BuildingType,
   tile: Coord,
   requestedRotation: Rotation | null,
-  base: { type: 'PlaceBuilding'; buildingType: BuildingType; solar?: boolean } | { type: 'MoveBuilding'; id: number },
+  base: { type: 'PlaceBuilding'; buildingType: BuildingType; solar?: boolean; colorVariant?: HomeColorVariant } | { type: 'MoveBuilding'; id: number },
   cost: number,
   tier = 1,
 ): Evaluation {

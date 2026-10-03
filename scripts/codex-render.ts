@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CODEX_ENTRIES, codexImageKey, validateCodex } from '../src/codex/catalog';
+import { CODEX_ENTRIES, codexImageKey, HOME_COLOR_VARIANTS, validateCodex } from '../src/codex/catalog';
 import { codexSnapshot } from '../src/codex/snapshot';
 import { ChunkedWorld } from '../src/scene/ChunkedWorld';
 import { EcologyLayer } from '../src/scene/EcologyLayer';
@@ -9,6 +9,7 @@ import { MODEL_KEYS, renderItemsOf } from '../src/scene/renderItems';
 validateCodex();
 const library = new ModelLibrary();
 await library.ensure(MODEL_KEYS);
+await library.ensureTextureVariants(['a', 'b', 'c']);
 const canvas = document.querySelector('canvas')!;
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(512, 512, false);
@@ -24,19 +25,22 @@ objects.add(world.root, ecology.root);
 scene.add(objects, sun, new THREE.AmbientLight(0xffffff, 1.2));
 const camera = new THREE.OrthographicCamera(-3, 3, 3, -3, 0.01, 1000);
 
-const variants = CODEX_ENTRIES.flatMap(entry => entry.levels.map(level => {
-  const state = codexSnapshot(entry.id, level);
+const variants = CODEX_ENTRIES.flatMap(entry => entry.levels.flatMap(level => {
+  const colors = entry.id === 'home' || entry.id === 'solarHome' ? HOME_COLOR_VARIANTS : [undefined];
+  return colors.map(colorVariant => {
+  const state = codexSnapshot(entry.id, level, colorVariant);
   const signature = JSON.stringify([
     renderItemsOf(state), state.brtRoads,
     state.buildings.map(b => ({ type: b.type, x: b.x, y: b.y, rotation: b.rotation })),
   ]);
-  return { id: entry.id, level, key: codexImageKey(entry.id, level), signature };
+  return { id: entry.id, level, colorVariant, key: codexImageKey(entry.id, level, colorVariant), signature };
+  });
 }));
 
 function render(key: string): string {
   const variant = variants.find(variant => variant.key === key);
   if (!variant) throw new Error(`Unknown codex variant: ${key}`);
-  const state = codexSnapshot(variant.id, variant.level);
+  const state = codexSnapshot(variant.id, variant.level, variant.colorVariant);
   world.sync(renderItemsOf(state));
   ecology.sync(state, null);
   objects.updateMatrixWorld(true);

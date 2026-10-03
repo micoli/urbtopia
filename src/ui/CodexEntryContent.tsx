@@ -3,6 +3,7 @@ import { totalCitizens } from '../core';
 import { codexImageKey, type CodexEntry, type CodexManifest } from '../codex/catalog';
 import { t } from '../i18n/t';
 import { useGame } from './hooks';
+import { readHomeColor } from './homeColor';
 
 interface CodexEntryContentProps {
   entry: CodexEntry;
@@ -12,6 +13,7 @@ interface CodexEntryContentProps {
 export function CodexEntryContent({ entry, manifest }: CodexEntryContentProps) {
   const citizens = useGame(store => totalCitizens(store.state));
   const [failedImages, setFailedImages] = useState<readonly number[]>([]);
+  const colorVariant = entry.id === 'home' || entry.id === 'solarHome' ? readHomeColor() : undefined;
   const available = citizens >= entry.unlockCitizens;
   return (
     <>
@@ -27,7 +29,7 @@ export function CodexEntryContent({ entry, manifest }: CodexEntryContentProps) {
         {entry.levels.map(level => (
           <figure key={level}>
             {failedImages.includes(level) ? <p role="alert">{t('codex.loadFailed')}</p> : <img
-              src={`${import.meta.env.BASE_URL}codex/${manifest.images[codexImageKey(entry.id, level)]}`}
+              src={`${import.meta.env.BASE_URL}codex/${manifest.images[codexImageKey(entry.id, level, colorVariant)]}`}
               width={512} height={512}
               alt={t('codex.preview').replace('{name}', t(entry.name)).replace('{level}', String(level))}
               onError={() => setFailedImages(levels => [...levels, level])}

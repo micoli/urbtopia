@@ -231,6 +231,15 @@ button {
   padding: 6px 0 0 16px;
 }
 
+.home-color-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; padding-right: 6px; }
+.home-color-picker button { display: flex; align-items: center; gap: 7px; min-width: 0; min-height: 38px; padding: 4px 7px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 9px; background: rgba(255, 255, 255, 0.07); color: inherit; font: inherit; font-size: 11px; text-align: left; cursor: pointer; }
+.home-color-picker button[aria-pressed='true'] { border-color: var(--accent); background: rgba(255, 255, 255, 0.15); box-shadow: inset 0 0 0 1px var(--accent); }
+.home-color-swatch { flex: 0 0 15px; width: 15px; height: 15px; border: 1px solid rgba(255, 255, 255, 0.45); border-radius: 50%; }
+.home-color-swatch-default { background: #6c9e57; }
+.home-color-swatch-a { background: #4d8dbd; }
+.home-color-swatch-b { background: #c75a50; }
+.home-color-swatch-c { background: #858f78; }
+
 .side-panel {
   position: fixed;
   right: 0;

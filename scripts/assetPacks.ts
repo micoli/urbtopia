@@ -8,6 +8,7 @@ export interface AssetPack {
   archive: string;
   files: string[];
   colormap?: boolean;
+  colorVariants?: boolean;
 }
 
 // Kenney asset packs (CC0). The original archives are versioned in ARCHIVES_DIR, so installing and building never
@@ -38,6 +39,7 @@ export const ASSET_PACKS: AssetPack[] = [
   },
   {
     name: 'suburban',
+    colorVariants: true,
     url: 'https://kenney.nl/media/pages/assets/city-kit-suburban/2c871b7af2-1745479373/kenney_city-kit-suburban_20.zip',
     archive: 'kenney_city-kit-suburban_20.zip',
     files: ['building-type-a', 'building-type-b', 'building-type-f', 'building-type-h', 'building-type-k', 'building-type-m', 'building-type-n', 'building-type-t', 'building-type-j', 'building-type-u', 'tree-small', 'tree-large'],

@@ -10,6 +10,8 @@ import { BUILDING_SECTIONS, readBuildSection, writeBuildSection, type BuildSecti
 import { ROAD_CONSTRUCTIONS } from '../codex/construction';
 import { codexImageKey, type CodexId } from '../codex/catalog';
 import { useCodexManifest } from './useCodexManifest';
+import type { HomeColorVariant } from '../core';
+import { HOME_COLOR_VARIANTS, readHomeColor, writeHomeColor } from './homeColor';
 
 export function BuildMenuContent() {
   const citizens = useGame(store => totalCitizens(store.state));
@@ -18,10 +20,12 @@ export function BuildMenuContent() {
   const openCodex = useUi(store => store.openCodex);
   const guide = guideOf(useGame((store) => store.state.tutorial));
   const [openSection, setOpenSection] = useState<BuildSection>(readBuildSection);
+  const [homeColor, setHomeColor] = useState<HomeColorVariant>(readHomeColor);
   const menuId = useId();
   const { manifest } = useCodexManifest();
   const previewOf = (id: CodexId) => {
-    const image = manifest?.images[codexImageKey(id, 1)];
+    const variant = id === 'home' || id === 'solarHome' ? homeColor : undefined;
+    const image = manifest?.images[codexImageKey(id, 1, variant)];
     return image ? `${import.meta.env.BASE_URL}codex/${image}` : undefined;
   };
   if (!flyout) return null;
@@ -50,19 +54,25 @@ export function BuildMenuContent() {
                 </button>
               </h3>
               <div className="build-section-items" id={sectionId} aria-labelledby={`${sectionId}-toggle`} hidden={!expanded}>
+                {section.title === 'build.housing' && <div className="home-color-picker" role="group" aria-label={t('build.homeColor')}>
+                  {HOME_COLOR_VARIANTS.map(variant => <button key={variant} type="button" aria-pressed={homeColor === variant} onClick={() => { setHomeColor(variant); writeHomeColor(variant); }}>
+                    <span className={`home-color-swatch home-color-swatch-${variant}`} aria-hidden="true" />
+                    <span>{t(`build.homeColor.${variant}`)}</span>
+                  </button>)}
+                </div>}
                 {section.types.map(type => (
                   <FlyoutItem
                     key={type}
                     label={t(`building.${type}`)}
                     cost={<UrbsAmount value={placementCost(type)} />}
                     guided={guide.buildings.includes(type)}
-                    onChoose={() => chooseTool({ kind: 'building', buildingType: type })}
+                    onChoose={() => chooseTool({ kind: 'building', buildingType: type, ...(type === 'home' ? { colorVariant: homeColor } : {}) })}
                     codexId={type}
                     preview={previewOf(type)}
                     onInfo={() => openCodex(type)}
                   />
                 ))}
-                {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true })} codexId="solarHome" preview={previewOf('solarHome')} onInfo={() => openCodex('solarHome')} />}
+                {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true, colorVariant: homeColor })} codexId="solarHome" preview={previewOf('solarHome')} onInfo={() => openCodex('solarHome')} />}
               </div>
             </section>
           );

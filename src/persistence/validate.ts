@@ -57,6 +57,7 @@ function isBuilding(value: unknown): boolean {
     isNonNegative(value.taxCitizenMs) &&
     (value.insulated === undefined || (value.type === 'home' && typeof value.insulated === 'boolean')) &&
     (value.solar === undefined || (value.type === 'home' && typeof value.solar === 'boolean')) &&
+    (value.colorVariant === undefined || (value.type === 'home' && ['default', 'a', 'b', 'c'].includes(value.colorVariant as string))) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&
     (value.storedEnergy === undefined || (value.type === 'battery' && isNonNegative(value.storedEnergy) && value.storedEnergy <= 24))
   );

@@ -22,7 +22,7 @@ import { roadBuildCost, missingRoadTiles } from './roadCost';
 import { roadPath } from './roads';
 import { maxTierOf, productionTierOf, upgradeCostOf } from './tiers';
 import { canRemoveStorage, hasStorage, isStorageType, storageCapacity, storageUsed } from './storage';
-import type { Building, BuildingType, GameState, QueueEntry, Rotation, TransitLine, TransitVehicleKind } from './state';
+import type { Building, BuildingType, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitVehicleKind } from './state';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -39,7 +39,7 @@ export type Command =
   | { readonly type: 'PlaceRoundabout'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoad'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoadPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
-  | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation; readonly solar?: boolean }
+  | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation; readonly solar?: boolean; readonly colorVariant?: HomeColorVariant }
   | { readonly type: 'EquipHome'; readonly buildingId: number; readonly equipment: 'solar' | 'insulation' }
   | { readonly type: 'SetCoalEnabled'; readonly buildingId: number; readonly enabled: boolean }
   | { readonly type: 'SetBusLine'; readonly id?: number; readonly stops: number[] }
@@ -132,7 +132,7 @@ export function handleCommand(state: GameState, command: Command, now: number): 
     case 'DemolishRoadPath':
       return demolishRoad(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
     case 'PlaceBuilding':
-      return placeBuilding(state, command.buildingType, command.x, command.y, command.rotation, command.solar);
+      return placeBuilding(state, command.buildingType, command.x, command.y, command.rotation, command.solar, command.colorVariant);
     case 'EquipHome':
       return equipHome(state, command.buildingId, command.equipment);
     case 'SetCoalEnabled':
@@ -257,7 +257,7 @@ function demolishRoad(state: GameState, tiles: Coord[]): CommandOutcome {
   return { state: next, events: [] };
 }
 
-function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, requestedRotation?: Rotation, solar = false): CommandOutcome {
+function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, requestedRotation?: Rotation, solar = false, colorVariant?: HomeColorVariant): CommandOutcome {
   if (citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < ECOLOGY.solarUnlockCitizens)) return fail('error.itemLocked');
   if (solar && type !== 'home') return fail('error.cannotProduce');
   const extraCost = solar ? ECOLOGY.solarCost : 0;
@@ -265,7 +265,7 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
   const issue = placementIssue(state, type, x, y, rotation);
   if (issue) return fail(issue);
   if (state.urbs < placementCost(type) + extraCost) return fail('error.notEnoughUrbs');
-  const building = { ...createBuilding(state.nextId, type, x, y, rotation), ...(solar ? { solar: true } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
+  const building = { ...createBuilding(state.nextId, type, x, y, rotation), ...(solar ? { solar: true } : {}), ...(type === 'home' && colorVariant ? { colorVariant } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
   const utilityIssue = type === 'home' ? utilityIssueFor(state, tierDemand(1)) : null;
   if (utilityIssue) return fail(utilityIssue);
   return {

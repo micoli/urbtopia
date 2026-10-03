@@ -5,7 +5,7 @@ import { extractPack } from './extractPack.ts';
 
 const force = process.argv.includes('--force');
 
-const expectedPaths = (pack: AssetPack) => [...pack.files.map((file) => `${file}.glb`), ...(pack.colormap === false ? [] : ['Textures/colormap.png'])].map((file) => join(MODELS_DIR, pack.name, file));
+const expectedPaths = (pack: AssetPack) => [...pack.files.map((file) => `${file}.glb`), ...(pack.colormap === false ? [] : ['Textures/colormap.png']), ...(pack.colorVariants ? ['Textures/variation-a.png', 'Textures/variation-b.png', 'Textures/variation-c.png'] : [])].map((file) => join(MODELS_DIR, pack.name, file));
 
 function installPack(pack: AssetPack): void {
   if (pack.files.length === 0) return;
@@ -14,7 +14,7 @@ function installPack(pack: AssetPack): void {
   const archive = join(ARCHIVES_DIR, pack.archive);
   if (!existsSync(archive)) throw new Error(`${archive} is missing: restore it from git or run \`npm run assets:fetch\``);
 
-  const files = extractPack(new Uint8Array(readFileSync(archive)), pack.files, pack.colormap);
+  const files = extractPack(new Uint8Array(readFileSync(archive)), pack.files, pack.colormap, pack.colorVariants);
   for (const file of files) {
     const target = join(MODELS_DIR, pack.name, file.path);
     mkdirSync(dirname(target), { recursive: true });

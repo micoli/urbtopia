@@ -4,6 +4,9 @@ import { MESSAGES, type MessageKey } from '../i18n/messages';
 import { FR } from '../i18n/fr';
 import { BUILDING_SECTIONS, type BuildSection } from './buildingSections';
 import { ROAD_CONSTRUCTIONS, type RoadConstructionId } from './construction';
+import type { HomeColorVariant } from '../core';
+
+export const HOME_COLOR_VARIANTS: readonly HomeColorVariant[] = ['default', 'a', 'b', 'c'];
 
 export type CodexId = BuildingType | 'solarHome' | RoadConstructionId;
 export type CodexSection = BuildSection | 'codex.roads';
@@ -72,8 +75,10 @@ export const CODEX_ENTRIES: readonly CodexEntry[] = [
   })),
 ];
 
-export function codexImageKey(id: CodexId, level: number): string {
-  return `${id}:${level}`;
+export function codexImageKey(id: CodexId, level: number, colorVariant?: HomeColorVariant): string {
+  const key = `${id}:${level}`;
+  if (id !== 'home' && id !== 'solarHome') return key;
+  return `${key}:${colorVariant ?? 'default'}`;
 }
 
 export function validateCodex(entries: readonly CodexEntry[] = CODEX_ENTRIES): void {
@@ -98,8 +103,11 @@ export function validateCodexManifest(manifest: CodexManifest): void {
   if (!manifest.fingerprint || !manifest.images) throw new Error('Invalid codex manifest');
   for (const entry of CODEX_ENTRIES) {
     for (const level of entry.levels) {
-      const image = manifest.images[codexImageKey(entry.id, level)];
-      if (!image || !/^[a-zA-Z0-9-]+\.png$/.test(image)) throw new Error(`Missing codex image: ${entry.id}, level ${level}`);
+      const variants = entry.id === 'home' || entry.id === 'solarHome' ? HOME_COLOR_VARIANTS : [undefined];
+      for (const colorVariant of variants) {
+        const image = manifest.images[codexImageKey(entry.id, level, colorVariant)];
+        if (!image || !/^[a-zA-Z0-9-]+\.png$/.test(image)) throw new Error(`Missing codex image: ${entry.id}, level ${level}, color ${colorVariant ?? 'default'}`);
+      }
     }
   }
 }

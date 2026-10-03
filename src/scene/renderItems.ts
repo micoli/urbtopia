@@ -11,6 +11,7 @@ export interface RenderItem {
   elevation?: number;
   lengthScale?: number;
   roofBase?: string;
+  textureVariant?: 'a' | 'b' | 'c';
 }
 
 export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
@@ -86,7 +87,7 @@ let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; items: RenderItem
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   return a.length === b.length && a.every((item, index) => {
     const other = b[index] as RenderItem;
-    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.lengthScale === other.lengthScale;
+    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant;
   });
 }
 
@@ -122,7 +123,7 @@ function buildingItems(state: GameState): RenderItem[] {
     const z = building.y + depth / 2;
     const rotation = building.rotation;
     const model = modelOfBuilding(building);
-    const items: RenderItem[] = [{ model, x, z, rotation }];
+    const items: RenderItem[] = [{ model, x, z, rotation, ...(building.type === 'home' && building.colorVariant && building.colorVariant !== 'default' ? { textureVariant: building.colorVariant } : {}) }];
     if (building.type === 'park') {
       items.push({ model: 'suburban/tree-small', x: x - width / 4, z: z - depth / 4, rotation });
       items.push({ model: 'suburban/tree-small', x: x + width / 4, z: z + depth / 4, rotation });

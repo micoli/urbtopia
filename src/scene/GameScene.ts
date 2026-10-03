@@ -153,6 +153,7 @@ export class GameScene {
         this.latest = null;
         const items = renderItemsOf(state);
         await this.library.ensure(items.map((item) => item.model));
+        await this.library.ensureTextureVariants(items.flatMap(item => item.textureVariant ? [item.textureVariant] : []));
         this.world.sync(items);
         this.syncParcels(state);
         this.traffic.sync(state);
