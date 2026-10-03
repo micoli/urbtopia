@@ -141,6 +141,7 @@ export const MESSAGES = {
   'prefs.layout.C': 'Side dock',
   'prefs.layout.A': 'Bars',
   'prefs.layout.B': 'Minimal',
+  'prefs.traffic': 'Traffic',
   'lang.en': 'English',
   'lang.fr': 'Français',
   'radial.open': 'Open the menu',

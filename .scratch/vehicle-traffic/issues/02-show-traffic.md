@@ -1,7 +1,7 @@
 # Show Traffic that follows the population
 
 Type: task
-Status: claimed
+Status: resolved
 Blocked by: 01
 
 ## What to build
@@ -19,13 +19,15 @@ The rendering layer is not tested automatically.
 ## Acceptance criteria
 
 - [x] `targetVehicleCount` follows the sizing rule.
-- [ ] The road graph handles plain roads, dead ends and roundabouts.
-- [ ] A Vehicle goes straight when it can, takes a random exit otherwise, and turns around at a dead end.
-- [ ] A `TrafficLayer` renders Vehicles with one instanced mesh per model, reading state snapshots only.
-- [ ] Vehicles spawn and despawn as the population and the roads change, out of view first.
-- [ ] A "Traffic" switch in the preferences hides all Vehicles, with FR/EN labels.
-- [ ] Typecheck, lint and the full test suite pass.
+- [x] The road graph handles plain roads, dead ends and roundabouts.
+- [x] A Vehicle goes straight when it can, takes a random exit otherwise, and turns around at a dead end.
+- [x] A `TrafficLayer` renders Vehicles with one instanced mesh per model, reading state snapshots only.
+- [x] Vehicles spawn and despawn as the population and the roads change, out of view first.
+- [x] A "Traffic" switch in the preferences hides all Vehicles, with FR/EN labels.
+- [x] Typecheck, lint and the full test suite pass.
 
-## Comments
+## Answer
 
-Work in progress on branch `feat/traffic`: target count done, road graph under way.
+Rules (`trafficTarget`, `roadGraph`, `roadWalk`) are covered by Vitest. `TrafficLayer` and `vehicleMotion` render and move the Vehicles; checked by eye in the browser with a 34-tile road network and 1600 Citizens (17 Vehicles, on their lane, no console error). The full suite (324 tests), typecheck and lint pass.
+
+Not covered by a test, by agreement: the rendering and the movement interpolation.

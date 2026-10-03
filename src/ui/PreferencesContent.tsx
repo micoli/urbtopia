@@ -8,7 +8,8 @@ const LAYOUTS: Layout[] = ['C', 'A', 'B'];
 export function PreferencesContent() {
   const language = useStore(prefsStore, (store) => store.language);
   const layout = useStore(prefsStore, (store) => store.layout);
-  const { setLanguage, setLayout } = prefsStore.getState();
+  const traffic = useStore(prefsStore, (store) => store.traffic);
+  const { setLanguage, setLayout, setTraffic } = prefsStore.getState();
 
   return (
     <section className="prefs">
@@ -27,6 +28,10 @@ export function PreferencesContent() {
           </button>
         ))}
       </div>
+      <label className="prefs-toggle">
+        <input type="checkbox" checked={traffic} onChange={(event) => setTraffic(event.target.checked)} />
+        {t('prefs.traffic')}
+      </label>
     </section>
   );
 }

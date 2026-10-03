@@ -143,6 +143,7 @@ export const FR: Record<MessageKey, string> = {
   'prefs.layout.C': 'Barre latérale',
   'prefs.layout.A': 'Barres',
   'prefs.layout.B': 'Minimale',
+  'prefs.traffic': 'Trafic',
   'lang.en': 'English',
   'lang.fr': 'Français',
   'radial.open': 'Ouvrir le menu',

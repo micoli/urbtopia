@@ -6,6 +6,7 @@ export type Layout = 'C' | 'A' | 'B';
 export interface Prefs {
   language: Language;
   layout: Layout;
+  traffic: boolean;
 }
 
 export const PREFS_KEY = 'urbtopia-prefs';
@@ -18,13 +19,14 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C' };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
     return {
       language: LANGUAGES.includes(parsed.language as Language) ? (parsed.language as Language) : fallback.language,
       layout: LAYOUTS.includes(parsed.layout as Layout) ? (parsed.layout as Layout) : fallback.layout,
+      traffic: typeof parsed.traffic === 'boolean' ? parsed.traffic : fallback.traffic,
     };
   } catch {
     return fallback;
@@ -39,9 +41,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored(prefs: Prefs): void {
+function writeStored({ language, layout, traffic }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -50,6 +52,7 @@ function writeStored(prefs: Prefs): void {
 export interface PrefsStore extends Prefs {
   setLanguage: (language: Language) => void;
   setLayout: (layout: Layout) => void;
+  setTraffic: (traffic: boolean) => void;
 }
 
 const browserLanguage = typeof navigator === 'undefined' ? undefined : navigator.language;
@@ -58,10 +61,14 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   ...parsePrefs(readStored(), browserLanguage),
   setLanguage: (language) => {
     set({ language });
-    writeStored({ language, layout: get().layout });
+    writeStored(get());
   },
   setLayout: (layout) => {
     set({ layout });
-    writeStored({ language: get().language, layout });
+    writeStored(get());
+  },
+  setTraffic: (traffic) => {
+    set({ traffic });
+    writeStored(get());
   },
 }));

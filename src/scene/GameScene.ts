@@ -8,6 +8,7 @@ import { GhostLayer } from './GhostLayer';
 import { createTendedGroundTexture, createWildGroundTexture, TENDED_TEXTURE_TILES, WILD_TEXTURE_TILES } from './groundTextures';
 import { ModelLibrary } from './modelLibrary';
 import { renderItemsOf } from './renderItems';
+import { TrafficLayer } from './TrafficLayer';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
 const GROUND_SIZE = MAP_TILES * 3;
@@ -25,6 +26,7 @@ export class GameScene {
   private parcels = new THREE.Group();
   private tendedMaterial = this.buildTendedMaterial();
   private ghostLayer = new GhostLayer();
+  private traffic = new TrafficLayer(this.library);
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   private lastCenterTile = '';
@@ -43,7 +45,7 @@ export class GameScene {
     this.scene.background = new THREE.Color(0x9ec5e8);
     const sun = new THREE.DirectionalLight(0xffffff, 2.2);
     sun.position.set(20, 40, 10);
-    this.scene.add(sun, new THREE.AmbientLight(0xffffff, 1.2), this.buildGround(), this.parcels, this.world.root, this.ghostLayer.root);
+    this.scene.add(sun, new THREE.AmbientLight(0xffffff, 1.2), this.buildGround(), this.parcels, this.world.root, this.traffic.root, this.ghostLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.controller.onTap = (clientX, clientY) => this.handleTap(clientX, clientY);
@@ -59,6 +61,10 @@ export class GameScene {
 
   setHandlers(handlers: SceneHandlers): void {
     this.handlers = handlers;
+  }
+
+  setTrafficEnabled(enabled: boolean): void {
+    this.traffic.setEnabled(enabled);
   }
 
   setGhost(ghost: GhostSpec | null): void {
@@ -94,6 +100,7 @@ export class GameScene {
     this.resizeObserver.disconnect();
     this.controller.dispose();
     this.ghostLayer.dispose();
+    this.traffic.dispose();
     this.renderer.dispose();
   }
 
@@ -108,6 +115,7 @@ export class GameScene {
         await this.library.ensure(items.map((item) => item.model));
         this.world.sync(items);
         this.syncParcels(state);
+        this.traffic.sync(state);
       }
     } finally {
       this.syncing = false;
@@ -174,6 +182,7 @@ export class GameScene {
     this.lastFrame = now;
     this.controller.update(delta);
     this.notifyCenterTile();
+    this.traffic.update(delta, this.controller.camera);
     this.renderer.render(this.scene, this.controller.camera);
     this.frameHandle = requestAnimationFrame(this.frame);
   };
