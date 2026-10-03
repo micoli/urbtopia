@@ -15,7 +15,10 @@ import { useConfirmKeys } from './useConfirmKeys';
 export function MenuContent() {
   const toggle = useUi((store) => store.toggleMenu);
   const [confirming, setConfirming] = useState(false);
-  const skipTime = (hours: number) => gameStore.getState().send({ type: 'SkipTime', hours });
+  const skipTime = (hours: number) => {
+    gameStore.getState().send({ type: 'SkipTime', hours });
+    toggle();
+  };
   const fileInput = useRef<HTMLInputElement>(null);
   const { canInstall, install } = useInstallPrompt();
   const startNewGame = () => {
