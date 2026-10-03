@@ -12,7 +12,8 @@
     "assets": "node scripts/install-assets.ts",
     "predev": "npm run assets",
     "prebuild": "npm run assets",
-    "assets:fetch": "node scripts/fetch-assets.ts"
+    "assets:fetch": "node scripts/fetch-assets.ts",
+    "assets:prototypes": "node scripts/prototype-assets.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
