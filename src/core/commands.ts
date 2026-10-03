@@ -255,7 +255,7 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
 function sellBuilding(state: GameState, id: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === id);
   if (!building) return fail('error.unknownBuilding');
-  if (isStorageType(building.type) && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
+  if ((isStorageType(building.type) || building.type === 'workshop' || building.type === 'factory') && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
   if ((building.type === 'powerPlant' || building.type === 'waterTower') && !canLoseUtility(state, building)) return fail('error.utilityInUse');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
   return {

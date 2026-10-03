@@ -1,5 +1,6 @@
 import { STORAGE_TIERS, type StorageType } from './economy';
 import type { GameState, Storage } from './state';
+import { productionTierOf } from './tiers';
 
 interface Compartments {
   materials: number;
@@ -18,11 +19,19 @@ export function hasStorage(state: GameState): boolean {
 
 export function storageCapacity(state: GameState): Compartments {
   const capacity: Compartments = { materials: 0, goods: 0 };
+  const production: Compartments = { materials: 0, goods: 0 };
+  for (const building of state.buildings) {
+    if (building.type !== 'workshop' && building.type !== 'factory') continue;
+    const compartment = building.type === 'workshop' ? 'materials' : 'goods';
+    production[compartment] += building.slotCount * productionTierOf(building).yield;
+  }
   for (const building of state.buildings) {
     if (!isStorageType(building.type)) continue;
     const spec = STORAGE_TIERS[building.type];
-    capacity.materials += spec.materials.base + (building.tier - 1) * spec.materials.perTier;
-    capacity.goods += spec.goods.base + (building.tier - 1) * spec.goods.perTier;
+    const materials = spec.materials.base + (building.tier - 1) * spec.materials.perTier;
+    const goods = spec.goods.base + (building.tier - 1) * spec.goods.perTier;
+    capacity.materials += building.type === 'storehouse' ? Math.max(materials, production.materials) : materials;
+    capacity.goods += building.type === 'storehouse' ? Math.max(goods, production.goods) : goods;
   }
   return capacity;
 }
