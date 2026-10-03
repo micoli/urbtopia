@@ -14,7 +14,9 @@ export class GhostLayer {
   private hintMaterial = new THREE.MeshBasicMaterial({ color: HINT_COLOR, transparent: true, opacity: 0.25, depthTest: false });
   private invalidMaterial = new THREE.MeshBasicMaterial({ color: INVALID_COLOR, transparent: true, opacity: 0.6, depthTest: false });
 
-  constructor() {
+  constructor(validColor = VALID_COLOR, { underBuildings = false } = {}) {
+    this.validMaterial.color.set(validColor);
+    this.validMaterial.depthTest = underBuildings;
     this.root.renderOrder = 10;
   }
 

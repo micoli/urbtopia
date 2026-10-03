@@ -98,6 +98,16 @@ function frontMarker(type: BuildingType, tile: Coord, rotation: Rotation, tier: 
   return { x: centerX + reach[direction].x, z: centerZ + reach[direction].z, direction };
 }
 
+const SELECTION_MARGIN = 0.3;
+
+export function selectionGhost(state: GameState, buildingId: number | null): GhostSpec | null {
+  const building = state.buildings.find((candidate) => candidate.id === buildingId);
+  if (!building) return null;
+  const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
+  const rect: GhostRect = { x: building.x - SELECTION_MARGIN, y: building.y - SELECTION_MARGIN, width: width + 2 * SELECTION_MARGIN, depth: depth + 2 * SELECTION_MARGIN, tone: 'target' };
+  return { tiles: [], rects: [rect], valid: true, front: null };
+}
+
 export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext): Evaluation {
   switch (tool.kind) {
     case 'building':

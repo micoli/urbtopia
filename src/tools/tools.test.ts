@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { newGame, type GameState } from '../core';
-import { confirmTool, evaluateTool, type Tool } from './tools';
+import { createBuilding, newGame, type GameState } from '../core';
+import { confirmTool, evaluateTool, selectionGhost, type Tool } from './tools';
 
 const state: GameState = newGame({ seed: 'amber-fox-4821', now: 0 });
 
@@ -113,5 +113,24 @@ describe('confirmTool', () => {
     const tool: Tool = { kind: 'move', buildingId: 1 };
     const evaluation = evaluateTool(tool, { state, tile: { x: 56, y: 59 }, rotation: null });
     expect(confirmTool(tool, { x: 56, y: 59 }, evaluation).nextTool).toBeNull();
+  });
+});
+
+describe('selectionGhost', () => {
+  it('surrounds the whole footprint of the selected building with a margin', () => {
+    const workshop = state.buildings.find((building) => building.type === 'workshop');
+    const ghost = selectionGhost(state, workshop?.id ?? null);
+    expect(ghost?.rects).toEqual([{ x: (workshop?.x ?? 0) - 0.3, y: (workshop?.y ?? 0) - 0.3, width: 2.6, depth: 2.6, tone: 'target' }]);
+  });
+
+  it('follows the rotated footprint of a Home that grew', () => {
+    const home = { ...createBuilding(9, 'home', 10, 20, 1), tier: 2 };
+    const ghost = selectionGhost({ ...state, buildings: [home] }, 9);
+    expect(ghost?.rects[0]).toMatchObject({ width: 1.6, depth: 2.6 });
+  });
+
+  it('shows nothing without a selection or for an unknown building', () => {
+    expect(selectionGhost(state, null)).toBeNull();
+    expect(selectionGhost(state, 999)).toBeNull();
   });
 });

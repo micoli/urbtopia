@@ -12,6 +12,7 @@ import { TrafficLayer } from './TrafficLayer';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
 const GROUND_SIZE = MAP_TILES * 3;
+const SELECTION_COLOR = 0x4da3ff;
 
 export interface SceneHandlers {
   onTap: (tile: Coord) => void;
@@ -26,6 +27,7 @@ export class GameScene {
   private parcels = new THREE.Group();
   private tendedMaterial = this.buildTendedMaterial();
   private ghostLayer = new GhostLayer();
+  private selectionLayer = new GhostLayer(SELECTION_COLOR, { underBuildings: true });
   private traffic = new TrafficLayer(this.library);
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -45,7 +47,7 @@ export class GameScene {
     this.scene.background = new THREE.Color(0x9ec5e8);
     const sun = new THREE.DirectionalLight(0xffffff, 2.2);
     sun.position.set(20, 40, 10);
-    this.scene.add(sun, new THREE.AmbientLight(0xffffff, 1.2), this.buildGround(), this.parcels, this.world.root, this.traffic.root, this.ghostLayer.root);
+    this.scene.add(sun, new THREE.AmbientLight(0xffffff, 1.2), this.buildGround(), this.parcels, this.world.root, this.traffic.root, this.selectionLayer.root, this.ghostLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.controller.onTap = (clientX, clientY) => this.handleTap(clientX, clientY);
@@ -69,6 +71,10 @@ export class GameScene {
 
   setGhost(ghost: GhostSpec | null): void {
     this.ghostLayer.set(ghost);
+  }
+
+  setSelection(selection: GhostSpec | null): void {
+    this.selectionLayer.set(selection);
   }
 
   project(x: number, y: number, z: number): { x: number; y: number; visible: boolean } {
@@ -100,6 +106,7 @@ export class GameScene {
     this.resizeObserver.disconnect();
     this.controller.dispose();
     this.ghostLayer.dispose();
+    this.selectionLayer.dispose();
     this.traffic.dispose();
     this.renderer.dispose();
   }

@@ -4,6 +4,7 @@ import { prefsStore } from '../i18n/prefsStore';
 import { gameStore } from '../store/gameStore';
 import { sceneHandle } from '../store/sceneHandle';
 import { uiStore } from '../store/uiStore';
+import { selectionGhost } from '../tools/tools';
 
 export function SceneCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,9 +24,15 @@ export function SceneCanvas() {
     scene.setState(gameStore.getState().state);
     scene.setGhost(uiStore.getState().evaluation?.ghost ?? null);
     scene.setTrafficEnabled(prefsStore.getState().traffic);
-    const unsubscribeGame = gameStore.subscribe((store) => scene.setState(store.state));
+    const showSelection = () => scene.setSelection(selectionGhost(gameStore.getState().state, uiStore.getState().selectedBuildingId));
+    showSelection();
+    const unsubscribeGame = gameStore.subscribe((store) => {
+      scene.setState(store.state);
+      showSelection();
+    });
     const unsubscribeUi = uiStore.subscribe((store, previous) => {
       if (store.evaluation !== previous.evaluation) scene.setGhost(store.evaluation?.ghost ?? null);
+      if (store.selectedBuildingId !== previous.selectedBuildingId) showSelection();
     });
     const unsubscribePrefs = prefsStore.subscribe((prefs) => scene.setTrafficEnabled(prefs.traffic));
     return () => {
