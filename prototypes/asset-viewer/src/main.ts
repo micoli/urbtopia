@@ -112,6 +112,7 @@ function dirVec(d: Dir) {
 
 async function place(p: string, n: string, at: THREE.Vector3, rotY: number, withGrid: boolean, version?: number) {
   const g = new THREE.Group()
+  g.userData.name = n
   const model = (await load(p, n)).clone(true)
   if (version !== undefined && version !== renderVersion) return
   g.add(model)
@@ -355,6 +356,25 @@ addEventListener('keydown', (event) => {
   if (index === next && !overview) return
   selectAsset(asset.pack, asset.name)
   if (isSearch) document.getElementById(target.id)?.focus()
+})
+const raycaster = new THREE.Raycaster()
+let pointerDown: { x: number; y: number } | null = null
+canvas.addEventListener('pointerdown', (e) => { pointerDown = { x: e.clientX, y: e.clientY } })
+canvas.addEventListener('pointerup', (e) => {
+  const start = pointerDown
+  pointerDown = null
+  if (!overview || !start || Math.hypot(e.clientX - start.x, e.clientY - start.y) > 4) return
+  const rect = canvas.getBoundingClientRect()
+  raycaster.setFromCamera(new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1), cam)
+  const hit = raycaster.intersectObjects(stage.children, true)[0]
+  let node: THREE.Object3D | null = hit?.object ?? null
+  while (node && node.parent !== stage) node = node.parent
+  const name = node?.userData.name as string | undefined
+  if (!name) return
+  current = name
+  renderSide()
+  renderList()
+  document.querySelector('#list .sel')?.scrollIntoView({ block: 'nearest' })
 })
 canvas.addEventListener('wheel', (e) => { e.preventDefault(); zoom = Math.min(30, Math.max(0.5, zoom * (e.deltaY > 0 ? 1.1 : 0.9))); resize() }, { passive: false })
 controls.enableZoom = false
