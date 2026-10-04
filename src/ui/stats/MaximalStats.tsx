@@ -131,7 +131,8 @@ export function MaximalStats() {
                     aria-hidden="true">▦</span> {t('eco.production')}</h3>
                     <div className="eco-counts">{countTypes.map(type => <span key={type}
                                                                               data-locked={citizens < (ECOLOGY_UNLOCKS[type] ?? 0)}><span>{t(`building.${type}`)}</span><strong>{state.buildings.filter(b => b.type === type).length}</strong>{citizens < (ECOLOGY_UNLOCKS[type] ?? 0) &&
-                        <small>◇ {t('eco.locked')}: {ECOLOGY_UNLOCKS[type]}</small>}</span>)}</div>
+                        <small>◇ {t('eco.locked')}: {ECOLOGY_UNLOCKS[type]}</small>}</span>)}
+                        <span><span>{t('eco.solarHome')}</span><strong>{homes.filter(b => b.solar).length}</strong></span></div>
                     <p>{t('eco.productionHelp')}</p>
                     <table>
                         <thead>
