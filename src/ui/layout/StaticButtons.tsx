@@ -1,5 +1,6 @@
 import { t } from '../../i18n/t';
 import { sceneHandle } from '../../store/sceneHandle';
+import { IconButton } from '../common/IconButton';
 import { useGame, useReadOnly } from '../common/hooks';
 
 export function StaticButtons() {
@@ -8,15 +9,15 @@ export function StaticButtons() {
   const readOnly = useReadOnly();
   return (
     <div className="camera-buttons">
-      <button type="button" data-action="undo" aria-label={t('action.undo')} disabled={!canUndo || readOnly} onClick={undo}>
+      <IconButton data-action="undo" size="md" tone="light" label={t('action.undo')} disabled={!canUndo || readOnly} onClick={undo}>
         ↶
-      </button>
-      <button type="button" aria-label={t('camera.rotateLeft')} onClick={() => sceneHandle.current?.camera.rotate(-1)}>
+      </IconButton>
+      <IconButton size="md" tone="light" label={t('camera.rotateLeft')} onClick={() => sceneHandle.current?.camera.rotate(-1)}>
         ⟲
-      </button>
-      <button type="button" aria-label={t('camera.rotateRight')} onClick={() => sceneHandle.current?.camera.rotate(1)}>
+      </IconButton>
+      <IconButton size="md" tone="light" label={t('camera.rotateRight')} onClick={() => sceneHandle.current?.camera.rotate(1)}>
         ⟳
-      </button>
+      </IconButton>
     </div>
   );
 }

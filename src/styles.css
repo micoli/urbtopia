@@ -27,19 +27,6 @@ body,
   gap: 8px;
 }
 
-.camera-buttons button {
-  width: 48px;
-  height: 48px;
-  font-size: 24px;
-  border: 0;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.85);
-}
-
-.camera-buttons button:disabled {
-  opacity: 0.4;
-}
-
 :root {
   --dock-width: 64px;
   --panel-bg: rgba(24, 28, 40, 0.92);
@@ -275,15 +262,6 @@ button {
   font-size: 18px;
 }
 
-.panel-close {
-  width: var(--tap);
-  height: var(--tap);
-  border: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  color: inherit;
-}
-
 .confirm-pad {
   position: fixed;
   left: 50%;
@@ -320,28 +298,6 @@ button {
 .confirm-buttons {
   display: flex;
   gap: 10px;
-}
-
-.pad-button {
-  width: 56px;
-  height: 56px;
-  border: 0;
-  border-radius: 14px;
-  font-size: 26px;
-  background: rgba(255, 255, 255, 0.9);
-}
-
-.pad-confirm {
-  background: var(--accent);
-}
-
-.pad-cancel {
-  background: var(--danger);
-  color: white;
-}
-
-.pad-button:disabled {
-  opacity: 0.4;
 }
 
 .toast {
@@ -1550,11 +1506,7 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 
 .casino-header-top .panel-close {
   flex: none;
-  width: var(--tap);
-  border: 0;
-  border-radius: 10px;
   background: rgba(255, 255, 255, 0.14);
-  color: inherit;
 }
 
 .blockmatch-stage {
@@ -1643,4 +1595,58 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 
 .button-row--spaced {
   margin-top: 8px;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+
+.icon-button--sm {
+  width: var(--tap);
+  height: var(--tap);
+  border-radius: 10px;
+}
+
+.icon-button--md {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 24px;
+}
+
+.icon-button--lg {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  font-size: 26px;
+}
+
+.icon-button--subtle {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.icon-button--light {
+  background: rgba(255, 255, 255, 0.9);
+  color: #111;
+}
+
+.icon-button--accent {
+  background: var(--accent);
+  color: #111;
+}
+
+.icon-button--danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.icon-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }

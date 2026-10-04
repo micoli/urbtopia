@@ -1,4 +1,5 @@
 import { t } from '../../i18n/t';
+import { IconButton } from './IconButton';
 
 interface CloseButtonProps {
     onClick: () => void;
@@ -7,8 +8,8 @@ interface CloseButtonProps {
 
 export function CloseButton({ onClick, label = t('panel.close') }: CloseButtonProps) {
     return (
-        <button type="button" className="panel-close" aria-label={label} onClick={onClick}>
+        <IconButton className="panel-close" label={label} onClick={onClick}>
             ✕
-        </button>
+        </IconButton>
     );
 }

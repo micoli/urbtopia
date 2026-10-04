@@ -3,6 +3,7 @@ import { CurrencyText } from '../common/CurrencyText';
 import { useUi } from '../common/hooks';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { useConfirmKeys } from './useConfirmKeys';
+import { IconButton } from '../common/IconButton';
 
 export function ConfirmPad() {
   const tool = useUi((store) => store.tool);
@@ -35,18 +36,18 @@ export function ConfirmPad() {
         ) : null}
       </div>
       <div className="confirm-buttons">
-        <button type="button" className="pad-button pad-cancel" aria-label={t('pad.cancel')} onClick={cancelTool}>
+        <IconButton size="lg" tone="danger" label={t('pad.cancel')} onClick={cancelTool}>
           ✗
-        </button>
+        </IconButton>
         {isBrush ? null : (
-          <button type="button" className="pad-button" aria-label={t('pad.rotate')} disabled={!canRotate} onClick={rotate}>
+          <IconButton size="lg" tone="light" label={t('pad.rotate')} disabled={!canRotate} onClick={rotate}>
             ⟳
-          </button>
+          </IconButton>
         )}
         {isBrush ? null : (
-          <button type="button" className="pad-button pad-confirm" aria-label={t('pad.confirm')} disabled={!canConfirm} onClick={() => confirm()}>
+          <IconButton size="lg" tone="accent" label={t('pad.confirm')} disabled={!canConfirm} onClick={() => confirm()}>
             ✓
-          </button>
+          </IconButton>
         )}
       </div>
     </div>
