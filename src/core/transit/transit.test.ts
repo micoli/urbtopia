@@ -143,6 +143,14 @@ describe('fleet management and service', () => {
     const again = dispatch(fixed, { type: 'RepairTransitNetwork', mode: 'rail' }, 0);
     expect(again.ok ? null : again.error.key).toBe('error.networkIntact');
   });
+  it('reports why a line is inactive', () => {
+    const base = railCity();
+    const status = (state: GameState) => transportStats(state).lines[0]!.status;
+    expect(status({ ...base, rails: [] })).toBe('disconnected');
+    expect(status({ ...base, urbs: 0 })).toBe('noFunds');
+    expect(status({ ...base, transitFleet: [] })).toBe('noVehicle');
+    expect(status({ ...base, storage: { materials: { coal: 0 }, goods: {} } })).toBe('noEnergy');
+  });
   it('drops lines and unassigns vehicles when a station is sold', () => {
     const next = run(railCity(), { type: 'SellBuilding', id: 2 });
     expect(next.transitLines).toEqual([]);

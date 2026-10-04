@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { transportStats } from '../../core';
+import { lineStatusKey } from './lineStatusKey';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
@@ -18,7 +19,7 @@ export function BusLinesPanel() {
     <h3>{t('eco.lines')}</h3>
     <p>{t('eco.lineHelp')}</p>
     {transport.lines.filter(line => line.mode === 'bus').map(line => <div className="eco-line" key={line.id}>
-      <strong>#{line.id}</strong> · {t(line.active ? 'eco.active' : 'eco.inactive')} · {line.riders.toFixed(1)} {t('eco.riders')}
+      <strong>#{line.id}</strong> · {t(lineStatusKey(line.status))} · {line.riders.toFixed(1)} {t('eco.riders')}
       <p>{line.stops.join(' → ')}</p>
       <button type="button" onClick={() => { setEditing(line.id); setStops(line.stops); }}>{t('eco.editLine')}</button>
       <button type="button" onClick={() => gameStore.getState().send({ type: 'DeleteBusLine', id: line.id })}>{t('eco.deleteLine')}</button>

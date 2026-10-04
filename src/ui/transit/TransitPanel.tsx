@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { totalCitizens, TRANSIT, transportStats, type TransitLine } from '../../core';
+import { lineStatusKey } from './lineStatusKey';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
@@ -24,7 +25,7 @@ export function TransitPanel() {
     <p>{t('transit.help')}</p><p>{t('transit.coverage')}</p>
     <p>{t('transit.transfers')}: {stats.transferRiders.toFixed(1)} · {t('transit.coal')}: {stats.coalPerHour.toFixed(2)}</p>
     {stats.lines.filter(l => l.mode !== 'bus').map(line => <div className="eco-line" key={line.id}>
-      <strong>{t(line.mode === 'brt' ? 'transit.brt' : 'transit.rail')} #{line.id}</strong> · {t(line.active ? 'eco.active' : 'eco.inactive')}
+      <strong>{t(line.mode === 'brt' ? 'transit.brt' : 'transit.rail')} #{line.id}</strong> · {t(lineStatusKey(line.status))}
       <p>{line.stops.join(' → ')} · {t('eco.riders')}: {line.riders.toFixed(1)} / {line.capacity.toFixed(1)}</p>
       <p>{t('transit.vehicles')}: {line.vehicleCount} · {t('transit.headway')}: {Number.isFinite(line.headway) ? `${line.headway.toFixed(1)} min` : '—'}</p>
       <button type="button" onClick={() => edit(state.transitLines!.find(l => l.id === line.id)!)}>{t('eco.editLine')}</button>
