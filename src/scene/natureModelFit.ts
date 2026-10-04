@@ -9,12 +9,13 @@ const limits: Record<NatureFamily, { width: number; height: number }> = {
   shrub: { width: 0.7, height: 1 },
   flower: { width: 0.55, height: 0.5 },
   grass: { width: 0.85, height: 0.35 },
+  decoration: { width: 0.9, height: 1.2 },
   habitat: { width: 0.8, height: 0.8 },
 };
 
 export function fitNatureModel(model: THREE.Object3D, key: string): void {
   const family = familiesByModel.get(key);
-  if (!family) return;
+  if (!family || key.startsWith('nature/cliff_')) return;
   model.updateMatrixWorld(true);
   const bounds = new THREE.Box3().setFromObject(model);
   if (bounds.isEmpty()) return;

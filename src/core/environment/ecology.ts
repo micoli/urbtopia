@@ -52,11 +52,16 @@ function greenSpacesTouch(a: Building, b: Building): boolean {
     (dy === (f.depth + g.depth) / 2 && dx < (f.width + g.width) / 2);
 }
 
+function isVegetation(type: BuildingType): boolean {
+  const family = natureModelOf(type)?.[2];
+  return Boolean(greenProfileOf(type)) && family !== 'habitat' && family !== 'decoration';
+}
+
 export function greenSpaceCoverage(state: GameState, space: Building): number {
   const profile = greenProfileOf(space.type);
   if (!profile) return 0;
   const habitat = natureModelOf(space.type)?.[2] === 'habitat';
-  if (habitat && !state.buildings.some(b => greenProfileOf(b.type) && natureModelOf(b.type)?.[2] !== 'habitat' && distance(space, b) <= 2)) return 0;
+  if (habitat && !state.buildings.some(b => isVegetation(b.type) && distance(space, b) <= 2)) return 0;
   return state.buildings.reduce((count, b) => {
     if (b.type !== 'home' || distance(space, b) > profile.radius) return count;
     return count + (HOME_TIERS[b.tier - 1]?.citizens ?? 0);
@@ -65,14 +70,14 @@ export function greenSpaceCoverage(state: GameState, space: Building): number {
 
 export function greenBenefits(state: GameState, home: Building) {
   const spaces = state.buildings.filter(b => greenProfileOf(b.type));
-  const vegetation = spaces.filter(b => natureModelOf(b.type)?.[2] !== 'habitat');
+  const vegetation = spaces.filter(b => isVegetation(b.type));
   const weight = { cooling: 0, biodiversity: 0, wellbeing: 0 };
   for (const b of spaces) {
     const profile = greenProfileOf(b.type)!;
     if (distance(b, home) > profile.radius) continue;
     const habitat = natureModelOf(b.type)?.[2] === 'habitat';
     if (habitat && !vegetation.some(other => distance(b, other) <= 2)) continue;
-    const connected = !habitat && vegetation.some(other => other.id !== b.id && greenSpacesTouch(b, other));
+    const connected = isVegetation(b.type) && vegetation.some(other => other.id !== b.id && greenSpacesTouch(b, other));
     const bonus = connected ? 1.2 : 1;
     weight.cooling += profile.cooling * bonus;
     weight.biodiversity += profile.biodiversity * bonus;

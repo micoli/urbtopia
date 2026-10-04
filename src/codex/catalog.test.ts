@@ -23,7 +23,7 @@ describe('codex coverage gate', () => {
       expect(entry?.unlockCitizens).toBe(threshold);
       expect(renderItemsOf(codexSnapshot(entry!.id, 1))[0]?.model).toBe(model);
     }
-    expect(CODEX_ENTRIES.some(entry => /nature-.*detailed/i.test(entry.id))).toBe(false);
+    expect(CODEX_ENTRIES.some(entry => /nature-tree.*detailed/i.test(entry.id))).toBe(false);
   });
 
   it('documents every Public facility in both languages with its unlock threshold', () => {

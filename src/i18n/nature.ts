@@ -10,6 +10,7 @@ const descriptions: Record<NatureFamily, readonly [string, string]> = {
   shrub: ['Shrubs support biodiversity, cooling and nearby Citizen well-being.', 'Les buissons et plantes favorisent la biodiversité, la fraîcheur et le bien-être des citoyens proches.'],
   flower: ['Flowers, mushrooms and lilies strongly support biodiversity and Citizen well-being, with a small cooling benefit.', 'Les fleurs, champignons et nénuphars favorisent fortement la biodiversité et le bien-être, avec un petit bénéfice de fraîcheur.'],
   grass: ['Grass improves cooling, biodiversity and nearby Citizen well-being.', 'L’herbe améliore la fraîcheur, la biodiversité et le bien-être des citoyens proches.'],
+  decoration: ['Cliffs are purely decorative: they only bring a little nearby Citizen well-being.', 'Les falaises sont purement décoratives : elles n’apportent qu’un peu de bien-être aux citoyens proches.'],
   habitat: ['Rocks, logs and stumps support biodiversity only within two tiles of vegetation. They provide no cooling or direct well-being.', 'Les rochers, troncs et souches favorisent la biodiversité uniquement à deux cases maximum de végétation. Ils n’apportent ni fraîcheur ni bien-être direct.'],
 };
 

@@ -79,7 +79,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'holiday',
     url: 'https://kenney.nl/media/pages/assets/holiday-kit/3976a6496a-1733923970/kenney_holiday-kit.zip',
     archive: 'kenney_holiday-kit.zip',
-    files: [],
+    files: natureFiles('holiday'),
   },
   {
     name: 'pirate',
