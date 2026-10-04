@@ -1336,6 +1336,11 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .codex-gallery figure { margin: 0; border-radius: 12px; overflow: hidden; background: rgba(255, 255, 255, 0.08); }
 .codex-gallery img { display: block; width: 100%; height: auto; }
 .codex-gallery figcaption { padding: 8px 12px 12px; font-weight: 700; text-align: center; }
+.codex-level-facts { margin: 0; padding: 0 12px 12px; font-size: 13px; }
+.codex-level-facts div { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; }
+.codex-level-facts dt { opacity: 0.75; }
+.codex-level-facts dd { margin: 0; font-weight: 700; text-align: right; }
+.codex-level-gain { margin-left: 6px; color: #8ce2b5; }
 .codex-back { display: none; }
 
 @media (max-width: 600px) {

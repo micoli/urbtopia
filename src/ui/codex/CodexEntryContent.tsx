@@ -5,6 +5,7 @@ import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { readHomeColor } from '../buildings/homeColor';
 import { CropFacts } from './CropFacts';
+import { LevelFacts } from './LevelFacts';
 
 interface CodexEntryContentProps {
   entry: CodexEntry;
@@ -42,6 +43,7 @@ export function CodexEntryContent({ entry, manifest }: CodexEntryContentProps) {
               onError={() => setFailedImages(levels => [...levels, level])}
             />}
             <figcaption>{captionOf(entry, level)}</figcaption>
+            {!isCrop(entry.id) && <LevelFacts id={entry.id} level={level} />}
           </figure>
         ))}
       </div>}
