@@ -1,6 +1,7 @@
 import { useStore } from 'zustand';
 import { prefsStore, type Language, type Layout } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
+import { CheckboxField } from '../common/CheckboxField';
 
 const LANGUAGES: Language[] = ['en', 'fr'];
 const LAYOUTS: Layout[] = ['C', 'A', 'B'];
@@ -30,18 +31,9 @@ export function PreferencesContent() {
           </button>
         ))}
       </div>
-      <label className="prefs-toggle">
-        <input type="checkbox" checked={traffic} onChange={(event) => setTraffic(event.target.checked)} />
-        {t('prefs.traffic')}
-      </label>
-      <label className="prefs-toggle">
-        <input type="checkbox" checked={confirmSale} onChange={(event) => setConfirmSale(event.target.checked)} />
-        {t('prefs.confirmSale')}
-      </label>
-      <label className="prefs-toggle">
-        <input type="checkbox" checked={showReach} onChange={(event) => setShowReach(event.target.checked)} />
-        {t('prefs.showReach')}
-      </label>
+      <CheckboxField label={t('prefs.traffic')} checked={traffic} onChange={setTraffic} />
+      <CheckboxField label={t('prefs.confirmSale')} checked={confirmSale} onChange={setConfirmSale} />
+      <CheckboxField label={t('prefs.showReach')} checked={showReach} onChange={setShowReach} />
     </section>
   );
 }

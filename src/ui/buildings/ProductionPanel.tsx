@@ -11,6 +11,7 @@ import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
 import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
+import { CheckboxField } from '../common/CheckboxField';
 
 interface ProductionPanelProps {
   building: Building;
@@ -60,10 +61,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
         })}
       </ol>
       {hasFreeSlot && canFilter ? (
-        <label className="prefs-toggle">
-          <input type="checkbox" checked={onlyCraftable} onChange={(event) => setOnlyCraftable(event.target.checked)} />
-          {t('panel.onlyCraftable')}
-        </label>
+        <CheckboxField label={t('panel.onlyCraftable')} checked={onlyCraftable} onChange={setOnlyCraftable} />
       ) : null}
       {hasFreeSlot ? (
         <ButtonRow align="stretch" spaced>
