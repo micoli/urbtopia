@@ -5,6 +5,7 @@ import { casinoStore } from '../../store/casinoStore';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 import { CasinoGameView } from './CasinoGameView';
+import { CasinoCloseContext } from './casinoCloseContext';
 import { LeaveRoundDialog } from './LeaveRoundDialog';
 
 export function CasinoDialog() {
@@ -24,11 +25,9 @@ export function CasinoDialog() {
   return (
     <div className="dialog-backdrop" role="dialog" aria-modal="true" aria-label={t(`casino.${game}`)}>
       <div className="dialog casino-dialog">
-        <header className="side-panel-header">
-          <h2>{t(`casino.${game}`)}</h2>
-          <button type="button" className="panel-close" aria-label={t('casino.close')} onClick={() => (round ? setConfirmLeave(true) : leave())}>✗</button>
-        </header>
-        <CasinoGameView game={game} casino={casino} />
+        <CasinoCloseContext.Provider value={() => (round ? setConfirmLeave(true) : leave())}>
+          <CasinoGameView game={game} casino={casino} />
+        </CasinoCloseContext.Provider>
       </div>
       {confirmLeave ? <LeaveRoundDialog onStay={() => setConfirmLeave(false)} onLeave={leave} /> : null}
     </div>
