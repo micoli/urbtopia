@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import {Building, Command, taxDue} from '../../core';
 import { gameStore } from '../../store/gameStore';
-import { sceneHandle } from '../../store/sceneHandle';
+import { useProjectedPosition } from '../common/useProjectedPosition';
 import { registerCollector, startSweep } from './collectSweep';
 
 const BADGE_HEIGHT = 1.8;
@@ -28,20 +28,7 @@ export function collectBadgeLabel(building: Building): string | null {
 export function CollectBadge({ worldX, worldZ, label, command }: CollectBadgeProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    let handle = 0;
-    const place = () => {
-      const element = ref.current;
-      const projected = sceneHandle.current?.project(worldX, BADGE_HEIGHT, worldZ);
-      if (element && projected) {
-        element.style.transform = `translate(${projected.x}px, ${projected.y}px) translate(-50%, -100%)`;
-        element.style.visibility = projected.visible ? 'visible' : 'hidden';
-      }
-      handle = requestAnimationFrame(place);
-    };
-    handle = requestAnimationFrame(place);
-    return () => cancelAnimationFrame(handle);
-  }, [worldX, worldZ]);
+  useProjectedPosition(ref, worldX, BADGE_HEIGHT, worldZ, 'above');
 
   const collect = () => gameStore.getState().send(command);
 

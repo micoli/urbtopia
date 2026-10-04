@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { footprintOf, isWorking, workProgress } from '../../core';
 import { sceneHandle } from '../../store/sceneHandle.ts';
 import { collectBadgeLabel } from '../collect/CollectBadge.tsx';
 import { useGame } from './hooks.ts';
+import { placeProjected, useFrameLoop } from './useProjectedPosition.ts';
 
 const INDICATOR_HEIGHT = 1.8;
 const RING_RADIUS = 14;
@@ -15,22 +16,15 @@ export function WorkingIndicators() {
   const working = useMemo(() => buildings.filter(isWorking), [buildings]);
   const elements = useRef(new Map<number, HTMLSpanElement>());
 
-  useEffect(() => {
-    let handle = 0;
-    const place = () => {
-      for (const building of working) {
-        const element = elements.current.get(building.id);
-        const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
-        const projected = sceneHandle.current?.project(building.x + width / 2, INDICATOR_HEIGHT, building.y + depth / 2);
-        if (!element || !projected) continue;
-        const beside = collectBadgeLabel(building) !== null ? BESIDE_BADGE_PX : 0;
-        element.style.transform = `translate(${projected.x + beside}px, ${projected.y}px) translate(-50%, -100%)`;
-        element.style.visibility = projected.visible ? 'visible' : 'hidden';
-      }
-      handle = requestAnimationFrame(place);
-    };
-    handle = requestAnimationFrame(place);
-    return () => cancelAnimationFrame(handle);
+  useFrameLoop(() => {
+    for (const building of working) {
+      const element = elements.current.get(building.id);
+      const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
+      const projected = sceneHandle.current?.project(building.x + width / 2, INDICATOR_HEIGHT, building.y + depth / 2);
+      if (!element || !projected) continue;
+      const beside = collectBadgeLabel(building) !== null ? BESIDE_BADGE_PX : 0;
+      placeProjected(element, projected, 'above', beside);
+    }
   }, [working]);
 
   return (

@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { GAME_CONFIG } from '../../core';
-import { sceneHandle } from '../../store/sceneHandle';
+import { useProjectedPosition } from '../common/useProjectedPosition';
 
 interface ParcelTagProps {
   parcelX: number;
@@ -11,20 +11,8 @@ interface ParcelTagProps {
 export function ParcelTag({ parcelX, parcelY, price }: ParcelTagProps) {
   const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const size = GAME_CONFIG.parcelSizeInTiles;
-    let handle = 0;
-    const place = () => {
-      const projected = sceneHandle.current?.project(parcelX * size + size / 2, 0.5, parcelY * size + size / 2);
-      if (ref.current && projected) {
-        ref.current.style.transform = `translate(${projected.x}px, ${projected.y}px) translate(-50%, -50%)`;
-        ref.current.style.visibility = projected.visible ? 'visible' : 'hidden';
-      }
-      handle = requestAnimationFrame(place);
-    };
-    handle = requestAnimationFrame(place);
-    return () => cancelAnimationFrame(handle);
-  }, [parcelX, parcelY]);
+  const size = GAME_CONFIG.parcelSizeInTiles;
+  useProjectedPosition(ref, parcelX * size + size / 2, 0.5, parcelY * size + size / 2, 'center');
 
   return (
     <div ref={ref} className="parcel-tag">
