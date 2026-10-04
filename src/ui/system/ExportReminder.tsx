@@ -4,6 +4,8 @@ import { recordReminder } from '../../persistence/meta';
 import { t } from '../../i18n/t';
 import { dialogStore } from '../../store/dialogStore';
 import { useDialogs } from '../common/hooks';
+import { ActionButton } from '../common/ActionButton';
+import { OverlayBanner } from '../common/OverlayBanner';
 
 export function ExportReminder() {
   const open = useDialogs((store) => store.exportReminder);
@@ -19,14 +21,9 @@ export function ExportReminder() {
   };
 
   return (
-    <div className="reminder">
-      <span>{t('reminder.text')}</span>
-      <button type="button" onClick={exportNow}>
-        {t('menu.export')}
-      </button>
-      <button type="button" onClick={dismiss}>
-        {t('reminder.dismiss')}
-      </button>
-    </div>
+    <OverlayBanner variant="reminder" message={t('reminder.text')}>
+      <ActionButton onClick={exportNow}>{t('menu.export')}</ActionButton>
+      <ActionButton onClick={dismiss}>{t('reminder.dismiss')}</ActionButton>
+    </OverlayBanner>
   );
 }
