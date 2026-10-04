@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] New "Leisure" section in the build menu; Casino locks below 250 Citizens and an Unlock notification announces it.
 - [ ] Casino is a Leisure building, not a Public facility: no Service category, no penalty when absent. Several Casinos can be built.

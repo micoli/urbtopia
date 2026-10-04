@@ -12,6 +12,7 @@ export const BUILDING_SECTIONS = [
   { title: 'build.greenSpaces', types: ['tree', 'park', ...natureTypesOf(false)] },
   { title: 'build.transport', types: ['busStop', 'brtStation', 'railStation'] },
   { title: 'build.publicFacilities', types: PUBLIC_FACILITY_TYPES },
+  { title: 'build.leisure', types: ['casino'] },
   { title: 'build.decoration', types: natureTypesOf(true) },
 ] as const satisfies readonly { title: string; types: readonly BuildingType[] }[];
 

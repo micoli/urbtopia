@@ -99,6 +99,7 @@ export function validateGameState(value: unknown): GameState | null {
   if (!valid) return null;
   if (value.timeOffset !== undefined && (!isNonNegative(value.timeOffset) || value.timeOffset > Number.MAX_SAFE_INTEGER)) return null;
   if (value.adaptationUntil !== undefined && !isNumber(value.adaptationUntil)) return null;
+  if (value.casinoRng !== undefined && !isNumber(value.casinoRng)) return null;
   if (value.ecologyDismissed !== undefined && typeof value.ecologyDismissed !== 'boolean') return null;
   if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&
     isArrayOf(line.stops, id => isInt(id, 0)) && (line.stops as number[]).length >= 2 &&

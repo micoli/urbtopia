@@ -1,5 +1,6 @@
 import { MaximalStats } from '../stats/MaximalStats';
 import { CodexDialog } from '../codex/CodexDialog';
+import { CasinoDialog } from '../casino/CasinoDialog';
 import { CameraButtons } from './CameraButtons';
 import { CollectBadges } from '../collect/CollectBadges';
 import { ConfirmPad } from '../build/ConfirmPad';
@@ -20,6 +21,7 @@ export function Overlays() {
     <>
       <MaximalStats />
       <CodexDialog />
+      <CasinoDialog />
       <WorkingIndicators />
       <CollectBadges />
       <ParcelTags />

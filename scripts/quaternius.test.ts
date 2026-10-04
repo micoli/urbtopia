@@ -9,9 +9,9 @@ import { convertQuaterniusPack, fitScale, plantScale, TILE_FILL } from './quater
 const archiveOf = (name: string) => new Uint8Array(readFileSync(join(QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS.find((pack) => pack.name === name)!.archive)));
 
 describe('Quaternius packs', () => {
-  it('provide every crop and farm model the scene can ask for', () => {
+  it('provide every crop, farm and casino model the scene can ask for', () => {
     const provided = new Set(QUATERNIUS_PACKS.flatMap((pack) => pack.files.map((file) => `${pack.name}/${file}`)));
-    const asked = MODEL_KEYS.filter((key) => key.startsWith('crops/') || key.startsWith('farm/'));
+    const asked = MODEL_KEYS.filter((key) => key.startsWith('crops/') || key.startsWith('farm/') || key.startsWith('buildings/'));
     expect(asked.filter((key) => !provided.has(key))).toEqual([]);
     expect([...provided].filter((key) => !MODEL_KEYS.includes(key))).toEqual([]);
   });

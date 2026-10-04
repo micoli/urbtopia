@@ -11,6 +11,7 @@ import {
   type UpgradeCostSpec,
 } from './economy';
 import { FACILITY_TYPES, facilityUpgradeCosts } from '../services/facilities';
+import { CASINO } from '../leisure/casino';
 import type { Building, BuildingType } from '../engine/state';
 
 export type UpgradeCost = UpgradeCostSpec;
@@ -31,6 +32,7 @@ const UPGRADE_COSTS: Partial<Record<BuildingType, Record<number, UpgradeCost>>> 
   powerPlant: UTILITY_UPGRADE_COSTS.powerPlant,
   coalPlant: COAL_UPGRADE_COSTS,
   waterTower: UTILITY_UPGRADE_COSTS.waterTower,
+  casino: Object.fromEntries(Object.entries(CASINO.upgradeCosts).map(([tier, urbs]) => [tier, { urbs, goods: {} }])),
   ...Object.fromEntries(FACILITY_TYPES.map((type) => [type, facilityUpgradeCosts(type)])),
 };
 

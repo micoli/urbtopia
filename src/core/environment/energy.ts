@@ -16,7 +16,7 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   const transitDemand = transitServices(state, now).reduce((n, line) => n + line.powerDemand, 0);
   let transitSupplied: number;
   const buildings = [...state.buildings].sort((a, b) => a.id - b.id);
-  const homes = buildings.filter(b => b.type === 'home'), economic = buildings.filter(b => economicPower(b) > 0);
+  const homes = buildings.filter(b => b.type === 'home'), casinos = buildings.filter(b => b.type === 'casino'), economic = buildings.filter(b => b.type !== 'casino' && economicPower(b) > 0);
   const factors = productionFactors(now + (state.timeOffset ?? 0));
   const need = new Map(buildings.map(b => [b.id, b.type === 'home' ? homePower(b) : economicPower(b)]));
   const supplied = new Map(buildings.map(b => [b.id, 0]));
@@ -50,6 +50,7 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   let grid = [...surplus.values()].reduce((n, x) => n + x, 0);
   grid -= distribute(homes, grid); grid -= distribute(economic, grid);
   transitSupplied = Math.min(grid, transitDemand); grid -= transitSupplied;
+  grid -= distribute(casinos, grid);
   const beforeGrid = [...surplus.values()].reduce((n, x) => n + x, 0);
   for (const source of generation) surplus.set(source.id, beforeGrid > 0 ? (surplus.get(source.id) ?? 0) * grid / beforeGrid : 0);
   const coalPlants = buildings.filter(b => b.type === 'coalPlant');
@@ -61,6 +62,7 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   const transitCoal = Math.min(coal - coalSupplied, transitDemand - transitSupplied);
   transitSupplied += transitCoal;
   coalSupplied += transitCoal;
+  coalSupplied += distribute(casinos, coal - coalSupplied);
   const coalRates = new Map(coalPlants.map(b => [b.id,
     b.coalEnabled !== false && coalCapacity > 0 ? coalSupplied * (COAL_CAPACITY[b.tier - 1] ?? 0) / coalCapacity : 0]));
   const batteries = buildings.filter(b => b.type === 'battery');
@@ -87,7 +89,8 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   let backed = distribute(homes, backup); backed += distribute(economic, backup - backed);
   const transitBackup = Math.min(backup - backed, transitDemand - transitSupplied);
   transitSupplied += transitBackup; backed += transitBackup;
-  const demand = homes.reduce((n, b) => n + homePower(b), 0) + economic.reduce((n, b) => n + economicPower(b), 0) + transitDemand;
+  backed += distribute(casinos, backup - backed);
+  const demand = homes.reduce((n, b) => n + homePower(b), 0) + economic.reduce((n, b) => n + economicPower(b), 0) + casinos.reduce((n, b) => n + economicPower(b), 0) + transitDemand;
   const economicDemand = economic.reduce((n, b) => n + economicPower(b), 0);
   const economicSupplied = economic.reduce((n, b) => n + (supplied.get(b.id) ?? 0), 0);
   const solar = generation.filter(b => b.type !== 'powerPlant').reduce((n, b) => n + output(b), 0);

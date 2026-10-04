@@ -2,6 +2,7 @@ import { FACILITIES, FACILITY_TYPES, type FacilityType } from '../services/facil
 import { NATURE_FAMILIES, NATURE_MODELS, type NatureType } from '../environment/nature';
 import type { Coord } from '../map/coord';
 import { HOME_FOOTPRINTS } from '../economy/economy';
+import { CASINO, casinoFootprint } from '../leisure/casino';
 import type { Building, BuildingType, Rotation, ShopStack } from '../engine/state';
 
 export interface Footprint {
@@ -50,10 +51,12 @@ export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
   farm: { footprint: { width: 2, depth: 2 }, cost: 200, requiresRoad: true, initialSlots: 0 },
   grainSilo: { footprint: { width: 2, depth: 2 }, cost: 300, requiresRoad: true, initialSlots: 0 },
   vault: { footprint: { width: 2, depth: 1 }, cost: 300, requiresRoad: true, initialSlots: 0 },
+  casino: { footprint: CASINO.footprints[0]!, cost: CASINO.cost, requiresRoad: true, initialSlots: 0 },
 };
 
 export function footprintOf(type: BuildingType, rotation: number, tier = 1): Footprint {
-  const { width, depth } = (type === 'home' ? HOME_FOOTPRINTS[tier - 1] : undefined) ?? BUILDING_SPECS[type].footprint;
+  const tiered = type === 'home' ? HOME_FOOTPRINTS[tier - 1] : type === 'casino' ? casinoFootprint(tier) : undefined;
+  const { width, depth } = tiered ?? BUILDING_SPECS[type].footprint;
   return rotation % 2 === 0 ? { width, depth } : { width: depth, depth: width };
 }
 

@@ -65,3 +65,9 @@ export { isHomeInReach, categoryCoverageRatio, coveredCategories, homesLackingRe
 export { uncoveredReason } from './services/services';
 export type { ServiceCoverage, UncoveredReason } from './services/services';
 export { facilitiesUnlockedBetween } from './progression/unlocks';
+
+export { CASINO, CASINO_GAMES, MAX_CASINO_TIER, casinoFootprint, casinoPower, casinoRadius, casinoWellbeingBonus, gamesOfTier, isValidStake, maxStake, stakeStepsOf } from './leisure/casino';
+export type { CasinoGame } from './leisure/casino';
+export { isCasinoPowered, poweredCasinoIds } from './leisure/poweredCasinos';
+export { SLOT_PAYOUTS, SLOT_REEL_COUNT, SLOT_SYMBOLS, slotOutcome, slotPayout, spinSlotMachine } from './leisure/slotMachine';
+export type { SlotOutcome, SlotSpin, SlotSymbol } from './leisure/slotMachine';

@@ -9,6 +9,9 @@ export const MAX_PLANT_HEIGHT = 1.6;
 export const PRODUCE_WIDTH = 0.4;
 export const BUILDING_FILL = 1.9;
 
+// A tier of the Casino is fitted to its footprint width, one column wider per Tier.
+export const CASINO_MODEL_WIDTHS: Record<string, number> = { '2Story_Stairs_Mat': 1.9, '2Story_Wide_Mat': 2.85, '2Story_Wide_2Doors_Mat': 3.8 };
+
 export interface QuaterniusPack {
   name: string;
   archive: string;
@@ -120,7 +123,7 @@ function plansOf(pack: QuaterniusPack, sizes: Map<string, Size>): Map<string, Mo
     }
     return plans;
   }
-  for (const name of pack.files) plans.set(name, { scaleOf: (size) => fitScale(size, BUILDING_FILL), placement: 'centered', turned: true });
+  for (const name of pack.files) plans.set(name, { scaleOf: (size) => fitScale(size, CASINO_MODEL_WIDTHS[name] ?? BUILDING_FILL), placement: 'centered', turned: true });
   return plans;
 }
 

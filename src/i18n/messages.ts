@@ -1,7 +1,9 @@
 import { facilityMessages } from './facilities';
+import { casinoMessages } from './casino';
 import { natureMessages } from './nature';
 export const MESSAGES = {
   ...natureMessages('en'),
+  ...casinoMessages('en'),
   ...facilityMessages('en'),
   'building.brtStation': "BRT station",
   'building.railStation': "Railway station",

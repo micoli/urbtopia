@@ -36,6 +36,7 @@ export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
   silo: 'industrial/building-p',
   grainSilo: 'farm/Silo_House',
   vault: 'industrial/building-s',
+  casino: 'buildings/2Story_Stairs_Mat',
   farm: 'farm/Barn',
   packhouse: 'farm/OpenBarn',
   tree: 'suburban/tree-small',
@@ -111,6 +112,8 @@ const STOREHOUSE_MODELS = ['industrial/building-a', 'industrial/building-a', 'in
 
 const GRAIN_SILO_MODELS = ['farm/Silo_House', 'farm/Silo_House', 'farm/Silo_House', 'farm/Silo', 'farm/Silo', 'farm/Silo'];
 
+const CASINO_MODELS = ['buildings/2Story_Stairs_Mat', 'buildings/2Story_Wide_Mat', 'buildings/2Story_Wide_2Doors_Mat'];
+
 const HOME_MODELS = [
   'suburban/building-type-k',
   'suburban/building-type-h',
@@ -139,6 +142,7 @@ export const MODEL_KEYS: readonly string[] = [
     ...COAL_MODELS,
     ...STOREHOUSE_MODELS,
     ...GRAIN_SILO_MODELS,
+    ...CASINO_MODELS,
     ...HOME_MODELS,
     ...SOLAR_HOME_MODELS,
     ...FACILITY_TYPES.map(type => FACILITY_DETAILS[type]),
@@ -160,6 +164,7 @@ export function modelOf(type: BuildingType, tier: number): string {
   if (type === 'coalPlant') return COAL_MODELS[tier - 1] ?? MODEL_BY_BUILDING.coalPlant;
   if (type === 'storehouse') return STOREHOUSE_MODELS[tier - 1] ?? MODEL_BY_BUILDING.storehouse;
   if (type === 'grainSilo') return GRAIN_SILO_MODELS[tier - 1] ?? MODEL_BY_BUILDING.grainSilo;
+  if (type === 'casino') return CASINO_MODELS[tier - 1] ?? MODEL_BY_BUILDING.casino;
   return MODEL_BY_BUILDING[type];
 }
 

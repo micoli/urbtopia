@@ -20,8 +20,8 @@ describe('coal save compatibility', () => {
     const loaded = parseEnvelope(JSON.stringify(saveV5));
     expect(loaded).toEqual({ ok: true, state: { ...saveV5.state, seedStock: {}, fields: [], adaptationUntil: Math.max(saveV5.state.adaptationUntil, saveV5.state.lastSeen + 24 * 3_600_000) }, savedAt: saveV5.savedAt });
     if (!loaded.ok) return;
-    expect(JSON.parse(serializeEnvelope(loaded.state, loaded.savedAt)).version).toBe(9);
-    expect(CURRENT_VERSION).toBe(9);
+    expect(JSON.parse(serializeEnvelope(loaded.state, loaded.savedAt)).version).toBe(10);
+    expect(CURRENT_VERSION).toBe(10);
     expect(parseEnvelope(serializeEnvelope(loaded.state, loaded.savedAt))).toEqual(loaded);
   });
 

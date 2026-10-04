@@ -5,7 +5,7 @@ import { CURRENT_VERSION, parseEnvelope, serializeEnvelope } from './envelope';
 
 describe('farming save compatibility', () => {
   it('migrates a frozen version-8 city to version 9 with an empty seed stock and nothing else changed', () => {
-    expect(CURRENT_VERSION).toBe(9);
+    expect(CURRENT_VERSION).toBe(10);
     const loaded = parseEnvelope(JSON.stringify(saveV8));
     expect(loaded).toEqual({ ok: true, state: { ...saveV8.state, seedStock: {}, fields: [] }, savedAt: saveV8.savedAt });
   });

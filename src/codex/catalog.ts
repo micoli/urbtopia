@@ -23,6 +23,7 @@ const DESCRIPTIONS = {
   silo: 'codex.description.silo',
   grainSilo: 'codex.description.grainSilo',
   vault: 'codex.description.vault',
+  casino: 'codex.description.casino',
   farm: 'codex.description.farm',
   packhouse: 'codex.description.packhouse',
   powerPlant: 'codex.description.powerPlant',

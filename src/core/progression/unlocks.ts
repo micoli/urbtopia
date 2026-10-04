@@ -1,6 +1,7 @@
 import { totalCitizens } from '../buildings/city';
 import { FACILITIES, FACILITY_TYPES, type FacilityType } from '../services/facilities';
 import { GOODS, MATERIALS, unlockCitizensOf, type ItemId } from '../economy/items';
+import { CASINO } from '../leisure/casino';
 import type { CropId } from '../farming/crops';
 import type { GameState } from '../engine/state';
 
@@ -27,8 +28,12 @@ export function nextUnlock(state: GameState): Unlock | null {
   return { citizens: next, items: ALL_ITEMS.filter((item) => unlockCitizensOf(item) === next) };
 }
 
-export function facilitiesUnlockedBetween(before: GameState, after: GameState): FacilityType[] {
+export function facilitiesUnlockedBetween(before: GameState, after: GameState): (FacilityType | 'casino')[] {
   const from = totalCitizens(before);
   const to = totalCitizens(after);
-  return FACILITY_TYPES.filter(type => FACILITIES[type].unlockCitizens > from && FACILITIES[type].unlockCitizens <= to);
+  const unlocked = (threshold: number) => threshold > from && threshold <= to;
+  return [
+    ...FACILITY_TYPES.filter(type => unlocked(FACILITIES[type].unlockCitizens)),
+    ...(unlocked(CASINO.unlockCitizens) ? ['casino' as const] : []),
+  ];
 }

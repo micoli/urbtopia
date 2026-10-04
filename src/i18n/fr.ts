@@ -1,9 +1,11 @@
 import { facilityMessages } from './facilities';
+import { casinoMessages } from './casino';
 import { natureMessages } from './nature';
 import type { MessageKey } from './messages';
 
 export const FR: Record<MessageKey, string> = {
   ...natureMessages('fr'),
+  ...casinoMessages('fr'),
   ...facilityMessages('fr'),
   'eco.temperature': 'Température de la ville',
   'eco.temperatureOptimum': 'Optimum : 26 °C',

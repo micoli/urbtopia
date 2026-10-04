@@ -27,6 +27,7 @@ import { roadBuildCost, missingRoadTiles } from '../map/roadCost';
 import { roadPath } from '../map/roads';
 import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
+import { playSlotMachine } from '../leisure/casinoRound';
 import type { Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 
 const HOUR_MS = 60 * 60 * 1000;
@@ -61,6 +62,7 @@ export type Command =
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
   | { readonly type: 'SellToMarket'; readonly good: GoodId; readonly quantity: number }
   | { readonly type: 'UpgradeBuilding'; readonly buildingId: number }
+  | { readonly type: 'PlaySlotMachine'; readonly buildingId: number; readonly stake: number }
   | { readonly type: 'BuyParcel'; readonly x: number; readonly y: number }
   | { readonly type: 'BuySlot'; readonly buildingId: number }
   | { readonly type: 'SellBuilding'; readonly id: number }
@@ -75,6 +77,9 @@ export type ErrorKey =
   | 'error.outsideOwnedParcels'
   | 'error.tilesOccupied'
   | 'error.homeExpansionBlocked'
+  | 'error.casinoExpansionBlocked'
+  | 'error.casinoShut'
+  | 'error.invalidStake'
   | 'error.needsRoad'
   | 'error.storehouseExists'
   | 'error.siloExists'
@@ -189,6 +194,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return sellToMarket(state, command.good, command.quantity, now);
     case 'UpgradeBuilding':
       return upgradeBuilding(state, command.buildingId);
+    case 'PlaySlotMachine':
+      return playSlotMachine(state, command.buildingId, command.stake);
     case 'BuyParcel':
       return buyParcel(state, { x: command.x, y: command.y });
     case 'BuySlot':
@@ -551,13 +558,13 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
   if (!cost) return fail('error.maxTier');
   const isHome = building.type === 'home';
   if (isHome && missingServices(serviceCoverage(state), building, nextTier).length > 0) return fail('error.serviceRequired');
-  if (isHome) {
-    const footprintIssue = placementIssue(state, 'home', building.x, building.y, building.rotation, {
+  if (isHome || building.type === 'casino') {
+    const footprintIssue = placementIssue(state, building.type, building.x, building.y, building.rotation, {
       ignoreBuildingId: building.id,
       isMove: true,
       tier: nextTier,
     });
-    if (footprintIssue === 'error.tilesOccupied') return fail('error.homeExpansionBlocked');
+    if (footprintIssue === 'error.tilesOccupied') return fail(isHome ? 'error.homeExpansionBlocked' : 'error.casinoExpansionBlocked');
     if (footprintIssue) return fail(footprintIssue);
   }
 

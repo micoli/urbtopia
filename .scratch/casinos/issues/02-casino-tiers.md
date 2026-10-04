@@ -4,7 +4,7 @@
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Tier 2 uses `2Story_Wide_Mat`, Tier 3 uses `2Story_Wide_2Doors_Mat`; the footprint grows from 2×2 to 3×2 to 4×2 (one column per Tier, anchored on the original tile), model fitted to the width.
 - [ ] An upgrade whose extra tiles are occupied or outside owned Parcels is refused with the existing placement error, and the panel says free space is needed.

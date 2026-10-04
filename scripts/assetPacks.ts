@@ -109,7 +109,7 @@ export const ASSET_PACKS: AssetPack[] = [
 export const QUATERNIUS_PACKS: QuaterniusPack[] = [
   { name: 'crops', archive: 'crops.zip', files: CROP_IDS.flatMap((species) => cropModelsOf(species)).map((model) => model.slice('crops/'.length)) },
   { name: 'farm', archive: 'farm-buildings.zip', files: ['Barn', 'OpenBarn', 'Silo_House', 'Silo'] },
-  { name: 'buildings', archive: 'buildings.zip', files: [] },
+  { name: 'buildings', archive: 'buildings.zip', files: ['2Story_Stairs_Mat', '2Story_Wide_Mat', '2Story_Wide_2Doors_Mat'] },
 ];
 
 export const QUATERNIUS_ARCHIVES_DIR = 'assets/quaternus';
