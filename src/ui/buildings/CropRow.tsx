@@ -3,6 +3,8 @@ import {t} from '../../i18n/t';
 import {formatDuration} from '../common/formatDuration';
 import {UrbsAmount} from '../common/UrbsAmount';
 import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
+import { ActionButton } from '../common/ActionButton';
+import { ButtonRow } from '../common/ButtonRow';
 
 interface CropRowProps {
     crop: CropId;
@@ -29,16 +31,16 @@ export function CropRow({crop, unlocked, stock, onPlant, onBuy}: CropRowProps) {
             <p>
                 {formatDuration(spec.growthMs)} · 💧{spec.water} · ▦{spec.yield}
             </p>
-            <div className="slot-actions">
-                <button type="button" onClick={onPlant}>
+            <ButtonRow align="stretch" spaced>
+                <ActionButton onClick={onPlant}>
                     {t('farm.plant')}
-                </button>
+                </ActionButton>
                 {PACK_SIZES.map((quantity) => (
-                    <button key={quantity} type="button" onClick={() => onBuy(quantity)}>
+                    <ActionButton key={quantity} onClick={() => onBuy(quantity)}>
                         +{quantity} (<UrbsAmount value={quantity * spec.seedPrice}/>)
-                    </button>
+                    </ActionButton>
                 ))}
-            </div>
+            </ButtonRow>
             <hr/>
         </div>
     );

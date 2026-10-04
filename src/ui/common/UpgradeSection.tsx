@@ -6,6 +6,7 @@ import { gameStore } from '../../store/gameStore.ts';
 import { useGame } from './hooks.ts';
 import { serviceName } from '../buildings/serviceNames.ts';
 import { UrbsAmount } from './UrbsAmount.tsx';
+import { ActionButton } from './ActionButton';
 
 interface UpgradeSectionProps {
   building: Building;
@@ -44,9 +45,9 @@ export function UpgradeSection({ building }: UpgradeSectionProps) {
         </p>
       ) : null}
       {blocking.length > 0 ? <p className="stat-tight">{t('home.upgradeBlocked')}: {blocking.map(serviceName).join(', ')}</p> : null}
-      <button type="button" className="collect-button" disabled={blocking.length > 0} onClick={() => gameStore.getState().send({ type: 'UpgradeBuilding', buildingId: building.id })}>
+      <ActionButton variant="primary" block disabled={blocking.length > 0} onClick={() => gameStore.getState().send({ type: 'UpgradeBuilding', buildingId: building.id })}>
         {t('home.upgrade')} → {building.tier + 1}
-      </button>
+      </ActionButton>
     </>
   );
 }

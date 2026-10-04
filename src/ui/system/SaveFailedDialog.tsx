@@ -2,6 +2,8 @@ import { exportCurrentCity } from '../../persistence/exportCity';
 import { t } from '../../i18n/t';
 import { dialogStore } from '../../store/dialogStore';
 import { useDialogs } from '../common/hooks';
+import { ActionButton } from '../common/ActionButton';
+import { ButtonRow } from '../common/ButtonRow';
 
 export function SaveFailedDialog() {
   const open = useDialogs((store) => store.saveFailed);
@@ -12,14 +14,14 @@ export function SaveFailedDialog() {
       <div className="dialog">
         <h2>{t('saveFailed.title')}</h2>
         <p>{t('saveFailed.text')}</p>
-        <div className="dialog-actions">
-          <button type="button" onClick={() => dialogStore.getState().setSaveFailed(false)}>
+        <ButtonRow align="end">
+          <ActionButton onClick={() => dialogStore.getState().setSaveFailed(false)}>
             {t('saveFailed.close')}
-          </button>
-          <button type="button" className="dialog-primary" onClick={exportCurrentCity}>
+          </ActionButton>
+          <ActionButton variant="primary" onClick={exportCurrentCity}>
             {t('menu.export')}
-          </button>
-        </div>
+          </ActionButton>
+        </ButtonRow>
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import { CasinoHeader } from '../../CasinoHeader.tsx';
 import { SlotReels } from './SlotReels.tsx';
 import { slotSpinDuration } from './slotSymbols.ts';
 import { useFrozen } from '../../useFrozen.ts';
+import { ActionButton } from '../../../common/ActionButton';
 
 const SPIN_MS = slotSpinDuration(SLOT_REEL_COUNT);
 
@@ -44,9 +45,9 @@ export function SlotMachineGame({ casino }: SlotMachineGameProps) {
       <p className="casino-result" data-win={!spinning && net > 0} aria-live="polite">
         {spin === null || spinning ? ' ' : net > 0 ? <>{t('casino.won')} <UrbsAmount value={net} /></> : net === 0 ? t('casino.even') : <>{t('casino.lost')} <UrbsAmount value={-net} /></>}
       </p>
-      <button type="button" className="collect-button" disabled={spinning || urbs < stake} onClick={play}>
+      <ActionButton variant="primary" block disabled={spinning || urbs < stake} onClick={play}>
         {t('casino.spin')}
-      </button>
+      </ActionButton>
     </div>
   );
 }

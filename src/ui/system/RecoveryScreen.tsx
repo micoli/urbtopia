@@ -7,6 +7,8 @@ import { t } from '../../i18n/t';
 import { dialogStore } from '../../store/dialogStore';
 import { gameStore } from '../../store/gameStore';
 import { useDialogs } from '../common/hooks';
+import { ActionButton } from '../common/ActionButton';
+import { ButtonRow } from '../common/ButtonRow';
 
 export function RecoveryScreen() {
   const recovery = useDialogs((store) => store.recovery);
@@ -36,29 +38,29 @@ export function RecoveryScreen() {
         <h2>{t('recovery.title')}</h2>
         <p>{t(`recovery.reason.${recovery.reason}`)}</p>
         {noBackup || !hasBackup ? <p className="stat-tight">{t('recovery.noBackup')}</p> : null}
-        <div className="dialog-column">
-          <button type="button" disabled={!hasBackup} onClick={restore}>
+        <ButtonRow align="start" column>
+          <ActionButton disabled={!hasBackup} onClick={restore}>
             {t('recovery.restore')}
-          </button>
-          <button type="button" onClick={() => downloadText('urbtopia-raw-save.json', recovery.raw)}>
+          </ActionButton>
+          <ActionButton onClick={() => downloadText('urbtopia-raw-save.json', recovery.raw)}>
             {t('recovery.exportRaw')}
-          </button>
+          </ActionButton>
           {confirmingNewGame ? (
             <>
               <p>{t('menu.newGameConfirm')}</p>
-              <button type="button" onClick={() => setConfirmingNewGame(false)}>
+              <ActionButton onClick={() => setConfirmingNewGame(false)}>
                 {t('sale.no')}
-              </button>
-              <button type="button" className="dialog-danger" onClick={startNewGame}>
+              </ActionButton>
+              <ActionButton variant="danger" onClick={startNewGame}>
                 {t('recovery.newGame')}
-              </button>
+              </ActionButton>
             </>
           ) : (
-            <button type="button" onClick={() => setConfirmingNewGame(true)}>
+            <ActionButton onClick={() => setConfirmingNewGame(true)}>
               {t('recovery.newGame')}
-            </button>
+            </ActionButton>
           )}
-        </div>
+        </ButtonRow>
       </div>
     </div>
   );

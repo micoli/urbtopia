@@ -3,6 +3,8 @@ import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
 import { gameStore } from '../../store/gameStore';
 import { useGame, useUi } from '../common/hooks';
+import { ActionButton } from '../common/ActionButton';
+import { ButtonRow } from '../common/ButtonRow';
 
 export function MarketContent() {
   const toggle = useUi((store) => store.toggleMarket);
@@ -34,14 +36,14 @@ export function MarketContent() {
                   {t('market.price')}: {one}
                 </div>
               </div>
-              <div className="market-actions">
-                <button type="button" onClick={() => send({ type: 'SellToMarket', good, quantity: 1 })}>
+              <ButtonRow align="stretch" spaced>
+                <ActionButton onClick={() => send({ type: 'SellToMarket', good, quantity: 1 })}>
                   {t('market.sellOne')} (+{one})
-                </button>
-                <button type="button" onClick={() => send({ type: 'SellToMarket', good, quantity: amount })}>
+                </ActionButton>
+                <ActionButton onClick={() => send({ type: 'SellToMarket', good, quantity: amount })}>
                   {t('market.sellAll')} (+{all})
-                </button>
-              </div>
+                </ActionButton>
+              </ButtonRow>
             </li>
           );
         })}

@@ -9,6 +9,8 @@ import { UpgradeSection } from '../common/UpgradeSection.tsx';
 import { UrbsAmount } from '../common/UrbsAmount';
 import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
 import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
+import { ActionButton } from '../common/ActionButton';
+import { ButtonRow } from '../common/ButtonRow';
 
 interface ProductionPanelProps {
   building: Building;
@@ -64,31 +66,31 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
         </label>
       ) : null}
       {hasFreeSlot ? (
-        <div className="slot-actions">
+        <ButtonRow align="stretch" spaced>
           {items.filter((item) => !filtering || !lacksMaterials(item)).map((item) =>
             isAvailable(item) ? (
-              <button key={item} type="button" disabled={lacksMaterials(item)} onClick={() => send({ type: 'QueueProduction', buildingId: building.id, item })}>
+              <ActionButton key={item} disabled={lacksMaterials(item)} onClick={() => send({ type: 'QueueProduction', buildingId: building.id, item })}>
                 {itemName(item)}
                 {recipeLabel(item)}
-              </button>
+              </ActionButton>
             ) : (
-              <button key={item} type="button" disabled>
+              <ActionButton key={item} disabled>
                 🔒 {itemName(item)} ({lockLabel(item)})
-              </button>
+              </ActionButton>
             ),
           )}
-        </div>
+        </ButtonRow>
       ) : null}
       {slotPrice !== undefined ? (
-        <button type="button" className="slot-buy" onClick={() => send({ type: 'BuySlot', buildingId: building.id })}>
+        <ActionButton block onClick={() => send({ type: 'BuySlot', buildingId: building.id })}>
           {t('panel.buySlot')} (<UrbsAmount value={slotPrice} />)
-        </button>
+        </ActionButton>
       ) : null}
       <UpgradeSection building={building} />
       {hasReadyOutput ? (
-        <button type="button" className="collect-button" onClick={() => send({ type: 'Collect', buildingId: building.id })}>
+        <ActionButton variant="primary" block onClick={() => send({ type: 'Collect', buildingId: building.id })}>
           {t('panel.collect')}
-        </button>
+        </ActionButton>
       ) : null}
   </DrawerProductionPanel>;
 }

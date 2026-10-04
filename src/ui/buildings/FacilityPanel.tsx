@@ -4,6 +4,7 @@ import { useGame } from '../common/hooks';
 import { ReachToggle } from '../common/ReachToggle.tsx';
 import { UpgradeSection } from '../common/UpgradeSection.tsx';
 import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
+import {DrawerPanelLabelValue} from "../common/DrawerPanelLabelValue.tsx";
 import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
 
 interface FacilityPanelProps {
@@ -18,9 +19,9 @@ export function FacilityPanel({ building }: FacilityPanelProps) {
   const served = state.buildings.reduce((total, home) => total + (home.type === 'home' && coverage.get(home.id)?.has(building.type) ? citizensOf(home.tier) : 0), 0);
   return <DrawerProductionPanel>
         <DrawerPanelTitle title={t(`home.tier`)} level={building.tier}/>
-        <p><strong>{t('facility.reach')}</strong>: {radius === null ? t('placement.cityWide') : `${2 * radius} × ${2 * radius}`}</p>
+        <DrawerPanelLabelValue label={t('facility.reach')} value={radius === null ? t('placement.cityWide') : `${2 * radius} × ${2 * radius}`}/>
         {radius !== null && <ReachToggle />}
-        <p><strong>{t('facility.capacity')}</strong>: {capacity === null ? t('facility.unlimited') : capacity} · {t('facility.served')}: {served}</p>
+        <DrawerPanelLabelValue label={t('facility.capacity')} value={`${capacity === null ? t('facility.unlimited') : capacity} · ${t('facility.served')}: ${served}`}/>
       <UpgradeSection building={building} />
   </DrawerProductionPanel>
 }

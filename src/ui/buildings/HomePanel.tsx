@@ -8,6 +8,7 @@ import {UrbsAmount} from "../common/UrbsAmount.tsx";
 import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
 import {DrawerPanelLabelValue} from "../common/DrawerPanelLabelValue.tsx";
 import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
+import { ActionButton } from '../common/ActionButton';
 
 interface HomePanelProps {
   building: Building;
@@ -41,18 +42,18 @@ export function HomePanel({ building }: HomePanelProps) {
       {(['insulation', 'solar'] as const).map(equipment => {
         const installed = equipment === 'solar' ? building.solar : building.insulated;
         const cost = (equipment === 'solar' ? ECOLOGY.solarCost : ECOLOGY.insulationCost) * building.tier;
-        return <button type="button" className="panel-button" key={equipment} disabled={installed || state.urbs < cost || totalCitizens(state) < (equipment === 'solar' ? ECOLOGY.solarUnlockCitizens : 6)} onClick={() => gameStore.getState().send({ type: 'EquipHome', buildingId: building.id, equipment })}>
+        return <ActionButton block key={equipment} disabled={installed || state.urbs < cost || totalCitizens(state) < (equipment === 'solar' ? ECOLOGY.solarUnlockCitizens : 6)} onClick={() => gameStore.getState().send({ type: 'EquipHome', buildingId: building.id, equipment })}>
           {t(equipment === 'solar' ? 'eco.retrofit' : 'eco.insulate')} · {installed ? t('eco.installed') : <UrbsAmount value={cost} />}
-        </button>;
+        </ActionButton>;
       })}
       {totalCitizens(state) < 15 && (<p>
           {t('eco.retrofit')} · {t('eco.locked')}: 15
       </p>)}
       <UpgradeSection building={building} />
       {due > 0 ? (
-        <button type="button" className="collect-button" onClick={() => gameStore.getState().send({ type: 'Collect', buildingId: building.id })}>
+        <ActionButton variant="primary" block onClick={() => gameStore.getState().send({ type: 'Collect', buildingId: building.id })}>
           {t('panel.collect')} (+{due})
-        </button>
+        </ActionButton>
       ) : null}
     </DrawerProductionPanel>
 }

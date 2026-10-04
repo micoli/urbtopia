@@ -284,23 +284,6 @@ button {
   color: inherit;
 }
 
-.side-panel-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.side-panel-actions button {
-  flex: 1 1 0;
-  padding: 0 12px;
-  min-height: var(--tap);
-  border: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.12);
-  color: inherit;
-}
-
 .confirm-pad {
   position: fixed;
   left: 50%;
@@ -520,70 +503,6 @@ button {
   background: rgba(53, 208, 127, 0.3);
 }
 
-.slot-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.slot-actions button,
-.collect-button {
-  flex: 1;
-  min-height: var(--tap);
-  border: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.12);
-  color: inherit;
-}
-
-.collect-button {
-  width: 100%;
-  margin-top: 8px;
-  background: var(--accent);
-  color: #08140d;
-  font-weight: 700;
-}
-
-.panel-button {
-  width: 100%;
-  min-height: var(--tap);
-  margin-top: 8px;
-  padding: 0 12px;
-  border: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.12);
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-
-.panel-button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.collect-button:disabled {
-  background: rgba(255, 255, 255, 0.12);
-  color: inherit;
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.slot-buy {
-  width: 100%;
-  min-height: var(--tap);
-  margin-top: 8px;
-  border: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.12);
-  color: inherit;
-}
-
-.slot-actions {
-  flex-wrap: wrap;
-}
-
 .market-panel {
   position: fixed;
   right: 0;
@@ -622,22 +541,6 @@ button {
 .market-price {
   font-size: 12px;
   opacity: 0.75;
-}
-
-.market-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 6px;
-}
-
-.market-actions button {
-  flex: 1;
-  min-height: var(--tap);
-  border: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.12);
-  color: inherit;
-  font-size: 12px;
 }
 
 .dock-button:disabled {
@@ -703,35 +606,6 @@ button {
   color: var(--panel-fg);
 }
 
-.dialog-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.dialog-actions button {
-  min-height: var(--tap);
-  padding: 0 16px;
-  border: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.14);
-  color: inherit;
-}
-
-.dialog-actions .dialog-danger {
-  background: var(--danger);
-  color: #fff;
-}
-
-.slot-actions button:disabled {
-  opacity: 0.45;
-}
-
-.side-panel-actions .dialog-danger {
-  background: var(--danger);
-  color: #fff;
-}
-
 .banner,
 .reminder {
   position: fixed;
@@ -771,33 +645,6 @@ button {
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.18);
   color: inherit;
-}
-
-.dialog-column {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.dialog-column button {
-  min-height: var(--tap);
-  border: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.14);
-  color: inherit;
-}
-
-.dialog-column button:disabled {
-  opacity: 0.4;
-}
-
-.dialog-column .dialog-danger {
-  background: var(--danger);
-}
-
-.dialog-actions .dialog-primary {
-  background: var(--accent);
-  color: #08140d;
 }
 
 .recovery {
@@ -1009,11 +856,6 @@ textarea {
   font-size: 11px;
 }
 
-.side-panel-actions .dialog-primary {
-  background: var(--accent);
-  color: #08140d;
-}
-
 .tutorial-banner {
   position: fixed;
   top: 64px;
@@ -1039,12 +881,6 @@ textarea {
   margin: 6px 0 10px;
 }
 
-.tutorial-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
 [data-guided='true'] {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
@@ -1060,23 +896,9 @@ textarea {
   }
 }
 
-.tutorial-banner .dialog-danger {
-  background: var(--danger);
-  color: white;
-}
-
-.tutorial-banner button {
+.tutorial-banner .action-button {
   min-height: 36px;
-  padding: 0 12px;
-  border: 0;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.14);
-  color: inherit;
-}
-
-.tutorial-banner .dialog-primary {
-  background: var(--accent);
-  color: #08140d;
 }
 
 .tutorial-handle {
@@ -1746,7 +1568,7 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   min-height: calc(var(--stage-cell) * 9 + 84px);
 }
 
-.casino-games .collect-button {
+.casino-games .action-button {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1762,7 +1584,67 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   pointer-events: none;
 }
 
-.casino-games .collect-button:disabled .casino-game-icon {
+.casino-games .action-button:disabled .casino-game-icon {
   opacity: 0.5;
   filter: grayscale(0.6);
+}
+
+.action-button {
+  min-height: var(--tap);
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.action-button--primary {
+  background: var(--accent);
+  color: #08140d;
+  font-weight: 700;
+}
+
+.action-button--danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.action-button--block {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.action-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.action-button--primary:disabled {
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.button-row--stretch > .action-button {
+  flex: 1 1 0;
+}
+
+.button-row--end {
+  justify-content: flex-end;
+}
+
+.button-row--column {
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.button-row--spaced {
+  margin-top: 8px;
 }

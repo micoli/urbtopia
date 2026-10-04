@@ -30,6 +30,7 @@ import {BusLinesPanel} from '../transit/BusLinesPanel';
 import {ServicesSection} from '../buildings/ServicesSection';
 import type {MessageKey} from '../../i18n/messages';
 import {NextUnlock} from "./NextUnlock.tsx";
+import { ActionButton } from '../common/ActionButton';
 
 export function MaximalStats() {
     const state = useGame(s => s.state);
@@ -207,8 +208,8 @@ export function MaximalStats() {
                 {!state.ecologyDismissed && <section className="eco-wide eco-objectives">
                     <h3>{t('eco.objectives')}</h3>{objectives.map(([key, done]) => <p key={key}
                                                                                       data-complete={done}>{done ? '✓' : '○'} {t(key)}</p>)}
-                    <button type="button" className="eco-primary"
-                            onClick={() => gameStore.getState().send({type: 'DismissEcology'})}>{t('eco.dismiss')}</button>
+                    <ActionButton variant="primary"
+                            onClick={() => gameStore.getState().send({type: 'DismissEcology'})}>{t('eco.dismiss')}</ActionButton>
                 </section>}
                 <section id="next-unlock" className="eco-wide">
                     <h3>{t('eco.nextUnlock')}</h3>

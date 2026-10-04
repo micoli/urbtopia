@@ -4,6 +4,7 @@ import { lineStatusKey } from './lineStatusKey';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
+import { ActionButton } from '../common/ActionButton';
 
 export function BusLinesPanel() {
   const state = useGame(s => s.state);
@@ -32,6 +33,6 @@ export function BusLinesPanel() {
       </button>)}</div>
     {stops.length > 0 && <button type="button" onClick={() => setStops([])}>{t('eco.clearStops')}</button>}
     {(stops.length > 0 || editing !== undefined) && <button type="button" onClick={reset}>{t('pad.cancel')}</button>}
-    <button type="button" className="eco-primary" disabled={stops.length < 2} onClick={save}>{t('eco.saveLine')}</button>
+    <ActionButton variant="primary" disabled={stops.length < 2} onClick={save}>{t('eco.saveLine')}</ActionButton>
   </section>;
 }

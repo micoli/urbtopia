@@ -11,6 +11,7 @@ import { CasinoHeader } from '../../CasinoHeader.tsx';
 import { blackjackResultKey } from './blackjackResult.ts';
 import { winnerOf } from './blackjackWinner.ts';
 import { useBlackjackRound } from './useBlackjackRound.ts';
+import { ActionButton } from '../../../common/ActionButton';
 
 interface BlackjackGameProps {
   casino: Building;
@@ -42,14 +43,14 @@ export function BlackjackGame({ casino }: BlackjackGameProps) {
       />
       {open && hand ? (
         <div className="blackjack-actions">
-          <button type="button" className="collect-button" disabled={finished} onClick={() => act('hit')}>{t('casino.hit')}</button>
-          <button type="button" className="collect-button" disabled={finished} onClick={() => act('stand')}>{t('casino.stand')}</button>
-          <button type="button" className="collect-button" disabled={!canDouble(hand) || urbs < open.stake} onClick={() => act('double')}>{t('casino.double')}</button>
+          <ActionButton variant="primary" block disabled={finished} onClick={() => act('hit')}>{t('casino.hit')}</ActionButton>
+          <ActionButton variant="primary" block disabled={finished} onClick={() => act('stand')}>{t('casino.stand')}</ActionButton>
+          <ActionButton variant="primary" block disabled={!canDouble(hand) || urbs < open.stake} onClick={() => act('double')}>{t('casino.double')}</ActionButton>
         </div>
       ) : (
-        <button type="button" className="collect-button" disabled={urbs < stake} onClick={deal}>
+        <ActionButton variant="primary" block disabled={urbs < stake} onClick={deal}>
           {result ? t('casino.newRound') : t('casino.deal')}
-        </button>
+        </ActionButton>
       )}
       <p className="casino-result" data-win={net > 0} aria-live="polite">
         {result && !open ? <>{t(blackjackResultKey(result.outcome))}{net === 0 ? null : <> · {net > 0 ? t('casino.won') : t('casino.lost')} <UrbsAmount value={Math.abs(net)} /></>}</> : ' '}

@@ -2,6 +2,8 @@ import { useRef, useState, type ChangeEvent } from 'react';
 import { exportCurrentCity } from '../../persistence/exportCity';
 import { saveSession } from '../../persistence/instance';
 import { importCity } from '../../persistence/transfer';
+import { ActionButton } from '../common/ActionButton';
+import { ButtonRow } from '../common/ButtonRow';
 import { t } from '../../i18n/t';
 import { dialogStore } from '../../store/dialogStore';
 import { gameStore } from '../../store/gameStore';
@@ -48,43 +50,41 @@ export function MenuContent() {
           ✗
         </button>
       </header>
-      <div className="side-panel-actions">
+      <ButtonRow align="stretch" spaced className="side-panel-actions">
         {canInstall ? (
-          <button type="button" className="dialog-primary" onClick={install}>
+          <ActionButton variant="primary" onClick={install}>
             {t('menu.install')}
-          </button>
+          </ActionButton>
         ) : null}
-        <div className="prefs-group">
-          <button type="button" onClick={() => skipTime(12)}>
+          <ActionButton onClick={() => skipTime(12)}>
             {t('menu.skip12')}
-          </button>
-        </div>
-        <button type="button" onClick={exportCurrentCity}>
+          </ActionButton>
+        <ActionButton onClick={exportCurrentCity}>
           {t('menu.export')}
-        </button>
-        <button type="button" onClick={() => fileInput.current?.click()}>
+        </ActionButton>
+        <ActionButton onClick={() => fileInput.current?.click()}>
           {t('menu.import')}
-        </button>
-        <button type="button" onClick={() => void reloadApp()}>
+        </ActionButton>
+        <ActionButton onClick={() => void reloadApp()}>
           {t('menu.reload')}
-        </button>
+        </ActionButton>
         <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={onFileChosen} />
         {confirming ? (
           <>
             <p>{t('menu.newGameConfirm')}</p>
-            <button type="button" onClick={() => setConfirming(false)}>
+            <ActionButton onClick={() => setConfirming(false)}>
               {t('sale.no')}
-            </button>
-            <button type="button" className="dialog-danger" onClick={startNewGame}>
+            </ActionButton>
+            <ActionButton variant="danger" onClick={startNewGame}>
               {t('menu.newGame')}
-            </button>
+            </ActionButton>
           </>
         ) : (
-          <button type="button" onClick={() => setConfirming(true)}>
+          <ActionButton onClick={() => setConfirming(true)}>
             {t('menu.newGame')}
-          </button>
+          </ActionButton>
         )}
-      </div>
+      </ButtonRow>
       <PreferencesContent />
       <small className="build-id">
         {t('menu.version')} {__BUILD_ID__}

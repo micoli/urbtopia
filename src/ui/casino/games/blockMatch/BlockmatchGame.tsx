@@ -8,6 +8,7 @@ import { useGame } from '../../../common/hooks.ts';
 import { BlockmatchPlay } from './BlockmatchPlay.tsx';
 import { BlockmatchResult } from './BlockmatchResult.tsx';
 import { CasinoHeader } from '../../CasinoHeader.tsx';
+import { ActionButton } from '../../../common/ActionButton';
 
 interface BlockmatchGameProps {
   casino: Building;
@@ -34,9 +35,9 @@ export function BlockmatchGame({ casino }: BlockmatchGameProps) {
         {playing ? <BlockmatchPlay buildingId={casino.id} tier={casino.tier} roundSeed={round.roundSeed} /> : null}
         {!playing && result ? <BlockmatchResult stars={result.stars} net={net} /> : null}
       </div>
-      <button type="button" className="collect-button" style={playing ? { visibility: 'hidden' } : undefined} aria-hidden={playing} tabIndex={playing ? -1 : 0} disabled={playing || urbs < stake} onClick={start}>
+      <ActionButton variant="primary" block style={playing ? { visibility: 'hidden' } : undefined} aria-hidden={playing} tabIndex={playing ? -1 : 0} disabled={playing || urbs < stake} onClick={start}>
         {result ? t('casino.newRound') : t('casino.deal')}
-      </button>
+      </ActionButton>
     </div>
   );
 }

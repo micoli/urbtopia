@@ -1,6 +1,8 @@
 import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
 import { useConfirmKeys } from './useConfirmKeys';
+import { ActionButton } from '../common/ActionButton';
+import { ButtonRow } from '../common/ButtonRow';
 
 export function ConfirmSaleDialog() {
   const pending = useUi((store) => store.pendingSaleId);
@@ -13,14 +15,14 @@ export function ConfirmSaleDialog() {
     <div className="dialog-backdrop" role="dialog" aria-modal="true">
       <div className="dialog">
         <p>{t('sale.confirm')}</p>
-        <div className="dialog-actions">
-          <button type="button" onClick={cancelSale}>
+        <ButtonRow align="end">
+          <ActionButton onClick={cancelSale}>
             {t('sale.no')}
-          </button>
-          <button type="button" className="dialog-danger" onClick={confirmSale}>
+          </ActionButton>
+          <ActionButton variant="danger" onClick={confirmSale}>
             {t('sale.yes')}
-          </button>
-        </div>
+          </ActionButton>
+        </ButtonRow>
       </div>
     </div>
   );

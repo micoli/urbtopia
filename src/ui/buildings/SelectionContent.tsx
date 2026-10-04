@@ -14,6 +14,8 @@ import { StoragePanel } from './StoragePanel';
 import { useSelectedBuilding } from './useSelectedBuilding';
 import { UtilityPanel } from './UtilityPanel';
 import {UrbsAmount} from "../common/UrbsAmount.tsx";
+import { ActionButton } from '../common/ActionButton';
+import { ButtonRow } from '../common/ButtonRow';
 
 export function SelectionContent() {
   const building = useSelectedBuilding();
@@ -42,14 +44,14 @@ export function SelectionContent() {
       {building.type === 'coalPlant' ? <CoalPlantPanel building={building} /> : null}
       {greenProfileOf(building.type) || ['solar','battery','backup','busStop','brtStation','railStation'].includes(building.type) || (building.type === 'home' && building.solar) ? <EcologicalBuildingPanel building={building} /> : null}
       {natureModelOf(building.type)?.[2] === 'decoration' ? <DecorationRotation building={building} /> : null}
-      <div className="side-panel-actions">
-        <button type="button" onClick={moveSelected}>
+      <ButtonRow align="stretch" spaced className="side-panel-actions">
+        <ActionButton onClick={moveSelected}>
           {t('panel.move')}
-        </button>
-        <button type="button" onClick={sellSelected}>
+        </ActionButton>
+        <ActionButton onClick={sellSelected}>
           ❌ +<UrbsAmount value={refund}/>
-        </button>
-      </div>
+        </ActionButton>
+      </ButtonRow>
     </>
   );
 }

@@ -5,6 +5,8 @@ import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
 import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
+import { ActionButton } from '../common/ActionButton';
+import { ButtonRow } from '../common/ButtonRow';
 
 interface ShopPanelProps {
   building: Building;
@@ -38,13 +40,13 @@ export function ShopPanel({ building }: ShopPanelProps) {
       </ol>
       {hasFreeSlot && stockable.length === 0 ? <p className="hint">{t('shop.needGoods')}</p> : null}
       {hasFreeSlot ? (
-        <div className="slot-actions">
+        <ButtonRow align="stretch" spaced>
           {stockable.map((good) => (
-            <button key={good} type="button" onClick={() => send({ type: 'StockShop', buildingId: building.id, good })}>
+            <ActionButton key={good} onClick={() => send({ type: 'StockShop', buildingId: building.id, good })}>
               + {SHOP.stackSize} {itemName(good)}
-            </button>
+            </ActionButton>
           ))}
-        </div>
+        </ButtonRow>
       ) : null}
   </DrawerProductionPanel>
 }

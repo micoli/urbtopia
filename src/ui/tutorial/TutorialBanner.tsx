@@ -4,6 +4,8 @@ import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { clampToViewport } from '../layout/clampToViewport';
 import { useGame, useUi } from '../common/hooks';
+import { ActionButton } from '../common/ActionButton';
+import { ButtonRow } from '../common/ButtonRow';
 
 interface Position {
   x: number;
@@ -55,27 +57,27 @@ export function TutorialBanner() {
         </span>
       </header>
       <p>{t(`tutorial.${step}`)}</p>
-      <div className="tutorial-actions">
+      <ButtonRow align="start">
         {canSkipTime ? (
-          <button type="button" className="dialog-primary" onClick={() => send({ type: 'SkipTutorialStep' })}>
+          <ActionButton variant="primary" onClick={() => send({ type: 'SkipTutorialStep' })}>
             {t('tutorial.timeSkip')}
-          </button>
+          </ActionButton>
         ) : null}
         {confirming ? (
           <>
-            <button type="button" onClick={() => setConfirming(false)}>
+            <ActionButton onClick={() => setConfirming(false)}>
               {t('sale.no')}
-            </button>
-            <button type="button" className="dialog-danger" onClick={skipTutorial}>
+            </ActionButton>
+            <ActionButton variant="danger" onClick={skipTutorial}>
               {t('tutorial.skipConfirm')}
-            </button>
+            </ActionButton>
           </>
         ) : (
-          <button type="button" onClick={() => setConfirming(true)}>
+          <ActionButton onClick={() => setConfirming(true)}>
             {t('tutorial.skip')}
-          </button>
+          </ActionButton>
         )}
-      </div>
+      </ButtonRow>
     </aside>
   );
 }

@@ -8,6 +8,9 @@ import { UrbsAmount } from '../common/UrbsAmount';
 import { casinoGameIconUrl } from './casinoGameIcons';
 import { launchCasinoGame } from './launchCasinoGame';
 import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
+import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
+import {DrawerPanelLabelValue} from "../common/DrawerPanelLabelValue.tsx";
+import { ActionButton } from '../common/ActionButton';
 
 const PLAYABLE = new Set(['slotMachine', 'blackjack', 'blockmatch']);
 
@@ -21,19 +24,19 @@ export function CasinoPanel({ building }: CasinoPanelProps) {
   const powered = isCasinoPowered(state, building);
   const unlocked = building.tier < MAX_CASINO_TIER ? gamesOfTier(building.tier + 1).filter(game => !gamesOfTier(building.tier).includes(game)) : [];
   return <DrawerProductionPanel>
-      <h3><strong>{t('home.tier')}</strong> {building.tier}</h3>
+      <DrawerPanelTitle title={t('home.tier')} level={building.tier}/>
       <p className="stat-tight" data-state={powered ? 'on' : 'off'}>{powered ? t('casino.powered') : t('casino.shut')}</p>
-      <p><strong>{t('facility.reach')}</strong>: {2 * casinoRadius(building.tier)} × {2 * casinoRadius(building.tier)}</p>
+      <DrawerPanelLabelValue label={t('facility.reach')} value={`${2 * casinoRadius(building.tier)} × ${2 * casinoRadius(building.tier)}`}/>
       <ReachToggle />
-      <p><strong>{t('casino.maxStake')}</strong>: <UrbsAmount value={maxStake(building.tier)} /></p>
+      <DrawerPanelLabelValue label={t('casino.maxStake')} value={<UrbsAmount value={maxStake(building.tier)} />}/>
       <div className="casino-games">
         {CASINO_GAMES.map(game => {
           const locked = CASINO.gameMinTier[game] > building.tier;
           return (
-            <button key={game} type="button" className="collect-button" disabled={locked || !powered || !PLAYABLE.has(game)} onClick={() => launchCasinoGame(building.id, game, () => select(null))}>
+            <ActionButton variant="primary" block key={game} disabled={locked || !powered || !PLAYABLE.has(game)} onClick={() => launchCasinoGame(building.id, game, () => select(null))}>
               <img className="casino-game-icon" src={casinoGameIconUrl(game)} alt="" draggable={false} />
               <span>{t(`casino.${game}`)}{locked ? ` · ${t('home.tier')} ${CASINO.gameMinTier[game]}` : ''}</span>
-            </button>
+            </ActionButton>
           );
         })}
       </div>

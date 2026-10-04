@@ -13,6 +13,7 @@ import {useGame, useUi} from '../common/hooks';
 import {productionFactors} from '../../core/environment/energy';
 import {DrawerPanelLabelValue} from '../common/DrawerPanelLabelValue.tsx';
 import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
+import { ActionButton } from '../common/ActionButton';
 
 export function EcologicalBuildingPanel({building}: { building: Building; }) {
     const state = useGame(s => s.state);
@@ -80,6 +81,6 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
             }
         </DrawerPanelLabelValue>
         }
-        <button type="button" className="panel-button" onClick={toggleStats}>{t('eco.title')}</button>
+        <ActionButton block onClick={toggleStats}>{t('eco.title')}</ActionButton>
     </DrawerProductionPanel>;
 }

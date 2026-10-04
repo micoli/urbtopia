@@ -6,6 +6,7 @@ import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 import { TransitFleetPanel } from './TransitFleetPanel';
 import { NumberStepper } from '../common/NumberStepper';
+import { ActionButton } from '../common/ActionButton';
 
 export function TransitPanel() {
   const state = useGame(s => s.state);
@@ -25,7 +26,7 @@ export function TransitPanel() {
     <h3>{t('transit.brt')} / {t('transit.rail')}</h3>
     {brokenLinks > 0 && <div className="eco-line" role="alert">
       <p>⚠️ {t('transit.broken')} ({brokenLinks})</p>
-      <button type="button" className="eco-primary" onClick={() => gameStore.getState().send({ type: 'RepairTransitNetwork', mode })}>{t('transit.repair')}</button>
+      <ActionButton variant="primary" onClick={() => gameStore.getState().send({ type: 'RepairTransitNetwork', mode })}>{t('transit.repair')}</ActionButton>
     </div>}
     <p>{t('transit.help')}</p><p>{t('transit.coverage')}</p>
     <p>{t('transit.transfers')}: {stats.transferRiders.toFixed(1)} · {t('transit.coal')}: {stats.coalPerHour.toFixed(2)}</p>
@@ -47,7 +48,7 @@ export function TransitPanel() {
     <NumberStepper label={t('transit.offPeak')} min={mode === 'brt' ? 10 : 1} max={mode === 'brt' ? 15 : 60} value={offPeak} onChange={setOffPeak} />
     {stops.length > 0 && <button type="button" onClick={() => setStops([])}>{t('eco.clearStops')}</button>}
     {(stops.length > 0 || editing !== undefined) && <button type="button" onClick={reset}>{t('pad.cancel')}</button>}
-    <button type="button" className="eco-primary" disabled={stops.length < 2 || totalCitizens(state) < TRANSIT[mode].unlock} onClick={save}>{t('eco.saveLine')}</button>
+    <ActionButton variant="primary" disabled={stops.length < 2 || totalCitizens(state) < TRANSIT[mode].unlock} onClick={save}>{t('eco.saveLine')}</ActionButton>
     <TransitFleetPanel />
   </section>;
 }

@@ -6,6 +6,8 @@ import { useGame } from '../common/hooks';
 import { CropRow } from './CropRow';
 import { UpgradeSection } from '../common/UpgradeSection.tsx';
 import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
+import { ActionButton } from '../common/ActionButton';
+import { ButtonRow } from '../common/ButtonRow';
 
 interface FarmPanelProps {
   building: Building;
@@ -40,10 +42,10 @@ export function FarmPanel({ building }: FarmPanelProps) {
           />
         ))}
       </div>
-        <div className="slot-actions">
-            <button type="button" disabled={state.fields.length >= fieldCap(state)} onClick={() => chooseTool({ kind: 'brush', action: 'layField', tiles: [] })}>{t('farm.layFields')}</button>
-            <button type="button" disabled={state.fields.length === 0} onClick={() => chooseTool({ kind: 'brush', action: 'removeField', tiles: [] })}>{t('farm.removeFields')}</button>
-        </div>
+        <ButtonRow align="stretch" spaced>
+            <ActionButton disabled={state.fields.length >= fieldCap(state)} onClick={() => chooseTool({ kind: 'brush', action: 'layField', tiles: [] })}>{t('farm.layFields')}</ActionButton>
+            <ActionButton disabled={state.fields.length === 0} onClick={() => chooseTool({ kind: 'brush', action: 'removeField', tiles: [] })}>{t('farm.removeFields')}</ActionButton>
+        </ButtonRow>
       <UpgradeSection building={building} />
     </section>
   );
