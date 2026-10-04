@@ -1,5 +1,6 @@
 import { t } from '../../i18n/t';
 import { UrbsAmount } from '../common/UrbsAmount';
+import { RadioChipGroup } from '../common/RadioChipGroup';
 
 interface StakePickerProps {
   steps: readonly number[];
@@ -11,12 +12,15 @@ interface StakePickerProps {
 
 export function StakePicker({ steps, urbs, value, disabled = false, onChange }: StakePickerProps) {
   return (
-    <div className="stake-picker" role="group" aria-label={t('casino.stake')}>
-      {steps.map(step => (
-        <button key={step} type="button" className="stake-step" aria-pressed={step === value} disabled={disabled || step > urbs} onClick={() => onChange(step)}>
-          <UrbsAmount value={step} />
-        </button>
-      ))}
-    </div>
+    <RadioChipGroup
+      variant="toggle"
+      className="stake-picker"
+      chipClassName="stake-step"
+      label={t('casino.stake')}
+      options={steps.map(step => ({ value: step, label: <UrbsAmount value={step} />, disabled: step > urbs }))}
+      value={value}
+      disabled={disabled}
+      onChange={onChange}
+    />
   );
 }

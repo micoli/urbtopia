@@ -3,6 +3,7 @@ import { prefsStore, type Language, type Layout } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { CheckboxField } from '../common/CheckboxField';
 import { SectionHeading } from '../common/SectionHeading';
+import { RadioChipGroup } from '../common/RadioChipGroup';
 
 const LANGUAGES: Language[] = ['en', 'fr'];
 const LAYOUTS: Layout[] = ['C', 'A', 'B'];
@@ -18,20 +19,8 @@ export function PreferencesContent() {
   return (
     <section className="prefs">
       <SectionHeading>{t('prefs.title')}</SectionHeading>
-      <div className="prefs-group" role="radiogroup" aria-label={t('prefs.language')}>
-        {LANGUAGES.map((code) => (
-          <button key={code} type="button" role="radio" aria-checked={language === code} onClick={() => setLanguage(code)}>
-            {t(`lang.${code}`)}
-          </button>
-        ))}
-      </div>
-      <div className="prefs-group" role="radiogroup" aria-label={t('prefs.layout')}>
-        {LAYOUTS.map((code) => (
-          <button key={code} type="button" role="radio" aria-checked={layout === code} onClick={() => setLayout(code)}>
-            {t(`prefs.layout.${code}`)}
-          </button>
-        ))}
-      </div>
+      <RadioChipGroup className="prefs-group" label={t('prefs.language')} options={LANGUAGES.map(code => ({ value: code, label: t(`lang.${code}`) }))} value={language} onChange={setLanguage} />
+      <RadioChipGroup className="prefs-group" label={t('prefs.layout')} options={LAYOUTS.map(code => ({ value: code, label: t(`prefs.layout.${code}`) }))} value={layout} onChange={setLayout} />
       <CheckboxField label={t('prefs.traffic')} checked={traffic} onChange={setTraffic} />
       <CheckboxField label={t('prefs.confirmSale')} checked={confirmSale} onChange={setConfirmSale} />
       <CheckboxField label={t('prefs.showReach')} checked={showReach} onChange={setShowReach} />
