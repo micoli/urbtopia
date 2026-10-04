@@ -123,7 +123,25 @@ const RAIL_MODELS = ['trains/railroad-straight', 'trains/railroad-corner-small']
 
 const ROAD_MODELS = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout'].map((piece) => `roads/road-${piece}`);
 
-export const MODEL_KEYS: readonly string[] = [...new Set([...Object.values(MODEL_BY_BUILDING), ...FACTORY_MODELS, ...COAL_MODELS, ...STOREHOUSE_MODELS, ...HOME_MODELS, ...SOLAR_HOME_MODELS, ...FACILITY_TYPES.map(type => FACILITY_DETAILS[type]), ROOF_PANEL_MODEL, SOLAR_PANEL_MODEL, ...ROAD_MODELS, ...RAIL_MODELS, ...TRAIN_MODELS, ...VEHICLE_MODELS, ...Object.values(SERVICE_VEHICLE_MODELS), BUS_MODEL])];
+export const MODEL_KEYS: readonly string[] = [
+  ...new Set([
+    ...Object.values(MODEL_BY_BUILDING),
+    ...FACTORY_MODELS,
+    ...COAL_MODELS,
+    ...STOREHOUSE_MODELS,
+    ...HOME_MODELS,
+    ...SOLAR_HOME_MODELS,
+    ...FACILITY_TYPES.map(type => FACILITY_DETAILS[type]),
+    ROOF_PANEL_MODEL,
+    SOLAR_PANEL_MODEL,
+    ...ROAD_MODELS,
+    ...RAIL_MODELS,
+    ...TRAIN_MODELS,
+    ...VEHICLE_MODELS,
+    ...Object.values(SERVICE_VEHICLE_MODELS),
+    BUS_MODEL,
+  ])
+];
 
 export function modelOf(type: BuildingType, tier: number): string {
   if (type === 'home') return HOME_MODELS[tier - 1] ?? MODEL_BY_BUILDING.home;

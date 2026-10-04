@@ -2,6 +2,7 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { MODEL_KEYS } from '../../../src/scene/renderItems'
 
 const PACKS: Record<string, string[]> = {}
 const manifest: Record<string, string[]> = await (await fetch('/manifest.json')).json()
@@ -16,6 +17,7 @@ interface Info { size: THREE.Vector3; min: THREE.Vector3; max: THREE.Vector3; tr
 const KEY = 'asset-viewer-notes'
 const notes: Record<string, Note> = JSON.parse(localStorage.getItem(KEY) ?? '{}')
 const save = () => localStorage.setItem(KEY, JSON.stringify(notes))
+const usedInGame = new Set(MODEL_KEYS)
 const infos: Record<string, Info> = {}
 const cache: Record<string, THREE.Object3D> = {}
 
@@ -225,7 +227,7 @@ function renderList() {
     const nt = notes[key(p, n)]
     d.className = (p === pack && n === current ? 'sel ' : '') + (nt?.role && nt.role !== 'unassigned' ? 'done' : '')
     const label = document.createElement('span')
-    label.textContent = globalSearch.trim() ? key(p, n) : n
+    label.textContent = (globalSearch.trim() ? key(p, n) : n) + (usedInGame.has(key(p, n)) ? ' (*)' : '')
     const front = document.createElement('span')
     front.textContent = nt?.front && nt.front !== 'none' ? nt.front : ''
     d.append(label, front)
