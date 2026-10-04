@@ -104,6 +104,22 @@ _Avoid_: Department, sector
 The state of a Home being served by a Public facility of a Service category: within the facility's reach (a square of twice its radius with corners rounded by 3 tiles) and inside its Citizen capacity, nearest Homes first. The Home that crosses the capacity is still served, so a single large Home can always be covered. Some facilities cover the whole city. Missing coverage lowers Well-being and can block Home Tier upgrades.
 _Avoid_: Service range, zone
 
+**Leisure building**:
+A building that entertains Citizens and raises the Well-being of nearby Homes. Unlike a Public facility it belongs to no Service category: its absence never lowers Well-being or blocks a Tier upgrade. It is not free to use.
+_Avoid_: Amusement, entertainment venue, Public facility
+
+**Casino**:
+A Leisure building with Tiers where the player plays Minigames with Urbs. Several can be built. It consumes much more power than other buildings and is shut down when not powered.
+_Avoid_: Gambling hall, arcade
+
+**Minigame**:
+A game played in a Casino: the slot machine, blackjack or blockmatch. Each Minigame requires a minimum Casino Tier and a Casino offers all the Minigames of its Tier and below. A Minigame in progress is never saved.
+_Avoid_: Game (already the whole city builder), attraction
+
+**Stake**:
+The Urbs the player puts on a Minigame round, from fixed steps capped by the Casino's Tier and never above the Urbs balance. It is debited when the round starts and lost if the round is left unfinished.
+_Avoid_: Bet, wager, buy-in
+
 **Vehicle**:
 A visual automobile that drives along the roads. Its presence follows mobility needs after public transport usage; individual Vehicles are not saved.
 _Avoid_: Car, automobile
@@ -235,6 +251,13 @@ _Avoid_: BRT station, Freight terminal
 **Transit itinerary**:
 A public transport journey linking a Home to an activity through one or more lines, with at most two Transfers.
 _Avoid_: Infrastructure route, Individual Citizen simulation
+
+## Relationships
+
+- A Casino is a Leisure building, never a Public facility.
+- A Casino is shed first when electricity falls short, before Homes, except during an Adaptation period.
+- A Minigame round of chance draws from the game's Seed; its outcome is fixed when the Stake is debited.
+- A blockmatch round pays by stars on top of the returned Stake: none loses the Stake, 1 star wins 25% of it, 2 stars 50%, 3 stars 100%.
 
 ## Naming rules
 
