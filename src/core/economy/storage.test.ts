@@ -15,12 +15,12 @@ function productionCity(): GameState {
 
 describe('storage capacity follows production queues', () => {
   it('holds a full batch from every Workshop and Factory, including their Tier yield', () => {
-    expect(storageCapacity(productionCity())).toEqual({ materials: 32, goods: 48 });
+    expect(storageCapacity(productionCity())).toEqual({ materials: 32, crops: 0, goods: 48 });
   });
 
   it('does not grant production-based storage without a Storehouse', () => {
     const state = productionCity();
-    expect(storageCapacity({ ...state, buildings: state.buildings.filter(building => building.type !== 'storehouse') })).toEqual({ materials: 0, goods: 0 });
+    expect(storageCapacity({ ...state, buildings: state.buildings.filter(building => building.type !== 'storehouse') })).toEqual({ materials: 0, crops: 0, goods: 0 });
   });
 
   it('increases capacity when a production Slot is bought or the yield is upgraded', () => {
@@ -47,8 +47,8 @@ describe('storage capacity follows production queues', () => {
   it('retains higher upgraded capacity and adds specialized storage bonuses', () => {
     const state = productionCity();
     const upgraded = { ...state, buildings: state.buildings.map(building => building.id === 1 ? { ...building, tier: 6 } : building) };
-    expect(storageCapacity(upgraded)).toEqual({ materials: 70, goods: 140 });
-    expect(storageCapacity({ ...state, buildings: [...state.buildings, createBuilding(7, 'silo', 70, 55, 0), createBuilding(8, 'vault', 70, 60, 0)] })).toEqual({ materials: 72, goods: 128 });
+    expect(storageCapacity(upgraded)).toEqual({ materials: 70, crops: 0, goods: 140 });
+    expect(storageCapacity({ ...state, buildings: [...state.buildings, createBuilding(7, 'silo', 70, 55, 0), createBuilding(8, 'vault', 70, 60, 0)] })).toEqual({ materials: 72, crops: 0, goods: 128 });
   });
 
   it('collects all full queues without running out of storage', () => {

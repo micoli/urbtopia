@@ -21,6 +21,7 @@ const DESCRIPTIONS = {
   shop: 'codex.description.shop',
   storehouse: 'codex.description.storehouse',
   silo: 'codex.description.silo',
+  grainSilo: 'codex.description.grainSilo',
   vault: 'codex.description.vault',
   farm: 'codex.description.farm',
   packhouse: 'codex.description.packhouse',

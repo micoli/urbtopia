@@ -65,15 +65,15 @@ describe('Harvest', () => {
     expect(state.storage.materials).toEqual({ wheat: 4 });
   });
 
-  it('leaves Crops ready when the Materials compartment has no room', () => {
-    const full = farmland([ripe('wheat')], { storage: { materials: { wood: 20 }, goods: {} } });
+  it('leaves Crops ready when the crops compartment has no room', () => {
+    const full = farmland([ripe('wheat')], { storage: { materials: { wheat: 10 }, goods: {} } });
     expect(failureKey(full, { type: 'Harvest', tiles: row(1) })).toBe('error.storageFull');
     expect(full.fields[0]?.crop).toEqual(ripe('wheat'));
   });
 
-  it('harvests only as many Crops as the Materials compartment can hold', () => {
-    const { state } = harvest(farmland([ripe('wheat'), ripe('wheat'), ripe('wheat')], { storage: { materials: { wood: 15 }, goods: {} } }), row(3));
-    expect(state.storage.materials).toEqual({ wood: 15, wheat: 4 });
+  it('harvests only as many Crops as the crops compartment can hold', () => {
+    const { state } = harvest(farmland([ripe('wheat'), ripe('wheat'), ripe('wheat')], { storage: { materials: { wheat: 5 }, goods: {} } }), row(3));
+    expect(state.storage.materials).toEqual({ wheat: 9 });
     expect(state.fields.map(f => f.crop?.species)).toEqual([undefined, undefined, 'wheat']);
   });
 

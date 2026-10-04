@@ -43,18 +43,23 @@ export const FARM_TIERS: readonly FarmTier[] = [
   { seedCapacity: 160, fieldCap: 90 },
 ];
 
-export type StorageType = 'storehouse' | 'silo' | 'vault';
+export type StorageType = 'storehouse' | 'silo' | 'vault' | 'grainSilo';
 
 interface CompartmentCapacity {
   base: number;
   perTier: number;
 }
 
-export const STORAGE_TIERS: Record<StorageType, { materials: CompartmentCapacity; goods: CompartmentCapacity; upgradeCosts: readonly number[] }> = {
-  storehouse: { materials: { base: 20, perTier: 10 }, goods: { base: 40, perTier: 20 }, upgradeCosts: [300, 800, 2000, 5000, 12000] },
-  silo: { materials: { base: 40, perTier: 20 }, goods: { base: 0, perTier: 0 }, upgradeCosts: [250, 600, 1500, 4000, 9000] },
-  vault: { materials: { base: 0, perTier: 0 }, goods: { base: 80, perTier: 40 }, upgradeCosts: [250, 600, 1500, 4000, 9000] },
+const NO_CAPACITY: CompartmentCapacity = { base: 0, perTier: 0 };
+
+export const STORAGE_TIERS: Record<StorageType, { materials: CompartmentCapacity; goods: CompartmentCapacity; crops: CompartmentCapacity; upgradeCosts: readonly number[] }> = {
+  storehouse: { materials: { base: 20, perTier: 10 }, goods: { base: 40, perTier: 20 }, crops: NO_CAPACITY, upgradeCosts: [300, 800, 2000, 5000, 12000] },
+  silo: { materials: { base: 40, perTier: 20 }, goods: NO_CAPACITY, crops: NO_CAPACITY, upgradeCosts: [250, 600, 1500, 4000, 9000] },
+  vault: { materials: NO_CAPACITY, goods: { base: 80, perTier: 40 }, crops: NO_CAPACITY, upgradeCosts: [250, 600, 1500, 4000, 9000] },
+  grainSilo: { materials: NO_CAPACITY, goods: NO_CAPACITY, crops: { base: 40, perTier: 20 }, upgradeCosts: [250, 600, 1500, 4000, 9000] },
 };
+
+export const FARM_CROP_CAPACITY = 10;
 
 export const SHOP = { stackSize: 5, saleIntervalMs: 45_000 };
 

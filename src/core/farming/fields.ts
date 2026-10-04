@@ -107,7 +107,7 @@ export function harvestFields(state: GameState, tiles: readonly Coord[]): Comman
 
   const materials = { ...state.storage.materials };
   const seedStock = { ...state.seedStock };
-  let room = storageCapacity(state).materials - storageUsed(state.storage).materials;
+  let room = storageCapacity(state).crops - storageUsed(state.storage).crops;
   let seedRoom = seedStockCapacity(state) - seedStockUsed(state);
   const harvested: FieldTile[] = [];
   for (const [species, fields] of bySpecies) {

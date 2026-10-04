@@ -1,4 +1,4 @@
-import { storageCapacity, storageUsed, type Building, type GoodId, type MaterialId } from '../../core';
+import { compartmentOf, storageCapacity, storageUsed, type Building, type GoodId, type MaterialId } from '../../core';
 import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
 import { useGame } from '../common/hooks';
@@ -12,7 +12,9 @@ export function StoragePanel({ building }: StoragePanelProps) {
   const state = useGame((store) => store.state);
   const capacity = storageCapacity(state);
   const used = storageUsed(state.storage);
-  const materials = Object.entries(state.storage.materials).filter(([, amount]) => (amount ?? 0) > 0);
+  const stocked = Object.entries(state.storage.materials).filter(([, amount]) => (amount ?? 0) > 0);
+  const materials = stocked.filter(([item]) => compartmentOf(item) === 'materials');
+  const crops = stocked.filter(([item]) => compartmentOf(item) === 'crops');
   const goods = Object.entries(state.storage.goods).filter(([, amount]) => (amount ?? 0) > 0);
 
   return (
@@ -25,6 +27,16 @@ export function StoragePanel({ building }: StoragePanelProps) {
       </p>
       <ul>
         {materials.map(([item, amount]) => (
+          <li key={item}>
+            {t(`item.${item as MaterialId}`)} × {amount}
+          </li>
+        ))}
+      </ul>
+      <p>
+        {t('panel.crops')}: {used.crops}/{capacity.crops}
+      </p>
+      <ul>
+        {crops.map(([item, amount]) => (
           <li key={item}>
             {t(`item.${item as MaterialId}`)} × {amount}
           </li>

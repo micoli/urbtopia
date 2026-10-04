@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advance, dispatch, energyStats, newGame, productionFactors, storageCapacity, utilityCapacity, type Command, type GameState } from '../index';
+import { advance, createBuilding, dispatch, energyStats, newGame, productionFactors, storageCapacity, utilityCapacity, type Command, type GameState } from '../index';
 
 const T0 = 1_700_000_000_000;
 const MINUTE = 60_000;
@@ -115,20 +115,52 @@ describe('Utility Tiers', () => {
   });
 });
 
+describe('Grain silo', () => {
+  const withFarm: GameState = { ...withStorehouse, nextId: withStorehouse.nextId + 1, buildings: [...withStorehouse.buildings, createBuilding(withStorehouse.nextId, 'farm', 60, 62, 0)] };
+  const withGrainSilo = succeed(withFarm, { type: 'PlaceBuilding', buildingType: 'grainSilo', x: 62, y: 59 });
+  const grainSiloId = withGrainSilo.buildings.find((b) => b.type === 'grainSilo')?.id ?? 0;
+
+  it('needs a Farm', () => {
+    expect(failureKey(withStorehouse, { type: 'PlaceBuilding', buildingType: 'grainSilo', x: 62, y: 59 })).toBe('error.noFarm');
+  });
+
+  it('is unique', () => {
+    expect(failureKey(withGrainSilo, { type: 'PlaceBuilding', buildingType: 'grainSilo', x: 54, y: 59 })).toBe('error.grainSiloExists');
+  });
+
+  it('relies on the Farm starting capacity of 10 crops until it is built', () => {
+    expect(storageCapacity(withStorehouse).crops).toBe(0);
+    expect(storageCapacity(withFarm).crops).toBe(10);
+  });
+
+  it('adds capacity to the crops compartment only', () => {
+    expect(storageCapacity(withGrainSilo)).toEqual({ materials: 20, crops: 50, goods: 40 });
+  });
+
+  it('raises the crops capacity by 20 per Tier', () => {
+    expect(storageCapacity(succeed(withGrainSilo, upgrade(grainSiloId))).crops).toBe(70);
+  });
+
+  it('cannot be sold while the stock would no longer fit', () => {
+    const stocked: GameState = { ...withGrainSilo, storage: { ...withGrainSilo.storage, materials: { wheat: 30 } } };
+    expect(failureKey(stocked, { type: 'SellBuilding', id: grainSiloId })).toBe('error.storageInUse');
+  });
+});
+
 describe('Silo and Vault', () => {
   const silo = succeed(withStorehouse, { type: 'PlaceBuilding', buildingType: 'silo', x: 58, y: 59 });
   const both = succeed(silo, { type: 'PlaceBuilding', buildingType: 'vault', x: 60, y: 59 });
   const idOf = (state: GameState, type: string) => state.buildings.find((b) => b.type === type)?.id ?? 0;
 
   it('adds Materials capacity only for the Silo and Goods capacity only for the Vault', () => {
-    expect(storageCapacity(withStorehouse)).toEqual({ materials: 20, goods: 40 });
-    expect(storageCapacity(silo)).toEqual({ materials: 60, goods: 40 });
-    expect(storageCapacity(both)).toEqual({ materials: 60, goods: 120 });
+    expect(storageCapacity(withStorehouse)).toEqual({ materials: 20, crops: 0, goods: 40 });
+    expect(storageCapacity(silo)).toEqual({ materials: 60, crops: 0, goods: 40 });
+    expect(storageCapacity(both)).toEqual({ materials: 60, crops: 0, goods: 120 });
   });
 
   it('raises each capacity with its own Tier', () => {
     const upgraded = succeed(succeed(both, upgrade(idOf(both, 'silo'))), upgrade(idOf(both, 'vault')));
-    expect(storageCapacity(upgraded)).toEqual({ materials: 80, goods: 160 });
+    expect(storageCapacity(upgraded)).toEqual({ materials: 80, crops: 0, goods: 160 });
   });
 
   it('allows a single Silo and a single Vault', () => {

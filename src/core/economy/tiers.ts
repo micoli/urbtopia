@@ -27,6 +27,7 @@ const UPGRADE_COSTS: Partial<Record<BuildingType, Record<number, UpgradeCost>>> 
   packhouse: PRODUCTION_UPGRADE_COSTS,
   silo: storageCosts('silo'),
   vault: storageCosts('vault'),
+  grainSilo: storageCosts('grainSilo'),
   powerPlant: UTILITY_UPGRADE_COSTS.powerPlant,
   coalPlant: COAL_UPGRADE_COSTS,
   waterTower: UTILITY_UPGRADE_COSTS.waterTower,

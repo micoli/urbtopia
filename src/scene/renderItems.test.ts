@@ -33,7 +33,7 @@ describe('renderItemsOf Tier models', () => {
       expect(renderItemsOf({ ...newGame({ seed: 'coal-models', now: 0 }), roads: [], buildings: [building] })).toEqual([{ model, x: 10.5, z: 20.5, rotation: 1 }]);
     }
   });
-  const modelAt = (type: 'factory' | 'storehouse' | 'silo' | 'vault', tier: number) => {
+  const modelAt = (type: 'factory' | 'storehouse' | 'silo' | 'vault' | 'grainSilo', tier: number) => {
     const building = { ...createBuilding(9, type, 10, 20, 0), tier };
     return renderItemsOf({ ...newGame({ seed: 'amber-fox-4821', now: 0 }), roads: [], buildings: [building] })[0]?.model;
   };
@@ -49,6 +49,19 @@ describe('renderItemsOf Tier models', () => {
 
   it('shows the Silo and the Vault with models of their own', () => {
     expect(new Set([modelAt('storehouse', 1), modelAt('silo', 1), modelAt('vault', 1)]).size).toBe(3);
+  });
+});
+
+describe('Grain silo models', () => {
+  const modelAt = (tier: number) => {
+    const building = { ...createBuilding(9, 'grainSilo', 10, 20, 0), tier };
+    return renderItemsOf({ ...newGame({ seed: 'amber-fox-4821', now: 0 }), roads: [], buildings: [building] })[0]?.model;
+  };
+
+  it('uses the silo house, then the tall silo from Tier 4', () => {
+    expect(modelAt(1)).toBe('farm/Silo_House');
+    expect(modelAt(3)).toBe('farm/Silo_House');
+    expect(modelAt(4)).toBe('farm/Silo');
   });
 });
 

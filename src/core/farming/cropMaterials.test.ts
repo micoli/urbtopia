@@ -32,8 +32,8 @@ describe('Crop Materials', () => {
     for (const item of producibleItems('factory')) for (const material of Object.keys(GOODS[item as GoodId].recipe)) expect(CROP_IDS).not.toContain(material);
   });
 
-  it('counts toward the Materials compartment', () => {
-    expect(storageUsed({ materials: { wood: 2, wheat: 3 }, goods: {} })).toEqual({ materials: 5, goods: 0 });
+  it('counts toward the crops compartment, apart from other Materials', () => {
+    expect(storageUsed({ materials: { wood: 2, wheat: 3 }, goods: {} })).toEqual({ materials: 2, crops: 3, goods: 0 });
   });
 
   it('is never sold directly to Shops or to the Market', () => {

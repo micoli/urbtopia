@@ -100,7 +100,7 @@ describe('migration from version 1', () => {
   it('turns the global Storehouse level into the Storehouse Tier, keeping its capacity', () => {
     const loaded = load(3);
     expect(loaded.buildings.find((b) => b.type === 'storehouse')?.tier).toBe(4);
-    expect(storageCapacity(loaded)).toEqual({ materials: 50, goods: 100 });
+    expect(storageCapacity(loaded)).toEqual({ materials: 50, crops: 0, goods: 100 });
     expect('storehouseLevel' in loaded).toBe(false);
   });
 });

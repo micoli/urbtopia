@@ -45,7 +45,7 @@ The unit of seeds needed to plant one Field tile, bought with Urbs and kept in t
 _Avoid_: Seed (already the game code), grain
 
 **Harvest**:
-The player gesture that collects ready Crops by pressing a ready Field's bubble and dragging over the others in one sweep. The yield becomes a Crop Material, stored like any other Material; a share of it is converted back into Seed packs.
+The player gesture that collects ready Crops by pressing a ready Field's bubble and dragging over the others in one sweep. The yield becomes a Crop Material, stored in the Grain silo; a share of it is converted back into Seed packs.
 _Avoid_: Picking, gathering
 
 **Packhouse**:
@@ -59,6 +59,10 @@ _Avoid_: Warehouse, depot, inventory
 **Silo**:
 A specialized storage that adds capacity to the Materials compartment only. Only one can be built; it has Tiers.
 _Avoid_: Granary, bin
+
+**Grain silo**:
+A specialized storage that holds Crop Materials only, in a compartment of its own that the Storehouse and the Silo do not share. The Farm provides a small base capacity so the first Harvest is never blocked. Only one can be built; it has Tiers.
+_Avoid_: Barn, granary, Silo (already the Materials storage)
 
 **Vault**:
 A specialized storage that adds capacity to the Goods compartment only. Only one can be built; it has Tiers.

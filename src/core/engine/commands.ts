@@ -26,7 +26,7 @@ import { newQueueEntry, restartRunningProduction, shiftRunningTimers, taxDue } f
 import { roadBuildCost, missingRoadTiles } from '../map/roadCost';
 import { roadPath } from '../map/roads';
 import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
-import { canRemoveStorage, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
+import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
 import type { Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 
 const HOUR_MS = 60 * 60 * 1000;
@@ -79,6 +79,7 @@ export type ErrorKey =
   | 'error.storehouseExists'
   | 'error.siloExists'
   | 'error.vaultExists'
+  | 'error.grainSiloExists'
   | 'error.farmExists'
   | 'error.packhouseExists'
   | 'error.noFarm'
@@ -400,7 +401,7 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
   const remaining: QueueEntry[] = [];
   let collected = 0;
   for (const entry of building.queue) {
-    const compartment = isMaterial(entry.item) ? 'materials' : 'goods';
+    const compartment = compartmentOf(entry.item);
     if (!entry.done || used[compartment] + entry.quantity > capacity[compartment]) {
       remaining.push(entry);
       continue;

@@ -108,10 +108,10 @@ describe('UpgradeBuilding on the Storehouse', () => {
       const before = state.urbs;
       state = succeed(state, upgrade);
       prices.push(before - state.urbs);
-      expect(storageCapacity(state)).toEqual({ materials: 20 + 10 * level, goods: 40 + 20 * level });
+      expect(storageCapacity(state)).toEqual({ materials: 20 + 10 * level, crops: 0, goods: 40 + 20 * level });
     }
     expect(prices).toEqual([300, 800, 2000, 5000, 12000]);
-    expect(storageCapacity(state)).toEqual({ materials: 70, goods: 140 });
+    expect(storageCapacity(state)).toEqual({ materials: 70, crops: 0, goods: 140 });
   });
 
   it('stops at Tier 6', () => {
@@ -131,6 +131,6 @@ describe('UpgradeBuilding on the Storehouse', () => {
     const upgraded = succeed({ ...withStorehouse, urbs: 5000 }, upgrade);
     const sold = succeed(upgraded, { type: 'SellBuilding', id: storehouseId });
     const rebuilt = succeed(sold, { type: 'PlaceBuilding', buildingType: 'storehouse', x: 56, y: 59 });
-    expect(storageCapacity(rebuilt)).toEqual({ materials: 20, goods: 40 });
+    expect(storageCapacity(rebuilt)).toEqual({ materials: 20, crops: 0, goods: 40 });
   });
 });

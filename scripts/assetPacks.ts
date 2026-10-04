@@ -108,7 +108,7 @@ export const ASSET_PACKS: AssetPack[] = [
 // Quaternius packs (CC0) ship FBX only: they are converted to GLB at install time so the runtime keeps one GLTF loader.
 export const QUATERNIUS_PACKS: QuaterniusPack[] = [
   { name: 'crops', archive: 'crops.zip', files: CROP_IDS.flatMap((species) => cropModelsOf(species)).map((model) => model.slice('crops/'.length)) },
-  { name: 'farm', archive: 'farm-buildings.zip', files: ['Barn', 'OpenBarn'] },
+  { name: 'farm', archive: 'farm-buildings.zip', files: ['Barn', 'OpenBarn', 'Silo_House', 'Silo'] },
 ];
 
 export const QUATERNIUS_ARCHIVES_DIR = 'assets/quaternus';

@@ -33,7 +33,7 @@ export { buyableParcels, isInsideMap, parcelPrice } from './map/parcels';
 export { marketPoints, marketQuote } from './economy/market';
 export { MARKET, MAX_SLOTS, SHOP, SLOT_PRICES, STORAGE_TIERS } from './economy/economy';
 export type { StorageType } from './economy/economy';
-export { canRemoveStorage, hasStorage, isStorageEmpty, isStorageType, storageCapacity, storageUsed } from './economy/storage';
+export { canRemoveStorage, compartmentOf, hasStorage, isStorageEmpty, isStorageType, storageCapacity, storageUsed } from './economy/storage';
 export { createBuilding } from './buildings/buildingSpecs';
 export { citizensOf, totalCitizens, utilityCapacity, utilityDemand } from './buildings/city';
 export type { UtilityTotals } from './buildings/city';

@@ -7,7 +7,7 @@ const PUBLIC_FACILITY_TYPES = SERVICE_CATEGORIES.flatMap(category => FACILITY_TY
 export const BUILDING_SECTIONS = [
   { title: 'build.housing', types: ['home'] },
   { title: 'build.production', types: ['workshop', 'factory', 'shop', 'farm', 'packhouse'] },
-  { title: 'build.storage', types: ['storehouse', 'silo', 'vault'] },
+  { title: 'build.storage', types: ['storehouse', 'silo', 'grainSilo', 'vault'] },
   { title: 'build.utilities', types: ['powerPlant', 'coalPlant', 'waterTower', 'solar', 'battery', 'backup'] },
   { title: 'build.greenSpaces', types: ['tree', 'park', ...natureTypesOf(false)] },
   { title: 'build.transport', types: ['busStop', 'brtStation', 'railStation'] },

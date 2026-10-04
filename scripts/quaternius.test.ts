@@ -30,7 +30,7 @@ describe('Quaternius packs', () => {
 
   it('converts to binary glTF files', async () => {
     const files = await convertQuaterniusPack(archiveOf('farm'), QUATERNIUS_PACKS.find((pack) => pack.name === 'farm')!);
-    expect(files.map((file) => file.path)).toEqual(['Barn.glb', 'OpenBarn.glb']);
+    expect(files.map((file) => file.path)).toEqual(['Barn.glb', 'OpenBarn.glb', 'Silo_House.glb', 'Silo.glb']);
     for (const file of files) expect(new TextDecoder().decode(file.data.slice(0, 4))).toBe('glTF');
   });
 });
