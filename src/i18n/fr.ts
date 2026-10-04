@@ -43,6 +43,8 @@ export const FR: Record<MessageKey, string> = {
   'building.coalPlant': 'Centrale à charbon',
   'building.busStop': 'Arrêt de bus',
   'error.invalidBusLine': 'Choisis au moins deux arrêts distincts reliés par des routes.',
+  'error.stopNotOnNetwork': 'Un arrêt ne fait pas face au réseau. Oriente-le ou construis le réseau devant lui.',
+  'error.networkNotConnected': 'Les arrêts ne sont pas connectés : le réseau est coupé entre eux.',
   'error.alreadyEquipped': 'Cet équipement est déjà installé.',
   'eco.title': 'Gestion de la ville',
   'eco.units': 'Indicateurs du jeu, sans valeur scientifique. Puissance : unités/heure ; stockage : unités d’énergie.',

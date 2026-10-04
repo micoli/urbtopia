@@ -6,18 +6,33 @@ import { networkNeighbours, networkTiles, TRANSIT } from './transitNetwork';
 import type { Coord } from '../map/coord';
 import type { BusLine, GameState, TransitLine, TransitMode } from '../engine/state';
 
-const routeCache = new WeakMap<GameState, Map<BusLine, { route: Coord[]; offsets: number[] } | null>>();
+type Route = { route: Coord[]; offsets: number[] };
+export type RouteFailure = 'invalid' | 'stopNotOnNetwork' | 'notConnected';
+type Resolution = Route | { failure: RouteFailure };
 
-export function routeDetails(state: GameState, line: BusLine | TransitLine): { route: Coord[]; offsets: number[] } | null {
+const routeCache = new WeakMap<GameState, Map<BusLine, Resolution>>();
+
+export function routeDetails(state: GameState, line: BusLine | TransitLine): Route | null {
+  const resolution = resolveCached(state, line);
+  return 'failure' in resolution ? null : resolution;
+}
+
+export function routeFailure(state: GameState, line: BusLine | TransitLine): RouteFailure | null {
+  const resolution = resolveCached(state, line);
+  return 'failure' in resolution ? resolution.failure : null;
+}
+
+function resolveCached(state: GameState, line: BusLine | TransitLine): Resolution {
   let cache = routeCache.get(state);
   if (!cache) { cache = new Map(); routeCache.set(state, cache); }
-  if (cache.has(line)) return cache.get(line)!;
+  const cached = cache.get(line);
+  if (cached) return cached;
   const result = resolveRoute(state, line); cache.set(line, result);
   return result;
 }
 
-function resolveRoute(state: GameState, line: BusLine | TransitLine): { route: Coord[]; offsets: number[] } | null {
-  if (line.stops.length < 2 || new Set(line.stops).size !== line.stops.length) return null;
+function resolveRoute(state: GameState, line: BusLine | TransitLine): Resolution {
+  if (line.stops.length < 2 || new Set(line.stops).size !== line.stops.length) return { failure: 'invalid' };
   const mode = 'mode' in line ? line.mode : 'bus';
   const roads = new Set(state.roads.map(tileKey));
   for (const center of state.roundabouts) for (const p of roundaboutTiles(center)) if (p.x !== center.x || p.y !== center.y) roads.add(tileKey(p));
@@ -26,9 +41,9 @@ function resolveRoute(state: GameState, line: BusLine | TransitLine): { route: C
   const endpoints: Coord[] = [];
   for (const id of line.stops) {
     const stop = state.buildings.find(b => b.id === id && b.type === (mode === 'bus' ? 'busStop' : mode === 'brt' ? 'brtStation' : 'railStation'));
-    if (!stop) return null;
+    if (!stop) return { failure: 'invalid' };
     const endpoint = frontTiles(stop.type, stop.x, stop.y, stop.rotation).find(p => keys.has(tileKey(p)));
-    if (!endpoint) return null;
+    if (!endpoint) return { failure: 'stopNotOnNetwork' };
     endpoints.push(endpoint);
   }
   const route = [endpoints[0]!], offsets = [0];
@@ -43,13 +58,13 @@ function resolveRoute(state: GameState, line: BusLine | TransitLine): { route: C
         parents.set(tileKey(next), current); queue.push(next);
       }
     }
-    if (!parents.has(tileKey(target))) return null;
+    if (!parents.has(tileKey(target))) return { failure: 'notConnected' };
     const path: Coord[] = [];
     let current: Coord | null = target;
     while (current) { path.unshift(current); current = parents.get(tileKey(current)) ?? null; }
     route.push(...path.slice(1)); offsets.push(route.length - 1);
   }
-  return route.length > 1 ? { route, offsets } : null;
+  return route.length > 1 ? { route, offsets } : { failure: 'invalid' };
 }
 
 export function routeForLine(state: GameState, line: BusLine | TransitLine): Coord[] | null {

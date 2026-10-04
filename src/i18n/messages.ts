@@ -38,6 +38,8 @@ export const MESSAGES = {
   'building.coalPlant': 'Coal power plant',
   'building.busStop': 'Bus stop',
   'error.invalidBusLine': 'Select at least two distinct stops connected by roads.',
+  'error.stopNotOnNetwork': 'A stop is not facing the network. Rotate it or build the network in front of it.',
+  'error.networkNotConnected': 'Stops are not connected: the network is broken between them.',
   'error.alreadyEquipped': 'This equipment is already installed.',
   'eco.title': 'City management',
   'eco.units': 'Game indicators, not scientific measurements. Power: units/hour; storage: energy units.',

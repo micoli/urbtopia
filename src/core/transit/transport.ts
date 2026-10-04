@@ -3,7 +3,7 @@ import { HOME_TIERS } from '../economy/economy';
 import { energyStats } from '../environment/energy';
 import { transitServices } from './transitService';
 import type { Building, GameState } from '../engine/state';
-export { routeForLine } from './transitService';
+export { routeForLine, routeFailure } from './transitService';
 
 type Service = ReturnType<typeof transitServices>[number];
 interface Itinerary { lines: number[]; minutes: number; }

@@ -125,6 +125,16 @@ describe('fleet management and service', () => {
     expect(next.rails!.find(p => p.x === 9)!.exits).toEqual(['W']);
     expect(next.rails!.find(p => p.x === 11)!.exits).toEqual(['E']);
   });
+  it('reports a precise error when stations are not connected', () => {
+    const broken = { ...railCity(), buildings: [...railCity().buildings, { ...createBuilding(9, 'home', 0, 8, 0), tier: 8 }, { ...createBuilding(10, 'home', 0, 12, 0), tier: 8 }], rails: strip(0, 0, 10).map(t => t.x === 9 ? { ...t, exits: ['W' as const] } : t).concat(strip(11, 0, 12)) };
+    const result = dispatch(broken, { type: 'SetTransitLine', mode: 'rail', stops: [1, 2], peakHeadway: 5, offPeakHeadway: 10 }, 0);
+    expect(result.ok ? null : result.error.key).toBe('error.networkNotConnected');
+  });
+  it('reports a precise error when a station does not face the network', () => {
+    const state = { ...railCity(), buildings: [...railCity().buildings, { ...createBuilding(9, 'home', 0, 8, 0), tier: 8 }, { ...createBuilding(10, 'home', 0, 12, 0), tier: 8 }], rails: [] };
+    const result = dispatch(state, { type: 'SetTransitLine', mode: 'rail', stops: [1, 2], peakHeadway: 5, offPeakHeadway: 10 }, 0);
+    expect(result.ok ? null : result.error.key).toBe('error.stopNotOnNetwork');
+  });
   it('drops lines and unassigns vehicles when a station is sold', () => {
     const next = run(railCity(), { type: 'SellBuilding', id: 2 });
     expect(next.transitLines).toEqual([]);

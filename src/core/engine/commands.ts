@@ -1,6 +1,6 @@
 import { TRANSIT, extendNetwork, networkTiles, validNetworkCrossings } from '../transit/transitNetwork';
 import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
-import { routeForLine } from '../transit/transport';
+import { routeFailure, routeForLine } from '../transit/transport';
 import { BUILDING_SPECS, createBuilding, emptyStack, placementCost } from '../buildings/buildingSpecs';
 import { advance } from './advance';
 import { GAME_CONFIG } from './config';
@@ -100,6 +100,8 @@ export type ErrorKey =
   | 'error.tutorialLocked'
   | 'error.nothingToSkip'
   | 'error.invalidBusLine'
+  | 'error.stopNotOnNetwork'
+  | 'error.networkNotConnected'
   | 'error.alreadyEquipped';
 
 export interface CommandError {
@@ -565,11 +567,14 @@ function equipHome(state: GameState, id: number, equipment: 'solar' | 'insulatio
   return { state: { ...state, urbs: state.urbs - cost, buildings: state.buildings.map(b => b.id === id ? { ...b, [field]: true } : b) }, events: [] };
 }
 
+const ROUTE_ERRORS = { invalid: 'error.invalidBusLine', stopNotOnNetwork: 'error.stopNotOnNetwork', notConnected: 'error.networkNotConnected' } as const;
+
 function setBusLine(state: GameState, id: number | undefined, stops: number[]): CommandOutcome {
   if (citizenCount(state) < 32) return fail('error.itemLocked');
   if (id !== undefined && !(state.busLines ?? []).some(line => line.id === id)) return fail('error.invalidBusLine');
   const line = { id: id ?? state.nextId, stops };
-  if (!routeForLine(state, line)) return fail('error.invalidBusLine');
+  const failure = routeFailure(state, line);
+  if (failure) return fail(ROUTE_ERRORS[failure]);
   return { state: { ...state, nextId: id === undefined ? state.nextId + 1 : state.nextId, busLines: [...(state.busLines ?? []).filter(l => l.id !== line.id), line] }, events: [] };
 }
 
@@ -597,7 +602,8 @@ function transitCommand(state: GameState, command: Extract<Command, { type: 'Bui
     if (command.mode === 'brt' && (command.peakHeadway < 5 || command.peakHeadway > 10 || command.offPeakHeadway < 10 || command.offPeakHeadway > 15)) return fail('error.invalidQuantity');
     if (command.id !== undefined && !lines.some(l => l.id === command.id && l.mode === command.mode)) return fail('error.invalidBusLine');
     const line: TransitLine = { id: command.id ?? state.nextId, mode: command.mode, stops: command.stops, peakHeadway: command.peakHeadway, offPeakHeadway: command.offPeakHeadway };
-    if (!routeForLine(state, line)) return fail('error.invalidBusLine');
+    const failure = routeFailure(state, line);
+  if (failure) return fail(ROUTE_ERRORS[failure]);
     return { state: { ...state, nextId: command.id === undefined ? state.nextId + 1 : state.nextId, transitLines: [...lines.filter(l => l.id !== line.id), line] }, events: [] };
   }
   if (command.type === 'BuyTransitVehicle') {
