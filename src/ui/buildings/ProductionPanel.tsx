@@ -15,7 +15,7 @@ interface ProductionPanelProps {
 export function ProductionPanel({ building }: ProductionPanelProps) {
   const state = useGame((store) => store.state);
   const now = state.lastSeen;
-  const items = [...producibleItems(building.type)].sort((a, b) => itemName(a).localeCompare(itemName(b)));
+  const items = [...producibleItems(building.type)];
   const [onlyCraftable, setOnlyCraftable] = useState(false);
   const hasFreeSlot = building.queue.length < building.slotCount;
   const hasReadyOutput = building.queue.some((entry) => entry.done);
