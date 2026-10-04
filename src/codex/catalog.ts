@@ -61,7 +61,14 @@ const levelsOf = (type: BuildingType) => Array.from({ length: maxTierOf(type) },
 
 export const CROP_CODEX_LEVELS: readonly number[] = [1, 2, 3, 4, 5];
 
-export const CODEX_SECTIONS: readonly CodexSection[] = [...BUILDING_SECTIONS.map(section => section.title), 'codex.crops', 'codex.roads'];
+const DECORATION_SECTION = 'build.decoration';
+
+export const CODEX_SECTIONS: readonly CodexSection[] = [
+  ...BUILDING_SECTIONS.map(section => section.title).filter(title => title !== DECORATION_SECTION),
+  'codex.crops',
+  'codex.roads',
+  DECORATION_SECTION,
+];
 
 export const CODEX_ENTRIES: readonly CodexEntry[] = [
   ...BUILDING_SECTIONS.flatMap(section => {

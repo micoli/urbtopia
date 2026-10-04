@@ -1340,8 +1340,9 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .codex-body { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 0; flex: 1; }
 .codex-list, .codex-detail { overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 16px; }
 .codex-list { border-right: 1px solid rgba(255, 255, 255, 0.15); }
-.codex-list section + section { margin-top: 20px; }
-.codex-list h3 { margin: 0 0 8px; font-size: 14px; font-weight: 700; }
+.codex-list section + section { margin-top: 4px; }
+.codex-list h3 { margin: 0; font-size: 14px; font-weight: 700; }
+.codex-list .codex-section-toggle { display: flex; justify-content: space-between; align-items: center; font-weight: 700; background: rgba(255, 255, 255, 0.06); }
 .codex-list button { display: block; width: 100%; padding: 8px 12px; text-align: left; border: 0; border-radius: 8px; background: transparent; color: inherit; }
 .codex-list button[aria-current='true'] { background: rgba(255, 255, 255, 0.15); font-weight: 700; }
 .codex-section-name { margin: 0 0 8px; font-size: 13px; opacity: 0.75; }

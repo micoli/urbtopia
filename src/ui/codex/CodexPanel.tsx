@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexId } from '../../codex/catalog';
+import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexId, type CodexSection } from '../../codex/catalog';
 import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
 import { CodexEntryContent } from './CodexEntryContent';
@@ -14,6 +14,7 @@ export function CodexPanel() {
   const heading = useId();
   const [selected, setSelected] = useState<CodexId>(initialEntry);
   const [showDetail, setShowDetail] = useState(initialDetail);
+  const [openSection, setOpenSection] = useState<CodexSection>(CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
   const { manifest, failed, retry } = useCodexManifest();
   const entry = CODEX_ENTRIES.find(entry => entry.id === selected)!;
   const detail = useRef<HTMLElement>(null);
@@ -45,6 +46,7 @@ export function CodexPanel() {
 
   const select = (id: CodexId) => {
     setSelected(id);
+    setOpenSection(CODEX_ENTRIES.find(entry => entry.id === id)!.section);
     setShowDetail(true);
   };
 
@@ -62,14 +64,25 @@ export function CodexPanel() {
       </header>
       <div className="codex-body" data-detail={showDetail}>
         <nav className="codex-list" aria-label={t('codex.title')}>
-          {CODEX_SECTIONS.map(section => (
-            <section key={section} aria-label={t(section)}>
-              <h3>{t(section)}</h3>
-              {CODEX_ENTRIES.filter(entry => entry.section === section).map(entry => (
-                <button type="button" key={entry.id} aria-current={selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
-              ))}
-            </section>
-          ))}
+          {CODEX_SECTIONS.map(section => {
+            const expanded = openSection === section;
+            const panelId = `${heading}-${section}`;
+            return (
+              <section key={section} aria-label={t(section)}>
+                <h3>
+                  <button type="button" className="codex-section-toggle" aria-expanded={expanded} aria-controls={panelId} onClick={() => setOpenSection(expanded ? ('' as CodexSection) : section)}>
+                    <span>{t(section)}</span>
+                    <span aria-hidden="true">{expanded ? '▾' : '▸'}</span>
+                  </button>
+                </h3>
+                <div id={panelId} hidden={!expanded}>
+                  {CODEX_ENTRIES.filter(entry => entry.section === section).map(entry => (
+                    <button type="button" key={entry.id} aria-current={selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </nav>
         <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(entry.name)}>
           <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />
