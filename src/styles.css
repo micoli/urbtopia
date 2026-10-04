@@ -1400,7 +1400,7 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   font-size: 44px;
 }
 
-.slot-reels[data-spinning='true'] .slot-reel {
+.slot-reel[data-spinning='true'] {
   animation: slot-spin 0.14s linear infinite;
 }
 
@@ -1410,7 +1410,7 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .slot-reels[data-spinning='true'] .slot-reel { animation: none; filter: blur(2px); }
+  .slot-reel[data-spinning='true'] { animation: none; filter: blur(2px); }
 }
 
 .stake-picker {

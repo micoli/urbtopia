@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useStore } from 'zustand';
-import { stakeStepsOf, type Building } from '../../core';
+import { SLOT_REEL_COUNT, stakeStepsOf, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { casinoStore } from '../../store/casinoStore';
 import { gameStore } from '../../store/gameStore';
@@ -8,19 +8,24 @@ import { useGame } from '../common/hooks';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { SlotReels } from './SlotReels';
 import { StakePicker } from './StakePicker';
+import { slotSpinDuration } from './slotSymbols';
 
-const SPIN_MS = 700;
+const SPIN_MS = slotSpinDuration(SLOT_REEL_COUNT);
 
 interface SlotMachineGameProps {
   casino: Building;
 }
 
 export function SlotMachineGame({ casino }: SlotMachineGameProps) {
-  const urbs = useGame(store => store.state.urbs);
+  const balance = useGame(store => store.state.urbs);
   const spin = useStore(casinoStore, store => store.lastSpin);
   const steps = stakeStepsOf(casino.tier);
   const [stake, setStake] = useState(steps[0]!);
   const [spinning, setSpinning] = useState(false);
+  const [urbs, setUrbs] = useState(balance);
+  useEffect(() => {
+    if (!spinning) setUrbs(balance);
+  }, [spinning, balance]);
   useEffect(() => {
     if (!spinning) return;
     const timer = setTimeout(() => setSpinning(false), SPIN_MS);
