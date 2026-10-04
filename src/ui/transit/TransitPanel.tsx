@@ -35,8 +35,8 @@ export function TransitPanel() {
       <strong>{t(line.mode === 'brt' ? 'transit.brt' : 'transit.rail')} #{line.id}</strong> · {t(lineStatusKey(line.status))}
       <p>{line.stops.join(' → ')} · {t('eco.riders')}: {line.riders.toFixed(1)} / {line.capacity.toFixed(1)}</p>
       <p>{t('transit.vehicles')}: {line.vehicleCount} · {t('transit.headway')}: {Number.isFinite(line.headway) ? `${line.headway.toFixed(1)} min` : '—'}</p>
-      <button type="button" onClick={() => edit(state.transitLines!.find(l => l.id === line.id)!)}>{t('eco.editLine')}</button>
-      <button type="button" onClick={() => gameStore.getState().send({ type: 'DeleteTransitLine', id: line.id })}>{t('eco.deleteLine')}</button>
+      <ActionButton onClick={() => edit(state.transitLines!.find(l => l.id === line.id)!)}>{t('eco.editLine')}</ActionButton>
+      <ActionButton onClick={() => gameStore.getState().send({ type: 'DeleteTransitLine', id: line.id })}>{t('eco.deleteLine')}</ActionButton>
     </div>)}
     <h4>{t(editing === undefined ? 'eco.newLine' : 'eco.editLine')}</h4>
     <select aria-label={t('eco.transport')} value={mode} disabled={editing !== undefined} onChange={event => { setMode(event.target.value as 'brt' | 'rail'); reset(); }}>
@@ -44,11 +44,11 @@ export function TransitPanel() {
     </select>
     <p>{t('eco.selectedStops')}: {stops.join(' → ') || '—'}</p>
     <div className="eco-stop-buttons">{state.buildings.filter(b => b.type === (mode === 'brt' ? 'brtStation' : 'railStation')).map(stop =>
-      <button type="button" key={stop.id} disabled={stops.includes(stop.id)} onClick={() => setStops(current => [...current, stop.id])}>{t(`building.${stop.type}`)} #{stop.id} ({stop.x}, {stop.y})</button>)}</div>
+      <ActionButton key={stop.id} disabled={stops.includes(stop.id)} onClick={() => setStops(current => [...current, stop.id])}>{t(`building.${stop.type}`)} #{stop.id} ({stop.x}, {stop.y})</ActionButton>)}</div>
     <NumberStepper label={t('transit.peak')} min={mode === 'brt' ? 5 : 1} max={mode === 'brt' ? 10 : 60} value={peak} onChange={setPeak} />
     <NumberStepper label={t('transit.offPeak')} min={mode === 'brt' ? 10 : 1} max={mode === 'brt' ? 15 : 60} value={offPeak} onChange={setOffPeak} />
-    {stops.length > 0 && <button type="button" onClick={() => setStops([])}>{t('eco.clearStops')}</button>}
-    {(stops.length > 0 || editing !== undefined) && <button type="button" onClick={reset}>{t('pad.cancel')}</button>}
+    {stops.length > 0 && <ActionButton onClick={() => setStops([])}>{t('eco.clearStops')}</ActionButton>}
+    {(stops.length > 0 || editing !== undefined) && <ActionButton onClick={reset}>{t('pad.cancel')}</ActionButton>}
     <ActionButton variant="primary" className="eco-primary" disabled={stops.length < 2 || totalCitizens(state) < TRANSIT[mode].unlock} onClick={save}>{t('eco.saveLine')}</ActionButton>
     <TransitFleetPanel />
   </section>;

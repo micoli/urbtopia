@@ -5,6 +5,7 @@ import { useUi } from '../common/hooks';
 import { CodexEntryContent } from './CodexEntryContent';
 import { useCodexManifest } from './useCodexManifest';
 import { CloseButton } from '../common/CloseButton';
+import { ActionButton } from '../common/ActionButton';
 import { AccordionSection } from '../common/AccordionSection';
 
 export function CodexPanel() {
@@ -80,7 +81,7 @@ export function CodexPanel() {
         </nav>
         <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(entry.name)}>
           <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />
-          {!manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><button type="button" onClick={retry}>{t('codex.retry')}</button></div> : <p role="status">{t('codex.loading')}</p>)}
+          {!manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}
         </article>
       </div>
     </dialog>
