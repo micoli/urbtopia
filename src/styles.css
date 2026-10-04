@@ -362,7 +362,7 @@ button {
   border-radius: 12px;
   background: var(--panel-bg);
   color: var(--panel-fg);
-  z-index: 20;
+  z-index: 200;
 }
 
 .collect-badge {

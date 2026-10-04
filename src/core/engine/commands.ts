@@ -6,7 +6,7 @@ import { advance } from './advance';
 import { GAME_CONFIG } from './config';
 import type { Coord } from '../map/coord';
 import type { GameEvent } from './events';
-import { tileKey } from '../map/geometry';
+import { neighbour, tileKey } from '../map/geometry';
 import { utilityCapacity, utilityDemand, type UtilityTotals } from '../buildings/city';
 import { HOME_TIERS, MAX_SLOTS, SHOP, TAX, SLOT_PRICES } from '../economy/economy';
 import { GOODS, isGood, isMaterial, minTierOf, producibleItems, recipeOf, type GoodId } from '../economy/items';
@@ -24,7 +24,7 @@ import { roadBuildCost, missingRoadTiles } from '../map/roadCost';
 import { roadPath } from '../map/roads';
 import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
-import type { Building, BuildingType, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitVehicleKind } from './state';
+import type { Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -292,8 +292,28 @@ function sellBuilding(state: GameState, id: number): CommandOutcome {
   if ((building.type === 'powerPlant' || building.type === 'waterTower') && !canLoseUtility(state, building)) return fail('error.utilityInUse');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
   return {
-    state: { ...state, urbs: state.urbs + refund, buildings: state.buildings.filter((candidate) => candidate !== building) },
+    state: withoutBrokenLines({ ...state, urbs: state.urbs + refund, buildings: state.buildings.filter((candidate) => candidate !== building) }, id, true),
     events: [{ type: 'BuildingSold', id }],
+  };
+}
+
+function withoutDanglingExits(tiles: TransitTile[]): TransitTile[] {
+  const keys = new Set(tiles.map(tileKey));
+  return tiles.map(tile => {
+    const exits = tile.exits.filter(d => keys.has(tileKey(neighbour(tile, d))));
+    return exits.length === tile.exits.length ? tile : { ...tile, exits };
+  });
+}
+
+function withoutBrokenLines(state: GameState, stopId: number, removed: boolean): GameState {
+  const broken = (line: BusLine) => line.stops.includes(stopId) && (removed || !routeForLine(state, line));
+  const dropped = new Set([...(state.busLines ?? []), ...(state.transitLines ?? [])].filter(broken).map(line => line.id));
+  if (dropped.size === 0) return state;
+  return {
+    ...state,
+    busLines: (state.busLines ?? []).filter(line => !dropped.has(line.id)),
+    transitLines: (state.transitLines ?? []).filter(line => !dropped.has(line.id)),
+    transitFleet: (state.transitFleet ?? []).map(vehicle => vehicle.lineId !== undefined && dropped.has(vehicle.lineId) ? { ...vehicle, lineId: undefined } : vehicle),
   };
 }
 
@@ -305,7 +325,7 @@ function moveBuilding(state: GameState, id: number, x: number, y: number, reques
   const issue = placementIssue(without, building.type, x, y, rotation, { isMove: true, tier: building.tier });
   if (issue) return fail(issue);
   return {
-    state: { ...state, buildings: state.buildings.map((candidate) => (candidate === building ? restartRunningProduction({ ...building, x, y, rotation }, now) : candidate)) },
+    state: withoutBrokenLines({ ...state, buildings: state.buildings.map((candidate) => (candidate === building ? restartRunningProduction({ ...building, x, y, rotation }, now) : candidate)) }, id, false),
     events: [{ type: 'BuildingMoved', id }],
   };
 }
@@ -565,8 +585,9 @@ function transitCommand(state: GameState, command: Extract<Command, { type: 'Bui
   if (command.type === 'DemolishTransit') {
     if (![command.from.x, command.from.y, command.to.x, command.to.y].every(n => Number.isSafeInteger(n) && n >= 0) || !isInsideOwnedParcels(state, command.from) || !isInsideOwnedParcels(state, command.to)) return fail('error.outsideOwnedParcels');
     const targets = new Set(roadPath(command.from, command.to, command.horizontalFirst ?? true).map(tileKey));
-    const tiles = networkTiles(state, command.mode).filter(p => !targets.has(tileKey(p)));
-    if (tiles.length === networkTiles(state, command.mode).length) return fail('error.noRoadHere');
+    const kept = networkTiles(state, command.mode).filter(p => !targets.has(tileKey(p)));
+    if (kept.length === networkTiles(state, command.mode).length) return fail('error.noRoadHere');
+    const tiles = withoutDanglingExits(kept);
     return { state: { ...state, [command.mode === 'brt' ? 'brtRoads' : 'rails']: tiles }, events: [] };
   }
   if (command.type === 'DeleteTransitLine') return { state: { ...state, transitLines: lines.filter(l => l.id !== command.id), transitFleet: fleet.map(v => v.lineId === command.id ? { ...v, lineId: undefined } : v) }, events: [] };

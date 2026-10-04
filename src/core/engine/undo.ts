@@ -1,4 +1,5 @@
 import type { Command } from './commands';
+import { tileKey } from '../map/geometry';
 import type { Coord } from '../map/coord';
 import { shiftRunningTimers } from '../economy/production';
 import type { Building, GameState, RoadTile, TransitTile } from './state';
@@ -25,12 +26,17 @@ export function captureDeletion(before: GameState, after: GameState, command: Co
   };
 }
 
+function mergeTiles(current: TransitTile[], restored: TransitTile[]): TransitTile[] {
+  const restoredKeys = new Set(restored.map(tileKey));
+  return [...current.filter(tile => !restoredKeys.has(tileKey(tile))), ...restored];
+}
+
 export function restoreDeletion(state: GameState, undo: DeletionUndo): GameState {
   const restored = shiftRunningTimers({ ...state, buildings: undo.buildings }, state.lastSeen - undo.deletedAt);
   return {
     ...state,
-    ...(undo.brtRoads ? { brtRoads: [...(state.brtRoads ?? []), ...undo.brtRoads] } : {}),
-    ...(undo.rails ? { rails: [...(state.rails ?? []), ...undo.rails] } : {}),
+    ...(undo.brtRoads ? { brtRoads: mergeTiles(state.brtRoads ?? [], undo.brtRoads) } : {}),
+    ...(undo.rails ? { rails: mergeTiles(state.rails ?? [], undo.rails) } : {}),
     buildings: [...state.buildings, ...restored.buildings],
     roads: [...state.roads, ...undo.roads],
     roundabouts: [...state.roundabouts, ...undo.roundabouts],

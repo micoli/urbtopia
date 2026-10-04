@@ -120,6 +120,16 @@ describe('fleet management and service', () => {
     expect(result.ok && result.undo).toBeTruthy();
     if (result.ok && result.undo) expect(transportStats(restoreDeletion(result.state, result.undo)).activeLines).toBe(1);
   });
+  it('removes exits pointing to demolished tiles', () => {
+    const next = run(railCity(), { type: 'DemolishTransit', mode: 'rail', from: { x: 10, y: 0 }, to: { x: 10, y: 0 } });
+    expect(next.rails!.find(p => p.x === 9)!.exits).toEqual(['W']);
+    expect(next.rails!.find(p => p.x === 11)!.exits).toEqual(['E']);
+  });
+  it('drops lines and unassigns vehicles when a station is sold', () => {
+    const next = run(railCity(), { type: 'SellBuilding', id: 2 });
+    expect(next.transitLines).toEqual([]);
+    expect(next.transitFleet![0]!.lineId).toBeUndefined();
+  });
 });
 
 function transferCity(): GameState {
