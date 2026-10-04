@@ -35,6 +35,7 @@ npm run dev      # http://localhost:5173, prepares models and codex previews fir
 | `npm run assets` | Extract the 3D models from the versioned archives into `public/models` |
 | `npm run assets:fetch` | Refresh the archives from kenney.nl (see [Assets](#assets)) |
 | `npm run assets:prototypes` | Copy the models the prototypes load |
+| `npm run casino:sim` | Casino simulator: play each Minigame with 100 000 Urbs, one URL per game (`/slot-machine`, `/blackjack`, `/blockmatch`, optional `?tier=`) |
 | `npm run codex:generate` | Generate static codex images; append `-- --force` to regenerate |
 | `npm run test:codex` | Browser checks against a production build, including mobile and offline access |
 | `npm run test:codex:images` | CI check that every codex image exists in the production build and is served |
@@ -80,7 +81,7 @@ To update the archives, run `npm run assets:fetch`. The download links contain a
 
 Crops and farm buildings come from two Quaternius packs, versioned in `assets/quaternus/`. They ship FBX only, so `npm run assets` converts the models the scene uses to GLB (scaled to one tile) with the three.js FBX loader, keeping a single GLTF loader at runtime.
 
-The [`prototypes`](prototypes) folder holds three throwaway prototypes (render benchmark, asset viewer, touch UX) that informed the design. Only their sources are versioned; `npm run assets:prototypes` copies the models they load.
+The [`prototypes`](prototypes) folder holds throwaway prototypes (render benchmark, asset viewer, touch UX, casino simulator) that informed the design. Only their sources are versioned; `npm run assets:prototypes` copies the models they load.
 
 ## Credits
 

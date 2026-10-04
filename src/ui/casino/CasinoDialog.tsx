@@ -4,10 +4,8 @@ import { t } from '../../i18n/t';
 import { casinoStore } from '../../store/casinoStore';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
-import { BlackjackGame } from './BlackjackGame';
-import { BlockmatchGame } from './BlockmatchGame';
+import { CasinoGameView } from './CasinoGameView';
 import { LeaveRoundDialog } from './LeaveRoundDialog';
-import { SlotMachineGame } from './SlotMachineGame';
 
 export function CasinoDialog() {
   const casinoId = useStore(casinoStore, store => store.casinoId);
@@ -30,9 +28,7 @@ export function CasinoDialog() {
           <h2>{t(`casino.${game}`)}</h2>
           <button type="button" className="panel-close" aria-label={t('casino.close')} onClick={() => (round ? setConfirmLeave(true) : leave())}>✗</button>
         </header>
-        {game === 'slotMachine' ? <SlotMachineGame casino={casino} /> : null}
-        {game === 'blackjack' ? <BlackjackGame casino={casino} /> : null}
-        {game === 'blockmatch' ? <BlockmatchGame casino={casino} /> : null}
+        <CasinoGameView game={game} casino={casino} />
       </div>
       {confirmLeave ? <LeaveRoundDialog onStay={() => setConfirmLeave(false)} onLeave={leave} /> : null}
     </div>

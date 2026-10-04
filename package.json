@@ -19,6 +19,7 @@
     "test:gameplay": "playwright test --config playwright.gameplay.config.ts",
     "assets:fetch": "node scripts/fetch-assets.ts",
     "assets:prototypes": "node scripts/prototype-assets.ts",
+    "casino:sim": "vite --config prototypes/casino-sim/vite.config.ts --host",
     "preview": "vite preview"
   },
   "devDependencies": {
