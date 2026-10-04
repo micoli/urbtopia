@@ -5,6 +5,7 @@ import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
+import { SectionHeading } from '../common/SectionHeading';
 
 export function BusLinesPanel() {
   const state = useGame(s => s.state);
@@ -17,7 +18,7 @@ export function BusLinesPanel() {
     if (!gameStore.getState().lastError) reset();
   };
   return <section>
-    <h3>{t('eco.lines')}</h3>
+    <SectionHeading>{t('eco.lines')}</SectionHeading>
     <p>{t('eco.lineHelp')}</p>
     {transport.lines.filter(line => line.mode === 'bus').map(line => <div className="eco-line" key={line.id}>
       <strong>#{line.id}</strong> · {t(lineStatusKey(line.status))} · {line.riders.toFixed(1)} {t('eco.riders')}

@@ -2,10 +2,11 @@ import { TRANSIT, totalCitizens } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
+import { SectionHeading } from '../common/SectionHeading';
 
 export function TransitFleetPanel() {
   const state = useGame(s => s.state);
-  return <section><h3>{t('transit.fleet')}</h3>
+  return <section><SectionHeading>{t('transit.fleet')}</SectionHeading>
     {(['brtElectric', 'trainElectric', 'trainCoal'] as const).map(kind => <button type="button" key={kind}
       disabled={state.urbs < TRANSIT[kind].price || totalCitizens(state) < TRANSIT[kind === 'brtElectric' ? 'brt' : 'rail'].unlock}
       onClick={() => gameStore.getState().send({ type: 'BuyTransitVehicle', kind })}>

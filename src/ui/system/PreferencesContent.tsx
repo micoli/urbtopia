@@ -2,6 +2,7 @@ import { useStore } from 'zustand';
 import { prefsStore, type Language, type Layout } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { CheckboxField } from '../common/CheckboxField';
+import { SectionHeading } from '../common/SectionHeading';
 
 const LANGUAGES: Language[] = ['en', 'fr'];
 const LAYOUTS: Layout[] = ['C', 'A', 'B'];
@@ -16,7 +17,7 @@ export function PreferencesContent() {
 
   return (
     <section className="prefs">
-      <h3>{t('prefs.title')}</h3>
+      <SectionHeading>{t('prefs.title')}</SectionHeading>
       <div className="prefs-group" role="radiogroup" aria-label={t('prefs.language')}>
         {LANGUAGES.map((code) => (
           <button key={code} type="button" role="radio" aria-checked={language === code} onClick={() => setLanguage(code)}>

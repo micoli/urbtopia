@@ -7,6 +7,7 @@ import { useGame } from '../common/hooks';
 import { TransitFleetPanel } from './TransitFleetPanel';
 import { NumberStepper } from '../common/NumberStepper';
 import { ActionButton } from '../common/ActionButton';
+import { SectionHeading } from '../common/SectionHeading';
 
 export function TransitPanel() {
   const state = useGame(s => s.state);
@@ -23,7 +24,7 @@ export function TransitPanel() {
     if (!gameStore.getState().lastError) reset();
   };
   return <section className="transit-panel">
-    <h3>{t('transit.brt')} / {t('transit.rail')}</h3>
+    <SectionHeading>{t('transit.brt')} / {t('transit.rail')}</SectionHeading>
     {brokenLinks > 0 && <div className="eco-line" role="alert">
       <p>⚠️ {t('transit.broken')} ({brokenLinks})</p>
       <ActionButton variant="primary" className="eco-primary" onClick={() => gameStore.getState().send({ type: 'RepairTransitNetwork', mode })}>{t('transit.repair')}</ActionButton>
