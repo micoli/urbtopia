@@ -13,6 +13,8 @@ import { codexImageKey, type CodexId } from '../../codex/catalog';
 import { useCodexManifest } from '../codex/useCodexManifest';
 import type { HomeColorVariant } from '../../core';
 import { HOME_COLOR_VARIANTS, readHomeColor, writeHomeColor } from '../buildings/homeColor';
+import { AccordionSection } from '../common/AccordionSection';
+import { RadioChipGroup } from '../common/RadioChipGroup';
 
 const categoryOf = (type: string | undefined) => (type !== undefined && isFacilityType(type) ? FACILITIES[type].category : null);
 
@@ -50,19 +52,15 @@ export function BuildMenuContent() {
           const expanded = activeSection === section.title;
           const sectionId = `${menuId}-${section.title}`;
           return (
-            <section className="build-section" key={section.title} aria-label={t(section.title)}>
-              <h3>
-                <button type="button" className="build-section-toggle" id={`${sectionId}-toggle`} aria-expanded={expanded} aria-disabled={expanded} aria-controls={sectionId} data-guided={section.types.some(type => guide.buildings.includes(type))} onClick={() => selectSection(section.title)}>
-                  <span>{t(section.title)}</span>
-                </button>
-              </h3>
-              <div className="build-section-items" id={sectionId} aria-labelledby={`${sectionId}-toggle`} hidden={!expanded}>
-                {section.title === 'build.housing' && <div className="home-color-picker" role="group" aria-label={t('build.homeColor')}>
-                  {HOME_COLOR_VARIANTS.map(variant => <button key={variant} type="button" aria-pressed={homeColor === variant} onClick={() => { setHomeColor(variant); writeHomeColor(variant); }}>
-                    <span className={`home-color-swatch home-color-swatch-${variant}`} aria-hidden="true" />
-                    <span>{t(`build.homeColor.${variant}`)}</span>
-                  </button>)}
-                </div>}
+            <AccordionSection key={section.title} id={sectionId} title={t(section.title)} expanded={expanded} lockWhenExpanded guided={section.types.some(type => guide.buildings.includes(type))} className="build-section" toggleClassName="build-section-toggle" contentClassName="build-section-items" onToggle={() => selectSection(section.title)}>
+                {section.title === 'build.housing' && <RadioChipGroup
+                  variant="toggle"
+                  className="home-color-picker"
+                  label={t('build.homeColor')}
+                  options={HOME_COLOR_VARIANTS.map(variant => ({ value: variant, label: <><span className={`home-color-swatch home-color-swatch-${variant}`} aria-hidden="true" /><span>{t(`build.homeColor.${variant}`)}</span></> }))}
+                  value={homeColor}
+                  onChange={variant => { setHomeColor(variant); writeHomeColor(variant); }}
+                />}
                 {section.types.map((type, index) => (
                   <Fragment key={type}>
                   {isFacilityType(type) && FACILITIES[type].category !== categoryOf(section.types[index - 1]) && <h4 className="build-category">{t(`service.${FACILITIES[type].category}`)}</h4>}
@@ -79,8 +77,7 @@ export function BuildMenuContent() {
                 ))}
                 {section.title === 'build.production' && <FieldTools />}
                 {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true, colorVariant: homeColor })} codexId="solarHome" preview={previewOf('solarHome')} onInfo={() => openCodex('solarHome')} />}
-              </div>
-            </section>
+            </AccordionSection>
           );
         })}
       </>

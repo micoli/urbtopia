@@ -5,6 +5,7 @@ import { useUi } from '../common/hooks';
 import { CodexEntryContent } from './CodexEntryContent';
 import { useCodexManifest } from './useCodexManifest';
 import { CloseButton } from '../common/CloseButton';
+import { AccordionSection } from '../common/AccordionSection';
 
 export function CodexPanel() {
   const close = useUi(store => store.closeCodex);
@@ -69,19 +70,11 @@ export function CodexPanel() {
             const expanded = openSection === section;
             const panelId = `${heading}-${section}`;
             return (
-              <section key={section} aria-label={t(section)}>
-                <h3>
-                  <button type="button" className="codex-section-toggle" aria-expanded={expanded} aria-controls={panelId} onClick={() => setOpenSection(expanded ? ('' as CodexSection) : section)}>
-                    <span>{t(section)}</span>
-                    <span aria-hidden="true">{expanded ? '▾' : '▸'}</span>
-                  </button>
-                </h3>
-                <div id={panelId} hidden={!expanded}>
-                  {CODEX_ENTRIES.filter(entry => entry.section === section).map(entry => (
-                    <button type="button" key={entry.id} aria-current={selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
-                  ))}
-                </div>
-              </section>
+              <AccordionSection key={section} id={panelId} title={t(section)} expanded={expanded} chevron toggleClassName="codex-section-toggle" onToggle={() => setOpenSection(expanded ? ('' as CodexSection) : section)}>
+                {CODEX_ENTRIES.filter(entry => entry.section === section).map(entry => (
+                  <button type="button" key={entry.id} aria-current={selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
+                ))}
+              </AccordionSection>
             );
           })}
         </nav>
