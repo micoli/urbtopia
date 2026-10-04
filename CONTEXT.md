@@ -9,7 +9,7 @@ The soft currency of the game, earned by selling goods and spent on building and
 _Avoid_: Coins, cash, money
 
 **Material**:
-A raw resource produced by a Workshop with a fixed production time.
+A raw resource produced by a Workshop with a fixed production time, or harvested from a Crop.
 _Avoid_: Raw good, ore, resource (too generic)
 
 **Good**:
@@ -27,6 +27,30 @@ _Avoid_: Plant, mill
 **Shop**:
 A building that sells Goods to citizens for Urbs.
 _Avoid_: Store, boutique
+
+**Farm**:
+A building that holds the player's seed stock and is the entry point of cultivation. It does not produce anything itself.
+_Avoid_: Workshop, plantation
+
+**Field**:
+A tile laid by the player on free owned land to make it cultivable. Crops are planted on Field tiles and harvested from them.
+_Avoid_: Plot, parcel, farmland, zone
+
+**Crop**:
+A species planted on a Field tile. Each species has its own growth time and water Demand, and goes through four growth stages before being ready to harvest.
+_Avoid_: Plant, vegetable
+
+**Seed pack**:
+The unit of seeds needed to plant one Field tile, bought with Urbs and kept in the Farm's seed stock. Part of each harvest is converted back into Seed packs.
+_Avoid_: Seed (already the game code), grain
+
+**Harvest**:
+The player gesture that collects every ready Crop under the pointer in one sweep. The yield becomes a Crop Material, stored like any other Material; a share of it is converted back into Seed packs.
+_Avoid_: Picking, gathering
+
+**Packhouse**:
+A building that packs Crop Materials into packed Goods, the only way to sell a Harvest. Only one can be built; it has Tiers.
+_Avoid_: Factory, cannery, packing plant
 
 **Storehouse**:
 The general storage that holds Materials and Goods, with a limited capacity. Only one can be built; it has Tiers that raise its capacity.

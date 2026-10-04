@@ -1,16 +1,16 @@
 # Farming balance and invariants
 
 Status: ready-for-agent
-Blocked by: 05
+Blocked by: 05, 09
 Spec: ../spec.md
 
 ## What to build
 
-Balance checks and invariants for the whole farming loop, and tuning of the species table.
+Balance checks and invariants for the whole farming loop (Seed pack → Crop → Crop Material → packed Good), and tuning of the species table.
 
 ## Acceptance criteria
 
-- [ ] No infinite loop: planting a Seed pack and replanting the returned share always yields a net loss unless extra packs are bought.
-- [ ] Urbs per hour of a Crop stays in line with Workshops of the same Unlock stage.
-- [ ] Tests in `balance.test.ts` and `utilityInvariant.test.ts` cover Crops.
-- [ ] Open points of the spec are resolved or recorded.
+- [ ] Self-sustaining Fields: for every species `yield × seed share ≥ 1`, so a planted area can be replanted from its own Harvest without buying Seed packs; growth beyond that is bounded by the seed stock capacity and the Field cap.
+- [ ] Net Urbs per hour of a Field tile (packed value minus Seed pack cost and Field cost amortised) stays in line with a Factory Good of the same Unlock stage.
+- [ ] Tests in `src/core/engine/balance.test.ts` and `src/core/environment/utilityInvariant.test.ts` cover Crops and packed Goods.
+- [ ] Spec table updated with tuned values; remaining open points recorded in the spec.
