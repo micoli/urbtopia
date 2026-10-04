@@ -45,7 +45,7 @@ The unit of seeds needed to plant one Field tile, bought with Urbs and kept in t
 _Avoid_: Seed (already the game code), grain
 
 **Harvest**:
-The player gesture that collects every ready Crop under the pointer in one sweep. The yield becomes a Crop Material, stored like any other Material; a share of it is converted back into Seed packs.
+The player gesture that collects ready Crops by pressing a ready Field's bubble and dragging over the others in one sweep. The yield becomes a Crop Material, stored like any other Material; a share of it is converted back into Seed packs.
 _Avoid_: Picking, gathering
 
 **Packhouse**:

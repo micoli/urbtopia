@@ -25,12 +25,11 @@ export function FarmPanel({ building }: FarmPanelProps) {
         {t('farm.seeds')}: {seedStockUsed(state)}/{seedStockCapacity(state)} · {t('farm.fields')}: {state.fields.length}/{fieldCap(state)}
       </p>
       <div className="slot-actions">
-        <button type="button" onClick={() => chooseTool({ kind: 'brush', action: 'layField', tiles: [] })}>{t('farm.layFields')}</button>
-        <button type="button" onClick={() => chooseTool({ kind: 'brush', action: 'removeField', tiles: [] })}>{t('farm.removeFields')}</button>
+        <button type="button" disabled={state.fields.length >= fieldCap(state)} onClick={() => chooseTool({ kind: 'brush', action: 'layField', tiles: [] })}>{t('farm.layFields')}</button>
+        <button type="button" disabled={state.fields.length === 0} onClick={() => chooseTool({ kind: 'brush', action: 'removeField', tiles: [] })}>{t('farm.removeFields')}</button>
         <button type="button" disabled={selectedCrop === null} onClick={() => selectedCrop && chooseTool({ kind: 'brush', action: 'plant', crop: selectedCrop, tiles: [] })}>
           {t('farm.plant')}
         </button>
-        <button type="button" onClick={() => chooseTool({ kind: 'brush', action: 'harvest', tiles: [] })}>{t('farm.harvest')}</button>
       </div>
       <ul className="crops">
         {CROP_IDS.map((crop) => (

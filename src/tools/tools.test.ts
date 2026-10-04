@@ -238,10 +238,9 @@ describe('brush tool', () => {
     expect(noSeeds.issue).toBe('error.noSeeds');
   });
 
-  it('removes and harvests with the matching commands', () => {
+  it('removes fields with the matching command', () => {
     const tiles = [{ x: 50, y: 50 }];
     expect(evaluateTool({ kind: 'brush', action: 'removeField', tiles }, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null }).command).toEqual({ type: 'RemoveFields', tiles });
-    expect(evaluateTool({ kind: 'brush', action: 'harvest', tiles: [{ x: 52, y: 50 }] }, { state: { ...farmCity, storage: { materials: {}, goods: {} } }, tile: { x: 0, y: 0 }, rotation: null }).command).toEqual({ type: 'Harvest', tiles: [{ x: 52, y: 50 }] });
   });
 
   it('sends the command when the drag ends and keeps the tool with an empty brush', () => {

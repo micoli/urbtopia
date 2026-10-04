@@ -208,7 +208,6 @@ export const MESSAGES = {
   'farm.layFields': 'Lay Fields',
   'farm.removeFields': 'Remove Fields',
   'farm.plant': 'Plant',
-  'farm.harvest': 'Harvest',
   'building.packhouse': 'Packhouse',
   'building.powerPlant': 'Wind turbine',
   'building.waterTower': 'Water tower',

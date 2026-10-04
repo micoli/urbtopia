@@ -210,7 +210,6 @@ export const FR: Record<MessageKey, string> = {
   'farm.layFields': 'Tracer des champs',
   'farm.removeFields': 'Retirer des champs',
   'farm.plant': 'Planter',
-  'farm.harvest': 'Récolter',
   'building.packhouse': 'Atelier de conditionnement',
   'building.powerPlant': 'Éolienne',
   'building.waterTower': "Château d'eau",

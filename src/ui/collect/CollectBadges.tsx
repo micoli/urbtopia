@@ -1,6 +1,8 @@
+import { footprintOf } from '../../core';
 import { useGame } from '../common/hooks';
 import { CollectBadge } from './CollectBadge';
 import { collectBadgeLabel } from './collectBadgeLabel';
+import { ReadyFieldBadges } from './ReadyFieldBadges';
 
 export function CollectBadges() {
   const buildings = useGame((store) => store.state.buildings);
@@ -8,8 +10,19 @@ export function CollectBadges() {
     <>
       {buildings.map((building) => {
         const label = collectBadgeLabel(building);
-        return label ? <CollectBadge key={building.id} building={building} label={label} /> : null;
+        if (!label) return null;
+        const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
+        return (
+          <CollectBadge
+            key={building.id}
+            worldX={building.x + width / 2}
+            worldZ={building.y + depth / 2}
+            label={label}
+            command={{ type: 'Collect', buildingId: building.id }}
+          />
+        );
       })}
+      <ReadyFieldBadges />
     </>
   );
 }

@@ -125,7 +125,7 @@ for (const layout of ['B', 'C']) {
   });
 }
 
-test('dragging the brush lays Fields, plants them and harvests them', async ({ page }, testInfo) => {
+test('dragging the brush lays Fields, plants them and harvests them by sweeping their bubbles', async ({ page }, testInfo) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
@@ -139,7 +139,7 @@ test('dragging the brush lays Fields, plants them and harvests them', async ({ p
     gameStore.getState().replaceState({ ...state, urbs: 10_000, buildings, nextId: 54, adaptationUntil: 0, seedStock: { wheat: 5 } });
   });
 
-  async function drag(action: 'layField' | 'plant' | 'harvest') {
+  async function drag(action: 'layField' | 'plant') {
     await page.evaluate(async action => {
       const { uiStore } = await import('../src/store/uiStore.ts');
       uiStore.getState().chooseTool({ kind: 'brush', action, ...(action === 'plant' ? { crop: 'wheat' as const } : {}), tiles: [] });
@@ -170,7 +170,16 @@ test('dragging the brush lays Fields, plants them and harvests them', async ({ p
 
   await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().send({ type: 'SkipTime', hours: 1 }));
   await page.screenshot({ path: testInfo.outputPath('ready-crops.png') });
-  await drag('harvest');
+  const badges = page.locator('.collect-badge');
+  await expect(badges).toHaveCount(4);
+  const centers = await badges.evaluateAll(elements => elements.map(element => {
+    const box = element.getBoundingClientRect();
+    return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  }));
+  await page.mouse.move(centers[0]!.x, centers[0]!.y);
+  await page.mouse.down();
+  for (const center of centers.slice(1)) await page.mouse.move(center.x, center.y, { steps: 4 });
+  await page.mouse.up();
   expect(await read()).toMatchObject({ fields: 4, planted: 0, wheat: 8, seeds: 5 });
   await page.screenshot({ path: testInfo.outputPath('after-harvest.png') });
   expect(errors).toEqual([]);

@@ -1,24 +1,26 @@
 import { useEffect, useRef } from 'react';
-import { footprintOf, type Building } from '../../core';
+import type { Command } from '../../core';
 import { gameStore } from '../../store/gameStore';
 import { sceneHandle } from '../../store/sceneHandle';
+import { registerCollector, startSweep } from './collectSweep';
 
 const BADGE_HEIGHT = 1.8;
 
 interface CollectBadgeProps {
-  building: Building;
+  worldX: number;
+  worldZ: number;
   label: string;
+  command: Command;
 }
 
-export function CollectBadge({ building, label }: CollectBadgeProps) {
+export function CollectBadge({ worldX, worldZ, label, command }: CollectBadgeProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
     let handle = 0;
     const place = () => {
       const element = ref.current;
-      const projected = sceneHandle.current?.project(building.x + width / 2, BADGE_HEIGHT, building.y + depth / 2);
+      const projected = sceneHandle.current?.project(worldX, BADGE_HEIGHT, worldZ);
       if (element && projected) {
         element.style.transform = `translate(${projected.x}px, ${projected.y}px) translate(-50%, -100%)`;
         element.style.visibility = projected.visible ? 'visible' : 'hidden';
@@ -27,14 +29,25 @@ export function CollectBadge({ building, label }: CollectBadgeProps) {
     };
     handle = requestAnimationFrame(place);
     return () => cancelAnimationFrame(handle);
-  }, [building.x, building.y, building.type, building.rotation, building.tier]);
+  }, [worldX, worldZ]);
+
+  const collect = () => gameStore.getState().send(command);
+
+  useEffect(() => (ref.current ? registerCollector(ref.current, collect) : undefined));
 
   return (
     <button
       ref={ref}
       type="button"
       className="collect-badge"
-      onClick={() => gameStore.getState().send({ type: 'Collect', buildingId: building.id })}
+      onPointerDown={(event) => {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+        startSweep();
+        collect();
+      }}
+      onClick={(event) => {
+        if (event.detail === 0) collect();
+      }}
     >
       {label}
     </button>

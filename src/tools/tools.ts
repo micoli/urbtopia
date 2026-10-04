@@ -39,7 +39,7 @@ export type Tool =
   | { kind: 'parcel' }
   | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] };
 
-export type BrushAction = 'layField' | 'removeField' | 'plant' | 'harvest';
+export type BrushAction = 'layField' | 'removeField' | 'plant';
 
 export interface ToolContext {
   state: GameState;
@@ -200,8 +200,6 @@ function brushCommand(tool: Extract<Tool, { kind: 'brush' }>, tiles: Coord[]): C
       return { type: 'LayFields', tiles };
     case 'removeField':
       return { type: 'RemoveFields', tiles };
-    case 'harvest':
-      return { type: 'Harvest', tiles };
     case 'plant':
       return tool.crop ? { type: 'Plant', crop: tool.crop, tiles } : null;
   }

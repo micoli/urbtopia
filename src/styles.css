@@ -378,6 +378,7 @@ button {
   color: #08140d;
   font-weight: 700;
   z-index: 5;
+  touch-action: none;
   animation: badge-bob 1.2s ease-in-out infinite alternate;
 }
 
