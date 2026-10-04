@@ -44,7 +44,7 @@ export function SlotMachineGame({ casino }: SlotMachineGameProps) {
       <p className="casino-result" data-win={!spinning && net > 0} aria-live="polite">
         {spin === null || spinning ? ' ' : net > 0 ? <>{t('casino.won')} <UrbsAmount value={net} /></> : net === 0 ? t('casino.even') : <>{t('casino.lost')} <UrbsAmount value={-net} /></>}
       </p>
-      <CasinoLedger spent={spent} won={won} balance={urbs} />
+      <CasinoLedger spent={spent} won={won} />
       <StakePicker steps={steps} urbs={urbs} value={stake} disabled={spinning} onChange={setStake} />
       <button type="button" className="collect-button" disabled={spinning || urbs < stake} onClick={play}>
         {t('casino.spin')}

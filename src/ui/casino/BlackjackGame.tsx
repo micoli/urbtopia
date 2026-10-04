@@ -33,7 +33,7 @@ export function BlackjackGame({ casino }: BlackjackGameProps) {
 
   return (
     <div className="casino-game">
-      <CasinoLedger spent={spent} won={won} balance={urbs} />
+      <CasinoLedger spent={spent} won={won} />
       <BlackjackFelt
         dealer={hand?.dealer ?? []}
         player={hand?.player ?? []}

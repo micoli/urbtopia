@@ -27,7 +27,7 @@ export function BlockmatchGame({ casino }: BlockmatchGameProps) {
   const net = result ? result.payout - result.stake : 0;
   const start = () => gameStore.getState().send({ type: 'StartCasinoRound', buildingId: casino.id, game: 'blockmatch', stake });
 
-  const ledger = <CasinoLedger spent={spent} won={won} balance={urbs} />;
+  const ledger = <CasinoLedger spent={spent} won={won} />;
   if (round?.game === 'blockmatch' && !result) {
     return (
       <div className="casino-game">

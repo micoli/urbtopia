@@ -1616,3 +1616,11 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   margin: 0;
   font-weight: 700;
 }
+
+.casino-ledger [data-sign='1'] dd {
+  color: var(--accent);
+}
+
+.casino-ledger [data-sign='-1'] dd {
+  color: var(--danger);
+}
