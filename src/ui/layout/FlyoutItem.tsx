@@ -14,17 +14,17 @@ interface FlyoutItemProps {
 
 export function FlyoutItem({ label, cost, guided = false, onChoose, codexId, onInfo, preview }: FlyoutItemProps) {
   const item = (
-    <button type="button" className="flyout-item" data-guided={guided} onClick={onChoose}>
+      <button type="button" className="flyout-item" data-guided={guided} onClick={onInfo ?? onChoose}>
       <span>{label}</span>
-      {cost ? <span className="flyout-cost">{cost}</span> : null}
     </button>
   );
   if (!onInfo) return item;
   return (
     <div className="flyout-row">
       {item}
-      <button type="button" className="flyout-info" data-codex-id={codexId} aria-label={t('codex.about').replace('{name}', label)} onClick={onInfo}>
-        {preview ? <img src={preview} width={44} height={44} alt="" loading="lazy" /> : <span aria-hidden="true">📖</span>}
+      <button type="button" className="flyout-info" data-codex-id={codexId} aria-label={t('codex.about').replace('{name}', label)} onClick={onChoose}>
+        {cost ? <small className="flyout-cost">{cost}</small> : null}
+        {preview ? <img src={preview} width={44} height={38} alt="" loading="lazy" /> : <span aria-hidden="true">📖</span>}
       </button>
     </div>
   );
