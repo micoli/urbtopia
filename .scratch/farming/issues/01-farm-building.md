@@ -1,0 +1,18 @@
+# Farm building
+
+Status: ready-for-agent
+Blocked by: none
+Spec: ../spec.md
+
+## What to build
+
+A single Farm building, buildable from the build menu, with Tiers (ADR 0004) and an empty seed stock in game state. It is the entry point of cultivation and does nothing else yet.
+
+## Acceptance criteria
+
+- [ ] `farm` is a `BuildingType`; only one can be built, placement follows the usual Parcel rules.
+- [ ] Tier data defines seed stock capacity and Field tile cap per Tier; upgrade works like other Tiers.
+- [ ] Unlock threshold defined; it appears in the build menu and tutorial-safe flows are unaffected.
+- [ ] `GameState` holds the seed stock (species to count); saves migrate to the next version with a fixture and migration test.
+- [ ] FR/EN strings; Farm model rendered with an existing placeholder asset if needed.
+- [ ] Core logic covered by tests in `src/core`.
