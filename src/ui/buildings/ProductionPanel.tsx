@@ -5,14 +5,12 @@ import { isPack, itemName } from '../../i18n/itemName';
 import { formatDuration } from '../common/formatDuration';
 import { useGame } from '../common/hooks';
 import { gameStore } from '../../store/gameStore';
-import { UpgradeSection } from '../common/UpgradeSection.tsx';
 import { UrbsAmount } from '../common/UrbsAmount';
-import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
-import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { CheckboxField } from '../common/CheckboxField';
 import { SlotList } from '../common/SlotList';
+import { DrawerPanel } from '../common/DrawerPanel';
 
 interface ProductionPanelProps {
   building: Building;
@@ -42,8 +40,8 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
   const canFilter = building.type === 'packhouse' && items.some((item) => isAvailable(item) && !lacksMaterials(item));
   const filtering = canFilter && onlyCraftable;
 
-  return <DrawerProductionPanel>
-      <DrawerPanelTitle title={`${t('panel.queue')} · ${t('home.tier')}`} level={building.tier}/>
+  return <DrawerPanel>
+      <DrawerPanel.Title title={`${t('panel.queue')} · ${t('home.tier')}`} level={building.tier}/>
       <SlotList>
         {Array.from({ length: building.slotCount }, (_, index) => {
           const entry = building.queue[index];
@@ -85,13 +83,13 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
           {t('panel.buySlot')} (<UrbsAmount value={slotPrice} />)
         </ActionButton>
       ) : null}
-      <UpgradeSection building={building} />
+      <DrawerPanel.Upgrade building={building} />
       {hasReadyOutput ? (
         <ActionButton variant="primary" block onClick={() => send({ type: 'Collect', buildingId: building.id })}>
           {t('panel.collect')}
         </ActionButton>
       ) : null}
-  </DrawerProductionPanel>;
+  </DrawerPanel>;
 }
 
 function recipeLabel(item: ItemId): string {

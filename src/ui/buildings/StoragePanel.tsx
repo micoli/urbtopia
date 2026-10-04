@@ -2,9 +2,7 @@ import { STORAGE_TIERS, compartmentOf, isStorageType, storageCapacity, storageUs
 import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
 import { useGame } from '../common/hooks';
-import { UpgradeSection } from '../common/UpgradeSection.tsx';
-import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
-import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
+import { DrawerPanel } from '../common/DrawerPanel';
 
 interface StoragePanelProps {
   building: Building;
@@ -25,8 +23,8 @@ export function StoragePanel({ building }: StoragePanelProps) {
   const compartments = (['materials', 'crops', 'goods'] as const).filter((compartment) => isStorageType(building.type) && STORAGE_TIERS[building.type][compartment].base > 0);
 
   return (
-    <DrawerProductionPanel>
-      <DrawerPanelTitle title={t(`panel.stock`)} level={building.tier}/>
+    <DrawerPanel>
+      <DrawerPanel.Title title={t(`panel.stock`)} level={building.tier}/>
       {compartments.map((compartment) => (
         <div key={compartment}>
           <p>
@@ -41,7 +39,7 @@ export function StoragePanel({ building }: StoragePanelProps) {
           </ul>
         </div>
       ))}
-      <UpgradeSection building={building} />
-    </DrawerProductionPanel>
+      <DrawerPanel.Upgrade building={building} />
+    </DrawerPanel>
   );
 }

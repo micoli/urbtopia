@@ -4,10 +4,9 @@ import { gameStore } from '../../store/gameStore';
 import { uiStore } from '../../store/uiStore';
 import { useGame } from '../common/hooks';
 import { CropRow } from './CropRow';
-import { UpgradeSection } from '../common/UpgradeSection.tsx';
-import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
+import { DrawerPanel } from '../common/DrawerPanel';
 
 interface FarmPanelProps {
   building: Building;
@@ -20,7 +19,7 @@ export function FarmPanel({ building }: FarmPanelProps) {
 
   return (
     <section className="farm">
-      <DrawerPanelTitle title={`${t('farm.seedStock')} · ${t('home.tier')}`} level={building.tier}/>
+      <DrawerPanel.Title title={`${t('farm.seedStock')} · ${t('home.tier')}`} level={building.tier}/>
       <p>
           {t('farm.seeds')}: {seedStockUsed(state)}/{seedStockCapacity(state)}
       </p>
@@ -46,7 +45,7 @@ export function FarmPanel({ building }: FarmPanelProps) {
             <ActionButton disabled={state.fields.length >= fieldCap(state)} onClick={() => chooseTool({ kind: 'brush', action: 'layField', tiles: [] })}>{t('farm.layFields')}</ActionButton>
             <ActionButton disabled={state.fields.length === 0} onClick={() => chooseTool({ kind: 'brush', action: 'removeField', tiles: [] })}>{t('farm.removeFields')}</ActionButton>
         </ButtonRow>
-      <UpgradeSection building={building} />
+      <DrawerPanel.Upgrade building={building} />
     </section>
   );
 }

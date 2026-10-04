@@ -2,9 +2,9 @@ import {CROPS, type CropId} from '../../core';
 import {t} from '../../i18n/t';
 import {formatDuration} from '../common/formatDuration';
 import {UrbsAmount} from '../common/UrbsAmount';
-import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
+import { DrawerPanel } from '../common/DrawerPanel';
 
 interface CropRowProps {
     crop: CropId;
@@ -27,7 +27,7 @@ export function CropRow({crop, unlocked, stock, onPlant, onBuy}: CropRowProps) {
     }
     return (
         <div className={'crop-row'}>
-            <DrawerPanelTitle title={t(`item.${crop}`)} level={stock}/>
+            <DrawerPanel.Title title={t(`item.${crop}`)} level={stock}/>
             <p>
                 {formatDuration(spec.growthMs)} · 💧{spec.water} · ▦{spec.yield}
             </p>
