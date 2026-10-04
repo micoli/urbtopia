@@ -1437,10 +1437,93 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   opacity: 0.45;
 }
 
-.card-hand .card-row {
-  display: flex;
+.felt {
+  display: grid;
+  gap: 10px;
+  padding: 14px 12px;
+  border: 6px solid #5b3a1e;
+  border-radius: 18px;
+  background: radial-gradient(ellipse at 50% 40%, #1f8a4c 0%, #146437 70%, #0e4a28 100%);
+  box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.45);
+}
+
+.felt-dealer {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.felt-rule {
+  margin: 0;
+  text-align: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.felt-stake {
+  justify-self: center;
+  min-width: 72px;
+  padding: 6px 14px;
+  border: 3px dashed rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.card-hand .stat-tight {
+  margin: 0 0 4px;
+}
+
+.card-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
   gap: 6px;
-  flex-wrap: wrap;
+}
+
+.card-slot {
+  position: relative;
+  display: block;
+  aspect-ratio: 52 / 74;
+  max-width: 56px;
+  border: 2px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+}
+
+.card-slot .playing-card {
+  position: absolute;
+  inset: -2px;
+  width: auto;
+  height: auto;
+  animation: card-deal 0.35s ease-out both;
+}
+
+.card-deck {
+  position: relative;
+  display: block;
+  width: 52px;
+  height: 74px;
+}
+
+.card-deck .playing-card {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+}
+
+.card-deck .playing-card:nth-child(1) { transform: translate(-4px, 4px); }
+.card-deck .playing-card:nth-child(2) { transform: translate(-2px, 2px); }
+
+@keyframes card-deal {
+  from { opacity: 0; transform: translate(-60px, -40px) rotate(-14deg) scale(0.7); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-slot .playing-card { animation: none; }
 }
 
 .playing-card {
@@ -1448,11 +1531,13 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   place-items: center;
   width: 52px;
   height: 74px;
+  box-sizing: border-box;
   border-radius: 8px;
   background: #fff;
   color: #1b1f2a;
   font-weight: 700;
   font-size: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
 }
 
 .playing-card[data-red='true'] {
@@ -1461,6 +1546,7 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 
 .playing-card[data-hidden='true'] {
   background: repeating-linear-gradient(45deg, #34528f, #34528f 6px, #2b4377 6px, #2b4377 12px);
+  border: 2px solid #fff;
 }
 
 .blackjack-actions {

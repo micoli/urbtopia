@@ -24,6 +24,7 @@ type CasinoMessageKey =
   | 'error.noOpenRound'
   | 'error.invalidRound'
   | 'casino.deal'
+  | 'casino.feltRule'
   | 'casino.hit'
   | 'casino.stand'
   | 'casino.double'
@@ -71,6 +72,7 @@ const texts: Record<CasinoMessageKey, readonly [string, string]> = {
   'error.noOpenRound': ['There is no round to settle.', 'Aucune manche à régler.'],
   'error.invalidRound': ['This round cannot be settled.', 'Cette manche ne peut pas être réglée.'],
   'casino.deal': ['Deal', 'Distribuer'],
+  'casino.feltRule': ['Blackjack pays 3 to 2 · Dealer stands on 17', 'Blackjack payé 3 pour 2 · Le croupier reste à 17'],
   'casino.hit': ['Hit', 'Tirer'],
   'casino.stand': ['Stand', 'Rester'],
   'casino.double': ['Double', 'Doubler'],
