@@ -36,6 +36,10 @@ type CasinoMessageKey =
   | 'casino.leaveConfirm'
   | 'casino.keepPlaying'
   | 'casino.leaveAnyway'
+  | 'home.leisure'
+  | 'home.leisureNone'
+  | 'casino.demand'
+  | 'casino.wellbeingGain'
   | 'casino.moves'
   | 'casino.unlocksNext'
   | 'casino.maxTier';
@@ -79,6 +83,10 @@ const texts: Record<CasinoMessageKey, readonly [string, string]> = {
   'casino.leaveConfirm': ['The round is not over: your Stake will be lost.', 'La manche n’est pas terminée : votre mise sera perdue.'],
   'casino.keepPlaying': ['Keep playing', 'Continuer'],
   'casino.leaveAnyway': ['Leave and lose the Stake', 'Quitter et perdre la mise'],
+  'home.leisure': ['Leisure', 'Loisirs'],
+  'home.leisureNone': ['none', 'aucun'],
+  'casino.demand': ['Casino power demand', 'Électricité des casinos'],
+  'casino.wellbeingGain': ['Well-being from Leisure', 'Bien-être des loisirs'],
   'casino.moves': ['moves', 'coups'],
   'casino.unlocksNext': ['Next Tier unlocks', 'Le niveau suivant débloque'],
   'casino.maxTier': ['Highest Tier reached', 'Niveau maximal atteint'],

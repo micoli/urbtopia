@@ -1,6 +1,7 @@
 import {useEffect, useRef} from 'react';
 import {
     cityBenefits,
+    economicPower,
     greenProfileOf,
     climateStats,
     ECOLOGY_UNLOCKS,
@@ -67,11 +68,15 @@ export function MaximalStats() {
     const homes = state.buildings.filter(b => b.type === 'home');
     const saved = homes.reduce((sum, b) => sum + (HOME_TIERS[b.tier - 1]?.power ?? 0) - homePower(b), 0);
     const climate = climateStats(state);
-    const countTypes: BuildingType[] = ['home', 'workshop', 'factory', 'shop', 'powerPlant', 'coalPlant', 'solar', 'battery', 'backup', 'tree', 'park', 'busStop', 'brtStation', 'railStation'];
+    const countTypes: BuildingType[] = ['home', 'workshop', 'factory', 'shop', 'casino', 'powerPlant', 'coalPlant', 'solar', 'battery', 'backup', 'tree', 'park', 'busStop', 'brtStation', 'railStation'];
+    const casinos = state.buildings.filter(b => b.type === 'casino');
+    const leisureGain = casinos.length ? green.wellbeing - cityBenefits({...state, buildings: state.buildings.filter(b => b.type !== 'casino')}).wellbeing : 0;
+    const casinoRows: [MessageKey, number | string][] = casinos.length ? [['casino.demand', casinos.reduce((sum, b) => sum + economicPower(b), 0)], ['casino.wellbeingGain', `+${leisureGain.toFixed(1)}`]] : [];
     const rows: [MessageKey, number | string][] = [
         ['eco.demand', energy.demand], ['transit.power', energy.transitDemand], ['eco.saved', saved], ['eco.solar', energy.solar], ['eco.wind', energy.wind], ['eco.coalCapacity', energy.coalCapacity], ['eco.coal', energy.coal], ['eco.coalCost', energy.coalCostPerHour], ['eco.backup', energy.backup],
         ['eco.unmet', energy.unmet], ['eco.surplus', energy.surplus], ['eco.storage', `${energy.stored.toFixed(1)} / ${energy.storageCapacity}`],
         ['eco.cost', energy.costPerHour + transport.costPerHour],
+        ...casinoRows,
     ];
     const objectives: [MessageKey, boolean][] = [
         ['eco.objectiveInsulate', homes.some(b => b.insulated)], ['eco.objectiveGreen', green.covered > 0],

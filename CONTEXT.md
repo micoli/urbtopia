@@ -116,6 +116,10 @@ _Avoid_: Gambling hall, arcade
 A game played in a Casino: the slot machine, blackjack or blockmatch. Each Minigame requires a minimum Casino Tier and a Casino offers all the Minigames of its Tier and below. A Minigame in progress is never saved.
 _Avoid_: Game (already the whole city builder), attraction
 
+**Round**:
+One play of a Minigame, from the moment its Stake is debited to its payout. The slot machine settles at once; blackjack and blockmatch last until the player finishes, and a Round left unfinished loses its Stake.
+_Avoid_: Hand, spin, game
+
 **Stake**:
 The Urbs the player puts on a Minigame round, from fixed steps capped by the Casino's Tier and never above the Urbs balance. It is debited when the round starts and lost if the round is left unfinished.
 _Avoid_: Bet, wager, buy-in

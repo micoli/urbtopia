@@ -22,7 +22,7 @@ describe('Good values follow the unlock order', () => {
 });
 
 describe('Upgrade costs', () => {
-  const upgradable = (['home', 'workshop', 'factory', 'storehouse', 'silo', 'vault', 'powerPlant', 'waterTower'] satisfies BuildingType[]);
+  const upgradable = (['home', 'workshop', 'factory', 'storehouse', 'silo', 'vault', 'powerPlant', 'waterTower', 'casino'] satisfies BuildingType[]);
 
   it.each(upgradable)('%s costs strictly more Urbs at every Tier', (type) => {
     let previous = 0;

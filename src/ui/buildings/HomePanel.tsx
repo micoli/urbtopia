@@ -1,4 +1,4 @@
-import { ECOLOGY, FACILITY_TYPES, homePower, homeBenefits, missingServices, serviceCoverage, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, type Building } from '../../core';
+import { ECOLOGY, FACILITY_TYPES, casinosReaching, poweredCasinoIds, homePower, homeBenefits, missingServices, serviceCoverage, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
@@ -14,6 +14,7 @@ export function HomePanel({ building }: HomePanelProps) {
   const state = useGame(s => s.state);
   const coverage = serviceCoverage(state);
   const benefits = homeBenefits(state, building, undefined, coverage);
+  const leisure = state.buildings.some(b => b.type === 'casino') ? casinosReaching(state, building, poweredCasinoIds(state)) : null;
   const covered = FACILITY_TYPES.filter(type => coverage.get(building.id)?.has(type));
   const missing = missingServices(coverage, building);
   const spec = HOME_TIERS[building.tier - 1];
@@ -38,6 +39,9 @@ export function HomePanel({ building }: HomePanelProps) {
       <p>
           <strong>{t('home.services')}</strong>: {covered.length ? covered.map(type => t(`building.${type}`)).join(', ') : t('home.servicesNone')}
       </p>
+      {leisure && (<p>
+          <strong>{t('home.leisure')}</strong>: {leisure.length ? leisure.map(casino => `${t('building.casino')} ${t('home.tier')} ${casino.tier}`).join(', ') : t('home.leisureNone')}
+      </p>)}
       {missing.length > 0 && (<p className="stat-tight">
           <strong>{t('home.servicesMissing')}</strong>: {missing.map(key => `${serviceName(key)} (${t(`home.reason.${uncoveredReason(state, building, key)}`)})`).join(', ')}{benefits.servicePenalty > 0 && ` · ${t('eco.servicePenalty')}: −${benefits.servicePenalty.toFixed(0)}`}
       </p>)}

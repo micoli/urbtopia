@@ -4,7 +4,7 @@
 
 **Blocked by:** 03, 04
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] `.scratch/casinos/balancing.md` documents pay tables, RTP per Minigame, Stake steps, build/upgrade costs and expected Urbs flow against Tax income.
 - [ ] Home panel lists Leisure coverage next to Service coverage, without any missing-service penalty.
