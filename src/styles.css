@@ -1753,3 +1753,24 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   align-content: center;
   min-height: calc(var(--stage-cell) * 9 + 84px);
 }
+
+.casino-games .collect-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  text-align: left;
+}
+
+.casino-game-icon {
+  flex: none;
+  width: 56px;
+  height: 44px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.casino-games .collect-button:disabled .casino-game-icon {
+  opacity: 0.5;
+  filter: grayscale(0.6);
+}

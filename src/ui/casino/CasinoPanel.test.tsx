@@ -28,9 +28,16 @@ describe('Casino panel', () => {
     const html = renderToStaticMarkup(<CasinoPanel building={casino} />);
     expect(html).toContain(t('casino.powered'));
     expect(html).toContain(t('casino.slotMachine'));
-    expect(html).toMatch(new RegExp(`disabled=""[^>]*>${t('casino.blackjack')} · ${t('home.tier')} 2`));
-    expect(html).toMatch(new RegExp(`disabled=""[^>]*>${t('casino.blockmatch')} · ${t('home.tier')} 3`));
+    expect(html).toMatch(new RegExp(`disabled=""[^>]*><img[^>]*><span>${t('casino.blackjack')} · ${t('home.tier')} 2`));
+    expect(html).toMatch(new RegExp(`disabled=""[^>]*><img[^>]*><span>${t('casino.blockmatch')} · ${t('home.tier')} 3`));
     expect(html).toContain(`${t('home.upgrade')} → 2`);
+  });
+
+  it('gives each Minigame button its icon', () => {
+    const { state, casino } = casinoCity(3, { adaptationUntil: 10 ** 12 });
+    context.state = state;
+    const html = renderToStaticMarkup(<CasinoPanel building={casino} />);
+    for (const file of ['casino-slotmachine.png', 'casino-blackjack.png', 'casino-blockmatch.png']) expect(html).toContain(`assets/icons/${file}`);
   });
 
   it('says the Casino is shut, and cannot be played, when it has no power', () => {
@@ -38,7 +45,7 @@ describe('Casino panel', () => {
     context.state = state;
     const html = renderToStaticMarkup(<CasinoPanel building={casino} />);
     expect(html).toContain(t('casino.shut'));
-    expect(html).toMatch(new RegExp(`disabled=""[^>]*>${t('casino.slotMachine')}`));
+    expect(html).toMatch(new RegExp(`disabled=""[^>]*><img[^>]*><span>${t('casino.slotMachine')}`));
   });
 
   it('is translated in French', () => {

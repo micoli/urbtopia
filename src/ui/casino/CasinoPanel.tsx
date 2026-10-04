@@ -4,6 +4,7 @@ import { useGame, useUi } from '../common/hooks';
 import { UpgradeSection } from '../buildings/UpgradeSection';
 import { UrbsAmount } from '../common/UrbsAmount';
 
+import { casinoGameIconUrl } from './casinoGameIcons';
 import { launchCasinoGame } from './launchCasinoGame';
 
 const PLAYABLE = new Set(['slotMachine', 'blackjack', 'blockmatch']);
@@ -28,7 +29,8 @@ export function CasinoPanel({ building }: CasinoPanelProps) {
           const locked = CASINO.gameMinTier[game] > building.tier;
           return (
             <button key={game} type="button" className="collect-button" disabled={locked || !powered || !PLAYABLE.has(game)} onClick={() => launchCasinoGame(building.id, game, () => select(null))}>
-              {t(`casino.${game}`)}{locked ? ` · ${t('home.tier')} ${CASINO.gameMinTier[game]}` : ''}
+              <img className="casino-game-icon" src={casinoGameIconUrl(game)} alt="" draggable={false} />
+              <span>{t(`casino.${game}`)}{locked ? ` · ${t('home.tier')} ${CASINO.gameMinTier[game]}` : ''}</span>
             </button>
           );
         })}
