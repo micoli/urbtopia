@@ -4,18 +4,19 @@ import type { CasinoGame, GameEvent } from '../core';
 export type SlotSpunEvent = Extract<GameEvent, { type: 'SlotSpun' }>;
 export type CasinoRoundStartedEvent = Extract<GameEvent, { type: 'CasinoRoundStarted' }>;
 export type BlackjackSettledEvent = Extract<GameEvent, { type: 'BlackjackSettled' }>;
+export type BlockmatchSettledEvent = Extract<GameEvent, { type: 'BlockmatchSettled' }>;
 
 export interface CasinoStore {
   casinoId: number | null;
   game: CasinoGame | null;
   lastSpin: SlotSpunEvent | null;
   round: CasinoRoundStartedEvent | null;
-  settled: BlackjackSettledEvent | null;
+  settled: BlackjackSettledEvent | BlockmatchSettledEvent | null;
   play: (casinoId: number, game: CasinoGame) => void;
   close: () => void;
   showSpin: (spin: SlotSpunEvent) => void;
   startRound: (round: CasinoRoundStartedEvent) => void;
-  settleRound: (settled: BlackjackSettledEvent) => void;
+  settleRound: (settled: BlackjackSettledEvent | BlockmatchSettledEvent) => void;
 }
 
 export const casinoStore = createStore<CasinoStore>((set) => ({

@@ -18,4 +18,5 @@ export type GameEvent =
   | { readonly type: 'SlotSpun'; readonly buildingId: number; readonly stake: number; readonly reels: readonly SlotSymbol[]; readonly outcome: SlotOutcome; readonly payout: number }
   | { readonly type: 'CasinoRoundStarted'; readonly buildingId: number; readonly game: 'blackjack' | 'blockmatch'; readonly stake: number; readonly roundSeed: number }
   | { readonly type: 'BlackjackSettled'; readonly buildingId: number; readonly stake: number; readonly doubled: boolean; readonly outcome: BlackjackOutcome; readonly payout: number }
+  | { readonly type: 'BlockmatchSettled'; readonly buildingId: number; readonly stake: number; readonly stars: number; readonly payout: number }
   | { readonly type: 'CropsHarvested'; readonly tiles: readonly { x: number; y: number; species: CropId }[] };

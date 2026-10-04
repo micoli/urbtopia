@@ -75,3 +75,5 @@ export { BLACKJACK_RANKS, BLACKJACK_SUITS, applyBlackjackAction, blackjackOutcom
 export type { BlackjackAction, BlackjackOutcome, BlackjackRound, Card } from './leisure/blackjack';
 export { withoutOpenRound } from './leisure/casinoRound';
 export type { OpenCasinoRound } from './engine/state';
+export { BLOCKMATCH_STAR_BONUS, MAX_BLOCKMATCH_STARS, blockmatchLevelNumber, blockmatchPayout, blockmatchSeed } from './leisure/blockmatchRound';
+export { generateLevel as generateBlockmatchLevel } from './leisure/blockmatch/levelGenerator';

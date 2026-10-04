@@ -27,7 +27,7 @@ import { roadBuildCost, missingRoadTiles } from '../map/roadCost';
 import { roadPath } from '../map/roads';
 import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
-import { abandonCasinoRound, playSlotMachine, settleBlackjack, startCasinoRound } from '../leisure/casinoRound';
+import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import type { BlackjackAction } from '../leisure/blackjack';
 import type { Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 
@@ -66,6 +66,7 @@ export type Command =
   | { readonly type: 'PlaySlotMachine'; readonly buildingId: number; readonly stake: number }
   | { readonly type: 'StartCasinoRound'; readonly buildingId: number; readonly game: 'blackjack' | 'blockmatch'; readonly stake: number }
   | { readonly type: 'SettleBlackjack'; readonly buildingId: number; readonly actions: readonly BlackjackAction[] }
+  | { readonly type: 'SettleBlockmatch'; readonly buildingId: number; readonly stars: number }
   | { readonly type: 'AbandonCasinoRound' }
   | { readonly type: 'BuyParcel'; readonly x: number; readonly y: number }
   | { readonly type: 'BuySlot'; readonly buildingId: number }
@@ -206,6 +207,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return startCasinoRound(state, command.buildingId, command.game, command.stake);
     case 'SettleBlackjack':
       return settleBlackjack(state, command.buildingId, command.actions);
+    case 'SettleBlockmatch':
+      return settleBlockmatch(state, command.buildingId, command.stars);
     case 'AbandonCasinoRound':
       return abandonCasinoRound(state);
     case 'BuyParcel':

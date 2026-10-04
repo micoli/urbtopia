@@ -55,7 +55,7 @@ export function createGameStore(initial: GameState) {
         if (event.type === 'CropsHarvested') harvestEffects.getState().show(event.tiles);
         if (event.type === 'SlotSpun') casinoStore.getState().showSpin(event);
         if (event.type === 'CasinoRoundStarted') casinoStore.getState().startRound(event);
-        if (event.type === 'BlackjackSettled') casinoStore.getState().settleRound(event);
+        if (event.type === 'BlackjackSettled' || event.type === 'BlockmatchSettled') casinoStore.getState().settleRound(event);
       }
       announceTutorialEnd(get().state, result.state);
       set({ state: result.state, deletionUndo: result.undo, lastError: null, lastChange: 'command' });

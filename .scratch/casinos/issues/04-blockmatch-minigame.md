@@ -4,7 +4,7 @@
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Pure engine copied from block-match (`game/engine`, `levelGenerator`, `rng`, `types`, `scoring`, `grid`, `gravity`, `effects`) into an isolated core module with its tests; no progress or best-score storage.
 - [ ] Level is derived from the game Seed and the casino PRNG stream, advanced at Stake time (ADR 0010); difficulty grows with the Casino Tier.

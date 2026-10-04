@@ -2,6 +2,7 @@ import { hashSeed, nextRandom } from '../engine/random';
 import { CASINO, isValidStake } from './casino';
 import { isCasinoPowered } from './poweredCasinos';
 import { blackjackOutcome, blackjackPayout, replayBlackjack, type BlackjackAction } from './blackjack';
+import { MAX_BLOCKMATCH_STARS, blockmatchPayout } from './blockmatchRound';
 import { spinSlotMachine } from './slotMachine';
 import type { CommandOutcome } from '../engine/commands';
 import type { Building, GameState } from '../engine/state';
@@ -67,5 +68,16 @@ export function settleBlackjack(state: GameState, buildingId: number, actions: r
   return {
     state: { ...withoutOpenRound(state), urbs: state.urbs - extraStake + payout },
     events: [{ type: 'BlackjackSettled', buildingId, stake: open.stake, doubled: round.doubled, outcome, payout }],
+  };
+}
+
+export function settleBlockmatch(state: GameState, buildingId: number, stars: number): CommandOutcome {
+  const open = state.openRound;
+  if (!open || open.game !== 'blockmatch' || open.buildingId !== buildingId) return { key: 'error.noOpenRound' };
+  if (!Number.isInteger(stars) || stars < 0 || stars > MAX_BLOCKMATCH_STARS) return { key: 'error.invalidRound' };
+  const payout = blockmatchPayout(stars, open.stake);
+  return {
+    state: { ...withoutOpenRound(state), urbs: state.urbs + payout },
+    events: [{ type: 'BlockmatchSettled', buildingId, stake: open.stake, stars, payout }],
   };
 }

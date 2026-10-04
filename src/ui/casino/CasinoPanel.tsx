@@ -5,7 +5,7 @@ import { useGame } from '../common/hooks';
 import { UpgradeSection } from '../buildings/UpgradeSection';
 import { UrbsAmount } from '../common/UrbsAmount';
 
-const PLAYABLE = new Set(['slotMachine', 'blackjack']);
+const PLAYABLE = new Set(['slotMachine', 'blackjack', 'blockmatch']);
 
 interface CasinoPanelProps {
   building: Building;

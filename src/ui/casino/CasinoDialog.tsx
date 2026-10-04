@@ -5,6 +5,7 @@ import { casinoStore } from '../../store/casinoStore';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 import { BlackjackGame } from './BlackjackGame';
+import { BlockmatchGame } from './BlockmatchGame';
 import { LeaveRoundDialog } from './LeaveRoundDialog';
 import { SlotMachineGame } from './SlotMachineGame';
 
@@ -31,6 +32,7 @@ export function CasinoDialog() {
         </header>
         {game === 'slotMachine' ? <SlotMachineGame casino={casino} /> : null}
         {game === 'blackjack' ? <BlackjackGame casino={casino} /> : null}
+        {game === 'blockmatch' ? <BlockmatchGame casino={casino} /> : null}
       </div>
       {confirmLeave ? <LeaveRoundDialog onStay={() => setConfirmLeave(false)} onLeave={leave} /> : null}
     </div>

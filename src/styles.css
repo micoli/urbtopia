@@ -1471,3 +1471,36 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .blackjack-actions button {
   flex: 1;
 }
+
+.blockmatch-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.blockmatch-moves {
+  display: grid;
+  place-items: center;
+  min-width: 64px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.blockmatch-moves strong {
+  font-size: 1.6rem;
+}
+
+.blockmatch-goals {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.casino-dialog .board {
+  --cell: min(52px, calc((min(100vw, 460px) - 56px) / var(--cols)), calc((100dvh - 330px) / var(--rows)));
+  align-self: center;
+}
