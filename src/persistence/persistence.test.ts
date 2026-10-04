@@ -16,7 +16,7 @@ const state = newGame({ seed: 'amber-fox-4821', now: T0 });
 describe('validateGameState', () => {
   it('accepts a fresh game and a played game', () => {
     expect(validateGameState(state)).not.toBeNull();
-    expect(validateGameState(fixtureV3.state)).not.toBeNull();
+    expect(parseEnvelope(JSON.stringify(fixtureV3)).ok).toBe(true);
   });
 
   it.each([

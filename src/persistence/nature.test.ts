@@ -7,14 +7,14 @@ import { parseEnvelope, serializeEnvelope } from './envelope';
 describe('nature save compatibility', () => {
   it('migrates a frozen version-6 city without changing its buildings or economy', () => {
     const loaded = parseEnvelope(JSON.stringify(saveV6));
-    expect(loaded).toEqual({ ok: true, state: { ...saveV6.state, adaptationUntil: saveV6.state.lastSeen + 24 * 3_600_000 }, savedAt: saveV6.savedAt });
+    expect(loaded).toEqual({ ok: true, state: { ...saveV6.state, seedStock: {}, fields: [], adaptationUntil: saveV6.state.lastSeen + 24 * 3_600_000 }, savedAt: saveV6.savedAt });
     if (!loaded.ok) return;
-    expect(JSON.parse(serializeEnvelope(loaded.state, loaded.savedAt)).version).toBe(8);
+    expect(JSON.parse(serializeEnvelope(loaded.state, loaded.savedAt)).version).toBe(9);
     expect(parseEnvelope(serializeEnvelope(loaded.state, loaded.savedAt), { currentVersion: 7 })).toEqual({ ok: false, reason: 'newer-version' });
   });
 
   it('loads a frozen version-7 mixed natural city, only adding a service Adaptation period', () => {
-    expect(parseEnvelope(JSON.stringify(saveV7))).toEqual({ ok: true, state: { ...saveV7.state, adaptationUntil: saveV7.state.lastSeen + 24 * 3_600_000 }, savedAt: saveV7.savedAt });
+    expect(parseEnvelope(JSON.stringify(saveV7))).toEqual({ ok: true, state: { ...saveV7.state, seedStock: {}, fields: [], adaptationUntil: saveV7.state.lastSeen + 24 * 3_600_000 }, savedAt: saveV7.savedAt });
   });
 
   it('round-trips every natural model and derives the same ecological benefits', () => {

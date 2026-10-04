@@ -3,10 +3,11 @@ import type { NatureType } from '../environment/nature';
 import type { Direction } from '../map/geometry';
 import type { Coord } from '../map/coord';
 import type { GoodId, ItemId, MaterialId } from '../economy/items';
+import type { CropId } from '../farming/crops';
 import type { RoadKind } from '../map/roads';
 import type { TutorialStep } from '../progression/tutorial';
 
-export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'coalPlant' | 'waterTower' | 'silo' | 'vault' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop' | 'brtStation' | 'railStation' | FacilityType | NatureType;
+export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'coalPlant' | 'waterTower' | 'silo' | 'vault' | 'farm' | 'packhouse' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop' | 'brtStation' | 'railStation' | FacilityType | NatureType;
 
 export type Rotation = 0 | 1 | 2 | 3;
 export type HomeColorVariant = 'default' | 'a' | 'b' | 'c';
@@ -80,7 +81,20 @@ export interface TransitTile extends Coord {
   exits: Direction[];
 }
 
+export interface PlantedCrop {
+  species: CropId;
+  plantedAt: number;
+}
+
+export interface FieldTile extends Coord {
+  crop?: PlantedCrop;
+}
+
+export type SeedStock = Partial<Record<string, number>>;
+
 export interface GameState {
+  seedStock: SeedStock;
+  fields: FieldTile[];
   brtRoads?: TransitTile[];
   rails?: TransitTile[];
   transitLines?: TransitLine[];

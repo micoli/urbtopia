@@ -57,15 +57,20 @@ describe('queueing locked items', () => {
 });
 
 describe('nextUnlock', () => {
-  it('names the next threshold and what it opens', () => {
-    expect(nextUnlock(withCitizens(18))).toEqual({ citizens: 30, items: ['clay', 'tiles'] });
-    expect(nextUnlock(withCitizens(36))).toEqual({ citizens: 80, items: ['metal', 'tools'] });
+  it('names the next threshold and what it opens, Crop species included', () => {
+    expect(nextUnlock(withCitizens(18))).toEqual({ citizens: 20, items: ['grass', 'flower', 'wheat', 'grassCrate', 'flowerCrate', 'wheatCrate'] });
+    expect(nextUnlock(withCitizens(24))).toEqual({ citizens: 30, items: ['clay', 'tiles'] });
+    expect(nextUnlock(withCitizens(36))).toEqual({ citizens: 60, items: ['carrot', 'beet', 'lettuce', 'carrotCrate', 'beetCrate', 'lettuceCrate'] });
+    expect(nextUnlock(withCitizens(66))).toEqual({ citizens: 80, items: ['metal', 'tools'] });
   });
 
   it('announces the late-game items after 200 Citizens', () => {
-    expect(nextUnlock(withCitizens(204))).toEqual({ citizens: 350, items: ['sand', 'cement'] });
-    expect(nextUnlock(withCitizens(354))).toEqual({ citizens: 600, items: ['coal', 'steel'] });
-    expect(nextUnlock(withCitizens(606))).toEqual({ citizens: 1000, items: ['gold', 'jewelry', 'crystal'] });
+    expect(nextUnlock(withCitizens(204))).toEqual({ citizens: 250, items: ['pumpkin', 'watermelon', 'mushroom', 'pumpkinCrate', 'watermelonCrate', 'mushroomCrate'] });
+    expect(nextUnlock(withCitizens(258))).toEqual({ citizens: 350, items: ['sand', 'cement'] });
+    expect(nextUnlock(withCitizens(354))).toEqual({ citizens: 450, items: ['bushBerries', 'bamboo', 'cactus', 'bushBerriesCrate', 'bambooCrate', 'cactusCrate'] });
+    expect(nextUnlock(withCitizens(456))).toEqual({ citizens: 600, items: ['coal', 'steel'] });
+    expect(nextUnlock(withCitizens(606))).toEqual({ citizens: 800, items: ['apple', 'orange', 'palmtree', 'appleCrate', 'orangeCrate', 'palmtreeCrate'] });
+    expect(nextUnlock(withCitizens(804))).toEqual({ citizens: 1000, items: ['gold', 'jewelry', 'crystal'] });
   });
 
   it('returns null once everything is unlocked', () => {

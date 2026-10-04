@@ -30,6 +30,19 @@ export const PRODUCTION_UPGRADE_COSTS: Record<number, UpgradeCostSpec> = {
   5: { urbs: 5000, goods: { tools: 4 } },
 };
 
+export interface FarmTier {
+  seedCapacity: number;
+  fieldCap: number;
+}
+
+export const FARM_TIERS: readonly FarmTier[] = [
+  { seedCapacity: 20, fieldCap: 12 },
+  { seedCapacity: 40, fieldCap: 24 },
+  { seedCapacity: 70, fieldCap: 40 },
+  { seedCapacity: 110, fieldCap: 60 },
+  { seedCapacity: 160, fieldCap: 90 },
+];
+
 export type StorageType = 'storehouse' | 'silo' | 'vault';
 
 interface CompartmentCapacity {

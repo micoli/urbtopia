@@ -10,6 +10,11 @@ const commandArb: fc.Arbitrary<Command> = fc.oneof(
   spotArb.map(({ x, y }): Command => ({ type: 'PlaceBuilding', buildingType: 'home', x, y })),
   spotArb.map(({ x, y }): Command => ({ type: 'PlaceBuilding', buildingType: 'powerPlant', x, y })),
   spotArb.map(({ x, y }): Command => ({ type: 'PlaceBuilding', buildingType: 'waterTower', x, y })),
+  spotArb.map(({ x, y }): Command => ({ type: 'PlaceBuilding', buildingType: 'farm', x, y })),
+  fc.array(spotArb, { minLength: 1, maxLength: 6 }).map((tiles): Command => ({ type: 'LayFields', tiles: tiles.map(({ x, y }) => ({ x, y: y - 8 })) })),
+  fc.constantFrom('wheat', 'grass', 'rice').map((crop): Command => ({ type: 'BuySeeds', crop, quantity: 10 })),
+  fc.tuple(fc.constantFrom('wheat', 'grass', 'rice'), fc.array(spotArb, { minLength: 1, maxLength: 6 })).map(([crop, tiles]): Command => ({ type: 'Plant', crop, tiles: tiles.map(({ x, y }) => ({ x, y: y - 8 })) })),
+  fc.constantFrom(0.02, 0.1, 1).map((hours): Command => ({ type: 'SkipTime', hours })),
   fc.integer({ min: 1, max: 40 }).map((id): Command => ({ type: 'SellBuilding', id })),
   fc.integer({ min: 1, max: 40 }).map((id): Command => ({ type: 'UpgradeBuilding', buildingId: id })),
 );

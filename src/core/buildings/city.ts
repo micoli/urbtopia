@@ -1,5 +1,6 @@
 import { homePower, economicPower } from '../environment/ecology';
 import { energyStats } from '../environment/energy';
+import { cropWaterDemand } from '../farming/growth';
 import { FACILITIES, isFacilityType } from '../services/facilities';
 import { HOME_TIERS, UTILITY_CAPACITY } from '../economy/economy';
 import type { GameState } from '../engine/state';
@@ -25,7 +26,7 @@ export function utilityCapacity(state: GameState): UtilityTotals {
 }
 
 export function utilityDemand(state: GameState): UtilityTotals {
-  return state.buildings.reduce<UtilityTotals>(
+  const buildings = state.buildings.reduce<UtilityTotals>(
     (total, building) => {
       if (building.type !== 'home') return { power: total.power + economicPower(building), water: total.water + (isFacilityType(building.type) ? FACILITIES[building.type].water : 0) };
       const tier = HOME_TIERS[building.tier - 1];
@@ -33,4 +34,5 @@ export function utilityDemand(state: GameState): UtilityTotals {
     },
     { power: 0, water: 0 },
   );
+  return { power: buildings.power, water: buildings.water + cropWaterDemand(state) };
 }

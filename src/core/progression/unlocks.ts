@@ -1,6 +1,7 @@
 import { totalCitizens } from '../buildings/city';
 import { FACILITIES, FACILITY_TYPES, type FacilityType } from '../services/facilities';
 import { GOODS, MATERIALS, unlockCitizensOf, type ItemId } from '../economy/items';
+import type { CropId } from '../farming/crops';
 import type { GameState } from '../engine/state';
 
 export interface Unlock {
@@ -12,6 +13,10 @@ const ALL_ITEMS: ItemId[] = [...(Object.keys(MATERIALS) as ItemId[]), ...(Object
 
 export function isItemUnlocked(state: GameState, item: ItemId): boolean {
   return totalCitizens(state) >= unlockCitizensOf(item);
+}
+
+export function isCropUnlocked(state: GameState, crop: CropId): boolean {
+  return isItemUnlocked(state, crop);
 }
 
 export function nextUnlock(state: GameState): Unlock | null {

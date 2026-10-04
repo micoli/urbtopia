@@ -21,7 +21,7 @@ export function storageCapacity(state: GameState): Compartments {
   const capacity: Compartments = { materials: 0, goods: 0 };
   const production: Compartments = { materials: 0, goods: 0 };
   for (const building of state.buildings) {
-    if (building.type !== 'workshop' && building.type !== 'factory') continue;
+    if (building.type !== 'workshop' && building.type !== 'factory' && building.type !== 'packhouse') continue;
     const compartment = building.type === 'workshop' ? 'materials' : 'goods';
     production[compartment] += building.slotCount * productionTierOf(building).yield;
   }

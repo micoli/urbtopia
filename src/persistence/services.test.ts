@@ -2,14 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { FACILITY_TYPES, createBuilding, newGame } from '../core';
 import saveV7 from './fixtures/save-v7.json';
 import saveV8 from './fixtures/save-v8.json';
-import { CURRENT_VERSION, parseEnvelope, serializeEnvelope } from './envelope';
+import { parseEnvelope, serializeEnvelope } from './envelope';
 
 const DAY = 24 * 3_600_000;
 
 describe('public facilities save compatibility', () => {
   it('loads a frozen version-8 city with Public facilities unchanged', () => {
-    expect(CURRENT_VERSION).toBe(8);
-    expect(parseEnvelope(JSON.stringify(saveV8))).toEqual({ ok: true, state: saveV8.state, savedAt: saveV8.savedAt });
+    expect(parseEnvelope(JSON.stringify(saveV8))).toEqual({ ok: true, state: { ...saveV8.state, seedStock: {}, fields: [] }, savedAt: saveV8.savedAt });
   });
 
   it('keeps Home Tiers of a version-7 save and starts an Adaptation period', () => {

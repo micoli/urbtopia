@@ -1,4 +1,4 @@
-import { BUILDING_SPECS, GAME_CONFIG, GOODS, MATERIALS, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
+import { BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -17,6 +17,7 @@ function isAmountRecord(value: unknown, validKeys: string[]): boolean {
   return isRecord(value) && Object.entries(value).every(([key, amount]) => validKeys.includes(key) && (key === 'coal' ? isNonNegative(amount) : isInt(amount, 0)));
 }
 
+const cropIds: string[] = [...CROP_IDS];
 const itemIds = [...Object.keys(MATERIALS), ...Object.keys(GOODS)];
 
 function isQueueEntry(value: unknown): boolean {
@@ -63,6 +64,12 @@ function isBuilding(value: unknown): boolean {
   );
 }
 
+function isFieldTile(value: unknown): boolean {
+  if (!isRecord(value) || !isCoord(value)) return false;
+  if (value.crop === undefined) return true;
+  return isRecord(value.crop) && cropIds.includes(value.crop.species as string) && isNumber(value.crop.plantedAt);
+}
+
 function isMarket(value: unknown): boolean {
   return isRecord(value) && Object.entries(value).every(([good, price]) => good in GOODS && isRecord(price) && isNumber(price.points) && isNumber(price.updatedAt));
 }
@@ -81,6 +88,9 @@ export function validateGameState(value: unknown): GameState | null {
     isRecord(value.storage) &&
     isAmountRecord(value.storage.materials, Object.keys(MATERIALS)) &&
     isAmountRecord(value.storage.goods, Object.keys(GOODS)) &&
+    isRecord(value.seedStock) &&
+    Object.values(value.seedStock).every(amount => isInt(amount, 0)) &&
+    isArrayOf(value.fields, isFieldTile) &&
     typeof value.marketUnlocked === 'boolean' &&
     isMarket(value.market) &&
     isArrayOf(value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string)) &&

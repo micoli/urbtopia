@@ -1,6 +1,6 @@
 {
   "format": "urbtopia-save",
-  "version": 8,
+  "version": 9,
   "savedAt": 1790000000000,
   "state": {
     "brtRoads": [],
@@ -816,6 +816,8 @@
         "taxCitizenMs": 0
       }
     ],
+    "seedStock": {},
+    "fields": [],
     "storage": {
       "materials": {
         "wood": 40,

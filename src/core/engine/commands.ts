@@ -11,6 +11,9 @@ import { utilityCapacity, utilityDemand, type UtilityTotals } from '../buildings
 import { HOME_TIERS, MAX_SLOTS, SHOP, TAX, SLOT_PRICES } from '../economy/economy';
 import { GOODS, isGood, isMaterial, minTierOf, producibleItems, recipeOf, type GoodId } from '../economy/items';
 import { marketQuote } from '../economy/market';
+import { harvestFields, layFields, plantFields, removeFields } from '../farming/fields';
+import { buySeeds } from '../farming/seeds';
+import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
 import { withStartingCity } from './newGame';
 import { tutorialAllows, tutorialSkipMs } from '../progression/tutorial';
@@ -48,6 +51,11 @@ export type Command =
   | { readonly type: 'SetBusLine'; readonly id?: number; readonly stops: number[] }
   | { readonly type: 'DeleteBusLine'; readonly id: number }
   | { readonly type: 'DismissEcology' }
+  | { readonly type: 'LayFields'; readonly tiles: readonly Coord[] }
+  | { readonly type: 'RemoveFields'; readonly tiles: readonly Coord[] }
+  | { readonly type: 'Plant'; readonly crop: CropId; readonly tiles: readonly Coord[] }
+  | { readonly type: 'Harvest'; readonly tiles: readonly Coord[] }
+  | { readonly type: 'BuySeeds'; readonly crop: CropId; readonly quantity: number }
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
@@ -71,6 +79,14 @@ export type ErrorKey =
   | 'error.storehouseExists'
   | 'error.siloExists'
   | 'error.vaultExists'
+  | 'error.farmExists'
+  | 'error.packhouseExists'
+  | 'error.noFarm'
+  | 'error.fieldCapReached'
+  | 'error.noFieldHere'
+  | 'error.noSeeds'
+  | 'error.nothingToPlant'
+  | 'error.seedStockFull'
   | 'error.townHallExists'
   | 'error.serviceRequired'
   | 'error.notEnoughUrbs'
@@ -152,6 +168,16 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return { state: { ...state, busLines: (state.busLines ?? []).filter(line => line.id !== command.id) }, events: [] };
     case 'DismissEcology':
       return { state: { ...state, ecologyDismissed: true }, events: [] };
+    case 'LayFields':
+      return layFields(state, command.tiles);
+    case 'RemoveFields':
+      return removeFields(state, command.tiles);
+    case 'Plant':
+      return plantFields(state, command.crop, command.tiles);
+    case 'Harvest':
+      return harvestFields(state, command.tiles);
+    case 'BuySeeds':
+      return buySeeds(state, command.crop, command.quantity);
     case 'QueueProduction':
       return queueProduction(state, command.buildingId, command.item, now);
     case 'Collect':
@@ -293,7 +319,7 @@ function setCoalEnabled(state: GameState, id: number, enabled: boolean): Command
 function sellBuilding(state: GameState, id: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === id);
   if (!building) return fail('error.unknownBuilding');
-  if ((isStorageType(building.type) || building.type === 'workshop' || building.type === 'factory') && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
+  if ((isStorageType(building.type) || building.type === 'workshop' || building.type === 'factory' || building.type === 'packhouse') && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
   if ((building.type === 'powerPlant' || building.type === 'waterTower') && !canLoseUtility(state, building)) return fail('error.utilityInUse');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
   return {

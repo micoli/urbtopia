@@ -46,6 +46,8 @@ export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
   coalPlant: { footprint: { width: 1, depth: 1 }, cost: 150, requiresRoad: false, initialSlots: 0 },
   waterTower: { footprint: { width: 1, depth: 1 }, cost: 200, requiresRoad: false, initialSlots: 0 },
   silo: { footprint: { width: 2, depth: 1 }, cost: 300, requiresRoad: true, initialSlots: 0 },
+  packhouse: { footprint: { width: 2, depth: 2 }, cost: 250, requiresRoad: true, initialSlots: 2 },
+  farm: { footprint: { width: 2, depth: 2 }, cost: 200, requiresRoad: true, initialSlots: 0 },
   vault: { footprint: { width: 2, depth: 1 }, cost: 300, requiresRoad: true, initialSlots: 0 },
 };
 

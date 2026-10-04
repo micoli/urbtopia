@@ -1,10 +1,12 @@
 import {
   HOME_UPGRADE_COSTS,
   COAL_UPGRADE_COSTS,
+  FARM_TIERS,
   PRODUCTION_TIERS,
   PRODUCTION_UPGRADE_COSTS,
   STORAGE_TIERS,
   UTILITY_UPGRADE_COSTS,
+  type FarmTier,
   type ProductionTier,
   type UpgradeCostSpec,
 } from './economy';
@@ -21,6 +23,8 @@ const UPGRADE_COSTS: Partial<Record<BuildingType, Record<number, UpgradeCost>>> 
   workshop: PRODUCTION_UPGRADE_COSTS,
   factory: PRODUCTION_UPGRADE_COSTS,
   storehouse: storageCosts('storehouse'),
+  farm: PRODUCTION_UPGRADE_COSTS,
+  packhouse: PRODUCTION_UPGRADE_COSTS,
   silo: storageCosts('silo'),
   vault: storageCosts('vault'),
   powerPlant: UTILITY_UPGRADE_COSTS.powerPlant,
@@ -41,4 +45,8 @@ export function upgradeCostOf(type: BuildingType, tier: number): UpgradeCost | u
 
 export function productionTierOf(building: Pick<Building, 'tier'>): ProductionTier {
   return PRODUCTION_TIERS[building.tier - 1] ?? PRODUCTION_TIERS[0]!;
+}
+
+export function farmTier(building: Pick<Building, 'tier'>): FarmTier {
+  return FARM_TIERS[building.tier - 1] ?? FARM_TIERS[0]!;
 }

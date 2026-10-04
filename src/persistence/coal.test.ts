@@ -18,10 +18,10 @@ describe('coal save compatibility', () => {
 
   it('migrates a frozen version-5 transit city without changing it beyond a service Adaptation period', () => {
     const loaded = parseEnvelope(JSON.stringify(saveV5));
-    expect(loaded).toEqual({ ok: true, state: { ...saveV5.state, adaptationUntil: Math.max(saveV5.state.adaptationUntil, saveV5.state.lastSeen + 24 * 3_600_000) }, savedAt: saveV5.savedAt });
+    expect(loaded).toEqual({ ok: true, state: { ...saveV5.state, seedStock: {}, fields: [], adaptationUntil: Math.max(saveV5.state.adaptationUntil, saveV5.state.lastSeen + 24 * 3_600_000) }, savedAt: saveV5.savedAt });
     if (!loaded.ok) return;
-    expect(JSON.parse(serializeEnvelope(loaded.state, loaded.savedAt)).version).toBe(8);
-    expect(CURRENT_VERSION).toBe(8);
+    expect(JSON.parse(serializeEnvelope(loaded.state, loaded.savedAt)).version).toBe(9);
+    expect(CURRENT_VERSION).toBe(9);
     expect(parseEnvelope(serializeEnvelope(loaded.state, loaded.savedAt))).toEqual(loaded);
   });
 

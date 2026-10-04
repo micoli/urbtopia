@@ -20,6 +20,7 @@ export function occupiedTiles(state: GameState, ignoreBuildingId?: number): Set<
     for (const tile of footprintTiles(building)) occupied.add(tileKey(tile));
   }
   for (const tile of [...(state.brtRoads ?? []), ...(state.rails ?? [])]) occupied.add(tileKey(tile));
+  for (const field of state.fields) occupied.add(tileKey(field));
   for (const road of state.roads) occupied.add(tileKey(road));
   for (const center of state.roundabouts) {
     for (const tile of roundaboutTiles(center)) occupied.add(tileKey(tile));

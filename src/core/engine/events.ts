@@ -1,4 +1,5 @@
 import type { FacilityType } from '../services/facilities';
+import type { CropId } from '../farming/crops';
 import type { ItemId } from '../economy/items';
 
 export type GameEvent =
@@ -11,4 +12,5 @@ export type GameEvent =
   | { readonly type: 'BuildingUpgraded'; readonly buildingId: number; readonly tier: number }
   | { readonly type: 'OfflineTimeCapped'; readonly forfeitedMs: number }
   | { readonly type: 'StorageFull'; readonly buildingId: number }
-  | { readonly type: 'FacilityUnlocked'; readonly facility: FacilityType };
+  | { readonly type: 'FacilityUnlocked'; readonly facility: FacilityType }
+  | { readonly type: 'CropsHarvested'; readonly tiles: readonly { x: number; y: number; species: CropId }[] };

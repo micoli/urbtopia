@@ -1,3 +1,4 @@
+import { shiftCropTimers } from '../farming/growth';
 import { citizensOf } from '../buildings/city';
 import { SHOP, TAX } from './economy';
 import type { GameEvent } from '../engine/events';
@@ -108,6 +109,10 @@ export function restartRunningProduction(building: Building, now: number): Build
 }
 
 export function shiftRunningTimers(state: GameState, shiftMs: number): GameState {
+  return shiftCropTimers(shiftBuildingTimers(state, shiftMs), shiftMs);
+}
+
+function shiftBuildingTimers(state: GameState, shiftMs: number): GameState {
   const market = Object.fromEntries(Object.entries(state.market).map(([good, price]) => [good, { ...price, updatedAt: price.updatedAt + shiftMs }]));
   return {
     ...state,

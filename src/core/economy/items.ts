@@ -1,12 +1,18 @@
+import { CROPS, CROP_IDS, type CropId } from '../farming/crops';
 import type { BuildingType } from '../engine/state';
 
-export type MaterialId = 'wood' | 'stone' | 'clay' | 'metal' | 'silicon' | 'sand' | 'coal' | 'gold';
-export type GoodId = 'planks' | 'bricks' | 'tiles' | 'tools' | 'glass' | 'circuits' | 'steel' | 'cement' | 'jewelry' | 'crystal';
+export type BaseMaterialId = 'wood' | 'stone' | 'clay' | 'metal' | 'silicon' | 'sand' | 'coal' | 'gold';
+export type MaterialId = BaseMaterialId | CropId;
+export type BaseGoodId = 'planks' | 'bricks' | 'tiles' | 'tools' | 'glass' | 'circuits' | 'steel' | 'cement' | 'jewelry' | 'crystal';
+export type CropCrateId = `${CropId}Crate`;
+export type GoodId = BaseGoodId | CropCrateId;
 export type ItemId = MaterialId | GoodId;
 
 const MINUTE_MS = 60_000;
 
-export const MATERIALS: Record<MaterialId, { durationMs: number; unlockCitizens: number; minTier: number }> = {
+type MaterialSpec = { durationMs: number; unlockCitizens: number; minTier: number };
+
+const BASE_MATERIALS: Record<BaseMaterialId, MaterialSpec> = {
   wood: { durationMs: 1 * MINUTE_MS, unlockCitizens: 0, minTier: 1 },
   stone: { durationMs: 2 * MINUTE_MS, unlockCitizens: 0, minTier: 1 },
   clay: { durationMs: 4 * MINUTE_MS, unlockCitizens: 30, minTier: 1 },
@@ -17,6 +23,12 @@ export const MATERIALS: Record<MaterialId, { durationMs: number; unlockCitizens:
   gold: { durationMs: 48 * MINUTE_MS, unlockCitizens: 1000, minTier: 5 },
 };
 
+const CROP_MATERIALS = Object.fromEntries(
+  CROP_IDS.map((id): [CropId, MaterialSpec] => [id, { durationMs: CROPS[id].growthMs, unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 }]),
+) as Record<CropId, MaterialSpec>;
+
+export const MATERIALS: Record<MaterialId, MaterialSpec> = { ...BASE_MATERIALS, ...CROP_MATERIALS };
+
 export interface GoodSpec {
   recipe: Partial<Record<MaterialId, number>>;
   durationMs: number;
@@ -25,7 +37,7 @@ export interface GoodSpec {
   minTier: number;
 }
 
-export const GOODS: Record<GoodId, GoodSpec> = {
+const BASE_GOODS: Record<BaseGoodId, GoodSpec> = {
   planks: { recipe: { wood: 2 }, durationMs: 2 * MINUTE_MS, value: 14, unlockCitizens: 0, minTier: 1 },
   bricks: { recipe: { stone: 2, wood: 1 }, durationMs: 4 * MINUTE_MS, value: 34, unlockCitizens: 0, minTier: 1 },
   tiles: { recipe: { clay: 2 }, durationMs: 6 * MINUTE_MS, value: 62, unlockCitizens: 30, minTier: 1 },
@@ -37,6 +49,12 @@ export const GOODS: Record<GoodId, GoodSpec> = {
   jewelry: { recipe: { gold: 1, clay: 2 }, durationMs: 24 * MINUTE_MS, value: 600, unlockCitizens: 1000, minTier: 5 },
   crystal: { recipe: { sand: 1, gold: 1 }, durationMs: 28 * MINUTE_MS, value: 850, unlockCitizens: 1000, minTier: 5 },
 };
+
+const CROP_GOODS = Object.fromEntries(
+  CROP_IDS.map((id): [CropCrateId, GoodSpec] => [`${id}Crate`, { recipe: { [id]: 2 }, durationMs: CROPS[id].packingMs, value: CROPS[id].packedValue, unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 }]),
+) as Record<CropCrateId, GoodSpec>;
+
+export const GOODS: Record<GoodId, GoodSpec> = { ...BASE_GOODS, ...CROP_GOODS };
 
 export function isMaterial(item: string): item is MaterialId {
   return item in MATERIALS;
@@ -63,8 +81,9 @@ export function recipeOf(item: ItemId): Partial<Record<MaterialId, number>> {
 }
 
 const PRODUCIBLE_BY_BUILDING: Partial<Record<BuildingType, readonly ItemId[]>> = {
-  workshop: Object.keys(MATERIALS) as MaterialId[],
-  factory: Object.keys(GOODS) as GoodId[],
+  workshop: Object.keys(BASE_MATERIALS) as BaseMaterialId[],
+  factory: Object.keys(BASE_GOODS) as BaseGoodId[],
+  packhouse: Object.keys(CROP_GOODS) as CropCrateId[],
 };
 
 export function producibleItems(type: BuildingType): readonly ItemId[] {

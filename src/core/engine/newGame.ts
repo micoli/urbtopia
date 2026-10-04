@@ -24,6 +24,8 @@ export function newGame(options: NewGameOptions): GameState {
     nextId: GAME_CONFIG.firstEntityId,
     ownedParcels: GAME_CONFIG.startingParcels.map((parcel) => ({ ...parcel })),
     buildings: [],
+    seedStock: {},
+    fields: [],
     storage: { materials: {}, goods: {} },
     marketUnlocked: false,
     market: {},
