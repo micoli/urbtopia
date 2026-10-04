@@ -6,7 +6,7 @@
 
 **Status:** done
 
-- [ ] Tier 2 uses `2Story_Wide_Mat`, Tier 3 uses `2Story_Wide_2Doors_Mat`; the footprint grows from 2×2 to 3×2 to 4×2 (one column per Tier, anchored on the original tile), model fitted to the width.
+- [ ] Tier 2 uses `2Story_Wide_Mat`, Tier 3 uses `2Story_Wide_2Doors_Mat`; the footprint grows from 2×2 to 3×2 to 6×2 (depth 2, anchored on the original tile), model fitted to the width.
 - [ ] An upgrade whose extra tiles are occupied or outside owned Parcels is refused with the existing placement error, and the panel says free space is needed.
 - [ ] Upgrade costs 4 000 Urbs (Tier 1 to 2) then 8 000 (Tier 2 to 3), from the Casino panel.
 - [ ] Max Stake is 100 / 500 / 2 000 by Tier.

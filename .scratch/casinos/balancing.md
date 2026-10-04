@@ -8,7 +8,7 @@ Numbers live in `src/core/leisure/` (`casino.ts`, `slotMachine.ts`, `blackjack.t
 |---|---|---|---|---|---|---|---|---|
 | 1 | 2x2 | `2Story_Stairs_Mat` | 2 500 | 6 | 16 | 6 | 100 | slot machine |
 | 2 | 3x2 | `2Story_Wide_Mat` | 4 000 | 9 | 20 | 7 | 500 | + blackjack |
-| 3 | 4x2 | `2Story_Wide_2Doors_Mat` | 8 000 | 13.5 | 24 | 8 | 2 000 | + blockmatch |
+| 3 | 6x2 | `2Story_Wide_2Doors_Mat` | 8 000 | 13.5 | 24 | 8 | 2 000 | + blockmatch |
 
 - Stake steps: 10, 50, 100, 500, 1 000, 2 000, capped by the Tier.
 - Power: 3x a theater (2) at Tier 1, +50% per Tier. A Home of Tier 5 draws 10, so a Tier 1 Casino costs about one Home of Tier 4 in power.

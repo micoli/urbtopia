@@ -13,7 +13,7 @@ export const CASINO = {
   footprints: [
     { width: 2, depth: 2 },
     { width: 3, depth: 2 },
-    { width: 4, depth: 2 },
+    { width: 6, depth: 2 },
   ] as readonly Footprint[],
   radii: [8, 10, 12] as readonly number[],
   wellbeingBonus: [6, 7, 8] as readonly number[],

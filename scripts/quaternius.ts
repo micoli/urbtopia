@@ -10,7 +10,7 @@ export const PRODUCE_WIDTH = 0.4;
 export const BUILDING_FILL = 1.9;
 
 // A tier of the Casino is fitted to its footprint width, one column wider per Tier.
-export const CASINO_MODEL_WIDTHS: Record<string, number> = { '2Story_Stairs_Mat': 1.9, '2Story_Wide_Mat': 2.85, '2Story_Wide_2Doors_Mat': 3.8 };
+export const CASINO_MODEL_WIDTHS: Record<string, number> = { '2Story_Stairs_Mat': 1.9, '2Story_Wide_Mat': 2.85, '2Story_Wide_2Doors_Mat': 5.7 };
 
 export interface QuaterniusPack {
   name: string;

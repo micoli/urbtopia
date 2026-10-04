@@ -20,8 +20,8 @@ describe('Casino rules', () => {
     expect(placed.ok && placed.state.urbs).toBe(big.urbs - 2500);
   });
 
-  it('grows one column per Tier, anchored on its tile', () => {
-    expect([1, 2, 3].map(tier => footprintOf('casino', 0, tier))).toEqual([{ width: 2, depth: 2 }, { width: 3, depth: 2 }, { width: 4, depth: 2 }]);
+  it('grows wider with each Tier (2x2, 3x2, 6x2), anchored on its tile', () => {
+    expect([1, 2, 3].map(tier => footprintOf('casino', 0, tier))).toEqual([{ width: 2, depth: 2 }, { width: 3, depth: 2 }, { width: 6, depth: 2 }]);
   });
 
   it('draws three times a theater at Tier 1 and 50% more per Tier', () => {
