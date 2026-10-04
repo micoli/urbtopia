@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BUILDING_SPECS, CROPS, CROP_IDS, FIELD_COST, GOODS, HOME_TIERS, MATERIALS, STORAGE_TIERS, citizensOf, maxTierOf, placementCost, producibleItems, upgradeCostOf, type BuildingType, type GoodId } from '../index';
+import { BUILDING_SPECS, CROPS, CROP_IDS, FIELD_COST, GOODS, HOME_TIERS, MATERIALS, PACK_FORMATS, STORAGE_TIERS, citizensOf, maxTierOf, placementCost, producibleItems, upgradeCostOf, type BuildingType, type GoodId } from '../index';
 
 const MINUTE = 60_000;
 
@@ -86,6 +86,16 @@ describe('Farming balance', () => {
   });
 
   it('keeps packed Goods unlocked with their species', () => {
-    for (const crop of CROP_IDS) expect(GOODS[`${crop}Crate`].unlockCitizens).toBe(CROPS[crop].unlockCitizens);
+    for (const crop of CROP_IDS) {
+      for (const { suffix } of PACK_FORMATS) expect(GOODS[`${crop}${suffix}`].unlockCitizens).toBe(CROPS[crop].unlockCitizens);
+    }
+  });
+
+  it('pays bigger packs at least as much per Crop Material', () => {
+    const perMaterial = (good: GoodId, size: number) => GOODS[good].value / size;
+    for (const crop of CROP_IDS) {
+      expect(perMaterial(`${crop}Box`, 5)).toBeGreaterThanOrEqual(perMaterial(`${crop}Crate`, 2));
+      expect(perMaterial(`${crop}Pallet`, 10)).toBeGreaterThanOrEqual(perMaterial(`${crop}Box`, 5));
+    }
   });
 });

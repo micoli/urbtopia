@@ -1,5 +1,6 @@
 import { GOODS, marketQuote, type GoodId } from '../../core';
 import { t } from '../../i18n/t';
+import { itemName } from '../../i18n/itemName';
 import { gameStore } from '../../store/gameStore';
 import { useGame, useUi } from '../common/hooks';
 
@@ -27,7 +28,7 @@ export function MarketContent() {
             <li key={good} className="market-row">
               <div>
                 <strong>
-                  {t(`item.${good}`)} × {amount}
+                  {itemName(good)} × {amount}
                 </strong>
                 <div className="market-price">
                   {t('market.price')}: {one}

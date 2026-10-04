@@ -1,5 +1,6 @@
 import { nextUnlock, totalCitizens } from '../../core';
 import { t } from '../../i18n/t';
+import { itemName } from '../../i18n/itemName';
 import { useGame } from '../common/hooks';
 
 export function NextUnlock() {
@@ -9,7 +10,7 @@ export function NextUnlock() {
 
   return (
     <div className="next-unlock">
-      {totalCitizens(state)}/{next.citizens} {t('stat.citizens')}: {next.items.map((item) => t(`item.${item}`)).join(', ')}
+      {totalCitizens(state)}/{next.citizens} {t('stat.citizens')}: {next.items.map((item) => itemName(item)).join(', ')}
     </div>
   );
 }

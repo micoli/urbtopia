@@ -5,7 +5,10 @@ export type BaseMaterialId = 'wood' | 'stone' | 'clay' | 'metal' | 'silicon' | '
 export type MaterialId = BaseMaterialId | CropId;
 export type BaseGoodId = 'planks' | 'bricks' | 'tiles' | 'tools' | 'glass' | 'circuits' | 'steel' | 'cement' | 'jewelry' | 'crystal';
 export type CropCrateId = `${CropId}Crate`;
-export type GoodId = BaseGoodId | CropCrateId;
+export type CropBoxId = `${CropId}Box`;
+export type CropPalletId = `${CropId}Pallet`;
+export type CropPackId = CropCrateId | CropBoxId | CropPalletId;
+export type GoodId = BaseGoodId | CropPackId;
 export type ItemId = MaterialId | GoodId;
 
 const MINUTE_MS = 60_000;
@@ -50,9 +53,26 @@ const BASE_GOODS: Record<BaseGoodId, GoodSpec> = {
   crystal: { recipe: { sand: 1, gold: 1 }, durationMs: 28 * MINUTE_MS, value: 850, unlockCitizens: 1000, minTier: 5 },
 };
 
+export const PACK_FORMATS = [
+  { suffix: 'Crate', size: 2, valueBonus: 1 },
+  { suffix: 'Box', size: 5, valueBonus: 1.1 },
+  { suffix: 'Pallet', size: 10, valueBonus: 1.25 },
+] as const;
+
 const CROP_GOODS = Object.fromEntries(
-  CROP_IDS.map((id): [CropCrateId, GoodSpec] => [`${id}Crate`, { recipe: { [id]: 2 }, durationMs: CROPS[id].packingMs, value: CROPS[id].packedValue, unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 }]),
-) as Record<CropCrateId, GoodSpec>;
+  CROP_IDS.flatMap((id) =>
+    PACK_FORMATS.map(({ suffix, size, valueBonus }): [CropPackId, GoodSpec] => [
+      `${id}${suffix}`,
+      {
+        recipe: { [id]: size },
+        durationMs: (CROPS[id].packingMs * size) / 2,
+        value: Math.round((CROPS[id].packedValue * size * valueBonus) / 2),
+        unlockCitizens: CROPS[id].unlockCitizens,
+        minTier: 1,
+      },
+    ]),
+  ),
+) as Record<CropPackId, GoodSpec>;
 
 export const GOODS: Record<GoodId, GoodSpec> = { ...BASE_GOODS, ...CROP_GOODS };
 
@@ -83,7 +103,7 @@ export function recipeOf(item: ItemId): Partial<Record<MaterialId, number>> {
 const PRODUCIBLE_BY_BUILDING: Partial<Record<BuildingType, readonly ItemId[]>> = {
   workshop: Object.keys(BASE_MATERIALS) as BaseMaterialId[],
   factory: Object.keys(BASE_GOODS) as BaseGoodId[],
-  packhouse: Object.keys(CROP_GOODS) as CropCrateId[],
+  packhouse: Object.keys(CROP_GOODS) as CropPackId[],
 };
 
 export function producibleItems(type: BuildingType): readonly ItemId[] {

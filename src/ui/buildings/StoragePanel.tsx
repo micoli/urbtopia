@@ -1,5 +1,6 @@
 import { storageCapacity, storageUsed, type Building, type GoodId, type MaterialId } from '../../core';
 import { t } from '../../i18n/t';
+import { itemName } from '../../i18n/itemName';
 import { useGame } from '../common/hooks';
 import { UpgradeSection } from './UpgradeSection';
 
@@ -35,7 +36,7 @@ export function StoragePanel({ building }: StoragePanelProps) {
       <ul>
         {goods.map(([item, amount]) => (
           <li key={item}>
-            {t(`item.${item as GoodId}`)} × {amount}
+            {itemName(item as GoodId)} × {amount}
           </li>
         ))}
       </ul>

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { cityBenefits, greenProfileOf, climateStats, ECOLOGY_UNLOCKS, ECOLOGY, energyStats, HOME_TIERS, homePower, productionFactors, productionTierOf, isItemUnlocked, minTierOf, durationOf, producibleItems, totalCitizens, transportStats, utilityCapacity, utilityDemand, type BuildingType } from '../../core';
 import { t } from '../../i18n/t';
+import { itemName } from '../../i18n/itemName';
 import { gameStore } from '../../store/gameStore';
 import { useGame, useUi } from '../common/hooks';
 import { TransitPanel } from '../transit/TransitPanel';
@@ -71,7 +72,7 @@ export function MaximalStats() {
             const nominal = buildings.reduce((n, b) => n + rate(b), 0);
             const active = buildings.filter(b => b.queue.find(q => !q.done)?.item === item).reduce((n, b) => n + rate(b), 0);
             if (!nominal) return null;
-            return <tr key={item}><td>{t(`item.${item}`)}</td><td>{nominal.toFixed(1)}</td><td>{(active * ((state.adaptationUntil ?? 0) > state.lastSeen ? 1 : energy.economicRatio)).toFixed(1)}</td></tr>;
+            return <tr key={item}><td>{itemName(item)}</td><td>{nominal.toFixed(1)}</td><td>{(active * ((state.adaptationUntil ?? 0) > state.lastSeen ? 1 : energy.economicRatio)).toFixed(1)}</td></tr>;
           }))}</tbody></table>
         <p>{t('eco.slots')}: {state.buildings.reduce((n, b) => n + b.queue.length, 0)} / {state.buildings.reduce((n, b) => n + b.slotCount, 0)}</p>
       </section>

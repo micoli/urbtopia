@@ -1,5 +1,6 @@
 import { GOODS, SHOP, type Building, type GoodId } from '../../core';
 import { t } from '../../i18n/t';
+import { itemName } from '../../i18n/itemName';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 
@@ -22,7 +23,7 @@ export function ShopPanel({ building }: ShopPanelProps) {
             {stack.good ? (
               <>
                 <span>
-                  {t(`item.${stack.good}`)} × {stack.stock}
+                  {itemName(stack.good)} × {stack.stock}
                 </span>
                 <span>
                     <strong>{t('shop.earned')}</strong>: {stack.earned}
@@ -39,7 +40,7 @@ export function ShopPanel({ building }: ShopPanelProps) {
         <div className="slot-actions">
           {stockable.map((good) => (
             <button key={good} type="button" onClick={() => send({ type: 'StockShop', buildingId: building.id, good })}>
-              + {SHOP.stackSize} {t(`item.${good}`)}
+              + {SHOP.stackSize} {itemName(good)}
             </button>
           ))}
         </div>

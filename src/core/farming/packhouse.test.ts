@@ -41,20 +41,30 @@ describe('Packhouse building', () => {
 });
 
 describe('Packed Goods', () => {
-  it('has one packed Good per species with a 2 Crop Material recipe', () => {
+  it('has a crate, a box and a pallet per species packing 2, 5 and 10 Crop Materials', () => {
     for (const id of CROP_IDS) {
       expect(GOODS[`${id}Crate`]).toEqual({ recipe: { [id]: 2 }, durationMs: CROPS[id].packingMs, value: CROPS[id].packedValue, unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 });
+      expect(GOODS[`${id}Box`]).toEqual({ recipe: { [id]: 5 }, durationMs: CROPS[id].packingMs * 2.5, value: Math.round(CROPS[id].packedValue * 2.5 * 1.1), unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 });
+      expect(GOODS[`${id}Pallet`]).toEqual({ recipe: { [id]: 10 }, durationMs: CROPS[id].packingMs * 5, value: Math.round(CROPS[id].packedValue * 5 * 1.25), unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 });
     }
+    expect(GOODS.wheatBox).toMatchObject({ durationMs: 2.5 * MINUTE, value: 55 });
+    expect(GOODS.wheatPallet).toMatchObject({ durationMs: 5 * MINUTE, value: 125 });
     expect(GOODS.wheatCrate).toMatchObject({ durationMs: MINUTE, value: 20 });
     expect(GOODS.palmtreeCrate).toMatchObject({ durationMs: 6 * MINUTE, value: 215 });
   });
 
   it('is produced by the Packhouse only', () => {
-    expect(producibleItems('packhouse')).toEqual(CROP_IDS.map(id => `${id}Crate`));
-    expect(producibleItems('factory').every(item => !String(item).endsWith('Crate'))).toBe(true);
+    expect(producibleItems('packhouse')).toEqual(CROP_IDS.flatMap(id => [`${id}Crate`, `${id}Box`, `${id}Pallet`]));
+    expect(producibleItems('factory').every(item => !/(Crate|Box|Pallet)$/.test(String(item)))).toBe(true);
     expect(producibleItems('factory')).toContain('planks');
     expect(failureKey(packed, { type: 'QueueProduction', buildingId: 2, item: 'wheatCrate' })).toBe('error.cannotProduce');
     expect(failureKey(packed, { type: 'QueueProduction', buildingId: packhouse.id, item: 'planks' })).toBe('error.cannotProduce');
+  });
+
+  it('packs 10 Crop Material into 1 pallet, taking the Materials at once', () => {
+    const stocked = { ...packed, storage: { materials: { wheat: 12 }, goods: {} } };
+    const queued = succeed(stocked, { type: 'QueueProduction', buildingId: packhouse.id, item: 'wheatPallet' });
+    expect(queued.storage.materials).toEqual({ wheat: 2 });
   });
 
   it('packs 2 Crop Material into 1 crate, taking the Materials at once', () => {

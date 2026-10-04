@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { maxTierOf, missingServices, serviceCoverage, upgradeCostOf, type Building, type GoodId } from '../../core';
 import { t } from '../../i18n/t';
+import { itemName } from '../../i18n/itemName';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 import { serviceName } from './serviceNames';
@@ -22,14 +23,14 @@ export function UpgradeSection({ building }: UpgradeSectionProps) {
     ...(urbs < cost.urbs ? [<UrbsAmount key="urbs" value={cost.urbs - urbs} />] : []),
     ...Object.entries(cost.goods).flatMap(([good, amount]) => {
       const lacking = amount - (goods[good as GoodId] ?? 0);
-      return lacking > 0 ? [<Fragment key={good}>{`${lacking} ${t(`item.${good as GoodId}`)}`}</Fragment>] : [];
+      return lacking > 0 ? [<Fragment key={good}>{`${lacking} ${itemName(good as GoodId)}`}</Fragment>] : [];
     }),
   ];
   return (
     <>
       <p>
         {t('home.upgrade')}: <UrbsAmount value={cost.urbs} />
-        {Object.entries(cost.goods).map(([good, amount]) => ` + ${amount} ${t(`item.${good as GoodId}`)}`)}
+        {Object.entries(cost.goods).map(([good, amount]) => ` + ${amount} ${itemName(good as GoodId)}`)}
       </p>
       {missing.length > 0 ? (
         <p className="stat-tight">

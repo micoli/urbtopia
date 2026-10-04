@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { SLOT_PRICES, isItemUnlocked, minTierOf, producibleItems, productionTierOf, recipeOf, unlockCitizensOf, type Building, type ItemId, type MaterialId } from '../../core';
 import { t } from '../../i18n/t';
+import { isPack, itemName } from '../../i18n/itemName';
 import { formatDuration } from '../common/formatDuration';
 import { useGame } from '../common/hooks';
 import { gameStore } from '../../store/gameStore';
@@ -13,7 +15,8 @@ interface ProductionPanelProps {
 export function ProductionPanel({ building }: ProductionPanelProps) {
   const state = useGame((store) => store.state);
   const now = state.lastSeen;
-  const items = producibleItems(building.type);
+  const items = [...producibleItems(building.type)].sort((a, b) => itemName(a).localeCompare(itemName(b)));
+  const [onlyCraftable, setOnlyCraftable] = useState(false);
   const hasFreeSlot = building.queue.length < building.slotCount;
   const hasReadyOutput = building.queue.some((entry) => entry.done);
   const send = gameStore.getState().send;
@@ -27,7 +30,11 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
     return conditions.join(' · ');
   }
 
+  const isAvailable = (item: ItemId) => isItemUnlocked(state, item) && building.tier >= minTierOf(item);
   const lacksMaterials = (item: ItemId) => building.type === 'packhouse' && Object.entries(recipeOf(item)).some(([material, amount]) => (state.storage.materials[material as MaterialId] ?? 0) < amount);
+
+  const canFilter = building.type === 'packhouse' && items.some((item) => isAvailable(item) && !lacksMaterials(item));
+  const filtering = canFilter && onlyCraftable;
 
   return (
     <section className="production">
@@ -45,23 +52,29 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
               : formatDuration(entry.startedAt + entry.duration - now);
           return (
             <li key={index} className={entry.done ? 'slot slot-ready' : 'slot'}>
-              <span>{t(`item.${entry.item}`)}</span>
+              <span>{itemName(entry.item)}</span>
               <span>{status}</span>
             </li>
           );
         })}
       </ol>
+      {hasFreeSlot && canFilter ? (
+        <label className="prefs-toggle">
+          <input type="checkbox" checked={onlyCraftable} onChange={(event) => setOnlyCraftable(event.target.checked)} />
+          {t('panel.onlyCraftable')}
+        </label>
+      ) : null}
       {hasFreeSlot ? (
         <div className="slot-actions">
-          {items.map((item) =>
-            isItemUnlocked(state, item) && building.tier >= minTierOf(item) ? (
+          {items.filter((item) => !filtering || !lacksMaterials(item)).map((item) =>
+            isAvailable(item) ? (
               <button key={item} type="button" disabled={lacksMaterials(item)} onClick={() => send({ type: 'QueueProduction', buildingId: building.id, item })}>
-                + {t(`item.${item}`)}
+                {itemName(item)}
                 {recipeLabel(item)}
               </button>
             ) : (
               <button key={item} type="button" disabled>
-                🔒 {t(`item.${item}`)} ({lockLabel(item)})
+                🔒 {itemName(item)} ({lockLabel(item)})
               </button>
             ),
           )}
@@ -83,6 +96,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
 }
 
 function recipeLabel(item: ItemId): string {
+  if (isPack(item)) return '';
   const parts = Object.entries(recipeOf(item)).map(([material, amount]) => `${amount} ${t(`item.${material as MaterialId}`)}`);
   return parts.length > 0 ? ` (${parts.join(', ')})` : '';
 }

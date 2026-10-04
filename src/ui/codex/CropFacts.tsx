@@ -1,5 +1,7 @@
-import { CROPS, GOODS, type CropId } from '../../core';
+import { Fragment } from 'react';
+import { CROPS, GOODS, PACK_FORMATS, type CropId } from '../../core';
 import { t } from '../../i18n/t';
+import { itemName } from '../../i18n/itemName';
 import { formatDuration } from '../common/formatDuration';
 import { UrbsAmount } from '../common/UrbsAmount';
 
@@ -9,7 +11,6 @@ interface CropFactsProps {
 
 export function CropFacts({ crop }: CropFactsProps) {
   const spec = CROPS[crop];
-  const packed = GOODS[`${crop}Crate`];
   return (
     <dl className="codex-facts">
       <dt>{t('codex.crop.growth')}</dt>
@@ -22,10 +23,17 @@ export function CropFacts({ crop }: CropFactsProps) {
       <dd>{Math.round(spec.seedShare * 100)}%</dd>
       <dt>{t('codex.crop.seedPrice')}</dt>
       <dd><UrbsAmount value={spec.seedPrice} /></dd>
-      <dt>{t('codex.crop.packing')}</dt>
-      <dd>2 × {t(`item.${crop}`)} → {t(`item.${crop}Crate`)} · {formatDuration(packed.durationMs)}</dd>
-      <dt>{t('codex.crop.packedValue')}</dt>
-      <dd><UrbsAmount value={packed.value} /></dd>
+      {PACK_FORMATS.map(({ suffix, size }) => {
+        const packed = GOODS[`${crop}${suffix}`];
+        return (
+          <Fragment key={suffix}>
+            <dt>{t('codex.crop.packing')}</dt>
+            <dd>{size} × {t(`item.${crop}`)} → {itemName(`${crop}${suffix}`)} · {formatDuration(packed.durationMs)}</dd>
+            <dt>{t('codex.crop.packedValue')}</dt>
+            <dd><UrbsAmount value={packed.value} /></dd>
+          </Fragment>
+        );
+      })}
     </dl>
   );
 }
