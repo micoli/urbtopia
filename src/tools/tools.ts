@@ -17,7 +17,9 @@ import {
   roadBuildCost,
   roadPath,
   roundaboutTiles,
+  type Building,
   type BuildingType,
+  casinoRadius,
   type Command,
   type Coord,
   type Direction,
@@ -113,12 +115,12 @@ function frontMarker(type: BuildingType, tile: Coord, rotation: Rotation, tier: 
 
 const SELECTION_MARGIN = 0.3;
 
-export function selectionGhost(state: GameState, buildingId: number | null): GhostSpec | null {
+export function selectionGhost(state: GameState, buildingId: number | null, showReach = true): GhostSpec | null {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return null;
   const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
   const rect: GhostRect = { x: building.x - SELECTION_MARGIN, y: building.y - SELECTION_MARGIN, width: width + 2 * SELECTION_MARGIN, depth: depth + 2 * SELECTION_MARGIN, tone: 'target' };
-  const range = isFacilityType(building.type) ? rangeTiles(building.type, building, building.rotation) : [];
+  const range = showReach ? reachTilesOf(building) : [];
   return { tiles: [], rects: [rect], valid: true, front: null, ...(range.length ? { range } : {}) };
 }
 
@@ -175,13 +177,18 @@ function addCoveragePreview(result: Evaluation, state: GameState, type: Facility
     return { x: home.x, y: home.y, width, depth, tone: 'hint' as const };
   });
   if (radius === null) return;
-  result.ghost.range = rangeTiles(type, tile, rotation);
+  result.ghost.range = rangeTiles(type, radius, tile, rotation);
 }
 
-function rangeTiles(type: FacilityType, tile: Coord, rotation: Rotation): Coord[] {
-  const radius = FACILITIES[type].radius;
+function reachTilesOf(building: Building): Coord[] {
+  if (building.type === 'casino') return rangeTiles(building.type, casinoRadius(building.tier), building, building.rotation, building.tier);
+  if (!isFacilityType(building.type)) return [];
+  return rangeTiles(building.type, FACILITIES[building.type].radius, building, building.rotation);
+}
+
+function rangeTiles(type: BuildingType, radius: number | null, tile: Coord, rotation: Rotation, tier = 1): Coord[] {
   if (radius === null) return [];
-  const { width, depth } = footprintOf(type, rotation);
+  const { width, depth } = footprintOf(type, rotation, tier);
   const center = { x: tile.x + width / 2, y: tile.y + depth / 2 };
   const reach = Math.ceil(radius);
   const range: Coord[] = [];

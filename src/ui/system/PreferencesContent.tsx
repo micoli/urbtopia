@@ -10,7 +10,8 @@ export function PreferencesContent() {
   const layout = useStore(prefsStore, (store) => store.layout);
   const traffic = useStore(prefsStore, (store) => store.traffic);
   const confirmSale = useStore(prefsStore, (store) => store.confirmSale);
-  const { setLanguage, setLayout, setTraffic, setConfirmSale } = prefsStore.getState();
+  const showReach = useStore(prefsStore, (store) => store.showReach);
+  const { setLanguage, setLayout, setTraffic, setConfirmSale, setShowReach } = prefsStore.getState();
 
   return (
     <section className="prefs">
@@ -36,6 +37,10 @@ export function PreferencesContent() {
       <label className="prefs-toggle">
         <input type="checkbox" checked={confirmSale} onChange={(event) => setConfirmSale(event.target.checked)} />
         {t('prefs.confirmSale')}
+      </label>
+      <label className="prefs-toggle">
+        <input type="checkbox" checked={showReach} onChange={(event) => setShowReach(event.target.checked)} />
+        {t('prefs.showReach')}
       </label>
     </section>
   );

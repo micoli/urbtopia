@@ -436,6 +436,8 @@ export const FR: Record<MessageKey, string> = {
   'prefs.layout.B': 'Minimale',
   'prefs.confirmSale': 'Confirmer avant de vendre un bâtiment',
   'prefs.traffic': 'Trafic',
+  'facility.showReach': "Afficher l'emprise",
+  'prefs.showReach': "Afficher l'emprise des bâtiments publics",
   'lang.en': 'English',
   'lang.fr': 'Français',
   'radial.open': 'Ouvrir le menu',

@@ -1,3 +1,4 @@
+import { ReachToggle } from '../buildings/ReachToggle';
 import { CASINO_GAMES, CASINO, MAX_CASINO_TIER, casinoRadius, gamesOfTier, isCasinoPowered, maxStake, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { useGame, useUi } from '../common/hooks';
@@ -23,6 +24,7 @@ export function CasinoPanel({ building }: CasinoPanelProps) {
       <h3><strong>{t('home.tier')}</strong> {building.tier}</h3>
       <p className="stat-tight" data-state={powered ? 'on' : 'off'}>{powered ? t('casino.powered') : t('casino.shut')}</p>
       <p><strong>{t('facility.reach')}</strong>: {2 * casinoRadius(building.tier)} × {2 * casinoRadius(building.tier)}</p>
+      <ReachToggle />
       <p><strong>{t('casino.maxStake')}</strong>: <UrbsAmount value={maxStake(building.tier)} /></p>
       <div className="casino-games">
         {CASINO_GAMES.map(game => {

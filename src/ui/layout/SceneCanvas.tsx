@@ -41,7 +41,7 @@ export function SceneCanvas() {
     scene.setTrafficEnabled(prefsStore.getState().traffic);
     scene.setBrushMode(uiStore.getState().tool?.kind === 'brush');
     const showSelection = () => {
-      scene.setSelection(selectionGhost(gameStore.getState().state, uiStore.getState().selectedBuildingId));
+      scene.setSelection(selectionGhost(gameStore.getState().state, uiStore.getState().selectedBuildingId, prefsStore.getState().showReach));
       scene.setEcologicalSelection(uiStore.getState().selectedBuildingId);
     };
     showSelection();
@@ -55,7 +55,10 @@ export function SceneCanvas() {
       if (store.selectedBuildingId !== previous.selectedBuildingId) showSelection();
     });
     const unsubscribeHarvest = harvestEffects.subscribe((effects) => scene.setAfterHarvest(effects.tiles));
-    const unsubscribePrefs = prefsStore.subscribe((prefs) => scene.setTrafficEnabled(prefs.traffic));
+    const unsubscribePrefs = prefsStore.subscribe((prefs, previous) => {
+      scene.setTrafficEnabled(prefs.traffic);
+      if (prefs.showReach !== previous.showReach) showSelection();
+    });
     return () => {
       unsubscribeGame();
       unsubscribePrefs();

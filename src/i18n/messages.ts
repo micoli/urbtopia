@@ -434,6 +434,8 @@ export const MESSAGES = {
   'prefs.layout.B': 'Minimal',
   'prefs.confirmSale': 'Confirm before selling a building',
   'prefs.traffic': 'Traffic',
+  'facility.showReach': "Show reach",
+  'prefs.showReach': "Show the reach of public buildings",
   'lang.en': 'English',
   'lang.fr': 'Français',
   'radial.open': 'Open the menu',
