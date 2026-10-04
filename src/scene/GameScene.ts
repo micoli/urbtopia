@@ -25,6 +25,8 @@ export interface SceneHandlers {
   onMouseMove: (tile: Coord) => void;
   onPointerKind: (pointerType: string) => void;
   onSecondaryClick: () => void;
+  onGrabStart: (tile: Coord) => boolean;
+  onGrabMove: (tile: Coord) => void;
   onBrushStart: (tile: Coord) => void;
   onBrushMove: (tile: Coord) => void;
   onBrushEnd: () => void;
@@ -55,6 +57,8 @@ export class GameScene {
     onMouseMove: () => {},
     onPointerKind: () => {},
     onSecondaryClick: () => {},
+    onGrabStart: () => false,
+    onGrabMove: () => {},
     onBrushStart: () => {},
     onBrushMove: () => {},
     onBrushEnd: () => {},
@@ -86,6 +90,12 @@ export class GameScene {
     this.controller.onMouseMove = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onMouseMove(tile));
     this.controller.onPointerKind = (pointerType) => this.handlers.onPointerKind(pointerType);
     this.controller.onSecondaryClick = () => this.handlers.onSecondaryClick();
+    this.controller.onGrabStart = (clientX, clientY) => {
+      let grabbed = false;
+      this.withTileAt(clientX, clientY, (tile) => (grabbed = this.handlers.onGrabStart(tile)));
+      return grabbed;
+    };
+    this.controller.onGrabMove = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onGrabMove(tile));
     this.controller.onBrushStart = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onBrushStart(tile));
     this.controller.onBrushMove = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onBrushMove(tile));
     this.controller.onBrushEnd = () => this.handlers.onBrushEnd();

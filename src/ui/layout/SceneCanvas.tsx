@@ -21,13 +21,15 @@ export function SceneCanvas() {
       onTap: (tile, shiftKey, buildingId) => {
         const ui = uiStore.getState();
         if (ui.tool && ui.pointerKind === 'mouse') return ui.clickTile(tile, shiftKey);
-        if (ui.tool) return scene.focusOnTile(tile);
+        if (ui.tool) return ui.pinTile(tile);
         ui.tapTile(tile, buildingId);
       },
       onCenterTileChange: (tile) => uiStore.getState().setCenterTile(tile),
       onMouseMove: (tile) => uiStore.getState().hoverTile(tile),
       onPointerKind: (pointerType) => uiStore.getState().setPointerKind(pointerKindOf(pointerType)),
       onSecondaryClick: () => uiStore.getState().cancelTool(),
+      onGrabStart: (tile) => uiStore.getState().grabGhost(tile),
+      onGrabMove: (tile) => uiStore.getState().dragGhost(tile),
       onBrushStart: (tile) => uiStore.getState().brushStart(tile),
       onBrushMove: (tile) => uiStore.getState().brushMove(tile),
       onBrushEnd: () => uiStore.getState().brushEnd(),

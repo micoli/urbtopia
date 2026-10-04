@@ -18,6 +18,18 @@ describe('aimTile', () => {
   });
 });
 
+describe('aimTile with a pinned tile', () => {
+  const pinned = { x: 70, y: 60 };
+
+  it('keeps a touch aim on the pinned tile instead of the screen centre', () => {
+    expect(aimTile('touch', null, center, pinned)).toBe(pinned);
+  });
+
+  it('still lets the mouse hover win over the pinned tile', () => {
+    expect(aimTile('mouse', hover, center, pinned)).toBe(hover);
+  });
+});
+
 describe('pointerKindOf', () => {
   it('treats only a mouse as a mouse', () => {
     expect(pointerKindOf('mouse')).toBe('mouse');
