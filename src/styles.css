@@ -1746,3 +1746,10 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   background: rgba(255, 255, 255, 0.14);
   color: inherit;
 }
+
+.blockmatch-stage {
+  --stage-cell: min(52px, calc((100dvh - 330px) / 9));
+  display: grid;
+  align-content: center;
+  min-height: calc(var(--stage-cell) * 9 + 84px);
+}

@@ -47,17 +47,13 @@ export function BlackjackGame({ casino }: BlackjackGameProps) {
           <button type="button" className="collect-button" disabled={!canDouble(hand) || urbs < open.stake} onClick={() => act('double')}>{t('casino.double')}</button>
         </div>
       ) : (
-        <>
-          <button type="button" className="collect-button" disabled={urbs < stake} onClick={deal}>
-            {result ? t('casino.newRound') : t('casino.deal')}
-          </button>
-          {result ? (
-            <p className="casino-result" data-win={net > 0} aria-live="polite">
-              {t(blackjackResultKey(result.outcome))}{net === 0 ? null : <> · {net > 0 ? t('casino.won') : t('casino.lost')} <UrbsAmount value={Math.abs(net)} /></>}
-            </p>
-          ) : null}
-        </>
+        <button type="button" className="collect-button" disabled={urbs < stake} onClick={deal}>
+          {result ? t('casino.newRound') : t('casino.deal')}
+        </button>
       )}
+      <p className="casino-result" data-win={net > 0} aria-live="polite">
+        {result && !open ? <>{t(blackjackResultKey(result.outcome))}{net === 0 ? null : <> · {net > 0 ? t('casino.won') : t('casino.lost')} <UrbsAmount value={Math.abs(net)} /></>}</> : ' '}
+      </p>
     </div>
   );
 }

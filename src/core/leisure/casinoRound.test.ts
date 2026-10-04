@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, dispatch, newGame, type Building, type GameEvent, type GameState } from '../index';
+import { CASINO, createBuilding, dispatch, newGame, type Building, type GameEvent, type GameState } from '../index';
 import { serializeEnvelope } from '../../persistence/envelope';
 import { blackjackOutcome, blackjackPayout, dealBlackjack, replayBlackjack } from './blackjack';
 import { casinoRngState } from './casinoRound';
@@ -91,6 +91,11 @@ describe('casino rounds (blackJack)', () => {
   it('needs the Tier of the Minigame', () => {
     expect(start(city())).toMatchObject({ ok: false, error: { key: 'error.tierTooLow' } });
     expect(start(tier2())).toMatchObject({ ok: true });
+  });
+
+  it('opens the Minigame at its Tier', () => {
+    const tier = CASINO.gameMinTier.blackjack;
+    expect(start(city({}, [building(1, 'casino', 55, 50, { tier }), building(2, 'coalPlant', 90, 40, { tier: 4 })]))).toMatchObject({ ok: true });
   });
 
   it('debits the Stake at the start and draws the round seed from the casino stream', () => {

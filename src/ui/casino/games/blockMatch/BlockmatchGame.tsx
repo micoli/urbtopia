@@ -27,19 +27,14 @@ export function BlockmatchGame({ casino }: BlockmatchGameProps) {
 
   const playing = round?.game === 'blockmatch' && !result;
   const header = <CasinoHeader spent={spent} won={won} steps={steps} urbs={urbs} stake={playing ? round.stake : stake} locked={playing} onStake={setStake} />;
-  if (playing) {
-    return (
-      <div className="casino-game">
-        {header}
-        <BlockmatchPlay buildingId={casino.id} tier={casino.tier} roundSeed={round.roundSeed} />
-      </div>
-    );
-  }
   return (
     <div className="casino-game">
       {header}
-      {result ? <BlockmatchResult stars={result.stars} net={net} /> : null}
-      <button type="button" className="collect-button" disabled={urbs < stake} onClick={start}>
+      <div className="blockmatch-stage">
+        {playing ? <BlockmatchPlay buildingId={casino.id} tier={casino.tier} roundSeed={round.roundSeed} /> : null}
+        {!playing && result ? <BlockmatchResult stars={result.stars} net={net} /> : null}
+      </div>
+      <button type="button" className="collect-button" style={playing ? { visibility: 'hidden' } : undefined} aria-hidden={playing} tabIndex={playing ? -1 : 0} disabled={playing || urbs < stake} onClick={start}>
         {result ? t('casino.newRound') : t('casino.deal')}
       </button>
     </div>
