@@ -6,6 +6,7 @@ import { clampToViewport } from '../layout/clampToViewport';
 import { useGame, useUi } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
+import { InlineConfirm } from '../common/InlineConfirm';
 
 interface Position {
   x: number;
@@ -63,20 +64,14 @@ export function TutorialBanner() {
             {t('tutorial.timeSkip')}
           </ActionButton>
         ) : null}
-        {confirming ? (
-          <>
-            <ActionButton onClick={() => setConfirming(false)}>
-              {t('sale.no')}
-            </ActionButton>
-            <ActionButton variant="danger" onClick={skipTutorial}>
-              {t('tutorial.skipConfirm')}
-            </ActionButton>
-          </>
-        ) : (
-          <ActionButton onClick={() => setConfirming(true)}>
-            {t('tutorial.skip')}
-          </ActionButton>
-        )}
+        <InlineConfirm
+          confirming={confirming}
+          triggerLabel={t('tutorial.skip')}
+          confirmLabel={t('tutorial.skipConfirm')}
+          onRequest={() => setConfirming(true)}
+          onCancel={() => setConfirming(false)}
+          onConfirm={skipTutorial}
+        />
       </ButtonRow>
     </aside>
   );

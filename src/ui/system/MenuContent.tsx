@@ -4,6 +4,7 @@ import { saveSession } from '../../persistence/instance';
 import { importCity } from '../../persistence/transfer';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
+import { InlineConfirm } from '../common/InlineConfirm';
 import { t } from '../../i18n/t';
 import { dialogStore } from '../../store/dialogStore';
 import { gameStore } from '../../store/gameStore';
@@ -65,21 +66,15 @@ export function MenuContent() {
           {t('menu.reload')}
         </ActionButton>
         <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={onFileChosen} />
-        {confirming ? (
-          <>
-            <p>{t('menu.newGameConfirm')}</p>
-            <ActionButton onClick={() => setConfirming(false)}>
-              {t('sale.no')}
-            </ActionButton>
-            <ActionButton variant="danger" onClick={startNewGame}>
-              {t('menu.newGame')}
-            </ActionButton>
-          </>
-        ) : (
-          <ActionButton onClick={() => setConfirming(true)}>
-            {t('menu.newGame')}
-          </ActionButton>
-        )}
+        <InlineConfirm
+          confirming={confirming}
+          triggerLabel={t('menu.newGame')}
+          confirmLabel={t('menu.newGame')}
+          message={t('menu.newGameConfirm')}
+          onRequest={() => setConfirming(true)}
+          onCancel={() => setConfirming(false)}
+          onConfirm={startNewGame}
+        />
       </ButtonRow>
       <PreferencesContent />
       <small className="build-id">

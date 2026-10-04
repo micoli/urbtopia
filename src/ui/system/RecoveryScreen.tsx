@@ -8,7 +8,8 @@ import { dialogStore } from '../../store/dialogStore';
 import { gameStore } from '../../store/gameStore';
 import { useDialogs } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
-import { ButtonRow } from '../common/ButtonRow';
+import { Dialog } from '../common/Dialog';
+import { InlineConfirm } from '../common/InlineConfirm';
 
 export function RecoveryScreen() {
   const recovery = useDialogs((store) => store.recovery);
@@ -33,35 +34,25 @@ export function RecoveryScreen() {
   };
 
   return (
-    <div className="dialog-backdrop recovery" role="alertdialog" aria-modal="true">
-      <div className="dialog">
-        <h2>{t('recovery.title')}</h2>
+    <Dialog role="alertdialog" className="recovery">
+      <Dialog.Title>{t('recovery.title')}</Dialog.Title>
+      <Dialog.Body>
         <p>{t(`recovery.reason.${recovery.reason}`)}</p>
         {noBackup || !hasBackup ? <p className="stat-tight">{t('recovery.noBackup')}</p> : null}
-        <ButtonRow align="start" column>
-          <ActionButton disabled={!hasBackup} onClick={restore}>
-            {t('recovery.restore')}
-          </ActionButton>
-          <ActionButton onClick={() => downloadText('urbtopia-raw-save.json', recovery.raw)}>
-            {t('recovery.exportRaw')}
-          </ActionButton>
-          {confirmingNewGame ? (
-            <>
-              <p>{t('menu.newGameConfirm')}</p>
-              <ActionButton onClick={() => setConfirmingNewGame(false)}>
-                {t('sale.no')}
-              </ActionButton>
-              <ActionButton variant="danger" onClick={startNewGame}>
-                {t('recovery.newGame')}
-              </ActionButton>
-            </>
-          ) : (
-            <ActionButton onClick={() => setConfirmingNewGame(true)}>
-              {t('recovery.newGame')}
-            </ActionButton>
-          )}
-        </ButtonRow>
-      </div>
-    </div>
+      </Dialog.Body>
+      <Dialog.Actions align="start" column>
+        <ActionButton disabled={!hasBackup} onClick={restore}>{t('recovery.restore')}</ActionButton>
+        <ActionButton onClick={() => downloadText('urbtopia-raw-save.json', recovery.raw)}>{t('recovery.exportRaw')}</ActionButton>
+        <InlineConfirm
+          confirming={confirmingNewGame}
+          triggerLabel={t('recovery.newGame')}
+          confirmLabel={t('recovery.newGame')}
+          message={t('menu.newGameConfirm')}
+          onRequest={() => setConfirmingNewGame(true)}
+          onCancel={() => setConfirmingNewGame(false)}
+          onConfirm={startNewGame}
+        />
+      </Dialog.Actions>
+    </Dialog>
   );
 }
