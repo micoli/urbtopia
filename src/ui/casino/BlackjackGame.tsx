@@ -7,6 +7,7 @@ import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { BlackjackFelt } from './BlackjackFelt';
+import { CasinoLedger } from './CasinoLedger';
 import { StakePicker } from './StakePicker';
 import { blackjackResultKey } from './blackjackResult';
 import { useBlackjackRound } from './useBlackjackRound';
@@ -19,6 +20,8 @@ export function BlackjackGame({ casino }: BlackjackGameProps) {
   const urbs = useGame(store => store.state.urbs);
   const round = useStore(casinoStore, store => store.round);
   const settled = useStore(casinoStore, store => store.settled);
+  const spent = useStore(casinoStore, store => store.spent);
+  const won = useStore(casinoStore, store => store.won);
   const open = round?.game === 'blackjack' ? round : null;
   const { hand, act } = useBlackjackRound(casino.id, open?.roundSeed ?? null);
   const steps = stakeStepsOf(casino.tier);
@@ -30,6 +33,7 @@ export function BlackjackGame({ casino }: BlackjackGameProps) {
 
   return (
     <div className="casino-game">
+      <CasinoLedger spent={spent} won={won} balance={urbs} />
       <BlackjackFelt
         dealer={hand?.dealer ?? []}
         player={hand?.player ?? []}
@@ -49,7 +53,6 @@ export function BlackjackGame({ casino }: BlackjackGameProps) {
               {t(blackjackResultKey(result.outcome))}{net === 0 ? null : <> · {net > 0 ? t('casino.won') : t('casino.lost')} <UrbsAmount value={Math.abs(net)} /></>}
             </p>
           ) : null}
-          <p>{t('casino.balance')}: <UrbsAmount value={urbs} /></p>
           <StakePicker steps={steps} urbs={urbs} value={stake} onChange={setStake} />
           <button type="button" className="collect-button" disabled={urbs < stake} onClick={deal}>
             {result ? t('casino.newRound') : t('casino.deal')}

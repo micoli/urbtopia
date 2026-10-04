@@ -27,6 +27,8 @@ type CasinoMessageKey =
   | 'casino.feltRule'
   | 'casino.handWon'
   | 'casino.handLost'
+  | 'casino.spent'
+  | 'casino.earned'
   | 'casino.hit'
   | 'casino.stand'
   | 'casino.double'
@@ -77,6 +79,8 @@ const texts: Record<CasinoMessageKey, readonly [string, string]> = {
   'casino.feltRule': ['Blackjack pays 3 to 2 · Dealer stands on 17', 'Blackjack payé 3 pour 2 · Le croupier reste à 17'],
   'casino.handWon': ['Your hand wins', 'Votre main gagne'],
   'casino.handLost': ['Dealer wins', 'Le croupier gagne'],
+  'casino.spent': ['Spent', 'Dépensé'],
+  'casino.earned': ['Won', 'Gagné'],
   'casino.hit': ['Hit', 'Tirer'],
   'casino.stand': ['Stand', 'Rester'],
   'casino.double': ['Double', 'Doubler'],

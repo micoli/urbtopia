@@ -1590,3 +1590,29 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   --cell: min(52px, calc((min(100vw, 460px) - 56px) / var(--cols)), calc((100dvh - 330px) / var(--rows)));
   align-self: center;
 }
+
+.casino-ledger {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 0;
+}
+
+.casino-ledger div {
+  display: grid;
+  gap: 2px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.casino-ledger dt {
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.casino-ledger dd {
+  margin: 0;
+  font-weight: 700;
+}

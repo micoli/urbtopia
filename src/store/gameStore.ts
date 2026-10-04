@@ -53,9 +53,22 @@ export function createGameStore(initial: GameState) {
       if (toast) toastStore.getState().show(toast);
       for (const event of result.events) {
         if (event.type === 'CropsHarvested') harvestEffects.getState().show(event.tiles);
-        if (event.type === 'SlotSpun') casinoStore.getState().showSpin(event);
-        if (event.type === 'CasinoRoundStarted') casinoStore.getState().startRound(event);
-        if (event.type === 'BlackjackSettled' || event.type === 'BlockmatchSettled') casinoStore.getState().settleRound(event);
+        if (event.type === 'SlotSpun') {
+          casinoStore.getState().record(event.stake, event.payout);
+          casinoStore.getState().showSpin(event);
+        }
+        if (event.type === 'CasinoRoundStarted') {
+          casinoStore.getState().record(event.stake, 0);
+          casinoStore.getState().startRound(event);
+        }
+        if (event.type === 'BlackjackSettled') {
+          casinoStore.getState().record(event.doubled ? event.stake : 0, event.payout);
+          casinoStore.getState().settleRound(event);
+        }
+        if (event.type === 'BlockmatchSettled') {
+          casinoStore.getState().record(0, event.payout);
+          casinoStore.getState().settleRound(event);
+        }
       }
       announceTutorialEnd(get().state, result.state);
       set({ state: result.state, deletionUndo: result.undo, lastError: null, lastChange: 'command' });

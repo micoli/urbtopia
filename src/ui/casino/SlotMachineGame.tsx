@@ -6,9 +6,11 @@ import { casinoStore } from '../../store/casinoStore';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 import { UrbsAmount } from '../common/UrbsAmount';
+import { CasinoLedger } from './CasinoLedger';
 import { SlotReels } from './SlotReels';
 import { StakePicker } from './StakePicker';
 import { slotSpinDuration } from './slotSymbols';
+import { useFrozen } from './useFrozen';
 
 const SPIN_MS = slotSpinDuration(SLOT_REEL_COUNT);
 
@@ -22,10 +24,9 @@ export function SlotMachineGame({ casino }: SlotMachineGameProps) {
   const steps = stakeStepsOf(casino.tier);
   const [stake, setStake] = useState(steps[0]!);
   const [spinning, setSpinning] = useState(false);
-  const [urbs, setUrbs] = useState(balance);
-  useEffect(() => {
-    if (!spinning) setUrbs(balance);
-  }, [spinning, balance]);
+  const urbs = useFrozen(balance, spinning);
+  const spent = useFrozen(useStore(casinoStore, store => store.spent), spinning);
+  const won = useFrozen(useStore(casinoStore, store => store.won), spinning);
   useEffect(() => {
     if (!spinning) return;
     const timer = setTimeout(() => setSpinning(false), SPIN_MS);
@@ -43,7 +44,7 @@ export function SlotMachineGame({ casino }: SlotMachineGameProps) {
       <p className="casino-result" data-win={!spinning && net > 0} aria-live="polite">
         {spin === null || spinning ? ' ' : net > 0 ? <>{t('casino.won')} <UrbsAmount value={net} /></> : net === 0 ? t('casino.even') : <>{t('casino.lost')} <UrbsAmount value={-net} /></>}
       </p>
-      <p>{t('casino.balance')}: <UrbsAmount value={urbs} /></p>
+      <CasinoLedger spent={spent} won={won} balance={urbs} />
       <StakePicker steps={steps} urbs={urbs} value={stake} disabled={spinning} onChange={setStake} />
       <button type="button" className="collect-button" disabled={spinning || urbs < stake} onClick={play}>
         {t('casino.spin')}

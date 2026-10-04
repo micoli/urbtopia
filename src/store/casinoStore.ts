@@ -12,11 +12,14 @@ export interface CasinoStore {
   lastSpin: SlotSpunEvent | null;
   round: CasinoRoundStartedEvent | null;
   settled: BlackjackSettledEvent | BlockmatchSettledEvent | null;
+  spent: number;
+  won: number;
   play: (casinoId: number, game: CasinoGame) => void;
   close: () => void;
   showSpin: (spin: SlotSpunEvent) => void;
   startRound: (round: CasinoRoundStartedEvent) => void;
   settleRound: (settled: BlackjackSettledEvent | BlockmatchSettledEvent) => void;
+  record: (spent: number, won: number) => void;
 }
 
 export const casinoStore = createStore<CasinoStore>((set) => ({
@@ -25,9 +28,12 @@ export const casinoStore = createStore<CasinoStore>((set) => ({
   lastSpin: null,
   round: null,
   settled: null,
-  play: (casinoId, game) => set({ casinoId, game, lastSpin: null, round: null, settled: null }),
-  close: () => set({ casinoId: null, game: null, lastSpin: null, round: null, settled: null }),
+  spent: 0,
+  won: 0,
+  play: (casinoId, game) => set({ casinoId, game, lastSpin: null, round: null, settled: null, spent: 0, won: 0 }),
+  close: () => set({ casinoId: null, game: null, lastSpin: null, round: null, settled: null, spent: 0, won: 0 }),
   showSpin: (lastSpin) => set({ lastSpin }),
   startRound: (round) => set({ round, settled: null }),
   settleRound: (settled) => set({ settled, round: null }),
+  record: (spent, won) => set(store => ({ spent: store.spent + spent, won: store.won + won })),
 }));
