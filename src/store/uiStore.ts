@@ -81,6 +81,10 @@ export const uiStore = createStore<UiStore>((set, get) => {
     const merged = { ...get(), ...patch };
     set({ ...patch, evaluation: evaluate(merged.tool, aimTile(merged.pointerKind, merged.hovered, merged.centerTile, merged.pinnedTile), merged.rotation) });
   };
+  const clearIssue = () => {
+    const { evaluation } = get();
+    if (evaluation?.issue) set({ evaluation: { ...evaluation, issue: null } });
+  };
   let grabOffset: Coord = { x: 0, y: 0 };
 
   return {
@@ -135,6 +139,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       if (!outcome.command && !evaluation.valid && evaluation.issue) return toastStore.getState().show(evaluation.issue);
       if (outcome.command) gameStore.getState().send(outcome.command);
       reevaluate({ tool: outcome.nextTool, rotation: outcome.nextTool?.kind === 'building' ? get().rotation : null, ...(outcome.nextTool ? {} : { pinnedTile: null }) });
+      if (outcome.command && tool.kind === 'brush') clearIssue();
     },
     setCenterTile: (tile) => reevaluate({ centerTile: tile }),
     setPointerKind: (kind) => {
