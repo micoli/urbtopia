@@ -17,6 +17,7 @@ export interface AssetPack {
 export const ASSET_PACKS: AssetPack[] = [
   {
     name: 'roads',
+    colorVariants: true,
     url: 'https://kenney.nl/media/pages/assets/city-kit-roads/74288c9459-1787042796/kenney_city-kit-roads.zip',
     archive: 'kenney_city-kit-roads.zip',
     files: [
