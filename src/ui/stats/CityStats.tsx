@@ -2,12 +2,13 @@ import { energyStats, totalCitizens, utilityCapacity, utilityDemand } from '../.
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { GameClock } from './GameClock';
+import { StatChip } from '../common/StatChip';
 
-function utilityStatus(demand: number, capacity: number): string {
-  if (demand === 0) return 'utility-normal';
-  if (demand >= capacity) return 'utility-critical';
-  if (demand >= capacity * 0.8) return 'utility-warning';
-  return 'utility-normal';
+function utilityStatus(demand: number, capacity: number): 'normal' | 'warning' | 'critical' {
+  if (demand === 0) return 'normal';
+  if (demand >= capacity) return 'critical';
+  if (demand >= capacity * 0.8) return 'warning';
+  return 'normal';
 }
 
 export function CityStats() {
@@ -21,13 +22,9 @@ export function CityStats() {
   return (
     <div className="city-stats" aria-label={t('eco.title')}>
       <GameClock />
-      <div title={t('stat.citizens')}>👥 {totalCitizens(state)}</div>
-      <div title={powerLabel} aria-label={powerLabel} className={utilityStatus(powerDemand, capacity.power)}>
-        ⚡ {powerDemand}
-      </div>
-      <div title={waterLabel} aria-label={waterLabel} className={utilityStatus(demand.water, capacity.water)}>
-        💧 {demand.water}
-      </div>
+      <StatChip icon="👥" value={totalCitizens(state)} title={t('stat.citizens')} />
+      <StatChip icon="⚡" value={powerDemand} title={powerLabel} tone={utilityStatus(powerDemand, capacity.power)} labelled />
+      <StatChip icon="💧" value={demand.water} title={waterLabel} tone={utilityStatus(demand.water, capacity.water)} labelled />
     </div>
   );
 }
