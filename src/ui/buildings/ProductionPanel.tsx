@@ -12,6 +12,7 @@ import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { CheckboxField } from '../common/CheckboxField';
+import { SlotList } from '../common/SlotList';
 
 interface ProductionPanelProps {
   building: Building;
@@ -43,23 +44,23 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
 
   return <DrawerProductionPanel>
       <DrawerPanelTitle title={`${t('panel.queue')} · ${t('home.tier')}`} level={building.tier}/>
-      <ol className="slots">
+      <SlotList>
         {Array.from({ length: building.slotCount }, (_, index) => {
           const entry = building.queue[index];
-          if (!entry) return <li key={index} className="slot slot-free">{t('panel.freeSlot')}</li>;
+          if (!entry) return <SlotList.Slot key={index} status="free">{t('panel.freeSlot')}</SlotList.Slot>;
           const status = entry.done
             ? t('panel.ready')
             : entry.startedAt === null
               ? t('panel.waiting')
               : formatDuration(entry.startedAt + entry.duration - now);
           return (
-            <li key={index} className={entry.done ? 'slot slot-ready' : 'slot'}>
+            <SlotList.Slot key={index} status={entry.done ? 'ready' : undefined}>
               <span>{itemName(entry.item)}</span>
               <span>{status}</span>
-            </li>
+            </SlotList.Slot>
           );
         })}
-      </ol>
+      </SlotList>
       {hasFreeSlot && canFilter ? (
         <CheckboxField label={t('panel.onlyCraftable')} checked={onlyCraftable} onChange={setOnlyCraftable} />
       ) : null}

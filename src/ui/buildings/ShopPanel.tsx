@@ -8,6 +8,7 @@ import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { Note } from '../common/Note';
+import { SlotList } from '../common/SlotList';
 
 interface ShopPanelProps {
   building: Building;
@@ -21,24 +22,22 @@ export function ShopPanel({ building }: ShopPanelProps) {
 
   return <DrawerProductionPanel>
       <DrawerPanelTitle title={t('shop.stock')} level={building.tier}/>
-      <ol className="slots">
+      <SlotList>
         {building.stacks.map((stack, index) => (
-          <li key={index} className={stack.earned > 0 ? 'slot slot-ready' : 'slot'}>
-            {stack.good ? (
-              <>
-                <span>
-                  {itemName(stack.good)} × {stack.stock}
-                </span>
-                <span>
-                    <strong>{t('shop.earned')}</strong>: {stack.earned}
-                </span>
-              </>
-            ) : (
-              <span className="slot-free">{t('panel.freeSlot')}</span>
-            )}
-          </li>
+          stack.good ? (
+            <SlotList.Slot key={index} status={stack.earned > 0 ? 'ready' : undefined}>
+              <span>
+                {itemName(stack.good)} × {stack.stock}
+              </span>
+              <span>
+                <strong>{t('shop.earned')}</strong>: {stack.earned}
+              </span>
+            </SlotList.Slot>
+          ) : (
+            <SlotList.Slot key={index} status="free">{t('panel.freeSlot')}</SlotList.Slot>
+          )
         ))}
-      </ol>
+      </SlotList>
       {hasFreeSlot && stockable.length === 0 ? <Note tone="muted">{t('shop.needGoods')}</Note> : null}
       {hasFreeSlot ? (
         <ButtonRow align="stretch" spaced>
