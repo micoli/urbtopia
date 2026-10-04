@@ -171,7 +171,9 @@ button {
 }
 
 .flyout-cost {
+  display: block;
   font-size: 12px;
+  line-height: 16px;
   opacity: 0.75;
 }
 
@@ -191,7 +193,9 @@ button {
   cursor: pointer;
 }
 
-.flyout-info img { display: block; width: var(--tap); height: var(--tap); object-fit: contain; }
+.flyout-info { position: relative; }
+.flyout-info img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.flyout-info .flyout-cost { position: absolute; top: 2px; left: 0; right: 0; z-index: 1; opacity: 1; font-weight: 700; text-shadow: 0 0 3px #000, 0 0 3px #000; }
 
 .build-section {
   display: flex;
