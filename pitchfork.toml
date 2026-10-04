@@ -18,3 +18,10 @@ dir = "prototypes/asset-viewer"
 ready_http = "http://localhost:5181/"
 boot_start = false
 retry = false
+
+[daemons.casino-sim]
+run = "npm run casino:sim -- --port 5182 --strictPort"
+dir = "."
+ready_http = "http://localhost:5182/"
+boot_start = false
+retry = false
