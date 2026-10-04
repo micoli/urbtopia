@@ -29,8 +29,8 @@ export function BusLinesPanel() {
       <button type="button" key={stop.id} disabled={stops.includes(stop.id)} onClick={() => setStops(current => [...current, stop.id])}>
         {t('eco.stop')} #{stop.id} ({stop.x}, {stop.y})
       </button>)}</div>
-    <button type="button" onClick={() => setStops([])}>{t('eco.clearStops')}</button>
-    {editing !== undefined && <button type="button" onClick={reset}>{t('pad.cancel')}</button>}
+    {stops.length > 0 && <button type="button" onClick={() => setStops([])}>{t('eco.clearStops')}</button>}
+    {(stops.length > 0 || editing !== undefined) && <button type="button" onClick={reset}>{t('pad.cancel')}</button>}
     <button type="button" className="eco-primary" disabled={stops.length < 2} onClick={save}>{t('eco.saveLine')}</button>
   </section>;
 }

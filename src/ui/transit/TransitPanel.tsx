@@ -39,10 +39,11 @@ export function TransitPanel() {
       <button type="button" key={stop.id} disabled={stops.includes(stop.id)} onClick={() => setStops(current => [...current, stop.id])}>{t(`building.${stop.type}`)} #{stop.id} ({stop.x}, {stop.y})</button>)}</div>
     <NumberStepper label={t('transit.peak')} min={mode === 'brt' ? 5 : 1} max={mode === 'brt' ? 10 : 60} value={peak} onChange={setPeak} />
     <NumberStepper label={t('transit.offPeak')} min={mode === 'brt' ? 10 : 1} max={mode === 'brt' ? 15 : 60} value={offPeak} onChange={setOffPeak} />
-    <button type="button" onClick={() => setStops([])}>{t('eco.clearStops')}</button>
-    <button type="button" onClick={reset}>{t('pad.cancel')}</button>
-    <button type="button" onClick={() => gameStore.getState().send({ type: 'RepairTransitNetwork', mode })}>{t('transit.repair')}</button>
+    {stops.length > 0 && <button type="button" onClick={() => setStops([])}>{t('eco.clearStops')}</button>}
+    {(stops.length > 0 || editing !== undefined) && <button type="button" onClick={reset}>{t('pad.cancel')}</button>}
     <button type="button" className="eco-primary" disabled={stops.length < 2 || totalCitizens(state) < TRANSIT[mode].unlock} onClick={save}>{t('eco.saveLine')}</button>
+    &nbsp;
+    <button type="button" onClick={() => gameStore.getState().send({ type: 'RepairTransitNetwork', mode })}>{t('transit.repair')}</button>
     <TransitFleetPanel />
   </section>;
 }
