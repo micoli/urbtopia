@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { advance, newGame, type GameState } from '../core';
 import fixtureV1 from './fixtures/save-v1.json';
 import { FORMAT, parseEnvelope, serializeEnvelope } from './envelope';
-import { BACKUP_KEY, exportFileName, importCity, restoreBackup } from './transfer';
-import { MemorySaveStore, SAVE_KEY } from './saveStore';
+import { BACKUP_KEY, exportFileName, hasBackup, importCity, restoreBackup } from './transfer';
+import { MemorySaveStore, SAVE_KEY, SaveQuotaError, versionedBackupKey } from './saveStore';
 import { SaveSession } from './saveSession';
 import { META_KEY, readMeta, recordExport, shouldRemindExport } from './meta';
 import { TabOwnership } from './tabOwnership';
@@ -162,5 +162,49 @@ describe('TabOwnership', () => {
     first.resume();
     expect(first.isActive).toBe(true);
     expect(events).toEqual(['lost', 'regained']);
+  });
+});
+
+describe('versioned backups', () => {
+  it('keeps the pre-migration copy of each source version even after the rolling backup is replaced', () => {
+    const store = new MemorySaveStore();
+    store.put(SAVE_KEY, JSON.stringify(fixtureV1));
+    const session = new SaveSession(store);
+    session.load();
+    expect(store.get(versionedBackupKey(1))).toBe(JSON.stringify(fixtureV1));
+
+    session.save(newGame({ seed: 'later', now: T0 }), T0);
+    session.backupNow();
+    expect(store.get(BACKUP_KEY)).not.toBe(JSON.stringify(fixtureV1));
+    expect(store.get(versionedBackupKey(1))).toBe(JSON.stringify(fixtureV1));
+  });
+
+  it('never overwrites an existing versioned backup', () => {
+    const store = new MemorySaveStore();
+    store.put(versionedBackupKey(1), 'first');
+    store.put(SAVE_KEY, JSON.stringify(fixtureV1));
+    new SaveSession(store).load();
+    expect(store.get(versionedBackupKey(1))).toBe('first');
+  });
+
+  it('still loads when the versioned backup does not fit in the quota', () => {
+    const store = new MemorySaveStore();
+    store.put(SAVE_KEY, JSON.stringify(fixtureV1));
+    const original = store.put.bind(store);
+    store.put = (key, value) => {
+      if (key === versionedBackupKey(1)) throw new SaveQuotaError();
+      original(key, value);
+    };
+    expect(new SaveSession(store).load()).toMatchObject({ kind: 'loaded' });
+  });
+
+  it('restores from a versioned backup when the rolling backup is unusable', () => {
+    const store = new MemorySaveStore();
+    const session = new SaveSession(store);
+    store.put(SAVE_KEY, 'garbage');
+    store.put(BACKUP_KEY, 'garbage');
+    store.put(versionedBackupKey(1), JSON.stringify(fixtureV1));
+    expect(hasBackup(store)).toBe(true);
+    expect(restoreBackup(store, session)).toMatchObject({ ok: true });
   });
 });

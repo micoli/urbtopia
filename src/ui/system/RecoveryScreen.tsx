@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { advance } from '../../core';
 import { downloadText } from '../../persistence/download';
 import { saveSession, saveStore } from '../../persistence/instance';
-import { BACKUP_KEY, restoreBackup } from '../../persistence/transfer';
+import { hasBackup as hasStoredBackup, restoreBackup } from '../../persistence/transfer';
 import { t } from '../../i18n/t';
 import { dialogStore } from '../../store/dialogStore';
 import { gameStore } from '../../store/gameStore';
@@ -14,7 +14,7 @@ export function RecoveryScreen() {
   const [noBackup, setNoBackup] = useState(false);
   if (!recovery) return null;
 
-  const hasBackup = saveStore.get(BACKUP_KEY) !== null;
+  const hasBackup = hasStoredBackup(saveStore);
   const close = () => dialogStore.getState().setRecovery(null);
 
   const restore = () => {

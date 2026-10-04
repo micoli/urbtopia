@@ -1,6 +1,10 @@
 export const SAVE_KEY = 'urbtopia-save';
 export const BACKUP_KEY = 'urbtopia-save-backup';
 
+export function versionedBackupKey(version: number): string {
+  return `${BACKUP_KEY}-v${version}`;
+}
+
 export class SaveQuotaError extends Error {}
 
 export interface SaveStore {
