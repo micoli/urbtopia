@@ -208,7 +208,7 @@ export function MaximalStats() {
                 {!state.ecologyDismissed && <section className="eco-wide eco-objectives">
                     <h3>{t('eco.objectives')}</h3>{objectives.map(([key, done]) => <p key={key}
                                                                                       data-complete={done}>{done ? '✓' : '○'} {t(key)}</p>)}
-                    <ActionButton variant="primary"
+                    <ActionButton variant="primary" className="eco-primary"
                             onClick={() => gameStore.getState().send({type: 'DismissEcology'})}>{t('eco.dismiss')}</ActionButton>
                 </section>}
                 <section id="next-unlock" className="eco-wide">
