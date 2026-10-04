@@ -1,10 +1,10 @@
-import { TRANSIT, totalCitizens } from '../../core';
-import { t } from '../../i18n/t';
-import { gameStore } from '../../store/gameStore';
-import { useGame } from '../common/hooks';
-import { ActionButton } from '../common/ActionButton';
-import { SectionHeading } from '../common/SectionHeading';
-import { UrbsAmount } from '../common/UrbsAmount';
+import { TRANSIT, totalCitizens } from '../../../../core';
+import { t } from '../../../../i18n/t.ts';
+import { gameStore } from '../../../../store/gameStore.ts';
+import { useGame } from '../../../common/hooks.ts';
+import { ActionButton } from '../../../common/ActionButton.tsx';
+import { SectionHeading } from '../../../common/SectionHeading.tsx';
+import { UrbsAmount } from '../../../common/UrbsAmount.tsx';
 
 export function TransitFleetPanel() {
   const state = useGame(s => s.state);

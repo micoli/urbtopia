@@ -1,4 +1,4 @@
-import { MaximalStats } from '../stats/MaximalStats';
+import { CityManagement } from '../stats/CityManagement.tsx';
 import { CodexDialog } from '../codex/CodexDialog';
 import { CasinoDialog } from '../casino/CasinoDialog';
 import { StaticButtons } from './StaticButtons.tsx';
@@ -19,7 +19,7 @@ import { WorkingIndicators } from '../common/WorkingIndicators.tsx';
 export function Overlays() {
   return (
     <>
-      <MaximalStats />
+      <CityManagement />
       <CodexDialog />
       <CasinoDialog />
       <WorkingIndicators />

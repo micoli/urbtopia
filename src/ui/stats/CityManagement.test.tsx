@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { climateStats, createBuilding, newGame, type GameState } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
-import { MaximalStats } from './MaximalStats';
+import { CityManagement } from './CityManagement.tsx';
 import { MinimalStats } from './MinimalStats';
 import { CityStats } from './CityStats';
 
@@ -19,7 +19,7 @@ describe('city management panel', () => {
   it.each(['en', 'fr'] as const)('renders explained energy, ecology and transport in %s', language => {
     prefsStore.getState().setLanguage(language);
     context.state = { ...newGame({ seed: 'dashboard', now: 0 }), buildings: [createBuilding(1, 'home', 55, 57, 0)] };
-    const html = renderToStaticMarkup(<MaximalStats />);
+    const html = renderToStaticMarkup(<CityManagement />);
     expect(html).toContain('role="dialog"');
     expect(html).toContain('aria-modal="true"');
     expect(html).toContain(language === 'fr' ? 'Besoin non couvert' : 'Unmet demand');
@@ -41,7 +41,7 @@ describe('city management panel', () => {
     const temperature = climateStats(context.state).temperature.toFixed(1);
     const label = language === 'fr' ? 'Température de la ville' : 'City temperature';
     const minimal = renderToStaticMarkup(<MinimalStats />);
-    const maximal = renderToStaticMarkup(<MaximalStats />);
+    const maximal = renderToStaticMarkup(<CityManagement />);
     expect(minimal).toContain(`aria-label="${label}: ${temperature} °C"`);
     expect(minimal).toContain('🌡️');
     expect(maximal).toContain(`<strong>${temperature} <small>°C</small></strong>`);
@@ -51,7 +51,7 @@ describe('city management panel', () => {
   it('does not mount the dialog when closed', () => {
     context.state = newGame({ seed: 'dashboard', now: 0 });
     context.statsOpen = false;
-    expect(renderToStaticMarkup(<MaximalStats />)).toBe('');
+    expect(renderToStaticMarkup(<CityManagement />)).toBe('');
   });
 
   it('shows the simulation clock in both HUD entry points, including skipped time', () => {

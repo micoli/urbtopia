@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { brokenLinkCount, totalCitizens, TRANSIT, transportStats, type TransitLine } from '../../core';
-import { lineStatusKey } from './lineStatusKey';
-import { t } from '../../i18n/t';
-import { gameStore } from '../../store/gameStore';
-import { useGame } from '../common/hooks';
-import { TransitFleetPanel } from './TransitFleetPanel';
-import { NumberStepper } from '../common/NumberStepper';
-import { ActionButton } from '../common/ActionButton';
-import { SectionHeading } from '../common/SectionHeading';
+import { brokenLinkCount, totalCitizens, TRANSIT, transportStats, type TransitLine } from '../../../../core';
+import { lineStatusKey } from './lineStatusKey.ts';
+import { t } from '../../../../i18n/t.ts';
+import { gameStore } from '../../../../store/gameStore.ts';
+import { useGame } from '../../../common/hooks.ts';
+import { TransitFleetPanel } from './TransitFleetPanel.tsx';
+import { NumberStepper } from '../../../common/NumberStepper.tsx';
+import { ActionButton } from '../../../common/ActionButton.tsx';
+import { SectionHeading } from '../../../common/SectionHeading.tsx';
 
 export function TransitPanel() {
   const state = useGame(s => s.state);

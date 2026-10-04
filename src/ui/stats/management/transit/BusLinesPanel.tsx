@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { transportStats } from '../../core';
-import { lineStatusKey } from './lineStatusKey';
-import { t } from '../../i18n/t';
-import { gameStore } from '../../store/gameStore';
-import { useGame } from '../common/hooks';
-import { ActionButton } from '../common/ActionButton';
-import { SectionHeading } from '../common/SectionHeading';
+import { transportStats } from '../../../../core';
+import { lineStatusKey } from './lineStatusKey.ts';
+import { t } from '../../../../i18n/t.ts';
+import { gameStore } from '../../../../store/gameStore.ts';
+import { useGame } from '../../../common/hooks.ts';
+import { ActionButton } from '../../../common/ActionButton.tsx';
+import { SectionHeading } from '../../../common/SectionHeading.tsx';
 
 export function BusLinesPanel() {
   const state = useGame(s => s.state);

@@ -1,5 +1,5 @@
-import type { LineStatus } from '../../core/transit/transitService';
-import type { MessageKey } from '../../i18n/messages';
+import type { LineStatus } from '../../../../core/transit/transitService.ts';
+import type { MessageKey } from '../../../../i18n/messages.ts';
 
 const STATUS_KEYS: Record<LineStatus, MessageKey> = {
   active: 'eco.active',

@@ -7,7 +7,7 @@ import {
     transportStats,
     type Building
 } from '../../core';
-import {lineStatusKey} from '../transit/lineStatusKey';
+import {lineStatusKey} from '../stats/management/transit/lineStatusKey';
 import {t} from '../../i18n/t';
 import {useGame, useUi} from '../common/hooks';
 import {productionFactors} from '../../core/environment/energy';

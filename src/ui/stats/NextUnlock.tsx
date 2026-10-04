@@ -13,7 +13,7 @@ export function NextUnlock() {
             {totalCitizens(state)}/{next.citizens} {t('stat.citizens')}
             <br/>
             <ul>
-                {next.items.map((item) => <li>
+                {next.items.map((item) => <li key={item}>
                     {itemName(item)}
                 </li>)}
             </ul>
