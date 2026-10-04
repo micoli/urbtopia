@@ -1,4 +1,6 @@
 import {
+  CROPS,
+  CROP_IDS,
   FACILITIES,
   GOODS,
   MATERIALS,
@@ -6,6 +8,11 @@ import {
   SLOT_PRICES,
   autoRotation,
   buildingDistance,
+  fieldCap,
+  isCropReady,
+  isCropUnlocked,
+  seedStockCapacity,
+  seedStockUsed,
   createBuilding,
   footprintTiles,
   isHomeInReach,
@@ -35,6 +42,7 @@ import {
   type Coord,
   type Rotation,
   type GameState,
+  type CropId,
   type GoodId,
   type ItemId,
   type MaterialId,
@@ -56,12 +64,18 @@ const NEED_LOOKAHEAD = 4;
 const IDLE_SKIP_HOURS = 0.25;
 const MIN_SKIP_HOURS = 1 / 60;
 const MAX_SKIP_HOURS = 3;
+const FARMING_CITIZENS = 20;
+const FIELD_TARGET = 12;
+const SEED_URBS_RESERVE = 100;
+const CROPS_TIGHT_RATIO = 0.7;
 
 const row = (fromX: number, toX: number, y: number, step = 2): Coord[] => {
   const tiles: Coord[] = [];
   for (let x = fromX; x <= toX; x += step) tiles.push({ x, y });
   return tiles;
 };
+
+const FIELD_TILES = row(50, 77, 55, 1);
 
 const PRODUCTION_SLOTS = [...row(50, 76, 56), ...row(50, 76, 66)];
 
@@ -73,6 +87,9 @@ const SLOTS: Partial<Record<BuildingType, Coord[]>> = {
   storehouse: [{ x: 56, y: 59 }],
   silo: [{ x: 58, y: 59 }],
   vault: [{ x: 60, y: 59 }],
+  farm: [{ x: 50, y: 52 }],
+  packhouse: [{ x: 54, y: 52 }],
+  grainSilo: [{ x: 58, y: 52 }],
   powerPlant: row(50, 59, 76, 1),
   waterTower: row(50, 59, 78, 1),
 };
@@ -89,6 +106,7 @@ const ROADS = {
   main: { from: { x: 49, y: 58 }, to: { x: 78, y: 58 }, horizontalFirst: true },
   link: { from: { x: 49, y: 58 }, to: { x: 49, y: 68 }, horizontalFirst: false },
   second: { from: { x: 49, y: 68 }, to: { x: 78, y: 68 }, horizontalFirst: true },
+  farm: { from: { x: 49, y: 54 }, to: { x: 78, y: 54 }, horizontalFirst: true },
 };
 
 export function isGoalReached(state: GameState): boolean {
@@ -182,7 +200,22 @@ function buildNext(player: Player): boolean {
     if (!hasRoadRow(player.state(), 68) && buildRoads(player, 'second')) return true;
     if (type === 'home' && ensureUtility(player, 'both')) return true;
   }
-  return buildStorage(player);
+  return buildFarming(player) || buildStorage(player);
+}
+
+function buildFarming(player: Player): boolean {
+  const state = player.state();
+  if (totalCitizens(state) < FARMING_CITIZENS) return false;
+  if (!hasRoadRow(state, ROADS.farm.from.y)) return buildRoads(player, 'farm');
+  for (const type of ['farm', 'packhouse'] as const) {
+    if (countOf(state, type) === 0) return build(player, type) === 'built';
+  }
+  return countOf(state, 'grainSilo') === 0 && cropsAreTight(state) && build(player, 'grainSilo') === 'built';
+}
+
+function cropsAreTight(state: GameState): boolean {
+  const capacity = storageCapacity(state).crops;
+  return capacity > 0 && storageUsed(state.storage).crops >= capacity * CROPS_TIGHT_RATIO;
 }
 
 function buildStorage(player: Player): boolean {
@@ -235,6 +268,7 @@ function upgradeCandidates(state: GameState): Candidate[] {
   for (const building of state.buildings) {
     if (building.tier >= maxTierOf(building.type)) continue;
     if ((building.type === 'powerPlant' || building.type === 'waterTower') && !isWeakestTightUtility(state, building)) continue;
+    if (building.type === 'grainSilo' && !cropsAreTight(state)) continue;
     if ((building.type === 'storehouse' || building.type === 'silo' || building.type === 'vault') && !storageIsTight) continue;
     const cost = upgradeCostOf(building.type, building.tier + 1);
     if (cost) candidates.push({ building, urbs: cost.urbs, goods: cost.goods });
@@ -358,6 +392,42 @@ function queueMaterials(player: Player, wanted: Set<MaterialId>): void {
   }
 }
 
+function bestCrop(state: GameState): CropId | undefined {
+  const profit = (crop: CropId) => (CROPS[crop].yield * CROPS[crop].packedValue) / CROPS[crop].growthMs;
+  return CROP_IDS.filter((crop) => isCropUnlocked(state, crop)).sort((a, b) => profit(b) - profit(a))[0];
+}
+
+function tendFields(player: Player): void {
+  if (countOf(player.state(), 'farm') === 0) return;
+  const ready = player.state().fields.filter((field) => field.crop && isCropReady(field.crop, player.state().lastSeen));
+  if (ready.length > 0) player.send({ type: 'Harvest', tiles: ready });
+
+  const laid = new Set(player.state().fields.map(tileKey));
+  const missing = Math.min(FIELD_TARGET, fieldCap(player.state())) - laid.size;
+  if (missing > 0) player.send({ type: 'LayFields', tiles: FIELD_TILES.filter((tile) => !laid.has(tileKey(tile))).slice(0, missing) });
+
+  const state = player.state();
+  const empty = state.fields.filter((field) => !field.crop);
+  const crop = bestCrop(state);
+  if (empty.length === 0 || !crop) return;
+  const toBuy = Math.min(empty.length - (state.seedStock[crop] ?? 0), seedStockCapacity(state) - seedStockUsed(state));
+  if (toBuy > 0 && state.urbs >= toBuy * CROPS[crop].seedPrice + SEED_URBS_RESERVE) player.send({ type: 'BuySeeds', crop, quantity: toBuy });
+  player.send({ type: 'Plant', crop, tiles: empty });
+}
+
+function queuePacks(player: Player, reserved: Needs): void {
+  for (const packhouse of player.state().buildings.filter((building) => building.type === 'packhouse')) {
+    while (player.state().buildings.find((building) => building.id === packhouse.id)!.queue.length < packhouse.slotCount) {
+      const state = player.state();
+      const current = state.buildings.find((building) => building.id === packhouse.id)!;
+      const choice = (Object.keys(GOODS) as GoodId[])
+        .filter((good) => canProduce(state, current, good) && (state.storage.goods[good] ?? 0) - (reserved[good] ?? 0) < GOODS_STOCK_CAP && materialsAvailable(state, good))
+        .sort((a, b) => profitRate(current, b) - profitRate(current, a))[0];
+      if (!choice || player.send({ type: 'QueueProduction', buildingId: packhouse.id, item: choice }) !== null) break;
+    }
+  }
+}
+
 function sellSurplus(player: Player, reserved: Needs): void {
   const state = player.state();
   const surplus = (good: GoodId) => (state.storage.goods[good] ?? 0) - (reserved[good] ?? 0);
@@ -400,6 +470,8 @@ export function playTurn(player: Player): number {
   const { missing, reserved } = goodsNeeded(player.state());
   const wantedMaterials = queueGoods(player, missing, { ...reserved });
   queueMaterials(player, wantedMaterials);
+  tendFields(player);
+  queuePacks(player, reserved);
   sellSurplus(player, reserved);
 
   const hours = hoursUntilNextCompletion(player.state());

@@ -31,4 +31,18 @@ describe('autoplayer', () => {
     console.log(`done in ${turns} turns · ${hours.toFixed(0)} game hours · ${describeProgress(player.state())}`);
     expect(isGoalReached(player.state())).toBe(true);
   }, 60_000);
+
+  it('farms: lays Fields, harvests Crops into a Grain silo and packs them', () => {
+    const player = headlessPlayer(newGame({ seed: 'amber-fox-4821', now: T0 }));
+    let turns = 0;
+    while (!isGoalReached(player.state()) && turns < MAX_TURNS) {
+      playTurn(player);
+      turns++;
+    }
+    const { buildings, fields, storage } = player.state();
+    const types = buildings.map((building) => building.type);
+    expect(types).toEqual(expect.arrayContaining(['farm', 'packhouse', 'grainSilo']));
+    expect(fields.length).toBeGreaterThan(0);
+    expect(Object.keys(storage.goods).some((item) => item.endsWith('Crate') || item.endsWith('Box') || item.endsWith('Pallet'))).toBe(true);
+  }, 60_000);
 });
