@@ -36,6 +36,10 @@ body,
   background: rgba(255, 255, 255, 0.85);
 }
 
+.camera-buttons button:disabled {
+  opacity: 0.4;
+}
+
 :root {
   --dock-width: 64px;
   --panel-bg: rgba(24, 28, 40, 0.92);
@@ -897,15 +901,6 @@ button {
   font-size: 20px;
 }
 
-.bottom-bar:has([data-action='undo']) {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-}
-
-.bottom-bar-button[data-action='undo'] {
-  grid-column: 5;
-}
-
 .bottom-bar-button span:last-child {
   font-size: 10px;
 }
@@ -940,14 +935,6 @@ button {
 
 [data-layout='A'] .confirm-pad {
   bottom: 76px;
-}
-
-[data-layout='A']:has(.bottom-bar [data-action='undo']) .sheet {
-  padding-bottom: calc(76px + var(--tap));
-}
-
-[data-layout='A']:has(.bottom-bar [data-action='undo']) .confirm-pad {
-  bottom: calc(76px + var(--tap));
 }
 
 /* Layout B: minimal with radial menu */

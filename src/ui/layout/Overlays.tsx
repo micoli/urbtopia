@@ -1,7 +1,7 @@
 import { MaximalStats } from '../stats/MaximalStats';
 import { CodexDialog } from '../codex/CodexDialog';
 import { CasinoDialog } from '../casino/CasinoDialog';
-import { CameraButtons } from './CameraButtons';
+import { StaticButtons } from './StaticButtons.tsx';
 import { CollectBadges } from '../collect/CollectBadges';
 import { ConfirmPad } from '../build/ConfirmPad';
 import { ConfirmSaleDialog } from '../build/ConfirmSaleDialog';
@@ -35,7 +35,7 @@ export function Overlays() {
       <RecoveryScreen />
       <Toast />
       <TutorialBanner />
-      <CameraButtons />
+      <StaticButtons />
     </>
   );
 }
