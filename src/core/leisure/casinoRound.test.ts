@@ -83,7 +83,7 @@ describe('slot machine command', () => {
   });
 });
 
-describe('casino rounds (blackjack)', () => {
+describe('casino rounds (blackJack)', () => {
   const tier2 = (extra: Partial<GameState> = {}) => city(extra, [building(1, 'casino', 55, 50, { tier: 2 }), building(2, 'coalPlant', 90, 40, { tier: 4 })]);
   const start = (state: GameState, stake = 10) => dispatch(state, { type: 'StartCasinoRound', buildingId: 1, game: 'blackjack', stake }, 0);
   const startedOf = (events: GameEvent[]) => events.find((event): event is Extract<GameEvent, { type: 'CasinoRoundStarted' }> => event.type === 'CasinoRoundStarted')!;

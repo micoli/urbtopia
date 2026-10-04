@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { applyBlackjackAction, type BlackjackAction } from '../../core';
-import { gameStore } from '../../store/gameStore';
-import { sessionFor, type BlackjackSession } from './blackjackSession';
+import { applyBlackjackAction, type BlackjackAction } from '../../../../core';
+import { gameStore } from '../../../../store/gameStore.ts';
+import { sessionFor, type BlackjackSession } from './blackjackSession.ts';
 
 export function useBlackjackRound(buildingId: number, roundSeed: number | null) {
   const [stored, setStored] = useState<BlackjackSession | null>(null);

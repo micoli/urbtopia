@@ -1,4 +1,4 @@
-import type { EffectOf, Pos } from '../../../core/leisure/blockmatch/types';
+import type { EffectOf, Pos } from '../../../../core/leisure/blockmatch/types.ts';
 
 const JAG = 0.35;
 

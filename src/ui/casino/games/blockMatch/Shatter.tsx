@@ -1,4 +1,4 @@
-import type { EffectOf } from '../../../core/leisure/blockmatch/types';
+import type { EffectOf } from '../../../../core/leisure/blockmatch/types.ts';
 
 const PIECES_BROKEN = 7;
 const PIECES_HIT = 3;

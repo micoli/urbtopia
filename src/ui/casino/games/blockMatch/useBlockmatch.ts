@@ -14,10 +14,10 @@ import {
   resolveSwap,
   shuffleBoard,
   swapTiles,
-} from '../../../core/leisure/blockmatch/engine';
-import { buildEffects } from '../../../core/leisure/blockmatch/effects';
-import { THREE_STARS_MIN_MOVES_LEFT_RATIO } from '../../../core/leisure/blockmatch/scoring';
-import type { ClearStats, Effect, Goal, GoalProgress, GameStatus, Level, Plan, Pos } from '../../../core/leisure/blockmatch/types';
+} from '../../../../core/leisure/blockmatch/engine.ts';
+import { buildEffects } from '../../../../core/leisure/blockmatch/effects.ts';
+import { THREE_STARS_MIN_MOVES_LEFT_RATIO } from '../../../../core/leisure/blockmatch/scoring.ts';
+import type { ClearStats, Effect, Goal, GoalProgress, GameStatus, Level, Plan, Pos } from '../../../../core/leisure/blockmatch/types.ts';
 
 type Live = {
   goals: GoalProgress[];

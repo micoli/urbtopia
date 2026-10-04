@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { applyBlackjackAction, dealBlackjack } from '../../core';
-import { sessionFor, type BlackjackSession } from './blackjackSession';
+import { applyBlackjackAction, dealBlackjack } from '../../../../core';
+import { sessionFor, type BlackjackSession } from './blackjackSession.ts';
 
 const playedOut = (seed: number): BlackjackSession => {
   let hand = dealBlackjack(seed);
@@ -12,7 +12,7 @@ const playedOut = (seed: number): BlackjackSession => {
   return { seed, hand, actions };
 };
 
-describe('blackjack session', () => {
+describe('blackJack session', () => {
   it('keeps the last hand on screen when no round is open', () => {
     const last = playedOut(1);
     expect(sessionFor(last, null)).toBe(last);

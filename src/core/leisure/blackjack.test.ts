@@ -6,7 +6,7 @@ const round = (player: Card[], dealer: Card[], deck: Card[] = [], extra: Partial
   deck: [...player, ...dealer, ...deck], drawn: player.length + dealer.length, player, dealer, doubled: false, finished: false, ...extra,
 });
 
-describe('blackjack hands', () => {
+describe('blackJack hands', () => {
   it('counts aces as 11 until that would bust', () => {
     expect(handValue([card('A'), card('K')])).toEqual({ total: 21, soft: true });
     expect(handValue([card('A'), card('K'), card('5')])).toEqual({ total: 16, soft: false });
@@ -24,7 +24,7 @@ describe('blackjack hands', () => {
   });
 });
 
-describe('blackjack rounds', () => {
+describe('blackJack rounds', () => {
   it('ends at once on a natural, paid 3:2, or a push when both have one', () => {
     const player = round([card('A'), card('K')], [card('9'), card('7')], [], { finished: true });
     expect(blackjackOutcome(player)).toBe('blackjack');
@@ -83,7 +83,7 @@ describe('blackjack rounds', () => {
   });
 });
 
-describe('blackjack return', () => {
+describe('blackJack return', () => {
   it('returns a little under the Stake when the player copies the dealer', () => {
     let paid = 0;
     const rounds = 30_000;

@@ -1438,6 +1438,7 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 }
 
 .felt {
+  --card-w: 44px;
   display: grid;
   gap: 10px;
   padding: 14px 12px;
@@ -1448,10 +1449,13 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 }
 
 .felt-dealer {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 10px;
-  align-items: start;
+  position: relative;
+}
+
+.felt-dealer .card-deck {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .felt-rule {
@@ -1479,15 +1483,13 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 
 .card-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
-  gap: 6px;
+  gap: 5px;
 }
 
 .card-slot {
   position: relative;
   display: block;
   aspect-ratio: 52 / 74;
-  max-width: 56px;
   border: 2px dashed rgba(255, 255, 255, 0.35);
   border-radius: 8px;
 }
@@ -1503,8 +1505,8 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .card-deck {
   position: relative;
   display: block;
-  width: 52px;
-  height: 74px;
+  width: var(--card-w, 52px);
+  aspect-ratio: 52 / 74;
 }
 
 .card-deck .playing-card {
@@ -1623,4 +1625,105 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 
 .casino-ledger [data-sign='-1'] dd {
   color: var(--danger);
+}
+
+.casino-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  gap: 8px;
+  padding-bottom: 8px;
+  background: var(--panel-bg, #181c28);
+}
+
+.blockmatch-result {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  margin: 8px 0;
+  padding: 24px 16px;
+  border: 3px solid var(--danger);
+  border-radius: 18px;
+  background: rgba(229, 72, 77, 0.12);
+  text-align: center;
+}
+
+.blockmatch-result[data-win='true'] {
+  border-color: var(--accent);
+  background: rgba(53, 208, 127, 0.14);
+}
+
+.blockmatch-result h3 {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+}
+
+.blockmatch-result .stars {
+  font-size: 4.5rem;
+  line-height: 1;
+}
+
+.blockmatch-result-amount {
+  margin: 0;
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--danger);
+}
+
+.blockmatch-result[data-win='true'] .blockmatch-result-amount {
+  color: var(--accent);
+}
+
+.blockmatch-result small {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.card-hand {
+  display: grid;
+  justify-items: center;
+}
+
+.card-hand-body {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.card-hand-body .card-row {
+  display: grid;
+  flex: none;
+}
+
+.winner-badge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(100% + 6px);
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  height: fit-content;
+  margin: auto 0;
+  padding: 4px 6px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #0b2a18;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+  animation: winner-pop 0.4s ease-out both;
+}
+
+.winner-badge[data-tie='true'] {
+  background: rgba(255, 255, 255, 0.85);
+  color: #1b1f2a;
+}
+
+@keyframes winner-pop {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: none; }
 }

@@ -1,6 +1,6 @@
-import type { Tile as TileData } from '../../../core/leisure/blockmatch/types';
-import { Gem } from './Gem';
-import { SpecialIcon } from './SpecialIcon';
+import type { Tile as TileData } from '../../../../core/leisure/blockmatch/types.ts';
+import { Gem } from './Gem.tsx';
+import { SpecialIcon } from './SpecialIcon.tsx';
 
 type Props = { tile: TileData; row: number; col: number; selected: boolean; hinted: boolean };
 

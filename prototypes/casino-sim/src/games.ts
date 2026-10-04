@@ -8,8 +8,8 @@ export interface SimGame {
 
 export const SIM_GAMES: readonly SimGame[] = [
   { game: 'slotMachine', path: '/slot-machine', minTier: CASINO.gameMinTier.slotMachine },
-  { game: 'blackjack', path: '/blackjack', minTier: CASINO.gameMinTier.blackjack },
-  { game: 'blockmatch', path: '/blockmatch', minTier: CASINO.gameMinTier.blockmatch },
+  { game: 'blackjack', path: '/blackJack', minTier: CASINO.gameMinTier.blackjack },
+  { game: 'blockmatch', path: '/blockMatch', minTier: CASINO.gameMinTier.blockmatch },
 ];
 
 export function simGameAt(pathname: string): SimGame | null {

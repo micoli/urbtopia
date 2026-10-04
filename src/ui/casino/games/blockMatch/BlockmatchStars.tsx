@@ -1,4 +1,4 @@
-import { MAX_BLOCKMATCH_STARS } from '../../../core';
+import { MAX_BLOCKMATCH_STARS } from '../../../../core';
 
 interface BlockmatchStarsProps {
   count: number;

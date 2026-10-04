@@ -1,4 +1,4 @@
-import type { Special } from '../../../core/leisure/blockmatch/types';
+import type { Special } from '../../../../core/leisure/blockmatch/types.ts';
 
 const ICONS: Record<Special, string> = {
   rocketH: '🚀',

@@ -1,4 +1,4 @@
-import type { EffectOf } from '../../../core/leisure/blockmatch/types';
+import type { EffectOf } from '../../../../core/leisure/blockmatch/types.ts';
 
 export const Beam = ({ effect }: { effect: EffectOf<'beam'> }) => (
   <div

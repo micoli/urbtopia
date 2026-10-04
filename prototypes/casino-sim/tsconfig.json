@@ -1,4 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "../../src/build.d.ts", "../../src/ui/casino/blockmatch/cssVars.d.ts"]
+  "include": ["src", "../../src/build.d.ts",
+    "../../src/ui/casino/games/blockMatch/cssVars.d.ts"
+  ]
 }

@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react';
 import type { PointerEvent } from 'react';
-import type { Board as BoardData, Effect, Move, Pos } from '../../../core/leisure/blockmatch/types';
-import { BoardCell } from './BoardCell';
-import { EffectsLayer } from './EffectsLayer';
+import type { Board as BoardData, Effect, Move, Pos } from '../../../../core/leisure/blockmatch/types.ts';
+import { BoardCell } from './BoardCell.tsx';
+import { EffectsLayer } from './EffectsLayer.tsx';
 import './blockmatch.css';
-import { Tile } from './Tile';
+import { Tile } from './Tile.tsx';
 
 const DRAG_THRESHOLD = 0.35;
 

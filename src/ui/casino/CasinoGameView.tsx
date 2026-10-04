@@ -1,7 +1,7 @@
 import type { Building, CasinoGame } from '../../core';
-import { BlackjackGame } from './BlackjackGame';
-import { BlockmatchGame } from './BlockmatchGame';
-import { SlotMachineGame } from './SlotMachineGame';
+import { BlackjackGame } from './games/blackJack/BlackjackGame.tsx';
+import { BlockmatchGame } from './games/blockMatch/BlockmatchGame.tsx';
+import { SlotMachineGame } from './games/slotMachineGame/SlotMachineGame.tsx';
 
 interface CasinoGameViewProps {
   game: CasinoGame;

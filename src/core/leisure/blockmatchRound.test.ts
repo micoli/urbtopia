@@ -5,13 +5,13 @@ import { generateLevel } from './blockmatch/levelGenerator';
 
 const building = (id: number, type: Building['type'], x: number, y: number, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
 const city = (tier = 3): GameState => ({
-  ...newGame({ seed: 'blockmatch-round', now: 0 }), nextId: 100, urbs: 1000, tutorial: null, adaptationUntil: 0,
+  ...newGame({ seed: 'blockMatch-round', now: 0 }), nextId: 100, urbs: 1000, tutorial: null, adaptationUntil: 0,
   buildings: [building(1, 'casino', 55, 50, { tier }), building(2, 'coalPlant', 90, 40, { tier: 4 })],
 });
 const started = (state: GameState, stake = 100) => dispatch(state, { type: 'StartCasinoRound', buildingId: 1, game: 'blockmatch', stake }, 0);
 const settledOf = (events: GameEvent[]) => events.find((event): event is Extract<GameEvent, { type: 'BlockmatchSettled' }> => event.type === 'BlockmatchSettled')!;
 
-describe('blockmatch payout', () => {
+describe('blockMatch payout', () => {
   it('loses the Stake without a star and adds 25%, 50% or 100% on top of it for 1, 2 or 3 stars', () => {
     expect([0, 1, 2, 3].map(stars => blockmatchPayout(stars, 100))).toEqual([0, 125, 150, 200]);
     expect(blockmatchPayout(3, 10)).toBe(20);
@@ -29,7 +29,7 @@ describe('blockmatch payout', () => {
   });
 });
 
-describe('blockmatch rounds', () => {
+describe('blockMatch rounds', () => {
   it('needs a Tier 3 Casino', () => {
     expect(started(city(2))).toMatchObject({ ok: false, error: { key: 'error.tierTooLow' } });
     expect(started(city(3))).toMatchObject({ ok: true });

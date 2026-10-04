@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { blockmatchLevelNumber, blockmatchSeed, generateBlockmatchLevel } from '../../../core';
-import type { Move } from '../../../core/leisure/blockmatch/types';
-import { gameStore } from '../../../store/gameStore';
-import { BlockmatchBoard } from './BlockmatchBoard';
-import { BlockmatchHud } from './BlockmatchHud';
-import { useBlockmatch } from './useBlockmatch';
+import { blockmatchLevelNumber, blockmatchSeed, generateBlockmatchLevel } from '../../../../core';
+import type { Move } from '../../../../core/leisure/blockmatch/types.ts';
+import { gameStore } from '../../../../store/gameStore.ts';
+import { BlockmatchBoard } from './BlockmatchBoard.tsx';
+import { BlockmatchHud } from './BlockmatchHud.tsx';
+import { useBlockmatch } from './useBlockmatch.ts';
 
 const HINT_DELAY_MS = 5000;
 

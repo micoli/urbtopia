@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useStore } from 'zustand';
-import { SLOT_REEL_COUNT, stakeStepsOf, type Building } from '../../core';
-import { t } from '../../i18n/t';
-import { casinoStore } from '../../store/casinoStore';
-import { gameStore } from '../../store/gameStore';
-import { useGame } from '../common/hooks';
-import { UrbsAmount } from '../common/UrbsAmount';
-import { CasinoLedger } from './CasinoLedger';
-import { SlotReels } from './SlotReels';
-import { StakePicker } from './StakePicker';
-import { slotSpinDuration } from './slotSymbols';
-import { useFrozen } from './useFrozen';
+import { SLOT_REEL_COUNT, stakeStepsOf, type Building } from '../../../../core';
+import { t } from '../../../../i18n/t.ts';
+import { casinoStore } from '../../../../store/casinoStore.ts';
+import { gameStore } from '../../../../store/gameStore.ts';
+import { useGame } from '../../../common/hooks.ts';
+import { UrbsAmount } from '../../../common/UrbsAmount.tsx';
+import { CasinoHeader } from '../../CasinoHeader.tsx';
+import { SlotReels } from './SlotReels.tsx';
+import { slotSpinDuration } from './slotSymbols.ts';
+import { useFrozen } from '../../useFrozen.ts';
 
 const SPIN_MS = slotSpinDuration(SLOT_REEL_COUNT);
 
@@ -40,12 +39,11 @@ export function SlotMachineGame({ casino }: SlotMachineGameProps) {
   const net = spin ? spin.payout - spin.stake : 0;
   return (
     <div className="casino-game">
+      <CasinoHeader spent={spent} won={won} steps={steps} urbs={urbs} stake={stake} locked={spinning} onStake={setStake} />
       <SlotReels reels={spin?.reels ?? null} spinning={spinning} />
       <p className="casino-result" data-win={!spinning && net > 0} aria-live="polite">
         {spin === null || spinning ? ' ' : net > 0 ? <>{t('casino.won')} <UrbsAmount value={net} /></> : net === 0 ? t('casino.even') : <>{t('casino.lost')} <UrbsAmount value={-net} /></>}
       </p>
-      <CasinoLedger spent={spent} won={won} />
-      <StakePicker steps={steps} urbs={urbs} value={stake} disabled={spinning} onChange={setStake} />
       <button type="button" className="collect-button" disabled={spinning || urbs < stake} onClick={play}>
         {t('casino.spin')}
       </button>

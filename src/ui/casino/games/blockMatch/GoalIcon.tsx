@@ -1,5 +1,5 @@
-import type { Goal } from '../../../core/leisure/blockmatch/types';
-import { Gem } from './Gem';
+import type { Goal } from '../../../../core/leisure/blockmatch/types.ts';
+import { Gem } from './Gem.tsx';
 
 export const GoalIcon = ({ goal }: { goal: Goal }) => {
   if (goal.type === 'color') return <Gem color={goal.color} />;

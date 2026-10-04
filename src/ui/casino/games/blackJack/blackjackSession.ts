@@ -1,4 +1,4 @@
-import { dealBlackjack, type BlackjackAction, type BlackjackRound } from '../../core';
+import { dealBlackjack, type BlackjackAction, type BlackjackRound } from '../../../../core';
 
 export interface BlackjackSession {
   seed: number;

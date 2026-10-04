@@ -1,4 +1,4 @@
-import type { SlotSymbol } from '../../core';
+import type { SlotSymbol } from '../../../../core';
 
 export const SLOT_SYMBOL_GLYPHS: Record<SlotSymbol, string> = {
   cherry: '🍒',

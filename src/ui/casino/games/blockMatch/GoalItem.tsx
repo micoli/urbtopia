@@ -1,5 +1,5 @@
-import type { GoalProgress } from '../../../core/leisure/blockmatch/types';
-import { GoalIcon } from './GoalIcon';
+import type { GoalProgress } from '../../../../core/leisure/blockmatch/types.ts';
+import { GoalIcon } from './GoalIcon.tsx';
 
 export const GoalItem = ({ goal }: { goal: GoalProgress }) => (
   <li className={`goal ${goal.remaining === 0 ? 'goal--done' : ''}`}>

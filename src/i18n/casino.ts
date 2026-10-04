@@ -29,6 +29,10 @@ type CasinoMessageKey =
   | 'casino.handLost'
   | 'casino.spent'
   | 'casino.earned'
+  | 'casino.victory'
+  | 'casino.defeat'
+  | 'casino.winner'
+  | 'casino.tie'
   | 'casino.hit'
   | 'casino.stand'
   | 'casino.double'
@@ -81,6 +85,10 @@ const texts: Record<CasinoMessageKey, readonly [string, string]> = {
   'casino.handLost': ['Dealer wins', 'Le croupier gagne'],
   'casino.spent': ['Spent', 'Dépensé'],
   'casino.earned': ['Won', 'Gagné'],
+  'casino.victory': ['Victory!', 'Victoire !'],
+  'casino.defeat': ['Defeated', 'Perdu'],
+  'casino.winner': ['Winner', 'Gagnant'],
+  'casino.tie': ['Push', 'Égalité'],
   'casino.hit': ['Hit', 'Tirer'],
   'casino.stand': ['Stand', 'Rester'],
   'casino.double': ['Double', 'Doubler'],

@@ -1,4 +1,4 @@
-import type { EffectOf } from '../../../core/leisure/blockmatch/types';
+import type { EffectOf } from '../../../../core/leisure/blockmatch/types.ts';
 
 export const Shockwave = ({ effect }: { effect: EffectOf<'shockwave'> }) => (
   <div className="fx fx-shock" style={{ '--r': effect.r, '--c': effect.c, '--radius': effect.radius }}>

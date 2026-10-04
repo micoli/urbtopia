@@ -26,7 +26,6 @@ export function SimGamePage({ entry, initialTier }: SimGamePageProps) {
     <main className="sim-page">
       <SimBar minTier={entry.minTier} tier={tier} onTier={setTier} onReset={() => setSession(value => value + 1)} />
       <div className="dialog casino-dialog sim-game">
-        <h2>{t(`casino.${entry.game}`)}</h2>
         {casino ? <CasinoGameView key={`${tier}-${session}`} game={entry.game} casino={casino} /> : null}
       </div>
     </main>

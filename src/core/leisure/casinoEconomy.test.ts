@@ -49,7 +49,7 @@ describe('Casino economy', () => {
     expect(send(exact.state, { type: 'SettleBlockmatch', buildingId: 1, stars: 0 }).state.urbs).toBe(0);
   });
 
-  it('drains a blackjack player who copies the dealer', () => {
+  it('drains a blackJack player who copies the dealer', () => {
     let state = city(100_000);
     const start = state.urbs;
     for (let round = 0; round < 6000; round++) {

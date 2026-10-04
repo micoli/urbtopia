@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { SLOT_REEL_COUNT, SLOT_SYMBOLS, type SlotSymbol } from '../../core';
-import { SLOT_SYMBOL_GLYPHS, SLOT_TICK_MS, slotStopAt } from './slotSymbols';
+import { SLOT_REEL_COUNT, SLOT_SYMBOLS, type SlotSymbol } from '../../../../core';
+import { SLOT_SYMBOL_GLYPHS, SLOT_TICK_MS, slotStopAt } from './slotSymbols.ts';
 
 interface SlotReelsProps {
   reels: readonly SlotSymbol[] | null;

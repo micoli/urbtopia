@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { useStore } from 'zustand';
-import { stakeStepsOf, type Building } from '../../core';
-import { t } from '../../i18n/t';
-import { casinoStore } from '../../store/casinoStore';
-import { gameStore } from '../../store/gameStore';
-import { useGame } from '../common/hooks';
-import { UrbsAmount } from '../common/UrbsAmount';
-import { BlockmatchPlay } from './blockmatch/BlockmatchPlay';
-import { BlockmatchStars } from './blockmatch/BlockmatchStars';
-import { CasinoLedger } from './CasinoLedger';
-import { StakePicker } from './StakePicker';
+import { stakeStepsOf, type Building } from '../../../../core';
+import { t } from '../../../../i18n/t.ts';
+import { casinoStore } from '../../../../store/casinoStore.ts';
+import { gameStore } from '../../../../store/gameStore.ts';
+import { useGame } from '../../../common/hooks.ts';
+import { BlockmatchPlay } from './BlockmatchPlay.tsx';
+import { BlockmatchResult } from './BlockmatchResult.tsx';
+import { CasinoHeader } from '../../CasinoHeader.tsx';
 
 interface BlockmatchGameProps {
   casino: Building;
@@ -27,27 +25,20 @@ export function BlockmatchGame({ casino }: BlockmatchGameProps) {
   const net = result ? result.payout - result.stake : 0;
   const start = () => gameStore.getState().send({ type: 'StartCasinoRound', buildingId: casino.id, game: 'blockmatch', stake });
 
-  const ledger = <CasinoLedger spent={spent} won={won} />;
-  if (round?.game === 'blockmatch' && !result) {
+  const playing = round?.game === 'blockmatch' && !result;
+  const header = <CasinoHeader spent={spent} won={won} steps={steps} urbs={urbs} stake={playing ? round.stake : stake} locked={playing} onStake={setStake} />;
+  if (playing) {
     return (
       <div className="casino-game">
-        {ledger}
+        {header}
         <BlockmatchPlay buildingId={casino.id} tier={casino.tier} roundSeed={round.roundSeed} />
       </div>
     );
   }
   return (
     <div className="casino-game">
-      {ledger}
-      {result ? (
-        <>
-          <BlockmatchStars count={result.stars} />
-          <p className="casino-result" data-win={net > 0} aria-live="polite">
-            {net > 0 ? t('casino.won') : t('casino.lost')} <UrbsAmount value={Math.abs(net)} />
-          </p>
-        </>
-      ) : null}
-      <StakePicker steps={steps} urbs={urbs} value={stake} onChange={setStake} />
+      {header}
+      {result ? <BlockmatchResult stars={result.stars} net={net} /> : null}
       <button type="button" className="collect-button" disabled={urbs < stake} onClick={start}>
         {result ? t('casino.newRound') : t('casino.deal')}
       </button>

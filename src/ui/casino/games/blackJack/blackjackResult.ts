@@ -1,5 +1,5 @@
-import type { BlackjackOutcome } from '../../core';
-import type { MessageKey } from '../../i18n/messages';
+import type { BlackjackOutcome } from '../../../../core';
+import type { MessageKey } from '../../../../i18n/messages.ts';
 
 export function blackjackResultKey(outcome: BlackjackOutcome): MessageKey {
   if (outcome === 'blackjack') return 'casino.naturalWin';

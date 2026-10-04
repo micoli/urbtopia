@@ -1,10 +1,10 @@
 import type { ComponentType } from 'react';
-import type { Effect, EffectOf } from '../../../core/leisure/blockmatch/types';
-import { Beam } from './Beam';
-import { Burst } from './Burst';
-import { Lightning } from './Lightning';
-import { Shatter } from './Shatter';
-import { Shockwave } from './Shockwave';
+import type { Effect, EffectOf } from '../../../../core/leisure/blockmatch/types.ts';
+import { Beam } from './Beam.tsx';
+import { Burst } from './Burst.tsx';
+import { Lightning } from './Lightning.tsx';
+import { Shatter } from './Shatter.tsx';
+import { Shockwave } from './Shockwave.tsx';
 
 type Props = { effects: Effect[]; rows: number; cols: number };
 

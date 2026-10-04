@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { useStore } from 'zustand';
-import { canDouble, stakeStepsOf, type Building } from '../../core';
-import { t } from '../../i18n/t';
-import { casinoStore } from '../../store/casinoStore';
-import { gameStore } from '../../store/gameStore';
-import { useGame } from '../common/hooks';
-import { UrbsAmount } from '../common/UrbsAmount';
-import { BlackjackFelt } from './BlackjackFelt';
-import { CasinoLedger } from './CasinoLedger';
-import { StakePicker } from './StakePicker';
-import { blackjackResultKey } from './blackjackResult';
-import { useBlackjackRound } from './useBlackjackRound';
+import { canDouble, stakeStepsOf, type Building } from '../../../../core';
+import { t } from '../../../../i18n/t.ts';
+import { casinoStore } from '../../../../store/casinoStore.ts';
+import { gameStore } from '../../../../store/gameStore.ts';
+import { useGame } from '../../../common/hooks.ts';
+import { UrbsAmount } from '../../../common/UrbsAmount.tsx';
+import { BlackjackFelt } from './BlackjackFelt.tsx';
+import { CasinoHeader } from '../../CasinoHeader.tsx';
+import { blackjackResultKey } from './blackjackResult.ts';
+import { winnerOf } from './blackjackWinner.ts';
+import { useBlackjackRound } from './useBlackjackRound.ts';
 
 interface BlackjackGameProps {
   casino: Building;
@@ -33,12 +33,12 @@ export function BlackjackGame({ casino }: BlackjackGameProps) {
 
   return (
     <div className="casino-game">
-      <CasinoLedger spent={spent} won={won} />
+      <CasinoHeader spent={spent} won={won} steps={steps} urbs={urbs} stake={open?.stake ?? stake} locked={open !== null} onStake={setStake} />
       <BlackjackFelt
         dealer={hand?.dealer ?? []}
         player={hand?.player ?? []}
         holeCardHidden={open !== null && !finished}
-        stake={open ? <UrbsAmount value={open.stake} /> : <UrbsAmount value={stake} />}
+        winner={winnerOf(hand)}
       />
       {open && hand ? (
         <div className="blackjack-actions">
@@ -48,15 +48,14 @@ export function BlackjackGame({ casino }: BlackjackGameProps) {
         </div>
       ) : (
         <>
+          <button type="button" className="collect-button" disabled={urbs < stake} onClick={deal}>
+            {result ? t('casino.newRound') : t('casino.deal')}
+          </button>
           {result ? (
             <p className="casino-result" data-win={net > 0} aria-live="polite">
               {t(blackjackResultKey(result.outcome))}{net === 0 ? null : <> · {net > 0 ? t('casino.won') : t('casino.lost')} <UrbsAmount value={Math.abs(net)} /></>}
             </p>
           ) : null}
-          <StakePicker steps={steps} urbs={urbs} value={stake} onChange={setStake} />
-          <button type="button" className="collect-button" disabled={urbs < stake} onClick={deal}>
-            {result ? t('casino.newRound') : t('casino.deal')}
-          </button>
         </>
       )}
     </div>

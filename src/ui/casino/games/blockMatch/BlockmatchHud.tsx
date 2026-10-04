@@ -1,6 +1,6 @@
-import type { GoalProgress } from '../../../core/leisure/blockmatch/types';
-import { t } from '../../../i18n/t';
-import { GoalItem } from './GoalItem';
+import type { GoalProgress } from '../../../../core/leisure/blockmatch/types.ts';
+import { t } from '../../../../i18n/t.ts';
+import { GoalItem } from './GoalItem.tsx';
 
 interface BlockmatchHudProps {
   movesLeft: number;
