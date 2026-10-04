@@ -1,7 +1,7 @@
 import type { ModelLibrary } from './modelLibrary';
 import { TRAIN_MODELS } from './renderItems';
 import * as THREE from 'three';
-import { networkTiles, neighbour, tileKey, type GameState, type TransitVehicleKind } from '../core';
+import { tileKey, type GameState, type TransitVehicleKind } from '../core';
 import type { transitServices } from '../core/transit/transitService';
 
 type Service = ReturnType<typeof transitServices>[number];
@@ -30,15 +30,6 @@ export class TransitLayer {
     const tracksChanged = trackSignature !== this.trackSignature;
     if (tracksChanged) {
       this.trackSignature = trackSignature; this.clear(this.tracks);
-      for (const mode of ['brt'] as const) for (const tile of networkTiles(state, mode)) {
-        this.box(this.tracks, tile.x + .5, .045, tile.y + .5, .94, .04, .94, 0x257cb5);
-        for (const exit of tile.exits) {
-          const next = neighbour(tile, exit);
-          const x = (tile.x + next.x) / 2 + .5, z = (tile.y + next.y) / 2 + .5;
-          const horizontal = next.x !== tile.x;
-          this.box(this.tracks, x, .075, z, horizontal ? .5 : .035, .015, horizontal ? .035 : .5, 0xffdf76);
-        }
-      }
     }
     if (trackSignature === this.trackSignature && !this.tracks.getObjectByName('stations')) {
       const stations = new THREE.Group(); stations.name = 'stations'; this.tracks.add(stations);

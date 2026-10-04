@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { facilityScaleOf, fitMatrixOf } from './modelFit';
 import type { ModelLibrary } from './modelLibrary';
-import { chunkKeyOf, type RenderItem } from './renderItems';
+import { chunkKeyOf, type RenderItem, type TextureVariant } from './renderItems';
 
 const DECAL_OFFSET = 0.02;
 const DECAL_HEIGHT = 0.45;
@@ -95,7 +95,7 @@ export class ChunkedWorld {
       this.library.get(model).traverse((node) => {
         const mesh = node as THREE.Mesh;
         if (!mesh.isMesh) return;
-        const textured = variant ? this.library.withTextureVariant(mesh.material, variant as 'a' | 'b' | 'c') : mesh.material;
+        const textured = variant ? this.library.withTextureVariant(mesh.material, variant as TextureVariant) : mesh.material;
         const tinted = tint ? this.library.withTint(textured, Number(tint)) : textured;
         const material = recolor ? this.library.withRecolor(tinted, Number(recolor)) : tinted;
         const instanced = new THREE.InstancedMesh(mesh.geometry, material, modelItems.length);

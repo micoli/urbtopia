@@ -1,7 +1,7 @@
 import { fitNatureModel } from './natureModelFit';
 import { fitRailCorner } from './railModelFit';
 import * as THREE from 'three';
-import { GARAGE_DOOR_MODEL, RED_CROSS_MODEL } from './renderItems';
+import { GARAGE_DOOR_MODEL, RED_CROSS_MODEL, type TextureVariant } from './renderItems';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class ModelLibrary {
@@ -16,12 +16,12 @@ export class ModelLibrary {
     await Promise.all([...new Set(keys)].map((key) => this.load(key)));
   }
 
-  async ensureTextureVariants(variants: Iterable<'a' | 'b' | 'c'>): Promise<void> {
+  async ensureTextureVariants(variants: Iterable<TextureVariant>): Promise<void> {
     await Promise.all([...new Set(variants)].map(variant => {
       if (this.variants.has(variant)) return Promise.resolve();
       const pending = this.pendingVariants.get(variant);
       if (pending) return pending.then(() => undefined);
-      const loading = this.textureLoader.loadAsync(`${import.meta.env.BASE_URL}models/suburban/Textures/variation-${variant}.png`).then(texture => {
+      const loading = this.textureLoader.loadAsync(`${import.meta.env.BASE_URL}models/${variantTexturePath(variant)}`).then(texture => {
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.flipY = false;
         texture.needsUpdate = true;
@@ -44,7 +44,7 @@ export class ModelLibrary {
     return model;
   }
 
-  withTextureVariant(source: THREE.Material | THREE.Material[], variant: 'a' | 'b' | 'c'): THREE.Material | THREE.Material[] {
+  withTextureVariant(source: THREE.Material | THREE.Material[], variant: TextureVariant): THREE.Material | THREE.Material[] {
     const replace = (material: THREE.Material): THREE.Material => {
       if (!(material as THREE.MeshStandardMaterial).map) return material;
       const clone = material.clone() as THREE.MeshStandardMaterial;
@@ -101,6 +101,11 @@ export class ModelLibrary {
     this.pending.set(key, promise);
     return promise;
   }
+}
+
+function variantTexturePath(variant: TextureVariant): string {
+  if (variant === 'roads-a') return 'roads/Textures/variation-a.png';
+  return `suburban/Textures/variation-${variant}.png`;
 }
 
 function buildRedCross(): THREE.Object3D {

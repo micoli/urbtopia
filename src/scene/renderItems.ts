@@ -1,8 +1,10 @@
-import { DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, type Building, type BuildingType, type FacilityType, type GameState, type ServiceCategory } from '../core';
+import { DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type GameState, type ServiceCategory } from '../core';
 import { NATURE_MODELS, type NatureType } from '../core/environment/nature';
 import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
 import { SERVICE_VEHICLE_MODELS } from './serviceTrip';
+
+export type TextureVariant = 'a' | 'b' | 'c' | 'roads-a';
 
 export interface RenderItem {
   model: string;
@@ -12,7 +14,7 @@ export interface RenderItem {
   elevation?: number;
   lengthScale?: number;
   roofBase?: string;
-  textureVariant?: 'a' | 'b' | 'c';
+  textureVariant?: TextureVariant;
   footprint?: number;
   recolor?: number;
   decal?: { x: number; z: number; lateral?: number; height?: number };
@@ -159,7 +161,7 @@ export function modelOfBuilding(building: Building): string {
 }
 
 let lastBuildingItems: RenderItem[] = [];
-let lastRoadItems: { roads: GameState['roads']; roundabouts: GameState['roundabouts']; rails: GameState['rails']; items: RenderItem[] } | null = null;
+let lastRoadItems: { roads: GameState['roads']; roundabouts: GameState['roundabouts']; rails: GameState['rails']; brtRoads: GameState['brtRoads']; items: RenderItem[] } | null = null;
 let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; items: RenderItem[] } | null = null;
 
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
@@ -174,8 +176,8 @@ export function renderItemsOf(state: GameState): RenderItem[] {
   const buildings = sameItems(builtBuildings, lastBuildingItems) ? lastBuildingItems : builtBuildings;
   lastBuildingItems = buildings;
 
-  if (lastRoadItems?.roads !== state.roads || lastRoadItems.roundabouts !== state.roundabouts || lastRoadItems.rails !== state.rails) {
-    lastRoadItems = { roads: state.roads, roundabouts: state.roundabouts, rails: state.rails, items: [...roadItems(state), ...railItems(state)] };
+  if (lastRoadItems?.roads !== state.roads || lastRoadItems.roundabouts !== state.roundabouts || lastRoadItems.rails !== state.rails || lastRoadItems.brtRoads !== state.brtRoads) {
+    lastRoadItems = { roads: state.roads, roundabouts: state.roundabouts, rails: state.rails, brtRoads: state.brtRoads, items: [...roadItems(state), ...brtItems(state), ...railItems(state)] };
   }
   const roads = lastRoadItems.items;
 
@@ -186,12 +188,22 @@ export function renderItemsOf(state: GameState): RenderItem[] {
 }
 
 function roadItems(state: GameState): RenderItem[] {
+  const brtKeys = new Set((state.brtRoads ?? []).map(tileKey));
   const tiles = state.roads.map((road) => {
+    if (brtKeys.has(tileKey(road))) return { model: 'roads/road-crossroad', x: road.x + 0.5, z: road.y + 0.5, rotation: 0 };
     const { piece, rotation } = roadPiece(roadExits(state, road), road.kind);
     return { model: `roads/road-${piece}`, x: road.x + 0.5, z: road.y + 0.5, rotation };
   });
   const roundabouts = state.roundabouts.map((center) => ({ model: 'roads/road-roundabout', x: center.x + 0.5, z: center.y + 0.5, rotation: 0 }));
   return [...tiles, ...roundabouts];
+}
+
+function brtItems(state: GameState): RenderItem[] {
+  const roadKeys = new Set(state.roads.map(tileKey));
+  return (state.brtRoads ?? []).filter(tile => !roadKeys.has(tileKey(tile))).map(tile => {
+    const { piece, rotation } = roadPiece(tile.exits);
+    return { model: `roads/road-${piece}`, x: tile.x + 0.5, z: tile.y + 0.5, rotation, textureVariant: 'roads-a' as const };
+  });
 }
 
 function redCrossItems(x: number, z: number, rotation: number, footprint: number, fitModel: string): RenderItem[] {

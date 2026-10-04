@@ -5,6 +5,13 @@ import { MODEL_KEYS, modelOf, railItems, chunkKeyOf, renderItemsOf } from './ren
 describe('renderItemsOf', () => {
   const state = newGame({ seed: 'amber-fox-4821', now: 0 });
 
+  it('renders BRT tiles with road kit pieces in variation A', () => {
+    const brtRoads = [{ x: 60, y: 60, exits: ['E' as const] }, { x: 61, y: 60, exits: ['W' as const, 'E' as const] }, { x: 62, y: 60, exits: ['W' as const] }];
+    const items = renderItemsOf({ ...state, brtRoads }).filter((item) => item.textureVariant === 'roads-a');
+    expect(items.map((item) => item.model)).toEqual(['roads/road-end', 'roads/road-straight', 'roads/road-end']);
+    expect(items[1]).toMatchObject({ x: 61.5, z: 60.5 });
+  });
+
   it('centres each building on its footprint', () => {
     const workshop = renderItemsOf(state).find((item) => item.model === 'industrial/building-h');
     expect(workshop).toMatchObject({ x: 55, z: 57, rotation: 2 });
