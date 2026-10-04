@@ -124,3 +124,54 @@ for (const layout of ['B', 'C']) {
     await expect(stats).toHaveCount(0);
   });
 }
+
+test('dragging the brush lays Fields, plants them and harvests them', async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
+  await page.goto('/');
+  await expect(page.locator('#splash')).toHaveCount(0);
+  await page.evaluate(async () => {
+    const { gameStore } = await import('../src/store/gameStore.ts');
+    const { newGame, createBuilding } = await import('../src/core/index.ts');
+    const state = newGame({ seed: 'brush-e2e', now: Date.now() });
+    const buildings = [createBuilding(50, 'farm', 64, 60, 0), { ...createBuilding(51, 'home', 60, 64, 0), tier: 3 }, createBuilding(52, 'waterTower', 70, 64, 0), createBuilding(53, 'storehouse', 74, 64, 0)];
+    gameStore.getState().replaceState({ ...state, urbs: 10_000, buildings, nextId: 54, adaptationUntil: 0, seedStock: { wheat: 5 } });
+  });
+
+  async function drag(action: 'layField' | 'plant' | 'harvest') {
+    await page.evaluate(async action => {
+      const { uiStore } = await import('../src/store/uiStore.ts');
+      uiStore.getState().chooseTool({ kind: 'brush', action, ...(action === 'plant' ? { crop: 'wheat' as const } : {}), tiles: [] });
+    }, action);
+    const points = await page.evaluate(async () => {
+      const { sceneHandle } = await import('../src/store/sceneHandle.ts');
+      const scene = sceneHandle.current!;
+      scene.camera.focusOn(66, 68);
+      return [64, 65, 66, 67].map(x => scene.project(x + 0.5, 0, 68.5));
+    });
+    await page.mouse.move(points[0]!.x, points[0]!.y);
+    await page.mouse.down();
+    for (const point of points.slice(1)) await page.mouse.move(point.x, point.y, { steps: 4 });
+    await page.mouse.up();
+  }
+
+  const read = () => page.evaluate(async () => {
+    const { gameStore } = await import('../src/store/gameStore.ts');
+    const state = gameStore.getState().state;
+    return { fields: state.fields.length, planted: state.fields.filter(f => f.crop).length, urbs: state.urbs, seeds: state.seedStock.wheat ?? 0, wheat: state.storage.materials.wheat ?? 0 };
+  });
+
+  await drag('layField');
+  expect(await read()).toMatchObject({ fields: 4, planted: 0, urbs: 10_000 - 20 });
+
+  await drag('plant');
+  expect(await read()).toMatchObject({ fields: 4, planted: 4, seeds: 1 });
+
+  await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().send({ type: 'SkipTime', hours: 1 }));
+  await page.screenshot({ path: testInfo.outputPath('ready-crops.png') });
+  await drag('harvest');
+  expect(await read()).toMatchObject({ fields: 4, planted: 0, wheat: 8, seeds: 5 });
+  await page.screenshot({ path: testInfo.outputPath('after-harvest.png') });
+  expect(errors).toEqual([]);
+});

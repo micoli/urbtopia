@@ -9,7 +9,7 @@ import { MODEL_KEYS, PROCEDURAL_MODELS, renderItemsOf } from '../src/scene/rende
 validateCodex();
 const library = new ModelLibrary();
 await library.ensure([...MODEL_KEYS, ...PROCEDURAL_MODELS]);
-await library.ensureTextureVariants(['a', 'b', 'c']);
+await library.ensureTextureVariants(['a', 'b', 'c', 'roads-a']);
 const canvas = document.querySelector('canvas')!;
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(512, 512, false);

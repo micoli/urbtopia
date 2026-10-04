@@ -3,21 +3,21 @@ import { join } from 'node:path';
 import { zipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
 import { MODEL_KEYS } from '../src/scene/renderItems';
-import { ARCHIVES_DIR, ASSET_PACKS } from './assetPacks';
+import { ARCHIVES_DIR, ASSET_PACKS, QUATERNIUS_PACKS } from './assetPacks';
 import { extractPack } from './extractPack';
 
 const bytes = (text: string) => new TextEncoder().encode(text);
 
 describe('asset packs', () => {
   it('provide every 3D model the scene can ask for', () => {
-    const provided = new Set(ASSET_PACKS.flatMap((pack) => pack.files.map((file) => `${pack.name}/${file}`)));
+    const provided = new Set([...ASSET_PACKS, ...QUATERNIUS_PACKS].flatMap((pack) => pack.files.map((file) => `${pack.name}/${file}`)));
     const missing = MODEL_KEYS.filter((key) => !provided.has(key));
     expect(missing).toEqual([]);
   });
 
   it('download nothing the scene does not use', () => {
     const used = new Set(MODEL_KEYS);
-    const unused = ASSET_PACKS.flatMap((pack) => pack.files.map((file) => `${pack.name}/${file}`)).filter((key) => !used.has(key));
+    const unused = [...ASSET_PACKS, ...QUATERNIUS_PACKS].flatMap((pack) => pack.files.map((file) => `${pack.name}/${file}`)).filter((key) => !used.has(key));
     expect(unused).toEqual([]);
   });
 

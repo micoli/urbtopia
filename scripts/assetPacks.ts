@@ -1,4 +1,7 @@
 import { NATURE_MODELS } from '../src/core/environment/nature.ts';
+import { CROP_IDS } from '../src/core/farming/crops.ts';
+import { cropModelsOf } from '../src/scene/cropModels.ts';
+import type { QuaterniusPack } from './quaternius.ts';
 
 const natureFiles = (pack: string) => NATURE_MODELS.filter(([, model]) => model.startsWith(`${pack}/`)).map(([, model]) => model.slice(pack.length + 1));
 
@@ -102,5 +105,12 @@ export const ASSET_PACKS: AssetPack[] = [
   },
 ];
 
+// Quaternius packs (CC0) ship FBX only: they are converted to GLB at install time so the runtime keeps one GLTF loader.
+export const QUATERNIUS_PACKS: QuaterniusPack[] = [
+  { name: 'crops', archive: 'crops.zip', files: CROP_IDS.flatMap((species) => cropModelsOf(species)).map((model) => model.slice('crops/'.length)) },
+  { name: 'farm', archive: 'farm-buildings.zip', files: ['Barn', 'OpenBarn'] },
+];
+
+export const QUATERNIUS_ARCHIVES_DIR = 'assets/quaternus';
 export const MODELS_DIR = 'public/models';
 export const ARCHIVES_DIR = 'assets/kenney';

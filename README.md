@@ -78,6 +78,8 @@ The 3D models come from Kenney asset packs (see [Credits](#credits)). The origin
 
 To update the archives, run `npm run assets:fetch`. The download links contain a hash that changes with each Kenney release: if one fails, copy the new link from the pack page into `scripts/assetPacks.ts`. Archives are validated before they replace the old ones. Then run `npm run assets -- --force` and commit the new archives.
 
+Crops and farm buildings come from two Quaternius packs, versioned in `assets/quaternus/`. They ship FBX only, so `npm run assets` converts the models the scene uses to GLB (scaled to one tile) with the three.js FBX loader, keeping a single GLTF loader at runtime.
+
 The [`prototypes`](prototypes) folder holds three throwaway prototypes (render benchmark, asset viewer, touch UX) that informed the design. Only their sources are versioned; `npm run assets:prototypes` copies the models they load.
 
 ## Credits
@@ -96,6 +98,8 @@ The [`prototypes`](prototypes) folder holds three throwaway prototypes (render b
 - [Pirate Kit](https://kenney.nl/assets/pirate-kit) 2.1
 - [Watercraft Kit](https://kenney.nl/assets/watercraft-kit) 2.1
 - [Train Kit](https://kenney.nl/assets/train-kit) 1.1
+
+3D models of crops and farm buildings: **[Quaternius](https://quaternius.com)**, released under CC0 1.0 Universal (public domain), from the Farm Crops and Farm Buildings packs.
 
 Each archive in `assets/kenney/` includes its original `License.txt`. Research notes on the packs are in [`docs/research/kenney-city-kits.md`](docs/research/kenney-city-kits.md).
 
