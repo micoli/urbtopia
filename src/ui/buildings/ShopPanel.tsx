@@ -3,6 +3,8 @@ import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
+import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
+import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
 
 interface ShopPanelProps {
   building: Building;
@@ -14,9 +16,8 @@ export function ShopPanel({ building }: ShopPanelProps) {
   const hasFreeSlot = building.stacks.some((stack) => stack.stock === 0);
   const stockable = (Object.keys(GOODS) as GoodId[]).filter((good) => (stock[good] ?? 0) >= SHOP.stackSize);
 
-  return (
-    <section className="production">
-      <h3>{t('shop.stock')}</h3>
+  return <DrawerProductionPanel>
+      <DrawerPanelTitle title={t('shop.stock')} level={building.tier}/>
       <ol className="slots">
         {building.stacks.map((stack, index) => (
           <li key={index} className={stack.earned > 0 ? 'slot slot-ready' : 'slot'}>
@@ -45,6 +46,5 @@ export function ShopPanel({ building }: ShopPanelProps) {
           ))}
         </div>
       ) : null}
-    </section>
-  );
+  </DrawerProductionPanel>
 }

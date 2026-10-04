@@ -1,7 +1,6 @@
 import { footprintOf } from '../../core';
 import { useGame } from '../common/hooks';
-import { CollectBadge } from './CollectBadge';
-import { collectBadgeLabel } from './collectBadgeLabel';
+import { CollectBadge, collectBadgeLabel } from './CollectBadge';
 import { ReadyFieldBadges } from './ReadyFieldBadges';
 
 export function CollectBadges() {

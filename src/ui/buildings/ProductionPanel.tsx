@@ -5,8 +5,10 @@ import { isPack, itemName } from '../../i18n/itemName';
 import { formatDuration } from '../common/formatDuration';
 import { useGame } from '../common/hooks';
 import { gameStore } from '../../store/gameStore';
-import { UpgradeSection } from './UpgradeSection';
+import { UpgradeSection } from '../common/UpgradeSection.tsx';
 import { UrbsAmount } from '../common/UrbsAmount';
+import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
+import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
 
 interface ProductionPanelProps {
   building: Building;
@@ -36,11 +38,8 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
   const canFilter = building.type === 'packhouse' && items.some((item) => isAvailable(item) && !lacksMaterials(item));
   const filtering = canFilter && onlyCraftable;
 
-  return (
-    <section className="production">
-      <h3>
-        {t('panel.queue')} · {t('home.tier')} {building.tier}
-      </h3>
+  return <DrawerProductionPanel>
+      <DrawerPanelTitle title={`${t('panel.queue')} · ${t('home.tier')}`} level={building.tier}/>
       <ol className="slots">
         {Array.from({ length: building.slotCount }, (_, index) => {
           const entry = building.queue[index];
@@ -91,8 +90,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
           {t('panel.collect')}
         </button>
       ) : null}
-    </section>
-  );
+  </DrawerProductionPanel>;
 }
 
 function recipeLabel(item: ItemId): string {

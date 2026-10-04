@@ -2,15 +2,17 @@ import { COAL_CAPACITY, ECOLOGY, energyStats, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
-import { UpgradeSection } from './UpgradeSection';
+import { UpgradeSection } from '../common/UpgradeSection.tsx';
+import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
+import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
 
 export function CoalPlantPanel({ building }: { building: Building }) {
   const state = useGame(s => s.state);
   const energy = energyStats(state);
   const delivered = energy.coalRates.get(building.id) ?? 0;
   const enabled = building.coalEnabled !== false;
-  return <section className="production">
-    <h3><strong>{t('home.tier')}</strong> {building.tier}</h3>
+  return <DrawerProductionPanel>
+    <DrawerPanelTitle title={t(`home.tier`)} level={building.tier}/>
     <p><strong>{t('eco.nominal')}</strong>: {COAL_CAPACITY[building.tier - 1] ?? 0}</p>
     <p><strong>{t('eco.coal')}</strong>: {delivered.toFixed(2)} / h</p>
     <p><strong>{t('eco.cost')}</strong>: {(delivered * ECOLOGY.coalCost).toFixed(2)} · {t('eco.coalRate')}: {ECOLOGY.coalCost}</p>
@@ -22,5 +24,5 @@ export function CoalPlantPanel({ building }: { building: Building }) {
       {t(enabled ? 'eco.coalStop' : 'eco.coalStart')}
     </button>
     <UpgradeSection building={building} />
-  </section>;
+  </DrawerProductionPanel>;
 }

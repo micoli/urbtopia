@@ -1,10 +1,8 @@
 import { t } from '../../i18n/t';
 import { sceneHandle } from '../../store/sceneHandle';
 import { useGame, useReadOnly } from '../common/hooks';
-import { useCoarsePointer } from './useCoarsePointer';
 
 export function StaticButtons() {
-  const touch = useCoarsePointer();
   const undo = useGame((store) => store.undo);
   const canUndo = useGame((store) => store.deletionUndo !== null);
   const readOnly = useReadOnly();

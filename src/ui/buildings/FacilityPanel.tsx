@@ -1,8 +1,10 @@
 import { FACILITIES, citizensOf, facilityCapacity, serviceCoverage, type Building, type FacilityType } from '../../core';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
-import { ReachToggle } from './ReachToggle';
-import { UpgradeSection } from './UpgradeSection';
+import { ReachToggle } from '../common/ReachToggle.tsx';
+import { UpgradeSection } from '../common/UpgradeSection.tsx';
+import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
+import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
 
 interface FacilityPanelProps {
   building: Building & { type: FacilityType };
@@ -14,13 +16,11 @@ export function FacilityPanel({ building }: FacilityPanelProps) {
   const capacity = facilityCapacity(building.type, building.tier);
   const coverage = serviceCoverage(state);
   const served = state.buildings.reduce((total, home) => total + (home.type === 'home' && coverage.get(home.id)?.has(building.type) ? citizensOf(home.tier) : 0), 0);
-  return (
-    <section className="production">
-        <h3><strong>{t('home.tier')}</strong> {building.tier}</h3>
+  return <DrawerProductionPanel>
+        <DrawerPanelTitle title={t(`home.tier`)} level={building.tier}/>
         <p><strong>{t('facility.reach')}</strong>: {radius === null ? t('placement.cityWide') : `${2 * radius} × ${2 * radius}`}</p>
         {radius !== null && <ReachToggle />}
         <p><strong>{t('facility.capacity')}</strong>: {capacity === null ? t('facility.unlimited') : capacity} · {t('facility.served')}: {served}</p>
       <UpgradeSection building={building} />
-    </section>
-  );
+  </DrawerProductionPanel>
 }

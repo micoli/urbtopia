@@ -1,11 +1,11 @@
 import { Fragment } from 'react';
 import { maxTierOf, missingServices, serviceCoverage, upgradeCostOf, type Building, type GoodId } from '../../core';
-import { t } from '../../i18n/t';
-import { itemName } from '../../i18n/itemName';
-import { gameStore } from '../../store/gameStore';
-import { useGame } from '../common/hooks';
-import { serviceName } from './serviceNames';
-import { UrbsAmount } from '../common/UrbsAmount';
+import { t } from '../../i18n/t.ts';
+import { itemName } from '../../i18n/itemName.ts';
+import { gameStore } from '../../store/gameStore.ts';
+import { useGame } from './hooks.ts';
+import { serviceName } from '../buildings/serviceNames.ts';
+import { UrbsAmount } from './UrbsAmount.tsx';
 
 interface UpgradeSectionProps {
   building: Building;

@@ -1,6 +1,6 @@
 import { useStore } from 'zustand';
-import { prefsStore } from '../../i18n/prefsStore';
-import { t } from '../../i18n/t';
+import { prefsStore } from '../../i18n/prefsStore.ts';
+import { t } from '../../i18n/t.ts';
 
 export function ReachToggle() {
   const showReach = useStore(prefsStore, (store) => store.showReach);

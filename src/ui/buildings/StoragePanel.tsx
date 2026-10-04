@@ -2,7 +2,8 @@ import { STORAGE_TIERS, compartmentOf, isStorageType, storageCapacity, storageUs
 import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
 import { useGame } from '../common/hooks';
-import { UpgradeSection } from './UpgradeSection';
+import { UpgradeSection } from '../common/UpgradeSection.tsx';
+import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
 
 interface StoragePanelProps {
   building: Building;
@@ -24,9 +25,7 @@ export function StoragePanel({ building }: StoragePanelProps) {
 
   return (
     <section className="storehouse">
-      <h3>
-        {t('panel.stock')} · {t('panel.level')} {building.tier}
-      </h3>
+      <DrawerPanelTitle title={t(`panel.stock`)} level={building.tier}/>
       {compartments.map((compartment) => (
         <div key={compartment}>
           <p>

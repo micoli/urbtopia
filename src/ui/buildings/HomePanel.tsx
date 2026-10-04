@@ -3,8 +3,11 @@ import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 import { serviceName } from './serviceNames';
-import { UpgradeSection } from './UpgradeSection';
+import { UpgradeSection } from '../common/UpgradeSection.tsx';
 import {UrbsAmount} from "../common/UrbsAmount.tsx";
+import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
+import {DrawerPanelLabelValue} from "../common/DrawerPanelLabelValue.tsx";
+import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
 
 interface HomePanelProps {
   building: Building;
@@ -19,35 +22,22 @@ export function HomePanel({ building }: HomePanelProps) {
   const missing = missingServices(coverage, building);
   const spec = HOME_TIERS[building.tier - 1];
   const due = taxDue(building);
-  return (
-    <section className="production">
-      <h3>
-          <strong>{t('home.tier')}</strong> {building.tier}
-      </h3>
-      <p>
-          <strong>{t('home.citizens')}</strong>: {citizensOf(building.tier)}
-      </p>
-      <p>
-          <strong>{t('home.demand')}</strong>: ⚡ {homePower(building).toFixed(1)} · 💧 {spec?.water ?? 0}
-      </p>
-      <p>
-          <strong>{t('home.tax')}</strong>: {due}
-      </p>
-      <p>
-          <strong>{t('eco.saved')}</strong>: {((spec?.power ?? 0) - homePower(building)).toFixed(1)} · {t('eco.wellbeing')}: {benefits.wellbeing.toFixed(1)}
-      </p>
-      <p>
-          <strong>{t('home.services')}</strong>: {covered.length ? covered.map(type => t(`building.${type}`)).join(', ') : t('home.servicesNone')}
-      </p>
-      {leisure && (<p>
-          <strong>{t('home.leisure')}</strong>: {leisure.length ? leisure.map(casino => `${t('building.casino')} ${t('home.tier')} ${casino.tier}`).join(', ') : t('home.leisureNone')}
-      </p>)}
+  return <DrawerProductionPanel>
+      <DrawerPanelTitle title={t(`home.tier`)} level={building.tier}/>
+      <DrawerPanelLabelValue label={t('home.citizens')} value={citizensOf(building.tier)}/>
+
+      <DrawerPanelLabelValue label={t('home.demand')} value={<>⚡ {homePower(building).toFixed(1)} · 💧 {spec?.water ?? 0}</>}/>
+      <DrawerPanelLabelValue label={t('home.tax')} value={<>{due}</>}/>
+      <DrawerPanelLabelValue label={t('eco.saved')} value={<>{((spec?.power ?? 0) - homePower(building)).toFixed(1)} · {t('eco.wellbeing')}: {benefits.wellbeing.toFixed(1)}</>}/>
+
+      <DrawerPanelLabelValue label={t('home.services')} value={<>{covered.length ? covered.map(type => t(`building.${type}`)).join(', ') : t('home.servicesNone')}</>}/>
+
+      {leisure && <DrawerPanelLabelValue label={t('home.leisure')} value={<>{leisure.length ? leisure.map(casino => `${t('building.casino')} ${t('home.tier')} ${casino.tier}`).join(', ') : t('home.leisureNone')}</>}/>}
       {missing.length > 0 && (<p className="stat-tight">
-          <strong>{t('home.servicesMissing')}</strong>: {missing.map(key => `${serviceName(key)} (${t(`home.reason.${uncoveredReason(state, building, key)}`)})`).join(', ')}{benefits.servicePenalty > 0 && ` · ${t('eco.servicePenalty')}: −${benefits.servicePenalty.toFixed(0)}`}
+          <DrawerPanelLabelValue label={t('home.servicesMissing')} value={<>{missing.map(key => `${serviceName(key)} (${t(`home.reason.${uncoveredReason(state, building, key)}`)})`).join(', ')}{benefits.servicePenalty > 0 && ` · ${t('eco.servicePenalty')}: −${benefits.servicePenalty.toFixed(0)}`}</>}/>
       </p>)}
-      {benefits.pollutionPenalty > 0 && (<p>
-          <strong>{t('eco.coalPenalty')}</strong>: −{benefits.pollutionPenalty.toFixed(1)} · {t('eco.coalPollutionHelp')}
-      </p>)}
+      {benefits.pollutionPenalty > 0 && <DrawerPanelLabelValue label={t('eco.coalPenalty')} value={<>−{benefits.pollutionPenalty.toFixed(1)} · {t('eco.coalPollutionHelp')}</>}/> }
+
       {(['insulation', 'solar'] as const).map(equipment => {
         const installed = equipment === 'solar' ? building.solar : building.insulated;
         const cost = (equipment === 'solar' ? ECOLOGY.solarCost : ECOLOGY.insulationCost) * building.tier;
@@ -64,6 +54,5 @@ export function HomePanel({ building }: HomePanelProps) {
           {t('panel.collect')} (+{due})
         </button>
       ) : null}
-    </section>
-  );
+    </DrawerProductionPanel>
 }

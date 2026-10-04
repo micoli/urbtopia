@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { footprintOf, isWorking, workProgress } from '../../core';
-import { sceneHandle } from '../../store/sceneHandle';
-import { collectBadgeLabel } from '../collect/collectBadgeLabel';
-import { useGame } from '../common/hooks';
+import { sceneHandle } from '../../store/sceneHandle.ts';
+import { collectBadgeLabel } from '../collect/CollectBadge.tsx';
+import { useGame } from './hooks.ts';
 
 const INDICATOR_HEIGHT = 1.8;
 const RING_RADIUS = 14;

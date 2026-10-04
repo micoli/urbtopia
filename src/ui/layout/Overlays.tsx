@@ -14,7 +14,7 @@ import { SaveFailedDialog } from '../system/SaveFailedDialog';
 import { Toast } from '../system/Toast';
 import { TutorialBanner } from '../tutorial/TutorialBanner';
 import { UpdatePrompt } from '../system/UpdatePrompt';
-import { WorkingIndicators } from '../buildings/WorkingIndicators';
+import { WorkingIndicators } from '../common/WorkingIndicators.tsx';
 
 export function Overlays() {
   return (

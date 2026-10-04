@@ -4,7 +4,8 @@ import { gameStore } from '../../store/gameStore';
 import { uiStore } from '../../store/uiStore';
 import { useGame } from '../common/hooks';
 import { CropRow } from './CropRow';
-import { UpgradeSection } from './UpgradeSection';
+import { UpgradeSection } from '../common/UpgradeSection.tsx';
+import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
 
 interface FarmPanelProps {
   building: Building;
@@ -17,9 +18,7 @@ export function FarmPanel({ building }: FarmPanelProps) {
 
   return (
     <section className="farm">
-      <h3>
-        {t('farm.seedStock')} · {t('home.tier')} {building.tier}
-      </h3>
+      <DrawerPanelTitle title={`${t('farm.seedStock')} · ${t('home.tier')}`} level={building.tier}/>
       <p>
           {t('farm.seeds')}: {seedStockUsed(state)}/{seedStockCapacity(state)}
       </p>
