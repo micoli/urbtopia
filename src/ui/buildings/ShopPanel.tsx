@@ -7,6 +7,7 @@ import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
 import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
+import { Note } from '../common/Note';
 
 interface ShopPanelProps {
   building: Building;
@@ -38,7 +39,7 @@ export function ShopPanel({ building }: ShopPanelProps) {
           </li>
         ))}
       </ol>
-      {hasFreeSlot && stockable.length === 0 ? <p className="hint">{t('shop.needGoods')}</p> : null}
+      {hasFreeSlot && stockable.length === 0 ? <Note tone="muted">{t('shop.needGoods')}</Note> : null}
       {hasFreeSlot ? (
         <ButtonRow align="stretch" spaced>
           {stockable.map((good) => (

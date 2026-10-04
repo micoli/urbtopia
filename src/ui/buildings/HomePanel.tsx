@@ -34,9 +34,7 @@ export function HomePanel({ building }: HomePanelProps) {
       <DrawerPanelLabelValue label={t('home.services')} value={<>{covered.length ? covered.map(type => t(`building.${type}`)).join(', ') : t('home.servicesNone')}</>}/>
 
       {leisure && <DrawerPanelLabelValue label={t('home.leisure')} value={<>{leisure.length ? leisure.map(casino => `${t('building.casino')} ${t('home.tier')} ${casino.tier}`).join(', ') : t('home.leisureNone')}</>}/>}
-      {missing.length > 0 && (<p className="stat-tight">
-          <DrawerPanelLabelValue label={t('home.servicesMissing')} value={<>{missing.map(key => `${serviceName(key)} (${t(`home.reason.${uncoveredReason(state, building, key)}`)})`).join(', ')}{benefits.servicePenalty > 0 && ` · ${t('eco.servicePenalty')}: −${benefits.servicePenalty.toFixed(0)}`}</>}/>
-      </p>)}
+      {missing.length > 0 && <DrawerPanelLabelValue tone="warn" label={t('home.servicesMissing')} value={<>{missing.map(key => `${serviceName(key)} (${t(`home.reason.${uncoveredReason(state, building, key)}`)})`).join(', ')}{benefits.servicePenalty > 0 && ` · ${t('eco.servicePenalty')}: −${benefits.servicePenalty.toFixed(0)}`}</>}/>}
       {benefits.pollutionPenalty > 0 && <DrawerPanelLabelValue label={t('eco.coalPenalty')} value={<>−{benefits.pollutionPenalty.toFixed(1)} · {t('eco.coalPollutionHelp')}</>}/> }
 
       {(['insulation', 'solar'] as const).map(equipment => {

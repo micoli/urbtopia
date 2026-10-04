@@ -7,6 +7,7 @@ import { useGame } from './hooks.ts';
 import { serviceName } from '../buildings/serviceNames.ts';
 import { UrbsAmount } from './UrbsAmount.tsx';
 import { ActionButton } from './ActionButton';
+import { Note } from './Note';
 
 interface UpgradeSectionProps {
   building: Building;
@@ -34,7 +35,7 @@ export function UpgradeSection({ building }: UpgradeSectionProps) {
         {Object.entries(cost.goods).map(([good, amount]) => ` + ${amount} ${itemName(good as GoodId)}`)}
       </p>
       {missing.length > 0 ? (
-        <p className="stat-tight">
+        <Note>
           {t('home.missing')}:{' '}
           {missing.map((item, index) => (
             <Fragment key={index}>
@@ -42,9 +43,9 @@ export function UpgradeSection({ building }: UpgradeSectionProps) {
               {item}
             </Fragment>
           ))}
-        </p>
+        </Note>
       ) : null}
-      {blocking.length > 0 ? <p className="stat-tight">{t('home.upgradeBlocked')}: {blocking.map(serviceName).join(', ')}</p> : null}
+      {blocking.length > 0 ? <Note>{t('home.upgradeBlocked')}: {blocking.map(serviceName).join(', ')}</Note> : null}
       <ActionButton variant="primary" block disabled={blocking.length > 0} onClick={() => gameStore.getState().send({ type: 'UpgradeBuilding', buildingId: building.id })}>
         {t('home.upgrade')} → {building.tier + 1}
       </ActionButton>

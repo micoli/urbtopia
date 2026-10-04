@@ -10,6 +10,7 @@ import { useDialogs } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
 import { Dialog } from '../common/Dialog';
 import { InlineConfirm } from '../common/InlineConfirm';
+import { Note } from '../common/Note';
 
 export function RecoveryScreen() {
   const recovery = useDialogs((store) => store.recovery);
@@ -38,7 +39,7 @@ export function RecoveryScreen() {
       <Dialog.Title>{t('recovery.title')}</Dialog.Title>
       <Dialog.Body>
         <p>{t(`recovery.reason.${recovery.reason}`)}</p>
-        {noBackup || !hasBackup ? <p className="stat-tight">{t('recovery.noBackup')}</p> : null}
+        {noBackup || !hasBackup ? <Note>{t('recovery.noBackup')}</Note> : null}
       </Dialog.Body>
       <Dialog.Actions align="start" column>
         <ActionButton disabled={!hasBackup} onClick={restore}>{t('recovery.restore')}</ActionButton>

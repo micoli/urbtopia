@@ -11,6 +11,7 @@ import {DrawerProductionPanel} from "../common/DrawerProductionPanel.tsx";
 import {DrawerPanelTitle} from "../common/DrawerPanelTitle.tsx";
 import {DrawerPanelLabelValue} from "../common/DrawerPanelLabelValue.tsx";
 import { ActionButton } from '../common/ActionButton';
+import { Note } from '../common/Note';
 
 const PLAYABLE = new Set(['slotMachine', 'blackjack', 'blockmatch']);
 
@@ -25,7 +26,7 @@ export function CasinoPanel({ building }: CasinoPanelProps) {
   const unlocked = building.tier < MAX_CASINO_TIER ? gamesOfTier(building.tier + 1).filter(game => !gamesOfTier(building.tier).includes(game)) : [];
   return <DrawerProductionPanel>
       <DrawerPanelTitle title={t('home.tier')} level={building.tier}/>
-      <p className="stat-tight" data-state={powered ? 'on' : 'off'}>{powered ? t('casino.powered') : t('casino.shut')}</p>
+      <Note>{powered ? t('casino.powered') : t('casino.shut')}</Note>
       <DrawerPanelLabelValue label={t('facility.reach')} value={`${2 * casinoRadius(building.tier)} × ${2 * casinoRadius(building.tier)}`}/>
       <ReachToggle />
       <DrawerPanelLabelValue label={t('casino.maxStake')} value={<UrbsAmount value={maxStake(building.tier)} />}/>
@@ -40,7 +41,7 @@ export function CasinoPanel({ building }: CasinoPanelProps) {
           );
         })}
       </div>
-      <p className="stat-tight">{building.tier < MAX_CASINO_TIER ? `${t('casino.unlocksNext')}: ${unlocked.map(game => t(`casino.${game}`)).join(', ')} · ${t('casino.maxStake')} ${maxStake(building.tier + 1)}` : t('casino.maxTier')}</p>
+      <Note>{building.tier < MAX_CASINO_TIER ? `${t('casino.unlocksNext')}: ${unlocked.map(game => t(`casino.${game}`)).join(', ')} · ${t('casino.maxStake')} ${maxStake(building.tier + 1)}` : t('casino.maxTier')}</Note>
       <UpgradeSection building={building} />
   </DrawerProductionPanel>
 }
