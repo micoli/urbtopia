@@ -1,0 +1,160 @@
+{
+  "format": "urbtopia-save",
+  "version": 9,
+  "savedAt": 1700000000000,
+  "state": {
+    "brtRoads": [],
+    "rails": [],
+    "transitLines": [],
+    "transitFleet": [],
+    "busLines": [],
+    "adaptationUntil": 0,
+    "seed": "services-compatibility",
+    "rngState": 1721211144,
+    "urbs": 1000,
+    "lastSeen": 1700000000000,
+    "nextId": 10,
+    "ownedParcels": [
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 4
+      }
+    ],
+    "buildings": [
+      {
+        "id": 1,
+        "type": "home",
+        "x": 50,
+        "y": 50,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 2,
+        "type": "school",
+        "x": 52,
+        "y": 50,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 3,
+        "type": "townHall",
+        "x": 50,
+        "y": 53,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 4,
+        "type": "hospital",
+        "x": 54,
+        "y": 53,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 5,
+        "type": "concertHall",
+        "x": 54,
+        "y": 57,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      }
+    ],
+    "storage": {
+      "materials": {},
+      "goods": {}
+    },
+    "marketUnlocked": false,
+    "market": {},
+    "roads": [
+      {
+        "x": 53,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 54,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 55,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 56,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 57,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 58,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 59,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 60,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 61,
+        "y": 58,
+        "kind": "road"
+      },
+      {
+        "x": 62,
+        "y": 58,
+        "kind": "road"
+      }
+    ],
+    "roundabouts": [],
+    "tutorial": null,
+    "seedStock": {},
+    "fields": []
+  }
+}
