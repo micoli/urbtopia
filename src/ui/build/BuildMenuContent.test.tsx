@@ -35,12 +35,12 @@ describe('build menu sections', () => {
     expect(sections[1]).toContain(t('building.workshop'));
     expect(sections[2]).toContain(t('building.storehouse'));
     expect(sections[3]).toContain(t('building.waterTower'));
-    expect(sections[4]).toContain(t('building.park'));
-    expect(sections[5]).toContain(t('building.railStation'));
-    expect(sections[6]).toContain(t('build.publicFacilities'));
-    expect(sections[7]).toContain(t('building.casino'));
-    expect(sections[8]).toContain(t('building.nature-cliff-steps-rock'));
-    for (const category of ['education', 'administration', 'culture', 'health', 'safety'] as const) expect(sections[6]).toContain(`<h4 class="build-category">${t(`service.${category}`)}</h4>`);
+    expect(sections[4]).toContain(t('building.railStation'));
+    expect(sections[5]).toContain(t('build.publicFacilities'));
+    expect(sections[6]).toContain(t('building.casino'));
+    expect(sections[7]).toContain(t('building.nature-cliff-steps-rock'));
+    expect(sections[8]).toContain(t('building.park'));
+    for (const category of ['education', 'administration', 'culture', 'health', 'safety'] as const) expect(sections[5]).toContain(`<h4 class="build-category">${t(`service.${category}`)}</h4>`);
     for (const type of Object.keys(BUILDING_SPECS) as (keyof typeof BUILDING_SPECS)[]) {
       expect(html.split(`<span>${t(`building.${type}`)}</span>`)).toHaveLength(2);
       expect(html).toContain(`data-codex-id="${type}"`);

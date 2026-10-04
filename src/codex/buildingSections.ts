@@ -9,11 +9,11 @@ export const BUILDING_SECTIONS = [
   { title: 'build.production', types: ['workshop', 'factory', 'shop', 'farm', 'packhouse'] },
   { title: 'build.storage', types: ['storehouse', 'silo', 'grainSilo', 'vault'] },
   { title: 'build.utilities', types: ['powerPlant', 'coalPlant', 'waterTower', 'solar', 'battery', 'backup'] },
-  { title: 'build.greenSpaces', types: ['tree', 'park', ...natureTypesOf(false)] },
   { title: 'build.transport', types: ['busStop', 'brtStation', 'railStation'] },
   { title: 'build.publicFacilities', types: PUBLIC_FACILITY_TYPES },
   { title: 'build.leisure', types: ['casino'] },
   { title: 'build.decoration', types: natureTypesOf(true) },
+  { title: 'build.greenSpaces', types: ['tree', 'park', ...natureTypesOf(false)] },
 ] as const satisfies readonly { title: string; types: readonly BuildingType[] }[];
 
 export type BuildSection = typeof BUILDING_SECTIONS[number]['title'];
