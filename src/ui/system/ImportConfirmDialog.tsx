@@ -5,7 +5,7 @@ import { gameStore } from '../../store/gameStore';
 import { useDialogs } from '../common/hooks';
 import { useConfirmKeys } from '../build/useConfirmKeys';
 import { ActionButton } from '../common/ActionButton';
-import { ButtonRow } from '../common/ButtonRow';
+import { Dialog } from '../common/Dialog';
 
 export function ImportConfirmDialog() {
   const pending = useDialogs((store) => store.pendingImport);
@@ -21,18 +21,12 @@ export function ImportConfirmDialog() {
   if (!pending) return null;
 
   return (
-    <div className="dialog-backdrop" role="dialog" aria-modal="true">
-      <div className="dialog">
-        <p>{t('import.confirm')}</p>
-        <ButtonRow align="end">
-          <ActionButton onClick={close}>
-            {t('sale.no')}
-          </ActionButton>
-          <ActionButton variant="danger" onClick={replace}>
-            {t('import.yes')}
-          </ActionButton>
-        </ButtonRow>
-      </div>
-    </div>
+    <Dialog>
+      <Dialog.Body><p>{t('import.confirm')}</p></Dialog.Body>
+      <Dialog.Actions>
+        <ActionButton onClick={close}>{t('sale.no')}</ActionButton>
+        <ActionButton variant="danger" onClick={replace}>{t('import.yes')}</ActionButton>
+      </Dialog.Actions>
+    </Dialog>
   );
 }
