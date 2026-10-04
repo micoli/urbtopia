@@ -41,6 +41,7 @@ export function TransitPanel() {
     <NumberStepper label={t('transit.offPeak')} min={mode === 'brt' ? 10 : 1} max={mode === 'brt' ? 15 : 60} value={offPeak} onChange={setOffPeak} />
     <button type="button" onClick={() => setStops([])}>{t('eco.clearStops')}</button>
     <button type="button" onClick={reset}>{t('pad.cancel')}</button>
+    <button type="button" onClick={() => gameStore.getState().send({ type: 'RepairTransitNetwork', mode })}>{t('transit.repair')}</button>
     <button type="button" className="eco-primary" disabled={stops.length < 2 || totalCitizens(state) < TRANSIT[mode].unlock} onClick={save}>{t('eco.saveLine')}</button>
     <TransitFleetPanel />
   </section>;

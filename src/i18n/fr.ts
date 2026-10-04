@@ -24,6 +24,8 @@ export const FR: Record<MessageKey, string> = {
   'transit.buy': "Acheter",
   'transit.sell': "Revendre (50 %)",
   'transit.unassigned': "Sans affectation",
+  'transit.repair': 'Corriger le réseau',
+  'error.networkIntact': 'Rien à corriger : aucun bout de voie face à un autre.',
   'transit.peak': "Intervalle en pointe (minutes du jeu)",
   'transit.offPeak': "Intervalle en heures creuses (minutes du jeu)",
   'transit.headway': "Intervalle effectif",

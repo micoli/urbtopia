@@ -19,6 +19,8 @@ export const MESSAGES = {
   'transit.buy': "Buy",
   'transit.sell': "Sell (50%)",
   'transit.unassigned': "Unassigned",
+  'transit.repair': 'Fix network',
+  'error.networkIntact': 'Nothing to fix: no facing dead ends found.',
   'transit.peak': "Peak headway (game minutes)",
   'transit.offPeak': "Off-peak headway (game minutes)",
   'transit.headway': "Actual headway",

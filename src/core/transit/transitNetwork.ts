@@ -49,6 +49,20 @@ export function validNetworkCrossings(state: GameState): boolean {
   return true;
 }
 
+export function repairNetwork(state: GameState, mode: 'brt' | 'rail'): TransitTile[] | null {
+  const key = mode === 'brt' ? 'brtRoads' : 'rails';
+  const map = new Map(networkTiles(state, mode).map(p => [tileKey(p), { ...p, exits: [...p.exits] }]));
+  let repaired = false;
+  for (const a of [...map.values()]) for (const d of ['E', 'S'] as const) {
+    const b = map.get(tileKey(neighbour(a, d)));
+    if (!b || a.exits.length > 1 || b.exits.length > 1 || a.exits.includes(d) || b.exits.includes(opposite(d))) continue;
+    a.exits.push(d); b.exits.push(opposite(d));
+    if (validNetworkCrossings({ ...state, [key]: [...map.values()] })) { repaired = true; continue; }
+    a.exits.pop(); b.exits.pop();
+  }
+  return repaired ? [...map.values()] : null;
+}
+
 export function extendNetwork(state: GameState, mode: 'brt' | 'rail', from: Coord, to: Coord, horizontalFirst: boolean): { tiles: TransitTile[]; cost: number } | { key: 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.invalidCrossing' } {
   if (![from.x, from.y, to.x, to.y].every(n => Number.isSafeInteger(n) && n >= 0) || !isInsideOwnedParcels(state, from) || !isInsideOwnedParcels(state, to)) return { key: 'error.outsideOwnedParcels' };
   const path = roadPath(from, to, horizontalFirst);

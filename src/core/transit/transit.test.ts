@@ -135,6 +135,14 @@ describe('fleet management and service', () => {
     const result = dispatch(state, { type: 'SetTransitLine', mode: 'rail', stops: [1, 2], peakHeadway: 5, offPeakHeadway: 10 }, 0);
     expect(result.ok ? null : result.error.key).toBe('error.stopNotOnNetwork');
   });
+  it('repairs facing dead ends so the line becomes valid', () => {
+    const base = railCity();
+    const broken = { ...base, buildings: [...base.buildings, { ...createBuilding(9, 'home', 0, 8, 0), tier: 8 }, { ...createBuilding(10, 'home', 0, 12, 0), tier: 8 }], rails: strip(0, 0, 10).map(t => t.x === 9 ? { ...t, exits: ['W' as const] } : t).concat(strip(10, 0, 13)), transitLines: [] };
+    const fixed = run(broken, { type: 'RepairTransitNetwork', mode: 'rail' });
+    expect(routeForLine(fixed, { id: 99, mode: 'rail', stops: [1, 2], peakHeadway: 5, offPeakHeadway: 10 })).not.toBeNull();
+    const again = dispatch(fixed, { type: 'RepairTransitNetwork', mode: 'rail' }, 0);
+    expect(again.ok ? null : again.error.key).toBe('error.networkIntact');
+  });
   it('drops lines and unassigns vehicles when a station is sold', () => {
     const next = run(railCity(), { type: 'SellBuilding', id: 2 });
     expect(next.transitLines).toEqual([]);

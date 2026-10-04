@@ -1,4 +1,4 @@
-import { TRANSIT, extendNetwork, networkTiles, validNetworkCrossings } from '../transit/transitNetwork';
+import { TRANSIT, extendNetwork, networkTiles, repairNetwork, validNetworkCrossings } from '../transit/transitNetwork';
 import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
 import { routeFailure, routeForLine } from '../transit/transport';
 import { BUILDING_SPECS, createBuilding, emptyStack, placementCost } from '../buildings/buildingSpecs';
@@ -31,6 +31,7 @@ const HOUR_MS = 60 * 60 * 1000;
 export type Command =
   | { readonly type: 'BuildTransit'; readonly mode: 'brt' | 'rail'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'DemolishTransit'; readonly mode: 'brt' | 'rail'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
+  | { readonly type: 'RepairTransitNetwork'; readonly mode: 'brt' | 'rail' }
   | { readonly type: 'SetTransitLine'; readonly id?: number; readonly mode: 'brt' | 'rail'; readonly stops: number[]; readonly peakHeadway: number; readonly offPeakHeadway: number }
   | { readonly type: 'DeleteTransitLine'; readonly id: number }
   | { readonly type: 'BuyTransitVehicle'; readonly kind: TransitVehicleKind }
@@ -76,6 +77,7 @@ export type ErrorKey =
   | 'error.lastRoadOfBuilding'
   | 'error.noRoadHere'
   | 'error.invalidCrossing'
+  | 'error.networkIntact'
   | 'error.cannotProduce'
   | 'error.queueFull'
   | 'error.nothingToCollect'
@@ -121,6 +123,7 @@ export function handleCommand(state: GameState, command: Command, now: number): 
   switch (command.type) {
     case 'BuildTransit':
     case 'DemolishTransit':
+    case 'RepairTransitNetwork':
     case 'SetTransitLine':
     case 'DeleteTransitLine':
     case 'BuyTransitVehicle':
@@ -578,7 +581,7 @@ function setBusLine(state: GameState, id: number | undefined, stops: number[]): 
   return { state: { ...state, nextId: id === undefined ? state.nextId + 1 : state.nextId, busLines: [...(state.busLines ?? []).filter(l => l.id !== line.id), line] }, events: [] };
 }
 
-function transitCommand(state: GameState, command: Extract<Command, { type: 'BuildTransit' | 'DemolishTransit' | 'SetTransitLine' | 'DeleteTransitLine' | 'BuyTransitVehicle' | 'SellTransitVehicle' | 'AssignTransitVehicle' }>): CommandOutcome {
+function transitCommand(state: GameState, command: Extract<Command, { type: 'BuildTransit' | 'DemolishTransit' | 'RepairTransitNetwork' | 'SetTransitLine' | 'DeleteTransitLine' | 'BuyTransitVehicle' | 'SellTransitVehicle' | 'AssignTransitVehicle' }>): CommandOutcome {
   const lines = state.transitLines ?? [], fleet = state.transitFleet ?? [];
   if (command.type === 'BuildTransit') {
     if (citizenCount(state) < TRANSIT[command.mode].unlock) return fail('error.itemLocked');
@@ -593,6 +596,11 @@ function transitCommand(state: GameState, command: Extract<Command, { type: 'Bui
     const kept = networkTiles(state, command.mode).filter(p => !targets.has(tileKey(p)));
     if (kept.length === networkTiles(state, command.mode).length) return fail('error.noRoadHere');
     const tiles = withoutDanglingExits(kept);
+    return { state: { ...state, [command.mode === 'brt' ? 'brtRoads' : 'rails']: tiles }, events: [] };
+  }
+  if (command.type === 'RepairTransitNetwork') {
+    const tiles = repairNetwork(state, command.mode);
+    if (!tiles) return fail('error.networkIntact');
     return { state: { ...state, [command.mode === 'brt' ? 'brtRoads' : 'rails']: tiles }, events: [] };
   }
   if (command.type === 'DeleteTransitLine') return { state: { ...state, transitLines: lines.filter(l => l.id !== command.id), transitFleet: fleet.map(v => v.lineId === command.id ? { ...v, lineId: undefined } : v) }, events: [] };
