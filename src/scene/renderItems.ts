@@ -119,7 +119,7 @@ const SOLAR_HOME_MODELS = ['suburban/building-type-j', 'suburban/building-type-u
 const ROOF_PANEL_MODEL = 'industrial/solar-panel-flat';
 const SOLAR_PANEL_MODEL = 'industrial/solar-panel-landscape';
 
-export const TRAIN_MODELS = ['trains/train-electric-city-a', 'trains/train-electric-city-b', 'trains/train-locomotive-a', 'trains/train-locomotive-passenger-a'];
+export const TRAIN_MODELS = ['trains/train-electric-city-a', 'trains/train-electric-city-b', 'trains/train-locomotive-a', 'trains/train-locomotive-passenger-a', 'trains/train-electric-city-c'];
 
 const RAIL_MODELS = ['trains/railroad-straight', 'trains/railroad-corner-small'];
 

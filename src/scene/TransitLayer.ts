@@ -6,6 +6,12 @@ import type { transitServices } from '../core/transit/transitService';
 
 type Service = ReturnType<typeof transitServices>[number];
 
+const VEHICLE_MODELS: Record<TransitVehicleKind, [string, string]> = {
+  brtElectric: [TRAIN_MODELS[0]!, TRAIN_MODELS[4]!],
+  trainElectric: [TRAIN_MODELS[0]!, TRAIN_MODELS[1]!],
+  trainCoal: [TRAIN_MODELS[2]!, TRAIN_MODELS[3]!],
+};
+
 export class TransitLayer {
   readonly root = new THREE.Group();
   readonly priorityTiles = new Set<string>();
@@ -21,7 +27,7 @@ export class TransitLayer {
   constructor(private library?: ModelLibrary) {
     this.root.add(this.tracks, this.vehicles);
     if (!library) return;
-    void library.ensure(TRAIN_MODELS).then(() => { if (this.disposed) return; this.modelsReady = true; this.fleetSignature = ''; for (const vehicle of this.moving) { if (vehicle.kind !== 'brtElectric') vehicle.mesh.add(this.makeVehicle(vehicle.kind)); } });
+    void library.ensure(TRAIN_MODELS).then(() => { if (this.disposed) return; this.modelsReady = true; this.fleetSignature = ''; for (const vehicle of this.moving) { vehicle.mesh.add(this.makeVehicle(vehicle.kind)); } });
   }
 
   sync(state: GameState, services: Service[]) {
@@ -95,29 +101,17 @@ export class TransitLayer {
 
   private makeVehicle(kind: TransitVehicleKind) {
     const group = new THREE.Group();
-    if (kind !== 'brtElectric') {
-      if (!this.modelsReady || !this.library) return group;
-      const coal = kind === 'trainCoal';
-      for (const [index, key] of (coal ? [TRAIN_MODELS[2]!, TRAIN_MODELS[3]!] : [TRAIN_MODELS[0]!, TRAIN_MODELS[1]!]).entries()) {
-        const model = this.library.get(key).clone(true);
-        const bounds = new THREE.Box3().setFromObject(model);
-        const center = bounds.getCenter(new THREE.Vector3());
-        const fitted = new THREE.Group();
-        fitted.scale.setScalar(.65 / bounds.getSize(new THREE.Vector3()).z);
-        model.position.sub(new THREE.Vector3(center.x, bounds.min.y, center.z));
-        fitted.position.z = index === 0 ? .35 : -.35; fitted.add(model); group.add(fitted);
-      }
-      group.userData.sharedModel = true;
-      return group;
+    if (!this.modelsReady || !this.library) return group;
+    for (const [index, key] of VEHICLE_MODELS[kind].entries()) {
+      const model = this.library.get(key).clone(true);
+      const bounds = new THREE.Box3().setFromObject(model);
+      const center = bounds.getCenter(new THREE.Vector3());
+      const fitted = new THREE.Group();
+      fitted.scale.setScalar(.65 / bounds.getSize(new THREE.Vector3()).z);
+      model.position.sub(new THREE.Vector3(center.x, bounds.min.y, center.z));
+      fitted.position.z = index === 0 ? .35 : -.35; fitted.add(model); group.add(fitted);
     }
-    const color = 0x198de0;
-    const parts = 2;
-    for (let i = 0; i < parts; i++) {
-      const z = (i - (parts - 1) / 2) * .42;
-      this.box(group, 0, .2, z, .32, .32, .38, color);
-      this.box(group, 0, .29, z, .34, .1, .26, 0xcdeaff);
-      this.box(group, 0, .02, z, .38, .08, .25, 0x171e27);
-    }
+    group.userData.sharedModel = true;
     return group;
   }
 
