@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { totalCitizens, TRANSIT, transportStats, type TransitLine } from '../../core';
+import { brokenLinkCount, totalCitizens, TRANSIT, transportStats, type TransitLine } from '../../core';
 import { lineStatusKey } from './lineStatusKey';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
@@ -14,6 +14,7 @@ export function TransitPanel() {
   const [stops, setStops] = useState<number[]>([]);
   const [peak, setPeak] = useState(5), [offPeak, setOffPeak] = useState(12);
   const stats = transportStats(state);
+  const brokenLinks = brokenLinkCount(state, mode);
   const reset = () => { setEditing(undefined); setStops([]); };
   const edit = (line: TransitLine) => { setMode(line.mode); setEditing(line.id); setStops(line.stops); setPeak(line.peakHeadway); setOffPeak(line.offPeakHeadway); };
   const save = () => {
@@ -22,6 +23,10 @@ export function TransitPanel() {
   };
   return <section className="transit-panel">
     <h3>{t('transit.brt')} / {t('transit.rail')}</h3>
+    {brokenLinks > 0 && <div className="eco-line" role="alert">
+      <p>⚠️ {t('transit.broken')} ({brokenLinks})</p>
+      <button type="button" className="eco-primary" onClick={() => gameStore.getState().send({ type: 'RepairTransitNetwork', mode })}>{t('transit.repair')}</button>
+    </div>}
     <p>{t('transit.help')}</p><p>{t('transit.coverage')}</p>
     <p>{t('transit.transfers')}: {stats.transferRiders.toFixed(1)} · {t('transit.coal')}: {stats.coalPerHour.toFixed(2)}</p>
     {stats.lines.filter(l => l.mode !== 'bus').map(line => <div className="eco-line" key={line.id}>
@@ -43,8 +48,6 @@ export function TransitPanel() {
     {stops.length > 0 && <button type="button" onClick={() => setStops([])}>{t('eco.clearStops')}</button>}
     {(stops.length > 0 || editing !== undefined) && <button type="button" onClick={reset}>{t('pad.cancel')}</button>}
     <button type="button" className="eco-primary" disabled={stops.length < 2 || totalCitizens(state) < TRANSIT[mode].unlock} onClick={save}>{t('eco.saveLine')}</button>
-    &nbsp;
-    <button type="button" onClick={() => gameStore.getState().send({ type: 'RepairTransitNetwork', mode })}>{t('transit.repair')}</button>
     <TransitFleetPanel />
   </section>;
 }

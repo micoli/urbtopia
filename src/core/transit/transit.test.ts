@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advance, createBuilding, dispatch, energyStats, extendNetwork, newGame, routeForLine, transportStats, type Command, type GameState, type TransitTile } from '../index';
+import { advance, createBuilding, brokenLinkCount, dispatch, energyStats, extendNetwork, newGame, routeForLine, transportStats, type Command, type GameState, type TransitTile } from '../index';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 import { validateGameState } from '../../persistence/validate';
 import { restoreDeletion } from '../engine/undo';
@@ -25,6 +25,16 @@ function railCity(): GameState {
 }
 
 describe('independent infrastructure', () => {
+  it('links a new BRT segment to the facing dead end of an existing one', () => {
+    const first = run(city(), { type: 'BuildTransit', mode: 'brt', from: { x: 8, y: 10 }, to: { x: 10, y: 10 } });
+    const second = run(first, { type: 'BuildTransit', mode: 'brt', from: { x: 11, y: 10 }, to: { x: 13, y: 10 } });
+    expect(brokenLinkCount(second, 'brt')).toBe(0);
+    expect(second.brtRoads!.find(p => p.x === 10 && p.y === 10)!.exits).toContain('E');
+  });
+  it('counts facing dead ends left unlinked in a legacy save', () => {
+    const state = { ...city(), brtRoads: [...strip(8, 10, 3), ...strip(11, 10, 3)] };
+    expect(brokenLinkCount(state, 'brt')).toBe(1);
+  });
   it('permits perpendicular Road/BRT crossings without joining networks', () => {
     const state = { ...city(), roads: Array.from({ length: 5 }, (_, i) => ({ x: 10, y: i + 8, kind: 'road' as const })) };
     const next = run(state, { type: 'BuildTransit', mode: 'brt', from: { x: 8, y: 10 }, to: { x: 12, y: 10 } });

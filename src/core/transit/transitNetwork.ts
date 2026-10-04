@@ -49,18 +49,28 @@ export function validNetworkCrossings(state: GameState): boolean {
   return true;
 }
 
-export function repairNetwork(state: GameState, mode: 'brt' | 'rail'): TransitTile[] | null {
+function linkFacingDeadEnds(state: GameState, mode: 'brt' | 'rail', map: Map<string, TransitTile>): number {
   const key = mode === 'brt' ? 'brtRoads' : 'rails';
-  const map = new Map(networkTiles(state, mode).map(p => [tileKey(p), { ...p, exits: [...p.exits] }]));
-  let repaired = false;
+  let linked = 0;
   for (const a of [...map.values()]) for (const d of ['E', 'S'] as const) {
     const b = map.get(tileKey(neighbour(a, d)));
     if (!b || a.exits.length > 1 || b.exits.length > 1 || a.exits.includes(d) || b.exits.includes(opposite(d))) continue;
     a.exits.push(d); b.exits.push(opposite(d));
-    if (validNetworkCrossings({ ...state, [key]: [...map.values()] })) { repaired = true; continue; }
+    if (validNetworkCrossings({ ...state, [key]: [...map.values()] })) { linked++; continue; }
     a.exits.pop(); b.exits.pop();
   }
-  return repaired ? [...map.values()] : null;
+  return linked;
+}
+
+const cloneTiles = (state: GameState, mode: 'brt' | 'rail') => new Map(networkTiles(state, mode).map(p => [tileKey(p), { ...p, exits: [...p.exits] }]));
+
+export function brokenLinkCount(state: GameState, mode: 'brt' | 'rail'): number {
+  return linkFacingDeadEnds(state, mode, cloneTiles(state, mode));
+}
+
+export function repairNetwork(state: GameState, mode: 'brt' | 'rail'): TransitTile[] | null {
+  const map = cloneTiles(state, mode);
+  return linkFacingDeadEnds(state, mode, map) > 0 ? [...map.values()] : null;
 }
 
 export function extendNetwork(state: GameState, mode: 'brt' | 'rail', from: Coord, to: Coord, horizontalFirst: boolean): { tiles: TransitTile[]; cost: number } | { key: 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.invalidCrossing' } {
@@ -80,6 +90,7 @@ export function extendNetwork(state: GameState, mode: 'brt' | 'rail', from: Coor
     if (!start.exits.includes(d)) start.exits.push(d);
     if (!end.exits.includes(opposite(d))) end.exits.push(opposite(d));
   }
+  linkFacingDeadEnds(state, mode, map);
   const tiles = [...map.values()];
   if (!validNetworkCrossings({ ...state, [mode === 'brt' ? 'brtRoads' : 'rails']: tiles })) return { key: 'error.invalidCrossing' };
   return { tiles, cost: (tiles.length - existing.length) * TRANSIT[mode].tileCost };
