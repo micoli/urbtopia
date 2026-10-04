@@ -122,6 +122,7 @@ export const MESSAGES = {
   'eco.adviceGreen': 'Some Homes lack nearby green space.',
   'eco.adviceBus': 'An operating line has no riders: check destinations and coverage.',
   'eco.locked': 'Required Citizens',
+  'eco.nextUnlock': 'Next Unlock',
 
   'action.undo': 'Undo deletion',
   'stat.urbs': 'Urbs',

@@ -124,6 +124,7 @@ export const FR: Record<MessageKey, string> = {
   'eco.adviceGreen': 'Certains logements manquent d’espaces verts proches.',
   'eco.adviceBus': 'Une ligne active n’a pas de voyageurs : vérifie destinations et couverture.',
   'eco.locked': 'Habitants requis',
+  'eco.nextUnlock': 'Next Unlock',
 
   'action.undo': 'Annuler la suppression',
   'stat.urbs': 'Urbs',
