@@ -16,7 +16,7 @@ import { UtilityPanel } from './UtilityPanel';
 import {UrbsAmount} from "../common/UrbsAmount.tsx";
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
-import { CloseButton } from '../common/CloseButton';
+import { PanelHeader } from '../common/PanelHeader';
 
 export function SelectionContent() {
   const building = useSelectedBuilding();
@@ -28,10 +28,7 @@ export function SelectionContent() {
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
   return (
     <>
-      <header className="side-panel-header">
-        <h2>{t(`building.${building.type}`)}</h2>
-        <CloseButton onClick={() => select(null)} />
-      </header>
+      <PanelHeader title={t(`building.${building.type}`)} onClose={() => select(null)} />
       {building.type === 'workshop' || building.type === 'factory' || building.type === 'packhouse' ? <ProductionPanel building={building} /> : null}
       {building.type === 'farm' ? <FarmPanel building={building} /> : null}
       {building.type === 'home' ? <HomePanel building={building} /> : null}

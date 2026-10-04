@@ -5,7 +5,7 @@ import { gameStore } from '../../store/gameStore';
 import { useGame, useUi } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
-import { CloseButton } from '../common/CloseButton';
+import { PanelHeader } from '../common/PanelHeader';
 
 export function MarketContent() {
   const toggle = useUi((store) => store.toggleMarket);
@@ -15,10 +15,7 @@ export function MarketContent() {
 
   return (
     <>
-      <header className="side-panel-header">
-        <h2>{t('market.title')}</h2>
-        <CloseButton onClick={toggle} />
-      </header>
+      <PanelHeader title={t('market.title')} onClose={toggle} />
       {goods.length === 0 ? <p>{t('market.empty')}</p> : null}
       <ul className="market-list">
         {goods.map((good) => {

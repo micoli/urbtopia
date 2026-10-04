@@ -13,7 +13,7 @@ import { reloadApp } from '../../pwa/reloadApp';
 import { useInstallPrompt } from '../../pwa/useInstallPrompt';
 import { PreferencesContent } from './PreferencesContent';
 import { useConfirmKeys } from '../build/useConfirmKeys';
-import { CloseButton } from '../common/CloseButton';
+import { PanelHeader } from '../common/PanelHeader';
 
 export function MenuContent() {
   const toggle = useUi((store) => store.toggleMenu);
@@ -45,10 +45,7 @@ export function MenuContent() {
 
   return (
     <>
-      <header className="side-panel-header">
-        <h2>{t('menu.title')}</h2>
-        <CloseButton onClick={toggle} />
-      </header>
+      <PanelHeader title={t('menu.title')} onClose={toggle} />
       <ButtonRow align="stretch" spaced className="side-panel-actions">
         {canInstall ? (
           <ActionButton variant="primary" onClick={install}>
