@@ -1,6 +1,7 @@
 // PROTOTYPE (throwaway): verify Kenney piece orientation, footprint, roles. Not production code.
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { MODEL_KEYS } from '../../../src/scene/renderItems'
 
@@ -63,14 +64,21 @@ const controls = new OrbitControls(cam, canvas)
 controls.enableDamping = false
 let zoom = 1.2
 
-const loader = new GLTFLoader()
+const gltfLoader = new GLTFLoader()
+const fbxLoader = new FBXLoader()
+const isFbxPack = (p: string) => p.startsWith('quaternius-')
 const key = (p: string, n: string) => `${p}/${n}`
+
+const matteOf = (source: THREE.Material) => {
+  const { color, map } = source as THREE.MeshPhongMaterial
+  const { r, g, b } = color.getRGB(new THREE.Color(), THREE.SRGBColorSpace)
+  return new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(r, g, b, THREE.LinearSRGBColorSpace), map, roughness: 1, metalness: 0 })
+}
 
 async function load(p: string, n: string): Promise<THREE.Object3D> {
   const k = key(p, n)
   if (cache[k]) return cache[k]
-  const gltf = await loader.loadAsync(`/models/${p}/${n}.glb`)
-  const root = gltf.scene
+  const root = isFbxPack(p) ? await fbxLoader.loadAsync(`/models/${p}/${n}.fbx`) : (await gltfLoader.loadAsync(`/models/${p}/${n}.glb`)).scene
   root.updateMatrixWorld(true)
   let tris = 0, meshes = 0, nodeScaled = false
   root.traverse((o) => {
@@ -79,8 +87,10 @@ async function load(p: string, n: string): Promise<THREE.Object3D> {
     if (m.isMesh) {
       meshes++
       tris += (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count) / 3
-      const mat = m.material as THREE.MeshStandardMaterial
-      if (mat.map) { mat.map.magFilter = THREE.NearestFilter; mat.map.needsUpdate = true }
+      if (isFbxPack(p)) m.material = Array.isArray(m.material) ? m.material.map(matteOf) : matteOf(m.material)
+      for (const mat of [m.material].flat() as THREE.MeshStandardMaterial[]) {
+        if (mat.map) { mat.map.magFilter = THREE.NearestFilter; mat.map.needsUpdate = true }
+      }
     }
   })
   const box = new THREE.Box3().setFromObject(root)

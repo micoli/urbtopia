@@ -31,3 +31,8 @@ export function extractPack(zip: Uint8Array, files: string[] | 'all', colormap =
     ...variants.map((path) => ({ path: `Textures/${baseName(path)}`, data: entries[path] as Uint8Array })),
   ];
 }
+
+export function extractFbx(zip: Uint8Array): ExtractedFile[] {
+  const entries = unzipSync(zip, { filter: ({ name }) => name.endsWith('.fbx') });
+  return Object.entries(entries).map(([path, data]) => ({ path: baseName(path), data }));
+}

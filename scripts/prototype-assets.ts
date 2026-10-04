@@ -1,8 +1,8 @@
 import { lstatSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { ARCHIVES_DIR, ASSET_PACKS } from './assetPacks.ts';
-import { extractPack } from './extractPack.ts';
-import { PROTOTYPES_DIR, PROTOTYPE_ASSETS, manifestOf } from './prototypeAssets.ts';
+import { ARCHIVES_DIR, ASSET_PACKS, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS } from './assetPacks.ts';
+import { extractFbx, extractPack } from './extractPack.ts';
+import { PROTOTYPES_DIR, PROTOTYPE_ASSETS, fbxPackName, manifestOf } from './prototypeAssets.ts';
 
 const isSymlink = (path: string) => {
   try {
@@ -13,7 +13,7 @@ const isSymlink = (path: string) => {
 };
 
 try {
-  for (const { prototype, packs, manifest } of PROTOTYPE_ASSETS) {
+  for (const { prototype, packs, manifest, rawFbx } of PROTOTYPE_ASSETS) {
     const publicDir = join(PROTOTYPES_DIR, prototype, 'public');
     const modelsDir = join(publicDir, 'models');
     if (isSymlink(modelsDir)) rmSync(modelsDir);
@@ -29,6 +29,18 @@ try {
         writeFileSync(target, file.data);
       }
       names[packName] = files.filter((file) => file.path.endsWith('.glb')).map((file) => file.path.replace(/\.glb$/, ''));
+    }
+    if (rawFbx) {
+      for (const pack of QUATERNIUS_PACKS) {
+        const files = extractFbx(new Uint8Array(readFileSync(join(QUATERNIUS_ARCHIVES_DIR, pack.archive))));
+        const name = fbxPackName(pack.name);
+        for (const file of files) {
+          const target = join(modelsDir, name, file.path);
+          mkdirSync(dirname(target), { recursive: true });
+          writeFileSync(target, file.data);
+        }
+        names[name] = files.map((file) => file.path.replace(/\.fbx$/, ''));
+      }
     }
     if (manifest) writeFileSync(join(publicDir, 'manifest.json'), JSON.stringify(manifestOf(names)));
     console.log(`✓ ${prototype}: ${Object.values(names).reduce((total, list) => total + list.length, 0)} models`);

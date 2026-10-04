@@ -6,6 +6,7 @@ export interface PrototypeAssets {
   prototype: string;
   packs: Record<string, Selection>;
   manifest: boolean;
+  rawFbx?: boolean;
 }
 
 const letters = (first: string, last: string) =>
@@ -17,6 +18,7 @@ export const PROTOTYPE_ASSETS: PrototypeAssets[] = [
     prototype: 'asset-viewer',
     packs: Object.fromEntries(ASSET_PACKS.map(({ name }) => [name, 'all' as const])),
     manifest: true,
+    rawFbx: true,
   },
   {
     prototype: 'render-bench',
@@ -41,6 +43,8 @@ export const PROTOTYPE_ASSETS: PrototypeAssets[] = [
     manifest: false,
   },
 ];
+
+export const fbxPackName = (pack: string) => `quaternius-${pack}`;
 
 export const PROTOTYPES_DIR = 'prototypes';
 
