@@ -8,6 +8,7 @@ import { CasinoPanel } from './CasinoPanel';
 const context = vi.hoisted(() => ({ state: null as GameState | null }));
 vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
+  useUi: (selector: (store: { select: () => void }) => unknown) => selector({ select: () => {} }),
 }));
 
 vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: () => {} }) } }));

@@ -1,9 +1,10 @@
 import { CASINO_GAMES, CASINO, MAX_CASINO_TIER, casinoRadius, gamesOfTier, isCasinoPowered, maxStake, type Building } from '../../core';
 import { t } from '../../i18n/t';
-import { casinoStore } from '../../store/casinoStore';
-import { useGame } from '../common/hooks';
+import { useGame, useUi } from '../common/hooks';
 import { UpgradeSection } from '../buildings/UpgradeSection';
 import { UrbsAmount } from '../common/UrbsAmount';
+
+import { launchCasinoGame } from './launchCasinoGame';
 
 const PLAYABLE = new Set(['slotMachine', 'blackjack', 'blockmatch']);
 
@@ -13,6 +14,7 @@ interface CasinoPanelProps {
 
 export function CasinoPanel({ building }: CasinoPanelProps) {
   const state = useGame(store => store.state);
+  const select = useUi(store => store.select);
   const powered = isCasinoPowered(state, building);
   const unlocked = building.tier < MAX_CASINO_TIER ? gamesOfTier(building.tier + 1).filter(game => !gamesOfTier(building.tier).includes(game)) : [];
   return (
@@ -25,7 +27,7 @@ export function CasinoPanel({ building }: CasinoPanelProps) {
         {CASINO_GAMES.map(game => {
           const locked = CASINO.gameMinTier[game] > building.tier;
           return (
-            <button key={game} type="button" className="collect-button" disabled={locked || !powered || !PLAYABLE.has(game)} onClick={() => casinoStore.getState().play(building.id, game)}>
+            <button key={game} type="button" className="collect-button" disabled={locked || !powered || !PLAYABLE.has(game)} onClick={() => launchCasinoGame(building.id, game, () => select(null))}>
               {t(`casino.${game}`)}{locked ? ` · ${t('home.tier')} ${CASINO.gameMinTier[game]}` : ''}
             </button>
           );
