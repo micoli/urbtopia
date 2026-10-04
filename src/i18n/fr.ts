@@ -362,7 +362,7 @@ export const FR: Record<MessageKey, string> = {
   'saveFailed.close': 'Fermer',
   'reminder.text': "Vous n'avez pas exporté votre ville depuis un moment.",
   'reminder.dismiss': 'Plus tard',
-  'update.text': 'Une nouvelle version est disponible. La ville actuelle a été exportée avant le rechargement.',
+  'update.text': 'Une nouvelle version est disponible. Ta ville est sauvegardée automatiquement.',
   'update.reload': 'Recharger',
   'error.notEnoughPower': "Pas assez d'électricité : construisez une centrale.",
   'error.notEnoughWater': "Pas assez d'eau : construisez un château d'eau.",
