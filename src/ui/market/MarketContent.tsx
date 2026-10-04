@@ -5,6 +5,7 @@ import { gameStore } from '../../store/gameStore';
 import { useGame, useUi } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
+import { CloseButton } from '../common/CloseButton';
 
 export function MarketContent() {
   const toggle = useUi((store) => store.toggleMarket);
@@ -16,9 +17,7 @@ export function MarketContent() {
     <>
       <header className="side-panel-header">
         <h2>{t('market.title')}</h2>
-        <button type="button" className="panel-close" aria-label={t('panel.close')} onClick={toggle}>
-          ✗
-        </button>
+        <CloseButton onClick={toggle} />
       </header>
       {goods.length === 0 ? <p>{t('market.empty')}</p> : null}
       <ul className="market-list">

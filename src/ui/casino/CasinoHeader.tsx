@@ -3,6 +3,7 @@ import { t } from '../../i18n/t.ts';
 import { CasinoLedger } from './CasinoLedger.tsx';
 import { StakePicker } from './StakePicker.tsx';
 import { CasinoCloseContext } from './casinoCloseContext.ts';
+import { CloseButton } from '../common/CloseButton';
 
 interface CasinoHeaderProps {
   spent: number;
@@ -20,7 +21,7 @@ export function CasinoHeader({ spent, won, steps, urbs, stake, locked = false, o
     <header className="casino-header">
       <div className="casino-header-top">
         <CasinoLedger spent={spent} won={won} />
-        {close ? <button type="button" className="panel-close" aria-label={t('casino.close')} onClick={close}>✗</button> : null}
+        {close ? <CloseButton label={t('casino.close')} onClick={close} /> : null}
       </div>
       <StakePicker steps={steps} urbs={urbs} value={stake} disabled={locked} onChange={onStake} />
     </header>

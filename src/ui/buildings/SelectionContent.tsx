@@ -16,6 +16,7 @@ import { UtilityPanel } from './UtilityPanel';
 import {UrbsAmount} from "../common/UrbsAmount.tsx";
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
+import { CloseButton } from '../common/CloseButton';
 
 export function SelectionContent() {
   const building = useSelectedBuilding();
@@ -29,9 +30,7 @@ export function SelectionContent() {
     <>
       <header className="side-panel-header">
         <h2>{t(`building.${building.type}`)}</h2>
-        <button type="button" className="panel-close" aria-label={t('panel.close')} onClick={() => select(null)}>
-          ✗
-        </button>
+        <CloseButton onClick={() => select(null)} />
       </header>
       {building.type === 'workshop' || building.type === 'factory' || building.type === 'packhouse' ? <ProductionPanel building={building} /> : null}
       {building.type === 'farm' ? <FarmPanel building={building} /> : null}

@@ -4,6 +4,7 @@ import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
 import { CodexEntryContent } from './CodexEntryContent';
 import { useCodexManifest } from './useCodexManifest';
+import { CloseButton } from '../common/CloseButton';
 
 export function CodexPanel() {
   const close = useUi(store => store.closeCodex);
@@ -59,7 +60,7 @@ export function CodexPanel() {
             setShowDetail(false);
             requestAnimationFrame(() => dialog.current?.querySelector<HTMLButtonElement>('.codex-list [aria-current="true"]')?.focus());
           }}>{t('codex.back')}</button>}
-          <button type="button" className="panel-close" aria-label={t('panel.close')} onClick={close}>✕</button>
+          <CloseButton onClick={close} />
         </div>
       </header>
       <div className="codex-body" data-detail={showDetail}>

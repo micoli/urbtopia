@@ -13,6 +13,7 @@ import { reloadApp } from '../../pwa/reloadApp';
 import { useInstallPrompt } from '../../pwa/useInstallPrompt';
 import { PreferencesContent } from './PreferencesContent';
 import { useConfirmKeys } from '../build/useConfirmKeys';
+import { CloseButton } from '../common/CloseButton';
 
 export function MenuContent() {
   const toggle = useUi((store) => store.toggleMenu);
@@ -46,9 +47,7 @@ export function MenuContent() {
     <>
       <header className="side-panel-header">
         <h2>{t('menu.title')}</h2>
-        <button type="button" className="panel-close" aria-label={t('panel.close')} onClick={toggle}>
-          ✗
-        </button>
+        <CloseButton onClick={toggle} />
       </header>
       <ButtonRow align="stretch" spaced className="side-panel-actions">
         {canInstall ? (
