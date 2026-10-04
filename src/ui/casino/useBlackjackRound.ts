@@ -1,28 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
-import { applyBlackjackAction, dealBlackjack, type BlackjackAction, type BlackjackRound } from '../../core';
+import { applyBlackjackAction, type BlackjackAction } from '../../core';
 import { gameStore } from '../../store/gameStore';
+import { sessionFor, type BlackjackSession } from './blackjackSession';
 
 export function useBlackjackRound(buildingId: number, roundSeed: number | null) {
-  const [hand, setHand] = useState<BlackjackRound | null>(null);
-  const [actions, setActions] = useState<BlackjackAction[]>([]);
+  const [stored, setStored] = useState<BlackjackSession | null>(null);
+  const session = sessionFor(stored, roundSeed);
+  if (session !== stored) setStored(session);
   const settledSeed = useRef<number | null>(null);
   useEffect(() => {
-    if (roundSeed === null) return;
-    setHand(dealBlackjack(roundSeed));
-    setActions([]);
-  }, [roundSeed]);
-  useEffect(() => {
-    if (roundSeed === null || !hand?.finished || settledSeed.current === roundSeed) return;
+    if (roundSeed === null || !session || session.seed !== roundSeed || !session.hand.finished || settledSeed.current === roundSeed) return;
     settledSeed.current = roundSeed;
-    gameStore.getState().send({ type: 'SettleBlackjack', buildingId, actions });
-  }, [hand?.finished, roundSeed, buildingId, actions]);
+    gameStore.getState().send({ type: 'SettleBlackjack', buildingId, actions: session.actions });
+  }, [session, roundSeed, buildingId]);
 
   const act = (action: BlackjackAction) => {
-    if (!hand) return;
-    const next = applyBlackjackAction(hand, action);
+    if (!session) return;
+    const next = applyBlackjackAction(session.hand, action);
     if (!next) return;
-    setActions(previous => [...previous, action]);
-    setHand(next);
+    setStored({ ...session, hand: next, actions: [...session.actions, action] });
   };
-  return { hand, act };
+  return { hand: session?.hand ?? null, act };
 }

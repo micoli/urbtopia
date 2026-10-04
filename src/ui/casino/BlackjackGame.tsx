@@ -46,7 +46,7 @@ export function BlackjackGame({ casino }: BlackjackGameProps) {
         <>
           {result ? (
             <p className="casino-result" data-win={net > 0} aria-live="polite">
-              {t(blackjackResultKey(result.outcome))} · {net >= 0 ? t('casino.won') : t('casino.lost')} <UrbsAmount value={Math.abs(net)} />
+              {t(blackjackResultKey(result.outcome))}{net === 0 ? null : <> · {net > 0 ? t('casino.won') : t('casino.lost')} <UrbsAmount value={Math.abs(net)} /></>}
             </p>
           ) : null}
           <p>{t('casino.balance')}: <UrbsAmount value={urbs} /></p>
