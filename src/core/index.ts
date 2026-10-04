@@ -50,7 +50,7 @@ export { ECOLOGY, ECOLOGY_UNLOCKS, distance as buildingDistance, homePower, econ
 export { energyStats, productionFactors } from './environment/energy';
 export { homeBenefits, cityBenefits, isAdapting, wellbeingTaxFactor } from './environment/wellbeing';
 export { climateStats } from './environment/climate';
-export { transportStats, routeForLine } from './transit/transport';
+export { transportStats, routeForLine, routeFailure } from './transit/transport';
 export type { BusLine } from './engine/state';
 
 export { TRANSIT, networkTiles, networkNeighbours, validNetworkCrossings, extendNetwork, brokenLinkCount } from './transit/transitNetwork';

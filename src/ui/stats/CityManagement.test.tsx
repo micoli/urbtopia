@@ -24,7 +24,7 @@ describe('city management panel', () => {
     expect(html).toContain('aria-modal="true"');
     expect(html).toContain(language === 'fr' ? 'Besoin non couvert' : 'Unmet demand');
     expect(html).toContain(language === 'fr' ? 'Biodiversité' : 'Biodiversity');
-    expect(html).toContain(language === 'fr' ? 'Lignes de bus' : 'Bus lines');
+    expect(html).toContain(language === 'fr' ? 'Lignes de transport' : 'Transit lines');
     expect(html).not.toContain('NaN');
     expect(html).not.toContain('undefined');
   });
