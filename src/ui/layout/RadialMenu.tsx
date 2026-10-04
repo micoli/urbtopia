@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { t } from '../../i18n/t';
-import { NavIcon } from './NavIcon';
+import { NavActionButton } from './NavActionButton';
 import { useNavActions } from './useNavActions';
 
 const RADIUS_PX = 224;
@@ -17,23 +17,16 @@ export function RadialMenu() {
             const x = Math.cos(angle) * RADIUS_PX;
             const y = -Math.sin(angle) * RADIUS_PX;
             return (
-              <button
+              <NavActionButton
                 key={action.id}
-                data-action={action.id}
-                type="button"
-                className="radial-item"
-                aria-label={action.label}
-                aria-pressed={action.pressed}
-                disabled={action.disabled}
-                data-guided={action.guided}
+                action={action}
+                variant="radial"
                 style={{ transform: `translate(${x}px, ${y}px)` }}
                 onClick={() => {
                   setOpen(false);
                   action.onClick();
                 }}
-              >
-                <NavIcon action={action} />
-              </button>
+              />
             );
           })
         : null}
