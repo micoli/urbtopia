@@ -71,3 +71,7 @@ export type { CasinoGame } from './leisure/casino';
 export { isCasinoPowered, poweredCasinoIds } from './leisure/poweredCasinos';
 export { SLOT_PAYOUTS, SLOT_REEL_COUNT, SLOT_SYMBOLS, slotOutcome, slotPayout, spinSlotMachine } from './leisure/slotMachine';
 export type { SlotOutcome, SlotSpin, SlotSymbol } from './leisure/slotMachine';
+export { BLACKJACK_RANKS, BLACKJACK_SUITS, applyBlackjackAction, blackjackOutcome, blackjackPayout, canDouble, dealBlackjack, handValue, replayBlackjack } from './leisure/blackjack';
+export type { BlackjackAction, BlackjackOutcome, BlackjackRound, Card } from './leisure/blackjack';
+export { withoutOpenRound } from './leisure/casinoRound';
+export type { OpenCasinoRound } from './engine/state';

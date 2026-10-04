@@ -1436,3 +1436,38 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .stake-step:disabled {
   opacity: 0.45;
 }
+
+.card-hand .card-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.playing-card {
+  display: inline-grid;
+  place-items: center;
+  width: 52px;
+  height: 74px;
+  border-radius: 8px;
+  background: #fff;
+  color: #1b1f2a;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.playing-card[data-red='true'] {
+  color: #c62828;
+}
+
+.playing-card[data-hidden='true'] {
+  background: repeating-linear-gradient(45deg, #34528f, #34528f 6px, #2b4377 6px, #2b4377 12px);
+}
+
+.blackjack-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.blackjack-actions button {
+  flex: 1;
+}

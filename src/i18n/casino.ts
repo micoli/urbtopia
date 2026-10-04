@@ -21,6 +21,21 @@ type CasinoMessageKey =
   | 'casino.lost'
   | 'casino.even'
   | 'casino.close'
+  | 'error.noOpenRound'
+  | 'error.invalidRound'
+  | 'casino.deal'
+  | 'casino.hit'
+  | 'casino.stand'
+  | 'casino.double'
+  | 'casino.dealer'
+  | 'casino.player'
+  | 'casino.naturalWin'
+  | 'casino.push'
+  | 'casino.bust'
+  | 'casino.newRound'
+  | 'casino.leaveConfirm'
+  | 'casino.keepPlaying'
+  | 'casino.leaveAnyway'
   | 'casino.unlocksNext'
   | 'casino.maxTier';
 
@@ -48,6 +63,21 @@ const texts: Record<CasinoMessageKey, readonly [string, string]> = {
   'casino.lost': ['You lost', 'Vous perdez'],
   'casino.even': ['Stake returned', 'Mise rendue'],
   'casino.close': ['Leave', 'Quitter'],
+  'error.noOpenRound': ['There is no round to settle.', 'Aucune manche à régler.'],
+  'error.invalidRound': ['This round cannot be settled.', 'Cette manche ne peut pas être réglée.'],
+  'casino.deal': ['Deal', 'Distribuer'],
+  'casino.hit': ['Hit', 'Tirer'],
+  'casino.stand': ['Stand', 'Rester'],
+  'casino.double': ['Double', 'Doubler'],
+  'casino.dealer': ['Dealer', 'Croupier'],
+  'casino.player': ['You', 'Vous'],
+  'casino.naturalWin': ['Blackjack!', 'Blackjack !'],
+  'casino.push': ['Push: stake returned', 'Égalité : mise rendue'],
+  'casino.bust': ['Bust', 'Bust'],
+  'casino.newRound': ['New round', 'Nouvelle manche'],
+  'casino.leaveConfirm': ['The round is not over: your Stake will be lost.', 'La manche n’est pas terminée : votre mise sera perdue.'],
+  'casino.keepPlaying': ['Keep playing', 'Continuer'],
+  'casino.leaveAnyway': ['Leave and lose the Stake', 'Quitter et perdre la mise'],
   'casino.unlocksNext': ['Next Tier unlocks', 'Le niveau suivant débloque'],
   'casino.maxTier': ['Highest Tier reached', 'Niveau maximal atteint'],
 };

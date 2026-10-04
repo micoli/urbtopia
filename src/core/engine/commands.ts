@@ -27,7 +27,8 @@ import { roadBuildCost, missingRoadTiles } from '../map/roadCost';
 import { roadPath } from '../map/roads';
 import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
-import { playSlotMachine } from '../leisure/casinoRound';
+import { abandonCasinoRound, playSlotMachine, settleBlackjack, startCasinoRound } from '../leisure/casinoRound';
+import type { BlackjackAction } from '../leisure/blackjack';
 import type { Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 
 const HOUR_MS = 60 * 60 * 1000;
@@ -63,6 +64,9 @@ export type Command =
   | { readonly type: 'SellToMarket'; readonly good: GoodId; readonly quantity: number }
   | { readonly type: 'UpgradeBuilding'; readonly buildingId: number }
   | { readonly type: 'PlaySlotMachine'; readonly buildingId: number; readonly stake: number }
+  | { readonly type: 'StartCasinoRound'; readonly buildingId: number; readonly game: 'blackjack' | 'blockmatch'; readonly stake: number }
+  | { readonly type: 'SettleBlackjack'; readonly buildingId: number; readonly actions: readonly BlackjackAction[] }
+  | { readonly type: 'AbandonCasinoRound' }
   | { readonly type: 'BuyParcel'; readonly x: number; readonly y: number }
   | { readonly type: 'BuySlot'; readonly buildingId: number }
   | { readonly type: 'SellBuilding'; readonly id: number }
@@ -80,6 +84,8 @@ export type ErrorKey =
   | 'error.casinoExpansionBlocked'
   | 'error.casinoShut'
   | 'error.invalidStake'
+  | 'error.noOpenRound'
+  | 'error.invalidRound'
   | 'error.needsRoad'
   | 'error.storehouseExists'
   | 'error.siloExists'
@@ -196,6 +202,12 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return upgradeBuilding(state, command.buildingId);
     case 'PlaySlotMachine':
       return playSlotMachine(state, command.buildingId, command.stake);
+    case 'StartCasinoRound':
+      return startCasinoRound(state, command.buildingId, command.game, command.stake);
+    case 'SettleBlackjack':
+      return settleBlackjack(state, command.buildingId, command.actions);
+    case 'AbandonCasinoRound':
+      return abandonCasinoRound(state);
     case 'BuyParcel':
       return buyParcel(state, { x: command.x, y: command.y });
     case 'BuySlot':

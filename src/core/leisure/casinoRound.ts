@@ -1,12 +1,19 @@
-import { hashSeed } from '../engine/random';
+import { hashSeed, nextRandom } from '../engine/random';
 import { CASINO, isValidStake } from './casino';
 import { isCasinoPowered } from './poweredCasinos';
+import { blackjackOutcome, blackjackPayout, replayBlackjack, type BlackjackAction } from './blackjack';
 import { spinSlotMachine } from './slotMachine';
 import type { CommandOutcome } from '../engine/commands';
 import type { Building, GameState } from '../engine/state';
 
 export function casinoRngState(state: GameState): number {
   return state.casinoRng ?? hashSeed(`${state.seed}:casino`);
+}
+
+export function withoutOpenRound(state: GameState): GameState {
+  const next = { ...state };
+  delete next.openRound;
+  return next;
 }
 
 type Opened = { casino: Building } | { error: CommandOutcome };
@@ -28,5 +35,37 @@ export function playSlotMachine(state: GameState, buildingId: number, stake: num
   return {
     state: { ...state, urbs: state.urbs - stake + spin.payout, casinoRng: spin.rngState },
     events: [{ type: 'SlotSpun', buildingId, stake, reels: spin.reels, outcome: spin.outcome, payout: spin.payout }],
+  };
+}
+
+const UINT32_RANGE = 4294967296;
+
+export function startCasinoRound(state: GameState, buildingId: number, game: 'blackjack' | 'blockmatch', stake: number): CommandOutcome {
+  const opened = openRound(state, buildingId, stake, CASINO.gameMinTier[game]);
+  if ('error' in opened) return opened.error;
+  const draw = nextRandom(casinoRngState(state));
+  const roundSeed = Math.floor(draw.value * UINT32_RANGE);
+  return {
+    state: { ...state, urbs: state.urbs - stake, casinoRng: draw.rngState, openRound: { buildingId, game, stake, roundSeed } },
+    events: [{ type: 'CasinoRoundStarted', buildingId, game, stake, roundSeed }],
+  };
+}
+
+export function abandonCasinoRound(state: GameState): CommandOutcome {
+  return { state: withoutOpenRound(state), events: [] };
+}
+
+export function settleBlackjack(state: GameState, buildingId: number, actions: readonly BlackjackAction[]): CommandOutcome {
+  const open = state.openRound;
+  if (!open || open.game !== 'blackjack' || open.buildingId !== buildingId) return { key: 'error.noOpenRound' };
+  const round = replayBlackjack(open.roundSeed, actions);
+  if (!round) return { key: 'error.invalidRound' };
+  const extraStake = round.doubled ? open.stake : 0;
+  if (state.urbs < extraStake) return { key: 'error.notEnoughUrbs' };
+  const outcome = blackjackOutcome(round);
+  const payout = blackjackPayout(outcome, open.stake, round.doubled);
+  return {
+    state: { ...withoutOpenRound(state), urbs: state.urbs - extraStake + payout },
+    events: [{ type: 'BlackjackSettled', buildingId, stake: open.stake, doubled: round.doubled, outcome, payout }],
   };
 }

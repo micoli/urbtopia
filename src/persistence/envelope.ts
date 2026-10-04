@@ -1,4 +1,4 @@
-import type { GameState } from '../core';
+import { withoutOpenRound, type GameState } from '../core';
 import { MIGRATIONS, migrate, type MigrationStep } from './migrations';
 import { validateGameState } from './validate';
 
@@ -15,7 +15,7 @@ export interface ParseOptions {
 export type ParseResult = { ok: true; state: GameState; savedAt: number } | { ok: false; reason: ParseFailure };
 
 export function serializeEnvelope(state: GameState, savedAt: number): string {
-  return JSON.stringify({ format: FORMAT, version: CURRENT_VERSION, savedAt, state });
+  return JSON.stringify({ format: FORMAT, version: CURRENT_VERSION, savedAt, state: withoutOpenRound(state) });
 }
 
 export function readVersion(text: string): number | null {

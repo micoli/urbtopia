@@ -9,6 +9,13 @@ import type { TutorialStep } from '../progression/tutorial';
 
 export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'coalPlant' | 'waterTower' | 'silo' | 'vault' | 'grainSilo' | 'farm' | 'packhouse' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop' | 'brtStation' | 'railStation' | 'casino' | FacilityType | NatureType;
 
+export interface OpenCasinoRound {
+  buildingId: number;
+  game: 'blackjack' | 'blockmatch';
+  stake: number;
+  roundSeed: number;
+}
+
 export type Rotation = 0 | 1 | 2 | 3;
 export type HomeColorVariant = 'default' | 'a' | 'b' | 'c';
 
@@ -106,6 +113,7 @@ export interface GameState {
   seed: string;
   rngState: number;
   casinoRng?: number;
+  openRound?: OpenCasinoRound;
   urbs: number;
   lastSeen: number;
   nextId: number;

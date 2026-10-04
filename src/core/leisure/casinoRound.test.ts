@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, newGame, type Building, type GameEvent, type GameState } from '../index';
+import { serializeEnvelope } from '../../persistence/envelope';
+import { blackjackOutcome, blackjackPayout, dealBlackjack, replayBlackjack } from './blackjack';
 import { casinoRngState } from './casinoRound';
 import { spinSlotMachine } from './slotMachine';
 
@@ -78,5 +80,70 @@ describe('slot machine command', () => {
     }
     expect(lost).toBeGreaterThan(0);
     expect(state.urbs).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe('casino rounds (blackjack)', () => {
+  const tier2 = (extra: Partial<GameState> = {}) => city(extra, [building(1, 'casino', 55, 50, { tier: 2 }), building(2, 'coalPlant', 90, 40, { tier: 4 })]);
+  const start = (state: GameState, stake = 10) => dispatch(state, { type: 'StartCasinoRound', buildingId: 1, game: 'blackjack', stake }, 0);
+  const startedOf = (events: GameEvent[]) => events.find((event): event is Extract<GameEvent, { type: 'CasinoRoundStarted' }> => event.type === 'CasinoRoundStarted')!;
+
+  it('needs the Tier of the Minigame', () => {
+    expect(start(city())).toMatchObject({ ok: false, error: { key: 'error.tierTooLow' } });
+    expect(start(tier2())).toMatchObject({ ok: true });
+  });
+
+  it('debits the Stake at the start and draws the round seed from the casino stream', () => {
+    const base = tier2();
+    const result = start(base, 50);
+    if (!result.ok) throw new Error(result.error.key);
+    expect(result.state.urbs).toBe(base.urbs - 50);
+    expect(result.state.openRound).toMatchObject({ game: 'blackjack', stake: 50, buildingId: 1, roundSeed: startedOf(result.events).roundSeed });
+    expect(result.state.casinoRng).not.toBe(casinoRngState(base));
+    expect(start(base, 50)).toMatchObject({ state: { openRound: { roundSeed: startedOf(result.events).roundSeed } } });
+  });
+
+  it('settles by replaying the actions from the round seed', () => {
+    let state = tier2();
+    let seed = 0;
+    for (let attempt = 0; attempt < 200; attempt++) {
+      const result = start(state);
+      if (!result.ok) throw new Error(result.error.key);
+      seed = result.state.openRound!.roundSeed;
+      if (!dealBlackjack(seed).finished) { state = result.state; break; }
+      state = result.state;
+    }
+    const before = state.urbs;
+    const settled = dispatch(state, { type: 'SettleBlackjack', buildingId: 1, actions: ['stand'] }, 0);
+    if (!settled.ok) throw new Error(settled.error.key);
+    const round = replayBlackjack(seed, ['stand'])!;
+    expect(settled.state.urbs).toBe(before + blackjackPayout(blackjackOutcome(round), 10, false));
+    expect(settled.state.openRound).toBeUndefined();
+    expect(dispatch(settled.state, { type: 'SettleBlackjack', buildingId: 1, actions: ['stand'] }, 0)).toMatchObject({ ok: false, error: { key: 'error.noOpenRound' } });
+  });
+
+  it('refuses a made-up result and charges the second Stake of a double', () => {
+    let state = tier2();
+    for (let attempt = 0; attempt < 400; attempt++) {
+      const result = start(state);
+      if (!result.ok) throw new Error(result.error.key);
+      state = result.state;
+      if (!dealBlackjack(state.openRound!.roundSeed).finished) break;
+    }
+    expect(dispatch(state, { type: 'SettleBlackjack', buildingId: 1, actions: [] }, 0)).toMatchObject({ ok: false, error: { key: 'error.invalidRound' } });
+    const doubled = dispatch(state, { type: 'SettleBlackjack', buildingId: 1, actions: ['double'] }, 0);
+    if (!doubled.ok) throw new Error(doubled.error.key);
+    const round = replayBlackjack(state.openRound!.roundSeed, ['double'])!;
+    expect(doubled.state.urbs).toBe(state.urbs - 10 + blackjackPayout(blackjackOutcome(round), 10, true));
+    expect(dispatch({ ...state, urbs: 5 }, { type: 'SettleBlackjack', buildingId: 1, actions: ['double'] }, 0)).toMatchObject({ ok: false, error: { key: 'error.notEnoughUrbs' } });
+  });
+
+  it('forgets an unfinished round on save and when abandoned', () => {
+    const started = start(tier2());
+    if (!started.ok) throw new Error(started.error.key);
+    expect(JSON.parse(serializeEnvelope(started.state, 0)).state.openRound).toBeUndefined();
+    const abandoned = dispatch(started.state, { type: 'AbandonCasinoRound' }, 0);
+    expect(abandoned.ok && abandoned.state.openRound).toBeUndefined();
+    expect(abandoned.ok && abandoned.state.urbs).toBe(started.state.urbs);
   });
 });

@@ -4,7 +4,7 @@
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Blackjack unlocks at Casino Tier 2 and opens in the full-screen modal.
 - [ ] One fresh shuffled 52-card deck per round, shuffled from the casino PRNG stream, advanced at Stake time (ADR 0010).
