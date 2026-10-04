@@ -1,5 +1,6 @@
 import { t } from '../../i18n/t';
 import { UrbsAmount } from '../common/UrbsAmount';
+import { LabeledList } from '../common/LabeledList';
 
 interface CasinoLedgerProps {
   spent: number;
@@ -9,10 +10,10 @@ interface CasinoLedgerProps {
 export function CasinoLedger({ spent, won }: CasinoLedgerProps) {
   const balance = won - spent;
   return (
-    <dl className="casino-ledger">
-      <div><dt>{t('casino.spent')}</dt><dd><UrbsAmount value={spent} /></dd></div>
-      <div><dt>{t('casino.earned')}</dt><dd><UrbsAmount value={won} /></dd></div>
-      <div data-sign={Math.sign(balance)}><dt>{t('casino.balance')}</dt><dd>{balance > 0 ? '+' : ''}<UrbsAmount value={balance} /></dd></div>
-    </dl>
+    <LabeledList className="casino-ledger">
+      <LabeledList.Row label={t('casino.spent')}><UrbsAmount value={spent} /></LabeledList.Row>
+      <LabeledList.Row label={t('casino.earned')}><UrbsAmount value={won} /></LabeledList.Row>
+      <LabeledList.Row data-sign={Math.sign(balance)} label={t('casino.balance')}>{balance > 0 ? '+' : ''}<UrbsAmount value={balance} /></LabeledList.Row>
+    </LabeledList>
   );
 }
