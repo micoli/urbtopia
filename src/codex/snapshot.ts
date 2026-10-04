@@ -1,4 +1,4 @@
-import { BUILDING_SPECS, createBuilding, isFacilityType, newGame, type BuildingType, type GameState, type HomeColorVariant } from '../core';
+import { BUILDING_SPECS, CROPS, createBuilding, isCrop, isFacilityType, newGame, type BuildingType, type GameState, type HomeColorVariant } from '../core';
 import type { CodexId } from './catalog';
 
 export function codexSnapshot(id: CodexId, tier: number, colorVariant: HomeColorVariant = 'default'): GameState {
@@ -6,6 +6,11 @@ export function codexSnapshot(id: CodexId, tier: number, colorVariant: HomeColor
   if (id === 'solarHome' || id in BUILDING_SPECS) {
     const building = createBuilding(1, id === 'solarHome' ? 'home' : id as BuildingType, 0, 0, id !== 'solarHome' && isFacilityType(id) ? 2 : 0);
     state.buildings = [{ ...building, tier, ...(id === 'solarHome' ? { solar: true } : {}), ...(id === 'home' || id === 'solarHome' ? { colorVariant } : {}) }];
+    return state;
+  }
+  if (isCrop(id)) {
+    const progress = tier > 4 ? 1 : (tier - 0.5) / 4;
+    state.fields = [{ x: 0, y: 0, crop: { species: id, plantedAt: state.lastSeen - CROPS[id].growthMs * progress } }];
     return state;
   }
   if (id === 'roundabout') {

@@ -6,6 +6,7 @@ import { FlyoutItem } from '../layout/FlyoutItem';
 import { useGame, useUi } from '../common/hooks';
 import { guideOf } from '../tutorial/tutorialGuide';
 import { UrbsAmount } from '../common/UrbsAmount';
+import { FieldTools } from './FieldTools';
 import { BUILDING_SECTIONS, readBuildSection, writeBuildSection, type BuildSection } from './buildMenuSections';
 import { ROAD_CONSTRUCTIONS } from '../../codex/construction';
 import { codexImageKey, type CodexId } from '../../codex/catalog';
@@ -76,6 +77,7 @@ export function BuildMenuContent() {
                   />
                   </Fragment>
                 ))}
+                {section.title === 'build.production' && <FieldTools />}
                 {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true, colorVariant: homeColor })} codexId="solarHome" preview={previewOf('solarHome')} onInfo={() => openCodex('solarHome')} />}
               </div>
             </section>

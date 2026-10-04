@@ -1,6 +1,6 @@
 # Packhouse and packed Goods
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 08
 Spec: ../spec.md
 

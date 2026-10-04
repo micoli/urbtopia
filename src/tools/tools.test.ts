@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, newGame, type GameState } from '../core';
-import { confirmTool, evaluateTool, selectionGhost, type Tool } from './tools';
+import { confirmTool, evaluateTool, extendBrush, selectionGhost, type Tool } from './tools';
 
 const state: GameState = newGame({ seed: 'amber-fox-4821', now: 0 });
 
@@ -187,5 +187,72 @@ describe('selectionGhost', () => {
   it('shows nothing without a selection or for an unknown building', () => {
     expect(selectionGhost(state, null)).toBeNull();
     expect(selectionGhost(state, 999)).toBeNull();
+  });
+});
+
+describe('brush tool', () => {
+  const farmCity: GameState = {
+    ...state,
+    urbs: 1000,
+    nextId: 20,
+    seedStock: { wheat: 2 },
+    buildings: [...state.buildings, { ...createBuilding(10, 'home', 40, 40, 0), tier: 3 }, createBuilding(11, 'farm', 56, 59, 0), createBuilding(12, 'waterTower', 70, 52, 0)],
+    fields: [{ x: 50, y: 50 }, { x: 51, y: 50 }, { x: 52, y: 50, crop: { species: 'carrot', plantedAt: -3_600_000 } }],
+  };
+  const laying: Tool = { kind: 'brush', action: 'layField', tiles: [] };
+
+  it('previews the hovered tile before the drag starts', () => {
+    const evaluation = evaluateTool(laying, { state: farmCity, tile: { x: 50, y: 52 }, rotation: null });
+    expect(evaluation.ghost.tiles).toEqual([{ x: 50, y: 52 }]);
+    expect(evaluation.valid).toBe(true);
+    expect(evaluation.cost).toBe(5);
+  });
+
+  it('fills the gap between two pointer positions of a fast drag, without duplicates', () => {
+    const started = extendBrush(laying, { x: 50, y: 52 });
+    const dragged = extendBrush(extendBrush(started, { x: 53, y: 52 }), { x: 52, y: 52 });
+    expect(dragged.kind === 'brush' && dragged.tiles).toEqual([{ x: 50, y: 52 }, { x: 51, y: 52 }, { x: 52, y: 52 }, { x: 53, y: 52 }]);
+  });
+
+  it('lays Fields over every dragged tile, pricing only the tiles that can be laid', () => {
+    const tool: Tool = { kind: 'brush', action: 'layField', tiles: [{ x: 50, y: 52 }, { x: 51, y: 52 }, { x: 50, y: 50 }] };
+    const evaluation = evaluateTool(tool, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null });
+    expect(evaluation.command).toEqual({ type: 'LayFields', tiles: tool.tiles });
+    expect(evaluation.cost).toBe(10);
+    expect(evaluation.valid).toBe(true);
+  });
+
+  it('is invalid when nothing under the brush can be laid', () => {
+    const tool: Tool = { kind: 'brush', action: 'layField', tiles: [{ x: 50, y: 50 }] };
+    const evaluation = evaluateTool(tool, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null });
+    expect(evaluation.valid).toBe(false);
+    expect(evaluation.issue).toBe('error.tilesOccupied');
+  });
+
+  it('plants the selected species and explains an empty seed stock', () => {
+    const tiles = [{ x: 50, y: 50 }, { x: 51, y: 50 }];
+    const planting = evaluateTool({ kind: 'brush', action: 'plant', crop: 'wheat', tiles }, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null });
+    expect(planting.command).toEqual({ type: 'Plant', crop: 'wheat', tiles });
+    expect(planting.valid).toBe(true);
+    const noSeeds = evaluateTool({ kind: 'brush', action: 'plant', crop: 'grass', tiles }, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null });
+    expect(noSeeds.issue).toBe('error.noSeeds');
+  });
+
+  it('removes and harvests with the matching commands', () => {
+    const tiles = [{ x: 50, y: 50 }];
+    expect(evaluateTool({ kind: 'brush', action: 'removeField', tiles }, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null }).command).toEqual({ type: 'RemoveFields', tiles });
+    expect(evaluateTool({ kind: 'brush', action: 'harvest', tiles: [{ x: 52, y: 50 }] }, { state: { ...farmCity, storage: { materials: {}, goods: {} } }, tile: { x: 0, y: 0 }, rotation: null }).command).toEqual({ type: 'Harvest', tiles: [{ x: 52, y: 50 }] });
+  });
+
+  it('sends the command when the drag ends and keeps the tool with an empty brush', () => {
+    const tool: Tool = { kind: 'brush', action: 'layField', tiles: [{ x: 50, y: 52 }] };
+    const current = evaluateTool(tool, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null });
+    expect(confirmTool(tool, { x: 50, y: 52 }, current)).toEqual({ command: current.command, nextTool: { ...tool, tiles: [] } });
+  });
+
+  it('drops an invalid drag but keeps the tool', () => {
+    const tool: Tool = { kind: 'brush', action: 'layField', tiles: [{ x: 50, y: 50 }] };
+    const current = evaluateTool(tool, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null });
+    expect(confirmTool(tool, { x: 50, y: 50 }, current)).toEqual({ command: null, nextTool: { ...tool, tiles: [] } });
   });
 });

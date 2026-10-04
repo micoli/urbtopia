@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { BUILDING_SPECS, FACILITIES, FACILITY_TYPES, ECOLOGY, ECOLOGY_UNLOCKS, TRANSIT, maxTierOf, type BuildingType } from '../core';
+import { BUILDING_SPECS, CROPS, CROP_IDS, FACILITIES, FACILITY_TYPES, ECOLOGY, ECOLOGY_UNLOCKS, TRANSIT, maxTierOf, type BuildingType } from '../core';
 import { CODEX_ENTRIES, codexImageKey, HOME_COLOR_VARIANTS, validateCodex, validateCodexManifest } from './catalog';
 import { ROAD_CONSTRUCTIONS } from './construction';
 import { codexSnapshot } from './snapshot';
 import { MESSAGES } from '../i18n/messages';
 import { FR } from '../i18n/fr';
+import { growthModelOf, produceModelOf } from '../scene/cropModels';
 import { modelOfBuilding, renderItemsOf } from '../scene/renderItems';
 
 describe('codex coverage gate', () => {
@@ -56,7 +57,7 @@ describe('codex coverage gate', () => {
 
   it('requires a complete page for every constructible, including locked objects', () => {
     expect(() => validateCodex()).not.toThrow();
-    const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...ROAD_CONSTRUCTIONS.map(item => item.id)];
+    const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...ROAD_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
     expect(CODEX_ENTRIES.map(entry => entry.id).sort()).toEqual(expected.sort());
     for (const id of expected) {
       expect(() => validateCodex(CODEX_ENTRIES.filter(entry => entry.id !== id)), id).toThrow('Every constructible');
@@ -118,5 +119,30 @@ describe('codex snapshots', () => {
     expect(codexSnapshot('brt', 1).brtRoads).toHaveLength(3);
     expect(codexSnapshot('rail', 1).rails).toHaveLength(3);
     expect(codexSnapshot('rail', 1).buildings).toHaveLength(0);
+  });
+});
+
+describe('crop codex', () => {
+  it('documents every species in the crops section with its Unlock threshold and five stages', () => {
+    for (const id of CROP_IDS) {
+      const entry = CODEX_ENTRIES.find(item => item.id === id);
+      expect(entry?.section, id).toBe('codex.crops');
+      expect(entry?.unlockCitizens).toBe(CROPS[id].unlockCitizens);
+      expect(entry?.levels).toEqual([1, 2, 3, 4, 5]);
+      for (const language of [MESSAGES, FR]) expect(language[entry!.name].trim()).not.toBe('');
+    }
+  });
+
+  it('shows one planted Field at each growth stage, then the ready Crop', () => {
+    for (const id of CROP_IDS) {
+      for (const level of [1, 2, 3, 4]) {
+        const models = renderItemsOf(codexSnapshot(id, level)).map(item => item.model);
+        expect(models, `${id} ${level}`).toContain(growthModelOf(id, level as 1 | 2 | 3 | 4));
+      }
+      const ready = renderItemsOf(codexSnapshot(id, 5)).map(item => item.model);
+      expect(ready).toContain(growthModelOf(id, 4));
+      const produce = produceModelOf(id);
+      if (produce) expect(ready).toContain(produce);
+    }
   });
 });

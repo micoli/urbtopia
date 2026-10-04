@@ -1,4 +1,5 @@
-import { DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type GameState, type ServiceCategory } from '../core';
+import { CROP_IDS, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
+import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
 import { NATURE_MODELS, type NatureType } from '../core/environment/nature';
 import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
@@ -34,6 +35,8 @@ export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
   waterTower: 'industrial/water-tower',
   silo: 'industrial/building-p',
   vault: 'industrial/building-s',
+  farm: 'farm/Barn',
+  packhouse: 'farm/OpenBarn',
   tree: 'suburban/tree-small',
   park: 'suburban/tree-large',
   solar: 'industrial/solar-panel-landscape-group',
@@ -79,7 +82,8 @@ const CATEGORY_TINTS: Record<ServiceCategory, number> = {
 
 export const RED_CROSS_MODEL = 'procedural/red-cross';
 export const GARAGE_DOOR_MODEL = 'procedural/garage-door';
-export const PROCEDURAL_MODELS: readonly string[] = [RED_CROSS_MODEL, GARAGE_DOOR_MODEL];
+export const FIELD_SOIL_MODEL = 'procedural/field-soil';
+export const PROCEDURAL_MODELS: readonly string[] = [RED_CROSS_MODEL, GARAGE_DOOR_MODEL, FIELD_SOIL_MODEL];
 
 const GARAGE_DOOR_SPACING = 0.6;
 const GARAGE_DOOR_HEIGHT = 0.27;
@@ -142,6 +146,7 @@ export const MODEL_KEYS: readonly string[] = [
     ...VEHICLE_MODELS,
     ...Object.values(SERVICE_VEHICLE_MODELS),
     BUS_MODEL,
+    ...CROP_IDS.flatMap((species) => cropModelsOf(species)),
   ])
 ];
 
@@ -162,7 +167,7 @@ export function modelOfBuilding(building: Building): string {
 
 let lastBuildingItems: RenderItem[] = [];
 let lastRoadItems: { roads: GameState['roads']; roundabouts: GameState['roundabouts']; rails: GameState['rails']; brtRoads: GameState['brtRoads']; items: RenderItem[] } | null = null;
-let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; items: RenderItem[] } | null = null;
+let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; fields: RenderItem[]; items: RenderItem[] } | null = null;
 
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   return a.length === b.length && a.every((item, index) => {
@@ -171,7 +176,15 @@ function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   });
 }
 
-export function renderItemsOf(state: GameState): RenderItem[] {
+export interface HarvestedTile {
+  x: number;
+  y: number;
+  species: CropId;
+}
+
+let lastFieldItems: RenderItem[] = [];
+
+export function renderItemsOf(state: GameState, afterHarvest: readonly HarvestedTile[] = []): RenderItem[] {
   const builtBuildings = buildingItems(state);
   const buildings = sameItems(builtBuildings, lastBuildingItems) ? lastBuildingItems : builtBuildings;
   lastBuildingItems = buildings;
@@ -181,10 +194,39 @@ export function renderItemsOf(state: GameState): RenderItem[] {
   }
   const roads = lastRoadItems.items;
 
-  if (lastItems && lastItems.buildings === buildings && lastItems.roads === roads) return lastItems.items;
-  const items = [...buildings, ...roads];
-  lastItems = { buildings, roads, items };
+  const builtFields = fieldItems(state, afterHarvest);
+  const fields = sameItems(builtFields, lastFieldItems) ? lastFieldItems : builtFields;
+  lastFieldItems = fields;
+
+  if (lastItems && lastItems.buildings === buildings && lastItems.roads === roads && lastItems.fields === fields) return lastItems.items;
+  const items = [...buildings, ...roads, ...fields];
+  lastItems = { buildings, roads, fields, items };
   return items;
+}
+
+const PRODUCE_OFFSET = 0.22;
+const PRODUCE_ELEVATION = 0.03;
+
+function fieldItems(state: GameState, afterHarvest: readonly HarvestedTile[]): RenderItem[] {
+  const harvestedAt = new Map(afterHarvest.map((tile) => [tileKey(tile), tile.species]));
+  return state.fields.flatMap((field) => {
+    const x = field.x + 0.5;
+    const z = field.y + 0.5;
+    const soil: RenderItem = { model: FIELD_SOIL_MODEL, x, z, rotation: 0 };
+    if (!field.crop) {
+      const harvested = harvestedAt.get(tileKey(field));
+      const model = harvested ? harvestedModelOf(harvested) : null;
+      return model ? [soil, { model, x, z, rotation: 0 }] : [soil];
+    }
+    const stage = cropStage(field.crop, state.lastSeen);
+    if (stage !== 'ready') return [soil, { model: growthModelOf(field.crop.species, stage), x, z, rotation: 0 }];
+    const produce = produceModelOf(field.crop.species);
+    return [
+      soil,
+      { model: growthModelOf(field.crop.species, 4), x, z, rotation: 0 },
+      ...(produce ? [{ model: produce, x: x + PRODUCE_OFFSET, z: z + PRODUCE_OFFSET, rotation: 0, elevation: PRODUCE_ELEVATION }] : []),
+    ];
+  });
 }
 
 function roadItems(state: GameState): RenderItem[] {

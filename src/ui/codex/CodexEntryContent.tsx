@@ -1,13 +1,19 @@
 import { useState } from 'react';
-import { totalCitizens } from '../../core';
+import { isCrop, totalCitizens } from '../../core';
 import { codexImageKey, type CodexEntry, type CodexManifest } from '../../codex/catalog';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { readHomeColor } from '../buildings/homeColor';
+import { CropFacts } from './CropFacts';
 
 interface CodexEntryContentProps {
   entry: CodexEntry;
   manifest: CodexManifest | null;
+}
+
+function captionOf(entry: CodexEntry, level: number): string {
+  if (!isCrop(entry.id)) return t('codex.level').replace('{level}', String(level));
+  return level > 4 ? t('codex.stageReady') : t('codex.stage').replace('{level}', String(level));
 }
 
 export function CodexEntryContent({ entry, manifest }: CodexEntryContentProps) {
@@ -24,6 +30,7 @@ export function CodexEntryContent({ entry, manifest }: CodexEntryContentProps) {
         <strong data-available={available}>{t(available ? 'codex.available' : 'codex.locked')}</strong>
         <span>{entry.unlockCitizens === 0 ? t('codex.fromStart') : t('codex.unlock').replace('{count}', String(entry.unlockCitizens))}</span>
       </p>
+      {isCrop(entry.id) ? <CropFacts crop={entry.id} /> : null}
       <h4>{t('codex.gallery')}</h4>
       {manifest && <div className="codex-gallery">
         {entry.levels.map(level => (
@@ -34,7 +41,7 @@ export function CodexEntryContent({ entry, manifest }: CodexEntryContentProps) {
               alt={t('codex.preview').replace('{name}', t(entry.name)).replace('{level}', String(level))}
               onError={() => setFailedImages(levels => [...levels, level])}
             />}
-            <figcaption>{t('codex.level').replace('{level}', String(level))}</figcaption>
+            <figcaption>{captionOf(entry, level)}</figcaption>
           </figure>
         ))}
       </div>}

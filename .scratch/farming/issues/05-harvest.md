@@ -1,6 +1,6 @@
 # Harvest
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 04, 08
 Spec: ../spec.md
 

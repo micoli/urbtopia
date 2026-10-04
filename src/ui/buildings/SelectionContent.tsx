@@ -4,6 +4,7 @@ import { CoalPlantPanel } from './CoalPlantPanel';
 import { GAME_CONFIG, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost } from '../../core';
 import { t } from '../../i18n/t';
 import { FacilityPanel } from './FacilityPanel';
+import { FarmPanel } from './FarmPanel';
 import { HomePanel } from './HomePanel';
 import { useUi } from '../common/hooks';
 import { ProductionPanel } from './ProductionPanel';
@@ -29,7 +30,8 @@ export function SelectionContent() {
           ✗
         </button>
       </header>
-      {building.type === 'workshop' || building.type === 'factory' ? <ProductionPanel building={building} /> : null}
+      {building.type === 'workshop' || building.type === 'factory' || building.type === 'packhouse' ? <ProductionPanel building={building} /> : null}
+      {building.type === 'farm' ? <FarmPanel building={building} /> : null}
       {building.type === 'home' ? <HomePanel building={building} /> : null}
       {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}
       {building.type === 'shop' ? <ShopPanel building={building} /> : null}

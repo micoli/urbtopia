@@ -1,7 +1,7 @@
 # Farming
 
 Status: ready-for-human
-Completion: pending
+Completion: completed
 
 ## Confirmed scope
 
@@ -63,12 +63,12 @@ Completion: pending
 
 ## Species and Unlocks
 
-Eighteen species, unlocked in six tiers of three by total Citizens. All yields are Crop Materials; each has a matching packed Good unlocked at the same threshold. Values below are starting points to tune (issue 07). Packing time and packed value are for the Packhouse recipe (2 Crop Material → 1 packed Good); packed value is the Good's `value`.
+Eighteen species, unlocked in six tiers of three by total Citizens. All yields are Crop Materials; each has a matching packed Good unlocked at the same threshold. Values below are tuned (issue 07): net Urbs per hour of a Field tile stays within 0.6× to 2.2× of the best Factory Good of the same Unlock stage (`balance.test.ts`). Packing time and packed value are for the Packhouse recipe (2 Crop Material → 1 packed Good); packed value is the Good's `value`.
 
 | Tier | Citizens | Species | Growth (min) | Water / tile | Yield / tile | Seed share | Seed pack (Urbs) | Packing (min) | Packed value (Urbs) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 20 | grass | 3 | 1 | 2 | 50% | 2 | 1 | 12 |
-| 1 | 20 | flower | 4 | 1 | 2 | 50% | 2 | 1 | 12 |
+| 1 | 20 | grass | 3 | 1 | 2 | 50% | 2 | 1 | 18 |
+| 1 | 20 | flower | 4 | 1 | 2 | 50% | 2 | 1 | 24 |
 | 1 | 20 | wheat | 5 | 1 | 3 | 40% | 3 | 1 | 20 |
 | 2 | 60 | carrot | 8 | 2 | 3 | 40% | 5 | 2 | 30 |
 | 2 | 60 | beet | 10 | 2 | 3 | 40% | 6 | 2 | 36 |
@@ -82,9 +82,9 @@ Eighteen species, unlocked in six tiers of three by total Citizens. All yields a
 | 5 | 450 | bushBerries | 32 | 3 | 6 | 25% | 28 | 5 | 170 |
 | 5 | 450 | bamboo | 30 | 3 | 6 | 25% | 26 | 5 | 155 |
 | 5 | 450 | cactus | 36 | 1 | 5 | 25% | 30 | 5 | 180 |
-| 6 | 800 | apple | 44 | 4 | 8 | 20% | 45 | 6 | 265 |
-| 6 | 800 | orange | 48 | 4 | 8 | 20% | 50 | 6 | 300 |
-| 6 | 800 | palmtree | 52 | 3 | 8 | 20% | 52 | 6 | 310 |
+| 6 | 800 | apple | 44 | 4 | 8 | 20% | 45 | 6 | 190 |
+| 6 | 800 | orange | 48 | 4 | 8 | 20% | 50 | 6 | 205 |
+| 6 | 800 | palmtree | 52 | 3 | 8 | 20% | 52 | 6 | 215 |
 
 - Species and packed Goods appear in the "next Unlock" announcement alongside other Materials and Goods.
 - Crop Materials are never producible by a Workshop.
@@ -104,4 +104,4 @@ Eighteen species, unlocked in six tiers of three by total Citizens. All yields a
 
 ## Open points
 
-- Final tuning of the species table and packed Good values (issue 07).
+- Real-play tuning of the species table once the loop has been played; the balance bounds are enforced by `balance.test.ts`.

@@ -1,7 +1,7 @@
 import { fitNatureModel } from './natureModelFit';
 import { fitRailCorner } from './railModelFit';
 import * as THREE from 'three';
-import { GARAGE_DOOR_MODEL, RED_CROSS_MODEL, type TextureVariant } from './renderItems';
+import { FIELD_SOIL_MODEL, GARAGE_DOOR_MODEL, RED_CROSS_MODEL, type TextureVariant } from './renderItems';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class ModelLibrary {
@@ -85,7 +85,7 @@ export class ModelLibrary {
 
   private load(key: string): Promise<void> {
     if (this.models.has(key)) return Promise.resolve();
-    const procedural = key === RED_CROSS_MODEL ? buildRedCross : key === GARAGE_DOOR_MODEL ? buildGarageDoor : null;
+    const procedural = key === RED_CROSS_MODEL ? buildRedCross : key === GARAGE_DOOR_MODEL ? buildGarageDoor : key === FIELD_SOIL_MODEL ? buildFieldSoil : null;
     if (procedural) {
       this.models.set(key, procedural());
       return Promise.resolve();
@@ -114,6 +114,15 @@ function buildRedCross(): THREE.Object3D {
   for (const [width, height] of [[0.5, 0.15], [0.15, 0.5]] as const) {
     group.add(new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.03), material));
   }
+  group.updateMatrixWorld(true);
+  return group;
+}
+
+function buildFieldSoil(): THREE.Object3D {
+  const group = new THREE.Group();
+  const soil = new THREE.Mesh(new THREE.BoxGeometry(0.94, 0.02, 0.94), new THREE.MeshStandardMaterial({ color: 0x6b4a2f, roughness: 1 }));
+  soil.position.y = 0.01;
+  group.add(soil);
   group.updateMatrixWorld(true);
   return group;
 }

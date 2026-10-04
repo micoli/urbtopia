@@ -21,6 +21,7 @@ import {
   type Command,
   type Coord,
   type Direction,
+  type CropId,
   type ErrorKey,
   type FacilityType,
   type GameState,
@@ -35,7 +36,10 @@ export type Tool =
   | { kind: 'crossing' }
   | { kind: 'roundabout' }
   | { kind: 'demolishRoad'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
-  | { kind: 'parcel' };
+  | { kind: 'parcel' }
+  | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] };
+
+export type BrushAction = 'layField' | 'removeField' | 'plant' | 'harvest';
 
 export interface ToolContext {
   state: GameState;
@@ -137,6 +141,8 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
       return evaluateDemolishRoad(state, tool, tile);
     case 'parcel':
       return evaluateParcel(state, tile);
+    case 'brush':
+      return evaluateBrush(state, tool, tile);
   }
 }
 
@@ -188,6 +194,46 @@ function rangeTiles(type: FacilityType, tile: Coord, rotation: Rotation): Coord[
   return range;
 }
 
+function brushCommand(tool: Extract<Tool, { kind: 'brush' }>, tiles: Coord[]): Command | null {
+  switch (tool.action) {
+    case 'layField':
+      return { type: 'LayFields', tiles };
+    case 'removeField':
+      return { type: 'RemoveFields', tiles };
+    case 'harvest':
+      return { type: 'Harvest', tiles };
+    case 'plant':
+      return tool.crop ? { type: 'Plant', crop: tool.crop, tiles } : null;
+  }
+}
+
+function evaluateBrush(state: GameState, tool: Extract<Tool, { kind: 'brush' }>, hovered: Coord): Evaluation {
+  const tiles = tool.tiles.length > 0 ? tool.tiles : [hovered];
+  const command = brushCommand(tool, tiles);
+  const result = evaluation(tiles, command, state);
+  if (!command || !result.valid) return result;
+  const outcome = dispatch(state, command, state.lastSeen);
+  return { ...result, cost: outcome.ok ? Math.max(0, state.urbs - outcome.state.urbs) : null };
+}
+
+export function extendBrush(tool: Tool, tile: Coord): Tool {
+  if (tool.kind !== 'brush') return tool;
+  const last = tool.tiles.at(-1);
+  const path = last ? lineBetween(last, tile) : [tile];
+  const known = new Set(tool.tiles.map((t) => `${t.x},${t.y}`));
+  const added = path.filter((t) => !known.has(`${t.x},${t.y}`));
+  return added.length === 0 ? tool : { ...tool, tiles: [...tool.tiles, ...added] };
+}
+
+function lineBetween(from: Coord, to: Coord): Coord[] {
+  const steps = Math.max(Math.abs(to.x - from.x), Math.abs(to.y - from.y));
+  if (steps === 0) return [to];
+  return Array.from({ length: steps }, (_, index) => {
+    const ratio = (index + 1) / steps;
+    return { x: Math.round(from.x + (to.x - from.x) * ratio), y: Math.round(from.y + (to.y - from.y) * ratio) };
+  });
+}
+
 function evaluateParcel(state: GameState, tile: Coord): Evaluation {
   const size = GAME_CONFIG.parcelSizeInTiles;
   const parcel = { x: Math.floor(tile.x / size), y: Math.floor(tile.y / size) };
@@ -218,6 +264,7 @@ function evaluateDemolishRoad(state: GameState, tool: Extract<Tool, { kind: 'dem
 }
 
 export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTool = false): Confirmation {
+  if (tool.kind === 'brush') return { command: current.valid ? current.command : null, nextTool: { ...tool, tiles: [] } };
   const isPathTool = tool.kind === 'road' || tool.kind === 'demolishRoad';
   if (isPathTool && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
   if (!current.valid) return { command: null, nextTool: tool };

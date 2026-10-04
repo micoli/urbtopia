@@ -1,6 +1,6 @@
 # Species catalog, Seed packs and Farm panel
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01
 Spec: ../spec.md
 

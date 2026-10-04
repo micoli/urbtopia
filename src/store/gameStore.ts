@@ -4,6 +4,7 @@ import { restoreDeletion, type DeletionUndo } from '../core/engine/undo';
 import { saveSession } from '../persistence/instance';
 import type { LoadResult } from '../persistence/saveSession';
 import { isSimulationRequested } from '../sim/simulationFlag';
+import { harvestEffects } from './harvestEffects';
 import { readOnlyStore } from './readOnlyStore';
 import { toastKeyForEvents, toastStore } from './toastStore';
 
@@ -49,6 +50,7 @@ export function createGameStore(initial: GameState) {
       }
       const toast = toastKeyForEvents(result.events);
       if (toast) toastStore.getState().show(toast);
+      for (const event of result.events) if (event.type === 'CropsHarvested') harvestEffects.getState().show(event.tiles);
       announceTutorialEnd(get().state, result.state);
       set({ state: result.state, deletionUndo: result.undo, lastError: null, lastChange: 'command' });
     },

@@ -27,6 +27,8 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
     return conditions.join(' · ');
   }
 
+  const lacksMaterials = (item: ItemId) => building.type === 'packhouse' && Object.entries(recipeOf(item)).some(([material, amount]) => (state.storage.materials[material as MaterialId] ?? 0) < amount);
+
   return (
     <section className="production">
       <h3>
@@ -53,7 +55,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
         <div className="slot-actions">
           {items.map((item) =>
             isItemUnlocked(state, item) && building.tier >= minTierOf(item) ? (
-              <button key={item} type="button" onClick={() => send({ type: 'QueueProduction', buildingId: building.id, item })}>
+              <button key={item} type="button" disabled={lacksMaterials(item)} onClick={() => send({ type: 'QueueProduction', buildingId: building.id, item })}>
                 + {t(`item.${item}`)}
                 {recipeLabel(item)}
               </button>

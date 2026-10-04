@@ -1,6 +1,6 @@
 # Planting by sprinkling and growth
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 02, 03
 Spec: ../spec.md
 

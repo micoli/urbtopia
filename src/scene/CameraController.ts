@@ -38,6 +38,12 @@ export class CameraController {
   onMouseMove: (clientX: number, clientY: number) => void = () => {};
   onPointerKind: (pointerType: string) => void = () => {};
   onSecondaryClick: () => void = () => {};
+  onBrushStart: (clientX: number, clientY: number) => void = () => {};
+  onBrushMove: (clientX: number, clientY: number) => void = () => {};
+  onBrushEnd: () => void = () => {};
+  onBrushCancel: () => void = () => {};
+  brushMode = false;
+  private brushPointer: number | null = null;
   private abort = new AbortController();
 
   constructor(
@@ -191,6 +197,13 @@ export class CameraController {
     this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     this.lastPinchDistance = 0;
     this.twist = 0;
+    if (this.brushMode && this.pointers.size === 1) {
+      this.brushPointer = event.pointerId;
+      this.onBrushStart(event.clientX, event.clientY);
+    } else if (this.brushPointer !== null) {
+      this.brushPointer = null;
+      this.onBrushCancel();
+    }
     if (this.pointers.size === 1) {
       this.gesture = { startX: event.clientX, startY: event.clientY, startTime: performance.now(), moved: false, multiTouch: false };
     } else {
@@ -201,8 +214,14 @@ export class CameraController {
   private onPointerEnd(event: PointerEvent): void {
     const wasSingle = this.pointers.size === 1 && event.type === 'pointerup';
     const { startX, startY, startTime, moved, multiTouch } = this.gesture;
-    const isTap = wasSingle && !moved && !multiTouch && performance.now() - startTime < TAP_MAX_MS;
+    const wasBrush = this.brushPointer === event.pointerId;
+    const isTap = !wasBrush && wasSingle && !moved && !multiTouch && performance.now() - startTime < TAP_MAX_MS;
     this.pointers.delete(event.pointerId);
+    if (wasBrush) {
+      this.brushPointer = null;
+      if (event.type === 'pointerup') this.onBrushEnd();
+      else this.onBrushCancel();
+    }
     this.pendingTap = isTap ? { x: startX, y: startY, shiftKey: event.shiftKey } : null;
     this.lastPinchDistance = 0;
     this.twist = 0;
@@ -222,6 +241,11 @@ export class CameraController {
     }
     const pointer = this.pointers.get(event.pointerId);
     if (!pointer) return;
+    if (this.brushPointer === event.pointerId) {
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+      return this.onBrushMove(event.clientX, event.clientY);
+    }
     if (Math.hypot(event.clientX - this.gesture.startX, event.clientY - this.gesture.startY) > TAP_SLOP_PX) this.gesture.moved = true;
     const dx = event.clientX - pointer.x;
     const dy = event.clientY - pointer.y;

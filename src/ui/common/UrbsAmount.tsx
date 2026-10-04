@@ -7,7 +7,7 @@ interface UrbsAmountProps {
 export function UrbsAmount({ value }: UrbsAmountProps) {
   return (
     <span className="urbs-amount">
-      {value} <UrbsSymbol />
+      {(value??0).toFixed(0)} <UrbsSymbol />
     </span>
   );
 }

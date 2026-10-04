@@ -10,7 +10,7 @@ import { GhostLayer } from './GhostLayer';
 import { createTendedGroundTexture, createWildGroundTexture, TENDED_TEXTURE_TILES, WILD_TEXTURE_TILES } from './groundTextures';
 import { facilityScaleOf, fitMatrixOf } from './modelFit';
 import { ModelLibrary } from './modelLibrary';
-import { facilityFootprint, modelOfBuilding, renderItemsOf } from './renderItems';
+import { facilityFootprint, modelOfBuilding, renderItemsOf, type HarvestedTile } from './renderItems';
 import { ServiceVehicleLayer } from './ServiceVehicleLayer';
 import { TrafficLayer } from './TrafficLayer';
 
@@ -25,6 +25,10 @@ export interface SceneHandlers {
   onMouseMove: (tile: Coord) => void;
   onPointerKind: (pointerType: string) => void;
   onSecondaryClick: () => void;
+  onBrushStart: (tile: Coord) => void;
+  onBrushMove: (tile: Coord) => void;
+  onBrushEnd: () => void;
+  onBrushCancel: () => void;
 }
 
 export class GameScene {
@@ -38,6 +42,7 @@ export class GameScene {
   private selectionLayer = new GhostLayer(SELECTION_COLOR, { underBuildings: true });
   private ecologyLayer = new EcologyLayer(this.library);
   private selectedId: number | null = null;
+  private afterHarvest: readonly HarvestedTile[] = [];
   private ecologicalState: GameState | null = null;
   private traffic = new TrafficLayer(this.library);
   private serviceVehicles = new ServiceVehicleLayer(this.library);
@@ -50,6 +55,10 @@ export class GameScene {
     onMouseMove: () => {},
     onPointerKind: () => {},
     onSecondaryClick: () => {},
+    onBrushStart: () => {},
+    onBrushMove: () => {},
+    onBrushEnd: () => {},
+    onBrushCancel: () => {},
   };
   private ownedSignature = '';
   private controller: CameraController;
@@ -77,6 +86,10 @@ export class GameScene {
     this.controller.onMouseMove = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onMouseMove(tile));
     this.controller.onPointerKind = (pointerType) => this.handlers.onPointerKind(pointerType);
     this.controller.onSecondaryClick = () => this.handlers.onSecondaryClick();
+    this.controller.onBrushStart = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onBrushStart(tile));
+    this.controller.onBrushMove = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onBrushMove(tile));
+    this.controller.onBrushEnd = () => this.handlers.onBrushEnd();
+    this.controller.onBrushCancel = () => this.handlers.onBrushCancel();
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
     this.resize();
@@ -94,6 +107,17 @@ export class GameScene {
   setTrafficEnabled(enabled: boolean): void {
     this.traffic.setEnabled(enabled);
     this.serviceVehicles.setEnabled(enabled);
+  }
+
+  setAfterHarvest(tiles: readonly HarvestedTile[]): void {
+    this.afterHarvest = tiles;
+    if (!this.ecologicalState) return;
+    this.latest = this.ecologicalState;
+    void this.drain();
+  }
+
+  setBrushMode(enabled: boolean): void {
+    this.controller.brushMode = enabled;
   }
 
   setGhost(ghost: GhostSpec | null): void {
@@ -155,7 +179,7 @@ export class GameScene {
       while (this.latest) {
         const state = this.latest;
         this.latest = null;
-        const items = renderItemsOf(state);
+        const items = renderItemsOf(state, this.afterHarvest);
         await this.library.ensure(items.map((item) => item.model));
         await this.library.ensureTextureVariants(items.flatMap(item => item.textureVariant ? [item.textureVariant] : []));
         this.world.sync(items);

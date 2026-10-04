@@ -1,8 +1,8 @@
 import { createStore } from 'zustand/vanilla';
-import { footprintTiles, type Coord, type Rotation } from '../core';
+import { footprintTiles, type Coord, type CropId, type Rotation } from '../core';
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
-import { confirmTool, evaluateTool, type Evaluation, type Tool } from '../tools/tools';
+import { confirmTool, evaluateTool, extendBrush, type Evaluation, type Tool } from '../tools/tools';
 import { gameStore } from './gameStore';
 import { sceneHandle } from './sceneHandle';
 import { toastStore } from './toastStore';
@@ -40,6 +40,12 @@ export interface UiStore {
   confirm: (keepTool?: boolean) => void;
   setCenterTile: (tile: Coord) => void;
   setPointerKind: (kind: PointerKind) => void;
+  selectedCrop: CropId | null;
+  selectCrop: (crop: CropId) => void;
+  brushStart: (tile: Coord) => void;
+  brushMove: (tile: Coord) => void;
+  brushEnd: () => void;
+  brushCancel: () => void;
   hoverTile: (tile: Coord) => void;
   clickTile: (tile: Coord, keepTool?: boolean) => void;
   tapTile: (tile: Coord, buildingId?: number | null) => void;
@@ -118,6 +124,30 @@ export const uiStore = createStore<UiStore>((set, get) => {
     setCenterTile: (tile) => reevaluate({ centerTile: tile }),
     setPointerKind: (kind) => {
       if (kind !== get().pointerKind) reevaluate({ pointerKind: kind });
+    },
+    selectedCrop: null,
+    selectCrop: (crop) => {
+      const { tool } = get();
+      set({ selectedCrop: crop });
+      if (tool?.kind === 'brush' && tool.action === 'plant') reevaluate({ tool: { ...tool, crop } });
+    },
+    brushStart: (tile) => {
+      const { tool } = get();
+      if (tool?.kind !== 'brush') return;
+      reevaluate({ tool: extendBrush({ ...tool, tiles: [] }, tile), hovered: tile });
+    },
+    brushMove: (tile) => {
+      const { tool } = get();
+      if (tool?.kind !== 'brush') return;
+      reevaluate({ tool: extendBrush(tool, tile), hovered: tile });
+    },
+    brushEnd: () => {
+      if (get().tool?.kind !== 'brush') return;
+      get().confirm();
+    },
+    brushCancel: () => {
+      const { tool } = get();
+      if (tool?.kind === 'brush') reevaluate({ tool: { ...tool, tiles: [] } });
     },
     hoverTile: (tile) => {
       const { hovered } = get();

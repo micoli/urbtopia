@@ -1,5 +1,5 @@
 import { NATURE_MODELS, type NatureType, type NatureFamily } from '../core/environment/nature';
-import { BUILDING_SPECS, ECOLOGY, ECOLOGY_UNLOCKS, FACILITY_TYPES, maxTierOf, type BuildingType, type FacilityType } from '../core';
+import { BUILDING_SPECS, CROPS, CROP_IDS, ECOLOGY, ECOLOGY_UNLOCKS, FACILITY_TYPES, isCrop, maxTierOf, type BuildingType, type CropId, type FacilityType } from '../core';
 import { MESSAGES, type MessageKey } from '../i18n/messages';
 import { FR } from '../i18n/fr';
 import { BUILDING_SECTIONS, type BuildSection } from './buildingSections';
@@ -8,8 +8,8 @@ import type { HomeColorVariant } from '../core';
 
 export const HOME_COLOR_VARIANTS: readonly HomeColorVariant[] = ['default', 'a', 'b', 'c'];
 
-export type CodexId = BuildingType | 'solarHome' | RoadConstructionId;
-export type CodexSection = BuildSection | 'codex.roads';
+export type CodexId = BuildingType | 'solarHome' | RoadConstructionId | CropId;
+export type CodexSection = BuildSection | 'codex.roads' | 'codex.crops';
 
 const DESCRIPTIONS = {
   ...Object.fromEntries(NATURE_MODELS.map(([type, , family]) => [type, `codex.description.nature.${family}`])) as Record<NatureType, `codex.description.nature.${NatureFamily}`>,
@@ -22,6 +22,8 @@ const DESCRIPTIONS = {
   storehouse: 'codex.description.storehouse',
   silo: 'codex.description.silo',
   vault: 'codex.description.vault',
+  farm: 'codex.description.farm',
+  packhouse: 'codex.description.packhouse',
   powerPlant: 'codex.description.powerPlant',
   coalPlant: 'codex.description.coalPlant',
   waterTower: 'codex.description.waterTower',
@@ -38,6 +40,7 @@ const DESCRIPTIONS = {
   roundabout: 'codex.description.roundabout',
   brt: 'codex.description.brt',
   rail: 'codex.description.rail',
+  ...Object.fromEntries(CROP_IDS.map(id => [id, 'codex.description.crop'])) as Record<CropId, 'codex.description.crop'>,
 } as const satisfies Record<CodexId, MessageKey>;
 
 export interface CodexEntry {
@@ -56,7 +59,9 @@ export interface CodexManifest {
 
 const levelsOf = (type: BuildingType) => Array.from({ length: maxTierOf(type) }, (_, i) => i + 1);
 
-export const CODEX_SECTIONS: readonly CodexSection[] = [...BUILDING_SECTIONS.map(section => section.title), 'codex.roads'];
+export const CROP_CODEX_LEVELS: readonly number[] = [1, 2, 3, 4, 5];
+
+export const CODEX_SECTIONS: readonly CodexSection[] = [...BUILDING_SECTIONS.map(section => section.title), 'codex.crops', 'codex.roads'];
 
 export const CODEX_ENTRIES: readonly CodexEntry[] = [
   ...BUILDING_SECTIONS.flatMap(section => {
@@ -70,6 +75,10 @@ export const CODEX_ENTRIES: readonly CodexEntry[] = [
     });
     return entries;
   }),
+  ...CROP_IDS.map((id): CodexEntry => ({
+    id, section: 'codex.crops', name: `item.${id}`, description: DESCRIPTIONS[id],
+    unlockCitizens: CROPS[id].unlockCitizens, levels: CROP_CODEX_LEVELS,
+  })),
   ...ROAD_CONSTRUCTIONS.map(item => ({
     id: item.id, section: 'codex.roads' as const, name: item.name, description: DESCRIPTIONS[item.id],
     unlockCitizens: item.unlockCitizens, levels: [1],
@@ -83,7 +92,7 @@ export function codexImageKey(id: CodexId, level: number, colorVariant?: HomeCol
 }
 
 export function validateCodex(entries: readonly CodexEntry[] = CODEX_ENTRIES): void {
-  const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...ROAD_CONSTRUCTIONS.map(item => item.id)];
+  const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...ROAD_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
   if (entries.length !== expected.length || expected.some(id => entries.filter(entry => entry.id === id).length !== 1)) {
     throw new Error('Every constructible must have exactly one codex entry');
   }
@@ -93,7 +102,7 @@ export function validateCodex(entries: readonly CodexEntry[] = CODEX_ENTRIES): v
       if (!MESSAGES[key]?.trim() || !FR[key]?.trim()) throw new Error(`Missing codex translation: ${key}`);
     }
     const buildingType = entry.id === 'solarHome' ? 'home' : entry.id;
-    const levels = buildingType in BUILDING_SPECS ? levelsOf(buildingType as BuildingType) : [1];
+    const levels = buildingType in BUILDING_SPECS ? levelsOf(buildingType as BuildingType) : isCrop(entry.id) ? CROP_CODEX_LEVELS : [1];
     if (JSON.stringify(entry.levels) !== JSON.stringify(levels)) throw new Error(`Missing codex levels: ${entry.id}`);
     if (!Number.isInteger(entry.unlockCitizens) || entry.unlockCitizens < 0) throw new Error(`Invalid codex unlock: ${entry.id}`);
   }

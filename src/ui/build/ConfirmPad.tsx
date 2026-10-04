@@ -11,6 +11,7 @@ export function ConfirmPad() {
   const cancelTool = useUi((store) => store.cancelTool);
   const rotate = useUi((store) => store.rotate);
   const isPathTool = tool?.kind === 'road' || tool?.kind === 'demolishRoad';
+  const isBrush = tool?.kind === 'brush';
   const needsStart = isPathTool && tool.start === null;
   const canConfirm = Boolean(evaluation?.valid) || needsStart;
   const canRotate = isPathTool ? tool.start !== null : evaluation?.rotation != null;
@@ -37,12 +38,16 @@ export function ConfirmPad() {
         <button type="button" className="pad-button pad-cancel" aria-label={t('pad.cancel')} onClick={cancelTool}>
           ✗
         </button>
-        <button type="button" className="pad-button" aria-label={t('pad.rotate')} disabled={!canRotate} onClick={rotate}>
-          ⟳
-        </button>
-        <button type="button" className="pad-button pad-confirm" aria-label={t('pad.confirm')} disabled={!canConfirm} onClick={() => confirm()}>
-          ✓
-        </button>
+        {isBrush ? null : (
+          <button type="button" className="pad-button" aria-label={t('pad.rotate')} disabled={!canRotate} onClick={rotate}>
+            ⟳
+          </button>
+        )}
+        {isBrush ? null : (
+          <button type="button" className="pad-button pad-confirm" aria-label={t('pad.confirm')} disabled={!canConfirm} onClick={() => confirm()}>
+            ✓
+          </button>
+        )}
       </div>
     </div>
   );
