@@ -53,9 +53,14 @@ button {
   overscroll-behavior: contain;
   touch-action: pan-y;
   scrollbar-width: none;
-  background: var(--panel-bg);
   color: var(--panel-fg);
   z-index: 10;
+}
+
+.dock .dock-stat,
+.dock .dock-button,
+.dock .city-stats {
+  background: color-mix(in srgb, var(--panel-bg) 80%, transparent);
 }
 
 .dock::-webkit-scrollbar {
@@ -64,6 +69,12 @@ button {
 
 .dock > * {
   flex-shrink: 0;
+}
+
+.dock__bottom {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
 }
 
 .dock-stat {
