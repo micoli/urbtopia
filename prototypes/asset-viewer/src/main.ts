@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { MODEL_KEYS } from '../../../src/scene/renderItems'
 
@@ -67,7 +68,7 @@ let zoom = 1.2
 
 const gltfLoader = new GLTFLoader()
 const fbxLoader = new FBXLoader()
-const objLoader = new OBJLoader()
+const mtlLoader = new MTLLoader()
 const isFbxPack = (p: string) => p.startsWith('quaternius-')
 const isObjPack = (p: string) => p === 'miscellaneous'
 const key = (p: string, n: string) => `${p}/${n}`
@@ -78,9 +79,23 @@ const matteOf = (source: THREE.Material) => {
   return new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(r, g, b, THREE.LinearSRGBColorSpace), map, roughness: 1, metalness: 0 })
 }
 
+async function loadMaterials(p: string, n: string) {
+  const response = await fetch(`/models/${p}/${n}.mtl`)
+  if (!response.ok || response.headers.get('content-type')?.includes('text/html')) return null
+  mtlLoader.setResourcePath(`/models/${p}/`)
+  return mtlLoader.parse(await response.text(), `/models/${p}/`)
+}
+
+async function loadObj(p: string, n: string): Promise<THREE.Object3D> {
+  const objLoader = new OBJLoader()
+  const materials = await loadMaterials(p, n)
+  if (materials) objLoader.setMaterials(materials)
+  return objLoader.loadAsync(`/models/${p}/${n}.obj`)
+}
+
 async function loadRoot(p: string, n: string): Promise<THREE.Object3D> {
   if (isFbxPack(p)) return fbxLoader.loadAsync(`/models/${p}/${n}.fbx`)
-  if (isObjPack(p)) return objLoader.loadAsync(`/models/${p}/${n}.obj`)
+  if (isObjPack(p)) return loadObj(p, n)
   return (await gltfLoader.loadAsync(`/models/${p}/${n}.glb`)).scene
 }
 
