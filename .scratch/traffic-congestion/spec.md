@@ -16,7 +16,7 @@ Supersedes the "cosmetic only" decision of [vehicle-traffic](../vehicle-traffic/
 - **Modal mix**: Riders stay those of existing coverage-based public transport; no dynamic modal shift in this delivery ([ticket 07](issues/07-dynamic-modal-shift.md)).
 - **City Management**: a Congestion tile in the overview (city index weighted by Citizens, alert above 100%, link to the transit tab); a Traffic section (Commuters by car vs Riders as a mix in %, saturated sections, disconnected sections); a congestion line in the Well-being section.
 - **Save**: Road tier is persisted with a version migration; Vehicles and Congestion values are derived, not saved.
-- **Balancing**: Lane capacities (starting point 6 / 14 / 24 Commuters per tile for 1 / 2 / 3 Lanes), Road tier prices and the penalty cap live in `balancing.md`, tunable without changing the rules.
+- **Balancing**: Lane capacities (100 / 250 / 500 Commuters per tile for 1 / 2 / 3 Lanes), Road tier prices and the penalty cap live in [balancing.md](balancing.md), tunable without changing the rules.
 
 ## Tickets
 

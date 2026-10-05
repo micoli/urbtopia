@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, newGame, type GameState } from '../core';
+import { ROAD_TIER_COSTS, createBuilding, newGame, type GameState } from '../core';
 import { confirmTool, evaluateTool, extendBrush, selectionGhost, type Tool } from './tools';
 
 const state: GameState = newGame({ seed: 'amber-fox-4821', now: 0 });
@@ -265,7 +265,7 @@ describe('upgradeRoad tool', () => {
     const tool = afterStart.nextTool!;
     const evaluation = evaluateTool(tool, { state, tile: { x: 57, y: 58 }, rotation: null });
     expect(evaluation.valid).toBe(true);
-    expect(evaluation.cost).toBe(18);
+    expect(evaluation.cost).toBe(3 * ROAD_TIER_COSTS[1]!);
     expect(evaluation.command).toMatchObject({ type: 'UpgradeRoads' });
     expect(confirmTool(tool, { x: 57, y: 58 }, evaluation).nextTool).toMatchObject({ kind: 'upgradeRoad', start: null });
   });

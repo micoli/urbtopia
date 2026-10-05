@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advance, congestionPenaltyOf, createBuilding, homeBenefits, newGame, type Building, type GameState } from '../index';
+import { CONGESTION, advance, congestionPenaltyOf, createBuilding, homeBenefits, newGame, type Building, type GameState } from '../index';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 
 const NOW = 1_700_000_000_000;
@@ -14,9 +14,9 @@ describe('congestionPenaltyOf', () => {
   it('is nil up to full load, then linear up to the cap', () => {
     expect(congestionPenaltyOf(0.5)).toBe(0);
     expect(congestionPenaltyOf(1)).toBe(0);
-    expect(congestionPenaltyOf(1.5)).toBeCloseTo(10);
-    expect(congestionPenaltyOf(2)).toBe(20);
-    expect(congestionPenaltyOf(9)).toBe(20);
+    expect(congestionPenaltyOf(1.5)).toBeCloseTo(CONGESTION.penaltyCap / 2);
+    expect(congestionPenaltyOf(2)).toBe(CONGESTION.penaltyCap);
+    expect(congestionPenaltyOf(9)).toBe(CONGESTION.penaltyCap);
   });
 });
 
@@ -27,7 +27,7 @@ describe('Home Well-being under congestion', () => {
   });
 
   it('lowers Well-being once the bottleneck is overloaded, and upgrades relieve it', () => {
-    const { state, home } = withHome(base, 6);
+    const { state, home } = withHome(base, 7);
     const congested = homeBenefits(state, home);
     expect(congested.congestionPenalty).toBeGreaterThan(0);
     const upgraded = { ...state, roads: state.roads.map((road) => ({ ...road, tier: 3 })) };
@@ -37,16 +37,16 @@ describe('Home Well-being under congestion', () => {
   it('applies the maximum penalty to a disconnected Home', () => {
     const { state, home } = withHome(base, 1);
     const isolated = { ...state, buildings: state.buildings.map((building) => (building === home ? { ...home, x: 20, y: 20 } : building)) };
-    expect(homeBenefits(isolated, isolated.buildings.at(-1)!).congestionPenalty).toBe(20);
+    expect(homeBenefits(isolated, isolated.buildings.at(-1)!).congestionPenalty).toBe(CONGESTION.penaltyCap);
   });
 
   it('spares the penalty during an Adaptation period', () => {
-    const { state, home } = withHome({ ...base, adaptationUntil: NOW + 1000, lastSeen: NOW }, 6);
+    const { state, home } = withHome({ ...base, adaptationUntil: NOW + 1000, lastSeen: NOW }, 7);
     expect(homeBenefits(state, home).congestionPenalty).toBe(0);
   });
 
   it('keeps live ticks and catch-up consistent', () => {
-    const { state } = withHome({ ...base, lastSeen: NOW }, 6);
+    const { state } = withHome({ ...base, lastSeen: NOW }, 7);
     const hour = 3_600_000;
     const caughtUp = advance(state, NOW + 4 * hour).state;
     const stepped = [1, 2, 3, 4].reduce((current, step) => advance(current, NOW + step * hour).state, state);
