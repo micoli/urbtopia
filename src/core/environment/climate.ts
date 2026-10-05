@@ -1,11 +1,11 @@
 import { cityGreenBenefits, ECOLOGY } from './ecology';
 import { energyStats } from './energy';
-import { transportStats } from '../transit/transport';
+import { cityTransportStats } from '../traffic/cityTransport';
 import type { GameState } from '../engine/state';
 
 export function climateStats(state: GameState) {
   const energy = energyStats(state);
-  const transport = transportStats(state);
+  const transport = cityTransportStats(state);
   const operatingRatio = (state.adaptationUntil ?? 0) > state.lastSeen ? 1 : energy.economicRatio;
   const activityEmissions = state.buildings.reduce((sum, building) => {
     if (building.type === 'factory') return sum + 2 * building.tier;

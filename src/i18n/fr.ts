@@ -240,6 +240,7 @@ export const FR: Record<MessageKey, string> = {
   'eco.congestionPenalty': 'Malus de bien-être des bouchons',
   'eco.jobs': 'Emplois disponibles',
   'eco.unemployed': 'Actifs sans emploi',
+  'eco.shiftedRiders': 'Voyageurs gagnés grâce aux bouchons',
   'eco.carShare': 'En voiture',
   'eco.transitShare': 'En transports en commun',
   'eco.commutersByCar': 'Trajets en voiture',
