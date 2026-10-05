@@ -1,6 +1,7 @@
 import { CityManagement } from '../stats/CityManagement.tsx';
 import { CodexDialog } from '../codex/CodexDialog';
 import { CasinoDialog } from '../casino/CasinoDialog';
+import { MarketModal } from '../market/MarketModal';
 import { StaticButtons } from './StaticButtons.tsx';
 import { CollectBadges } from '../collect/CollectBadges';
 import { ConfirmPad } from '../build/ConfirmPad';
@@ -22,6 +23,7 @@ export function Overlays() {
       <CityManagement />
       <CodexDialog />
       <CasinoDialog />
+      <MarketModal />
       <WorkingIndicators />
       <CollectBadges />
       <ParcelTags />
