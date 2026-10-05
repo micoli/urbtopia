@@ -1,6 +1,7 @@
 # Vehicle traffic
 
 Ecological city update: electricity allocation and transport behavior are superseded by [ADR 0005](../../docs/adr/0005-local-energy-and-coverage-based-mobility.md); historical MVP decisions below are retained for context.
+Traffic becomes a game mechanic in [traffic-congestion](../traffic-congestion/spec.md), superseding the "cosmetic only" decision below.
 Add the Kenney Car Kit vehicle models, then show Vehicles driving on the roads, with the Traffic size following the city's total Citizens. Agreed in a grilling session on 2026-10-03; vocabulary (**Vehicle**, **Traffic**) is in `CONTEXT.md`.
 
 ## Decisions

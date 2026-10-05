@@ -125,7 +125,7 @@ The Urbs the player puts on a Minigame round, from fixed steps capped by the Cas
 _Avoid_: Bet, wager, buy-in
 
 **Vehicle**:
-A visual automobile that drives along the roads. Its presence follows mobility needs after public transport usage; individual Vehicles are not saved.
+A visual automobile that drives along the roads. It is a projection of the city's Congestion: its presence follows the Commuters who drive, two Vehicles never overlap, and individual Vehicles are not saved.
 _Avoid_: Car, automobile
 
 **Service vehicle**:
@@ -133,8 +133,28 @@ A visual ambulance, fire truck or police car that leaves its Public facility by 
 _Avoid_: Emergency, incident, Transit fleet
 
 **Traffic**:
-The set of Vehicles on the roads, whose size follows Citizens who do not use public transport.
+The set of Vehicles on the roads, whose size follows Commuters who drive instead of using public transport.
 _Avoid_: Flow, cars
+
+**Commute**:
+The daily journey of a Home's Citizens who do not use public transport, from the Home to the workplaces (Workshop, Factory, Shop, Public facility, Leisure building) by the shortest road path. Modelled per Home in aggregate, never per individual Citizen. A workplace has no job limit yet.
+_Avoid_: Individual Citizen journey, Transit itinerary
+
+**Commuter**:
+A Citizen who drives on a Commute.
+_Avoid_: Driver, rider (a rider uses public transport)
+
+**Lane**:
+A traffic channel of a Road in one direction. The number of Lanes comes from the Road's Tier and sets its capacity.
+_Avoid_: Track, way
+
+**Road tier**:
+The upgradable level of a Road tile, giving it 1, 2 or 3 Lanes per direction.
+_Avoid_: Avenue, road type
+
+**Congestion**:
+The state of a Road section whose Commuters exceed its Lane capacity. The bottleneck of a Commute is its lowest-capacity section. A connected set of Roads that serves Homes but no workplace, or workplaces but no Home, is a disconnected section, marked with a red cross; the Commute of its Homes is at maximum Congestion.
+_Avoid_: Jam, bouchon
 
 **Power plant**:
 A building that supplies power to the city, using wind or coal. Backup generation is a separate service role.

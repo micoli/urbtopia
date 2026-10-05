@@ -1,0 +1,5 @@
+# Congestion as a core model with Vehicles as its projection
+
+Accepted. Amends ADR 0005, which kept Traffic cosmetic. Road congestion now affects Well-being, so it lives in the pure injected-clock core: Commuters (Citizens not using public transport) are aggregated per Home, loaded on the shortest road path to workplaces, and compared with Lane capacity set by the Road tier. The bottleneck of each Commute drives a capped Well-being penalty, with an Adaptation period for saved cities. Vehicles in the scene remain a visual projection of this model: they never overlap, but individual Vehicles are not saved and carry no state of their own.
+
+Individual Citizen journeys stay rejected, as in ADR 0005, to keep the simulation bounded and catch-up deterministic. Simulating queues in the scene and feeding congestion back to the core was rejected: it would make Well-being depend on rendering, frame rate and camera. Workplaces have no job limit for now; the aggregate Commute model leaves room to add one. Lane capacities, Road tier prices and the penalty cap are tunable in `.scratch/traffic-congestion/balancing.md`.
