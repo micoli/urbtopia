@@ -5,7 +5,7 @@ import { casinoPower, gamesOfTier, stakeStepsOf } from './casino';
 const building = (id: number, type: Building['type'], x: number, y = 50, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
 const city = (buildings: Building[], extra: Partial<GameState> = {}): GameState => ({
   ...newGame({ seed: 'casino', now: 0 }), buildings, nextId: 100, urbs: 100_000, tutorial: null,
-  roads: Array.from({ length: 30 }, (_, index) => ({ x: 45 + index, y: 49, kind: 'road' as const })), adaptationUntil: 0, ...extra,
+  roads: Array.from({ length: 30 }, (_, index) => ({ x: 45 + index, y: 49, kind: 'road' as const, tier: 3 })), adaptationUntil: 0, ...extra,
 });
 const townsfolk = () => building(1, 'home', 46, 50, { tier: 7 });
 

@@ -73,6 +73,17 @@ describe('congestionStats', () => {
   });
 });
 
+describe('city without a Commute', () => {
+  it('has no congestion when there is no road or no workplace', () => {
+    const noRoad = withHome({ ...base, roads: [], roundabouts: [] }, 56, 59, 1);
+    const noWorkplace = withHome({ ...base, buildings: [] }, 56, 59, 1);
+    for (const state of [noRoad, noWorkplace]) {
+      const home = congestionStats(state).homes.get(homeIdOf(state))!;
+      expect(home).toEqual({ commuters: 0, ratio: 0, disconnected: false });
+    }
+  });
+});
+
 describe('UpgradeRoads', () => {
   const tile = { x: 55, y: 58 };
 

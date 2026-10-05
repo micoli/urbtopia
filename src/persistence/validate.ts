@@ -1,4 +1,4 @@
-import { BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
+import { BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -93,7 +93,7 @@ export function validateGameState(value: unknown): GameState | null {
     isArrayOf(value.fields, isFieldTile) &&
     typeof value.marketUnlocked === 'boolean' &&
     isMarket(value.market) &&
-    isArrayOf(value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string)) &&
+    isArrayOf(value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string) && ((road as Json).tier === undefined || isInt((road as Json).tier, 1, MAX_ROAD_TIER))) &&
     isArrayOf(value.roundabouts, (center) => isCoord(center)) &&
     (value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep));
   if (!valid) return null;

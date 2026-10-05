@@ -9,7 +9,7 @@ const versions = Array.from({ length: CURRENT_VERSION }, (_, index) => index + 1
 
 // Update this snapshot together with CURRENT_VERSION: a schema change needs a migration and a new frozen fixture.
 const SCHEMA_SNAPSHOT = {
-  version: 10,
+  version: 11,
   keys: [
     'adaptationUntil', 'brtRoads', 'buildings', 'busLines', 'casinoRng', 'fields', 'lastSeen', 'market', 'marketUnlocked', 'nextId',
     'ownedParcels', 'rails', 'rngState', 'roads', 'roundabouts', 'seed', 'seedStock', 'storage', 'transitFleet', 'transitLines', 'tutorial', 'urbs',
@@ -20,6 +20,14 @@ describe('save migration contract', () => {
   it.each(versions)('has a frozen fixture for version %i that loads into the current version', (version) => {
     const result = parseEnvelope(fixtureText(version));
     expect(result.ok).toBe(true);
+  });
+
+  it('gives a version-10 city a congestion Adaptation period and keeps its roads at tier 1', () => {
+    const v10 = JSON.parse(fixtureText(10));
+    const loaded = parseEnvelope(JSON.stringify(v10));
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.adaptationUntil).toBe(v10.state.lastSeen + 24 * 3_600_000);
+    expect(loaded.state.roads).toEqual(v10.state.roads);
   });
 
   it('has one migration step per released version', () => {

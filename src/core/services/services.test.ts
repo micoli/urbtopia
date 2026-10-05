@@ -5,7 +5,7 @@ import { ECOLOGY } from '../environment/ecology';
 const H = ECOLOGY.hourMs;
 const b = (id: number, type: Building['type'], x: number, y = 0, extra: Partial<Building> = {}) => ({ ...createBuilding(id, type, x + 50, y + 50, 0), ...extra });
 const city = (buildings: Building[], extra: Partial<GameState> = {}): GameState => ({
-  ...newGame({ seed: 'services', now: 0 }), buildings, nextId: 100, urbs: 1_000_000, tutorial: null, roads: Array.from({ length: 32 }, (_, index) => ({ x: 48 + index, y: 49, kind: 'road' as const })), adaptationUntil: 0, ...extra,
+  ...newGame({ seed: 'services', now: 0 }), buildings, nextId: 100, urbs: 1_000_000, tutorial: null, roads: Array.from({ length: 32 }, (_, index) => ({ x: 48 + index, y: 49, kind: 'road' as const, tier: 3 })), adaptationUntil: 0, ...extra,
 });
 const coveredIds = (state: GameState, type: Building['type']) => [...serviceCoverage(state)].filter(([, types]) => types.has(type as never)).map(([id]) => id);
 
