@@ -1,6 +1,7 @@
 # Dynamic modal shift
 
-Status: needs-triage
+Status: ready-for-agent
+Spec: [traffic-congestion-followups](../../traffic-congestion-followups/spec.md)
 
 Deferred from the traffic congestion grilling (2026-10-05, Q7).
 
