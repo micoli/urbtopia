@@ -63,8 +63,11 @@ describe('congestionStats', () => {
     expect(stats.disconnectedSections.map((tiles) => tiles.map(tileKey).sort())).toContainEqual(['20,22', '21,22']);
   });
 
-  it('flags a road section that serves workplaces but no Home', () => {
-    expect(congestionStats(base).disconnectedSections).toHaveLength(1);
+  it('flags a road section that serves workplaces but no Home, once the city has Homes', () => {
+    expect(congestionStats(base).disconnectedSections).toEqual([]);
+    const isolated = [{ x: 20, y: 22, kind: 'road' as const }];
+    const state = withHome({ ...base, roads: [...base.roads, ...isolated] }, 20, 23, 1);
+    expect(congestionStats(state).disconnectedSections.map((tiles) => tiles.length).sort()).toEqual([1, 10]);
   });
 
   it('does not flag the connected road network', () => {

@@ -1,10 +1,11 @@
 import * as THREE from 'three';
-import { hashSeed, nextRandom, totalCitizens, transportStats, tileKey, type Coord, type GameState } from '../core';
+import { congestionStats, hashSeed, nextRandom, tileKey, type Coord, type GameState } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { buildRoadGraph, emptyRoadGraph, type RoadGraph } from './roadGraph';
 import { targetVehicleCount } from './trafficTarget';
 import { VEHICLE_MODELS } from './vehicleModels';
-import { advanceVehicle, isOnRoad, poseOf, startVehicle, type Vehicle } from './vehicleMotion';
+import { poseOf } from './vehicleMotion';
+import { advanceTrafficVehicle, isOnTrafficRoad, isSpotFree, laneTileCount, startTrafficVehicle, type TrafficVehicle } from './vehicleTraffic';
 
 const VEHICLE_SCALE = 0.25;
 const ROAD_SURFACE_HEIGHT = 0.02;
@@ -22,7 +23,10 @@ export class TrafficLayer {
   readonly root = new THREE.Group();
   priorityTiles: ReadonlySet<string> = new Set();
   private models: ModelMeshes[] = [];
-  private vehicles: Vehicle[] = [];
+  private vehicles: TrafficVehicle[] = [];
+  private nextVehicleId = 1;
+  private laneTiles = 0;
+  private tiers: ReadonlyMap<string, number> = new Map();
   private graph: RoadGraph = emptyRoadGraph();
   private roadTiles: Coord[] = [];
   private roads: GameState['roads'] | null = null;
@@ -53,7 +57,7 @@ export class TrafficLayer {
   sync(state: GameState): void {
     if (state.seed !== this.seed) this.reset(state.seed);
     if (state.roads !== this.roads || state.roundabouts !== this.roundabouts) this.rebuildGraph(state);
-    this.target = targetVehicleCount({ citizens: Math.max(0,totalCitizens(state)-transportStats(state).riders), roadTiles: this.roadTiles.length, touch: this.touch });
+    this.target = targetVehicleCount({ commuters: congestionStats(state).commuters, laneTiles: this.laneTiles, touch: this.touch });
   }
 
   update(deltaSeconds: number, camera: THREE.Camera): void {
@@ -101,8 +105,12 @@ export class TrafficLayer {
     this.roundabouts = state.roundabouts;
     this.graph = buildRoadGraph(state);
     this.roadTiles = [...this.graph.keys()].filter((key) => (this.graph.get(key)?.length ?? 0) > 0).map(parseTile);
-    this.vehicles = this.vehicles.filter((vehicle) => isOnRoad(this.graph, vehicle));
+    this.tiers = new Map(state.roads.map((road) => [tileKey(road), road.tier ?? 1]));
+    this.laneTiles = laneTileCount(this.tiers, this.roadTiles);
+    this.vehicles = this.vehicles.filter((vehicle) => isOnTrafficRoad(this.graph, vehicle));
   }
+
+  private lanesAt = (tile: Coord): number => this.tiers.get(tileKey(tile)) ?? 1;
 
   private random = (): number => {
     const next = nextRandom(this.rngState);
@@ -121,7 +129,7 @@ export class TrafficLayer {
   }
 
   private moveVehicles(deltaSeconds: number): void {
-    this.vehicles = this.vehicles.filter((vehicle) => (vehicle.progress < .5 && this.priorityTiles.has(tileKey(vehicle.to))) || advanceVehicle(this.graph, vehicle, deltaSeconds, this.random));
+    this.vehicles = this.vehicles.filter((vehicle) => (vehicle.progress < .5 && this.priorityTiles.has(tileKey(vehicle.to))) || advanceTrafficVehicle(this.graph, vehicle, deltaSeconds, this.random, this.vehicles, this.lanesAt));
   }
 
   private adjustCount(): void {
@@ -144,8 +152,10 @@ export class TrafficLayer {
     for (let attempt = 1; attempt < SPAWN_ATTEMPTS && this.isInView(tile); attempt++) tile = this.randomRoadTile();
     const speed = BASE_SPEED * (1 - SPEED_VARIATION + 2 * SPEED_VARIATION * this.random());
     const model = Math.floor(this.random() * VEHICLE_MODELS.length);
-    const vehicle = startVehicle(this.graph, tile, model, speed, this.random);
-    if (vehicle) this.vehicles.push(vehicle);
+    const vehicle = startTrafficVehicle(this.graph, tile, this.nextVehicleId, model, speed, this.lanesAt, this.random);
+    if (!vehicle || !isSpotFree(vehicle, this.vehicles)) return;
+    this.nextVehicleId++;
+    this.vehicles.push(vehicle);
   }
 
   private randomRoadTile(): Coord {

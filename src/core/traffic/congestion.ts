@@ -65,7 +65,7 @@ function calculateCongestion(state: GameState, now: number): CongestionStats {
   const riders = transportStats(state, now).homeRiders;
   const homes = endpoints(state, graph, (building) => building.type === 'home');
   const workplaces = endpoints(state, graph, (building) => workplaceTypes.includes(building.type)).filter((workplace) => workplace.access.length > 0);
-  if (graph.size === 0 || workplaces.length === 0) return noCommute(homes);
+  if (graph.size === 0 || workplaces.length === 0 || homes.length === 0) return noCommute(homes);
   const components = labelComponents(graph);
   const componentOf = (endpoint: Endpoint) => components.labels.get(tileKey(endpoint.access[0] ?? { x: NaN, y: NaN }));
   const homeComponents = new Set(homes.map(componentOf));

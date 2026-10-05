@@ -11,21 +11,26 @@ export interface Vehicle {
   progress: number;
 }
 
+export interface LanePosition {
+  lane?: number;
+  lanes?: number;
+}
+
 export interface Pose {
   x: number;
   z: number;
   yaw: number;
 }
 
-const LANE_OFFSET = 0.2;
+const ROAD_HALF_WIDTH = 0.4;
 const TURN_BLEND_PROGRESS = 0.5;
 const MIN_HEADING_LENGTH = 0.2;
 
-function sameTile(a: Coord, b: Coord): boolean {
+export function sameTile(a: Coord, b: Coord): boolean {
   return a.x === b.x && a.y === b.y;
 }
 
-function directionOf(from: Coord, to: Coord): Coord {
+export function directionOf(from: Coord, to: Coord): Coord {
   return { x: to.x - from.x, y: to.y - from.y };
 }
 
@@ -52,7 +57,12 @@ export function advanceVehicle(graph: RoadGraph, vehicle: Vehicle, deltaSeconds:
   return true;
 }
 
-export function poseOf(vehicle: Vehicle): Pose {
+export function laneOffset(lane = 0, lanes = 1): number {
+  return (ROAD_HALF_WIDTH / lanes) * (lane + 0.5);
+}
+
+export function poseOf(vehicle: Vehicle & LanePosition): Pose {
+  const offset = laneOffset(vehicle.lane, vehicle.lanes);
   const direction = directionOf(vehicle.from, vehicle.to);
   const blend = Math.min(1, vehicle.progress / TURN_BLEND_PROGRESS);
   const blended = {
@@ -62,8 +72,8 @@ export function poseOf(vehicle: Vehicle): Pose {
   const length = Math.hypot(blended.x, blended.y);
   const heading = length < MIN_HEADING_LENGTH ? direction : { x: blended.x / length, y: blended.y / length };
   return {
-    x: vehicle.from.x + 0.5 + direction.x * vehicle.progress - heading.y * LANE_OFFSET,
-    z: vehicle.from.y + 0.5 + direction.y * vehicle.progress + heading.x * LANE_OFFSET,
+    x: vehicle.from.x + 0.5 + direction.x * vehicle.progress - heading.y * offset,
+    z: vehicle.from.y + 0.5 + direction.y * vehicle.progress + heading.x * offset,
     yaw: Math.atan2(heading.x, heading.y),
   };
 }
