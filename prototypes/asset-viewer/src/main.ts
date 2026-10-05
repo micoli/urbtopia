@@ -2,6 +2,7 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { MODEL_KEYS } from '../../../src/scene/renderItems'
 
@@ -66,7 +67,9 @@ let zoom = 1.2
 
 const gltfLoader = new GLTFLoader()
 const fbxLoader = new FBXLoader()
+const objLoader = new OBJLoader()
 const isFbxPack = (p: string) => p.startsWith('quaternius-')
+const isObjPack = (p: string) => p === 'miscellaneous'
 const key = (p: string, n: string) => `${p}/${n}`
 
 const matteOf = (source: THREE.Material) => {
@@ -75,10 +78,16 @@ const matteOf = (source: THREE.Material) => {
   return new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(r, g, b, THREE.LinearSRGBColorSpace), map, roughness: 1, metalness: 0 })
 }
 
+async function loadRoot(p: string, n: string): Promise<THREE.Object3D> {
+  if (isFbxPack(p)) return fbxLoader.loadAsync(`/models/${p}/${n}.fbx`)
+  if (isObjPack(p)) return objLoader.loadAsync(`/models/${p}/${n}.obj`)
+  return (await gltfLoader.loadAsync(`/models/${p}/${n}.glb`)).scene
+}
+
 async function load(p: string, n: string): Promise<THREE.Object3D> {
   const k = key(p, n)
   if (cache[k]) return cache[k]
-  const root = isFbxPack(p) ? await fbxLoader.loadAsync(`/models/${p}/${n}.fbx`) : (await gltfLoader.loadAsync(`/models/${p}/${n}.glb`)).scene
+  const root = await loadRoot(p, n)
   root.updateMatrixWorld(true)
   let tris = 0, meshes = 0, nodeScaled = false
   root.traverse((o) => {
@@ -87,7 +96,8 @@ async function load(p: string, n: string): Promise<THREE.Object3D> {
     if (m.isMesh) {
       meshes++
       tris += (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count) / 3
-      if (isFbxPack(p)) m.material = Array.isArray(m.material) ? m.material.map(matteOf) : matteOf(m.material)
+      if (isObjPack(p) && !m.geometry.attributes.normal) m.geometry.computeVertexNormals()
+      if (isFbxPack(p) || isObjPack(p)) m.material = Array.isArray(m.material) ? m.material.map(matteOf) : matteOf(m.material)
       for (const mat of [m.material].flat() as THREE.MeshStandardMaterial[]) {
         if (mat.map) { mat.map.magFilter = THREE.NearestFilter; mat.map.needsUpdate = true }
       }
