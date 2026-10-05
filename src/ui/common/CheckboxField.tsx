@@ -6,9 +6,9 @@ interface CheckboxFieldProps {
 
 export function CheckboxField({ label, checked, onChange }: CheckboxFieldProps) {
     return (
-        <label className="prefs-toggle">
-            <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
+        <button type="button" role="checkbox" aria-checked={checked} className="prefs-toggle" onClick={() => onChange(!checked)}>
+            <span className="prefs-toggle__box" aria-hidden="true" />
             {label}
-        </label>
+        </button>
     );
 }
