@@ -2,6 +2,9 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js'
+import { ThreeMFLoader } from 'three/examples/jsm/loaders/3MFLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { MODEL_KEYS } from '../../../src/scene/renderItems'
 
@@ -66,19 +69,50 @@ let zoom = 1.2
 
 const gltfLoader = new GLTFLoader()
 const fbxLoader = new FBXLoader()
+const mtlLoader = new MTLLoader()
+const threeMfLoader = new ThreeMFLoader()
 const isFbxPack = (p: string) => p.startsWith('quaternius-')
+const isObjPack = (p: string) => p === 'miscellaneous'
 const key = (p: string, n: string) => `${p}/${n}`
 
 const matteOf = (source: THREE.Material) => {
-  const { color, map } = source as THREE.MeshPhongMaterial
+  const { color, map, vertexColors } = source as THREE.MeshPhongMaterial
   const { r, g, b } = color.getRGB(new THREE.Color(), THREE.SRGBColorSpace)
-  return new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(r, g, b, THREE.LinearSRGBColorSpace), map, roughness: 1, metalness: 0 })
+  return new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(r, g, b, THREE.LinearSRGBColorSpace), map, vertexColors, roughness: 1, metalness: 0 })
+}
+
+async function loadMaterials(p: string, n: string) {
+  const response = await fetch(`/models/${p}/${n}.mtl`)
+  if (!response.ok || response.headers.get('content-type')?.includes('text/html')) return null
+  const directory = `/models/${p}/${n.slice(0, n.lastIndexOf('/') + 1)}`
+  mtlLoader.setResourcePath(directory)
+  return mtlLoader.parse(await response.text(), directory)
+}
+
+async function loadObj(p: string, n: string): Promise<THREE.Object3D> {
+  const objLoader = new OBJLoader()
+  const materials = await loadMaterials(p, n)
+  if (materials) objLoader.setMaterials(materials)
+  return objLoader.loadAsync(`/models/${p}/${n}.obj`)
+}
+
+async function load3mf(p: string, n: string): Promise<THREE.Object3D> {
+  const model = await threeMfLoader.loadAsync(`/models/${p}/${n}`)
+  model.rotation.x = -Math.PI / 2
+  return new THREE.Group().add(model)
+}
+
+async function loadRoot(p: string, n: string): Promise<THREE.Object3D> {
+  if (isFbxPack(p)) return fbxLoader.loadAsync(`/models/${p}/${n}.fbx`)
+  if (isObjPack(p) && n.endsWith('.glb')) return (await gltfLoader.loadAsync(`/models/${p}/${n}`)).scene
+  if (isObjPack(p)) return n.endsWith('.3mf') ? load3mf(p, n) : loadObj(p, n)
+  return (await gltfLoader.loadAsync(`/models/${p}/${n}.glb`)).scene
 }
 
 async function load(p: string, n: string): Promise<THREE.Object3D> {
   const k = key(p, n)
   if (cache[k]) return cache[k]
-  const root = isFbxPack(p) ? await fbxLoader.loadAsync(`/models/${p}/${n}.fbx`) : (await gltfLoader.loadAsync(`/models/${p}/${n}.glb`)).scene
+  const root = await loadRoot(p, n)
   root.updateMatrixWorld(true)
   let tris = 0, meshes = 0, nodeScaled = false
   root.traverse((o) => {
@@ -87,7 +121,8 @@ async function load(p: string, n: string): Promise<THREE.Object3D> {
     if (m.isMesh) {
       meshes++
       tris += (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count) / 3
-      if (isFbxPack(p)) m.material = Array.isArray(m.material) ? m.material.map(matteOf) : matteOf(m.material)
+      if (isObjPack(p) && !m.geometry.attributes.normal) m.geometry.computeVertexNormals()
+      if (isFbxPack(p) || isObjPack(p)) m.material = Array.isArray(m.material) ? m.material.map(matteOf) : matteOf(m.material)
       for (const mat of [m.material].flat() as THREE.MeshStandardMaterial[]) {
         if (mat.map) { mat.map.magFilter = THREE.NearestFilter; mat.map.needsUpdate = true }
       }
