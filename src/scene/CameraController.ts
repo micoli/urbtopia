@@ -20,6 +20,7 @@ const KEY_DIRECTIONS: Record<string, { x: number; z: number }> = {
 const YAW_EASING = 12;
 const TAP_SLOP_PX = 8;
 const TAP_MAX_MS = 400;
+const LONG_PRESS_MS = 900;
 
 export class CameraController {
   readonly camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -500, 500);
@@ -38,6 +39,7 @@ export class CameraController {
   onMouseMove: (clientX: number, clientY: number) => void = () => {};
   onPointerKind: (pointerType: string) => void = () => {};
   onSecondaryClick: () => void = () => {};
+  onLongPress: (clientX: number, clientY: number) => boolean = () => false;
   onGrabStart: (clientX: number, clientY: number) => boolean = () => false;
   onGrabMove: (clientX: number, clientY: number) => void = () => {};
   onBrushStart: (clientX: number, clientY: number) => void = () => {};
@@ -47,6 +49,8 @@ export class CameraController {
   brushMode = false;
   private brushPointer: number | null = null;
   private grabPointer: number | null = null;
+  private longPressTimer: number | null = null;
+  private longPressed = false;
   private abort = new AbortController();
 
   constructor(
@@ -211,18 +215,38 @@ export class CameraController {
     }
     if (this.pointers.size === 1) {
       this.gesture = { startX: event.clientX, startY: event.clientY, startTime: performance.now(), moved: false, multiTouch: false };
+      this.longPressed = false;
+      if (!this.brushMode && this.grabPointer === null) this.armLongPress(event);
     } else {
       this.gesture.multiTouch = true;
+      this.cancelLongPress();
     }
   }
 
+  private armLongPress({ clientX, clientY, pointerId, pointerType }: PointerEvent): void {
+    this.cancelLongPress();
+    this.longPressTimer = window.setTimeout(() => {
+      this.longPressTimer = null;
+      if (!this.onLongPress(clientX, clientY)) return;
+      this.longPressed = true;
+      if (pointerType !== 'mouse') this.grabPointer = pointerId;
+    }, LONG_PRESS_MS);
+  }
+
+  private cancelLongPress(): void {
+    if (this.longPressTimer === null) return;
+    window.clearTimeout(this.longPressTimer);
+    this.longPressTimer = null;
+  }
+
   private onPointerEnd(event: PointerEvent): void {
+    this.cancelLongPress();
     const wasSingle = this.pointers.size === 1 && event.type === 'pointerup';
     const { startX, startY, startTime, moved, multiTouch } = this.gesture;
     const wasBrush = this.brushPointer === event.pointerId;
     const wasGrab = this.grabPointer === event.pointerId;
     if (wasGrab) this.grabPointer = null;
-    const isTap = !wasBrush && !wasGrab && wasSingle && !moved && !multiTouch && performance.now() - startTime < TAP_MAX_MS;
+    const isTap = !this.longPressed && !wasBrush && !wasGrab && wasSingle && !moved && !multiTouch && performance.now() - startTime < TAP_MAX_MS;
     this.pointers.delete(event.pointerId);
     if (wasBrush) {
       this.brushPointer = null;
@@ -248,12 +272,16 @@ export class CameraController {
     }
     const pointer = this.pointers.get(event.pointerId);
     if (!pointer) return;
+    if (this.longPressed && this.grabPointer !== event.pointerId) return;
     if (this.brushPointer === event.pointerId) {
       pointer.x = event.clientX;
       pointer.y = event.clientY;
       return this.onBrushMove(event.clientX, event.clientY);
     }
-    if (Math.hypot(event.clientX - this.gesture.startX, event.clientY - this.gesture.startY) > TAP_SLOP_PX) this.gesture.moved = true;
+    if (Math.hypot(event.clientX - this.gesture.startX, event.clientY - this.gesture.startY) > TAP_SLOP_PX) {
+      this.gesture.moved = true;
+      this.cancelLongPress();
+    }
     if (this.grabPointer === event.pointerId) {
       pointer.x = event.clientX;
       pointer.y = event.clientY;

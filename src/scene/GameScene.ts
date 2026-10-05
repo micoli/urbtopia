@@ -21,6 +21,7 @@ const FALLBACK_HEIGHT = 1.5;
 
 export interface SceneHandlers {
   onTap: (tile: Coord, shiftKey: boolean, buildingId: number | null) => void;
+  onLongPress: (buildingId: number) => boolean;
   onCenterTileChange: (tile: Coord) => void;
   onMouseMove: (tile: Coord) => void;
   onPointerKind: (pointerType: string) => void;
@@ -53,6 +54,7 @@ export class GameScene {
   private lastCenterTile = '';
   private handlers: SceneHandlers = {
     onTap: () => {},
+    onLongPress: () => false,
     onCenterTileChange: () => {},
     onMouseMove: () => {},
     onPointerKind: () => {},
@@ -87,6 +89,10 @@ export class GameScene {
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.controller.onTap = (clientX, clientY, shiftKey) =>
       this.withTileAt(clientX, clientY, (tile) => this.handlers.onTap(tile, shiftKey, this.pickBuildingAt(clientX, clientY)));
+    this.controller.onLongPress = (clientX, clientY) => {
+      const buildingId = this.pickBuildingAt(clientX, clientY);
+      return buildingId !== null && this.handlers.onLongPress(buildingId);
+    };
     this.controller.onMouseMove = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onMouseMove(tile));
     this.controller.onPointerKind = (pointerType) => this.handlers.onPointerKind(pointerType);
     this.controller.onSecondaryClick = () => this.handlers.onSecondaryClick();

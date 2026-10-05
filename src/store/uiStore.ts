@@ -228,6 +228,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       const building = gameStore.getState().state.buildings.find((candidate) => candidate.id === id);
       if (!building) return;
       const tile = { x: building.x, y: building.y };
+      grabOffset = { x: 0, y: 0 };
       set({ selectedBuildingId: null });
       sceneHandle.current?.focusOnTile(tile);
       reevaluate({ tool: { kind: 'move', buildingId: building.id }, rotation: null, centerTile: tile, hovered: null, pinnedTile: null });
