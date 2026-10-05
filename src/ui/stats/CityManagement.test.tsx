@@ -35,6 +35,7 @@ describe('city management panel', () => {
     expect(html).toContain('id="eco-traffic"');
     expect(html).toContain(language === 'fr' ? 'Trafic routier' : 'Road traffic');
     expect(html).toContain(language === 'fr' ? 'En voiture' : 'By car');
+    expect(html).toContain(language === 'fr' ? 'Emplois disponibles' : 'Jobs available');
     expect(html).toContain(language === 'fr' ? 'Malus de bien-être des bouchons' : 'Congestion Well-being penalty');
     expect(html).not.toContain('NaN');
     expect(html).not.toContain('undefined');

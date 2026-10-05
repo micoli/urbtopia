@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ROAD_TIER_COSTS, citizensOf, congestionStats, createBuilding, dispatch, laneCapacity, newGame, tileKey, type Building, type GameState } from '../index';
+import { ROAD_TIER_COSTS, citizensOf, jobsOf, congestionStats, createBuilding, dispatch, laneCapacity, newGame, tileKey, type Building, type GameState } from '../index';
 
 const base = newGame({ seed: 'traffic', now: 0 });
 
@@ -23,12 +23,35 @@ describe('congestionStats', () => {
     expect(stats.sections.get(tileKey({ x: 56, y: 58 }))!.load).toBeCloseTo(citizensOf(1));
   });
 
-  it('spreads Commuters evenly over reachable workplaces', () => {
-    const state = withHome(base, 56, 59, 1);
+  it('fills the nearest workplace first', () => {
+    const stats = congestionStats(withHome(base, 56, 59, 1));
+    expect(stats.sections.get(tileKey({ x: 55, y: 58 }))!.load).toBeCloseTo(citizensOf(1));
+    expect(stats.sections.has(tileKey({ x: 60, y: 58 }))).toBe(false);
+  });
+
+  it('overflows to the next workplace when the nearest one has no job left', () => {
+    const state = withHome(base, 56, 59, 3);
     const stats = congestionStats(state);
-    const share = citizensOf(1) / 2;
-    expect(stats.sections.get(tileKey({ x: 55, y: 58 }))!.load).toBeCloseTo(share);
-    expect(stats.sections.get(tileKey({ x: 60, y: 58 }))!.load).toBeCloseTo(share);
+    const workshopJobs = jobsOf(base.buildings.find((building) => building.type === 'workshop')!);
+    expect(stats.sections.get(tileKey({ x: 55, y: 58 }))!.load).toBeCloseTo(workshopJobs);
+    expect(stats.sections.get(tileKey({ x: 60, y: 58 }))!.load).toBeCloseTo(citizensOf(3) - workshopJobs);
+    expect(stats.unemployed).toBe(0);
+  });
+
+  it('keeps Commuters without a job off the road', () => {
+    const state = withHome(base, 56, 59, 7);
+    const stats = congestionStats(state);
+    const home = stats.homes.get(homeIdOf(state))!;
+    expect(stats.jobs).toBe(base.buildings.reduce((sum, building) => sum + jobsOf(building), 0));
+    expect(home.commuters).toBe(stats.jobs);
+    expect(home.unemployed).toBe(citizensOf(7) - stats.jobs);
+    expect(stats.unemployed).toBe(home.unemployed);
+    expect(stats.commuters).toBe(stats.jobs);
+  });
+
+  it('is deterministic for the same city', () => {
+    const state = withHome(base, 56, 59, 3);
+    expect(congestionStats({ ...state }).homes).toEqual(congestionStats(state).homes);
   });
 
   it('takes the worst section of the Commute as its bottleneck', () => {
@@ -82,7 +105,7 @@ describe('city without a Commute', () => {
     const noWorkplace = withHome({ ...base, buildings: [] }, 56, 59, 1);
     for (const state of [noRoad, noWorkplace]) {
       const home = congestionStats(state).homes.get(homeIdOf(state))!;
-      expect(home).toEqual({ commuters: 0, ratio: 0, disconnected: false });
+      expect(home).toEqual({ commuters: 0, unemployed: 0, ratio: 0, disconnected: false });
     }
   });
 });

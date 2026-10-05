@@ -236,6 +236,8 @@ export const MESSAGES = {
   'eco.congestion': 'Congestion',
   'eco.congestionHelp': "Load on the busiest road of each Home's commute, against the Lanes it offers. Above 100% the road is saturated and Well-being drops.",
   'eco.congestionPenalty': 'Congestion Well-being penalty',
+  'eco.jobs': 'Jobs available',
+  'eco.unemployed': 'Commuters without a job',
   'eco.carShare': 'By car',
   'eco.transitShare': 'By public transport',
   'eco.commutersByCar': 'Commuters by car',

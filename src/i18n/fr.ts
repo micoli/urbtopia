@@ -238,6 +238,8 @@ export const FR: Record<MessageKey, string> = {
   'eco.congestion': 'Bouchons',
   'eco.congestionHelp': 'Charge de la route la plus chargée du trajet de chaque Home, par rapport aux voies disponibles. Au-delà de 100 %, la route est saturée et le bien-être baisse.',
   'eco.congestionPenalty': 'Malus de bien-être des bouchons',
+  'eco.jobs': 'Emplois disponibles',
+  'eco.unemployed': 'Actifs sans emploi',
   'eco.carShare': 'En voiture',
   'eco.transitShare': 'En transports en commun',
   'eco.commutersByCar': 'Trajets en voiture',
