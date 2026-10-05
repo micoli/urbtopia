@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { citizensOf, congestionStats, createBuilding, dispatch, laneCapacity, newGame, tileKey, type Building, type GameState } from '../index';
+import { ROAD_TIER_COSTS, citizensOf, congestionStats, createBuilding, dispatch, laneCapacity, newGame, tileKey, type Building, type GameState } from '../index';
 
 const base = newGame({ seed: 'traffic', now: 0 });
 
@@ -94,14 +94,14 @@ describe('UpgradeRoads', () => {
     const result = dispatch(base, { type: 'UpgradeRoads', tiles: [tile] }, 0);
     if (!result.ok) throw new Error(result.error.key);
     expect(result.state.roads.find((road) => road.x === tile.x && road.y === tile.y)!.tier).toBe(2);
-    expect(result.state.urbs).toBe(base.urbs - 6);
+    expect(result.state.urbs).toBe(base.urbs - ROAD_TIER_COSTS[1]!);
   });
 
   it('skips tiles already at the maximum tier and charges only the others', () => {
     const mixed = { ...base, roads: base.roads.map((road) => (road.x === 55 ? { ...road, tier: 3 } : road)) };
     const result = dispatch(mixed, { type: 'UpgradeRoads', tiles: [{ x: 55, y: 58 }, { x: 56, y: 58 }] }, 0);
     if (!result.ok) throw new Error(result.error.key);
-    expect(result.state.urbs).toBe(mixed.urbs - 6);
+    expect(result.state.urbs).toBe(mixed.urbs - ROAD_TIER_COSTS[1]!);
   });
 
   it('refuses beyond the maximum tier, without road or without Urbs', () => {

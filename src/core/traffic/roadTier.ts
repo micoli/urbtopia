@@ -3,12 +3,12 @@ import type { GameState } from '../engine/state';
 
 export const MAX_ROAD_TIER = 3;
 
-export const ROAD_TIER_COSTS: readonly number[] = [0, 6, 12];
+export const ROAD_TIER_COSTS: readonly number[] = [0, 8, 20];
 
 export const CONGESTION = {
-  laneCapacities: [60, 140, 240],
+  laneCapacities: [100, 250, 500],
   maxRatio: 2,
-  penaltyCap: 20,
+  penaltyCap: 25,
 };
 
 export function roadTierOf(state: GameState, tile: Coord): number {
