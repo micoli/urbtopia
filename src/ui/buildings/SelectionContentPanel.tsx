@@ -42,7 +42,7 @@ export function SelectionContentPanel() {
       {natureModelOf(building.type)?.[2] === 'decoration' ? <DecorationRotation building={building} /> : null}
       <ButtonRow align="stretch" spaced className="side-panel-actions">
         <ActionButton onClick={moveSelected}>
-          {t('panel.move')}
+          ✥ {t('panel.move')}
         </ActionButton>
         <ActionButton onClick={sellSelected}>
           ❌ +<UrbsAmount value={refund}/>
