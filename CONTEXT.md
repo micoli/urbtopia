@@ -89,7 +89,7 @@ A resident of a Home. The number of Citizens depends on the Home's tier and driv
 _Avoid_: Inhabitant, resident, sim
 
 **Well-being**:
-The satisfaction of a Home's Citizens, raised by nearby Green spaces and Public facility coverage, lowered by coal pollution and missing services. It modulates the Home's Tax.
+The satisfaction of a Home's Citizens, raised by nearby Green spaces and Public facility coverage, lowered by coal pollution, missing services and Congestion on its Commute. It modulates the Home's Tax.
 _Avoid_: Happiness, bonheur, mood, attractiveness
 
 **Public facility**:

@@ -6,8 +6,9 @@ export const MAX_ROAD_TIER = 3;
 export const ROAD_TIER_COSTS: readonly number[] = [0, 6, 12];
 
 export const CONGESTION = {
-  laneCapacities: [6, 14, 24],
+  laneCapacities: [60, 140, 240],
   maxRatio: 2,
+  penaltyCap: 20,
 };
 
 export function roadTierOf(state: GameState, tile: Coord): number {

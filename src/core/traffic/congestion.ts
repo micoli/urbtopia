@@ -38,13 +38,25 @@ interface Endpoint {
 }
 
 const statsCache = new WeakMap<GameState, { now: number; stats: CongestionStats }>();
+const layoutCache = new WeakMap<GameState['roads'], { roundabouts: GameState['roundabouts']; signature: string; stats: CongestionStats }>();
 
 export function congestionStats(state: GameState, now = state.lastSeen): CongestionStats {
   const cached = statsCache.get(state);
   if (cached?.now === now) return cached.stats;
-  const stats = calculateCongestion(state, now);
+  const signature = layoutSignature(state, now);
+  const layout = layoutCache.get(state.roads);
+  const stats = layout?.roundabouts === state.roundabouts && layout.signature === signature ? layout.stats : calculateCongestion(state, now);
+  layoutCache.set(state.roads, { roundabouts: state.roundabouts, signature, stats });
   statsCache.set(state, { now, stats });
   return stats;
+}
+
+function layoutSignature(state: GameState, now: number): string {
+  const riders = transportStats(state, now).homeRiders;
+  return state.buildings
+    .filter((building) => building.type === 'home' || workplaceTypes.includes(building.type))
+    .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${riders.get(building.id) ?? 0}`)
+    .join('|');
 }
 
 function calculateCongestion(state: GameState, now: number): CongestionStats {
@@ -52,7 +64,8 @@ function calculateCongestion(state: GameState, now: number): CongestionStats {
   const tiers = new Map(state.roads.map((road) => [tileKey(road), road.tier ?? 1]));
   const riders = transportStats(state, now).homeRiders;
   const homes = endpoints(state, graph, (building) => building.type === 'home');
-  const workplaces = endpoints(state, graph, (building) => workplaceTypes.includes(building.type));
+  const workplaces = endpoints(state, graph, (building) => workplaceTypes.includes(building.type)).filter((workplace) => workplace.access.length > 0);
+  if (graph.size === 0 || workplaces.length === 0) return noCommute(homes);
   const components = labelComponents(graph);
   const componentOf = (endpoint: Endpoint) => components.labels.get(tileKey(endpoint.access[0] ?? { x: NaN, y: NaN }));
   const homeComponents = new Set(homes.map(componentOf));
@@ -109,6 +122,17 @@ function calculateCongestion(state: GameState, now: number): CongestionStats {
     commuters: commutersTotal,
     saturatedSections: [...sections.values()].filter((section) => section.ratio > 1).length,
     disconnectedSections: [...brokenComponents].map((id) => components.members.get(id)!),
+  };
+}
+
+function noCommute(homes: Endpoint[]): CongestionStats {
+  return {
+    sections: new Map(),
+    homes: new Map(homes.map((home) => [home.building.id, { commuters: 0, ratio: 0, disconnected: false }])),
+    index: 0,
+    commuters: 0,
+    saturatedSections: 0,
+    disconnectedSections: [],
   };
 }
 

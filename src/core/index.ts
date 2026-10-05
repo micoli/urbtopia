@@ -50,7 +50,7 @@ export type { TutorialStep } from './progression/tutorial';
 
 export { ECOLOGY, ECOLOGY_UNLOCKS, distance as buildingDistance, homePower, economicPower, greenSpaceCoverage, greenBenefits, cityGreenBenefits } from './environment/ecology';
 export { energyStats, productionFactors } from './environment/energy';
-export { homeBenefits, cityBenefits, isAdapting, wellbeingTaxFactor } from './environment/wellbeing';
+export { homeBenefits, cityBenefits, congestionPenaltyOf, isAdapting, wellbeingTaxFactor } from './environment/wellbeing';
 export { climateStats } from './environment/climate';
 export { transportStats, routeForLine, routeFailure } from './transit/transport';
 export type { BusLine } from './engine/state';

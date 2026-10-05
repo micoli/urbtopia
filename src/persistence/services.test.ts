@@ -8,7 +8,7 @@ const DAY = 24 * 3_600_000;
 
 describe('public facilities save compatibility', () => {
   it('loads a frozen version-8 city with Public facilities unchanged', () => {
-    expect(parseEnvelope(JSON.stringify(saveV8))).toEqual({ ok: true, state: { ...saveV8.state, seedStock: {}, fields: [] }, savedAt: saveV8.savedAt });
+    expect(parseEnvelope(JSON.stringify(saveV8))).toEqual({ ok: true, state: { ...saveV8.state, seedStock: {}, fields: [], adaptationUntil: Math.max(saveV8.state.adaptationUntil, saveV8.state.lastSeen + 24 * 3_600_000) }, savedAt: saveV8.savedAt });
   });
 
   it('keeps Home Tiers of a version-7 save and starts an Adaptation period', () => {
