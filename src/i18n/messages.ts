@@ -239,6 +239,7 @@ export const MESSAGES = {
   'eco.jobs': 'Jobs available',
   'eco.unemployed': 'Commuters without a job',
   'eco.shiftedRiders': 'Riders won from congestion',
+  'eco.showBottleneck': 'Show the worst bottleneck',
   'eco.carShare': 'By car',
   'eco.transitShare': 'By public transport',
   'eco.commutersByCar': 'Commuters by car',

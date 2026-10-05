@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { worstSection, type SectionLoad } from './congestion';
 import { ROAD_TIER_COSTS, citizensOf, jobsOf, congestionStats, createBuilding, dispatch, laneCapacity, newGame, tileKey, type Building, type GameState } from '../index';
 
 const base = newGame({ seed: 'traffic', now: 0 });
@@ -96,6 +97,36 @@ describe('congestionStats', () => {
   it('does not flag the connected road network', () => {
     const stats = congestionStats(withHome(base, 56, 59, 1));
     expect(stats.disconnectedSections).toEqual([]);
+  });
+});
+
+describe('worst bottleneck', () => {
+  const busy = (): GameState => {
+    const state = withHome({ ...base, buildings: base.buildings.map((building) => ({ ...building, tier: 8 })) }, 56, 59, 7);
+    return state;
+  };
+  const section = (x: number, y: number, load: number, capacity: number): SectionLoad => ({ tile: { x, y }, load, capacity, ratio: load / capacity });
+  const mapOf = (...sections: SectionLoad[]) => new Map(sections.map((entry) => [tileKey(entry.tile), entry]));
+
+  it('is the most overloaded section of a saturated city', () => {
+    const stats = congestionStats(busy());
+    const worst = stats.worstBottleneck!;
+    expect(worst.ratio).toBeGreaterThan(1);
+    expect(worst.ratio).toBe(Math.max(...[...stats.sections.values()].map((entry) => entry.ratio)));
+  });
+
+  it('is absent when no section is saturated', () => {
+    expect(congestionStats(withHome(base, 56, 59, 1)).worstBottleneck).toBeNull();
+    expect(congestionStats(withHome({ ...base, roads: [] }, 56, 59, 1)).worstBottleneck).toBeNull();
+  });
+
+  it('ignores sections at or below full load', () => {
+    expect(worstSection(mapOf(section(1, 1, 100, 100), section(2, 1, 40, 100)))).toBeNull();
+  });
+
+  it('breaks ties by load, then by the smallest y, then the smallest x', () => {
+    expect(worstSection(mapOf(section(1, 1, 200, 100), section(2, 1, 400, 200)))!.tile).toEqual({ x: 2, y: 1 });
+    expect(worstSection(mapOf(section(5, 3, 200, 100), section(4, 2, 200, 100), section(3, 2, 200, 100)))!.tile).toEqual({ x: 3, y: 2 });
   });
 });
 

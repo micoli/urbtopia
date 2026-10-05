@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.stubGlobal('window', { location: { search: '' } });
 const { uiStore } = await import('./uiStore');
+const { sceneHandle } = await import('./sceneHandle');
 
 const shop = { kind: 'building', buildingType: 'shop' } as const;
 const aimedTile = () => uiStore.getState().evaluation!.ghost.tiles.concat(uiStore.getState().evaluation!.ghost.rects.map((r) => ({ x: r.x, y: r.y })))[0]!;
@@ -34,5 +35,26 @@ describe('touch placement', () => {
     uiStore.getState().pinTile({ x: 70, y: 60 });
     uiStore.getState().cancelTool();
     expect(uiStore.getState().pinnedTile).toBeNull();
+  });
+});
+
+describe('showTile', () => {
+  beforeEach(() => {
+    uiStore.setState({ statsOpen: true });
+  });
+
+  it('closes City Management and focuses the camera on the tile', () => {
+    const focusOnTile = vi.fn();
+    sceneHandle.current = { focusOnTile } as never;
+    uiStore.getState().showTile({ x: 57, y: 58 });
+    expect(uiStore.getState().statsOpen).toBe(false);
+    expect(focusOnTile).toHaveBeenCalledWith({ x: 57, y: 58 });
+    sceneHandle.current = null;
+  });
+
+  it('still closes the panel when no scene is mounted', () => {
+    sceneHandle.current = null;
+    uiStore.getState().showTile({ x: 1, y: 1 });
+    expect(uiStore.getState().statsOpen).toBe(false);
   });
 });

@@ -21,6 +21,7 @@ export interface UiStore {
   flyout: Flyout;
   statsOpen: boolean;
   toggleStats: () => void;
+  showTile: (tile: Coord) => void;
   marketOpen: boolean;
   settingsOpen: boolean;
   codexOpen: boolean;
@@ -223,6 +224,10 @@ export const uiStore = createStore<UiStore>((set, get) => {
       set({ selectedBuildingId: null });
     },
     cancelSale: () => set({ pendingSaleId: null }),
+    showTile: (tile) => {
+      set({ statsOpen: false });
+      sceneHandle.current?.focusOnTile(tile);
+    },
     moveSelected: () => {
       const id = get().selectedBuildingId;
       const building = gameStore.getState().state.buildings.find((candidate) => candidate.id === id);

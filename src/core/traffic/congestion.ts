@@ -34,6 +34,7 @@ export interface CongestionStats {
   jobs: number;
   unemployed: number;
   shift: ModalShift;
+  worstBottleneck: SectionLoad | null;
   saturatedSections: number;
   disconnectedSections: readonly (readonly Coord[])[];
 }
@@ -148,6 +149,7 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     jobs,
     unemployed: unemployedTotal,
     shift: NO_SHIFT,
+    worstBottleneck: worstSection(sections),
     saturatedSections: [...sections.values()].filter((section) => section.ratio > 1).length,
     disconnectedSections: [...brokenComponents].map((id) => components.members.get(id)!),
   };
@@ -162,9 +164,26 @@ function noCommute(homes: Endpoint[], jobs: number): CongestionStats {
     jobs,
     unemployed: 0,
     shift: NO_SHIFT,
+    worstBottleneck: null,
     saturatedSections: 0,
     disconnectedSections: [],
   };
+}
+
+export function worstSection(sections: ReadonlyMap<string, SectionLoad>): SectionLoad | null {
+  let worst: SectionLoad | null = null;
+  for (const section of sections.values()) {
+    if (section.ratio <= 1) continue;
+    if (worst === null || isWorse(section, worst)) worst = section;
+  }
+  return worst;
+}
+
+function isWorse(candidate: SectionLoad, current: SectionLoad): boolean {
+  if (candidate.ratio !== current.ratio) return candidate.ratio > current.ratio;
+  if (candidate.load !== current.load) return candidate.load > current.load;
+  if (candidate.tile.y !== current.tile.y) return candidate.tile.y < current.tile.y;
+  return candidate.tile.x < current.tile.x;
 }
 
 function endpoints(state: GameState, graph: RoadGraph, matches: (building: Building) => boolean): Endpoint[] {

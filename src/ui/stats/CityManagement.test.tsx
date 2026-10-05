@@ -40,6 +40,18 @@ describe('city management panel', () => {
     expect(html).not.toContain('NaN');
     expect(html).not.toContain('undefined');
   });
+  it.each(['en', 'fr'] as const)('offers the worst bottleneck only when a road is saturated in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    const label = language === 'fr' ? 'Voir le pire goulot' : 'Show the worst bottleneck';
+    const start = newGame({ seed: 'bottleneck', now: 0 });
+    const home = (tier: number) => ({ ...createBuilding(40, 'home', 56, 59, 0), tier });
+    context.state = { ...start, adaptationUntil: 0, buildings: [...start.buildings.map(building => ({ ...building, tier: 8 })), home(7)] };
+    expect(renderToStaticMarkup(<CityManagement />)).toContain(label);
+    context.state = { ...start, adaptationUntil: 0, buildings: [...start.buildings, home(1)] };
+    const calm = renderToStaticMarkup(<CityManagement />);
+    expect(calm).not.toContain(label);
+    expect(calm).not.toContain('NaN');
+  });
   it('provides accessible management buttons from both HUD entry points', () => {
     context.state = newGame({ seed: 'dashboard', now: 0 });
     for (const component of [<MinimalStats />, <CityStats />]) {
