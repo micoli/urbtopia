@@ -238,6 +238,7 @@ export const MESSAGES = {
   'eco.congestionPenalty': 'Congestion Well-being penalty',
   'eco.jobs': 'Jobs available',
   'eco.unemployed': 'Commuters without a job',
+  'eco.shiftedRiders': 'Riders won from congestion',
   'eco.carShare': 'By car',
   'eco.transitShare': 'By public transport',
   'eco.commutersByCar': 'Commuters by car',

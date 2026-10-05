@@ -1,4 +1,4 @@
-import {cityBenefits, climateStats, congestionStats, energyStats, transportStats} from '../../core';
+import {cityBenefits, climateStats, cityTransportStats, congestionStats, energyStats} from '../../core';
 import {t} from '../../i18n/t';
 import {useGame, useUi} from '../common/hooks';
 import {CloseButton} from '../common/CloseButton';
@@ -26,7 +26,7 @@ export function CityManagement() {
     if (!open) return null;
     const energy = energyStats(state);
     const green = cityBenefits(state, energy.coalRates);
-    const transport = transportStats(state);
+    const transport = cityTransportStats(state);
     const climate = climateStats(state);
     const congestion = congestionStats(state);
     const showSection = (id: string) => scrollToSection(panel.current, id);

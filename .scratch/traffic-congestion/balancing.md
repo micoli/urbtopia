@@ -15,6 +15,7 @@ Status: Provisional values, tunable without changing the rules. Source of truth 
 | Commuters of a Home | Citizens minus Riders of public transport |
 | Jobs per workplace | Workshop 25 × Tier; Factory 25 × Tier; Shop 15; Casino 15 × Tier; Public facility capacity ÷ 40 (Town hall 40) |
 | Job filling | Homes in id order take the nearest workplaces first; Commuters left without a Job do not drive |
+| Modal shift | A Home whose bottleneck ratio exceeds 1 moves up to 50% of its driving Commuters to public transport, scaled by (ratio − 1) ÷ (maxRatio − 1); Riders of a Home may then reach 90% of its Citizens (usual cap 70%); bounded by the spare capacity of the lines of its itineraries, Homes in id order; one pass, then congestion is recomputed once |
 | Vehicles | 1 per 10 Commuters, at most 1 per 2 lane tiles, 150 (75 on touch) |
 
 The penalty feeds Tax through `wellbeingTaxFactor` (1 + Well-being / 500), so the cap costs a Home up to 5% of its Tax, the same order as missing services (cap 40, 8%).
@@ -49,4 +50,4 @@ Jobs are plentiful early and run short in a large city that stopped building wor
 
 - The load model sends every Commuter of a Home toward every workplace by the shortest path, so a single trunk road concentrates most of the flow. Parallel roads only help if they offer a shorter or equal path; ties are resolved by exploration order, not by load balancing.
 - Capacity ignores direction; Lanes per direction are a presentation of the tier.
-- Dynamic modal shift ([ticket 07](issues/07-dynamic-modal-shift.md)) would change these figures.
+- The headless autoplayer builds no Bus line, so its measurements above have no modal shift; the shift is covered by `modalShift.test.ts` on a hand-built city with lines.

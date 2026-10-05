@@ -7,6 +7,7 @@ import { buildRoadGraph, neighboursOf, type RoadGraph } from '../map/roadGraph';
 import { FACILITY_TYPES } from '../services/facilities';
 import { transportStats } from '../transit/transport';
 import { jobsOf } from './jobs';
+import { NO_SHIFT, modalShift, type ModalShift } from './modalShift';
 import { CONGESTION, laneCapacity } from './roadTier';
 
 export const workplaceTypes: readonly BuildingType[] = ['workshop', 'factory', 'shop', 'casino', ...FACILITY_TYPES];
@@ -32,6 +33,7 @@ export interface CongestionStats {
   commuters: number;
   jobs: number;
   unemployed: number;
+  shift: ModalShift;
   saturatedSections: number;
   disconnectedSections: readonly (readonly Coord[])[];
 }
@@ -49,24 +51,34 @@ export function congestionStats(state: GameState, now = state.lastSeen): Congest
   if (cached?.now === now) return cached.stats;
   const signature = layoutSignature(state, now);
   const layout = layoutCache.get(state.roads);
-  const stats = layout?.roundabouts === state.roundabouts && layout.signature === signature ? layout.stats : calculateCongestion(state, now);
+  const stats = layout?.roundabouts === state.roundabouts && layout.signature === signature ? layout.stats : withModalShift(state, now);
   layoutCache.set(state.roads, { roundabouts: state.roundabouts, signature, stats });
   statsCache.set(state, { now, stats });
   return stats;
 }
 
 function layoutSignature(state: GameState, now: number): string {
-  const riders = transportStats(state, now).homeRiders;
-  return state.buildings
+  const transport = transportStats(state, now);
+  const buildings = state.buildings
     .filter((building) => building.type === 'home' || workplaceTypes.includes(building.type))
-    .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${riders.get(building.id) ?? 0}`)
-    .join('|');
+    .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${transport.homeRiders.get(building.id) ?? 0}`);
+  const lines = transport.lines.map((line) => `${line.id}:${line.capacity.toFixed(2)}:${line.riders.toFixed(2)}`);
+  return [...buildings, ...lines].join('|');
 }
 
-function calculateCongestion(state: GameState, now: number): CongestionStats {
+function withModalShift(state: GameState, now: number): CongestionStats {
+  const transport = transportStats(state, now);
+  const first = calculateCongestion(state, transport.homeRiders);
+  const shift = modalShift(state, transport, first);
+  if (shift.total === 0) return first;
+  const riders = new Map(transport.homeRiders);
+  for (const [id, moved] of shift.byHome) riders.set(id, (riders.get(id) ?? 0) + moved);
+  return { ...calculateCongestion(state, riders), shift };
+}
+
+function calculateCongestion(state: GameState, riders: ReadonlyMap<number, number>): CongestionStats {
   const graph = buildRoadGraph(state);
   const tiers = new Map(state.roads.map((road) => [tileKey(road), road.tier ?? 1]));
-  const riders = transportStats(state, now).homeRiders;
   const homes = endpoints(state, graph, (building) => building.type === 'home');
   const workplaces = endpoints(state, graph, (building) => workplaceTypes.includes(building.type)).filter((workplace) => workplace.access.length > 0);
   const jobs = workplaces.reduce((sum, workplace) => sum + jobsOf(workplace.building), 0);
@@ -135,6 +147,7 @@ function calculateCongestion(state: GameState, now: number): CongestionStats {
     commuters: commutersTotal,
     jobs,
     unemployed: unemployedTotal,
+    shift: NO_SHIFT,
     saturatedSections: [...sections.values()].filter((section) => section.ratio > 1).length,
     disconnectedSections: [...brokenComponents].map((id) => components.members.get(id)!),
   };
@@ -148,6 +161,7 @@ function noCommute(homes: Endpoint[], jobs: number): CongestionStats {
     commuters: 0,
     jobs,
     unemployed: 0,
+    shift: NO_SHIFT,
     saturatedSections: 0,
     disconnectedSections: [],
   };

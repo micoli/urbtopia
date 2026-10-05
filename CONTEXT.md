@@ -144,6 +144,10 @@ _Avoid_: Individual Citizen journey, Transit itinerary
 A place at a workplace that one Commuter can fill. A workplace offers a number of Jobs set by its type and Tier.
 _Avoid_: Position, vacancy, employment
 
+**Modal shift**:
+The move of Commuters from car to public transport when their road is saturated: a share of a Home's Commuters becomes Riders, even beyond the usual 70% of Citizens, within the spare capacity of the Bus lines or other lines that serve the Home. Recomputed from the current Congestion each time, with no memory.
+_Avoid_: Mode switch, migration, individual journey
+
 **Commuter**:
 A Citizen who drives on a Commute.
 _Avoid_: Driver, rider (a rider uses public transport)

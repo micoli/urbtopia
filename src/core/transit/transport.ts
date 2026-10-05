@@ -8,6 +8,8 @@ export { routeForLine, routeFailure } from './transitService';
 type Service = ReturnType<typeof transitServices>[number];
 interface Itinerary { lines: number[]; minutes: number; }
 
+export const TRANSIT_ELIGIBLE_SHARE = 0.7;
+
 function itineraries(first: Service, firstStop: number, lines: Service[], stops: Map<number, Building>, activities: Building[]): Itinerary[] {
   const results: Itinerary[] = [];
   const visited = new Map<string, number>();
@@ -60,6 +62,7 @@ function calculateTransport(state: GameState, now: number) {
   const stops = new Map(state.buildings.filter(b => ['busStop', 'brtStation', 'railStation'].includes(b.type)).map(b => [b.id, b]));
   const optionsByStop = new Map<string, Itinerary[]>();
   const homeRiders = new Map<number, number>();
+  const homeLines = new Map<number, number[][]>();
   let riders = 0, covered = 0, transferRiders = 0;
   for (const home of homes) {
     const options: Itinerary[] = [];
@@ -77,7 +80,8 @@ function calculateTransport(state: GameState, now: number) {
     options.sort((a, b) => a.minutes - b.minutes || a.lines.join(':').localeCompare(b.lines.join(':')));
     const citizens = HOME_TIERS[home.tier - 1]?.citizens ?? 0;
     if (options.length) covered += citizens;
-    let remaining = citizens * .7;
+    let remaining = citizens * TRANSIT_ELIGIBLE_SHARE;
+    if (options.length) homeLines.set(home.id, options.map(option => option.lines));
     for (const option of options) {
       const used = option.lines.map(id => byId.get(id)!);
       const allocated = Math.max(0, Math.min(remaining, ...used.map(l => l.capacity - l.riders)));
@@ -89,7 +93,7 @@ function calculateTransport(state: GameState, now: number) {
       if (remaining <= 1e-9) break;
     }
   }
-  return { lines, covered, riders, homeRiders, transferRiders, activeLines: lines.filter(l => l.active).length,
+  return { lines, covered, riders, homeRiders, homeLines, transferRiders, activeLines: lines.filter(l => l.active).length,
     costPerHour: lines.reduce((n, l) => n + l.costPerHour, 0), coalPerHour: lines.reduce((n, l) => n + l.coalPerHour, 0),
     emissions: Math.max(0, citizenCount(state) - riders) / 10 + lines.reduce((n, l) => n + l.emissions, 0) };
 }
