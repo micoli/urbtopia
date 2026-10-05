@@ -22,9 +22,9 @@ export interface UiStore {
   statsOpen: boolean;
   toggleStats: () => void;
   marketOpen: boolean;
-  menuOpen: boolean;
+  settingsOpen: boolean;
   codexOpen: boolean;
-  codexFromMenu: boolean;
+  codexFromSettings: boolean;
   codexFromFlyout: Flyout;
   codexEntryId: CodexId;
   codexShowDetail: boolean;
@@ -34,7 +34,7 @@ export interface UiStore {
   evaluation: Evaluation | null;
   openFlyout: (flyout: Flyout) => void;
   toggleMarket: () => void;
-  toggleMenu: () => void;
+  toggleSettings: () => void;
   chooseTool: (tool: Tool) => void;
   cancelTool: () => void;
   rotate: () => void;
@@ -102,29 +102,29 @@ export const uiStore = createStore<UiStore>((set, get) => {
     statsOpen: false,
     toggleStats: () => {
       if (!get().statsOpen) get().cancelTool();
-      set({ statsOpen: !get().statsOpen, flyout: null, menuOpen: false, marketOpen: false });
+      set({ statsOpen: !get().statsOpen, flyout: null, settingsOpen: false, marketOpen: false });
     },
     marketOpen: false,
-    menuOpen: false,
+    settingsOpen: false,
     codexOpen: false,
-    codexFromMenu: false,
+    codexFromSettings: false,
     codexFromFlyout: null,
     codexEntryId: 'home',
     codexShowDetail: false,
     openCodex: (entry) => {
       get().cancelTool();
-      set({ codexOpen: true, codexFromMenu: get().menuOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined, menuOpen: false, marketOpen: false, statsOpen: false, flyout: null, selectedBuildingId: null });
+      set({ codexOpen: true, codexFromSettings: get().settingsOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined, settingsOpen: false, marketOpen: false, statsOpen: false, flyout: null, selectedBuildingId: null });
     },
-    closeCodex: () => set({ codexOpen: false, menuOpen: get().codexFromMenu, flyout: get().codexFromFlyout, codexFromMenu: false, codexFromFlyout: null }),
+    closeCodex: () => set({ codexOpen: false, settingsOpen: get().codexFromSettings, flyout: get().codexFromFlyout, codexFromSettings: false, codexFromFlyout: null }),
     pendingSaleId: null,
     evaluation: null,
     openFlyout: (flyout) => {
       leaveParcelMode();
       set({ flyout: get().flyout === flyout ? null : flyout });
     },
-    toggleMenu: () => {
+    toggleSettings: () => {
       leaveParcelMode();
-      set({ menuOpen: !get().menuOpen, flyout: null });
+      set({ settingsOpen: !get().settingsOpen, flyout: null });
     },
     toggleMarket: () => {
       if (!gameStore.getState().state.marketUnlocked) return toastStore.getState().show('error.marketLocked');

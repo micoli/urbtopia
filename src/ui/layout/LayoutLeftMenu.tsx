@@ -1,6 +1,6 @@
 import { Dock } from './Dock';
 import { Flyout } from './Flyout';
-import { MenuPanel } from '../system/MenuPanel';
+import { SettingsPanel } from '../system/SettingsPanel';
 import { SidePanel } from './SidePanel';
 
 export function LayoutLeftMenu() {
@@ -9,7 +9,7 @@ export function LayoutLeftMenu() {
       <Dock />
       <Flyout />
       <SidePanel />
-      <MenuPanel />
+      <SettingsPanel />
     </>
   );
 }

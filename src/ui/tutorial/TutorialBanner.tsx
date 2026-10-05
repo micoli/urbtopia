@@ -15,14 +15,14 @@ interface Position {
 
 export function TutorialBanner() {
   const state = useGame((store) => store.state);
-  const menuOpen = useUi(store => store.menuOpen);
+  const settingsOpen = useUi(store => store.settingsOpen);
   const codexOpen = useUi(store => store.codexOpen);
   const [confirming, setConfirming] = useState(false);
   const [position, setPosition] = useState<Position | null>(null);
   const banner = useRef<HTMLElement>(null);
   const grab = useRef<Position | null>(null);
   const step = state.tutorial;
-  if (step === null || menuOpen || codexOpen) return null;
+  if (step === null || settingsOpen || codexOpen) return null;
 
   const send = gameStore.getState().send;
   const canSkipTime = tutorialSkipMs(state, state.lastSeen) !== null;

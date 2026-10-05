@@ -16,8 +16,8 @@ import { PreferencesContent } from './PreferencesContent';
 import { useConfirmKeys } from '../build/useConfirmKeys';
 import { PanelHeader } from '../common/PanelHeader';
 
-export function MenuContent() {
-  const toggle = useUi((store) => store.toggleMenu);
+export function SettingsContent() {
+  const toggle = useUi((store) => store.toggleSettings);
   const [confirming, setConfirming] = useState(false);
   const skipTime = (hours: number) => {
     gameStore.getState().send({ type: 'SkipTime', hours });
@@ -46,31 +46,31 @@ export function MenuContent() {
 
   return (
     <>
-      <PanelHeader title={t('menu.title')} onClose={toggle} />
+      <PanelHeader title={t('settings.title')} onClose={toggle} />
       <ButtonRow align="stretch" spaced className="side-panel-actions">
         {canInstall ? (
           <ActionButton variant="primary" onClick={install}>
-            {t('menu.install')}
+            {t('settings.install')}
           </ActionButton>
         ) : null}
           <ActionButton onClick={() => skipTime(12)}>
-            {t('menu.skip12')}
+            {t('settings.skip12')}
           </ActionButton>
         <ActionButton onClick={exportCurrentCity}>
-          {t('menu.export')}
+          {t('settings.export')}
         </ActionButton>
         <ActionButton onClick={() => fileInput.current?.click()}>
-          {t('menu.import')}
+          {t('settings.import')}
         </ActionButton>
         <ActionButton onClick={() => void reloadApp()}>
-          {t('menu.reload')}
+          {t('settings.reload')}
         </ActionButton>
         <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={onFileChosen} />
         <InlineConfirm
           confirming={confirming}
-          triggerLabel={t('menu.newGame')}
-          confirmLabel={t('menu.newGame')}
-          message={t('menu.newGameConfirm')}
+          triggerLabel={t('settings.newGame')}
+          confirmLabel={t('settings.newGame')}
+          message={t('settings.newGameConfirm')}
           onRequest={() => setConfirming(true)}
           onCancel={() => setConfirming(false)}
           onConfirm={startNewGame}
@@ -78,7 +78,7 @@ export function MenuContent() {
       </ButtonRow>
       <PreferencesContent />
       <small className="build-id">
-        {t('menu.version')} {__BUILD_ID__}
+        {t('settings.version')} {__BUILD_ID__}
       </small>
     </>
   );

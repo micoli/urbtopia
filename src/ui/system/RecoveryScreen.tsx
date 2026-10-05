@@ -48,7 +48,7 @@ export function RecoveryScreen() {
           confirming={confirmingNewGame}
           triggerLabel={t('recovery.newGame')}
           confirmLabel={t('recovery.newGame')}
-          message={t('menu.newGameConfirm')}
+          message={t('settings.newGameConfirm')}
           onRequest={() => setConfirmingNewGame(true)}
           onCancel={() => setConfirmingNewGame(false)}
           onConfirm={startNewGame}

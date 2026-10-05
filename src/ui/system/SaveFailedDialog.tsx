@@ -15,7 +15,7 @@ export function SaveFailedDialog() {
       <Dialog.Body><p>{t('saveFailed.text')}</p></Dialog.Body>
       <Dialog.Actions>
         <ActionButton onClick={() => dialogStore.getState().setSaveFailed(false)}>{t('saveFailed.close')}</ActionButton>
-        <ActionButton variant="primary" onClick={exportCurrentCity}>{t('menu.export')}</ActionButton>
+        <ActionButton variant="primary" onClick={exportCurrentCity}>{t('settings.export')}</ActionButton>
       </Dialog.Actions>
     </Dialog>
   );

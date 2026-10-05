@@ -5,19 +5,19 @@ import { useNavActions } from './useNavActions';
 
 export function Dock() {
   const actions = useNavActions();
-  const menuAction = actions.find((action) => action.id === 'menu');
+  const settingsAction = actions.find((action) => action.id === 'settings');
   return (
     <nav className="dock">
       <UrbsStat />
       <CityStats />
       {actions
-        .filter((action) => action.id !== 'menu')
+        .filter((action) => action.id !== 'settings')
         .map((action) => (
           <NavActionButton key={action.id} action={action} variant="dock" />
         ))}
-      {menuAction ? (
+      {settingsAction ? (
         <div className="dock__bottom">
-          <NavActionButton action={menuAction} variant="dock" />
+          <NavActionButton action={settingsAction} variant="dock" />
         </div>
       ) : null}
     </nav>
