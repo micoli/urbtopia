@@ -85,6 +85,9 @@ export const uiStore = createStore<UiStore>((set, get) => {
     const { evaluation } = get();
     if (evaluation?.issue) set({ evaluation: { ...evaluation, issue: null } });
   };
+  const leaveParcelMode = () => {
+    if (get().tool?.kind === 'parcel') get().cancelTool();
+  };
   let grabOffset: Coord = { x: 0, y: 0 };
 
   return {
@@ -115,10 +118,17 @@ export const uiStore = createStore<UiStore>((set, get) => {
     closeCodex: () => set({ codexOpen: false, menuOpen: get().codexFromMenu, flyout: get().codexFromFlyout, codexFromMenu: false, codexFromFlyout: null }),
     pendingSaleId: null,
     evaluation: null,
-    openFlyout: (flyout) => set({ flyout: get().flyout === flyout ? null : flyout }),
-    toggleMenu: () => set({ menuOpen: !get().menuOpen, flyout: null }),
+    openFlyout: (flyout) => {
+      leaveParcelMode();
+      set({ flyout: get().flyout === flyout ? null : flyout });
+    },
+    toggleMenu: () => {
+      leaveParcelMode();
+      set({ menuOpen: !get().menuOpen, flyout: null });
+    },
     toggleMarket: () => {
       if (!gameStore.getState().state.marketUnlocked) return toastStore.getState().show('error.marketLocked');
+      leaveParcelMode();
       set({ marketOpen: !get().marketOpen, flyout: null });
     },
     chooseTool: (tool) => {
