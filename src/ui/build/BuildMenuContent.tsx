@@ -1,5 +1,5 @@
 import { Fragment, useId, useState, type ReactNode } from 'react';
-import { TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, isFacilityType, totalCitizens, placementCost } from '../../core';
+import { TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, ROAD_TIER_COSTS, isFacilityType, totalCitizens, placementCost } from '../../core';
 import { t } from '../../i18n/t';
 import type { Tool } from '../../tools/tools';
 import { FlyoutItem } from '../layout/FlyoutItem';
@@ -86,6 +86,7 @@ export function BuildMenuContent() {
 
   const roadTools: { label: string; cost?: ReactNode; tool: Tool; codexId?: CodexId }[] = [
     ...ROAD_CONSTRUCTIONS.filter(item => item.unlockCitizens === 0).map(item => ({ label: t(item.name), cost: item.perTile ? `${item.cost} ${t('tool.perTile')}` : <UrbsAmount value={item.cost} />, tool: item.tool, codexId: item.id })),
+    { label: t('tool.upgradeRoad'), cost: `${ROAD_TIER_COSTS[1]}–${ROAD_TIER_COSTS[2]} ${t('tool.perTile')}`, tool: { kind: 'upgradeRoad', start: null, horizontalFirst: true } },
     { label: t('tool.demolishRoad'), tool: { kind: 'demolishRoad', start: null, horizontalFirst: true } },
   ];
   for (const mode of ['brt', 'rail'] as const) {

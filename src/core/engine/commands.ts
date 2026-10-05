@@ -278,12 +278,12 @@ function upgradeRoads(state: GameState, tiles: readonly Coord[]): CommandOutcome
   const targets = new Set(tiles.map(tileKey));
   const roads = state.roads.filter((road) => targets.has(tileKey(road)));
   if (roads.length === 0) return fail('error.noRoadHere');
-  const costs = roads.map((road) => roadTierUpgradeCost(road.tier ?? 1));
-  if (costs.some((cost) => cost === null)) return fail('error.maxRoadTier');
-  const total = costs.reduce<number>((sum, cost) => sum + (cost ?? 0), 0);
+  const upgradable = roads.filter((road) => roadTierUpgradeCost(road.tier ?? 1) !== null);
+  if (upgradable.length === 0) return fail('error.maxRoadTier');
+  const total = upgradable.reduce((sum, road) => sum + (roadTierUpgradeCost(road.tier ?? 1) ?? 0), 0);
   if (state.urbs < total) return fail('error.notEnoughUrbs');
   return {
-    state: { ...state, urbs: state.urbs - total, roads: state.roads.map((road) => (roads.includes(road) ? { ...road, tier: (road.tier ?? 1) + 1 } : road)) },
+    state: { ...state, urbs: state.urbs - total, roads: state.roads.map((road) => (upgradable.includes(road) ? { ...road, tier: (road.tier ?? 1) + 1 } : road)) },
     events: [],
   };
 }
