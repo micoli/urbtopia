@@ -20,7 +20,7 @@ const KEY_DIRECTIONS: Record<string, { x: number; z: number }> = {
 const YAW_EASING = 12;
 const TAP_SLOP_PX = 8;
 const TAP_MAX_MS = 400;
-const LONG_PRESS_MS = 1500;
+const LONG_PRESS_MS = 900;
 
 export class CameraController {
   readonly camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -500, 500);
