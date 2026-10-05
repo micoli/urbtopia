@@ -1,0 +1,24 @@
+import type { Coord } from '../map/coord';
+import type { GameState } from '../engine/state';
+
+export const MAX_ROAD_TIER = 3;
+
+export const ROAD_TIER_COSTS: readonly number[] = [0, 6, 12];
+
+export const CONGESTION = {
+  laneCapacities: [6, 14, 24],
+  maxRatio: 2,
+};
+
+export function roadTierOf(state: GameState, tile: Coord): number {
+  return state.roads.find((road) => road.x === tile.x && road.y === tile.y)?.tier ?? 1;
+}
+
+export function laneCapacity(tier: number): number {
+  return CONGESTION.laneCapacities[Math.min(Math.max(tier, 1), MAX_ROAD_TIER) - 1] ?? 0;
+}
+
+export function roadTierUpgradeCost(tier: number): number | null {
+  if (tier >= MAX_ROAD_TIER) return null;
+  return ROAD_TIER_COSTS[tier] ?? null;
+}

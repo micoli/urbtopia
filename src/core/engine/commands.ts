@@ -25,6 +25,7 @@ import { autoRotation, frontTouchesRoad, placementIssue } from '../map/placement
 import { newQueueEntry, restartRunningProduction, shiftRunningTimers, taxDue } from '../economy/production';
 import { roadBuildCost, missingRoadTiles } from '../map/roadCost';
 import { roadPath } from '../map/roads';
+import { roadTierUpgradeCost } from '../traffic/roadTier';
 import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
@@ -43,6 +44,7 @@ export type Command =
   | { readonly type: 'SellTransitVehicle'; readonly id: number }
   | { readonly type: 'AssignTransitVehicle'; readonly id: number; readonly lineId?: number }
   | { readonly type: 'BuildRoad'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
+  | { readonly type: 'UpgradeRoads'; readonly tiles: readonly Coord[] }
   | { readonly type: 'PlaceCrossing'; readonly x: number; readonly y: number }
   | { readonly type: 'PlaceRoundabout'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoad'; readonly x: number; readonly y: number }
@@ -106,6 +108,7 @@ export type ErrorKey =
   | 'error.lastRoadOfBuilding'
   | 'error.noRoadHere'
   | 'error.invalidCrossing'
+  | 'error.maxRoadTier'
   | 'error.networkIntact'
   | 'error.cannotProduce'
   | 'error.queueFull'
@@ -161,6 +164,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return transitCommand(state, command);
     case 'BuildRoad':
       return buildRoad(state, command.from, command.to, command.horizontalFirst ?? true);
+    case 'UpgradeRoads':
+      return upgradeRoads(state, command.tiles);
     case 'PlaceCrossing':
       return placeCrossing(state, { x: command.x, y: command.y });
     case 'PlaceRoundabout':
@@ -266,6 +271,20 @@ function buildRoad(state: GameState, from: Coord, to: Coord, horizontalFirst: bo
   return {
     state: { ...state, urbs: state.urbs - cost, roads: [...state.roads, ...missing.map((tile) => ({ ...tile, kind: 'road' as const }))] },
     events: [{ type: 'RoadBuilt', tiles: missing.length }],
+  };
+}
+
+function upgradeRoads(state: GameState, tiles: readonly Coord[]): CommandOutcome {
+  const targets = new Set(tiles.map(tileKey));
+  const roads = state.roads.filter((road) => targets.has(tileKey(road)));
+  if (roads.length === 0) return fail('error.noRoadHere');
+  const costs = roads.map((road) => roadTierUpgradeCost(road.tier ?? 1));
+  if (costs.some((cost) => cost === null)) return fail('error.maxRoadTier');
+  const total = costs.reduce<number>((sum, cost) => sum + (cost ?? 0), 0);
+  if (state.urbs < total) return fail('error.notEnoughUrbs');
+  return {
+    state: { ...state, urbs: state.urbs - total, roads: state.roads.map((road) => (roads.includes(road) ? { ...road, tier: (road.tier ?? 1) + 1 } : road)) },
+    events: [],
   };
 }
 

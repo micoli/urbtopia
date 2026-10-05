@@ -59,6 +59,7 @@ function calculateTransport(state: GameState, now: number) {
   const activities = state.buildings.filter(b => ['workshop', 'factory', 'shop'].includes(b.type));
   const stops = new Map(state.buildings.filter(b => ['busStop', 'brtStation', 'railStation'].includes(b.type)).map(b => [b.id, b]));
   const optionsByStop = new Map<string, Itinerary[]>();
+  const homeRiders = new Map<number, number>();
   let riders = 0, covered = 0, transferRiders = 0;
   for (const home of homes) {
     const options: Itinerary[] = [];
@@ -83,11 +84,12 @@ function calculateTransport(state: GameState, now: number) {
       if (allocated <= 0) continue;
       for (const line of used) { line.riders += allocated; if (!line.homeIds.includes(home.id)) { line.homeIds.push(home.id); line.covered += citizens; } }
       riders += allocated; remaining -= allocated;
+      homeRiders.set(home.id, (homeRiders.get(home.id) ?? 0) + allocated);
       if (used.length > 1) transferRiders += allocated;
       if (remaining <= 1e-9) break;
     }
   }
-  return { lines, covered, riders, transferRiders, activeLines: lines.filter(l => l.active).length,
+  return { lines, covered, riders, homeRiders, transferRiders, activeLines: lines.filter(l => l.active).length,
     costPerHour: lines.reduce((n, l) => n + l.costPerHour, 0), coalPerHour: lines.reduce((n, l) => n + l.coalPerHour, 0),
     emissions: Math.max(0, citizenCount(state) - riders) / 10 + lines.reduce((n, l) => n + l.emissions, 0) };
 }

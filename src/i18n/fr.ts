@@ -277,6 +277,7 @@ export const FR: Record<MessageKey, string> = {
   'error.lastRoadOfBuilding': "C'est la seule route d'un bâtiment.",
   'error.noRoadHere': "Il n'y a pas de route ici.",
   'error.invalidCrossing': 'Un passage piéton demande une route droite.',
+  'error.maxRoadTier': 'Cette route a déjà le nombre maximal de voies.',
   'error.cannotProduce': 'Ce bâtiment ne peut pas produire cela.',
   'error.queueFull': 'Tous les emplacements sont occupés.',
   'error.nothingToCollect': 'Rien à récupérer pour le moment.',

@@ -275,6 +275,7 @@ export const MESSAGES = {
   'error.lastRoadOfBuilding': 'This is the only road of a building.',
   'error.noRoadHere': 'There is no road here.',
   'error.invalidCrossing': 'A crossing needs a straight road.',
+  'error.maxRoadTier': 'This road already has the maximum number of lanes.',
   'error.cannotProduce': 'This building cannot produce that.',
   'error.queueFull': 'All Slots are in use.',
   'error.nothingToCollect': 'Nothing to collect yet.',
