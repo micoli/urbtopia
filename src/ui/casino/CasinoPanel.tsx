@@ -22,7 +22,6 @@ export function CasinoPanel({ building }: CasinoPanelProps) {
   const powered = isCasinoPowered(state, building);
   const unlocked = building.tier < MAX_CASINO_TIER ? gamesOfTier(building.tier + 1).filter(game => !gamesOfTier(building.tier).includes(game)) : [];
   return <DrawerPanel>
-      <DrawerPanel.Title title={t('home.tier')} level={building.tier}/>
       <Note>{powered ? t('casino.powered') : t('casino.shut')}</Note>
       <DrawerPanel.LabelValue label={t('facility.reach')} value={`${2 * casinoRadius(building.tier)} × ${2 * casinoRadius(building.tier)}`}/>
       <ReachToggle />

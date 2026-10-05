@@ -11,7 +11,6 @@ export function CoalPlantPanel({ building }: { building: Building }) {
   const delivered = energy.coalRates.get(building.id) ?? 0;
   const enabled = building.coalEnabled !== false;
   return <DrawerPanel>
-    <DrawerPanel.Title title={t(`home.tier`)} level={building.tier}/>
     <DrawerPanel.LabelValue label={t('eco.nominal')} value={COAL_CAPACITY[building.tier - 1] ?? 0}/>
     <DrawerPanel.LabelValue label={t('eco.coal')} value={`${delivered.toFixed(2)} / h`}/>
     <DrawerPanel.LabelValue label={t('eco.cost')} value={`${(delivered * ECOLOGY.coalCost).toFixed(2)} · ${t('eco.coalRate')}: ${ECOLOGY.coalCost}`}/>

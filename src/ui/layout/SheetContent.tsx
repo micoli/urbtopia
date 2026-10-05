@@ -1,7 +1,7 @@
 import { BuildMenuContent } from '../build/BuildMenuContent';
 import { MarketContent } from '../market/MarketContent';
 import { MenuContent } from '../system/MenuContent';
-import { SelectionContent } from '../buildings/SelectionContent';
+import { SelectionContentPanel } from '../buildings/SelectionContentPanel.tsx';
 import { useUi } from '../common/hooks';
 import { useSelectedBuilding } from '../buildings/useSelectedBuilding';
 
@@ -20,7 +20,7 @@ export function useSheetKind(): SheetKind {
 
 export function SheetContent() {
   const kind = useSheetKind();
-  if (kind === 'selection') return <SelectionContent />;
+  if (kind === 'selection') return <SelectionContentPanel />;
   if (kind === 'market') return <MarketContent />;
   if (kind === 'menu') return <MenuContent />;
   if (kind === 'build') return <BuildMenuContent />;

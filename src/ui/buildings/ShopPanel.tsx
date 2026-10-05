@@ -20,7 +20,6 @@ export function ShopPanel({ building }: ShopPanelProps) {
   const stockable = (Object.keys(GOODS) as GoodId[]).filter((good) => (stock[good] ?? 0) >= SHOP.stackSize);
 
   return <DrawerPanel>
-      <DrawerPanel.Title title={t('shop.stock')} level={building.tier}/>
       <SlotList>
         {building.stacks.map((stack, index) => (
           stack.good ? (

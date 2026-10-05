@@ -2,7 +2,7 @@ import { BottomBar } from './BottomBar';
 import { BottomSheet } from './BottomSheet';
 import { TopBar } from './TopBar';
 
-export function LayoutA() {
+export function LayoutBottomMenu() {
   return (
     <>
       <TopBar />

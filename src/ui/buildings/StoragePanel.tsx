@@ -24,7 +24,6 @@ export function StoragePanel({ building }: StoragePanelProps) {
 
   return (
     <DrawerPanel>
-      <DrawerPanel.Title title={t(`panel.stock`)} level={building.tier}/>
       {compartments.map((compartment) => (
         <div key={compartment}>
           <p>

@@ -41,7 +41,6 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
   const filtering = canFilter && onlyCraftable;
 
   return <DrawerPanel>
-      <DrawerPanel.Title title={`${t('panel.queue')} · ${t('home.tier')}`} level={building.tier}/>
       <SlotList>
         {Array.from({ length: building.slotCount }, (_, index) => {
           const entry = building.queue[index];

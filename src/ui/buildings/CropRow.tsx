@@ -27,7 +27,7 @@ export function CropRow({crop, unlocked, stock, onPlant, onBuy}: CropRowProps) {
     }
     return (
         <div className={'crop-row'}>
-            <DrawerPanel.Title title={t(`item.${crop}`)} level={stock}/>
+            <DrawerPanel.LabelValue label={t(`item.${crop}`)} value={stock}/>
             <p>
                 {formatDuration(spec.growthMs)} · 💧{spec.water} · ▦{spec.yield}
             </p>

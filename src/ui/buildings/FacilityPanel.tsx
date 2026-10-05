@@ -15,7 +15,6 @@ export function FacilityPanel({ building }: FacilityPanelProps) {
   const coverage = serviceCoverage(state);
   const served = state.buildings.reduce((total, home) => total + (home.type === 'home' && coverage.get(home.id)?.has(building.type) ? citizensOf(home.tier) : 0), 0);
   return <DrawerPanel>
-        <DrawerPanel.Title title={t(`home.tier`)} level={building.tier}/>
         <DrawerPanel.LabelValue label={t('facility.reach')} value={radius === null ? t('placement.cityWide') : `${2 * radius} × ${2 * radius}`}/>
         {radius !== null && <ReachToggle />}
         <DrawerPanel.LabelValue label={t('facility.capacity')} value={`${capacity === null ? t('facility.unlimited') : capacity} · ${t('facility.served')}: ${served}`}/>

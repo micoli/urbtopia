@@ -1,4 +1,4 @@
-import { SelectionContent } from '../buildings/SelectionContent';
+import { SelectionContentPanel } from '../buildings/SelectionContentPanel.tsx';
 import { useSelectedBuilding } from '../buildings/useSelectedBuilding';
 
 export function SidePanel() {
@@ -6,7 +6,7 @@ export function SidePanel() {
   if (!building) return null;
   return (
     <aside className="side-panel">
-      <SelectionContent />
+      <SelectionContentPanel />
     </aside>
   );
 }

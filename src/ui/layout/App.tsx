@@ -1,9 +1,9 @@
 import { Fragment, useEffect } from 'react';
 import { useStore } from 'zustand';
 import { prefsStore } from '../../i18n/prefsStore';
-import { LayoutA } from './LayoutA';
-import { LayoutB } from './LayoutB';
-import { LayoutC } from './LayoutC';
+import { LayoutBottomMenu } from './LayoutBottomMenu.tsx';
+import { LayoutRadial } from './LayoutRadial.tsx';
+import { LayoutLeftMenu } from './LayoutLeftMenu.tsx';
 import { Overlays } from './Overlays';
 import { useUndoKeys } from '../build/useUndoKeys';
 import { SceneCanvas } from './SceneCanvas';
@@ -17,13 +17,13 @@ export function App() {
     document.documentElement.dataset.layout = layout;
     document.documentElement.lang = language;
   }, [layout, language]);
-
+    console.log(layout)
   return (
     <>
       <SceneCanvas />
       <Fragment key={language}>
         <Overlays />
-        {layout === 'A' ? <LayoutA /> : layout === 'B' ? <LayoutB /> : <LayoutC />}
+        {layout === 'A' ? <LayoutBottomMenu /> : layout === 'B' ? <LayoutRadial /> : <LayoutLeftMenu />}
       </Fragment>
     </>
   );

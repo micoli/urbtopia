@@ -21,7 +21,6 @@ export function HomePanel({ building }: HomePanelProps) {
   const spec = HOME_TIERS[building.tier - 1];
   const due = taxDue(building);
   return <DrawerPanel>
-      <DrawerPanel.Title title={t(`home.tier`)} level={building.tier}/>
       <DrawerPanel.LabelValue label={t('home.citizens')} value={citizensOf(building.tier)}/>
 
       <DrawerPanel.LabelValue label={t('home.demand')} value={<>⚡ {homePower(building).toFixed(1)} · 💧 {spec?.water ?? 0}</>}/>

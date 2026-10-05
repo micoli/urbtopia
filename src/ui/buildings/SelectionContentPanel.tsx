@@ -18,7 +18,7 @@ import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { PanelHeader } from '../common/PanelHeader';
 
-export function SelectionContent() {
+export function SelectionContentPanel() {
   const building = useSelectedBuilding();
   const select = useUi((store) => store.select);
   const moveSelected = useUi((store) => store.moveSelected);
@@ -28,7 +28,7 @@ export function SelectionContent() {
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
   return (
     <>
-      <PanelHeader title={t(`building.${building.type}`)} onClose={() => select(null)} />
+      <PanelHeader title={t(`building.${building.type}`)} subtitle={building.tier} onClose={() => select(null)} />
       {building.type === 'workshop' || building.type === 'factory' || building.type === 'packhouse' ? <ProductionPanel building={building} /> : null}
       {building.type === 'farm' ? <FarmPanel building={building} /> : null}
       {building.type === 'home' ? <HomePanel building={building} /> : null}

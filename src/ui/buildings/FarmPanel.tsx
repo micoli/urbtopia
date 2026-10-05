@@ -19,7 +19,6 @@ export function FarmPanel({ building }: FarmPanelProps) {
 
   return (
     <section className="farm">
-      <DrawerPanel.Title title={`${t('farm.seedStock')} · ${t('home.tier')}`} level={building.tier}/>
       <p>
           {t('farm.seeds')}: {seedStockUsed(state)}/{seedStockCapacity(state)}
       </p>
