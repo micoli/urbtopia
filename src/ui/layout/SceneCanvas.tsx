@@ -24,6 +24,13 @@ export function SceneCanvas() {
         if (ui.tool) return ui.pinTile(tile);
         ui.tapTile(tile, buildingId);
       },
+      onLongPress: (buildingId) => {
+        const ui = uiStore.getState();
+        if (ui.tool) return false;
+        ui.select(buildingId);
+        ui.moveSelected();
+        return true;
+      },
       onCenterTileChange: (tile) => uiStore.getState().setCenterTile(tile),
       onMouseMove: (tile) => uiStore.getState().hoverTile(tile),
       onPointerKind: (pointerType) => uiStore.getState().setPointerKind(pointerKindOf(pointerType)),
