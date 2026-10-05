@@ -12,7 +12,7 @@ export function RadialMenu() {
   return (
     <div className="radial">
       {open
-        ? actions.map((action, index) => {
+        ? actions.reverse().map((action, index) => {
             const angle = (index / (actions.length - 1)) * (Math.PI / 2);
             const x = Math.cos(angle) * RADIUS_PX;
             const y = -Math.sin(angle) * RADIUS_PX;
