@@ -1,4 +1,4 @@
-import { lstatSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { ARCHIVES_DIR, ASSET_PACKS, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS } from './assetPacks.ts';
 import { extractFbx, extractPack } from './extractPack.ts';
@@ -41,6 +41,12 @@ try {
         }
         names[name] = files.map((file) => file.path.replace(/\.fbx$/, ''));
       }
+    }
+    const miscDir = join(modelsDir, 'miscellaneous');
+    if (rawFbx && existsSync(miscDir)) {
+      names.miscellaneous = readdirSync(miscDir)
+        .filter((file) => file.endsWith('.obj'))
+        .map((file) => file.replace(/\.obj$/, ''));
     }
     if (manifest) writeFileSync(join(publicDir, 'manifest.json'), JSON.stringify(manifestOf(names)));
     console.log(`✓ ${prototype}: ${Object.values(names).reduce((total, list) => total + list.length, 0)} models`);
