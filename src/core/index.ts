@@ -21,6 +21,8 @@ export type { Direction } from './map/geometry';
 export { roadPath, roadPiece } from './map/roads';
 export type { RoadKind, RoadPiece, RoadPieceName } from './map/roads';
 export { missingRoadTiles, roadBuildCost } from './map/roadCost';
+export { buildRoadGraph, emptyRoadGraph, isRoundaboutExit, neighboursOf } from './map/roadGraph';
+export type { RoadGraph } from './map/roadGraph';
 export { GROWTH_STAGES, cropStage, cropWaterDemand, isCropReady } from './farming/growth';
 export type { CropStage } from './farming/growth';
 export { FIELD_COST, fieldCap } from './farming/fields';
@@ -78,3 +80,7 @@ export type { OpenCasinoRound } from './engine/state';
 export { BLOCKMATCH_STAR_BONUS, MAX_BLOCKMATCH_STARS, blockmatchLevelNumber, blockmatchPayout, blockmatchSeed } from './leisure/blockmatchRound';
 export { generateLevel as generateBlockmatchLevel } from './leisure/blockmatch/levelGenerator';
 export { casinosReaching } from './leisure/leisure';
+
+export { CONGESTION, ROAD_TIER_COSTS, MAX_ROAD_TIER, laneCapacity, roadTierOf, roadTierUpgradeCost } from './traffic/roadTier';
+export { congestionStats, workplaceTypes } from './traffic/congestion';
+export type { CongestionStats, HomeCongestion, SectionLoad } from './traffic/congestion';

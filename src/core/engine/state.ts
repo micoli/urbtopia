@@ -64,6 +64,7 @@ export interface Storage {
 
 export interface RoadTile extends Coord {
   kind: RoadKind;
+  tier?: number;
 }
 
 export interface BusLine {
