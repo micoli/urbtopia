@@ -38,8 +38,15 @@ export type Tool =
   | { kind: 'crossing' }
   | { kind: 'roundabout' }
   | { kind: 'demolishRoad'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
+  | { kind: 'upgradeRoad'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'parcel' }
   | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] };
+
+export type PathTool = Extract<Tool, { kind: 'road' | 'demolishRoad' | 'upgradeRoad' }>;
+
+export function isPathTool(tool: Tool | null): tool is PathTool {
+  return tool?.kind === 'road' || tool?.kind === 'demolishRoad' || tool?.kind === 'upgradeRoad';
+}
 
 export type BrushAction = 'layField' | 'removeField' | 'plant';
 
@@ -141,6 +148,8 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
       return evaluation(roundaboutTiles(tile), { type: 'PlaceRoundabout', x: tile.x, y: tile.y }, state);
     case 'demolishRoad':
       return evaluateDemolishRoad(state, tool, tile);
+    case 'upgradeRoad':
+      return evaluateUpgradeRoad(state, tool, tile);
     case 'parcel':
       return evaluateParcel(state, tile);
     case 'brush':
@@ -268,12 +277,22 @@ function evaluateDemolishRoad(state: GameState, tool: Extract<Tool, { kind: 'dem
   return evaluation(path, { type: 'DemolishRoadPath', from: tool.start, to: tile, horizontalFirst: tool.horizontalFirst }, state);
 }
 
+function evaluateUpgradeRoad(state: GameState, tool: Extract<Tool, { kind: 'upgradeRoad' }>, tile: Coord): Evaluation {
+  if (!tool.start) return evaluation([tile], null, state);
+  const path = roadPath(tool.start, tile, tool.horizontalFirst);
+  const command: Command = { type: 'UpgradeRoads', tiles: path };
+  const result = evaluation(path, command, state);
+  if (!result.valid) return result;
+  const outcome = dispatch(state, command, state.lastSeen);
+  return { ...result, cost: outcome.ok ? Math.max(0, state.urbs - outcome.state.urbs) : null };
+}
+
 export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTool = false): Confirmation {
   if (tool.kind === 'brush') return { command: current.valid ? current.command : null, nextTool: { ...tool, tiles: [] } };
-  const isPathTool = tool.kind === 'road' || tool.kind === 'demolishRoad';
-  if (isPathTool && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
+  const pathTool = isPathTool(tool);
+  if (pathTool && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
   if (!current.valid) return { command: null, nextTool: tool };
-  if (isPathTool) return { command: current.command, nextTool: { ...tool, start: null } };
+  if (pathTool) return { command: current.command, nextTool: { ...tool, start: null } };
   if (tool.kind === 'building') return { command: current.command, nextTool: keepTool ? tool : null };
   if (tool.kind === 'move') return { command: current.command, nextTool: null };
   return { command: current.command, nextTool: tool };

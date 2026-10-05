@@ -7,5 +7,6 @@ export function WellbeingSection({green}: { green: ReturnType<typeof cityBenefit
         <SectionHeading>{t('eco.wellbeing')}</SectionHeading>
         <p>{t('eco.coalPenalty')}: −{green.pollutionPenalty.toFixed(1)}</p>
         <p>{t('eco.coalPollutionHelp')}</p>
+        <p>{t('eco.congestionPenalty')}: −{green.congestionPenalty.toFixed(1)}</p>
     </section>;
 }

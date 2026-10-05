@@ -28,6 +28,17 @@ describe('city management panel', () => {
     expect(html).not.toContain('NaN');
     expect(html).not.toContain('undefined');
   });
+  it.each(['en', 'fr'] as const)('explains road traffic, the car and public transport mix and the congestion penalty in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    context.state = { ...newGame({ seed: 'traffic-panel', now: 0 }), buildings: [...newGame({ seed: 'traffic-panel', now: 0 }).buildings, { ...createBuilding(40, 'home', 56, 59, 0), tier: 6 }] };
+    const html = renderToStaticMarkup(<CityManagement />);
+    expect(html).toContain('id="eco-traffic"');
+    expect(html).toContain(language === 'fr' ? 'Trafic routier' : 'Road traffic');
+    expect(html).toContain(language === 'fr' ? 'En voiture' : 'By car');
+    expect(html).toContain(language === 'fr' ? 'Malus de bien-être des bouchons' : 'Congestion Well-being penalty');
+    expect(html).not.toContain('NaN');
+    expect(html).not.toContain('undefined');
+  });
   it('provides accessible management buttons from both HUD entry points', () => {
     context.state = newGame({ seed: 'dashboard', now: 0 });
     for (const component of [<MinimalStats />, <CityStats />]) {

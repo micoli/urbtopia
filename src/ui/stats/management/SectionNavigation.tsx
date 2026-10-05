@@ -3,7 +3,7 @@ import type {MessageKey} from '../../../i18n/messages';
 
 const SECTIONS: [string, string, MessageKey][] = [
     ['production', '▦', 'eco.production'], ['energy', '⚡', 'eco.energy'],
-    ['nature', '♧', 'build.greenSpaces'], ['services', '✚', 'stats.services'], ['transport', '↔', 'eco.transport'],
+    ['nature', '♧', 'build.greenSpaces'], ['services', '✚', 'stats.services'], ['transport', '↔', 'eco.transport'], ['traffic', '🚗', 'eco.traffic'],
 ];
 
 interface SectionNavigationProps {

@@ -255,3 +255,23 @@ describe('brush tool', () => {
     expect(confirmTool(tool, { x: 50, y: 50 }, current)).toEqual({ command: null, nextTool: { ...tool, tiles: [] } });
   });
 });
+
+describe('upgradeRoad tool', () => {
+  const start: Tool = { kind: 'upgradeRoad', start: null, horizontalFirst: true };
+
+  it('asks for a start tile first, then previews the widened section with its cost', () => {
+    const afterStart = confirmTool(start, { x: 55, y: 58 }, evaluateTool(start, { state, tile: { x: 55, y: 58 }, rotation: null }));
+    expect(afterStart.command).toBeNull();
+    const tool = afterStart.nextTool!;
+    const evaluation = evaluateTool(tool, { state, tile: { x: 57, y: 58 }, rotation: null });
+    expect(evaluation.valid).toBe(true);
+    expect(evaluation.cost).toBe(18);
+    expect(evaluation.command).toMatchObject({ type: 'UpgradeRoads' });
+    expect(confirmTool(tool, { x: 57, y: 58 }, evaluation).nextTool).toMatchObject({ kind: 'upgradeRoad', start: null });
+  });
+
+  it('explains when there is no road to widen', () => {
+    const tool: Tool = { kind: 'upgradeRoad', start: { x: 10, y: 10 }, horizontalFirst: true };
+    expect(evaluateTool(tool, { state, tile: { x: 12, y: 10 }, rotation: null }).issue).toBe('error.noRoadHere');
+  });
+});

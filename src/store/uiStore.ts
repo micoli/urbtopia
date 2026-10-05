@@ -2,7 +2,7 @@ import { createStore } from 'zustand/vanilla';
 import { footprintTiles, type Coord, type CropId, type Rotation } from '../core';
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
-import { confirmTool, evaluateTool, extendBrush, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
+import { confirmTool, evaluateTool, extendBrush, isPathTool, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
 import { gameStore } from './gameStore';
 import { sceneHandle } from './sceneHandle';
 import { toastStore } from './toastStore';
@@ -138,7 +138,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     cancelTool: () => reevaluate({ tool: null, rotation: null, pinnedTile: null }),
     rotate: () => {
       const { tool, evaluation } = get();
-      if (tool?.kind === 'road' || tool?.kind === 'demolishRoad') return reevaluate({ tool: { ...tool, horizontalFirst: !tool.horizontalFirst } });
+      if (isPathTool(tool)) return reevaluate({ tool: { ...tool, horizontalFirst: !tool.horizontalFirst } });
       if (evaluation?.rotation == null) return;
       reevaluate({ rotation: ((evaluation.rotation + 1) % 4) as Rotation });
     },

@@ -1,4 +1,4 @@
-import {climateStats, cityBenefits, energyStats, totalCitizens, transportStats, type GameState} from '../../../core';
+import {climateStats, cityBenefits, energyStats, totalCitizens, transportStats, type CongestionStats, type GameState} from '../../../core';
 import {t} from '../../../i18n/t';
 import {OverviewTile} from './OverviewTile';
 
@@ -8,10 +8,12 @@ interface CityOverviewProps {
     green: ReturnType<typeof cityBenefits>;
     climate: ReturnType<typeof climateStats>;
     transport: ReturnType<typeof transportStats>;
+    congestion: CongestionStats;
     onShowTransport: () => void;
+    onShowTraffic: () => void;
 }
 
-export function CityOverview({state, energy, green, climate, transport, onShowTransport}: CityOverviewProps) {
+export function CityOverview({state, energy, green, climate, transport, congestion, onShowTransport, onShowTraffic}: CityOverviewProps) {
     return <div className="eco-overview">
         <OverviewTile icon="👥">
             <span>{t('stat.citizens')}</span><strong>{totalCitizens(state)}</strong>
@@ -29,6 +31,10 @@ export function CityOverview({state, energy, green, climate, transport, onShowTr
             <strong>{climate.temperature.toFixed(1)}{' '}<small>°C</small></strong>
             <small>{t('eco.temperatureOptimum')}</small>
         </OverviewTile>
+        <button type="button" aria-controls="eco-traffic" data-warning={congestion.index > 1} title={t('eco.congestionHelp')} onClick={onShowTraffic}>
+            <span aria-hidden="true">🚗</span>
+            <span className="eco-overview-value"><span>{t('eco.congestion')}</span><strong>{(congestion.index * 100).toFixed(0)}<small>%</small></strong></span>
+        </button>
         <button type="button" aria-controls="eco-transport" onClick={onShowTransport}>
             <span aria-hidden="true">↔</span>
             <span className="eco-overview-value"><span>{t('eco.riders')}</span><strong>{transport.riders.toFixed(1)}</strong></span>
