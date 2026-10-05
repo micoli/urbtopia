@@ -3,7 +3,8 @@ import { CONGESTION, advance, congestionPenaltyOf, createBuilding, homeBenefits,
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 
 const NOW = 1_700_000_000_000;
-const base = { ...newGame({ seed: 'traffic', now: NOW }), adaptationUntil: 0 };
+const start = newGame({ seed: 'traffic', now: NOW });
+const base = { ...start, adaptationUntil: 0, buildings: start.buildings.map((building) => ({ ...building, tier: 8 })) };
 
 function withHome(state: GameState, tier: number): { state: GameState; home: Building } {
   const home: Building = { ...createBuilding(state.nextId, 'home', 56, 59, 0), tier };

@@ -82,5 +82,6 @@ export { generateLevel as generateBlockmatchLevel } from './leisure/blockmatch/l
 export { casinosReaching } from './leisure/leisure';
 
 export { CONGESTION, ROAD_TIER_COSTS, MAX_ROAD_TIER, laneCapacity, roadTierOf, roadTierUpgradeCost } from './traffic/roadTier';
+export { JOBS, jobsOf } from './traffic/jobs';
 export { congestionStats, workplaceTypes } from './traffic/congestion';
 export type { CongestionStats, HomeCongestion, SectionLoad } from './traffic/congestion';

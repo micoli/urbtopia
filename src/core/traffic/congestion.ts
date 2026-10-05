@@ -6,6 +6,7 @@ import { frontTiles } from '../map/placement';
 import { buildRoadGraph, neighboursOf, type RoadGraph } from '../map/roadGraph';
 import { FACILITY_TYPES } from '../services/facilities';
 import { transportStats } from '../transit/transport';
+import { jobsOf } from './jobs';
 import { CONGESTION, laneCapacity } from './roadTier';
 
 export const workplaceTypes: readonly BuildingType[] = ['workshop', 'factory', 'shop', 'casino', ...FACILITY_TYPES];
@@ -19,6 +20,7 @@ export interface SectionLoad {
 
 export interface HomeCongestion {
   commuters: number;
+  unemployed: number;
   ratio: number;
   disconnected: boolean;
 }
@@ -28,6 +30,8 @@ export interface CongestionStats {
   homes: ReadonlyMap<number, HomeCongestion>;
   index: number;
   commuters: number;
+  jobs: number;
+  unemployed: number;
   saturatedSections: number;
   disconnectedSections: readonly (readonly Coord[])[];
 }
@@ -65,7 +69,8 @@ function calculateCongestion(state: GameState, now: number): CongestionStats {
   const riders = transportStats(state, now).homeRiders;
   const homes = endpoints(state, graph, (building) => building.type === 'home');
   const workplaces = endpoints(state, graph, (building) => workplaceTypes.includes(building.type)).filter((workplace) => workplace.access.length > 0);
-  if (graph.size === 0 || workplaces.length === 0 || homes.length === 0) return noCommute(homes);
+  const jobs = workplaces.reduce((sum, workplace) => sum + jobsOf(workplace.building), 0);
+  if (graph.size === 0 || workplaces.length === 0 || homes.length === 0) return noCommute(homes, jobs);
   const components = labelComponents(graph);
   const componentOf = (endpoint: Endpoint) => components.labels.get(tileKey(endpoint.access[0] ?? { x: NaN, y: NaN }));
   const homeComponents = new Set(homes.map(componentOf));
@@ -75,27 +80,35 @@ function calculateCongestion(state: GameState, now: number): CongestionStats {
   const loads = new Map<string, number>();
   const used = new Map<number, Set<string>>();
   const result = new Map<number, HomeCongestion>();
+  const jobsLeft = new Map(workplaces.map((workplace) => [workplace.building.id, jobsOf(workplace.building)]));
   let commutersTotal = 0;
+  let unemployedTotal = 0;
   for (const home of homes) {
     const citizens = citizensOf(home.building.tier);
-    const commuters = Math.max(0, citizens - (riders.get(home.building.id) ?? 0));
-    const reachable = home.access.length === 0 ? [] : reachableWorkplaces(graph, home, workplaces);
-    commutersTotal += commuters;
-    if (reachable.length === 0) {
-      result.set(home.building.id, { commuters, ratio: CONGESTION.maxRatio, disconnected: true });
+    const wanting = Math.max(0, citizens - (riders.get(home.building.id) ?? 0));
+    const options = home.access.length === 0 ? [] : reachableWorkplaces(graph, home, workplaces);
+    if (options.length === 0) {
+      commutersTotal += wanting;
+      result.set(home.building.id, { commuters: wanting, unemployed: 0, ratio: CONGESTION.maxRatio, disconnected: true });
       continue;
     }
     const tiles = new Set<string>();
-    const share = commuters / reachable.length;
-    for (const path of reachable) {
-      for (const tile of path) {
+    let remaining = wanting;
+    for (const option of options) {
+      const taken = Math.min(remaining, jobsLeft.get(option.id) ?? 0);
+      if (taken <= 0) continue;
+      jobsLeft.set(option.id, (jobsLeft.get(option.id) ?? 0) - taken);
+      remaining -= taken;
+      for (const tile of option.path) {
         const key = tileKey(tile);
-        loads.set(key, (loads.get(key) ?? 0) + share);
+        loads.set(key, (loads.get(key) ?? 0) + taken);
         tiles.add(key);
       }
     }
+    commutersTotal += wanting - remaining;
+    unemployedTotal += remaining;
     used.set(home.building.id, tiles);
-    result.set(home.building.id, { commuters, ratio: 0, disconnected: false });
+    result.set(home.building.id, { commuters: wanting - remaining, unemployed: remaining, ratio: 0, disconnected: false });
   }
 
   const sections = new Map<string, SectionLoad>();
@@ -120,17 +133,21 @@ function calculateCongestion(state: GameState, now: number): CongestionStats {
     homes: result,
     index: population > 0 ? weighted / population : 0,
     commuters: commutersTotal,
+    jobs,
+    unemployed: unemployedTotal,
     saturatedSections: [...sections.values()].filter((section) => section.ratio > 1).length,
     disconnectedSections: [...brokenComponents].map((id) => components.members.get(id)!),
   };
 }
 
-function noCommute(homes: Endpoint[]): CongestionStats {
+function noCommute(homes: Endpoint[], jobs: number): CongestionStats {
   return {
     sections: new Map(),
-    homes: new Map(homes.map((home) => [home.building.id, { commuters: 0, ratio: 0, disconnected: false }])),
+    homes: new Map(homes.map((home) => [home.building.id, { commuters: 0, unemployed: 0, ratio: 0, disconnected: false }])),
     index: 0,
     commuters: 0,
+    jobs,
+    unemployed: 0,
     saturatedSections: 0,
     disconnectedSections: [],
   };
@@ -170,7 +187,7 @@ function labelComponents(graph: RoadGraph): { labels: Map<string, number>; membe
   return { labels, members };
 }
 
-function reachableWorkplaces(graph: RoadGraph, home: Endpoint, workplaces: Endpoint[]): Coord[][] {
+function reachableWorkplaces(graph: RoadGraph, home: Endpoint, workplaces: Endpoint[]): { id: number; path: Coord[] }[] {
   const parents = new Map<string, string | null>();
   const queue: string[] = [];
   for (const tile of home.access) {
@@ -189,13 +206,13 @@ function reachableWorkplaces(graph: RoadGraph, home: Endpoint, workplaces: Endpo
     }
   }
   const order = new Map(queue.map((key, index) => [key, index]));
-  const paths: Coord[][] = [];
+  const options: { id: number; path: Coord[] }[] = [];
   for (const workplace of workplaces) {
     const reached = workplace.access.map(tileKey).filter((key) => parents.has(key)).sort((a, b) => order.get(a)! - order.get(b)!)[0];
     if (reached === undefined) continue;
-    paths.push(traceBack(parents, reached));
+    options.push({ id: workplace.building.id, path: traceBack(parents, reached) });
   }
-  return paths;
+  return options.sort((a, b) => a.path.length - b.path.length || a.id - b.id);
 }
 
 function traceBack(parents: Map<string, string | null>, end: string): Coord[] {

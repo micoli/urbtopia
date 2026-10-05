@@ -137,8 +137,12 @@ The set of Vehicles on the roads, whose size follows Commuters who drive instead
 _Avoid_: Flow, cars
 
 **Commute**:
-The daily journey of a Home's Citizens who do not use public transport, from the Home to the workplaces (Workshop, Factory, Shop, Public facility, Leisure building) by the shortest road path. Modelled per Home in aggregate, never per individual Citizen. A workplace has no job limit yet.
+The daily journey of a Home's Citizens who do not use public transport, from the Home to the workplaces (Workshop, Factory, Shop, Public facility, Leisure building) by the shortest road path. Commuters fill the nearest workplaces first, up to their Jobs; those who find none do not drive. Modelled per Home in aggregate, never per individual Citizen.
 _Avoid_: Individual Citizen journey, Transit itinerary
+
+**Job**:
+A place at a workplace that one Commuter can fill. A workplace offers a number of Jobs set by its type and Tier.
+_Avoid_: Position, vacancy, employment
 
 **Commuter**:
 A Citizen who drives on a Commute.
