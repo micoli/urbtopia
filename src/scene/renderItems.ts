@@ -96,7 +96,7 @@ const FACILITY_RECOLORS: Partial<Record<FacilityType, number>> = {
   policeStation: 0x2f5fd0,
 };
 
-const FOOTPRINT_BOOST: Partial<Record<FacilityType, number>> = { townHall: 1.3, fireStation: 1.6 };
+const FOOTPRINT_BOOST: Partial<Record<FacilityType, number>> = { townHall: 1.3 };
 
 export function facilityFootprint(building: Pick<Building, 'type'>): number | null {
   if (!isFacilityType(building.type)) return null;

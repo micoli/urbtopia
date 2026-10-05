@@ -37,7 +37,7 @@ export const FACILITIES: Record<FacilityType, FacilitySpec> = {
   university: { category: 'education', unlockCitizens: 400, cost: 3000, radius: null, capacity: 2000, footprint: { width: 3, depth: 3 }, power, water: 0 },
   hospital: { category: 'health', unlockCitizens: 100, cost: 1500, radius: 14, capacity: 800, footprint: { width: 3, depth: 3 }, power, water: 2 },
   townHall: { category: 'administration', unlockCitizens: 160, cost: 2000, radius: null, capacity: null, footprint: { width: 3, depth: 2 }, power, water: 0, unique: true },
-  fireStation: { category: 'safety', unlockCitizens: 160, cost: 1000, radius: 18, capacity: 800, footprint: { width: 2, depth: 2 }, power, water: 0 },
+  fireStation: { category: 'safety', unlockCitizens: 160, cost: 1000, radius: 18, capacity: 800, footprint: { width: 3, depth: 2 }, power, water: 0 },
   policeStation: { category: 'safety', unlockCitizens: 160, cost: 1000, radius: 18, capacity: 800, footprint: { width: 2, depth: 2 }, power, water: 0 },
   theater: { category: 'culture', unlockCitizens: 250, cost: 800, radius: 10, capacity: 500, footprint: { width: 2, depth: 2 }, power, water: 0 },
   concertHall: { category: 'culture', unlockCitizens: 600, cost: 2000, radius: 14, capacity: 1200, footprint: { width: 3, depth: 3 }, power, water: 0 },
