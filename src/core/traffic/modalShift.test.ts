@@ -1,5 +1,14 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { WALKING } from './walking';
 import { SHIFT, citizensOf, cityTransportStats, congestionStats, createBuilding, newGame, transportStats, type Building, type GameState } from '../index';
+
+const walkingThreshold = WALKING.workThreshold;
+beforeAll(() => {
+  WALKING.workThreshold = 0;
+});
+afterAll(() => {
+  WALKING.workThreshold = walkingThreshold;
+});
 
 const HOME_TIER = 7;
 const homeCitizens = citizensOf(HOME_TIER);

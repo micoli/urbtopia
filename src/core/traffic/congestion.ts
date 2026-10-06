@@ -3,12 +3,14 @@ import type { BuildingType, Building, GameState } from '../engine/state';
 import type { Coord } from '../map/coord';
 import { tileKey } from '../map/geometry';
 import { frontTiles } from '../map/placement';
+import { accessNodes, nearestTarget, pedestrianGraph, walkFrom, type PedestrianGraph } from '../map/pedestrianGraph';
 import { buildRoadGraph, neighboursOf, type RoadGraph } from '../map/roadGraph';
 import { FACILITY_TYPES } from '../services/facilities';
 import { transportStats } from '../transit/transport';
 import { jobsOf } from './jobs';
 import { NO_SHIFT, modalShift, type ModalShift } from './modalShift';
 import { CONGESTION, laneCapacity } from './roadTier';
+import { WALKING } from './walking';
 
 export const workplaceTypes: readonly BuildingType[] = ['workshop', 'factory', 'shop', 'casino', ...FACILITY_TYPES];
 
@@ -21,6 +23,7 @@ export interface SectionLoad {
 
 export interface HomeCongestion {
   commuters: number;
+  walkers: number;
   unemployed: number;
   ratio: number;
   disconnected: boolean;
@@ -31,6 +34,8 @@ export interface CongestionStats {
   homes: ReadonlyMap<number, HomeCongestion>;
   index: number;
   commuters: number;
+  walkers: number;
+  modes: { car: number; transit: number; walking: number };
   jobs: number;
   unemployed: number;
   shift: ModalShift;
@@ -42,6 +47,7 @@ export interface CongestionStats {
 interface Endpoint {
   building: Building;
   access: Coord[];
+  sidewalks: string[];
 }
 
 const statsCache = new WeakMap<GameState, { now: number; stats: CongestionStats }>();
@@ -80,8 +86,10 @@ function withModalShift(state: GameState, now: number): CongestionStats {
 function calculateCongestion(state: GameState, riders: ReadonlyMap<number, number>): CongestionStats {
   const graph = buildRoadGraph(state);
   const tiers = new Map(state.roads.map((road) => [tileKey(road), road.tier ?? 1]));
-  const homes = endpoints(state, graph, (building) => building.type === 'home');
-  const workplaces = endpoints(state, graph, (building) => workplaceTypes.includes(building.type)).filter((workplace) => workplace.access.length > 0);
+  const walkable = pedestrianGraph(state);
+  const homes = endpoints(state, graph, walkable, (building) => building.type === 'home');
+  const workplaces = endpoints(state, graph, walkable, (building) => workplaceTypes.includes(building.type)).filter((workplace) => workplace.access.length > 0);
+  const workplaceById = new Map(workplaces.map((workplace) => [workplace.building.id, workplace]));
   const jobs = workplaces.reduce((sum, workplace) => sum + jobsOf(workplace.building), 0);
   if (graph.size === 0 || workplaces.length === 0 || homes.length === 0) return noCommute(homes, jobs);
   const components = labelComponents(graph);
@@ -95,33 +103,44 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
   const result = new Map<number, HomeCongestion>();
   const jobsLeft = new Map(workplaces.map((workplace) => [workplace.building.id, jobsOf(workplace.building)]));
   let commutersTotal = 0;
+  let walkersTotal = 0;
+  let transitTotal = 0;
   let unemployedTotal = 0;
   for (const home of homes) {
     const citizens = citizensOf(home.building.tier);
-    const wanting = Math.max(0, citizens - (riders.get(home.building.id) ?? 0));
+    const homeRiders = Math.min(citizens, riders.get(home.building.id) ?? 0);
+    const wanting = citizens - homeRiders;
+    transitTotal += homeRiders;
     const options = home.access.length === 0 ? [] : reachableWorkplaces(graph, home, workplaces);
     if (options.length === 0) {
       commutersTotal += wanting;
-      result.set(home.building.id, { commuters: wanting, unemployed: 0, ratio: CONGESTION.maxRatio, disconnected: true });
+      result.set(home.building.id, { commuters: wanting, walkers: 0, unemployed: 0, ratio: CONGESTION.maxRatio, disconnected: true });
       continue;
     }
     const tiles = new Set<string>();
+    const walk = walkFrom(walkable, home.sidewalks, WALKING.workThreshold);
     let remaining = wanting;
+    let walking = 0;
     for (const option of options) {
       const taken = Math.min(remaining, jobsLeft.get(option.id) ?? 0);
       if (taken <= 0) continue;
       jobsLeft.set(option.id, (jobsLeft.get(option.id) ?? 0) - taken);
       remaining -= taken;
+      if (WALKING.workThreshold > 0 && nearestTarget(walk, workplaceById.get(option.id)?.sidewalks ?? []) !== null) {
+        walking += taken;
+        continue;
+      }
       for (const tile of option.path) {
         const key = tileKey(tile);
         loads.set(key, (loads.get(key) ?? 0) + taken);
         tiles.add(key);
       }
     }
-    commutersTotal += wanting - remaining;
+    commutersTotal += wanting - remaining - walking;
+    walkersTotal += walking;
     unemployedTotal += remaining;
     used.set(home.building.id, tiles);
-    result.set(home.building.id, { commuters: wanting - remaining, unemployed: remaining, ratio: 0, disconnected: false });
+    result.set(home.building.id, { commuters: wanting - remaining - walking, walkers: walking, unemployed: remaining, ratio: 0, disconnected: false });
   }
 
   const sections = new Map<string, SectionLoad>();
@@ -146,6 +165,8 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     homes: result,
     index: population > 0 ? weighted / population : 0,
     commuters: commutersTotal,
+    walkers: walkersTotal,
+    modes: { car: commutersTotal, transit: transitTotal, walking: walkersTotal },
     jobs,
     unemployed: unemployedTotal,
     shift: NO_SHIFT,
@@ -158,9 +179,11 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
 function noCommute(homes: Endpoint[], jobs: number): CongestionStats {
   return {
     sections: new Map(),
-    homes: new Map(homes.map((home) => [home.building.id, { commuters: 0, unemployed: 0, ratio: 0, disconnected: false }])),
+    homes: new Map(homes.map((home) => [home.building.id, { commuters: 0, walkers: 0, unemployed: 0, ratio: 0, disconnected: false }])),
     index: 0,
     commuters: 0,
+    walkers: 0,
+    modes: { car: 0, transit: 0, walking: 0 },
     jobs,
     unemployed: 0,
     shift: NO_SHIFT,
@@ -186,13 +209,14 @@ function isWorse(candidate: SectionLoad, current: SectionLoad): boolean {
   return candidate.tile.x < current.tile.x;
 }
 
-function endpoints(state: GameState, graph: RoadGraph, matches: (building: Building) => boolean): Endpoint[] {
+function endpoints(state: GameState, graph: RoadGraph, walkable: PedestrianGraph, matches: (building: Building) => boolean): Endpoint[] {
   return state.buildings
     .filter(matches)
     .sort((a, b) => a.id - b.id)
     .map((building) => ({
       building,
       access: frontTiles(building.type, building.x, building.y, building.rotation, building.tier).filter((tile) => graph.has(tileKey(tile))),
+      sidewalks: accessNodes(state, walkable, building),
     }));
 }
 

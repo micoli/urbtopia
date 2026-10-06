@@ -1,6 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { WALKING } from './walking';
 import { worstSection, type SectionLoad } from './congestion';
 import { ROAD_TIER_COSTS, citizensOf, jobsOf, congestionStats, createBuilding, dispatch, laneCapacity, newGame, tileKey, type Building, type GameState } from '../index';
+
+const walkingThreshold = WALKING.workThreshold;
+beforeAll(() => {
+  WALKING.workThreshold = 0;
+});
+afterAll(() => {
+  WALKING.workThreshold = walkingThreshold;
+});
 
 const base = newGame({ seed: 'traffic', now: 0 });
 
@@ -136,7 +145,7 @@ describe('city without a Commute', () => {
     const noWorkplace = withHome({ ...base, buildings: [] }, 56, 59, 1);
     for (const state of [noRoad, noWorkplace]) {
       const home = congestionStats(state).homes.get(homeIdOf(state))!;
-      expect(home).toEqual({ commuters: 0, unemployed: 0, ratio: 0, disconnected: false });
+      expect(home).toEqual({ commuters: 0, walkers: 0, unemployed: 0, ratio: 0, disconnected: false });
     }
   });
 });

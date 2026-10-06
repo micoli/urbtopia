@@ -1,10 +1,19 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { WALKING } from '../../core/traffic/walking';
 import { climateStats, createBuilding, newGame, type GameState } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { CityManagement } from './CityManagement.tsx';
 import { MinimalStats } from './MinimalStats';
 import { CityStats } from './CityStats';
+
+const walkingThreshold = WALKING.workThreshold;
+beforeAll(() => {
+  WALKING.workThreshold = 0;
+});
+afterAll(() => {
+  WALKING.workThreshold = walkingThreshold;
+});
 
 const context = vi.hoisted(() => ({ state: null as GameState | null, statsOpen: true }));
 vi.mock('../common/hooks', () => ({
