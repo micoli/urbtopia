@@ -8,6 +8,10 @@ Urbtopia is a solo, serverless isometric city builder: the player produces resou
 The soft currency of the game, earned by selling goods and spent on building and upgrading.
 _Avoid_: Coins, cash, money
 
+**Model definition**:
+The entry of a 3D model in `assets/models.json`: footprint, scale or fit, rotation offset, recolor, and source license. Edited with `tools/assets-editor`; a model without one uses computed defaults.
+_Avoid_: Asset config, model metadata
+
 **Material**:
 A raw resource produced by a Workshop with a fixed production time, or harvested from a Crop.
 _Avoid_: Raw good, ore, resource (too generic)
