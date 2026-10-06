@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { newGame, type Coord, type GameState } from '../core';
 import { buildRoadGraph } from './roadGraph';
-import { MIN_GAP, advanceTrafficVehicle, distanceToLeader, isSpotFree, nodeIsFree, pickLane, type TrafficVehicle } from './vehicleTraffic';
+import { MIN_GAP, advanceTrafficVehicle, distanceToLeader, isSpotFree, nodeIsFree, pickLane, startBusVehicle, type TrafficVehicle } from './vehicleTraffic';
+import { poseOf } from './vehicleMotion';
 
 function graphOf(roads: [number, number][]) {
   const state: GameState = { ...newGame({ now: 0, seed: 'test' }), roads: roads.map(([x, y]) => ({ x, y, kind: 'road' as const })), roundabouts: [] };
@@ -113,5 +114,55 @@ describe('stopping for pedestrians', () => {
     const car = vehicle(1, { x: 0, y: 5 }, { x: 1, y: 5 }, 0.3, 0, 4);
     advanceTrafficVehicle(row, car, 1, one, [car], lanesAt);
     expect(car.from).toEqual({ x: 1, y: 5 });
+  });
+});
+
+describe('buses in traffic', () => {
+  const tiles: Coord[] = [0, 1, 2, 3].map((x) => ({ x, y: 5 }));
+  const single = () => 1;
+  const bus = (start = 0) => startBusVehicle(tiles, 9, 7, 1.5, single, start)!;
+
+  it('starts on its route, heading to the next tile', () => {
+    const started = bus(1);
+    expect(started.from).toEqual({ x: 1, y: 5 });
+    expect(started.to).toEqual({ x: 2, y: 5 });
+    expect(started.run).toBeDefined();
+    expect(startBusVehicle([tiles[0]!], 9, 7, 1.5, single, 0)).toBeNull();
+  });
+
+  it('drives its route back and forth', () => {
+    const driving = bus();
+    const visited: number[] = [];
+    for (let step = 0; step < 14; step++) {
+      advanceTrafficVehicle(row, driving, 1 / 1.5, one, [driving], single);
+      if (visited.at(-1) !== driving.to.x) visited.push(driving.to.x);
+    }
+    expect(visited.slice(0, 8)).toEqual([2, 3, 2, 1, 0, 1, 2, 3]);
+  });
+
+  it('keeps to the right-hand side in both directions', () => {
+    const driving = bus();
+    expect(poseOf(driving).z).toBeCloseTo(5.5 + 0.2);
+    for (let step = 0; step < 4; step++) advanceTrafficVehicle(row, driving, 1 / 1.5, one, [driving], single);
+    expect(driving.to.x).toBeLessThan(driving.from.x);
+    driving.progress = 0;
+    expect(poseOf(driving).z).toBeCloseTo(5.5 - 0.2 * 1);
+  });
+
+  it('queues behind a slower car instead of driving through it', () => {
+    const driving = bus();
+    const car = vehicle(1, { x: 0, y: 5 }, { x: 1, y: 5 }, 0.6, 0, 0);
+    car.lanes = 1;
+    driving.lanes = 1;
+    for (let step = 0; step < 10; step++) advanceTrafficVehicle(row, driving, 1, one, [driving, car], single);
+    expect(driving.from).toEqual({ x: 0, y: 5 });
+    expect(driving.progress).toBeLessThanOrEqual(0.6 - MIN_GAP + 1e-9);
+  });
+
+  it('waits for pedestrians crossing the next tile', () => {
+    const driving = bus();
+    for (let step = 0; step < 6; step++) advanceTrafficVehicle(row, driving, 1, one, [driving], single, new Set(['1,5']));
+    expect(driving.from).toEqual({ x: 0, y: 5 });
+    expect(driving.progress).toBeLessThan(0.5);
   });
 });
