@@ -133,7 +133,7 @@ A visual ambulance, fire truck or police car that leaves its Public facility by 
 _Avoid_: Emergency, incident, Transit fleet
 
 **Traffic**:
-The set of Vehicles on the roads, whose size follows Commuters who drive instead of using public transport.
+The set of Vehicles on the roads, whose size follows Commuters who drive instead of using public transport. The buses of the active Bus lines are part of it.
 _Avoid_: Flow, cars
 
 **Commute**:
@@ -257,8 +257,12 @@ A visible roadside sign marking a public-transport stop that covers nearby Homes
 _Avoid_: Road STOP sign, station
 
 **Bus line**:
-An ordered set of road-connected Bus stops, with operating costs and usage driven by useful residential and activity coverage.
+An ordered set of road-connected Bus stops, with operating costs and usage driven by useful residential and activity coverage. An active Bus line drives on the ordinary roads like any other Vehicle: it loads them and is slowed by their Congestion, which lowers its Effective speed and capacity.
 _Avoid_: Individual Citizen journey, decorative Traffic
+
+**Effective speed**:
+The speed of a Bus line once the Congestion of its route is counted: each tile of the route takes longer in proportion to how far its section is above capacity, down to half of the nominal speed. Capacity and itinerary times follow it. BRT and rail are never slowed.
+_Avoid_: Delay, journey time
 
 **Adaptation period**:
 The announced grace period during which new electricity shortages or newly required Service coverage do not penalize production, Tax or Well-being.

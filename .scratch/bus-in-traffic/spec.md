@@ -1,6 +1,6 @@
 # Buses in traffic
 
-Status: ready-for-agent
+Status: resolved
 
 Follow-up to [traffic-congestion](../traffic-congestion/spec.md), [traffic-congestion-followups](../traffic-congestion-followups/spec.md), [pedestrian-network](../pedestrian-network/spec.md) and [dedicated-transit](../dedicated-transit/spec.md). Vocabulary (**Bus line**, **Bus stop**, **Headway**, **Congestion**, **Modal shift**, **Vehicle**, **Rider**) is in `CONTEXT.md`. Respects [ADR 0011](../../docs/adr/0011-congestion-as-core-model-with-visual-vehicles.md): congestion stays an aggregate core model, scene vehicles are a projection that never feeds back into the core.
 
