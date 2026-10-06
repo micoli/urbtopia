@@ -19,8 +19,8 @@ describe('prototype assets', () => {
     }
   });
 
-  it('lists every model of every pack in the asset viewer manifest, sorted', () => {
-    const viewer = PROTOTYPE_ASSETS.find((entry) => entry.prototype === 'asset-viewer');
+  it('lists every model of every pack in the assets editor manifest, sorted', () => {
+    const viewer = PROTOTYPE_ASSETS.find((entry) => entry.prototype === 'assets-editor');
     expect(viewer?.manifest).toBe(true);
     const names = Object.fromEntries(
       Object.keys(viewer?.packs ?? {}).map((pack) => [pack, filesOf(pack, 'all').filter((file) => file.path.endsWith('.glb')).map((file) => file.path.replace('.glb', ''))]),
@@ -31,8 +31,8 @@ describe('prototype assets', () => {
     for (const list of Object.values(manifest)) expect(list).toEqual([...list].sort());
   });
 
-  it('exposes every Quaternius FBX of the archives to the asset viewer, including the unused ones', () => {
-    const viewer = PROTOTYPE_ASSETS.find((entry) => entry.prototype === 'asset-viewer');
+  it('exposes every Quaternius FBX of the archives to the assets editor, including the unused ones', () => {
+    const viewer = PROTOTYPE_ASSETS.find((entry) => entry.prototype === 'assets-editor');
     expect(viewer?.rawFbx).toBe(true);
     const farm = QUATERNIUS_PACKS.find((pack) => pack.name === 'farm')!;
     const names = extractFbx(new Uint8Array(readFileSync(join(QUATERNIUS_ARCHIVES_DIR, farm.archive)))).map((file) => file.path);

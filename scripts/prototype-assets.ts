@@ -13,8 +13,8 @@ const isSymlink = (path: string) => {
 };
 
 try {
-  for (const { prototype, packs, manifest, rawFbx } of PROTOTYPE_ASSETS) {
-    const publicDir = join(PROTOTYPES_DIR, prototype, 'public');
+  for (const { prototype, directory, packs, manifest, rawFbx } of PROTOTYPE_ASSETS) {
+    const publicDir = join(directory ?? join(PROTOTYPES_DIR, prototype), 'public');
     const modelsDir = join(publicDir, 'models');
     if (isSymlink(modelsDir)) rmSync(modelsDir);
 

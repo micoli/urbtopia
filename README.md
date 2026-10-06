@@ -75,7 +75,7 @@ The product spec and the work breakdown live in [`.scratch/urbix-mvp`](.scratch/
 
 ## Assets
 
-The 3D models come from Kenney asset packs (see [Credits](#credits)). The original archives are versioned in `assets/kenney/`, so installing and building never need the network. `npm run assets` extracts only the models the scene uses into `public/models`, which is generated and ignored by git. `npm run assets:prototypes` makes all registered packs available in the asset viewer, including packs with no models selected for the game.
+The 3D models come from Kenney asset packs (see [Credits](#credits)). The original archives are versioned in `assets/kenney/`, so installing and building never need the network. `npm run assets` extracts only the models the scene uses into `public/models`, which is generated and ignored by git. `npm run assets:prototypes` makes all registered packs available in the assets editor (`npm run assets:editor`), including packs with no models selected for the game.
 
 To update the archives, run `npm run assets:fetch`. The download links contain a hash that changes with each Kenney release: if one fails, copy the new link from the pack page into `scripts/assetPacks.ts`. Archives are validated before they replace the old ones. Then run `npm run assets -- --force` and commit the new archives.
 
@@ -83,7 +83,7 @@ Crops and farm buildings come from two Quaternius packs, versioned in `assets/qu
 
 Models with no downloadable source (made by hand in Blender) are versioned as GLB in `assets/managed-models/<theme>/`. `npm run assets` copies them as is to `public/models/<theme>/`, next to the extracted packs.
 
-The [`prototypes`](prototypes) folder holds throwaway prototypes (render benchmark, asset viewer, touch UX, casino simulator) that informed the design. Only their sources are versioned; `npm run assets:prototypes` copies the models they load.
+The [`prototypes`](prototypes) folder holds throwaway prototypes (render benchmark, touch UX, casino simulator) that informed the design. Only their sources are versioned; `npm run assets:prototypes` copies the models they load.
 
 ## Credits
 

@@ -1,6 +1,6 @@
 # Asset catalog (Kenney City Kits)
 
-Machine-readable data: [`asset-catalog.json`](asset-catalog.json). Decided with the owner in the asset viewer (`prototypes/asset-viewer/`). Source facts: [`research/kenney-city-kits.md`](research/kenney-city-kits.md).
+Machine-readable data: [`asset-catalog.json`](asset-catalog.json). Decided with the owner in the assets editor (`tools/assets-editor/`). Source facts: [`research/kenney-city-kits.md`](research/kenney-city-kits.md).
 
 ## Conventions
 

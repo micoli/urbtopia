@@ -12,9 +12,9 @@ ready_http = "http://localhost:5175/"
 boot_start = false
 retry = false
 
-[daemons.asset-viewer]
-run = "npm run dev -- --host --port 5181 --strictPort"
-dir = "prototypes/asset-viewer"
+[daemons.assets-editor]
+run = "npm run assets:editor -- --port 5181 --strictPort"
+dir = "."
 ready_http = "http://localhost:5181/"
 boot_start = false
 retry = false

@@ -4,6 +4,7 @@ export type Selection = string[] | 'all';
 
 export interface PrototypeAssets {
   prototype: string;
+  directory?: string;
   packs: Record<string, Selection>;
   manifest: boolean;
   rawFbx?: boolean;
@@ -15,7 +16,8 @@ const letters = (first: string, last: string) =>
 // The 3D models each throwaway prototype loads. They are copied from the versioned Kenney archives and never committed.
 export const PROTOTYPE_ASSETS: PrototypeAssets[] = [
   {
-    prototype: 'asset-viewer',
+    prototype: 'assets-editor',
+    directory: 'tools/assets-editor',
     packs: Object.fromEntries(ASSET_PACKS.map(({ name }) => [name, 'all' as const])),
     manifest: true,
     rawFbx: true,
