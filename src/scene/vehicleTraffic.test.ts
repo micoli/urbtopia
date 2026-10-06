@@ -93,11 +93,24 @@ describe('lanes and spawning', () => {
 });
 
 describe('stopping for pedestrians', () => {
-  it('holds a vehicle before a tile where pedestrians are crossing', () => {
-    const car = vehicle(1, { x: 0, y: 5 }, { x: 1, y: 5 }, 0.5, 0, 4);
-    advanceTrafficVehicle(row, car, 1, one, [car], lanesAt, new Set(['1,5']));
+  const crossing = new Set(['1,5']);
+
+  it('holds a vehicle on the tile before the crossing, never on the crossing tile', () => {
+    const car = vehicle(1, { x: 0, y: 5 }, { x: 1, y: 5 }, 0.1, 0, 4);
+    for (let step = 0; step < 5; step++) advanceTrafficVehicle(row, car, 1, one, [car], lanesAt, crossing);
     expect(car.from).toEqual({ x: 0, y: 5 });
-    expect(car.progress).toBeLessThan(1);
+    expect(car.progress).toBeCloseTo(0.3);
+    expect(car.progress).toBeLessThan(0.5);
+  });
+
+  it('lets a vehicle already past the tile edge clear the crossing', () => {
+    const car = vehicle(1, { x: 0, y: 5 }, { x: 1, y: 5 }, 0.6, 0, 4);
+    advanceTrafficVehicle(row, car, 1, one, [car], lanesAt, crossing);
+    expect(car.from).toEqual({ x: 1, y: 5 });
+  });
+
+  it('moves on once the pedestrians are gone', () => {
+    const car = vehicle(1, { x: 0, y: 5 }, { x: 1, y: 5 }, 0.3, 0, 4);
     advanceTrafficVehicle(row, car, 1, one, [car], lanesAt);
     expect(car.from).toEqual({ x: 1, y: 5 });
   });

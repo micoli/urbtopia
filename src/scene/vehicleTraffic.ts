@@ -6,6 +6,8 @@ import { directionOf, sameTile, type Vehicle } from './vehicleMotion';
 export const MIN_GAP = 0.4;
 export const NODE_CLEARANCE = 0.45;
 const STOP_BEFORE_NODE = 0.02;
+const TILE_EDGE_PROGRESS = 0.5;
+const STOP_BEFORE_CROSSING = 0.3;
 
 export interface TrafficVehicle extends Vehicle {
   id: number;
@@ -70,7 +72,8 @@ const NO_STOPS: ReadonlySet<string> = new Set();
 export function advanceTrafficVehicle(graph: RoadGraph, vehicle: TrafficVehicle, deltaSeconds: number, random: () => number, others: readonly TrafficVehicle[], lanesAt: LanesAt, stopTiles: ReadonlySet<string> = NO_STOPS): boolean {
   const room = Math.max(0, distanceToLeader(vehicle, others));
   let travel = Math.min(vehicle.speed * deltaSeconds, room);
-  if (vehicle.progress + travel >= 1 && (stopTiles.has(tileKey(vehicle.to)) || !nodeIsFree(vehicle, others))) travel = Math.min(travel, Math.max(0, 1 - STOP_BEFORE_NODE - vehicle.progress));
+  if (vehicle.progress < TILE_EDGE_PROGRESS && stopTiles.has(tileKey(vehicle.to))) travel = Math.min(travel, Math.max(0, STOP_BEFORE_CROSSING - vehicle.progress));
+  if (vehicle.progress + travel >= 1 && !nodeIsFree(vehicle, others)) travel = Math.min(travel, Math.max(0, 1 - STOP_BEFORE_NODE - vehicle.progress));
   vehicle.progress += travel;
   if (vehicle.progress < 1) return true;
   const previous = vehicle.from;
