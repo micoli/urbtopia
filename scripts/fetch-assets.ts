@@ -1,7 +1,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ARCHIVES_DIR, ASSET_PACKS } from './assetPacks.ts';
+import { ARCHIVES_DIR, ASSET_PACKS, POLY_PIZZA_DIR, POLY_PIZZA_LIST_ID } from './assetPacks.ts';
 import { extractPack } from './extractPack.ts';
+import { fetchPolyPizzaList } from './polyPizza.ts';
 
 async function download(url: string): Promise<Uint8Array> {
   const response = await fetch(url);
@@ -17,6 +18,8 @@ try {
     extractPack(archive, pack.files, pack.colormap);
     writeFileSync(join(ARCHIVES_DIR, pack.archive), archive);
   }
+  const polyPizzaCount = await fetchPolyPizzaList(POLY_PIZZA_LIST_ID, POLY_PIZZA_DIR);
+  console.log(`${polyPizzaCount} Poly Pizza assets refreshed in ${POLY_PIZZA_DIR} (credits in each license.txt).`);
   console.log('Archives refreshed in assets/kenney. Run `npm run assets -- --force` to extract them, then commit.');
   console.log('Assets by Kenney (https://kenney.nl), CC0.');
 } catch (error) {
