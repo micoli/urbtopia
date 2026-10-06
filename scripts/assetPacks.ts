@@ -115,3 +115,4 @@ export const QUATERNIUS_PACKS: QuaterniusPack[] = [
 export const QUATERNIUS_ARCHIVES_DIR = 'assets/quaternus';
 export const MODELS_DIR = 'public/models';
 export const ARCHIVES_DIR = 'assets/kenney';
+export const MANAGED_MODELS_DIR = 'assets/managed-models';

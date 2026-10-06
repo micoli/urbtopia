@@ -3,6 +3,7 @@ import { NATURE_FAMILIES, NATURE_MODELS, type NatureType } from '../environment/
 import type { Coord } from '../map/coord';
 import { HOME_FOOTPRINTS } from '../economy/economy';
 import { CASINO, casinoFootprint } from '../leisure/casino';
+import { STADIUM } from '../leisure/stadium';
 import type { Building, BuildingType, Rotation, ShopStack } from '../engine/state';
 
 export interface Footprint {
@@ -52,6 +53,7 @@ export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
   grainSilo: { footprint: { width: 2, depth: 2 }, cost: 300, requiresRoad: true, initialSlots: 0 },
   vault: { footprint: { width: 2, depth: 1 }, cost: 300, requiresRoad: true, initialSlots: 0 },
   casino: { footprint: CASINO.footprints[0]!, cost: CASINO.cost, requiresRoad: true, initialSlots: 0 },
+  stadium: { footprint: STADIUM.footprint, cost: STADIUM.cost, requiresRoad: true, initialSlots: 0 },
 };
 
 export function footprintOf(type: BuildingType, rotation: number, tier = 1): Footprint {

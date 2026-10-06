@@ -37,6 +37,7 @@ export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
   grainSilo: 'farm/Silo_House',
   vault: 'industrial/building-s',
   casino: 'buildings/2Story_Stairs_Mat',
+  stadium: 'sport/athletics-stadium',
   farm: 'farm/Barn',
   packhouse: 'farm/OpenBarn',
   tree: 'suburban/tree-small',

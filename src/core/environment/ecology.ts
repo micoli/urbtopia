@@ -3,6 +3,7 @@ import { footprintOf } from '../buildings/buildingSpecs';
 import { FACILITIES, FACILITY_TYPES, isFacilityType } from '../services/facilities';
 import { HOME_TIERS } from '../economy/economy';
 import { CASINO, casinoPower } from '../leisure/casino';
+import { STADIUM } from '../leisure/stadium';
 import type { Building, BuildingType, GameState } from '../engine/state';
 
 export const ECOLOGY = {
@@ -16,7 +17,7 @@ export const ECOLOGY = {
 export const ECOLOGY_UNLOCKS: Partial<Record<BuildingType, number>> = {
   ...Object.fromEntries(NATURE_MODELS.map(([type, , family]) => [type, NATURE_FAMILIES[family].unlock])),
   ...Object.fromEntries(FACILITY_TYPES.map(type => [type, FACILITIES[type].unlockCitizens])),
-  casino: CASINO.unlockCitizens, brtStation: 200, railStation: 600, farm: 20, packhouse: 20, tree: 6, park: 15, solar: 32, battery: 32, backup: 32, busStop: 32,
+  casino: CASINO.unlockCitizens, stadium: STADIUM.unlockCitizens, brtStation: 200, railStation: 600, farm: 20, packhouse: 20, tree: 6, park: 15, solar: 32, battery: 32, backup: 32, busStop: 32,
 };
 
 export function citizenCount(state: GameState): number {

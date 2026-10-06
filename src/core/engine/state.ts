@@ -7,7 +7,7 @@ import type { CropId } from '../farming/crops';
 import type { RoadKind } from '../map/roads';
 import type { TutorialStep } from '../progression/tutorial';
 
-export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'coalPlant' | 'waterTower' | 'silo' | 'vault' | 'grainSilo' | 'farm' | 'packhouse' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop' | 'brtStation' | 'railStation' | 'casino' | FacilityType | NatureType;
+export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'coalPlant' | 'waterTower' | 'silo' | 'vault' | 'grainSilo' | 'farm' | 'packhouse' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop' | 'brtStation' | 'railStation' | 'casino' | 'stadium' | FacilityType | NatureType;
 
 export interface OpenCasinoRound {
   buildingId: number;

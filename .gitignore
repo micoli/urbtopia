@@ -12,3 +12,4 @@ test-results/
 !assets/quaternus/*.zip
 prototypes/*/public/models
 prototypes/*/public/manifest.json
+assets/**/*.blend1

@@ -14,7 +14,7 @@ export type GameEvent =
   | { readonly type: 'BuildingUpgraded'; readonly buildingId: number; readonly tier: number }
   | { readonly type: 'OfflineTimeCapped'; readonly forfeitedMs: number }
   | { readonly type: 'StorageFull'; readonly buildingId: number }
-  | { readonly type: 'FacilityUnlocked'; readonly facility: FacilityType | 'casino' }
+  | { readonly type: 'FacilityUnlocked'; readonly facility: FacilityType | 'casino' | 'stadium' }
   | { readonly type: 'SlotSpun'; readonly buildingId: number; readonly stake: number; readonly reels: readonly SlotSymbol[]; readonly outcome: SlotOutcome; readonly payout: number }
   | { readonly type: 'CasinoRoundStarted'; readonly buildingId: number; readonly game: 'blackjack' | 'blockmatch'; readonly stake: number; readonly roundSeed: number }
   | { readonly type: 'BlackjackSettled'; readonly buildingId: number; readonly stake: number; readonly doubled: boolean; readonly outcome: BlackjackOutcome; readonly payout: number }

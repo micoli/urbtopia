@@ -81,6 +81,8 @@ To update the archives, run `npm run assets:fetch`. The download links contain a
 
 Crops and farm buildings come from two Quaternius packs, versioned in `assets/quaternus/`. They ship FBX only, so `npm run assets` converts the models the scene uses to GLB (scaled to one tile) with the three.js FBX loader, keeping a single GLTF loader at runtime.
 
+Models with no downloadable source (made by hand in Blender) are versioned as GLB in `assets/managed-models/<theme>/`. `npm run assets` copies them as is to `public/models/<theme>/`, next to the extracted packs.
+
 The [`prototypes`](prototypes) folder holds throwaway prototypes (render benchmark, asset viewer, touch UX, casino simulator) that informed the design. Only their sources are versioned; `npm run assets:prototypes` copies the models they load.
 
 ## Credits

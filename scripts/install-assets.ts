@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { ARCHIVES_DIR, ASSET_PACKS, MODELS_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS, type AssetPack } from './assetPacks.ts';
+import { ARCHIVES_DIR, ASSET_PACKS, MANAGED_MODELS_DIR, MODELS_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS, type AssetPack } from './assetPacks.ts';
+import { managedModelKeys } from './managedModels.ts';
 import { convertQuaterniusPack, type QuaterniusPack } from './quaternius.ts';
 import { extractPack } from './extractPack.ts';
 
@@ -37,7 +38,21 @@ async function installQuaterniusPack(pack: QuaterniusPack): Promise<void> {
   console.log(`✓ ${pack.name}: ${files.length} files converted from FBX`);
 }
 
+function installManagedModels(): void {
+  const keys = managedModelKeys();
+  for (const key of keys) {
+    const source = join(MANAGED_MODELS_DIR, `${key}.glb`);
+    const target = join(MODELS_DIR, `${key}.glb`);
+    const data = readFileSync(source);
+    if (!force && existsSync(target) && readFileSync(target).equals(data)) continue;
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, data);
+  }
+  console.log(`✓ managed models: ${keys.length} files`);
+}
+
 try {
+  installManagedModels();
   for (const pack of ASSET_PACKS) installPack(pack);
   for (const pack of QUATERNIUS_PACKS) await installQuaterniusPack(pack);
 } catch (error) {
