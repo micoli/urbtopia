@@ -1,25 +1,15 @@
 import * as THREE from 'three';
-
-interface ModelFit {
-  scale: number;
-  centerX: number;
-  centerZ: number;
-}
-
-const MODEL_FIT: Record<string, ModelFit> = {
-  'industrial/building-h': { scale: 1.45, centerX: -0.58, centerZ: 0.28 },
-  'suburban/tree-small': { scale: 1.5, centerX: 0, centerZ: 0 },
-  'suburban/tree-large': { scale: 1.5, centerX: 0, centerZ: 0 },
-};
+import { definitionOf } from './modelDefinitions';
 
 const IDENTITY = new THREE.Matrix4();
 
 export function fitMatrixOf(model: string): THREE.Matrix4 {
   if (model === 'trains/railroad-straight') return new THREE.Matrix4().makeScale(.7, 1, .25).multiply(new THREE.Matrix4().makeTranslation(0, 1, -2));
   if (model === 'trains/railroad-corner-small') return new THREE.Matrix4().makeTranslation(0, 1, 0);
-  const fit = MODEL_FIT[model];
-  if (!fit) return IDENTITY;
-  return new THREE.Matrix4().makeScale(fit.scale, fit.scale, fit.scale).multiply(new THREE.Matrix4().makeTranslation(-fit.centerX, 0, -fit.centerZ));
+  const definition = definitionOf(model);
+  if (definition?.scale === undefined || definition.fit) return IDENTITY;
+  const [centerX, centerZ] = definition.center ?? [0, 0];
+  return new THREE.Matrix4().makeScale(definition.scale, definition.scale, definition.scale).multiply(new THREE.Matrix4().makeTranslation(-centerX, 0, -centerZ));
 }
 
 const FOOTPRINT_FILL = 0.9;

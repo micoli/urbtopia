@@ -412,6 +412,7 @@ export const FR: Record<MessageKey, string> = {
   'credits.title': 'Crédits',
   'credits.polyPizza': 'Modèles Poly Pizza',
   'credits.by': 'par',
+  'credits.otherModels': 'Autres modèles',
   'settings.install': "Installer l'application",
   'settings.version': 'Version',
   'settings.export': 'Exporter la ville',

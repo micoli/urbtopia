@@ -409,6 +409,7 @@ export const MESSAGES = {
   'credits.title': 'Credits',
   'credits.polyPizza': 'Poly Pizza models',
   'credits.by': 'by',
+  'credits.otherModels': 'Other models',
   'settings.install': 'Install the app',
   'settings.skip12': '+12 h',
   'settings.version': 'Build',

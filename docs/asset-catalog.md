@@ -1,12 +1,12 @@
 # Asset catalog (Kenney City Kits)
 
-Machine-readable data: [`asset-catalog.json`](asset-catalog.json). Decided with the owner in the assets editor (`tools/assets-editor/`). Source facts: [`research/kenney-city-kits.md`](research/kenney-city-kits.md).
+Machine-readable data: [`assets/models.json`](../assets/models.json) (Model definitions, see [ADR 0012](adr/0012-models-json-single-source-of-model-definitions.md)). Decided with the owner in the assets editor (`tools/assets-editor/`). Source facts: [`research/kenney-city-kits.md`](research/kenney-city-kits.md).
 
 ## Conventions
 
 - 1 unit = 1 road tile. Y up, ground at Y=0, models centred on X/Z. Rotations are multiples of 90 degrees around Y.
 - **Front (door) is -Z at rotation 0** for every building (checked visually on commercial, suburban and industrial). Roads and buildings face the street on that side.
-- **Footprint** = `ceil(bbox - 0.15)` per axis in tiles, native model size, no scaling. Exceptions are listed in the JSON (`scale`, `note`).
+- **Footprint** = `ceil(bbox - 0.15)` per axis in tiles, native model size, no scaling. Exceptions are listed in `models.json` (`scale`, `note`).
 - Node scales to bake into geometry before instancing: `industrial/water-tower`, `industrial/detail-tank`, `industrial/shipping-container-a/b/c`.
 - Textures: each pack needs `Textures/colormap.png` next to its `.glb` files (external URI). The suburban zip ships no `colormap.png` in `GLB format/`; copy it from `FBX format/Textures/`. Layout used: `models/<pack>/*.glb` + `models/<pack>/Textures/colormap.png`.
 

@@ -1,6 +1,6 @@
 import { t } from '../../i18n/t';
 import { dialogStore } from '../../store/dialogStore';
-import { PACK_CREDITS, POLY_PIZZA_CREDITS } from '../../credits/credits';
+import { OTHER_MODEL_CREDITS, PACK_CREDITS, POLY_PIZZA_CREDITS } from '../../credits/credits';
 import { ActionButton } from '../common/ActionButton';
 import { Dialog } from '../common/Dialog';
 import { useDialogs } from '../common/hooks';
@@ -30,6 +30,18 @@ export function CreditsDialog() {
               </li>
             ))}
           </ul>
+          {OTHER_MODEL_CREDITS.length > 0 && (
+            <>
+              <h3>{t('credits.otherModels')}</h3>
+              <ul className="credits-list">
+                {OTHER_MODEL_CREDITS.map((credit) => (
+                  <li key={credit.model}>
+                    {credit.url ? <a href={credit.url} target="_blank" rel="noreferrer">{credit.model}</a> : credit.model} {t('credits.by')} {credit.author} ({credit.license})
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       </Dialog.Body>
       <Dialog.Actions>
