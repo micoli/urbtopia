@@ -86,4 +86,6 @@ export { JOBS, jobsOf } from './traffic/jobs';
 export { SHIFT } from './traffic/modalShift';
 export { cityTransportStats } from './traffic/cityTransport';
 export { congestionStats, workplaceTypes } from './traffic/congestion';
-export type { CongestionStats, HomeCongestion, SectionLoad } from './traffic/congestion';
+export type { CongestionStats, CrossingLoad, HomeCongestion, SectionLoad } from './traffic/congestion';
+export { WALKING, WALK_DESTINATIONS, modeShares } from './traffic/walking';
+export type { ModeShares, WalkDestination } from './traffic/walking';

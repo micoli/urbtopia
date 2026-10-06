@@ -49,6 +49,20 @@ describe('city management panel', () => {
     expect(html).not.toContain('NaN');
     expect(html).not.toContain('undefined');
   });
+  it.each(['en', 'fr'] as const)('shows the car, public transport and walking mix with the walking details in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    WALKING.enabled = true;
+    const start = newGame({ seed: 'walking-panel', now: 0 });
+    context.state = { ...start, roads: [...start.roads], buildings: [...start.buildings, { ...createBuilding(40, 'home', 56, 59, 0), tier: 1 }, createBuilding(41, 'shop', 57, 57, 0)] };
+    const html = renderToStaticMarkup(<CityManagement />);
+    WALKING.enabled = false;
+    expect(html).toContain(language === 'fr' ? 'À pied' : 'On foot');
+    expect(html).toContain(language === 'fr' ? 'Sorties à pied vers les services' : 'Walks to services');
+    expect(html).toContain(language === 'fr' ? 'Passages piétons saturés' : 'Saturated crossings');
+    expect(html).toContain(language === 'fr' ? 'Commerces' : 'Shops');
+    expect(html).not.toContain('NaN');
+    expect(html).not.toContain('undefined');
+  });
   it.each(['en', 'fr'] as const)('offers the worst bottleneck only when a road is saturated in %s', language => {
     prefsStore.getState().setLanguage(language);
     const label = language === 'fr' ? 'Voir le pire goulot' : 'Show the worst bottleneck';

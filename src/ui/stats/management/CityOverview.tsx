@@ -1,4 +1,4 @@
-import {climateStats, cityBenefits, energyStats, totalCitizens, transportStats, type CongestionStats, type GameState} from '../../../core';
+import {climateStats, cityBenefits, energyStats, modeShares, totalCitizens, transportStats, type CongestionStats, type GameState} from '../../../core';
 import {t} from '../../../i18n/t';
 import {OverviewTile} from './OverviewTile';
 
@@ -34,6 +34,10 @@ export function CityOverview({state, energy, green, climate, transport, congesti
         <button type="button" aria-controls="eco-traffic" data-warning={congestion.index > 1} title={t('eco.congestionHelp')} onClick={onShowTraffic}>
             <span aria-hidden="true">🚗</span>
             <span className="eco-overview-value"><span>{t('eco.congestion')}</span><strong>{(congestion.index * 100).toFixed(0)}<small>%</small></strong></span>
+        </button>
+        <button type="button" aria-controls="eco-traffic" onClick={onShowTraffic}>
+            <span aria-hidden="true">🚶</span>
+            <span className="eco-overview-value"><span>{t('eco.walkShare')}</span><strong>{(modeShares(congestion).walking * 100).toFixed(0)}<small>%</small></strong></span>
         </button>
         <button type="button" aria-controls="eco-transport" onClick={onShowTransport}>
             <span aria-hidden="true">↔</span>

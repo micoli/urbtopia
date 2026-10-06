@@ -5,6 +5,8 @@ import { dividerStrips, tintColor } from './congestionMarkers';
 const TINT_HEIGHT = 0.03;
 const MARKER_HEIGHT = 0.04;
 const TINT_SIZE = 0.9;
+const CROSSING_TINT = 0x3a86ff;
+const CROSSING_TINT_HEIGHT = 0.035;
 const CROSS_LENGTH = 0.7;
 const CROSS_WIDTH = 0.1;
 const DIVIDER_LENGTH = 0.9;
@@ -28,6 +30,7 @@ export class CongestionLayer {
     this.roads = state.roads;
     this.clear();
     this.addTints(stats);
+    this.addCrossingTints(stats);
     this.addCrosses(stats);
     this.addDividers(state);
   }
@@ -55,6 +58,17 @@ export class CongestionLayer {
     saturated.forEach((section, index) => {
       this.place(mesh, index, section.tile.x + 0.5, TINT_HEIGHT, section.tile.y + 0.5, 0, TINT_SIZE, TINT_SIZE);
       mesh.setColorAt(index, new THREE.Color(tintColor(section.ratio)));
+    });
+    this.finish(mesh);
+  }
+
+  private addCrossingTints(stats: CongestionStats): void {
+    const saturated = [...stats.crossings.values()].filter((crossing) => crossing.saturated);
+    if (saturated.length === 0) return;
+    const mesh = this.makeMesh(this.tintMaterial, saturated.length);
+    saturated.forEach((crossing, index) => {
+      this.place(mesh, index, crossing.tile.x + 0.5, CROSSING_TINT_HEIGHT, crossing.tile.y + 0.5, 0, TINT_SIZE, TINT_SIZE);
+      mesh.setColorAt(index, new THREE.Color(CROSSING_TINT));
     });
     this.finish(mesh);
   }
