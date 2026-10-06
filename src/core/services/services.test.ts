@@ -1,6 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { WALKING } from '../traffic/walking';
 import { FACILITIES, facilityCapacity, uncoveredReason, advance, isWithinReach, categoryCoverageRatio, createBuilding, dispatch, homeBenefits, missingServices, newGame, serviceCoverage, type Building, type Command, type GameState } from '../index';
 import { ECOLOGY } from '../environment/ecology';
+
+const walkingEnabled = WALKING.enabled;
+beforeAll(() => {
+  WALKING.enabled = false;
+});
+afterAll(() => {
+  WALKING.enabled = walkingEnabled;
+});
 
 const H = ECOLOGY.hourMs;
 const b = (id: number, type: Building['type'], x: number, y = 0, extra: Partial<Building> = {}) => ({ ...createBuilding(id, type, x + 50, y + 50, 0), ...extra });

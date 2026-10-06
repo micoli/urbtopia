@@ -1,3 +1,4 @@
+import { footprintTiles } from '../buildings/buildingSpecs';
 import type { Building, GameState } from '../engine/state';
 import type { Coord } from './coord';
 import { DIRECTIONS, frontDirection, neighbour, tileKey, type Direction } from './geometry';
@@ -104,6 +105,21 @@ export function accessNodes(state: GameState, graph: PedestrianGraph, building: 
     }
   }
   return nodes;
+}
+
+export function adjacentNodes(graph: PedestrianGraph, building: Building): string[] {
+  const inside = new Set(footprintTiles(building).map(tileKey));
+  const nodes = new Set<string>();
+  for (const tile of footprintTiles(building)) {
+    for (const direction of DIRECTIONS) {
+      const outside = neighbour(tile, direction);
+      if (inside.has(tileKey(outside))) continue;
+      for (const node of [sidewalkNode(outside, OPPOSITE[direction]), sidewalkNode(outside, 'R')]) {
+        if (graph.has(node)) nodes.add(node);
+      }
+    }
+  }
+  return [...nodes].sort();
 }
 
 export function walkFrom(graph: PedestrianGraph, sources: readonly string[], maxCost: number): WalkMap {

@@ -1,6 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { WALKING } from '../traffic/walking';
 import { cityBenefits, createBuilding, dispatch, energyStats, footprintOf, homeBenefits, isCasinoPowered, newGame, poweredCasinoIds, totalCitizens, type Building, type GameState } from '../index';
 import { casinoPower, gamesOfTier, stakeStepsOf } from './casino';
+
+const walkingEnabled = WALKING.enabled;
+beforeAll(() => {
+  WALKING.enabled = false;
+});
+afterAll(() => {
+  WALKING.enabled = walkingEnabled;
+});
 
 const building = (id: number, type: Building['type'], x: number, y = 50, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
 const city = (buildings: Building[], extra: Partial<GameState> = {}): GameState => ({

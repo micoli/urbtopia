@@ -2,12 +2,12 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from './walking';
 import { SHIFT, citizensOf, cityTransportStats, congestionStats, createBuilding, newGame, transportStats, type Building, type GameState } from '../index';
 
-const walkingThreshold = WALKING.workThreshold;
+const walkingEnabled = WALKING.enabled;
 beforeAll(() => {
-  WALKING.workThreshold = 0;
+  WALKING.enabled = false;
 });
 afterAll(() => {
-  WALKING.workThreshold = walkingThreshold;
+  WALKING.enabled = walkingEnabled;
 });
 
 const HOME_TIER = 7;

@@ -1,6 +1,15 @@
 import fc from 'fast-check';
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { WALKING } from '../traffic/walking';
 import { GAME_CONFIG, advance, dispatch, newGame, type Command, type GameState } from '../index';
+
+const walkingEnabled = WALKING.enabled;
+beforeAll(() => {
+  WALKING.enabled = false;
+});
+afterAll(() => {
+  WALKING.enabled = walkingEnabled;
+});
 
 const T0 = 1_700_000_000_000;
 const MINUTE = 60_000;

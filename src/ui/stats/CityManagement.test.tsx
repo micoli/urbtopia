@@ -7,12 +7,12 @@ import { CityManagement } from './CityManagement.tsx';
 import { MinimalStats } from './MinimalStats';
 import { CityStats } from './CityStats';
 
-const walkingThreshold = WALKING.workThreshold;
+const walkingEnabled = WALKING.enabled;
 beforeAll(() => {
-  WALKING.workThreshold = 0;
+  WALKING.enabled = false;
 });
 afterAll(() => {
-  WALKING.workThreshold = walkingThreshold;
+  WALKING.enabled = walkingEnabled;
 });
 
 const context = vi.hoisted(() => ({ state: null as GameState | null, statsOpen: true }));

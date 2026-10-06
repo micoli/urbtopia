@@ -3,12 +3,12 @@ import { WALKING } from './walking';
 import { CONGESTION, advance, congestionPenaltyOf, createBuilding, homeBenefits, newGame, type Building, type GameState } from '../index';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 
-const walkingThreshold = WALKING.workThreshold;
+const walkingEnabled = WALKING.enabled;
 beforeAll(() => {
-  WALKING.workThreshold = 0;
+  WALKING.enabled = false;
 });
 afterAll(() => {
-  WALKING.workThreshold = walkingThreshold;
+  WALKING.enabled = walkingEnabled;
 });
 
 const NOW = 1_700_000_000_000;
