@@ -1,6 +1,6 @@
 # Pedestrian network and walking mode
 
-Status: ready-for-agent
+Status: resolved
 
 Follow-up to [traffic-congestion](../traffic-congestion/spec.md) and [traffic-congestion-followups](../traffic-congestion-followups/spec.md). Vocabulary (**Commute**, **Commuter**, **Lane**, **Road tier**, **Congestion**, **Rider**, **Modal shift**) is in `CONTEXT.md`. Respects [ADR 0011](../../docs/adr/0011-congestion-as-core-model-with-visual-vehicles.md): walking stays an aggregate core model, no individual Citizen journeys; visible pedestrians are a cosmetic projection.
 
