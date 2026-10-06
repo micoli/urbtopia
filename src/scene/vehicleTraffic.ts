@@ -8,6 +8,7 @@ export const NODE_CLEARANCE = 0.45;
 const STOP_BEFORE_NODE = 0.02;
 const TILE_EDGE_PROGRESS = 0.5;
 const STOP_BEFORE_CROSSING = 0.3;
+export const NODE_PATIENCE_SECONDS = 1.5;
 
 export interface BusRun {
   tiles: readonly Coord[];
@@ -19,6 +20,7 @@ export interface TrafficVehicle extends Vehicle {
   id: number;
   lane: number;
   lanes: number;
+  blockedSeconds?: number;
   run?: BusRun;
 }
 
@@ -90,15 +92,23 @@ export function nextRunTile(run: BusRun): Coord {
   return run.tiles[run.index]!;
 }
 
-export function allowedTravel(vehicle: TrafficVehicle, wanted: number, others: readonly TrafficVehicle[], stopTiles: ReadonlySet<string> = NO_STOPS): number {
+export function allowedTravel(vehicle: TrafficVehicle, wanted: number, others: readonly TrafficVehicle[], stopTiles: ReadonlySet<string> = NO_STOPS, deltaSeconds = 0): number {
   let travel = Math.min(wanted, Math.max(0, distanceToLeader(vehicle, others)));
   if (vehicle.progress < TILE_EDGE_PROGRESS && stopTiles.has(tileKey(vehicle.to))) travel = Math.min(travel, Math.max(0, STOP_BEFORE_CROSSING - vehicle.progress));
-  if (vehicle.progress + travel >= 1 && !nodeIsFree(vehicle, others)) travel = Math.min(travel, Math.max(0, 1 - STOP_BEFORE_NODE - vehicle.progress));
-  return travel;
+  if (vehicle.progress + travel < 1) {
+    vehicle.blockedSeconds = 0;
+    return travel;
+  }
+  if (nodeIsFree(vehicle, others) || (vehicle.blockedSeconds ?? 0) >= NODE_PATIENCE_SECONDS) {
+    vehicle.blockedSeconds = 0;
+    return travel;
+  }
+  vehicle.blockedSeconds = (vehicle.blockedSeconds ?? 0) + deltaSeconds;
+  return Math.min(travel, Math.max(0, 1 - STOP_BEFORE_NODE - vehicle.progress));
 }
 
 export function advanceTrafficVehicle(graph: RoadGraph, vehicle: TrafficVehicle, deltaSeconds: number, random: () => number, others: readonly TrafficVehicle[], lanesAt: LanesAt, stopTiles: ReadonlySet<string> = NO_STOPS): boolean {
-  const travel = allowedTravel(vehicle, vehicle.speed * deltaSeconds, others, stopTiles);
+  const travel = allowedTravel(vehicle, vehicle.speed * deltaSeconds, others, stopTiles, deltaSeconds);
   vehicle.progress += travel;
   if (vehicle.progress < 1) return true;
   const previous = vehicle.from;
@@ -109,6 +119,7 @@ export function advanceTrafficVehicle(graph: RoadGraph, vehicle: TrafficVehicle,
   vehicle.progress -= 1;
   vehicle.lanes = lanesAt(vehicle.from);
   vehicle.lane = pickLane(vehicle.from, vehicle.to, vehicle.lanes, vehicle.lane, others.filter((other) => other !== vehicle));
+  vehicle.progress = Math.max(0, Math.min(vehicle.progress, vehicle.progress + distanceToLeader(vehicle, others)));
   return true;
 }
 

@@ -31,11 +31,11 @@ describe('car following', () => {
   });
 
   it('never closes in on a slower leader below the minimum gap', () => {
-    const leader = vehicle(2, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.9, 0, 0.1);
+    const leader = vehicle(2, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.9, 0, 1);
     const follower = vehicle(1, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.1, 0, 5);
     for (let step = 0; step < 50; step++) {
-      advanceTrafficVehicle(row, leader, 0.1, one, [leader, follower], lanesAt);
-      advanceTrafficVehicle(row, follower, 0.1, one, [leader, follower], lanesAt);
+      advanceTrafficVehicle(row, leader, 0.1, one, [leader, follower], () => 1);
+      advanceTrafficVehicle(row, follower, 0.1, one, [leader, follower], () => 1);
       if (leader.from.x === follower.from.x) expect(leader.progress - follower.progress).toBeGreaterThanOrEqual(MIN_GAP - 1e-9);
     }
   });

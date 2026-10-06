@@ -21,7 +21,7 @@ export function startServiceTrip(path: readonly Coord[], id: number, speed: numb
 export function driveServiceTrip(trip: ServiceTrip, deltaSeconds: number, traffic: TrafficContext | null): boolean {
   const { vehicle, path } = trip;
   const wanted = vehicle.speed * deltaSeconds;
-  vehicle.progress += traffic ? allowedTravel(vehicle, wanted, traffic.others, traffic.stopTiles) : wanted;
+  vehicle.progress += traffic ? allowedTravel(vehicle, wanted, traffic.others, traffic.stopTiles, deltaSeconds) : wanted;
   while (vehicle.progress >= 1) {
     vehicle.progress -= 1;
     trip.segment++;
