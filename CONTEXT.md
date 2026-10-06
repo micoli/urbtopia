@@ -137,7 +137,7 @@ The set of Vehicles on the roads, whose size follows Commuters who drive instead
 _Avoid_: Flow, cars
 
 **Commute**:
-The daily journey of a Home's Citizens who do not use public transport, from the Home to the workplaces (Workshop, Factory, Shop, Public facility, Leisure building) by the shortest road path. Commuters fill the nearest workplaces first, up to their Jobs; those who find none do not drive. Modelled per Home in aggregate, never per individual Citizen.
+The daily journey of a Home's Citizens who do not use public transport, from the Home to the workplaces (Workshop, Factory, Shop, Public facility, Leisure building) by the shortest road path. Commuters fill the nearest workplaces first, up to their Jobs; those who find none do not drive, and those whose workplace is within walking distance walk instead of driving. Modelled per Home in aggregate, never per individual Citizen.
 _Avoid_: Individual Citizen journey, Transit itinerary
 
 **Job**:
@@ -151,6 +151,22 @@ _Avoid_: Mode switch, migration, individual journey
 **Commuter**:
 A Citizen who drives on a Commute.
 _Avoid_: Driver, rider (a rider uses public transport)
+
+**Pedestrian path**:
+The route on foot between a Building and a destination, over the sidewalks of the roads. Sidewalks are implicit on every Road tile and have two sides; a road is crossed only at a Crossing or around a dead end. Its length counts tiles walked plus a cost per Crossing crossed.
+_Avoid_: Footpath, pavement, pedestrian way
+
+**Sidewalk side**:
+One of the two edges of a Road tile along which Citizens walk. The two sides of a straight tile are joined only by a Crossing.
+_Avoid_: Pavement, kerb
+
+**Walking trip**:
+A trip on foot from a Home to a shop, school, health, culture, casino or park within walking distance. It adds no car demand, gives Well-being, and loads the Crossings it uses. Modelled per Home in aggregate.
+_Avoid_: Stroll, individual journey
+
+**Crossing**:
+A straight Road tile where pedestrians can cross the road. The more pedestrians use it, the less capacity the road keeps for cars.
+_Avoid_: Zebra, pedestrian crossing, crosswalk
 
 **Lane**:
 A traffic channel of a Road in one direction. The number of Lanes comes from the Road's Tier and sets its capacity.

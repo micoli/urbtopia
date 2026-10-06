@@ -13,6 +13,7 @@ import { ModelLibrary } from './modelLibrary';
 import { facilityFootprint, modelOfBuilding, renderItemsOf, type HarvestedTile } from './renderItems';
 import { ServiceVehicleLayer } from './ServiceVehicleLayer';
 import { CongestionLayer } from './CongestionLayer';
+import { PedestrianLayer } from './PedestrianLayer';
 import { TrafficLayer } from './TrafficLayer';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
@@ -50,6 +51,7 @@ export class GameScene {
   private ecologicalState: GameState | null = null;
   private congestion = new CongestionLayer();
   private traffic = new TrafficLayer(this.library);
+  private pedestrians = new PedestrianLayer();
   private serviceVehicles = new ServiceVehicleLayer(this.library);
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -86,7 +88,7 @@ export class GameScene {
     this.scene.background = new THREE.Color(0x9ec5e8);
     const sun = new THREE.DirectionalLight(0xffffff, 2.2);
     sun.position.set(20, 40, 10);
-    this.scene.add(sun, new THREE.AmbientLight(0xffffff, 1.2), this.buildGround(), this.parcels, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.serviceVehicles.root, this.selectionLayer.root, this.ghostLayer.root);
+    this.scene.add(sun, new THREE.AmbientLight(0xffffff, 1.2), this.buildGround(), this.parcels, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.selectionLayer.root, this.ghostLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.controller.onTap = (clientX, clientY, shiftKey) =>
@@ -124,6 +126,7 @@ export class GameScene {
 
   setTrafficEnabled(enabled: boolean): void {
     this.traffic.setEnabled(enabled);
+    this.pedestrians.setEnabled(enabled);
     this.serviceVehicles.setEnabled(enabled);
   }
 
@@ -186,6 +189,7 @@ export class GameScene {
     this.selectionLayer.dispose();
     this.congestion.dispose();
     this.traffic.dispose();
+    this.pedestrians.dispose();
     this.serviceVehicles.dispose();
     this.ecologyLayer.dispose();
     this.renderer.dispose();
@@ -205,6 +209,7 @@ export class GameScene {
         this.syncParcels(state);
         this.congestion.sync(state);
         this.traffic.sync(state);
+    this.pedestrians.sync(state);
         this.serviceVehicles.sync(state);
         this.markReady();
       }
@@ -299,6 +304,8 @@ export class GameScene {
     this.notifyCenterTile();
     this.ecologyLayer.update(delta);
     this.traffic.priorityTiles = this.ecologyLayer.transit.priorityTiles;
+    this.pedestrians.update(delta);
+    this.traffic.stopTiles = this.pedestrians.crossingTiles;
     this.traffic.update(delta, this.controller.camera);
     this.serviceVehicles.update(delta);
     this.renderer.render(this.scene, this.controller.camera);

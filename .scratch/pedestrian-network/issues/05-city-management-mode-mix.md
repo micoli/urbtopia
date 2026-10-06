@@ -16,10 +16,10 @@ Show the three-way mix and the walking information in City Management.
 - [x] Consistency with Riders and Modal shift figures (a Rider is never a walker)
 - [x] FR/EN strings, one React component per file
 - [x] Component tests in `CityManagement.test.tsx` style: presence, FR/EN, no `NaN` or `undefined`
-- [ ] Checked by eye in the dev server (not done: tests only)
+- [x] Checked by eye in the dev server (Traffic section in French; Crossing tint not observed)
 
 ## Comments
 
 ## Answer
 
-`ModeMix` (car / public transport / walking in %, from `modeShares`) and `WalkingSummary` (walkers, saturated Crossings, trips per destination type, help text) in the Traffic section; overview tile with the walking share linking to it; `CongestionLayer` tints saturated Crossings blue. FR/EN strings `eco.walk*`. Test in `CityManagement.test.tsx`. Visual check in the dev server still to do.
+`ModeMix` (car / public transport / walking in %, from `modeShares`) and `WalkingSummary` (walkers, saturated Crossings, trips per destination type, help text) in the Traffic section; overview tile with the walking share linking to it; `CongestionLayer` tints saturated Crossings blue. FR/EN strings `eco.walk*`. Test in `CityManagement.test.tsx`.

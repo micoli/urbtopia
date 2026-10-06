@@ -91,3 +91,14 @@ describe('lanes and spawning', () => {
     }
   });
 });
+
+describe('stopping for pedestrians', () => {
+  it('holds a vehicle before a tile where pedestrians are crossing', () => {
+    const car = vehicle(1, { x: 0, y: 5 }, { x: 1, y: 5 }, 0.5, 0, 4);
+    advanceTrafficVehicle(row, car, 1, one, [car], lanesAt, new Set(['1,5']));
+    expect(car.from).toEqual({ x: 0, y: 5 });
+    expect(car.progress).toBeLessThan(1);
+    advanceTrafficVehicle(row, car, 1, one, [car], lanesAt);
+    expect(car.from).toEqual({ x: 1, y: 5 });
+  });
+});

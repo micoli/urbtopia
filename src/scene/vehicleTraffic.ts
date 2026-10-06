@@ -65,10 +65,12 @@ export function startTrafficVehicle(graph: RoadGraph, tile: Coord, id: number, m
   return { id, model, speed, from: tile, to, heading: directionOf(tile, to), progress: random(), lane: Math.floor(random() * lanes), lanes };
 }
 
-export function advanceTrafficVehicle(graph: RoadGraph, vehicle: TrafficVehicle, deltaSeconds: number, random: () => number, others: readonly TrafficVehicle[], lanesAt: LanesAt): boolean {
+const NO_STOPS: ReadonlySet<string> = new Set();
+
+export function advanceTrafficVehicle(graph: RoadGraph, vehicle: TrafficVehicle, deltaSeconds: number, random: () => number, others: readonly TrafficVehicle[], lanesAt: LanesAt, stopTiles: ReadonlySet<string> = NO_STOPS): boolean {
   const room = Math.max(0, distanceToLeader(vehicle, others));
   let travel = Math.min(vehicle.speed * deltaSeconds, room);
-  if (vehicle.progress + travel >= 1 && !nodeIsFree(vehicle, others)) travel = Math.min(travel, Math.max(0, 1 - STOP_BEFORE_NODE - vehicle.progress));
+  if (vehicle.progress + travel >= 1 && (stopTiles.has(tileKey(vehicle.to)) || !nodeIsFree(vehicle, others))) travel = Math.min(travel, Math.max(0, 1 - STOP_BEFORE_NODE - vehicle.progress));
   vehicle.progress += travel;
   if (vehicle.progress < 1) return true;
   const previous = vehicle.from;
