@@ -306,6 +306,9 @@ export class GameScene {
     this.traffic.priorityTiles = this.ecologyLayer.transit.priorityTiles;
     this.pedestrians.update(delta);
     this.traffic.stopTiles = this.pedestrians.crossingTiles;
+    this.serviceVehicles.trafficVehicles = this.traffic.vehicleList;
+    this.serviceVehicles.stopTiles = new Set([...this.pedestrians.crossingTiles, ...this.ecologyLayer.transit.priorityTiles]);
+    this.traffic.externalVehicles = this.serviceVehicles.followingVehicles;
     this.traffic.update(delta, this.controller.camera);
     this.serviceVehicles.update(delta);
     this.renderer.render(this.scene, this.controller.camera);

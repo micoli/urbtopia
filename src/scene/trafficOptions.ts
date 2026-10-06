@@ -1,0 +1,3 @@
+export const TRAFFIC_OPTIONS = {
+  SERVICE_VEHICLES_FOLLOW_TRAFFIC: false,
+};

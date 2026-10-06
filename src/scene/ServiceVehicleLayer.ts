@@ -3,17 +3,17 @@ import type { Coord, GameState } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { buildRoadGraph, emptyRoadGraph, type RoadGraph } from './roadGraph';
 import { SERVICE_VEHICLE_MODELS, planServiceTrip, sendsServiceVehicles, tripDelaySeconds } from './serviceTrip';
-import { poseOf, type Vehicle } from './vehicleMotion';
+import { driveServiceTrip, startServiceTrip, type ServiceTrip } from './serviceDrive';
+import { TRAFFIC_OPTIONS } from './trafficOptions';
+import { poseOf } from './vehicleMotion';
+import type { TrafficVehicle } from './vehicleTraffic';
 
 const VEHICLE_SCALE = 0.25;
 const ROAD_SURFACE_HEIGHT = 0.02;
 const SPEED = 2.5;
 
-interface Trip {
+interface Trip extends ServiceTrip {
   object: THREE.Object3D;
-  path: Coord[];
-  segment: number;
-  vehicle: Vehicle;
 }
 
 interface Dispatcher {
@@ -32,6 +32,9 @@ export class ServiceVehicleLayer {
   private state: GameState | null = null;
   private enabled = true;
   private ready = false;
+  private tiers: ReadonlyMap<string, number> = new Map();
+  trafficVehicles: readonly TrafficVehicle[] = [];
+  stopTiles: ReadonlySet<string> = new Set();
 
   constructor(private library: ModelLibrary) {
     this.root.visible = false;
@@ -49,6 +52,7 @@ export class ServiceVehicleLayer {
       this.roads = state.roads;
       this.roundabouts = state.roundabouts;
       this.graph = buildRoadGraph(state);
+      this.tiers = new Map(state.roads.map((road) => [`${road.x},${road.y}`, road.tier ?? 1]));
       for (const dispatcher of this.dispatchers.values()) this.cancel(dispatcher);
     }
     const facilities = new Set(state.buildings.filter((building) => sendsServiceVehicles(building.type)).map((building) => building.id));
@@ -89,29 +93,26 @@ export class ServiceVehicleLayer {
     const object = this.library.get(SERVICE_VEHICLE_MODELS[facility.type]).clone(true);
     object.scale.setScalar(VEHICLE_SCALE);
     this.root.add(object);
-    const [from, to] = path as [Coord, Coord];
-    dispatcher.trip = { object, path, segment: 0, vehicle: { model: 0, speed: SPEED, from, to, heading: { x: to.x - from.x, y: to.y - from.y }, progress: 0 } };
+    dispatcher.trip = { ...startServiceTrip(path, -dispatcher.id, SPEED), object };
     this.place(dispatcher.trip);
+  }
+
+  get followingVehicles(): readonly TrafficVehicle[] {
+    if (!TRAFFIC_OPTIONS.SERVICE_VEHICLES_FOLLOW_TRAFFIC) return [];
+    return [...this.dispatchers.values()].flatMap((dispatcher) => (dispatcher.trip ? [dispatcher.trip.vehicle] : []));
   }
 
   private move(dispatcher: Dispatcher, deltaSeconds: number): void {
     const trip = dispatcher.trip!;
-    const { vehicle, path } = trip;
-    vehicle.progress += SPEED * deltaSeconds;
-    while (vehicle.progress >= 1) {
-      vehicle.progress -= 1;
-      trip.segment++;
-      const next = path[trip.segment + 1];
-      if (!next) {
-        this.cancel(dispatcher);
-        return this.rest(dispatcher);
-      }
-      vehicle.heading = { x: path[trip.segment]!.x - vehicle.from.x, y: path[trip.segment]!.y - vehicle.from.y };
-      vehicle.from = path[trip.segment]!;
-      vehicle.to = next;
+    const traffic = TRAFFIC_OPTIONS.SERVICE_VEHICLES_FOLLOW_TRAFFIC ? { others: [...this.trafficVehicles, ...this.followingVehicles], stopTiles: this.stopTiles, lanesAt: this.lanesAt } : null;
+    if (driveServiceTrip(trip, deltaSeconds, traffic)) {
+      this.cancel(dispatcher);
+      return this.rest(dispatcher);
     }
     this.place(trip);
   }
+
+  private lanesAt = (tile: Coord): number => this.tiers.get(`${tile.x},${tile.y}`) ?? 1;
 
   private place(trip: Trip): void {
     const pose = poseOf(trip.vehicle);

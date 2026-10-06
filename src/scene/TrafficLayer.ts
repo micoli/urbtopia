@@ -30,6 +30,10 @@ export class TrafficLayer {
   readonly root = new THREE.Group();
   priorityTiles: ReadonlySet<string> = new Set();
   stopTiles: ReadonlySet<string> = new Set();
+  externalVehicles: readonly TrafficVehicle[] = [];
+  get vehicleList(): readonly TrafficVehicle[] {
+    return this.vehicles;
+  }
   private models: ModelMeshes[] = [];
   private vehicles: TrafficVehicle[] = [];
   private nextVehicleId = 1;
@@ -169,7 +173,8 @@ export class TrafficLayer {
   }
 
   private moveVehicles(deltaSeconds: number): void {
-    this.vehicles = this.vehicles.filter((vehicle) => (vehicle.progress < .5 && this.priorityTiles.has(tileKey(vehicle.to))) || advanceTrafficVehicle(this.graph, vehicle, deltaSeconds, this.random, this.vehicles, this.lanesAt, this.stopTiles));
+    const others = this.externalVehicles.length > 0 ? [...this.vehicles, ...this.externalVehicles] : this.vehicles;
+    this.vehicles = this.vehicles.filter((vehicle) => (vehicle.progress < .5 && this.priorityTiles.has(tileKey(vehicle.to))) || advanceTrafficVehicle(this.graph, vehicle, deltaSeconds, this.random, others, this.lanesAt, this.stopTiles));
   }
 
   private adjustCount(): void {
