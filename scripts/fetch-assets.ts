@@ -12,7 +12,7 @@ async function download(url: string): Promise<Uint8Array> {
 
 try {
   mkdirSync(ARCHIVES_DIR, { recursive: true });
-  for (const pack of ASSET_PACKS) {
+  for (const pack of ASSET_PACKS.filter((candidate) => candidate.url)) {
     console.log(`↓ ${pack.archive}`);
     const archive = await download(pack.url);
     extractPack(archive, pack.files, pack.colormap);

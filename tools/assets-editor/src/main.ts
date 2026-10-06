@@ -214,6 +214,88 @@ async function render() {
 
 const matchesSourceFilter = (p: string) => sourceFilter === 'all' || (sourceOf(p) ?? 'other') === sourceFilter
 
+async function callAssets(operation: string, body: object): Promise<string | null> {
+  const response = await fetch(`/api/assets/${operation}`, { method: 'POST', body: JSON.stringify(body) })
+  if (response.ok) return null
+  return ((await response.json()) as { error: string }).error
+}
+
+const base64Of = async (file: File) => {
+  const bytes = new Uint8Array(await file.arrayBuffer())
+  let binary = ''
+  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
+  return btoa(binary)
+}
+
+const slugOf = (name: string) => name.toLowerCase().replace(/\.[^.]+$/, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+
+const ADD_MODES = ['glb (hand-made)', 'poly.pizza', 'zip (kenney)', 'zip (quaternius)'] as const
+
+function openAddDialog() {
+  const dialog = document.createElement('dialog')
+  const form = document.createElement('div')
+  form.className = 'add-form'
+  let mode: (typeof ADD_MODES)[number] = ADD_MODES[0]
+  const fields: Record<string, HTMLInputElement> = {}
+  const status = document.createElement('div')
+  const field = (name: string, label: string, type = 'text') => {
+    const input = document.createElement('input')
+    input.type = type
+    fields[name] = input
+    const row = document.createElement('div')
+    row.className = 'row'
+    row.append(label + ': ', input)
+    return row
+  }
+  const rows: Record<string, HTMLElement> = {
+    file: field('file', 'file', 'file'),
+    category: field('category', 'category (folder)'),
+    name: field('name', 'name'),
+    input: field('input', 'poly.pizza URL or id'),
+    license: field('license', 'license (required)'),
+    author: field('author', 'author'),
+    url: field('url', 'source url'),
+    note: field('note', 'note'),
+  }
+  const visible: Record<(typeof ADD_MODES)[number], string[]> = {
+    'glb (hand-made)': ['file', 'category', 'name', 'license', 'author', 'url', 'note'],
+    'poly.pizza': ['input', 'license'],
+    'zip (kenney)': ['file', 'name'],
+    'zip (quaternius)': ['file', 'name'],
+  }
+  const refresh = () => { for (const [name, row] of Object.entries(rows)) row.hidden = !visible[mode].includes(name) }
+  const select = document.createElement('select')
+  for (const m of ADD_MODES) select.add(new Option(m, m))
+  select.onchange = () => { mode = select.value as typeof mode; refresh() }
+  fields.file!.onchange = () => {
+    const file = fields.file!.files?.[0]
+    if (file && !fields.name!.value) fields.name!.value = slugOf(file.name)
+  }
+  const submit = document.createElement('button')
+  submit.textContent = 'add'
+  submit.onclick = async () => {
+    status.textContent = 'working...'
+    const file = fields.file!.files?.[0]
+    const value = (name: string) => fields[name]!.value.trim()
+    const dataBase64 = file ? await base64Of(file) : ''
+    const error = mode === 'poly.pizza'
+      ? await callAssets('add-poly', { input: value('input'), license: value('license') })
+      : mode === 'glb (hand-made)'
+        ? await callAssets('add-glb', { category: value('category'), name: value('name'), dataBase64, license: value('license'), author: value('author'), url: value('url'), note: value('note') })
+        : await callAssets('add-pack', { kind: mode === 'zip (kenney)' ? 'kenney' : 'quaternius', name: value('name'), archive: file?.name ?? '', dataBase64 })
+    if (error) { status.textContent = error; return }
+    location.reload()
+  }
+  const cancel = document.createElement('button')
+  cancel.textContent = 'cancel'
+  cancel.onclick = () => dialog.remove()
+  form.append(select, ...Object.values(rows), submit, cancel, status)
+  dialog.appendChild(form)
+  document.body.appendChild(dialog)
+  refresh()
+  dialog.showModal()
+}
+
 function renderBar() {
   const bar = document.getElementById('bar')!
   bar.innerHTML = ''
@@ -241,6 +323,10 @@ function renderBar() {
   ov.textContent = overview ? 'single' : 'overview (all in pack)'
   ov.onclick = () => { overview = !overview; renderBar(); render() }
   bar.appendChild(ov)
+  const add = document.createElement('button')
+  add.textContent = '+ add asset'
+  add.onclick = openAddDialog
+  bar.appendChild(add)
   const r = document.createElement('button')
   r.textContent = 'rotate 90 (game rotation)'
   r.onclick = () => { rot = (rot + 1) % 4; render() }
@@ -412,6 +498,18 @@ function renderSide() {
   remove.textContent = 'remove definition (use computed defaults)'
   remove.onclick = () => { delete definitions[definitionKey(pack, current)]; void persist().then(render) }
   side.appendChild(remove)
+  const removable = sourceOf(pack) === 'managed' || sourceOf(pack) === 'poly.pizza'
+  if (removable) {
+    const del = document.createElement('button')
+    del.textContent = 'delete this asset'
+    del.onclick = async () => {
+      if (!confirm(`Delete ${definitionKey(pack, current)} from assets/?`)) return
+      const error = await callAssets('remove', { key: definitionKey(pack, current), usedKeys: [...usedInGame] })
+      if (error) { saveMessage = error; renderSide(); return }
+      location.reload()
+    }
+    side.appendChild(del)
+  }
   const status = document.createElement('div')
   status.textContent = saveMessage
   side.appendChild(status)

@@ -1,6 +1,6 @@
 # models.json and game reads
 
-Status: ready-for-agent
+Status: resolved
 Spec: [assets-editor](../spec.md)
 Blocked by: 01
 

@@ -82,3 +82,28 @@ export async function fetchPolyPizzaList(listId: string, targetDir: string): Pro
   }
   return assets.length;
 }
+
+export const publicIdOf = (input: string): string => {
+  const id = input.trim().match(/poly\.pizza\/m\/([A-Za-z0-9_-]+)/)?.[1] ?? input.trim();
+  if (!/^[A-Za-z0-9_-]+$/.test(id)) throw new Error(`Not a Poly Pizza URL or id: ${input}`);
+  return id;
+};
+
+export interface PolyPizzaModel {
+  slug: string;
+  title: string;
+  author: string;
+  url: string;
+  glb: Uint8Array;
+}
+
+// The model page does not expose its licence in static HTML, so the caller supplies it.
+export async function fetchPolyPizzaModel(input: string, download: (url: string) => Promise<Response> = get): Promise<PolyPizzaModel> {
+  const publicID = publicIdOf(input);
+  const html = await (await download(`${SITE}/m/${publicID}`)).text();
+  const resourceId = html.match(/"ResourceID":"([^"]+)"/)?.[1] ?? html.match(/static\.poly\.pizza\/([0-9a-f-]{36})\.glb/)?.[1];
+  if (!resourceId) throw new Error(`No model file found on ${SITE}/m/${publicID}`);
+  const [, title = publicID, author = 'unknown'] = html.match(/og:title" content="(.+?) - Free (?:3D )?Model By (.+?)"/) ?? [];
+  const glb = new Uint8Array(await (await download(`${STATIC}/${resourceId}.glb`)).arrayBuffer());
+  return { slug: slugify(title), title, author, url: `${SITE}/m/${publicID}`, glb };
+}

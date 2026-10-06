@@ -1,6 +1,7 @@
 import { NATURE_MODELS } from '../src/core/environment/nature.ts';
 import { CROP_IDS } from '../src/core/farming/crops.ts';
 import { cropModelsOf } from '../src/scene/cropModels.ts';
+import { existsSync, readFileSync } from 'node:fs';
 import type { QuaterniusPack } from './quaternius.ts';
 
 const natureFiles = (pack: string) => NATURE_MODELS.filter(([, model]) => model.startsWith(`${pack}/`)).map(([, model]) => model.slice(pack.length + 1));
@@ -17,6 +18,18 @@ export interface AssetPack {
 // Kenney asset packs (CC0). The original archives are versioned in ARCHIVES_DIR, so installing and building never
 // need the network. The URLs are only used by `npm run assets:fetch` to refresh them: they contain a hash that
 // changes with each Kenney release, copy the new link from the pack page on https://kenney.nl/assets when it fails.
+export const EXTRA_PACKS_FILE = 'assets/extra-packs.json';
+
+export interface ExtraPacks {
+  kenney: { name: string; archive: string; colormap: boolean }[];
+  quaternius: { name: string; archive: string }[];
+}
+
+// Packs added with tools/assets-editor: the archive is listed for browsing, none of its models is installed for the game.
+export const readExtraPacks = (file = EXTRA_PACKS_FILE): ExtraPacks => (existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : { kenney: [], quaternius: [] });
+
+const extraPacks = readExtraPacks();
+
 export const ASSET_PACKS: AssetPack[] = [
   {
     name: 'roads',
@@ -103,6 +116,7 @@ export const ASSET_PACKS: AssetPack[] = [
     archive: 'kenney_train-kit.zip',
     files: ['train-electric-subway-a', 'railroad-straight', 'railroad-corner-small', 'train-electric-city-a', 'train-electric-city-b', 'train-electric-city-c', 'train-locomotive-a', 'train-locomotive-passenger-a'],
   },
+  ...extraPacks.kenney.map(({ name, archive, colormap }) => ({ name, url: '', archive, files: [], colormap })),
 ];
 
 // Quaternius packs (CC0) ship FBX only: they are converted to GLB at install time so the runtime keeps one GLTF loader.
@@ -110,6 +124,7 @@ export const QUATERNIUS_PACKS: QuaterniusPack[] = [
   { name: 'crops', archive: 'crops.zip', files: CROP_IDS.flatMap((species) => cropModelsOf(species)).map((model) => model.slice('crops/'.length)) },
   { name: 'farm', archive: 'farm-buildings.zip', files: ['Barn', 'OpenBarn', 'Silo_House', 'Silo'] },
   { name: 'buildings', archive: 'buildings.zip', files: ['2Story_Stairs_Mat', '2Story_Wide_Mat', '2Story_Wide_2Doors_Mat'] },
+  ...extraPacks.quaternius.map(({ name, archive }) => ({ name, archive, files: [] })),
 ];
 
 export const QUATERNIUS_ARCHIVES_DIR = 'assets/quaternus';

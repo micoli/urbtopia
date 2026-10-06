@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -5,6 +6,8 @@ import { defineConfig, type Plugin } from 'vite'
 import { ASSET_PACKS, MANAGED_MODELS_DIR, POLY_PIZZA_DIR } from '../../scripts/assetPacks.ts'
 import { managedModelKeys } from '../../scripts/managedModels.ts'
 import { readModels, writeModels } from '../../scripts/modelsFile.ts'
+import { addGlb, addPack, addPolyPizzaModel, removeModel } from '../../scripts/assetOperations.ts'
+import { fetchPolyPizzaModel } from '../../scripts/polyPizza.ts'
 
 const publicDir = join(dirname(fileURLToPath(import.meta.url)), 'public')
 
@@ -92,4 +95,38 @@ const modelsApi = (): Plugin => ({
   },
 })
 
-export default defineConfig({ root: dirname(fileURLToPath(import.meta.url)), plugins: [liveMiscellaneous(), liveSources(), modelsApi()], server: { fs: { allow: ['../..'] }, watch: { ignored: ['**/assets/models.json'] } } })
+const bytesOf = (base64: string) => new Uint8Array(Buffer.from(base64, 'base64'))
+
+type Operation = (body: any) => Promise<unknown> | unknown
+
+const OPERATIONS: Record<string, Operation> = {
+  'add-glb': ({ dataBase64, ...input }) => addGlb({ ...input, data: bytesOf(dataBase64) }),
+  'add-poly': async ({ input, license }) => addPolyPizzaModel(await fetchPolyPizzaModel(input), license),
+  'add-pack': ({ dataBase64, ...input }) => addPack({ ...input, data: bytesOf(dataBase64) }),
+  remove: ({ key, usedKeys }) => removeModel(key, usedKeys),
+}
+
+// Operations change the sources, so the game's generated public/models is refreshed afterwards.
+const assetOperationsApi = (): Plugin => ({
+  name: 'asset-operations-api',
+  configureServer(server) {
+    server.middlewares.use('/api/assets', async (req, res) => {
+      res.setHeader('Content-Type', 'application/json')
+      const operation = OPERATIONS[(req.url ?? '').replace(/^\//, '')]
+      if (req.method !== 'POST' || !operation) {
+        res.statusCode = 404
+        return res.end(JSON.stringify({ error: 'unknown operation' }))
+      }
+      try {
+        const result = await operation(JSON.parse(await readBody(req)))
+        execFileSync('node', ['scripts/install-assets.ts'], { stdio: 'ignore' })
+        res.end(JSON.stringify({ ok: true, result }))
+      } catch (error) {
+        res.statusCode = 400
+        res.end(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }))
+      }
+    })
+  },
+})
+
+export default defineConfig({ root: dirname(fileURLToPath(import.meta.url)), plugins: [liveMiscellaneous(), liveSources(), modelsApi(), assetOperationsApi()], server: { fs: { allow: ['../..'] }, watch: { ignored: ['**/assets/models.json'] } } })

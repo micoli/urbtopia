@@ -1,6 +1,6 @@
 # Editor edits models.json across all sources
 
-Status: ready-for-agent
+Status: resolved
 Spec: [assets-editor](../spec.md)
 Blocked by: 02
 
