@@ -1,206 +1,206 @@
 {
   "commercial/building-a": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "commercial/building-b": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "commercial/building-c": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "commercial/building-d": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "commercial/building-e": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "commercial/building-f": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "commercial/building-g": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "commercial/building-h": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "commercial/building-i": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
     ],
-    "source": "kenney",
-    "license": "CC0",
     "note": "catalog suggested x1.5 to fill 2x2; the game scales facilities from their footprint instead"
   },
   "commercial/building-k": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "commercial/building-l": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
     ],
-    "source": "kenney",
-    "license": "CC0",
     "note": "catalog suggested x1.5 to fill 2x2; the game scales facilities from their footprint instead"
   },
   "commercial/building-m": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
     ],
-    "source": "kenney",
-    "license": "CC0",
     "note": "catalog suggested x1.5 to fill 2x2; the game scales facilities from their footprint instead"
   },
   "commercial/building-skyscraper-a": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "commercial/building-skyscraper-b": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "commercial/building-skyscraper-c": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "commercial/building-skyscraper-d": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "commercial/building-skyscraper-e": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-a": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-b": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-c": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-d": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-e": {
-    "footprint": [
-      2,
-      2
-    ],
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "industrial/building-f": {
-    "footprint": [
-      2,
-      2
-    ],
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "industrial/building-g": {
-    "footprint": [
-      2,
-      2
-    ],
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "industrial/building-h": {
-    "footprint": [
-      2,
-      2
-    ],
     "source": "kenney",
     "license": "CC0",
+    "footprint": [
+      2,
+      2
+    ]
+  },
+  "industrial/building-f": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      2,
+      2
+    ]
+  },
+  "industrial/building-g": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      2,
+      2
+    ]
+  },
+  "industrial/building-h": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      2,
+      2
+    ],
     "scale": 1.45,
     "center": [
       -0.58,
@@ -208,1636 +208,1636 @@
     ]
   },
   "industrial/building-i": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-j": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-k": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-l": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-m": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-n": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-o": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-p": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-q": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-r": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       3,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-s": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/building-t": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/solar-panel-landscape-group": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/solar-panel-portrait-group": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "industrial/water-tower": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
     ],
-    "bakeNodeScale": true,
-    "source": "kenney",
-    "license": "CC0"
+    "bakeNodeScale": true
   },
   "industrial/windmill": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "nature/cactus_short": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.7,
-      "height": 1.0
-    },
-    "source": "kenney",
-    "license": "CC0"
+      "height": 1
+    }
   },
   "nature/cactus_tall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.7,
-      "height": 1.0
-    },
-    "source": "kenney",
-    "license": "CC0"
+      "height": 1
+    }
   },
   "nature/flower_purpleA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/flower_purpleB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/flower_purpleC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/flower_redA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/flower_redB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/flower_redC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/flower_yellowA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/flower_yellowB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/flower_yellowC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/grass": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 0.35
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/grass_large": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 0.35
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/grass_leafs": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 0.35
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/grass_leafsLarge": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 0.35
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/ground_grass": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 0.35
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/lily_large": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/lily_small": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/log": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/log_large": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/log_stack": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/log_stackLarge": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/mushroom_red": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/mushroom_redGroup": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/mushroom_redTall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/mushroom_tan": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/mushroom_tanGroup": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/mushroom_tanTall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/plant_bush": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.7,
-      "height": 1.0
-    },
-    "source": "kenney",
-    "license": "CC0"
+      "height": 1
+    }
   },
   "nature/plant_bushLarge": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.7,
-      "height": 1.0
-    },
-    "source": "kenney",
-    "license": "CC0"
+      "height": 1
+    }
   },
   "nature/plant_bushLargeTriangle": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.7,
-      "height": 1.0
-    },
-    "source": "kenney",
-    "license": "CC0"
+      "height": 1
+    }
   },
   "nature/plant_bushSmall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.7,
-      "height": 1.0
-    },
-    "source": "kenney",
-    "license": "CC0"
+      "height": 1
+    }
   },
   "nature/plant_bushTriangle": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.7,
-      "height": 1.0
-    },
-    "source": "kenney",
-    "license": "CC0"
+      "height": 1
+    }
   },
   "nature/plant_flatShort": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.7,
-      "height": 1.0
-    },
-    "source": "kenney",
-    "license": "CC0"
+      "height": 1
+    }
   },
   "nature/plant_flatTall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.7,
-      "height": 1.0
-    },
-    "source": "kenney",
-    "license": "CC0"
+      "height": 1
+    }
   },
   "nature/rock_largeA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_largeB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_largeC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_largeD": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_largeE": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_largeF": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallD": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallE": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallF": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallFlatA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallFlatB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallFlatC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallG": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallH": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallI": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallTopA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_smallTopB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_tallA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_tallB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_tallC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_tallD": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_tallE": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_tallF": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_tallG": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_tallH": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_tallI": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/rock_tallJ": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/statue_column": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/statue_head": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/statue_obelisk": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/statue_ring": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_largeA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_largeB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_largeC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_largeD": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_largeE": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_largeF": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallD": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallE": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallF": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallFlatA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallFlatB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallFlatC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallG": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallH": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallI": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallTopA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_smallTopB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_tallA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_tallB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_tallC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_tallD": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_tallE": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_tallF": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_tallG": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_tallH": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_tallI": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stone_tallJ": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stump_old": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stump_oldTall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stump_round": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/stump_square": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tent_detailedClosed": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tent_detailedOpen": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_blocks": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_blocks_dark": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_blocks_fall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_cone": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_cone_dark": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_cone_fall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_default": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_default_dark": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_default_fall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_fat": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_fat_darkh": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_fat_fall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_oak": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_oak_dark": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_oak_fall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_palm": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_palmBend": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_palmShort": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_palmTall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineDefaultA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineDefaultB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineGroundA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineGroundB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineRoundA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineRoundB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineRoundC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineRoundD": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineRoundE": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineRoundF": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineSmallA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineSmallB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineSmallC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineSmallD": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineTallA": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineTallB": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineTallC": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_pineTallD": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_plateau": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_plateau_dark": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_plateau_fall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_simple": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_simple_dark": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_simple_fall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_small": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_small_dark": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_small_fall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_tall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_tall_dark": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_tall_fall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_thin": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_thin_dark": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "nature/tree_thin_fall": {
+    "source": "kenney",
+    "license": "CC0",
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "source": "kenney",
-    "license": "CC0"
+    }
   },
   "roads/road-bend": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "roads/road-crossing": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "roads/road-crossroad": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "roads/road-end": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "roads/road-intersection": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "roads/road-roundabout": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       3,
       3
     ],
-    "note": "exits assumed at the middle of each side; to verify",
-    "source": "kenney",
-    "license": "CC0"
+    "note": "exits assumed at the middle of each side; to verify"
   },
   "roads/road-square": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "roads/road-straight": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "sport/athletics-stadium": {
     "source": "managed",
     "license": "Own work"
   },
   "suburban/building-type-a": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-b": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-c": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-d": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-e": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-f": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-g": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
     ],
-    "note": "bbox 1.45x1.18: overridden to 2x1 (rule gives 2x2)",
-    "source": "kenney",
-    "license": "CC0"
+    "note": "bbox 1.45x1.18: overridden to 2x1 (rule gives 2x2)"
   },
   "suburban/building-type-h": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-i": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-j": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-k": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-l": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-m": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-n": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-o": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-p": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-q": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-r": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       1,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-s": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-t": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       2
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/building-type-u": {
+    "source": "kenney",
+    "license": "CC0",
     "footprint": [
       2,
       1
-    ],
-    "source": "kenney",
-    "license": "CC0"
+    ]
   },
   "suburban/tree-large": {
-    "scale": 1.5,
     "source": "kenney",
-    "license": "CC0"
+    "license": "CC0",
+    "scale": 1.5
   },
   "suburban/tree-small": {
-    "scale": 1.5,
     "source": "kenney",
-    "license": "CC0"
+    "license": "CC0",
+    "scale": 1.5
   }
 }

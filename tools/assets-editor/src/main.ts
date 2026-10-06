@@ -1,4 +1,4 @@
-// PROTOTYPE (throwaway): verify Kenney piece orientation, footprint, roles. Not production code.
+// Assets editor: browse every model source and edit assets/models.json (Model definitions).
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
@@ -7,21 +7,26 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js'
 import { ThreeMFLoader } from 'three/examples/jsm/loaders/3MFLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { MODEL_KEYS } from '../../../src/scene/renderItems'
+import { ModelLibrary } from '../../../src/scene/modelLibrary'
+import type { ModelDefinition, ModelSource } from '../../../src/scene/modelDefinitions'
 
 const PACKS: Record<string, string[]> = {}
 const manifest: Record<string, string[]> = await (await fetch('/manifest.json')).json()
 Object.assign(PACKS, manifest)
 
-type Dir = '+X' | '-X' | '+Z' | '-Z'
-const DIRS: Dir[] = ['+X', '-X', '+Z', '-Z']
-const ROLES = ['unassigned', 'road', 'road-prop', 'workshop', 'factory', 'shop', 'storehouse', 'home', 'power-plant', 'water-tower', 'market', 'decor', 'skip']
-interface Note { front?: Dir | 'none'; role?: string; exits?: Dir[]; fw?: number; fd?: number; comment?: string }
+const sourceOfPack: Record<string, ModelSource | undefined> = await (await fetch('/api/packs')).json()
+const definitions: Record<string, ModelDefinition> = await (await fetch('/api/models')).json()
+const library = new ModelLibrary()
+
 interface Info { size: THREE.Vector3; min: THREE.Vector3; max: THREE.Vector3; tris: number; meshes: number; nodeScaled: boolean }
 
-const KEY = 'asset-viewer-notes'
-const notes: Record<string, Note> = JSON.parse(localStorage.getItem(KEY) ?? '{}')
-const save = () => localStorage.setItem(KEY, JSON.stringify(notes))
+// Quaternius FBX packs are listed as quaternius-<pack> but the game keys them <pack>/<name>.
+const definitionKey = (p: string, n: string) => (isFbxPack(p) ? `${p.slice('quaternius-'.length)}/${n}` : `${p}/${n}`)
+const sourceOf = (p: string): ModelSource | undefined => (isFbxPack(p) ? 'quaternius' : sourceOfPack[p])
+const definitionOf = (p: string, n: string) => definitions[definitionKey(p, n)]
 const usedInGame = new Set(MODEL_KEYS)
+let sourceFilter = 'all'
+let saveMessage = ''
 const infos: Record<string, Info> = {}
 const cache: Record<string, THREE.Object3D> = {}
 
@@ -37,7 +42,7 @@ const assets = Object.entries(PACKS).flatMap(([pack, names]) => names.map(name =
 function visibleAssets() {
   const query = globalSearch.trim().toLowerCase()
   const filter = listSearch.trim().toLowerCase()
-  return assets.filter(asset => (query ? key(asset.pack, asset.name).toLowerCase().includes(query) : asset.pack === pack)
+  return assets.filter(asset => (query ? matchesSourceFilter(asset.pack) && key(asset.pack, asset.name).toLowerCase().includes(query) : asset.pack === pack)
     && asset.name.toLowerCase().includes(filter))
 }
 
@@ -147,12 +152,8 @@ function arrow(dir: THREE.Vector3, color: number, len = 0.8) {
 
 function footprint(p: string, n: string) {
   const i = infos[key(p, n)]
-  const nt = notes[key(p, n)] ?? {}
-  return { w: nt.fw ?? Math.max(1, Math.ceil(i.size.x - 0.15)), d: nt.fd ?? Math.max(1, Math.ceil(i.size.z - 0.15)) }
-}
-
-function dirVec(d: Dir) {
-  return new THREE.Vector3(d === '+X' ? 1 : d === '-X' ? -1 : 0, 0, d === '+Z' ? 1 : d === '-Z' ? -1 : 0)
+  const fixed = definitionOf(p, n)?.footprint
+  return { w: fixed?.[0] ?? Math.max(1, Math.ceil(i.size.x - 0.15)), d: fixed?.[1] ?? Math.max(1, Math.ceil(i.size.z - 0.15)) }
 }
 
 async function place(p: string, n: string, at: THREE.Vector3, rotY: number, withGrid: boolean, version?: number) {
@@ -160,9 +161,15 @@ async function place(p: string, n: string, at: THREE.Vector3, rotY: number, with
   g.userData.name = n
   const model = (await load(p, n)).clone(true)
   if (version !== undefined && version !== renderVersion) return
+  const recolor = definitionOf(p, n)?.recolor
+  if (recolor && /^#[0-9a-f]{6}$/i.test(recolor.color)) {
+    model.traverse((o) => {
+      const mesh = o as THREE.Mesh
+      if (mesh.isMesh) mesh.material = library.withRecolor(mesh.material, Number.parseInt(recolor.color.slice(1), 16))
+    })
+  }
   g.add(model)
   const { w, d } = footprint(p, n)
-  const nt = notes[key(p, n)] ?? {}
   const fp = new THREE.Mesh(
     new THREE.PlaneGeometry(w, d),
     new THREE.MeshBasicMaterial({ color: 0xffee88, transparent: true, opacity: 0.55, side: THREE.DoubleSide }),
@@ -181,16 +188,6 @@ async function place(p: string, n: string, at: THREE.Vector3, rotY: number, with
   }
   g.add(arrow(new THREE.Vector3(1, 0, 0), 0xff2222))
   g.add(arrow(new THREE.Vector3(0, 0, 1), 0x2244ff))
-  if (nt.front && nt.front !== 'none') {
-    const f = arrow(dirVec(nt.front), 0x00aa00, 1.2)
-    f.position.y = 0.4
-    g.add(f)
-  }
-  for (const e of nt.exits ?? []) {
-    const m = new THREE.Mesh(new THREE.SphereGeometry(0.08), new THREE.MeshBasicMaterial({ color: 0xff00ff }))
-    m.position.copy(dirVec(e).multiplyScalar(0.5)).setY(0.1)
-    g.add(m)
-  }
   g.position.copy(at)
   g.rotation.y = rotY
   stage.add(g)
@@ -215,6 +212,8 @@ async function render() {
   renderList()
 }
 
+const matchesSourceFilter = (p: string) => sourceFilter === 'all' || (sourceOf(p) ?? 'other') === sourceFilter
+
 function renderBar() {
   const bar = document.getElementById('bar')!
   bar.innerHTML = ''
@@ -226,7 +225,12 @@ function renderBar() {
   search.value = globalSearch
   search.oninput = () => { globalSearch = search.value; renderList() }
   bar.appendChild(search)
-  for (const p of Object.keys(PACKS)) {
+  const filter = document.createElement('select')
+  filter.setAttribute('aria-label', 'Source')
+  for (const source of ['all', 'kenney', 'quaternius', 'managed', 'poly.pizza', 'other']) filter.add(new Option(source, source, false, source === sourceFilter))
+  filter.onchange = () => { sourceFilter = filter.value; renderBar() }
+  bar.appendChild(filter)
+  for (const p of Object.keys(PACKS).filter(matchesSourceFilter)) {
     const b = document.createElement('button')
     b.textContent = p
     b.className = p === pack ? 'on' : ''
@@ -241,10 +245,6 @@ function renderBar() {
   r.textContent = 'rotate 90 (game rotation)'
   r.onclick = () => { rot = (rot + 1) % 4; render() }
   bar.appendChild(r)
-  const ex = document.createElement('button')
-  ex.textContent = 'export catalog.json'
-  ex.onclick = () => void exportCatalog()
-  bar.appendChild(ex)
 }
 
 function resetCam() {
@@ -270,16 +270,99 @@ function renderList() {
   if (!results.length) list.textContent = 'No assets found'
   for (const { pack: p, name: n } of results) {
     const d = document.createElement('div')
-    const nt = notes[key(p, n)]
-    d.className = (p === pack && n === current ? 'sel ' : '') + (nt?.role && nt.role !== 'unassigned' ? 'done' : '')
+    d.className = (p === pack && n === current ? 'sel ' : '') + (definitionOf(p, n) ? 'done' : '')
     const label = document.createElement('span')
-    label.textContent = (globalSearch.trim() ? key(p, n) : n) + (usedInGame.has(key(p, n)) ? ' (*)' : '')
-    const front = document.createElement('span')
-    front.textContent = nt?.front && nt.front !== 'none' ? nt.front : ''
-    d.append(label, front)
+    label.textContent = (globalSearch.trim() ? key(p, n) : n) + (usedInGame.has(definitionKey(p, n)) ? ' (*)' : '')
+    d.append(label, definitionOf(p, n) ? 'defined' : '')
     d.onclick = () => { selectAsset(p, n); list.focus() }
     list.appendChild(d)
   }
+}
+
+let pending: { key: string; definition: ModelDefinition } | null = null
+
+async function persist() {
+  if (pending) definitions[pending.key] ??= pending.definition
+  const response = await fetch('/api/models', { method: 'PUT', body: JSON.stringify(definitions) })
+  saveMessage = response.ok ? 'saved' : ((await response.json()) as { error: string }).error
+  renderSide()
+  renderList()
+}
+
+// An entry only joins models.json on its first edit, so browsing never creates definitions.
+function editable(p: string, n: string): ModelDefinition {
+  const existing = definitionOf(p, n)
+  if (existing) return existing
+  const source = sourceOf(p)!
+  const definition: ModelDefinition = { source, license: source === 'kenney' || source === 'quaternius' ? 'CC0' : '' }
+  pending = { key: definitionKey(p, n), definition }
+  return definition
+}
+
+function textRow(side: HTMLElement, label: string, value: string, on: (value: string) => void) {
+  const row = document.createElement('div')
+  row.className = 'row'
+  const input = document.createElement('input')
+  input.value = value
+  input.onchange = () => { on(input.value.trim()); void persist() }
+  row.append(label + ': ', input)
+  side.appendChild(row)
+}
+
+function numberRow(side: HTMLElement, label: string, value: number | undefined, placeholder: string, on: (value: number | undefined) => void) {
+  const row = document.createElement('div')
+  row.className = 'row'
+  const input = document.createElement('input')
+  input.type = 'number'; input.step = 'any'; input.style.width = '60px'
+  input.value = value === undefined ? '' : String(value)
+  input.placeholder = placeholder
+  input.onchange = () => { on(input.value === '' ? undefined : Number(input.value)); void persist().then(render) }
+  row.append(label + ': ', input)
+  side.appendChild(row)
+}
+
+function colorInput(value: string, on: (value: string) => void) {
+  const input = document.createElement('input')
+  input.type = 'color'
+  input.value = value
+  input.onchange = () => { on(input.value); void persist().then(render) }
+  return input
+}
+
+function renderRecolor(side: HTMLElement, def: ModelDefinition) {
+  const row = document.createElement('div')
+  row.className = 'row'
+  const enable = document.createElement('input')
+  enable.type = 'checkbox'
+  enable.checked = !!def.recolor
+  enable.onchange = () => {
+    if (enable.checked) def.recolor = { color: '#c0392b' }
+    else delete def.recolor
+    void persist().then(render)
+  }
+  row.append('recolor: ', enable)
+  const recolor = def.recolor
+  if (recolor) {
+    row.append(colorInput(recolor.color, (color) => { recolor.color = color }))
+    for (const [name, color] of Object.entries(recolor.variants ?? {})) {
+      const variant = document.createElement('div')
+      const remove = document.createElement('button')
+      remove.textContent = 'x'
+      remove.onclick = () => { delete recolor.variants![name]; if (!Object.keys(recolor.variants!).length) delete recolor.variants; void persist().then(render) }
+      variant.append(`${name}: `, colorInput(color, (value) => { recolor.variants![name] = value }), remove)
+      row.appendChild(variant)
+    }
+    const add = document.createElement('button')
+    add.textContent = '+ variant'
+    add.onclick = () => {
+      const name = prompt('Variant name')?.trim()
+      if (!name) return
+      recolor.variants = { ...recolor.variants, [name]: recolor.color }
+      void persist().then(render)
+    }
+    row.appendChild(add)
+  }
+  side.appendChild(row)
 }
 
 function renderSide() {
@@ -287,90 +370,51 @@ function renderSide() {
   if (!current) { side.textContent = 'pick a model'; return }
   const k = key(pack, current)
   const i = infos[k]
-  const nt = (notes[k] ??= {})
   const fp = i ? footprint(pack, current) : { w: 0, d: 0 }
   side.innerHTML = ''
   const h = document.createElement('h3')
-  h.textContent = k
+  h.textContent = definitionKey(pack, current)
   side.appendChild(h)
   const info = document.createElement('div')
   info.innerHTML = i
-    ? `bbox ${i.size.x.toFixed(2)} x ${i.size.z.toFixed(2)} h ${i.size.y.toFixed(2)}<br>min ${i.min.x.toFixed(2)},${i.min.z.toFixed(2)} max ${i.max.x.toFixed(2)},${i.max.z.toFixed(2)}<br>tris ${i.tris} meshes ${i.meshes}${i.nodeScaled ? '<br><b>node scale != 1 (bake)</b>' : ''}<br>footprint ${fp.w} x ${fp.d}`
+    ? `bbox ${i.size.x.toFixed(2)} x ${i.size.z.toFixed(2)} h ${i.size.y.toFixed(2)}<br>min ${i.min.x.toFixed(2)},${i.min.z.toFixed(2)} max ${i.max.x.toFixed(2)},${i.max.z.toFixed(2)}<br>tris ${i.tris} meshes ${i.meshes}${i.nodeScaled ? '<br><b>node scale != 1 (bake)</b>' : ''}<br>footprint ${fp.w} x ${fp.d}${definitionOf(pack, current)?.footprint ? '' : ' (computed)'}<br>source ${sourceOf(pack) ?? 'none'}, ${usedInGame.has(definitionKey(pack, current)) ? 'used in game' : 'not used in game'}`
     : 'loading'
   side.appendChild(info)
+  if (!sourceOf(pack)) { side.append('not part of a managed source: read only'); return }
 
-  const mk = (label: string, opts: string[], sel: string | undefined, on: (v: string) => void) => {
-    const row = document.createElement('div')
-    row.className = 'row'
-    row.append(label + ': ')
-    for (const o of opts) {
-      const b = document.createElement('button')
-      b.textContent = o
-      b.className = o === sel ? 'on' : ''
-      b.onclick = () => { on(o); save(); render() }
-      row.appendChild(b)
-    }
-    side.appendChild(row)
+  pending = null
+  const def = editable(pack, current)
+  const set = <K extends keyof ModelDefinition>(field: K, value: ModelDefinition[K] | undefined | '') => {
+    if (value === undefined || value === '') delete def[field]
+    else def[field] = value as ModelDefinition[K]
   }
-  mk('front (door side)', [...DIRS, 'none'], nt.front, (v) => (nt.front = v as Dir | 'none'))
-  const exits = document.createElement('div')
-  exits.className = 'row'
-  exits.append('road exits (toward neighbour): ')
-  for (const d of DIRS) {
-    const b = document.createElement('button')
-    b.textContent = d
-    b.className = nt.exits?.includes(d) ? 'on' : ''
-    b.onclick = () => {
-      const s = new Set(nt.exits ?? [])
-      s.has(d) ? s.delete(d) : s.add(d)
-      nt.exits = [...s]
-      save(); render()
-    }
-    exits.appendChild(b)
-  }
-  side.appendChild(exits)
-  const role = document.createElement('div')
-  role.className = 'row'
-  const sel = document.createElement('select')
-  for (const r of ROLES) sel.add(new Option(r, r, false, r === (nt.role ?? 'unassigned')))
-  sel.onchange = () => { nt.role = sel.value; save(); renderList() }
-  role.append('role: ', sel)
-  side.appendChild(role)
-  for (const f of ['fw', 'fd'] as const) {
-    const row = document.createElement('div')
-    row.className = 'row'
-    const inp = document.createElement('input')
-    inp.type = 'number'; inp.min = '1'; inp.step = '1'; inp.style.width = '50px'
-    inp.value = String(nt[f] ?? (f === 'fw' ? fp.w : fp.d))
-    inp.onchange = () => { nt[f] = Number(inp.value); save(); render() }
-    row.append(f === 'fw' ? 'footprint W (x): ' : 'footprint D (z): ', inp)
-    side.appendChild(row)
-  }
-  const c = document.createElement('input')
-  c.placeholder = 'comment'; c.style.width = '95%'; c.value = nt.comment ?? ''
-  c.onchange = () => { nt.comment = c.value; save() }
-  side.appendChild(c)
-}
-
-async function exportCatalog() {
-  const out: Record<string, unknown> = {}
-  for (const p of Object.keys(PACKS)) {
-    for (const n of PACKS[p]) {
-      await load(p, n)
-      const k = key(p, n), i = infos[k], nt = notes[k] ?? {}
-      out[k] = {
-        size: [+i.size.x.toFixed(3), +i.size.y.toFixed(3), +i.size.z.toFixed(3)],
-        center: [+((i.min.x + i.max.x) / 2).toFixed(3), +((i.min.z + i.max.z) / 2).toFixed(3)],
-        footprint: [footprint(p, n).w, footprint(p, n).d],
-        tris: i.tris, meshes: i.meshes, nodeScaled: i.nodeScaled,
-        front: nt.front ?? null, exits: nt.exits ?? null, role: nt.role ?? 'unassigned', comment: nt.comment ?? null,
-      }
-    }
-  }
-  const a = document.createElement('a')
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(out, null, 1)], { type: 'application/json' }))
-  a.download = 'catalog.json'
-  a.click()
+  const pair = (a: number | undefined, b: number | undefined): [number, number] | undefined => (a === undefined && b === undefined ? undefined : [a ?? 1, b ?? 1])
+  numberRow(side, 'footprint W (x)', def.footprint?.[0], String(fp.w), (v) => set('footprint', pair(v, def.footprint?.[1] ?? fp.d)))
+  numberRow(side, 'footprint D (z)', def.footprint?.[1], String(fp.d), (v) => set('footprint', pair(def.footprint?.[0] ?? fp.w, v)))
+  numberRow(side, 'scale', def.scale, '1', (v) => set('scale', v))
+  numberRow(side, 'fit width', def.fit?.width, '', (v) => set('fit', v === undefined ? undefined : { width: v, height: def.fit?.height ?? v }))
+  numberRow(side, 'fit height', def.fit?.height, '', (v) => set('fit', v === undefined ? undefined : { width: def.fit?.width ?? v, height: v }))
+  numberRow(side, 'rotation offset (deg)', def.rotationOffset, '0', (v) => set('rotationOffset', v))
+  const bake = document.createElement('div')
+  bake.className = 'row'
+  const bakeBox = document.createElement('input')
+  bakeBox.type = 'checkbox'
+  bakeBox.checked = !!def.bakeNodeScale
+  bakeBox.onchange = () => { set('bakeNodeScale', bakeBox.checked || undefined); void persist() }
+  bake.append('bake node scale: ', bakeBox)
+  side.appendChild(bake)
+  renderRecolor(side, def)
+  textRow(side, 'license', def.license, (v) => set('license', v as string))
+  textRow(side, 'author', def.author ?? '', (v) => set('author', v))
+  textRow(side, 'url', def.url ?? '', (v) => set('url', v))
+  textRow(side, 'note', def.note ?? '', (v) => set('note', v))
+  const remove = document.createElement('button')
+  remove.textContent = 'remove definition (use computed defaults)'
+  remove.onclick = () => { delete definitions[definitionKey(pack, current)]; void persist().then(render) }
+  side.appendChild(remove)
+  const status = document.createElement('div')
+  status.textContent = saveMessage
+  side.appendChild(status)
 }
 
 function resize() {
