@@ -6,6 +6,7 @@ import { buildRoadGraph, emptyRoadGraph, type RoadGraph } from './roadGraph';
 import { targetVehicleCount } from './trafficTarget';
 import { VEHICLE_MODELS } from './vehicleModels';
 import { poseOf } from './vehicleMotion';
+import { cumulativeWeights, pickByWeight } from './trafficSpawn';
 import { advanceTrafficVehicle, isOnTrafficRoad, isSpotFree, laneTileCount, startBusVehicle, startTrafficVehicle, type TrafficVehicle } from './vehicleTraffic';
 
 const VEHICLE_SCALE = 0.25;
@@ -50,6 +51,7 @@ export class TrafficLayer {
   private carFit = new THREE.Matrix4().makeScale(VEHICLE_SCALE, VEHICLE_SCALE, VEHICLE_SCALE);
   private fitted = new THREE.Matrix4();
   private busSignature = '';
+  private spawnWeights: number[] = [];
   private probe = new THREE.Vector3();
   private touch = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
 
@@ -67,7 +69,9 @@ export class TrafficLayer {
     if (state.seed !== this.seed) this.reset(state.seed);
     if (state.roads !== this.roads || state.roundabouts !== this.roundabouts) this.rebuildGraph(state);
     this.syncBuses(state);
-    this.target = targetVehicleCount({ commuters: congestionStats(state).commuters, laneTiles: this.laneTiles, touch: this.touch });
+    const stats = congestionStats(state);
+    this.spawnWeights = cumulativeWeights(this.roadTiles, (key) => stats.sections.get(key)?.ratio ?? 0);
+    this.target = targetVehicleCount({ commuters: stats.commuters, laneTiles: this.laneTiles, touch: this.touch });
   }
 
   update(deltaSeconds: number, camera: THREE.Camera): void {
@@ -196,7 +200,7 @@ export class TrafficLayer {
   }
 
   private randomRoadTile(): Coord {
-    return this.roadTiles[Math.floor(this.random() * this.roadTiles.length)] ?? { x: 0, y: 0 };
+    return this.roadTiles[pickByWeight(this.spawnWeights, this.random())] ?? { x: 0, y: 0 };
   }
 
   private draw(): void {
