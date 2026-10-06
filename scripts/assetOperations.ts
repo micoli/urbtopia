@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, rmdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, rmSync, rmdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { EXTRA_PACKS_FILE, MANAGED_MODELS_DIR, POLY_PIZZA_DIR, ARCHIVES_DIR, QUATERNIUS_ARCHIVES_DIR, readExtraPacks } from './assetPacks.ts';
 import { extractFbx, extractPack } from './extractPack.ts';
@@ -104,6 +104,5 @@ export function removeModel(key: string, usedKeys: readonly string[], paths = AS
     if (readdirSync(directory).length === 0) rmdirSync(directory);
   }
   if (!(key in models)) return;
-  const { [key]: _removed, ...rest } = models;
-  writeModels(rest, paths.models);
+  writeModels(Object.fromEntries(Object.entries(models).filter(([candidate]) => candidate !== key)), paths.models);
 }
