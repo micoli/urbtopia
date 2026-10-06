@@ -10,7 +10,7 @@ import { transportStats } from '../transit/transport';
 import { jobsOf } from './jobs';
 import { NO_SHIFT, modalShift, type ModalShift } from './modalShift';
 import { CONGESTION, laneCapacity } from './roadTier';
-import { WALKING, maxWalkCost, walkDestinationOf } from './walking';
+import { WALKING, crossingCut, maxWalkCost, walkDestinationOf } from './walking';
 import { emptyTrips, walkDestinations, walkServices, type WalkingTrips } from './walkingTrips';
 
 export const workplaceTypes: readonly BuildingType[] = ['workshop', 'factory', 'shop', 'casino', ...FACILITY_TYPES];
@@ -20,6 +20,13 @@ export interface SectionLoad {
   load: number;
   capacity: number;
   ratio: number;
+}
+
+export interface CrossingLoad {
+  tile: Coord;
+  pedestrians: number;
+  cut: number;
+  saturated: boolean;
 }
 
 export interface HomeCongestion {
@@ -39,6 +46,8 @@ export interface CongestionStats {
   walkers: number;
   walkingTrips: WalkingTrips;
   pedestrians: ReadonlyMap<string, number>;
+  crossings: ReadonlyMap<string, CrossingLoad>;
+  saturatedCrossings: number;
   modes: { car: number; transit: number; walking: number };
   jobs: number;
   unemployed: number;
@@ -155,8 +164,13 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
 
   const sections = new Map<string, SectionLoad>();
   for (const [key, load] of loads) {
-    const capacity = laneCapacity(tiers.get(key) ?? 1);
+    const capacity = laneCapacity(tiers.get(key) ?? 1) * (1 - crossingCut(pedestrians.get(key) ?? 0));
     sections.set(key, { tile: parseTile(key), load, capacity, ratio: load / capacity });
+  }
+  const crossings = new Map<string, CrossingLoad>();
+  for (const [key, count] of pedestrians) {
+    const cut = crossingCut(count);
+    crossings.set(key, { tile: parseTile(key), pedestrians: count, cut, saturated: cut >= WALKING.maxCrossingCut });
   }
   let weighted = 0;
   let population = 0;
@@ -178,6 +192,8 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     walkers: walkersTotal,
     walkingTrips,
     pedestrians,
+    crossings,
+    saturatedCrossings: [...crossings.values()].filter((crossing) => crossing.saturated).length,
     modes: { car: commutersTotal, transit: transitTotal, walking: walkersTotal },
     jobs,
     unemployed: unemployedTotal,
@@ -197,6 +213,8 @@ function noCommute(homes: Endpoint[], jobs: number): CongestionStats {
     walkers: 0,
     walkingTrips: emptyTrips(),
     pedestrians: new Map(),
+    crossings: new Map(),
+    saturatedCrossings: 0,
     modes: { car: 0, transit: 0, walking: 0 },
     jobs,
     unemployed: 0,
