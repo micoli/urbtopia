@@ -71,6 +71,7 @@ cam.position.set(6, 6, 6)
 const controls = new OrbitControls(cam, canvas)
 controls.enableDamping = false
 let zoom = 1.2
+let fitZoom = zoom
 
 const gltfLoader = new GLTFLoader()
 const fbxLoader = new FBXLoader()
@@ -345,6 +346,7 @@ function resetCam() {
   cam.zoom = 1
   cam.far = Math.max(200, radius * 6)
   zoom = radius * 1.1 / Math.min(1, Math.max(0.01, aspect))
+  fitZoom = zoom
   resize()
   controls.update()
 }
@@ -563,7 +565,7 @@ canvas.addEventListener('pointerup', (e) => {
   renderList()
   document.querySelector('#list .sel')?.scrollIntoView({ block: 'nearest' })
 })
-canvas.addEventListener('wheel', (e) => { e.preventDefault(); zoom = Math.min(30, Math.max(0.5, zoom * (e.deltaY > 0 ? 1.1 : 0.9))); resize() }, { passive: false })
+canvas.addEventListener('wheel', (e) => { e.preventDefault(); zoom = Math.min(fitZoom * 8, Math.max(fitZoom * 0.02, zoom * (e.deltaY > 0 ? 1.1 : 0.9))); resize() }, { passive: false })
 controls.enableZoom = false
 
 current = PACKS[pack][0]
@@ -580,6 +582,7 @@ await render()
   controls.target.set(c, 0, 0)
   cam.position.set(c, 40, 0.001)
   zoom = names.length * 0.9
+  fitZoom = zoom
   resize()
   controls.update()
 }
