@@ -157,6 +157,26 @@ function footprint(p: string, n: string) {
   return { w: fixed?.[0] ?? Math.max(1, Math.ceil(i.size.x - 0.15)), d: fixed?.[1] ?? Math.max(1, Math.ceil(i.size.z - 0.15)) }
 }
 
+// Mirrors how the game places a model: fit limits (natureModelFit) or scale and center (modelFit), plus the rotation offset.
+function fitted(model: THREE.Object3D, definition?: ModelDefinition): THREE.Object3D {
+  if (!definition) return model
+  const placed = new THREE.Group()
+  placed.add(model)
+  placed.rotation.y = THREE.MathUtils.degToRad(definition.rotationOffset ?? 0)
+  const { fit, scale, center } = definition
+  if (fit) {
+    const bounds = new THREE.Box3().setFromObject(model)
+    if (bounds.isEmpty()) return placed
+    const size = bounds.getSize(new THREE.Vector3()), middle = bounds.getCenter(new THREE.Vector3())
+    placed.scale.setScalar(Math.min(fit.width / Math.max(size.x, size.z, 0.001), fit.height / Math.max(size.y, 0.001)))
+    model.position.set(-middle.x, -bounds.min.y, -middle.z)
+  } else if (scale) {
+    placed.scale.setScalar(scale)
+    if (center) model.position.set(-center[0], 0, -center[1])
+  }
+  return placed
+}
+
 async function place(p: string, n: string, at: THREE.Vector3, rotY: number, withGrid: boolean, version?: number) {
   const g = new THREE.Group()
   g.userData.name = n
@@ -169,7 +189,7 @@ async function place(p: string, n: string, at: THREE.Vector3, rotY: number, with
       if (mesh.isMesh) mesh.material = library.withRecolor(mesh.material, Number.parseInt(recolor.color.slice(1), 16))
     })
   }
-  g.add(model)
+  g.add(fitted(model, definitionOf(p, n)))
   const { w, d } = footprint(p, n)
   const fp = new THREE.Mesh(
     new THREE.PlaneGeometry(w, d),
