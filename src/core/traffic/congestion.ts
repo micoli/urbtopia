@@ -10,6 +10,7 @@ import { transportStats } from '../transit/transport';
 import { jobsOf } from './jobs';
 import { NO_SHIFT, modalShift, type ModalShift } from './modalShift';
 import { CONGESTION, laneCapacity } from './roadTier';
+import { BUS_TRAFFIC, busRouteTiles, busSpeedFactor, type BusRoute, type BusSpeed } from './busTraffic';
 import { WALKING, crossingCut, maxWalkCost, walkDestinationOf } from './walking';
 import { emptyTrips, walkDestinations, walkServices, type WalkingTrips } from './walkingTrips';
 
@@ -48,6 +49,9 @@ export interface CongestionStats {
   pedestrians: ReadonlyMap<string, number>;
   crossings: ReadonlyMap<string, CrossingLoad>;
   saturatedCrossings: number;
+  busSpeeds: ReadonlyMap<number, BusSpeed>;
+  speedFactors: ReadonlyMap<number, number>;
+  slowedLines: number;
   modes: { car: number; transit: number; walking: number };
   jobs: number;
   unemployed: number;
@@ -82,21 +86,26 @@ function layoutSignature(state: GameState, now: number): string {
   const buildings = state.buildings
     .filter((building) => building.type === 'home' || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null)
     .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${transport.homeRiders.get(building.id) ?? 0}`);
-  const lines = transport.lines.map((line) => `${line.id}:${line.capacity.toFixed(2)}:${line.riders.toFixed(2)}`);
+  const lines = transport.lines.map((line) => `${line.id}:${line.capacity.toFixed(2)}:${line.riders.toFixed(2)}:${line.mode === 'bus' && line.active && line.route ? line.route.map(tileKey).join(';') : ''}`);
   return [...buildings, ...lines].join('|');
+}
+
+function activeBusRoutes(transport: ReturnType<typeof transportStats>): BusRoute[] {
+  return transport.lines.flatMap((line) => (line.mode === 'bus' && line.active && line.route ? [{ id: line.id, route: line.route }] : []));
 }
 
 function withModalShift(state: GameState, now: number): CongestionStats {
   const transport = transportStats(state, now);
-  const first = calculateCongestion(state, transport.homeRiders);
+  const buses = activeBusRoutes(transport);
+  const first = calculateCongestion(state, transport.homeRiders, buses);
   const shift = modalShift(state, transport, first);
   if (shift.total === 0) return first;
   const riders = new Map(transport.homeRiders);
   for (const [id, moved] of shift.byHome) riders.set(id, (riders.get(id) ?? 0) + moved);
-  return { ...calculateCongestion(state, riders), shift };
+  return { ...calculateCongestion(state, riders, buses), shift };
 }
 
-function calculateCongestion(state: GameState, riders: ReadonlyMap<number, number>): CongestionStats {
+function calculateCongestion(state: GameState, riders: ReadonlyMap<number, number>, buses: readonly BusRoute[] = []): CongestionStats {
   const graph = buildRoadGraph(state);
   const tiers = new Map(state.roads.map((road) => [tileKey(road), road.tier ?? 1]));
   const walkable = pedestrianGraph(state);
@@ -162,10 +171,18 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     result.set(home.building.id, { commuters: wanting - remaining - walking, walkers: walking, walkAccess, unemployed: remaining, ratio: 0, disconnected: false });
   }
 
+  for (const bus of buses) {
+    for (const key of busRouteTiles(bus.route)) loads.set(key, (loads.get(key) ?? 0) + BUS_TRAFFIC.load);
+  }
   const sections = new Map<string, SectionLoad>();
   for (const [key, load] of loads) {
     const capacity = laneCapacity(tiers.get(key) ?? 1) * (1 - crossingCut(pedestrians.get(key) ?? 0));
     sections.set(key, { tile: parseTile(key), load, capacity, ratio: load / capacity });
+  }
+  const busSpeeds = new Map<number, BusSpeed>();
+  for (const bus of buses) {
+    const factor = busSpeedFactor(bus.route, (key) => sections.get(key)?.ratio ?? 0);
+    busSpeeds.set(bus.id, { factor, slowed: factor < BUS_TRAFFIC.slowedBelow });
   }
   const crossings = new Map<string, CrossingLoad>();
   for (const [key, count] of pedestrians) {
@@ -194,6 +211,9 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     pedestrians,
     crossings,
     saturatedCrossings: [...crossings.values()].filter((crossing) => crossing.saturated).length,
+    busSpeeds,
+    speedFactors: new Map([...busSpeeds].map(([id, speed]) => [id, speed.factor])),
+    slowedLines: [...busSpeeds.values()].filter((speed) => speed.slowed).length,
     modes: { car: commutersTotal, transit: transitTotal, walking: walkersTotal },
     jobs,
     unemployed: unemployedTotal,
@@ -215,6 +235,9 @@ function noCommute(homes: Endpoint[], jobs: number): CongestionStats {
     pedestrians: new Map(),
     crossings: new Map(),
     saturatedCrossings: 0,
+    busSpeeds: new Map(),
+    speedFactors: new Map(),
+    slowedLines: 0,
     modes: { car: 0, transit: 0, walking: 0 },
     jobs,
     unemployed: 0,
