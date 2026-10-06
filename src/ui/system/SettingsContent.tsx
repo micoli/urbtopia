@@ -62,6 +62,9 @@ export function SettingsContent() {
         <ActionButton onClick={() => fileInput.current?.click()}>
           {t('settings.import')}
         </ActionButton>
+        <ActionButton onClick={() => dialogStore.getState().setCreditsOpen(true)}>
+          {t('settings.credits')}
+        </ActionButton>
         <ActionButton onClick={() => void reloadApp()}>
           {t('settings.reload')}
         </ActionButton>

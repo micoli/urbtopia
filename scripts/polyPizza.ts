@@ -60,7 +60,7 @@ export async function listAssets(listId: string): Promise<PolyPizzaAsset[]> {
   const slugs = uniqueSlugs(list.Models);
   return Promise.all(
     list.Models.map(async (model, index) => ({
-      slug: slugs[index],
+      slug: slugs[index]!,
       title: model.title,
       publicID: model.publicID,
       licence: model.licence,

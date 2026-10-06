@@ -1,4 +1,5 @@
 import { CityManagement } from '../stats/CityManagement.tsx';
+import { CreditsDialog } from '../system/CreditsDialog';
 import { CodexDialog } from '../codex/CodexDialog';
 import { CasinoDialog } from '../casino/CasinoDialog';
 import { MarketModal } from '../market/MarketModal';
@@ -33,6 +34,7 @@ export function Overlays() {
       <UpdatePrompt />
       <ConfirmSaleDialog />
       <ImportConfirmDialog />
+      <CreditsDialog />
       <SaveFailedDialog />
       <RecoveryScreen />
       <Toast />
