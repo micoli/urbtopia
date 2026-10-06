@@ -1,7 +1,7 @@
 import { ECOLOGY, citizenCount, distance } from '../environment/ecology';
 import { HOME_TIERS } from '../economy/economy';
 import { energyStats } from '../environment/energy';
-import { transitServices } from './transitService';
+import { transitServices, type SpeedFactors } from './transitService';
 import type { Building, GameState } from '../engine/state';
 export { routeForLine, routeFailure } from './transitService';
 
@@ -43,18 +43,27 @@ function itineraries(first: Service, firstStop: number, lines: Service[], stops:
   return [...best.values()].sort((a, b) => a.minutes - b.minutes || a.lines.join(':').localeCompare(b.lines.join(':')));
 }
 
-const statsCache = new WeakMap<GameState, { now: number; stats: ReturnType<typeof calculateTransport> }>();
+type TransportStats = ReturnType<typeof calculateTransport>;
 
-export function transportStats(state: GameState, now = state.lastSeen) {
+const statsCache = new WeakMap<GameState, { now: number; stats: TransportStats }>();
+const slowedCache = new WeakMap<SpeedFactors, { state: GameState; now: number; stats: TransportStats }>();
+
+export function transportStats(state: GameState, now = state.lastSeen, speedFactors?: SpeedFactors): TransportStats {
+  if (speedFactors) {
+    const slowed = slowedCache.get(speedFactors);
+    if (slowed?.state === state && slowed.now === now) return slowed.stats;
+    const stats = calculateTransport(state, now, speedFactors); slowedCache.set(speedFactors, { state, now, stats });
+    return stats;
+  }
   const cached = statsCache.get(state);
   if (cached?.now === now) return cached.stats;
   const stats = calculateTransport(state, now); statsCache.set(state, { now, stats });
   return stats;
 }
 
-function calculateTransport(state: GameState, now: number) {
+function calculateTransport(state: GameState, now: number, speedFactors?: SpeedFactors) {
   const energy = energyStats(state, now);
-  const services = transitServices(state, now, energy.transitRatio);
+  const services = transitServices(state, now, energy.transitRatio, speedFactors);
   const lines = services.map(line => ({ ...line, riders: 0, homeIds: [] as number[], covered: 0 }));
   const byId = new Map(lines.map(l => [l.id, l]));
   const homes = state.buildings.filter(b => b.type === 'home').sort((a, b) => a.id - b.id);

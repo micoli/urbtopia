@@ -4,8 +4,9 @@ import { congestionStats } from './congestion';
 
 // transportStats is the coverage-based baseline; this adds the Riders won through the modal shift.
 export function cityTransportStats(state: GameState, now = state.lastSeen) {
-  const base = transportStats(state, now);
-  const shift = congestionStats(state, now).shift;
+  const congestion = congestionStats(state, now);
+  const base = transportStats(state, now, congestion.speedFactors.size > 0 ? congestion.speedFactors : undefined);
+  const shift = congestion.shift;
   if (shift.total === 0) return { ...base, shiftedRiders: 0 };
   return {
     ...base,

@@ -79,14 +79,18 @@ function lineStatus(connected: boolean, funded: boolean, hasVehicle: boolean, ac
   return active ? 'active' : 'noEnergy';
 }
 
-export function transitServices(state: GameState, now = state.lastSeen, powerRatio = 1) {
+export type SpeedFactors = ReadonlyMap<number, number>;
+
+export function transitServices(state: GameState, now = state.lastSeen, powerRatio = 1, speedFactors: SpeedFactors = new Map()) {
   const hour = ((Math.floor((now + (state.timeOffset ?? 0)) / ECOLOGY.hourMs) % 24) + 24) % 24;
   const peak = (hour >= 7 && hour < 9) || (hour >= 17 && hour < 19);
   const allLines: (BusLine | TransitLine)[] = [...(state.busLines ?? []), ...(state.transitLines ?? [])];
   return allLines.sort((a, b) => a.id - b.id).map(line => {
     const mode: TransitMode = 'mode' in line ? line.mode : 'bus';
     const details = routeDetails(state, line);
-    const speed = mode === 'bus' ? 2 : TRANSIT[mode].speed;
+    const nominalSpeed = mode === 'bus' ? 2 : TRANSIT[mode].speed;
+    const speedFactor = mode === 'bus' ? speedFactors.get(line.id) ?? 1 : 1;
+    const speed = nominalSpeed * speedFactor;
     const cycle = details ? Math.max(2, 2 * ((details.route.length - 1) / speed + line.stops.length * .5)) : Infinity;
     const targetHeadway = 'mode' in line ? peak ? line.peakHeadway : line.offPeakHeadway : 15;
     const fleet = (state.transitFleet ?? []).filter(v => v.lineId === line.id);
@@ -101,7 +105,7 @@ export function transitServices(state: GameState, now = state.lastSeen, powerRat
     const coalPerHour = available.reduce((n, v) => n + TRANSIT[v.kind].coal * duty * v.ratio, 0);
     const costPerHour = mode === 'bus' ? active ? ECOLOGY.busCost : 0 : available.reduce((n, v) => n + TRANSIT[v.kind].cost * duty * v.ratio, 0);
     const emissions = mode === 'bus' ? active ? .5 : 0 : available.reduce((n, v) => n + TRANSIT[v.kind].emissions * duty * v.ratio, 0);
-    const capacity = active ? mode === 'bus' ? ECOLOGY.lineCapacity : TRANSIT[mode].capacity * 15 / headway : 0;
-    return { ...line, mode, route: details?.route ?? null, offsets: details?.offsets ?? [], speed, targetHeadway, headway, peak, active, capacity, costPerHour, emissions, powerDemand, coalPerHour, status, vehicleCount: fleet.length, operatingVehicleIds: available.filter(v => v.ratio > 0).map(v => v.id) };
+    const capacity = active ? mode === 'bus' ? ECOLOGY.lineCapacity * speedFactor : TRANSIT[mode].capacity * 15 / headway : 0;
+    return { ...line, mode, route: details?.route ?? null, offsets: details?.offsets ?? [], speed, nominalSpeed, speedFactor, targetHeadway, headway, peak, active, capacity, costPerHour, emissions, powerDemand, coalPerHour, status, vehicleCount: fleet.length, operatingVehicleIds: available.filter(v => v.ratio > 0).map(v => v.id) };
   });
 }

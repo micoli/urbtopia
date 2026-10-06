@@ -98,11 +98,12 @@ function withModalShift(state: GameState, now: number): CongestionStats {
   const transport = transportStats(state, now);
   const buses = activeBusRoutes(transport);
   const first = calculateCongestion(state, transport.homeRiders, buses);
-  const shift = modalShift(state, transport, first);
-  if (shift.total === 0) return first;
-  const riders = new Map(transport.homeRiders);
+  const effective = first.speedFactors.size > 0 ? transportStats(state, now, first.speedFactors) : transport;
+  const shift = modalShift(state, effective, first);
+  if (shift.total === 0 && effective === transport) return first;
+  const riders = new Map(effective.homeRiders);
   for (const [id, moved] of shift.byHome) riders.set(id, (riders.get(id) ?? 0) + moved);
-  return { ...calculateCongestion(state, riders, buses), shift };
+  return { ...calculateCongestion(state, riders, buses), shift, busSpeeds: first.busSpeeds, speedFactors: first.speedFactors, slowedLines: first.slowedLines };
 }
 
 function calculateCongestion(state: GameState, riders: ReadonlyMap<number, number>, buses: readonly BusRoute[] = []): CongestionStats {
@@ -212,7 +213,7 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     crossings,
     saturatedCrossings: [...crossings.values()].filter((crossing) => crossing.saturated).length,
     busSpeeds,
-    speedFactors: new Map([...busSpeeds].map(([id, speed]) => [id, speed.factor])),
+    speedFactors: new Map([...busSpeeds].filter(([, speed]) => speed.factor < 1).map(([id, speed]) => [id, speed.factor])),
     slowedLines: [...busSpeeds.values()].filter((speed) => speed.slowed).length,
     modes: { car: commutersTotal, transit: transitTotal, walking: walkersTotal },
     jobs,

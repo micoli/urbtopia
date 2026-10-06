@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { BUS_TRAFFIC } from './busTraffic';
 import { WALKING } from './walking';
 import { SHIFT, citizensOf, cityTransportStats, congestionStats, createBuilding, newGame, transportStats, type Building, type GameState } from '../index';
 
@@ -29,18 +30,23 @@ function city(homeCount: number, lineCount: number): GameState {
 
 
 
+function effectiveTransport(state: GameState) {
+  const factors = congestionStats(state).speedFactors;
+  return transportStats(state, state.lastSeen, factors.size > 0 ? factors : undefined);
+}
+
 describe('modal shift', () => {
   it('moves Commuters of a saturated road onto lines with spare capacity', () => {
-    const state = city(3, 5);
+    const state = city(3, 8);
     const stats = congestionStats(state);
-    const base = transportStats(state);
+    const base = effectiveTransport(state);
     expect(stats.shift.total).toBeGreaterThan(0);
     expect(stats.commuters).toBeCloseTo(3 * homeCitizens - base.riders - stats.shift.total);
   });
 
   it('counts the shifted Riders with the other Riders and in the lines', () => {
-    const state = city(3, 5);
-    const base = transportStats(state);
+    const state = city(3, 8);
+    const base = effectiveTransport(state);
     const merged = cityTransportStats(state);
     expect(merged.shiftedRiders).toBeCloseTo(congestionStats(state).shift.total);
     expect(merged.riders).toBeCloseTo(base.riders + merged.shiftedRiders);
@@ -49,9 +55,9 @@ describe('modal shift', () => {
   });
 
   it('never takes a Home beyond the maximum Rider share', () => {
-    const state = city(3, 5);
+    const state = city(3, 8);
     const stats = congestionStats(state);
-    const base = transportStats(state);
+    const base = effectiveTransport(state);
     for (const [id, moved] of stats.shift.byHome) expect((base.homeRiders.get(id) ?? 0) + moved).toBeLessThanOrEqual(homeCitizens * SHIFT.maxRiderShare + 1e-9);
   });
 
@@ -64,7 +70,7 @@ describe('modal shift', () => {
     const stats = congestionStats(state);
     const [line] = cityTransportStats(state).lines;
     expect(line!.riders).toBeLessThanOrEqual(line!.capacity + 1e-9);
-    expect(stats.shift.total).toBeLessThanOrEqual(Math.max(0, line!.capacity - transportStats(state).lines[0]!.riders) + 1e-9);
+    expect(stats.shift.total).toBeLessThanOrEqual(Math.max(0, line!.capacity - effectiveTransport(state).lines[0]!.riders) + 1e-9);
   });
 
   it('does nothing without any line', () => {
@@ -72,10 +78,10 @@ describe('modal shift', () => {
   });
 
   it('lowers the congestion ratio the shift acts on', () => {
-    const shifted = city(3, 5);
+    const shifted = city(3, 8);
     const stats = congestionStats(shifted);
     const peak = Math.max(...[...stats.sections.values()].map((section) => section.ratio));
-    const beforeShift = (3 * homeCitizens - transportStats(shifted).riders) / 100;
+    const beforeShift = (3 * homeCitizens - effectiveTransport(shifted).riders + 8 * BUS_TRAFFIC.load) / 100;
     expect(peak).toBeLessThan(beforeShift);
   });
 });
