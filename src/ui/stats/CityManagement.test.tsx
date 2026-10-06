@@ -63,6 +63,23 @@ describe('city management panel', () => {
     expect(html).not.toContain('NaN');
     expect(html).not.toContain('undefined');
   });
+  it.each(['en', 'fr'] as const)('shows how traffic slows the bus lines in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    const start = newGame({ seed: 'bus-panel', now: 0 });
+    const homes = [0, 1, 2].map(index => ({ ...createBuilding(40 + index, 'home', 53 + 2 * index, 59, 0), tier: 7 }));
+    const stops = [createBuilding(60, 'busStop', 59, 59, 0), createBuilding(61, 'busStop', 61, 59, 0)];
+    const city = (lines: number): GameState => ({ ...start, adaptationUntil: 0, roads: [...start.roads], nextId: 100, buildings: [...start.buildings.map(building => ({ ...building, tier: 8 })), ...homes, ...stops], busLines: Array.from({ length: lines }, (_, index) => ({ id: 20 + index, stops: [60, 61] })) });
+    context.state = city(1);
+    const slowed = renderToStaticMarkup(<CityManagement />);
+    expect(slowed).toContain(language === 'fr' ? 'Lignes de bus ralenties par les bouchons: 1' : 'Bus lines slowed by traffic: 1');
+    expect(slowed).toContain(language === 'fr' ? 'ralentie par les bouchons' : 'slowed by traffic');
+    expect(slowed).not.toContain('NaN');
+    expect(slowed).not.toContain('undefined');
+    context.state = { ...city(1), buildings: city(1).buildings.slice(0, -2).filter(building => building.id < 41), busLines: [] };
+    const calm = renderToStaticMarkup(<CityManagement />);
+    expect(calm).toContain(language === 'fr' ? 'Lignes de bus ralenties par les bouchons: 0' : 'Bus lines slowed by traffic: 0');
+    expect(calm).not.toContain('🐌');
+  });
   it.each(['en', 'fr'] as const)('offers the worst bottleneck only when a road is saturated in %s', language => {
     prefsStore.getState().setLanguage(language);
     const label = language === 'fr' ? 'Voir le pire goulot' : 'Show the worst bottleneck';

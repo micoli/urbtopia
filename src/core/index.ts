@@ -83,6 +83,7 @@ export { casinosReaching } from './leisure/leisure';
 
 export { CONGESTION, ROAD_TIER_COSTS, MAX_ROAD_TIER, laneCapacity, roadTierOf, roadTierUpgradeCost } from './traffic/roadTier';
 export { JOBS, jobsOf } from './traffic/jobs';
+export { BUS_TRAFFIC } from './traffic/busTraffic';
 export { SHIFT } from './traffic/modalShift';
 export { cityTransportStats } from './traffic/cityTransport';
 export { congestionStats, workplaceTypes } from './traffic/congestion';

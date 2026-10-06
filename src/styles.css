@@ -1154,6 +1154,7 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   text-align: left;
   cursor: pointer;
 }
+.eco-dashboard .transit-line-speed { font-size: 0.8em; opacity: 0.85; white-space: nowrap; }
 .eco-dashboard .transit-line-item:hover { background: rgba(255, 255, 255, 0.08); }
 .eco-dashboard .transit-line-item[aria-current='true'] { background: rgba(255, 255, 255, 0.15); font-weight: 700; }
 .transit-line-name { flex: 1; }
