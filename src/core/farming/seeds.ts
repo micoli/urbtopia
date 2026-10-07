@@ -13,6 +13,12 @@ export function seedStockCapacity(state: GameState): number {
   return farm ? farmTier(farm).seedCapacity : 0;
 }
 
+const SELL_RATIO = 0.5;
+
+export function seedSellPrice(crop: CropId): number {
+  return Math.floor(CROPS[crop].seedPrice * SELL_RATIO);
+}
+
 export function buySeeds(state: GameState, crop: CropId, quantity: number): CommandOutcome {
   if (!state.buildings.some((building) => building.type === 'farm')) return { key: 'error.noFarm' };
   if (!(crop in CROPS)) return { key: 'error.unknownCommand' };
@@ -25,6 +31,19 @@ export function buySeeds(state: GameState, crop: CropId, quantity: number): Comm
   if (state.urbs < cost) return { key: 'error.notEnoughUrbs' };
   return {
     state: { ...state, urbs: state.urbs - cost, seedStock: { ...state.seedStock, [crop]: (state.seedStock[crop] ?? 0) + bought } },
+    events: [],
+  };
+}
+
+export function sellSeeds(state: GameState, crop: CropId, quantity: number): CommandOutcome {
+  if (!state.buildings.some((building) => building.type === 'farm')) return { key: 'error.noFarm' };
+  if (!(crop in CROPS)) return { key: 'error.unknownCommand' };
+  if (!Number.isInteger(quantity) || quantity < 1) return { key: 'error.invalidQuantity' };
+  const owned = state.seedStock[crop] ?? 0;
+  if (owned < 1) return { key: 'error.noSeeds' };
+  const sold = Math.min(quantity, owned);
+  return {
+    state: { ...state, urbs: state.urbs + sold * seedSellPrice(crop), seedStock: { ...state.seedStock, [crop]: owned - sold } },
     events: [],
   };
 }

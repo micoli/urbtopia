@@ -75,3 +75,41 @@ describe('Buying Seed packs', () => {
     expect(failureKey(cityWith(3, 1), { type: 'BuySeeds', crop: 'wheat', quantity: 1.5 })).toBe('error.invalidQuantity');
   });
 });
+
+describe('Selling Seed packs', () => {
+  const stocked = (): GameState => ({ ...cityWith(3, 1), seedStock: { wheat: 4 } });
+
+  it('refunds half the price and frees room in the stock', () => {
+    const result = dispatch(stocked(), { type: 'SellSeeds', crop: 'wheat', quantity: 3 }, T0);
+    if (!result.ok) throw new Error(result.error.key);
+    expect(result.state.seedStock).toEqual({ wheat: 1 });
+    expect(result.state.urbs).toBe(10_000 + 3 * 1);
+  });
+
+  it('sells what is left when asked for more than owned', () => {
+    const result = dispatch(stocked(), { type: 'SellSeeds', crop: 'wheat', quantity: 10 }, T0);
+    if (!result.ok) throw new Error(result.error.key);
+    expect(result.state.seedStock).toEqual({ wheat: 0 });
+  });
+
+  it('refuses when no pack of that species is owned', () => {
+    expect(failureKey(stocked(), { type: 'SellSeeds', crop: 'grass', quantity: 1 })).toBe('error.noSeeds');
+  });
+
+  it('needs a Farm', () => {
+    expect(failureKey({ ...cityWith(3), seedStock: { wheat: 1 } }, { type: 'SellSeeds', crop: 'wheat', quantity: 1 })).toBe('error.noFarm');
+  });
+
+  it('refuses a non positive or fractional quantity', () => {
+    expect(failureKey(stocked(), { type: 'SellSeeds', crop: 'wheat', quantity: 0 })).toBe('error.invalidQuantity');
+    expect(failureKey(stocked(), { type: 'SellSeeds', crop: 'wheat', quantity: 1.5 })).toBe('error.invalidQuantity');
+  });
+
+  it('lets a full stock buy another species once packs are sold', () => {
+    const full: GameState = { ...cityWith(3, 1), seedStock: { wheat: 20 } };
+    expect(failureKey(full, { type: 'BuySeeds', crop: 'grass', quantity: 1 })).toBe('error.seedStockFull');
+    const sold = dispatch(full, { type: 'SellSeeds', crop: 'wheat', quantity: 2 }, T0);
+    if (!sold.ok) throw new Error(sold.error.key);
+    expect(failureKey(sold.state, { type: 'BuySeeds', crop: 'grass', quantity: 1 })).toBeNull();
+  });
+});

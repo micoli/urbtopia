@@ -12,7 +12,7 @@ import { HOME_TIERS, MAX_SLOTS, SHOP, TAX, SLOT_PRICES } from '../economy/econom
 import { GOODS, isGood, isMaterial, minTierOf, producibleItems, recipeOf, type GoodId } from '../economy/items';
 import { marketQuote } from '../economy/market';
 import { harvestFields, layFields, plantFields, removeFields } from '../farming/fields';
-import { buySeeds } from '../farming/seeds';
+import { buySeeds, sellSeeds } from '../farming/seeds';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
 import { withStartingCity } from './newGame';
@@ -60,6 +60,7 @@ export type Command =
   | { readonly type: 'Plant'; readonly crop: CropId; readonly tiles: readonly Coord[] }
   | { readonly type: 'Harvest'; readonly tiles: readonly Coord[] }
   | { readonly type: 'BuySeeds'; readonly crop: CropId; readonly quantity: number }
+  | { readonly type: 'SellSeeds'; readonly crop: CropId; readonly quantity: number }
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
@@ -196,6 +197,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return harvestFields(state, command.tiles);
     case 'BuySeeds':
       return buySeeds(state, command.crop, command.quantity);
+    case 'SellSeeds':
+      return sellSeeds(state, command.crop, command.quantity);
     case 'QueueProduction':
       return queueProduction(state, command.buildingId, command.item, now);
     case 'Collect':

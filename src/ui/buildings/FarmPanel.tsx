@@ -37,6 +37,7 @@ export function FarmPanel({ building }: FarmPanelProps) {
               chooseTool({ kind: 'brush', action: 'plant', crop, tiles: [] });
             }}
             onBuy={(quantity) => send({ type: 'BuySeeds', crop, quantity })}
+            onSell={(quantity) => send({ type: 'SellSeeds', crop, quantity })}
           />
         ))}
       </div>
