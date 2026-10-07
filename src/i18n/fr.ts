@@ -375,6 +375,7 @@ export const FR: Record<MessageKey, string> = {
   'credits.otherModels': 'Autres modèles',
   'settings.install': "Installer l'application",
   'settings.version': 'Version',
+  'settings.release': 'Release',
   'settings.export': 'Exporter la ville',
   'settings.import': 'Importer une ville',
   'import.invalid-json': "Ce fichier n'est pas une sauvegarde valide.",

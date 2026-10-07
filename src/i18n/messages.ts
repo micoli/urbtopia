@@ -373,6 +373,7 @@ export const MESSAGES = {
   'settings.install': 'Install the app',
   'settings.skip12': '+12 h',
   'settings.version': 'Build',
+  'settings.release': 'Release',
   'settings.export': 'Export the city',
   'settings.import': 'Import a city',
   'import.invalid-json': 'This file is not a valid save.',

@@ -82,6 +82,8 @@ export function SettingsContent() {
       <PreferencesContent />
       <small className="build-id">
         {t('settings.version')} {__BUILD_ID__}
+        <br />
+        {t('settings.release')} {__RELEASE_NAME__}
       </small>
     </>
   );

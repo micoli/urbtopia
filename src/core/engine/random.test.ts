@@ -33,7 +33,7 @@ describe('nextRandom', () => {
 
 describe('generateSeed', () => {
   it('builds a readable text Seed from entropy', () => {
-    expect(generateSeed(123456)).toMatch(/^[a-z]+-[a-z]+-\d{4}$/);
+    expect(generateSeed(123456)).toMatch(/^[a-z]+-[a-z]+-[a-z]+-\d{4}$/);
   });
 
   it('is deterministic for a given entropy and varies with it', () => {
