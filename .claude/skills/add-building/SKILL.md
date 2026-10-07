@@ -1,84 +1,71 @@
 ---
 name: add-building
-description: Add a new placeable building, decoration or green-space element (a 3D model the player can build) to the Urbix game. Asks the category (build menu section), the unlock threshold in Citizens and the price, then adds it to the right data table (sport venues, nature elements) or wires it by hand. Use when the user wants to add a model, building or constructible to the game.
+description: Add a new placeable building, decoration or green-space element (a 3D model the player can build) to the Urbix game. Asks the category (build menu section), the unlock threshold in Citizens and the price, then adds one entry to assets/buildings.json. Use when the user wants to add a model, building or constructible to the game.
 ---
 
 # Add a building to the game
 
 Talk to the user in French. Code, identifiers and comments in English, comments only when the code is ambiguous. Never use trademarked game names (SimCity terms) in names, docs or code.
 
-## 1. Choose the path
+Every building is one entry of `assets/buildings.json` (ADR 0014). Menu, specs, unlocks, model, codex and texts are derived from it.
 
-Read `src/codex/buildingSections.ts` first: its `BUILDING_SECTIONS` are the categories. Ask with `AskUserQuestion` (one call, several questions) and skip any answer the user already gave.
+## 1. Gather inputs
 
-**Category** (always ask): `build.housing`, `build.production`, `build.storage`, `build.utilities`, `build.transport`, `build.publicFacilities`, `build.leisure`, `build.sport`, `build.decoration`, `build.greenSpaces`; "new category" through the automatic "Other" choice.
+Read `assets/buildings.json` and `src/core/buildings/buildSections.ts` (the sections). Ask with `AskUserQuestion` (one call, several questions) and skip any answer the user already gave.
 
-The category selects the path:
+- **Model key** `<theme>/<name>` in `assets/models.json`. If it is not defined there, stop and tell the user to add the model first (assets editor); never invent a key.
+- **Category** (section): `build.housing`, `build.production`, `build.storage`, `build.utilities`, `build.transport`, `build.publicFacilities`, `build.leisure`, `build.sport`, `build.decoration`, `build.greenSpaces`.
+- **Unlock threshold** in Citizens: propose a value from the neighbours in the chosen section.
+- **Price** in Urbs: propose a value from comparable buildings.
+- **Id** (camelCase; hyphenated for nature elements), **English and French name**, **English and French one-sentence description**.
+- **Footprint** (default: from `models.json`) and **requiresRoad** (default `true`).
+- **Well-being radius and bonus** if it is a sport venue (propose the values of the other venues).
 
-| Category | Path | Files touched |
-|---|---|---|
-| `build.sport` | Sport venue | 1 (`assets/models.json`) |
-| `build.decoration`, `build.greenSpaces` | Nature element | 1 (`assets/models.json`) |
-| anything else | Fallback | many |
+For decoration and green spaces there is no free price or threshold: ask the **nature family** instead (`NATURE_FAMILIES` in `src/core/environment/natureFamilies.ts`) and show each candidate's `cost` and `unlock`. Decoration section means family `decoration`; green spaces means `tree`, `conifer`, `palm`, `shrub`, `flower`, `grass` or `habitat`. If no family fits the wanted price, offer the closest one.
 
-Always needed: **model key** `<theme>/<name>` in `assets/models.json`. If the model is not defined there yet, stop and tell the user to add it first (assets editor); never invent a key.
+Confirm the recap in one short message before editing.
 
-## 2. Wire it up
+## 2. Add the entry
 
-### Path A: sport venue
+Edit through `scripts/buildingsFile.ts` so the entry is validated, the order is kept and `src/core/buildings/buildingTypes.generated.ts` is regenerated in the same step. Entries are in menu order: insert the new one after the last entry of its section.
 
-Ask the **unlock threshold** (Citizens; propose from `ECOLOGY_UNLOCKS` in `src/core/environment/ecology.ts` neighbours), the **price** in Urbs (propose from comparable `BUILDING_SPECS`), the **footprint** (default: the model's own `footprint` in `assets/models.json`), the Well-being **radius** and **bonus** (propose from the other sport venues), the **id** (camelCase) and the **English and French name and one-sentence description**. Confirm the recap in one short message.
+```bash
+node -e "import('./scripts/buildingsFile.ts').then(({ readBuildings, writeBuildings }) => {
+  const all = readBuildings();
+  const next = {};
+  for (const [id, definition] of Object.entries(all)) { next[id] = definition; if (id === '<last entry of the section>') next['<new id>'] = { /* entry */ }; }
+  writeBuildings(next);
+})"
+```
 
-The data lives in `assets/models.json`, not in code (ADR 0013). Add a `building` block to the model's entry, and a `footprint` if it has none:
+Entry shapes:
 
 ```json
-"poly.pizza/some-model": {
-  "source": "poly.pizza", "license": "CC-BY 3.0",
-  "footprint": [10, 10],
-  "building": {
-    "kind": "sport", "id": "myVenue",
-    "name": { "en": "English name", "fr": "Nom français" },
-    "description": { "en": "English sentence.", "fr": "Phrase française." },
-    "unlockCitizens": 300, "cost": 2500, "radius": 12, "wellbeingBonus": 10
-  }
+"myVenue": {
+  "section": "build.sport", "model": "poly.pizza/some-model", "footprint": [10, 10],
+  "cost": 2500, "unlockCitizens": 300, "requiresRoad": true,
+  "name": { "en": "English name", "fr": "Nom français" },
+  "description": { "en": "English sentence.", "fr": "Phrase française." },
+  "sport": { "radius": 12, "wellbeingBonus": 10 }
 }
 ```
 
-Edit it through `scripts/modelsFile.ts` rather than by hand, so the entry is validated and `src/core/buildings/buildingTypes.generated.ts` is regenerated in the same step:
-
-```bash
-node -e "import('./scripts/modelsFile.ts').then(({ readModels, writeModels }) => { const d = readModels(); d['<model key>'].building = {...}; writeModels(d); })"
-```
-
-(The user can also fill the "Building" form of the assets editor, `npm run assets:editor`.) Never edit the generated types file; a test fails when it is out of date. Everything else derives from the entry: `BuildingType`, specs, unlocks, model, the `build.sport` menu section, codex, toast, i18n, range preview, Home panel and Well-being effect. Do not touch any other file.
-
-### Path B: nature element (decoration and green spaces)
-
-Price, unlock threshold, footprint (1×1), radius and bonuses come from the **family** in `NATURE_FAMILIES` (`src/core/environment/natureFamilies.ts`), not from the element. So instead of asking a free price and threshold, ask the **family** and show, for each candidate, its `cost` and `unlock`:
-
-- Decoration section: family `decoration`.
-- Green spaces section: `tree`, `conifer`, `palm`, `shrub`, `flower`, `grass`, `habitat`.
-
-If the user wants a price or threshold that no family has, say so and offer the closest family; do not add a per-element override unless the user asks. Ask the **id** (kebab-case, e.g. `nature-tree-oak`) and the **English and French name**, confirm, then add to the model's entry in `assets/models.json`, the same way as path A:
+Drop `sport` for an ordinary building (add `initialSlots` only for Shop-like stacks). A nature element has only `model`, `name` and `nature`:
 
 ```json
-"building": { "kind": "nature", "id": "nature-tree-oak", "family": "tree", "name": { "en": "Oak", "fr": "Chêne" } }
+"nature-tree-oak": { "model": "nature/tree_oak", "name": { "en": "Oak", "fr": "Chêne" }, "nature": { "family": "tree" } }
 ```
 
-The menu section, codex entry, description (per family), unlock, price and i18n name all derive from it. Do not touch any other file.
+The user can also fill the form of the assets editor (`npm run assets:editor`): each model lists the buildings that use it.
 
-### Path C: any other building
+## 3. When the building has rules
 
-Use when the category is neither Sport, Decoration nor Green spaces. Ask the unlock threshold, the price, the footprint and requiresRoad, the type id (camelCase), the English and French names and codex description, and whether it has a gameplay effect; confirm the recap first. Mirror what the data-driven tables already do (`FACILITIES` in `src/core/services/facilities.ts`, `NATURE_MODELS`): prefer extending a table over adding scattered `if` branches. Reference implementations: `git show a35f80c --stat` (a former hand-wired stadium, now a table entry). Files that name a plain building: `state.ts` (`BuildingType`), `buildingSpecs.ts`, `ecology.ts` (`ECOLOGY_UNLOCKS`), `renderItems.ts` (`MODEL_BY_BUILDING`), `buildingSections.ts`, `catalog.ts` (`DESCRIPTIONS`), `i18n/messages.ts` and `i18n/fr.ts` (`building.<id>`, `codex.description.<id>`), and, for an unlock toast, `unlocks.ts`, `events.ts`, `event.unlocked.<id>`. Finish with `grep -rn "<similar type>" src scripts` to catch anything missed.
+A building with behaviour beyond data (Tiers, capacities, production, energy, service coverage) also needs code keyed by its id: a rule table such as `FACILITIES` (category, radius, capacity, power, water) or a constants module like `CASINO`. Mirror an existing building of the same kind (`git show a35f80c --stat` shows a hand-wired one from before ADR 0014). Tier models stay in `src/scene/renderItems.ts`; `model` in the entry is the Tier 1 model. If the building should announce its unlock, add `event.unlocked.<id>` and the entry in `facilitiesUnlockedBetween` (`src/core/progression/unlocks.ts`) and `events.ts`. Finish with `grep -rn "<similar id>" src scripts`.
 
-### Models
+## 4. Test and verify
 
-A `poly.pizza/<slug>` model is copied to `public/models/` by `npm run assets` only when `src/scene/renderItems.ts` names it; models with a `building` block are copied too, so nothing else is needed. Run `npm run assets` once to check. If the model is not in `assets/models.json` yet, stop and ask the user to add it first.
-
-## 3. Test and verify
-
-1. Paths A and B need no new test. For path C, add a test next to the module for any gameplay effect.
-2. Run `npx tsc --noEmit`. The `Record<BuildingType, ...>` maps make TypeScript point at every missing place.
-3. Run `rtk proxy npx vitest run` (the rtk filter hides the summary). `validateCodex` fails if the codex entry is missing; the codex image manifest is regenerated by `npm run codex:generate`, do not edit `public/codex/manifest.json` by hand.
-4. Run `npm run lint`.
-5. Report: the files changed, the chosen values (category, unlock Citizens, price or family) and anything left undone (for instance codex images to generate). Do not commit unless the user asks.
+1. `npx tsc --noEmit`: `Record<BuildingType, …>` maps point at every missing case.
+2. `rtk proxy npx vitest run` (the rtk filter hides the summary). `scripts/buildingsFile.test.ts` checks the generated types and `buildingDefinitions.test.ts` checks specs and texts; the codex image manifest is regenerated by `npm run codex:generate`, do not edit `public/codex/manifest.json`.
+3. `npm run assets` copies a `poly.pizza/<slug>` model to `public/models/` when a building uses it; run it once to check.
+4. `npm run lint`.
+5. Report the entry added, the chosen values (category, unlock Citizens, price or family) and anything left undone. Do not commit unless the user asks.
