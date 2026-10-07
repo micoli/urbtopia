@@ -1,10 +1,23 @@
 import { useEffect, useRef } from 'react'
+import type { ModelDefinition } from '../../../../src/scene/modelDefinitions'
 import { definitionKey, type Definitions } from '../assetKeys'
 import type { ModelInfo } from '../modelLoader'
+import { footprintOf } from '../fitted'
+import { layoutOverview } from '../overviewLayout'
 import { buildPlacement, SceneStage } from '../sceneStage'
 
-const OVERVIEW_SPACING = 3
 const CLICK_TOLERANCE_PX = 4
+const OVERVIEW_MIN_SIZE = 0.25
+const OVERVIEW_MAX_SIZE = 16
+const OVERVIEW_TARGET_SIZE = 4
+
+// Models without a scale or fit keep their raw size in the game data; the overview only shrinks or grows the extreme ones so the whole pack stays readable.
+const overviewScale = (info: ModelInfo, definition: ModelDefinition | undefined) => {
+  if (definition?.scale || definition?.fit) return 1
+  const size = Math.max(info.size.x, info.size.z)
+  if (size >= OVERVIEW_MIN_SIZE && size <= OVERVIEW_MAX_SIZE) return 1
+  return OVERVIEW_TARGET_SIZE / size
+}
 
 interface Props {
   pack: string
@@ -58,14 +71,22 @@ export function ModelViewer({ pack, names, current, rotation, overview, definiti
     const stage = stageRef.current!
     let cancelled = false
     const shown = overview ? names : focus ? [focus] : []
-    const cols = Math.ceil(Math.sqrt(shown.length))
     void (async () => {
       const placements = await Promise.all(shown.map((name) => buildPlacement(pack, name, definitions[definitionKey(pack, name)], !overview)))
       if (cancelled) return
       stage.clear()
+      const scales = placements.map(({ name, info }) => (overview ? overviewScale(info, definitions[definitionKey(pack, name)]) : 1))
+      const positions = layoutOverview(placements.map(({ name, info }, index) => {
+        const factor = scales[index]!
+        if (factor !== 1) return { width: info.size.x * factor, depth: info.size.z * factor }
+        return footprintOf(info, definitions[definitionKey(pack, name)])
+      }))
       placements.forEach(({ name, info, object }, index) => {
         callbacks.current.onInfo(pack, name, info)
-        if (overview) object.position.set((index % cols) * OVERVIEW_SPACING, 0, Math.floor(index / cols) * OVERVIEW_SPACING)
+        if (overview) {
+          object.scale.setScalar(scales[index]!)
+          object.position.set(positions[index]!.x, 0, positions[index]!.z)
+        }
         else object.rotation.y = (rotation * Math.PI) / 2
         stage.stage.add(object)
       })
