@@ -1,6 +1,6 @@
-import { NATURE_MODELS, NATURE_FAMILIES, type NatureFamily, type NatureType } from '../core/environment/nature';
+import { NATURE_FAMILIES, type NatureFamily } from '../core/environment/nature';
 
-type NatureMessageKey = `building.${NatureType}` | `codex.description.nature.${NatureFamily}`;
+type NatureMessageKey = `codex.description.nature.${NatureFamily}`;
 
 const descriptions: Record<NatureFamily, readonly [string, string]> = {
   tree: ['Trees strongly improve cooling, biodiversity and nearby Citizen well-being.', 'Les arbres améliorent fortement la fraîcheur, la biodiversité et le bien-être des citoyens proches.'],
@@ -15,12 +15,11 @@ const descriptions: Record<NatureFamily, readonly [string, string]> = {
 
 export function natureMessages(language: 'en' | 'fr'): Record<NatureMessageKey, string> {
   const index = language === 'en' ? 0 : 1;
-  const names = NATURE_MODELS.map(([type, , , name]) => [`building.${type}`, name[index]]);
   const help = Object.entries(NATURE_FAMILIES).map(([family, profile]) => [
     `codex.description.nature.${family}`,
     language === 'en'
       ? `${descriptions[family as NatureFamily][index]} Range: ${profile.radius} tiles. Adjacent vegetation gains 20%; benefits have diminishing returns and never cancel emissions. No road, power, water or maintenance required.`
       : `${descriptions[family as NatureFamily][index]} Rayon : ${profile.radius} cases. La végétation adjacente gagne 20 % ; les bénéfices ont un rendement décroissant et ne compensent jamais les émissions. Aucune route, électricité, eau ou entretien requis.`,
   ]);
-  return Object.fromEntries([...names, ...help]) as Record<NatureMessageKey, string>;
+  return Object.fromEntries(help) as Record<NatureMessageKey, string>;
 }

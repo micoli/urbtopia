@@ -1,6 +1,5 @@
-import { NATURE_MODELS, type NatureType, type NatureFamily } from '../core/environment/nature';
-import { BUILDING_SPECS, CROPS, CROP_IDS, ECOLOGY, ECOLOGY_UNLOCKS, FACILITY_TYPES, isCrop, maxTierOf, type BuildingType, type CropId, type FacilityType } from '../core';
-import { SPORT_VENUE_TYPES, type SportVenueType } from '../core/leisure/sportVenues';
+import { BUILDING_ENTRIES } from '../core/buildings/buildingDefinitions';
+import { BUILDING_SPECS, CROPS, CROP_IDS, ECOLOGY, ECOLOGY_UNLOCKS, isCrop, maxTierOf, type BuildingType, type CropId } from '../core';
 import { MESSAGES, type MessageKey } from '../i18n/messages';
 import { FR } from '../i18n/fr';
 import { BUILDING_SECTIONS, type BuildSection } from './buildingSections';
@@ -13,32 +12,8 @@ export type CodexId = BuildingType | 'solarHome' | RoadConstructionId | CropId;
 export type CodexSection = BuildSection | 'codex.roads' | 'codex.crops';
 
 const DESCRIPTIONS = {
-  ...Object.fromEntries(NATURE_MODELS.map(([type, , family]) => [type, `codex.description.nature.${family}`])) as Record<NatureType, `codex.description.nature.${NatureFamily}`>,
-  ...Object.fromEntries(FACILITY_TYPES.map(type => [type, `codex.description.${type}`])) as Record<FacilityType, `codex.description.${FacilityType}`>,
-  ...Object.fromEntries(SPORT_VENUE_TYPES.map(type => [type, `codex.description.${type}`])) as Record<SportVenueType, `codex.description.${SportVenueType}`>,
-  home: 'codex.description.home',
+  ...Object.fromEntries(BUILDING_ENTRIES.map(({ id, nature }) => [id, nature ? `codex.description.nature.${nature.family}` : `codex.description.${id}`])) as Record<BuildingType, MessageKey>,
   solarHome: 'codex.description.solarHome',
-  workshop: 'codex.description.workshop',
-  factory: 'codex.description.factory',
-  shop: 'codex.description.shop',
-  storehouse: 'codex.description.storehouse',
-  silo: 'codex.description.silo',
-  grainSilo: 'codex.description.grainSilo',
-  vault: 'codex.description.vault',
-  casino: 'codex.description.casino',
-  farm: 'codex.description.farm',
-  packhouse: 'codex.description.packhouse',
-  powerPlant: 'codex.description.powerPlant',
-  coalPlant: 'codex.description.coalPlant',
-  waterTower: 'codex.description.waterTower',
-  tree: 'codex.description.tree',
-  park: 'codex.description.park',
-  solar: 'codex.description.solar',
-  battery: 'codex.description.battery',
-  backup: 'codex.description.backup',
-  busStop: 'codex.description.busStop',
-  brtStation: 'codex.description.brtStation',
-  railStation: 'codex.description.railStation',
   road: 'codex.description.road',
   crossing: 'codex.description.crossing',
   roundabout: 'codex.description.roundabout',

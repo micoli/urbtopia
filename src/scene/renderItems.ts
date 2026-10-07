@@ -1,7 +1,6 @@
-import { SPORT_VENUES, SPORT_VENUE_TYPES, type SportVenueType } from '../core/leisure/sportVenues';
+import { BUILDING_ENTRIES } from '../core/buildings/buildingDefinitions';
 import { CROP_IDS, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
-import { NATURE_MODELS, type NatureType } from '../core/environment/nature';
 import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
 import { SERVICE_VEHICLE_MODELS } from './serviceTrip';
@@ -24,43 +23,7 @@ export interface RenderItem {
   tint?: number;
 }
 
-export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
-  ...Object.fromEntries(SPORT_VENUE_TYPES.map(type => [type, SPORT_VENUES[type].model])) as Record<SportVenueType, string>,
-  ...Object.fromEntries(NATURE_MODELS.map(([type, model]) => [type, model])) as Record<NatureType, string>,
-  workshop: 'industrial/building-h',
-  factory: 'industrial/building-b',
-  shop: 'commercial/building-a',
-  storehouse: 'industrial/building-a',
-  home: 'suburban/building-type-k',
-  powerPlant: 'industrial/windmill',
-  coalPlant: 'industrial/chimney-basic',
-  waterTower: 'industrial/water-tower',
-  silo: 'industrial/building-p',
-  grainSilo: 'farm/Silo_House',
-  vault: 'industrial/building-s',
-  casino: 'buildings/2Story_Stairs_Mat',
-  farm: 'farm/Barn',
-  packhouse: 'farm/OpenBarn',
-  tree: 'suburban/tree-small',
-  park: 'suburban/tree-large',
-  solar: 'industrial/solar-panel-landscape-group',
-  battery: 'industrial/shipping-container-a',
-  backup: 'industrial/building-d',
-  brtStation: 'roads/road-sign-empty',
-  railStation: 'industrial/building-q',
-  busStop: 'roads/road-sign-empty',
-  school: 'commercial/building-d',
-  middleSchool: 'commercial/building-f',
-  highSchool: 'commercial/building-g',
-  university: 'commercial/building-l',
-  townHall: 'commercial/building-k',
-  communityHall: 'commercial/building-a',
-  theater: 'commercial/building-b',
-  concertHall: 'commercial/building-n',
-  hospital: 'commercial/building-i',
-  fireStation: 'industrial/building-s',
-  policeStation: 'commercial/building-j',
-};
+export const MODEL_BY_BUILDING = Object.fromEntries(BUILDING_ENTRIES.map(({ id, model }) => [id, model])) as Record<BuildingType, string>;
 
 const FACILITY_DETAILS: Record<FacilityType, string> = {
   school: 'commercial/detail-awning',

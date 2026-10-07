@@ -1,3 +1,4 @@
+import { definitionOf } from '../buildings/buildingDefinitions';
 import type { Footprint } from '../buildings/buildingSpecs';
 
 export type CasinoGame = 'slotMachine' | 'blackjack' | 'blockmatch';
@@ -6,12 +7,14 @@ export const CASINO_GAMES: readonly CasinoGame[] = ['slotMachine', 'blackjack', 
 
 const THEATER_POWER = 2;
 
+const definition = definitionOf('casino');
+
 export const CASINO = {
-  unlockCitizens: 250,
-  cost: 2500,
+  unlockCitizens: definition.unlockCitizens!,
+  cost: definition.cost!,
   upgradeCosts: { 2: 4000, 3: 8000 } as Record<number, number>,
   footprints: [
-    { width: 2, depth: 2 },
+    { width: definition.footprint![0], depth: definition.footprint![1] },
     { width: 3, depth: 2 },
     { width: 6, depth: 2 },
   ] as readonly Footprint[],

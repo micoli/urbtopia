@@ -1,5 +1,5 @@
-import { SPORT_DEFINITIONS } from '../buildings/buildingDefinitions';
-import type { SportVenueType } from '../buildings/buildingTypes.generated';
+import { SPORT_ENTRIES } from '../buildings/buildingDefinitions.ts';
+import type { SportVenueType } from '../buildings/buildingTypes.generated.ts';
 
 export type { SportVenueType };
 
@@ -14,10 +14,10 @@ export interface SportVenue {
   intro: readonly [en: string, fr: string];
 }
 
-export const SPORT_VENUES = Object.fromEntries(SPORT_DEFINITIONS.map(({ model, definition, building }): [string, SportVenue] => {
-  const [width, depth] = definition.footprint ?? [1, 1];
-  const { unlockCitizens, cost, radius, wellbeingBonus, name, description } = building;
-  return [building.id, { model, unlockCitizens, cost, footprint: { width, depth }, radius, wellbeingBonus, name: [name.en, name.fr], intro: [description.en, description.fr] }];
+export const SPORT_VENUES = Object.fromEntries(SPORT_ENTRIES.map(({ id, model, footprint, unlockCitizens, cost, sport, name, description }): [string, SportVenue] => {
+  const [width, depth] = footprint!;
+  const intro = description ?? name;
+  return [id, { model, unlockCitizens: unlockCitizens!, cost: cost!, footprint: { width, depth }, radius: sport.radius, wellbeingBonus: sport.wellbeingBonus, name: [name.en, name.fr], intro: [intro.en, intro.fr] }];
 })) as Record<SportVenueType, SportVenue>;
 
 export const SPORT_VENUE_TYPES = Object.keys(SPORT_VENUES) as SportVenueType[];

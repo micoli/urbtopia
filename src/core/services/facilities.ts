@@ -1,3 +1,4 @@
+import { definitionOf } from '../buildings/buildingDefinitions';
 import type { Footprint } from '../buildings/buildingSpecs';
 
 export type ServiceCategory = 'education' | 'administration' | 'culture' | 'health' | 'safety';
@@ -29,19 +30,27 @@ export interface FacilitySpec {
 
 const power = 2;
 
-export const FACILITIES: Record<FacilityType, FacilitySpec> = {
-  communityHall: { category: 'culture', unlockCitizens: 32, cost: 150, radius: 6, capacity: 150, footprint: { width: 1, depth: 1 }, power, water: 0 },
-  school: { category: 'education', unlockCitizens: 15, cost: 300, radius: 10, capacity: 300, footprint: { width: 2, depth: 2 }, power, water: 0 },
-  middleSchool: { category: 'education', unlockCitizens: 60, cost: 600, radius: 12, capacity: 400, footprint: { width: 2, depth: 2 }, power, water: 0 },
-  highSchool: { category: 'education', unlockCitizens: 100, cost: 1000, radius: 14, capacity: 600, footprint: { width: 3, depth: 2 }, power, water: 0 },
-  university: { category: 'education', unlockCitizens: 400, cost: 3000, radius: null, capacity: 2000, footprint: { width: 3, depth: 3 }, power, water: 0 },
-  hospital: { category: 'health', unlockCitizens: 100, cost: 1500, radius: 14, capacity: 800, footprint: { width: 3, depth: 3 }, power, water: 2 },
-  townHall: { category: 'administration', unlockCitizens: 160, cost: 2000, radius: null, capacity: null, footprint: { width: 3, depth: 2 }, power, water: 0, unique: true },
-  fireStation: { category: 'safety', unlockCitizens: 160, cost: 1000, radius: 18, capacity: 800, footprint: { width: 3, depth: 2 }, power, water: 0 },
-  policeStation: { category: 'safety', unlockCitizens: 160, cost: 1000, radius: 18, capacity: 800, footprint: { width: 2, depth: 2 }, power, water: 0 },
-  theater: { category: 'culture', unlockCitizens: 250, cost: 800, radius: 10, capacity: 500, footprint: { width: 2, depth: 2 }, power, water: 0 },
-  concertHall: { category: 'culture', unlockCitizens: 600, cost: 2000, radius: 14, capacity: 1200, footprint: { width: 3, depth: 3 }, power, water: 0 },
+type FacilityRule = Omit<FacilitySpec, 'unlockCitizens' | 'cost' | 'footprint'>;
+
+const RULES: Record<FacilityType, FacilityRule> = {
+  communityHall: { category: 'culture', radius: 6, capacity: 150, power, water: 0 },
+  school: { category: 'education', radius: 10, capacity: 300, power, water: 0 },
+  middleSchool: { category: 'education', radius: 12, capacity: 400, power, water: 0 },
+  highSchool: { category: 'education', radius: 14, capacity: 600, power, water: 0 },
+  university: { category: 'education', radius: null, capacity: 2000, power, water: 0 },
+  hospital: { category: 'health', radius: 14, capacity: 800, power, water: 2 },
+  townHall: { category: 'administration', radius: null, capacity: null, power, water: 0, unique: true },
+  fireStation: { category: 'safety', radius: 18, capacity: 800, power, water: 0 },
+  policeStation: { category: 'safety', radius: 18, capacity: 800, power, water: 0 },
+  theater: { category: 'culture', radius: 10, capacity: 500, power, water: 0 },
+  concertHall: { category: 'culture', radius: 14, capacity: 1200, power, water: 0 },
 };
+
+export const FACILITIES = Object.fromEntries(Object.entries(RULES).map(([type, rule]) => {
+  const { footprint, cost, unlockCitizens } = definitionOf(type as FacilityType);
+  const [width, depth] = footprint!;
+  return [type, { ...rule, cost: cost!, unlockCitizens: unlockCitizens!, footprint: { width, depth } }];
+})) as Record<FacilityType, FacilitySpec>;
 
 export const FACILITY_TYPES = Object.keys(FACILITIES) as FacilityType[];
 

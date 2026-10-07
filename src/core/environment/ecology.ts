@@ -1,9 +1,9 @@
-import { NATURE_MODELS, NATURE_FAMILIES, greenProfileOf, natureModelOf } from './nature';
+import { NATURE_FAMILIES, greenProfileOf, natureModelOf } from './nature';
+import { BUILDING_ENTRIES } from '../buildings/buildingDefinitions';
 import { footprintOf } from '../buildings/buildingSpecs';
-import { FACILITIES, FACILITY_TYPES, isFacilityType } from '../services/facilities';
+import { FACILITIES, isFacilityType } from '../services/facilities';
 import { HOME_TIERS } from '../economy/economy';
-import { CASINO, casinoPower } from '../leisure/casino';
-import { SPORT_VENUES, SPORT_VENUE_TYPES } from '../leisure/sportVenues';
+import { casinoPower } from '../leisure/casino';
 import type { Building, BuildingType, GameState } from '../engine/state';
 
 export const ECOLOGY = {
@@ -14,12 +14,9 @@ export const ECOLOGY = {
   coalCost: 0.05, coalEmissions: 2, coalPollutionRadius: 6, coalWellbeingPenalty: 10, coalWellbeingCap: 20,
 };
 
-export const ECOLOGY_UNLOCKS: Partial<Record<BuildingType, number>> = {
-  ...Object.fromEntries(NATURE_MODELS.map(([type, , family]) => [type, NATURE_FAMILIES[family].unlock])),
-  ...Object.fromEntries(FACILITY_TYPES.map(type => [type, FACILITIES[type].unlockCitizens])),
-  ...Object.fromEntries(SPORT_VENUE_TYPES.map(type => [type, SPORT_VENUES[type].unlockCitizens])),
-  casino: CASINO.unlockCitizens, brtStation: 200, railStation: 600, farm: 20, packhouse: 20, tree: 6, park: 15, solar: 32, battery: 32, backup: 32, busStop: 32,
-};
+export const ECOLOGY_UNLOCKS: Partial<Record<BuildingType, number>> = Object.fromEntries(
+  BUILDING_ENTRIES.map(({ id, nature, unlockCitizens }) => [id, nature ? NATURE_FAMILIES[nature.family].unlock : unlockCitizens ?? 0]),
+);
 
 export function citizenCount(state: GameState): number {
   return state.buildings.reduce((sum, b) => sum + (b.type === 'home' ? HOME_TIERS[b.tier - 1]?.citizens ?? 0 : 0), 0);

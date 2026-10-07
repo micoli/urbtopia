@@ -1,21 +1,16 @@
-import { SPORT_VENUE_TYPES } from '../core/leisure/sportVenues';
-import { NATURE_MODELS } from '../core/environment/nature';
-import { FACILITIES, FACILITY_TYPES, SERVICE_CATEGORIES, type BuildingType } from '../core';
+import { BUILD_SECTION_TITLES, type BuildSection } from '../core/buildings/buildSections';
+import { BUILDING_ENTRIES, type BuildingEntry } from '../core/buildings/buildingDefinitions';
+import { FACILITIES, SERVICE_CATEGORIES, isFacilityType, type BuildingType } from '../core';
 
-const natureTypesOf = (decorative: boolean) => NATURE_MODELS.filter(([, , family]) => (family === 'decoration') === decorative).map(([type]) => type);
-const PUBLIC_FACILITY_TYPES = SERVICE_CATEGORIES.flatMap(category => FACILITY_TYPES.filter(type => FACILITIES[type].category === category));
+export type { BuildSection };
 
-export const BUILDING_SECTIONS = [
-  { title: 'build.housing', types: ['home'] },
-  { title: 'build.production', types: ['workshop', 'factory', 'shop', 'farm', 'packhouse'] },
-  { title: 'build.storage', types: ['storehouse', 'silo', 'grainSilo', 'vault'] },
-  { title: 'build.utilities', types: ['powerPlant', 'coalPlant', 'waterTower', 'solar', 'battery', 'backup'] },
-  { title: 'build.transport', types: ['busStop', 'brtStation', 'railStation'] },
-  { title: 'build.publicFacilities', types: PUBLIC_FACILITY_TYPES },
-  { title: 'build.leisure', types: ['casino'] },
-  { title: 'build.sport', types: SPORT_VENUE_TYPES },
-  { title: 'build.decoration', types: natureTypesOf(true) },
-  { title: 'build.greenSpaces', types: ['tree', 'park', ...natureTypesOf(false)] },
-] as const satisfies readonly { title: string; types: readonly BuildingType[] }[];
+const sectionOf = ({ nature, section }: BuildingEntry): BuildSection => (nature ? (nature.family === 'decoration' ? 'build.decoration' : 'build.greenSpaces') : section!);
 
-export type BuildSection = typeof BUILDING_SECTIONS[number]['title'];
+const typesOf = (title: BuildSection): BuildingType[] => BUILDING_ENTRIES.filter(entry => sectionOf(entry) === title).map(({ id }) => id);
+
+const byServiceCategory = (types: BuildingType[]): BuildingType[] => SERVICE_CATEGORIES.flatMap(category => types.filter(type => isFacilityType(type) && FACILITIES[type].category === category));
+
+export const BUILDING_SECTIONS: readonly { title: BuildSection; types: readonly BuildingType[] }[] = BUILD_SECTION_TITLES.map(title => ({
+  title,
+  types: title === 'build.publicFacilities' ? byServiceCategory(typesOf(title)) : typesOf(title),
+}));

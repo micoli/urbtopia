@@ -1,3 +1,4 @@
+import { BUILD_SECTION_TITLES } from '../../core/buildings/buildSections';
 import { BUILDING_SECTIONS, type BuildSection } from '../../codex/buildingSections';
 export { BUILDING_SECTIONS, type BuildSection } from '../../codex/buildingSections';
 export const BUILD_SECTION_KEY = 'urbtopia-build-section';
@@ -6,9 +7,9 @@ export function readBuildSection(): BuildSection {
   try {
     const stored = localStorage.getItem(BUILD_SECTION_KEY);
     const section = BUILDING_SECTIONS.find(section => section.title === stored);
-    return section?.title ?? BUILDING_SECTIONS[0].title;
+    return section?.title ?? BUILD_SECTION_TITLES[0];
   } catch {
-    return BUILDING_SECTIONS[0].title;
+    return BUILD_SECTION_TITLES[0];
   }
 }
 

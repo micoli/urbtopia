@@ -1,7 +1,6 @@
 import { CASINO, MAX_CASINO_TIER, casinoPower, casinoRadius, maxStake } from '../core/leisure/casino';
 
 type CasinoMessageKey =
-  | 'building.casino'
   | 'codex.description.casino'
   | 'event.unlocked.casino'
   | 'build.leisure'
@@ -54,7 +53,6 @@ type CasinoMessageKey =
   | 'casino.maxTier';
 
 const texts: Record<CasinoMessageKey, readonly [string, string]> = {
-  'building.casino': ['Casino', 'Casino'],
   'codex.description.casino': ['', ''],
   'event.unlocked.casino': ['New leisure building available: Casino.', 'Nouveau bâtiment de loisirs disponible : Casino.'],
   'build.leisure': ['Leisure', 'Loisirs'],
