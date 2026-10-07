@@ -308,8 +308,21 @@ _Avoid_: BRT station, Freight terminal
 A public transport journey linking a Home to an activity through one or more lines, with at most two Transfers.
 _Avoid_: Infrastructure route, Individual Citizen simulation
 
+**Player account**:
+The anonymous identity a Cloud save belongs to, created silently on first play and bound to the device. The player can later attach an email to it to recover their city on another device.
+_Avoid_: User, profile, login
+
+**Cloud save**:
+The copy of the city kept online for a Player account: the current one plus the 3 previous versions. The local save stays the source of truth; the Cloud save mirrors it.
+_Avoid_: Remote save, sync, server save
+
+**Save conflict**:
+The situation where the local save and the Cloud save have both advanced since they last matched. The player chooses which one to keep; the other is kept as a previous version.
+_Avoid_: Merge, overwrite
+
 ## Relationships
 
+- A Cloud save never replaces the local save without the player's consent when a Save conflict exists.
 - A Casino is a Leisure building, never a Public facility.
 - A Casino is shed first when electricity falls short, before Homes, except during an Adaptation period.
 - A Minigame round of chance draws from the game's Seed; its outcome is fixed when the Stake is debited.
