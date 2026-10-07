@@ -15,6 +15,14 @@ describe('readCloudConfig', () => {
   });
 
   it.each([
+    ['https://x.supabase.co/'],
+    ['https://x.supabase.co/rest/v1/'],
+    ['https://x.supabase.co/auth/v1'],
+  ])('keeps only the project root of %s', (url) => {
+    expect(readCloudConfig({ VITE_SUPABASE_URL: url, VITE_SUPABASE_PUBLISHABLE_KEY: 'k' })?.url).toBe('https://x.supabase.co');
+  });
+
+  it.each([
     ['nothing', {}],
     ['an empty URL', { VITE_SUPABASE_URL: '', VITE_SUPABASE_PUBLISHABLE_KEY: 'k' }],
     ['a missing key', { VITE_SUPABASE_URL: 'https://x.supabase.co' }],
