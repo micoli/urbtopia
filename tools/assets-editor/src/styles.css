@@ -2,23 +2,41 @@ html,body,#root{margin:0;height:100%;overflow:hidden;background:#cfd8e3;font:12p
   #app{display:grid;grid-template-columns:150px 1fr 230px;grid-template-rows:auto 1fr;height:100%}
   @media (max-width:800px){#app{grid-template-columns:1fr;grid-template-rows:auto 25% 40% 1fr}#bar,#assets,#view,#side{grid-column:1}}
   #bar{grid-column:1/4;background:#222;color:#fff;padding:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-  #bar button{font:inherit;padding:4px 8px}
-  #bar button.on{background:#fc0}
+  button,select,input{font:inherit}
+  button,.toolbar-button,.select-trigger{padding:4px 8px;cursor:pointer}
+  .toolbar-button[data-state=on]{background:#fc0}
+  .packs{display:contents}
   #assets{display:flex;flex-direction:column;min-height:0;background:#fff;border-right:1px solid #888}
   #assets input{margin:6px;min-width:0;font:inherit;padding:4px}
-  #list{overflow:auto;flex:1}
-  #list div{padding:3px 6px;cursor:pointer;display:flex;justify-content:space-between}
-  #list div:hover{background:#eef}
-  #list div.sel{background:#fc0}
-  #list div.done{color:#070}
+  .scroll-root{flex:1;min-height:0;overflow:hidden;position:relative}
+  .scroll-viewport{width:100%;height:100%}
+  .scroll-viewport>div{display:block!important}
+  .asset-row{padding:3px 6px;cursor:pointer;display:flex;justify-content:space-between}
+  .asset-row:hover{background:#eef}
+  .asset-row.sel{background:#fc0}
+  .asset-row.done{color:#070}
+  .scrollbar{width:8px;padding:1px;background:#0001}
+  .scrollbar-thumb{background:#888;border-radius:4px}
   #view{position:relative;min-width:0}
   canvas{display:block;width:100%;height:100%}
   #side{background:#fff;border-left:1px solid #888;padding:8px;overflow:auto}
   #side h3{margin:0 0 6px}
   #side .row{margin:6px 0}
-  #side button{font:inherit;padding:3px 6px}
-  #side button.on{background:#fc0}
+  #side button{padding:3px 6px}
   #legend{position:absolute;left:6px;bottom:6px;max-width:90%;background:#fffc;padding:4px;pointer-events:none}
 #side .row input{max-width:100%}
 #side .row{margin:6px 0}
-dialog .row{margin:6px 0}
+button.select-trigger{background:#fff;border:1px solid #888;color:#000;display:inline-flex;gap:6px;align-items:center}
+.select-content{background:#fff;border:1px solid #888;z-index:20;min-width:var(--radix-select-trigger-width)}
+.select-item{padding:4px 8px;cursor:pointer;outline:none}
+.select-item[data-highlighted]{background:#fc0}
+.checkbox{width:16px;height:16px;padding:0;background:#fff;border:1px solid #888;line-height:1;vertical-align:middle}
+.checkbox[data-state=checked]{background:#fc0}
+.dialog-overlay{position:fixed;inset:0;background:#0006;z-index:10}
+.dialog-content{position:fixed;z-index:11;top:50%;left:50%;transform:translate(-50%,-50%);width:min(420px,90vw);background:#fff;border:1px solid #888;padding:12px;display:flex;flex-direction:column;gap:6px}
+.dialog-content h2{margin:0;font-size:14px}
+.dialog-content p{margin:0}
+.dialog-content .row{margin:2px 0}
+.dialog-actions{display:flex;gap:6px;justify-content:flex-end}
+.popover-content{background:#fff;border:1px solid #888;padding:6px;display:flex;gap:6px;z-index:20}
+.popover-arrow{fill:#888}

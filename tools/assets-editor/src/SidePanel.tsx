@@ -1,6 +1,7 @@
 import type { ModelDefinition, ModelSource } from '../../../src/scene/modelDefinitions'
 import { defaultLicense } from './assetKeys'
 import { CheckboxField } from './CheckboxField'
+import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
 import { footprintOf } from './fitted'
 import type { ModelInfo } from './modelLoader'
 import { NumberField } from './NumberField'
@@ -68,7 +69,7 @@ export function SidePanel({ title, info, definition, source, usedInGame, deletab
           <TextField label="url" value={definition?.url ?? ''} onCommit={edit('url')} />
           <TextField label="note" value={definition?.note ?? ''} onCommit={edit('note')} />
           <button onClick={onRemoveDefinition}>remove definition (use computed defaults)</button>
-          {deletable && <button onClick={onDeleteAsset}>delete this asset</button>}
+          {deletable && <ConfirmDeleteDialog assetKey={title} onConfirm={onDeleteAsset} />}
           <div>{message}</div>
         </>
       ) : (

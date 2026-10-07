@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { Dialog, Label } from 'radix-ui'
+import { useState } from 'react'
 import { base64Of, callAssets } from './api'
+import { ChoiceSelect } from './ChoiceSelect'
 
 const MODES = ['glb (hand-made)', 'poly.pizza', 'zip (kenney)', 'zip (quaternius)'] as const
 type Mode = (typeof MODES)[number]
@@ -20,15 +22,10 @@ interface Props {
 }
 
 export function AddAssetDialog({ onClose }: Props) {
-  const dialogRef = useRef<HTMLDialogElement>(null)
   const [mode, setMode] = useState<Mode>(MODES[0])
   const [values, setValues] = useState<Record<string, string>>({})
   const [file, setFile] = useState<File | null>(null)
   const [status, setStatus] = useState('')
-
-  useEffect(() => {
-    dialogRef.current?.showModal()
-  }, [])
 
   const setValue = (name: string, value: string) => setValues((current) => ({ ...current, [name]: value }))
 
@@ -47,24 +44,31 @@ export function AddAssetDialog({ onClose }: Props) {
   }
 
   return (
-    <dialog ref={dialogRef} onClose={onClose}>
-      <div className="add-form">
-        <select value={mode} onChange={(event) => setMode(event.target.value as Mode)}>
-          {MODES.map((candidate) => <option key={candidate}>{candidate}</option>)}
-        </select>
-        {FIELDS_BY_MODE[mode].map((name) => (
-          <div className="row" key={name}>
-            {LABELS[name] ?? name}:{' '}
-            {name === 'file'
-              ? <input type="file" onChange={(event) => pickFile(event.target.files?.[0] ?? null)} />
-              : <input value={values[name] ?? ''} onChange={(event) => setValue(name, event.target.value)} />}
+    <Dialog.Root open onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="dialog-overlay" />
+        <Dialog.Content className="dialog-content">
+          <Dialog.Title>Add an asset</Dialog.Title>
+          <Dialog.Description>The file is added to assets/ and the game models are refreshed.</Dialog.Description>
+          <ChoiceSelect label="Kind" value={mode} options={MODES} onChange={(next) => setMode(next as Mode)} />
+          {FIELDS_BY_MODE[mode].map((name) => (
+            <div className="row" key={name}>
+              <Label.Root htmlFor={`add-${name}`}>{LABELS[name] ?? name}: </Label.Root>
+              {name === 'file'
+                ? <input id="add-file" type="file" onChange={(event) => pickFile(event.target.files?.[0] ?? null)} />
+                : <input id={`add-${name}`} value={values[name] ?? ''} onChange={(event) => setValue(name, event.target.value)} />}
+            </div>
+          ))}
+          <div className="dialog-actions">
+            <button onClick={submit}>add</button>
+            <Dialog.Close asChild>
+              <button>cancel</button>
+            </Dialog.Close>
           </div>
-        ))}
-        <button onClick={submit}>add</button>
-        <button onClick={onClose}>cancel</button>
-        <div>{status}</div>
-      </div>
-    </dialog>
+          <div role="status">{status}</div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   )
 }
 

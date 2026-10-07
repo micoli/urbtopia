@@ -70,7 +70,6 @@ export function Editor({ manifest, sourceByPack, initialDefinitions }: Props) {
   const removeDefinition = () => void commit(Object.fromEntries(Object.entries(definitions).filter(([candidate]) => candidate !== key)))
 
   const deleteAsset = async () => {
-    if (!confirm(`Delete ${key} from assets/?`)) return
     const error = await callAssets('remove', { key, usedKeys: [...usedInGame] })
     if (error) return setMessage(error)
     location.reload()

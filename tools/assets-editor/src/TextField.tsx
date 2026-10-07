@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { Label } from 'radix-ui'
+import { useEffect, useId, useState } from 'react'
 
 interface Props {
   label: string
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export function TextField({ label, value, onCommit }: Props) {
+  const id = useId()
   const [draft, setDraft] = useState(value)
   useEffect(() => {
     setDraft(value)
@@ -14,7 +16,8 @@ export function TextField({ label, value, onCommit }: Props) {
 
   return (
     <div className="row">
-      {label}: <input value={draft} onChange={(event) => setDraft(event.target.value)} onBlur={() => onCommit(draft.trim())} onKeyDown={(event) => event.key === 'Enter' && event.currentTarget.blur()} />
+      <Label.Root htmlFor={id}>{label}: </Label.Root>
+      <input id={id} value={draft} onChange={(event) => setDraft(event.target.value)} onBlur={() => onCommit(draft.trim())} onKeyDown={(event) => event.key === 'Enter' && event.currentTarget.blur()} />
     </div>
   )
 }

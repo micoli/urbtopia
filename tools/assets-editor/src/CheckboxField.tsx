@@ -1,3 +1,6 @@
+import { Checkbox, Label } from 'radix-ui'
+import { useId } from 'react'
+
 interface Props {
   label: string
   checked: boolean
@@ -5,9 +8,13 @@ interface Props {
 }
 
 export function CheckboxField({ label, checked, onChange }: Props) {
+  const id = useId()
   return (
     <div className="row">
-      {label}: <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
+      <Label.Root htmlFor={id}>{label}: </Label.Root>
+      <Checkbox.Root id={id} className="checkbox" checked={checked} onCheckedChange={(state) => onChange(state === true)}>
+        <Checkbox.Indicator>✓</Checkbox.Indicator>
+      </Checkbox.Root>
     </div>
   )
 }

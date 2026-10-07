@@ -1,3 +1,6 @@
+import { Toolbar as RadixToolbar } from 'radix-ui'
+import { ChoiceSelect } from './ChoiceSelect'
+
 interface Props {
   packs: string[]
   pack: string
@@ -16,15 +19,17 @@ export const SOURCE_FILTERS = ['all', 'kenney', 'quaternius', 'managed', 'poly.p
 
 export function Toolbar({ packs, pack, search, sourceFilter, overview, onSearch, onSourceFilter, onPack, onOverview, onAdd, onRotate }: Props) {
   return (
-    <div id="bar">
+    <RadixToolbar.Root id="bar" aria-label="Assets">
       <input id="global-search" type="search" placeholder="Search all assets" aria-label="Search all assets" value={search} onChange={(event) => onSearch(event.target.value)} />
-      <select aria-label="Source" value={sourceFilter} onChange={(event) => onSourceFilter(event.target.value)}>
-        {SOURCE_FILTERS.map((source) => <option key={source}>{source}</option>)}
-      </select>
-      {packs.map((name) => <button key={name} className={name === pack ? 'on' : ''} onClick={() => onPack(name)}>{name}</button>)}
-      <button onClick={onOverview}>{overview ? 'single' : 'overview (all in pack)'}</button>
-      <button onClick={onAdd}>+ add asset</button>
-      <button onClick={onRotate}>rotate 90 (game rotation)</button>
-    </div>
+      <ChoiceSelect label="Source" value={sourceFilter} options={SOURCE_FILTERS} onChange={onSourceFilter} />
+      <RadixToolbar.ToggleGroup type="single" value={pack} onValueChange={(value) => value && onPack(value)} aria-label="Pack" className="packs">
+        {packs.map((name) => (
+          <RadixToolbar.ToggleItem key={name} value={name} className="toolbar-button">{name}</RadixToolbar.ToggleItem>
+        ))}
+      </RadixToolbar.ToggleGroup>
+      <RadixToolbar.Button className="toolbar-button" onClick={onOverview}>{overview ? 'single' : 'overview (all in pack)'}</RadixToolbar.Button>
+      <RadixToolbar.Button className="toolbar-button" onClick={onAdd}>+ add asset</RadixToolbar.Button>
+      <RadixToolbar.Button className="toolbar-button" onClick={onRotate}>rotate 90 (game rotation)</RadixToolbar.Button>
+    </RadixToolbar.Root>
   )
 }
