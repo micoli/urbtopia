@@ -1,0 +1,44 @@
+name: Database
+
+on:
+  pull_request:
+    paths:
+      - supabase/**
+      - src/persistence/cloud/database.types.ts
+      - package.json
+      - .github/workflows/database.yml
+  push:
+    branches: [main]
+    paths:
+      - supabase/**
+      - src/persistence/cloud/database.types.ts
+      - package.json
+      - .github/workflows/database.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: database-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
+        with:
+          version: 2.120.0
+      # Only Postgres and Auth are needed: Auth creates the auth schema the migrations and tests rely on.
+      # Starting on an empty database applies every migration from scratch.
+      - run: supabase start -x realtime,storage-api,imgproxy,mailpit,postgrest,studio,edge-runtime,logflare,vector,supavisor,kong,postgres-meta
+      - run: supabase test db
+      - run: supabase db lint --fail-on error
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+      - name: Fail if the generated types are stale
+        run: |
+          npm run db:types
+          git diff --exit-code src/persistence/cloud/database.types.ts
