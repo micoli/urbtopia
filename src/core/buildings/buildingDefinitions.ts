@@ -1,12 +1,20 @@
-import definitions from '../../../assets/models.json' with { type: 'json' };
-import type { ModelDefinition } from '../../scene/modelDefinitions';
-import type { NatureBuildingDefinition, SportBuildingDefinition } from './buildingDefinition';
+import definitions from '../../../assets/buildings.json' with { type: 'json' };
+import type { BuildingDefinition } from './buildingDefinition.ts';
+import type { BuildingId, NatureType, SportVenueType } from './buildingTypes.generated.ts';
 
-type Placed<B> = { model: string; definition: ModelDefinition; building: B };
+export type BuildingEntry = BuildingDefinition & { id: BuildingId };
 
-const placed = Object.entries(definitions as unknown as Record<string, ModelDefinition>)
-  .flatMap(([model, definition]) => (definition.building ? [{ model, definition, building: definition.building }] : []));
+export const BUILDING_ENTRIES: readonly BuildingEntry[] = Object.entries(definitions as unknown as Record<BuildingId, BuildingDefinition>)
+  .map(([id, definition]) => ({ id: id as BuildingId, ...definition }));
 
-export const SPORT_DEFINITIONS = placed.filter((entry): entry is Placed<SportBuildingDefinition> => entry.building.kind === 'sport');
+export const BUILDING_IDS: readonly BuildingId[] = BUILDING_ENTRIES.map(({ id }) => id);
 
-export const NATURE_DEFINITIONS = placed.filter((entry): entry is Placed<NatureBuildingDefinition> => entry.building.kind === 'nature');
+const entriesById = new Map<string, BuildingEntry>(BUILDING_ENTRIES.map(entry => [entry.id, entry]));
+
+export const definitionOf = (id: BuildingId): BuildingEntry => entriesById.get(id)!;
+
+export type SportEntry = BuildingEntry & { id: SportVenueType; sport: NonNullable<BuildingDefinition['sport']> };
+export type NatureEntry = BuildingEntry & { id: NatureType; nature: NonNullable<BuildingDefinition['nature']> };
+
+export const SPORT_ENTRIES = BUILDING_ENTRIES.filter((entry): entry is SportEntry => entry.sport !== undefined);
+export const NATURE_ENTRIES = BUILDING_ENTRIES.filter((entry): entry is NatureEntry => entry.nature !== undefined);

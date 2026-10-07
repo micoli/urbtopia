@@ -138,32 +138,6 @@
       2
     ]
   },
-  "holiday/bench": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "holiday-bench",
-      "family": "decoration",
-      "name": {
-        "en": "Bench",
-        "fr": "Banc"
-      }
-    }
-  },
-  "holiday/lantern": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "holiday-lantern",
-      "family": "decoration",
-      "name": {
-        "en": "Lantern",
-        "fr": "Lanterne"
-      }
-    }
-  },
   "industrial/building-a": {
     "source": "kenney",
     "license": "CC0",
@@ -362,164 +336,12 @@
       1
     ]
   },
-  "mini-forest/building-platform": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "mini-forest-building-platform",
-      "family": "decoration",
-      "name": {
-        "en": "Wooden platform",
-        "fr": "Plateforme en bois"
-      }
-    }
-  },
-  "mini-forest/building-roof": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "mini-forest-building-roof",
-      "family": "decoration",
-      "name": {
-        "en": "Wooden roof",
-        "fr": "Toit en bois"
-      }
-    }
-  },
-  "mini-forest/patch-grass": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "mini-forest-patch-grass",
-      "family": "grass",
-      "name": {
-        "en": "Patch Grass · Mini Forest",
-        "fr": "Touffe Herbe · Mini Forest"
-      }
-    }
-  },
-  "mini-forest/plant": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "mini-forest-plant",
-      "family": "shrub",
-      "name": {
-        "en": "Plant · Mini Forest",
-        "fr": "Plante · Mini Forest"
-      }
-    }
-  },
-  "mini-forest/rocks-high": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "mini-forest-rocks-high",
-      "family": "habitat",
-      "name": {
-        "en": "Rocks high · Mini Forest",
-        "fr": "Rochers haut · Mini Forest"
-      }
-    }
-  },
-  "mini-forest/rocks-low": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "mini-forest-rocks-low",
-      "family": "habitat",
-      "name": {
-        "en": "Rocks low · Mini Forest",
-        "fr": "Rochers bas · Mini Forest"
-      }
-    }
-  },
-  "mini-forest/rocks-ramp": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "mini-forest-rocks-ramp",
-      "family": "habitat",
-      "name": {
-        "en": "Rocks sloped · Mini Forest",
-        "fr": "Rochers incliné · Mini Forest"
-      }
-    }
-  },
-  "mini-forest/stones": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "mini-forest-stones",
-      "family": "habitat",
-      "name": {
-        "en": "Stones · Mini Forest",
-        "fr": "Pierres · Mini Forest"
-      }
-    }
-  },
-  "mini-forest/tent": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "mini-forest-tent",
-      "family": "decoration",
-      "name": {
-        "en": "Camp tent",
-        "fr": "Tente de camp"
-      }
-    }
-  },
-  "mini-forest/tree": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "mini-forest-tree",
-      "family": "conifer",
-      "name": {
-        "en": "Tree · Mini Forest",
-        "fr": "Arbre · Mini Forest"
-      }
-    }
-  },
-  "mini-forest/tree-high": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "mini-forest-tree-high",
-      "family": "conifer",
-      "name": {
-        "en": "Tree high · Mini Forest",
-        "fr": "Arbre haut · Mini Forest"
-      }
-    }
-  },
   "nature/cactus_short": {
     "source": "kenney",
     "license": "CC0",
     "fit": {
       "width": 0.7,
       "height": 1
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-cactus-short",
-      "family": "shrub",
-      "name": {
-        "en": "Cactus short",
-        "fr": "Cactus court"
-      }
     }
   },
   "nature/cactus_tall": {
@@ -528,67 +350,6 @@
     "fit": {
       "width": 0.7,
       "height": 1
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-cactus-tall",
-      "family": "shrub",
-      "name": {
-        "en": "Cactus tall",
-        "fr": "Cactus haut"
-      }
-    }
-  },
-  "nature/cliff_blockCave_rock": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "nature-cliff-blockCave-rock",
-      "family": "decoration",
-      "name": {
-        "en": "Cliff cave block",
-        "fr": "Bloc de falaise à grotte"
-      }
-    }
-  },
-  "nature/cliff_stepsCornerInner_rock": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "nature-cliff-stepsCornerInner-rock",
-      "family": "decoration",
-      "name": {
-        "en": "Cliff steps inner corner",
-        "fr": "Falaise en escalier, angle intérieur"
-      }
-    }
-  },
-  "nature/cliff_stepsCorner_rock": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "nature-cliff-stepsCorner-rock",
-      "family": "decoration",
-      "name": {
-        "en": "Cliff steps corner",
-        "fr": "Falaise en escalier, angle"
-      }
-    }
-  },
-  "nature/cliff_steps_rock": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "nature-cliff-steps-rock",
-      "family": "decoration",
-      "name": {
-        "en": "Cliff steps",
-        "fr": "Falaise en escalier"
-      }
     }
   },
   "nature/flower_purpleA": {
@@ -597,15 +358,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-flower-purpleA",
-      "family": "flower",
-      "name": {
-        "en": "Flowers purple A",
-        "fr": "Fleurs violettes A"
-      }
     }
   },
   "nature/flower_purpleB": {
@@ -614,15 +366,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-flower-purpleB",
-      "family": "flower",
-      "name": {
-        "en": "Flowers purple B",
-        "fr": "Fleurs violettes B"
-      }
     }
   },
   "nature/flower_purpleC": {
@@ -631,15 +374,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-flower-purpleC",
-      "family": "flower",
-      "name": {
-        "en": "Flowers purple C",
-        "fr": "Fleurs violettes C"
-      }
     }
   },
   "nature/flower_redA": {
@@ -648,15 +382,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-flower-redA",
-      "family": "flower",
-      "name": {
-        "en": "Flowers red A",
-        "fr": "Fleurs rouges A"
-      }
     }
   },
   "nature/flower_redB": {
@@ -665,15 +390,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-flower-redB",
-      "family": "flower",
-      "name": {
-        "en": "Flowers red B",
-        "fr": "Fleurs rouges B"
-      }
     }
   },
   "nature/flower_redC": {
@@ -682,15 +398,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-flower-redC",
-      "family": "flower",
-      "name": {
-        "en": "Flowers red C",
-        "fr": "Fleurs rouges C"
-      }
     }
   },
   "nature/flower_yellowA": {
@@ -699,15 +406,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-flower-yellowA",
-      "family": "flower",
-      "name": {
-        "en": "Flowers yellow A",
-        "fr": "Fleurs jaunes A"
-      }
     }
   },
   "nature/flower_yellowB": {
@@ -716,15 +414,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-flower-yellowB",
-      "family": "flower",
-      "name": {
-        "en": "Flowers yellow B",
-        "fr": "Fleurs jaunes B"
-      }
     }
   },
   "nature/flower_yellowC": {
@@ -733,15 +422,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-flower-yellowC",
-      "family": "flower",
-      "name": {
-        "en": "Flowers yellow C",
-        "fr": "Fleurs jaunes C"
-      }
     }
   },
   "nature/grass": {
@@ -750,15 +430,6 @@
     "fit": {
       "width": 0.85,
       "height": 0.35
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-grass",
-      "family": "grass",
-      "name": {
-        "en": "Grass",
-        "fr": "Herbe"
-      }
     }
   },
   "nature/grass_large": {
@@ -767,15 +438,6 @@
     "fit": {
       "width": 0.85,
       "height": 0.35
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-grass-large",
-      "family": "grass",
-      "name": {
-        "en": "Grass large",
-        "fr": "Herbe grande"
-      }
     }
   },
   "nature/grass_leafs": {
@@ -784,15 +446,6 @@
     "fit": {
       "width": 0.85,
       "height": 0.35
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-grass-leafs",
-      "family": "grass",
-      "name": {
-        "en": "Grass leafy",
-        "fr": "Herbe feuillue"
-      }
     }
   },
   "nature/grass_leafsLarge": {
@@ -801,15 +454,6 @@
     "fit": {
       "width": 0.85,
       "height": 0.35
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-grass-leafsLarge",
-      "family": "grass",
-      "name": {
-        "en": "Grass leafy large",
-        "fr": "Herbe feuillue grande"
-      }
     }
   },
   "nature/ground_grass": {
@@ -818,15 +462,6 @@
     "fit": {
       "width": 0.85,
       "height": 0.35
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-ground-grass",
-      "family": "grass",
-      "name": {
-        "en": "Low Grass",
-        "fr": "Sol herbeux"
-      }
     }
   },
   "nature/lily_large": {
@@ -835,15 +470,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-lily-large",
-      "family": "flower",
-      "name": {
-        "en": "Lily large",
-        "fr": "Grand nénuphar"
-      }
     }
   },
   "nature/lily_small": {
@@ -852,15 +478,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-lily-small",
-      "family": "flower",
-      "name": {
-        "en": "Lily small",
-        "fr": "Nénuphar petit"
-      }
     }
   },
   "nature/log": {
@@ -869,15 +486,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-log",
-      "family": "habitat",
-      "name": {
-        "en": "Log",
-        "fr": "Tronc"
-      }
     }
   },
   "nature/log_large": {
@@ -886,15 +494,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-log-large",
-      "family": "habitat",
-      "name": {
-        "en": "Log large",
-        "fr": "Grand tronc"
-      }
     }
   },
   "nature/log_stack": {
@@ -903,15 +502,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-log-stack",
-      "family": "habitat",
-      "name": {
-        "en": "Log stack",
-        "fr": "Tronc tas"
-      }
     }
   },
   "nature/log_stackLarge": {
@@ -920,15 +510,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-log-stackLarge",
-      "family": "habitat",
-      "name": {
-        "en": "Log stack large",
-        "fr": "Tronc tas grande"
-      }
     }
   },
   "nature/mushroom_red": {
@@ -937,15 +518,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-mushroom-red",
-      "family": "flower",
-      "name": {
-        "en": "Mushrooms red",
-        "fr": "Champignons rouges"
-      }
     }
   },
   "nature/mushroom_redGroup": {
@@ -954,15 +526,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-mushroom-redGroup",
-      "family": "flower",
-      "name": {
-        "en": "Mushrooms red group",
-        "fr": "Champignons rouges groupe"
-      }
     }
   },
   "nature/mushroom_redTall": {
@@ -971,15 +534,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-mushroom-redTall",
-      "family": "flower",
-      "name": {
-        "en": "Mushrooms red tall",
-        "fr": "Champignons rouges haut"
-      }
     }
   },
   "nature/mushroom_tan": {
@@ -988,15 +542,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-mushroom-tan",
-      "family": "flower",
-      "name": {
-        "en": "Mushrooms tan",
-        "fr": "Champignons beiges"
-      }
     }
   },
   "nature/mushroom_tanGroup": {
@@ -1005,15 +550,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-mushroom-tanGroup",
-      "family": "flower",
-      "name": {
-        "en": "Mushrooms tan group",
-        "fr": "Champignons beiges groupe"
-      }
     }
   },
   "nature/mushroom_tanTall": {
@@ -1022,15 +558,6 @@
     "fit": {
       "width": 0.55,
       "height": 0.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-mushroom-tanTall",
-      "family": "flower",
-      "name": {
-        "en": "Mushrooms tan tall",
-        "fr": "Champignons beiges haut"
-      }
     }
   },
   "nature/plant_bush": {
@@ -1039,15 +566,6 @@
     "fit": {
       "width": 0.7,
       "height": 1
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-plant-bush",
-      "family": "shrub",
-      "name": {
-        "en": "Plant bush",
-        "fr": "Buisson"
-      }
     }
   },
   "nature/plant_bushLarge": {
@@ -1056,15 +574,6 @@
     "fit": {
       "width": 0.7,
       "height": 1
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-plant-bushLarge",
-      "family": "shrub",
-      "name": {
-        "en": "Plant bush large",
-        "fr": "Grand buisson"
-      }
     }
   },
   "nature/plant_bushLargeTriangle": {
@@ -1073,15 +582,6 @@
     "fit": {
       "width": 0.7,
       "height": 1
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-plant-bushLargeTriangle",
-      "family": "shrub",
-      "name": {
-        "en": "Plant bush large triangular",
-        "fr": "Grand buisson triangulaire"
-      }
     }
   },
   "nature/plant_bushSmall": {
@@ -1090,15 +590,6 @@
     "fit": {
       "width": 0.7,
       "height": 1
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-plant-bushSmall",
-      "family": "shrub",
-      "name": {
-        "en": "Plant bush small",
-        "fr": "Petit buisson"
-      }
     }
   },
   "nature/plant_bushTriangle": {
@@ -1107,15 +598,6 @@
     "fit": {
       "width": 0.7,
       "height": 1
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-plant-bushTriangle",
-      "family": "shrub",
-      "name": {
-        "en": "Plant bush triangular",
-        "fr": "Buisson triangulaire"
-      }
     }
   },
   "nature/plant_flatShort": {
@@ -1124,15 +606,6 @@
     "fit": {
       "width": 0.7,
       "height": 1
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-plant-flatShort",
-      "family": "shrub",
-      "name": {
-        "en": "Plant flat short",
-        "fr": "Plante basse à feuilles plates"
-      }
     }
   },
   "nature/plant_flatTall": {
@@ -1141,15 +614,6 @@
     "fit": {
       "width": 0.7,
       "height": 1
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-plant-flatTall",
-      "family": "shrub",
-      "name": {
-        "en": "Plant flat tall",
-        "fr": "Plante haute à feuilles plates"
-      }
     }
   },
   "nature/rock_largeA": {
@@ -1158,15 +622,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-largeA",
-      "family": "habitat",
-      "name": {
-        "en": "Rock large A",
-        "fr": "Grand rocher A"
-      }
     }
   },
   "nature/rock_largeB": {
@@ -1175,15 +630,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-largeB",
-      "family": "habitat",
-      "name": {
-        "en": "Rock large B",
-        "fr": "Grand rocher B"
-      }
     }
   },
   "nature/rock_largeC": {
@@ -1192,15 +638,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-largeC",
-      "family": "habitat",
-      "name": {
-        "en": "Rock large C",
-        "fr": "Grand rocher C"
-      }
     }
   },
   "nature/rock_largeD": {
@@ -1209,15 +646,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-largeD",
-      "family": "habitat",
-      "name": {
-        "en": "Rock large D",
-        "fr": "Grand rocher D"
-      }
     }
   },
   "nature/rock_largeE": {
@@ -1226,15 +654,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-largeE",
-      "family": "habitat",
-      "name": {
-        "en": "Rock large E",
-        "fr": "Grand rocher E"
-      }
     }
   },
   "nature/rock_largeF": {
@@ -1243,15 +662,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-largeF",
-      "family": "habitat",
-      "name": {
-        "en": "Rock large F",
-        "fr": "Grand rocher F"
-      }
     }
   },
   "nature/rock_smallA": {
@@ -1260,15 +670,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallA",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small A",
-        "fr": "Rocher petit A"
-      }
     }
   },
   "nature/rock_smallB": {
@@ -1277,15 +678,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallB",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small B",
-        "fr": "Rocher petit B"
-      }
     }
   },
   "nature/rock_smallC": {
@@ -1294,15 +686,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallC",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small C",
-        "fr": "Rocher petit C"
-      }
     }
   },
   "nature/rock_smallD": {
@@ -1311,15 +694,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallD",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small D",
-        "fr": "Rocher petit D"
-      }
     }
   },
   "nature/rock_smallE": {
@@ -1328,15 +702,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallE",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small E",
-        "fr": "Rocher petit E"
-      }
     }
   },
   "nature/rock_smallF": {
@@ -1345,15 +710,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallF",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small F",
-        "fr": "Rocher petit F"
-      }
     }
   },
   "nature/rock_smallFlatA": {
@@ -1362,15 +718,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallFlatA",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small flat A",
-        "fr": "Rocher petit plat A"
-      }
     }
   },
   "nature/rock_smallFlatB": {
@@ -1379,15 +726,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallFlatB",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small flat B",
-        "fr": "Rocher petit plat B"
-      }
     }
   },
   "nature/rock_smallFlatC": {
@@ -1396,15 +734,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallFlatC",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small flat C",
-        "fr": "Rocher petit plat C"
-      }
     }
   },
   "nature/rock_smallG": {
@@ -1413,15 +742,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallG",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small G",
-        "fr": "Rocher petit G"
-      }
     }
   },
   "nature/rock_smallH": {
@@ -1430,15 +750,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallH",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small H",
-        "fr": "Rocher petit H"
-      }
     }
   },
   "nature/rock_smallI": {
@@ -1447,15 +758,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallI",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small I",
-        "fr": "Rocher petit I"
-      }
     }
   },
   "nature/rock_smallTopA": {
@@ -1464,15 +766,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallTopA",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small topped A",
-        "fr": "Rocher petit sommet A"
-      }
     }
   },
   "nature/rock_smallTopB": {
@@ -1481,15 +774,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-smallTopB",
-      "family": "habitat",
-      "name": {
-        "en": "Rock small topped B",
-        "fr": "Rocher petit sommet B"
-      }
     }
   },
   "nature/rock_tallA": {
@@ -1498,15 +782,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-tallA",
-      "family": "decoration",
-      "name": {
-        "en": "Rock tall A",
-        "fr": "Rocher haut A"
-      }
     }
   },
   "nature/rock_tallB": {
@@ -1515,15 +790,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-tallB",
-      "family": "decoration",
-      "name": {
-        "en": "Rock tall B",
-        "fr": "Rocher haut B"
-      }
     }
   },
   "nature/rock_tallC": {
@@ -1532,15 +798,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-tallC",
-      "family": "habitat",
-      "name": {
-        "en": "Rock tall C",
-        "fr": "Rocher haut C"
-      }
     }
   },
   "nature/rock_tallD": {
@@ -1549,15 +806,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-tallD",
-      "family": "habitat",
-      "name": {
-        "en": "Rock tall D",
-        "fr": "Rocher haut D"
-      }
     }
   },
   "nature/rock_tallE": {
@@ -1566,15 +814,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-tallE",
-      "family": "habitat",
-      "name": {
-        "en": "Rock tall E",
-        "fr": "Rocher haut E"
-      }
     }
   },
   "nature/rock_tallF": {
@@ -1583,15 +822,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-tallF",
-      "family": "habitat",
-      "name": {
-        "en": "Rock tall F",
-        "fr": "Rocher haut F"
-      }
     }
   },
   "nature/rock_tallG": {
@@ -1600,15 +830,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-tallG",
-      "family": "habitat",
-      "name": {
-        "en": "Rock tall G",
-        "fr": "Rocher haut G"
-      }
     }
   },
   "nature/rock_tallH": {
@@ -1617,15 +838,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-tallH",
-      "family": "habitat",
-      "name": {
-        "en": "Rock tall H",
-        "fr": "Rocher haut H"
-      }
     }
   },
   "nature/rock_tallI": {
@@ -1634,15 +846,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-tallI",
-      "family": "habitat",
-      "name": {
-        "en": "Rock tall I",
-        "fr": "Rocher haut I"
-      }
     }
   },
   "nature/rock_tallJ": {
@@ -1651,15 +854,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-rock-tallJ",
-      "family": "habitat",
-      "name": {
-        "en": "Rock tall J",
-        "fr": "Rocher haut J"
-      }
     }
   },
   "nature/statue_column": {
@@ -1668,15 +862,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-statue-column",
-      "family": "decoration",
-      "name": {
-        "en": "Statue column",
-        "fr": "Colonne"
-      }
     }
   },
   "nature/statue_head": {
@@ -1685,15 +870,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-statue-head",
-      "family": "decoration",
-      "name": {
-        "en": "Statue head",
-        "fr": "Tête de statue"
-      }
     }
   },
   "nature/statue_obelisk": {
@@ -1702,15 +878,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-statue-obelisk",
-      "family": "decoration",
-      "name": {
-        "en": "Obelisk",
-        "fr": "Obélisque"
-      }
     }
   },
   "nature/statue_ring": {
@@ -1719,15 +886,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-statue-ring",
-      "family": "decoration",
-      "name": {
-        "en": "Statue ring",
-        "fr": "Anneau de pierre"
-      }
     }
   },
   "nature/stone_largeA": {
@@ -1736,15 +894,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-largeA",
-      "family": "decoration",
-      "name": {
-        "en": "Stone large A",
-        "fr": "Grande pierre A"
-      }
     }
   },
   "nature/stone_largeB": {
@@ -1753,15 +902,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-largeB",
-      "family": "decoration",
-      "name": {
-        "en": "Stone large B",
-        "fr": "Grande pierre B"
-      }
     }
   },
   "nature/stone_largeC": {
@@ -1770,15 +910,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-largeC",
-      "family": "decoration",
-      "name": {
-        "en": "Stone large C",
-        "fr": "Grande pierre C"
-      }
     }
   },
   "nature/stone_largeD": {
@@ -1787,15 +918,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-largeD",
-      "family": "decoration",
-      "name": {
-        "en": "Stone large D",
-        "fr": "Grande pierre D"
-      }
     }
   },
   "nature/stone_largeE": {
@@ -1804,15 +926,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-largeE",
-      "family": "decoration",
-      "name": {
-        "en": "Stone large E",
-        "fr": "Grande pierre E"
-      }
     }
   },
   "nature/stone_largeF": {
@@ -1821,15 +934,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-largeF",
-      "family": "decoration",
-      "name": {
-        "en": "Stone large F",
-        "fr": "Grande pierre F"
-      }
     }
   },
   "nature/stone_smallA": {
@@ -1838,15 +942,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallA",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small A",
-        "fr": "Petite pierre A"
-      }
     }
   },
   "nature/stone_smallB": {
@@ -1855,15 +950,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallB",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small B",
-        "fr": "Petite pierre B"
-      }
     }
   },
   "nature/stone_smallC": {
@@ -1872,15 +958,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallC",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small C",
-        "fr": "Petite pierre C"
-      }
     }
   },
   "nature/stone_smallD": {
@@ -1889,15 +966,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallD",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small D",
-        "fr": "Petite pierre D"
-      }
     }
   },
   "nature/stone_smallE": {
@@ -1906,15 +974,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallE",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small E",
-        "fr": "Petite pierre E"
-      }
     }
   },
   "nature/stone_smallF": {
@@ -1923,15 +982,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallF",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small F",
-        "fr": "Petite pierre F"
-      }
     }
   },
   "nature/stone_smallFlatA": {
@@ -1940,15 +990,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallFlatA",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small flat A",
-        "fr": "Petite pierre plat A"
-      }
     }
   },
   "nature/stone_smallFlatB": {
@@ -1957,15 +998,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallFlatB",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small flat B",
-        "fr": "Petite pierre plat B"
-      }
     }
   },
   "nature/stone_smallFlatC": {
@@ -1974,15 +1006,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallFlatC",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small flat C",
-        "fr": "Petite pierre plat C"
-      }
     }
   },
   "nature/stone_smallG": {
@@ -1991,15 +1014,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallG",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small G",
-        "fr": "Petite pierre G"
-      }
     }
   },
   "nature/stone_smallH": {
@@ -2008,15 +1022,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallH",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small H",
-        "fr": "Petite pierre H"
-      }
     }
   },
   "nature/stone_smallI": {
@@ -2025,15 +1030,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallI",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small I",
-        "fr": "Petite pierre I"
-      }
     }
   },
   "nature/stone_smallTopA": {
@@ -2042,15 +1038,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallTopA",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small topped A",
-        "fr": "Petite pierre sommet A"
-      }
     }
   },
   "nature/stone_smallTopB": {
@@ -2059,15 +1046,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-smallTopB",
-      "family": "habitat",
-      "name": {
-        "en": "Stone small topped B",
-        "fr": "Petite pierre sommet B"
-      }
     }
   },
   "nature/stone_tallA": {
@@ -2076,15 +1054,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-tallA",
-      "family": "habitat",
-      "name": {
-        "en": "Stone tall A",
-        "fr": "Pierre haut A"
-      }
     }
   },
   "nature/stone_tallB": {
@@ -2093,15 +1062,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-tallB",
-      "family": "habitat",
-      "name": {
-        "en": "Stone tall B",
-        "fr": "Pierre haut B"
-      }
     }
   },
   "nature/stone_tallC": {
@@ -2110,15 +1070,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-tallC",
-      "family": "habitat",
-      "name": {
-        "en": "Stone tall C",
-        "fr": "Pierre haut C"
-      }
     }
   },
   "nature/stone_tallD": {
@@ -2127,15 +1078,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-tallD",
-      "family": "habitat",
-      "name": {
-        "en": "Stone tall D",
-        "fr": "Pierre haut D"
-      }
     }
   },
   "nature/stone_tallE": {
@@ -2144,15 +1086,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-tallE",
-      "family": "habitat",
-      "name": {
-        "en": "Stone tall E",
-        "fr": "Pierre haut E"
-      }
     }
   },
   "nature/stone_tallF": {
@@ -2161,15 +1094,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-tallF",
-      "family": "habitat",
-      "name": {
-        "en": "Stone tall F",
-        "fr": "Pierre haut F"
-      }
     }
   },
   "nature/stone_tallG": {
@@ -2178,15 +1102,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-tallG",
-      "family": "habitat",
-      "name": {
-        "en": "Stone tall G",
-        "fr": "Pierre haut G"
-      }
     }
   },
   "nature/stone_tallH": {
@@ -2195,15 +1110,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-tallH",
-      "family": "habitat",
-      "name": {
-        "en": "Stone tall H",
-        "fr": "Pierre haut H"
-      }
     }
   },
   "nature/stone_tallI": {
@@ -2212,15 +1118,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-tallI",
-      "family": "habitat",
-      "name": {
-        "en": "Stone tall I",
-        "fr": "Pierre haut I"
-      }
     }
   },
   "nature/stone_tallJ": {
@@ -2229,15 +1126,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stone-tallJ",
-      "family": "habitat",
-      "name": {
-        "en": "Stone tall J",
-        "fr": "Pierre haut J"
-      }
     }
   },
   "nature/stump_old": {
@@ -2246,15 +1134,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stump-old",
-      "family": "habitat",
-      "name": {
-        "en": "Stump old",
-        "fr": "Souche ancienne"
-      }
     }
   },
   "nature/stump_oldTall": {
@@ -2263,15 +1142,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stump-oldTall",
-      "family": "habitat",
-      "name": {
-        "en": "Stump old tall",
-        "fr": "Souche ancienne haut"
-      }
     }
   },
   "nature/stump_round": {
@@ -2280,15 +1150,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stump-round",
-      "family": "habitat",
-      "name": {
-        "en": "Stump round",
-        "fr": "Souche rond"
-      }
     }
   },
   "nature/stump_square": {
@@ -2297,15 +1158,6 @@
     "fit": {
       "width": 0.8,
       "height": 0.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-stump-square",
-      "family": "habitat",
-      "name": {
-        "en": "Stump square",
-        "fr": "Souche carrée"
-      }
     }
   },
   "nature/tent_detailedClosed": {
@@ -2314,15 +1166,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tent-detailedClosed",
-      "family": "decoration",
-      "name": {
-        "en": "Tent closed",
-        "fr": "Tente fermée"
-      }
     }
   },
   "nature/tent_detailedOpen": {
@@ -2331,15 +1174,6 @@
     "fit": {
       "width": 0.9,
       "height": 1.2
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tent-detailedOpen",
-      "family": "decoration",
-      "name": {
-        "en": "Tent open",
-        "fr": "Tente ouverte"
-      }
     }
   },
   "nature/tree_blocks": {
@@ -2348,15 +1182,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-blocks",
-      "family": "tree",
-      "name": {
-        "en": "Tree block crown",
-        "fr": "Arbre couronne cubique"
-      }
     }
   },
   "nature/tree_blocks_dark": {
@@ -2365,15 +1190,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-blocks-dark",
-      "family": "tree",
-      "name": {
-        "en": "Tree block crown dark",
-        "fr": "Arbre couronne cubique sombre"
-      }
     }
   },
   "nature/tree_blocks_fall": {
@@ -2382,15 +1198,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-blocks-fall",
-      "family": "tree",
-      "name": {
-        "en": "Tree block crown autumn",
-        "fr": "Arbre couronne cubique automne"
-      }
     }
   },
   "nature/tree_cone": {
@@ -2399,15 +1206,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-cone",
-      "family": "tree",
-      "name": {
-        "en": "Tree conical",
-        "fr": "Arbre conique"
-      }
     }
   },
   "nature/tree_cone_dark": {
@@ -2416,15 +1214,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-cone-dark",
-      "family": "tree",
-      "name": {
-        "en": "Tree conical dark",
-        "fr": "Arbre conique sombre"
-      }
     }
   },
   "nature/tree_cone_fall": {
@@ -2433,15 +1222,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-cone-fall",
-      "family": "tree",
-      "name": {
-        "en": "Tree conical autumn",
-        "fr": "Arbre conique automne"
-      }
     }
   },
   "nature/tree_default": {
@@ -2450,15 +1230,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-default",
-      "family": "tree",
-      "name": {
-        "en": "Tree classic",
-        "fr": "Arbre classique"
-      }
     }
   },
   "nature/tree_default_dark": {
@@ -2467,15 +1238,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-default-dark",
-      "family": "tree",
-      "name": {
-        "en": "Tree classic dark",
-        "fr": "Arbre classique sombre"
-      }
     }
   },
   "nature/tree_default_fall": {
@@ -2484,15 +1246,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-default-fall",
-      "family": "tree",
-      "name": {
-        "en": "Tree classic autumn",
-        "fr": "Arbre classique automne"
-      }
     }
   },
   "nature/tree_fat": {
@@ -2501,15 +1254,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-fat",
-      "family": "tree",
-      "name": {
-        "en": "Tree broad",
-        "fr": "Arbre large"
-      }
     }
   },
   "nature/tree_fat_darkh": {
@@ -2518,15 +1262,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-fat-darkh",
-      "family": "tree",
-      "name": {
-        "en": "Tree broad dark",
-        "fr": "Arbre large sombre"
-      }
     }
   },
   "nature/tree_fat_fall": {
@@ -2535,15 +1270,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-fat-fall",
-      "family": "tree",
-      "name": {
-        "en": "Tree broad autumn",
-        "fr": "Arbre large automne"
-      }
     }
   },
   "nature/tree_oak": {
@@ -2552,15 +1278,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-oak",
-      "family": "tree",
-      "name": {
-        "en": "Tree oak",
-        "fr": "Chêne"
-      }
     }
   },
   "nature/tree_oak_dark": {
@@ -2569,15 +1286,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-oak-dark",
-      "family": "tree",
-      "name": {
-        "en": "Tree oak dark",
-        "fr": "Chêne sombre"
-      }
     }
   },
   "nature/tree_oak_fall": {
@@ -2586,15 +1294,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-oak-fall",
-      "family": "tree",
-      "name": {
-        "en": "Tree oak autumn",
-        "fr": "Chêne automne"
-      }
     }
   },
   "nature/tree_palm": {
@@ -2603,15 +1302,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-palm",
-      "family": "palm",
-      "name": {
-        "en": "Tree palm",
-        "fr": "Palmier"
-      }
     }
   },
   "nature/tree_palmBend": {
@@ -2620,15 +1310,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-palmBend",
-      "family": "palm",
-      "name": {
-        "en": "Tree palm curved",
-        "fr": "Palmier courbé"
-      }
     }
   },
   "nature/tree_palmShort": {
@@ -2637,15 +1318,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-palmShort",
-      "family": "palm",
-      "name": {
-        "en": "Tree palm short",
-        "fr": "Palmier court"
-      }
     }
   },
   "nature/tree_palmTall": {
@@ -2654,15 +1326,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-palmTall",
-      "family": "palm",
-      "name": {
-        "en": "Tree palm tall",
-        "fr": "Palmier haut"
-      }
     }
   },
   "nature/tree_pineDefaultA": {
@@ -2671,15 +1334,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineDefaultA",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine classic A",
-        "fr": "Pin classique A"
-      }
     }
   },
   "nature/tree_pineDefaultB": {
@@ -2688,15 +1342,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineDefaultB",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine classic B",
-        "fr": "Pin classique B"
-      }
     }
   },
   "nature/tree_pineGroundA": {
@@ -2705,15 +1350,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineGroundA",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine low A",
-        "fr": "Pin bas A"
-      }
     }
   },
   "nature/tree_pineGroundB": {
@@ -2722,15 +1358,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineGroundB",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine low B",
-        "fr": "Pin bas B"
-      }
     }
   },
   "nature/tree_pineRoundA": {
@@ -2739,15 +1366,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineRoundA",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine round A",
-        "fr": "Pin rond A"
-      }
     }
   },
   "nature/tree_pineRoundB": {
@@ -2756,15 +1374,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineRoundB",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine round B",
-        "fr": "Pin rond B"
-      }
     }
   },
   "nature/tree_pineRoundC": {
@@ -2773,15 +1382,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineRoundC",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine round C",
-        "fr": "Pin rond C"
-      }
     }
   },
   "nature/tree_pineRoundD": {
@@ -2790,15 +1390,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineRoundD",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine round D",
-        "fr": "Pin rond D"
-      }
     }
   },
   "nature/tree_pineRoundE": {
@@ -2807,15 +1398,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineRoundE",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine round E",
-        "fr": "Pin rond E"
-      }
     }
   },
   "nature/tree_pineRoundF": {
@@ -2824,15 +1406,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineRoundF",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine round F",
-        "fr": "Pin rond F"
-      }
     }
   },
   "nature/tree_pineSmallA": {
@@ -2841,15 +1414,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineSmallA",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine small A",
-        "fr": "Pin petit A"
-      }
     }
   },
   "nature/tree_pineSmallB": {
@@ -2858,15 +1422,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineSmallB",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine small B",
-        "fr": "Pin petit B"
-      }
     }
   },
   "nature/tree_pineSmallC": {
@@ -2875,15 +1430,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineSmallC",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine small C",
-        "fr": "Pin petit C"
-      }
     }
   },
   "nature/tree_pineSmallD": {
@@ -2892,15 +1438,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineSmallD",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine small D",
-        "fr": "Pin petit D"
-      }
     }
   },
   "nature/tree_pineTallA": {
@@ -2909,15 +1446,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineTallA",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine tall A",
-        "fr": "Pin haut A"
-      }
     }
   },
   "nature/tree_pineTallB": {
@@ -2926,15 +1454,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineTallB",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine tall B",
-        "fr": "Pin haut B"
-      }
     }
   },
   "nature/tree_pineTallC": {
@@ -2943,15 +1462,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineTallC",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine tall C",
-        "fr": "Pin haut C"
-      }
     }
   },
   "nature/tree_pineTallD": {
@@ -2960,15 +1470,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.8
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-pineTallD",
-      "family": "conifer",
-      "name": {
-        "en": "Tree pine tall D",
-        "fr": "Pin haut D"
-      }
     }
   },
   "nature/tree_plateau": {
@@ -2977,15 +1478,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-plateau",
-      "family": "tree",
-      "name": {
-        "en": "Tree flat crown",
-        "fr": "Arbre couronne plate"
-      }
     }
   },
   "nature/tree_plateau_dark": {
@@ -2994,15 +1486,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-plateau-dark",
-      "family": "tree",
-      "name": {
-        "en": "Tree flat crown dark",
-        "fr": "Arbre couronne plate sombre"
-      }
     }
   },
   "nature/tree_plateau_fall": {
@@ -3011,15 +1494,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-plateau-fall",
-      "family": "tree",
-      "name": {
-        "en": "Tree flat crown autumn",
-        "fr": "Arbre couronne plate automne"
-      }
     }
   },
   "nature/tree_simple": {
@@ -3028,15 +1502,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-simple",
-      "family": "tree",
-      "name": {
-        "en": "Tree simple",
-        "fr": "Arbre simple"
-      }
     }
   },
   "nature/tree_simple_dark": {
@@ -3045,15 +1510,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-simple-dark",
-      "family": "tree",
-      "name": {
-        "en": "Tree simple dark",
-        "fr": "Arbre simple sombre"
-      }
     }
   },
   "nature/tree_simple_fall": {
@@ -3062,15 +1518,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-simple-fall",
-      "family": "tree",
-      "name": {
-        "en": "Tree simple autumn",
-        "fr": "Arbre simple automne"
-      }
     }
   },
   "nature/tree_small": {
@@ -3079,15 +1526,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-small",
-      "family": "tree",
-      "name": {
-        "en": "Tree small",
-        "fr": "Arbre petit"
-      }
     }
   },
   "nature/tree_small_dark": {
@@ -3096,15 +1534,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-small-dark",
-      "family": "tree",
-      "name": {
-        "en": "Tree small dark",
-        "fr": "Arbre petit sombre"
-      }
     }
   },
   "nature/tree_small_fall": {
@@ -3113,15 +1542,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-small-fall",
-      "family": "tree",
-      "name": {
-        "en": "Tree small autumn",
-        "fr": "Arbre petit automne"
-      }
     }
   },
   "nature/tree_tall": {
@@ -3130,15 +1550,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-tall",
-      "family": "tree",
-      "name": {
-        "en": "Tree tall",
-        "fr": "Arbre haut"
-      }
     }
   },
   "nature/tree_tall_dark": {
@@ -3147,15 +1558,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-tall-dark",
-      "family": "tree",
-      "name": {
-        "en": "Tree tall dark",
-        "fr": "Arbre haut sombre"
-      }
     }
   },
   "nature/tree_tall_fall": {
@@ -3164,15 +1566,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-tall-fall",
-      "family": "tree",
-      "name": {
-        "en": "Tree tall autumn",
-        "fr": "Arbre haut automne"
-      }
     }
   },
   "nature/tree_thin": {
@@ -3181,15 +1574,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-thin",
-      "family": "tree",
-      "name": {
-        "en": "Tree slender",
-        "fr": "Arbre fin"
-      }
     }
   },
   "nature/tree_thin_dark": {
@@ -3198,15 +1582,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-thin-dark",
-      "family": "tree",
-      "name": {
-        "en": "Tree slender dark",
-        "fr": "Arbre fin sombre"
-      }
     }
   },
   "nature/tree_thin_fall": {
@@ -3215,106 +1590,6 @@
     "fit": {
       "width": 0.85,
       "height": 2.5
-    },
-    "building": {
-      "kind": "nature",
-      "id": "nature-tree-thin-fall",
-      "family": "tree",
-      "name": {
-        "en": "Tree slender autumn",
-        "fr": "Arbre fin automne"
-      }
-    }
-  },
-  "pirate/grass": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "pirate-grass",
-      "family": "grass",
-      "name": {
-        "en": "Grass · Pirate",
-        "fr": "Herbe · Pirate"
-      }
-    }
-  },
-  "pirate/grass-patch": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "pirate-grass-patch",
-      "family": "grass",
-      "name": {
-        "en": "Grass patch · Pirate",
-        "fr": "Herbe touffe · Pirate"
-      }
-    }
-  },
-  "pirate/grass-plant": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "pirate-grass-plant",
-      "family": "grass",
-      "name": {
-        "en": "Grass Plant · Pirate",
-        "fr": "Herbe Plante · Pirate"
-      }
-    }
-  },
-  "pirate/palm-bend": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "pirate-palm-bend",
-      "family": "palm",
-      "name": {
-        "en": "Palm curved · Pirate",
-        "fr": "Palmier courbé · Pirate"
-      }
-    }
-  },
-  "pirate/palm-straight": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "pirate-palm-straight",
-      "family": "palm",
-      "name": {
-        "en": "Palm straight · Pirate",
-        "fr": "Palmier droit · Pirate"
-      }
-    }
-  },
-  "pirate/patch-grass": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "pirate-patch-grass",
-      "family": "grass",
-      "name": {
-        "en": "Patch Grass · Pirate",
-        "fr": "Touffe Herbe · Pirate"
-      }
-    }
-  },
-  "pirate/patch-grass-foliage": {
-    "source": "kenney",
-    "license": "CC0",
-    "building": {
-      "kind": "nature",
-      "id": "pirate-patch-grass-foliage",
-      "family": "grass",
-      "name": {
-        "en": "Patch Grass foliage · Pirate",
-        "fr": "Touffe Herbe feuillage · Pirate"
-      }
     }
   },
   "poly.pizza/above-ground-swimming-pool": {
@@ -3352,23 +1627,7 @@
       "height": 7
     },
     "rotationOffset": 45,
-    "note": "Ballpark",
-    "building": {
-      "kind": "sport",
-      "id": "baseballField",
-      "unlockCitizens": 300,
-      "cost": 2500,
-      "radius": 12,
-      "wellbeingBonus": 10,
-      "name": {
-        "en": "Baseball field",
-        "fr": "Terrain de baseball"
-      },
-      "description": {
-        "en": "A large Sport building with a diamond, an outfield and stands.",
-        "fr": "Un grand bâtiment de sport avec un losange, un champ extérieur et des tribunes."
-      }
-    }
+    "note": "Ballpark"
   },
   "poly.pizza/ballpark-8p3rzdaoytp": {
     "source": "poly.pizza",
@@ -3766,27 +2025,7 @@
   },
   "sport/athletics-stadium": {
     "source": "managed",
-    "license": "Own work",
-    "footprint": [
-      9,
-      5
-    ],
-    "building": {
-      "kind": "sport",
-      "id": "stadium",
-      "unlockCitizens": 400,
-      "cost": 1000,
-      "radius": 10,
-      "wellbeingBonus": 8,
-      "name": {
-        "en": "Athletics stadium",
-        "fr": "Stade d’athlétisme"
-      },
-      "description": {
-        "en": "A Sport building with a 400 m track, a long jump pit and a pole vault mat.",
-        "fr": "Un bâtiment de sport avec une piste de 400 m, une fosse de saut en longueur et un tapis de saut à la perche."
-      }
-    }
+    "license": "Own work"
   },
   "suburban/building-type-a": {
     "source": "kenney",

@@ -1,6 +1,6 @@
 # Simple buildings are defined in models.json, edited by tools/assets-editor
 
-Accepted. Amends [ADR 0012](0012-models-json-single-source-of-model-definitions.md), which kept "wiring a new asset into gameplay" as manual code.
+Superseded by [ADR 0014](0014-all-buildings-defined-in-buildings-json.md). Amends [ADR 0012](0012-models-json-single-source-of-model-definitions.md), which kept "wiring a new asset into gameplay" as manual code.
 
 Sport venues and nature elements (decoration, green spaces) are buildings whose only features are a model, a footprint, a price, an unlock threshold, a name and, for sport, a Well-being radius and bonus. They were duplicated across `sportVenues.ts`, `NATURE_MODELS`, `natureNames.ts` and the footprint already stored in `models.json`, and the copies drifted apart. Their definition now lives in an optional `building` block of the model's entry in `assets/models.json`:
 

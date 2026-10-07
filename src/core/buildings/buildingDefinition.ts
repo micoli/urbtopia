@@ -1,26 +1,23 @@
 import type { NatureFamily } from '../environment/natureFamilies';
+import type { BuildSection } from './buildSections';
 
 export interface LocalizedText {
   en: string;
   fr: string;
 }
 
-export interface SportBuildingDefinition {
-  kind: 'sport';
-  id: string;
+export interface BuildingDefinition {
+  section?: BuildSection;
+  model: string;
+  footprint?: [number, number];
+  cost?: number;
+  unlockCitizens?: number;
+  requiresRoad?: boolean;
+  initialSlots?: number;
   name: LocalizedText;
-  description: LocalizedText;
-  unlockCitizens: number;
-  cost: number;
-  radius: number;
-  wellbeingBonus: number;
+  description?: LocalizedText;
+  sport?: { radius: number; wellbeingBonus: number };
+  nature?: { family: NatureFamily };
 }
 
-export interface NatureBuildingDefinition {
-  kind: 'nature';
-  id: string;
-  family: NatureFamily;
-  name: LocalizedText;
-}
-
-export type BuildingDefinition = SportBuildingDefinition | NatureBuildingDefinition;
+export type BuildingDefinitions = Record<string, BuildingDefinition>;

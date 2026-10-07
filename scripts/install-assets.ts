@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { ARCHIVES_DIR, ASSET_PACKS, MANAGED_MODELS_DIR, MODELS_DIR, POLY_PIZZA_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS, type AssetPack } from './assetPacks.ts';
 import { managedModelKeys, polyPizzaModelKeys } from './managedModels.ts';
-import { readModels } from './modelsFile.ts';
+import { readBuildings } from './buildingsFile.ts';
 import { convertQuaterniusPack, type QuaterniusPack } from './quaternius.ts';
 import { extractPack } from './extractPack.ts';
 
@@ -54,8 +54,8 @@ function installManagedModels(): void {
 
 function installPolyPizzaModels(): void {
   const sceneModels = readFileSync('src/scene/renderItems.ts', 'utf8');
-  const definitions = readModels();
-  const keys = polyPizzaModelKeys().filter(key => definitions[key]?.building || sceneModels.includes(`'${key}'`));
+  const buildingModels = new Set(Object.values(readBuildings()).map(({ model }) => model));
+  const keys = polyPizzaModelKeys().filter(key => buildingModels.has(key) || sceneModels.includes(`'${key}'`));
   for (const key of keys) {
     const slug = key.slice('poly.pizza/'.length);
     const data = readFileSync(join(POLY_PIZZA_DIR, slug, `${slug}.glb`));
