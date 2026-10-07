@@ -1,5 +1,6 @@
 [tools]
 node = "26.1.0"
 gitleaks = "8.28.0"
+supabase = "2.120.0"
 "npm:playwright" = { version = "1.63.0", postinstall = "playwright install chromium" }
 pitchfork = "2.20.0"

@@ -47,7 +47,7 @@ The codex catalog is checked against every building in `BUILDING_SPECS` and ever
 
 ## Cloud saves database
 
-The optional Cloud save lives in a Supabase project described by [`supabase/`](supabase/) (config, migrations, pgTAP tests); every Postgres object is prefixed `urb_`. Contributors need Docker and run a local Supabase:
+The optional Cloud save lives in a Supabase project described by [`supabase/`](supabase/) (config, migrations, pgTAP tests); every Postgres object is prefixed `urb_`. The Supabase CLI is pinned in `mise.toml` (`mise install`); a Docker-compatible runtime (Docker, OrbStack, Colima) must be running. Contributors run a local Supabase:
 
 | Command | Purpose |
 | --- | --- |

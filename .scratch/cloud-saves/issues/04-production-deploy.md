@@ -1,6 +1,6 @@
 # Production deploy of migrations
 
-Status: ready-for-human - wizard and workflow written; the owner must run `scripts/production-wizard.sh`. `database.types.ts` is hand-written: run `npm run db:types` once Docker is available
+Status: ready-for-human - wizard and workflow written; the owner must run `scripts/production-wizard.sh`
 Blocked by: 01, 02, 03
 Spec: ../spec.md
 

@@ -23,12 +23,12 @@
     "casino:sim": "vite --config prototypes/casino-sim/vite.config.ts --host",
     "preview": "vite preview",
     "check:bundle": "node scripts/checkBundle.ts dist",
-    "db:start": "npx --yes supabase@2 start",
-    "db:stop": "npx --yes supabase@2 stop",
-    "db:reset": "npx --yes supabase@2 db reset",
-    "db:test": "npx --yes supabase@2 test db",
-    "db:types": "npx --yes supabase@2 gen types typescript --local --schema public > src/persistence/cloud/database.types.ts",
-    "db:lint": "npx --yes supabase@2 db lint --fail-on error",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:test": "supabase test db",
+    "db:types": "supabase gen types typescript --local --schema public > src/persistence/cloud/database.types.ts && npx --yes oxfmt src/persistence/cloud/database.types.ts",
+    "db:lint": "supabase db lint --fail-on error",
     "prepare": "lefthook install"
   },
   "devDependencies": {

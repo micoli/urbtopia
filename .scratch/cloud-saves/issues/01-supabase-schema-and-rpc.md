@@ -1,6 +1,6 @@
 # Supabase schema and RPC
 
-Status: done - implemented; SQL and pgTAP not executed locally (no Supabase CLI / Docker): run `npm run db:start && npm run db:test` before relying on it
+Status: done - verified on a local Supabase: 19 pgTAP tests and `db lint` pass
 Blocked by: none
 Spec: ../spec.md
 
