@@ -51,15 +51,20 @@ if ! $assume_yes; then
   [ "$answer" = "y" ] || { echo "Cancelled."; exit 1; }
 fi
 
+body="$(mktemp)"
+trap 'rm -f "$body"' EXIT
 status="$(printf 'header = "Authorization: Bearer %s"\n' "$SUPABASE_ACCESS_TOKEN" |
-  curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+  curl --silent --show-error --output "$body" --write-out '%{http_code}' \
     --config - --request PATCH \
     --header 'Content-Type: application/json' \
     --data "$payload" \
     "https://api.supabase.com/v1/projects/$ref/config/auth")"
 
 if [ "$status" != "200" ]; then
-  echo "The API answered HTTP $status. 401/403: check the token permissions; 404: check the project ref." >&2
+  echo "The API answered HTTP $status:" >&2
+  head -c 2000 "$body" >&2
+  echo >&2
+  echo "401/403: check the token permissions; 404: check the project ref; 400: see the message above." >&2
   exit 1
 fi
 echo "Templates updated on $ref."
