@@ -20,3 +20,4 @@ assets/**/*.blend1
 !.env.example
 supabase/.temp/
 supabase/.branches/
+.mcp.json

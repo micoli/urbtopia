@@ -15,3 +15,4 @@ Let a Player account get an email so the Cloud save follows the player across de
 - [x] Signed-in state shows the email and a sign-out button; signing out continues with a fresh anonymous account.
 - [x] Typed errors for invalid email, rate limiting and failure, FR and EN strings.
 - [x] Local config requires email confirmation and allows the dev redirect URLs.
+- [x] Bilingual (FR then EN) skinned templates for the email change and magic link mails in `supabase/templates/`, wired in the local `config.toml`; production needs them pasted in the dashboard.

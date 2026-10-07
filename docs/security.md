@@ -34,6 +34,8 @@ The Player account can be upgraded with an email link. In the Supabase dashboard
 
 - [ ] Sign In / Providers: **Allow anonymous sign-ins** on, **Confirm email** on (without it anyone could attach someone else's email to their account).
 - [ ] URL Configuration: add the site URL (`https://micoli.github.io/urbtopia/`) to **Redirect URLs**, otherwise the link in the email is refused.
+- [ ] Email Templates: paste `supabase/templates/email_change.html` into "Change email address" and `supabase/templates/magic_link.html` into "Magic link" (the local `config.toml` applies them only to the local stack), with the subjects from `config.toml`. Keep `{{ .ConfirmationURL }}` in the link.
+- [ ] SMTP: the built-in mailer is meant for testing only; configure a custom SMTP provider before opening to real players.
 - [ ] Rate limits: keep the default email limits; the game reports "too many emails" instead of retrying.
 
 ## GitHub settings to enable manually
