@@ -1,13 +1,8 @@
-import { ASSET_PACKS } from './assetPacks.ts';
-
 export type Selection = string[] | 'all';
 
 export interface PrototypeAssets {
   prototype: string;
-  directory?: string;
   packs: Record<string, Selection>;
-  manifest: boolean;
-  rawFbx?: boolean;
 }
 
 const letters = (first: string, last: string) =>
@@ -15,13 +10,6 @@ const letters = (first: string, last: string) =>
 
 // The 3D models each throwaway prototype loads. They are copied from the versioned Kenney archives and never committed.
 export const PROTOTYPE_ASSETS: PrototypeAssets[] = [
-  {
-    prototype: 'assets-editor',
-    directory: 'tools/assets-editor',
-    packs: Object.fromEntries(ASSET_PACKS.map(({ name }) => [name, 'all' as const])),
-    manifest: true,
-    rawFbx: true,
-  },
   {
     prototype: 'render-bench',
     packs: {
@@ -32,7 +20,6 @@ export const PROTOTYPE_ASSETS: PrototypeAssets[] = [
       ],
       roads: ['road-crossroad', 'road-straight'],
     },
-    manifest: false,
   },
   {
     prototype: 'touch-ux',
@@ -42,14 +29,8 @@ export const PROTOTYPE_ASSETS: PrototypeAssets[] = [
       suburban: ['building-type-a'],
       roads: ['road-straight', 'road-crossroad'],
     },
-    manifest: false,
   },
 ];
 
-export const fbxPackName = (pack: string) => `quaternius-${pack}`;
-
 export const PROTOTYPES_DIR = 'prototypes';
 
-export function manifestOf(modelNamesByPack: Record<string, string[]>): Record<string, string[]> {
-  return Object.fromEntries(Object.entries(modelNamesByPack).map(([pack, names]) => [pack, [...names].sort()]));
-}

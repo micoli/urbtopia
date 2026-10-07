@@ -3,27 +3,28 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig, type Plugin } from 'vite'
-import { ASSET_PACKS, MANAGED_MODELS_DIR, POLY_PIZZA_DIR } from '../../scripts/assetPacks.ts'
+import { MANAGED_MODELS_DIR, POLY_PIZZA_DIR } from '../../scripts/assetPacks.ts'
+import { archiveFile, archiveManifest, contentTypeOf, kenneyPackNames } from './archiveSources.ts'
 import { managedModelKeys } from '../../scripts/managedModels.ts'
 import { readModels, writeModels } from '../../scripts/modelsFile.ts'
 import { addGlb, addPack, addPolyPizzaModel, removeModel } from '../../scripts/assetOperations.ts'
 import { fetchPolyPizzaModel } from '../../scripts/polyPizza.ts'
 
-const publicDir = join(dirname(fileURLToPath(import.meta.url)), 'public')
+const editorDir = dirname(fileURLToPath(import.meta.url))
+const miscellaneousDir = join(editorDir, 'miscellaneous')
 
 const miscellaneousNamesIn = (dir: string) =>
   existsSync(dir)
     ? readdirSync(dir, { recursive: true }).map(String).filter((file) => file.endsWith('.obj') || file.endsWith('.3mf') || file.endsWith('.glb')).map((file) => file.replace(/\.obj$/, '')).sort()
     : []
 
-// Rescans models/miscellaneous (subfolders included) on each request so dropped-in OBJ, 3MF and GLB files show up without regenerating the manifest.
-const liveMiscellaneous = (): Plugin => ({
-  name: 'live-miscellaneous-manifest',
+// Builds the manifest on each request: archives are unzipped on demand and the miscellaneous folder (subfolders included) is rescanned, so dropped-in OBJ, 3MF and GLB files show up without a restart.
+const liveManifest = (): Plugin => ({
+  name: 'live-manifest',
   configureServer(server) {
     server.middlewares.use('/manifest.json', (_req, res) => {
-      const manifestPath = join(publicDir, 'manifest.json')
-      const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, 'utf8')) : {}
-      const miscellaneous = miscellaneousNamesIn(join(publicDir, 'models', 'miscellaneous'))
+      const manifest = archiveManifest()
+      const miscellaneous = miscellaneousNamesIn(miscellaneousDir)
       if (miscellaneous.length) manifest.miscellaneous = miscellaneous
       Object.assign(manifest, managedPacks(), polyPizzaPacks())
       res.setHeader('Content-Type', 'application/json')
@@ -47,21 +48,28 @@ const polyPizzaPacks = (): Record<string, string[]> => {
 }
 
 const sourcesByPack = () => ({
-  ...Object.fromEntries(ASSET_PACKS.map(({ name }) => [name, 'kenney'])),
+  ...Object.fromEntries(kenneyPackNames().map((name) => [name, 'kenney'])),
   ...Object.fromEntries(Object.keys(managedPacks()).map((name) => [name, 'managed'])),
   'poly.pizza': 'poly.pizza',
 })
 
-// Serves hand-made and Poly Pizza GLBs straight from assets/, so an added file shows up without copying it.
+// Serves models without copying them: archive entries from memory, hand-made and Poly Pizza GLBs from assets/, miscellaneous files from their folder.
 const liveSources = (): Plugin => ({
   name: 'live-asset-sources',
   configureServer(server) {
     server.middlewares.use('/models', (req, res, next) => {
       const path = decodeURIComponent((req.url ?? '').split('?')[0]!).replace(/^\//, '')
+      const [pack = '', ...rest] = path.split('/')
+      const archived = archiveFile(pack, rest.join('/'))
+      if (archived) {
+        res.setHeader('Content-Type', contentTypeOf(path))
+        return res.end(archived)
+      }
       const slug = path.match(/^poly\.pizza\/([^/]+)\.glb$/)?.[1]
-      const file = slug ? join(POLY_PIZZA_DIR, slug, `${slug}.glb`) : join(MANAGED_MODELS_DIR, path)
-      if (!resolve(file).startsWith(resolve(slug ? POLY_PIZZA_DIR : MANAGED_MODELS_DIR)) || !existsSync(file) || !file.endsWith('.glb')) return next()
-      res.setHeader('Content-Type', 'model/gltf-binary')
+      const root = slug ? POLY_PIZZA_DIR : pack === 'miscellaneous' ? miscellaneousDir : MANAGED_MODELS_DIR
+      const file = slug ? join(POLY_PIZZA_DIR, slug, `${slug}.glb`) : join(root, pack === 'miscellaneous' ? rest.join('/') : path)
+      if (!resolve(file).startsWith(resolve(root)) || !existsSync(file)) return next()
+      res.setHeader('Content-Type', contentTypeOf(file))
       res.end(readFileSync(file))
     })
   },
@@ -132,4 +140,4 @@ const assetOperationsApi = (): Plugin => ({
   },
 })
 
-export default defineConfig({ root: dirname(fileURLToPath(import.meta.url)), plugins: [liveMiscellaneous(), liveSources(), modelsApi(), assetOperationsApi()], server: { fs: { allow: ['../..'] }, watch: { ignored: ['**/assets/models.json'] } } })
+export default defineConfig({ root: dirname(fileURLToPath(import.meta.url)), plugins: [liveManifest(), liveSources(), modelsApi(), assetOperationsApi()], server: { fs: { allow: ['../..'] }, watch: { ignored: ['**/assets/models.json'] } } })

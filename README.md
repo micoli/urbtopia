@@ -34,7 +34,7 @@ npm run dev      # http://localhost:5173, prepares models and codex previews fir
 | `npm run typecheck` / `npm run lint` | TypeScript and ESLint |
 | `npm run assets` | Extract the 3D models from the versioned archives into `public/models` |
 | `npm run assets:fetch` | Refresh the archives from kenney.nl (see [Assets](#assets)) |
-| `npm run assets:prototypes` | Copy the models the prototypes load |
+| `npm run assets:prototypes` | Copy the models the prototypes load (render-bench, touch-ux) |
 | `npm run assets:editor` | Assets editor: browse every model source, edit `assets/models.json`, add or delete assets |
 | `npm run casino:sim` | Casino simulator: play each Minigame with 100 000 Urbs, one URL per game (`/slot-machine`, `/blackjack`, `/blockmatch`, optional `?tier=`) |
 | `npm run codex:generate` | Generate static codex images; append `-- --force` to regenerate |
@@ -76,7 +76,7 @@ The product spec and the work breakdown live in [`.scratch/urbix-mvp`](.scratch/
 
 ## Assets
 
-The 3D models come from Kenney asset packs (see [Credits](#credits)). The original archives are versioned in `assets/kenney/`, so installing and building never need the network. `npm run assets` extracts only the models the scene uses into `public/models`, which is generated and ignored by git. `npm run assets:prototypes` makes all registered packs available in the assets editor (`npm run assets:editor`), including packs with no models selected for the game.
+The 3D models come from Kenney asset packs (see [Credits](#credits)). The original archives are versioned in `assets/kenney/`, so installing and building never need the network. `npm run assets` extracts only the models the scene uses into `public/models`, which is generated and ignored by git. The assets editor (`npm run assets:editor`) reads the archives directly, including packs with no models selected for the game.
 
 To update the archives, run `npm run assets:fetch`. The download links contain a hash that changes with each Kenney release: if one fails, copy the new link from the pack page into `scripts/assetPacks.ts`. Archives are validated before they replace the old ones. Then run `npm run assets -- --force` and commit the new archives.
 
