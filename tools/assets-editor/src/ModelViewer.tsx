@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import * as THREE from 'three'
 import { definitionKey, type Definitions } from './assetKeys'
 import type { ModelInfo } from './modelLoader'
 import { buildPlacement, SceneStage } from './sceneStage'

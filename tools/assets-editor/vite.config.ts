@@ -97,13 +97,16 @@ const modelsApi = (): Plugin => ({
 
 const bytesOf = (base64: string) => new Uint8Array(Buffer.from(base64, 'base64'))
 
-type Operation = (body: any) => Promise<unknown> | unknown
+type WithFile<T extends { data: Uint8Array }> = Omit<T, 'data'> & { dataBase64: string }
+type Operation = (body: never) => Promise<unknown> | unknown
+
+const operation = <Body,>(run: (body: Body) => Promise<unknown> | unknown): Operation => run as Operation
 
 const OPERATIONS: Record<string, Operation> = {
-  'add-glb': ({ dataBase64, ...input }) => addGlb({ ...input, data: bytesOf(dataBase64) }),
-  'add-poly': async ({ input, license }) => addPolyPizzaModel(await fetchPolyPizzaModel(input), license),
-  'add-pack': ({ dataBase64, ...input }) => addPack({ ...input, data: bytesOf(dataBase64) }),
-  remove: ({ key, usedKeys }) => removeModel(key, usedKeys),
+  'add-glb': operation(({ dataBase64, ...input }: WithFile<Parameters<typeof addGlb>[0]>) => addGlb({ ...input, data: bytesOf(dataBase64) })),
+  'add-poly': operation(async ({ input, license }: { input: string; license: string }) => addPolyPizzaModel(await fetchPolyPizzaModel(input), license)),
+  'add-pack': operation(({ dataBase64, ...input }: WithFile<Parameters<typeof addPack>[0]>) => addPack({ ...input, data: bytesOf(dataBase64) })),
+  remove: operation(({ key, usedKeys }: { key: string; usedKeys: string[] }) => removeModel(key, usedKeys)),
 }
 
 // Operations change the sources, so the game's generated public/models is refreshed afterwards.
@@ -112,13 +115,13 @@ const assetOperationsApi = (): Plugin => ({
   configureServer(server) {
     server.middlewares.use('/api/assets', async (req, res) => {
       res.setHeader('Content-Type', 'application/json')
-      const operation = OPERATIONS[(req.url ?? '').replace(/^\//, '')]
-      if (req.method !== 'POST' || !operation) {
+      const run = OPERATIONS[(req.url ?? '').replace(/^\//, '')]
+      if (req.method !== 'POST' || !run) {
         res.statusCode = 404
         return res.end(JSON.stringify({ error: 'unknown operation' }))
       }
       try {
-        const result = await operation(JSON.parse(await readBody(req)))
+        const result = await run(JSON.parse(await readBody(req)))
         execFileSync('node', ['scripts/install-assets.ts'], { stdio: 'ignore' })
         res.end(JSON.stringify({ ok: true, result }))
       } catch (error) {

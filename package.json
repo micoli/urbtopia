@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src build scripts",
+    "lint": "eslint src build scripts tools",
     "test": "vitest run",
     "saves:update": "UPDATE_SAVES=1 vitest run src/saves",
     "assets": "node scripts/install-assets.ts",
