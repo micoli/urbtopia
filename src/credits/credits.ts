@@ -1,5 +1,5 @@
-import { MODEL_DEFINITIONS } from '../scene/modelDefinitions';
-import { parseLicenses, type PolyPizzaCredit } from './polyPizzaCredits';
+import { MODEL_DEFINITIONS, type ModelDefinition, type ModelSource } from '../scene/modelDefinitions';
+import { MODEL_KEYS } from '../scene/renderItems';
 
 export interface PackCredit {
   name: string;
@@ -14,15 +14,27 @@ export const PACK_CREDITS: PackCredit[] = [
 
 export interface ModelCredit {
   model: string;
+  title: string;
   author: string;
   url?: string;
   license: string;
+  licenseUrl?: string;
 }
 
-export const OTHER_MODEL_CREDITS: ModelCredit[] = Object.entries(MODEL_DEFINITIONS)
-  .filter(([, definition]) => definition.source === 'managed' && definition.author)
-  .map(([model, definition]) => ({ model, author: definition.author!, url: definition.url, license: definition.license }));
+const LICENSE_URLS: Record<string, string> = {
+  'CC-BY 3.0': 'https://creativecommons.org/licenses/by/3.0/',
+  'CC0 1.0': 'https://creativecommons.org/publicdomain/zero/1.0/',
+};
 
-const licenseFiles = import.meta.glob<string>('../../assets/poly.pizza/*/license.txt', { query: '?raw', import: 'default', eager: true });
+export function creditsOf(source: ModelSource, usedKeys: readonly string[], definitions: Record<string, ModelDefinition>): ModelCredit[] {
+  return usedKeys
+    .flatMap((model) => {
+      const definition = definitions[model];
+      if (definition?.source !== source || !definition.author) return [];
+      return [{ model, title: definition.note ?? model, author: definition.author, url: definition.url, license: definition.license, licenseUrl: LICENSE_URLS[definition.license] }];
+    })
+    .sort((a, b) => a.title.localeCompare(b.title) || a.author.localeCompare(b.author));
+}
 
-export const POLY_PIZZA_CREDITS: PolyPizzaCredit[] = parseLicenses(Object.values(licenseFiles));
+export const POLY_PIZZA_CREDITS = creditsOf('poly.pizza', MODEL_KEYS, MODEL_DEFINITIONS);
+export const OTHER_MODEL_CREDITS = creditsOf('managed', MODEL_KEYS, MODEL_DEFINITIONS);

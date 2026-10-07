@@ -1,5 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import type { ModelDefinition } from '../src/scene/modelDefinitions.ts';
+import { MODELS_FILE, readModels, writeModels } from './modelsFile.ts';
 
 const SITE = 'https://poly.pizza';
 const STATIC = 'https://static.poly.pizza';
@@ -70,7 +72,15 @@ export async function listAssets(listId: string): Promise<PolyPizzaAsset[]> {
   );
 }
 
-export async function fetchPolyPizzaList(listId: string, targetDir: string): Promise<number> {
+export const polyPizzaDefinition = (asset: Pick<PolyPizzaAsset, 'title' | 'author' | 'publicID' | 'licence'>): ModelDefinition => ({
+  source: 'poly.pizza',
+  license: asset.licence,
+  author: asset.author,
+  url: `${SITE}/m/${asset.publicID}`,
+  note: asset.title,
+});
+
+export async function fetchPolyPizzaList(listId: string, targetDir: string, modelsFile = MODELS_FILE): Promise<number> {
   const assets = await listAssets(listId);
   for (const asset of assets) {
     console.log(`↓ ${asset.slug}`);
@@ -80,6 +90,12 @@ export async function fetchPolyPizzaList(listId: string, targetDir: string): Pro
     writeFileSync(join(dir, `${asset.slug}.glb`), model);
     writeFileSync(join(dir, 'license.txt'), licenseText(asset));
   }
+  const models = readModels(modelsFile);
+  for (const asset of assets) {
+    const key = `poly.pizza/${asset.slug}`;
+    models[key] = { ...polyPizzaDefinition(asset), ...models[key] };
+  }
+  writeModels(models, modelsFile);
   return assets.length;
 }
 

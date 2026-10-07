@@ -1592,6 +1592,363 @@
       "height": 2.5
     }
   },
+  "poly.pizza/above-ground-swimming-pool": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/2R5gjVusWRN",
+    "note": "Above ground swimming pool"
+  },
+  "poly.pizza/archway": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/erbvRcGd7YA",
+    "note": "Archway"
+  },
+  "poly.pizza/bakery": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/6BGhNQlUzRR",
+    "note": "Bakery"
+  },
+  "poly.pizza/ballpark-45ez39jsdz6": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/45Ez39JSdz6",
+    "note": "Ballpark"
+  },
+  "poly.pizza/ballpark-8p3rzdaoytp": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/8P3RzdaoYTP",
+    "note": "Ballpark"
+  },
+  "poly.pizza/bank": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/f1GOJtZFtsR",
+    "note": "Bank"
+  },
+  "poly.pizza/bar": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/cr_gfObT2-R",
+    "note": "Bar"
+  },
+  "poly.pizza/barn-0qthkuzrye": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/0QTh_KUZRYE",
+    "note": "Barn"
+  },
+  "poly.pizza/barn-6oqd70uscs": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/6OQd70uscs-",
+    "note": "Barn"
+  },
+  "poly.pizza/big-barn": {
+    "source": "poly.pizza",
+    "license": "CC0 1.0",
+    "author": "Quaternius",
+    "url": "https://poly.pizza/m/q1N3xn2SpC",
+    "note": "Big Barn"
+  },
+  "poly.pizza/casino": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/ch4RRNmqTUI",
+    "note": "Casino"
+  },
+  "poly.pizza/chickencoop": {
+    "source": "poly.pizza",
+    "license": "CC0 1.0",
+    "author": "Quaternius",
+    "url": "https://poly.pizza/m/DM0F8siLam",
+    "note": "ChickenCoop"
+  },
+  "poly.pizza/cinema": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/c-5balfj4bu",
+    "note": "Cinema"
+  },
+  "poly.pizza/cloister-garden": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Bruno Oliveira",
+    "url": "https://poly.pizza/m/9kOXKJvTgKS",
+    "note": "Cloister Garden"
+  },
+  "poly.pizza/club": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/bnNROJXnfsP",
+    "note": "Club"
+  },
+  "poly.pizza/colosseum": {
+    "source": "poly.pizza",
+    "license": "CC0 1.0",
+    "author": "CreativeTrio",
+    "url": "https://poly.pizza/m/83ftBPyiSf",
+    "note": "Colosseum"
+  },
+  "poly.pizza/concert-stage": {
+    "source": "poly.pizza",
+    "license": "CC0 1.0",
+    "author": "iPoly3D",
+    "url": "https://poly.pizza/m/BQPFzsjXJF",
+    "note": "Concert Stage"
+  },
+  "poly.pizza/dettweiler-block-stage-no-fx": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Ulric Dettweiler",
+    "url": "https://poly.pizza/m/1oeJ9IH1igP",
+    "note": "Dettweiler Block Stage (No FX)"
+  },
+  "poly.pizza/ferris-wheel-5kivenxn5cw": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/5KiVEnXN5Cw",
+    "note": "Ferris wheel"
+  },
+  "poly.pizza/ferris-wheel-6cepszjxbw": {
+    "source": "poly.pizza",
+    "license": "CC0 1.0",
+    "author": "CreativeTrio",
+    "url": "https://poly.pizza/m/6CepsZjXBw",
+    "note": "Ferris Wheel"
+  },
+  "poly.pizza/fire-engine": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "J-Toastie",
+    "url": "https://poly.pizza/m/P4XkeNmBLj",
+    "note": "Fire Engine"
+  },
+  "poly.pizza/fire-station-with-fire-trucks": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Ivan Klus",
+    "url": "https://poly.pizza/m/akzBrALzbei",
+    "note": "Fire Station with Fire Trucks"
+  },
+  "poly.pizza/fire-truck": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Ivan Klus",
+    "url": "https://poly.pizza/m/7iHJ519SwxG",
+    "note": "Fire Truck"
+  },
+  "poly.pizza/football-stadium": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/6TZCkGh76m5",
+    "note": "Football stadium"
+  },
+  "poly.pizza/fountain": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/0YTMlW0CUHU",
+    "note": "Fountain"
+  },
+  "poly.pizza/greek-temple": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Alexandre Thomas (Ashtom)",
+    "url": "https://poly.pizza/m/cdMQnl19MB9",
+    "note": "Greek Temple"
+  },
+  "poly.pizza/hospital": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/asNvyjkcSG1",
+    "note": "Hospital"
+  },
+  "poly.pizza/japanese-torii": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Jacques Fourie",
+    "url": "https://poly.pizza/m/cXyQGUwmlA5",
+    "note": "Japanese Torii"
+  },
+  "poly.pizza/lighthouse-6gfe4vkpyaj": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/6gFE4VkpYAJ",
+    "note": "Lighthouse"
+  },
+  "poly.pizza/lighthouse-b7ttdcccjcf": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/b7tTDCCCjcF",
+    "note": "Lighthouse"
+  },
+  "poly.pizza/lighthouse-bk72chfpgo": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/bk72ChfpGo-",
+    "note": "Lighthouse"
+  },
+  "poly.pizza/lighthouse-c1hm3zs8u": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "CG ART Creation",
+    "url": "https://poly.pizza/m/c1-hm3Zs-8U",
+    "note": "Lighthouse"
+  },
+  "poly.pizza/market-stalls-compact": {
+    "source": "poly.pizza",
+    "license": "CC0 1.0",
+    "author": "Quaternius",
+    "url": "https://poly.pizza/m/fmHUuX9AS3",
+    "note": "Market Stalls Compact"
+  },
+  "poly.pizza/mayan-ziggurat": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Bruno Oliveira",
+    "url": "https://poly.pizza/m/0rEriuH2sVr",
+    "note": "Mayan Ziggurat"
+  },
+  "poly.pizza/mine": {
+    "source": "poly.pizza",
+    "license": "CC0 1.0",
+    "author": "Quaternius",
+    "url": "https://poly.pizza/m/wOJ61Fa0Lt",
+    "note": "Mine"
+  },
+  "poly.pizza/pagoda-1zs7ucaad4j": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/1zS7ucaAd4J",
+    "note": "Pagoda"
+  },
+  "poly.pizza/pagoda-d1m5ncmbudi": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/d1M5ncMBUDi",
+    "note": "Pagoda"
+  },
+  "poly.pizza/pagoda-ehoi2vgw1ol": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/eHOI2VgW1ol",
+    "note": "Pagoda"
+  },
+  "poly.pizza/palace-1d1nn3qb1e7": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "jeremy",
+    "url": "https://poly.pizza/m/1d1nN3qb1E7",
+    "note": "Palace"
+  },
+  "poly.pizza/palace-3xf6koesac": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/3Xf6ko_eSAC",
+    "note": "Palace"
+  },
+  "poly.pizza/santo-spirito-fountain": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Don Carson",
+    "url": "https://poly.pizza/m/7b_tCaBRLCI",
+    "note": "Santo Spirito Fountain"
+  },
+  "poly.pizza/school-bus": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Kyle Li",
+    "url": "https://poly.pizza/m/2_1dZHNPJqJ",
+    "note": "SCHOOL BUS"
+  },
+  "poly.pizza/stadium": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Zsky",
+    "url": "https://poly.pizza/m/FNOmnIZJLs",
+    "note": "Stadium"
+  },
+  "poly.pizza/stadium-seats": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Zsky",
+    "url": "https://poly.pizza/m/KAHX68dbXO",
+    "note": "Stadium Seats"
+  },
+  "poly.pizza/stage": {
+    "source": "poly.pizza",
+    "license": "CC0 1.0",
+    "author": "iPoly3D",
+    "url": "https://poly.pizza/m/dGRAisemWy",
+    "note": "Stage"
+  },
+  "poly.pizza/swimming-pool": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Poly by Google",
+    "url": "https://poly.pizza/m/fZTY7mCI_lv",
+    "note": "Swimming pool"
+  },
+  "poly.pizza/temple-for-tilt-integration": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "kris pilcher",
+    "url": "https://poly.pizza/m/2c77k-iimuh",
+    "note": "temple for tilt integration"
+  },
+  "poly.pizza/temple-of-prophecy-ruined": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Duncan Anderson",
+    "url": "https://poly.pizza/m/7LV6QMkGBNo",
+    "note": "Temple of Prophecy: Ruined"
+  },
+  "poly.pizza/village-market": {
+    "source": "poly.pizza",
+    "license": "CC0 1.0",
+    "author": "Quaternius",
+    "url": "https://poly.pizza/m/0TsHLxX6CB",
+    "note": "Village Market"
+  },
+  "poly.pizza/water-tank": {
+    "source": "poly.pizza",
+    "license": "CC0 1.0",
+    "author": "Quaternius",
+    "url": "https://poly.pizza/m/XVB8vUbnZb",
+    "note": "Water Tank"
+  },
+  "poly.pizza/water-tower": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Alex Safayan",
+    "url": "https://poly.pizza/m/9JYqZyTiVkU",
+    "note": "Water Tower"
+  },
   "roads/road-bend": {
     "source": "kenney",
     "license": "CC0",

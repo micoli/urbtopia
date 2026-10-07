@@ -21,22 +21,26 @@ export function CreditsDialog() {
               </li>
             ))}
           </ul>
-          <h3>{t('credits.polyPizza')}</h3>
-          <ul className="credits-list">
-            {POLY_PIZZA_CREDITS.map((credit) => (
-              <li key={credit.source}>
-                <a href={credit.source} target="_blank" rel="noreferrer">{credit.title}</a> {t('credits.by')} {credit.author} (
-                {credit.licenceUrl ? <a href={credit.licenceUrl} target="_blank" rel="noreferrer">{credit.licence}</a> : credit.licence})
-              </li>
-            ))}
-          </ul>
+          {POLY_PIZZA_CREDITS.length > 0 && (
+            <>
+              <h3>{t('credits.polyPizza')}</h3>
+              <ul className="credits-list">
+                {POLY_PIZZA_CREDITS.map((credit) => (
+                  <li key={credit.model}>
+                    {credit.url ? <a href={credit.url} target="_blank" rel="noreferrer">{credit.title}</a> : credit.title} {t('credits.by')} {credit.author} (
+                    {credit.licenseUrl ? <a href={credit.licenseUrl} target="_blank" rel="noreferrer">{credit.license}</a> : credit.license})
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           {OTHER_MODEL_CREDITS.length > 0 && (
             <>
               <h3>{t('credits.otherModels')}</h3>
               <ul className="credits-list">
                 {OTHER_MODEL_CREDITS.map((credit) => (
                   <li key={credit.model}>
-                    {credit.url ? <a href={credit.url} target="_blank" rel="noreferrer">{credit.model}</a> : credit.model} {t('credits.by')} {credit.author} ({credit.license})
+                    {credit.url ? <a href={credit.url} target="_blank" rel="noreferrer">{credit.title}</a> : credit.title} {t('credits.by')} {credit.author} ({credit.license})
                   </li>
                 ))}
               </ul>
