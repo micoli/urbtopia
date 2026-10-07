@@ -1,5 +1,6 @@
 TODO.md
-.claude/
+.claude/*
+!.claude/skills/
 .ssh/
 .DS_Store
 node_modules/
