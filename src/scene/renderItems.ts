@@ -1,3 +1,4 @@
+import { SPORT_VENUES, SPORT_VENUE_TYPES, type SportVenueType } from '../core/leisure/sportVenues';
 import { CROP_IDS, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
 import { NATURE_MODELS, type NatureType } from '../core/environment/nature';
@@ -24,6 +25,7 @@ export interface RenderItem {
 }
 
 export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
+  ...Object.fromEntries(SPORT_VENUE_TYPES.map(type => [type, SPORT_VENUES[type].model])) as Record<SportVenueType, string>,
   ...Object.fromEntries(NATURE_MODELS.map(([type, model]) => [type, model])) as Record<NatureType, string>,
   workshop: 'industrial/building-h',
   factory: 'industrial/building-b',
@@ -37,7 +39,6 @@ export const MODEL_BY_BUILDING: Record<BuildingType, string> = {
   grainSilo: 'farm/Silo_House',
   vault: 'industrial/building-s',
   casino: 'buildings/2Story_Stairs_Mat',
-  stadium: 'sport/athletics-stadium',
   farm: 'farm/Barn',
   packhouse: 'farm/OpenBarn',
   tree: 'suburban/tree-small',

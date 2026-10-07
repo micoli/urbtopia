@@ -1,3 +1,4 @@
+import { SPORT_VENUE_TYPES } from '../core/leisure/sportVenues';
 import { NATURE_MODELS } from '../core/environment/nature';
 import { FACILITIES, FACILITY_TYPES, SERVICE_CATEGORIES, type BuildingType } from '../core';
 
@@ -12,7 +13,7 @@ export const BUILDING_SECTIONS = [
   { title: 'build.transport', types: ['busStop', 'brtStation', 'railStation'] },
   { title: 'build.publicFacilities', types: PUBLIC_FACILITY_TYPES },
   { title: 'build.leisure', types: ['casino'] },
-  { title: 'build.sport', types: ['stadium'] },
+  { title: 'build.sport', types: SPORT_VENUE_TYPES },
   { title: 'build.decoration', types: natureTypesOf(true) },
   { title: 'build.greenSpaces', types: ['tree', 'park', ...natureTypesOf(false)] },
 ] as const satisfies readonly { title: string; types: readonly BuildingType[] }[];

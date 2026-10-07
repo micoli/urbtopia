@@ -79,8 +79,8 @@ export { withoutOpenRound } from './leisure/casinoRound';
 export type { OpenCasinoRound } from './engine/state';
 export { BLOCKMATCH_STAR_BONUS, MAX_BLOCKMATCH_STARS, blockmatchLevelNumber, blockmatchPayout, blockmatchSeed } from './leisure/blockmatchRound';
 export { generateLevel as generateBlockmatchLevel } from './leisure/blockmatch/levelGenerator';
-export { casinosReaching, stadiumsReaching } from './leisure/leisure';
-export { STADIUM } from './leisure/stadium';
+export { casinosReaching, sportVenuesReaching } from './leisure/leisure';
+export { SPORT_VENUES, SPORT_VENUE_TYPES, isSportVenueType, type SportVenueType } from './leisure/sportVenues';
 
 export { CONGESTION, ROAD_TIER_COSTS, MAX_ROAD_TIER, laneCapacity, roadTierOf, roadTierUpgradeCost } from './traffic/roadTier';
 export { JOBS, jobsOf } from './traffic/jobs';

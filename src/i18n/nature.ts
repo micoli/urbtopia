@@ -1,4 +1,3 @@
-import { NATURE_NAMES } from './natureNames';
 import { NATURE_MODELS, NATURE_FAMILIES, type NatureFamily, type NatureType } from '../core/environment/nature';
 
 type NatureMessageKey = `building.${NatureType}` | `codex.description.nature.${NatureFamily}`;
@@ -16,7 +15,7 @@ const descriptions: Record<NatureFamily, readonly [string, string]> = {
 
 export function natureMessages(language: 'en' | 'fr'): Record<NatureMessageKey, string> {
   const index = language === 'en' ? 0 : 1;
-  const names = NATURE_MODELS.map(([type]) => [`building.${type}`, NATURE_NAMES[type][index]]);
+  const names = NATURE_MODELS.map(([type, , , name]) => [`building.${type}`, name[index]]);
   const help = Object.entries(NATURE_FAMILIES).map(([family, profile]) => [
     `codex.description.nature.${family}`,
     language === 'en'

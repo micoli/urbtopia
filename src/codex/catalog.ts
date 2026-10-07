@@ -1,5 +1,6 @@
 import { NATURE_MODELS, type NatureType, type NatureFamily } from '../core/environment/nature';
 import { BUILDING_SPECS, CROPS, CROP_IDS, ECOLOGY, ECOLOGY_UNLOCKS, FACILITY_TYPES, isCrop, maxTierOf, type BuildingType, type CropId, type FacilityType } from '../core';
+import { SPORT_VENUE_TYPES, type SportVenueType } from '../core/leisure/sportVenues';
 import { MESSAGES, type MessageKey } from '../i18n/messages';
 import { FR } from '../i18n/fr';
 import { BUILDING_SECTIONS, type BuildSection } from './buildingSections';
@@ -14,6 +15,7 @@ export type CodexSection = BuildSection | 'codex.roads' | 'codex.crops';
 const DESCRIPTIONS = {
   ...Object.fromEntries(NATURE_MODELS.map(([type, , family]) => [type, `codex.description.nature.${family}`])) as Record<NatureType, `codex.description.nature.${NatureFamily}`>,
   ...Object.fromEntries(FACILITY_TYPES.map(type => [type, `codex.description.${type}`])) as Record<FacilityType, `codex.description.${FacilityType}`>,
+  ...Object.fromEntries(SPORT_VENUE_TYPES.map(type => [type, `codex.description.${type}`])) as Record<SportVenueType, `codex.description.${SportVenueType}`>,
   home: 'codex.description.home',
   solarHome: 'codex.description.solarHome',
   workshop: 'codex.description.workshop',
@@ -24,7 +26,6 @@ const DESCRIPTIONS = {
   grainSilo: 'codex.description.grainSilo',
   vault: 'codex.description.vault',
   casino: 'codex.description.casino',
-  stadium: 'codex.description.stadium',
   farm: 'codex.description.farm',
   packhouse: 'codex.description.packhouse',
   powerPlant: 'codex.description.powerPlant',

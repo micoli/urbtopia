@@ -1,3 +1,4 @@
+import type { SportVenueType } from '../leisure/sportVenues';
 import type { FacilityType } from '../services/facilities';
 import type { NatureType } from '../environment/nature';
 import type { Direction } from '../map/geometry';
@@ -7,7 +8,7 @@ import type { CropId } from '../farming/crops';
 import type { RoadKind } from '../map/roads';
 import type { TutorialStep } from '../progression/tutorial';
 
-export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'coalPlant' | 'waterTower' | 'silo' | 'vault' | 'grainSilo' | 'farm' | 'packhouse' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop' | 'brtStation' | 'railStation' | 'casino' | 'stadium' | FacilityType | NatureType;
+export type BuildingType = 'workshop' | 'factory' | 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'coalPlant' | 'waterTower' | 'silo' | 'vault' | 'grainSilo' | 'farm' | 'packhouse' | 'tree' | 'park' | 'solar' | 'battery' | 'backup' | 'busStop' | 'brtStation' | 'railStation' | 'casino' | SportVenueType | FacilityType | NatureType;
 
 export interface OpenCasinoRound {
   buildingId: number;

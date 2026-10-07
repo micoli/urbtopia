@@ -1,9 +1,10 @@
 import { FACILITIES, FACILITY_TYPES, type FacilityType } from '../services/facilities';
 import { NATURE_FAMILIES, NATURE_MODELS, type NatureType } from '../environment/nature';
+import type { SportVenueType } from '../leisure/sportVenues';
 import type { Coord } from '../map/coord';
 import { HOME_FOOTPRINTS } from '../economy/economy';
 import { CASINO, casinoFootprint } from '../leisure/casino';
-import { STADIUM } from '../leisure/stadium';
+import { SPORT_VENUES, SPORT_VENUE_TYPES } from '../leisure/sportVenues';
 import type { Building, BuildingType, Rotation, ShopStack } from '../engine/state';
 
 export interface Footprint {
@@ -28,8 +29,14 @@ const facilitySpecs = Object.fromEntries(FACILITY_TYPES.map(type => {
   return [type, { footprint, cost, requiresRoad: true, initialSlots: 0 }];
 })) as Record<FacilityType, BuildingSpec>;
 
+const sportVenueSpecs = Object.fromEntries(SPORT_VENUE_TYPES.map(type => {
+  const { footprint, cost } = SPORT_VENUES[type];
+  return [type, { footprint, cost, requiresRoad: true, initialSlots: 0 }];
+})) as Record<SportVenueType, BuildingSpec>;
+
 export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
   ...natureSpecs,
+  ...sportVenueSpecs,
   ...facilitySpecs,
   tree: { footprint: { width: 1, depth: 1 }, cost: 40, requiresRoad: false, initialSlots: 0 },
   park: { footprint: { width: 2, depth: 2 }, cost: 120, requiresRoad: false, initialSlots: 0 },
@@ -53,7 +60,6 @@ export const BUILDING_SPECS: Record<BuildingType, BuildingSpec> = {
   grainSilo: { footprint: { width: 2, depth: 2 }, cost: 300, requiresRoad: true, initialSlots: 0 },
   vault: { footprint: { width: 2, depth: 1 }, cost: 300, requiresRoad: true, initialSlots: 0 },
   casino: { footprint: CASINO.footprints[0]!, cost: CASINO.cost, requiresRoad: true, initialSlots: 0 },
-  stadium: { footprint: STADIUM.footprint, cost: STADIUM.cost, requiresRoad: true, initialSlots: 0 },
 };
 
 export function footprintOf(type: BuildingType, rotation: number, tier = 1): Footprint {

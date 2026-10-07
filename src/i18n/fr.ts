@@ -1,13 +1,13 @@
 import { facilityMessages } from './facilities';
 import { casinoMessages } from './casino';
-import { stadiumMessages } from './stadium';
+import { sportVenueMessages } from './sportVenues';
 import { natureMessages } from './nature';
 import type { MessageKey } from './messages';
 
 export const FR: Record<MessageKey, string> = {
   ...natureMessages('fr'),
   ...casinoMessages('fr'),
-  ...stadiumMessages('fr'),
+  ...sportVenueMessages('fr'),
   ...facilityMessages('fr'),
   'eco.temperature': 'Température de la ville',
   'eco.temperatureOptimum': 'Optimum : 26 °C',

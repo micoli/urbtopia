@@ -1,4 +1,4 @@
-import { ECOLOGY, FACILITY_TYPES, casinosReaching, stadiumsReaching, poweredCasinoIds, homePower, homeBenefits, missingServices, serviceCoverage, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, type Building } from '../../core';
+import { ECOLOGY, FACILITY_TYPES, casinosReaching, sportVenuesReaching, isSportVenueType, poweredCasinoIds, homePower, homeBenefits, missingServices, serviceCoverage, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
@@ -15,10 +15,10 @@ export function HomePanel({ building }: HomePanelProps) {
   const state = useGame(s => s.state);
   const coverage = serviceCoverage(state);
   const benefits = homeBenefits(state, building, undefined, coverage);
-  const hasLeisure = state.buildings.some(b => b.type === 'casino' || b.type === 'stadium');
+  const hasLeisure = state.buildings.some(b => b.type === 'casino' || isSportVenueType(b.type));
   const leisure = hasLeisure ? [
     ...casinosReaching(state, building, poweredCasinoIds(state)).map(casino => `${t('building.casino')} ${t('home.tier')} ${casino.tier}`),
-    ...stadiumsReaching(state, building).map(() => t('building.stadium')),
+    ...sportVenuesReaching(state, building).map(venue => t(`building.${venue.type}`)),
   ] : null;
   const covered = FACILITY_TYPES.filter(type => coverage.get(building.id)?.has(type));
   const missing = missingServices(coverage, building);

@@ -20,7 +20,8 @@ import {
   type Building,
   type BuildingType,
   casinoRadius,
-  STADIUM,
+  SPORT_VENUES,
+  isSportVenueType,
   type Command,
   type Coord,
   type Direction,
@@ -192,7 +193,7 @@ function addCoveragePreview(result: Evaluation, state: GameState, type: Facility
 
 function reachTilesOf(building: Building): Coord[] {
   if (building.type === 'casino') return rangeTiles(building.type, casinoRadius(building.tier), building, building.rotation, building.tier);
-  if (building.type === 'stadium') return rangeTiles(building.type, STADIUM.radius, building, building.rotation);
+  if (isSportVenueType(building.type)) return rangeTiles(building.type, SPORT_VENUES[building.type].radius, building, building.rotation);
   if (!isFacilityType(building.type)) return [];
   return rangeTiles(building.type, FACILITIES[building.type].radius, building, building.rotation);
 }
