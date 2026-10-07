@@ -1,0 +1,14 @@
+title = "Urbix gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documented dummy values only"
+regexes = [
+  '''dummy-publishable-key''',
+  '''http://127\.0\.0\.1:54321''',
+]
+paths = [
+  '''package-lock\.json''',
+]

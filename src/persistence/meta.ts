@@ -26,8 +26,46 @@ export function readMeta(store: SaveStore, now: number): Meta {
   return fresh;
 }
 
+function readRecord(store: SaveStore): Record<string, unknown> {
+  const raw = store.get(META_KEY);
+  if (raw === null) return {};
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return typeof parsed === 'object' && parsed !== null ? (parsed as Record<string, unknown>) : {};
+  } catch {
+    return {};
+  }
+}
+
 function update(store: SaveStore, now: number, patch: Partial<Meta>): void {
-  store.put(META_KEY, JSON.stringify({ ...readMeta(store, now), ...patch }));
+  store.put(META_KEY, JSON.stringify({ ...readRecord(store), ...readMeta(store, now), ...patch }));
+}
+
+export interface CloudMeta {
+  baseRevision: number;
+  syncedSavedAt: number;
+  editedSinceSync: boolean;
+  lastSyncAt: number | null;
+  paused: boolean;
+}
+
+const NEVER_SYNCED: CloudMeta = { baseRevision: 0, syncedSavedAt: 0, editedSinceSync: true, lastSyncAt: null, paused: false };
+
+export function readCloudMeta(store: SaveStore): CloudMeta {
+  const raw = readRecord(store).cloud as Partial<CloudMeta> | undefined;
+  if (typeof raw !== 'object' || raw === null) return { ...NEVER_SYNCED };
+  return {
+    baseRevision: typeof raw.baseRevision === 'number' ? raw.baseRevision : 0,
+    syncedSavedAt: typeof raw.syncedSavedAt === 'number' ? raw.syncedSavedAt : 0,
+    editedSinceSync: typeof raw.editedSinceSync === 'boolean' ? raw.editedSinceSync : true,
+    lastSyncAt: typeof raw.lastSyncAt === 'number' ? raw.lastSyncAt : null,
+    paused: raw.paused === true,
+  };
+}
+
+export function writeCloudMeta(store: SaveStore, now: number, patch: Partial<CloudMeta>): void {
+  update(store, now, {});
+  store.put(META_KEY, JSON.stringify({ ...readRecord(store), cloud: { ...readCloudMeta(store), ...patch } }));
 }
 
 export function recordExport(store: SaveStore, now: number): void {

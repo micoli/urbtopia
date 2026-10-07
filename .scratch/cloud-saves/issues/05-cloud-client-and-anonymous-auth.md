@@ -1,6 +1,6 @@
 # Cloud client and anonymous auth
 
-Status: ready-for-agent
+Status: done - implemented
 Blocked by: 01
 Spec: ../spec.md
 

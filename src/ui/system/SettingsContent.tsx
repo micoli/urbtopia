@@ -12,6 +12,7 @@ import { toastStore } from '../../store/toastStore';
 import { useUi } from '../common/hooks';
 import { reloadApp } from '../../pwa/reloadApp';
 import { useInstallPrompt } from '../../pwa/useInstallPrompt';
+import { CloudSaveSection } from './CloudSaveSection';
 import { PreferencesContent } from './PreferencesContent';
 import { useConfirmKeys } from '../build/useConfirmKeys';
 import { PanelHeader } from '../common/PanelHeader';
@@ -79,6 +80,7 @@ export function SettingsContent() {
           onConfirm={startNewGame}
         />
       </ButtonRow>
+      <CloudSaveSection />
       <PreferencesContent />
       <small className="build-id">
         {t('settings.version')} {__BUILD_ID__}

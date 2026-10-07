@@ -1,6 +1,6 @@
 # Repository secret guardrails
 
-Status: ready-for-agent
+Status: done - implemented; GitHub settings checklist is manual (docs/security.md)
 Blocked by: none
 Spec: ../spec.md
 

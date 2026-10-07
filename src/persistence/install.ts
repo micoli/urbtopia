@@ -3,6 +3,7 @@ import { dialogStore } from '../store/dialogStore';
 import { bootResult, gameStore } from '../store/gameStore';
 import { readOnlyStore } from '../store/readOnlyStore';
 import { createAutosave } from './autosave';
+import { installCloudSync } from './cloud/installCloud';
 import { saveSession, saveStore } from './instance';
 import { readMeta, shouldRemindExport } from './meta';
 import { TabOwnership } from './tabOwnership';
@@ -66,7 +67,10 @@ export function installPersistence(): () => void {
   const meta = readMeta(saveStore, now);
   if (shouldRemindExport({ ...meta, now, lastSavedAt: gameStore.getState().state.lastSeen })) dialogStore.getState().setExportReminder(true);
 
+  const disposeCloud = installCloudSync();
+
   return () => {
+    disposeCloud();
     unsubscribe();
     document.removeEventListener('visibilitychange', onVisibility);
     window.removeEventListener('pagehide', autosave.flush);

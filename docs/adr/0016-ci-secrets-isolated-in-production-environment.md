@@ -4,7 +4,7 @@ Accepted. The repository is open source: anything in a commit or a CI log is pub
 
 - **Secrets** (`SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, project ref) are GitHub Environment secrets of `production`, restricted to `main` and gated by a required reviewer. Only the deploy job references that environment. No repository-level secret exists.
 - **Untrusted code**: the validation workflow runs on `pull_request` (forks get no secrets) against `supabase start` in the runner. `pull_request_target` is forbidden. Default `permissions: contents: read`; first-time contributors need approval.
-- **Public values**: the Supabase URL and publishable key are GitHub Variables injected at build, with a committed `.env.example` of dummy values. A CI check greps `dist/` for `service_role` and `sb_secret_`.
+- **Public values**: the Supabase URL and publishable key are GitHub Variables injected at build, with a committed `.env.example` of dummy values. A CI script scans `dist/` for an `sb_secret_` key or a `service_role` JWT (the bare strings exist inside supabase-js, so a plain grep is not usable).
 - **Logs**: secrets reach a step only through its `env:`, never as a CLI argument; no `set -x`, no echoing variables, no `--debug` on the production job. Third-party actions are pinned by commit SHA, kept fresh by Dependabot.
 - **Detection**: GitHub secret scanning with push protection, `gitleaks` in CI on every push and PR, and a local pre-commit `gitleaks` hook. A leaked secret is revoked and regenerated; history is not rewritten.
 

@@ -1,6 +1,6 @@
 # Cloud save UI
 
-Status: ready-for-agent
+Status: done - implemented
 Blocked by: 06
 Spec: ../spec.md
 

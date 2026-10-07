@@ -1823,3 +1823,14 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+.cloud-save { margin-top: 1rem; }
+.cloud-save h3 { margin: 0 0 0.25rem; }
+.cloud-status { margin: 0 0 0.5rem; font-size: 0.9em; opacity: 0.85; }
+.cloud-status--offline, .cloud-status--pending { opacity: 1; }
+.cloud-status--conflict, .cloud-status--error { color: #c0392b; opacity: 1; }
+.cloud-versions { list-style: none; margin: 0.5rem 0 0; padding: 0; display: grid; gap: 0.25rem; }
+.cloud-versions li { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.conflict-cities { display: flex; flex-wrap: wrap; gap: 1rem; }
+.conflict-city { flex: 1 1 12rem; display: grid; gap: 0.25rem; }
+.conflict-city h3 { margin: 0; }

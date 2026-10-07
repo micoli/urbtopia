@@ -12,6 +12,7 @@ import { ImportConfirmDialog } from '../system/ImportConfirmDialog';
 import { ParcelTags } from '../parcels/ParcelTags';
 import { ReadOnlyBanner } from '../system/ReadOnlyBanner';
 import { RecoveryScreen } from '../system/RecoveryScreen';
+import { SaveConflictOverlay } from '../system/SaveConflictOverlay';
 import { SaveFailedDialog } from '../system/SaveFailedDialog';
 import { Toast } from '../system/Toast';
 import { TutorialBanner } from '../tutorial/TutorialBanner';
@@ -36,6 +37,7 @@ export function Overlays() {
       <ImportConfirmDialog />
       <CreditsDialog />
       <SaveFailedDialog />
+      <SaveConflictOverlay />
       <RecoveryScreen />
       <Toast />
       <TutorialBanner />

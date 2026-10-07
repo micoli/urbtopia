@@ -1,6 +1,6 @@
 # Sync and conflict detection
 
-Status: ready-for-agent
+Status: done - implemented
 Blocked by: 05
 Spec: ../spec.md
 

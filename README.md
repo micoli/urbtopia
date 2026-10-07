@@ -45,6 +45,19 @@ npm run dev      # http://localhost:5173, prepares models and codex previews fir
 
 The codex catalog is checked against every building in `BUILDING_SPECS` and every network tool in the shared construction registry. Adding a constructible requires a section, French and English descriptions, and a preview for every Tier. Missing entries, translations, models or generated images block CI and deployment. CI checks image availability only, without checking pixels, dimensions or visual accuracy. Generated images and their manifest live in `public/codex/`, are excluded from Git, and are included in the offline cache.
 
+## Cloud saves database
+
+The optional Cloud save lives in a Supabase project described by [`supabase/`](supabase/) (config, migrations, pgTAP tests); every Postgres object is prefixed `urb_`. Contributors need Docker and run a local Supabase:
+
+| Command | Purpose |
+| --- | --- |
+| `npm run db:start` / `db:stop` | Start or stop the local Supabase stack |
+| `npm run db:reset` | Recreate the local database from the migrations |
+| `npm run db:test` | Run the pgTAP tests in `supabase/tests/database/` |
+| `npm run db:lint` | Lint the schema |
+
+The game is fully playable without Supabase: copy `.env.example` to `.env.local` and fill the local URL and publishable key printed by `supabase start` to try the Cloud save. See [`docs/security.md`](docs/security.md) for what is public and what is secret.
+
 ## Deployment
 
 Every push to `main` runs the checks (type-check, lint, tests), builds, and deploys `dist/` to GitHub Pages with [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). The site is served at `https://micoli.github.io/urbtopia/`; the build uses relative paths, so any sub-path works. GitHub Pages must be set to the **GitHub Actions** source in the repository settings (Settings, Pages, Build and deployment).
