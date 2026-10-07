@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readCloudConfig } from './cloudConfig';
 import { FakeCloudSaveClient } from './fakeCloudSaveClient';
+import { isPlausibleEmail } from './email';
 import { loadCloudClient } from './loadCloudClient';
 import { toCloudError } from './supabaseCloudSaveClient';
 import { CloudError } from './types';
@@ -35,6 +36,7 @@ describe('toCloudError', () => {
     expect(toCloudError({ message: 'urb_too_large' })).toMatchObject({ kind: 'too-large' });
     expect(toCloudError({ message: 'urb_unauthenticated' })).toMatchObject({ kind: 'unauthenticated' });
     expect(toCloudError({ message: 'permission denied', code: '42501' })).toMatchObject({ kind: 'unauthenticated' });
+    expect(toCloudError({ message: 'email rate limit exceeded', code: 'over_email_send_rate_limit' })).toMatchObject({ kind: 'rate-limited' });
   });
 
   it('maps network failures to offline and anything else to unknown', () => {
@@ -54,5 +56,12 @@ describe('FakeCloudSaveClient', () => {
     expect(client.rows).toHaveLength(4);
     await expect(client.push({ baseRevision: 1, envelope: 'x', savedAt: 0, formatVersion: 11 })).rejects.toMatchObject({ kind: 'conflict', serverRevision: 6 });
     await expect(client.push({ baseRevision: 6, envelope: 'x'.repeat(1_048_577), savedAt: 0, formatVersion: 11 })).rejects.toBeInstanceOf(CloudError);
+  });
+});
+
+describe('isPlausibleEmail', () => {
+  it('accepts an address and rejects obvious mistakes', () => {
+    expect(isPlausibleEmail(' me@example.com ')).toBe(true);
+    for (const bad of ['', 'me', 'me@', '@example.com', 'me@example', 'me @example.com']) expect(isPlausibleEmail(bad)).toBe(false);
   });
 });

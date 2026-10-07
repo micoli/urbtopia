@@ -2,7 +2,7 @@ import { totalCitizens } from '../../core';
 import { CURRENT_VERSION, parseEnvelope, type ParseOptions } from '../envelope';
 import { readCloudMeta, writeCloudMeta } from '../meta';
 import { SAVE_KEY, type SaveStore } from '../saveStore';
-import { CloudError, type CloudSaveClient, type CloudSaveVersion } from './types';
+import { CloudError, type CloudAccount, type CloudSaveClient, type CloudSaveVersion } from './types';
 
 export const PUSH_INTERVAL_MS = 5 * 60_000;
 const BACKOFF_START_MS = 30_000;
@@ -43,6 +43,7 @@ export interface CloudSyncDeps {
   local: LocalSavePort;
   canPush: () => boolean;
   onStatus: (status: CloudStatus) => void;
+  onAccount?: (account: CloudAccount | null) => void;
   parseOptions?: ParseOptions;
 }
 
@@ -218,10 +219,42 @@ export class CloudSync {
     this.setStatus({ kind: 'error', reason: kind === 'unauthenticated' ? 'unauthenticated' : 'unknown' });
   }
 
+  async accountChanged(): Promise<void> {
+    if (!this.signedIn) return;
+    this.signedIn = false;
+    this.reconciled = false;
+    this.cloudCity = null;
+    if (this.status.kind === 'conflict') this.setStatus({ kind: 'idle' });
+    await this.start();
+  }
+
+  async signOut(): Promise<void> {
+    await this.guarded(async () => {
+      await this.deps.client.signOut();
+      this.signedIn = false;
+      this.reconciled = false;
+      this.cloudCity = null;
+      this.deps.onAccount?.(null);
+      this.setStatus({ kind: 'idle' });
+    });
+    await this.start();
+  }
+
   private async ensureSignedIn(): Promise<void> {
     if (this.signedIn) return;
     await this.deps.client.signIn();
+    const account = await this.deps.client.account();
+    if (account) this.followAccount(account);
     this.signedIn = true;
+  }
+
+  private followAccount(account: CloudAccount): void {
+    const known = readCloudMeta(this.deps.store).userId;
+    if (known !== null && known !== account.userId) {
+      this.updateMeta({ baseRevision: 0, syncedSavedAt: 0, editedSinceSync: true, lastSyncAt: null, paused: false });
+    }
+    if (known !== account.userId) this.updateMeta({ userId: account.userId });
+    this.deps.onAccount?.(account);
   }
 
   private async reconcile(): Promise<void> {

@@ -47,9 +47,10 @@ export interface CloudMeta {
   editedSinceSync: boolean;
   lastSyncAt: number | null;
   paused: boolean;
+  userId: string | null;
 }
 
-const NEVER_SYNCED: CloudMeta = { baseRevision: 0, syncedSavedAt: 0, editedSinceSync: true, lastSyncAt: null, paused: false };
+const NEVER_SYNCED: CloudMeta = { baseRevision: 0, syncedSavedAt: 0, editedSinceSync: true, lastSyncAt: null, paused: false, userId: null };
 
 export function readCloudMeta(store: SaveStore): CloudMeta {
   const raw = readRecord(store).cloud as Partial<CloudMeta> | undefined;
@@ -60,6 +61,7 @@ export function readCloudMeta(store: SaveStore): CloudMeta {
     editedSinceSync: typeof raw.editedSinceSync === 'boolean' ? raw.editedSinceSync : true,
     lastSyncAt: typeof raw.lastSyncAt === 'number' ? raw.lastSyncAt : null,
     paused: raw.paused === true,
+    userId: typeof raw.userId === 'string' ? raw.userId : null,
   };
 }
 

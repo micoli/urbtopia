@@ -1834,3 +1834,5 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .conflict-cities { display: flex; flex-wrap: wrap; gap: 1rem; }
 .conflict-city { flex: 1 1 12rem; display: grid; gap: 0.25rem; }
 .conflict-city h3 { margin: 0; }
+.cloud-email, .cloud-account { display: grid; gap: 0.5rem; margin: 0.5rem 0; }
+.cloud-email input { padding: 0.4rem 0.5rem; font: inherit; }

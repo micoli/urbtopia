@@ -28,6 +28,14 @@ The repository is open source: anything committed or printed in a CI log is publ
 
 A fork needs its own Supabase project: create it, apply `supabase/migrations/` with `supabase db push`, then set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` as repository Variables of the fork. Without them the game runs without the Cloud save.
 
+## Supabase Auth settings (production project)
+
+The Player account can be upgraded with an email link. In the Supabase dashboard, Authentication:
+
+- [ ] Sign In / Providers: **Allow anonymous sign-ins** on, **Confirm email** on (without it anyone could attach someone else's email to their account).
+- [ ] URL Configuration: add the site URL (`https://micoli.github.io/urbtopia/`) to **Redirect URLs**, otherwise the link in the email is refused.
+- [ ] Rate limits: keep the default email limits; the game reports "too many emails" instead of retrying.
+
 ## GitHub settings to enable manually
 
 - [ ] Settings, Code security: enable **secret scanning** and **push protection**.

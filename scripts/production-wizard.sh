@@ -11,7 +11,8 @@ pause() { read -r -p "Press Enter when done... " _; }
 echo
 echo "Step 1/5 - create the Supabase project"
 echo "  Open https://supabase.com/dashboard/new, create a project, and keep the database password."
-echo "  Then: Authentication > Sign In / Providers > enable 'Allow anonymous sign-ins'."
+echo "  Then: Authentication > Sign In / Providers > enable 'Allow anonymous sign-ins' and 'Confirm email'."
+echo "  Authentication > URL Configuration > add your site URL (GitHub Pages) to Redirect URLs."
 pause
 
 echo

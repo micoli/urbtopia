@@ -1,4 +1,4 @@
-import { CloudError, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
+import { CloudError, type CloudAccount, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
 
 const MAX_ROWS = 4;
 const MAX_ENVELOPE_LENGTH = 1_048_576;
@@ -8,13 +8,37 @@ interface Row extends CloudSave {
 }
 
 export class FakeCloudSaveClient implements CloudSaveClient {
-  rows: Row[] = [];
+  private users = new Map<string, Row[]>();
+  private userId = 'user-1';
+  private nextUser = 2;
+  emails = new Map<string, string>();
+  sentLinks: string[] = [];
+  private listeners = new Set<(account: CloudAccount | null) => void>();
   pushes: PushInput[] = [];
   signedIn = false;
   private offline = false;
   private hourMs = 3_600_000;
 
   constructor(private clock: () => number = () => 0) {}
+
+  get rows(): Row[] {
+    let rows = this.users.get(this.userId);
+    if (!rows) {
+      rows = [];
+      this.users.set(this.userId, rows);
+    }
+    return rows;
+  }
+
+  set rows(value: Row[]) {
+    this.users.set(this.userId, value);
+  }
+
+  switchUser(userId: string, email: string | null = null): void {
+    this.userId = userId;
+    if (email) this.emails.set(userId, email);
+    this.emitAccount();
+  }
 
   goOffline(): void {
     this.offline = true;
@@ -35,6 +59,29 @@ export class FakeCloudSaveClient implements CloudSaveClient {
 
   async signOut(): Promise<void> {
     this.signedIn = false;
+    this.userId = `user-${this.nextUser}`;
+    this.nextUser += 1;
+    this.emitAccount();
+  }
+
+  async account(): Promise<CloudAccount | null> {
+    this.guard();
+    return this.signedIn ? { userId: this.userId, email: this.emails.get(this.userId) ?? null } : null;
+  }
+
+  async sendEmailLink(email: string): Promise<void> {
+    this.guard();
+    this.sentLinks.push(email);
+  }
+
+  onAccountChange(listener: (account: CloudAccount | null) => void): () => void {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
+
+  private emitAccount(): void {
+    const account = { userId: this.userId, email: this.emails.get(this.userId) ?? null };
+    for (const listener of this.listeners) listener(account);
   }
 
   async push(input: PushInput): Promise<number> {

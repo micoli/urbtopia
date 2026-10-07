@@ -4,6 +4,7 @@ import { MESSAGES } from '../../i18n/messages';
 import { t } from '../../i18n/t';
 import type { SaveConflict } from '../../persistence/cloud/cloudSync';
 import { CloudSavePanel } from './CloudSavePanel';
+import { CloudAccountSection } from './CloudAccountSection';
 import { CloudStatusLine } from './CloudStatusLine';
 import { CloudVersionList } from './CloudVersionList';
 import { SaveConflictDialog } from './SaveConflictDialog';
@@ -34,7 +35,7 @@ describe('cloud status', () => {
 
 describe('cloud save panel', () => {
   const panel = (props: Partial<Parameters<typeof CloudSavePanel>[0]> = {}) =>
-    renderToStaticMarkup(<CloudSavePanel status={{ kind: 'pending' }} versions={null} onSaveNow={noop} onShowVersions={noop} onRestore={noop} onDelete={noop} {...props} />);
+    renderToStaticMarkup(<CloudSavePanel status={{ kind: 'pending' }} versions={null} account={null} emailLink={{ kind: 'idle' }} onSendLink={noop} onSignOut={noop} onSaveNow={noop} onShowVersions={noop} onRestore={noop} onDelete={noop} {...props} />);
 
   it('offers saving now, previous versions and deleting the cloud data', () => {
     const html = panel();
@@ -75,5 +76,36 @@ describe('save conflict dialog', () => {
     expect(html).toContain('77');
     expect(html).toContain(t('cloud.conflict.keepLocal'));
     expect(html).toContain(t('cloud.conflict.keepCloud'));
+  });
+});
+
+describe('cloud account', () => {
+  const section = (account: Parameters<typeof CloudAccountSection>[0]['account'], emailLink: Parameters<typeof CloudAccountSection>[0]['emailLink'] = { kind: 'idle' }) =>
+    renderToStaticMarkup(<CloudAccountSection account={account} emailLink={emailLink} onSendLink={noop} onSignOut={noop} />);
+
+  it('asks for an email while the account is anonymous', () => {
+    const html = section({ userId: 'u', email: null });
+    expect(html).toContain('type="email"');
+    expect(html).toContain(t('cloud.account.sendLink'));
+    expect(html).toContain(t('cloud.account.anonymous'));
+  });
+
+  it('shows the email and a sign out button once signed in', () => {
+    const html = section({ userId: 'u', email: 'me@example.com' });
+    expect(html).toContain('me@example.com');
+    expect(html).toContain(t('cloud.account.signOut'));
+    expect(html).not.toContain('type="email"');
+  });
+
+  it('confirms that the link was sent and reports failures', () => {
+    const anonymous = { userId: 'u', email: null };
+    expect(section(anonymous, { kind: 'sent', email: 'me@example.com' })).toContain(t('cloud.account.sent'));
+    expect(section(anonymous, { kind: 'error', reason: 'invalid-email' })).toContain(t('cloud.account.invalidEmail'));
+    expect(section(anonymous, { kind: 'error', reason: 'rate-limited' })).toContain(t('cloud.account.rateLimited'));
+    expect(section(anonymous, { kind: 'sending' })).toContain(t('cloud.account.sending'));
+  });
+
+  it('renders nothing before the account is known', () => {
+    expect(section(null)).toBe('');
   });
 });

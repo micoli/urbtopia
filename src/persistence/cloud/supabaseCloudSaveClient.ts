@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { CloudConfig } from './cloudConfig';
 import type { Database, Json } from './database.types';
-import { CloudError, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
+import { CloudError, type CloudAccount, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
 
 const PUSH_PATH = '/rpc/urb_push_save';
 const KEEPALIVE_BODY_LIMIT = 60_000;
@@ -18,6 +18,7 @@ export function toCloudError(failure: PostgrestFailure): CloudError {
   if (failure.message.includes('urb_conflict')) return new CloudError('conflict', Number(failure.details ?? 0));
   if (failure.message.includes('urb_too_large')) return new CloudError('too-large');
   if (failure.message.includes('urb_unauthenticated') || failure.code === '28000' || failure.code === '42501') return new CloudError('unauthenticated');
+  if (failure.code === 'over_email_send_rate_limit' || failure.code === 'over_request_rate_limit') return new CloudError('rate-limited');
   if (/fetch|network|load failed/i.test(failure.message) || failure.code === '') return new CloudError('offline');
   return new CloudError('unknown');
 }
@@ -31,6 +32,10 @@ export async function createSupabaseCloudSaveClient(config: CloudConfig): Promis
   return new SupabaseCloudSaveClient(client, (value) => {
     keepalive = value;
   });
+}
+
+function toAccount(user: { id: string; email?: string }): CloudAccount {
+  return { userId: user.id, email: user.email ? user.email : null };
 }
 
 class SupabaseCloudSaveClient implements CloudSaveClient {
@@ -50,6 +55,29 @@ class SupabaseCloudSaveClient implements CloudSaveClient {
 
   async signOut(): Promise<void> {
     await this.client.auth.signOut();
+  }
+
+  async account(): Promise<CloudAccount | null> {
+    const { data, error } = await this.attempt(() => this.client.auth.getSession());
+    if (error) throw toCloudError(error);
+    return data.session ? toAccount(data.session.user) : null;
+  }
+
+  async sendEmailLink(email: string): Promise<void> {
+    const emailRedirectTo = typeof window === 'undefined' ? undefined : window.location.origin + window.location.pathname;
+    const { data } = await this.attempt(() => this.client.auth.getSession());
+    if (data.session?.user.is_anonymous) {
+      const upgraded = await this.attempt(() => this.client.auth.updateUser({ email }, { emailRedirectTo }));
+      if (!upgraded.error) return;
+      if (upgraded.error.code !== 'email_exists') throw toCloudError(upgraded.error);
+    }
+    const { error } = await this.attempt(() => this.client.auth.signInWithOtp({ email, options: { emailRedirectTo, shouldCreateUser: false } }));
+    if (error) throw toCloudError(error);
+  }
+
+  onAccountChange(listener: (account: CloudAccount | null) => void): () => void {
+    const { data } = this.client.auth.onAuthStateChange((_event, session) => listener(session ? toAccount(session.user) : null));
+    return () => data.subscription.unsubscribe();
   }
 
   async push(input: PushInput): Promise<number> {

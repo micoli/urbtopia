@@ -5,6 +5,8 @@ export function CloudSaveSection() {
   const enabled = useCloud((store) => store.enabled);
   const status = useCloud((store) => store.status);
   const versions = useCloud((store) => store.versions);
+  const account = useCloud((store) => store.account);
+  const emailLink = useCloud((store) => store.emailLink);
   const actions = useCloud((store) => store.actions);
   if (!enabled || !actions) return null;
 
@@ -12,10 +14,14 @@ export function CloudSaveSection() {
     <CloudSavePanel
       status={status}
       versions={versions}
+      account={account}
+      emailLink={emailLink}
       onSaveNow={() => void actions.syncNow()}
       onShowVersions={() => void actions.loadVersions()}
       onRestore={(revision) => void actions.restoreVersion(revision)}
       onDelete={() => void actions.deleteCloudData()}
+      onSendLink={(email) => void actions.sendEmailLink(email)}
+      onSignOut={() => void actions.signOut()}
     />
   );
 }

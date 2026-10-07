@@ -11,7 +11,7 @@ The single save lives in localStorage (ADR 0003): clearing the browser or changi
 Recorded in [ADR 0015](../../docs/adr/0015-supabase-cloud-save-mirror-with-rpc-only-writes.md) and [ADR 0016](../../docs/adr/0016-ci-secrets-isolated-in-production-environment.md). Vocabulary (Player account, Cloud save, Save conflict) in `CONTEXT.md`.
 
 - Local save stays the source of truth; the Cloud save is a mirror, the game is fully playable offline or without Supabase.
-- Player account: anonymous Supabase Auth, upgradable to email magic link later.
+- Player account: anonymous Supabase Auth, upgraded with an email magic link (same user id, data kept); the same email on another device signs in to that account, and the local city versus the account's Cloud save goes through the Save conflict dialog.
 - Cloud save: current + 3 previous versions, written only through RPC (`urb_push_save`, `urb_list_saves`, `urb_restore_save`, `urb_delete_my_saves`).
 - Every Postgres object (tables, functions, triggers, policies, indexes, types, cron jobs) is prefixed `urb_`.
 - Save conflict detected with a server `revision` and compare-and-swap; `baseRevision` stored in the local meta record, never in the envelope. The player chooses; the loser becomes a previous version.

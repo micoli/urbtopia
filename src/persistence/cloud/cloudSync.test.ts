@@ -401,3 +401,65 @@ describe('CloudSync safeguards', () => {
   });
 });
 
+describe('CloudSync accounts', () => {
+  it('does not mistake the city of another account for a synced one', async () => {
+    const { client, device } = world();
+    const a = device();
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+
+    client.switchUser('user-with-email', 'me@example.com');
+    client.seed(envelopeAt(T0 + 5), T0 + 5);
+    await a.sync.accountChanged();
+    expect(a.sync.current.kind).toBe('conflict');
+    expect(readCloudMeta(a.store).userId).toBe('user-with-email');
+    expect(a.log.adopted).toHaveLength(0);
+  });
+
+  it('keeps the same history when the anonymous account gets an email', async () => {
+    const { client, device } = world();
+    const a = device();
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+
+    client.emails.set('user-1', 'me@example.com');
+    await a.sync.accountChanged();
+    expect(a.sync.current.kind).toBe('synced');
+    expect(readCloudMeta(a.store).baseRevision).toBe(1);
+  });
+
+  it('signs out then continues with a fresh anonymous account', async () => {
+    const { client, device } = world();
+    const a = device();
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+
+    await a.sync.signOut();
+    expect(a.sync.current.kind).toBe('pending');
+    expect(client.rows).toHaveLength(0);
+    await a.sync.pushNow();
+    expect(client.rows).toHaveLength(1);
+  });
+
+  it('reports the account it signed in with', async () => {
+    const { client, clock } = world();
+    const seen: unknown[] = [];
+    const store = new MemorySaveStore();
+    const sync = new CloudSync({
+      client,
+      store,
+      now: () => clock.now,
+      local: { adopt: () => {}, keepAsPreviousVersion: () => {} },
+      canPush: () => true,
+      onStatus: () => {},
+      onAccount: (account) => seen.push(account),
+    });
+    client.emails.set('user-1', 'me@example.com');
+    await sync.start();
+    expect(seen).toEqual([{ userId: 'user-1', email: 'me@example.com' }]);
+  });
+});
+
