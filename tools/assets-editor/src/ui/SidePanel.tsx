@@ -1,3 +1,4 @@
+import type { BuildingDefinitions } from '../../../../src/core/buildings/buildingDefinition'
 import type { ModelDefinition, ModelSource } from '../../../../src/scene/modelDefinitions'
 import { defaultLicense } from '../assetKeys'
 import { BuildingFields } from './BuildingFields'
@@ -22,6 +23,8 @@ interface Props {
   title: string
   info: ModelInfo | undefined
   definition: ModelDefinition | undefined
+  buildings: BuildingDefinitions
+  onBuildingsChange: (buildings: BuildingDefinitions) => void
   source: ModelSource | undefined
   usedInGame: boolean
   deletable: boolean
@@ -31,7 +34,7 @@ interface Props {
   onDeleteAsset: () => void
 }
 
-export function SidePanel({ title, info, definition, source, usedInGame, deletable, message, onEdit, onRemoveDefinition, onDeleteAsset }: Props) {
+export function SidePanel({ title, info, definition, buildings, onBuildingsChange, source, usedInGame, deletable, message, onEdit, onRemoveDefinition, onDeleteAsset }: Props) {
   const footprint = info ? footprintOf(info, definition) : { width: 0, depth: 0 }
   const edit = <K extends Field>(field: K) => (value: ModelDefinition[K] | undefined | '') => onEdit((draft) => setField(draft, field, value))
 
@@ -70,7 +73,7 @@ export function SidePanel({ title, info, definition, source, usedInGame, deletab
           <NumberField label="Rotation offset (deg)" value={definition?.rotationOffset} placeholder="0" onCommit={edit('rotationOffset')} />
           <CheckboxField label="Bake node scale" checked={!!definition?.bakeNodeScale} onChange={(checked) => onEdit((draft) => setField(draft, 'bakeNodeScale', checked || undefined))} />
           <RecolorField recolor={definition?.recolor} onChange={(recolor) => onEdit((draft) => setField(draft, 'recolor', recolor))} />
-          <BuildingFields building={definition?.building} onChange={(building) => onEdit((draft) => setField(draft, 'building', building))} />
+          <BuildingFields model={title} modelFootprint={definition?.footprint} buildings={buildings} onChange={onBuildingsChange} />
           <TextField label="License" value={definition?.license ?? defaultLicense(source)} onCommit={edit('license')} />
           <TextField label="Author" value={definition?.author ?? ''} onCommit={edit('author')} />
           <TextField label="Url" value={definition?.url ?? ''} onCommit={edit('url')} />

@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
+import type { BuildingDefinitions } from '../../../../src/core/buildings/buildingDefinition'
 import type { ModelDefinition, ModelSource } from '../../../../src/scene/modelDefinitions'
 import { MODEL_KEYS } from '../../../../src/scene/renderItems'
 import { AddAssetDialog } from './AddAssetDialog'
 import { assetKey, defaultLicense, definitionKey, sourceOf, type Asset, type Definitions } from '../assetKeys'
 import { AssetTree } from './components/AssetTree'
-import { callAssets, saveDefinitions } from '../api'
+import { callAssets, saveBuildings, saveDefinitions } from '../api'
 import type { ModelInfo } from '../modelLoader'
 import { ModelViewer } from './ModelViewer'
 import { SidePanel } from './SidePanel'
@@ -18,9 +19,10 @@ interface Props {
   manifest: Record<string, string[]>
   sourceByPack: Record<string, ModelSource | undefined>
   initialDefinitions: Definitions
+  initialBuildings: BuildingDefinitions
 }
 
-export function Editor({ manifest, sourceByPack, initialDefinitions }: Props) {
+export function Editor({ manifest, sourceByPack, initialDefinitions, initialBuildings }: Props) {
   const packNames = Object.keys(manifest)
   const [pack, setPack] = useState(packNames[0]!)
   const [current, setCurrent] = useState(manifest[packNames[0]!]![0] ?? '')
@@ -30,6 +32,7 @@ export function Editor({ manifest, sourceByPack, initialDefinitions }: Props) {
   const [expandedSources, setExpandedSources] = useState(() => [sourceOf(packNames[0]!, sourceByPack) ?? 'other'])
   const [expandedPacks, setExpandedPacks] = useState([packNames[0]!])
   const [definitions, setDefinitions] = useState(initialDefinitions)
+  const [buildings, setBuildings] = useState(initialBuildings)
   const [infos, setInfos] = useState<Record<string, ModelInfo>>({})
   const [message, setMessage] = useState('')
   const [adding, setAdding] = useState(false)
@@ -70,6 +73,11 @@ export function Editor({ manifest, sourceByPack, initialDefinitions }: Props) {
     const draft = structuredClone(definitions[key] ?? { source, license: defaultLicense(source) })
     mutate(draft)
     void commit({ ...definitions, [key]: draft })
+  }
+
+  const commitBuildings = async (next: BuildingDefinitions) => {
+    setBuildings(next)
+    setMessage(await saveBuildings(next))
   }
 
   const removeDefinition = () => void commit(Object.fromEntries(Object.entries(definitions).filter(([candidate]) => candidate !== key)))
@@ -117,6 +125,8 @@ export function Editor({ manifest, sourceByPack, initialDefinitions }: Props) {
           title={key}
           info={infos[assetKey(pack, current)]}
           definition={definitions[key]}
+          buildings={buildings}
+          onBuildingsChange={(next) => void commitBuildings(next)}
           source={source}
           usedInGame={usedInGame.has(key)}
           deletable={source === 'managed' || source === 'poly.pizza'}

@@ -6,6 +6,7 @@ import { defineConfig, type Plugin } from 'vite'
 import { MANAGED_MODELS_DIR, POLY_PIZZA_DIR } from '../../scripts/assetPacks.ts'
 import { archiveFile, archiveManifest, contentTypeOf, kenneyPackNames } from './archiveSources.ts'
 import { managedModelKeys } from '../../scripts/managedModels.ts'
+import { readBuildings, writeBuildings } from '../../scripts/buildingsFile.ts'
 import { readModels, writeModels } from '../../scripts/modelsFile.ts'
 import { addGlb, addPack, addPolyPizzaModel, removeModel } from '../../scripts/assetOperations.ts'
 import { fetchPolyPizzaModel } from '../../scripts/polyPizza.ts'
@@ -81,13 +82,24 @@ const readBody = (req: NodeJS.ReadableStream) => new Promise<string>((done) => {
   req.on('end', () => done(body))
 })
 
-// Dev-only adapter: the editor reads and writes assets/models.json through it.
+// Dev-only adapter: the editor reads and writes assets/models.json and assets/buildings.json through it.
 const modelsApi = (): Plugin => ({
   name: 'models-api',
   configureServer(server) {
     server.middlewares.use('/api/packs', (_req, res) => {
       res.setHeader('Content-Type', 'application/json')
       res.end(JSON.stringify(sourcesByPack()))
+    })
+    server.middlewares.use('/api/buildings', async (req, res) => {
+      res.setHeader('Content-Type', 'application/json')
+      if (req.method !== 'PUT') return res.end(JSON.stringify(readBuildings()))
+      try {
+        writeBuildings(JSON.parse(await readBody(req)))
+        res.end(JSON.stringify({ ok: true }))
+      } catch (error) {
+        res.statusCode = 400
+        res.end(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }))
+      }
     })
     server.middlewares.use('/api/models', async (req, res) => {
       res.setHeader('Content-Type', 'application/json')
@@ -140,4 +152,4 @@ const assetOperationsApi = (): Plugin => ({
   },
 })
 
-export default defineConfig({ root: dirname(fileURLToPath(import.meta.url)), plugins: [liveManifest(), liveSources(), modelsApi(), assetOperationsApi()], server: { fs: { allow: ['../..'] }, watch: { ignored: ['**/assets/models.json'] } } })
+export default defineConfig({ root: dirname(fileURLToPath(import.meta.url)), plugins: [liveManifest(), liveSources(), modelsApi(), assetOperationsApi()], server: { fs: { allow: ['../..'] }, watch: { ignored: ['**/assets/models.json', '**/assets/buildings.json'] } } })

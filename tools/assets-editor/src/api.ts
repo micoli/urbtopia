@@ -1,4 +1,5 @@
 import type { ModelSource } from '../../../src/scene/modelDefinitions'
+import type { BuildingDefinitions } from '../../../src/core/buildings/buildingDefinition'
 import type { Definitions } from './assetKeys'
 
 const getJson = async <T>(url: string): Promise<T> => (await fetch(url)).json()
@@ -6,6 +7,13 @@ const getJson = async <T>(url: string): Promise<T> => (await fetch(url)).json()
 export const fetchManifest = () => getJson<Record<string, string[]>>('/manifest.json')
 export const fetchSourceByPack = () => getJson<Record<string, ModelSource | undefined>>('/api/packs')
 export const fetchDefinitions = () => getJson<Definitions>('/api/models')
+
+export const fetchBuildings = () => getJson<BuildingDefinitions>('/api/buildings')
+
+export async function saveBuildings(buildings: BuildingDefinitions): Promise<string> {
+  const response = await fetch('/api/buildings', { method: 'PUT', body: JSON.stringify(buildings) })
+  return response.ok ? 'saved' : ((await response.json()) as { error: string }).error
+}
 
 export async function saveDefinitions(definitions: Definitions): Promise<string> {
   const response = await fetch('/api/models', { method: 'PUT', body: JSON.stringify(definitions) })
