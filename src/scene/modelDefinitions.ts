@@ -1,4 +1,5 @@
 import definitions from '../../assets/models.json';
+import type { BuildingDefinition } from '../core/buildings/buildingDefinition';
 
 export type ModelSource = 'kenney' | 'quaternius' | 'managed' | 'poly.pizza';
 
@@ -15,6 +16,7 @@ export interface ModelDefinition {
   bakeNodeScale?: boolean;
   recolor?: { color: string; variants?: Record<string, string> };
   note?: string;
+  building?: BuildingDefinition;
 }
 
 export const MODEL_DEFINITIONS = definitions as unknown as Record<string, ModelDefinition>;

@@ -1,5 +1,6 @@
 import type { ModelDefinition, ModelSource } from '../../../../src/scene/modelDefinitions'
 import { defaultLicense } from '../assetKeys'
+import { BuildingFields } from './BuildingFields'
 import { CheckboxField } from './components/CheckboxField'
 import { ConfirmDeleteDialog } from './components/ConfirmDeleteDialog'
 import { footprintOf } from '../fitted'
@@ -69,6 +70,7 @@ export function SidePanel({ title, info, definition, source, usedInGame, deletab
           <NumberField label="Rotation offset (deg)" value={definition?.rotationOffset} placeholder="0" onCommit={edit('rotationOffset')} />
           <CheckboxField label="Bake node scale" checked={!!definition?.bakeNodeScale} onChange={(checked) => onEdit((draft) => setField(draft, 'bakeNodeScale', checked || undefined))} />
           <RecolorField recolor={definition?.recolor} onChange={(recolor) => onEdit((draft) => setField(draft, 'recolor', recolor))} />
+          <BuildingFields building={definition?.building} onChange={(building) => onEdit((draft) => setField(draft, 'building', building))} />
           <TextField label="License" value={definition?.license ?? defaultLicense(source)} onCommit={edit('license')} />
           <TextField label="Author" value={definition?.author ?? ''} onCommit={edit('author')} />
           <TextField label="Url" value={definition?.url ?? ''} onCommit={edit('url')} />
