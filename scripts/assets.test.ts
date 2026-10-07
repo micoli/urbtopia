@@ -5,14 +5,14 @@ import { describe, expect, it } from 'vitest';
 import { MODEL_KEYS } from '../src/scene/renderItems';
 import { ARCHIVES_DIR, ASSET_PACKS, QUATERNIUS_PACKS } from './assetPacks';
 import { extractPack } from './extractPack';
-import { managedModelKeys } from './managedModels';
+import { managedModelKeys, polyPizzaModelKeys } from './managedModels';
 
 const bytes = (text: string) => new TextEncoder().encode(text);
 
 describe('asset packs', () => {
   it('provide every 3D model the scene can ask for', () => {
     const provided = new Set([...ASSET_PACKS, ...QUATERNIUS_PACKS].flatMap((pack) => pack.files.map((file) => `${pack.name}/${file}`)));
-    const managed = new Set(managedModelKeys());
+    const managed = new Set([...managedModelKeys(), ...polyPizzaModelKeys()]);
     const missing = MODEL_KEYS.filter((key) => !provided.has(key) && !managed.has(key));
     expect(missing).toEqual([]);
   });
