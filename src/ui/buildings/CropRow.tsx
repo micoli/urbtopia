@@ -3,7 +3,6 @@ import {t} from '../../i18n/t';
 import {formatDuration} from '../common/formatDuration';
 import {UrbsAmount} from '../common/UrbsAmount';
 import { ActionButton } from '../common/ActionButton';
-import { ButtonRow } from '../common/ButtonRow';
 import { DrawerPanel } from '../common/DrawerPanel';
 
 interface CropRowProps {
@@ -32,23 +31,21 @@ export function CropRow({crop, unlocked, stock, onPlant, onBuy, onSell}: CropRow
             <p>
                 {formatDuration(spec.growthMs)} · 💧{spec.water} · ▦{spec.yield}
             </p>
-            <ButtonRow align="stretch" spaced>
-                <ActionButton onClick={onPlant}>
+            <div className="crop-actions" style={{gridTemplateColumns: `repeat(${PACK_SIZES.length + 1}, 1fr)`}}>
+                <ActionButton className="crop-plant" onClick={onPlant}>
                     {t('farm.plant')}
                 </ActionButton>
                 {PACK_SIZES.map((quantity) => (
-                    <ActionButton key={quantity} onClick={() => onBuy(quantity)}>
+                    <ActionButton key={`buy-${quantity}`} onClick={() => onBuy(quantity)}>
                         +{quantity} (<UrbsAmount value={quantity * spec.seedPrice}/>)
                     </ActionButton>
                 ))}
-            </ButtonRow>
-            <ButtonRow align="stretch" spaced>
                 {PACK_SIZES.map((quantity) => (
-                    <ActionButton key={quantity} disabled={stock < 1} onClick={() => onSell(quantity)}>
+                    <ActionButton key={`sell-${quantity}`} disabled={stock < 1} onClick={() => onSell(quantity)}>
                         -{quantity} (+<UrbsAmount value={Math.min(quantity, stock) * seedSellPrice(crop)}/>)
                     </ActionButton>
                 ))}
-            </ButtonRow>
+            </div>
             <hr/>
         </div>
     );

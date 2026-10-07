@@ -3,6 +3,7 @@ import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexId, type CodexSection } from '
 import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
 import { CodexEntryContent } from './CodexEntryContent';
+import { CropEconomyPage } from './CropEconomyPage';
 import { useCodexManifest } from './useCodexManifest';
 import { CloseButton } from '../common/CloseButton';
 import { ActionButton } from '../common/ActionButton';
@@ -17,6 +18,7 @@ export function CodexPanel() {
   const heading = useId();
   const [selected, setSelected] = useState<CodexId>(initialEntry);
   const [showDetail, setShowDetail] = useState(initialDetail);
+  const [economyOpen, setEconomyOpen] = useState(false);
   const [openSection, setOpenSection] = useState<CodexSection>(CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
   const { manifest, failed, retry } = useCodexManifest();
   const entry = CODEX_ENTRIES.find(entry => entry.id === selected)!;
@@ -45,9 +47,10 @@ export function CodexPanel() {
     if (!showDetail) return;
     detail.current?.scrollTo(0, 0);
     detail.current?.focus();
-  }, [selected, showDetail]);
+  }, [selected, showDetail, economyOpen]);
 
   const select = (id: CodexId) => {
+    setEconomyOpen(false);
     setSelected(id);
     setOpenSection(CODEX_ENTRIES.find(entry => entry.id === id)!.section);
     setShowDetail(true);
@@ -72,16 +75,19 @@ export function CodexPanel() {
             const panelId = `${heading}-${section}`;
             return (
               <AccordionSection key={section} id={panelId} title={t(section)} expanded={expanded} chevron toggleClassName="codex-section-toggle" onToggle={() => setOpenSection(expanded ? ('' as CodexSection) : section)}>
+                {section === 'codex.crops' && (
+                  <button type="button" aria-current={economyOpen ? 'true' : undefined} onClick={() => { setEconomyOpen(true); setShowDetail(true); }}>{t('codex.economy.title')}</button>
+                )}
                 {CODEX_ENTRIES.filter(entry => entry.section === section).map(entry => (
-                  <button type="button" key={entry.id} aria-current={selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
+                  <button type="button" key={entry.id} aria-current={!economyOpen && selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
                 ))}
               </AccordionSection>
             );
           })}
         </nav>
-        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(entry.name)}>
-          <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />
-          {!manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}
+        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(economyOpen ? 'codex.economy.title' : entry.name)}>
+          {economyOpen ? <CropEconomyPage /> : <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />}
+          {!economyOpen && !manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}
         </article>
       </div>
     </dialog>

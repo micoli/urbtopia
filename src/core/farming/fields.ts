@@ -85,12 +85,12 @@ export function plantFields(state: GameState, crop: CropId, tiles: readonly Coor
   return { state: { ...state, fields, seedStock: { ...state.seedStock, [crop]: seeds } }, events: [] };
 }
 
-function seedsReturned(species: CropId, tiles: number): number {
+export function seedsReturned(species: CropId, tiles: number): number {
   const { yield: perTile, seedShare } = CROPS[species];
   return Math.floor((tiles * perTile * Math.round(seedShare * 100)) / 100);
 }
 
-function storedYield(species: CropId, tiles: number): number {
+export function storedYield(species: CropId, tiles: number): number {
   return tiles * CROPS[species].yield - seedsReturned(species, tiles);
 }
 

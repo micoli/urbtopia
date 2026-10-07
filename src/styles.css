@@ -1251,6 +1251,16 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .codex-level-facts dt { opacity: 0.75; }
 .codex-level-facts dd { margin: 0; font-weight: 700; text-align: right; }
 .codex-level-gain { margin-left: 6px; color: #8ce2b5; }
+.codex-economy-sort { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.codex-economy-sort button { padding: 6px 12px; border: 0; border-radius: 999px; background: rgba(255, 255, 255, 0.1); color: inherit; }
+.codex-economy-sort button[aria-checked='true'] { background: rgba(255, 255, 255, 0.28); font-weight: 700; }
+.codex-economy-scroll { overflow-x: auto; margin-top: 12px; }
+.codex-economy { width: 100%; border-collapse: collapse; font-size: 14px; }
+.codex-economy th, .codex-economy td { padding: 8px 10px; text-align: right; white-space: nowrap; border-bottom: 1px solid rgba(255, 255, 255, 0.12); }
+.codex-economy thead th { font-size: 12px; opacity: 0.75; white-space: normal; vertical-align: bottom; }
+.codex-economy th:first-child { text-align: left; }
+.codex-economy th small { display: block; font-weight: 400; opacity: 0.7; }
+.codex-economy tr[data-unlocked='false'] { opacity: 0.5; }
 .codex-back { display: none; }
 
 @media (max-width: 600px) {
@@ -1744,6 +1754,20 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 
 .button-row--spaced {
   margin-top: 8px;
+}
+
+.crop-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.crop-actions > .action-button {
+  width: 100%;
+}
+
+.crop-actions > .crop-plant {
+  grid-row: span 2;
 }
 
 .icon-button {
