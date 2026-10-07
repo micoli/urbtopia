@@ -80,8 +80,9 @@ export function SettingsContent() {
           onConfirm={startNewGame}
         />
       </ButtonRow>
-      <CloudSaveSection />
       <PreferencesContent />
+      <hr/>
+      <CloudSaveSection />
       <small className="build-id">
         {t('settings.version')} {__BUILD_ID__}
         <br />
