@@ -1,7 +1,7 @@
-import { AddVariantPopover } from './AddVariantPopover'
+import { AddVariantPopover } from '../AddVariantPopover'
 import { CheckboxField } from './CheckboxField'
 import { ColorField } from './ColorField'
-import type { ModelDefinition } from '../../../src/scene/modelDefinitions'
+import type { ModelDefinition } from '../../../../../src/scene/modelDefinitions'
 
 type Recolor = NonNullable<ModelDefinition['recolor']>
 

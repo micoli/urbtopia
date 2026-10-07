@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
-import type { Asset } from './assetKeys'
+import type { Asset } from '../assetKeys'
 
 const isTextTarget = (target: HTMLElement) => target.closest('input, select, textarea, [contenteditable], [role=combobox], [role=listbox]') !== null
-const isSearchBox = (target: HTMLElement) => target.id === 'global-search' || target.id === 'list-search'
+const isSearchBox = (target: HTMLElement) => target.id === 'tree-search'
 
 export function useArrowNavigation(results: Asset[], selected: Asset | null, overview: boolean, onSelect: (asset: Asset) => void) {
   const latest = useRef({ results, selected, overview, onSelect })

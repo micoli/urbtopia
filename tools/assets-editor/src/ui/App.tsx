@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import type { ModelSource } from '../../../src/scene/modelDefinitions'
-import type { Definitions } from './assetKeys'
-import { fetchDefinitions, fetchManifest, fetchSourceByPack } from './api'
+import type { ModelSource } from '../../../../src/scene/modelDefinitions'
+import type { Definitions } from '../assetKeys'
+import { fetchDefinitions, fetchManifest, fetchSourceByPack } from '../api'
 import { Editor } from './Editor'
 
 interface Catalog {

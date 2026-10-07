@@ -1,15 +1,16 @@
 import { useMemo, useState } from 'react'
-import type { ModelDefinition, ModelSource } from '../../../src/scene/modelDefinitions'
-import { MODEL_KEYS } from '../../../src/scene/renderItems'
+import type { ModelDefinition, ModelSource } from '../../../../src/scene/modelDefinitions'
+import { MODEL_KEYS } from '../../../../src/scene/renderItems'
 import { AddAssetDialog } from './AddAssetDialog'
-import { assetKey, defaultLicense, definitionKey, sourceOf, type Asset, type Definitions } from './assetKeys'
-import { AssetList } from './AssetList'
-import { callAssets, saveDefinitions } from './api'
-import type { ModelInfo } from './modelLoader'
+import { assetKey, defaultLicense, definitionKey, sourceOf, type Asset, type Definitions } from '../assetKeys'
+import { AssetTree } from './components/AssetTree'
+import { callAssets, saveDefinitions } from '../api'
+import type { ModelInfo } from '../modelLoader'
 import { ModelViewer } from './ModelViewer'
 import { SidePanel } from './SidePanel'
 import { Toolbar } from './Toolbar'
-import { useArrowNavigation } from './useArrowNavigation'
+import { buildTree } from '../treeModel'
+import { useArrowNavigation } from '../hooks/useArrowNavigation'
 
 const usedInGame: ReadonlySet<string> = new Set(MODEL_KEYS)
 
@@ -25,29 +26,33 @@ export function Editor({ manifest, sourceByPack, initialDefinitions }: Props) {
   const [current, setCurrent] = useState(manifest[packNames[0]!]![0] ?? '')
   const [rotation, setRotation] = useState(0)
   const [overview, setOverview] = useState(false)
-  const [search, setSearch] = useState('')
-  const [listSearch, setListSearch] = useState('')
-  const [sourceFilter, setSourceFilter] = useState('all')
+  const [filter, setFilter] = useState('')
+  const [expandedSources, setExpandedSources] = useState(() => [sourceOf(packNames[0]!, sourceByPack) ?? 'other'])
+  const [expandedPacks, setExpandedPacks] = useState([packNames[0]!])
   const [definitions, setDefinitions] = useState(initialDefinitions)
   const [infos, setInfos] = useState<Record<string, ModelInfo>>({})
   const [message, setMessage] = useState('')
   const [adding, setAdding] = useState(false)
 
   const sourceOfPack = (name: string) => sourceOf(name, sourceByPack)
-  const matchesSourceFilter = (name: string) => sourceFilter === 'all' || (sourceOfPack(name) ?? 'other') === sourceFilter
+  const searching = filter.trim() !== ''
+  const sources = useMemo(() => buildTree(manifest, sourceByPack, filter), [manifest, sourceByPack, filter])
+  const openSources = searching ? sources.map((node) => node.id) : expandedSources
+  const openPacks = searching ? sources.flatMap((node) => node.packs.map(({ pack: name }) => name)) : expandedPacks
 
-  const results = useMemo(() => {
-    const query = search.trim().toLowerCase()
-    const filter = listSearch.trim().toLowerCase()
-    const assets: Asset[] = Object.entries(manifest).flatMap(([name, models]) => models.map((model) => ({ pack: name, name: model })))
-    return assets.filter((asset) => (query ? matchesSourceFilter(asset.pack) && assetKey(asset.pack, asset.name).toLowerCase().includes(query) : asset.pack === pack) && asset.name.toLowerCase().includes(filter))
-  }, [manifest, search, listSearch, pack, sourceFilter])
+  const results = useMemo(
+    () => sources.filter((node) => openSources.includes(node.id)).flatMap((node) => node.packs.filter((entry) => openPacks.includes(entry.pack) || node.packs.length === 1 && entry.pack === node.id).flatMap((entry) => entry.assets)),
+    [sources, openSources.join('\n'), openPacks.join('\n')],
+  )
 
   const select = (asset: Asset) => {
     setPack(asset.pack)
     setCurrent(asset.name)
     setRotation(0)
     setOverview(false)
+    const assetSource = sourceOfPack(asset.pack) ?? 'other'
+    setExpandedSources((known) => (known.includes(assetSource) ? known : [...known, assetSource]))
+    setExpandedPacks((known) => (known.includes(asset.pack) ? known : [...known, asset.pack]))
   }
 
   useArrowNavigation(results, current ? { pack, name: current } : null, overview, select)
@@ -78,19 +83,25 @@ export function Editor({ manifest, sourceByPack, initialDefinitions }: Props) {
   return (
     <div id="app">
       <Toolbar
-        packs={packNames.filter(matchesSourceFilter)}
-        pack={pack}
-        search={search}
-        sourceFilter={sourceFilter}
-        overview={overview}
-        onSearch={setSearch}
-        onSourceFilter={setSourceFilter}
-        onPack={(name) => { setPack(name); setCurrent(manifest[name]![0] ?? ''); setRotation(0) }}
-        onOverview={() => setOverview(!overview)}
-        onAdd={() => setAdding(true)}
-        onRotate={() => setRotation((rotation + 1) % 4)}
+          overview={overview}
+          onOverviewChange={setOverview}
+          onAdd={() => setAdding(true)}
+          onMinusRotate={() => setRotation((rotation - 1) % 4)}
+          onPlusRotate={() => setRotation((rotation + 1) % 4)}
       />
-      <AssetList assets={results} selected={current ? { pack, name: current } : null} showFullKey={search.trim() !== ''} definitions={definitions} usedInGame={usedInGame} listSearch={listSearch} onListSearch={setListSearch} onSelect={select} />
+      <AssetTree
+        sources={sources}
+        expandedSources={openSources}
+        expandedPacks={openPacks}
+        selected={current ? { pack, name: current } : null}
+        definitions={definitions}
+        usedInGame={usedInGame}
+        filter={filter}
+        onFilter={setFilter}
+        onExpandedSources={(next) => !searching && setExpandedSources(next)}
+        onExpandedPacks={(next) => !searching && setExpandedPacks(next)}
+        onSelect={select}
+      />
       <ModelViewer
         pack={pack}
         names={manifest[pack]!}

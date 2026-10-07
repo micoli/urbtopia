@@ -1,7 +1,7 @@
 import { Dialog, Label } from 'radix-ui'
 import { useState } from 'react'
-import { base64Of, callAssets } from './api'
-import { ChoiceSelect } from './ChoiceSelect'
+import { base64Of, callAssets } from '../api'
+import { ChoiceSelect } from './components/ChoiceSelect'
 
 const MODES = ['glb (hand-made)', 'poly.pizza', 'zip (kenney)', 'zip (quaternius)'] as const
 type Mode = (typeof MODES)[number]

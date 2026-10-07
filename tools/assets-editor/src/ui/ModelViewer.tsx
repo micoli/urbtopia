@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { definitionKey, type Definitions } from './assetKeys'
-import type { ModelInfo } from './modelLoader'
-import { buildPlacement, SceneStage } from './sceneStage'
+import { definitionKey, type Definitions } from '../assetKeys'
+import type { ModelInfo } from '../modelLoader'
+import { buildPlacement, SceneStage } from '../sceneStage'
 
 const OVERVIEW_SPACING = 3
 const CLICK_TOLERANCE_PX = 4
