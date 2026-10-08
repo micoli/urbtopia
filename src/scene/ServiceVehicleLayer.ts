@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { Coord, GameState } from '../core';
+import { buildNetworkGraph, type Coord, type GameState } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { buildRoadGraph, emptyRoadGraph, type RoadGraph } from './roadGraph';
 import { SERVICE_VEHICLE_MODELS, planServiceTrip, sendsServiceVehicles, tripDelaySeconds } from './serviceTrip';
@@ -26,8 +26,9 @@ interface Dispatcher {
 export class ServiceVehicleLayer {
   readonly root = new THREE.Group();
   private dispatchers = new Map<number, Dispatcher>();
-  private graph: RoadGraph = emptyRoadGraph();
+  private graphs: readonly RoadGraph[] = [emptyRoadGraph()];
   private roads: GameState['roads'] | null = null;
+  private brtRoads: GameState['brtRoads'] | null = null;
   private roundabouts: GameState['roundabouts'] | null = null;
   private state: GameState | null = null;
   private enabled = true;
@@ -48,10 +49,11 @@ export class ServiceVehicleLayer {
 
   sync(state: GameState): void {
     this.state = state;
-    if (state.roads !== this.roads || state.roundabouts !== this.roundabouts) {
+    if (state.roads !== this.roads || state.roundabouts !== this.roundabouts || state.brtRoads !== this.brtRoads) {
       this.roads = state.roads;
       this.roundabouts = state.roundabouts;
-      this.graph = buildRoadGraph(state);
+      this.brtRoads = state.brtRoads;
+      this.graphs = [buildRoadGraph(state), buildNetworkGraph(state, 'brt')];
       this.tiers = new Map(state.roads.map((road) => [`${road.x},${road.y}`, road.tier ?? 1]));
       for (const dispatcher of this.dispatchers.values()) this.cancel(dispatcher);
     }
@@ -88,7 +90,7 @@ export class ServiceVehicleLayer {
     dispatcher.remaining -= deltaSeconds;
     if (dispatcher.remaining > 0 || !this.state) return;
     const facility = this.state.buildings.find((building) => building.id === dispatcher.id);
-    const path = facility ? planServiceTrip(this.state, this.graph, facility, dispatcher.tripIndex) : null;
+    const path = facility ? planServiceTrip(this.state, this.graphs, facility, dispatcher.tripIndex) : null;
     if (!facility || !path || !sendsServiceVehicles(facility.type)) return this.rest(dispatcher);
     const object = this.library.get(SERVICE_VEHICLE_MODELS[facility.type]).clone(true);
     object.scale.setScalar(VEHICLE_SCALE);

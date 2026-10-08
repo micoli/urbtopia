@@ -47,19 +47,21 @@ function pathTo(previous: ReadonlyMap<string, Coord | null>, end: Coord): Coord[
   return path;
 }
 
-export function planServiceTrip(state: GameState, graph: RoadGraph, facility: Building, tripIndex: number): Coord[] | null {
+export function planServiceTrip(state: GameState, graphs: readonly RoadGraph[], facility: Building, tripIndex: number): Coord[] | null {
   if (!isFacilityType(facility.type)) return null;
-  const starts = roadTilesInFront(graph, facility);
-  if (!starts.length) return null;
   const coverage = serviceCoverage(state);
   const homes = state.buildings.filter((building) => building.type === 'home' && coverage.get(building.id)?.has(facility.type as never));
   if (!homes.length) return null;
   const first = Math.floor(nextRandom(hashSeed(`${state.seed}:trip:${facility.id}:${tripIndex}`)).value * homes.length);
   for (let offset = 0; offset < homes.length; offset++) {
     const home = homes[(first + offset) % homes.length]!;
-    const path = shortestPath(graph, starts, roadTilesInFront(graph, home));
-    if (!path || path.length < 2) continue;
-    return [...path, ...path.slice(0, -1).reverse()];
+    for (const graph of graphs) {
+      const starts = roadTilesInFront(graph, facility);
+      if (!starts.length) continue;
+      const path = shortestPath(graph, starts, roadTilesInFront(graph, home));
+      if (!path || path.length < 2) continue;
+      return [...path, ...path.slice(0, -1).reverse()];
+    }
   }
   return null;
 }

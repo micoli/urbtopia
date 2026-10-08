@@ -56,7 +56,7 @@ export { climateStats } from './environment/climate';
 export { transportStats, routeForLine, routeFailure } from './transit/transport';
 export type { BusLine } from './engine/state';
 
-export { TRANSIT, networkTiles, networkNeighbours, validNetworkCrossings, extendNetwork, brokenLinkCount } from './transit/transitNetwork';
+export { TRANSIT, networkTiles, networkNeighbours, validNetworkCrossings, extendNetwork, brokenLinkCount, buildNetworkGraph } from './transit/transitNetwork';
 export type { TransitLine, TransitMode, TransitTile, TransitVehicle, TransitVehicleKind } from './engine/state';
 
 export { NATURE_FAMILIES, NATURE_MODELS, NATURE_TYPES, natureModelOf, greenProfileOf } from './environment/nature';
