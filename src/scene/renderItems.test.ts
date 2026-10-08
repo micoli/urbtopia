@@ -164,7 +164,20 @@ describe('renderItemsOf water', () => {
 
   it('lays a water tile on every Water tile, centred on its tile', () => {
     const items = renderItemsOf({ ...base, waterTiles: [{ x: 50, y: 60 }] });
-    expect(items).toEqual([{ model: 'procedural/water-tile', x: 50.5, z: 60.5, rotation: 0 }]);
+    expect(items).toEqual([{ model: 'procedural/water-tile:vvvv', x: 50.5, z: 60.5, rotation: 0 }]);
+  });
+
+  it('rounds the outer corners and fills the inside corner of an L-shaped lake', () => {
+    const lake = [{ x: 50, y: 60 }, { x: 51, y: 60 }, { x: 50, y: 61 }];
+    const codes = renderItemsOf({ ...base, waterTiles: lake }).map((item) => item.model.split(':')[1]);
+    expect(codes).toEqual(['vfcf', 'fvvf', 'ffvv']);
+  });
+
+  it('does not fill an inside corner onto a road', () => {
+    const lake = [{ x: 50, y: 60 }, { x: 51, y: 60 }, { x: 50, y: 61 }];
+    const withRoad = { ...base, waterTiles: lake, roads: [{ x: 51, y: 61, kind: 'road' as const }] };
+    const first = renderItemsOf(withRoad).find((item) => item.x === 50.5 && item.z === 60.5)!;
+    expect(first.model).toBe('procedural/water-tile:vfff');
   });
 
   it('keeps the same items while the Water tiles do not change', () => {
@@ -176,7 +189,7 @@ describe('renderItemsOf water', () => {
 describe('renderItemsOf boats', () => {
   it('leaves Boats to the animated Boat layer', () => {
     const state = { ...newGame({ seed: 'boat-render', now: 0 }), roads: [], buildings: [], waterTiles: [{ x: 50, y: 60 }], boats: [{ id: 7, family: 'pleasure' as const, marinaId: 1, x: 50, y: 60 }] };
-    expect(renderItemsOf(state).map((item) => item.model)).toEqual(['procedural/water-tile']);
+    expect(renderItemsOf(state).map((item) => item.model)).toEqual(['procedural/water-tile:vvvv']);
   });
 });
 
@@ -193,6 +206,6 @@ describe('renderItemsOf bridges', () => {
     expect(items.some((item) => item.model === 'procedural/bridge-deck')).toBe(false);
     expect(items.some((item) => item.x === 52.5 && item.model.startsWith('roads/'))).toBe(false);
     expect(items.some((item) => item.x === 51.5 && item.model.startsWith('roads/'))).toBe(true);
-    expect(items.some((item) => item.x === 52.5 && item.model === 'procedural/water-tile')).toBe(true);
+    expect(items.some((item) => item.x === 52.5 && item.model.startsWith('procedural/water-tile'))).toBe(true);
   });
 });

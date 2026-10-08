@@ -1,5 +1,6 @@
 import { BUILDING_ENTRIES } from '../core/buildings/buildingDefinitions';
-import { CROP_IDS, bridgeKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type BoatFamily, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
+import { CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type BoatFamily, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
+import { cornerCode } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
 import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
@@ -162,7 +163,7 @@ export interface HarvestedTile {
 }
 
 let lastFieldItems: RenderItem[] = [];
-let lastWaterItems: { tiles: GameState['waterTiles']; items: RenderItem[] } | null = null;
+let lastWaterItems: RenderItem[] = [];
 
 export function renderItemsOf(state: GameState, afterHarvest: readonly HarvestedTile[] = []): RenderItem[] {
   const builtBuildings = buildingItems(state);
@@ -178,8 +179,9 @@ export function renderItemsOf(state: GameState, afterHarvest: readonly Harvested
   const fields = sameItems(builtFields, lastFieldItems) ? lastFieldItems : builtFields;
   lastFieldItems = fields;
 
-  if (!lastWaterItems || lastWaterItems.tiles !== state.waterTiles) lastWaterItems = { tiles: state.waterTiles, items: waterItems(state) };
-  const water = lastWaterItems.items;
+  const builtWater = waterItems(state);
+  const water = sameItems(builtWater, lastWaterItems) ? lastWaterItems : builtWater;
+  lastWaterItems = water;
 
   if (lastItems && lastItems.buildings === buildings && lastItems.roads === roads && lastItems.fields === fields && lastItems.water === water) return lastItems.items;
   const items = [...buildings, ...roads, ...fields, ...water];
@@ -213,7 +215,15 @@ function fieldItems(state: GameState, afterHarvest: readonly HarvestedTile[]): R
 }
 
 function waterItems(state: GameState): RenderItem[] {
-  return (state.waterTiles ?? []).map((tile) => ({ model: WATER_TILE_MODEL, x: tile.x + 0.5, z: tile.y + 0.5, rotation: 0 }));
+  const tiles = state.waterTiles ?? [];
+  if (tiles.length === 0) return [];
+  const water = waterKeys(state);
+  let occupied: Set<string> | null = null;
+  const neighbourhood = {
+    isWater: (x: number, y: number) => water.has(tileKey({ x, y })),
+    isFree: (x: number, y: number) => !(occupied ??= occupiedTiles(state)).has(tileKey({ x, y })),
+  };
+  return tiles.map((tile) => ({ model: `${WATER_TILE_MODEL}:${cornerCode(tile.x, tile.y, neighbourhood)}`, x: tile.x + 0.5, z: tile.y + 0.5, rotation: 0 }));
 }
 
 function roadItems(state: GameState): RenderItem[] {
