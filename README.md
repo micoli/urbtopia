@@ -82,7 +82,7 @@ The optional Cloud save lives in a Supabase project described by [`supabase/`](s
 | `npm run db:test` | Run the pgTAP tests in `supabase/tests/database/` |
 | `npm run db:lint` / `db:types` | Lint the schema / regenerate `database.types.ts` (need the Supabase CLI: `mise install`) |
 
-Open http://localhost:5170 (served by the compose from [`dev/index.html`](dev/index.html)) for a page of links to the game, the tools, Studio and Mailpit, with a dot showing which ones are up. Copy `.env.example` to `.env.local` to try the Cloud save; the game is fully playable without Supabase. CI and production deploys use the Supabase CLI (pinned in `mise.toml`) with `supabase/config.toml`. See [`docs/security.md`](docs/security.md) for what is public and what is secret.
+Open http://localhost:5170 (served by the compose from [`dev/index/index.html`](dev/index/index.html)) for a page of links to the game, the tools, Studio and Mailpit, with a dot showing which ones are up. Copy `.env.example` to `.env.local` to try the Cloud save; the game is fully playable without Supabase. CI and production deploys use the Supabase CLI (pinned in `mise.toml`) with `supabase/config.toml`. See [`docs/security.md`](docs/security.md) for what is public and what is secret.
 
 ## Deployment
 

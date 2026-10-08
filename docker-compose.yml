@@ -176,7 +176,7 @@ services:
     environment:
       SERVER_ROOT: /public
     volumes:
-      - ./dev/index.html:/public/index.html:ro
+      - ./dev/index:/public:ro
 
   pgtap:
     image: public.ecr.aws/supabase/pg_prove:3.36
