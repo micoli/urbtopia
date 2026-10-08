@@ -31,6 +31,14 @@ export interface World {
   errands: readonly Coord[];
 }
 
+// How far toward the Fixture a person stands inside the cell of its slot, so that it is right in front of it.
+const STAND_OFFSET: Record<Figure['kind'], number> = { gamer: 0.38, queue: 0, employee: 0.25 };
+
+export function standPoint(figure: Figure): Coord {
+  const reach = STAND_OFFSET[figure.kind];
+  return { x: figure.x + 0.5 + Math.sin(figure.facing) * reach, y: figure.y + 0.5 + Math.cos(figure.facing) * reach };
+}
+
 export const AGENTS = {
   speed: 1.15,
   playSeconds: [7, 16] as const,
@@ -87,7 +95,10 @@ export function findPath(world: World, from: Coord, to: Coord): Coord[] | null {
 
 function routeTo(world: World, agent: Agent, goal: Coord): Agent {
   const route = findPath(world, cellOf(agent), goal) ?? [goal];
-  return { ...agent, goal, path: route.map(centre) };
+  const path = route.map(centre);
+  const slot = agent.slot;
+  if (slot && slot.x === goal.x && slot.y === goal.y && path.length > 0) path[path.length - 1] = standPoint(slot);
+  return { ...agent, goal, path };
 }
 
 export function makeWorld(size: number, entrance: Coord, blockedCells: readonly Coord[], errands: readonly Coord[]): World {
@@ -143,7 +154,7 @@ export function reconcile(agents: readonly Agent[], plan: readonly Figure[], wor
     const placed = options.initial || kind === 'employee';
     const agent: Agent = {
       id: id++, kind, slot: figure,
-      x: placed ? figure.x + 0.5 : door.x, y: placed ? figure.y + 0.5 : door.y,
+      x: placed ? standPoint(figure).x : door.x, y: placed ? standPoint(figure).y : door.y,
       path: [], goal: null,
       mode: 'walking', timer: 0, satisfaction: clamp01(satisfaction + jitter), facing: figure.facing,
     };
@@ -214,3 +225,19 @@ export function stepAgent(agent: Agent, world: World, dt: number, dice: Dice, mo
 export function repath(agents: readonly Agent[], world: World): Agent[] {
   return agents.map(agent => (agent.goal && agent.path.length > 0 ? routeTo(world, agent, agent.goal) : agent));
 }
+
+// What a person does with its hands and body, chosen at random now and then so that nobody moves in step with the others.
+const PLAY_CLIPS = ['interact-right', 'interact-left', 'holding-both', 'holding-right', 'holding-left', 'interact-right', 'interact-left'] as const;
+const CHECK_CLIPS = ['interact-right', 'interact-left', 'pick-up'] as const;
+
+export function pickClip(mode: AgentMode, kind: Agent['kind'], satisfaction: number, roll: number): string {
+  const choose = <T extends string>(clips: readonly T[]): T => clips[Math.min(clips.length - 1, Math.floor(roll * clips.length))]!;
+  if (mode === 'walking' || mode === 'leaving' || mode === 'errand') return 'walk';
+  if (mode === 'playing') return roll > 0.9 ? (satisfaction > 0.5 ? 'emote-yes' : 'emote-no') : choose(PLAY_CLIPS);
+  if (mode === 'waiting') return satisfaction < 0.3 && roll > 0.5 ? 'emote-no' : 'idle';
+  if (mode === 'checking') return choose(CHECK_CLIPS);
+  return kind === 'employee' && roll > 0.55 ? (roll > 0.8 ? 'interact-left' : 'interact-right') : 'idle';
+}
+
+// Seconds before the next pick, for a person who keeps doing the same thing.
+export const clipSeconds = (roll: number): number => 1.2 + roll * 3;

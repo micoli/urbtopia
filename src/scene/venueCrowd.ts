@@ -52,11 +52,10 @@ export function planCrowd(input: CrowdInput): Figure[] {
   const players = games.length === 0 ? 0 : Math.max(1, Math.min(games.length, Math.round(input.saturation * games.length)));
   for (const fixture of games.slice(0, players)) {
     const tiles = fixtureTiles(fixture);
-    const center = centerOf(tiles);
     const front = FRONT[fixture.rotation % 4]!;
-    const candidates = tiles.flatMap(tile => [front, ...AROUND].map(offset => ({ x: tile.x + offset.x, y: tile.y + offset.y })));
-    const spot = candidates.find(free);
-    if (spot) add('gamer', spot, center);
+    const candidates = tiles.flatMap(tile => [front, ...AROUND].map(offset => ({ cell: { x: tile.x + offset.x, y: tile.y + offset.y }, tile })));
+    const spot = candidates.find(candidate => free(candidate.cell));
+    if (spot) add('gamer', spot.cell, spot.tile);
   }
 
   const counter = fixtures.find(fixture => COUNTERS.includes(fixture.type));

@@ -3,7 +3,7 @@ import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { fixtureTiles, type Coord, type VenueFixture } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { VENUE_CROWD_MODELS } from './renderItems';
-import { makeWorld, reconcile, repath, stepAgent, type Agent, type AgentMode, type Dice, type World } from './venueAgents';
+import { clipSeconds, makeWorld, pickClip, reconcile, repath, stepAgent, type Agent, type Dice, type World } from './venueAgents';
 import type { Figure } from './venueCrowd';
 
 const CROWD_SCALE = 0.7;
@@ -11,21 +11,14 @@ const BAR = { width: 0.46, height: 0.07, lift: 0.8, background: 0x10131c };
 const RECONCILE_EVERY = 0.9;
 const FADE = 0.2;
 
-const CLIP_OF: Record<AgentMode, string> = {
-  walking: 'walk',
-  leaving: 'walk',
-  errand: 'walk',
-  playing: 'interact-right',
-  waiting: 'idle',
-  idle: 'idle',
-  checking: 'interact-left',
-};
-
 interface Visual {
   holder: THREE.Group;
   mixer: THREE.AnimationMixer;
   actions: Map<string, THREE.AnimationAction>;
   clip: string;
+  mode: Agent['mode'] | '';
+  until: number;
+  speed: number;
   bar: { group: THREE.Group; fill: THREE.Mesh; material: THREE.MeshBasicMaterial } | null;
 }
 
@@ -143,7 +136,7 @@ export class VenueCrowdLayer {
       bar = { group, fill, material };
     }
     this.root.add(holder);
-    const visual: Visual = { holder, mixer, actions, clip: '', bar };
+    const visual: Visual = { holder, mixer, actions, clip: '', mode: '', until: 0, speed: 0.88 + Math.random() * 0.26, bar };
     this.visuals.set(agent.id, visual);
     return visual;
   }
@@ -155,8 +148,8 @@ export class VenueCrowdLayer {
       const visual = this.visualOf(agent);
       visual.holder.position.set(agent.x, 0, agent.y);
       visual.holder.rotation.y = agent.facing;
-      this.play(visual, CLIP_OF[agent.mode]);
-      visual.mixer.update(delta);
+      this.choose(visual, agent, delta);
+      visual.mixer.update(delta * visual.speed);
       if (!visual.bar) continue;
       const level = Math.min(1, Math.max(0, agent.satisfaction));
       visual.bar.group.position.set(agent.x, BAR.lift, agent.y);
@@ -172,12 +165,29 @@ export class VenueCrowdLayer {
     }
   }
 
+  // A person keeps a gesture for a few seconds, then draws another; a new activity draws at once.
+  private choose(visual: Visual, agent: Agent, delta: number): void {
+    const moving = agent.mode === 'walking' || agent.mode === 'leaving' || agent.mode === 'errand';
+    if (moving) {
+      visual.until = 0;
+      visual.mode = agent.mode;
+      this.play(visual, 'walk');
+      return;
+    }
+    visual.until -= delta;
+    if (visual.until > 0 && visual.mode === agent.mode) return;
+    visual.mode = agent.mode;
+    visual.until = clipSeconds(Math.random());
+    this.play(visual, pickClip(agent.mode, agent.kind, agent.satisfaction, Math.random()));
+  }
+
   private play(visual: Visual, clip: string): void {
     if (visual.clip === clip) return;
     const next = visual.actions.get(clip) ?? visual.actions.get('idle');
     if (!next) return;
     const previous = visual.actions.get(visual.clip);
     next.reset().fadeIn(FADE).play();
+    next.time = Math.random() * next.getClip().duration;
     if (previous && previous !== next) previous.fadeOut(FADE);
     visual.clip = clip;
   }

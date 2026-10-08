@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AGENTS, findPath, makeWorld, reconcile, repath, roll, stepAgent, type Agent, type Dice, type World } from './venueAgents';
+import { AGENTS, clipSeconds, findPath, makeWorld, pickClip, reconcile, repath, roll, standPoint, stepAgent, type Agent, type Dice, type World } from './venueAgents';
 import type { Figure } from './venueCrowd';
 
 const entrance = { x: 3, y: 0 };
@@ -43,7 +43,7 @@ describe('Venue people', () => {
     const { agents } = fill(plan);
     expect(agents).toHaveLength(4);
     expect(agents.filter(agent => agent.kind === 'customer')).toHaveLength(3);
-    for (const agent of agents) expect([agent.x, agent.y]).toEqual([agent.slot!.x + 0.5, agent.slot!.y + 0.5]);
+    for (const agent of agents) expect([agent.x, agent.y]).toEqual([standPoint(agent.slot!).x, standPoint(agent.slot!).y]);
     expect(agents.find(agent => agent.slot!.kind === 'gamer')!.mode).toBe('playing');
     expect(agents.find(agent => agent.slot!.kind === 'queue')!.mode).toBe('waiting');
     expect(agents.find(agent => agent.kind === 'employee')!.mode).toBe('idle');
@@ -85,7 +85,7 @@ describe('Venue people', () => {
     expect(halfway.y - entering.y).toBeCloseTo(AGENTS.speed * 1.0, 0);
     const arrived = run(entering, w, 8)!;
     expect(arrived.mode).toBe('playing');
-    expect([arrived.x, arrived.y]).toEqual([3.5, 3.5]);
+    expect([arrived.x, arrived.y]).toEqual([standPoint(arrived.slot!).x, standPoint(arrived.slot!).y]);
   });
 
   it('plays for a while, then leaves through the entrance and disappears', () => {
@@ -137,7 +137,7 @@ describe('Venue people', () => {
     const employee = fill([slot('employee', 3, 1)], undefined, [], w).agents[0]!;
     const later = run(employee, w, 30)!;
     expect(later.mode).toBe('idle');
-    expect([later.x, later.y]).toEqual([3.5, 1.5]);
+    expect([later.x, later.y]).toEqual([standPoint(later.slot!).x, standPoint(later.slot!).y]);
   });
 
   it('draws the routes again when the Fixtures change', () => {
@@ -145,7 +145,7 @@ describe('Venue people', () => {
     const blocked = world([{ x: 3, y: 1 }, { x: 3, y: 2 }]);
     const redrawn = repath([entering], blocked)[0]!;
     expect(redrawn.path.some(cell => cell.x === 3.5 && (cell.y === 1.5 || cell.y === 2.5))).toBe(false);
-    expect(redrawn.path[redrawn.path.length - 1]).toEqual({ x: 3.5, y: 4.5 });
+    expect(redrawn.path[redrawn.path.length - 1]).toEqual(standPoint(slot('gamer', 3, 4)));
   });
 
   it('is deterministic for a given seed', () => {
@@ -164,5 +164,62 @@ describe('Venue people', () => {
       expect(agent.satisfaction).toBeGreaterThanOrEqual(0);
       expect(agent.satisfaction).toBeLessThanOrEqual(1);
     }
+  });
+
+  it('stands in front of the Fixture, toward it, and not in the middle of the cell', () => {
+    const facing = Math.PI;
+    const point = standPoint({ kind: 'gamer', x: 4, y: 4, facing });
+    expect(point.x).toBeCloseTo(4.5, 9);
+    expect(point.y).toBeLessThan(4.5);
+    expect(4.5 - point.y).toBeCloseTo(0.38, 9);
+    expect(standPoint({ kind: 'queue', x: 4, y: 4, facing })).toEqual({ x: 4.5, y: 4.5 });
+    const east = standPoint({ kind: 'gamer', x: 4, y: 4, facing: Math.PI / 2 });
+    expect(east.x).toBeGreaterThan(4.5);
+    expect(Math.hypot(east.x - 4.5, east.y - 4.5)).toBeCloseTo(0.38, 9);
+  });
+
+  it('keeps the person inside its own cell', () => {
+    for (let facing = 0; facing < 2 * Math.PI; facing += 0.4) {
+      const point = standPoint({ kind: 'gamer', x: 2, y: 3, facing });
+      expect(Math.floor(point.x)).toBe(2);
+      expect(Math.floor(point.y)).toBe(3);
+    }
+  });
+});
+
+describe('Venue gestures', () => {
+  const sample = (mode: Parameters<typeof pickClip>[0], kind: Parameters<typeof pickClip>[1], satisfaction: number) =>
+    new Set(Array.from({ length: 50 }, (_, index) => pickClip(mode, kind, satisfaction, index / 50)));
+
+  it('walks while moving, always', () => {
+    for (const mode of ['walking', 'leaving', 'errand'] as const) expect([...sample(mode, 'customer', 0.5)]).toEqual(['walk']);
+  });
+
+  it('draws different gestures for a player, not always the same arm', () => {
+    const clips = sample('playing', 'customer', 0.8);
+    expect(clips.size).toBeGreaterThanOrEqual(4);
+    expect(clips.has('interact-right')).toBe(true);
+    expect(clips.has('interact-left')).toBe(true);
+    expect(clips.has('emote-yes')).toBe(true);
+    expect(clips.has('emote-no')).toBe(false);
+    expect(sample('playing', 'customer', 0.2).has('emote-no')).toBe(true);
+  });
+
+  it('lets an impatient customer complain, and a calm one wait', () => {
+    expect([...sample('waiting', 'customer', 0.8)]).toEqual(['idle']);
+    expect(sample('waiting', 'customer', 0.1).has('emote-no')).toBe(true);
+  });
+
+  it('keeps an employee mostly at ease, and sometimes busy with their hands', () => {
+    const clips = sample('idle', 'employee', 0.5);
+    expect(clips.has('idle')).toBe(true);
+    expect(clips.has('interact-right')).toBe(true);
+    expect([...sample('idle', 'customer', 0.5)]).toEqual(['idle']);
+    expect(sample('checking', 'employee', 0.5).size).toBeGreaterThan(1);
+  });
+
+  it('holds a gesture for a few seconds', () => {
+    expect(clipSeconds(0)).toBeGreaterThan(1);
+    expect(clipSeconds(1)).toBeLessThan(5);
   });
 });
