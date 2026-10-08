@@ -1,5 +1,6 @@
 import { EcologyLayer } from './EcologyLayer';
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { GAME_CONFIG, type Building, type GameState } from '../core';
 import { CameraController } from './CameraController';
 import type { Coord } from '../core';
@@ -85,10 +86,15 @@ export class GameScene {
   constructor(private canvas: HTMLCanvasElement) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.toneMapping = THREE.NeutralToneMapping;
+    this.renderer.toneMappingExposure = 0.9;
     this.scene.background = new THREE.Color(0x9ec5e8);
-    const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+    this.scene.environment = this.buildEnvironment();
+    this.scene.environmentIntensity = 0.35;
+    const sun = new THREE.DirectionalLight(0xfff2d6, 2.0);
     sun.position.set(20, 40, 10);
-    this.scene.add(sun, new THREE.AmbientLight(0xffffff, 1.2), this.buildGround(), this.parcels, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.selectionLayer.root, this.ghostLayer.root);
+    const sky = new THREE.HemisphereLight(0xbcd8f5, 0x8a7a64, 0.5);
+    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.selectionLayer.root, this.ghostLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.controller.onTap = (clientX, clientY, shiftKey) =>
@@ -216,6 +222,13 @@ export class GameScene {
     } finally {
       this.syncing = false;
     }
+  }
+
+  private buildEnvironment(): THREE.Texture {
+    const generator = new THREE.PMREMGenerator(this.renderer);
+    const texture = generator.fromScene(new RoomEnvironment(), 0.04).texture;
+    generator.dispose();
+    return texture;
   }
 
   private buildGround(): THREE.Mesh {
