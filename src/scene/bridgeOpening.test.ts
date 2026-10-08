@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Bridge } from '../core';
-import { CLOSING_SECONDS, MAX_LEAF_ANGLE, MIN_OPEN_SECONDS, OPENING_SECONDS, boatsMayPass, closedBridge, deckBusy, gateEdges, isStoppingTraffic, leafAngle, leafSplit, stepOpening, type BridgeOpening, type OpeningInput } from './bridgeOpening';
+import { CLOSING_SECONDS, MAX_LEAF_ANGLE, MIN_OPEN_SECONDS, OPENING_SECONDS, boatsMayPass, closedBridge, deckBusy, gateEdges, isStoppingTraffic, leafAngle, leafLayout, leafSplit, stepOpening, type BridgeOpening, type OpeningInput } from './bridgeOpening';
 
 const idle: OpeningInput = { requested: false, occupied: false, deckBusy: false };
 
@@ -16,6 +16,15 @@ describe('leaves of a Bridge', () => {
     [5, [3, 2]],
   ])('a %i-tile Bridge has the leaves %j', (length, leaves) => {
     expect(leafSplit(length)).toEqual(leaves);
+  });
+
+  it.each([
+    [1, [{ hinge: 0, direction: 1, tiles: 1 }]],
+    [2, [{ hinge: 0, direction: 1, tiles: 1 }, { hinge: 2, direction: -1, tiles: 1 }]],
+    [3, [{ hinge: 0, direction: 1, tiles: 2 }, { hinge: 3, direction: -1, tiles: 1 }]],
+    [5, [{ hinge: 0, direction: 1, tiles: 3 }, { hinge: 5, direction: -1, tiles: 2 }]],
+  ])('hinges the leaves of a %i-tile Bridge on its two banks: %j', (length, layout) => {
+    expect(leafLayout(length)).toEqual(layout);
   });
 
   it('rises from flat to the maximum angle with a smooth start and end', () => {

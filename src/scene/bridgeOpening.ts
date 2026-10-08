@@ -27,6 +27,19 @@ export function leafSplit(length: number): number[] {
   return length - first > 0 ? [first, length - first] : [first];
 }
 
+export interface LeafLayout {
+  hinge: number;
+  direction: 1 | -1;
+  tiles: number;
+}
+
+export function leafLayout(length: number): LeafLayout[] {
+  const [first = length, second] = leafSplit(length);
+  const leaves: LeafLayout[] = [{ hinge: 0, direction: 1, tiles: first }];
+  if (second !== undefined) leaves.push({ hinge: length, direction: -1, tiles: second });
+  return leaves;
+}
+
 export function leafAngle(openness: number): number {
   const eased = openness * openness * (3 - 2 * openness);
   return eased * MAX_LEAF_ANGLE;

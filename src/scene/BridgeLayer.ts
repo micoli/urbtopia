@@ -3,7 +3,7 @@ import { bridgeTiles, bridgesOf, roadPiece, tileKey, type Bridge, type GameState
 import { fitMatrixOf } from './modelFit';
 import type { ModelLibrary } from './modelLibrary';
 import { BRIDGE_DECK_MODEL } from './renderItems';
-import { boatsMayPass, closedBridge, deckBusy, gateEdges, isStoppingTraffic, leafAngle, leafSplit, stepOpening, type BridgeOpening } from './bridgeOpening';
+import { boatsMayPass, closedBridge, deckBusy, gateEdges, isStoppingTraffic, leafAngle, leafLayout, stepOpening, type BridgeOpening } from './bridgeOpening';
 import type { TrafficVehicle } from './vehicleTraffic';
 
 const ROAD_MODEL = 'roads/road-straight';
@@ -77,25 +77,19 @@ export class BridgeLayer {
 
   private build(bridge: Bridge, opening: BridgeOpening = closedBridge()): Drawbridge {
     const tiles = bridgeTiles(bridge);
-    const split = leafSplit(bridge.length);
-    const leaves: Leaf[] = [];
-    let offset = 0;
-    split.forEach((count, index) => {
-      const fromStart = index === 0;
-      const hinge = fromStart ? offset : bridge.length - offset;
+    const leaves: Leaf[] = leafLayout(bridge.length).map(({ hinge, direction, tiles: count }) => {
       const group = new THREE.Group();
       const [hingeX, hingeZ] = bridge.axis === 'x' ? [bridge.x + hinge, bridge.y + 0.5] : [bridge.x + 0.5, bridge.y + hinge];
       group.position.set(hingeX, 0, hingeZ);
       for (let step = 0; step < count; step++) {
-        const along = (fromStart ? 1 : -1) * (step + 0.5);
         const piece = this.tile(bridge.axis);
+        const along = direction * (step + 0.5);
         if (bridge.axis === 'x') piece.position.x = along;
         else piece.position.z = along;
         group.add(piece);
       }
       this.root.add(group);
-      leaves.push({ group, sign: fromStart ? 1 : -1 });
-      offset += count;
+      return { group, sign: direction };
     });
     return { bridge, deck: new Set(tiles.map(tileKey)), gates: gateEdges(bridge), opening, leaves };
   }
