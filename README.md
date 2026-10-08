@@ -47,16 +47,16 @@ The codex catalog is checked against every building in `BUILDING_SPECS` and ever
 
 ## Cloud saves database
 
-The optional Cloud save lives in a Supabase project described by [`supabase/`](supabase/) (config, migrations, pgTAP tests); every Postgres object is prefixed `urb_`. The Supabase CLI is pinned in `mise.toml` (`mise install`); a Docker-compatible runtime (Docker, OrbStack, Colima) must be running. Contributors run a local Supabase:
+The optional Cloud save lives in a Supabase project described by [`supabase/`](supabase/) (migrations, pgTAP tests, email templates); every Postgres object is prefixed `urb_`. Locally it runs from [`docker-compose.yml`](docker-compose.yml) (Postgres, Auth, REST, a small gateway, Mailpit and Studio, same ports as `supabase start`), which needs a Docker-compatible runtime (Docker, OrbStack, Colima). Migrations are applied when the stack starts.
 
 | Command | Purpose |
 | --- | --- |
-| `npm run db:start` / `db:stop` | Start or stop the local Supabase stack |
-| `npm run db:reset` | Recreate the local database from the migrations |
+| `npm run db:start` / `db:stop` | Start or stop the local stack |
+| `npm run db:reset` | Wipe the local database and re-apply the migrations |
 | `npm run db:test` | Run the pgTAP tests in `supabase/tests/database/` |
-| `npm run db:lint` | Lint the schema |
+| `npm run db:lint` / `db:types` | Lint the schema / regenerate `database.types.ts` (need the Supabase CLI: `mise install`) |
 
-The game is fully playable without Supabase: copy `.env.example` to `.env.local` and fill the local URL and publishable key printed by `supabase start` to try the Cloud save. See [`docs/security.md`](docs/security.md) for what is public and what is secret.
+Open [`dev/index.html`](dev/index.html) in a browser for a page of links to the game, the tools, Studio and Mailpit, with a dot showing which ones are up. Copy `.env.example` to `.env.local` to try the Cloud save; the game is fully playable without Supabase. CI and production deploys use the Supabase CLI (pinned in `mise.toml`) with `supabase/config.toml`. See [`docs/security.md`](docs/security.md) for what is public and what is secret.
 
 ## Deployment
 

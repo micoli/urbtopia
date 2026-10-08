@@ -1,0 +1,184 @@
+# Local Supabase for development: Postgres, Auth, REST, a small gateway, Mailpit and Studio.
+# Same ports as `supabase start` (API 54321, DB 54322, Studio 54323, Mailpit 54324).
+# The keys below are the public Supabase demo keys, only valid against this local stack.
+# CI and production deploys still use the Supabase CLI (supabase/config.toml).
+name: urbix-supabase
+
+x-jwt-secret: &jwt-secret super-secret-jwt-token-with-at-least-32-characters-long
+x-anon-key: &anon-key eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+x-service-key: &service-key eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+
+services:
+  db:
+    image: ghcr.io/supabase/postgres:17.11.0.004
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf -c log_min_messages=fatal
+    ports:
+      - "54322:5432"
+    environment:
+      POSTGRES_HOST: /var/run/postgresql
+      PGPORT: "5432"
+      POSTGRES_PORT: "5432"
+      PGPASSWORD: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATABASE: postgres
+      POSTGRES_DB: postgres
+      JWT_SECRET: *jwt-secret
+      JWT_EXP: "3600"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./dev/supabase/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-h", "localhost"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  auth:
+    image: ghcr.io/supabase/gotrue:v2.197.0
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/health"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: "9999"
+      API_EXTERNAL_URL: http://127.0.0.1:54321/auth/v1
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:postgres@db:5432/postgres
+      GOTRUE_SITE_URL: http://localhost:5173
+      GOTRUE_URI_ALLOW_LIST: http://localhost:5173,http://127.0.0.1:5173,http://localhost:5175,http://127.0.0.1:5175
+      GOTRUE_DISABLE_SIGNUP: "false"
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: "3600"
+      GOTRUE_JWT_SECRET: *jwt-secret
+      GOTRUE_SECURITY_REFRESH_TOKEN_ROTATION_ENABLED: "true"
+      GOTRUE_SECURITY_REFRESH_TOKEN_REUSE_INTERVAL: "10"
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "false"
+      GOTRUE_MAILER_SECURE_EMAIL_CHANGE_ENABLED: "true"
+      GOTRUE_MAILER_URLPATHS_INVITE: http://127.0.0.1:54321/auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_CONFIRMATION: http://127.0.0.1:54321/auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_RECOVERY: http://127.0.0.1:54321/auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: http://127.0.0.1:54321/auth/v1/verify
+      GOTRUE_MAILER_TEMPLATE_RELOADING_ENABLED: "true"
+      # Same templates and subjects as supabase/config.toml, served by the gateway.
+      GOTRUE_MAILER_TEMPLATES_EMAIL_CHANGE: http://gateway:8088/email/email_change.html
+      GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: http://gateway:8088/email/magic_link.html
+      GOTRUE_MAILER_SUBJECTS_EMAIL_CHANGE: Urbtopia - Confirmez votre adresse / Confirm your address
+      GOTRUE_MAILER_SUBJECTS_MAGIC_LINK: Urbtopia - Votre lien de connexion / Your sign-in link
+      GOTRUE_SMTP_HOST: mailpit
+      GOTRUE_SMTP_PORT: "1025"
+      GOTRUE_SMTP_ADMIN_EMAIL: admin@email.com
+      GOTRUE_SMTP_SENDER_NAME: Urbtopia
+      GOTRUE_SMTP_MAX_FREQUENCY: 1s
+      GOTRUE_RATE_LIMIT_EMAIL_SENT: "360000"
+      GOTRUE_RATE_LIMIT_ANONYMOUS_USERS: "30"
+
+  migrate:
+    image: ghcr.io/supabase/postgres:17.11.0.004
+    depends_on:
+      db:
+        condition: service_healthy
+      auth:
+        condition: service_healthy
+    restart: "no"
+    entrypoint: ["/bin/sh", "/migrate.sh"]
+    environment:
+      PGPASSWORD: postgres
+    volumes:
+      - ./dev/supabase/migrate.sh:/migrate.sh:ro
+      - ./supabase/migrations:/migrations:ro
+
+  rest:
+    image: public.ecr.aws/supabase/postgrest:v16.4
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    command: postgrest
+    environment:
+      PGRST_DB_URI: postgres://authenticator:postgres@db:5432/postgres
+      PGRST_DB_SCHEMAS: public
+      PGRST_DB_EXTRA_SEARCH_PATH: public,extensions
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_DB_MAX_ROWS: "100"
+      PGRST_JWT_SECRET: *jwt-secret
+
+  gateway:
+    image: nginx:1.27-alpine
+    depends_on:
+      - auth
+      - rest
+    restart: unless-stopped
+    ports:
+      - "54321:8000"
+    volumes:
+      - ./dev/supabase/gateway.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./supabase/templates:/templates:ro
+
+  mailpit:
+    image: public.ecr.aws/supabase/mailpit:v1.31.3
+    restart: unless-stopped
+    ports:
+      - "54324:8025"
+    environment:
+      MP_SMTP_DISABLE_RDNS: "true"
+
+  meta:
+    image: public.ecr.aws/supabase/postgres-meta:v0.100.0
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    environment:
+      PG_META_PORT: "8080"
+      PG_META_DB_HOST: db
+      PG_META_DB_PORT: "5432"
+      PG_META_DB_NAME: postgres
+      PG_META_DB_USER: postgres
+      PG_META_DB_PASSWORD: postgres
+
+  studio:
+    image: public.ecr.aws/supabase/studio:2026.10.05-sha-94b8b06
+    depends_on:
+      - meta
+      - gateway
+    restart: unless-stopped
+    ports:
+      - "54323:3000"
+    environment:
+      HOSTNAME: 0.0.0.0
+      STUDIO_PG_META_URL: http://meta:8080
+      POSTGRES_PASSWORD: postgres
+      SUPABASE_URL: http://gateway:8000
+      SUPABASE_PUBLIC_URL: http://127.0.0.1:54321
+      SUPABASE_ANON_KEY: *anon-key
+      SUPABASE_SERVICE_KEY: *service-key
+      AUTH_JWT_SECRET: *jwt-secret
+      PGRST_DB_SCHEMAS: public
+      NEXT_PUBLIC_ENABLE_LOGS: "false"
+      DEFAULT_ORGANIZATION_NAME: Urbix
+      DEFAULT_PROJECT_NAME: urbix
+
+  pgtap:
+    image: public.ecr.aws/supabase/pg_prove:3.36
+    profiles: [test]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    entrypoint: ["pg_prove", "-h", "db", "-U", "postgres", "-d", "postgres", "--ext", ".sql", "-r", "/tests"]
+    environment:
+      PGPASSWORD: postgres
+    volumes:
+      - ./supabase/tests/database:/tests:ro
+
+volumes:
+  db-data:
