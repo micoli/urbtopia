@@ -2,7 +2,7 @@
 # Same ports as `supabase start` (API 54321, DB 54322, Studio 54323, Mailpit 54324).
 # The keys below are the public Supabase demo keys, only valid against this local stack.
 # CI and production deploys still use the Supabase CLI (supabase/config.toml).
-name: urbix-supabase
+name: urbtopia
 
 x-jwt-secret: &jwt-secret super-secret-jwt-token-with-at-least-32-characters-long
 x-anon-key: &anon-key eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
@@ -167,6 +167,16 @@ services:
       NEXT_PUBLIC_ENABLE_LOGS: "false"
       DEFAULT_ORGANIZATION_NAME: Urbix
       DEFAULT_PROJECT_NAME: urbix
+
+  index:
+    image: joseluisq/static-web-server:2
+    restart: unless-stopped
+    ports:
+      - "5170:80"
+    environment:
+      SERVER_ROOT: /public
+    volumes:
+      - ./dev/index.html:/public/index.html:ro
 
   pgtap:
     image: public.ecr.aws/supabase/pg_prove:3.36
