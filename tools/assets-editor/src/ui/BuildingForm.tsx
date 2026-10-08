@@ -18,7 +18,7 @@ function asKind(building: BuildingDefinition, kind: Kind): BuildingDefinition {
   const { model, name, description, footprint } = building
   const common = { model, name, ...(description ? { description } : {}) }
   if (kind === 'nature') return { ...common, nature: { family: 'decoration' } }
-  const placed = { section: building.section ?? BUILD_SECTION_TITLES[0], footprint: footprint ?? [1, 1], cost: building.cost ?? 0, unlockCitizens: building.unlockCitizens ?? 0, requiresRoad: building.requiresRoad ?? true }
+  const placed = { section: building.section ?? BUILD_SECTION_TITLES[0], footprint: footprint ?? [1, 1], cost: building.cost ?? 0, unlockCitizens: building.unlockCitizens ?? 0, requiresRoad: building.requiresRoad ?? true, ...(building.accessModes ? { accessModes: building.accessModes } : {}) }
   return kind === 'sport' ? { ...common, ...placed, section: 'build.sport', sport: { radius: 1, wellbeingBonus: 0 } } : { ...common, ...placed }
 }
 
@@ -55,7 +55,8 @@ export function BuildingForm({ id, building, onChange }: Props) {
           <NumberField label="Cost (Urbs)" value={building.cost} onCommit={withNumber('cost')} />
           <NumberField label="Unlock (Citizens)" value={building.unlockCitizens} onCommit={withNumber('unlockCitizens')} />
           <NumberField label="Initial slots" value={building.initialSlots} placeholder="0" onCommit={(value) => change({ initialSlots: value || undefined })} />
-          <CheckboxField label="Requires road" checked={building.requiresRoad ?? true} onChange={(requiresRoad) => change({ requiresRoad })} />
+          <CheckboxField label="Requires road" checked={building.requiresRoad ?? true} onChange={(requiresRoad) => change({ requiresRoad, ...(requiresRoad ? {} : { accessModes: undefined }) })} />
+          {(building.requiresRoad ?? true) && <CheckboxField label="BRT compatible" checked={building.accessModes?.includes('brt') ?? false} onChange={(brt) => change({ accessModes: brt ? ['road', 'brt'] : undefined })} />}
         </>
       )}
       {building.sport && (

@@ -1,5 +1,7 @@
-import type { Building } from '../engine/state';
-import { FACILITIES, facilityCapacity, isFacilityType } from '../services/facilities';
+import type { Building, BuildingType } from '../engine/state';
+import { FACILITIES, FACILITY_TYPES, facilityCapacity, isFacilityType } from '../services/facilities';
+
+export const workplaceTypes: readonly BuildingType[] = ['workshop', 'factory', 'shop', 'casino', ...FACILITY_TYPES];
 
 export const JOBS = {
   workshopPerTier: 25,

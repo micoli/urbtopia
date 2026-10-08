@@ -65,7 +65,7 @@ describe('independent infrastructure', () => {
   it('allows dedicated station access without granting ordinary building road access', () => {
     const state = { ...city(), brtRoads: strip(8, 10, 5) };
     expect(dispatch(state, { type: 'PlaceBuilding', buildingType: 'brtStation', x: 9, y: 11 }, 0).ok).toBe(true);
-    expect(dispatch(state, { type: 'PlaceBuilding', buildingType: 'shop', x: 9, y: 11 }, 0)).toMatchObject({ ok: false, error: { key: 'error.needsRoad' } });
+    expect(dispatch(state, { type: 'PlaceBuilding', buildingType: 'workshop', x: 9, y: 11 }, 0)).toMatchObject({ ok: false, error: { key: 'error.needsRoad' } });
   });
   it('rejects non-finite coordinates and locked infrastructure', () => {
     expect(extendNetwork(city(), 'brt', { x: NaN, y: 0 }, { x: 0, y: 0 }, true)).toEqual({ key: 'error.outsideOwnedParcels' });

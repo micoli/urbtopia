@@ -9,6 +9,10 @@
     "cost": 150,
     "unlockCitizens": 0,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "Home",
       "fr": "Logement"
@@ -68,6 +72,10 @@
     "cost": 300,
     "unlockCitizens": 0,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "initialSlots": 3,
     "name": {
       "en": "Shop",
@@ -374,6 +382,10 @@
     "cost": 300,
     "unlockCitizens": 15,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "School",
       "fr": "École"
@@ -393,6 +405,10 @@
     "cost": 600,
     "unlockCitizens": 60,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "Middle school",
       "fr": "Collège"
@@ -412,6 +428,10 @@
     "cost": 1000,
     "unlockCitizens": 100,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "High school",
       "fr": "Lycée"
@@ -431,6 +451,10 @@
     "cost": 3000,
     "unlockCitizens": 400,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "University",
       "fr": "Université"
@@ -450,6 +474,10 @@
     "cost": 2000,
     "unlockCitizens": 160,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "Town hall",
       "fr": "Hôtel de ville"
@@ -469,6 +497,10 @@
     "cost": 150,
     "unlockCitizens": 32,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "Community hall",
       "fr": "Salle des fêtes"
@@ -488,6 +520,10 @@
     "cost": 800,
     "unlockCitizens": 250,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "Theater",
       "fr": "Théâtre"
@@ -507,6 +543,10 @@
     "cost": 2000,
     "unlockCitizens": 600,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "Concert hall",
       "fr": "Salle de concert"
@@ -526,6 +566,10 @@
     "cost": 1500,
     "unlockCitizens": 100,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "Hospital",
       "fr": "Hôpital"
@@ -545,6 +589,10 @@
     "cost": 1000,
     "unlockCitizens": 160,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "Fire station",
       "fr": "Caserne de pompiers"
@@ -564,6 +612,10 @@
     "cost": 1000,
     "unlockCitizens": 160,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "Police station",
       "fr": "Commissariat"
@@ -583,6 +635,10 @@
     "cost": 2500,
     "unlockCitizens": 250,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "Casino",
       "fr": "Casino"
@@ -598,6 +654,10 @@
     "cost": 2500,
     "unlockCitizens": 300,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "Baseball field",
       "fr": "Terrain de baseball"
@@ -621,6 +681,10 @@
     "cost": 1000,
     "unlockCitizens": 400,
     "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
     "name": {
       "en": "Athletics stadium",
       "fr": "Stade d’athlétisme"

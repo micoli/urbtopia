@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ROAD_TIER_COSTS, createBuilding, newGame, type GameState } from '../core';
+import { ROAD_TIER_COSTS, createBuilding, frontTiles, newGame, type GameState } from '../core';
 import { confirmTool, evaluateTool, extendBrush, selectionGhost, type Tool } from './tools';
 
 const state: GameState = newGame({ seed: 'amber-fox-4821', now: 0 });
@@ -18,13 +18,13 @@ describe('building tool', () => {
   it('explains why a ghost is invalid', () => {
     const evaluation = evaluateTool(shopTool, { state, tile: { x: 70, y: 70 }, rotation: null });
     expect(evaluation.valid).toBe(false);
-    expect(evaluation.issue).toBe('error.needsRoad');
+    expect(evaluation.issue).toBe('error.needsRoadOrBrt');
   });
 
   it('respects a rotation chosen by the player', () => {
     const evaluation = evaluateTool(shopTool, { state, tile: { x: 56, y: 57 }, rotation: 0 });
     expect(evaluation.rotation).toBe(0);
-    expect(evaluation.issue).toBe('error.needsRoad');
+    expect(evaluation.issue).toBe('error.needsRoadOrBrt');
   });
 
   it('covers the whole footprint of a large building', () => {
@@ -273,5 +273,40 @@ describe('upgradeRoad tool', () => {
   it('explains when there is no road to widen', () => {
     const tool: Tool = { kind: 'upgradeRoad', start: { x: 10, y: 10 }, horizontalFirst: true };
     expect(evaluateTool(tool, { state, tile: { x: 12, y: 10 }, rotation: null }).issue).toBe('error.noRoadHere');
+  });
+});
+
+describe('front marker of a BRT compatible building', () => {
+  const homeTool: Tool = { kind: 'building', buildingType: 'shop' };
+  const tile = { x: 62, y: 66 };
+  const [front] = frontTiles('shop', tile.x, tile.y, 0);
+  const brtState: GameState = { ...state, roads: [], rails: [], brtRoads: [{ ...front!, exits: [] }] };
+
+  it('marks the BRT corridor as the access when there is no road', () => {
+    const evaluation = evaluateTool(homeTool, { state: brtState, tile, rotation: 0 });
+    expect(evaluation.valid).toBe(true);
+    expect(evaluation.ghost.front?.access).toBe('brt');
+  });
+
+  it('accepts a solar Home next to a BRT corridor like any other Home', () => {
+    const solar: Tool = { kind: 'building', buildingType: 'home', solar: true };
+    const [homeFront] = frontTiles('home', tile.x, tile.y, 0);
+    const withWater = { ...brtState, brtRoads: [{ ...homeFront!, exits: [] }] };
+    const evaluation = evaluateTool(solar, { state: withWater, tile, rotation: 0 });
+    expect(evaluation.issue).not.toBe('error.needsRoadOrBrt');
+    expect(evaluation.ghost.front?.access).toBe('brt');
+  });
+
+  it('marks the road as the access when both are present', () => {
+    const both: GameState = { ...brtState, roads: [{ ...front!, kind: 'road' }] };
+    expect(evaluateTool(homeTool, { state: both, tile, rotation: 0 }).ghost.front?.access).toBe('road');
+  });
+
+  it('marks no access when nothing touches the front', () => {
+    const none: GameState = { ...brtState, brtRoads: [] };
+    const evaluation = evaluateTool(homeTool, { state: none, tile, rotation: 0 });
+    expect(evaluation.valid).toBe(false);
+    expect(evaluation.issue).toBe('error.needsRoadOrBrt');
+    expect(evaluation.ghost.front?.access).toBeUndefined();
   });
 });

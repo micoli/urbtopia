@@ -4,6 +4,7 @@ import { isInsideOwnedParcels, roadExits, roundaboutTiles } from '../map/occupan
 import { roadPath } from '../map/roads';
 import type { Coord } from '../map/coord';
 import type { GameState, TransitTile } from '../engine/state';
+import { emptyRoadGraph, type RoadGraph } from '../map/roadGraph';
 
 export const TRANSIT = {
   brt: { unlock: 200, tileCost: 12, speed: 3, capacity: 160 },
@@ -17,6 +18,13 @@ export const opposite = (d: Direction): Direction => ({ N: 'S', S: 'N', E: 'W', 
 export const networkTiles = (state: GameState, mode: 'brt' | 'rail') => (mode === 'brt' ? state.brtRoads : state.rails) ?? [];
 
 const tileMaps = new WeakMap<TransitTile[], Map<string, TransitTile>>();
+
+export function buildNetworkGraph(state: GameState, mode: 'brt' | 'rail'): RoadGraph {
+  const tiles = networkTiles(state, mode);
+  const graph = emptyRoadGraph() as RoadGraph & Map<string, readonly Coord[]>;
+  for (const tile of tiles) graph.set(tileKey(tile), networkNeighbours(tiles, tile));
+  return graph;
+}
 
 export function networkNeighbours(tiles: TransitTile[], tile: Coord): Coord[] {
   let map = tileMaps.get(tiles);

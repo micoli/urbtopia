@@ -1,5 +1,5 @@
 import { Fragment, useId, useState, type ReactNode } from 'react';
-import { TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, ROAD_TIER_COSTS, isFacilityType, totalCitizens, placementCost } from '../../core';
+import { BUILDING_SPECS, TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, ROAD_TIER_COSTS, isFacilityType, totalCitizens, placementCost } from '../../core';
 import { t } from '../../i18n/t';
 import type { Tool } from '../../tools/tools';
 import { FlyoutItem } from '../layout/FlyoutItem';
@@ -66,6 +66,7 @@ export function BuildMenuContent() {
                   {isFacilityType(type) && FACILITIES[type].category !== categoryOf(section.types[index - 1]) && <h4 className="build-category">{t(`service.${FACILITIES[type].category}`)}</h4>}
                   <FlyoutItem
                     label={t(`building.${type}`)}
+                    badge={BUILDING_SPECS[type].accessModes.includes('brt') ? t('build.brtCompatible') : undefined}
                     cost={<UrbsAmount value={placementCost(type)} />}
                     guided={guide.buildings.includes(type)}
                     onChoose={() => chooseTool({ kind: 'building', buildingType: type, ...(type === 'home' ? { colorVariant: homeColor } : {}) })}
@@ -76,7 +77,7 @@ export function BuildMenuContent() {
                   </Fragment>
                 ))}
                 {section.title === 'build.production' && <FieldTools />}
-                {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem label={t('eco.solarHome')} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true, colorVariant: homeColor })} codexId="solarHome" preview={previewOf('solarHome')} onInfo={() => openCodex('solarHome')} />}
+                {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem label={t('eco.solarHome')} badge={BUILDING_SPECS.home.accessModes.includes('brt') ? t('build.brtCompatible') : undefined} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true, colorVariant: homeColor })} codexId="solarHome" preview={previewOf('solarHome')} onInfo={() => openCodex('solarHome')} />}
             </AccordionSection>
           );
         })}

@@ -49,6 +49,19 @@ describe('build menu sections', () => {
     expect(html).toContain('data-codex-id="solarHome"');
   });
 
+  it.each(['en', 'fr'] as const)('badges exactly the BRT compatible buildings in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 600 }, (_, id) => ({ ...home, id })) };
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    const compatible = (Object.keys(BUILDING_SPECS) as (keyof typeof BUILDING_SPECS)[]).filter(type => BUILDING_SPECS[type].accessModes.includes('brt'));
+    expect(compatible).toEqual(expect.arrayContaining(['home', 'shop', 'casino', 'school', 'hospital', 'stadium']));
+    expect(compatible).not.toContain('workshop');
+    expect(html.split('class="flyout-badge"')).toHaveLength(compatible.length + 2);
+    expect(html.slice(html.indexOf(t('eco.solarHome')))).toContain('class="flyout-badge"');
+    expect(html).toContain(`<small class="flyout-badge">${t('build.brtCompatible')}</small>`);
+  });
+
   it('hides locked buildings and empty sections at the start of a city', () => {
     context.state = { ...newGame({ seed: 'build-menu', now: 0 }), tutorial: 'workshop' };
     const html = renderToStaticMarkup(<BuildMenuContent />);

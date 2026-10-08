@@ -7,7 +7,7 @@ export type { GameEvent } from './engine/events';
 export { BUILDING_SPECS, footprintOf, footprintTiles, placementCost } from './buildings/buildingSpecs';
 export type { BuildingSpec, Footprint } from './buildings/buildingSpecs';
 export { isInsideOwnedParcels, isRoadLike, occupiedTiles, roadExits, roundaboutTiles } from './map/occupancy';
-export { autoRotation, frontTiles, frontTouchesRoad, placementIssue } from './map/placement';
+export { autoRotation, frontTiles, frontAccessModes, frontHasAccess, hasBrtOnlyAccess, placementIssue } from './map/placement';
 export type { PlacementIssue } from './map/placement';
 export { GAME_CONFIG } from './engine/config';
 export { newGame } from './engine/newGame';
@@ -56,7 +56,7 @@ export { climateStats } from './environment/climate';
 export { transportStats, routeForLine, routeFailure } from './transit/transport';
 export type { BusLine } from './engine/state';
 
-export { TRANSIT, networkTiles, networkNeighbours, validNetworkCrossings, extendNetwork, brokenLinkCount } from './transit/transitNetwork';
+export { TRANSIT, networkTiles, networkNeighbours, validNetworkCrossings, extendNetwork, brokenLinkCount, buildNetworkGraph } from './transit/transitNetwork';
 export type { TransitLine, TransitMode, TransitTile, TransitVehicle, TransitVehicleKind } from './engine/state';
 
 export { NATURE_FAMILIES, NATURE_MODELS, NATURE_TYPES, natureModelOf, greenProfileOf } from './environment/nature';

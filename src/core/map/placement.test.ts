@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dispatch, newGame, type Command, type GameState } from '../index';
+import { autoRotation, createBuilding, dispatch, frontAccessModes, frontTiles, newGame, placementIssue, type Command, type GameState } from '../index';
 
 const NOW = 1_700_000_000_000;
 const initial = newGame({ seed: 'amber-fox-4821', now: NOW });
@@ -69,11 +69,11 @@ describe('PlaceBuilding', () => {
   });
 
   it('lets the player override the rotation, which can then fail the road rule', () => {
-    expect(failureKey(initial, place('shop', 56, 57, 0))).toBe('error.needsRoad');
+    expect(failureKey(initial, place('shop', 56, 57, 0))).toBe('error.needsRoadOrBrt');
   });
 
   it('refuses a building whose front does not touch a road', () => {
-    expect(failureKey(initial, place('shop', 70, 70))).toBe('error.needsRoad');
+    expect(failureKey(initial, place('shop', 70, 70))).toBe('error.needsRoadOrBrt');
   });
 
   it('does not need a road for a Power plant or a Water tower', () => {
@@ -121,7 +121,7 @@ describe('DemolishRoad', () => {
 
   it('refuses to demolish the last road touching the front of a building', () => {
     const state = succeed(initial, { type: 'DemolishRoad', x: 54, y: 58 });
-    expect(failureKey(state, { type: 'DemolishRoad', x: 55, y: 58 })).toBe('error.lastRoadOfBuilding');
+    expect(failureKey(state, { type: 'DemolishRoad', x: 55, y: 58 })).toBe('error.lastAccessOfBuilding');
   });
 
   it('refuses to demolish where there is no road', () => {
@@ -189,5 +189,91 @@ describe('dispatch clock', () => {
     const earlier = run(later.state, place('waterTower', 72, 70), NOW);
     if (!earlier.ok) throw new Error('expected success');
     expect(earlier.state.lastSeen).toBe(NOW + 5000);
+  });
+});
+
+describe('access modes', () => {
+  const at = { x: 62, y: 66 };
+  const withBrt = (type: 'home' | 'workshop' | 'brtStation', rotation: 0 | 1 | 2 | 3, roads: GameState['roads'] = []): GameState => {
+    const front = frontTiles(type, at.x, at.y, rotation);
+    return { ...initial, roads, rails: [], brtRoads: front.map((tile) => ({ ...tile, exits: ['E', 'W'] as const })) as never };
+  };
+  const withRoad = (type: 'home' | 'workshop', rotation: 0 | 1 | 2 | 3): GameState => ({
+    ...initial,
+    roads: frontTiles(type, at.x, at.y, rotation).map((tile) => ({ ...tile, kind: 'road' as const })),
+  });
+
+  it('accepts a BRT corridor in front of a Home without a road', () => {
+    expect(placementIssue(withBrt('home', 0), 'home', at.x, at.y, 0)).toBeNull();
+  });
+
+  it('accepts a road in front of a Home as before', () => {
+    expect(placementIssue(withRoad('home', 0), 'home', at.x, at.y, 0)).toBeNull();
+  });
+
+  it('refuses a Home with neither a road nor a BRT corridor, naming both', () => {
+    expect(placementIssue({ ...initial, brtRoads: [] }, 'home', at.x, at.y, 0)).toBe('error.needsRoadOrBrt');
+  });
+
+  it('keeps asking for a road from buildings that do not accept the BRT', () => {
+    expect(placementIssue(withBrt('workshop', 0), 'workshop', at.x, at.y, 0)).toBe('error.needsRoad');
+  });
+
+  it('does not accept a rail tile as access', () => {
+    const rails = frontTiles('home', at.x, at.y, 0).map((tile) => ({ ...tile, exits: ['E', 'W'] as const }));
+    expect(placementIssue({ ...initial, brtRoads: [], rails: rails as never }, 'home', at.x, at.y, 0)).toBe('error.needsRoadOrBrt');
+  });
+
+  it('lists the modes that touch the front', () => {
+    const both: GameState = { ...withBrt('home', 0), roads: frontTiles('home', at.x, at.y, 0).map((tile) => ({ ...tile, kind: 'road' as const })) };
+    expect(frontAccessModes(both, 'home', at.x, at.y, 0)).toEqual(['road', 'brt']);
+    expect(frontAccessModes(withBrt('home', 0), 'home', at.x, at.y, 0)).toEqual(['brt']);
+  });
+
+  it('faces the BRT corridor when there is no road', () => {
+    const state = withBrt('home', 1);
+    expect(autoRotation(state, 'home', at.x, at.y)).toBe(1);
+  });
+
+  it('prefers the road over the BRT corridor', () => {
+    const roadFront = frontTiles('home', at.x, at.y, 3).map((tile) => ({ ...tile, kind: 'road' as const }));
+    const brtFront = frontTiles('home', at.x, at.y, 1).map((tile) => ({ ...tile, exits: ['E', 'W'] as const }));
+    const state: GameState = { ...initial, roads: roadFront, rails: [], brtRoads: brtFront as never };
+    expect(autoRotation(state, 'home', at.x, at.y)).toBe(3);
+  });
+
+  it('keeps stations on their own network', () => {
+    expect(placementIssue(withBrt('brtStation', 0), 'brtStation', at.x, at.y, 0)).toBeNull();
+  });
+});
+
+describe('last access of a building', () => {
+  const home = createBuilding(900, 'home', 62, 66, 0);
+  const [front] = frontTiles('home', 62, 66, 0);
+  const brtOnly: GameState = { ...initial, roads: [], rails: [], brtRoads: [{ ...front!, exits: [] }], buildings: [...initial.buildings, home] };
+  const brtTile = { type: 'DemolishTransit', mode: 'brt', from: front!, to: front! } as const;
+
+  it('refuses to remove the BRT tile that is the only access of a Home', () => {
+    expect(failureKey(brtOnly, brtTile)).toBe('error.lastAccessOfBuilding');
+  });
+
+  it('allows removing the BRT tile when a road still touches the front', () => {
+    const both: GameState = { ...brtOnly, roads: [{ ...front!, kind: 'road' }] };
+    expect(succeed(both, brtTile).brtRoads).toEqual([]);
+  });
+
+  it('allows removing the road when a BRT tile still touches the front', () => {
+    const both: GameState = { ...brtOnly, roads: [{ ...front!, kind: 'road' }] };
+    expect(succeed(both, { type: 'DemolishRoad', x: front!.x, y: front!.y }).roads).toEqual([]);
+  });
+
+  it('refuses to remove the last road even when only the BRT mode would have been allowed', () => {
+    const roadOnly: GameState = { ...brtOnly, brtRoads: [], roads: [{ ...front!, kind: 'road' }] };
+    expect(failureKey(roadOnly, { type: 'DemolishRoad', x: front!.x, y: front!.y })).toBe('error.lastAccessOfBuilding');
+  });
+
+  it('ignores a building that already had no access', () => {
+    const stranded: GameState = { ...brtOnly, brtRoads: [], roads: [{ x: 70, y: 70, kind: 'road' }] };
+    expect(succeed(stranded, { type: 'DemolishRoad', x: 70, y: 70 }).roads).toEqual([]);
   });
 });

@@ -304,6 +304,14 @@ _Avoid_: Bus stop, Railway station
 A passenger stop on a Railway, served by Trains assigned to Railway lines.
 _Avoid_: BRT station, Freight terminal
 
+**Access mode**:
+A network a building can be reached from: the Road or the BRT corridor. Each building declares the modes it accepts. Homes, Leisure buildings, Shops and Public facilities accept both; every other building accepts the Road only. A position is valid when any accepted mode has a tile in front of the building.
+_Avoid_: Entrance, connection type, requiresRoad
+
+**BRT-only access**:
+The state of a building reached by a BRT corridor but not by a Road. It has no Commute by car and no Pedestrian path: its Citizens use public transport, and the Jobs of its workplaces are filled by Riders only. A BRT-only Home with no BRT station covering it is marked disconnected.
+_Avoid_: Roadless building, transit-only building
+
 **Transit itinerary**:
 A public transport journey linking a Home to an activity through one or more lines, with at most two Transfers.
 _Avoid_: Infrastructure route, Individual Citizen simulation
@@ -324,6 +332,9 @@ _Avoid_: Merge, overwrite
 
 - A Cloud save never replaces the local save without the player's consent when a Save conflict exists.
 - A Casino is a Leisure building, never a Public facility.
+- A building touching both a Road and a BRT corridor keeps the Road as its primary access, and its front faces the Road.
+- Removing the last access of a building, Road or BRT corridor, is refused.
+- Service vehicles stay on the network of their facility and never switch between Road and BRT corridor.
 - A Casino is shed first when electricity falls short, before Homes, except during an Adaptation period.
 - A Minigame round of chance draws from the game's Seed; its outcome is fixed when the Stake is debited.
 - A blockmatch round pays by stars on top of the returned Stake: none loses the Stake, 1 star wins 25% of it, 2 stars 50%, 3 stars 100%.

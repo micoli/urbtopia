@@ -1,6 +1,8 @@
 import { ECOLOGY, citizenCount, distance } from '../environment/ecology';
 import { HOME_TIERS } from '../economy/economy';
 import { energyStats } from '../environment/energy';
+import { workplaceTypes } from '../traffic/jobs';
+import { hasBrtOnlyAccess } from '../map/placement';
 import { transitServices, type SpeedFactors } from './transitService';
 import type { Building, GameState } from '../engine/state';
 export { routeForLine, routeFailure } from './transitService';
@@ -67,11 +69,16 @@ function calculateTransport(state: GameState, now: number, speedFactors?: SpeedF
   const lines = services.map(line => ({ ...line, riders: 0, homeIds: [] as number[], covered: 0 }));
   const byId = new Map(lines.map(l => [l.id, l]));
   const homes = state.buildings.filter(b => b.type === 'home').sort((a, b) => a.id - b.id);
-  const activities = state.buildings.filter(b => ['workshop', 'factory', 'shop'].includes(b.type));
+  const activities = state.buildings.filter(b => ['workshop', 'factory', 'shop'].includes(b.type) || (workplaceTypes.includes(b.type) && hasBrtOnlyAccess(state, b)));
   const stops = new Map(state.buildings.filter(b => ['busStop', 'brtStation', 'railStation'].includes(b.type)).map(b => [b.id, b]));
   const optionsByStop = new Map<string, Itinerary[]>();
   const homeRiders = new Map<number, number>();
   const homeLines = new Map<number, number[][]>();
+  const coveredActivities = new Set<number>();
+  for (const line of lines) {
+    if (!line.active) continue;
+    for (const stop of line.stops.flatMap(id => stops.get(id) ?? [])) for (const activity of activities) if (distance(activity, stop) <= ECOLOGY.stopRadius) coveredActivities.add(activity.id);
+  }
   let riders = 0, covered = 0, transferRiders = 0;
   for (const home of homes) {
     const options: Itinerary[] = [];
@@ -102,7 +109,7 @@ function calculateTransport(state: GameState, now: number, speedFactors?: SpeedF
       if (remaining <= 1e-9) break;
     }
   }
-  return { lines, covered, riders, homeRiders, homeLines, transferRiders, activeLines: lines.filter(l => l.active).length,
+  return { lines, covered, riders, homeRiders, homeLines, coveredActivities, transferRiders, activeLines: lines.filter(l => l.active).length,
     costPerHour: lines.reduce((n, l) => n + l.costPerHour, 0), coalPerHour: lines.reduce((n, l) => n + l.coalPerHour, 0),
     emissions: Math.max(0, citizenCount(state) - riders) / 10 + lines.reduce((n, l) => n + l.emissions, 0) };
 }

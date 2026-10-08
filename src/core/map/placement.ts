@@ -1,10 +1,11 @@
 import { BUILDING_SPECS, footprintTiles, placementCost } from '../buildings/buildingSpecs';
+import type { AccessMode } from '../buildings/buildingDefinition';
 import type { Coord } from './coord';
 import { frontDirection, neighbour, tileKey } from './geometry';
 import { isInsideOwnedParcels, isRoadLike, occupiedTiles } from './occupancy';
 import type { BuildingType, GameState, Rotation } from '../engine/state';
 
-export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.storehouseExists' | 'error.siloExists' | 'error.vaultExists' | 'error.grainSiloExists' | 'error.noFarm' | 'error.farmExists' | 'error.packhouseExists' | 'error.townHallExists' | 'error.notEnoughUrbs';
+export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.storehouseExists' | 'error.siloExists' | 'error.vaultExists' | 'error.grainSiloExists' | 'error.noFarm' | 'error.farmExists' | 'error.packhouseExists' | 'error.townHallExists' | 'error.notEnoughUrbs';
 
 const UNIQUE_BUILDING_ERRORS: Partial<Record<BuildingType, PlacementIssue>> = {
   storehouse: 'error.storehouseExists',
@@ -25,15 +26,30 @@ export function frontTiles(type: BuildingType, x: number, y: number, rotation: R
   return tiles.map((tile) => neighbour(tile, front)).filter((tile) => !inside.has(tileKey(tile)));
 }
 
-export function frontTouchesRoad(state: GameState, type: BuildingType, x: number, y: number, rotation: Rotation, tier = 1): boolean {
-  const network = type === 'brtStation' ? state.brtRoads : type === 'railStation' ? state.rails : undefined;
-  if (type === 'brtStation' || type === 'railStation') return frontTiles(type, x, y, rotation, tier).some(tile => (network ?? []).some(p => tileKey(p) === tileKey(tile)));
-  return frontTiles(type, x, y, rotation, tier).some((tile) => isRoadLike(state, tile));
+const isBrtTile = (state: GameState, tile: Coord) => (state.brtRoads ?? []).some((candidate) => tileKey(candidate) === tileKey(tile));
+
+export function frontAccessModes(state: GameState, type: BuildingType, x: number, y: number, rotation: Rotation, tier = 1): AccessMode[] {
+  const front = frontTiles(type, x, y, rotation, tier);
+  return BUILDING_SPECS[type].accessModes.filter((mode) => front.some((tile) => (mode === 'road' ? isRoadLike(state, tile) : isBrtTile(state, tile))));
+}
+
+export function hasBrtOnlyAccess(state: GameState, building: { type: BuildingType; x: number; y: number; rotation: Rotation; tier?: number }): boolean {
+  const modes = frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier);
+  return modes.includes('brt') && !modes.includes('road');
+}
+
+export function frontHasAccess(state: GameState, type: BuildingType, x: number, y: number, rotation: Rotation, tier = 1): boolean {
+  if (type === 'brtStation' || type === 'railStation') {
+    const network = (type === 'brtStation' ? state.brtRoads : state.rails) ?? [];
+    return frontTiles(type, x, y, rotation, tier).some((tile) => network.some((candidate) => tileKey(candidate) === tileKey(tile)));
+  }
+  return frontAccessModes(state, type, x, y, rotation, tier).length > 0;
 }
 
 export function autoRotation(state: GameState, type: BuildingType, x: number, y: number, tier = 1): Rotation {
   if (!BUILDING_SPECS[type].requiresRoad) return 0;
-  return ROTATIONS.find((rotation) => frontTouchesRoad(state, type, x, y, rotation, tier)) ?? 0;
+  const onRoad = ROTATIONS.find((rotation) => frontAccessModes(state, type, x, y, rotation, tier).includes('road'));
+  return onRoad ?? ROTATIONS.find((rotation) => frontHasAccess(state, type, x, y, rotation, tier)) ?? 0;
 }
 
 interface PlacementOptions {
@@ -54,7 +70,7 @@ export function placementIssue(
   if (!tiles.every((tile) => isInsideOwnedParcels(state, tile))) return 'error.outsideOwnedParcels';
   const occupied = occupiedTiles(state, ignoreBuildingId);
   if (tiles.some((tile) => occupied.has(tileKey(tile)))) return 'error.tilesOccupied';
-  if (BUILDING_SPECS[type].requiresRoad && !frontTouchesRoad(state, type, x, y, rotation, tier)) return 'error.needsRoad';
+  if (BUILDING_SPECS[type].requiresRoad && !frontHasAccess(state, type, x, y, rotation, tier)) return BUILDING_SPECS[type].accessModes.includes('brt') ? 'error.needsRoadOrBrt' : 'error.needsRoad';
   if (isMove) return null;
   const existsError = UNIQUE_BUILDING_ERRORS[type];
   if (existsError && state.buildings.some((building) => building.type === type)) return existsError;

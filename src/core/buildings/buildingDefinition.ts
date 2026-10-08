@@ -1,6 +1,8 @@
 import type { NatureFamily } from '../environment/natureFamilies';
 import type { BuildSection } from './buildSections';
 
+export type AccessMode = 'road' | 'brt';
+
 export interface LocalizedText {
   en: string;
   fr: string;
@@ -13,6 +15,7 @@ export interface BuildingDefinition {
   cost?: number;
   unlockCitizens?: number;
   requiresRoad?: boolean;
+  accessModes?: AccessMode[];
   initialSlots?: number;
   name: LocalizedText;
   description?: LocalizedText;

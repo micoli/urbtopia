@@ -172,6 +172,16 @@ button {
   text-align: left;
 }
 
+.flyout-badge {
+  margin-left: auto;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: rgba(62, 166, 255, 0.25);
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
 .flyout-cost {
   display: block;
   font-size: 12px;
