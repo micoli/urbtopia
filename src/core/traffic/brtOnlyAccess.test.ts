@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from './walking';
-import { congestionStats, createBuilding, newGame, type GameState, type TransitTile } from '../index';
+import { GOODS, SHOP, advance, congestionStats, createBuilding, newGame, transportStats, type GameState, type TransitTile } from '../index';
 
 const walkingEnabled = WALKING.enabled;
 beforeAll(() => {
@@ -64,5 +64,63 @@ describe('Home reached only by a BRT corridor', () => {
   it('is deterministic across calls', () => {
     const state = brtDistrict();
     expect(congestionStats(state, 1000).homes.get(4)).toEqual(congestionStats(state, 1000).homes.get(4));
+  });
+});
+
+describe('workplaces reached only by a BRT corridor', () => {
+  const withBuildings = (state: GameState, replace: (b: GameState['buildings'][number]) => GameState['buildings'][number]): GameState => ({ ...state, buildings: state.buildings.map(replace) });
+  const swapWorkshop = (type: 'hospital' | 'shop') => (state: GameState) => withBuildings(state, (b) => (b.id === 5 ? createBuilding(5, type, 18, 1, 0) : b));
+
+  it('counts the Jobs of a covered BRT-only facility, and not those of an uncovered one', () => {
+    const covered = swapWorkshop('hospital')(brtDistrict());
+    const uncovered = swapWorkshop('hospital')(brtDistrict({ withLine: false }));
+    expect(congestionStats(covered).jobs).toBeGreaterThan(0);
+    expect(congestionStats(uncovered).jobs).toBe(0);
+  });
+
+  it('never sends Commuters by car to a BRT-only workplace', () => {
+    const stats = congestionStats(swapWorkshop('hospital')(brtDistrict({ roads: true })));
+    expect(stats.commuters).toBe(0);
+    expect(stats.homes.get(4)!.unemployed).toBe(0);
+  });
+
+  it('makes a covered BRT-only facility a destination for Riders', () => {
+    const state = swapWorkshop('hospital')(brtDistrict());
+    expect(transportStats(state).riders).toBeGreaterThan(0);
+    expect(transportStats(state).coveredActivities.has(5)).toBe(true);
+  });
+
+  it('keeps the destinations of ordinary facilities unchanged', () => {
+    const roadFacility = withBuildings(brtDistrict(), (b) => (b.id === 5 ? createBuilding(5, 'hospital', 18, 1, 0) : b));
+    const noBrt = { ...roadFacility, brtRoads: [], transitLines: [], transitFleet: [] };
+    expect(transportStats(noBrt).coveredActivities.size).toBe(0);
+  });
+});
+
+describe('Shop reached only by a BRT corridor', () => {
+  const good = Object.keys(GOODS)[0] as keyof typeof GOODS;
+  const withShop = (state: GameState): GameState => ({
+    ...state,
+    buildings: state.buildings.map((b) =>
+      b.id === 5 ? { ...createBuilding(5, 'shop', 18, 1, 0), stacks: [{ good, stock: SHOP.stackSize, nextSaleAt: 10_000, earned: 0 }] } : b,
+    ),
+    lastSeen: 0,
+  });
+  const stockAfter = (state: GameState, ms: number) => advance(state, ms).state.buildings.find((b) => b.id === 5)!.stacks[0]!;
+
+  it('sells to Citizens covered by a station', () => {
+    expect(stockAfter(withShop(brtDistrict()), 3_600_000).stock).toBeLessThan(SHOP.stackSize);
+  });
+
+  it('does not sell without a station in reach, and keeps its stock', () => {
+    const stack = stockAfter(withShop(brtDistrict({ withLine: false })), 3_600_000);
+    expect(stack.stock).toBe(SHOP.stackSize);
+    expect(stack.earned).toBe(0);
+  });
+
+  it('resumes selling once a station covers it', () => {
+    const stalled = advance(withShop(brtDistrict({ withLine: false })), 3_600_000).state;
+    const served = { ...brtDistrict(), buildings: stalled.buildings, lastSeen: stalled.lastSeen };
+    expect(advance(served, stalled.lastSeen + 3_600_000).state.buildings.find((b) => b.id === 5)!.stacks[0]!.stock).toBeLessThan(SHOP.stackSize);
   });
 });

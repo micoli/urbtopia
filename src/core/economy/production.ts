@@ -84,16 +84,17 @@ export function taxDue(building: Building): number {
   return Math.floor((building.taxCitizenMs * TAX.urbsPerCitizenPerHour) / TAX.hourMs);
 }
 
-export function advanceProduction(state: GameState, now: number, elapsedMs: number, economicRatio = 1, homeRatios: ReadonlyMap<number, number> = new Map()): { state: GameState; events: GameEvent[] } {
+export function advanceProduction(state: GameState, now: number, elapsedMs: number, economicRatio = 1, homeRatios: ReadonlyMap<number, number> = new Map(), idleShops: ReadonlySet<number> = new Set()): { state: GameState; events: GameEvent[] } {
   const results = state.buildings.map((building) => {
-    const delay = elapsedMs * (1 - economicRatio);
+    const idle = idleShops.has(building.id);
+    const delay = idle ? elapsedMs : elapsedMs * (1 - economicRatio);
     const slowed = building.type === 'workshop' || building.type === 'factory' || building.type === 'shop' ? {
       ...building,
       queue: building.queue.map(entry => entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + delay }),
       stacks: building.stacks.map(stack => stack.nextSaleAt === null ? stack : { ...stack, nextSaleAt: stack.nextSaleAt + delay }),
     } : building;
     const produced = advanceBuilding(slowed, now);
-    return { ...produced, building: advanceHome(advanceShop(produced.building, now), elapsedMs * (homeRatios.get(building.id) ?? 1)) };
+    return { ...produced, building: advanceHome(idle ? produced.building : advanceShop(produced.building, now), elapsedMs * (homeRatios.get(building.id) ?? 1)) };
   });
   const events = results.flatMap((result) => result.events).sort((a, b) => ('at' in a && 'at' in b ? a.at - b.at : 0));
   return { state: { ...state, buildings: results.map((result) => result.building) }, events };

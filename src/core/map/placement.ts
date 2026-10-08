@@ -33,6 +33,11 @@ export function frontAccessModes(state: GameState, type: BuildingType, x: number
   return BUILDING_SPECS[type].accessModes.filter((mode) => front.some((tile) => (mode === 'road' ? isRoadLike(state, tile) : isBrtTile(state, tile))));
 }
 
+export function hasBrtOnlyAccess(state: GameState, building: { type: BuildingType; x: number; y: number; rotation: Rotation; tier?: number }): boolean {
+  const modes = frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier);
+  return modes.includes('brt') && !modes.includes('road');
+}
+
 export function frontHasAccess(state: GameState, type: BuildingType, x: number, y: number, rotation: Rotation, tier = 1): boolean {
   if (type === 'brtStation' || type === 'railStation') {
     const network = (type === 'brtStation' ? state.brtRoads : state.rails) ?? [];
