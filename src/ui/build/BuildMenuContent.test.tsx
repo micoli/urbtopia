@@ -36,7 +36,8 @@ describe('build menu sections', () => {
     expect(sections[2]).toContain(t('building.storehouse'));
     expect(sections[3]).toContain(t('building.waterTower'));
     expect(sections[4]).toContain(t('building.railStation'));
-    expect(sections[5]).toContain(t('water.lay'));
+    expect(sections[5]).toContain(t('building.marina'));
+    expect(sections[5]).not.toContain(t('water.lay'));
     expect(sections[6]).toContain(t('build.publicFacilities'));
     expect(sections[7]).toContain(t('building.casino'));
     expect(sections[8]).toContain(t('building.stadium'));
@@ -89,6 +90,29 @@ describe('build menu sections', () => {
     const html = renderToStaticMarkup(<BuildMenuContent />);
     expect(html).toContain(t('tool.road'));
     expect(html).not.toContain('build-section');
+  });
+
+  it('lays Water tiles and builds Bridges from the road tools once unlocked, not from the buildings', () => {
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    const big = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 600 }, (_, id) => ({ ...home, id })) };
+    context.state = big;
+    context.flyout = 'roads';
+    const roads = renderToStaticMarkup(<BuildMenuContent />);
+    for (const label of [t('water.lay'), `${t('water.bridge')} · 1 ${t('water.bridgeTiles')}`, `${t('water.bridge')} · 5 ${t('water.bridgeTiles')}`]) expect(roads).toContain(label);
+    context.state = { ...big, waterTiles: [{ x: 50, y: 50 }], bridges: [{ x: 52, y: 50, length: 1, axis: 'x' }] };
+    const used = renderToStaticMarkup(<BuildMenuContent />);
+    expect(used).toContain(t('water.remove'));
+    expect(used).toContain(t('water.removeBridge'));
+    context.flyout = 'build';
+    const buildings = renderToStaticMarkup(<BuildMenuContent />);
+    expect(buildings).toContain(t('building.marina'));
+    for (const label of [t('water.lay'), t('water.remove'), t('water.removeBridge')]) expect(buildings).not.toContain(label);
+  });
+
+  it('hides the water tools from the road tools until 40 Citizens', () => {
+    context.state = newGame({ seed: 'build-menu', now: 0 });
+    context.flyout = 'roads';
+    expect(renderToStaticMarkup(<BuildMenuContent />)).not.toContain(t('water.lay'));
   });
 
   it('opens only the first section by default', () => {

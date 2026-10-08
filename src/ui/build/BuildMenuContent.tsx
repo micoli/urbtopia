@@ -40,7 +40,7 @@ export function BuildMenuContent() {
     const visibleSections = BUILDING_SECTIONS.map(section => ({
       ...section,
       types: section.types.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0)),
-    })).filter(section => section.types.length || (section.title === 'build.water' && citizens >= WATER.unlockCitizens));
+    })).filter(section => section.types.length);
     const activeSection = visibleSections.some(section => section.title === openSection) ? openSection : visibleSections[0]?.title;
     const selectSection = (section: BuildSection) => {
       if (activeSection === section) return;
@@ -78,7 +78,6 @@ export function BuildMenuContent() {
                   </Fragment>
                 ))}
                 {section.title === 'build.production' && <FieldTools />}
-                {section.title === 'build.water' && citizens >= WATER.unlockCitizens && <WaterTools />}
                 {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem label={t('eco.solarHome')} badge={BUILDING_SPECS.home.accessModes.includes('brt') ? t('build.brtCompatible') : undefined} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true, colorVariant: homeColor })} codexId="solarHome" preview={previewOf('solarHome')} onInfo={() => openCodex('solarHome')} />}
             </AccordionSection>
           );
@@ -103,6 +102,7 @@ export function BuildMenuContent() {
       {roadTools.map((item) => (
         <FlyoutItem key={item.label} label={item.label} cost={item.cost} guided={guide.road && item.tool.kind === 'road'} onChoose={() => chooseTool(item.tool)} codexId={item.codexId} preview={item.codexId ? previewOf(item.codexId) : undefined} onInfo={item.codexId ? () => openCodex(item.codexId) : undefined} />
       ))}
+      {citizens >= WATER.unlockCitizens && <WaterTools />}
     </>
   );
 }
