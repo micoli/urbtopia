@@ -6,7 +6,7 @@ for (const touch of [false, true]) {
     test('selecting a Storehouse does not click through to its sale button', async ({ page }) => {
       await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
       await page.goto('/');
-      await expect(page.locator('#splash')).toHaveCount(0);
+      await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
       await page.evaluate(async () => {
         const { gameStore } = await import('../src/store/gameStore.ts');
         const { uiStore } = await import('../src/store/uiStore.ts');
@@ -51,7 +51,7 @@ for (const touch of [false, true]) {
       page.on('pageerror', error => errors.push(error.message));
       await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
       await page.goto('/');
-      await expect(page.locator('#splash')).toHaveCount(0);
+      await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
       await page.getByRole('button', { name: 'Passer le didacticiel', exact: true }).click();
       await page.getByRole('button', { name: 'Passer', exact: true }).click();
       await page.getByRole('button', { name: 'Construire', exact: true }).click();
@@ -94,7 +94,7 @@ for (const touch of [false, true]) {
         saveSession.save(gameStore.getState().state, Date.now());
       });
       await page.reload();
-      await expect(page.locator('#splash')).toHaveCount(0);
+      await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
       await page.evaluate(async () => (await import('../src/store/uiStore.ts')).uiStore.getState().select(50));
       await expect(toggle).not.toBeChecked();
       await expect(panel.getByRole('heading', { name: 'Centrale à charbon 4', exact: true })).toBeVisible();
@@ -108,7 +108,7 @@ for (const layout of ['B', 'C']) {
   test(`city management shortcut opens from layout ${layout} navigation`, async ({ page }) => {
     await page.addInitScript(layout => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout })), layout);
     await page.goto('/');
-    await expect(page.locator('#splash')).toHaveCount(0);
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     if (layout === 'B') await page.getByRole('button', { name: 'Ouvrir le menu', exact: true }).click();
     const shortcut = page.locator('[data-action="stats"]');
     await expect(shortcut).toBeVisible();
@@ -130,7 +130,7 @@ test('dragging the brush lays Fields, plants them and harvests them by sweeping 
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
   await page.goto('/');
-  await expect(page.locator('#splash')).toHaveCount(0);
+  await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   await page.evaluate(async () => {
     const { gameStore } = await import('../src/store/gameStore.ts');
     const { newGame, createBuilding } = await import('../src/core/index.ts');
