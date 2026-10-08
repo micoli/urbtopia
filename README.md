@@ -45,6 +45,32 @@ npm run dev      # http://localhost:5173, prepares models and codex previews fir
 
 The codex catalog is checked against every building in `BUILDING_SPECS` and every network tool in the shared construction registry. Adding a constructible requires a section, French and English descriptions, and a preview for every Tier. Missing entries, translations, models or generated images block CI and deployment. CI checks image availability only, without checking pixels, dimensions or visual accuracy. Generated images and their manifest live in `public/codex/`, are excluded from Git, and are included in the offline cache.
 
+## Local stack (Docker and pitchfork)
+
+The full local environment is the game and tools run by [pitchfork](https://pitchfork.jdx.dev) (see [`pitchfork.toml`](pitchfork.toml)) plus the Supabase stack and a dev index page run by Docker. You need a Docker-compatible runtime running (Docker, OrbStack, Colima).
+
+```sh
+mise install                    # pinned Node, pitchfork, Supabase CLI, gitleaks
+cp .env.example .env.local      # local Supabase URL and public demo key (skip to play without the Cloud save)
+npm run db:start                # docker compose: Postgres, Auth, REST, Studio, Mailpit, index page
+pitchfork start ur/dev ur/assets-editor ur/casino-sim
+```
+
+Then open the index: **http://127.0.0.1:5170/**. It lists every service below with a dot showing which ones answer.
+
+| Service | URL | Started by |
+|---|---|---|
+| Dev index | http://127.0.0.1:5170/ | `npm run db:start` |
+| Game | http://localhost:5175/ | `pitchfork start ur/dev` |
+| Assets editor | http://localhost:5181/ | `pitchfork start ur/assets-editor` |
+| Casino simulator | http://localhost:5182/ | `pitchfork start ur/casino-sim` |
+| Pitchfork dashboard | http://localhost:3120/ | pitchfork (start and stop daemons from there too) |
+| Supabase Studio | http://127.0.0.1:54323/ | `npm run db:start` |
+| Mailpit (emails sent by Auth) | http://127.0.0.1:54324/ | `npm run db:start` |
+| Supabase API | http://127.0.0.1:54321 | `npm run db:start` |
+
+Stop everything with `pitchfork stop ur/dev ur/assets-editor ur/casino-sim` and `npm run db:stop`. Without pitchfork, `npm run dev` serves the game on http://localhost:5173 instead.
+
 ## Cloud saves database
 
 The optional Cloud save lives in a Supabase project described by [`supabase/`](supabase/) (migrations, pgTAP tests, email templates); every Postgres object is prefixed `urb_`. Locally it runs from [`docker-compose.yml`](docker-compose.yml) (Postgres, Auth, REST, a small gateway, Mailpit and Studio, same ports as `supabase start`), which needs a Docker-compatible runtime (Docker, OrbStack, Colima). Migrations are applied when the stack starts.
