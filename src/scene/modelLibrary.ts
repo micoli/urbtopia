@@ -86,7 +86,7 @@ export class ModelLibrary {
 
   private load(key: string): Promise<void> {
     if (this.models.has(key)) return Promise.resolve();
-    const procedural = key === RED_CROSS_MODEL ? buildRedCross : key === GARAGE_DOOR_MODEL ? buildGarageDoor : key === FIELD_SOIL_MODEL ? buildFieldSoil : key.startsWith(`${WATER_TILE_MODEL}:`) ? () => buildWaterTile(key.slice(WATER_TILE_MODEL.length + 1)) : key === BRIDGE_DECK_MODEL ? buildBridgeDeck : null;
+    const procedural = key === RED_CROSS_MODEL ? buildRedCross : key === GARAGE_DOOR_MODEL ? buildGarageDoor : key === FIELD_SOIL_MODEL ? buildFieldSoil : key.startsWith(`${WATER_TILE_MODEL}:`) ? () => buildWaterTile(...(key.slice(WATER_TILE_MODEL.length + 1).split(':') as [string, string, string])) : key === BRIDGE_DECK_MODEL ? buildBridgeDeck : null;
     if (procedural) {
       this.models.set(key, procedural());
       return Promise.resolve();
@@ -139,8 +139,8 @@ function waterSlab(points: readonly (readonly [number, number])[]): THREE.Mesh {
   return new THREE.Mesh(geometry, WATER_MATERIAL);
 }
 
-function buildWaterTile(code: string): THREE.Object3D {
-  const { outline, fillets } = waterOutline(code);
+function buildWaterTile(code: string, edges: string, variant: string): THREE.Object3D {
+  const { outline, fillets } = waterOutline(code, edges, Number(variant));
   const group = new THREE.Group();
   group.add(waterSlab(outline), ...fillets.map(waterSlab));
   group.updateMatrixWorld(true);

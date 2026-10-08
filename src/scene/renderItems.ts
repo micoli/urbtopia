@@ -1,6 +1,6 @@
 import { BUILDING_ENTRIES } from '../core/buildings/buildingDefinitions';
 import { CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type BoatFamily, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
-import { cornerCode } from './waterShape';
+import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
 import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
@@ -54,7 +54,7 @@ export const FIELD_SOIL_MODEL = 'procedural/field-soil';
 export const WATER_TILE_MODEL = 'procedural/water-tile';
 export const BRIDGE_DECK_MODEL = 'procedural/bridge-deck';
 export const BOAT_MODELS: Record<BoatFamily, string> = { pleasure: 'watercraft/boat-sail-a', fishing: 'watercraft/boat-fishing-small', casino: 'watercraft/ship-ocean-liner-small' };
-export const PROCEDURAL_MODELS: readonly string[] = [RED_CROSS_MODEL, GARAGE_DOOR_MODEL, FIELD_SOIL_MODEL, WATER_TILE_MODEL, BRIDGE_DECK_MODEL];
+export const PROCEDURAL_MODELS: readonly string[] = [RED_CROSS_MODEL, GARAGE_DOOR_MODEL, FIELD_SOIL_MODEL, BRIDGE_DECK_MODEL];
 
 const GARAGE_DOOR_SPACING = 0.6;
 const GARAGE_DOOR_HEIGHT = 0.27;
@@ -223,7 +223,11 @@ function waterItems(state: GameState): RenderItem[] {
     isWater: (x: number, y: number) => water.has(tileKey({ x, y })),
     isFree: (x: number, y: number) => !(occupied ??= occupiedTiles(state)).has(tileKey({ x, y })),
   };
-  return tiles.map((tile) => ({ model: `${WATER_TILE_MODEL}:${cornerCode(tile.x, tile.y, neighbourhood)}`, x: tile.x + 0.5, z: tile.y + 0.5, rotation: 0 }));
+  return tiles.map((tile) => {
+    const edges = edgeInfo(tile.x, tile.y, neighbourhood);
+    const variant = /[01]/.test(edges) ? Math.abs((tile.x * 73856093) ^ (tile.y * 19349663)) % WATER_VARIANTS : 0;
+    return { model: `${WATER_TILE_MODEL}:${cornerCode(tile.x, tile.y, neighbourhood)}:${edges}:${variant}`, x: tile.x + 0.5, z: tile.y + 0.5, rotation: 0 };
+  });
 }
 
 function roadItems(state: GameState): RenderItem[] {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, newGame, type GameState } from '../core';
-import { MODEL_KEYS, modelOf, railItems, chunkKeyOf, renderItemsOf } from './renderItems';
+import { MODEL_KEYS, PROCEDURAL_MODELS, WATER_TILE_MODEL, modelOf, railItems, chunkKeyOf, renderItemsOf } from './renderItems';
 
 describe('renderItemsOf', () => {
   const state = newGame({ seed: 'amber-fox-4821', now: 0 });
@@ -159,12 +159,21 @@ describe('renderItemsOf farming', () => {
   });
 });
 
+describe('water models', () => {
+  it('are built on demand from the shape of each tile, not preloaded as one model', () => {
+    expect(PROCEDURAL_MODELS).not.toContain(WATER_TILE_MODEL);
+    expect(PROCEDURAL_MODELS.every((key) => !key.startsWith(`${WATER_TILE_MODEL}:`))).toBe(true);
+  });
+});
+
 describe('renderItemsOf water', () => {
   const base = { ...newGame({ seed: 'water-render', now: 0 }), roads: [], buildings: [] };
 
   it('lays a water tile on every Water tile, centred on its tile', () => {
     const items = renderItemsOf({ ...base, waterTiles: [{ x: 50, y: 60 }] });
-    expect(items).toEqual([{ model: 'procedural/water-tile:vvvv', x: 50.5, z: 60.5, rotation: 0 }]);
+    expect(items).toHaveLength(1);
+    expect(items[0]).toMatchObject({ x: 50.5, z: 60.5, rotation: 0 });
+    expect(items[0]!.model).toMatch(/^procedural\/water-tile:vvvv:/);
   });
 
   it('rounds the outer corners and fills the inside corner of an L-shaped lake', () => {
@@ -177,7 +186,7 @@ describe('renderItemsOf water', () => {
     const lake = [{ x: 50, y: 60 }, { x: 51, y: 60 }, { x: 50, y: 61 }];
     const withRoad = { ...base, waterTiles: lake, roads: [{ x: 51, y: 61, kind: 'road' as const }] };
     const first = renderItemsOf(withRoad).find((item) => item.x === 50.5 && item.z === 60.5)!;
-    expect(first.model).toBe('procedural/water-tile:vfff');
+    expect(first.model.split(':')[1]).toBe('vfff');
   });
 
   it('keeps the same items while the Water tiles do not change', () => {
@@ -189,7 +198,7 @@ describe('renderItemsOf water', () => {
 describe('renderItemsOf boats', () => {
   it('leaves Boats to the animated Boat layer', () => {
     const state = { ...newGame({ seed: 'boat-render', now: 0 }), roads: [], buildings: [], waterTiles: [{ x: 50, y: 60 }], boats: [{ id: 7, family: 'pleasure' as const, marinaId: 1, x: 50, y: 60 }] };
-    expect(renderItemsOf(state).map((item) => item.model)).toEqual(['procedural/water-tile:vvvv']);
+    expect(renderItemsOf(state).map((item) => item.model.split(':')[1])).toEqual(['vvvv']);
   });
 });
 
