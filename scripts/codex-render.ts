@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { CODEX_ENTRIES, codexImageKey, HOME_COLOR_VARIANTS, validateCodex } from '../src/codex/catalog';
 import { codexSnapshot } from '../src/codex/snapshot';
+import { BridgeLayer } from '../src/scene/BridgeLayer';
 import { ChunkedWorld } from '../src/scene/ChunkedWorld';
 import { EcologyLayer } from '../src/scene/EcologyLayer';
 import { ModelLibrary } from '../src/scene/modelLibrary';
@@ -20,8 +21,9 @@ const sun = new THREE.DirectionalLight(0xffffff, 2.2);
 sun.position.set(20, 40, 10);
 const world = new ChunkedWorld(library);
 const ecology = new EcologyLayer(library);
+const bridges = new BridgeLayer(library);
 const objects = new THREE.Group();
-objects.add(world.root, ecology.root);
+objects.add(world.root, ecology.root, bridges.root);
 scene.add(objects, sun, new THREE.AmbientLight(0xffffff, 1.2));
 const camera = new THREE.OrthographicCamera(-3, 3, 3, -3, 0.01, 1000);
 
@@ -30,19 +32,22 @@ const variants = CODEX_ENTRIES.flatMap(entry => entry.levels.flatMap(level => {
   return colors.map(colorVariant => {
   const state = codexSnapshot(entry.id, level, colorVariant);
   const signature = JSON.stringify([
-    renderItemsOf(state), state.brtRoads,
+    renderItemsOf(state), state.brtRoads, state.bridges,
     state.buildings.map(b => ({ type: b.type, x: b.x, y: b.y, rotation: b.rotation })),
   ]);
   return { id: entry.id, level, colorVariant, key: codexImageKey(entry.id, level, colorVariant), signature };
   });
 }));
 
-function render(key: string): string {
+async function render(key: string): Promise<string> {
   const variant = variants.find(variant => variant.key === key);
   if (!variant) throw new Error(`Unknown codex variant: ${key}`);
   const state = codexSnapshot(variant.id, variant.level, variant.colorVariant);
-  world.sync(renderItemsOf(state));
+  const items = renderItemsOf(state);
+  await library.ensure([...new Set(items.map(item => item.model))]);
+  world.sync(items);
   ecology.sync(state, null);
+  bridges.sync(state);
   objects.updateMatrixWorld(true);
   const bounds = new THREE.Box3().setFromObject(objects);
   if (bounds.isEmpty()) throw new Error(`Empty codex model: ${key}`);

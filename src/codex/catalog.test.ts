@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { BUILDING_SPECS, CROPS, CROP_IDS, FACILITIES, FACILITY_TYPES, ECOLOGY, ECOLOGY_UNLOCKS, TRANSIT, maxTierOf, type BuildingType } from '../core';
+import { BUILDING_SPECS, CROPS, CROP_IDS, FACILITIES, FACILITY_TYPES, ECOLOGY, ECOLOGY_UNLOCKS, TRANSIT, WATER, BRIDGES, maxTierOf, type BuildingType } from '../core';
 import { CODEX_ENTRIES, codexImageKey, HOME_COLOR_VARIANTS, validateCodex, validateCodexManifest } from './catalog';
 import { ROAD_CONSTRUCTIONS } from './construction';
+import { WATER_CONSTRUCTIONS } from './waterConstructions';
 import { codexSnapshot } from './snapshot';
 import { MESSAGES } from '../i18n/messages';
 import { FR } from '../i18n/fr';
@@ -57,7 +58,7 @@ describe('codex coverage gate', () => {
 
   it('requires a complete page for every constructible, including locked objects', () => {
     expect(() => validateCodex()).not.toThrow();
-    const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...ROAD_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
+    const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...ROAD_CONSTRUCTIONS.map(item => item.id), ...WATER_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
     expect(CODEX_ENTRIES.map(entry => entry.id).sort()).toEqual(expected.sort());
     for (const id of expected) {
       expect(() => validateCodex(CODEX_ENTRIES.filter(entry => entry.id !== id)), id).toThrow('Every constructible');
@@ -68,6 +69,14 @@ describe('codex coverage gate', () => {
     for (const entry of CODEX_ENTRIES) {
       expect(() => validateCodex(CODEX_ENTRIES.map(item => item === entry ? { ...item, levels: [] } : item))).toThrow('Missing codex levels');
       expect(() => validateCodex(CODEX_ENTRIES.map(item => item === entry ? { ...item, description: 'codex.missing' as typeof item.description } : item))).toThrow('Missing codex translation');
+    }
+  });
+
+  it('files Water and Bridges in their own section with their unlock thresholds', () => {
+    for (const [id, threshold] of [['water', WATER.unlockCitizens], ['bridge', BRIDGES.unlockCitizens]] as const) {
+      const entry = CODEX_ENTRIES.find(item => item.id === id);
+      expect(entry?.section, id).toBe('codex.water');
+      expect(entry?.unlockCitizens).toBe(threshold);
     }
   });
 
@@ -119,6 +128,14 @@ describe('codex snapshots', () => {
     expect(codexSnapshot('brt', 1).brtRoads).toHaveLength(3);
     expect(codexSnapshot('rail', 1).rails).toHaveLength(3);
     expect(codexSnapshot('rail', 1).buildings).toHaveLength(0);
+  });
+
+  it('shows a lake for Water and a Bridge across it with its two Roads', () => {
+    expect(codexSnapshot('water', 1).waterTiles).toHaveLength(9);
+    expect(codexSnapshot('water', 1).bridges ?? []).toHaveLength(0);
+    const bridge = codexSnapshot('bridge', 1);
+    expect(bridge.bridges).toEqual([{ x: 1, y: 0, length: 3, axis: 'x' }]);
+    expect(bridge.roads.map(road => road.x)).toEqual([0, 1, 2, 3, 4]);
   });
 });
 

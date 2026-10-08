@@ -17,6 +17,14 @@ export function codexSnapshot(id: CodexId, tier: number, colorVariant: HomeColor
     state.roundabouts = [{ x: 0, y: 0 }];
     return state;
   }
+  if (id === 'water' || id === 'bridge') {
+    const lake = Array.from({ length: 9 }, (_, index) => ({ x: 1 + (index % 3), y: Math.floor(index / 3) - 1 }));
+    state.waterTiles = lake;
+    if (id === 'water') return state;
+    state.bridges = [{ x: 1, y: 0, length: 3, axis: 'x' }];
+    state.roads = [0, 1, 2, 3, 4].map(x => ({ x, y: 0, kind: 'road' as const }));
+    return state;
+  }
   const tiles = Array.from({ length: 3 }, (_, x) => ({ x, y: 0 }));
   if (id === 'road' || id === 'crossing') {
     state.roads = tiles.map(tile => ({ ...tile, kind: id === 'crossing' && tile.x === 1 ? 'crossing' : 'road' }));
