@@ -96,6 +96,22 @@ button {
   opacity: 0.7;
 }
 
+.dock-stat--rates {
+  align-items: stretch;
+  gap: 2px;
+  padding: 4px 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dock-rate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  white-space: nowrap;
+}
+
 .dock-button {
   min-height: var(--tap);
   border: 0;
