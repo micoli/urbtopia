@@ -67,6 +67,7 @@ export interface VenueData {
   fixtures: VenueFixture[];
   nextFixtureId: number;
   takings: number;
+  price?: number;
 }
 
 export interface Building extends Coord {

@@ -17,7 +17,7 @@ import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
-import { collectTakings, isVenue, moveFixture, placeFixture, removeFixture } from '../venues/venues';
+import { collectTakings, isVenue, moveFixture, placeFixture, removeFixture, setVenuePrice } from '../venues/venues';
 import { bridgeAt, bridgeKeys, placeBridge, refundOf, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
@@ -78,6 +78,7 @@ export type Command =
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
   | { readonly type: 'MoveFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'SetVenuePrice'; readonly buildingId: number; readonly price: number }
   | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: ArcadeFixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
@@ -100,6 +101,7 @@ export type ErrorKey =
   | 'error.unknownCommand'
   | 'error.unknownBuilding'
   | 'error.unknownFixture'
+  | 'error.invalidPrice'
   | 'error.outsideOwnedParcels'
   | 'error.tilesOccupied'
   | 'error.homeExpansionBlocked'
@@ -251,6 +253,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return collect(state, command.buildingId);
     case 'MoveFixture':
       return moveFixture(state, command.buildingId, command.fixtureId, command.x, command.y, command.rotation);
+    case 'SetVenuePrice':
+      return setVenuePrice(state, command.buildingId, command.price);
     case 'RemoveFixture':
       return removeFixture(state, command.buildingId, command.fixtureId);
     case 'PlaceFixture':

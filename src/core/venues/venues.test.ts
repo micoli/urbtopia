@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { advance, createBuilding, dispatch, newGame, type Building, type Command, type GameState } from '../index';
-import { ARCADE_FIXTURES, entranceCell, fixtureRefund, takingsDue, takingsPerHour, visitorsPerHour, VENUE } from './venues';
+import { ARCADE_FIXTURES, entranceCell, fixtureRefund, priceAcceptance, takingsCapOf, takingsDue, takingsPerHour, venuePerformance, visitorsPerHour, VENUE } from './venues';
 
 const HOUR = 3_600_000;
 const building = (id: number, type: Building['type'], x: number, y: number, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
@@ -66,7 +66,7 @@ describe('Arcade Venue', () => {
     expect(failure(collected, { type: 'Collect', buildingId: 1 })).toBe('error.nothingToCollect');
 
     const capped = advance({ ...equipped, lastSeen: 0 }, 40 * HOUR).state;
-    expect(arcadeOf(capped).venue!.takings).toBeLessThanOrEqual(VENUE.takingsCap);
+    expect(arcadeOf(capped).venue!.takings).toBeLessThanOrEqual(takingsCapOf(1));
   });
 
   it('gives the same Takings whether replayed in one Catch-up or in steps', () => {
@@ -119,6 +119,56 @@ describe('Arcade Venue', () => {
       const turned = send(placed, { type: 'MoveFixture', buildingId: 1, fixtureId: 1, x: 0, y: 0, rotation: 1 });
       expect(tiles(turned)).toEqual([[0, 0, 1]]);
       expect(failure(tier2, place('billiard', 5, 0))).toBe('error.tilesOccupied');
+    });
+  });
+
+  describe('Revenue model', () => {
+    const equipped = (...fixtures: [Parameters<typeof place>[0], number, number][]) => fixtures.reduce((state, [fixture, x, y]) => send(state, place(fixture, x, y)), city(100_000));
+    const performance = (state: GameState) => venuePerformance(state, arcadeOf(state) as never);
+
+    it('limits service to the game capacity, and halves it without a counter', () => {
+      const bare = equipped(['barrelClimber', 1, 1], ['spaceShooter', 2, 1]);
+      const counted = equipped(['barrelClimber', 1, 1], ['spaceShooter', 2, 1], ['counter', 3, 1]);
+      expect(performance(bare).capacity).toBe((6 + 8) * VENUE.withoutCounterRate);
+      expect(performance(counted).capacity).toBe(6 + 8);
+      expect(performance(counted).served).toBeLessThanOrEqual(performance(counted).capacity);
+    });
+
+    it('serves at most the accepted Visitors when there are more machines than Visitors', () => {
+      const many = equipped(...Array.from({ length: 5 }, (_, index) => ['airHockey', index, 1] as [Parameters<typeof place>[0], number, number]), ['counter', 0, 2]);
+      const result = performance(many);
+      expect(result.served).toBeLessThanOrEqual(result.accepted + 1e-9);
+    });
+
+    it('loses Visitors when the price is too high, and Takings when it is too low', () => {
+      expect(priceAcceptance(VENUE.playPrice)).toBe(1);
+      expect(priceAcceptance(VENUE.maxPrice)).toBeLessThan(priceAcceptance(VENUE.playPrice + 1));
+      const base = equipped(['barrelClimber', 1, 1], ['counter', 3, 1]);
+      const earnings = (price: number) => performance(send(base, { type: 'SetVenuePrice', buildingId: 1, price })).earningsPerHour;
+      expect(earnings(VENUE.minPrice)).toBeLessThan(earnings(VENUE.playPrice));
+      expect(earnings(VENUE.maxPrice)).toBeLessThan(earnings(VENUE.playPrice + 2));
+    });
+
+    it('splits the earnings between the game Fixtures, and none for the others', () => {
+      const state = equipped(['barrelClimber', 1, 1], ['spaceShooter', 2, 1], ['counter', 3, 1], ['table', 4, 4]);
+      const result = performance(state);
+      const total = [...result.earningsByFixture.values()].reduce((sum, value) => sum + value, 0);
+      expect(total).toBeCloseTo(result.earningsPerHour, 9);
+      expect(result.earningsByFixture.size).toBe(2);
+    });
+
+    it('validates the price and keeps it in the save state', () => {
+      expect(failure(city(), { type: 'SetVenuePrice', buildingId: 1, price: 0 })).toBe('error.invalidPrice');
+      expect(failure(city(), { type: 'SetVenuePrice', buildingId: 1, price: VENUE.maxPrice + 1 })).toBe('error.invalidPrice');
+      expect(failure(city(), { type: 'SetVenuePrice', buildingId: 1, price: 2.5 })).toBe('error.invalidPrice');
+      expect(arcadeOf(send(city(), { type: 'SetVenuePrice', buildingId: 1, price: 4 })).venue!.price).toBe(4);
+    });
+
+    it('caps Takings by Tier', () => {
+      expect(takingsCapOf(2)).toBeGreaterThan(takingsCapOf(1));
+      const rich = { ...equipped(['barrelClimber', 1, 1], ['counter', 3, 1]), lastSeen: 0 };
+      const capped = advance(rich, 200 * 3_600_000).state;
+      expect(arcadeOf(capped).venue!.takings).toBe(takingsCapOf(1));
     });
   });
 });

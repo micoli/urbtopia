@@ -1,5 +1,5 @@
 import { useStore } from 'zustand';
-import { fixtureRefund, isVenue } from '../../core';
+import { fixtureRefund, isVenue, venuePerformance } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
@@ -19,12 +19,17 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
     const building = store.state.buildings.find(candidate => candidate.id === venueId);
     return building && isVenue(building) ? building.venue.fixtures.find(candidate => candidate.id === (movingId ?? placedId)) : undefined;
   });
+  const earnings = useGame(store => {
+    const building = store.state.buildings.find(candidate => candidate.id === venueId);
+    return fixture && building && isVenue(building) ? venuePerformance(store.state, building).earningsByFixture.get(fixture.id) : undefined;
+  });
   if (!fixture) return null;
   const { startMove, stopMove, selectPlaced } = venueStore.getState();
   const send = gameStore.getState().send;
   return (
     <section className="venue-build">
       <h3>{t(`venue.fixture.${fixture.type}`)}</h3>
+      {earnings !== undefined ? <p><strong>{t('venue.fixtureEarnings')}</strong>: <UrbsAmount value={earnings} /></p> : null}
       {movingId !== null ? (
         <>
           <p className="note note--muted">{t('venue.moveHint')}</p>

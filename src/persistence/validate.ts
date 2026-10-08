@@ -47,6 +47,7 @@ function isVenueData(value: unknown): boolean {
     isRecord(value) &&
     isInt(value.nextFixtureId, 1) &&
     isNonNegative(value.takings) &&
+    (value.price === undefined || isInt(value.price, 1, 20)) &&
     isArrayOf(value.fixtures, fixture => isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, (value.nextFixtureId as number) - 1) && ARCADE_FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3))
   );
 }

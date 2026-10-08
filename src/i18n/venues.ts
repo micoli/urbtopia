@@ -2,6 +2,10 @@ import type { ArcadeFixtureId } from '../core/engine/state';
 
 type VenueMessageKey =
   | 'error.unknownFixture'
+  | 'error.invalidPrice'
+  | 'venue.price'
+  | 'venue.fixtureEarnings'
+  | 'venue.served'
   | 'venue.manage'
   | 'venue.back'
   | 'venue.build'
@@ -24,6 +28,10 @@ type VenueMessageKey =
 
 const texts: Record<VenueMessageKey, readonly [string, string]> = {
   'error.unknownFixture': ['This Fixture does not exist.', 'Cet équipement n’existe pas.'],
+  'error.invalidPrice': ['This price is not allowed.', 'Ce prix n’est pas autorisé.'],
+  'venue.price': ['Price of a play', 'Prix d’une partie'],
+  'venue.fixtureEarnings': ['Earns per hour', 'Rapporte par heure'],
+  'venue.served': ['Plays served per hour', 'Parties servies par heure'],
   'venue.manage': ['Manage', 'Gérer'],
   'venue.back': ['Back to the city', 'Retour à la ville'],
   'venue.build': ['Build', 'Construire'],

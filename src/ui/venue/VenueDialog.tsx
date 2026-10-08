@@ -35,7 +35,7 @@ export function VenueDialog() {
         <VenueBuildMenu tier={venue.tier} />
         <section className="venue-takings">
           <h3>{t('venue.takings')}</h3>
-          <VenueTakings building={venue} />
+          <VenueTakings building={venue} editable />
         </section>
       </aside>
     </div>

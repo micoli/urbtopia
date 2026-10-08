@@ -10,7 +10,11 @@ export const VENUE = {
   reachRadius: 12,
   visitorsPerCitizenPerHour: 0.2,
   playPrice: 2,
-  takingsCap: 400,
+  minPrice: 1,
+  maxPrice: 6,
+  priceTolerance: 0.2,
+  withoutCounterRate: 0.5,
+  takingsCaps: [400, 900, 1800] as readonly number[],
   gridSizes: [6] as readonly number[],
   refundRatio: 0.5,
 };
@@ -33,6 +37,10 @@ export function fixtureTiles(fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'r
   return Array.from({ length: width * depth }, (_, index) => ({ x: fixture.x + (index % width), y: fixture.y + Math.floor(index / width) }));
 }
 
+export const takingsCapOf = (tier: number): number => VENUE.takingsCaps[tier - 1] ?? VENUE.takingsCaps[VENUE.takingsCaps.length - 1]!;
+
+export const priceOf = (venue: VenueData): number => venue.price ?? VENUE.playPrice;
+
 export function visitorsPerHour(state: GameState, venue: Building): number {
   const to = centerOf(venue);
   const citizens = state.buildings.reduce((total, home) => {
@@ -47,10 +55,36 @@ export function playsCapacityPerHour(venue: VenueData): number {
   return venue.fixtures.reduce((total, fixture) => total + ARCADE_FIXTURES[fixture.type].playsPerHour, 0);
 }
 
-export function takingsPerHour(state: GameState, venue: Building & { venue: VenueData }): number {
-  const served = Math.min(visitorsPerHour(state, venue), playsCapacityPerHour(venue.venue));
-  return served * VENUE.playPrice;
+export const priceAcceptance = (price: number): number => Math.min(1, Math.max(0, 1 - VENUE.priceTolerance * (price - VENUE.playPrice)));
+
+export const serviceRateOf = (venue: VenueData): number => venue.fixtures.some(fixture => fixture.type === 'counter') ? 1 : VENUE.withoutCounterRate;
+
+export interface VenuePerformance {
+  visitors: number;
+  accepted: number;
+  capacity: number;
+  served: number;
+  earningsPerHour: number;
+  earningsByFixture: ReadonlyMap<number, number>;
 }
+
+export function venuePerformance(state: GameState, venue: Building & { venue: VenueData }): VenuePerformance {
+  const price = priceOf(venue.venue);
+  const visitors = visitorsPerHour(state, venue);
+  const accepted = visitors * priceAcceptance(price);
+  const capacity = playsCapacityPerHour(venue.venue) * serviceRateOf(venue.venue);
+  const served = Math.min(accepted, capacity);
+  const earningsByFixture = new Map<number, number>();
+  if (capacity > 0) {
+    for (const fixture of venue.venue.fixtures) {
+      const share = ARCADE_FIXTURES[fixture.type].playsPerHour * serviceRateOf(venue.venue) / capacity;
+      if (share > 0) earningsByFixture.set(fixture.id, served * share * price);
+    }
+  }
+  return { visitors, accepted, capacity, served, earningsPerHour: served * price, earningsByFixture };
+}
+
+export const takingsPerHour = (state: GameState, venue: Building & { venue: VenueData }): number => venuePerformance(state, venue).earningsPerHour;
 
 export function advanceVenues(state: GameState, elapsedMs: number): GameState {
   if (elapsedMs <= 0 || !state.buildings.some(isVenue)) return state;
@@ -58,7 +92,7 @@ export function advanceVenues(state: GameState, elapsedMs: number): GameState {
     ...state,
     buildings: state.buildings.map(building => {
       if (!isVenue(building)) return building;
-      const takings = Math.min(VENUE.takingsCap, building.venue.takings + takingsPerHour(state, building) * elapsedMs / VENUE.hourMs);
+      const takings = Math.min(takingsCapOf(building.tier), building.venue.takings + takingsPerHour(state, building) * elapsedMs / VENUE.hourMs);
       return takings === building.venue.takings ? building : { ...building, venue: { ...building.venue, takings } };
     }),
   };
@@ -130,4 +164,11 @@ export function removeFixture(state: GameState, buildingId: number, fixtureId: n
   const fixture = building.venue.fixtures.find(candidate => candidate.id === fixtureId);
   if (!fixture) return { key: 'error.unknownFixture' };
   return { state: withVenue(state, building, { ...building.venue, fixtures: building.venue.fixtures.filter(candidate => candidate !== fixture) }, state.urbs + fixtureRefund(fixture.type)), events: [] };
+}
+
+export function setVenuePrice(state: GameState, buildingId: number, price: number): CommandOutcome {
+  const building = state.buildings.find(candidate => candidate.id === buildingId);
+  if (!building || !isVenue(building)) return { key: 'error.unknownBuilding' };
+  if (!Number.isInteger(price) || price < VENUE.minPrice || price > VENUE.maxPrice) return { key: 'error.invalidPrice' };
+  return { state: withVenue(state, building, { ...building.venue, price }), events: [] };
 }
