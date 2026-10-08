@@ -101,8 +101,12 @@ describe('build menu sections', () => {
     const demolishLabels = ['tool.demolishRoad', 'tool.demolishBrt', 'tool.demolishRail', 'water.remove', 'water.removeBridge'] as const;
     expect(sections).toHaveLength(demolishLabels.length);
     demolishLabels.forEach((key, index) => expect(sections[index]).toContain(`aria-label="${t(key)}"`));
+    expect(sections[0]).toContain('▾');
     expect(sections[0]).toContain('aria-expanded="true"');
-    for (const section of sections.slice(1)) expect(section).toContain('aria-expanded="false"');
+    for (const section of sections.slice(1)) {
+      expect(section).toContain('aria-expanded="false"');
+      expect(section).toContain('▸');
+    }
   });
 
   it('only offers the Water and Bridge demolish buttons when there is something to remove', () => {
@@ -144,11 +148,11 @@ describe('build menu sections', () => {
     expect(sections[0]).toContain('aria-expanded="true"');
     expect(sections[0]).toContain('aria-disabled="true"');
     expect(sections[0]).not.toContain('hidden=""');
-    expect(html).not.toContain('▾');
-    expect(html).not.toContain('▸');
+    expect(sections[0]).toContain('▾');
     for (const section of sections.slice(1)) {
       expect(section).toContain('aria-expanded="false"');
       expect(section).toContain('hidden=""');
+      expect(section).toContain('▸');
     }
   });
 

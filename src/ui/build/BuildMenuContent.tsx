@@ -51,7 +51,7 @@ export function BuildMenuContent() {
           const expanded = activeSection === section.title;
           const sectionId = `${menuId}-${section.title}`;
           return (
-            <AccordionSection key={section.title} id={sectionId} title={t(section.title)} expanded={expanded} lockWhenExpanded guided={section.types.some(type => guide.buildings.includes(type))} className="build-section" toggleClassName="build-section-toggle" contentClassName="build-section-items" onToggle={() => selectSection(section.title)}>
+            <AccordionSection key={section.title} id={sectionId} title={t(section.title)} expanded={expanded} chevron lockWhenExpanded guided={section.types.some(type => guide.buildings.includes(type))} className="build-section" toggleClassName="build-section-toggle" contentClassName="build-section-items" onToggle={() => selectSection(section.title)}>
                 {section.title === 'build.housing' && <RadioChipGroup
                   variant="toggle"
                   className="home-color-picker"

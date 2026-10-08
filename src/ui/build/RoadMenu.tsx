@@ -74,6 +74,7 @@ export function RoadMenu() {
           id={`roads-${id}`}
           title={t(SECTION_TITLES[id])}
           expanded={activeSection === id}
+          chevron
           lockWhenExpanded
           className="road-section build-section"
           toggleClassName="build-section-toggle"
