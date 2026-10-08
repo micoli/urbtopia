@@ -5,6 +5,7 @@ import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_CROWD_MODELS, VENUE_SHELL_MODELS } from './renderItems';
 import { VenueCrowdLayer } from './VenueCrowdLayer';
 import type { Figure } from './venueCrowd';
+import { clampPan, nextZoom } from './venueZoom';
 
 const TAP_DISTANCE = 6;
 const SELECTION_COLOR = 0x4da3ff;
@@ -32,6 +33,8 @@ export class VenueScene {
   private crowd: VenueCrowdLayer;
   private lastFrame = performance.now();
   private fixturesSignature = '';
+  private zoom = 1;
+  private pan = { x: 0, z: 0 };
   private brokenRoot = new THREE.Group();
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -73,6 +76,7 @@ export class VenueScene {
     canvas.addEventListener('pointerup', this.handlePointerUp);
     canvas.addEventListener('pointermove', this.handlePointerMove);
     canvas.addEventListener('pointerleave', this.handlePointerLeave);
+    canvas.addEventListener('wheel', this.handleWheel, { passive: false });
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
     this.resize();
@@ -139,6 +143,7 @@ export class VenueScene {
     this.canvas.removeEventListener('pointerup', this.handlePointerUp);
     this.canvas.removeEventListener('pointermove', this.handlePointerMove);
     this.canvas.removeEventListener('pointerleave', this.handlePointerLeave);
+    this.canvas.removeEventListener('wheel', this.handleWheel);
     this.clear(this.ghostRoot, true);
     this.clear(this.selectionRoot, true);
     this.clear(this.warningRoot, true);
@@ -203,11 +208,15 @@ export class VenueScene {
     }
   }
 
-  private cellAt(clientX: number, clientY: number): Coord | null {
+  private groundAt(clientX: number, clientY: number): THREE.Vector3 | null {
     const rect = this.canvas.getBoundingClientRect();
     const pointer = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -(((clientY - rect.top) / rect.height) * 2 - 1));
     this.raycaster.setFromCamera(pointer, this.camera);
-    const hit = this.raycaster.ray.intersectPlane(this.groundPlane, new THREE.Vector3());
+    return this.raycaster.ray.intersectPlane(this.groundPlane, new THREE.Vector3());
+  }
+
+  private cellAt(clientX: number, clientY: number): Coord | null {
+    const hit = this.groundAt(clientX, clientY);
     if (!hit) return null;
     const cell = { x: Math.floor(hit.x), y: Math.floor(hit.z) };
     return cell.x >= 0 && cell.y >= 0 && cell.x < this.size && cell.y < this.size ? cell : null;
@@ -233,18 +242,37 @@ export class VenueScene {
     this.onHoverCell(null);
   };
 
+  // The wheel zooms around the point under the pointer, which stays where it is on the screen.
+  private handleWheel = (event: WheelEvent): void => {
+    event.preventDefault();
+    const zoom = nextZoom(this.zoom, event.deltaY);
+    if (zoom === this.zoom) return;
+    const before = this.groundAt(event.clientX, event.clientY);
+    this.zoom = zoom;
+    this.resize();
+    const after = this.groundAt(event.clientX, event.clientY);
+    if (before && after) {
+      this.pan = clampPan({ x: this.pan.x + before.x - after.x, z: this.pan.z + before.z - after.z }, this.zoom, this.size);
+      this.resize();
+    }
+    this.pan = clampPan(this.pan, this.zoom, this.size);
+    this.onHoverCell(this.cellAt(event.clientX, event.clientY));
+  };
+
   private resize(): void {
     const width = Math.max(1, this.canvas.clientWidth), height = Math.max(1, this.canvas.clientHeight);
     this.renderer.setSize(width, height, false);
     const aspect = width / height;
-    const halfHeight = Math.max(this.size * 0.55 + 1.2, (this.size * 0.75 + 0.6) / aspect);
+    const halfHeight = Math.max(this.size * 0.55 + 1.2, (this.size * 0.75 + 0.6) / aspect) / this.zoom;
     this.camera.left = -halfHeight * aspect;
     this.camera.right = halfHeight * aspect;
     this.camera.top = halfHeight;
     this.camera.bottom = -halfHeight;
+    this.pan = clampPan(this.pan, this.zoom, this.size);
     const center = this.size / 2, distance = 40, pitch = Math.atan(1 / Math.SQRT2), yaw = Math.PI / 4;
-    this.camera.position.set(center + Math.sin(yaw) * Math.cos(pitch) * distance, Math.sin(pitch) * distance, center + Math.cos(yaw) * Math.cos(pitch) * distance);
-    this.camera.lookAt(center, 0.3, center);
+    const focusX = center + this.pan.x, focusZ = center + this.pan.z;
+    this.camera.position.set(focusX + Math.sin(yaw) * Math.cos(pitch) * distance, Math.sin(pitch) * distance, focusZ + Math.cos(yaw) * Math.cos(pitch) * distance);
+    this.camera.lookAt(focusX, 0.3, focusZ);
     this.camera.updateProjectionMatrix();
     this.dirty = true;
   }
