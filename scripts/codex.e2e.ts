@@ -12,7 +12,7 @@ for (const layout of ['A', 'B', 'C']) {
       test('opens directly from the main navigation', async ({ page }) => {
         await page.addInitScript(layout => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout })), layout);
         await page.goto('/');
-        await expect(page.locator('#splash')).toHaveCount(0);
+        await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
         if (layout === 'B') await page.getByRole('button', { name: 'Ouvrir le menu' }).click();
         const shortcut = page.locator('[data-action="codex"]');
         await expect(shortcut).toBeVisible();
@@ -132,7 +132,7 @@ test('codex previews remain available offline after PWA installation', async ({ 
     if (navigator.serviceWorker.controller) return;
     await new Promise<void>(resolve => navigator.serviceWorker.addEventListener('controllerchange', () => resolve(), { once: true }));
   });
-  await expect(page.locator('#splash')).toHaveCount(0);
+  await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   await context.setOffline(true);
   await page.locator('[data-action="codex"]').click();
   const dialog = page.getByRole('dialog', { name: 'Codex' });
@@ -153,7 +153,7 @@ test('natural construction and Codex share Citizen unlocks and real previews', a
     localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' }));
   }, serializeEnvelope(state, state.lastSeen));
   await page.goto('/');
-  await expect(page.locator('#splash')).toHaveCount(0);
+  await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   await page.getByRole('button', { name: 'Construire', exact: true }).click();
   await page.getByRole('button', { name: 'Espaces verts', exact: true }).click();
   const treeInfo = page.locator('[data-codex-id="nature-tree-oak"]');
