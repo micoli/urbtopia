@@ -57,7 +57,8 @@ describe('build menu sections', () => {
     const compatible = (Object.keys(BUILDING_SPECS) as (keyof typeof BUILDING_SPECS)[]).filter(type => BUILDING_SPECS[type].accessModes.includes('brt'));
     expect(compatible).toEqual(expect.arrayContaining(['home', 'shop', 'casino', 'school', 'hospital', 'stadium']));
     expect(compatible).not.toContain('workshop');
-    expect(html.split('class="flyout-badge"')).toHaveLength(compatible.length + 1);
+    expect(html.split('class="flyout-badge"')).toHaveLength(compatible.length + 2);
+    expect(html.slice(html.indexOf(t('eco.solarHome')))).toContain('class="flyout-badge"');
     expect(html).toContain(`<small class="flyout-badge">${t('build.brtCompatible')}</small>`);
   });
 

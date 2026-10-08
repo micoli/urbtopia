@@ -288,6 +288,15 @@ describe('front marker of a BRT compatible building', () => {
     expect(evaluation.ghost.front?.access).toBe('brt');
   });
 
+  it('accepts a solar Home next to a BRT corridor like any other Home', () => {
+    const solar: Tool = { kind: 'building', buildingType: 'home', solar: true };
+    const [homeFront] = frontTiles('home', tile.x, tile.y, 0);
+    const withWater = { ...brtState, brtRoads: [{ ...homeFront!, exits: [] }] };
+    const evaluation = evaluateTool(solar, { state: withWater, tile, rotation: 0 });
+    expect(evaluation.issue).not.toBe('error.needsRoadOrBrt');
+    expect(evaluation.ghost.front?.access).toBe('brt');
+  });
+
   it('marks the road as the access when both are present', () => {
     const both: GameState = { ...brtState, roads: [{ ...front!, kind: 'road' }] };
     expect(evaluateTool(homeTool, { state: both, tile, rotation: 0 }).ghost.front?.access).toBe('road');
