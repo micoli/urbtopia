@@ -6,6 +6,8 @@ useDefault = true
 [allowlist]
 description = "Documented dummy values only"
 regexes = [
+  '''super-secret-jwt-token-with-at-least-32-characters-long''',
+  '''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.eyJpc3MiOiJzdXBhYmFzZS1kZW1v[A-Za-z0-9_.-]+''',
   '''dummy-publishable-key''',
   '''http://127\.0\.0\.1:54321''',
 ]

@@ -23,12 +23,12 @@
     "casino:sim": "vite --config prototypes/casino-sim/vite.config.ts --host",
     "preview": "vite preview",
     "check:bundle": "node scripts/checkBundle.ts dist",
-    "db:start": "supabase start",
-    "db:stop": "supabase stop",
-    "db:reset": "supabase db reset",
-    "db:test": "supabase test db",
-    "db:types": "supabase gen types typescript --local --schema public > src/persistence/cloud/database.types.ts && npx --yes oxfmt src/persistence/cloud/database.types.ts",
-    "db:lint": "supabase db lint --fail-on error",
+    "db:start": "docker compose up -d --wait",
+    "db:stop": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up -d --wait",
+    "db:test": "docker compose --profile test run --rm pgtap",
+    "db:types": "supabase gen types typescript --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres --schema public > src/persistence/cloud/database.types.ts && npx --yes oxfmt src/persistence/cloud/database.types.ts",
+    "db:lint": "supabase db lint --fail-on error --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres",
     "prepare": "lefthook install"
   },
   "devDependencies": {
