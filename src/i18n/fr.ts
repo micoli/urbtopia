@@ -1,5 +1,6 @@
 import { facilityMessages } from './facilities';
 import { casinoMessages } from './casino';
+import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
 import { buildingMessages } from './buildings';
 import { natureMessages } from './nature';
@@ -8,6 +9,7 @@ import type { MessageKey } from './messages';
 export const FR: Record<MessageKey, string> = {
   ...natureMessages('fr'),
   ...casinoMessages('fr'),
+  ...venueMessages('fr'),
   ...buildingMessages('fr'),
   ...sportVenueMessages('fr'),
   ...facilityMessages('fr'),

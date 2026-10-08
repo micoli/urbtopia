@@ -116,6 +116,25 @@ export const ASSET_PACKS: AssetPack[] = [
     archive: 'kenney_train-kit.zip',
     files: ['train-electric-subway-a', 'railroad-straight', 'railroad-corner-small', 'train-electric-city-a', 'train-electric-city-b', 'train-electric-city-c', 'train-locomotive-a', 'train-locomotive-passenger-a'],
   },
+  {
+    name: 'mini-arcade',
+    url: 'https://kenney.nl/media/pages/assets/mini-arcade/ece1e8f320-1721638600/kenney_mini-arcade.zip',
+    archive: 'kenney_mini-arcade.zip',
+    files: ['arcade-machine', 'floor', 'wall', 'wall-corner'],
+  },
+  {
+    name: 'mini-market',
+    url: 'https://kenney.nl/media/pages/assets/mini-market/463f38da51-1729865423/kenney_mini-market.zip',
+    archive: 'kenney_mini-market.zip',
+    files: [],
+  },
+  {
+    name: 'furniture',
+    colormap: false,
+    url: 'https://kenney.nl/media/pages/assets/furniture-kit/440e0608a4-1677580847/kenney_furniture-kit.zip',
+    archive: 'kenney_furniture-kit.zip',
+    files: [],
+  },
   ...extraPacks.kenney.map(({ name, archive, colormap }) => ({ name, url: '', archive, files: [], colormap })),
 ];
 

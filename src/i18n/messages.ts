@@ -1,11 +1,13 @@
 import { facilityMessages } from './facilities';
 import { casinoMessages } from './casino';
+import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
 import { buildingMessages } from './buildings';
 import { natureMessages } from './nature';
 export const MESSAGES = {
   ...natureMessages('en'),
   ...casinoMessages('en'),
+  ...venueMessages('en'),
   ...buildingMessages('en'),
   ...sportVenueMessages('en'),
   ...facilityMessages('en'),

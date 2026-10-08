@@ -82,6 +82,7 @@ export class GameScene {
   private modelHeights = new Map<string, number>();
   private syncing = false;
   private frameHandle = 0;
+  private paused = false;
   private markReady: () => void = () => {};
   readonly ready = new Promise<void>((resolve) => (this.markReady = resolve));
   private lastFrame = performance.now();
@@ -132,6 +133,10 @@ export class GameScene {
 
   setHandlers(handlers: SceneHandlers): void {
     this.handlers = handlers;
+  }
+
+  setPaused(paused: boolean): void {
+    this.paused = paused;
   }
 
   setTrafficEnabled(enabled: boolean): void {
@@ -319,6 +324,11 @@ export class GameScene {
   }
 
   private frame = (now: number): void => {
+    if (this.paused) {
+      this.lastFrame = now;
+      this.frameHandle = requestAnimationFrame(this.frame);
+      return;
+    }
     const delta = Math.max(0, Math.min(0.1, (now - this.lastFrame) / 1000));
     this.lastFrame = now;
     this.controller.update(delta);

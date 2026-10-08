@@ -1,5 +1,5 @@
 import { BUILDING_ENTRIES } from '../core/buildings/buildingDefinitions';
-import { CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type BoatFamily, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
+import { ARCADE_FIXTURES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type BoatFamily, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
 import { VEHICLE_MODELS } from './vehicleModels';
@@ -102,6 +102,8 @@ export const TRAIN_MODELS = ['trains/train-electric-city-a', 'trains/train-elect
 
 const RAIL_MODELS = ['trains/railroad-straight', 'trains/railroad-corner-small'];
 
+export const VENUE_SHELL_MODELS = { floor: 'mini-arcade/floor', wall: 'mini-arcade/wall', corner: 'mini-arcade/wall-corner' } as const;
+
 const ROAD_MODELS = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout'].map((piece) => `roads/road-${piece}`);
 
 export const MODEL_KEYS: readonly string[] = [
@@ -118,6 +120,8 @@ export const MODEL_KEYS: readonly string[] = [
     ROOF_PANEL_MODEL,
     SOLAR_PANEL_MODEL,
     ...ROAD_MODELS,
+    ...Object.values(VENUE_SHELL_MODELS),
+    ...Object.values(ARCADE_FIXTURES).map(({ model }) => model),
     ...RAIL_MODELS,
     ...TRAIN_MODELS,
     ...VEHICLE_MODELS,
