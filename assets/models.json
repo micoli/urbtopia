@@ -2205,5 +2205,41 @@
     "source": "kenney",
     "license": "CC0",
     "scale": 1.5
+  },
+  "watercraft/boat-house-a": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 1.9,
+      "height": 1.6
+    }
+  },
+  "watercraft/boat-sail-a": {
+    "source": "kenney",
+    "license": "CC0",
+    "fit": {
+      "width": 0.9,
+      "height": 1.1
+    }
+  },
+  "watercraft/boat-fishing-small": {
+    "source": "kenney",
+    "license": "CC0",
+    "fit": {
+      "width": 0.9,
+      "height": 0.8
+    }
+  },
+  "watercraft/ship-ocean-liner-small": {
+    "source": "kenney",
+    "license": "CC0",
+    "fit": {
+      "width": 0.95,
+      "height": 0.9
+    }
   }
 }

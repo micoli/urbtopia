@@ -14,7 +14,7 @@ import { useBlackjackRound } from './useBlackjackRound.ts';
 import { ActionButton } from '../../../common/ActionButton';
 
 interface BlackjackGameProps {
-  casino: Building;
+  casino: Pick<Building, 'id' | 'tier'>;
 }
 
 export function BlackjackGame({ casino }: BlackjackGameProps) {

@@ -1,5 +1,5 @@
 import { Fragment, useId, useState, type ReactNode } from 'react';
-import { BUILDING_SPECS, TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, ROAD_TIER_COSTS, isFacilityType, totalCitizens, placementCost } from '../../core';
+import { BUILDING_SPECS, TRANSIT, WATER, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, ROAD_TIER_COSTS, isFacilityType, totalCitizens, placementCost } from '../../core';
 import { t } from '../../i18n/t';
 import type { Tool } from '../../tools/tools';
 import { FlyoutItem } from '../layout/FlyoutItem';
@@ -7,6 +7,7 @@ import { useGame, useUi } from '../common/hooks';
 import { guideOf } from '../tutorial/tutorialGuide';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { FieldTools } from './FieldTools';
+import { WaterTools } from './WaterTools';
 import { BUILDING_SECTIONS, readBuildSection, writeBuildSection, type BuildSection } from './buildMenuSections';
 import { ROAD_CONSTRUCTIONS } from '../../codex/construction';
 import { codexImageKey, type CodexId } from '../../codex/catalog';
@@ -97,10 +98,11 @@ export function BuildMenuContent() {
     roadTools.push({ label: t(mode === 'brt' ? 'tool.demolishBrt' : 'tool.demolishRail'), tool: { kind: 'demolishRoad', mode, start: null, horizontalFirst: true } });
   }
   return (
-    <>
+    <div className="flyout-items">
       {roadTools.map((item) => (
         <FlyoutItem key={item.label} label={item.label} cost={item.cost} guided={guide.road && item.tool.kind === 'road'} onChoose={() => chooseTool(item.tool)} codexId={item.codexId} preview={item.codexId ? previewOf(item.codexId) : undefined} onInfo={item.codexId ? () => openCodex(item.codexId) : undefined} />
       ))}
-    </>
+      {citizens >= WATER.unlockCitizens && <WaterTools />}
+    </div>
   );
 }

@@ -4,6 +4,7 @@ export const BUILD_SECTION_TITLES = [
   'build.storage',
   'build.utilities',
   'build.transport',
+  'build.water',
   'build.publicFacilities',
   'build.leisure',
   'build.sport',

@@ -1,5 +1,8 @@
 import {
   extendNetwork,
+  BOATS,
+  bridgeCost,
+  bridgeTiles,
   BUILDING_SPECS,
   GAME_CONFIG,
   buyableParcels,
@@ -18,6 +21,7 @@ import {
   roadBuildCost,
   roadPath,
   roundaboutTiles,
+  type BoatFamily,
   type Building,
   type BuildingType,
   casinoRadius,
@@ -43,6 +47,9 @@ export type Tool =
   | { kind: 'demolishRoad'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'upgradeRoad'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'parcel' }
+  | { kind: 'boat'; family: BoatFamily; marinaId: number }
+  | { kind: 'bridge'; length: number }
+  | { kind: 'removeBridge' }
   | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] };
 
 export type PathTool = Extract<Tool, { kind: 'road' | 'demolishRoad' | 'upgradeRoad' }>;
@@ -51,7 +58,7 @@ export function isPathTool(tool: Tool | null): tool is PathTool {
   return tool?.kind === 'road' || tool?.kind === 'demolishRoad' || tool?.kind === 'upgradeRoad';
 }
 
-export type BrushAction = 'layField' | 'removeField' | 'plant';
+export type BrushAction = 'layField' | 'removeField' | 'plant' | 'layWater' | 'removeWater';
 
 export interface ToolContext {
   state: GameState;
@@ -157,6 +164,12 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
       return evaluateUpgradeRoad(state, tool, tile);
     case 'parcel':
       return evaluateParcel(state, tile);
+    case 'bridge':
+      return evaluateBridge(state, tool.length, tile);
+    case 'removeBridge':
+      return evaluation([tile], { type: 'RemoveBridge', x: tile.x, y: tile.y }, state);
+    case 'boat':
+      return evaluation([tile], { type: 'BuyBoat', family: tool.family, marinaId: tool.marinaId, x: tile.x, y: tile.y }, state, { cost: BOATS[tool.family].cost });
     case 'brush':
       return evaluateBrush(state, tool, tile);
   }
@@ -222,6 +235,10 @@ function brushCommand(tool: Extract<Tool, { kind: 'brush' }>, tiles: Coord[]): C
       return { type: 'LayFields', tiles };
     case 'removeField':
       return { type: 'RemoveFields', tiles };
+    case 'layWater':
+      return { type: 'LayWater', tiles };
+    case 'removeWater':
+      return { type: 'RemoveWater', tiles };
     case 'plant':
       return tool.crop ? { type: 'Plant', crop: tool.crop, tiles } : null;
   }
@@ -252,6 +269,14 @@ function lineBetween(from: Coord, to: Coord): Coord[] {
     const ratio = (index + 1) / steps;
     return { x: Math.round(from.x + (to.x - from.x) * ratio), y: Math.round(from.y + (to.y - from.y) * ratio) };
   });
+}
+
+function evaluateBridge(state: GameState, length: number, tile: Coord): Evaluation {
+  const attempts = (['x', 'y'] as const).map((axis) => {
+    const command: Command = { type: 'PlaceBridge', x: tile.x, y: tile.y, length, axis };
+    return evaluation(bridgeTiles({ x: tile.x, y: tile.y, length, axis }), command, state, { cost: bridgeCost(length) ?? null });
+  });
+  return attempts.find((attempt) => attempt.valid) ?? attempts[0]!;
 }
 
 function evaluateParcel(state: GameState, tile: Coord): Evaluation {
@@ -299,7 +324,7 @@ export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTo
   if (pathTool && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
   if (!current.valid) return { command: null, nextTool: tool };
   if (pathTool) return { command: current.command, nextTool: { ...tool, start: null } };
-  if (tool.kind === 'building') return { command: current.command, nextTool: keepTool ? tool : null };
+  if (tool.kind === 'building' || tool.kind === 'boat') return { command: current.command, nextTool: keepTool ? tool : null };
   if (tool.kind === 'move') return { command: current.command, nextTool: null };
   return { command: current.command, nextTool: tool };
 }

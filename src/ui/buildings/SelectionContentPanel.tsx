@@ -6,6 +6,7 @@ import { t } from '../../i18n/t';
 import { FacilityPanel } from './FacilityPanel';
 import { CasinoPanel } from '../casino/CasinoPanel';
 import { FarmPanel } from './FarmPanel';
+import { MarinaPanel } from './MarinaPanel';
 import { BuildingAccess } from './BuildingAccess';
 import { HomePanel } from './HomePanel';
 import { useUi } from '../common/hooks';
@@ -35,6 +36,7 @@ export function SelectionContentPanel() {
       {building.type === 'farm' ? <FarmPanel building={building} /> : null}
       {building.type === 'home' ? <HomePanel building={building} /> : null}
       {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}
+      {building.type === 'marina' ? <MarinaPanel building={building} /> : null}
       {building.type === 'casino' ? <CasinoPanel building={building} /> : null}
       {building.type === 'shop' ? <ShopPanel building={building} /> : null}
       {isStorageType(building.type) ? <StoragePanel building={building} /> : null}

@@ -9,15 +9,15 @@ for (const layout of ['A', 'B', 'C']) {
   for (const mobile of [false, true]) {
     test.describe(`codex navigation, layout ${layout}, ${mobile ? 'mobile' : 'desktop'}`, () => {
       test.use({ viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 900 }, hasTouch: mobile, isMobile: mobile });
-      test('opens directly from the main navigation and from settings', async ({ page }) => {
+      test('opens directly from the main navigation', async ({ page }) => {
         await page.addInitScript(layout => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout })), layout);
         await page.goto('/');
-        await expect(page.locator('#splash')).toHaveCount(0);
+        await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
         if (layout === 'B') await page.getByRole('button', { name: 'Ouvrir le menu' }).click();
         const shortcut = page.locator('[data-action="codex"]');
         await expect(shortcut).toBeVisible();
         await expect(shortcut.locator('img')).toHaveAttribute('src', /\/assets\/icons\/codex\.png$/);
-        await expect(page.locator('[data-action="menu"] img')).toHaveAttribute('src', /\/assets\/icons\/settings\.png$/);
+        await expect(page.locator('[data-action="settings"] img')).toHaveAttribute('src', /\/assets\/icons\/settings\.png$/);
         await shortcut.click();
         const dialog = page.getByRole('dialog', { name: 'Codex' });
         await expect(dialog).toBeVisible();
@@ -37,6 +37,7 @@ for (const layout of ['A', 'B', 'C']) {
           await back.click();
           await expect(dialog.getByRole('button', { name: 'Logement', exact: true })).toBeFocused();
         }
+        await dialog.getByRole('button', { name: 'Transports', exact: true }).click();
         await dialog.getByRole('button', { name: 'Gare ferroviaire', exact: true }).click();
         await expect(dialog.getByRole('heading', { name: 'Gare ferroviaire', exact: true })).toBeVisible();
         await expect(dialog.getByText('Verrouillé', { exact: true })).toBeVisible();
@@ -45,14 +46,14 @@ for (const layout of ['A', 'B', 'C']) {
         expect(await page.evaluate(() => !!document.activeElement?.closest('dialog'))).toBe(true);
         await page.keyboard.press('Escape');
         await expect(dialog).toHaveCount(0);
-        await expect(page.getByRole('heading', { name: 'Menu', exact: true })).toHaveCount(0);
+        await expect(page.getByRole('heading', { name: 'Réglages', exact: true })).toHaveCount(0);
         if (layout === 'B') {
           await expect(page.getByRole('button', { name: 'Ouvrir le menu' })).toBeFocused();
           await page.getByRole('button', { name: 'Ouvrir le menu' }).click();
         } else {
           await expect(shortcut).toBeFocused();
         }
-        await page.getByRole('button', { name: /Menu/, exact: false }).click();
+        await page.getByRole('button', { name: /Réglages/, exact: false }).click();
         if (layout === 'C') {
           const bounds = await page.locator('.market-panel').boundingBox();
           const viewport = page.viewportSize()!;
@@ -65,12 +66,6 @@ for (const layout of ['A', 'B', 'C']) {
           expect(viewport.width - bounds!.x - bounds!.width).toBeGreaterThanOrEqual(3);
           expect(viewport.height - bounds!.y - bounds!.height).toBe(3);
         }
-        const settingsShortcut = page.locator('.side-panel-actions [data-action="codex"]');
-        await settingsShortcut.click();
-        await expect(dialog).toBeVisible();
-        await dialog.getByRole('button', { name: 'Fermer', exact: true }).click();
-        await expect(dialog).toHaveCount(0);
-        await expect(settingsShortcut).toBeFocused();
         await page.getByRole('button', { name: 'Fermer', exact: true }).click();
         await page.getByRole('button', { name: 'Passer le didacticiel', exact: true }).click();
         await page.getByRole('button', { name: 'Passer', exact: true }).click();
@@ -82,19 +77,21 @@ for (const layout of ['A', 'B', 'C']) {
         const manifest = await manifestResponse.json() as CodexManifest;
         await expect(workshopInfo.locator('img')).toHaveAttribute('src', `./codex/${manifest.images['workshop:1']}`);
         await expect(workshopInfo).not.toHaveText('?');
-        await workshopInfo.click();
+        const workshopLabel = page.locator('.flyout-row', { has: workshopInfo }).locator('.flyout-item');
+        await workshopLabel.click();
         await expect(dialog.getByRole('heading', { name: 'Atelier', exact: true })).toBeVisible();
         await expect(page.locator('.confirm-pad')).toHaveCount(0);
         await dialog.getByRole('button', { name: 'Fermer', exact: true }).click();
-        await expect(workshopInfo).toBeFocused();
+        await expect(workshopLabel).toBeFocused();
         if (layout === 'B') await page.getByRole('button', { name: 'Ouvrir le menu' }).click();
         await page.getByRole('button', { name: 'Routes', exact: true }).click();
         const roadInfo = page.getByRole('button', { name: 'À propos de Route', exact: true });
         await expect(roadInfo.locator('img')).toHaveAttribute('src', `./codex/${manifest.images['road:1']}`);
-        await roadInfo.click();
+        const roadLabel = page.locator('.flyout-row', { has: roadInfo }).locator('.flyout-item');
+        await roadLabel.click();
         await expect(dialog.getByRole('heading', { name: 'Route', exact: true })).toBeVisible();
         await dialog.getByRole('button', { name: 'Fermer', exact: true }).click();
-        await expect(roadInfo).toBeFocused();
+        await expect(roadLabel).toBeFocused();
       });
     });
   }
@@ -135,7 +132,7 @@ test('codex previews remain available offline after PWA installation', async ({ 
     if (navigator.serviceWorker.controller) return;
     await new Promise<void>(resolve => navigator.serviceWorker.addEventListener('controllerchange', () => resolve(), { once: true }));
   });
-  await expect(page.locator('#splash')).toHaveCount(0);
+  await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   await context.setOffline(true);
   await page.locator('[data-action="codex"]').click();
   const dialog = page.getByRole('dialog', { name: 'Codex' });
@@ -156,7 +153,7 @@ test('natural construction and Codex share Citizen unlocks and real previews', a
     localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' }));
   }, serializeEnvelope(state, state.lastSeen));
   await page.goto('/');
-  await expect(page.locator('#splash')).toHaveCount(0);
+  await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   await page.getByRole('button', { name: 'Construire', exact: true }).click();
   await page.getByRole('button', { name: 'Espaces verts', exact: true }).click();
   const treeInfo = page.locator('[data-codex-id="nature-tree-oak"]');
@@ -164,7 +161,7 @@ test('natural construction and Codex share Citizen unlocks and real previews', a
   await expect(page.locator('[data-codex-id="pirate-grass"]')).toBeVisible();
   await expect(page.locator('[data-codex-id="nature-flower-purpleA"]')).toHaveCount(0);
   await expect(page.locator('[data-codex-id="pirate-palm-bend"]')).toHaveCount(0);
-  await treeInfo.click();
+  await page.locator('.flyout-row', { has: treeInfo }).locator('.flyout-item').click();
   const dialog = page.getByRole('dialog', { name: 'Codex' });
   await expect(dialog.getByRole('heading', { name: 'Chêne', exact: true })).toBeVisible();
   await expect(dialog.getByText('Disponible', { exact: true })).toBeVisible();

@@ -6,6 +6,7 @@ import { poweredCasinoIds } from '../leisure/poweredCasinos';
 import { serviceCoverage } from '../services/services';
 import { hasBrtOnlyAccess } from '../map/placement';
 import { transportStats } from '../transit/transport';
+import { waterStats } from '../water/boats';
 import { GAME_CONFIG } from './config';
 import type { GameEvent } from './events';
 import { advanceProduction, shiftRunningTimers } from '../economy/production';
@@ -68,7 +69,7 @@ function replay(state: GameState, until: number): AdvanceResult {
       if (running?.startedAt != null) end = Math.min(end, now + Math.max(0, running.duration - (now - running.startedAt)) / ratio);
       if (!idleShops.has(b.id)) for (const stack of b.stacks) if (stack.nextSaleAt !== null && stack.stock > 0) end = Math.min(end, now + Math.max(0, stack.nextSaleAt - now) / ratio);
     }
-    const cost = energy.costPerHour + transport.costPerHour;
+    const cost = energy.costPerHour + transport.costPerHour + waterStats(current).costPerHour;
     const budgetEnd = cost > 0 ? now + current.urbs / cost * ECOLOGY.hourMs : Infinity;
     end = Math.min(end, budgetEnd);
     const coalEnd = transport.coalPerHour > 0 ? now + (current.storage.materials.coal ?? 0) / transport.coalPerHour * ECOLOGY.hourMs : Infinity;

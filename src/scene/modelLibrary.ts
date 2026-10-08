@@ -1,7 +1,8 @@
 import { fitNatureModel } from './natureModelFit';
+import { waterOutline } from './waterShape';
 import { fitRailCorner } from './railModelFit';
 import * as THREE from 'three';
-import { FIELD_SOIL_MODEL, GARAGE_DOOR_MODEL, RED_CROSS_MODEL, type TextureVariant } from './renderItems';
+import { FIELD_SOIL_MODEL, GARAGE_DOOR_MODEL, RED_CROSS_MODEL, WATER_TILE_MODEL, BRIDGE_DECK_MODEL, type TextureVariant } from './renderItems';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class ModelLibrary {
@@ -85,7 +86,7 @@ export class ModelLibrary {
 
   private load(key: string): Promise<void> {
     if (this.models.has(key)) return Promise.resolve();
-    const procedural = key === RED_CROSS_MODEL ? buildRedCross : key === GARAGE_DOOR_MODEL ? buildGarageDoor : key === FIELD_SOIL_MODEL ? buildFieldSoil : null;
+    const procedural = key === RED_CROSS_MODEL ? buildRedCross : key === GARAGE_DOOR_MODEL ? buildGarageDoor : key === FIELD_SOIL_MODEL ? buildFieldSoil : key.startsWith(`${WATER_TILE_MODEL}:`) ? () => buildWaterTile(...(key.slice(WATER_TILE_MODEL.length + 1).split(':') as [string, string, string])) : key === BRIDGE_DECK_MODEL ? buildBridgeDeck : null;
     if (procedural) {
       this.models.set(key, procedural());
       return Promise.resolve();
@@ -123,6 +124,34 @@ function buildFieldSoil(): THREE.Object3D {
   const soil = new THREE.Mesh(new THREE.BoxGeometry(0.94, 0.02, 0.94), new THREE.MeshStandardMaterial({ color: 0x6b4a2f, roughness: 1 }));
   soil.position.y = 0.01;
   group.add(soil);
+  group.updateMatrixWorld(true);
+  return group;
+}
+
+const WATER_THICKNESS = 0.04;
+const WATER_MATERIAL = new THREE.MeshStandardMaterial({ color: 0x3f8fd8, roughness: 0.25, metalness: 0.1 });
+
+function waterSlab(points: readonly (readonly [number, number])[]): THREE.Mesh {
+  const shape = new THREE.Shape(points.map(([x, z]) => new THREE.Vector2(x, z)));
+  const geometry = new THREE.ExtrudeGeometry(shape, { depth: WATER_THICKNESS, bevelEnabled: false });
+  geometry.rotateX(Math.PI / 2);
+  geometry.translate(0, WATER_THICKNESS, 0);
+  return new THREE.Mesh(geometry, WATER_MATERIAL);
+}
+
+function buildWaterTile(code: string, edges: string, variant: string): THREE.Object3D {
+  const { outline, fillets } = waterOutline(code, edges, Number(variant));
+  const group = new THREE.Group();
+  group.add(waterSlab(outline), ...fillets.map(waterSlab));
+  group.updateMatrixWorld(true);
+  return group;
+}
+
+function buildBridgeDeck(): THREE.Object3D {
+  const group = new THREE.Group();
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(1, 0.1, 1), new THREE.MeshStandardMaterial({ color: 0x8a8f98, roughness: 0.8 }));
+  deck.position.y = 0.05;
+  group.add(deck);
   group.updateMatrixWorld(true);
   return group;
 }

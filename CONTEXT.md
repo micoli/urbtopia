@@ -196,6 +196,46 @@ _Avoid_: Wind turbine, Factory
 A building that supplies water capacity to the city.
 _Avoid_: Pump, water plant
 
+**Water tile**:
+A 1x1 tile laid by the player on free owned land to make it navigable. Boats are placed on Water tiles. Not to be confused with water as a utility (Water tower, Capacity, Demand).
+_Avoid_: Lake, river, sea, pond
+
+**Boat**:
+A persistent object bought with Urbs and placed on a Water tile connected to a Marina. It is saved, and drifts visually over connected Water tiles. A Boat belongs to one family for life: Pleasure boat, Casino boat or Fishing boat.
+_Avoid_: Vehicle (a visual projection, never saved), ship, watercraft
+
+**Pleasure boat**:
+A Boat that is a Leisure building: it raises the Well-being of nearby Homes, has an operating cost in Urbs and is never required. Unlike other workplaces it offers no Jobs. It has no effect when not connected to a Marina, or when its operating cost cannot be paid.
+_Avoid_: Yacht, ferry
+
+**Casino boat**:
+A Boat that is a Casino: it offers Minigames under the same rules and has the same Tiers. It needs no power, so it is never shed on a shortage; it has an operating cost in Urbs equal to the energy bill of a Casino of the same Tier through Backup power. Without Urbs to pay it, it stops offering Minigames.
+_Avoid_: Floating casino, riverboat
+
+**Fishing boat**:
+A Boat that produces a Material over a fixed production time, like a Workshop, with no Jobs and no Commute. The Material is stored in the Storehouse and turned into Goods by a Factory.
+_Avoid_: Trawler, fisher
+
+**Fish**:
+The Material produced by a Fishing boat. A Factory turns it into Canned fish.
+_Avoid_: Seafood, catch
+
+**Canned fish**:
+The Good a Factory makes from Fish, sold in Shops or to the Market.
+_Avoid_: Fish product
+
+**Marina**:
+A building on land touching a Water tile, reached by Road. Boats can only be placed on the Water tiles connected to a Marina's; its Tier sets how many Boats it holds and how many Slots a Fishing boat has. It collects the operating cost of the Pleasure boats and Casino boats connected to it.
+_Avoid_: Port, harbour, dock
+
+**Bridge**:
+A structure of fixed length (1, 2, 3 or 5 tiles) carrying a Road over Water tiles, from one bank to the other, aligned with a Road or Crossing at each end. It joins the Road graph. Boats cannot be placed on it but still navigate beneath it, and it opens for them: see Bridge opening.
+_Avoid_: Viaduct, overpass
+
+**Bridge opening**:
+The raising of a Bridge in two leaves when a Boat has to pass beneath it, each leaf hinged on its bank (a 1-tile Bridge has one leaf; 3 tiles give 2 + 1, 5 tiles give 3 + 2). Traffic stops before it, like at a red light. Its cost is a closed fraction of time, from the Boats that can reach the Bridge, which lowers the capacity of its Road tiles.
+_Avoid_: Lift, swing, drawbridge cycle
+
 **Market**:
 The simulated (non-player) buyer that purchases Goods from the player.
 _Avoid_: Trade hub, exchange, auction
@@ -332,10 +372,13 @@ _Avoid_: Merge, overwrite
 
 - A Cloud save never replaces the local save without the player's consent when a Save conflict exists.
 - A Casino is a Leisure building, never a Public facility.
+- A Pleasure boat is a Leisure building and a Casino boat is a Casino, both hosted by a Boat on a Water tile.
+- Removing a Water tile that carries a Boat or a Bridge, a Marina that holds Boats, or a Water tile that would cut a Boat off its Marina is refused.
+- A Bridge is part of the Road graph: Commute, Congestion and Pedestrian paths use it like any Road. Bridge openings lower its capacity in proportion to the Boats that can reach it.
 - A building touching both a Road and a BRT corridor keeps the Road as its primary access, and its front faces the Road.
 - Removing the last access of a building, Road or BRT corridor, is refused.
 - Service vehicles stay on the network of their facility and never switch between Road and BRT corridor.
-- A Casino is shed first when electricity falls short, before Homes, except during an Adaptation period.
+- A Casino is shed first when electricity falls short, before Homes, except during an Adaptation period. A Casino boat is never shed: it uses no power.
 - A Minigame round of chance draws from the game's Seed; its outcome is fixed when the Stake is debited.
 - A blockmatch round pays by stars on top of the returned Stake: none loses the Stake, 1 star wins 25% of it, 2 stars 50%, 3 stars 100%.
 

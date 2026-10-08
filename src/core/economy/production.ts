@@ -110,7 +110,12 @@ export function restartRunningProduction(building: Building, now: number): Build
 }
 
 export function shiftRunningTimers(state: GameState, shiftMs: number): GameState {
-  return shiftCropTimers(shiftBuildingTimers(state, shiftMs), shiftMs);
+  return shiftBoatTimers(shiftCropTimers(shiftBuildingTimers(state, shiftMs), shiftMs), shiftMs);
+}
+
+function shiftBoatTimers(state: GameState, shiftMs: number): GameState {
+  if (!state.boats) return state;
+  return { ...state, boats: state.boats.map((boat) => (boat.catchSince === undefined ? boat : { ...boat, catchSince: boat.catchSince + shiftMs })) };
 }
 
 function shiftBuildingTimers(state: GameState, shiftMs: number): GameState {

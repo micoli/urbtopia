@@ -93,6 +93,21 @@ export interface PlantedCrop {
   plantedAt: number;
 }
 
+export type BoatFamily = 'pleasure' | 'fishing' | 'casino';
+
+export interface Boat extends Coord {
+  id: number;
+  family: BoatFamily;
+  marinaId: number;
+  catchSince?: number;
+  tier?: number;
+}
+
+export interface Bridge extends Coord {
+  length: number;
+  axis: 'x' | 'y';
+}
+
 export interface FieldTile extends Coord {
   crop?: PlantedCrop;
 }
@@ -102,6 +117,9 @@ export type SeedStock = Partial<Record<string, number>>;
 export interface GameState {
   seedStock: SeedStock;
   fields: FieldTile[];
+  waterTiles?: Coord[];
+  boats?: Boat[];
+  bridges?: Bridge[];
   brtRoads?: TransitTile[];
   rails?: TransitTile[];
   transitLines?: TransitLine[];

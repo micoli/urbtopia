@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { newGame, type Coord, type GameState } from '../core';
 import { buildRoadGraph } from './roadGraph';
-import { MIN_GAP, advanceTrafficVehicle, distanceToLeader, isSpotFree, nodeIsFree, pickLane, startBusVehicle, type TrafficVehicle } from './vehicleTraffic';
+import { MIN_GAP, edgeKey, advanceTrafficVehicle, distanceToLeader, isSpotFree, nodeIsFree, pickLane, startBusVehicle, type TrafficVehicle } from './vehicleTraffic';
 import { poseOf } from './vehicleMotion';
 
 function graphOf(roads: [number, number][]) {
@@ -114,6 +114,29 @@ describe('stopping for pedestrians', () => {
     const car = vehicle(1, { x: 0, y: 5 }, { x: 1, y: 5 }, 0.3, 0, 4);
     advanceTrafficVehicle(row, car, 1, one, [car], lanesAt);
     expect(car.from).toEqual({ x: 1, y: 5 });
+  });
+});
+
+describe('stopping at the gate of a Bridge', () => {
+  const gate = new Set([edgeKey({ x: 0, y: 5 }, { x: 1, y: 5 })]);
+
+  it('holds a vehicle on the bank in front of the gate', () => {
+    const car = vehicle(1, { x: 0, y: 5 }, { x: 1, y: 5 }, 0.1, 0, 4);
+    for (let step = 0; step < 5; step++) advanceTrafficVehicle(row, car, 1, one, [car], lanesAt, gate);
+    expect(car.from).toEqual({ x: 0, y: 5 });
+    expect(car.progress).toBeCloseTo(0.3);
+  });
+
+  it('never holds a vehicle that is already on the deck, whatever its next tile', () => {
+    const car = vehicle(1, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.1, 0, 4);
+    advanceTrafficVehicle(row, car, 1, one, [car], lanesAt, gate);
+    expect(car.from).toEqual({ x: 2, y: 5 });
+  });
+
+  it('does not hold the opposite direction, which leaves the deck', () => {
+    const car = vehicle(1, { x: 1, y: 5 }, { x: 0, y: 5 }, 0.1, 0, 4);
+    advanceTrafficVehicle(row, car, 1, one, [car], lanesAt, gate);
+    expect(car.from).toEqual({ x: 0, y: 5 });
   });
 });
 

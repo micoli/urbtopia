@@ -18,6 +18,7 @@ export type BuildingId =
   | 'holiday-lantern'
   | 'home'
   | 'hospital'
+  | 'marina'
   | 'middleSchool'
   | 'mini-forest-building-platform'
   | 'mini-forest-building-roof'

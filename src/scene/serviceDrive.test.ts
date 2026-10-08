@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Coord } from '../core';
 import { driveServiceTrip, startServiceTrip, type TrafficContext } from './serviceDrive';
 import { TRAFFIC_OPTIONS } from './trafficOptions';
-import type { TrafficVehicle } from './vehicleTraffic';
+import { edgeKey, type TrafficVehicle } from './vehicleTraffic';
 
 const path: Coord[] = [0, 1, 2, 3].map((x) => ({ x, y: 5 }));
 const single = () => 1;
@@ -51,5 +51,33 @@ describe('service vehicles and traffic', () => {
     let finished = false;
     for (let step = 0; step < 6 && !finished; step++) finished = driveServiceTrip(trip, 1, context([trip.vehicle]));
     expect(finished).toBe(true);
+  });
+});
+
+describe('service vehicles and Bridge gates', () => {
+  const gate = new Set([edgeKey(path[1]!, path[2]!)]);
+
+  it('stop in front of a Bridge that is open, even though they ignore traffic', () => {
+    const trip = startServiceTrip(path, -3, 2);
+    for (let step = 0; step < 80; step++) expect(driveServiceTrip(trip, 0.1, null, gate)).toBe(false);
+    expect(trip.vehicle.from).toEqual(path[1]);
+    expect(trip.vehicle.to).toEqual(path[2]);
+    expect(trip.vehicle.progress).toBeCloseTo(0.3);
+  });
+
+  it('go on once the Bridge is closed again', () => {
+    const trip = startServiceTrip(path, -3, 2);
+    for (let step = 0; step < 40; step++) driveServiceTrip(trip, 0.1, null, gate);
+    let finished = false;
+    for (let step = 0; step < 80 && !finished; step++) finished = driveServiceTrip(trip, 0.1, null);
+    expect(finished).toBe(true);
+  });
+
+  it('still honour the gates when subject to traffic', () => {
+    const trip = startServiceTrip(path, -3, 2);
+    const traffic = context([trip.vehicle]);
+    for (let step = 0; step < 80; step++) driveServiceTrip(trip, 0.1, traffic, gate);
+    expect(trip.vehicle.from).toEqual(path[1]);
+    expect(trip.vehicle.progress).toBeCloseTo(0.3);
   });
 });

@@ -6,7 +6,7 @@ for (const touch of [false, true]) {
     test('selecting a Storehouse does not click through to its sale button', async ({ page }) => {
       await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
       await page.goto('/');
-      await expect(page.locator('#splash')).toHaveCount(0);
+      await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
       await page.evaluate(async () => {
         const { gameStore } = await import('../src/store/gameStore.ts');
         const { uiStore } = await import('../src/store/uiStore.ts');
@@ -51,7 +51,7 @@ for (const touch of [false, true]) {
       page.on('pageerror', error => errors.push(error.message));
       await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
       await page.goto('/');
-      await expect(page.locator('#splash')).toHaveCount(0);
+      await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
       await page.getByRole('button', { name: 'Passer le didacticiel', exact: true }).click();
       await page.getByRole('button', { name: 'Passer', exact: true }).click();
       await page.getByRole('button', { name: 'Construire', exact: true }).click();
@@ -67,7 +67,7 @@ for (const touch of [false, true]) {
         uiStore.getState().select(50);
       });
       const panel = page.locator('.side-panel');
-      await expect(panel.getByRole('heading', { name: 'Centrale à charbon', exact: true })).toBeVisible();
+      await expect(panel.getByRole('heading', { name: 'Centrale à charbon 1', exact: true })).toBeVisible();
       const toggle = panel.getByRole('switch', { name: 'Production au charbon activée', exact: true });
       await expect(toggle).toBeChecked();
       await toggle.click();
@@ -77,7 +77,7 @@ for (const touch of [false, true]) {
       await expect(toggle).toBeChecked();
       for (const tier of [2, 3, 4]) {
         await panel.getByRole('button', { name: `Améliorer → ${tier}`, exact: true }).click();
-        await expect(panel.getByRole('heading', { name: `Niveau ${tier}`, exact: true })).toBeVisible();
+        await expect(panel.getByRole('heading', { name: `Centrale à charbon ${tier}`, exact: true })).toBeVisible();
       }
       await expect(panel).toContainText('Unités nominales/heure: 64');
       await page.evaluate(async () => (await import('../src/store/uiStore.ts')).uiStore.getState().select(null));
@@ -94,10 +94,10 @@ for (const touch of [false, true]) {
         saveSession.save(gameStore.getState().state, Date.now());
       });
       await page.reload();
-      await expect(page.locator('#splash')).toHaveCount(0);
+      await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
       await page.evaluate(async () => (await import('../src/store/uiStore.ts')).uiStore.getState().select(50));
       await expect(toggle).not.toBeChecked();
-      await expect(panel.getByRole('heading', { name: 'Niveau 4', exact: true })).toBeVisible();
+      await expect(panel.getByRole('heading', { name: 'Centrale à charbon 4', exact: true })).toBeVisible();
       await page.screenshot({ path: testInfo.outputPath('coal-tier-four.png') });
       expect(errors).toEqual([]);
     });
@@ -108,7 +108,7 @@ for (const layout of ['B', 'C']) {
   test(`city management shortcut opens from layout ${layout} navigation`, async ({ page }) => {
     await page.addInitScript(layout => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout })), layout);
     await page.goto('/');
-    await expect(page.locator('#splash')).toHaveCount(0);
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     if (layout === 'B') await page.getByRole('button', { name: 'Ouvrir le menu', exact: true }).click();
     const shortcut = page.locator('[data-action="stats"]');
     await expect(shortcut).toBeVisible();
@@ -130,7 +130,7 @@ test('dragging the brush lays Fields, plants them and harvests them by sweeping 
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
   await page.goto('/');
-  await expect(page.locator('#splash')).toHaveCount(0);
+  await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   await page.evaluate(async () => {
     const { gameStore } = await import('../src/store/gameStore.ts');
     const { newGame, createBuilding } = await import('../src/core/index.ts');

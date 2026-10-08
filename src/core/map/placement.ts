@@ -3,9 +3,10 @@ import type { AccessMode } from '../buildings/buildingDefinition';
 import type { Coord } from './coord';
 import { frontDirection, neighbour, tileKey } from './geometry';
 import { isInsideOwnedParcels, isRoadLike, occupiedTiles } from './occupancy';
+import { touchesWater } from '../water/marina';
 import type { BuildingType, GameState, Rotation } from '../engine/state';
 
-export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.storehouseExists' | 'error.siloExists' | 'error.vaultExists' | 'error.grainSiloExists' | 'error.noFarm' | 'error.farmExists' | 'error.packhouseExists' | 'error.townHallExists' | 'error.notEnoughUrbs';
+export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.needsWater' | 'error.storehouseExists' | 'error.siloExists' | 'error.vaultExists' | 'error.grainSiloExists' | 'error.noFarm' | 'error.farmExists' | 'error.packhouseExists' | 'error.townHallExists' | 'error.notEnoughUrbs';
 
 const UNIQUE_BUILDING_ERRORS: Partial<Record<BuildingType, PlacementIssue>> = {
   storehouse: 'error.storehouseExists',
@@ -71,6 +72,7 @@ export function placementIssue(
   const occupied = occupiedTiles(state, ignoreBuildingId);
   if (tiles.some((tile) => occupied.has(tileKey(tile)))) return 'error.tilesOccupied';
   if (BUILDING_SPECS[type].requiresRoad && !frontHasAccess(state, type, x, y, rotation, tier)) return BUILDING_SPECS[type].accessModes.includes('brt') ? 'error.needsRoadOrBrt' : 'error.needsRoad';
+  if (type === 'marina' && !touchesWater(state, { type, x, y, rotation, tier })) return 'error.needsWater';
   if (isMove) return null;
   const existsError = UNIQUE_BUILDING_ERRORS[type];
   if (existsError && state.buildings.some((building) => building.type === type)) return existsError;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, newGame, type GameState } from '../core';
-import { MODEL_KEYS, modelOf, railItems, chunkKeyOf, renderItemsOf } from './renderItems';
+import { MODEL_KEYS, PROCEDURAL_MODELS, WATER_TILE_MODEL, modelOf, railItems, chunkKeyOf, renderItemsOf } from './renderItems';
 
 describe('renderItemsOf', () => {
   const state = newGame({ seed: 'amber-fox-4821', now: 0 });
@@ -156,5 +156,65 @@ describe('renderItemsOf farming', () => {
 
   it('preloads every crop model', () => {
     expect(MODEL_KEYS).toEqual(expect.arrayContaining(['crops/Wheat_1', 'crops/Palmtree_1'.replace('Palmtree', 'PalmTree'), 'crops/Flowers_Crop', 'farm/Barn', 'farm/OpenBarn']));
+  });
+});
+
+describe('water models', () => {
+  it('are built on demand from the shape of each tile, not preloaded as one model', () => {
+    expect(PROCEDURAL_MODELS).not.toContain(WATER_TILE_MODEL);
+    expect(PROCEDURAL_MODELS.every((key) => !key.startsWith(`${WATER_TILE_MODEL}:`))).toBe(true);
+  });
+});
+
+describe('renderItemsOf water', () => {
+  const base = { ...newGame({ seed: 'water-render', now: 0 }), roads: [], buildings: [] };
+
+  it('lays a water tile on every Water tile, centred on its tile', () => {
+    const items = renderItemsOf({ ...base, waterTiles: [{ x: 50, y: 60 }] });
+    expect(items).toHaveLength(1);
+    expect(items[0]).toMatchObject({ x: 50.5, z: 60.5, rotation: 0 });
+    expect(items[0]!.model).toMatch(/^procedural\/water-tile:vvvv:/);
+  });
+
+  it('rounds the outer corners and fills the inside corner of an L-shaped lake', () => {
+    const lake = [{ x: 50, y: 60 }, { x: 51, y: 60 }, { x: 50, y: 61 }];
+    const codes = renderItemsOf({ ...base, waterTiles: lake }).map((item) => item.model.split(':')[1]);
+    expect(codes).toEqual(['vfcf', 'fvvf', 'ffvv']);
+  });
+
+  it('does not fill an inside corner onto a road', () => {
+    const lake = [{ x: 50, y: 60 }, { x: 51, y: 60 }, { x: 50, y: 61 }];
+    const withRoad = { ...base, waterTiles: lake, roads: [{ x: 51, y: 61, kind: 'road' as const }] };
+    const first = renderItemsOf(withRoad).find((item) => item.x === 50.5 && item.z === 60.5)!;
+    expect(first.model.split(':')[1]).toBe('vfff');
+  });
+
+  it('keeps the same items while the Water tiles do not change', () => {
+    const state = { ...base, waterTiles: [{ x: 50, y: 60 }] };
+    expect(renderItemsOf({ ...state, urbs: 1 })).toBe(renderItemsOf(state));
+  });
+});
+
+describe('renderItemsOf boats', () => {
+  it('leaves Boats to the animated Boat layer', () => {
+    const state = { ...newGame({ seed: 'boat-render', now: 0 }), roads: [], buildings: [], waterTiles: [{ x: 50, y: 60 }], boats: [{ id: 7, family: 'pleasure' as const, marinaId: 1, x: 50, y: 60 }] };
+    expect(renderItemsOf(state).map((item) => item.model.split(':')[1])).toEqual(['vvvv']);
+  });
+});
+
+describe('renderItemsOf bridges', () => {
+  const base = {
+    ...newGame({ seed: 'bridge-render', now: 0 }), buildings: [],
+    waterTiles: [{ x: 52, y: 50 }],
+    roads: [{ x: 51, y: 50, kind: 'road' as const }, { x: 52, y: 50, kind: 'road' as const }, { x: 53, y: 50, kind: 'road' as const }],
+    bridges: [{ x: 52, y: 50, length: 1, axis: 'x' as const }],
+  };
+
+  it('leaves the deck and the Road of a Bridge to the animated Bridge layer', () => {
+    const items = renderItemsOf(base);
+    expect(items.some((item) => item.model === 'procedural/bridge-deck')).toBe(false);
+    expect(items.some((item) => item.x === 52.5 && item.model.startsWith('roads/'))).toBe(false);
+    expect(items.some((item) => item.x === 51.5 && item.model.startsWith('roads/'))).toBe(true);
+    expect(items.some((item) => item.x === 52.5 && item.model.startsWith('procedural/water-tile'))).toBe(true);
   });
 });

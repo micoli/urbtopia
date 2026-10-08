@@ -11,7 +11,7 @@ import { CasinoHeader } from '../../CasinoHeader.tsx';
 import { ActionButton } from '../../../common/ActionButton';
 
 interface BlockmatchGameProps {
-  casino: Building;
+  casino: Pick<Building, 'id' | 'tier'>;
 }
 
 export function BlockmatchGame({ casino }: BlockmatchGameProps) {

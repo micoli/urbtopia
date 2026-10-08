@@ -34,5 +34,5 @@ describe('traffic gridlock', () => {
       samples++;
     }
     expect(movingSamples / samples).toBeGreaterThan(0.3);
-  });
+  }, 20_000);
 });

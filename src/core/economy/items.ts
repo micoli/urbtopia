@@ -2,8 +2,8 @@ import { CROPS, CROP_IDS, type CropId } from '../farming/crops';
 import type { BuildingType } from '../engine/state';
 
 export type BaseMaterialId = 'wood' | 'stone' | 'clay' | 'metal' | 'silicon' | 'sand' | 'coal' | 'gold';
-export type MaterialId = BaseMaterialId | CropId;
-export type BaseGoodId = 'planks' | 'bricks' | 'tiles' | 'tools' | 'glass' | 'circuits' | 'steel' | 'cement' | 'jewelry' | 'crystal';
+export type MaterialId = BaseMaterialId | CropId | 'fish';
+export type BaseGoodId = 'planks' | 'cannedFish' | 'bricks' | 'tiles' | 'tools' | 'glass' | 'circuits' | 'steel' | 'cement' | 'jewelry' | 'crystal';
 export type CropCrateId = `${CropId}Crate`;
 export type CropBoxId = `${CropId}Box`;
 export type CropPalletId = `${CropId}Pallet`;
@@ -30,7 +30,9 @@ const CROP_MATERIALS = Object.fromEntries(
   CROP_IDS.map((id): [CropId, MaterialSpec] => [id, { durationMs: CROPS[id].growthMs, unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 }]),
 ) as Record<CropId, MaterialSpec>;
 
-export const MATERIALS: Record<MaterialId, MaterialSpec> = { ...BASE_MATERIALS, ...CROP_MATERIALS };
+export const FISH_MATERIAL: MaterialSpec = { durationMs: 6 * MINUTE_MS, unlockCitizens: 100, minTier: 1 };
+
+export const MATERIALS: Record<MaterialId, MaterialSpec> = { ...BASE_MATERIALS, ...CROP_MATERIALS, fish: FISH_MATERIAL };
 
 export interface GoodSpec {
   recipe: Partial<Record<MaterialId, number>>;
@@ -42,6 +44,7 @@ export interface GoodSpec {
 
 const BASE_GOODS: Record<BaseGoodId, GoodSpec> = {
   planks: { recipe: { wood: 2 }, durationMs: 2 * MINUTE_MS, value: 14, unlockCitizens: 0, minTier: 1 },
+  cannedFish: { recipe: { fish: 2 }, durationMs: 5 * MINUTE_MS, value: 80, unlockCitizens: 100, minTier: 1 },
   bricks: { recipe: { stone: 2, wood: 1 }, durationMs: 4 * MINUTE_MS, value: 34, unlockCitizens: 0, minTier: 1 },
   tiles: { recipe: { clay: 2 }, durationMs: 6 * MINUTE_MS, value: 62, unlockCitizens: 30, minTier: 1 },
   tools: { recipe: { metal: 1, wood: 1 }, durationMs: 8 * MINUTE_MS, value: 80, unlockCitizens: 80, minTier: 1 },

@@ -1,4 +1,4 @@
-import { BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
+import { MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -99,6 +99,10 @@ export function validateGameState(value: unknown): GameState | null {
   if (!valid) return null;
   if (value.timeOffset !== undefined && (!isNonNegative(value.timeOffset) || value.timeOffset > Number.MAX_SAFE_INTEGER)) return null;
   if (value.adaptationUntil !== undefined && !isNumber(value.adaptationUntil)) return null;
+  if (value.waterTiles !== undefined && !isArrayOf(value.waterTiles, tile => isRecord(tile) && isCoord(tile))) return null;
+  if (value.waterTiles !== undefined && new Set((value.waterTiles as { x: number; y: number }[]).map(tile => `${tile.x}:${tile.y}`)).size !== (value.waterTiles as unknown[]).length) return null;
+  if (value.boats !== undefined && !isArrayOf(value.boats, boat => isRecord(boat) && isCoord(boat) && isInt(boat.id, 1) && BOAT_FAMILIES.includes(boat.family as never) && isInt(boat.marinaId, 1) && (boat.catchSince === undefined || (boat.family === 'fishing' && isNumber(boat.catchSince))) && (boat.tier === undefined || (boat.family === 'casino' && isInt(boat.tier, 1, MAX_CASINO_TIER))))) return null;
+  if (value.bridges !== undefined && !isArrayOf(value.bridges, bridge => isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string))) return null;
   if (value.casinoRng !== undefined && !isNumber(value.casinoRng)) return null;
   if (value.ecologyDismissed !== undefined && typeof value.ecologyDismissed !== 'boolean') return null;
   if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&
@@ -116,8 +120,22 @@ export function validateGameState(value: unknown): GameState | null {
     (l.mode !== 'brt' || (l.peakHeadway >= 5 && l.peakHeadway <= 10 && l.offPeakHeadway >= 10 && l.offPeakHeadway <= 15)))) return null;
   if (value.transitFleet !== undefined && !isArrayOf(value.transitFleet, v => isRecord(v) && isInt(v.id, 1) && ['brtElectric', 'trainElectric', 'trainCoal'].includes(v.kind as string) && isNonNegative(v.purchasePrice) && (v.lineId === undefined || isInt(v.lineId, 1)))) return null;
   const state = value as unknown as GameState;
-  const ids = [...state.buildings.map(b => b.id), ...(state.busLines ?? []).map(l => l.id), ...(state.transitLines ?? []).map(l => l.id), ...(state.transitFleet ?? []).map(v => v.id)];
+  const ids = [...state.buildings.map(b => b.id), ...(state.boats ?? []).map(b => b.id), ...(state.busLines ?? []).map(l => l.id), ...(state.transitLines ?? []).map(l => l.id), ...(state.transitFleet ?? []).map(v => v.id)];
   if (new Set(ids).size !== ids.length || ids.some(id => id >= state.nextId)) return null;
+  const roadKeys = new Set(state.roads.map(road => `${road.x}:${road.y}`));
+  const bridged = new Set<string>();
+  for (const bridge of state.bridges ?? []) {
+    for (let step = 0; step < bridge.length; step++) {
+      const key = bridge.axis === 'x' ? `${bridge.x + step}:${bridge.y}` : `${bridge.x}:${bridge.y + step}`;
+      if (bridged.has(key) || !roadKeys.has(key) || !(state.waterTiles ?? []).some(tile => `${tile.x}:${tile.y}` === key)) return null;
+      bridged.add(key);
+    }
+  }
+  const waterKeys = new Set((state.waterTiles ?? []).map(tile => `${tile.x}:${tile.y}`));
+  for (const boat of state.boats ?? []) {
+    if (!waterKeys.has(`${boat.x}:${boat.y}`) || !state.buildings.some(b => b.id === boat.marinaId && b.type === 'marina')) return null;
+  }
+  if (new Set((state.boats ?? []).map(boat => `${boat.x}:${boat.y}`)).size !== (state.boats ?? []).length) return null;
   for (const line of state.busLines ?? []) {
     if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && b.type === 'busStop')))) return null;
   }
