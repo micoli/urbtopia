@@ -2,7 +2,8 @@ import { citizensOf } from '../buildings/city';
 import type { BuildingType, Building, GameState } from '../engine/state';
 import type { Coord } from '../map/coord';
 import { tileKey } from '../map/geometry';
-import { frontTiles } from '../map/placement';
+import { footprintTiles } from '../buildings/buildingSpecs';
+import { frontAccessModes, frontTiles } from '../map/placement';
 import { accessNodes, crossingsOnPath, nearestTarget, pedestrianGraph, walkFrom, type PedestrianGraph } from '../map/pedestrianGraph';
 import { buildRoadGraph, neighboursOf, type RoadGraph } from '../map/roadGraph';
 import { FACILITY_TYPES } from '../services/facilities';
@@ -85,10 +86,12 @@ function layoutSignature(state: GameState, now: number): string {
   const transport = transportStats(state, now);
   const buildings = state.buildings
     .filter((building) => building.type === 'home' || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null)
-    .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${transport.homeRiders.get(building.id) ?? 0}`);
+    .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${transport.homeRiders.get(building.id) ?? 0}:${isCovered(transport, building.id) ? 1 : 0}:${frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier).join('+')}`);
   const lines = transport.lines.map((line) => `${line.id}:${line.capacity.toFixed(2)}:${line.riders.toFixed(2)}:${line.mode === 'bus' && line.active && line.route ? line.route.map(tileKey).join(';') : ''}`);
   return [...buildings, ...lines].join('|');
 }
+
+const isCovered = (transport: ReturnType<typeof transportStats>, homeId: number) => transport.homeLines.has(homeId);
 
 function activeBusRoutes(transport: ReturnType<typeof transportStats>): BusRoute[] {
   return transport.lines.flatMap((line) => (line.mode === 'bus' && line.active && line.route ? [{ id: line.id, route: line.route }] : []));
@@ -97,16 +100,17 @@ function activeBusRoutes(transport: ReturnType<typeof transportStats>): BusRoute
 function withModalShift(state: GameState, now: number): CongestionStats {
   const transport = transportStats(state, now);
   const buses = activeBusRoutes(transport);
-  const first = calculateCongestion(state, transport.homeRiders, buses);
+  const covered = new Set(transport.homeLines.keys());
+  const first = calculateCongestion(state, transport.homeRiders, covered, buses);
   const effective = first.speedFactors.size > 0 ? transportStats(state, now, first.speedFactors) : transport;
   const shift = modalShift(state, effective, first);
   if (shift.total === 0 && effective === transport) return first;
   const riders = new Map(effective.homeRiders);
   for (const [id, moved] of shift.byHome) riders.set(id, (riders.get(id) ?? 0) + moved);
-  return { ...calculateCongestion(state, riders, buses), shift, busSpeeds: first.busSpeeds, speedFactors: first.speedFactors, slowedLines: first.slowedLines };
+  return { ...calculateCongestion(state, riders, covered, buses), shift, busSpeeds: first.busSpeeds, speedFactors: first.speedFactors, slowedLines: first.slowedLines };
 }
 
-function calculateCongestion(state: GameState, riders: ReadonlyMap<number, number>, buses: readonly BusRoute[] = []): CongestionStats {
+function calculateCongestion(state: GameState, riders: ReadonlyMap<number, number>, covered: ReadonlySet<number>, buses: readonly BusRoute[] = []): CongestionStats {
   const graph = buildRoadGraph(state);
   const tiers = new Map(state.roads.map((road) => [tileKey(road), road.tier ?? 1]));
   const walkable = pedestrianGraph(state);
@@ -117,7 +121,7 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
   const walkingTrips = emptyTrips();
   const workplaceById = new Map(workplaces.map((workplace) => [workplace.building.id, workplace]));
   const jobs = workplaces.reduce((sum, workplace) => sum + jobsOf(workplace.building), 0);
-  if (graph.size === 0 || workplaces.length === 0 || homes.length === 0) return noCommute(homes, jobs);
+  if (graph.size === 0 || workplaces.length === 0 || homes.length === 0) return noCommute(state, homes, jobs, covered, riders);
   const components = labelComponents(graph);
   const componentOf = (endpoint: Endpoint) => components.labels.get(tileKey(endpoint.access[0] ?? { x: NaN, y: NaN }));
   const homeComponents = new Set(homes.map(componentOf));
@@ -132,11 +136,18 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
   let walkersTotal = 0;
   let transitTotal = 0;
   let unemployedTotal = 0;
+  const brtOnlyDisconnected: Coord[][] = [];
   for (const home of homes) {
     const citizens = citizensOf(home.building.tier);
     const homeRiders = Math.min(citizens, riders.get(home.building.id) ?? 0);
     const wanting = citizens - homeRiders;
     transitTotal += homeRiders;
+    if (isBrtOnly(state, home)) {
+      const entry = brtOnlyEntry(covered.has(home.building.id));
+      result.set(home.building.id, entry);
+      if (entry.disconnected) brtOnlyDisconnected.push(footprintTiles(home.building));
+      continue;
+    }
     const walk = walkFrom(walkable, WALKING.enabled ? home.sidewalks : [], maxWalkCost());
     const walkAccess = WALKING.enabled ? walkServices(walk, destinations, citizens, pedestrians, walkingTrips) : 0;
     const options = home.access.length === 0 ? [] : reachableWorkplaces(graph, home, workplaces);
@@ -221,15 +232,30 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     shift: NO_SHIFT,
     worstBottleneck: worstSection(sections),
     saturatedSections: [...sections.values()].filter((section) => section.ratio > 1).length,
-    disconnectedSections: [...brokenComponents].map((id) => components.members.get(id)!),
+    disconnectedSections: [...[...brokenComponents].map((id) => components.members.get(id)!), ...brtOnlyDisconnected],
   };
 }
 
-function noCommute(homes: Endpoint[], jobs: number): CongestionStats {
+function isBrtOnly(state: GameState, home: Endpoint): boolean {
+  if (home.access.length > 0) return false;
+  const { type, x, y, rotation, tier } = home.building;
+  return frontAccessModes(state, type, x, y, rotation, tier).includes('brt');
+}
+
+function brtOnlyEntry(covered: boolean): HomeCongestion {
+  return { commuters: 0, walkers: 0, walkAccess: 0, unemployed: 0, ratio: covered ? 0 : CONGESTION.maxRatio, disconnected: !covered };
+}
+
+function noCommute(state: GameState, homes: Endpoint[], jobs: number, covered: ReadonlySet<number>, riders: ReadonlyMap<number, number>): CongestionStats {
+  const entries = homes.map((home): [number, HomeCongestion] => [home.building.id, isBrtOnly(state, home) ? brtOnlyEntry(covered.has(home.building.id)) : { commuters: 0, walkers: 0, walkAccess: 0, unemployed: 0, ratio: 0, disconnected: false }]);
+  const stranded = homes.filter((home) => isBrtOnly(state, home) && !covered.has(home.building.id));
+  const population = homes.reduce((sum, home) => sum + citizensOf(home.building.tier), 0);
+  const transit = homes.reduce((sum, home) => sum + Math.min(citizensOf(home.building.tier), riders.get(home.building.id) ?? 0), 0);
+  const weighted = stranded.reduce((sum, home) => sum + citizensOf(home.building.tier) * CONGESTION.maxRatio, 0);
   return {
     sections: new Map(),
-    homes: new Map(homes.map((home) => [home.building.id, { commuters: 0, walkers: 0, walkAccess: 0, unemployed: 0, ratio: 0, disconnected: false }])),
-    index: 0,
+    homes: new Map(entries),
+    index: population > 0 ? weighted / population : 0,
     commuters: 0,
     walkers: 0,
     walkingTrips: emptyTrips(),
@@ -239,13 +265,13 @@ function noCommute(homes: Endpoint[], jobs: number): CongestionStats {
     busSpeeds: new Map(),
     speedFactors: new Map(),
     slowedLines: 0,
-    modes: { car: 0, transit: 0, walking: 0 },
+    modes: { car: 0, transit, walking: 0 },
     jobs,
     unemployed: 0,
     shift: NO_SHIFT,
     worstBottleneck: null,
     saturatedSections: 0,
-    disconnectedSections: [],
+    disconnectedSections: stranded.map((home) => footprintTiles(home.building)),
   };
 }
 

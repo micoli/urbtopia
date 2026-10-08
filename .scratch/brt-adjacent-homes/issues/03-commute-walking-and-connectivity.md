@@ -1,6 +1,6 @@
 # BRT-only access in Commute, walking and connectivity
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01
 
 ## What to build
@@ -9,10 +9,10 @@ A building reached only by BRT has no car Commute and no Pedestrian path, and a 
 
 ## Acceptance criteria
 
-- [ ] A BRT-only Home has empty road `access` in `congestion.ts` and no sidewalk node in `pedestrianGraph.ts` `accessNodes`
-- [ ] A BRT-only Home covered by no BRT station is flagged disconnected: red cross, maximum Congestion; covered by a station it is not
-- [ ] Buildings served by a Road behave exactly as before
-- [ ] Deterministic across calls and catch-up
-- [ ] Unit tests: no Commute, no walking trip, disconnected with and without a station (prior art: `congestion.test.ts`, `walkingCommute.test.ts`)
+- [x] A BRT-only Home has empty road `access` in `congestion.ts` and no sidewalk node in `pedestrianGraph.ts` `accessNodes`
+- [x] A BRT-only Home covered by no BRT station is flagged disconnected: red cross, maximum Congestion; covered by a station it is not
+- [x] Buildings served by a Road behave exactly as before
+- [x] Deterministic across calls and catch-up
+- [x] Unit tests: no Commute, no walking trip, disconnected with and without a station (prior art: `congestion.test.ts`, `walkingCommute.test.ts`)
 
 ## Comments
