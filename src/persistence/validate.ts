@@ -102,6 +102,7 @@ export function validateGameState(value: unknown): GameState | null {
   if (value.waterTiles !== undefined && !isArrayOf(value.waterTiles, tile => isRecord(tile) && isCoord(tile))) return null;
   if (value.waterTiles !== undefined && new Set((value.waterTiles as { x: number; y: number }[]).map(tile => `${tile.x}:${tile.y}`)).size !== (value.waterTiles as unknown[]).length) return null;
   if (value.boats !== undefined && !isArrayOf(value.boats, boat => isRecord(boat) && isCoord(boat) && isInt(boat.id, 1) && BOAT_FAMILIES.includes(boat.family as never) && isInt(boat.marinaId, 1) && (boat.catchSince === undefined || (boat.family === 'fishing' && isNumber(boat.catchSince))) && (boat.tier === undefined || (boat.family === 'casino' && isInt(boat.tier, 1, MAX_CASINO_TIER))))) return null;
+  if (value.bridges !== undefined && !isArrayOf(value.bridges, bridge => isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string))) return null;
   if (value.casinoRng !== undefined && !isNumber(value.casinoRng)) return null;
   if (value.ecologyDismissed !== undefined && typeof value.ecologyDismissed !== 'boolean') return null;
   if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&
@@ -121,6 +122,15 @@ export function validateGameState(value: unknown): GameState | null {
   const state = value as unknown as GameState;
   const ids = [...state.buildings.map(b => b.id), ...(state.boats ?? []).map(b => b.id), ...(state.busLines ?? []).map(l => l.id), ...(state.transitLines ?? []).map(l => l.id), ...(state.transitFleet ?? []).map(v => v.id)];
   if (new Set(ids).size !== ids.length || ids.some(id => id >= state.nextId)) return null;
+  const roadKeys = new Set(state.roads.map(road => `${road.x}:${road.y}`));
+  const bridged = new Set<string>();
+  for (const bridge of state.bridges ?? []) {
+    for (let step = 0; step < bridge.length; step++) {
+      const key = bridge.axis === 'x' ? `${bridge.x + step}:${bridge.y}` : `${bridge.x}:${bridge.y + step}`;
+      if (bridged.has(key) || !roadKeys.has(key) || !(state.waterTiles ?? []).some(tile => `${tile.x}:${tile.y}` === key)) return null;
+      bridged.add(key);
+    }
+  }
   const waterKeys = new Set((state.waterTiles ?? []).map(tile => `${tile.x}:${tile.y}`));
   for (const boat of state.boats ?? []) {
     if (!waterKeys.has(`${boat.x}:${boat.y}`) || !state.buildings.some(b => b.id === boat.marinaId && b.type === 'marina')) return null;

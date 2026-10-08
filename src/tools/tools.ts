@@ -1,6 +1,8 @@
 import {
   extendNetwork,
   BOATS,
+  bridgeCost,
+  bridgeTiles,
   BUILDING_SPECS,
   GAME_CONFIG,
   buyableParcels,
@@ -46,6 +48,8 @@ export type Tool =
   | { kind: 'upgradeRoad'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'parcel' }
   | { kind: 'boat'; family: BoatFamily; marinaId: number }
+  | { kind: 'bridge'; length: number }
+  | { kind: 'removeBridge' }
   | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] };
 
 export type PathTool = Extract<Tool, { kind: 'road' | 'demolishRoad' | 'upgradeRoad' }>;
@@ -160,6 +164,10 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
       return evaluateUpgradeRoad(state, tool, tile);
     case 'parcel':
       return evaluateParcel(state, tile);
+    case 'bridge':
+      return evaluateBridge(state, tool.length, tile);
+    case 'removeBridge':
+      return evaluation([tile], { type: 'RemoveBridge', x: tile.x, y: tile.y }, state);
     case 'boat':
       return evaluation([tile], { type: 'BuyBoat', family: tool.family, marinaId: tool.marinaId, x: tile.x, y: tile.y }, state, { cost: BOATS[tool.family].cost });
     case 'brush':
@@ -261,6 +269,14 @@ function lineBetween(from: Coord, to: Coord): Coord[] {
     const ratio = (index + 1) / steps;
     return { x: Math.round(from.x + (to.x - from.x) * ratio), y: Math.round(from.y + (to.y - from.y) * ratio) };
   });
+}
+
+function evaluateBridge(state: GameState, length: number, tile: Coord): Evaluation {
+  const attempts = (['x', 'y'] as const).map((axis) => {
+    const command: Command = { type: 'PlaceBridge', x: tile.x, y: tile.y, length, axis };
+    return evaluation(bridgeTiles({ x: tile.x, y: tile.y, length, axis }), command, state, { cost: bridgeCost(length) ?? null });
+  });
+  return attempts.find((attempt) => attempt.valid) ?? attempts[0]!;
 }
 
 function evaluateParcel(state: GameState, tile: Coord): Evaluation {

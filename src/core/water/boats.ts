@@ -4,6 +4,7 @@ import { tileKey } from '../map/geometry';
 import type { Coord } from '../map/coord';
 import type { CommandOutcome } from '../engine/commands';
 import type { Boat, BoatFamily, Building, GameState } from '../engine/state';
+import { bridgeKeys } from './bridges';
 import { CASINO, MAX_CASINO_TIER } from '../leisure/casino';
 import { connectedWaterKeys, marinaCapacity } from './marina';
 
@@ -47,7 +48,7 @@ export function buyBoat(state: GameState, family: BoatFamily, marinaId: number, 
   const marina = marinaOf(state, marinaId);
   if (!marina) return { key: 'error.unknownBuilding' };
   if (!connectedWaterKeys(state, marina).has(tileKey(tile))) return { key: 'error.notOnMarinaWater' };
-  if (boatsOf(state).some((boat) => tileKey(boat) === tileKey(tile))) return { key: 'error.tilesOccupied' };
+  if (boatsOf(state).some((boat) => tileKey(boat) === tileKey(tile)) || bridgeKeys(state).has(tileKey(tile))) return { key: 'error.tilesOccupied' };
   if (boatsOfMarina(state, marinaId).length >= marinaCapacity(marina)) return { key: 'error.marinaFull' };
   if (state.urbs < spec.cost) return { key: 'error.notEnoughUrbs' };
   const boat: Boat = { id: state.nextId, family, marinaId, x: tile.x, y: tile.y, ...(family === 'fishing' ? { catchSince: state.lastSeen } : {}), ...(family === 'casino' ? { tier: 1 } : {}) };

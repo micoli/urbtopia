@@ -182,3 +182,19 @@ describe('renderItemsOf boats', () => {
     expect(items[1]).toMatchObject({ x: 50.5, z: 60.5 });
   });
 });
+
+describe('renderItemsOf bridges', () => {
+  const base = {
+    ...newGame({ seed: 'bridge-render', now: 0 }), buildings: [],
+    waterTiles: [{ x: 52, y: 50 }],
+    roads: [{ x: 51, y: 50, kind: 'road' as const }, { x: 52, y: 50, kind: 'road' as const }, { x: 53, y: 50, kind: 'road' as const }],
+    bridges: [{ x: 52, y: 50, length: 1, axis: 'x' as const }],
+  };
+
+  it('lifts the Road of a Bridge and lays a deck under it', () => {
+    const items = renderItemsOf(base);
+    expect(items.filter((item) => item.model === 'procedural/bridge-deck')).toHaveLength(1);
+    expect(items.find((item) => item.x === 52.5 && item.model.startsWith('roads/'))?.elevation).toBeGreaterThan(0);
+    expect(items.find((item) => item.x === 51.5 && item.model.startsWith('roads/'))?.elevation).toBeUndefined();
+  });
+});

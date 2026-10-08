@@ -255,6 +255,17 @@ describe('brush tool', () => {
     expect(evaluated.cost).toBe(400);
   });
 
+  it('previews a Bridge from the hovered tile, trying the horizontal then the vertical axis', () => {
+    const horizontal = evaluateTool({ kind: 'bridge', length: 3 }, { state: farmCity, tile: { x: 50, y: 50 }, rotation: null });
+    expect(horizontal.command).toEqual({ type: 'PlaceBridge', x: 50, y: 50, length: 3, axis: 'x' });
+    expect(horizontal.ghost.tiles).toEqual([{ x: 50, y: 50 }, { x: 51, y: 50 }, { x: 52, y: 50 }]);
+    expect(horizontal.cost).toBe(450);
+  });
+
+  it('removes a Bridge from the hovered tile', () => {
+    expect(evaluateTool({ kind: 'removeBridge' }, { state: farmCity, tile: { x: 50, y: 50 }, rotation: null }).command).toEqual({ type: 'RemoveBridge', x: 50, y: 50 });
+  });
+
   it('sends the command when the drag ends and keeps the tool with an empty brush', () => {
     const tool: Tool = { kind: 'brush', action: 'layField', tiles: [{ x: 50, y: 52 }] };
     const current = evaluateTool(tool, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null });

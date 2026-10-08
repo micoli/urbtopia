@@ -1,7 +1,7 @@
 import { fitNatureModel } from './natureModelFit';
 import { fitRailCorner } from './railModelFit';
 import * as THREE from 'three';
-import { FIELD_SOIL_MODEL, GARAGE_DOOR_MODEL, RED_CROSS_MODEL, WATER_TILE_MODEL, type TextureVariant } from './renderItems';
+import { FIELD_SOIL_MODEL, GARAGE_DOOR_MODEL, RED_CROSS_MODEL, WATER_TILE_MODEL, BRIDGE_DECK_MODEL, type TextureVariant } from './renderItems';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class ModelLibrary {
@@ -85,7 +85,7 @@ export class ModelLibrary {
 
   private load(key: string): Promise<void> {
     if (this.models.has(key)) return Promise.resolve();
-    const procedural = key === RED_CROSS_MODEL ? buildRedCross : key === GARAGE_DOOR_MODEL ? buildGarageDoor : key === FIELD_SOIL_MODEL ? buildFieldSoil : key === WATER_TILE_MODEL ? buildWaterTile : null;
+    const procedural = key === RED_CROSS_MODEL ? buildRedCross : key === GARAGE_DOOR_MODEL ? buildGarageDoor : key === FIELD_SOIL_MODEL ? buildFieldSoil : key === WATER_TILE_MODEL ? buildWaterTile : key === BRIDGE_DECK_MODEL ? buildBridgeDeck : null;
     if (procedural) {
       this.models.set(key, procedural());
       return Promise.resolve();
@@ -132,6 +132,15 @@ function buildWaterTile(): THREE.Object3D {
   const water = new THREE.Mesh(new THREE.BoxGeometry(1, 0.04, 1), new THREE.MeshStandardMaterial({ color: 0x3f8fd8, roughness: 0.25, metalness: 0.1 }));
   water.position.y = 0.02;
   group.add(water);
+  group.updateMatrixWorld(true);
+  return group;
+}
+
+function buildBridgeDeck(): THREE.Object3D {
+  const group = new THREE.Group();
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(1, 0.1, 1), new THREE.MeshStandardMaterial({ color: 0x8a8f98, roughness: 0.8 }));
+  deck.position.y = 0.05;
+  group.add(deck);
   group.updateMatrixWorld(true);
   return group;
 }

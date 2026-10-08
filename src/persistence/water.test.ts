@@ -58,3 +58,25 @@ describe('boat save compatibility', () => {
     expect(parseEnvelope(serializeEnvelope(state as never, 100))).toEqual({ ok: false, reason: 'invalid-state' });
   });
 });
+
+describe('bridge save compatibility', () => {
+  const base = () => ({
+    ...newGame({ seed: 'bridge-save', now: 0 }),
+    waterTiles: [{ x: 52, y: 50 }, { x: 53, y: 50 }],
+    roads: [{ x: 52, y: 50, kind: 'road' as const }, { x: 53, y: 50, kind: 'road' as const }],
+  });
+
+  it('round-trips Bridges', () => {
+    const state = { ...base(), bridges: [{ x: 52, y: 50, length: 2, axis: 'x' as const }] };
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+  });
+
+  it.each([
+    [[{ x: 52, y: 50, length: 4, axis: 'x' }]],
+    [[{ x: 52, y: 50, length: 2, axis: 'z' }]],
+    [[{ x: 52, y: 50, length: 3, axis: 'x' }]],
+    [[{ x: 52, y: 50, length: 2, axis: 'x' }, { x: 53, y: 50, length: 1, axis: 'x' }]],
+  ])('rejects invalid Bridges %j', bridges => {
+    expect(parseEnvelope(serializeEnvelope({ ...base(), bridges } as never, 100))).toEqual({ ok: false, reason: 'invalid-state' });
+  });
+});

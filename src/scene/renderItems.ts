@@ -1,5 +1,5 @@
 import { BUILDING_ENTRIES } from '../core/buildings/buildingDefinitions';
-import { CROP_IDS, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type BoatFamily, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
+import { CROP_IDS, bridgeKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type BoatFamily, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
 import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
@@ -51,9 +51,11 @@ export const RED_CROSS_MODEL = 'procedural/red-cross';
 export const GARAGE_DOOR_MODEL = 'procedural/garage-door';
 export const FIELD_SOIL_MODEL = 'procedural/field-soil';
 export const WATER_TILE_MODEL = 'procedural/water-tile';
+export const BRIDGE_DECK_MODEL = 'procedural/bridge-deck';
+const BRIDGE_ELEVATION = 0.1;
 export const BOAT_MODELS: Record<BoatFamily, string> = { pleasure: 'watercraft/boat-sail-a', fishing: 'watercraft/boat-fishing-small', casino: 'watercraft/ship-ocean-liner-small' };
 const BOAT_ELEVATION = 0.04;
-export const PROCEDURAL_MODELS: readonly string[] = [RED_CROSS_MODEL, GARAGE_DOOR_MODEL, FIELD_SOIL_MODEL, WATER_TILE_MODEL];
+export const PROCEDURAL_MODELS: readonly string[] = [RED_CROSS_MODEL, GARAGE_DOOR_MODEL, FIELD_SOIL_MODEL, WATER_TILE_MODEL, BRIDGE_DECK_MODEL];
 
 const GARAGE_DOOR_SPACING = 0.6;
 const GARAGE_DOOR_HEIGHT = 0.27;
@@ -145,7 +147,7 @@ export function modelOfBuilding(building: Building): string {
 }
 
 let lastBuildingItems: RenderItem[] = [];
-let lastRoadItems: { roads: GameState['roads']; roundabouts: GameState['roundabouts']; rails: GameState['rails']; brtRoads: GameState['brtRoads']; items: RenderItem[] } | null = null;
+let lastRoadItems: { bridges: GameState['bridges']; roads: GameState['roads']; roundabouts: GameState['roundabouts']; rails: GameState['rails']; brtRoads: GameState['brtRoads']; items: RenderItem[] } | null = null;
 let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; fields: RenderItem[]; water: RenderItem[]; items: RenderItem[] } | null = null;
 
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
@@ -169,8 +171,8 @@ export function renderItemsOf(state: GameState, afterHarvest: readonly Harvested
   const buildings = sameItems(builtBuildings, lastBuildingItems) ? lastBuildingItems : builtBuildings;
   lastBuildingItems = buildings;
 
-  if (lastRoadItems?.roads !== state.roads || lastRoadItems.roundabouts !== state.roundabouts || lastRoadItems.rails !== state.rails || lastRoadItems.brtRoads !== state.brtRoads) {
-    lastRoadItems = { roads: state.roads, roundabouts: state.roundabouts, rails: state.rails, brtRoads: state.brtRoads, items: [...roadItems(state), ...brtItems(state), ...railItems(state)] };
+  if (lastRoadItems?.roads !== state.roads || lastRoadItems.bridges !== state.bridges || lastRoadItems.roundabouts !== state.roundabouts || lastRoadItems.rails !== state.rails || lastRoadItems.brtRoads !== state.brtRoads) {
+    lastRoadItems = { bridges: state.bridges, roads: state.roads, roundabouts: state.roundabouts, rails: state.rails, brtRoads: state.brtRoads, items: [...roadItems(state), ...brtItems(state), ...railItems(state)] };
   }
   const roads = lastRoadItems.items;
 
@@ -215,15 +217,21 @@ function fieldItems(state: GameState, afterHarvest: readonly HarvestedTile[]): R
 function waterItems(state: GameState): RenderItem[] {
   const tiles = (state.waterTiles ?? []).map((tile) => ({ model: WATER_TILE_MODEL, x: tile.x + 0.5, z: tile.y + 0.5, rotation: 0 }));
   const boats = (state.boats ?? []).map((boat) => ({ model: BOAT_MODELS[boat.family], x: boat.x + 0.5, z: boat.y + 0.5, rotation: boat.id % 4, elevation: BOAT_ELEVATION }));
-  return [...tiles, ...boats];
+  const decks = [...bridgeKeys(state)].map((key) => {
+    const [x = 0, y = 0] = key.split(',').map(Number);
+    return { model: BRIDGE_DECK_MODEL, x: x + 0.5, z: y + 0.5, rotation: 0 };
+  });
+  return [...tiles, ...decks, ...boats];
 }
 
 function roadItems(state: GameState): RenderItem[] {
   const brtKeys = new Set((state.brtRoads ?? []).map(tileKey));
+  const onBridge = bridgeKeys(state);
   const tiles = state.roads.map((road) => {
+    const elevation = onBridge.has(tileKey(road)) ? BRIDGE_ELEVATION : undefined;
     if (brtKeys.has(tileKey(road))) return { model: 'roads/road-crossroad', x: road.x + 0.5, z: road.y + 0.5, rotation: 0 };
     const { piece, rotation } = roadPiece(roadExits(state, road), road.kind);
-    return { model: `roads/road-${piece}`, x: road.x + 0.5, z: road.y + 0.5, rotation };
+    return { model: `roads/road-${piece}`, x: road.x + 0.5, z: road.y + 0.5, rotation, ...(elevation === undefined ? {} : { elevation }) };
   });
   const roundabouts = state.roundabouts.map((center) => ({ model: 'roads/road-roundabout', x: center.x + 0.5, z: center.y + 0.5, rotation: 0 }));
   return [...tiles, ...roundabouts];

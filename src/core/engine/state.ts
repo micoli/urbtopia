@@ -103,6 +103,11 @@ export interface Boat extends Coord {
   tier?: number;
 }
 
+export interface Bridge extends Coord {
+  length: number;
+  axis: 'x' | 'y';
+}
+
 export interface FieldTile extends Coord {
   crop?: PlantedCrop;
 }
@@ -114,6 +119,7 @@ export interface GameState {
   fields: FieldTile[];
   waterTiles?: Coord[];
   boats?: Boat[];
+  bridges?: Bridge[];
   brtRoads?: TransitTile[];
   rails?: TransitTile[];
   transitLines?: TransitLine[];
