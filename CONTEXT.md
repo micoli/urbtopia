@@ -128,6 +128,38 @@ _Avoid_: Hand, spin, game
 The Urbs the player puts on a Minigame round, from fixed steps capped by the Casino's Tier and never above the Urbs balance. It is debited when the round starts and lost if the round is left unfinished.
 _Avoid_: Bet, wager, buy-in
 
+**Venue**:
+A building the player fits out and runs from the inside: Arcade, Supermarket or Hotel. Unlike a Casino, the player never plays in it: simulated visitors do, and the player manages Fixtures, Staff and prices to earn Urbs. Its Tier sets the size of its interior and its number of Staff posts.
+_Avoid_: Establishment, business, Casino
+
+**Management view**:
+The page that opens from a Venue's side panel and shows its interior, where the player builds Fixtures and hires Staff.
+_Avoid_: Interior, editor, back office
+
+**Fixture**:
+An item the player places inside a Venue's interior: a counter, a table, a chair, a game machine, a billiard table, an air hockey table. Its position relative to the other Fixtures affects the Venue's performance.
+_Avoid_: Furniture, equipment, decoration
+
+**Staff**:
+The workers of a Venue, held as roles (manager, employee, technician, security), not as individuals. Each role fills a post of the Venue's Tier, is staffed by Citizens like a Job, and costs a daily wage in Urbs.
+_Avoid_: Employee (one of the roles), worker, personnel
+
+**Condition**:
+The wear state of a Fixture, lowered by use. A Fixture whose Condition is too low breaks down and stops earning. It is never discarded for wear: it is repaired.
+_Avoid_: Durability, health, usury
+
+**Repair**:
+The act of restoring a Fixture's Condition, paid in Urbs, by the player or by a Technician. A Repair always costs less than buying the Fixture again.
+_Avoid_: Maintenance, replacement, fix
+
+**Takings**:
+The Urbs a Venue has earned and not yet collected, net of Staff wages and Fixture upkeep. Capped by the Venue's Tier like Tax, and collected by hand. A Venue whose wages cannot be paid closes.
+_Avoid_: Revenue, income, till
+
+**Visitor**:
+A simulated customer of a Venue, modelled in aggregate. Arcade and Supermarket draw them from the surrounding Citizens; a Hotel draws them from outside the city, by the city's attractiveness. Only a visual silhouette is shown, never saved.
+_Avoid_: Customer, guest, Citizen
+
 **Vehicle**:
 A visual automobile that drives along the roads. It is a projection of the city's Congestion: its presence follows the Commuters who drive, two Vehicles never overlap, and individual Vehicles are not saved.
 _Avoid_: Car, automobile
@@ -372,6 +404,9 @@ _Avoid_: Merge, overwrite
 
 - A Cloud save never replaces the local save without the player's consent when a Save conflict exists.
 - A Casino is a Leisure building, never a Public facility.
+- A Venue is distinct from a Casino and a Shop: Minigames and Stakes belong to the Casino only.
+- A breakdown of a Fixture is drawn from the Venue's own stream of the game's Seed, so reloading never dodges it.
+- A Venue is simulated in aggregate per game tick, collected by hand like Tax, and replayed by Catch-up.
 - A Pleasure boat is a Leisure building and a Casino boat is a Casino, both hosted by a Boat on a Water tile.
 - Removing a Water tile that carries a Boat or a Bridge, a Marina that holds Boats, or a Water tile that would cut a Boat off its Marina is refused.
 - A Bridge is part of the Road graph: Commute, Congestion and Pedestrian paths use it like any Road. Bridge openings lower its capacity in proportion to the Boats that can reach it.
