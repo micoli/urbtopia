@@ -25,13 +25,17 @@ describe('Venue zoom', () => {
     expect(nextZoom(nextZoom(1.2, -80), 80)).toBeCloseTo(1.2, 9);
   });
 
-  it('lets the view move only when it is zoomed in', () => {
-    expect(maxPan(1, 6)).toBe(0);
-    expect(maxPan(0.8, 6)).toBe(0);
+  it('lets the view be dragged a little at the default zoom and further when zoomed in', () => {
+    expect(maxPan(1, 6)).toBeGreaterThan(0);
+    expect(maxPan(0.8, 6)).toBe(maxPan(1, 6));
     expect(maxPan(3, 6)).toBeGreaterThan(maxPan(2, 6));
-    expect(clampPan({ x: 5, z: -5 }, 1, 6)).toEqual({ x: 0, z: 0 });
+    expect(maxPan(2, 10)).toBeGreaterThan(maxPan(2, 6));
+  });
+
+  it('keeps the pan inside its limit, and leaves a small one alone', () => {
     const limit = maxPan(2, 6);
     expect(clampPan({ x: 99, z: -99 }, 2, 6)).toEqual({ x: limit, z: -limit });
     expect(clampPan({ x: 0.5, z: -0.5 }, 3, 6)).toEqual({ x: 0.5, z: -0.5 });
+    expect(clampPan({ x: 0, z: 0 }, 1, 6)).toEqual({ x: 0, z: 0 });
   });
 });

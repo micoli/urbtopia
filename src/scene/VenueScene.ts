@@ -41,7 +41,8 @@ export class VenueScene {
   private resizeObserver: ResizeObserver;
   private frameHandle = 0;
   private dirty = true;
-  private pointerDown: { x: number; y: number } | null = null;
+  private pointerDown: { x: number; y: number; ground: THREE.Vector3 | null } | null = null;
+  private dragged = false;
   private lastFixtures: readonly VenueFixture[] = [];
   private builtSize = 0;
   private disposed = false;
@@ -223,18 +224,39 @@ export class VenueScene {
   }
 
   private handlePointerDown = (event: PointerEvent): void => {
-    this.pointerDown = { x: event.clientX, y: event.clientY };
+    this.pointerDown = { x: event.clientX, y: event.clientY, ground: this.groundAt(event.clientX, event.clientY) };
+    this.dragged = false;
+    try {
+      this.canvas.setPointerCapture(event.pointerId);
+    } catch {
+      // A pointer that is no longer active cannot be captured; the drag still works inside the canvas.
+    }
   };
 
   private handlePointerUp = (event: PointerEvent): void => {
     const start = this.pointerDown;
     this.pointerDown = null;
-    if (!start || Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_DISTANCE) return;
+    this.canvas.style.cursor = '';
+    if (this.canvas.hasPointerCapture(event.pointerId)) this.canvas.releasePointerCapture(event.pointerId);
+    if (!start || this.dragged) return;
     const cell = this.cellAt(event.clientX, event.clientY);
     if (cell) this.onTapCell(cell);
   };
 
+  // Dragging with the button down moves the room under the pointer, as in the city.
   private handlePointerMove = (event: PointerEvent): void => {
+    const start = this.pointerDown;
+    if (start && (this.dragged || Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_DISTANCE)) {
+      this.dragged = true;
+      this.canvas.style.cursor = 'grabbing';
+      const now = this.groundAt(event.clientX, event.clientY);
+      if (start.ground && now) {
+        this.pan = clampPan({ x: this.pan.x + start.ground.x - now.x, z: this.pan.z + start.ground.z - now.z }, this.zoom, this.size);
+        this.resize();
+      }
+      this.onHoverCell(null);
+      return;
+    }
     this.onHoverCell(this.cellAt(event.clientX, event.clientY));
   };
 

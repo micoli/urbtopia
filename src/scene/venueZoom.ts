@@ -8,9 +8,9 @@ export function nextZoom(current: number, deltaY: number): number {
   return clamp(current * Math.exp(step), ZOOM.min, ZOOM.max);
 }
 
-// The view can only be moved away from the centre of the room as far as the zoom reveals something there.
+// How far the view can be dragged away from the centre of the room: a little at the default zoom, more as it is zoomed in.
 export function maxPan(zoom: number, size: number): number {
-  return Math.max(0, zoom - 1) * size * 0.5;
+  return (0.35 + 0.5 * Math.max(0, zoom - 1)) * size;
 }
 
 export function clampPan(pan: { x: number; z: number }, zoom: number, size: number): { x: number; z: number } {
