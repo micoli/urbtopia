@@ -189,6 +189,12 @@ button {
   opacity: 0.75;
 }
 
+.flyout-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .flyout-row { display: flex; gap: 6px; align-items: stretch; }
 .flyout-row .flyout-item { flex: 1; min-width: 0; }
 .flyout-info {
