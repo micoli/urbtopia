@@ -93,13 +93,14 @@ export interface PlantedCrop {
   plantedAt: number;
 }
 
-export type BoatFamily = 'pleasure' | 'fishing';
+export type BoatFamily = 'pleasure' | 'fishing' | 'casino';
 
 export interface Boat extends Coord {
   id: number;
   family: BoatFamily;
   marinaId: number;
   catchSince?: number;
+  tier?: number;
 }
 
 export interface FieldTile extends Coord {

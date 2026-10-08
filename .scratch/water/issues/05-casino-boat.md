@@ -1,6 +1,6 @@
 # Casino boat
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 02, 03
 Spec: ../spec.md
 

@@ -4,13 +4,15 @@ import { tileKey } from '../map/geometry';
 import type { Coord } from '../map/coord';
 import type { CommandOutcome } from '../engine/commands';
 import type { Boat, BoatFamily, Building, GameState } from '../engine/state';
+import { CASINO, MAX_CASINO_TIER } from '../leisure/casino';
 import { connectedWaterKeys, marinaCapacity } from './marina';
 
-export const BOAT_FAMILIES: readonly BoatFamily[] = ['pleasure', 'fishing'];
+export const BOAT_FAMILIES: readonly BoatFamily[] = ['pleasure', 'fishing', 'casino'];
 
 export const BOATS = {
   pleasure: { cost: 400, unlockCitizens: 80, radius: 6, wellbeingBonus: 4, operatingCostPerHour: 2 },
   fishing: { cost: 800, unlockCitizens: 100, operatingCostPerHour: 0 },
+  casino: { cost: 3000, unlockCitizens: 300, operatingCostPerHour: 12 },
 } as const;
 
 const FUNDS_EPSILON = 1e-9;
@@ -48,7 +50,7 @@ export function buyBoat(state: GameState, family: BoatFamily, marinaId: number, 
   if (boatsOf(state).some((boat) => tileKey(boat) === tileKey(tile))) return { key: 'error.tilesOccupied' };
   if (boatsOfMarina(state, marinaId).length >= marinaCapacity(marina)) return { key: 'error.marinaFull' };
   if (state.urbs < spec.cost) return { key: 'error.notEnoughUrbs' };
-  const boat: Boat = { id: state.nextId, family, marinaId, x: tile.x, y: tile.y, ...(family === 'fishing' ? { catchSince: state.lastSeen } : {}) };
+  const boat: Boat = { id: state.nextId, family, marinaId, x: tile.x, y: tile.y, ...(family === 'fishing' ? { catchSince: state.lastSeen } : {}), ...(family === 'casino' ? { tier: 1 } : {}) };
   return {
     state: { ...state, urbs: state.urbs - spec.cost, nextId: state.nextId + 1, boats: [...boatsOf(state), boat] },
     events: [],
@@ -62,10 +64,37 @@ export function sellBoat(state: GameState, id: number): CommandOutcome {
   return { state: { ...state, urbs: state.urbs + refund, boats: boatsOf(state).filter((candidate) => candidate !== boat) }, events: [] };
 }
 
+export function boatTier(boat: Boat): number {
+  return boat.tier ?? 1;
+}
+
+export function boatOperatingCost(boat: Boat): number {
+  const hourly = BOATS[boat.family].operatingCostPerHour;
+  return boat.family === 'casino' ? hourly * boatTier(boat) : hourly;
+}
+
+export function upgradeBoat(state: GameState, id: number): CommandOutcome {
+  const boat = boatsOf(state).find((candidate) => candidate.id === id);
+  if (!boat) return { key: 'error.unknownBoat' };
+  if (boat.family !== 'casino') return { key: 'error.cannotProduce' };
+  const next = boatTier(boat) + 1;
+  const price = CASINO.upgradeCosts[next];
+  if (price === undefined || next > MAX_CASINO_TIER) return { key: 'error.maxTier' };
+  if (state.urbs < price) return { key: 'error.notEnoughUrbs' };
+  return { state: { ...state, urbs: state.urbs - price, boats: boatsOf(state).map((candidate) => (candidate === boat ? { ...boat, tier: next } : candidate)) }, events: [] };
+}
+
+export function casinoOf(state: GameState, id: number): { id: number; tier: number } | undefined {
+  const building = state.buildings.find((candidate) => candidate.id === id && candidate.type === 'casino');
+  if (building) return { id, tier: building.tier };
+  const boat = boatsOf(state).find((candidate) => candidate.id === id && candidate.family === 'casino');
+  return boat ? { id, tier: boatTier(boat) } : undefined;
+}
+
 export function waterStats(state: GameState): { costPerHour: number; operating: ReadonlySet<number> } {
   const operating = boatsOf(state).filter((boat) => isBoatOperating(state, boat));
   return {
-    costPerHour: operating.reduce((sum, boat) => sum + BOATS[boat.family].operatingCostPerHour, 0),
+    costPerHour: operating.reduce((sum, boat) => sum + boatOperatingCost(boat), 0),
     operating: new Set(operating.map((boat) => boat.id)),
   };
 }

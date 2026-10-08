@@ -320,6 +320,8 @@ export const FR: Record<MessageKey, string> = {
   'marina.cost': "Coût d'exploitation",
   'boat.pleasure': 'Bateau de plaisance',
   'boat.fishing': 'Bateau de pêche',
+  'boat.casino': 'Bateau casino',
+  'marina.upgrade': 'Améliorer',
   'marina.collect': 'Récolter le poisson',
   'marina.fishReady': 'Poisson prêt',
   'error.notOnMarinaWater': "Un bateau se pose sur une tuile d'eau reliée à sa marina.",

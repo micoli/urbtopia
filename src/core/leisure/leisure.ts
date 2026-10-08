@@ -2,7 +2,7 @@ import { centerOf } from '../environment/ecology';
 import { isWithinReach } from '../services/facilities';
 import { casinoRadius, casinoWellbeingBonus } from './casino';
 import { SPORT_VENUES, isSportVenueType, type SportVenueType } from './sportVenues';
-import { BOATS, boatsOf, isBoatOperating } from '../water/boats';
+import { BOATS, boatTier, boatsOf, isBoatOperating } from '../water/boats';
 import type { Building, GameState } from '../engine/state';
 
 export function casinosReaching(state: GameState, home: Building, powered: ReadonlySet<number>): Building[] {
@@ -32,7 +32,10 @@ export function pleasureBoatsReaching(state: GameState, home: Building): number 
 }
 
 export function leisureRetention(state: GameState, home: Building, powered: ReadonlySet<number>, limit: number): number {
+  const to = centerOf(home);
   const fromCasinos = casinosReaching(state, home, powered).reduce((retained, casino) => retained * (1 - casinoWellbeingBonus(casino.tier) / limit), 1);
-  const withSport = sportVenuesReaching(state, home).reduce((retained, venue) => retained * (1 - SPORT_VENUES[venue.type as SportVenueType].wellbeingBonus / limit), fromCasinos);
+  const casinoBoats = boatsOf(state).filter(boat => boat.family === 'casino' && isBoatOperating(state, boat) && isWithinReach(to.x - (boat.x + 0.5), to.y - (boat.y + 0.5), casinoRadius(boatTier(boat))));
+  const fromBoats = casinoBoats.reduce((retained, boat) => retained * (1 - casinoWellbeingBonus(boatTier(boat)) / limit), fromCasinos);
+  const withSport = sportVenuesReaching(state, home).reduce((retained, venue) => retained * (1 - SPORT_VENUES[venue.type as SportVenueType].wellbeingBonus / limit), fromBoats);
   return withSport * (1 - BOATS.pleasure.wellbeingBonus / limit) ** pleasureBoatsReaching(state, home);
 }

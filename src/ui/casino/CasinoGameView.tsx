@@ -5,7 +5,7 @@ import { SlotMachineGame } from './games/slotMachineGame/SlotMachineGame.tsx';
 
 interface CasinoGameViewProps {
   game: CasinoGame;
-  casino: Building;
+  casino: Pick<Building, 'id' | 'tier'>;
 }
 
 export function CasinoGameView({ game, casino }: CasinoGameViewProps) {

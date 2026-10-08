@@ -205,3 +205,58 @@ describe('Fishing boat', () => {
     expect(queued.storage.materials.fish).toBe(2);
   });
 });
+
+describe('Casino boat', () => {
+  const casinoBoat = (x = 52): Command => ({ type: 'BuyBoat', family: 'casino', marinaId: 100, x, y: 50 });
+  const BIG_CITY = [{ ...createBuilding(1, 'home', 40, 40, 0), tier: 8 }, createBuilding(100, 'marina', 50, 48, 0)];
+  const docked = () => succeed(harbour({ buildings: BIG_CITY }), casinoBoat());
+
+  it('costs 3000 Urbs and unlocks at 300 Citizens', () => {
+    expect(failureKey(harbour(), casinoBoat())).toBe('error.itemLocked');
+    const state = docked();
+    expect(state.urbs).toBe(100_000 - 3000);
+    expect(state.boats).toEqual([{ id: 200, family: 'casino', marinaId: 100, x: 52, y: 50, tier: 1 }]);
+  });
+
+  it('offers the slot machine with the Tier 1 Stake cap', () => {
+    const state = docked();
+    const spun = succeed(state, { type: 'PlaySlotMachine', buildingId: 200, stake: 10 });
+    expect(spun.casinoRng).not.toBe(state.casinoRng);
+    expect(failureKey(state, { type: 'PlaySlotMachine', buildingId: 200, stake: 500 })).toBe('error.invalidStake');
+    expect(failureKey(state, { type: 'StartCasinoRound', buildingId: 200, game: 'blackjack', stake: 10 })).toBe('error.tierTooLow');
+  });
+
+  it('upgrades like a Casino and unlocks the next Minigames', () => {
+    const state = docked();
+    const second = succeed(state, { type: 'UpgradeBoat', id: 200 });
+    expect(second.urbs).toBe(state.urbs - 4000);
+    expect(failureKey(second, { type: 'StartCasinoRound', buildingId: 200, game: 'blackjack', stake: 50 })).toBeNull();
+    const third = succeed(second, { type: 'UpgradeBoat', id: 200 });
+    expect(failureKey(third, { type: 'UpgradeBoat', id: 200 })).toBe('error.maxTier');
+  });
+
+  it('needs no power and is never shed', () => {
+    const state = docked();
+    const noPower = { ...state, buildings: state.buildings.filter((building) => building.type !== 'powerPlant') };
+    expect(failureKey(noPower, { type: 'PlaySlotMachine', buildingId: 200, stake: 10 })).toBeNull();
+  });
+
+  it('pays a running cost that grows with its Tier and shuts when it cannot be paid', () => {
+    const state = docked();
+    const idle = harbour({ buildings: BIG_CITY });
+    expect(idle.urbs - advance(idle, T0 + HOUR).state.urbs - (state.urbs - advance(state, T0 + HOUR).state.urbs)).toBeCloseTo(-12);
+    const broke = { ...state, urbs: 0 };
+    expect(failureKey(broke, { type: 'PlaySlotMachine', buildingId: 200, stake: 10 })).toBe('error.casinoShut');
+  });
+
+  it('raises the Well-being of nearby Homes like a Casino', () => {
+    const near = harbour({ buildings: [{ ...createBuilding(1, 'home', 52, 52, 0), tier: 8 }, createBuilding(100, 'marina', 50, 48, 0)] });
+    const withBoat = succeed(near, casinoBoat());
+    const home = (state: GameState) => state.buildings.find((b) => b.type === 'home')!;
+    expect(homeBenefits(withBoat, home(withBoat)).wellbeing).toBeGreaterThan(homeBenefits(near, home(near)).wellbeing);
+  });
+
+  it('only upgrades Casino boats', () => {
+    expect(failureKey(succeed(harbour(), buy(52)), { type: 'UpgradeBoat', id: 200 })).toBe('error.cannotProduce');
+  });
+});

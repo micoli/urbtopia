@@ -318,6 +318,8 @@ export const MESSAGES = {
   'marina.cost': 'Running cost',
   'boat.pleasure': 'Pleasure boat',
   'boat.fishing': 'Fishing boat',
+  'boat.casino': 'Casino boat',
+  'marina.upgrade': 'Upgrade',
   'marina.collect': 'Collect fish',
   'marina.fishReady': 'Fish ready',
   'error.notOnMarinaWater': 'A Boat goes on a Water tile connected to its Marina.',

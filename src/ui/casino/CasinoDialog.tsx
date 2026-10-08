@@ -3,6 +3,7 @@ import { useStore } from 'zustand';
 import { t } from '../../i18n/t';
 import { casinoStore } from '../../store/casinoStore';
 import { gameStore } from '../../store/gameStore';
+import { casinoOf } from '../../core';
 import { useGame } from '../common/hooks';
 import { CasinoGameView } from './CasinoGameView';
 import { CasinoCloseContext } from './casinoCloseContext';
@@ -13,7 +14,8 @@ export function CasinoDialog() {
   const game = useStore(casinoStore, store => store.game);
   const round = useStore(casinoStore, store => store.round);
   const close = useStore(casinoStore, store => store.close);
-  const casino = useGame(store => store.state.buildings.find(building => building.id === casinoId && building.type === 'casino'));
+  const tier = useGame(store => (casinoId === null ? undefined : casinoOf(store.state, casinoId)?.tier));
+  const casino = casinoId !== null && tier !== undefined ? { id: casinoId, tier } : undefined;
   const [confirmLeave, setConfirmLeave] = useState(false);
   if (!casino || game === null) return null;
 

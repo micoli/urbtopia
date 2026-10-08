@@ -15,7 +15,7 @@ import { ActionButton } from '../../../common/ActionButton';
 const SPIN_MS = slotSpinDuration(SLOT_REEL_COUNT);
 
 interface SlotMachineGameProps {
-  casino: Building;
+  casino: Pick<Building, 'id' | 'tier'>;
 }
 
 export function SlotMachineGame({ casino }: SlotMachineGameProps) {

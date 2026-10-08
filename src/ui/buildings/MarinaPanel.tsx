@@ -1,9 +1,10 @@
-import { BOATS, BOAT_FAMILIES, boatsOfMarina, isBoatOperating, marinaCapacity, readyFish, totalCitizens, type Building } from '../../core';
+import { BOATS, BOAT_FAMILIES, boatOperatingCost, boatsOfMarina, isBoatOperating, marinaCapacity, readyFish, totalCitizens, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { uiStore } from '../../store/uiStore';
 import { useGame } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
+import { CasinoBoatRow } from './CasinoBoatRow';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { UrbsAmount } from '../common/UrbsAmount';
 
@@ -16,7 +17,7 @@ export function MarinaPanel({ building }: MarinaPanelProps) {
   const citizens = totalCitizens(state);
   const boats = boatsOfMarina(state, building.id);
   const capacity = marinaCapacity(building);
-  const costPerHour = boats.filter((boat) => isBoatOperating(state, boat)).reduce((sum, boat) => sum + BOATS[boat.family].operatingCostPerHour, 0);
+  const costPerHour = boats.filter((boat) => isBoatOperating(state, boat)).reduce((sum, boat) => sum + boatOperatingCost(boat), 0);
   const fish = readyFish(state, building.id);
   const { chooseTool } = uiStore.getState();
   const send = gameStore.getState().send;
@@ -31,10 +32,10 @@ export function MarinaPanel({ building }: MarinaPanelProps) {
       ) : null}
       {boats.length === 0 ? <p>{t('marina.empty')}</p> : null}
       {boats.map((boat) => (
-        <p key={boat.id}>
-          {t(`boat.${boat.family}`)}
-          <ActionButton onClick={() => send({ type: 'SellBoat', id: boat.id })}>{t('marina.sell')}</ActionButton>
-        </p>
+        <div key={boat.id}>
+          {boat.family === 'casino' ? <CasinoBoatRow boat={boat} /> : <p>{t(`boat.${boat.family}`)}</p>}
+          <ActionButton onClick={() => send({ type: 'SellBoat', id: boat.id })}>{t('marina.sell')} · {t(`boat.${boat.family}`)}</ActionButton>
+        </div>
       ))}
       {BOAT_FAMILIES.filter((family) => citizens >= BOATS[family].unlockCitizens).map((family) => (
         <ActionButton key={family} disabled={boats.length >= capacity} onClick={() => chooseTool({ kind: 'boat', family, marinaId: building.id })}>

@@ -5,7 +5,8 @@ import { blackjackOutcome, blackjackPayout, replayBlackjack, type BlackjackActio
 import { MAX_BLOCKMATCH_STARS, blockmatchPayout } from './blockmatchRound';
 import { spinSlotMachine } from './slotMachine';
 import type { CommandOutcome } from '../engine/commands';
-import type { Building, GameState } from '../engine/state';
+import { casinoOf, boatsOf, isBoatOperating } from '../water/boats';
+import type { GameState } from '../engine/state';
 
 export function casinoRngState(state: GameState): number {
   return state.casinoRng ?? hashSeed(`${state.seed}:casino`);
@@ -17,16 +18,23 @@ export function withoutOpenRound(state: GameState): GameState {
   return next;
 }
 
-type Opened = { casino: Building } | { error: CommandOutcome };
+type Opened = { casino: { id: number; tier: number } } | { error: CommandOutcome };
 
 function openRound(state: GameState, buildingId: number, stake: number, minTier: number): Opened {
-  const casino = state.buildings.find(building => building.id === buildingId);
-  if (!casino || casino.type !== 'casino') return { error: { key: 'error.unknownBuilding' } };
+  const casino = casinoOf(state, buildingId);
+  if (!casino) return { error: { key: 'error.unknownBuilding' } };
   if (casino.tier < minTier) return { error: { key: 'error.tierTooLow' } };
-  if (!isCasinoPowered(state, casino)) return { error: { key: 'error.casinoShut' } };
+  if (!isOpen(state, casino.id)) return { error: { key: 'error.casinoShut' } };
   if (!isValidStake(casino.tier, stake)) return { error: { key: 'error.invalidStake' } };
   if (state.urbs < stake) return { error: { key: 'error.notEnoughUrbs' } };
   return { casino };
+}
+
+function isOpen(state: GameState, id: number): boolean {
+  const building = state.buildings.find(candidate => candidate.id === id);
+  if (building) return isCasinoPowered(state, building);
+  const boat = boatsOf(state).find(candidate => candidate.id === id);
+  return boat !== undefined && isBoatOperating(state, boat);
 }
 
 export function playSlotMachine(state: GameState, buildingId: number, stake: number): CommandOutcome {

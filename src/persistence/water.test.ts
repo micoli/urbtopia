@@ -39,7 +39,14 @@ describe('boat save compatibility', () => {
     expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
   });
 
+  it('round-trips a Casino boat with its Tier', () => {
+    const state = { ...base(), boats: [{ id: 11, family: 'casino' as const, marinaId: 10, x: 50, y: 50, tier: 2 }] };
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+  });
+
   it.each([
+    [{ id: 11, family: 'casino', marinaId: 10, x: 50, y: 50, tier: 4 }],
+    [{ id: 11, family: 'pleasure', marinaId: 10, x: 50, y: 50, tier: 2 }],
     [{ id: 11, family: 'pleasure', marinaId: 10, x: 50, y: 50, catchSince: 5 }],
     [{ id: 11, family: 'fishing', marinaId: 10, x: 50, y: 50, catchSince: 'now' }],
     [{ id: 11, family: 'yacht', marinaId: 10, x: 50, y: 50 }],
