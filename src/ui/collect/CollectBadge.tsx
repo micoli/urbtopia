@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import {Building, Command, taxDue} from '../../core';
+import { Building, Command, isVenue, taxDue, takingsDue } from '../../core';
 import { gameStore } from '../../store/gameStore';
 import { useProjectedPosition } from '../common/useProjectedPosition';
 import { registerCollector, startSweep } from './collectSweep';
@@ -19,6 +19,10 @@ export function collectBadgeLabel(building: Building): string | null {
   }
   if (building.type === 'home') {
     const due = taxDue(building);
+    return due > 0 ? `+${due}` : null;
+  }
+  if (isVenue(building)) {
+    const due = takingsDue(building.venue);
     return due > 0 ? `+${due}` : null;
   }
   const ready = building.queue.filter((entry) => entry.done).length;
