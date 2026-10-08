@@ -105,6 +105,7 @@ export type ErrorKey =
   | 'error.fieldCapReached'
   | 'error.noFieldHere'
   | 'error.noWaterHere'
+  | 'error.needsWater'
   | 'error.waterInUse'
   | 'error.noSeeds'
   | 'error.nothingToPlant'

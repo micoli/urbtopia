@@ -27,6 +27,7 @@ export { GROWTH_STAGES, cropStage, cropWaterDemand, isCropReady } from './farmin
 export type { CropStage } from './farming/growth';
 export { FIELD_COST, fieldCap } from './farming/fields';
 export { WATER, isWaterTile, waterKeys, waterTilesOf } from './water/waterTiles';
+export { MARINA_TIERS, connectedWaterKeys, marinaCapacity, touchesWater } from './water/marina';
 export { cropReturns, type CropReturns } from './farming/returns';
 export { seedSellPrice, seedStockCapacity, seedStockUsed } from './farming/seeds';
 export { CROPS, CROP_IDS, isCrop } from './farming/crops';

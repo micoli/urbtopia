@@ -2205,5 +2205,17 @@
     "source": "kenney",
     "license": "CC0",
     "scale": 1.5
+  },
+  "watercraft/boat-house-a": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 1.9,
+      "height": 1.6
+    }
   }
 }

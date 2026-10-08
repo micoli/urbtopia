@@ -1,5 +1,5 @@
 import {
-  CASINO_GAMES, COAL_CAPACITY, FACILITIES, FARM_TIERS, HOME_TIERS, STORAGE_TIERS, UTILITY_CAPACITY,
+  CASINO_GAMES, COAL_CAPACITY, MARINA_TIERS, FACILITIES, FARM_TIERS, HOME_TIERS, STORAGE_TIERS, UTILITY_CAPACITY,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
   type StorageType,
 } from '../core';
@@ -85,6 +85,7 @@ export function levelFactsOf(id: CodexId, level: number): LevelFact[] {
   if (id === 'storehouse' || id === 'silo' || id === 'vault' || id === 'grainSilo') return storageFacts(id, level);
   if (id === 'powerPlant' || id === 'waterTower') return [numericFact('codex.fact.output', tier => UTILITY_CAPACITY[id][tier - 1] ?? 0, level)];
   if (id === 'coalPlant') return [numericFact('codex.fact.output', tier => COAL_CAPACITY[tier - 1] ?? 0, level)];
+  if (id === 'marina') return [numericFact('codex.fact.boats', tier => MARINA_TIERS[tier - 1]?.boats ?? 0, level)];
   if (id === 'casino') return casinoFacts(level);
   if (isFacilityType(id) && FACILITIES[id].capacity !== null) {
     return [numericFact('codex.fact.capacity', tier => facilityCapacity(id, tier) ?? 0, level)];
