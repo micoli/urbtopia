@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { fixtureTiles, type Coord, type VenueFixture } from '../core';
+import { FIXTURES, fixtureTiles, type Coord, type VenueFixture } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { VENUE_CROWD_MODELS } from './renderItems';
 import { clipSeconds, makeWorld, pickClip, reconcile, repath, stepAgent, type Agent, type Dice, type World } from './venueAgents';
@@ -93,7 +93,7 @@ export class VenueCrowdLayer {
     const taken = new Set(blocked.map(cell => `${cell.x}:${cell.y}`));
     taken.add(`${this.entrance.x}:${this.entrance.y}`);
     const errands: Coord[] = [];
-    for (const fixture of this.fixtures) {
+    for (const fixture of this.fixtures.filter(candidate => !FIXTURES[candidate.type].partition)) {
       const front = fixtureTiles(fixture)
         .flatMap(tile => [{ x: tile.x, y: tile.y + 1 }, { x: tile.x + 1, y: tile.y }, { x: tile.x - 1, y: tile.y }, { x: tile.x, y: tile.y - 1 }])
         .find(cell => cell.x >= 0 && cell.y >= 0 && cell.x < this.size && cell.y < this.size && !taken.has(`${cell.x}:${cell.y}`));

@@ -1,12 +1,12 @@
 import type { FixtureId, VenueType } from '../engine/state';
 
-export type FixtureCategory = 'games' | 'service' | 'furniture' | 'shelves' | 'checkouts' | 'decor' | 'beds' | 'bathroom' | 'comfort' | 'reception';
+export type FixtureCategory = 'games' | 'service' | 'furniture' | 'shelves' | 'checkouts' | 'decor' | 'beds' | 'bathroom' | 'comfort' | 'reception' | 'walls';
 
 // The sections of the build menu of each kind of Venue, in order.
 export const FIXTURE_CATEGORIES: Record<VenueType, readonly FixtureCategory[]> = {
-  arcade: ['games', 'service', 'furniture'],
-  supermarket: ['shelves', 'checkouts', 'decor'],
-  hotel: ['beds', 'bathroom', 'comfort', 'reception'],
+  arcade: ['games', 'service', 'furniture', 'walls'],
+  supermarket: ['shelves', 'checkouts', 'decor', 'walls'],
+  hotel: ['beds', 'bathroom', 'comfort', 'reception', 'walls'],
 };
 
 export interface FixtureSpec {
@@ -32,6 +32,8 @@ export interface FixtureSpec {
   comfort?: number;
   // Decoration: attractiveness it adds.
   attract?: number;
+  // A wall: it only divides the room, and earns, serves and wears nothing.
+  partition?: true;
 }
 
 const arcade = (spec: Omit<FixtureSpec, 'venue'>): FixtureSpec => ({ venue: 'arcade', ...spec });
@@ -53,6 +55,8 @@ export const FIXTURES: Record<FixtureId, FixtureSpec> = {
   basketball: arcade({ category: 'games', model: 'mini-arcade/basketball-game', footprint: [1, 1], price: 400, minTier: 3, playsPerHour: 6, loud: true }),
   danceMachine: arcade({ category: 'games', model: 'mini-arcade/dance-machine', footprint: [1, 1], price: 500, minTier: 3, playsPerHour: 8, loud: true }),
   prizeWheel: arcade({ category: 'games', model: 'mini-arcade/prize-wheel', footprint: [1, 1], price: 450, minTier: 3, playsPerHour: 5 }),
+  arcadeWall: arcade({ category: 'walls', model: 'mini-arcade/wall', footprint: [1, 1], price: 40, minTier: 1, playsPerHour: 0, partition: true }),
+  arcadeWindow: arcade({ category: 'walls', model: 'mini-arcade/wall-window', footprint: [1, 1], price: 60, minTier: 1, playsPerHour: 0, partition: true }),
   ticketMachine: arcade({ category: 'service', model: 'mini-arcade/ticket-machine', footprint: [1, 1], price: 350, minTier: 3, playsPerHour: 0 }),
 
   checkout: supermarket({ category: 'checkouts', model: 'mini-market/cash-register', footprint: [1, 1], price: 100, minTier: 1, checkout: 20, wear: 0.1 }),
@@ -64,6 +68,8 @@ export const FIXTURES: Record<FixtureId, FixtureSpec> = {
   freezerStanding: supermarket({ category: 'shelves', model: 'mini-market/freezers-standing', footprint: [1, 1], price: 380, minTier: 3, shelf: 20, wear: 0.05 }),
   shoppingBasket: supermarket({ category: 'decor', model: 'mini-market/shopping-basket', footprint: [1, 1], price: 15, minTier: 1, attract: 0.02 }),
   shoppingCart: supermarket({ category: 'decor', model: 'mini-market/shopping-cart', footprint: [1, 1], price: 30, minTier: 1, attract: 0.03 }),
+  marketWall: supermarket({ category: 'walls', model: 'mini-market/wall', footprint: [1, 1], price: 40, minTier: 1, partition: true }),
+  marketWindow: supermarket({ category: 'walls', model: 'mini-market/wall-window', footprint: [1, 1], price: 60, minTier: 1, partition: true }),
   bottleReturn: supermarket({ category: 'decor', model: 'mini-market/bottle-return', footprint: [1, 1], price: 200, minTier: 2, attract: 0.06 }),
 
   receptionDesk: hotel({ category: 'reception', model: 'furniture/desk', footprint: [1, 1], price: 150, minTier: 1, reception: true }),
@@ -79,6 +85,8 @@ export const FIXTURES: Record<FixtureId, FixtureSpec> = {
   rug: hotel({ category: 'comfort', model: 'furniture/rugRectangle', footprint: [2, 1], price: 60, minTier: 1, comfort: 0.5 }),
   pottedPlant: hotel({ category: 'comfort', model: 'furniture/pottedPlant', footprint: [1, 1], price: 35, minTier: 1, comfort: 0.5 }),
   coffeeCorner: hotel({ category: 'comfort', model: 'furniture/kitchenCoffeeMachine', footprint: [1, 1], price: 180, minTier: 2, comfort: 1.5 }),
+  hotelWall: hotel({ category: 'walls', model: 'furniture/wall', footprint: [1, 1], price: 40, minTier: 1, partition: true }),
+  hotelWindow: hotel({ category: 'walls', model: 'furniture/wallWindow', footprint: [1, 1], price: 60, minTier: 1, partition: true }),
   miniFridge: hotel({ category: 'comfort', model: 'furniture/kitchenFridgeSmall', footprint: [1, 1], price: 220, minTier: 3, comfort: 1.5 }),
 };
 

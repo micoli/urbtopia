@@ -77,7 +77,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       hovered = cell;
       showGhost();
     };
-    scene.onTapCell = cell => {
+    scene.onTapCell = (cell, repeat) => {
       const venue = venueOf(venueId);
       if (!venue) return;
       const { selectedFixture, movingId, selectPlaced, stopMove } = venueStore.getState();
@@ -85,8 +85,8 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       if (selectedFixture) {
         const before = venue.venue.fixtures.length;
         send({ type: 'PlaceFixture', buildingId: venueId, fixture: selectedFixture, x: cell.x, y: cell.y });
-        // Once the item is placed the add mode ends; a refused placement keeps it, to try another cell.
-        if ((venueOf(venueId)?.venue.fixtures.length ?? before) > before) venueStore.getState().selectFixture(null);
+        // Once the item is placed the add mode ends, unless Shift is held, to put several in a row; a refused placement keeps it, to try another cell.
+        if (!repeat && (venueOf(venueId)?.venue.fixtures.length ?? before) > before) venueStore.getState().selectFixture(null);
         return;
       }
       if (movingId !== null) {

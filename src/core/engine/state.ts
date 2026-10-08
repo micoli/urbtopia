@@ -57,7 +57,9 @@ export type ArcadeFixtureId =
   | 'basketball'
   | 'danceMachine'
   | 'prizeWheel'
-  | 'ticketMachine';
+  | 'ticketMachine'
+  | 'arcadeWall'
+  | 'arcadeWindow';
 
 export type SupermarketFixtureId =
   | 'checkout'
@@ -69,7 +71,9 @@ export type SupermarketFixtureId =
   | 'freezerStanding'
   | 'shoppingBasket'
   | 'shoppingCart'
-  | 'bottleReturn';
+  | 'bottleReturn'
+  | 'marketWall'
+  | 'marketWindow';
 
 export type HotelFixtureId =
   | 'receptionDesk'
@@ -85,7 +89,9 @@ export type HotelFixtureId =
   | 'rug'
   | 'pottedPlant'
   | 'coffeeCorner'
-  | 'miniFridge';
+  | 'miniFridge'
+  | 'hotelWall'
+  | 'hotelWindow';
 
 export type FixtureId = ArcadeFixtureId | SupermarketFixtureId | HotelFixtureId;
 

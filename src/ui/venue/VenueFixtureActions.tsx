@@ -1,5 +1,5 @@
 import { useStore } from 'zustand';
-import { conditionOf, fixtureRefund, isBroken, isVenue, repairCost, WEAR } from '../../core';
+import { FIXTURES, conditionOf, fixtureRefund, isBroken, isVenue, repairCost, WEAR } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
@@ -25,13 +25,14 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
   const earnings = fixture ? performance?.earningsByFixture.get(fixture.id) : undefined;
   const hints = fixture ? performance?.layout.hints.get(fixture.id) ?? [] : [];
   if (!fixture) return null;
+  const partition = FIXTURES[fixture.type].partition === true;
   const { startMove, stopMove, selectPlaced } = venueStore.getState();
   const send = gameStore.getState().send;
   return (
     <section className="venue-build">
       <h3>{t(`venue.fixture.${fixture.type}`)}</h3>
-      <p><strong>{t('venue.condition')}</strong>: {Math.round(conditionOf(fixture))} %</p>
-      {isBroken(fixture) ? <p className="note note--warn">{t('venue.broken')}</p> : conditionOf(fixture) < WEAR.breakdownBelow ? <p className="note note--warn">{t('venue.worn')}</p> : null}
+      {partition ? null : <p><strong>{t('venue.condition')}</strong>: {Math.round(conditionOf(fixture))} %</p>}
+      {partition ? null : isBroken(fixture) ? <p className="note note--warn">{t('venue.broken')}</p> : conditionOf(fixture) < WEAR.breakdownBelow ? <p className="note note--warn">{t('venue.worn')}</p> : null}
       {hints.map(hint => <p key={hint} className="note note--warn">{t(`venue.hint.${hint}`)}</p>)}
       {movingId === null ? <VenueShelfStock venueId={venueId} fixture={fixture} /> : null}
       {earnings !== undefined ? <p><strong>{t('venue.fixtureEarnings')}</strong>: <UrbsAmount value={earnings} /></p> : null}

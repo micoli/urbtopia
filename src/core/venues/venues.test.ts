@@ -571,3 +571,54 @@ describe('Visitor satisfaction', () => {
     expect(far).toBeLessThan(near);
   });
 });
+
+describe('Walls', () => {
+  const walled = () => [['arcadeWall', 0, 3], ['arcadeWall', 1, 3], ['arcadeWindow', 2, 3]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), city(100_000));
+  const staffedGame = (state: GameState) => hire([['counter', 3, 1], ['barrelClimber', 1, 2]].reduce((current, [fixture, x, y]) => send(current, place(fixture as never, x as number, y as number)), state), 'employee', 2);
+
+  it('are Fixtures of their own kind of Venue, in a section of their own', () => {
+    expect(FIXTURES.arcadeWall.category).toBe('walls');
+    expect(FIXTURES.marketWindow.venue).toBe('supermarket');
+    expect(FIXTURES.hotelWall.venue).toBe('hotel');
+    expect(failure(city(), place('marketWall', 1, 1))).toBe('error.unknownCommand');
+    expect(failure(city(), place('hotelWindow', 1, 1))).toBe('error.unknownCommand');
+  });
+
+  it('take a cell, which nothing else can use, and cannot stand on the entrance', () => {
+    const state = walled();
+    expect(failure(state, place('barrelClimber', 0, 3))).toBe('error.tilesOccupied');
+    expect(failure(state, place('arcadeWall', 1, 3))).toBe('error.tilesOccupied');
+    const entrance = entranceCell(1);
+    expect(failure(city(), place('arcadeWall', entrance.x, entrance.y))).toBe('error.tilesOccupied');
+  });
+
+  it('turn, move and are sold for half the price like any Fixture', () => {
+    const state = walled();
+    const wall = arcadeOf(state).venue!.fixtures[0]!;
+    const turned = send(state, { type: 'MoveFixture', buildingId: 1, fixtureId: wall.id, x: wall.x, y: wall.y, rotation: 1 });
+    expect(arcadeOf(turned).venue!.fixtures[0]!.rotation).toBe(1);
+    const sold = send(state, { type: 'RemoveFixture', buildingId: 1, fixtureId: wall.id });
+    expect(sold.urbs).toBe(state.urbs + fixtureRefund('arcadeWall'));
+    expect(fixtureRefund('arcadeWall')).toBe(FIXTURES.arcadeWall.price / 2);
+  });
+
+  it('earn nothing, serve nothing and never wear', () => {
+    const plain = staffedGame(city(100_000));
+    const withWalls = [['arcadeWall', 0, 4], ['arcadeWindow', 1, 4]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), plain);
+    const before = venuePerformance(plain, arcadeOf(plain) as never);
+    const after = venuePerformance(withWalls, arcadeOf(withWalls) as never);
+    expect(after.earningsPerHour).toBeCloseTo(before.earningsPerHour, 9);
+    expect(after.capacity).toBeCloseTo(before.capacity, 9);
+    expect(after.layout.attractiveness).toBe(before.layout.attractiveness);
+    const walls = arcadeOf(withWalls).venue!.fixtures.filter(f => FIXTURES[f.type].partition).map(f => f.id);
+    for (const id of walls) {
+      expect(after.earningsByFixture.has(id)).toBe(false);
+      expect(after.usageByFixture.has(id)).toBe(false);
+    }
+    const later = advance({ ...withWalls, lastSeen: 0 }, 48 * 3_600_000).state;
+    for (const fixture of arcadeOf(later).venue!.fixtures.filter(f => FIXTURES[f.type].partition)) {
+      expect(fixture.condition).toBeUndefined();
+      expect(fixture.broken).toBeUndefined();
+    }
+  });
+});

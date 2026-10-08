@@ -2720,5 +2720,33 @@
       "width": 0.6,
       "height": 1.4
     }
+  },
+  "mini-arcade/wall-window": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/wall-window": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "furniture/wallWindow": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 1.0,
+      "height": 1.4
+    }
   }
 }

@@ -47,7 +47,8 @@ export class VenueScene {
   private builtSize = 0;
   private disposed = false;
   readonly ready: Promise<void>;
-  onTapCell: (cell: Coord) => void = () => {};
+  // `repeat` is true when Shift is held: the player keeps placing the same item.
+  onTapCell: (cell: Coord, repeat: boolean) => void = () => {};
   onHoverCell: (cell: Coord | null) => void = () => {};
 
   private shellModels: { floor: string; wall: string; corner: string };
@@ -240,7 +241,7 @@ export class VenueScene {
     if (this.canvas.hasPointerCapture(event.pointerId)) this.canvas.releasePointerCapture(event.pointerId);
     if (!start || this.dragged) return;
     const cell = this.cellAt(event.clientX, event.clientY);
-    if (cell) this.onTapCell(cell);
+    if (cell) this.onTapCell(cell, event.shiftKey);
   };
 
   // Dragging with the button down moves the room under the pointer, as in the city.

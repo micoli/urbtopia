@@ -27,7 +27,7 @@ describe('Venue build menu', () => {
   it.each(['en', 'fr'] as const)('lists the sections of an Arcade, games first, in %s', language => {
     prefsStore.getState().setLanguage(language);
     const sections = html(1, 'arcade').match(/<section\b[^>]*aria-label="[^"]*"[^>]*>[\s\S]*?<\/section>/g) ?? [];
-    expect(sections.filter(section => section.includes('build-section'))).toHaveLength(3);
+    expect(sections.filter(section => section.includes('build-section'))).toHaveLength(4);
     expect(sections[0]).toContain(t('venue.build'));
     expect(html(1, 'arcade').indexOf(t('venue.category.games'))).toBeLessThan(html(1, 'arcade').indexOf(t('venue.category.furniture')));
   });
