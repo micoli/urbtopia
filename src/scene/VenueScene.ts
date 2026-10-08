@@ -1,10 +1,15 @@
 import * as THREE from 'three';
+import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { ARCADE_FIXTURES, entranceCell, fixtureFootprint, type Coord, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
-import { VENUE_SHELL_MODELS } from './renderItems';
+import { VENUE_CROWD_MODELS, VENUE_SHELL_MODELS } from './renderItems';
+import type { Figure } from './venueCrowd';
 
 const { floor: FLOOR_MODEL, wall: WALL_MODEL, corner: CORNER_MODEL } = VENUE_SHELL_MODELS;
 const TAP_DISTANCE = 6;
+const CROWD_SCALE = 0.7;
+const QUEUE_TINT = 0xffd9a8;
+const EMPLOYEE_TINT = 0xffffff;
 const SELECTION_COLOR = 0x4da3ff;
 const WARNING_COLOR = 0xff9500;
 const BROKEN_COLOR = 0xe5484d;
@@ -27,6 +32,9 @@ export class VenueScene {
   private ghostRoot = new THREE.Group();
   private selectionRoot = new THREE.Group();
   private warningRoot = new THREE.Group();
+  private crowdRoot = new THREE.Group();
+  private lastCrowd: readonly Figure[] = [];
+  private crowdSignature = '';
   private brokenRoot = new THREE.Group();
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -50,11 +58,12 @@ export class VenueScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 2.2);
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
-    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.warningRoot, this.brokenRoot, this.selectionRoot, this.ghostRoot);
-    this.ready = this.library.ensure([FLOOR_MODEL, WALL_MODEL, CORNER_MODEL, ...new Set(Object.values(ARCADE_FIXTURES).map(spec => spec.model))]).then(() => {
+    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowdRoot, this.warningRoot, this.brokenRoot, this.selectionRoot, this.ghostRoot);
+    this.ready = this.library.ensure([FLOOR_MODEL, WALL_MODEL, CORNER_MODEL, ...new Set([...Object.values(ARCADE_FIXTURES).map(spec => spec.model), ...Object.values(VENUE_CROWD_MODELS)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
       this.rebuildFixtures();
+      this.rebuildCrowd();
       this.dirty = true;
     });
     canvas.addEventListener('pointerdown', this.handlePointerDown);
@@ -70,6 +79,14 @@ export class VenueScene {
   setFixtures(fixtures: readonly VenueFixture[]): void {
     this.lastFixtures = fixtures;
     this.rebuildFixtures();
+  }
+
+  setCrowd(figures: readonly Figure[]): void {
+    const signature = JSON.stringify(figures);
+    if (signature === this.crowdSignature) return;
+    this.crowdSignature = signature;
+    this.lastCrowd = figures;
+    this.rebuildCrowd();
   }
 
   setSize(size: number): void {
@@ -157,6 +174,18 @@ export class VenueScene {
     this.dirty = true;
   }
 
+  private rebuildCrowd(): void {
+    if (!this.library.has(FLOOR_MODEL)) return;
+    this.clear(this.crowdRoot);
+    for (const figure of this.lastCrowd) {
+      const holder = this.place(this.crowdRoot, VENUE_CROWD_MODELS[figure.kind], figure.x + 0.5, figure.y + 0.5, figure.facing);
+      holder.scale.setScalar(CROWD_SCALE);
+      if (figure.kind === 'queue') this.tint(holder, QUEUE_TINT);
+      if (figure.kind === 'employee') this.tint(holder, EMPLOYEE_TINT);
+    }
+    this.dirty = true;
+  }
+
   private tint(object: THREE.Object3D, color: number): void {
     object.traverse(node => {
       if (node instanceof THREE.Mesh) node.material = this.library.withTint(node.material, color);
@@ -165,7 +194,7 @@ export class VenueScene {
 
   private place(parent: THREE.Group, model: string, x: number, z: number, rotation: number): THREE.Object3D {
     const holder = new THREE.Group();
-    holder.add(this.library.get(model).clone(true));
+    holder.add(cloneModel(this.library.get(model)));
     holder.position.set(x, 0, z);
     holder.rotation.y = rotation;
     parent.add(holder);

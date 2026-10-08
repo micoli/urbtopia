@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, fixtureTiles, gridSizeOf, isBroken, isVenue, venueLayout, type Building, type Coord, type VenueData } from '../../core';
+import { canPlaceFixture, entranceCell, fixtureTiles, gridSizeOf, hiredOf, isBroken, isVenue, venueLayout, venuePerformance, type Building, type Coord, type VenueData } from '../../core';
 import { VenueScene } from '../../scene/VenueScene';
+import { planCrowd } from '../../scene/venueCrowd';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
 
@@ -44,12 +45,28 @@ export function VenueCanvas({ venueId }: VenueCanvasProps) {
       scene.setWarnings(venue.venue.fixtures.filter(fixture => hints.has(fixture.id) && !isBroken(fixture)).flatMap(fixtureTiles));
       scene.setBroken(venue.venue.fixtures.filter(isBroken).flatMap(fixtureTiles));
     };
+    const showCrowd = () => {
+      const venue = venueOf(venueId);
+      if (!venue) return;
+      const performance = venuePerformance(gameStore.getState().state, venue);
+      const demandRatio = performance.capacity > 0 ? performance.accepted / performance.capacity : performance.accepted > 0 ? 2 : 0;
+      scene.setCrowd(planCrowd({
+        size: gridSizeOf(venue.tier),
+        entrance: entranceCell(venue.tier),
+        fixtures: venue.venue.fixtures,
+        playsByFixture: performance.playsByFixture,
+        saturation: performance.capacity > 0 ? performance.served / performance.capacity : 0,
+        demandRatio,
+        employees: performance.powered && !performance.closed ? hiredOf(venue.venue, 'employee') : 0,
+      }));
+    };
     const sync = () => {
       const venue = venueOf(venueId);
       if (venue) {
         scene.setSize(gridSizeOf(venue.tier));
         scene.setFixtures(venue.venue.fixtures);
       }
+      showCrowd();
       showSelection();
       showWarnings();
       showGhost();

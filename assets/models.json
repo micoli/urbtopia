@@ -2396,5 +2396,21 @@
       "height": 0.9
     },
     "note": "Pool Table"
+  },
+  "mini-arcade/character-gamer": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade/character-employee": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
   }
 }

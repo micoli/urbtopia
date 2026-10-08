@@ -120,7 +120,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'mini-arcade',
     url: 'https://kenney.nl/media/pages/assets/mini-arcade/ece1e8f320-1721638600/kenney_mini-arcade.zip',
     archive: 'kenney_mini-arcade.zip',
-    files: ['arcade-machine', 'floor', 'wall', 'wall-corner', 'air-hockey', 'basketball-game', 'cash-register', 'claw-machine', 'dance-machine', 'pinball', 'prize-wheel', 'ticket-machine', 'vending-machine'],
+    files: ['arcade-machine', 'floor', 'wall', 'wall-corner', 'air-hockey', 'basketball-game', 'cash-register', 'claw-machine', 'dance-machine', 'pinball', 'prize-wheel', 'ticket-machine', 'vending-machine', 'character-gamer', 'character-employee'],
   },
   {
     name: 'mini-market',

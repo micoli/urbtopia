@@ -104,6 +104,8 @@ const RAIL_MODELS = ['trains/railroad-straight', 'trains/railroad-corner-small']
 
 export const VENUE_SHELL_MODELS = { floor: 'mini-arcade/floor', wall: 'mini-arcade/wall', corner: 'mini-arcade/wall-corner' } as const;
 
+export const VENUE_CROWD_MODELS = { gamer: 'mini-arcade/character-gamer', queue: 'mini-arcade/character-gamer', employee: 'mini-arcade/character-employee' } as const;
+
 const ROAD_MODELS = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout'].map((piece) => `roads/road-${piece}`);
 
 export const MODEL_KEYS: readonly string[] = [
@@ -121,6 +123,7 @@ export const MODEL_KEYS: readonly string[] = [
     SOLAR_PANEL_MODEL,
     ...ROAD_MODELS,
     ...Object.values(VENUE_SHELL_MODELS),
+    ...Object.values(VENUE_CROWD_MODELS),
     ...Object.values(ARCADE_FIXTURES).map(({ model }) => model),
     ...RAIL_MODELS,
     ...TRAIN_MODELS,
