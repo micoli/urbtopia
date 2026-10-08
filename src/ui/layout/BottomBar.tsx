@@ -1,8 +1,13 @@
 import { NavActionButton } from './NavActionButton';
-import { useNavActions } from './useNavActions';
+import { useNavActions, type NavAction } from './useNavActions';
 
-export function BottomBar() {
-  const actions = useNavActions();
+interface BottomBarProps {
+  actions?: NavAction[];
+}
+
+export function BottomBar({ actions: provided }: BottomBarProps) {
+  const cityActions = useNavActions();
+  const actions = provided ?? cityActions;
   return (
     <nav className="bottom-bar">
       {actions.map((action) => (

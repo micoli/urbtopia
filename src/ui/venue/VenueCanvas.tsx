@@ -82,7 +82,13 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       if (!venue) return;
       const { selectedFixture, movingId, selectPlaced, stopMove } = venueStore.getState();
       const { send } = gameStore.getState();
-      if (selectedFixture) return send({ type: 'PlaceFixture', buildingId: venueId, fixture: selectedFixture, x: cell.x, y: cell.y });
+      if (selectedFixture) {
+        const before = venue.venue.fixtures.length;
+        send({ type: 'PlaceFixture', buildingId: venueId, fixture: selectedFixture, x: cell.x, y: cell.y });
+        // Once the item is placed the add mode ends; a refused placement keeps it, to try another cell.
+        if ((venueOf(venueId)?.venue.fixtures.length ?? before) > before) venueStore.getState().selectFixture(null);
+        return;
+      }
       if (movingId !== null) {
         send({ type: 'MoveFixture', buildingId: venueId, fixtureId: movingId, x: cell.x, y: cell.y });
         return stopMove();

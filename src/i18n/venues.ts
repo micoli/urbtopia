@@ -49,6 +49,8 @@ type VenueMessageKey =
   | 'venue.hint.noHost'
   | 'venue.fixtureEarnings'
   | 'venue.manage'
+  | 'venue.menu.back'
+  | 'venue.fixture.panel'
   | 'venue.back'
   | 'venue.build'
   | 'venue.takings'
@@ -208,6 +210,8 @@ const texts: Record<VenueMessageKey, readonly [string, string]> = {
   'venue.hint.noise': ['Next to another loud machine: fewer Visitors come.', 'Collé à une autre borne bruyante : moins de visiteurs.'],
   'venue.hint.noHost': ['Needs a table next to it (or a counter for a stool).', 'Il lui faut une table à côté (ou un comptoir pour un tabouret).'],
   'venue.fixtureEarnings': ['Earns per hour', 'Rapporte par heure'],
+  'venue.menu.back': ['City', 'Ville'],
+  'venue.fixture.panel': ['Fixture', 'Équipement'],
   'venue.manage': ['Manage', 'Gérer'],
   'venue.back': ['Back to the city', 'Retour à la ville'],
   'venue.build': ['Build', 'Construire'],

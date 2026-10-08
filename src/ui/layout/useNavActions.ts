@@ -3,7 +3,7 @@ import { useGame, useUi } from '../common/hooks';
 import { guideOf } from '../tutorial/tutorialGuide';
 
 export interface NavAction {
-  id: 'build' | 'roads' | 'parcels' | 'market' | 'stats' | 'codex' | 'settings';
+  id: string;
   icon: string;
   image?: string;
   label: string;

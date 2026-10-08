@@ -4,18 +4,12 @@ import { venueTypeOf } from '../../core';
 import { t } from '../../i18n/t';
 import { sceneHandle } from '../../store/sceneHandle';
 import { venueStore } from '../../store/venueStore';
-import { CloseButton } from '../common/CloseButton';
 import { useGame } from '../common/hooks';
-import { VenueBuildMenu } from './VenueBuildMenu';
 import { VenueCanvas } from './VenueCanvas';
-import { VenueEvents } from './VenueEvents';
-import { VenueFixtureActions } from './VenueFixtureActions';
-import { VenueStaff } from './VenueStaff';
-import { VenueTakings } from './VenueTakings';
+import { VenueMenus } from './VenueMenus';
 
 export function VenueDialog() {
   const venueId = useStore(venueStore, store => store.venueId);
-  const close = useStore(venueStore, store => store.close);
   const venue = useGame(store => (venueId === null ? undefined : store.state.buildings.find(building => building.id === venueId)));
   const open = venueId !== null && venue !== undefined;
 
@@ -25,24 +19,28 @@ export function VenueDialog() {
     return () => sceneHandle.current?.setPaused(false);
   }, [open]);
 
+  // Escape closes what is open, one thing at a time, then leaves the Venue.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      const { movingId, placedId, selectedFixture, panel, stopMove, selectPlaced, selectFixture, closePanel, close } = venueStore.getState();
+      if (movingId !== null) return stopMove();
+      if (placedId !== null) return selectPlaced(null);
+      if (selectedFixture) return selectFixture(null);
+      if (panel) return closePanel();
+      close();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open]);
+
   if (!open) return null;
   return (
     <div className="venue-view" role="dialog" aria-modal="true" aria-label={t('venue.manage')}>
       <VenueCanvas venueId={venueId} venueType={venueTypeOf(venue)} />
-      <header className="venue-view__header">
-        <h2>{t(`building.${venue.type}`)}</h2>
-        <CloseButton onClick={close} label={t('venue.back')} />
-      </header>
-      <aside className="venue-view__side">
-        <VenueFixtureActions venueId={venue.id} />
-        <VenueBuildMenu tier={venue.tier} venueType={venueTypeOf(venue)} />
-        <VenueStaff venueId={venue.id} />
-        <VenueEvents venueId={venue.id} />
-        <section className="venue-takings">
-          <h3>{t('venue.takings')}</h3>
-          <VenueTakings building={venue} editable />
-        </section>
-      </aside>
+      <h2 className="venue-view__title">{t(`building.${venue.type}`)}</h2>
+      <VenueMenus venue={venue} />
     </div>
   );
 }

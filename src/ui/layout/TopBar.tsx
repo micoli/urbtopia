@@ -1,11 +1,20 @@
+import type { ReactNode } from 'react';
 import { CityStats } from '../stats/CityStats';
 import { UrbsStat } from '../common/UrbsStat';
 
-export function TopBar() {
+interface TopBarProps {
+  children?: ReactNode;
+}
+
+export function TopBar({ children }: TopBarProps) {
   return (
     <header className="top-bar">
-      <UrbsStat />
-      <CityStats />
+      {children ?? (
+        <>
+          <UrbsStat />
+          <CityStats />
+        </>
+      )}
     </header>
   );
 }

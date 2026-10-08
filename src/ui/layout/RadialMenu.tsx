@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import { t } from '../../i18n/t';
 import { NavActionButton } from './NavActionButton';
-import { useNavActions } from './useNavActions';
+import { useNavActions, type NavAction } from './useNavActions';
 
 const RADIUS_PX = 224;
 
-export function RadialMenu() {
+interface RadialMenuProps {
+  actions?: NavAction[];
+}
+
+export function RadialMenu({ actions: provided }: RadialMenuProps) {
   const [open, setOpen] = useState(false);
-  const actions = useNavActions();
+  const cityActions = useNavActions();
+  const actions = provided ?? cityActions;
 
   return (
     <div className="radial">
