@@ -13,7 +13,9 @@ import { GOODS, isGood, isMaterial, minTierOf, producibleItems, recipeOf, type G
 import { marketQuote } from '../economy/market';
 import { harvestFields, layFields, plantFields, removeFields } from '../farming/fields';
 import { buySeeds, sellSeeds } from '../farming/seeds';
-import { layWater, removeWater } from '../water/waterTiles';
+import { layWater } from '../water/waterTiles';
+import { removeWater } from '../water/removeWater';
+import { boatsOfMarina, buyBoat, sellBoat } from '../water/boats';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
 import { withStartingCity } from './newGame';
@@ -31,7 +33,7 @@ import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import type { BlackjackAction } from '../leisure/blackjack';
-import type { Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
+import type { BoatFamily, Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -60,6 +62,8 @@ export type Command =
   | { readonly type: 'RemoveFields'; readonly tiles: readonly Coord[] }
   | { readonly type: 'LayWater'; readonly tiles: readonly Coord[] }
   | { readonly type: 'RemoveWater'; readonly tiles: readonly Coord[] }
+  | { readonly type: 'BuyBoat'; readonly family: BoatFamily; readonly marinaId: number; readonly x: number; readonly y: number }
+  | { readonly type: 'SellBoat'; readonly id: number }
   | { readonly type: 'Plant'; readonly crop: CropId; readonly tiles: readonly Coord[] }
   | { readonly type: 'Harvest'; readonly tiles: readonly Coord[] }
   | { readonly type: 'BuySeeds'; readonly crop: CropId; readonly quantity: number }
@@ -106,6 +110,10 @@ export type ErrorKey =
   | 'error.noFieldHere'
   | 'error.noWaterHere'
   | 'error.needsWater'
+  | 'error.notOnMarinaWater'
+  | 'error.marinaFull'
+  | 'error.marinaInUse'
+  | 'error.unknownBoat'
   | 'error.waterInUse'
   | 'error.noSeeds'
   | 'error.nothingToPlant'
@@ -202,6 +210,10 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return layWater(state, command.tiles);
     case 'RemoveWater':
       return removeWater(state, command.tiles);
+    case 'BuyBoat':
+      return buyBoat(state, command.family, command.marinaId, { x: command.x, y: command.y });
+    case 'SellBoat':
+      return sellBoat(state, command.id);
     case 'Plant':
       return plantFields(state, command.crop, command.tiles);
     case 'Harvest':
@@ -381,6 +393,7 @@ function sellBuilding(state: GameState, id: number): CommandOutcome {
   if (!building) return fail('error.unknownBuilding');
   if ((isStorageType(building.type) || building.type === 'workshop' || building.type === 'factory' || building.type === 'packhouse') && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
   if ((building.type === 'powerPlant' || building.type === 'waterTower') && !canLoseUtility(state, building)) return fail('error.utilityInUse');
+  if (building.type === 'marina' && boatsOfMarina(state, building.id).length > 0) return fail('error.marinaInUse');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
   return {
     state: withoutBrokenLines({ ...state, urbs: state.urbs + refund, buildings: state.buildings.filter((candidate) => candidate !== building) }, id, true),
@@ -411,6 +424,7 @@ function withoutBrokenLines(state: GameState, stopId: number, removed: boolean):
 function moveBuilding(state: GameState, id: number, x: number, y: number, requestedRotation: Rotation | undefined, now: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === id);
   if (!building) return fail('error.unknownBuilding');
+  if (building.type === 'marina' && boatsOfMarina(state, building.id).length > 0) return fail('error.marinaInUse');
   const without: GameState = { ...state, buildings: state.buildings.filter((candidate) => candidate !== building) };
   const rotation = requestedRotation ?? autoRotation(without, building.type, x, y, building.tier);
   const issue = placementIssue(without, building.type, x, y, rotation, { isMove: true, tier: building.tier });

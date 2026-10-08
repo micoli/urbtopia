@@ -1,4 +1,4 @@
-import { BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
+import { BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -101,6 +101,7 @@ export function validateGameState(value: unknown): GameState | null {
   if (value.adaptationUntil !== undefined && !isNumber(value.adaptationUntil)) return null;
   if (value.waterTiles !== undefined && !isArrayOf(value.waterTiles, tile => isRecord(tile) && isCoord(tile))) return null;
   if (value.waterTiles !== undefined && new Set((value.waterTiles as { x: number; y: number }[]).map(tile => `${tile.x}:${tile.y}`)).size !== (value.waterTiles as unknown[]).length) return null;
+  if (value.boats !== undefined && !isArrayOf(value.boats, boat => isRecord(boat) && isCoord(boat) && isInt(boat.id, 1) && BOAT_FAMILIES.includes(boat.family as never) && isInt(boat.marinaId, 1))) return null;
   if (value.casinoRng !== undefined && !isNumber(value.casinoRng)) return null;
   if (value.ecologyDismissed !== undefined && typeof value.ecologyDismissed !== 'boolean') return null;
   if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&
@@ -118,8 +119,13 @@ export function validateGameState(value: unknown): GameState | null {
     (l.mode !== 'brt' || (l.peakHeadway >= 5 && l.peakHeadway <= 10 && l.offPeakHeadway >= 10 && l.offPeakHeadway <= 15)))) return null;
   if (value.transitFleet !== undefined && !isArrayOf(value.transitFleet, v => isRecord(v) && isInt(v.id, 1) && ['brtElectric', 'trainElectric', 'trainCoal'].includes(v.kind as string) && isNonNegative(v.purchasePrice) && (v.lineId === undefined || isInt(v.lineId, 1)))) return null;
   const state = value as unknown as GameState;
-  const ids = [...state.buildings.map(b => b.id), ...(state.busLines ?? []).map(l => l.id), ...(state.transitLines ?? []).map(l => l.id), ...(state.transitFleet ?? []).map(v => v.id)];
+  const ids = [...state.buildings.map(b => b.id), ...(state.boats ?? []).map(b => b.id), ...(state.busLines ?? []).map(l => l.id), ...(state.transitLines ?? []).map(l => l.id), ...(state.transitFleet ?? []).map(v => v.id)];
   if (new Set(ids).size !== ids.length || ids.some(id => id >= state.nextId)) return null;
+  const waterKeys = new Set((state.waterTiles ?? []).map(tile => `${tile.x}:${tile.y}`));
+  for (const boat of state.boats ?? []) {
+    if (!waterKeys.has(`${boat.x}:${boat.y}`) || !state.buildings.some(b => b.id === boat.marinaId && b.type === 'marina')) return null;
+  }
+  if (new Set((state.boats ?? []).map(boat => `${boat.x}:${boat.y}`)).size !== (state.boats ?? []).length) return null;
   for (const line of state.busLines ?? []) {
     if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && b.type === 'busStop')))) return null;
   }

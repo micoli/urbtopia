@@ -249,6 +249,12 @@ describe('brush tool', () => {
     expect(evaluateTool({ kind: 'brush', action: 'removeWater', tiles }, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null }).command).toEqual({ type: 'RemoveWater', tiles });
   });
 
+  it('previews buying a Boat on the hovered tile with its price', () => {
+    const evaluated = evaluateTool({ kind: 'boat', family: 'pleasure', marinaId: 1 }, { state: farmCity, tile: { x: 50, y: 50 }, rotation: null });
+    expect(evaluated.command).toEqual({ type: 'BuyBoat', family: 'pleasure', marinaId: 1, x: 50, y: 50 });
+    expect(evaluated.cost).toBe(400);
+  });
+
   it('sends the command when the drag ends and keeps the tool with an empty brush', () => {
     const tool: Tool = { kind: 'brush', action: 'layField', tiles: [{ x: 50, y: 52 }] };
     const current = evaluateTool(tool, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null });

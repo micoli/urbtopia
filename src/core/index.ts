@@ -15,7 +15,7 @@ export type { NewGameOptions } from './engine/newGame';
 export { hashSeed, nextRandom } from './engine/random';
 export { generateSeed } from './engine/seed';
 export type { Coord } from './map/coord';
-export type { Building, BuildingType, GameState, HomeColorVariant, ParcelCoord, MarketPrice, QueueEntry, RoadTile, Rotation, FieldTile, PlantedCrop, SeedStock, ShopStack, Storage } from './engine/state';
+export type { Boat, BoatFamily, Building, BuildingType, GameState, HomeColorVariant, ParcelCoord, MarketPrice, QueueEntry, RoadTile, Rotation, FieldTile, PlantedCrop, SeedStock, ShopStack, Storage } from './engine/state';
 export { DIRECTIONS, DIRECTION_VECTORS, frontDirection, neighbour, tileKey } from './map/geometry';
 export type { Direction } from './map/geometry';
 export { roadPath, roadPiece } from './map/roads';
@@ -27,6 +27,7 @@ export { GROWTH_STAGES, cropStage, cropWaterDemand, isCropReady } from './farmin
 export type { CropStage } from './farming/growth';
 export { FIELD_COST, fieldCap } from './farming/fields';
 export { WATER, isWaterTile, waterKeys, waterTilesOf } from './water/waterTiles';
+export { BOATS, BOAT_FAMILIES, boatsOf, boatsOfMarina, isBoatOperating, waterStats } from './water/boats';
 export { MARINA_TIERS, connectedWaterKeys, marinaCapacity, touchesWater } from './water/marina';
 export { cropReturns, type CropReturns } from './farming/returns';
 export { seedSellPrice, seedStockCapacity, seedStockUsed } from './farming/seeds';

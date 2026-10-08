@@ -2217,5 +2217,13 @@
       "width": 1.9,
       "height": 1.6
     }
+  },
+  "watercraft/boat-sail-a": {
+    "source": "kenney",
+    "license": "CC0",
+    "fit": {
+      "width": 0.9,
+      "height": 1.1
+    }
   }
 }

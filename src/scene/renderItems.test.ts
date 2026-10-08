@@ -172,3 +172,13 @@ describe('renderItemsOf water', () => {
     expect(renderItemsOf({ ...state, urbs: 1 })).toBe(renderItemsOf(state));
   });
 });
+
+describe('renderItemsOf boats', () => {
+  const base = { ...newGame({ seed: 'boat-render', now: 0 }), roads: [], buildings: [], waterTiles: [{ x: 50, y: 60 }] };
+
+  it('floats every Boat on its Water tile', () => {
+    const items = renderItemsOf({ ...base, boats: [{ id: 7, family: 'pleasure', marinaId: 1, x: 50, y: 60 }] });
+    expect(items.map((item) => item.model)).toEqual(['procedural/water-tile', 'watercraft/boat-sail-a']);
+    expect(items[1]).toMatchObject({ x: 50.5, z: 60.5 });
+  });
+});

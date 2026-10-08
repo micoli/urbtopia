@@ -108,7 +108,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'watercraft',
     url: 'https://kenney.nl/media/pages/assets/watercraft-kit/a335cfed49-1713519620/kenney_watercraft-pack.zip',
     archive: 'kenney_watercraft-pack.zip',
-    files: ['boat-house-a'],
+    files: ['boat-house-a', 'boat-sail-a'],
   },
   {
     name: 'trains',

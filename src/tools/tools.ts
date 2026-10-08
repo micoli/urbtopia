@@ -1,5 +1,6 @@
 import {
   extendNetwork,
+  BOATS,
   BUILDING_SPECS,
   GAME_CONFIG,
   buyableParcels,
@@ -18,6 +19,7 @@ import {
   roadBuildCost,
   roadPath,
   roundaboutTiles,
+  type BoatFamily,
   type Building,
   type BuildingType,
   casinoRadius,
@@ -43,6 +45,7 @@ export type Tool =
   | { kind: 'demolishRoad'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'upgradeRoad'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'parcel' }
+  | { kind: 'boat'; family: BoatFamily; marinaId: number }
   | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] };
 
 export type PathTool = Extract<Tool, { kind: 'road' | 'demolishRoad' | 'upgradeRoad' }>;
@@ -157,6 +160,8 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
       return evaluateUpgradeRoad(state, tool, tile);
     case 'parcel':
       return evaluateParcel(state, tile);
+    case 'boat':
+      return evaluation([tile], { type: 'BuyBoat', family: tool.family, marinaId: tool.marinaId, x: tile.x, y: tile.y }, state, { cost: BOATS[tool.family].cost });
     case 'brush':
       return evaluateBrush(state, tool, tile);
   }
@@ -303,7 +308,7 @@ export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTo
   if (pathTool && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
   if (!current.valid) return { command: null, nextTool: tool };
   if (pathTool) return { command: current.command, nextTool: { ...tool, start: null } };
-  if (tool.kind === 'building') return { command: current.command, nextTool: keepTool ? tool : null };
+  if (tool.kind === 'building' || tool.kind === 'boat') return { command: current.command, nextTool: keepTool ? tool : null };
   if (tool.kind === 'move') return { command: current.command, nextTool: null };
   return { command: current.command, nextTool: tool };
 }

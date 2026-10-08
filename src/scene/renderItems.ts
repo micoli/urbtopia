@@ -1,5 +1,5 @@
 import { BUILDING_ENTRIES } from '../core/buildings/buildingDefinitions';
-import { CROP_IDS, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
+import { CROP_IDS, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type BoatFamily, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
 import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
@@ -51,6 +51,8 @@ export const RED_CROSS_MODEL = 'procedural/red-cross';
 export const GARAGE_DOOR_MODEL = 'procedural/garage-door';
 export const FIELD_SOIL_MODEL = 'procedural/field-soil';
 export const WATER_TILE_MODEL = 'procedural/water-tile';
+export const BOAT_MODELS: Record<BoatFamily, string> = { pleasure: 'watercraft/boat-sail-a' };
+const BOAT_ELEVATION = 0.04;
 export const PROCEDURAL_MODELS: readonly string[] = [RED_CROSS_MODEL, GARAGE_DOOR_MODEL, FIELD_SOIL_MODEL, WATER_TILE_MODEL];
 
 const GARAGE_DOOR_SPACING = 0.6;
@@ -120,6 +122,7 @@ export const MODEL_KEYS: readonly string[] = [
     ...VEHICLE_MODELS,
     ...Object.values(SERVICE_VEHICLE_MODELS),
     BUS_MODEL,
+    ...Object.values(BOAT_MODELS),
     ...CROP_IDS.flatMap((species) => cropModelsOf(species)),
   ])
 ];
@@ -159,7 +162,7 @@ export interface HarvestedTile {
 }
 
 let lastFieldItems: RenderItem[] = [];
-let lastWaterItems: { tiles: GameState['waterTiles']; items: RenderItem[] } | null = null;
+let lastWaterItems: { tiles: GameState['waterTiles']; boats: GameState['boats']; items: RenderItem[] } | null = null;
 
 export function renderItemsOf(state: GameState, afterHarvest: readonly HarvestedTile[] = []): RenderItem[] {
   const builtBuildings = buildingItems(state);
@@ -175,7 +178,7 @@ export function renderItemsOf(state: GameState, afterHarvest: readonly Harvested
   const fields = sameItems(builtFields, lastFieldItems) ? lastFieldItems : builtFields;
   lastFieldItems = fields;
 
-  if (!lastWaterItems || lastWaterItems.tiles !== state.waterTiles) lastWaterItems = { tiles: state.waterTiles, items: waterItems(state) };
+  if (!lastWaterItems || lastWaterItems.tiles !== state.waterTiles || lastWaterItems.boats !== state.boats) lastWaterItems = { tiles: state.waterTiles, boats: state.boats, items: waterItems(state) };
   const water = lastWaterItems.items;
 
   if (lastItems && lastItems.buildings === buildings && lastItems.roads === roads && lastItems.fields === fields && lastItems.water === water) return lastItems.items;
@@ -210,7 +213,9 @@ function fieldItems(state: GameState, afterHarvest: readonly HarvestedTile[]): R
 }
 
 function waterItems(state: GameState): RenderItem[] {
-  return (state.waterTiles ?? []).map((tile) => ({ model: WATER_TILE_MODEL, x: tile.x + 0.5, z: tile.y + 0.5, rotation: 0 }));
+  const tiles = (state.waterTiles ?? []).map((tile) => ({ model: WATER_TILE_MODEL, x: tile.x + 0.5, z: tile.y + 0.5, rotation: 0 }));
+  const boats = (state.boats ?? []).map((boat) => ({ model: BOAT_MODELS[boat.family], x: boat.x + 0.5, z: boat.y + 0.5, rotation: boat.id % 4, elevation: BOAT_ELEVATION }));
+  return [...tiles, ...boats];
 }
 
 function roadItems(state: GameState): RenderItem[] {

@@ -93,6 +93,14 @@ export interface PlantedCrop {
   plantedAt: number;
 }
 
+export type BoatFamily = 'pleasure';
+
+export interface Boat extends Coord {
+  id: number;
+  family: BoatFamily;
+  marinaId: number;
+}
+
 export interface FieldTile extends Coord {
   crop?: PlantedCrop;
 }
@@ -103,6 +111,7 @@ export interface GameState {
   seedStock: SeedStock;
   fields: FieldTile[];
   waterTiles?: Coord[];
+  boats?: Boat[];
   brtRoads?: TransitTile[];
   rails?: TransitTile[];
   transitLines?: TransitLine[];
