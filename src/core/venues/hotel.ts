@@ -1,6 +1,6 @@
 import { FIXTURES } from './fixtures';
 import { distanceBetween, type LayoutHint } from './layout';
-import { emptyLayout, type Evaluate, type RoomReport } from './rules';
+import { clamp01, emptyLayout, type Evaluate, type RoomReport } from './rules';
 import { frontRate, hiredOf } from './staff';
 import { priceAcceptance } from './shared';
 import type { GameState, VenueData, VenueFixture } from '../engine/state';
@@ -102,6 +102,7 @@ export const evaluateHotel: Evaluate = (state, venue, { working, price, surge })
     earnings,
     usage,
     layout: { ...emptyLayout(), hints },
+    satisfaction: clamp01(valid.length === 0 ? 0 : 0.4 * cleanliness + 0.3 * (standing / 3) + 0.3 * priceAcceptance(price)),
     sales: new Map(),
     rooms: report,
     reputationTarget: 100 * quality,

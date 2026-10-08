@@ -1,6 +1,6 @@
 import { GOODS, type GoodId } from '../economy/items';
 import { FIXTURES } from './fixtures';
-import { emptyLayout, type Evaluate } from './rules';
+import { clamp01, emptyLayout, serviceRatio, type Evaluate } from './rules';
 import { frontRate, securityRate } from './staff';
 import { neighbourhoodVisitors, priceAcceptance } from './shared';
 import type { LayoutHint } from './layout';
@@ -49,7 +49,10 @@ export const evaluateSupermarket: Evaluate = (state, venue, { working, price, su
   }
   for (const checkout of checkouts) usage.set(checkout.id, served / checkouts.length);
   const hints = new Map<number, readonly LayoutHint[]>(working.fixtures.filter(fixture => isShelf(fixture) && !hasStock(fixture)).map(fixture => [fixture.id, ['emptyShelf']]));
-  return { visitors, accepted, capacity, served, gross, earnings, usage, layout: { ...emptyLayout(attractiveness), hints }, sales };
+  const shelves = working.fixtures.filter(isShelf);
+  const coverage = shelves.length > 0 ? stocked.length / shelves.length : 0;
+  const satisfaction = clamp01(0.35 * serviceRatio(accepted, capacity) + 0.35 * coverage + 0.3 * priceAcceptance(price));
+  return { visitors, accepted, capacity, served, gross, earnings, usage, layout: { ...emptyLayout(attractiveness), hints }, satisfaction, sales };
 };
 
 export function sellStock(fixtures: readonly VenueFixture[], sales: ReadonlyMap<number, number>, hours: number): VenueFixture[] {

@@ -2,7 +2,7 @@ import { FIXTURES } from './fixtures';
 import { LAYOUT, layoutOf, type Layout } from './layout';
 import { frontRate, securityRate } from './staff';
 import { entranceCell, neighbourhoodVisitors, priceAcceptance } from './shared';
-import type { Evaluate } from './rules';
+import { clamp01, serviceRatio, type Evaluate } from './rules';
 import type { VenueData, VenueFixture } from '../engine/state';
 
 export const ARCADE = { visitsPerCitizen: 0.2 };
@@ -31,5 +31,6 @@ export const evaluateArcade: Evaluate = (state, venue, { working, price, surge }
       earnings.set(fixture.id, served * share * price);
     }
   }
-  return { visitors, accepted, capacity, served, gross: served * price, earnings, usage, layout, sales: new Map() };
+  const satisfaction = clamp01(0.4 * serviceRatio(accepted, capacity) + 0.3 * priceAcceptance(price) + 0.3 * layout.attractiveness * layout.counterRate);
+  return { visitors, accepted, capacity, served, gross: served * price, earnings, usage, layout, satisfaction, sales: new Map() };
 };

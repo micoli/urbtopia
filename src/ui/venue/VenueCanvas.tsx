@@ -22,7 +22,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
     const canvas = canvasRef.current;
     const initial = venueOf(venueId);
     if (!canvas || !initial) return;
-    const scene = new VenueScene(canvas, gridSizeOf(initial.tier), initial.tier, venueType);
+    const scene = new VenueScene(canvas, gridSizeOf(initial.tier), initial.tier, venueType, venueId);
     let hovered: Coord | null = null;
 
     const showGhost = () => {
@@ -59,7 +59,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
         saturation: performance.capacity > 0 ? performance.served / performance.capacity : 0,
         demandRatio,
         employees: performance.powered && !performance.closed ? hiredOf(venue.venue, FRONT_ROLE[venueType]) : 0,
-      }));
+      }), performance.satisfaction);
     };
     const sync = () => {
       const venue = venueOf(venueId);

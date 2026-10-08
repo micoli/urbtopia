@@ -544,3 +544,30 @@ describe('Arcade events', () => {
     expect(eventBudgetOf(3)).toBeGreaterThan(eventBudgetOf(1));
   });
 });
+
+describe('Visitor satisfaction', () => {
+  const fixtured = () => [['counter', 3, 1], ['barrelClimber', 1, 2], ['spaceShooter', 4, 4]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), hire(city(100_000), 'employee', 2));
+  const mood = (state: GameState) => venuePerformance(state, arcadeOf(state) as never).satisfaction;
+
+  it('stays between 0 and 1', () => {
+    for (const state of [city(), fixtured(), hire(fixtured(), 'manager')]) {
+      expect(mood(state)).toBeGreaterThanOrEqual(0);
+      expect(mood(state)).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('falls when the Visitors wait for the service, and when the price is too high', () => {
+    const slow = hire(city(100_000), 'employee', 0);
+    const crowded = [['counter', 3, 1], ['barrelClimber', 1, 2]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), slow);
+    expect(mood(crowded)).toBeLessThan(mood(fixtured()));
+    const managed = hire(fixtured(), 'manager');
+    const priced = (price: number) => mood(send(managed, { type: 'SetVenuePrice', buildingId: 1, price }));
+    expect(priced(6)).toBeLessThan(priced(2));
+  });
+
+  it('rises with a counter near the entrance and quiet machines', () => {
+    const near = mood(fixtured());
+    const far = mood([['counter', 0, 5], ['barrelClimber', 1, 2], ['spaceShooter', 2, 2]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), hire(city(100_000), 'employee', 2)));
+    expect(far).toBeLessThan(near);
+  });
+});

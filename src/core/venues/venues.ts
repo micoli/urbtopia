@@ -62,6 +62,7 @@ export interface VenuePerformance {
   usageByFixture: ReadonlyMap<number, number>;
   salesByFixture: ReadonlyMap<number, number>;
   layout: Layout;
+  satisfaction: number;
   rooms?: Evaluation['rooms'];
   reputationTarget?: number;
 }
@@ -107,6 +108,7 @@ export function venuePerformance(state: GameState, venue: Building & { venue: Ve
     usageByFixture,
     salesByFixture,
     layout: evaluation.layout,
+    satisfaction: evaluation.satisfaction,
     ...(evaluation.rooms ? { rooms: evaluation.rooms } : {}),
     ...(evaluation.reputationTarget === undefined ? {} : { reputationTarget: evaluation.reputationTarget }),
   };

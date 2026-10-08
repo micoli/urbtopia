@@ -3,12 +3,10 @@ import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { FIXTURES, entranceCell, fixtureFootprint, fixtureIdsOf, type Coord, type VenueFixture, type VenueType } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_CROWD_MODELS, VENUE_SHELL_MODELS } from './renderItems';
+import { VenueCrowdLayer } from './VenueCrowdLayer';
 import type { Figure } from './venueCrowd';
 
 const TAP_DISTANCE = 6;
-const CROWD_SCALE = 0.7;
-const QUEUE_TINT = 0xffd9a8;
-const EMPLOYEE_TINT = 0xffffff;
 const SELECTION_COLOR = 0x4da3ff;
 const WARNING_COLOR = 0xff9500;
 const BROKEN_COLOR = 0xe5484d;
@@ -31,9 +29,9 @@ export class VenueScene {
   private ghostRoot = new THREE.Group();
   private selectionRoot = new THREE.Group();
   private warningRoot = new THREE.Group();
-  private crowdRoot = new THREE.Group();
-  private lastCrowd: readonly Figure[] = [];
-  private crowdSignature = '';
+  private crowd: VenueCrowdLayer;
+  private lastFrame = performance.now();
+  private fixturesSignature = '';
   private brokenRoot = new THREE.Group();
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -51,9 +49,10 @@ export class VenueScene {
   private shellModels: { floor: string; wall: string; corner: string };
   private cornerPlacement: { x: number; z: number; rotation: number };
 
-  constructor(private canvas: HTMLCanvasElement, private size: number, private tier = 1, venueType: VenueType = 'arcade') {
+  constructor(private canvas: HTMLCanvasElement, private size: number, private tier = 1, venueType: VenueType = 'arcade', seed = 1) {
     this.shellModels = VENUE_SHELL_MODELS[venueType];
     this.cornerPlacement = VENUE_CORNER_PLACEMENT[venueType];
+    this.crowd = new VenueCrowdLayer(this.library, size, entranceCell(tier), seed);
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.toneMapping = THREE.NeutralToneMapping;
@@ -62,12 +61,12 @@ export class VenueScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 2.2);
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
-    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowdRoot, this.warningRoot, this.brokenRoot, this.selectionRoot, this.ghostRoot);
+    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowd.root, this.warningRoot, this.brokenRoot, this.selectionRoot, this.ghostRoot);
     this.ready = this.library.ensure([...Object.values(this.shellModels), ...new Set([...fixtureIdsOf(venueType).map(id => FIXTURES[id].model), ...Object.values(VENUE_CROWD_MODELS)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
       this.rebuildFixtures();
-      this.rebuildCrowd();
+      this.crowd.enable();
       this.dirty = true;
     });
     canvas.addEventListener('pointerdown', this.handlePointerDown);
@@ -81,21 +80,22 @@ export class VenueScene {
   }
 
   setFixtures(fixtures: readonly VenueFixture[]): void {
+    const signature = JSON.stringify(fixtures.map(fixture => [fixture.id, fixture.type, fixture.x, fixture.y, fixture.rotation]));
+    if (signature === this.fixturesSignature) return;
+    this.fixturesSignature = signature;
     this.lastFixtures = fixtures;
+    this.crowd.setFixtures(fixtures);
     this.rebuildFixtures();
   }
 
-  setCrowd(figures: readonly Figure[]): void {
-    const signature = JSON.stringify(figures);
-    if (signature === this.crowdSignature) return;
-    this.crowdSignature = signature;
-    this.lastCrowd = figures;
-    this.rebuildCrowd();
+  setCrowd(plan: readonly Figure[], mood: number): void {
+    this.crowd.setPlan(plan, mood);
   }
 
   setSize(size: number): void {
     if (size === this.size) return;
     this.size = size;
+    this.crowd.setSize(size);
     this.buildShell();
     this.resize();
   }
@@ -143,6 +143,7 @@ export class VenueScene {
     this.clear(this.selectionRoot, true);
     this.clear(this.warningRoot, true);
     this.clear(this.brokenRoot, true);
+    this.crowd.dispose();
     this.renderer.dispose();
   }
 
@@ -174,18 +175,6 @@ export class VenueScene {
       const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
       const object = this.place(this.fixtureRoot, spec.model, fixture.x + width / 2, fixture.y + depth / 2, -fixture.rotation * Math.PI / 2);
       if (spec.tint !== undefined) this.tint(object, spec.tint);
-    }
-    this.dirty = true;
-  }
-
-  private rebuildCrowd(): void {
-    if (!this.library.has(this.shellModels.floor)) return;
-    this.clear(this.crowdRoot);
-    for (const figure of this.lastCrowd) {
-      const holder = this.place(this.crowdRoot, VENUE_CROWD_MODELS[figure.kind], figure.x + 0.5, figure.y + 0.5, figure.facing);
-      holder.scale.setScalar(CROWD_SCALE);
-      if (figure.kind === 'queue') this.tint(holder, QUEUE_TINT);
-      if (figure.kind === 'employee') this.tint(holder, EMPLOYEE_TINT);
     }
     this.dirty = true;
   }
@@ -260,7 +249,11 @@ export class VenueScene {
     this.dirty = true;
   }
 
-  private frame = (): void => {
+  private frame = (now: number): void => {
+    const delta = Math.min(0.1, Math.max(0, (now - this.lastFrame) / 1000));
+    this.lastFrame = now;
+    this.crowd.update(delta, this.camera);
+    if (this.crowd.active) this.dirty = true;
     if (this.dirty) {
       this.dirty = false;
       this.renderer.render(this.scene, this.camera);

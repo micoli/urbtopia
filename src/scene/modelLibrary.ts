@@ -11,6 +11,7 @@ export class ModelLibrary {
   private variants = new Map<string, THREE.Texture>();
   private pendingVariants = new Map<string, Promise<THREE.Texture>>();
   private models = new Map<string, THREE.Object3D>();
+  private clips = new Map<string, THREE.AnimationClip[]>();
   private pending = new Map<string, Promise<void>>();
 
   async ensure(keys: Iterable<string>): Promise<void> {
@@ -37,6 +38,10 @@ export class ModelLibrary {
 
   has(key: string): boolean {
     return this.models.has(key);
+  }
+
+  clipsOf(key: string): readonly THREE.AnimationClip[] {
+    return this.clips.get(key) ?? [];
   }
 
   get(key: string): THREE.Object3D {
@@ -98,6 +103,7 @@ export class ModelLibrary {
       if (key === 'trains/railroad-corner-small') fitRailCorner(gltf.scene);
       gltf.scene.updateMatrixWorld(true);
       this.models.set(key, gltf.scene);
+      if (gltf.animations.length > 0) this.clips.set(key, gltf.animations);
     });
     this.pending.set(key, promise);
     return promise;
