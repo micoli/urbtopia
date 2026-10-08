@@ -1,10 +1,11 @@
 import { ARCADE_FIXTURES } from './fixtures';
 import { LAYOUT, layoutOf, type Layout } from './layout';
+import { STAFF_ROLES, employeeRate, hiredOf, managerYield, postsOf, securityRate, wagesPerHour } from './staff';
 import { citizensOf } from '../buildings/city';
 import { centerOf } from '../environment/ecology';
 import { isWithinReach } from '../services/facilities';
 import type { CommandOutcome } from '../engine/commands';
-import type { ArcadeFixtureId, Building, GameState, Rotation, VenueData, VenueFixture } from '../engine/state';
+import type { ArcadeFixtureId, Building, GameState, Rotation, StaffRole, VenueData, VenueFixture } from '../engine/state';
 
 export const VENUE = {
   hourMs: 3_600_000,
@@ -21,6 +22,7 @@ export const VENUE = {
 
 export { ARCADE_FIXTURES, ARCADE_FIXTURE_IDS, type FixtureSpec } from './fixtures';
 export type { Layout, LayoutHint } from './layout';
+export { STAFF, STAFF_ROLES, hiredOf, postsOf, totalStaff, wagesPerHour } from './staff';
 
 export const entranceCell = (tier: number): { x: number; y: number } => ({ x: Math.floor(gridSizeOf(tier) / 2), y: 0 });
 
@@ -40,7 +42,7 @@ export function fixtureTiles(fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'r
 
 export const takingsCapOf = (tier: number): number => VENUE.takingsCaps[tier - 1] ?? VENUE.takingsCaps[VENUE.takingsCaps.length - 1]!;
 
-export const priceOf = (venue: VenueData): number => venue.price ?? VENUE.playPrice;
+export const priceOf = (venue: VenueData): number => (hiredOf(venue, 'manager') > 0 ? venue.price ?? VENUE.playPrice : VENUE.playPrice);
 
 export function visitorsPerHour(state: GameState, venue: Building): number {
   const to = centerOf(venue);
@@ -68,6 +70,9 @@ export interface VenuePerformance {
   accepted: number;
   capacity: number;
   served: number;
+  grossPerHour: number;
+  wagesPerHour: number;
+  closed: boolean;
   earningsPerHour: number;
   earningsByFixture: ReadonlyMap<number, number>;
   layout: Layout;
@@ -77,21 +82,27 @@ export function venuePerformance(state: GameState, venue: Building & { venue: Ve
   const price = priceOf(venue.venue);
   const layout = venueLayout(venue);
   const visitors = visitorsPerHour(state, venue);
-  const accepted = visitors * priceAcceptance(price) * layout.attractiveness;
+  const accepted = visitors * priceAcceptance(price) * layout.attractiveness * securityRate(venue.venue);
   const raw = playsCapacityPerHour(venue.venue, layout);
-  const capacity = raw * layout.counterRate;
+  const capacity = raw * layout.counterRate * employeeRate(venue.venue);
   const served = Math.min(accepted, capacity);
+  const yieldRate = managerYield(venue.venue);
+  const grossPerHour = served * price * yieldRate;
+  const wages = wagesPerHour(venue.venue);
+  const closed = venue.venue.takings <= 0 && grossPerHour < wages;
   const earningsByFixture = new Map<number, number>();
-  if (capacity > 0) {
+  if (capacity > 0 && !closed) {
     for (const fixture of venue.venue.fixtures) {
       const share = playsOf(fixture, layout) / raw;
-      if (share > 0) earningsByFixture.set(fixture.id, served * share * price);
+      if (share > 0) earningsByFixture.set(fixture.id, served * share * price * yieldRate);
     }
   }
-  return { visitors, accepted, capacity, served, earningsPerHour: served * price, earningsByFixture, layout };
+  return { visitors, accepted, capacity, served, grossPerHour, wagesPerHour: wages, closed, earningsPerHour: closed ? 0 : grossPerHour, earningsByFixture, layout };
 }
 
 export const takingsPerHour = (state: GameState, venue: Building & { venue: VenueData }): number => venuePerformance(state, venue).earningsPerHour;
+
+export const netPerHour = (performance: VenuePerformance): number => performance.closed ? 0 : performance.grossPerHour - performance.wagesPerHour;
 
 export function advanceVenues(state: GameState, elapsedMs: number): GameState {
   if (elapsedMs <= 0 || !state.buildings.some(isVenue)) return state;
@@ -99,7 +110,10 @@ export function advanceVenues(state: GameState, elapsedMs: number): GameState {
     ...state,
     buildings: state.buildings.map(building => {
       if (!isVenue(building)) return building;
-      const takings = Math.min(takingsCapOf(building.tier), building.venue.takings + takingsPerHour(state, building) * elapsedMs / VENUE.hourMs);
+      const performance = venuePerformance(state, building);
+      if (performance.closed) return building;
+      const net = (performance.grossPerHour - performance.wagesPerHour) * elapsedMs / VENUE.hourMs;
+      const takings = Math.max(0, Math.min(takingsCapOf(building.tier), building.venue.takings + net));
       return takings === building.venue.takings ? building : { ...building, venue: { ...building.venue, takings } };
     }),
   };
@@ -176,6 +190,25 @@ export function removeFixture(state: GameState, buildingId: number, fixtureId: n
 export function setVenuePrice(state: GameState, buildingId: number, price: number): CommandOutcome {
   const building = state.buildings.find(candidate => candidate.id === buildingId);
   if (!building || !isVenue(building)) return { key: 'error.unknownBuilding' };
+  if (hiredOf(building.venue, 'manager') === 0) return { key: 'error.managerRequired' };
   if (!Number.isInteger(price) || price < VENUE.minPrice || price > VENUE.maxPrice) return { key: 'error.invalidPrice' };
   return { state: withVenue(state, building, { ...building.venue, price }), events: [] };
+}
+
+export function hireStaff(state: GameState, buildingId: number, role: StaffRole): CommandOutcome {
+  const building = state.buildings.find(candidate => candidate.id === buildingId);
+  if (!building || !isVenue(building)) return { key: 'error.unknownBuilding' };
+  if (!STAFF_ROLES.includes(role)) return { key: 'error.unknownCommand' };
+  const hired = hiredOf(building.venue, role);
+  if (hired >= postsOf(role, building.tier)) return { key: 'error.noStaffPost' };
+  return { state: withVenue(state, building, { ...building.venue, staff: { ...building.venue.staff, [role]: hired + 1 } }), events: [] };
+}
+
+export function releaseStaff(state: GameState, buildingId: number, role: StaffRole): CommandOutcome {
+  const building = state.buildings.find(candidate => candidate.id === buildingId);
+  if (!building || !isVenue(building)) return { key: 'error.unknownBuilding' };
+  if (!STAFF_ROLES.includes(role)) return { key: 'error.unknownCommand' };
+  const hired = hiredOf(building.venue, role);
+  if (hired === 0) return { key: 'error.noStaffToRelease' };
+  return { state: withVenue(state, building, { ...building.venue, staff: { ...building.venue.staff, [role]: hired - 1 } }), events: [] };
 }

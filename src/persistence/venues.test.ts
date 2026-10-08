@@ -21,4 +21,13 @@ describe('Venue save', () => {
     const wrongType = { ...base, buildings: [{ ...createBuilding(1, 'home', 55, 50, 0), venue: { fixtures: [], nextFixtureId: 1, takings: 0 } }] };
     expect(parseEnvelope(serializeEnvelope(wrongType, 0)).ok).toBe(false);
   });
+
+  it('keeps the Staff and the price, and refuses an unknown role', () => {
+    const staffed = { ...base, buildings: [{ ...base.buildings[0]!, venue: { ...base.buildings[0]!.venue!, price: 4, staff: { manager: 1, employee: 2 } } }] };
+    const loaded = parseEnvelope(serializeEnvelope(staffed, 0));
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.buildings[0]!.venue).toMatchObject({ price: 4, staff: { manager: 1, employee: 2 } });
+    const unknown = { ...base, buildings: [{ ...base.buildings[0]!, venue: { ...base.buildings[0]!.venue!, staff: { janitor: 1 } } }] };
+    expect(parseEnvelope(serializeEnvelope(unknown as never, 0)).ok).toBe(false);
+  });
 });

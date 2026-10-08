@@ -8,6 +8,7 @@ import { useGame } from '../common/hooks';
 import { VenueBuildMenu } from './VenueBuildMenu';
 import { VenueCanvas } from './VenueCanvas';
 import { VenueFixtureActions } from './VenueFixtureActions';
+import { VenueStaff } from './VenueStaff';
 import { VenueTakings } from './VenueTakings';
 
 export function VenueDialog() {
@@ -33,6 +34,7 @@ export function VenueDialog() {
       <aside className="venue-view__side">
         <VenueFixtureActions venueId={venue.id} />
         <VenueBuildMenu tier={venue.tier} />
+        <VenueStaff venueId={venue.id} />
         <section className="venue-takings">
           <h3>{t('venue.takings')}</h3>
           <VenueTakings building={venue} editable />

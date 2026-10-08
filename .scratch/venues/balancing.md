@@ -34,3 +34,8 @@ Placeholders to tune by play. Values live in `VENUE` and `ARCADE_FIXTURES` (`src
 - Counter rate: 1 at distance 1 from the entrance, minus 6% per extra tile, floor 60%; 50% with no counter.
 - Noise: each pair of adjacent loud machines costs 8% attractiveness, floor 50%.
 - Seats: a chair needs a table next to it (a bar stool also a counter); 4 seats per table or counter; a seat adds 2 plays per hour.
+
+## Staff (`STAFF`)
+- Wages per day: manager 60, employee 30, technician 40, security 35 Urbs; paid per hour out of the Takings.
+- Posts Tier 1/2/3: manager 1/1/1, employee 2/3/4, technician 1/1/2, security 1/1/2.
+- Employee rate `min(1, 0.4 + 0.3 x employees)`; manager +10% yield and unlocks the price; no security: Visitors x 0.9.

@@ -63,11 +63,14 @@ export interface VenueFixture extends Coord {
   rotation: Rotation;
 }
 
+export type StaffRole = 'manager' | 'employee' | 'technician' | 'security';
+
 export interface VenueData {
   fixtures: VenueFixture[];
   nextFixtureId: number;
   takings: number;
   price?: number;
+  staff?: Partial<Record<StaffRole, number>>;
 }
 
 export interface Building extends Coord {

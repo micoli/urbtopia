@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { advance, createBuilding, dispatch, newGame, type Building, type Command, type GameState } from '../index';
+import { advance, createBuilding, dispatch, newGame, type Building, type Command, type GameState, type StaffRole } from '../index';
+import { jobsOf } from '../traffic/jobs';
+import { STAFF, hiredOf, postsOf, wagesPerHour, priceOf } from './venues';
 import { ARCADE_FIXTURES, entranceCell, fixtureRefund, priceAcceptance, takingsCapOf, takingsDue, takingsPerHour, venuePerformance, visitorsPerHour, VENUE } from './venues';
 
 const HOUR = 3_600_000;
@@ -18,6 +20,7 @@ const failure = (state: GameState, command: Command) => {
 };
 const arcadeOf = (state: GameState) => state.buildings.find(b => b.type === 'arcade')!;
 const place = (fixture: Extract<Command, { type: 'PlaceFixture' }>['fixture'], x: number, y: number, rotation?: 0 | 1 | 2 | 3): Command => ({ type: 'PlaceFixture', buildingId: 1, fixture, x, y, rotation });
+const hire = (state: GameState, role: StaffRole, count = 1): GameState => Array.from({ length: count }).reduce<GameState>(current => send(current, { type: 'HireStaff', buildingId: 1, role }), state);
 const machine = (x: number, y: number): Command => ({ type: 'PlaceFixture', buildingId: 1, fixture: 'barrelClimber', x, y });
 
 describe('Arcade Venue', () => {
@@ -127,8 +130,8 @@ describe('Arcade Venue', () => {
     const performance = (state: GameState) => venuePerformance(state, arcadeOf(state) as never);
 
     it('limits service to the game capacity, and halves it without a counter', () => {
-      const bare = equipped(['barrelClimber', 1, 1], ['spaceShooter', 2, 1]);
-      const counted = equipped(['barrelClimber', 1, 1], ['spaceShooter', 2, 1], ['counter', 3, 1]);
+      const bare = hire(equipped(['barrelClimber', 1, 1], ['spaceShooter', 2, 1]), 'employee', 2);
+      const counted = hire(equipped(['barrelClimber', 1, 1], ['spaceShooter', 2, 1], ['counter', 3, 1]), 'employee', 2);
       expect(performance(bare).capacity).toBe((6 + 8) * 0.5);
       expect(performance(counted).capacity).toBe(6 + 8);
       expect(performance(counted).served).toBeLessThanOrEqual(performance(counted).capacity);
@@ -143,14 +146,14 @@ describe('Arcade Venue', () => {
     it('loses Visitors when the price is too high, and Takings when it is too low', () => {
       expect(priceAcceptance(VENUE.playPrice)).toBe(1);
       expect(priceAcceptance(VENUE.maxPrice)).toBeLessThan(priceAcceptance(VENUE.playPrice + 1));
-      const base = equipped(['barrelClimber', 1, 1], ['counter', 3, 1]);
+      const base = hire(hire(equipped(['barrelClimber', 1, 1], ['counter', 3, 1]), 'employee', 2), 'manager');
       const earnings = (price: number) => performance(send(base, { type: 'SetVenuePrice', buildingId: 1, price })).earningsPerHour;
       expect(earnings(VENUE.minPrice)).toBeLessThan(earnings(VENUE.playPrice));
       expect(earnings(VENUE.maxPrice)).toBeLessThan(earnings(VENUE.playPrice + 2));
     });
 
     it('splits the earnings between the game Fixtures, and none for the others', () => {
-      const state = equipped(['barrelClimber', 1, 1], ['spaceShooter', 2, 1], ['counter', 3, 1], ['table', 4, 4]);
+      const state = hire(equipped(['barrelClimber', 1, 1], ['spaceShooter', 2, 1], ['counter', 3, 1], ['table', 4, 4]), 'employee', 2);
       const result = performance(state);
       const total = [...result.earningsByFixture.values()].reduce((sum, value) => sum + value, 0);
       expect(total).toBeCloseTo(result.earningsPerHour, 9);
@@ -158,17 +161,18 @@ describe('Arcade Venue', () => {
     });
 
     it('validates the price and keeps it in the save state', () => {
-      expect(failure(city(), { type: 'SetVenuePrice', buildingId: 1, price: 0 })).toBe('error.invalidPrice');
-      expect(failure(city(), { type: 'SetVenuePrice', buildingId: 1, price: VENUE.maxPrice + 1 })).toBe('error.invalidPrice');
-      expect(failure(city(), { type: 'SetVenuePrice', buildingId: 1, price: 2.5 })).toBe('error.invalidPrice');
-      expect(arcadeOf(send(city(), { type: 'SetVenuePrice', buildingId: 1, price: 4 })).venue!.price).toBe(4);
+      const managed = hire(city(), 'manager');
+      expect(failure(managed, { type: 'SetVenuePrice', buildingId: 1, price: 0 })).toBe('error.invalidPrice');
+      expect(failure(managed, { type: 'SetVenuePrice', buildingId: 1, price: VENUE.maxPrice + 1 })).toBe('error.invalidPrice');
+      expect(failure(managed, { type: 'SetVenuePrice', buildingId: 1, price: 2.5 })).toBe('error.invalidPrice');
+      expect(arcadeOf(send(managed, { type: 'SetVenuePrice', buildingId: 1, price: 4 })).venue!.price).toBe(4);
     });
 
     it('caps Takings by Tier', () => {
       expect(takingsCapOf(2)).toBeGreaterThan(takingsCapOf(1));
-      const rich = { ...equipped(['barrelClimber', 1, 1], ['counter', 3, 1]), lastSeen: 0 };
+      const rich = { ...hire(equipped(['barrelClimber', 1, 1], ['counter', 3, 1]), 'employee', 2), lastSeen: 0 };
       const capped = advance(rich, 200 * 3_600_000).state;
-      expect(arcadeOf(capped).venue!.takings).toBe(takingsCapOf(1));
+      expect(arcadeOf(capped).venue!.takings).toBeCloseTo(takingsCapOf(1), 6);
     });
   });
 });
@@ -222,7 +226,7 @@ describe('Arcade layout rules', () => {
   });
 
   it('adds capacity and earnings for seated chairs only', () => {
-    const base = furnished(['counter', 3, 1], ['barrelClimber', 0, 4]);
+    const base = hire(furnished(['counter', 3, 1], ['barrelClimber', 0, 4]), 'employee', 2);
     const withSeats = send(send(send(base, place('table', 2, 3)), place('chair', 1, 3)), place('chair', 5, 5));
     const before = venuePerformance(base, arcadeOf(base) as never);
     const after = venuePerformance(withSeats, arcadeOf(withSeats) as never);
@@ -236,5 +240,79 @@ describe('Arcade layout rules', () => {
     const state = furnished(['counter', 0, 5], ['barrelClimber', 1, 2], ['spaceShooter', 4, 4]);
     const moved = send(state, { type: 'MoveFixture', buildingId: 1, fixtureId: 1, x: entrance.x, y: entrance.y + 1 });
     expect(takingsPerHour(moved, arcadeOf(moved) as never)).toBeGreaterThan(takingsPerHour(state, arcadeOf(state) as never));
+  });
+});
+
+describe('Arcade Staff', () => {
+  const fitted = () => [['counter', 3, 1], ['barrelClimber', 1, 2], ['spaceShooter', 4, 4]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), city(100_000));
+  const performance = (state: GameState) => venuePerformance(state, arcadeOf(state) as never);
+
+  it('hires and releases by role, within the posts of the Tier', () => {
+    let state = city();
+    for (let index = 0; index < postsOf('employee', 1); index++) state = hire(state, 'employee');
+    expect(failure(state, { type: 'HireStaff', buildingId: 1, role: 'employee' })).toBe('error.noStaffPost');
+    const released = send(state, { type: 'ReleaseStaff', buildingId: 1, role: 'employee' });
+    expect(hiredOf(arcadeOf(released).venue!, 'employee')).toBe(postsOf('employee', 1) - 1);
+    expect(failure(city(), { type: 'ReleaseStaff', buildingId: 1, role: 'manager' })).toBe('error.noStaffToRelease');
+  });
+
+  it('serves slower without an employee, and at full speed with enough of them', () => {
+    const none = performance(fitted()).capacity;
+    const one = performance(hire(fitted(), 'employee')).capacity;
+    const two = performance(hire(fitted(), 'employee', 2)).capacity;
+    expect(none).toBeLessThan(one);
+    expect(one).toBeLessThan(two);
+    expect(two / one).toBeCloseTo(1 / 0.7, 9);
+  });
+
+  it('locks the price to its default without a manager, and adds a yield bonus with one', () => {
+    const staffed = hire(fitted(), 'employee', 2);
+    expect(failure(staffed, { type: 'SetVenuePrice', buildingId: 1, price: 4 })).toBe('error.managerRequired');
+    const withManager = hire(staffed, 'manager');
+    const priced = send(withManager, { type: 'SetVenuePrice', buildingId: 1, price: 3 });
+    expect(priceOf(arcadeOf(priced).venue!)).toBe(3);
+    expect(priceOf(arcadeOf(send(priced, { type: 'ReleaseStaff', buildingId: 1, role: 'manager' })).venue!)).toBe(VENUE.playPrice);
+    expect(performance(withManager).grossPerHour).toBeGreaterThan(performance(staffed).grossPerHour);
+  });
+
+  it('keeps 10% more Visitors with security', () => {
+    const staffed = hire(fitted(), 'employee', 2);
+    expect(performance(hire(staffed, 'security')).accepted).toBeCloseTo(performance(staffed).accepted / STAFF.withoutSecurityRate, 9);
+  });
+
+  it('takes wages out of the Takings, per hour, never into debt', () => {
+    const staffed = { ...hire(hire(fitted(), 'employee', 2), 'technician'), lastSeen: 0 };
+    const seeded = { ...staffed, buildings: staffed.buildings.map(b => b.id === 1 ? { ...b, venue: { ...b.venue!, takings: 5 } } : b) };
+    const net = performance(seeded).grossPerHour - wagesPerHour(arcadeOf(seeded).venue!);
+    const later = advance(seeded, 3_600_000).state;
+    expect(arcadeOf(later).venue!.takings).toBeCloseTo(5 + net, 6);
+    expect(wagesPerHour(arcadeOf(seeded).venue!)).toBeCloseTo((2 * STAFF.dailyWage.employee + STAFF.dailyWage.technician) / 24, 9);
+  });
+
+  it('closes when the wages cannot be paid, and reopens when they can', () => {
+    const overstaffed = { ...hire(hire(hire(city(), 'employee', 2), 'manager'), 'security'), lastSeen: 0 };
+    const empty = advance(overstaffed, 24 * 3_600_000).state;
+    const closed = performance(empty);
+    expect(arcadeOf(empty).venue!.takings).toBe(0);
+    expect(closed.closed).toBe(true);
+    expect(closed.earningsPerHour).toBe(0);
+    const stillClosed = advance(empty, 48 * 3_600_000).state;
+    expect(arcadeOf(stillClosed).venue!.takings).toBe(0);
+    const trimmed = [...Array(2).fill('employee'), 'manager', 'security'].reduce<GameState>((state, role) => send(state, { type: 'ReleaseStaff', buildingId: 1, role }), empty);
+    expect(performance(trimmed).closed).toBe(false);
+  });
+
+  it('gives the same Takings in one Catch-up or in steps, wages included', () => {
+    const base = { ...hire(hire(fitted(), 'employee', 2), 'manager'), lastSeen: 0 };
+    const once = advance(base, 10 * 3_600_000).state;
+    let stepped = base;
+    for (let hour = 1; hour <= 10; hour++) stepped = advance(stepped, hour * 3_600_000).state;
+    expect(arcadeOf(stepped).venue!.takings).toBeCloseTo(arcadeOf(once).venue!.takings, 6);
+  });
+
+  it('counts the Staff as Jobs of the Arcade', () => {
+    const staffed = hire(hire(city(), 'employee', 2), 'security');
+    expect(jobsOf(arcadeOf(staffed))).toBe(3);
+    expect(jobsOf(arcadeOf(city()))).toBe(0);
   });
 });

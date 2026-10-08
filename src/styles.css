@@ -1967,3 +1967,21 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   font-size: 0.8rem;
   opacity: 0.8;
 }
+
+.venue-staff {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.venue-staff__label {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.venue-staff__actions {
+  display: flex;
+  gap: 4px;
+}

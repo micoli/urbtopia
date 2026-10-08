@@ -17,7 +17,7 @@ import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
-import { collectTakings, isVenue, moveFixture, placeFixture, removeFixture, setVenuePrice } from '../venues/venues';
+import { collectTakings, hireStaff, isVenue, moveFixture, releaseStaff, placeFixture, removeFixture, setVenuePrice } from '../venues/venues';
 import { bridgeAt, bridgeKeys, placeBridge, refundOf, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
@@ -36,7 +36,7 @@ import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import type { BlackjackAction } from '../leisure/blackjack';
-import type { ArcadeFixtureId, BoatFamily, Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
+import type { ArcadeFixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -78,6 +78,8 @@ export type Command =
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
   | { readonly type: 'MoveFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'HireStaff'; readonly buildingId: number; readonly role: StaffRole }
+  | { readonly type: 'ReleaseStaff'; readonly buildingId: number; readonly role: StaffRole }
   | { readonly type: 'SetVenuePrice'; readonly buildingId: number; readonly price: number }
   | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: ArcadeFixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
@@ -102,6 +104,9 @@ export type ErrorKey =
   | 'error.unknownBuilding'
   | 'error.unknownFixture'
   | 'error.invalidPrice'
+  | 'error.managerRequired'
+  | 'error.noStaffPost'
+  | 'error.noStaffToRelease'
   | 'error.outsideOwnedParcels'
   | 'error.tilesOccupied'
   | 'error.homeExpansionBlocked'
@@ -253,6 +258,10 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return collect(state, command.buildingId);
     case 'MoveFixture':
       return moveFixture(state, command.buildingId, command.fixtureId, command.x, command.y, command.rotation);
+    case 'HireStaff':
+      return hireStaff(state, command.buildingId, command.role);
+    case 'ReleaseStaff':
+      return releaseStaff(state, command.buildingId, command.role);
     case 'SetVenuePrice':
       return setVenuePrice(state, command.buildingId, command.price);
     case 'RemoveFixture':

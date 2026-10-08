@@ -1,8 +1,21 @@
-import type { ArcadeFixtureId } from '../core/engine/state';
+import type { ArcadeFixtureId, StaffRole } from '../core/engine/state';
 
 type VenueMessageKey =
   | 'error.unknownFixture'
   | 'error.invalidPrice'
+  | 'error.managerRequired'
+  | 'error.noStaffPost'
+  | 'error.noStaffToRelease'
+  | 'venue.staff'
+  | 'venue.wage'
+  | 'venue.wages'
+  | 'venue.net'
+  | 'venue.closed'
+  | 'venue.hire'
+  | 'venue.release'
+  | 'venue.priceLocked'
+  | `venue.role.${StaffRole}`
+  | `venue.roleEffect.${StaffRole}`
   | 'venue.price'
   | 'venue.attractiveness'
   | 'venue.serviceRate'
@@ -33,6 +46,25 @@ type VenueMessageKey =
 
 const texts: Record<VenueMessageKey, readonly [string, string]> = {
   'error.unknownFixture': ['This Fixture does not exist.', 'Cet équipement n’existe pas.'],
+  'error.managerRequired': ['Hire a manager first.', 'Embauchez d’abord un manager.'],
+  'error.noStaffPost': ['All the posts of this role are filled.', 'Tous les postes de ce rôle sont pourvus.'],
+  'error.noStaffToRelease': ['Nobody to release in this role.', 'Personne à licencier dans ce rôle.'],
+  'venue.staff': ['Staff', 'Personnel'],
+  'venue.wage': ['per day', 'par jour'],
+  'venue.wages': ['Wages per hour', 'Salaires par heure'],
+  'venue.net': ['Net per hour', 'Net par heure'],
+  'venue.closed': ['Closed: the wages cannot be paid.', 'Fermé : les salaires ne peuvent pas être payés.'],
+  'venue.hire': ['Hire', 'Embaucher'],
+  'venue.release': ['Release', 'Licencier'],
+  'venue.priceLocked': ['Only a manager can change the price.', 'Seul un manager peut changer le prix.'],
+  'venue.role.manager': ['Manager', 'Manager'],
+  'venue.role.employee': ['Employee', 'Employé'],
+  'venue.role.technician': ['Technician', 'Technicien'],
+  'venue.role.security': ['Security', 'Sécurité'],
+  'venue.roleEffect.manager': ['Unlocks pricing and events, +10% yield', 'Débloque les prix et les événements, +10 % de rendement'],
+  'venue.roleEffect.employee': ['Serves the counter: faster service', 'Tient le comptoir : service plus rapide'],
+  'venue.roleEffect.technician': ['Repairs the machines', 'Répare les machines'],
+  'venue.roleEffect.security': ['Prevents incidents: keeps 10% more Visitors', 'Évite les incidents : garde 10 % de visiteurs en plus'],
   'error.invalidPrice': ['This price is not allowed.', 'Ce prix n’est pas autorisé.'],
   'venue.attractiveness': ['Attractiveness', 'Attractivité'],
   'venue.serviceRate': ['Service speed', 'Rapidité du service'],
