@@ -5,6 +5,7 @@ import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from '.
 import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
 import { SERVICE_VEHICLE_MODELS } from './serviceTrip';
+import { VENUE_CUSTOMER_MODELS, VENUE_STAFF_MODELS } from './venueCrowdModels';
 
 export type TextureVariant = 'a' | 'b' | 'c' | 'roads-a';
 
@@ -115,8 +116,6 @@ export const VENUE_SHELL_MODELS = {
   hotel: { floor: 'furniture/floorFull', wall: 'furniture/wall', corner: 'furniture/wallCorner' },
 } as const;
 
-export const VENUE_CROWD_MODELS = { gamer: 'mini-arcade/character-gamer', queue: 'mini-arcade/character-gamer', employee: 'mini-arcade/character-employee' } as const;
-
 const ROAD_MODELS = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout'].map((piece) => `roads/road-${piece}`);
 
 export const MODEL_KEYS: readonly string[] = [
@@ -134,7 +133,8 @@ export const MODEL_KEYS: readonly string[] = [
     SOLAR_PANEL_MODEL,
     ...ROAD_MODELS,
     ...Object.values(VENUE_SHELL_MODELS).flatMap(shell => Object.values(shell)),
-    ...Object.values(VENUE_CROWD_MODELS),
+    ...VENUE_CUSTOMER_MODELS,
+    ...Object.values(VENUE_STAFF_MODELS).flat(),
     ...FIXTURE_MODELS,
     ...RAIL_MODELS,
     ...TRAIN_MODELS,

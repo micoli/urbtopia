@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, fixtureTiles, type Coord, type VenueFixture } from '../core';
+import { FIXTURES, fixtureTiles, type Coord, type VenueFixture, type VenueType } from '../core';
 import type { ModelLibrary } from './modelLibrary';
-import { VENUE_CROWD_MODELS } from './renderItems';
+import { VENUE_CUSTOMER_MODELS, VENUE_STAFF_MODELS } from './venueCrowdModels';
 import { clipSeconds, makeWorld, pickClip, reconcile, repath, stepAgent, type Agent, type Dice, type World } from './venueAgents';
 import type { Figure } from './venueCrowd';
 
@@ -41,7 +41,7 @@ export class VenueCrowdLayer {
   private enabled = false;
   private started = false;
 
-  constructor(private library: ModelLibrary, private size: number, private entrance: Coord, seed: number) {
+  constructor(private library: ModelLibrary, private size: number, private entrance: Coord, seed: number, private venueType: VenueType) {
     this.dice = { rng: seed >>> 0 };
     this.world = makeWorld(size, entrance, [], []);
   }
@@ -113,7 +113,8 @@ export class VenueCrowdLayer {
   private visualOf(agent: Agent): Visual {
     const known = this.visuals.get(agent.id);
     if (known) return known;
-    const model = VENUE_CROWD_MODELS[agent.kind === 'employee' ? 'employee' : 'gamer'];
+    const models = agent.kind === 'employee' ? VENUE_STAFF_MODELS[this.venueType] : VENUE_CUSTOMER_MODELS;
+    const model = models[agent.id % models.length]!;
     const holder = new THREE.Group();
     const body = cloneModel(this.library.get(model));
     holder.add(body);

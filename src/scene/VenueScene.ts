@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { FIXTURES, entranceCell, fixtureFootprint, fixtureIdsOf, type Coord, type VenueFixture, type VenueType } from '../core';
 import { ModelLibrary } from './modelLibrary';
-import { VENUE_CORNER_PLACEMENT, VENUE_CROWD_MODELS, VENUE_SHELL_MODELS } from './renderItems';
+import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
+import { venueCrowdModelsOf } from './venueCrowdModels';
 import { VenueCrowdLayer } from './VenueCrowdLayer';
 import type { Figure } from './venueCrowd';
 import { clampPan, nextZoom } from './venueZoom';
@@ -57,7 +58,7 @@ export class VenueScene {
   constructor(private canvas: HTMLCanvasElement, private size: number, private tier = 1, venueType: VenueType = 'arcade', seed = 1) {
     this.shellModels = VENUE_SHELL_MODELS[venueType];
     this.cornerPlacement = VENUE_CORNER_PLACEMENT[venueType];
-    this.crowd = new VenueCrowdLayer(this.library, size, entranceCell(tier), seed);
+    this.crowd = new VenueCrowdLayer(this.library, size, entranceCell(tier), seed, venueType);
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.toneMapping = THREE.NeutralToneMapping;
@@ -67,7 +68,7 @@ export class VenueScene {
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
     this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowd.root, this.warningRoot, this.brokenRoot, this.selectionRoot, this.ghostRoot);
-    this.ready = this.library.ensure([...Object.values(this.shellModels), ...new Set([...fixtureIdsOf(venueType).map(id => FIXTURES[id].model), ...Object.values(VENUE_CROWD_MODELS)])]).then(() => {
+    this.ready = this.library.ensure([...Object.values(this.shellModels), ...new Set([...fixtureIdsOf(venueType).map(id => FIXTURES[id].model), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
       this.rebuildFixtures();

@@ -2397,14 +2397,6 @@
     },
     "note": "Pool Table"
   },
-  "mini-arcade/character-gamer": {
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      1
-    ]
-  },
   "mini-arcade/character-employee": {
     "source": "kenney",
     "license": "CC0",
@@ -2730,6 +2722,110 @@
     ]
   },
   "mini-market/wall-window": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/character-employee": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters/character-female-a": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters/character-female-b": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters/character-female-c": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters/character-female-d": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters/character-female-e": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters/character-female-f": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters/character-male-a": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters/character-male-b": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters/character-male-c": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters/character-male-d": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters/character-male-e": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters/character-male-f": {
     "source": "kenney",
     "license": "CC0",
     "footprint": [

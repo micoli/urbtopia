@@ -1,6 +1,7 @@
 import { NATURE_MODELS } from '../src/core/environment/nature.ts';
 import { CROP_IDS } from '../src/core/farming/crops.ts';
 import { cropModelsOf } from '../src/scene/cropModels.ts';
+import { MINI_CHARACTER_FILES } from '../src/scene/venueCrowdModels.ts';
 import { existsSync, readFileSync } from 'node:fs';
 import type { QuaterniusPack } from './quaternius.ts';
 
@@ -120,13 +121,19 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'mini-arcade',
     url: 'https://kenney.nl/media/pages/assets/mini-arcade/ece1e8f320-1721638600/kenney_mini-arcade.zip',
     archive: 'kenney_mini-arcade.zip',
-    files: ['arcade-machine', 'floor', 'wall', 'wall-corner', 'air-hockey', 'basketball-game', 'cash-register', 'claw-machine', 'dance-machine', 'pinball', 'prize-wheel', 'ticket-machine', 'vending-machine', 'character-gamer', 'character-employee', 'wall-window'],
+    files: ['arcade-machine', 'floor', 'wall', 'wall-corner', 'air-hockey', 'basketball-game', 'cash-register', 'claw-machine', 'dance-machine', 'pinball', 'prize-wheel', 'ticket-machine', 'vending-machine', 'character-employee', 'wall-window'],
   },
   {
     name: 'mini-market',
     url: 'https://kenney.nl/media/pages/assets/mini-market/463f38da51-1729865423/kenney_mini-market.zip',
     archive: 'kenney_mini-market.zip',
-    files: ['cash-register', 'shelf-bags', 'shelf-boxes', 'display-bread', 'display-fruit', 'freezer', 'freezers-standing', 'shopping-basket', 'shopping-cart', 'bottle-return', 'floor', 'wall', 'wall-corner', 'wall-window'],
+    files: ['cash-register', 'shelf-bags', 'shelf-boxes', 'display-bread', 'display-fruit', 'freezer', 'freezers-standing', 'shopping-basket', 'shopping-cart', 'bottle-return', 'floor', 'wall', 'wall-corner', 'wall-window', 'character-employee'],
+  },
+  {
+    name: 'mini-characters',
+    url: 'https://kenney.nl/media/pages/assets/mini-characters/bfc7e272b4-1774770718/kenney_mini-characters.zip',
+    archive: 'kenney_mini-characters.zip',
+    files: [...MINI_CHARACTER_FILES],
   },
   {
     name: 'furniture',
