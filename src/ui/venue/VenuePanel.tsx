@@ -16,6 +16,7 @@ export function VenuePanel({ building }: VenuePanelProps) {
         {t('venue.manage')}
       </ActionButton>
       <VenueTakings building={building} />
+      <DrawerPanel.Upgrade building={building} />
     </DrawerPanel>
   );
 }

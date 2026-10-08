@@ -4,7 +4,9 @@ import { drawBreakdowns, isBroken, repairCost, restored, technicianRepairs, wear
 import { hashSeed } from '../engine/random';
 import { STAFF_ROLES, employeeRate, hiredOf, managerYield, postsOf, securityRate, wagesPerHour } from './staff';
 import { citizensOf } from '../buildings/city';
-import { centerOf } from '../environment/ecology';
+import { centerOf, economicPower } from '../environment/ecology';
+import { isAdapting } from '../environment/adaptation';
+import { energyStats } from '../environment/energy';
 import { isWithinReach } from '../services/facilities';
 import type { CommandOutcome } from '../engine/commands';
 import type { ArcadeFixtureId, Building, GameState, Rotation, StaffRole, VenueData, VenueFixture } from '../engine/state';
@@ -18,7 +20,8 @@ export const VENUE = {
   maxPrice: 6,
   priceTolerance: 0.2,
   takingsCaps: [400, 900, 1800] as readonly number[],
-  gridSizes: [6] as readonly number[],
+  gridSizes: [6, 8, 10] as readonly number[],
+  upgradeCosts: { 2: 2500, 3: 6000 } as Record<number, number>,
   refundRatio: 0.5,
 };
 
@@ -27,7 +30,8 @@ export type { Layout, LayoutHint } from './layout';
 export { WEAR, conditionOf, isBroken, repairCost, technicianRepairCost } from './wear';
 export { STAFF, STAFF_ROLES, hiredOf, postsOf, totalStaff, wagesPerHour } from './staff';
 
-export const entranceCell = (tier: number): { x: number; y: number } => ({ x: Math.floor(gridSizeOf(tier) / 2), y: 0 });
+// The entrance stays on the same cell of the north wall at every Tier, so growing the grid never moves it under a Fixture.
+export const entranceCell = (_tier = 1): { x: number; y: number } => ({ x: 3, y: 0 });
 
 export const isVenue = (building: Building): building is Building & { venue: VenueData } => building.venue !== undefined;
 
@@ -76,13 +80,21 @@ export interface VenuePerformance {
   grossPerHour: number;
   wagesPerHour: number;
   closed: boolean;
+  powered: boolean;
   earningsPerHour: number;
   earningsByFixture: ReadonlyMap<number, number>;
   playsByFixture: ReadonlyMap<number, number>;
   layout: Layout;
 }
 
-export function venuePerformance(state: GameState, venue: Building & { venue: VenueData }): VenuePerformance {
+const POWER_EPSILON = 1e-9;
+
+export function isVenuePowered(state: GameState, venue: Building, supplied?: ReadonlyMap<number, number>): boolean {
+  if (isAdapting(state)) return true;
+  return ((supplied ?? energyStats(state).supplied).get(venue.id) ?? 0) >= economicPower(venue) - POWER_EPSILON;
+}
+
+export function venuePerformance(state: GameState, venue: Building & { venue: VenueData }, powered = isVenuePowered(state, venue)): VenuePerformance {
   const price = priceOf(venue.venue);
   const working: VenueData = { ...venue.venue, fixtures: venue.venue.fixtures.filter(fixture => !isBroken(fixture)) };
   const layout = layoutOf(working, entranceCell(venue.tier));
@@ -95,9 +107,10 @@ export function venuePerformance(state: GameState, venue: Building & { venue: Ve
   const grossPerHour = served * price * yieldRate;
   const wages = wagesPerHour(venue.venue);
   const closed = venue.venue.takings <= 0 && grossPerHour < wages;
+  const operating = powered && !closed;
   const earningsByFixture = new Map<number, number>();
   const playsByFixture = new Map<number, number>();
-  if (capacity > 0 && !closed) {
+  if (capacity > 0 && operating) {
     for (const fixture of working.fixtures) {
       const share = playsOf(fixture, layout) / raw;
       if (share === 0) continue;
@@ -105,18 +118,18 @@ export function venuePerformance(state: GameState, venue: Building & { venue: Ve
       earningsByFixture.set(fixture.id, served * share * price * yieldRate);
     }
   }
-  return { visitors, accepted, capacity, served, grossPerHour, wagesPerHour: wages, closed, earningsPerHour: closed ? 0 : grossPerHour, earningsByFixture, playsByFixture, layout };
+  return { visitors, accepted, capacity, served, grossPerHour, wagesPerHour: wages, closed, powered, earningsPerHour: operating ? grossPerHour : 0, earningsByFixture, playsByFixture, layout };
 }
 
 export const takingsPerHour = (state: GameState, venue: Building & { venue: VenueData }): number => venuePerformance(state, venue).earningsPerHour;
 
-export const netPerHour = (performance: VenuePerformance): number => performance.closed ? 0 : performance.grossPerHour - performance.wagesPerHour;
+export const netPerHour = (performance: VenuePerformance): number => performance.closed || !performance.powered ? 0 : performance.grossPerHour - performance.wagesPerHour;
 
 const isHourBoundary = (state: GameState, time: number): boolean => (time + (state.timeOffset ?? 0)) % VENUE.hourMs === 0;
 
-function advanceVenue(state: GameState, building: Building & { venue: VenueData }, from: number, to: number): Building {
-  const performance = venuePerformance(state, building);
-  if (performance.closed) return building;
+function advanceVenue(state: GameState, building: Building & { venue: VenueData }, from: number, to: number, supplied?: ReadonlyMap<number, number>): Building {
+  const performance = venuePerformance(state, building, isVenuePowered(state, building, supplied));
+  if (performance.closed || !performance.powered) return building;
   const hours = (to - from) / VENUE.hourMs;
   const technicians = hiredOf(building.venue, 'technician');
   const net = (performance.grossPerHour - performance.wagesPerHour) * hours;
@@ -134,9 +147,10 @@ function advanceVenue(state: GameState, building: Building & { venue: VenueData 
   return { ...building, venue: { ...building.venue, fixtures, takings, ...(rng === undefined ? {} : { rng }) } };
 }
 
-export function advanceVenues(state: GameState, from: number, to: number): GameState {
+export function advanceVenues(state: GameState, from: number, to: number, supplied?: ReadonlyMap<number, number>): GameState {
   if (to <= from || !state.buildings.some(isVenue)) return state;
-  return { ...state, buildings: state.buildings.map(building => (isVenue(building) ? advanceVenue(state, building, from, to) : building)) };
+  const delivered = supplied ?? energyStats(state, from).supplied;
+  return { ...state, buildings: state.buildings.map(building => (isVenue(building) ? advanceVenue(state, building, from, to, delivered) : building)) };
 }
 
 export const takingsDue = (venue: VenueData): number => Math.floor(venue.takings);

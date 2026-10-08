@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { advance, createBuilding, dispatch, newGame, type Building, type Command, type GameState, type StaffRole } from '../index';
+import { economicPower, energyStats } from '../index';
 import { jobsOf } from '../traffic/jobs';
 import { conditionOf, isBroken, repairCost, technicianRepairCost, STAFF, hiredOf, postsOf, wagesPerHour, priceOf } from './venues';
-import { ARCADE_FIXTURES, entranceCell, fixtureRefund, priceAcceptance, takingsCapOf, takingsDue, takingsPerHour, venuePerformance, visitorsPerHour, VENUE } from './venues';
+import { ARCADE_FIXTURES, gridSizeOf, entranceCell, fixtureRefund, priceAcceptance, takingsCapOf, takingsDue, takingsPerHour, venuePerformance, visitorsPerHour, VENUE } from './venues';
 
 const HOUR = 3_600_000;
 const building = (id: number, type: Building['type'], x: number, y: number, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
-const city = (urbs = 10_000, buildings: Building[] = [building(1, 'arcade', 55, 50), building(2, 'home', 52, 50, { tier: 4 })]): GameState => ({
+const city = (urbs = 10_000, buildings: Building[] = [building(1, 'arcade', 55, 50), building(2, 'home', 52, 50, { tier: 4 }), building(3, 'coalPlant', 90, 40, { tier: 4 })]): GameState => ({
   ...newGame({ seed: 'venues', now: 0 }), nextId: 100, urbs, tutorial: null, adaptationUntil: 0, buildings,
 });
 const send = (state: GameState, command: Command, now = 0) => {
@@ -45,7 +46,7 @@ describe('Arcade Venue', () => {
   it('draws Visitors only from the Homes within reach', () => {
     const near = visitorsPerHour(city(), arcadeOf(city()));
     expect(near).toBeGreaterThan(0);
-    const far = city(10_000, [building(1, 'arcade', 55, 50), building(2, 'home', 55 + VENUE.reachRadius + 20, 50, { tier: 4 })]);
+    const far = city(10_000, [building(1, 'arcade', 55, 50), building(2, 'home', 55 + VENUE.reachRadius + 20, 50, { tier: 4 }), building(3, 'coalPlant', 90, 40, { tier: 4 })]);
     expect(visitorsPerHour(far, arcadeOf(far))).toBe(0);
   });
 
@@ -115,13 +116,13 @@ describe('Arcade Venue', () => {
     });
 
     it('lets a 2x1 Fixture turn into a 1x2 one and blocks it from leaving the grid', () => {
-      const tier2 = city(10_000, [building(1, 'arcade', 55, 50, { tier: 2 }), building(2, 'home', 52, 50, { tier: 4 })]);
+      const tier2 = city(10_000, [building(1, 'arcade', 55, 50, { tier: 2 }), building(2, 'home', 52, 50, { tier: 4 }), building(3, 'coalPlant', 90, 40, { tier: 4 })]);
       const placed = send(tier2, place('billiard', 0, 0));
       const tiles = (state: GameState) => fixtures(state).map(f => [f.x, f.y, f.rotation]);
       expect(tiles(placed)).toEqual([[0, 0, 0]]);
       const turned = send(placed, { type: 'MoveFixture', buildingId: 1, fixtureId: 1, x: 0, y: 0, rotation: 1 });
       expect(tiles(turned)).toEqual([[0, 0, 1]]);
-      expect(failure(tier2, place('billiard', 5, 0))).toBe('error.tilesOccupied');
+      expect(failure(tier2, place('billiard', 7, 1))).toBe('error.tilesOccupied');
     });
   });
 
@@ -393,5 +394,65 @@ describe('Arcade wear and repair', () => {
     const later = run(seeded, 1);
     expect(conditionOf(fixtureOf(later, 'barrelClimber'))).toBe(100);
     expect(isBroken(fixtureOf(later, 'barrelClimber'))).toBe(false);
+  });
+});
+
+describe('Arcade Tiers and power', () => {
+  const equipped = (state: GameState) => hire(send(send(state, place('barrelClimber', 1, 2)), place('counter', 3, 1)), 'employee', 2);
+  const performance = (state: GameState) => venuePerformance(state, arcadeOf(state) as never);
+  const withoutPower = (state: GameState): GameState => ({ ...state, buildings: state.buildings.filter(b => b.type !== 'coalPlant') });
+
+  it('upgrades for Urbs, keeping the Fixtures where they are and growing the grid', () => {
+    const start = equipped(city(100_000));
+    const upgraded = send(start, { type: 'UpgradeBuilding', buildingId: 1 });
+    expect(arcadeOf(upgraded).tier).toBe(2);
+    expect(upgraded.urbs).toBe(start.urbs - VENUE.upgradeCosts[2]!);
+    expect(arcadeOf(upgraded).venue!.fixtures).toEqual(arcadeOf(start).venue!.fixtures);
+    expect(gridSizeOf(2)).toBeGreaterThan(gridSizeOf(1));
+    expect(failure(city(10), { type: 'UpgradeBuilding', buildingId: 1 })).toBe('error.notEnoughUrbs');
+    const top = send(upgraded, { type: 'UpgradeBuilding', buildingId: 1 });
+    expect(arcadeOf(top).tier).toBe(3);
+    expect(failure(top, { type: 'UpgradeBuilding', buildingId: 1 })).toBe('error.maxTier');
+  });
+
+  it('keeps the entrance on the same cell at every Tier, and places a Fixture on the new cells', () => {
+    expect(entranceCell(3)).toEqual(entranceCell(1));
+    const upgraded = send(city(100_000), { type: 'UpgradeBuilding', buildingId: 1 });
+    expect(arcadeOf(send(upgraded, place('barrelClimber', 7, 7))).venue!.fixtures).toHaveLength(1);
+  });
+
+  it('raises the Staff posts, the Takings cap and unlocks Fixtures with the Tier', () => {
+    expect(postsOf('employee', 3)).toBeGreaterThan(postsOf('employee', 1));
+    expect(takingsCapOf(3)).toBeGreaterThan(takingsCapOf(2));
+    const upgraded = send(city(100_000), { type: 'UpgradeBuilding', buildingId: 1 });
+    expect(failure(upgraded, place('billiard', 0, 0))).toBeNull();
+    expect(failure(upgraded, place('basketball', 0, 0))).toBe('error.tierTooLow');
+  });
+
+  it('asks for more power with each Tier', () => {
+    expect(economicPower(createBuilding(1, 'arcade', 0, 0, 0))).toBeGreaterThan(0);
+    expect(economicPower({ ...createBuilding(1, 'arcade', 0, 0, 0), tier: 3 })).toBe(3 * economicPower(createBuilding(1, 'arcade', 0, 0, 0)));
+  });
+
+  it('shuts without power: it earns nothing, pays nothing and does not wear', () => {
+    const dark = withoutPower(equipped(city(100_000)));
+    const result = performance(dark);
+    expect(result.powered).toBe(false);
+    expect(result.earningsPerHour).toBe(0);
+    const later = advance({ ...dark, lastSeen: 0 }, 6 * 3_600_000).state;
+    expect(arcadeOf(later).venue).toEqual(arcadeOf(dark).venue);
+  });
+
+  it('stays open during an Adaptation period', () => {
+    const dark = { ...withoutPower(equipped(city(100_000))), adaptationUntil: 10 * 3_600_000, lastSeen: 0 };
+    expect(performance(dark).powered).toBe(true);
+    expect(performance(dark).earningsPerHour).toBeGreaterThan(0);
+  });
+
+  it('is shed after the Casino when power falls short', () => {
+    const short: GameState = { ...city(), buildings: [building(1, 'arcade', 55, 50), building(2, 'casino', 60, 50, { tier: 3 }), building(3, 'coalPlant', 90, 40, { tier: 1 })] };
+    const supplied = energyStats(short).supplied;
+    expect(supplied.get(1)).toBeCloseTo(economicPower(short.buildings[0]!), 9);
+    expect(supplied.get(2)!).toBeLessThan(economicPower(short.buildings[1]!));
   });
 });

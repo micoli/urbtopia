@@ -44,3 +44,7 @@ Placeholders to tune by play. Values live in `VENUE` and `ARCADE_FIXTURES` (`src
 - Wear: 0.5 Condition points per play served; technician x0.6.
 - Breakdown below Condition 40: chance `0.5 x (40 - condition) / 40` per game hour.
 - Repair by hand: `0.6 x price x damage`; by a technician 60% of that, paid from the Takings.
+
+## Tiers and power
+- Upgrade: 2500 Urbs (Tier 2), 6000 (Tier 3). Grid 6x6 / 8x8 / 10x10.
+- Power Demand: 1.5 x Tier (Casino Tier 1 is 4.5; Casino Tier 3 is 13.5).

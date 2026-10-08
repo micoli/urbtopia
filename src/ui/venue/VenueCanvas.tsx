@@ -46,7 +46,10 @@ export function VenueCanvas({ venueId }: VenueCanvasProps) {
     };
     const sync = () => {
       const venue = venueOf(venueId);
-      if (venue) scene.setFixtures(venue.venue.fixtures);
+      if (venue) {
+        scene.setSize(gridSizeOf(venue.tier));
+        scene.setFixtures(venue.venue.fixtures);
+      }
       showSelection();
       showWarnings();
       showGhost();

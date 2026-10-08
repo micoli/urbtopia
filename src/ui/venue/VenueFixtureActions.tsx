@@ -1,5 +1,5 @@
 import { useStore } from 'zustand';
-import { conditionOf, fixtureRefund, isBroken, isVenue, repairCost, venuePerformance, venueLayout, WEAR } from '../../core';
+import { conditionOf, fixtureRefund, isBroken, isVenue, repairCost, WEAR } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
@@ -7,6 +7,7 @@ import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { useGame } from '../common/hooks';
 import { UrbsAmount } from '../common/UrbsAmount';
+import { useVenuePerformance } from './useVenuePerformance';
 
 interface VenueFixtureActionsProps {
   venueId: number;
@@ -19,14 +20,9 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
     const building = store.state.buildings.find(candidate => candidate.id === venueId);
     return building && isVenue(building) ? building.venue.fixtures.find(candidate => candidate.id === (movingId ?? placedId)) : undefined;
   });
-  const earnings = useGame(store => {
-    const building = store.state.buildings.find(candidate => candidate.id === venueId);
-    return fixture && building && isVenue(building) ? venuePerformance(store.state, building).earningsByFixture.get(fixture.id) : undefined;
-  });
-  const hints = useGame(store => {
-    const building = store.state.buildings.find(candidate => candidate.id === venueId);
-    return fixture && building && isVenue(building) ? venueLayout(building).hints.get(fixture.id) ?? [] : [];
-  });
+  const performance = useVenuePerformance(venueId);
+  const earnings = fixture ? performance?.earningsByFixture.get(fixture.id) : undefined;
+  const hints = fixture ? performance?.layout.hints.get(fixture.id) ?? [] : [];
   if (!fixture) return null;
   const { startMove, stopMove, selectPlaced } = venueStore.getState();
   const send = gameStore.getState().send;

@@ -1,5 +1,6 @@
 import {
   CASINO_GAMES, COAL_CAPACITY, MARINA_TIERS, FACILITIES, FARM_TIERS, HOME_TIERS, STORAGE_TIERS, UTILITY_CAPACITY,
+  ARCADE_FIXTURES, ARCADE_FIXTURE_IDS, STAFF_ROLES, economicPower, gridSizeOf, postsOf, takingsCapOf,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
   type StorageType,
 } from '../core';
@@ -66,6 +67,19 @@ function casinoFacts(level: number): LevelFact[] {
   ];
 }
 
+function arcadeFacts(level: number): LevelFact[] {
+  const gridText = (tier: number) => `${gridSizeOf(tier)}×${gridSizeOf(tier)}`;
+  const fixturesText = (tier: number) => ARCADE_FIXTURE_IDS.filter(id => ARCADE_FIXTURES[id].minTier <= tier).map(id => t(`venue.fixture.${id}`)).join(', ');
+  const posts = (tier: number) => STAFF_ROLES.reduce((total, role) => total + postsOf(role, tier), 0);
+  return [
+    textFact('codex.fact.grid', gridText, level),
+    numericFact('codex.fact.posts', posts, level),
+    numericFact('codex.fact.takingsCap', takingsCapOf, level),
+    numericFact('codex.fact.power', tier => economicPower({ type: 'arcade', tier } as never), level),
+    textFact('codex.fact.fixtures', fixturesText, level),
+  ];
+}
+
 export function levelFactsOf(id: CodexId, level: number): LevelFact[] {
   if (id === 'home' || id === 'solarHome') return [
     numericFact('codex.fact.citizens', tier => homeTier(tier).citizens, level),
@@ -87,6 +101,7 @@ export function levelFactsOf(id: CodexId, level: number): LevelFact[] {
   if (id === 'coalPlant') return [numericFact('codex.fact.output', tier => COAL_CAPACITY[tier - 1] ?? 0, level)];
   if (id === 'marina') return [numericFact('codex.fact.boats', tier => MARINA_TIERS[tier - 1]?.boats ?? 0, level)];
   if (id === 'casino') return casinoFacts(level);
+  if (id === 'arcade') return arcadeFacts(level);
   if (isFacilityType(id) && FACILITIES[id].capacity !== null) {
     return [numericFact('codex.fact.capacity', tier => facilityCapacity(id, tier) ?? 0, level)];
   }

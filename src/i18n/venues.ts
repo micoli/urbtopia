@@ -11,6 +11,11 @@ type VenueMessageKey =
   | 'venue.worn'
   | 'error.noStaffPost'
   | 'error.noStaffToRelease'
+  | 'codex.fact.grid'
+  | 'codex.fact.posts'
+  | 'codex.fact.takingsCap'
+  | 'codex.fact.fixtures'
+  | 'venue.shut'
   | 'venue.staff'
   | 'venue.wage'
   | 'venue.wages'
@@ -59,6 +64,11 @@ const texts: Record<VenueMessageKey, readonly [string, string]> = {
   'error.managerRequired': ['Hire a manager first.', 'Embauchez d’abord un manager.'],
   'error.noStaffPost': ['All the posts of this role are filled.', 'Tous les postes de ce rôle sont pourvus.'],
   'error.noStaffToRelease': ['Nobody to release in this role.', 'Personne à licencier dans ce rôle.'],
+  'codex.fact.grid': ['Interior', 'Intérieur'],
+  'codex.fact.posts': ['Staff posts', 'Postes de personnel'],
+  'codex.fact.takingsCap': ['Takings cap', 'Plafond des recettes'],
+  'codex.fact.fixtures': ['Fixtures available', 'Équipements disponibles'],
+  'venue.shut': ['Shut: not enough power', 'Fermé : électricité insuffisante'],
   'venue.staff': ['Staff', 'Personnel'],
   'venue.wage': ['per day', 'par jour'],
   'venue.wages': ['Wages per hour', 'Salaires par heure'],

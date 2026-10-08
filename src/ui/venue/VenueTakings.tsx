@@ -1,11 +1,11 @@
-import { VENUE, hiredOf, isVenue, netPerHour, priceOf, takingsCapOf, takingsDue, venuePerformance, type Building } from '../../core';
+import { VENUE, hiredOf, isVenue, netPerHour, priceOf, takingsCapOf, takingsDue, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
 import { DrawerPanel } from '../common/DrawerPanel';
-import { useGame } from '../common/hooks';
 import { NumberStepper } from '../common/NumberStepper';
 import { UrbsAmount } from '../common/UrbsAmount';
+import { useVenuePerformance } from './useVenuePerformance';
 
 interface VenueTakingsProps {
   building: Building;
@@ -13,13 +13,13 @@ interface VenueTakingsProps {
 }
 
 export function VenueTakings({ building, editable = false }: VenueTakingsProps) {
-  const state = useGame(store => store.state);
-  if (!isVenue(building)) return null;
-  const performance = venuePerformance(state, building);
+  const performance = useVenuePerformance(building.id);
+  if (!isVenue(building) || !performance) return null;
   const due = takingsDue(building.venue);
   const full = building.venue.takings >= takingsCapOf(building.tier);
   return (
     <>
+      {performance.powered ? null : <p className="note note--warn">{t('venue.shut')}</p>}
       <DrawerPanel.LabelValue label={t('venue.visitors')} value={performance.visitors.toFixed(1)} />
       <DrawerPanel.LabelValue label={t('venue.attractiveness')} value={`${Math.round(performance.layout.attractiveness * 100)} %`} />
       <DrawerPanel.LabelValue label={t('venue.serviceRate')} value={`${Math.round(performance.layout.counterRate * 100)} %`} />
