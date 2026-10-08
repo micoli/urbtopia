@@ -4,12 +4,13 @@ import { MESSAGES, type MessageKey } from '../i18n/messages';
 import { FR } from '../i18n/fr';
 import { BUILDING_SECTIONS, type BuildSection } from './buildingSections';
 import { ROAD_CONSTRUCTIONS, type RoadConstructionId } from './construction';
+import { WATER_CONSTRUCTIONS, type WaterConstructionId } from './waterConstructions';
 import type { HomeColorVariant } from '../core';
 
 export const HOME_COLOR_VARIANTS: readonly HomeColorVariant[] = ['default', 'a', 'b', 'c'];
 
-export type CodexId = BuildingType | 'solarHome' | RoadConstructionId | CropId;
-export type CodexSection = BuildSection | 'codex.roads' | 'codex.crops';
+export type CodexId = BuildingType | 'solarHome' | RoadConstructionId | WaterConstructionId | CropId;
+export type CodexSection = BuildSection | 'codex.roads' | 'codex.water' | 'codex.crops';
 
 const DESCRIPTIONS = {
   ...Object.fromEntries(BUILDING_ENTRIES.map(({ id, nature }) => [id, nature ? `codex.description.nature.${nature.family}` : `codex.description.${id}`])) as Record<BuildingType, MessageKey>,
@@ -19,6 +20,8 @@ const DESCRIPTIONS = {
   roundabout: 'codex.description.roundabout',
   brt: 'codex.description.brt',
   rail: 'codex.description.rail',
+  water: 'codex.description.water',
+  bridge: 'codex.description.bridge',
   ...Object.fromEntries(CROP_IDS.map(id => [id, 'codex.description.crop'])) as Record<CropId, 'codex.description.crop'>,
 } as const satisfies Record<CodexId, MessageKey>;
 
@@ -47,6 +50,7 @@ export const CODEX_SECTIONS: readonly CodexSection[] = [
   ...BUILDING_SECTIONS.map(section => section.title).filter(title => title !== DECORATION_SECTION && title !== GREEN_SPACES_SECTION),
   'codex.crops',
   'codex.roads',
+  'codex.water',
   DECORATION_SECTION,
   GREEN_SPACES_SECTION,
 ];
@@ -71,6 +75,10 @@ export const CODEX_ENTRIES: readonly CodexEntry[] = [
     id: item.id, section: 'codex.roads' as const, name: item.name, description: DESCRIPTIONS[item.id],
     unlockCitizens: item.unlockCitizens, levels: [1],
   })),
+  ...WATER_CONSTRUCTIONS.map(item => ({
+    id: item.id, section: 'codex.water' as const, name: item.name, description: DESCRIPTIONS[item.id],
+    unlockCitizens: item.unlockCitizens, levels: [1],
+  })),
 ];
 
 export function codexImageKey(id: CodexId, level: number, colorVariant?: HomeColorVariant): string {
@@ -80,7 +88,7 @@ export function codexImageKey(id: CodexId, level: number, colorVariant?: HomeCol
 }
 
 export function validateCodex(entries: readonly CodexEntry[] = CODEX_ENTRIES): void {
-  const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...ROAD_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
+  const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...ROAD_CONSTRUCTIONS.map(item => item.id), ...WATER_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
   if (entries.length !== expected.length || expected.some(id => entries.filter(entry => entry.id === id).length !== 1)) {
     throw new Error('Every constructible must have exactly one codex entry');
   }

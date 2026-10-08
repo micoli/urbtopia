@@ -89,7 +89,33 @@ describe('build menu sections', () => {
     context.flyout = 'roads';
     const html = renderToStaticMarkup(<BuildMenuContent />);
     expect(html).toContain(t('tool.road'));
-    expect(html).not.toContain('build-section');
+    expect(html).not.toContain(t('build.housing'));
+  });
+
+  it('groups road tools in one section per network, each with a demolish button', () => {
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    const big = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 700 }, (_, id) => ({ ...home, id })), waterTiles: [{ x: 50, y: 50 }], bridges: [{ x: 52, y: 50, length: 1, axis: 'x' as const }] };
+    context.state = big;
+    context.flyout = 'roads';
+    const sections = renderToStaticMarkup(<BuildMenuContent />).match(/<section\b[^>]*>[\s\S]*?<\/section>/g) ?? [];
+    const demolishLabels = ['tool.demolishRoad', 'tool.demolishBrt', 'tool.demolishRail', 'water.remove', 'water.removeBridge'] as const;
+    expect(sections).toHaveLength(demolishLabels.length);
+    demolishLabels.forEach((key, index) => expect(sections[index]).toContain(`aria-label="${t(key)}"`));
+    expect(sections[0]).toContain('▾');
+    expect(sections[0]).toContain('aria-expanded="true"');
+    for (const section of sections.slice(1)) {
+      expect(section).toContain('aria-expanded="false"');
+      expect(section).toContain('▸');
+    }
+  });
+
+  it('only offers the Water and Bridge demolish buttons when there is something to remove', () => {
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 700 }, (_, id) => ({ ...home, id })) };
+    context.flyout = 'roads';
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    expect(html).not.toContain(t('water.remove'));
+    expect(html).not.toContain(t('water.removeBridge'));
   });
 
   it('lays Water tiles and builds Bridges from the road tools once unlocked, not from the buildings', () => {
@@ -122,11 +148,11 @@ describe('build menu sections', () => {
     expect(sections[0]).toContain('aria-expanded="true"');
     expect(sections[0]).toContain('aria-disabled="true"');
     expect(sections[0]).not.toContain('hidden=""');
-    expect(html).not.toContain('▾');
-    expect(html).not.toContain('▸');
+    expect(sections[0]).toContain('▾');
     for (const section of sections.slice(1)) {
       expect(section).toContain('aria-expanded="false"');
       expect(section).toContain('hidden=""');
+      expect(section).toContain('▸');
     }
   });
 
@@ -159,5 +185,16 @@ describe('build menu sections', () => {
     });
     expect(readBuildSection()).toBe('build.housing');
     expect(() => writeBuildSection('build.storage')).not.toThrow();
+  });
+
+  it('opens the Codex from the Water and Bridge tool names, keeping their icons', () => {
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 700 }, (_, id) => ({ ...home, id })) };
+    context.flyout = 'roads';
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    expect(html).toContain('data-codex-label="water"');
+    expect(html).toContain('data-codex-label="bridge"');
+    expect(html).toContain('assets/icons/lac.png');
+    expect(html).toContain('assets/icons/bridge.png');
   });
 });

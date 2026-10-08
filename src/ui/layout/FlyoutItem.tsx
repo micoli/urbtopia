@@ -11,22 +11,24 @@ interface FlyoutItemProps {
   codexId?: CodexId;
   onInfo?: () => void;
   preview?: string;
+  icon?: string;
 }
 
-export function FlyoutItem({ label, badge, cost, guided = false, onChoose, codexId, onInfo, preview }: FlyoutItemProps) {
+export function FlyoutItem({ label, badge, cost, guided = false, onChoose, codexId, onInfo, preview, icon }: FlyoutItemProps) {
   const item = (
       <button type="button" className="flyout-item" data-guided={guided} data-codex-label={onInfo ? codexId : undefined} onClick={onInfo ?? onChoose}>
       <span>{label}</span>
       {badge ? <small className="flyout-badge">{badge}</small> : null}
     </button>
   );
-  if (!onInfo) return item;
+  if (!onInfo && !icon) return item;
+  const picture = icon ? `${import.meta.env.BASE_URL}assets/icons/${icon}` : preview;
   return (
     <div className="flyout-row">
       {item}
-      <button type="button" className="flyout-info" data-codex-id={codexId} aria-label={t('codex.about').replace('{name}', label)} onClick={onChoose}>
+      <button type="button" className="flyout-info" data-codex-id={codexId} aria-label={onInfo ? t('codex.about').replace('{name}', label) : label} onClick={onChoose}>
         {cost ? <small className="flyout-cost">{cost}</small> : null}
-        {preview ? <img src={preview} width={44} height={38} alt="" loading="lazy" /> : <span aria-hidden="true">📖</span>}
+        {picture ? <img src={picture} width={44} height={38} alt="" loading="lazy" /> : <span aria-hidden="true">📖</span>}
       </button>
     </div>
   );
