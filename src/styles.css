@@ -1941,33 +1941,6 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   overflow-y: auto;
 }
 
-.venue-fixture {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  min-height: var(--tap);
-  padding: 6px 10px;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  color: inherit;
-}
-
-.venue-fixture:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.venue-fixture--selected {
-  border-color: var(--accent);
-}
-
-.venue-fixture__lock {
-  font-size: 0.8rem;
-  opacity: 0.8;
-}
-
 .venue-staff {
   display: flex;
   align-items: center;
@@ -1984,4 +1957,20 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .venue-staff__actions {
   display: flex;
   gap: 4px;
+}
+
+.flyout-item[data-selected='true'],
+.flyout-row:has(.flyout-item[data-selected='true']) .flyout-info {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.flyout-item:disabled,
+.flyout-info:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.venue-view__side {
+  overflow-y: auto;
 }

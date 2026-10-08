@@ -18,7 +18,7 @@ import type { Building, FixtureId, GameState, Rotation, StaffRole, VenueData, Ve
 
 export const VENUE = { ...SHARED, upgradeCosts: VENUE_PROFILES.arcade.upgradeCosts };
 
-export { FIXTURES, FIXTURE_IDS, FIXTURE_MODELS, fixtureIdsOf, type FixtureSpec } from './fixtures';
+export { FIXTURES, FIXTURE_IDS, FIXTURE_MODELS, FIXTURE_CATEGORIES, fixtureIdsOf, fixtureIdsInCategory, type FixtureCategory, type FixtureSpec } from './fixtures';
 export { VENUE_TYPES, VENUE_PROFILES, isVenueType, venuePower } from './profiles';
 export { entranceCell, gridSizeOf, priceAcceptance, takingsCapOf } from './shared';
 export { playsCapacityPerHour } from './arcade';

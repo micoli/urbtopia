@@ -1,4 +1,5 @@
 import type { FixtureId, StaffRole, VenueType } from '../core/engine/state';
+import type { FixtureCategory } from '../core/venues/fixtures';
 
 type VenueMessageKey =
   | 'error.unknownFixture'
@@ -64,6 +65,7 @@ type VenueMessageKey =
   | 'venue.remove'
   | 'venue.entrance'
   | `venue.fixture.${FixtureId}`
+  | `venue.category.${FixtureCategory}`
   | `venue.price.${VenueType}`
   | `venue.served.${VenueType}`
   | `venue.visitors.${VenueType}`
@@ -144,6 +146,16 @@ const texts: Record<VenueMessageKey, readonly [string, string]> = {
   'venue.fixture.pottedPlant': ['Potted plant', 'Plante en pot'],
   'venue.fixture.coffeeCorner': ['Coffee corner', 'Coin café'],
   'venue.fixture.miniFridge': ['Mini fridge', 'Mini-réfrigérateur'],
+  'venue.category.games': ['Games', 'Jeux'],
+  'venue.category.service': ['Service', 'Services'],
+  'venue.category.furniture': ['Furniture', 'Mobilier'],
+  'venue.category.shelves': ['Shelves', 'Rayons'],
+  'venue.category.checkouts': ['Checkouts', 'Caisses'],
+  'venue.category.decor': ['Decor', 'Décoration'],
+  'venue.category.beds': ['Beds', 'Lits'],
+  'venue.category.bathroom': ['Bathroom', 'Salle de bain'],
+  'venue.category.comfort': ['Comfort', 'Confort'],
+  'venue.category.reception': ['Reception', 'Réception'],
   'error.unknownFixture': ['This Fixture does not exist.', 'Cet équipement n’existe pas.'],
   'error.nothingToRepair': ['This Fixture is in perfect condition.', 'Cet équipement est en parfait état.'],
   'venue.repair': ['Repair', 'Réparer'],

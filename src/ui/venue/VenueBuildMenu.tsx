@@ -1,41 +1,45 @@
-import { FIXTURES, fixtureIdsOf, type VenueType } from '../../core';
-import { t } from '../../i18n/t';
+import { useId, useState } from 'react';
 import { useStore } from 'zustand';
+import { FIXTURE_CATEGORIES, fixtureIdsInCategory, type FixtureCategory, type VenueType } from '../../core';
+import { t } from '../../i18n/t';
 import { venueStore } from '../../store/venueStore';
-import { useGame } from '../common/hooks';
-import { UrbsAmount } from '../common/UrbsAmount';
+import { AccordionSection } from '../common/AccordionSection';
+import { VenueFixtureItem } from './VenueFixtureItem';
 
 interface VenueBuildMenuProps {
   tier: number;
   venueType: VenueType;
 }
 
+// The same menu as the city: one section open at a time, with the items of the section as rows with a picture and a cost.
 export function VenueBuildMenu({ tier, venueType }: VenueBuildMenuProps) {
   const selected = useStore(venueStore, store => store.selectedFixture);
   const select = useStore(venueStore, store => store.selectFixture);
-  const urbs = useGame(store => store.state.urbs);
+  const categories = FIXTURE_CATEGORIES[venueType];
+  const [opened, setOpened] = useState<FixtureCategory>(categories[0]!);
+  const menuId = useId();
+  const open = categories.includes(opened) ? opened : categories[0]!;
   return (
     <section className="venue-build" aria-label={t('venue.build')}>
       <h3>{t('venue.build')}</h3>
-      <div className="venue-build__items">
-        {fixtureIdsOf(venueType).map(id => {
-          const { price, minTier } = FIXTURES[id];
-          const locked = tier < minTier;
-          return (
-            <button
-              key={id}
-              type="button"
-              className={`venue-fixture${selected === id ? ' venue-fixture--selected' : ''}`}
-              aria-pressed={selected === id}
-              disabled={locked || urbs < price}
-              onClick={() => select(selected === id ? null : id)}
-            >
-              <span>{t(`venue.fixture.${id}`)}</span>
-              {locked ? <span className="venue-fixture__lock">{t('venue.tierNeeded')} {minTier}</span> : <UrbsAmount value={price} />}
-            </button>
-          );
-        })}
-      </div>
+      {categories.map(category => (
+        <AccordionSection
+          key={category}
+          id={`${menuId}-${category}`}
+          title={t(`venue.category.${category}`)}
+          expanded={open === category}
+          chevron
+          lockWhenExpanded
+          className="build-section"
+          toggleClassName="build-section-toggle"
+          contentClassName="build-section-items"
+          onToggle={() => setOpened(category)}
+        >
+          {fixtureIdsInCategory(venueType, category).map(id => (
+            <VenueFixtureItem key={id} id={id} tier={tier} selected={selected === id} onChoose={() => select(selected === id ? null : id)} />
+          ))}
+        </AccordionSection>
+      ))}
       <p className="note note--muted">{selected ? t('venue.placeHint') : t('venue.chooseFixture')}</p>
     </section>
   );
