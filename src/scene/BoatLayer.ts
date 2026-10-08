@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { bridgeKeys, hashSeed, nextRandom, waterKeys, type GameState } from '../core';
 import { BOAT_MODELS } from './renderItems';
 import type { ModelLibrary } from './modelLibrary';
-import { advanceDrift, driftPosition, keyOf, releaseDrift, startDrift, type DriftBoat } from './boatDrift';
+import { advanceDrift, driftPosition, keyOf, releaseDrift, startDrift, waitingFor, type DriftBoat } from './boatDrift';
 
 const BOAT_ELEVATION = 0.04;
 const BOB_HEIGHT = 0.012;
@@ -25,6 +25,8 @@ export class BoatLayer {
   private ready = false;
   private enabled = true;
   private pending: GameState | null = null;
+  waiting: ReadonlySet<string> = new Set();
+  occupied: ReadonlySet<string> = new Set();
 
   constructor(private library: ModelLibrary) {
     void this.load();
@@ -59,17 +61,23 @@ export class BoatLayer {
     }
   }
 
-  update(deltaSeconds: number): void {
+  update(deltaSeconds: number, closedTiles: ReadonlySet<string> = new Set()): void {
     if (!this.enabled || !this.ready) return;
     this.clock += deltaSeconds;
-    const context = { water: this.water, reserved: this.reserved, random: this.random };
+    const context = { water: this.water, reserved: this.reserved, closedTiles, random: this.random };
+    const waiting = new Set<string>();
+    const occupied = new Set<string>();
     for (const { drift, object } of this.floating.values()) {
       advanceDrift(drift, deltaSeconds, context);
+      const blocked = waitingFor(drift, closedTiles);
+      if (blocked) waiting.add(blocked);
+      for (const tile of [drift.from, drift.to]) if (tile && this.bridges.has(keyOf(tile))) occupied.add(keyOf(tile));
       const { x, z } = driftPosition(drift);
-      object.visible = !this.bridges.has(keyOf({ x: Math.floor(x), y: Math.floor(z) }));
       object.position.set(x, BOAT_ELEVATION + Math.sin(this.clock * BOB_SPEED + drift.id) * BOB_HEIGHT, z);
       object.rotation.y = drift.heading;
     }
+    this.waiting = waiting;
+    this.occupied = occupied;
   }
 
   dispose(): void {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Coord } from '../core';
-import { DRIFT_SPEED, advanceDrift, driftPosition, keyOf, releaseDrift, startDrift, type DriftBoat } from './boatDrift';
+import { DRIFT_SPEED, waitingFor, advanceDrift, driftPosition, keyOf, releaseDrift, startDrift, type DriftBoat } from './boatDrift';
 
 function lcg(seed: number) {
   let state = seed;
@@ -83,5 +83,27 @@ describe('boat drift', () => {
     advanceDrift(boats[0]!, 0.1, context);
     releaseDrift(boats[0]!, context.reserved);
     expect(context.reserved.size).toBe(0);
+  });
+
+  it('waits in front of a closed Bridge and asks for it to open', () => {
+    const water = lake(2, 1);
+    const closedTiles = new Set([keyOf({ x: 51, y: 50 })]);
+    const { boats, context } = fleet(water, [{ x: 50, y: 50 }]);
+    boats[0]!.rest = 0;
+    run(boats, { ...context, closedTiles }, 5);
+    expect(boats[0]!.to).toBeNull();
+    expect(boats[0]!.want).toEqual({ x: 51, y: 50 });
+    expect(waitingFor(boats[0]!, closedTiles)).toBe('51,50');
+    expect(driftPosition(boats[0]!)).toEqual({ x: 50.5, z: 50.5 });
+  });
+
+  it('goes through as soon as the Bridge is open', () => {
+    const water = lake(2, 1);
+    const { boats, context } = fleet(water, [{ x: 50, y: 50 }]);
+    boats[0]!.rest = 0;
+    run(boats, { ...context, closedTiles: new Set([keyOf({ x: 51, y: 50 })]) }, 2);
+    run(boats, { ...context, closedTiles: new Set() }, 1);
+    expect(boats[0]!.to).toEqual({ x: 51, y: 50 });
+    expect(boats[0]!.want).toBeNull();
   });
 });

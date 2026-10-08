@@ -188,10 +188,11 @@ describe('renderItemsOf bridges', () => {
     bridges: [{ x: 52, y: 50, length: 1, axis: 'x' as const }],
   };
 
-  it('lifts the Road of a Bridge and lays a deck under it', () => {
+  it('leaves the deck and the Road of a Bridge to the animated Bridge layer', () => {
     const items = renderItemsOf(base);
-    expect(items.filter((item) => item.model === 'procedural/bridge-deck')).toHaveLength(1);
-    expect(items.find((item) => item.x === 52.5 && item.model.startsWith('roads/'))?.elevation).toBeGreaterThan(0);
-    expect(items.find((item) => item.x === 51.5 && item.model.startsWith('roads/'))?.elevation).toBeUndefined();
+    expect(items.some((item) => item.model === 'procedural/bridge-deck')).toBe(false);
+    expect(items.some((item) => item.x === 52.5 && item.model.startsWith('roads/'))).toBe(false);
+    expect(items.some((item) => item.x === 51.5 && item.model.startsWith('roads/'))).toBe(true);
+    expect(items.some((item) => item.x === 52.5 && item.model === 'procedural/water-tile')).toBe(true);
   });
 });
