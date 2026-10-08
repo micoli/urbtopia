@@ -18,6 +18,6 @@
 
 ## Comments
 
-- Interior shell uses floor, walls and a corner pillar only; the door and its entrance come with ticket 02. The pillar position is approximate.
+- Interior shell uses floor, walls and a corner pillar; the entrance came with ticket 02.
 - Only Mini Arcade models are extracted for now; Mini Market and Furniture Kit are registered with no model until tickets 02, 10 and 11.
 - Balancing values (`VENUE` in `src/core/venues/venues.ts`) are placeholders for `.scratch/venues/balancing.md`.

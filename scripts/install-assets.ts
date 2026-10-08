@@ -53,7 +53,7 @@ function installManagedModels(): void {
 }
 
 function installPolyPizzaModels(): void {
-  const sceneModels = readFileSync('src/scene/renderItems.ts', 'utf8');
+  const sceneModels = ['src/scene/renderItems.ts', 'src/core/venues/fixtures.ts'].map(file => readFileSync(file, 'utf8')).join('\n');
   const buildingModels = new Set(Object.values(readBuildings()).map(({ model }) => model));
   const keys = polyPizzaModelKeys().filter(key => buildingModels.has(key) || sceneModels.includes(`'${key}'`));
   for (const key of keys) {

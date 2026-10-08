@@ -40,7 +40,22 @@ export interface MarketPrice {
   updatedAt: number;
 }
 
-export type ArcadeFixtureId = 'arcadeMachine';
+export type ArcadeFixtureId =
+  | 'counter'
+  | 'barrelClimber'
+  | 'spaceShooter'
+  | 'airHockey'
+  | 'table'
+  | 'chair'
+  | 'barStool'
+  | 'pinball'
+  | 'billiard'
+  | 'vendingMachine'
+  | 'clawMachine'
+  | 'basketball'
+  | 'danceMachine'
+  | 'prizeWheel'
+  | 'ticketMachine';
 
 export interface VenueFixture extends Coord {
   id: number;

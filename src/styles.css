@@ -1937,6 +1937,8 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   display: flex;
   flex-direction: column;
   gap: 6px;
+  max-height: 34dvh;
+  overflow-y: auto;
 }
 
 .venue-fixture {
@@ -1959,4 +1961,9 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 
 .venue-fixture--selected {
   border-color: var(--accent);
+}
+
+.venue-fixture__lock {
+  font-size: 0.8rem;
+  opacity: 0.8;
 }

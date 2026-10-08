@@ -6,7 +6,7 @@ describe('Venue save', () => {
   const base = { ...newGame({ seed: 'venue-save', now: 0 }), urbs: 5_000, tutorial: null, nextId: 10, buildings: [createBuilding(1, 'arcade', 55, 50, 0)] };
 
   it('keeps Fixtures and Takings through a save and a load', () => {
-    const placed = dispatch(base, { type: 'PlaceFixture', buildingId: 1, fixture: 'arcadeMachine', x: 1, y: 1 }, 0);
+    const placed = dispatch(base, { type: 'PlaceFixture', buildingId: 1, fixture: 'barrelClimber', x: 1, y: 1 }, 0);
     if (!placed.ok) throw new Error(placed.error.key);
     const state = { ...placed.state, buildings: placed.state.buildings.map(b => ({ ...b, venue: { ...b.venue!, takings: 12.5 } })) };
     const loaded = parseEnvelope(serializeEnvelope(state, 0));

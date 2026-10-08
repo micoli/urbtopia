@@ -4,15 +4,25 @@ import type { ArcadeFixtureId } from '../core';
 export interface VenueStore {
   venueId: number | null;
   selectedFixture: ArcadeFixtureId | null;
+  placedId: number | null;
+  movingId: number | null;
   open: (venueId: number) => void;
   close: () => void;
   selectFixture: (fixture: ArcadeFixtureId | null) => void;
+  selectPlaced: (fixtureId: number | null) => void;
+  startMove: (fixtureId: number) => void;
+  stopMove: () => void;
 }
+
+const idle = { selectedFixture: null, placedId: null, movingId: null };
 
 export const venueStore = createStore<VenueStore>((set) => ({
   venueId: null,
-  selectedFixture: null,
-  open: (venueId) => set({ venueId, selectedFixture: null }),
-  close: () => set({ venueId: null, selectedFixture: null }),
-  selectFixture: (selectedFixture) => set({ selectedFixture }),
+  ...idle,
+  open: (venueId) => set({ venueId, ...idle }),
+  close: () => set({ venueId: null, ...idle }),
+  selectFixture: (selectedFixture) => set({ selectedFixture, placedId: null, movingId: null }),
+  selectPlaced: (placedId) => set({ placedId, selectedFixture: null, movingId: null }),
+  startMove: (movingId) => set({ movingId, selectedFixture: null }),
+  stopMove: () => set({ movingId: null }),
 }));

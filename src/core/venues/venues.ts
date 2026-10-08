@@ -1,3 +1,4 @@
+import { ARCADE_FIXTURES } from './fixtures';
 import { citizensOf } from '../buildings/city';
 import { centerOf } from '../environment/ecology';
 import { isWithinReach } from '../services/facilities';
@@ -11,20 +12,12 @@ export const VENUE = {
   playPrice: 2,
   takingsCap: 400,
   gridSizes: [6] as readonly number[],
+  refundRatio: 0.5,
 };
 
-export interface FixtureSpec {
-  model: string;
-  footprint: readonly [number, number];
-  price: number;
-  playsPerHour: number;
-}
+export { ARCADE_FIXTURES, ARCADE_FIXTURE_IDS, type FixtureSpec } from './fixtures';
 
-export const ARCADE_FIXTURES: Record<ArcadeFixtureId, FixtureSpec> = {
-  arcadeMachine: { model: 'mini-arcade/arcade-machine', footprint: [1, 1], price: 150, playsPerHour: 6 },
-};
-
-export const ARCADE_FIXTURE_IDS = Object.keys(ARCADE_FIXTURES) as ArcadeFixtureId[];
+export const entranceCell = (tier: number): { x: number; y: number } => ({ x: Math.floor(gridSizeOf(tier) / 2), y: 0 });
 
 export const isVenue = (building: Building): building is Building & { venue: VenueData } => building.venue !== undefined;
 
@@ -73,16 +66,18 @@ export function advanceVenues(state: GameState, elapsedMs: number): GameState {
 
 export const takingsDue = (venue: VenueData): number => Math.floor(venue.takings);
 
-export function canPlaceFixture(building: Building & { venue: VenueData }, fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>): boolean {
+export function canPlaceFixture(building: Building & { venue: VenueData }, fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>, ignoreId?: number): boolean {
   const size = gridSizeOf(building.tier);
-  const occupied = new Set(building.venue.fixtures.flatMap(fixtureTiles).map(tile => `${tile.x}:${tile.y}`));
-  return fixtureTiles(fixture).every(tile => tile.x >= 0 && tile.y >= 0 && tile.x < size && tile.y < size && !occupied.has(`${tile.x}:${tile.y}`));
+  const entrance = entranceCell(building.tier);
+  const occupied = new Set(building.venue.fixtures.filter(other => other.id !== ignoreId).flatMap(fixtureTiles).map(tile => `${tile.x}:${tile.y}`));
+  return fixtureTiles(fixture).every(tile => tile.x >= 0 && tile.y >= 0 && tile.x < size && tile.y < size && !occupied.has(`${tile.x}:${tile.y}`) && !(tile.x === entrance.x && tile.y === entrance.y));
 }
 
 export function placeFixture(state: GameState, buildingId: number, type: ArcadeFixtureId, x: number, y: number, rotation: Rotation): CommandOutcome {
   const building = state.buildings.find(candidate => candidate.id === buildingId);
   if (!building || !isVenue(building)) return { key: 'error.unknownBuilding' };
   if (!(type in ARCADE_FIXTURES)) return { key: 'error.unknownCommand' };
+  if (building.tier < ARCADE_FIXTURES[type].minTier) return { key: 'error.tierTooLow' };
   const fixture = { type, x, y, rotation };
   if (!canPlaceFixture(building, fixture)) return { key: 'error.tilesOccupied' };
   const price = ARCADE_FIXTURES[type].price;
@@ -109,4 +104,30 @@ export function collectTakings(state: GameState, building: Building & { venue: V
     },
     events: [{ type: 'ItemsCollected', buildingId: building.id }],
   };
+}
+
+const withVenue = (state: GameState, building: Building & { venue: VenueData }, venue: VenueData, urbs = state.urbs): GameState => ({
+  ...state,
+  urbs,
+  buildings: state.buildings.map(candidate => candidate === building ? { ...building, venue } : candidate),
+});
+
+export const fixtureRefund = (type: ArcadeFixtureId): number => Math.floor(ARCADE_FIXTURES[type].price * VENUE.refundRatio);
+
+export function moveFixture(state: GameState, buildingId: number, fixtureId: number, x: number, y: number, rotation?: Rotation): CommandOutcome {
+  const building = state.buildings.find(candidate => candidate.id === buildingId);
+  if (!building || !isVenue(building)) return { key: 'error.unknownBuilding' };
+  const fixture = building.venue.fixtures.find(candidate => candidate.id === fixtureId);
+  if (!fixture) return { key: 'error.unknownFixture' };
+  const moved: VenueFixture = { ...fixture, x, y, rotation: rotation ?? fixture.rotation };
+  if (!canPlaceFixture(building, moved, fixtureId)) return { key: 'error.tilesOccupied' };
+  return { state: withVenue(state, building, { ...building.venue, fixtures: building.venue.fixtures.map(candidate => candidate === fixture ? moved : candidate) }), events: [] };
+}
+
+export function removeFixture(state: GameState, buildingId: number, fixtureId: number): CommandOutcome {
+  const building = state.buildings.find(candidate => candidate.id === buildingId);
+  if (!building || !isVenue(building)) return { key: 'error.unknownBuilding' };
+  const fixture = building.venue.fixtures.find(candidate => candidate.id === fixtureId);
+  if (!fixture) return { key: 'error.unknownFixture' };
+  return { state: withVenue(state, building, { ...building.venue, fixtures: building.venue.fixtures.filter(candidate => candidate !== fixture) }, state.urbs + fixtureRefund(fixture.type)), events: [] };
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { advance, createBuilding, dispatch, newGame, type Building, type Command, type GameState } from '../index';
-import { takingsDue, takingsPerHour, visitorsPerHour, VENUE } from './venues';
+import { ARCADE_FIXTURES, entranceCell, fixtureRefund, takingsDue, takingsPerHour, visitorsPerHour, VENUE } from './venues';
 
 const HOUR = 3_600_000;
 const building = (id: number, type: Building['type'], x: number, y: number, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
@@ -17,7 +17,8 @@ const failure = (state: GameState, command: Command) => {
   return result.ok ? null : result.error.key;
 };
 const arcadeOf = (state: GameState) => state.buildings.find(b => b.type === 'arcade')!;
-const machine = (x: number, y: number): Command => ({ type: 'PlaceFixture', buildingId: 1, fixture: 'arcadeMachine', x, y });
+const place = (fixture: Extract<Command, { type: 'PlaceFixture' }>['fixture'], x: number, y: number, rotation?: 0 | 1 | 2 | 3): Command => ({ type: 'PlaceFixture', buildingId: 1, fixture, x, y, rotation });
+const machine = (x: number, y: number): Command => ({ type: 'PlaceFixture', buildingId: 1, fixture: 'barrelClimber', x, y });
 
 describe('Arcade Venue', () => {
   it('starts empty, with no Takings', () => {
@@ -26,7 +27,7 @@ describe('Arcade Venue', () => {
 
   it('places a game machine on a free interior cell and pays its price', () => {
     const state = send(city(), machine(2, 3));
-    expect(arcadeOf(state).venue!.fixtures).toEqual([{ id: 1, type: 'arcadeMachine', x: 2, y: 3, rotation: 0 }]);
+    expect(arcadeOf(state).venue!.fixtures).toEqual([{ id: 1, type: 'barrelClimber', x: 2, y: 3, rotation: 0 }]);
     expect(state.urbs).toBe(10_000 - 150);
   });
 
@@ -74,5 +75,50 @@ describe('Arcade Venue', () => {
     let stepped = equipped;
     for (let hour = 1; hour <= 6; hour++) stepped = advance(stepped, hour * HOUR).state;
     expect(arcadeOf(stepped).venue!.takings).toBeCloseTo(arcadeOf(once).venue!.takings, 6);
+  });
+
+  describe('Fixture editing', () => {
+    const fixtures = (state: GameState) => arcadeOf(state).venue!.fixtures;
+
+    it('moves and rotates a Fixture, refusing taken cells and the entrance', () => {
+      const placed = send(send(city(), machine(1, 1)), machine(2, 1));
+      const moved = send(placed, { type: 'MoveFixture', buildingId: 1, fixtureId: 1, x: 4, y: 4, rotation: 1 });
+      expect(fixtures(moved)[0]).toMatchObject({ x: 4, y: 4, rotation: 1 });
+      expect(failure(placed, { type: 'MoveFixture', buildingId: 1, fixtureId: 1, x: 2, y: 1 })).toBe('error.tilesOccupied');
+      const entrance = entranceCell(1);
+      expect(failure(placed, { type: 'MoveFixture', buildingId: 1, fixtureId: 1, x: entrance.x, y: entrance.y })).toBe('error.tilesOccupied');
+      expect(failure(city(), machine(entrance.x, entrance.y))).toBe('error.tilesOccupied');
+      expect(failure(placed, { type: 'MoveFixture', buildingId: 1, fixtureId: 99, x: 0, y: 0 })).toBe('error.unknownFixture');
+    });
+
+    it('lets a Fixture be rotated in place', () => {
+      const placed = send(city(), machine(1, 1));
+      const turned = send(placed, { type: 'MoveFixture', buildingId: 1, fixtureId: 1, x: 1, y: 1, rotation: 2 });
+      expect(fixtures(turned)[0]).toMatchObject({ x: 1, y: 1, rotation: 2 });
+    });
+
+    it('refunds half the price when removing a Fixture', () => {
+      const placed = send(city(), machine(1, 1));
+      const removed = send(placed, { type: 'RemoveFixture', buildingId: 1, fixtureId: 1 });
+      expect(fixtures(removed)).toEqual([]);
+      expect(removed.urbs).toBe(placed.urbs + fixtureRefund('barrelClimber'));
+      expect(fixtureRefund('barrelClimber')).toBe(ARCADE_FIXTURES.barrelClimber.price / 2);
+      expect(failure(removed, { type: 'RemoveFixture', buildingId: 1, fixtureId: 1 })).toBe('error.unknownFixture');
+    });
+
+    it('locks Fixtures above the Venue Tier', () => {
+      expect(failure(city(), place('pinball', 0, 0))).toBe('error.tierTooLow');
+      expect(failure(city(), place('billiard', 0, 0))).toBe('error.tierTooLow');
+    });
+
+    it('lets a 2x1 Fixture turn into a 1x2 one and blocks it from leaving the grid', () => {
+      const tier2 = city(10_000, [building(1, 'arcade', 55, 50, { tier: 2 }), building(2, 'home', 52, 50, { tier: 4 })]);
+      const placed = send(tier2, place('billiard', 0, 0));
+      const tiles = (state: GameState) => fixtures(state).map(f => [f.x, f.y, f.rotation]);
+      expect(tiles(placed)).toEqual([[0, 0, 0]]);
+      const turned = send(placed, { type: 'MoveFixture', buildingId: 1, fixtureId: 1, x: 0, y: 0, rotation: 1 });
+      expect(tiles(turned)).toEqual([[0, 0, 1]]);
+      expect(failure(tier2, place('billiard', 5, 0))).toBe('error.tilesOccupied');
+    });
   });
 });

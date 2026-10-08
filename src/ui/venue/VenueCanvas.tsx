@@ -1,10 +1,13 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, fixtureTiles, gridSizeOf, isVenue, type Building } from '../../core';
+import { canPlaceFixture, fixtureTiles, gridSizeOf, isVenue, type Building, type Coord, type VenueData } from '../../core';
 import { VenueScene } from '../../scene/VenueScene';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
 
-const venueOf = (venueId: number): Building | undefined => gameStore.getState().state.buildings.find(building => building.id === venueId);
+const venueOf = (venueId: number): (Building & { venue: VenueData }) | undefined => {
+  const building = gameStore.getState().state.buildings.find(candidate => candidate.id === venueId);
+  return building && isVenue(building) ? building : undefined;
+};
 
 interface VenueCanvasProps {
   venueId: number;
@@ -17,19 +20,27 @@ export function VenueCanvas({ venueId }: VenueCanvasProps) {
     const canvas = canvasRef.current;
     const initial = venueOf(venueId);
     if (!canvas || !initial) return;
-    const scene = new VenueScene(canvas, gridSizeOf(initial.tier));
-    let hovered: { x: number; y: number } | null = null;
+    const scene = new VenueScene(canvas, gridSizeOf(initial.tier), initial.tier);
+    let hovered: Coord | null = null;
 
     const showGhost = () => {
       const venue = venueOf(venueId);
-      const fixture = venueStore.getState().selectedFixture;
-      if (!venue || !isVenue(venue) || !fixture || !hovered) return scene.setGhost(null);
-      const candidate = { type: fixture, x: hovered.x, y: hovered.y, rotation: 0 as const };
-      scene.setGhost({ tiles: fixtureTiles(candidate), valid: canPlaceFixture(venue, candidate) });
+      const { selectedFixture, movingId } = venueStore.getState();
+      const moving = venue?.venue.fixtures.find(fixture => fixture.id === movingId);
+      const type = moving?.type ?? selectedFixture;
+      if (!venue || !type || !hovered) return scene.setGhost(null);
+      const candidate = { type, x: hovered.x, y: hovered.y, rotation: moving?.rotation ?? (0 as const) };
+      scene.setGhost({ tiles: fixtureTiles(candidate), valid: canPlaceFixture(venue, candidate, moving?.id) });
     };
-    const syncFixtures = () => {
+    const showSelection = () => {
+      const { placedId, movingId } = venueStore.getState();
+      const fixture = venueOf(venueId)?.venue.fixtures.find(candidate => candidate.id === (movingId ?? placedId));
+      scene.setSelection(fixture ? fixtureTiles(fixture) : []);
+    };
+    const sync = () => {
       const venue = venueOf(venueId);
-      if (venue && isVenue(venue)) scene.setFixtures(venue.venue.fixtures);
+      if (venue) scene.setFixtures(venue.venue.fixtures);
+      showSelection();
       showGhost();
     };
 
@@ -38,13 +49,21 @@ export function VenueCanvas({ venueId }: VenueCanvasProps) {
       showGhost();
     };
     scene.onTapCell = cell => {
-      const fixture = venueStore.getState().selectedFixture;
-      if (!fixture) return;
-      gameStore.getState().send({ type: 'PlaceFixture', buildingId: venueId, fixture, x: cell.x, y: cell.y });
+      const venue = venueOf(venueId);
+      if (!venue) return;
+      const { selectedFixture, movingId, selectPlaced, stopMove } = venueStore.getState();
+      const { send } = gameStore.getState();
+      if (selectedFixture) return send({ type: 'PlaceFixture', buildingId: venueId, fixture: selectedFixture, x: cell.x, y: cell.y });
+      if (movingId !== null) {
+        send({ type: 'MoveFixture', buildingId: venueId, fixtureId: movingId, x: cell.x, y: cell.y });
+        return stopMove();
+      }
+      const tapped = venue.venue.fixtures.find(fixture => fixtureTiles(fixture).some(tile => tile.x === cell.x && tile.y === cell.y));
+      selectPlaced(tapped?.id ?? null);
     };
-    syncFixtures();
-    const unsubscribeGame = gameStore.subscribe(syncFixtures);
-    const unsubscribeVenue = venueStore.subscribe(showGhost);
+    sync();
+    const unsubscribeGame = gameStore.subscribe(sync);
+    const unsubscribeVenue = venueStore.subscribe(sync);
     return () => {
       unsubscribeGame();
       unsubscribeVenue();

@@ -7,6 +7,7 @@ import { CloseButton } from '../common/CloseButton';
 import { useGame } from '../common/hooks';
 import { VenueBuildMenu } from './VenueBuildMenu';
 import { VenueCanvas } from './VenueCanvas';
+import { VenueFixtureActions } from './VenueFixtureActions';
 import { VenueTakings } from './VenueTakings';
 
 export function VenueDialog() {
@@ -30,7 +31,8 @@ export function VenueDialog() {
         <CloseButton onClick={close} label={t('venue.back')} />
       </header>
       <aside className="venue-view__side">
-        <VenueBuildMenu />
+        <VenueFixtureActions venueId={venue.id} />
+        <VenueBuildMenu tier={venue.tier} />
         <section className="venue-takings">
           <h3>{t('venue.takings')}</h3>
           <VenueTakings building={venue} />

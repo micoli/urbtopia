@@ -120,7 +120,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'mini-arcade',
     url: 'https://kenney.nl/media/pages/assets/mini-arcade/ece1e8f320-1721638600/kenney_mini-arcade.zip',
     archive: 'kenney_mini-arcade.zip',
-    files: ['arcade-machine', 'floor', 'wall', 'wall-corner'],
+    files: ['arcade-machine', 'floor', 'wall', 'wall-corner', 'air-hockey', 'basketball-game', 'cash-register', 'claw-machine', 'dance-machine', 'pinball', 'prize-wheel', 'ticket-machine', 'vending-machine'],
   },
   {
     name: 'mini-market',
@@ -133,7 +133,7 @@ export const ASSET_PACKS: AssetPack[] = [
     colormap: false,
     url: 'https://kenney.nl/media/pages/assets/furniture-kit/440e0608a4-1677580847/kenney_furniture-kit.zip',
     archive: 'kenney_furniture-kit.zip',
-    files: [],
+    files: ['table', 'chair', 'stoolBar'],
   },
   ...extraPacks.kenney.map(({ name, archive, colormap }) => ({ name, url: '', archive, files: [], colormap })),
 ];

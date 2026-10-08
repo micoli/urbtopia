@@ -1,10 +1,12 @@
 import * as THREE from 'three';
-import { ARCADE_FIXTURES, fixtureFootprint, type Coord, type VenueFixture } from '../core';
+import { ARCADE_FIXTURES, entranceCell, fixtureFootprint, type Coord, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_SHELL_MODELS } from './renderItems';
 
 const { floor: FLOOR_MODEL, wall: WALL_MODEL, corner: CORNER_MODEL } = VENUE_SHELL_MODELS;
 const TAP_DISTANCE = 6;
+const SELECTION_COLOR = 0x4da3ff;
+const ENTRANCE_COLOR = 0xe8d9a8;
 const VALID_COLOR = 0x35d07f;
 const INVALID_COLOR = 0xe5484d;
 
@@ -21,6 +23,7 @@ export class VenueScene {
   private shell = new THREE.Group();
   private fixtureRoot = new THREE.Group();
   private ghostRoot = new THREE.Group();
+  private selectionRoot = new THREE.Group();
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   private resizeObserver: ResizeObserver;
@@ -34,7 +37,7 @@ export class VenueScene {
   onTapCell: (cell: Coord) => void = () => {};
   onHoverCell: (cell: Coord | null) => void = () => {};
 
-  constructor(private canvas: HTMLCanvasElement, private size: number) {
+  constructor(private canvas: HTMLCanvasElement, private size: number, private tier = 1) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.toneMapping = THREE.NeutralToneMapping;
@@ -43,8 +46,8 @@ export class VenueScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 2.2);
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
-    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.ghostRoot);
-    this.ready = this.library.ensure([FLOOR_MODEL, WALL_MODEL, CORNER_MODEL, ...Object.values(ARCADE_FIXTURES).map(spec => spec.model)]).then(() => {
+    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.selectionRoot, this.ghostRoot);
+    this.ready = this.library.ensure([FLOOR_MODEL, WALL_MODEL, CORNER_MODEL, ...new Set(Object.values(ARCADE_FIXTURES).map(spec => spec.model))]).then(() => {
       if (this.disposed) return;
       this.buildShell();
       this.rebuildFixtures();
@@ -73,15 +76,23 @@ export class VenueScene {
   }
 
   setGhost(ghost: VenueGhost | null): void {
-    this.clear(this.ghostRoot);
-    if (ghost) {
-      const material = new THREE.MeshBasicMaterial({ color: ghost.valid ? VALID_COLOR : INVALID_COLOR, transparent: true, opacity: 0.55, depthTest: false });
-      for (const tile of ghost.tiles) {
+    this.markTiles(this.ghostRoot, ghost?.tiles ?? [], ghost ? (ghost.valid ? VALID_COLOR : INVALID_COLOR) : VALID_COLOR);
+  }
+
+  setSelection(tiles: readonly Coord[]): void {
+    this.markTiles(this.selectionRoot, tiles, SELECTION_COLOR);
+  }
+
+  private markTiles(root: THREE.Group, tiles: readonly Coord[], color: number): void {
+    this.clear(root, true);
+    if (tiles.length > 0) {
+      const material = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.55, depthTest: false });
+      for (const tile of tiles) {
         const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), material);
         mesh.rotation.x = -Math.PI / 2;
         mesh.position.set(tile.x + 0.5, 0.05, tile.y + 0.5);
         mesh.renderOrder = 10;
-        this.ghostRoot.add(mesh);
+        root.add(mesh);
       }
     }
     this.dirty = true;
@@ -95,7 +106,8 @@ export class VenueScene {
     this.canvas.removeEventListener('pointerup', this.handlePointerUp);
     this.canvas.removeEventListener('pointermove', this.handlePointerMove);
     this.canvas.removeEventListener('pointerleave', this.handlePointerLeave);
-    this.clear(this.ghostRoot);
+    this.clear(this.ghostRoot, true);
+    this.clear(this.selectionRoot, true);
     this.renderer.dispose();
   }
 
@@ -103,14 +115,19 @@ export class VenueScene {
     if (!this.library.has(FLOOR_MODEL) || this.builtSize === this.size) return;
     this.builtSize = this.size;
     this.clear(this.shell);
+    const entrance = entranceCell(this.tier);
     for (let x = 0; x < this.size; x++) {
       for (let y = 0; y < this.size; y++) this.place(this.shell, FLOOR_MODEL, x + 0.5, y + 0.5, 0);
     }
     for (let index = 0; index < this.size; index++) {
-      this.place(this.shell, WALL_MODEL, index + 0.5, 0, 0);
+      if (index !== entrance.x) this.place(this.shell, WALL_MODEL, index + 0.5, 0, 0);
       this.place(this.shell, WALL_MODEL, 0, index + 0.5, Math.PI / 2);
     }
     this.place(this.shell, CORNER_MODEL, -0.1, -0.1, Math.PI / 2);
+    const mat = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), new THREE.MeshBasicMaterial({ color: ENTRANCE_COLOR }));
+    mat.rotation.x = -Math.PI / 2;
+    mat.position.set(entrance.x + 0.5, 0.04, entrance.y + 0.5);
+    this.shell.add(mat);
     this.dirty = true;
   }
 
@@ -118,28 +135,35 @@ export class VenueScene {
     if (!this.library.has(FLOOR_MODEL)) return;
     this.clear(this.fixtureRoot);
     for (const fixture of this.lastFixtures) {
+      const spec = ARCADE_FIXTURES[fixture.type];
       const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
-      this.place(this.fixtureRoot, ARCADE_FIXTURES[fixture.type].model, fixture.x + width / 2, fixture.y + depth / 2, -fixture.rotation * Math.PI / 2);
+      const object = this.place(this.fixtureRoot, spec.model, fixture.x + width / 2, fixture.y + depth / 2, -fixture.rotation * Math.PI / 2);
+      if (spec.tint !== undefined) this.tint(object, spec.tint);
     }
     this.dirty = true;
   }
 
-  private place(parent: THREE.Group, model: string, x: number, z: number, rotation: number): void {
-    const object = this.library.get(model).clone(true);
-    object.position.set(x, 0, z);
-    object.rotation.y = rotation;
-    parent.add(object);
+  private tint(object: THREE.Object3D, color: number): void {
+    object.traverse(node => {
+      if (node instanceof THREE.Mesh) node.material = this.library.withTint(node.material, color);
+    });
   }
 
-  private clear(group: THREE.Group): void {
+  private place(parent: THREE.Group, model: string, x: number, z: number, rotation: number): THREE.Object3D {
+    const holder = new THREE.Group();
+    holder.add(this.library.get(model).clone(true));
+    holder.position.set(x, 0, z);
+    holder.rotation.y = rotation;
+    parent.add(holder);
+    return holder;
+  }
+
+  private clear(group: THREE.Group, disposeMarks = false): void {
     for (const child of [...group.children]) {
       group.remove(child);
-      child.traverse(node => {
-        if (node instanceof THREE.Mesh && node.parent === this.ghostRoot) {
-          node.geometry.dispose();
-          (node.material as THREE.Material).dispose();
-        }
-      });
+      if (!disposeMarks || !(child instanceof THREE.Mesh)) continue;
+      child.geometry.dispose();
+      (child.material as THREE.Material).dispose();
     }
   }
 

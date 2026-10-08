@@ -17,7 +17,7 @@ import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
-import { collectTakings, isVenue, placeFixture } from '../venues/venues';
+import { collectTakings, isVenue, moveFixture, placeFixture, removeFixture } from '../venues/venues';
 import { bridgeAt, bridgeKeys, placeBridge, refundOf, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
@@ -77,6 +77,8 @@ export type Command =
   | { readonly type: 'SellSeeds'; readonly crop: CropId; readonly quantity: number }
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
+  | { readonly type: 'MoveFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: ArcadeFixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
   | { readonly type: 'SellToMarket'; readonly good: GoodId; readonly quantity: number }
@@ -97,6 +99,7 @@ export type Command =
 export type ErrorKey =
   | 'error.unknownCommand'
   | 'error.unknownBuilding'
+  | 'error.unknownFixture'
   | 'error.outsideOwnedParcels'
   | 'error.tilesOccupied'
   | 'error.homeExpansionBlocked'
@@ -246,6 +249,10 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return queueProduction(state, command.buildingId, command.item, now);
     case 'Collect':
       return collect(state, command.buildingId);
+    case 'MoveFixture':
+      return moveFixture(state, command.buildingId, command.fixtureId, command.x, command.y, command.rotation);
+    case 'RemoveFixture':
+      return removeFixture(state, command.buildingId, command.fixtureId);
     case 'PlaceFixture':
       return placeFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
     case 'StockShop':

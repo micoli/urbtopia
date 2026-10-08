@@ -100,4 +100,4 @@ export { pedestrianGraph } from './map/pedestrianGraph';
 export type { PedestrianGraph } from './map/pedestrianGraph';
 export { WALKING, WALK_DESTINATIONS, modeShares } from './traffic/walking';
 export type { ModeShares, WalkDestination } from './traffic/walking';
-export { ARCADE_FIXTURES, ARCADE_FIXTURE_IDS, VENUE, canPlaceFixture, fixtureFootprint, fixtureTiles, gridSizeOf, isVenue, playsCapacityPerHour, takingsDue, takingsPerHour, visitorsPerHour } from './venues/venues';
+export { ARCADE_FIXTURES, ARCADE_FIXTURE_IDS, VENUE, canPlaceFixture, entranceCell, fixtureRefund, fixtureFootprint, fixtureTiles, gridSizeOf, isVenue, playsCapacityPerHour, takingsDue, takingsPerHour, visitorsPerHour } from './venues/venues';

@@ -2273,5 +2273,128 @@
       1,
       1
     ]
+  },
+  "mini-arcade/air-hockey": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade/basketball-game": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade/cash-register": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade/claw-machine": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade/dance-machine": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade/pinball": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade/prize-wheel": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade/ticket-machine": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade/vending-machine": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "furniture/table": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.9,
+      "height": 0.6
+    }
+  },
+  "furniture/chair": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.5,
+      "height": 0.9
+    }
+  },
+  "furniture/stoolBar": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.5,
+      "height": 0.9
+    }
+  },
+  "poly.pizza/pool-table": {
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Evol-Love",
+    "url": "https://poly.pizza/m/7GzmqI1M0fC",
+    "footprint": [
+      2,
+      1
+    ],
+    "fit": {
+      "width": 1.9,
+      "height": 0.9
+    },
+    "note": "Pool Table"
   }
 }

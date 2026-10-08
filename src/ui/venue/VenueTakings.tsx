@@ -20,7 +20,7 @@ export function VenueTakings({ building }: VenueTakingsProps) {
       <DrawerPanel.LabelValue label={t('venue.visitors')} value={visitorsPerHour(state, building).toFixed(1)} />
       <DrawerPanel.LabelValue label={t('venue.capacity')} value={playsCapacityPerHour(building.venue)} />
       <DrawerPanel.LabelValue label={t('venue.earnings')} value={<UrbsAmount value={takingsPerHour(state, building)} />} />
-      {building.venue.fixtures.length === 0 ? <p className="note note--warn">{t('venue.noFixture')}</p> : null}
+      {playsCapacityPerHour(building.venue) === 0 ? <p className="note note--warn">{t('venue.noFixture')}</p> : null}
       {full ? <p className="note note--warn">{t('venue.cap')}</p> : null}
       <ActionButton variant="primary" block disabled={due === 0} onClick={() => gameStore.getState().send({ type: 'Collect', buildingId: building.id })}>
         {t('venue.collect')} · <UrbsAmount value={due} />
