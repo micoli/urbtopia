@@ -6,10 +6,11 @@ import type { CommandOutcome } from '../engine/commands';
 import type { Boat, BoatFamily, Building, GameState } from '../engine/state';
 import { connectedWaterKeys, marinaCapacity } from './marina';
 
-export const BOAT_FAMILIES: readonly BoatFamily[] = ['pleasure'];
+export const BOAT_FAMILIES: readonly BoatFamily[] = ['pleasure', 'fishing'];
 
 export const BOATS = {
   pleasure: { cost: 400, unlockCitizens: 80, radius: 6, wellbeingBonus: 4, operatingCostPerHour: 2 },
+  fishing: { cost: 800, unlockCitizens: 100, operatingCostPerHour: 0 },
 } as const;
 
 const FUNDS_EPSILON = 1e-9;
@@ -27,7 +28,7 @@ export function boatsOfMarina(state: GameState, marinaId: number): Boat[] {
 }
 
 export function isBoatOperating(state: GameState, boat: Boat): boolean {
-  return state.urbs > FUNDS_EPSILON && marinaOf(state, boat.marinaId) !== undefined && boat.family in BOATS;
+  return boat.family !== 'fishing' && state.urbs > FUNDS_EPSILON && marinaOf(state, boat.marinaId) !== undefined;
 }
 
 export function boatsCutOff(state: GameState): boolean {
@@ -47,7 +48,7 @@ export function buyBoat(state: GameState, family: BoatFamily, marinaId: number, 
   if (boatsOf(state).some((boat) => tileKey(boat) === tileKey(tile))) return { key: 'error.tilesOccupied' };
   if (boatsOfMarina(state, marinaId).length >= marinaCapacity(marina)) return { key: 'error.marinaFull' };
   if (state.urbs < spec.cost) return { key: 'error.notEnoughUrbs' };
-  const boat: Boat = { id: state.nextId, family, marinaId, x: tile.x, y: tile.y };
+  const boat: Boat = { id: state.nextId, family, marinaId, x: tile.x, y: tile.y, ...(family === 'fishing' ? { catchSince: state.lastSeen } : {}) };
   return {
     state: { ...state, urbs: state.urbs - spec.cost, nextId: state.nextId + 1, boats: [...boatsOf(state), boat] },
     events: [],

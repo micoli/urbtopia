@@ -51,7 +51,7 @@ export const RED_CROSS_MODEL = 'procedural/red-cross';
 export const GARAGE_DOOR_MODEL = 'procedural/garage-door';
 export const FIELD_SOIL_MODEL = 'procedural/field-soil';
 export const WATER_TILE_MODEL = 'procedural/water-tile';
-export const BOAT_MODELS: Record<BoatFamily, string> = { pleasure: 'watercraft/boat-sail-a' };
+export const BOAT_MODELS: Record<BoatFamily, string> = { pleasure: 'watercraft/boat-sail-a', fishing: 'watercraft/boat-fishing-small' };
 const BOAT_ELEVATION = 0.04;
 export const PROCEDURAL_MODELS: readonly string[] = [RED_CROSS_MODEL, GARAGE_DOOR_MODEL, FIELD_SOIL_MODEL, WATER_TILE_MODEL];
 

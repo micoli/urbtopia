@@ -101,7 +101,7 @@ export function validateGameState(value: unknown): GameState | null {
   if (value.adaptationUntil !== undefined && !isNumber(value.adaptationUntil)) return null;
   if (value.waterTiles !== undefined && !isArrayOf(value.waterTiles, tile => isRecord(tile) && isCoord(tile))) return null;
   if (value.waterTiles !== undefined && new Set((value.waterTiles as { x: number; y: number }[]).map(tile => `${tile.x}:${tile.y}`)).size !== (value.waterTiles as unknown[]).length) return null;
-  if (value.boats !== undefined && !isArrayOf(value.boats, boat => isRecord(boat) && isCoord(boat) && isInt(boat.id, 1) && BOAT_FAMILIES.includes(boat.family as never) && isInt(boat.marinaId, 1))) return null;
+  if (value.boats !== undefined && !isArrayOf(value.boats, boat => isRecord(boat) && isCoord(boat) && isInt(boat.id, 1) && BOAT_FAMILIES.includes(boat.family as never) && isInt(boat.marinaId, 1) && (boat.catchSince === undefined || (boat.family === 'fishing' && isNumber(boat.catchSince))))) return null;
   if (value.casinoRng !== undefined && !isNumber(value.casinoRng)) return null;
   if (value.ecologyDismissed !== undefined && typeof value.ecologyDismissed !== 'boolean') return null;
   if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&

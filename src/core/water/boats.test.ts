@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { advance, createBuilding, dispatch, homeBenefits, newGame, type Command, type GameState } from '../index';
+import { advance, createBuilding, dispatch, homeBenefits, newGame, readyFish, type Command, type GameState } from '../index';
 
 const T0 = 1_700_000_000_000;
 const HOUR = 3_600_000;
@@ -142,5 +142,66 @@ describe('Protecting the Marina and the water', () => {
     const state = succeed(harbour(), buy(52));
     const after = succeed(state, { type: 'RemoveWater', tiles: row(6) });
     expect(after.waterTiles).toEqual([{ x: 51, y: 50 }, { x: 52, y: 50 }]);
+  });
+});
+
+describe('Fishing boat', () => {
+  const MINUTE = 60_000;
+  const fishing = (x = 52): Command => ({ type: 'BuyBoat', family: 'fishing', marinaId: 100, x, y: 50 });
+  const withStorehouse = (state: GameState): GameState => ({ ...state, buildings: [...state.buildings, createBuilding(2, 'storehouse', 56, 44, 0)] });
+  const later = (state: GameState, minutes: number): GameState => ({ ...state, lastSeen: state.lastSeen + minutes * MINUTE });
+
+  it('costs 800 Urbs, unlocks at 100 Citizens and has no running cost', () => {
+    const small = harbour({ buildings: [{ ...createBuilding(1, 'home', 40, 40, 0), tier: 4 }, createBuilding(100, 'marina', 50, 48, 0)] });
+    expect(failureKey(small, fishing())).toBe('error.itemLocked');
+    const state = succeed(withStorehouse(harbour()), fishing());
+    expect(state.urbs).toBe(100_000 - 800);
+    expect(advance(state, T0 + 3 * HOUR).state.urbs).toBeGreaterThanOrEqual(state.urbs);
+  });
+
+  it('catches 2 Fish every 6 minutes, up to the Slots of the Marina Tier', () => {
+    const state = succeed(withStorehouse(harbour()), fishing());
+    expect(readyFish(later(state, 5), 100)).toBe(0);
+    expect(readyFish(later(state, 6), 100)).toBe(2);
+    expect(readyFish(later(state, 13), 100)).toBe(4);
+    expect(readyFish(later(state, 600), 100)).toBe(4);
+    const upgraded = { ...state, buildings: state.buildings.map((b) => (b.type === 'marina' ? { ...b, tier: 3 } : b)) };
+    expect(readyFish(later(upgraded, 600), 100)).toBe(10);
+  });
+
+  it('collects the catch into the Materials compartment and keeps the progress of the current cycle', () => {
+    const state = later(succeed(withStorehouse(harbour()), fishing()), 8);
+    const collected = succeed(state, { type: 'CollectCatch', marinaId: 100 });
+    expect(collected.storage.materials.fish).toBe(2);
+    expect(readyFish(collected, 100)).toBe(0);
+    expect(readyFish(later(collected, 4), 100)).toBe(2);
+  });
+
+  it('restarts the clock when the boat was full', () => {
+    const state = later(succeed(withStorehouse(harbour()), fishing()), 600);
+    const collected = succeed(state, { type: 'CollectCatch', marinaId: 100 });
+    expect(collected.storage.materials.fish).toBe(4);
+    expect(readyFish(later(collected, 5), 100)).toBe(0);
+  });
+
+  it('fails without a catch or without room', () => {
+    const state = succeed(withStorehouse(harbour()), fishing());
+    expect(failureKey(state, { type: 'CollectCatch', marinaId: 100 })).toBe('error.nothingToCollect');
+    const noStorage = later(succeed(harbour(), fishing()), 8);
+    expect(failureKey(noStorage, { type: 'CollectCatch', marinaId: 100 })).toBe('error.storageFull');
+  });
+
+  it('does not count the time that is forfeited offline or skipped', () => {
+    const state = succeed(withStorehouse(harbour()), fishing());
+    const skipped = succeed(state, { type: 'SkipTime', hours: 1 });
+    expect(readyFish(skipped, 100)).toBe(4);
+    const away = advance(state, T0 + 100 * HOUR).state;
+    expect(readyFish(away, 100)).toBe(4);
+  });
+
+  it('turns two Fish into Canned fish in a Factory', () => {
+    const state = { ...withStorehouse(harbour()), buildings: [...harbour().buildings, createBuilding(2, 'storehouse', 56, 44, 0), createBuilding(3, 'factory', 58, 44, 0)], storage: { materials: { fish: 4 }, goods: {} } };
+    const queued = succeed(state, { type: 'QueueProduction', buildingId: 3, item: 'cannedFish' });
+    expect(queued.storage.materials.fish).toBe(2);
   });
 });

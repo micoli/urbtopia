@@ -16,6 +16,7 @@ import { buySeeds, sellSeeds } from '../farming/seeds';
 import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat } from '../water/boats';
+import { collectCatch } from '../water/fishing';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
 import { withStartingCity } from './newGame';
@@ -64,6 +65,7 @@ export type Command =
   | { readonly type: 'RemoveWater'; readonly tiles: readonly Coord[] }
   | { readonly type: 'BuyBoat'; readonly family: BoatFamily; readonly marinaId: number; readonly x: number; readonly y: number }
   | { readonly type: 'SellBoat'; readonly id: number }
+  | { readonly type: 'CollectCatch'; readonly marinaId: number }
   | { readonly type: 'Plant'; readonly crop: CropId; readonly tiles: readonly Coord[] }
   | { readonly type: 'Harvest'; readonly tiles: readonly Coord[] }
   | { readonly type: 'BuySeeds'; readonly crop: CropId; readonly quantity: number }
@@ -214,6 +216,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return buyBoat(state, command.family, command.marinaId, { x: command.x, y: command.y });
     case 'SellBoat':
       return sellBoat(state, command.id);
+    case 'CollectCatch':
+      return collectCatch(state, command.marinaId);
     case 'Plant':
       return plantFields(state, command.crop, command.tiles);
     case 'Harvest':

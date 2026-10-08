@@ -1,6 +1,6 @@
 # Fishing boat, Fish and Canned fish
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 02
 Spec: ../spec.md
 
