@@ -96,7 +96,7 @@ export function nextRunTile(run: BusRun): Coord {
 
 export function allowedTravel(vehicle: TrafficVehicle, wanted: number, others: readonly TrafficVehicle[], stopTiles: ReadonlySet<string> = NO_STOPS, deltaSeconds = 0): number {
   let travel = Math.min(wanted, Math.max(0, distanceToLeader(vehicle, others)));
-  if (vehicle.progress < TILE_EDGE_PROGRESS && (stopTiles.has(tileKey(vehicle.to)) || stopTiles.has(edgeKey(vehicle.from, vehicle.to)))) travel = Math.min(travel, Math.max(0, STOP_BEFORE_CROSSING - vehicle.progress));
+  if (stopTiles.size > 0 && vehicle.progress < TILE_EDGE_PROGRESS && (stopTiles.has(tileKey(vehicle.to)) || stopTiles.has(edgeKey(vehicle.from, vehicle.to)))) travel = Math.min(travel, Math.max(0, STOP_BEFORE_CROSSING - vehicle.progress));
   if (vehicle.progress + travel < 1) {
     vehicle.blockedSeconds = 0;
     return travel;
