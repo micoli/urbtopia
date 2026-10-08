@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, fixtureTiles, gridSizeOf, isVenue, venueLayout, type Building, type Coord, type VenueData } from '../../core';
+import { canPlaceFixture, fixtureTiles, gridSizeOf, isBroken, isVenue, venueLayout, type Building, type Coord, type VenueData } from '../../core';
 import { VenueScene } from '../../scene/VenueScene';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
@@ -41,7 +41,8 @@ export function VenueCanvas({ venueId }: VenueCanvasProps) {
       const venue = venueOf(venueId);
       if (!venue) return;
       const { hints } = venueLayout(venue);
-      scene.setWarnings(venue.venue.fixtures.filter(fixture => hints.has(fixture.id)).flatMap(fixtureTiles));
+      scene.setWarnings(venue.venue.fixtures.filter(fixture => hints.has(fixture.id) && !isBroken(fixture)).flatMap(fixtureTiles));
+      scene.setBroken(venue.venue.fixtures.filter(isBroken).flatMap(fixtureTiles));
     };
     const sync = () => {
       const venue = venueOf(venueId);

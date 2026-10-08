@@ -4,6 +4,11 @@ type VenueMessageKey =
   | 'error.unknownFixture'
   | 'error.invalidPrice'
   | 'error.managerRequired'
+  | 'error.nothingToRepair'
+  | 'venue.repair'
+  | 'venue.condition'
+  | 'venue.broken'
+  | 'venue.worn'
   | 'error.noStaffPost'
   | 'error.noStaffToRelease'
   | 'venue.staff'
@@ -46,6 +51,11 @@ type VenueMessageKey =
 
 const texts: Record<VenueMessageKey, readonly [string, string]> = {
   'error.unknownFixture': ['This Fixture does not exist.', 'Cet équipement n’existe pas.'],
+  'error.nothingToRepair': ['This Fixture is in perfect condition.', 'Cet équipement est en parfait état.'],
+  'venue.repair': ['Repair', 'Réparer'],
+  'venue.condition': ['Condition', 'État'],
+  'venue.broken': ['Out of order: it earns nothing until repaired.', 'En panne : il ne rapporte rien tant qu’il n’est pas réparé.'],
+  'venue.worn': ['Worn: it may break down soon.', 'Usé : il risque de tomber en panne.'],
   'error.managerRequired': ['Hire a manager first.', 'Embauchez d’abord un manager.'],
   'error.noStaffPost': ['All the posts of this role are filled.', 'Tous les postes de ce rôle sont pourvus.'],
   'error.noStaffToRelease': ['Nobody to release in this role.', 'Personne à licencier dans ce rôle.'],
@@ -63,7 +73,7 @@ const texts: Record<VenueMessageKey, readonly [string, string]> = {
   'venue.role.security': ['Security', 'Sécurité'],
   'venue.roleEffect.manager': ['Unlocks pricing and events, +10% yield', 'Débloque les prix et les événements, +10 % de rendement'],
   'venue.roleEffect.employee': ['Serves the counter: faster service', 'Tient le comptoir : service plus rapide'],
-  'venue.roleEffect.technician': ['Repairs the machines', 'Répare les machines'],
+  'venue.roleEffect.technician': ['Repairs the machines for less, slows the wear', 'Répare les machines à moindre coût, ralentit l’usure'],
   'venue.roleEffect.security': ['Prevents incidents: keeps 10% more Visitors', 'Évite les incidents : garde 10 % de visiteurs en plus'],
   'error.invalidPrice': ['This price is not allowed.', 'Ce prix n’est pas autorisé.'],
   'venue.attractiveness': ['Attractiveness', 'Attractivité'],

@@ -1,5 +1,5 @@
 import { useStore } from 'zustand';
-import { fixtureRefund, isVenue, venuePerformance, venueLayout } from '../../core';
+import { conditionOf, fixtureRefund, isBroken, isVenue, repairCost, venuePerformance, venueLayout, WEAR } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
@@ -33,6 +33,8 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
   return (
     <section className="venue-build">
       <h3>{t(`venue.fixture.${fixture.type}`)}</h3>
+      <p><strong>{t('venue.condition')}</strong>: {Math.round(conditionOf(fixture))} %</p>
+      {isBroken(fixture) ? <p className="note note--warn">{t('venue.broken')}</p> : conditionOf(fixture) < WEAR.breakdownBelow ? <p className="note note--warn">{t('venue.worn')}</p> : null}
       {hints.map(hint => <p key={hint} className="note note--warn">{t(`venue.hint.${hint}`)}</p>)}
       {earnings !== undefined ? <p><strong>{t('venue.fixtureEarnings')}</strong>: <UrbsAmount value={earnings} /></p> : null}
       {movingId !== null ? (
@@ -42,6 +44,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
         </>
       ) : (
         <ButtonRow align="stretch" spaced>
+          {repairCost(fixture) > 0 ? <ActionButton variant="primary" onClick={() => send({ type: 'RepairFixture', buildingId: venueId, fixtureId: fixture.id })}>🔧 {t('venue.repair')} <UrbsAmount value={repairCost(fixture)} /></ActionButton> : null}
           <ActionButton onClick={() => startMove(fixture.id)}>✥ {t('venue.move')}</ActionButton>
           <ActionButton onClick={() => send({ type: 'MoveFixture', buildingId: venueId, fixtureId: fixture.id, x: fixture.x, y: fixture.y, rotation: ((fixture.rotation + 1) % 4) as 0 | 1 | 2 | 3 })}>⟳ {t('venue.rotate')}</ActionButton>
           <ActionButton

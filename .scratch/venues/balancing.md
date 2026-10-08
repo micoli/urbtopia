@@ -39,3 +39,8 @@ Placeholders to tune by play. Values live in `VENUE` and `ARCADE_FIXTURES` (`src
 - Wages per day: manager 60, employee 30, technician 40, security 35 Urbs; paid per hour out of the Takings.
 - Posts Tier 1/2/3: manager 1/1/1, employee 2/3/4, technician 1/1/2, security 1/1/2.
 - Employee rate `min(1, 0.4 + 0.3 x employees)`; manager +10% yield and unlocks the price; no security: Visitors x 0.9.
+
+## Wear (`WEAR`)
+- Wear: 0.5 Condition points per play served; technician x0.6.
+- Breakdown below Condition 40: chance `0.5 x (40 - condition) / 40` per game hour.
+- Repair by hand: `0.6 x price x damage`; by a technician 60% of that, paid from the Takings.

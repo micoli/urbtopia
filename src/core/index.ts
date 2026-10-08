@@ -101,4 +101,4 @@ export { pedestrianGraph } from './map/pedestrianGraph';
 export type { PedestrianGraph } from './map/pedestrianGraph';
 export { WALKING, WALK_DESTINATIONS, modeShares } from './traffic/walking';
 export type { ModeShares, WalkDestination } from './traffic/walking';
-export { ARCADE_FIXTURES, ARCADE_FIXTURE_IDS, VENUE, priceAcceptance, priceOf, takingsCapOf, venuePerformance, venueLayout, canPlaceFixture, entranceCell, fixtureRefund, fixtureFootprint, fixtureTiles, gridSizeOf, isVenue, playsCapacityPerHour, takingsDue, takingsPerHour, visitorsPerHour, STAFF, STAFF_ROLES, hiredOf, postsOf, totalStaff, wagesPerHour, netPerHour } from './venues/venues';
+export { ARCADE_FIXTURES, ARCADE_FIXTURE_IDS, VENUE, priceAcceptance, priceOf, takingsCapOf, venuePerformance, venueLayout, canPlaceFixture, entranceCell, fixtureRefund, fixtureFootprint, fixtureTiles, gridSizeOf, isVenue, playsCapacityPerHour, takingsDue, takingsPerHour, visitorsPerHour, WEAR, conditionOf, isBroken, repairCost, technicianRepairCost, STAFF, STAFF_ROLES, hiredOf, postsOf, totalStaff, wagesPerHour, netPerHour } from './venues/venues';

@@ -30,4 +30,14 @@ describe('Venue save', () => {
     const unknown = { ...base, buildings: [{ ...base.buildings[0]!, venue: { ...base.buildings[0]!.venue!, staff: { janitor: 1 } } }] };
     expect(parseEnvelope(serializeEnvelope(unknown as never, 0)).ok).toBe(false);
   });
+
+  it('keeps the Condition of Fixtures, a breakdown and the breakdown stream, so a reload never dodges one', () => {
+    const fixtures = [{ id: 1, type: 'barrelClimber', x: 1, y: 1, rotation: 0, condition: 12.5, broken: true }, { id: 2, type: 'counter', x: 3, y: 1, rotation: 0 }];
+    const worn = { ...base, buildings: [{ ...base.buildings[0]!, venue: { fixtures, nextFixtureId: 3, takings: 0, rng: 123456 } }] };
+    const loaded = parseEnvelope(serializeEnvelope(worn as never, 0));
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.buildings[0]!.venue).toEqual(worn.buildings[0]!.venue);
+    const tooWorn = { ...worn, buildings: [{ ...worn.buildings[0]!, venue: { ...worn.buildings[0]!.venue, fixtures: [{ ...fixtures[0]!, condition: 140 }] } }] };
+    expect(parseEnvelope(serializeEnvelope(tooWorn as never, 0)).ok).toBe(false);
+  });
 });

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { advance, createBuilding, dispatch, newGame, type Building, type Command, type GameState, type StaffRole } from '../index';
 import { jobsOf } from '../traffic/jobs';
-import { STAFF, hiredOf, postsOf, wagesPerHour, priceOf } from './venues';
+import { conditionOf, isBroken, repairCost, technicianRepairCost, STAFF, hiredOf, postsOf, wagesPerHour, priceOf } from './venues';
 import { ARCADE_FIXTURES, entranceCell, fixtureRefund, priceAcceptance, takingsCapOf, takingsDue, takingsPerHour, venuePerformance, visitorsPerHour, VENUE } from './venues';
 
 const HOUR = 3_600_000;
@@ -170,9 +170,9 @@ describe('Arcade Venue', () => {
 
     it('caps Takings by Tier', () => {
       expect(takingsCapOf(2)).toBeGreaterThan(takingsCapOf(1));
-      const rich = { ...hire(equipped(['barrelClimber', 1, 1], ['counter', 3, 1]), 'employee', 2), lastSeen: 0 };
-      const capped = advance(rich, 200 * 3_600_000).state;
-      expect(arcadeOf(capped).venue!.takings).toBeCloseTo(takingsCapOf(1), 6);
+      const staffed = hire(equipped(['barrelClimber', 1, 1], ['counter', 3, 1]), 'employee', 2);
+      const nearlyFull: GameState = { ...staffed, lastSeen: 0, buildings: staffed.buildings.map(b => b.type === 'arcade' ? { ...b, venue: { ...b.venue!, takings: takingsCapOf(1) - 1 } } : b) };
+      expect(arcadeOf(advance(nearlyFull, 3_600_000).state).venue!.takings).toBe(takingsCapOf(1));
     });
   });
 });
@@ -281,12 +281,12 @@ describe('Arcade Staff', () => {
   });
 
   it('takes wages out of the Takings, per hour, never into debt', () => {
-    const staffed = { ...hire(hire(fitted(), 'employee', 2), 'technician'), lastSeen: 0 };
+    const staffed = { ...hire(hire(fitted(), 'employee', 2), 'security'), lastSeen: 0 };
     const seeded = { ...staffed, buildings: staffed.buildings.map(b => b.id === 1 ? { ...b, venue: { ...b.venue!, takings: 5 } } : b) };
     const net = performance(seeded).grossPerHour - wagesPerHour(arcadeOf(seeded).venue!);
     const later = advance(seeded, 3_600_000).state;
     expect(arcadeOf(later).venue!.takings).toBeCloseTo(5 + net, 6);
-    expect(wagesPerHour(arcadeOf(seeded).venue!)).toBeCloseTo((2 * STAFF.dailyWage.employee + STAFF.dailyWage.technician) / 24, 9);
+    expect(wagesPerHour(arcadeOf(seeded).venue!)).toBeCloseTo((2 * STAFF.dailyWage.employee + STAFF.dailyWage.security) / 24, 9);
   });
 
   it('closes when the wages cannot be paid, and reopens when they can', () => {
@@ -314,5 +314,84 @@ describe('Arcade Staff', () => {
     const staffed = hire(hire(city(), 'employee', 2), 'security');
     expect(jobsOf(arcadeOf(staffed))).toBe(3);
     expect(jobsOf(arcadeOf(city()))).toBe(0);
+  });
+});
+
+describe('Arcade wear and repair', () => {
+  const HOURS = 3_600_000;
+  const run = (state: GameState, hours: number) => advance({ ...state, lastSeen: 0 }, hours * HOURS).state;
+  const base = () => hire(
+    [['counter', 3, 1], ['barrelClimber', 1, 2], ['chair', 5, 5]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), city(100_000)),
+    'employee', 2,
+  );
+  const fixtureOf = (state: GameState, type: string) => arcadeOf(state).venue!.fixtures.find(fixture => fixture.type === type)!;
+  const withCondition = (state: GameState, type: string, condition: number): GameState => ({
+    ...state,
+    buildings: state.buildings.map(b => b.type === 'arcade' ? { ...b, venue: { ...b.venue!, fixtures: b.venue!.fixtures.map(f => f.type === type ? { ...f, condition } : f) } } : b),
+  });
+
+  it('wears the game Fixtures that serve Visitors, and nothing else', () => {
+    const later = run(base(), 4);
+    expect(conditionOf(fixtureOf(later, 'barrelClimber'))).toBeLessThan(100);
+    expect(conditionOf(fixtureOf(later, 'counter'))).toBe(100);
+    expect(conditionOf(fixtureOf(later, 'chair'))).toBe(100);
+  });
+
+  it('wears more slowly with a technician', () => {
+    const plain = conditionOf(fixtureOf(run(base(), 4), 'barrelClimber'));
+    const tended = conditionOf(fixtureOf(run(hire(base(), 'technician'), 4), 'barrelClimber'));
+    expect(tended).toBeGreaterThan(plain);
+  });
+
+  it('breaks a worn Fixture from the Seed of the Venue, the same way every time', () => {
+    const worn = withCondition(base(), 'barrelClimber', 5);
+    const first = run(worn, 24), second = run(worn, 24);
+    expect(isBroken(fixtureOf(first, 'barrelClimber'))).toBe(true);
+    expect(arcadeOf(first).venue!.rng).toBe(arcadeOf(second).venue!.rng);
+    expect(arcadeOf(first).venue!.rng).toBeDefined();
+    const healthy = run(base(), 2);
+    expect(isBroken(fixtureOf(healthy, 'barrelClimber'))).toBe(false);
+  });
+
+  it('never breaks a Fixture that is in good shape', () => {
+    expect(isBroken(fixtureOf(run(withCondition(base(), 'barrelClimber', 80), 1), 'barrelClimber'))).toBe(false);
+  });
+
+  it('stops earning from a broken Fixture', () => {
+    const intact = base();
+    const broken: GameState = { ...intact, buildings: intact.buildings.map(b => b.type === 'arcade' ? { ...b, venue: { ...b.venue!, fixtures: b.venue!.fixtures.map(f => f.type === 'barrelClimber' ? { ...f, broken: true } : f) } } : b) };
+    expect(venuePerformance(broken, arcadeOf(broken) as never).earningsPerHour).toBe(0);
+    expect(venuePerformance(intact, arcadeOf(intact) as never).earningsPerHour).toBeGreaterThan(0);
+  });
+
+  it('gives the same result in one Catch-up or in steps, breakdowns included', () => {
+    const worn = withCondition(base(), 'barrelClimber', 30);
+    const once = run(worn, 12);
+    let stepped: GameState = { ...worn, lastSeen: 0 };
+    for (let hour = 1; hour <= 12; hour++) stepped = advance(stepped, hour * HOURS).state;
+    expect(arcadeOf(stepped).venue!.fixtures).toEqual(arcadeOf(once).venue!.fixtures);
+    expect(arcadeOf(stepped).venue!.rng).toBe(arcadeOf(once).venue!.rng);
+  });
+
+  it('repairs for less than a new Fixture, and restores it', () => {
+    const state = withCondition(base(), 'barrelClimber', 20);
+    const fixture = fixtureOf(state, 'barrelClimber');
+    expect(repairCost(fixture)).toBeGreaterThan(0);
+    expect(repairCost(fixture)).toBeLessThan(ARCADE_FIXTURES.barrelClimber.price);
+    const repaired = send(state, { type: 'RepairFixture', buildingId: 1, fixtureId: fixture.id });
+    expect(conditionOf(fixtureOf(repaired, 'barrelClimber'))).toBe(100);
+    expect(repaired.urbs).toBe(state.urbs - repairCost(fixture));
+    expect(failure(repaired, { type: 'RepairFixture', buildingId: 1, fixtureId: fixture.id })).toBe('error.nothingToRepair');
+    expect(failure({ ...state, urbs: 0 }, { type: 'RepairFixture', buildingId: 1, fixtureId: fixture.id })).toBe('error.notEnoughUrbs');
+  });
+
+  it('lets a technician repair broken Fixtures at the Venue expense, cheaper than by hand', () => {
+    const worn = hire(withCondition(base(), 'barrelClimber', 10), 'technician');
+    const seeded: GameState = { ...worn, buildings: worn.buildings.map(b => b.type === 'arcade' ? { ...b, venue: { ...b.venue!, takings: 100 } } : b) };
+    const fixture = fixtureOf(seeded, 'barrelClimber');
+    expect(technicianRepairCost(fixture)).toBeLessThan(repairCost(fixture));
+    const later = run(seeded, 1);
+    expect(conditionOf(fixtureOf(later, 'barrelClimber'))).toBe(100);
+    expect(isBroken(fixtureOf(later, 'barrelClimber'))).toBe(false);
   });
 });

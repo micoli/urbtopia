@@ -61,6 +61,8 @@ export interface VenueFixture extends Coord {
   id: number;
   type: ArcadeFixtureId;
   rotation: Rotation;
+  condition?: number;
+  broken?: boolean;
 }
 
 export type StaffRole = 'manager' | 'employee' | 'technician' | 'security';
@@ -71,6 +73,7 @@ export interface VenueData {
   takings: number;
   price?: number;
   staff?: Partial<Record<StaffRole, number>>;
+  rng?: number;
 }
 
 export interface Building extends Coord {
