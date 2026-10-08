@@ -15,6 +15,7 @@ import { facilityFootprint, modelOfBuilding, renderItemsOf, type HarvestedTile }
 import { ServiceVehicleLayer } from './ServiceVehicleLayer';
 import { CongestionLayer } from './CongestionLayer';
 import { PedestrianLayer } from './PedestrianLayer';
+import { BoatLayer } from './BoatLayer';
 import { TrafficLayer } from './TrafficLayer';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
@@ -54,6 +55,7 @@ export class GameScene {
   private traffic = new TrafficLayer(this.library);
   private pedestrians = new PedestrianLayer();
   private serviceVehicles = new ServiceVehicleLayer(this.library);
+  private boats = new BoatLayer(this.library);
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   private lastCenterTile = '';
@@ -94,7 +96,7 @@ export class GameScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 2.0);
     sun.position.set(20, 40, 10);
     const sky = new THREE.HemisphereLight(0xbcd8f5, 0x8a7a64, 0.5);
-    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.selectionLayer.root, this.ghostLayer.root);
+    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.selectionLayer.root, this.ghostLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.controller.onTap = (clientX, clientY, shiftKey) =>
@@ -197,6 +199,7 @@ export class GameScene {
     this.traffic.dispose();
     this.pedestrians.dispose();
     this.serviceVehicles.dispose();
+    this.boats.dispose();
     this.ecologyLayer.dispose();
     this.renderer.dispose();
   }
@@ -217,6 +220,7 @@ export class GameScene {
         this.traffic.sync(state);
     this.pedestrians.sync(state);
         this.serviceVehicles.sync(state);
+        this.boats.sync(state);
         this.markReady();
       }
     } finally {
@@ -324,6 +328,7 @@ export class GameScene {
     this.traffic.externalVehicles = this.serviceVehicles.followingVehicles;
     this.traffic.update(delta, this.controller.camera);
     this.serviceVehicles.update(delta);
+    this.boats.update(delta);
     this.renderer.render(this.scene, this.controller.camera);
     this.frameHandle = requestAnimationFrame(this.frame);
   };

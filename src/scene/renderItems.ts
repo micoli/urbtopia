@@ -54,7 +54,6 @@ export const WATER_TILE_MODEL = 'procedural/water-tile';
 export const BRIDGE_DECK_MODEL = 'procedural/bridge-deck';
 const BRIDGE_ELEVATION = 0.1;
 export const BOAT_MODELS: Record<BoatFamily, string> = { pleasure: 'watercraft/boat-sail-a', fishing: 'watercraft/boat-fishing-small', casino: 'watercraft/ship-ocean-liner-small' };
-const BOAT_ELEVATION = 0.04;
 export const PROCEDURAL_MODELS: readonly string[] = [RED_CROSS_MODEL, GARAGE_DOOR_MODEL, FIELD_SOIL_MODEL, WATER_TILE_MODEL, BRIDGE_DECK_MODEL];
 
 const GARAGE_DOOR_SPACING = 0.6;
@@ -164,7 +163,7 @@ export interface HarvestedTile {
 }
 
 let lastFieldItems: RenderItem[] = [];
-let lastWaterItems: { tiles: GameState['waterTiles']; boats: GameState['boats']; items: RenderItem[] } | null = null;
+let lastWaterItems: { tiles: GameState['waterTiles']; bridges: GameState['bridges']; items: RenderItem[] } | null = null;
 
 export function renderItemsOf(state: GameState, afterHarvest: readonly HarvestedTile[] = []): RenderItem[] {
   const builtBuildings = buildingItems(state);
@@ -180,7 +179,7 @@ export function renderItemsOf(state: GameState, afterHarvest: readonly Harvested
   const fields = sameItems(builtFields, lastFieldItems) ? lastFieldItems : builtFields;
   lastFieldItems = fields;
 
-  if (!lastWaterItems || lastWaterItems.tiles !== state.waterTiles || lastWaterItems.boats !== state.boats) lastWaterItems = { tiles: state.waterTiles, boats: state.boats, items: waterItems(state) };
+  if (!lastWaterItems || lastWaterItems.tiles !== state.waterTiles || lastWaterItems.bridges !== state.bridges) lastWaterItems = { tiles: state.waterTiles, bridges: state.bridges, items: waterItems(state) };
   const water = lastWaterItems.items;
 
   if (lastItems && lastItems.buildings === buildings && lastItems.roads === roads && lastItems.fields === fields && lastItems.water === water) return lastItems.items;
@@ -216,12 +215,11 @@ function fieldItems(state: GameState, afterHarvest: readonly HarvestedTile[]): R
 
 function waterItems(state: GameState): RenderItem[] {
   const tiles = (state.waterTiles ?? []).map((tile) => ({ model: WATER_TILE_MODEL, x: tile.x + 0.5, z: tile.y + 0.5, rotation: 0 }));
-  const boats = (state.boats ?? []).map((boat) => ({ model: BOAT_MODELS[boat.family], x: boat.x + 0.5, z: boat.y + 0.5, rotation: boat.id % 4, elevation: BOAT_ELEVATION }));
   const decks = [...bridgeKeys(state)].map((key) => {
     const [x = 0, y = 0] = key.split(',').map(Number);
     return { model: BRIDGE_DECK_MODEL, x: x + 0.5, z: y + 0.5, rotation: 0 };
   });
-  return [...tiles, ...decks, ...boats];
+  return [...tiles, ...decks];
 }
 
 function roadItems(state: GameState): RenderItem[] {
