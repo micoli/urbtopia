@@ -26,6 +26,7 @@ export type { RoadGraph } from './map/roadGraph';
 export { GROWTH_STAGES, cropStage, cropWaterDemand, isCropReady } from './farming/growth';
 export type { CropStage } from './farming/growth';
 export { FIELD_COST, fieldCap } from './farming/fields';
+export { WATER, isWaterTile, waterKeys, waterTilesOf } from './water/waterTiles';
 export { cropReturns, type CropReturns } from './farming/returns';
 export { seedSellPrice, seedStockCapacity, seedStockUsed } from './farming/seeds';
 export { CROPS, CROP_IDS, isCrop } from './farming/crops';

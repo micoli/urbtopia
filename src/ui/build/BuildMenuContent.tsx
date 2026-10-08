@@ -1,5 +1,5 @@
 import { Fragment, useId, useState, type ReactNode } from 'react';
-import { BUILDING_SPECS, TRANSIT, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, ROAD_TIER_COSTS, isFacilityType, totalCitizens, placementCost } from '../../core';
+import { BUILDING_SPECS, TRANSIT, WATER, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, ROAD_TIER_COSTS, isFacilityType, totalCitizens, placementCost } from '../../core';
 import { t } from '../../i18n/t';
 import type { Tool } from '../../tools/tools';
 import { FlyoutItem } from '../layout/FlyoutItem';
@@ -7,6 +7,7 @@ import { useGame, useUi } from '../common/hooks';
 import { guideOf } from '../tutorial/tutorialGuide';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { FieldTools } from './FieldTools';
+import { WaterTools } from './WaterTools';
 import { BUILDING_SECTIONS, readBuildSection, writeBuildSection, type BuildSection } from './buildMenuSections';
 import { ROAD_CONSTRUCTIONS } from '../../codex/construction';
 import { codexImageKey, type CodexId } from '../../codex/catalog';
@@ -39,7 +40,7 @@ export function BuildMenuContent() {
     const visibleSections = BUILDING_SECTIONS.map(section => ({
       ...section,
       types: section.types.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0)),
-    })).filter(section => section.types.length);
+    })).filter(section => section.types.length || (section.title === 'build.water' && citizens >= WATER.unlockCitizens));
     const activeSection = visibleSections.some(section => section.title === openSection) ? openSection : visibleSections[0]?.title;
     const selectSection = (section: BuildSection) => {
       if (activeSection === section) return;
@@ -77,6 +78,7 @@ export function BuildMenuContent() {
                   </Fragment>
                 ))}
                 {section.title === 'build.production' && <FieldTools />}
+                {section.title === 'build.water' && citizens >= WATER.unlockCitizens && <WaterTools />}
                 {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem label={t('eco.solarHome')} badge={BUILDING_SPECS.home.accessModes.includes('brt') ? t('build.brtCompatible') : undefined} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true, colorVariant: homeColor })} codexId="solarHome" preview={previewOf('solarHome')} onInfo={() => openCodex('solarHome')} />}
             </AccordionSection>
           );

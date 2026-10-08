@@ -13,6 +13,7 @@ import { GOODS, isGood, isMaterial, minTierOf, producibleItems, recipeOf, type G
 import { marketQuote } from '../economy/market';
 import { harvestFields, layFields, plantFields, removeFields } from '../farming/fields';
 import { buySeeds, sellSeeds } from '../farming/seeds';
+import { layWater, removeWater } from '../water/waterTiles';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
 import { withStartingCity } from './newGame';
@@ -57,6 +58,8 @@ export type Command =
   | { readonly type: 'DismissEcology' }
   | { readonly type: 'LayFields'; readonly tiles: readonly Coord[] }
   | { readonly type: 'RemoveFields'; readonly tiles: readonly Coord[] }
+  | { readonly type: 'LayWater'; readonly tiles: readonly Coord[] }
+  | { readonly type: 'RemoveWater'; readonly tiles: readonly Coord[] }
   | { readonly type: 'Plant'; readonly crop: CropId; readonly tiles: readonly Coord[] }
   | { readonly type: 'Harvest'; readonly tiles: readonly Coord[] }
   | { readonly type: 'BuySeeds'; readonly crop: CropId; readonly quantity: number }
@@ -101,6 +104,8 @@ export type ErrorKey =
   | 'error.noFarm'
   | 'error.fieldCapReached'
   | 'error.noFieldHere'
+  | 'error.noWaterHere'
+  | 'error.waterInUse'
   | 'error.noSeeds'
   | 'error.nothingToPlant'
   | 'error.seedStockFull'
@@ -192,6 +197,10 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return layFields(state, command.tiles);
     case 'RemoveFields':
       return removeFields(state, command.tiles);
+    case 'LayWater':
+      return layWater(state, command.tiles);
+    case 'RemoveWater':
+      return removeWater(state, command.tiles);
     case 'Plant':
       return plantFields(state, command.crop, command.tiles);
     case 'Harvest':

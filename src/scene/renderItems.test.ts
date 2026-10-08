@@ -158,3 +158,17 @@ describe('renderItemsOf farming', () => {
     expect(MODEL_KEYS).toEqual(expect.arrayContaining(['crops/Wheat_1', 'crops/Palmtree_1'.replace('Palmtree', 'PalmTree'), 'crops/Flowers_Crop', 'farm/Barn', 'farm/OpenBarn']));
   });
 });
+
+describe('renderItemsOf water', () => {
+  const base = { ...newGame({ seed: 'water-render', now: 0 }), roads: [], buildings: [] };
+
+  it('lays a water tile on every Water tile, centred on its tile', () => {
+    const items = renderItemsOf({ ...base, waterTiles: [{ x: 50, y: 60 }] });
+    expect(items).toEqual([{ model: 'procedural/water-tile', x: 50.5, z: 60.5, rotation: 0 }]);
+  });
+
+  it('keeps the same items while the Water tiles do not change', () => {
+    const state = { ...base, waterTiles: [{ x: 50, y: 60 }] };
+    expect(renderItemsOf({ ...state, urbs: 1 })).toBe(renderItemsOf(state));
+  });
+});

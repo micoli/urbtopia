@@ -50,7 +50,8 @@ const CATEGORY_TINTS: Record<ServiceCategory, number> = {
 export const RED_CROSS_MODEL = 'procedural/red-cross';
 export const GARAGE_DOOR_MODEL = 'procedural/garage-door';
 export const FIELD_SOIL_MODEL = 'procedural/field-soil';
-export const PROCEDURAL_MODELS: readonly string[] = [RED_CROSS_MODEL, GARAGE_DOOR_MODEL, FIELD_SOIL_MODEL];
+export const WATER_TILE_MODEL = 'procedural/water-tile';
+export const PROCEDURAL_MODELS: readonly string[] = [RED_CROSS_MODEL, GARAGE_DOOR_MODEL, FIELD_SOIL_MODEL, WATER_TILE_MODEL];
 
 const GARAGE_DOOR_SPACING = 0.6;
 const GARAGE_DOOR_HEIGHT = 0.27;
@@ -142,7 +143,7 @@ export function modelOfBuilding(building: Building): string {
 
 let lastBuildingItems: RenderItem[] = [];
 let lastRoadItems: { roads: GameState['roads']; roundabouts: GameState['roundabouts']; rails: GameState['rails']; brtRoads: GameState['brtRoads']; items: RenderItem[] } | null = null;
-let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; fields: RenderItem[]; items: RenderItem[] } | null = null;
+let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; fields: RenderItem[]; water: RenderItem[]; items: RenderItem[] } | null = null;
 
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   return a.length === b.length && a.every((item, index) => {
@@ -158,6 +159,7 @@ export interface HarvestedTile {
 }
 
 let lastFieldItems: RenderItem[] = [];
+let lastWaterItems: { tiles: GameState['waterTiles']; items: RenderItem[] } | null = null;
 
 export function renderItemsOf(state: GameState, afterHarvest: readonly HarvestedTile[] = []): RenderItem[] {
   const builtBuildings = buildingItems(state);
@@ -173,9 +175,12 @@ export function renderItemsOf(state: GameState, afterHarvest: readonly Harvested
   const fields = sameItems(builtFields, lastFieldItems) ? lastFieldItems : builtFields;
   lastFieldItems = fields;
 
-  if (lastItems && lastItems.buildings === buildings && lastItems.roads === roads && lastItems.fields === fields) return lastItems.items;
-  const items = [...buildings, ...roads, ...fields];
-  lastItems = { buildings, roads, fields, items };
+  if (!lastWaterItems || lastWaterItems.tiles !== state.waterTiles) lastWaterItems = { tiles: state.waterTiles, items: waterItems(state) };
+  const water = lastWaterItems.items;
+
+  if (lastItems && lastItems.buildings === buildings && lastItems.roads === roads && lastItems.fields === fields && lastItems.water === water) return lastItems.items;
+  const items = [...buildings, ...roads, ...fields, ...water];
+  lastItems = { buildings, roads, fields, water, items };
   return items;
 }
 
@@ -202,6 +207,10 @@ function fieldItems(state: GameState, afterHarvest: readonly HarvestedTile[]): R
       ...(produce ? [{ model: produce, x: x + PRODUCE_OFFSET, z: z + PRODUCE_OFFSET, rotation: 0, elevation: PRODUCE_ELEVATION }] : []),
     ];
   });
+}
+
+function waterItems(state: GameState): RenderItem[] {
+  return (state.waterTiles ?? []).map((tile) => ({ model: WATER_TILE_MODEL, x: tile.x + 0.5, z: tile.y + 0.5, rotation: 0 }));
 }
 
 function roadItems(state: GameState): RenderItem[] {

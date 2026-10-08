@@ -243,6 +243,12 @@ describe('brush tool', () => {
     expect(evaluateTool({ kind: 'brush', action: 'removeField', tiles }, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null }).command).toEqual({ type: 'RemoveFields', tiles });
   });
 
+  it('lays and removes Water tiles with the matching commands', () => {
+    const tiles = [{ x: 50, y: 50 }];
+    expect(evaluateTool({ kind: 'brush', action: 'layWater', tiles }, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null }).command).toEqual({ type: 'LayWater', tiles });
+    expect(evaluateTool({ kind: 'brush', action: 'removeWater', tiles }, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null }).command).toEqual({ type: 'RemoveWater', tiles });
+  });
+
   it('sends the command when the drag ends and keeps the tool with an empty brush', () => {
     const tool: Tool = { kind: 'brush', action: 'layField', tiles: [{ x: 50, y: 52 }] };
     const current = evaluateTool(tool, { state: farmCity, tile: { x: 0, y: 0 }, rotation: null });

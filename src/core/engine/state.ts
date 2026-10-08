@@ -102,6 +102,7 @@ export type SeedStock = Partial<Record<string, number>>;
 export interface GameState {
   seedStock: SeedStock;
   fields: FieldTile[];
+  waterTiles?: Coord[];
   brtRoads?: TransitTile[];
   rails?: TransitTile[];
   transitLines?: TransitLine[];

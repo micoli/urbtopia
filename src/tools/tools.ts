@@ -51,7 +51,7 @@ export function isPathTool(tool: Tool | null): tool is PathTool {
   return tool?.kind === 'road' || tool?.kind === 'demolishRoad' || tool?.kind === 'upgradeRoad';
 }
 
-export type BrushAction = 'layField' | 'removeField' | 'plant';
+export type BrushAction = 'layField' | 'removeField' | 'plant' | 'layWater' | 'removeWater';
 
 export interface ToolContext {
   state: GameState;
@@ -222,6 +222,10 @@ function brushCommand(tool: Extract<Tool, { kind: 'brush' }>, tiles: Coord[]): C
       return { type: 'LayFields', tiles };
     case 'removeField':
       return { type: 'RemoveFields', tiles };
+    case 'layWater':
+      return { type: 'LayWater', tiles };
+    case 'removeWater':
+      return { type: 'RemoveWater', tiles };
     case 'plant':
       return tool.crop ? { type: 'Plant', crop: tool.crop, tiles } : null;
   }
