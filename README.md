@@ -8,6 +8,7 @@ The vocabulary used in code and docs (Urbs, Workshop, Factory, Parcel, Catch-upâ
 
 - Isometric 3D city on a 128x128 map of 16x16 Parcels, with roads, roundabouts and crossings.
 - Production chains: Workshops make Materials, Factories make Goods, Shops and the Market turn them into Urbs.
+- Water to lay on your land: a Marina, Pleasure, Fishing and Casino boats, and drawbridges that open for them and stop the traffic.
 - Homes with six Tiers, shared power and water capacity, Tax collected by hand, population-gated Unlocks.
 - Real-time progress, caught up in one pass when you come back (up to 48 hours).
 - Installable web app (Android and others) that updates itself and works offline.

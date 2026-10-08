@@ -5,15 +5,16 @@ import type { Coord } from '../map/coord';
 import type { CommandOutcome } from '../engine/commands';
 import type { Boat, BoatFamily, Building, GameState } from '../engine/state';
 import { bridgeKeys } from './bridges';
-import { CASINO, MAX_CASINO_TIER } from '../leisure/casino';
+import { CASINO, MAX_CASINO_TIER, casinoPower } from '../leisure/casino';
+import { ECOLOGY } from '../environment/ecology';
 import { connectedWaterKeys, marinaCapacity } from './marina';
 
 export const BOAT_FAMILIES: readonly BoatFamily[] = ['pleasure', 'fishing', 'casino'];
 
 export const BOATS = {
   pleasure: { cost: 400, unlockCitizens: 80, radius: 6, wellbeingBonus: 4, operatingCostPerHour: 2 },
-  fishing: { cost: 800, unlockCitizens: 100, operatingCostPerHour: 0 },
-  casino: { cost: 3000, unlockCitizens: 300, operatingCostPerHour: 12 },
+  fishing: { cost: 800, unlockCitizens: 100 },
+  casino: { cost: 3000, unlockCitizens: 300 },
 } as const;
 
 const FUNDS_EPSILON = 1e-9;
@@ -70,8 +71,9 @@ export function boatTier(boat: Boat): number {
 }
 
 export function boatOperatingCost(boat: Boat): number {
-  const hourly = BOATS[boat.family].operatingCostPerHour;
-  return boat.family === 'casino' ? hourly * boatTier(boat) : hourly;
+  if (boat.family === 'pleasure') return BOATS.pleasure.operatingCostPerHour;
+  if (boat.family === 'casino') return casinoPower(boatTier(boat)) * ECOLOGY.backupCost;
+  return 0;
 }
 
 export function upgradeBoat(state: GameState, id: number): CommandOutcome {

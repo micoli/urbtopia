@@ -205,11 +205,11 @@ A persistent object bought with Urbs and placed on a Water tile connected to a M
 _Avoid_: Vehicle (a visual projection, never saved), ship, watercraft
 
 **Pleasure boat**:
-A Boat that is a Leisure building: it raises the Well-being of nearby Homes, has an operating cost in Urbs and is never required. It has no effect when not connected to a Marina, or when its operating cost cannot be paid.
+A Boat that is a Leisure building: it raises the Well-being of nearby Homes, has an operating cost in Urbs and is never required. Unlike other workplaces it offers no Jobs. It has no effect when not connected to a Marina, or when its operating cost cannot be paid.
 _Avoid_: Yacht, ferry
 
 **Casino boat**:
-A Boat that is a Casino: it offers Minigames under the same rules and has the same Tiers. It needs no power, so it is never shed on a shortage; it has an operating cost in Urbs, paid like a Pleasure boat's. Without Urbs to pay it, it stops offering Minigames.
+A Boat that is a Casino: it offers Minigames under the same rules and has the same Tiers. It needs no power, so it is never shed on a shortage; it has an operating cost in Urbs equal to the energy bill of a Casino of the same Tier through Backup power. Without Urbs to pay it, it stops offering Minigames.
 _Avoid_: Floating casino, riverboat
 
 **Fishing boat**:

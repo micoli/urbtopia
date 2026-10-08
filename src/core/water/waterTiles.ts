@@ -6,7 +6,7 @@ import type { CommandOutcome, ErrorKey } from '../engine/commands';
 import type { GameState } from '../engine/state';
 
 export const WATER = {
-  tileCost: 30,
+  tileCost: 10,
   unlockCitizens: 40,
 };
 

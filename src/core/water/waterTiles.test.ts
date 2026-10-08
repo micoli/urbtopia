@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, dispatch, newGame, type Command, type GameState } from '../index';
+import { WATER, createBuilding, dispatch, newGame, type Command, type GameState } from '../index';
 
 const T0 = 1_700_000_000_000;
 
@@ -22,10 +22,11 @@ function city(citizensTier = 4, urbs = 10_000): GameState {
 }
 
 describe('Laying Water tiles', () => {
-  it('costs 30 Urbs per tile', () => {
+  it('costs 10 Urbs per tile', () => {
     const state = succeed(city(), { type: 'LayWater', tiles: row(3) });
+    expect(WATER.tileCost).toBe(10);
     expect(state.waterTiles).toEqual(row(3));
-    expect(state.urbs).toBe(10_000 - 90);
+    expect(state.urbs).toBe(10_000 - 3 * WATER.tileCost);
   });
 
   it('is locked below 40 Citizens', () => {
@@ -37,16 +38,16 @@ describe('Laying Water tiles', () => {
     const base = city();
     const state = succeed(base, { type: 'LayWater', tiles: [{ x: 5, y: 5 }, { x: 40, y: 40 }, ...row(1)] });
     expect(state.waterTiles).toEqual(row(1));
-    expect(state.urbs).toBe(base.urbs - 30);
+    expect(state.urbs).toBe(base.urbs - WATER.tileCost);
     expect(failureKey(state, { type: 'LayWater', tiles: row(1) })).toBe('error.tilesOccupied');
     expect(failureKey(base, { type: 'LayWater', tiles: [{ x: 5, y: 5 }] })).toBe('error.outsideOwnedParcels');
   });
 
   it('stops when Urbs run out', () => {
-    const state = succeed(city(4, 70), { type: 'LayWater', tiles: row(5) });
+    const state = succeed(city(4, 25), { type: 'LayWater', tiles: row(5) });
     expect(state.waterTiles).toHaveLength(2);
-    expect(state.urbs).toBe(10);
-    expect(failureKey(city(4, 10), { type: 'LayWater', tiles: row(1) })).toBe('error.notEnoughUrbs');
+    expect(state.urbs).toBe(5);
+    expect(failureKey(city(4, 9), { type: 'LayWater', tiles: row(1) })).toBe('error.notEnoughUrbs');
   });
 
   it('refuses roads, Fields and buildings on a Water tile', () => {

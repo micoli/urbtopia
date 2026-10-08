@@ -6,7 +6,7 @@ import { boatsOfMarina, marinaOf } from './boats';
 
 export const FISHING = {
   cycleMs: FISH_MATERIAL.durationMs,
-  yield: 2,
+  yield: 1,
   slotsByMarinaTier: [2, 3, 5] as readonly number[],
 };
 

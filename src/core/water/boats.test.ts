@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { advance, createBuilding, dispatch, homeBenefits, newGame, readyFish, type Command, type GameState } from '../index';
+import { advance, boatOperatingCost, createBuilding, dispatch, homeBenefits, newGame, readyFish, type Command, type GameState } from '../index';
 
 const T0 = 1_700_000_000_000;
 const HOUR = 3_600_000;
@@ -159,28 +159,28 @@ describe('Fishing boat', () => {
     expect(advance(state, T0 + 3 * HOUR).state.urbs).toBeGreaterThanOrEqual(state.urbs);
   });
 
-  it('catches 2 Fish every 6 minutes, up to the Slots of the Marina Tier', () => {
+  it('catches 1 Fish every 6 minutes, up to the Slots of the Marina Tier', () => {
     const state = succeed(withStorehouse(harbour()), fishing());
     expect(readyFish(later(state, 5), 100)).toBe(0);
-    expect(readyFish(later(state, 6), 100)).toBe(2);
-    expect(readyFish(later(state, 13), 100)).toBe(4);
-    expect(readyFish(later(state, 600), 100)).toBe(4);
+    expect(readyFish(later(state, 6), 100)).toBe(1);
+    expect(readyFish(later(state, 13), 100)).toBe(2);
+    expect(readyFish(later(state, 600), 100)).toBe(2);
     const upgraded = { ...state, buildings: state.buildings.map((b) => (b.type === 'marina' ? { ...b, tier: 3 } : b)) };
-    expect(readyFish(later(upgraded, 600), 100)).toBe(10);
+    expect(readyFish(later(upgraded, 600), 100)).toBe(5);
   });
 
   it('collects the catch into the Materials compartment and keeps the progress of the current cycle', () => {
     const state = later(succeed(withStorehouse(harbour()), fishing()), 8);
     const collected = succeed(state, { type: 'CollectCatch', marinaId: 100 });
-    expect(collected.storage.materials.fish).toBe(2);
+    expect(collected.storage.materials.fish).toBe(1);
     expect(readyFish(collected, 100)).toBe(0);
-    expect(readyFish(later(collected, 4), 100)).toBe(2);
+    expect(readyFish(later(collected, 4), 100)).toBe(1);
   });
 
   it('restarts the clock when the boat was full', () => {
     const state = later(succeed(withStorehouse(harbour()), fishing()), 600);
     const collected = succeed(state, { type: 'CollectCatch', marinaId: 100 });
-    expect(collected.storage.materials.fish).toBe(4);
+    expect(collected.storage.materials.fish).toBe(2);
     expect(readyFish(later(collected, 5), 100)).toBe(0);
   });
 
@@ -194,9 +194,9 @@ describe('Fishing boat', () => {
   it('does not count the time that is forfeited offline or skipped', () => {
     const state = succeed(withStorehouse(harbour()), fishing());
     const skipped = succeed(state, { type: 'SkipTime', hours: 1 });
-    expect(readyFish(skipped, 100)).toBe(4);
+    expect(readyFish(skipped, 100)).toBe(2);
     const away = advance(state, T0 + 100 * HOUR).state;
-    expect(readyFish(away, 100)).toBe(4);
+    expect(readyFish(away, 100)).toBe(2);
   });
 
   it('turns two Fish into Canned fish in a Factory', () => {
@@ -241,10 +241,10 @@ describe('Casino boat', () => {
     expect(failureKey(noPower, { type: 'PlaySlotMachine', buildingId: 200, stake: 10 })).toBeNull();
   });
 
-  it('pays a running cost that grows with its Tier and shuts when it cannot be paid', () => {
+  it('pays the energy bill of a Casino as a running cost, and shuts when it cannot be paid', () => {
     const state = docked();
     const idle = harbour({ buildings: BIG_CITY });
-    expect(idle.urbs - advance(idle, T0 + HOUR).state.urbs - (state.urbs - advance(state, T0 + HOUR).state.urbs)).toBeCloseTo(-12);
+    expect(idle.urbs - advance(idle, T0 + HOUR).state.urbs - (state.urbs - advance(state, T0 + HOUR).state.urbs)).toBeCloseTo(-3);
     const broke = { ...state, urbs: 0 };
     expect(failureKey(broke, { type: 'PlaySlotMachine', buildingId: 200, stake: 10 })).toBe('error.casinoShut');
   });
@@ -258,5 +258,17 @@ describe('Casino boat', () => {
 
   it('only upgrades Casino boats', () => {
     expect(failureKey(succeed(harbour(), buy(52)), { type: 'UpgradeBoat', id: 200 })).toBe('error.cannotProduce');
+  });
+});
+
+describe('Boat running costs', () => {
+  it('make a Casino boat cost what powering a Casino of the same Tier would through Backup power', () => {
+    const casino = (tier: number) => boatOperatingCost({ id: 1, family: 'casino', marinaId: 1, x: 0, y: 0, tier });
+    expect([1, 2, 3].map(casino)).toEqual([3, 4.5, 6.75]);
+  });
+
+  it('are 2 Urbs per hour for a Pleasure boat and nothing for a Fishing boat', () => {
+    expect(boatOperatingCost({ id: 1, family: 'pleasure', marinaId: 1, x: 0, y: 0 })).toBe(2);
+    expect(boatOperatingCost({ id: 1, family: 'fishing', marinaId: 1, x: 0, y: 0 })).toBe(0);
   });
 });

@@ -5,9 +5,9 @@ import { bridgeTiles, bridgesOf } from './bridges';
 import { waterKeys } from './waterTiles';
 
 export const BRIDGE_OPENING = {
-  openingsPerBoatHour: 2,
-  minutesPerOpening: 3,
-  maxClosed: 0.6,
+  openingsPerBoatHour: 6,
+  minutesPerOpening: 1,
+  maxClosed: 0.5,
 };
 
 function reachableWater(water: ReadonlySet<string>, start: readonly Coord[]): Set<string> {
