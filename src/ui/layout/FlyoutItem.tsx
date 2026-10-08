@@ -15,7 +15,7 @@ interface FlyoutItemProps {
 
 export function FlyoutItem({ label, badge, cost, guided = false, onChoose, codexId, onInfo, preview }: FlyoutItemProps) {
   const item = (
-      <button type="button" className="flyout-item" data-guided={guided} onClick={onInfo ?? onChoose}>
+      <button type="button" className="flyout-item" data-guided={guided} data-codex-label={onInfo ? codexId : undefined} onClick={onInfo ?? onChoose}>
       <span>{label}</span>
       {badge ? <small className="flyout-badge">{badge}</small> : null}
     </button>

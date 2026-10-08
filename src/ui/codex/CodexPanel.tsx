@@ -26,13 +26,13 @@ export function CodexPanel() {
 
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
-    const previousEntry = previous?.getAttribute('data-codex-id') ?? (initialDetail && initialFlyout ? initialEntry : null);
+    const previousEntry = previous?.getAttribute('data-codex-id') ?? previous?.getAttribute('data-codex-label') ?? (initialDetail && initialFlyout ? initialEntry : null);
     dialog.current?.showModal();
     return () => {
       requestAnimationFrame(() => {
         if (previous?.isConnected && previous !== document.body) return previous.focus();
         if (previousEntry) {
-          const trigger = [...document.querySelectorAll<HTMLButtonElement>('[data-codex-id]')].find(button => button.dataset.codexId === previousEntry);
+          const trigger = [...document.querySelectorAll<HTMLButtonElement>('[data-codex-label], [data-codex-id]')].find(button => (button.dataset.codexLabel ?? button.dataset.codexId) === previousEntry);
           if (trigger) return trigger.focus();
         }
         const target = document.querySelector<HTMLButtonElement>('.side-panel-actions [data-action="codex"]')
