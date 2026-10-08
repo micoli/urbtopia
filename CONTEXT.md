@@ -229,8 +229,12 @@ A building on land touching a Water tile, reached by Road. Boats can only be pla
 _Avoid_: Port, harbour, dock
 
 **Bridge**:
-A structure of fixed length (1, 2, 3 or 5 tiles) carrying a Road over Water tiles, from one bank to the other, aligned with a Road or Crossing at each end. It joins the Road graph. Boats cannot be placed on it but still navigate beneath it.
+A structure of fixed length (1, 2, 3 or 5 tiles) carrying a Road over Water tiles, from one bank to the other, aligned with a Road or Crossing at each end. It joins the Road graph. Boats cannot be placed on it but still navigate beneath it, and it opens for them: see Bridge opening.
 _Avoid_: Viaduct, overpass
+
+**Bridge opening**:
+The raising of a Bridge in two leaves when a Boat has to pass beneath it, each leaf hinged on its bank (a 1-tile Bridge has one leaf; 3 tiles give 2 + 1, 5 tiles give 3 + 2). Traffic stops before it, like at a red light. Its cost is a closed fraction of time, from the Boats that can reach the Bridge, which lowers the capacity of its Road tiles.
+_Avoid_: Lift, swing, drawbridge cycle
 
 **Market**:
 The simulated (non-player) buyer that purchases Goods from the player.
@@ -370,7 +374,7 @@ _Avoid_: Merge, overwrite
 - A Casino is a Leisure building, never a Public facility.
 - A Pleasure boat is a Leisure building and a Casino boat is a Casino, both hosted by a Boat on a Water tile.
 - Removing a Water tile that carries a Boat or a Bridge, a Marina that holds Boats, or a Water tile that would cut a Boat off its Marina is refused.
-- A Bridge is part of the Road graph: Commute, Congestion and Pedestrian paths use it like any Road.
+- A Bridge is part of the Road graph: Commute, Congestion and Pedestrian paths use it like any Road. Bridge openings lower its capacity in proportion to the Boats that can reach it.
 - A building touching both a Road and a BRT corridor keeps the Road as its primary access, and its front faces the Road.
 - Removing the last access of a building, Road or BRT corridor, is refused.
 - Service vehicles stay on the network of their facility and never switch between Road and BRT corridor.

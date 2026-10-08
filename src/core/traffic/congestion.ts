@@ -7,6 +7,7 @@ import { frontAccessModes, frontTiles, hasBrtOnlyAccess } from '../map/placement
 import { accessNodes, crossingsOnPath, nearestTarget, pedestrianGraph, walkFrom, type PedestrianGraph } from '../map/pedestrianGraph';
 import { buildRoadGraph, neighboursOf, type RoadGraph } from '../map/roadGraph';
 import { transportStats } from '../transit/transport';
+import { closedFractionsByTile } from '../water/bridgeOpenings';
 import { jobsOf, workplaceTypes } from './jobs';
 import { NO_SHIFT, modalShift, type ModalShift } from './modalShift';
 import { CONGESTION, laneCapacity } from './roadTier';
@@ -92,7 +93,8 @@ function layoutSignature(state: GameState, now: number): string {
     .filter((building) => building.type === 'home' || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null)
     .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${transport.homeRiders.get(building.id) ?? 0}:${transport.homeLines.has(building.id) ? 1 : 0}${transport.coveredActivities.has(building.id) ? 1 : 0}:${frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier).join('+')}`);
   const lines = transport.lines.map((line) => `${line.id}:${line.capacity.toFixed(2)}:${line.riders.toFixed(2)}:${line.mode === 'bus' && line.active && line.route ? line.route.map(tileKey).join(';') : ''}`);
-  return [...buildings, ...lines].join('|');
+  const openings = [...closedFractionsByTile(state)].map(([key, fraction]) => `${key}=${fraction.toFixed(3)}`);
+  return [...buildings, ...lines, ...openings].join('|');
 }
 
 function activeBusRoutes(transport: ReturnType<typeof transportStats>): BusRoute[] {
@@ -115,6 +117,7 @@ function withModalShift(state: GameState, now: number): CongestionStats {
 function calculateCongestion(state: GameState, riders: ReadonlyMap<number, number>, covered: TransitCoverage, buses: readonly BusRoute[] = []): CongestionStats {
   const graph = buildRoadGraph(state);
   const tiers = new Map(state.roads.map((road) => [tileKey(road), road.tier ?? 1]));
+  const closed = closedFractionsByTile(state);
   const walkable = pedestrianGraph(state);
   const homes = endpoints(state, graph, walkable, (building) => building.type === 'home');
   const workplaces = endpoints(state, graph, walkable, (building) => workplaceTypes.includes(building.type)).filter((workplace) => workplace.access.length > 0);
@@ -190,7 +193,7 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
   }
   const sections = new Map<string, SectionLoad>();
   for (const [key, load] of loads) {
-    const capacity = laneCapacity(tiers.get(key) ?? 1) * (1 - crossingCut(pedestrians.get(key) ?? 0));
+    const capacity = laneCapacity(tiers.get(key) ?? 1) * (1 - crossingCut(pedestrians.get(key) ?? 0)) * (1 - (closed.get(key) ?? 0));
     sections.set(key, { tile: parseTile(key), load, capacity, ratio: load / capacity });
   }
   const busSpeeds = new Map<number, BusSpeed>();

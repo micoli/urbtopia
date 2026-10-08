@@ -13,3 +13,17 @@ Initial values, to tune in play.
 
 - Operating cost (Pleasure boat, Casino boat): Urbs per cycle, one line per Marina. To set.
 - Fishing boat: fixed duration and yield per cycle, no dependency on the size of the water. Fish then Canned fish (Factory). To set.
+
+## Bridge openings
+
+The capacity of every tile of a Bridge is multiplied by `1 − closed fraction`, where
+`closed fraction = min(maxClosed, boats × openingsPerBoatHour × minutesPerOpening / 60)`
+and `boats` counts the Boats on the same body of water as the Bridge. Constants live in `src/core/water/bridgeOpenings.ts`.
+
+| Constant | Value |
+|---|---|
+| `openingsPerBoatHour` | 2 |
+| `minutesPerOpening` | 3 |
+| `maxClosed` | 0.6 |
+
+One Boat closes a Bridge 10% of the time, six Boats or more reach the 60% cap.
