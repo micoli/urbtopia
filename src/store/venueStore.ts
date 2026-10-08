@@ -28,12 +28,13 @@ export const venueStore = createStore<VenueStore>((set) => ({
   venueId: null,
   ...idle,
   open: (venueId) => set({ venueId, ...idle }),
-  togglePanel: (panel) => set(store => (store.panel === panel ? { panel: null, selectedFixture: null } : { panel, selectedFixture: panel === 'build' ? store.selectedFixture : null })),
+  // One panel at a time: opening one closes the other, and the panel of a selected Fixture.
+  togglePanel: (panel) => set(store => (store.panel === panel ? { panel: null, selectedFixture: null } : { panel, selectedFixture: panel === 'build' ? store.selectedFixture : null, placedId: null, movingId: null })),
   closePanel: () => set({ panel: null, selectedFixture: null }),
   close: () => set({ venueId: null, ...idle }),
   selectFixture: (selectedFixture) => set({ selectedFixture, placedId: null, movingId: null }),
   chooseFixture: (selectedFixture) => set({ selectedFixture, panel: null, placedId: null, movingId: null }),
-  selectPlaced: (placedId) => set({ placedId, selectedFixture: null, movingId: null }),
+  selectPlaced: (placedId) => set({ placedId, selectedFixture: null, movingId: null, ...(placedId === null ? {} : { panel: null }) }),
   startMove: (movingId) => set({ movingId, selectedFixture: null }),
   stopMove: () => set({ movingId: null }),
 }));

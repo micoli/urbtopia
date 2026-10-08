@@ -6,6 +6,7 @@ import { t } from '../../i18n/t';
 import { venueStore } from '../../store/venueStore';
 import { VenueMenus } from './VenueMenus';
 import { venueActionsOf } from './venueActions';
+import { venuePanelTitle } from './venuePanelTitle';
 
 const arcade = createBuilding(1, 'arcade', 55, 50, 0);
 
@@ -66,6 +67,32 @@ describe('Venue main menu', () => {
     store.selectFixture('barrelClimber');
     store.closePanel();
     expect(venueStore.getState()).toMatchObject({ panel: null, selectedFixture: null });
+  });
+});
+
+describe('One panel at a time', () => {
+  it('titles the panels opened beside the room, and leaves the build menu to carry its own', () => {
+    expect(venuePanelTitle('staff')).toBe(t('venue.staff'));
+    expect(venuePanelTitle('events')).toBe(t('venue.events'));
+    expect(venuePanelTitle('takings')).toBe(t('venue.takings'));
+    expect(venuePanelTitle('build')).toBeUndefined();
+    expect(venuePanelTitle(null)).toBeUndefined();
+  });
+
+  it('closes the panel of a Fixture when a panel of the menu opens, and the other way round', () => {
+    const store = venueStore.getState();
+    store.open(1);
+    store.selectPlaced(3);
+    expect(venueStore.getState()).toMatchObject({ placedId: 3, panel: null });
+    store.togglePanel('staff');
+    expect(venueStore.getState()).toMatchObject({ placedId: null, movingId: null, panel: 'staff' });
+    store.selectPlaced(4);
+    expect(venueStore.getState()).toMatchObject({ placedId: 4, panel: null });
+    store.togglePanel('events');
+    store.togglePanel('takings');
+    expect(venueStore.getState().panel).toBe('takings');
+    store.selectPlaced(null);
+    expect(venueStore.getState().panel).toBe('takings');
   });
 });
 

@@ -22,7 +22,6 @@ export function VenueEvents({ venueId }: VenueEventsProps) {
   const active = isEventActive(venue, now);
   return (
     <section className="venue-build" aria-label={t('venue.events')}>
-      <h3>{t('venue.events')}</h3>
       {hiredOf(venue, 'manager') === 0 ? <p className="note note--muted">{t('venue.eventNeedsManager')}</p> : null}
       {venue.event ? (
         <>

@@ -48,7 +48,7 @@ export function VenueMenus({ venue, layout: forced }: VenueMenusProps) {
       <VenuePlacementHint />
       <Dock actions={actions} header={<VenueStats venue={venue} />} bottomId="back" />
       <VenueFlyout venue={venue} />
-      <VenueSidePanel venueId={venue.id} />
+      <VenueSidePanel venue={venue} />
     </>
   );
 }

@@ -22,11 +22,11 @@ export function VenueTakings({ building, editable = false }: VenueTakingsProps) 
   return (
     <>
       {performance.powered ? null : <p className="note note--warn">{t('venue.shut')}</p>}
-      <DrawerPanel.LabelValue label={t(`venue.capacity.${type}`)} value={performance.capacity.toFixed(1)} />
+      {type === 'hotel' ? null : <DrawerPanel.LabelValue label={t(`venue.capacity.${type}`)} value={performance.capacity.toFixed(1)} />}
       <DrawerPanel.LabelValue label={t(`venue.visitors.${type}`)} value={performance.visitors.toFixed(1)} />
       <DrawerPanel.LabelValue label={t('venue.attractiveness')} value={`${Math.round(performance.layout.attractiveness * 100)} %`} />
       <DrawerPanel.LabelValue label={t('venue.serviceRate')} value={`${Math.round(performance.layout.counterRate * 100)} %`} />
-      <DrawerPanel.LabelValue label={t(`venue.served.${type}`)} value={performance.served.toFixed(1)} />
+      {type === 'hotel' ? null : <DrawerPanel.LabelValue label={t(`venue.served.${type}`)} value={performance.served.toFixed(1)} />}
       <DrawerPanel.LabelValue label={t('venue.earnings')} value={<UrbsAmount value={performance.earningsPerHour} />} />
       {editable && hiredOf(building.venue, 'manager') > 0 ? (
         <NumberStepper label={t(`venue.price.${type}`)} value={priceOf(building.venue)} min={VENUE.minPrice} max={VENUE.maxPrice} onChange={price => gameStore.getState().send({ type: 'SetVenuePrice', buildingId: building.id, price })} />

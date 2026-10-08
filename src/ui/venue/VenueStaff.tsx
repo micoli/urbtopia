@@ -15,7 +15,6 @@ export function VenueStaff({ venueId }: VenueStaffProps) {
   const send = gameStore.getState().send;
   return (
     <section className="venue-build" aria-label={t('venue.staff')}>
-      <h3>{t('venue.staff')}</h3>
       <div className="venue-build__items">
         {staffRolesOf(venueTypeOf(building)).map(role => {
           const hired = hiredOf(building.venue, role);
