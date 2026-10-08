@@ -11,7 +11,7 @@ export function BridgeTools() {
   return (
     <>
       {BRIDGE_LENGTHS.map((length) => (
-        <FlyoutItem key={length} label={`${t('water.bridge')} · ${length} ${t('water.bridgeTiles')}`} cost={<UrbsAmount value={BRIDGES.costs[length] ?? 0} />} onChoose={() => chooseTool({ kind: 'bridge', length })} />
+        <FlyoutItem icon="bridge.png" key={length} label={`${t('water.bridge')} · ${length} ${t('water.bridgeTiles')}`} cost={<UrbsAmount value={BRIDGES.costs[length] ?? 0} />} onChoose={() => chooseTool({ kind: 'bridge', length })} />
       ))}
     </>
   );

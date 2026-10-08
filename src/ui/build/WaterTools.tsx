@@ -6,5 +6,5 @@ import { UrbsAmount } from '../common/UrbsAmount';
 
 export function WaterTools() {
   const chooseTool = useUi((store) => store.chooseTool);
-  return <FlyoutItem label={t('water.lay')} cost={<UrbsAmount value={WATER.tileCost} />} onChoose={() => chooseTool({ kind: 'brush', action: 'layWater', tiles: [] })} />;
+  return <FlyoutItem icon="lac.png" label={t('water.lay')} cost={<UrbsAmount value={WATER.tileCost} />} onChoose={() => chooseTool({ kind: 'brush', action: 'layWater', tiles: [] })} />;
 }
