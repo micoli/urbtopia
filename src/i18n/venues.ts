@@ -4,6 +4,11 @@ type VenueMessageKey =
   | 'error.unknownFixture'
   | 'error.invalidPrice'
   | 'venue.price'
+  | 'venue.attractiveness'
+  | 'venue.serviceRate'
+  | 'venue.hint.counterFar'
+  | 'venue.hint.noise'
+  | 'venue.hint.noHost'
   | 'venue.fixtureEarnings'
   | 'venue.served'
   | 'venue.manage'
@@ -29,6 +34,11 @@ type VenueMessageKey =
 const texts: Record<VenueMessageKey, readonly [string, string]> = {
   'error.unknownFixture': ['This Fixture does not exist.', 'Cet équipement n’existe pas.'],
   'error.invalidPrice': ['This price is not allowed.', 'Ce prix n’est pas autorisé.'],
+  'venue.attractiveness': ['Attractiveness', 'Attractivité'],
+  'venue.serviceRate': ['Service speed', 'Rapidité du service'],
+  'venue.hint.counterFar': ['Too far from the entrance: the service slows down.', 'Trop loin de l’entrée : le service ralentit.'],
+  'venue.hint.noise': ['Next to another loud machine: fewer Visitors come.', 'Collé à une autre borne bruyante : moins de visiteurs.'],
+  'venue.hint.noHost': ['Needs a table next to it (or a counter for a stool).', 'Il lui faut une table à côté (ou un comptoir pour un tabouret).'],
   'venue.price': ['Price of a play', 'Prix d’une partie'],
   'venue.fixtureEarnings': ['Earns per hour', 'Rapporte par heure'],
   'venue.served': ['Plays served per hour', 'Parties servies par heure'],

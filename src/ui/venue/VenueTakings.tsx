@@ -21,6 +21,8 @@ export function VenueTakings({ building, editable = false }: VenueTakingsProps) 
   return (
     <>
       <DrawerPanel.LabelValue label={t('venue.visitors')} value={performance.visitors.toFixed(1)} />
+      <DrawerPanel.LabelValue label={t('venue.attractiveness')} value={`${Math.round(performance.layout.attractiveness * 100)} %`} />
+      <DrawerPanel.LabelValue label={t('venue.serviceRate')} value={`${Math.round(performance.layout.counterRate * 100)} %`} />
       <DrawerPanel.LabelValue label={t('venue.served')} value={performance.served.toFixed(1)} />
       <DrawerPanel.LabelValue label={t('venue.earnings')} value={<UrbsAmount value={performance.earningsPerHour} />} />
       {editable ? (

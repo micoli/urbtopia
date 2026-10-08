@@ -1,4 +1,5 @@
 import { ARCADE_FIXTURES } from './fixtures';
+import { LAYOUT, layoutOf, type Layout } from './layout';
 import { citizensOf } from '../buildings/city';
 import { centerOf } from '../environment/ecology';
 import { isWithinReach } from '../services/facilities';
@@ -13,13 +14,13 @@ export const VENUE = {
   minPrice: 1,
   maxPrice: 6,
   priceTolerance: 0.2,
-  withoutCounterRate: 0.5,
   takingsCaps: [400, 900, 1800] as readonly number[],
   gridSizes: [6] as readonly number[],
   refundRatio: 0.5,
 };
 
 export { ARCADE_FIXTURES, ARCADE_FIXTURE_IDS, type FixtureSpec } from './fixtures';
+export type { Layout, LayoutHint } from './layout';
 
 export const entranceCell = (tier: number): { x: number; y: number } => ({ x: Math.floor(gridSizeOf(tier) / 2), y: 0 });
 
@@ -51,13 +52,16 @@ export function visitorsPerHour(state: GameState, venue: Building): number {
   return citizens * VENUE.visitorsPerCitizenPerHour;
 }
 
-export function playsCapacityPerHour(venue: VenueData): number {
-  return venue.fixtures.reduce((total, fixture) => total + ARCADE_FIXTURES[fixture.type].playsPerHour, 0);
+export const venueLayout = (building: Building & { venue: VenueData }): Layout => layoutOf(building.venue, entranceCell(building.tier));
+
+const playsOf = (fixture: VenueFixture, layout: Layout): number =>
+  ARCADE_FIXTURES[fixture.type].playsPerHour + (layout.seatedIds.has(fixture.id) ? LAYOUT.playsPerSeat : 0);
+
+export function playsCapacityPerHour(venue: VenueData, layout?: Layout): number {
+  return venue.fixtures.reduce((total, fixture) => total + (layout ? playsOf(fixture, layout) : ARCADE_FIXTURES[fixture.type].playsPerHour), 0);
 }
 
 export const priceAcceptance = (price: number): number => Math.min(1, Math.max(0, 1 - VENUE.priceTolerance * (price - VENUE.playPrice)));
-
-export const serviceRateOf = (venue: VenueData): number => venue.fixtures.some(fixture => fixture.type === 'counter') ? 1 : VENUE.withoutCounterRate;
 
 export interface VenuePerformance {
   visitors: number;
@@ -66,22 +70,25 @@ export interface VenuePerformance {
   served: number;
   earningsPerHour: number;
   earningsByFixture: ReadonlyMap<number, number>;
+  layout: Layout;
 }
 
 export function venuePerformance(state: GameState, venue: Building & { venue: VenueData }): VenuePerformance {
   const price = priceOf(venue.venue);
+  const layout = venueLayout(venue);
   const visitors = visitorsPerHour(state, venue);
-  const accepted = visitors * priceAcceptance(price);
-  const capacity = playsCapacityPerHour(venue.venue) * serviceRateOf(venue.venue);
+  const accepted = visitors * priceAcceptance(price) * layout.attractiveness;
+  const raw = playsCapacityPerHour(venue.venue, layout);
+  const capacity = raw * layout.counterRate;
   const served = Math.min(accepted, capacity);
   const earningsByFixture = new Map<number, number>();
   if (capacity > 0) {
     for (const fixture of venue.venue.fixtures) {
-      const share = ARCADE_FIXTURES[fixture.type].playsPerHour * serviceRateOf(venue.venue) / capacity;
+      const share = playsOf(fixture, layout) / raw;
       if (share > 0) earningsByFixture.set(fixture.id, served * share * price);
     }
   }
-  return { visitors, accepted, capacity, served, earningsPerHour: served * price, earningsByFixture };
+  return { visitors, accepted, capacity, served, earningsPerHour: served * price, earningsByFixture, layout };
 }
 
 export const takingsPerHour = (state: GameState, venue: Building & { venue: VenueData }): number => venuePerformance(state, venue).earningsPerHour;

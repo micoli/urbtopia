@@ -6,6 +6,7 @@ import { VENUE_SHELL_MODELS } from './renderItems';
 const { floor: FLOOR_MODEL, wall: WALL_MODEL, corner: CORNER_MODEL } = VENUE_SHELL_MODELS;
 const TAP_DISTANCE = 6;
 const SELECTION_COLOR = 0x4da3ff;
+const WARNING_COLOR = 0xff9500;
 const ENTRANCE_COLOR = 0xe8d9a8;
 const VALID_COLOR = 0x35d07f;
 const INVALID_COLOR = 0xe5484d;
@@ -24,6 +25,7 @@ export class VenueScene {
   private fixtureRoot = new THREE.Group();
   private ghostRoot = new THREE.Group();
   private selectionRoot = new THREE.Group();
+  private warningRoot = new THREE.Group();
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   private resizeObserver: ResizeObserver;
@@ -46,7 +48,7 @@ export class VenueScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 2.2);
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
-    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.selectionRoot, this.ghostRoot);
+    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.warningRoot, this.selectionRoot, this.ghostRoot);
     this.ready = this.library.ensure([FLOOR_MODEL, WALL_MODEL, CORNER_MODEL, ...new Set(Object.values(ARCADE_FIXTURES).map(spec => spec.model))]).then(() => {
       if (this.disposed) return;
       this.buildShell();
@@ -83,6 +85,10 @@ export class VenueScene {
     this.markTiles(this.selectionRoot, tiles, SELECTION_COLOR);
   }
 
+  setWarnings(tiles: readonly Coord[]): void {
+    this.markTiles(this.warningRoot, tiles, WARNING_COLOR);
+  }
+
   private markTiles(root: THREE.Group, tiles: readonly Coord[], color: number): void {
     this.clear(root, true);
     if (tiles.length > 0) {
@@ -108,6 +114,7 @@ export class VenueScene {
     this.canvas.removeEventListener('pointerleave', this.handlePointerLeave);
     this.clear(this.ghostRoot, true);
     this.clear(this.selectionRoot, true);
+    this.clear(this.warningRoot, true);
     this.renderer.dispose();
   }
 

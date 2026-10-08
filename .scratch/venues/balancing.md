@@ -29,3 +29,8 @@ Placeholders to tune by play. Values live in `VENUE` and `ARCADE_FIXTURES` (`src
 
 ## Building
 - Unlock at 100 Citizens, cost 1200 Urbs, footprint 2x2.
+
+## Layout rules (`LAYOUT`)
+- Counter rate: 1 at distance 1 from the entrance, minus 6% per extra tile, floor 60%; 50% with no counter.
+- Noise: each pair of adjacent loud machines costs 8% attractiveness, floor 50%.
+- Seats: a chair needs a table next to it (a bar stool also a counter); 4 seats per table or counter; a seat adds 2 plays per hour.

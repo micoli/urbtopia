@@ -129,7 +129,7 @@ describe('Arcade Venue', () => {
     it('limits service to the game capacity, and halves it without a counter', () => {
       const bare = equipped(['barrelClimber', 1, 1], ['spaceShooter', 2, 1]);
       const counted = equipped(['barrelClimber', 1, 1], ['spaceShooter', 2, 1], ['counter', 3, 1]);
-      expect(performance(bare).capacity).toBe((6 + 8) * VENUE.withoutCounterRate);
+      expect(performance(bare).capacity).toBe((6 + 8) * 0.5);
       expect(performance(counted).capacity).toBe(6 + 8);
       expect(performance(counted).served).toBeLessThanOrEqual(performance(counted).capacity);
     });
@@ -170,5 +170,71 @@ describe('Arcade Venue', () => {
       const capped = advance(rich, 200 * 3_600_000).state;
       expect(arcadeOf(capped).venue!.takings).toBe(takingsCapOf(1));
     });
+  });
+});
+
+describe('Arcade layout rules', () => {
+  const entrance = entranceCell(1);
+  const furnished = (...fixtures: [Parameters<typeof place>[0], number, number][]) => fixtures.reduce((state, [fixture, x, y]) => send(state, place(fixture, x, y)), city(100_000));
+  const layoutOf = (state: GameState) => venuePerformance(state, arcadeOf(state) as never).layout;
+  const hintsOf = (state: GameState, id: number) => layoutOf(state).hints.get(id) ?? [];
+
+  it('serves faster when the counter is near the entrance', () => {
+    const near = layoutOf(furnished(['counter', entrance.x, entrance.y + 1]));
+    const far = layoutOf(furnished(['counter', 0, 5]));
+    expect(near.counterRate).toBe(1);
+    expect(far.counterRate).toBeLessThan(near.counterRate);
+    expect(far.counterRate).toBeGreaterThanOrEqual(0.6);
+    expect(layoutOf(city()).counterRate).toBe(0.5);
+  });
+
+  it('flags a counter that is too far from the entrance', () => {
+    const state = furnished(['counter', 0, 5]);
+    expect(hintsOf(state, 1)).toContain('counterFar');
+  });
+
+  it('lowers attractiveness for each pair of neighbouring loud machines, never below the floor', () => {
+    const apart = layoutOf(furnished(['barrelClimber', 0, 2], ['spaceShooter', 2, 2]));
+    const side = furnished(['barrelClimber', 0, 2], ['spaceShooter', 1, 2]);
+    expect(apart.attractiveness).toBe(1);
+    expect(layoutOf(side).attractiveness).toBeLessThan(1);
+    expect(hintsOf(side, 1)).toContain('noise');
+    expect(hintsOf(side, 2)).toContain('noise');
+    const row = layoutOf(furnished(...[3, 4].flatMap(y => Array.from({ length: 6 }, (_, index) => ['barrelClimber', index, y] as [Parameters<typeof place>[0], number, number]))));
+    expect(row.attractiveness).toBe(0.5);
+  });
+
+  it('keeps quiet Fixtures from making noise, even next to a loud one', () => {
+    const state = furnished(['barrelClimber', 0, 2], ['table', 1, 2]);
+    expect(layoutOf(state).attractiveness).toBe(1);
+    expect(hintsOf(state, 1)).toEqual([]);
+  });
+
+  it('counts a chair only when a table is in reach, four chairs per table', () => {
+    const alone = furnished(['chair', 0, 3]);
+    expect(layoutOf(alone).seatedIds.size).toBe(0);
+    expect(hintsOf(alone, 1)).toContain('noHost');
+    const seated = furnished(['table', 2, 3], ['chair', 1, 3], ['chair', 3, 3], ['chair', 2, 2], ['chair', 2, 4]);
+    expect(layoutOf(seated).seatedIds.size).toBe(4);
+    const tooMany = furnished(['table', 2, 3], ['chair', 1, 3], ['chair', 3, 3], ['chair', 2, 2], ['chair', 2, 4], ['barStool', 1, 4]);
+    expect(layoutOf(tooMany).seatedIds.size).toBe(4);
+    expect(layoutOf(furnished(['counter', 3, 1], ['barStool', 3, 2])).seatedIds.size).toBe(1);
+  });
+
+  it('adds capacity and earnings for seated chairs only', () => {
+    const base = furnished(['counter', 3, 1], ['barrelClimber', 0, 4]);
+    const withSeats = send(send(send(base, place('table', 2, 3)), place('chair', 1, 3)), place('chair', 5, 5));
+    const before = venuePerformance(base, arcadeOf(base) as never);
+    const after = venuePerformance(withSeats, arcadeOf(withSeats) as never);
+    expect(after.capacity).toBe(before.capacity + 2);
+    const chairs = arcadeOf(withSeats).venue!.fixtures.filter(fixture => fixture.type === 'chair');
+    expect(after.earningsByFixture.has(chairs[0]!.id)).toBe(true);
+    expect(after.earningsByFixture.has(chairs[1]!.id)).toBe(false);
+  });
+
+  it('changes Takings on the next tick once a Fixture is moved', () => {
+    const state = furnished(['counter', 0, 5], ['barrelClimber', 1, 2], ['spaceShooter', 4, 4]);
+    const moved = send(state, { type: 'MoveFixture', buildingId: 1, fixtureId: 1, x: entrance.x, y: entrance.y + 1 });
+    expect(takingsPerHour(moved, arcadeOf(moved) as never)).toBeGreaterThan(takingsPerHour(state, arcadeOf(state) as never));
   });
 });

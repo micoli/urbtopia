@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, fixtureTiles, gridSizeOf, isVenue, type Building, type Coord, type VenueData } from '../../core';
+import { canPlaceFixture, fixtureTiles, gridSizeOf, isVenue, venueLayout, type Building, type Coord, type VenueData } from '../../core';
 import { VenueScene } from '../../scene/VenueScene';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
@@ -37,10 +37,17 @@ export function VenueCanvas({ venueId }: VenueCanvasProps) {
       const fixture = venueOf(venueId)?.venue.fixtures.find(candidate => candidate.id === (movingId ?? placedId));
       scene.setSelection(fixture ? fixtureTiles(fixture) : []);
     };
+    const showWarnings = () => {
+      const venue = venueOf(venueId);
+      if (!venue) return;
+      const { hints } = venueLayout(venue);
+      scene.setWarnings(venue.venue.fixtures.filter(fixture => hints.has(fixture.id)).flatMap(fixtureTiles));
+    };
     const sync = () => {
       const venue = venueOf(venueId);
       if (venue) scene.setFixtures(venue.venue.fixtures);
       showSelection();
+      showWarnings();
       showGhost();
     };
 
