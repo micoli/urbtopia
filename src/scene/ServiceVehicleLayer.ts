@@ -36,6 +36,7 @@ export class ServiceVehicleLayer {
   private tiers: ReadonlyMap<string, number> = new Map();
   trafficVehicles: readonly TrafficVehicle[] = [];
   stopTiles: ReadonlySet<string> = new Set();
+  gateTiles: ReadonlySet<string> = new Set();
 
   constructor(private library: ModelLibrary) {
     this.root.visible = false;
@@ -99,6 +100,10 @@ export class ServiceVehicleLayer {
     this.place(dispatcher.trip);
   }
 
+  get activeVehicles(): readonly TrafficVehicle[] {
+    return [...this.dispatchers.values()].flatMap((dispatcher) => (dispatcher.trip ? [dispatcher.trip.vehicle] : []));
+  }
+
   get followingVehicles(): readonly TrafficVehicle[] {
     if (!TRAFFIC_OPTIONS.SERVICE_VEHICLES_FOLLOW_TRAFFIC) return [];
     return [...this.dispatchers.values()].flatMap((dispatcher) => (dispatcher.trip ? [dispatcher.trip.vehicle] : []));
@@ -107,7 +112,7 @@ export class ServiceVehicleLayer {
   private move(dispatcher: Dispatcher, deltaSeconds: number): void {
     const trip = dispatcher.trip!;
     const traffic = TRAFFIC_OPTIONS.SERVICE_VEHICLES_FOLLOW_TRAFFIC ? { others: [...this.trafficVehicles, ...this.followingVehicles], stopTiles: this.stopTiles, lanesAt: this.lanesAt } : null;
-    if (driveServiceTrip(trip, deltaSeconds, traffic)) {
+    if (driveServiceTrip(trip, deltaSeconds, traffic, this.gateTiles)) {
       this.cancel(dispatcher);
       return this.rest(dispatcher);
     }

@@ -326,10 +326,11 @@ export class GameScene {
     this.ecologyLayer.update(delta);
     this.traffic.priorityTiles = this.ecologyLayer.transit.priorityTiles;
     this.pedestrians.update(delta);
-    this.bridges.update(delta, this.boats.waiting, this.boats.occupied, this.traffic.vehicleList);
+    this.bridges.update(delta, this.boats.waiting, this.boats.occupied, [...this.traffic.vehicleList, ...this.serviceVehicles.activeVehicles]);
     this.traffic.stopTiles = new Set([...this.pedestrians.crossingTiles, ...this.bridges.stopTiles]);
     this.serviceVehicles.trafficVehicles = this.traffic.vehicleList;
-    this.serviceVehicles.stopTiles = new Set([...this.pedestrians.crossingTiles, ...this.bridges.stopTiles, ...this.ecologyLayer.transit.priorityTiles]);
+    this.serviceVehicles.stopTiles = new Set([...this.pedestrians.crossingTiles, ...this.ecologyLayer.transit.priorityTiles]);
+    this.serviceVehicles.gateTiles = this.bridges.stopTiles;
     this.traffic.externalVehicles = this.serviceVehicles.followingVehicles;
     this.traffic.update(delta, this.controller.camera);
     this.serviceVehicles.update(delta);

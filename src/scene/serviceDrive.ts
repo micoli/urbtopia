@@ -13,15 +13,19 @@ export interface TrafficContext {
   lanesAt: LanesAt;
 }
 
+const NO_TILES: ReadonlySet<string> = new Set();
+const NO_VEHICLES: readonly TrafficVehicle[] = [];
+
 export function startServiceTrip(path: readonly Coord[], id: number, speed: number): ServiceTrip {
   const [from, to] = path as [Coord, Coord];
   return { path, segment: 0, vehicle: { id, model: 0, speed, from, to, heading: { x: to.x - from.x, y: to.y - from.y }, progress: 0, lane: 0, lanes: 1 } };
 }
 
-export function driveServiceTrip(trip: ServiceTrip, deltaSeconds: number, traffic: TrafficContext | null): boolean {
+export function driveServiceTrip(trip: ServiceTrip, deltaSeconds: number, traffic: TrafficContext | null, gates: ReadonlySet<string> = NO_TILES): boolean {
   const { vehicle, path } = trip;
   const wanted = vehicle.speed * deltaSeconds;
-  vehicle.progress += traffic ? allowedTravel(vehicle, wanted, traffic.others, traffic.stopTiles, deltaSeconds) : wanted;
+  const stops = traffic && gates.size > 0 ? new Set([...traffic.stopTiles, ...gates]) : traffic?.stopTiles ?? gates;
+  vehicle.progress += traffic || gates.size > 0 ? allowedTravel(vehicle, wanted, traffic?.others ?? NO_VEHICLES, stops, deltaSeconds) : wanted;
   while (vehicle.progress >= 1) {
     vehicle.progress -= 1;
     trip.segment++;
