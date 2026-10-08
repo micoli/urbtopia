@@ -136,7 +136,11 @@ export class GameScene {
   }
 
   setPaused(paused: boolean): void {
+    if (this.paused === paused) return;
     this.paused = paused;
+    if (paused) return cancelAnimationFrame(this.frameHandle);
+    this.lastFrame = performance.now();
+    this.frameHandle = requestAnimationFrame(this.frame);
   }
 
   setTrafficEnabled(enabled: boolean): void {
@@ -324,11 +328,6 @@ export class GameScene {
   }
 
   private frame = (now: number): void => {
-    if (this.paused) {
-      this.lastFrame = now;
-      this.frameHandle = requestAnimationFrame(this.frame);
-      return;
-    }
     const delta = Math.max(0, Math.min(0.1, (now - this.lastFrame) / 1000));
     this.lastFrame = now;
     this.controller.update(delta);

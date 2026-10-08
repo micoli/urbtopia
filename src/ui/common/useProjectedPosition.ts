@@ -1,5 +1,7 @@
 import { DependencyList, RefObject, useEffect } from 'react';
+import { useStore } from 'zustand';
 import { sceneHandle } from '../../store/sceneHandle';
+import { venueStore } from '../../store/venueStore';
 
 export type ProjectedAnchor = 'center' | 'above';
 
@@ -11,7 +13,9 @@ const ANCHOR_TRANSFORM: Record<ProjectedAnchor, string> = {
 };
 
 export function useFrameLoop(onFrame: () => void, deps: DependencyList) {
+    const cityHidden = useStore(venueStore, store => store.venueId !== null);
     useEffect(() => {
+        if (cityHidden) return;
         let handle = 0;
         const tick = () => {
             onFrame();
@@ -19,7 +23,7 @@ export function useFrameLoop(onFrame: () => void, deps: DependencyList) {
         };
         handle = requestAnimationFrame(tick);
         return () => cancelAnimationFrame(handle);
-    }, deps);
+    }, [...deps, cityHidden]);
 }
 
 export function placeProjected(element: HTMLElement, projected: Projected, anchor: ProjectedAnchor, offsetX = 0) {
