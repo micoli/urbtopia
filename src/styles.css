@@ -246,6 +246,20 @@ button {
   cursor: pointer;
 }
 
+.accordion-heading-with-action { display: flex; align-items: stretch; gap: 6px; }
+.accordion-heading-with-action > :first-child { flex: 1; min-width: 0; }
+.section-demolish {
+  flex: 0 0 auto;
+  min-width: var(--tap);
+  min-height: var(--tap);
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+
 .build-section-items:not([hidden]) {
   display: flex;
   flex-direction: column;
