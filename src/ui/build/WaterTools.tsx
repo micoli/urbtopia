@@ -6,5 +6,6 @@ import { UrbsAmount } from '../common/UrbsAmount';
 
 export function WaterTools() {
   const chooseTool = useUi((store) => store.chooseTool);
-  return <FlyoutItem icon="lac.png" label={t('water.lay')} cost={<UrbsAmount value={WATER.tileCost} />} onChoose={() => chooseTool({ kind: 'brush', action: 'layWater', tiles: [] })} />;
+  const openCodex = useUi((store) => store.openCodex);
+  return <FlyoutItem icon="lac.png" codexId="water" onInfo={() => openCodex('water')} label={t('water.lay')} cost={<UrbsAmount value={WATER.tileCost} />} onChoose={() => chooseTool({ kind: 'brush', action: 'layWater', tiles: [] })} />;
 }
