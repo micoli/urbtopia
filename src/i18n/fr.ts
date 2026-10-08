@@ -223,7 +223,7 @@ export const FR: Record<MessageKey, string> = {
   'roads.section.rail': 'Rails',
   'roads.section.water': 'Eau',
   'roads.section.bridges': 'Ponts',
-  'dock.roads': 'Routes',
+  'dock.networks': 'Reseaux',
   'flyout.close': 'Fermer',
   'tool.road': 'Route',
   'tool.crossing': 'Passage piéton',

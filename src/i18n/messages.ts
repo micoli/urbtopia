@@ -221,7 +221,7 @@ export const MESSAGES = {
   'roads.section.rail': 'Railways',
   'roads.section.water': 'Water',
   'roads.section.bridges': 'Bridges',
-  'dock.roads': 'Roads',
+  'dock.networks': 'Networks',
   'flyout.close': 'Close',
   'tool.road': 'Road',
   'tool.crossing': 'Crossing',
