@@ -107,7 +107,7 @@ export type ErrorKey =
   | 'error.townHallExists'
   | 'error.serviceRequired'
   | 'error.notEnoughUrbs'
-  | 'error.lastRoadOfBuilding'
+  | 'error.lastAccessOfBuilding'
   | 'error.noRoadHere'
   | 'error.invalidCrossing'
   | 'error.maxRoadTier'
@@ -331,11 +331,15 @@ function demolishRoad(state: GameState, tiles: Coord[]): CommandOutcome {
     roads: state.roads.filter((candidate) => !roads.includes(candidate)),
     roundabouts: state.roundabouts.filter((center) => !roundabouts.includes(center)),
   };
-  const orphaned = next.buildings.some(
-    (building) => !['busStop', 'brtStation', 'railStation'].includes(building.type) && BUILDING_SPECS[building.type].requiresRoad && !frontHasAccess(next, building.type, building.x, building.y, building.rotation, building.tier),
-  );
-  if (orphaned) return fail('error.lastRoadOfBuilding');
+  if (strandsBuilding(state, next)) return fail('error.lastAccessOfBuilding');
   return { state: next, events: [] };
+}
+
+function strandsBuilding(before: GameState, after: GameState): boolean {
+  const hasAccess = (state: GameState, building: Building) => frontHasAccess(state, building.type, building.x, building.y, building.rotation, building.tier);
+  return before.buildings.some(
+    (building) => !['busStop', 'brtStation', 'railStation'].includes(building.type) && BUILDING_SPECS[building.type].requiresRoad && hasAccess(before, building) && !hasAccess(after, building),
+  );
 }
 
 function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, requestedRotation?: Rotation, solar = false, colorVariant?: HomeColorVariant): CommandOutcome {
@@ -668,7 +672,9 @@ function transitCommand(state: GameState, command: Extract<Command, { type: 'Bui
     const kept = networkTiles(state, command.mode).filter(p => !targets.has(tileKey(p)));
     if (kept.length === networkTiles(state, command.mode).length) return fail('error.noRoadHere');
     const tiles = withoutDanglingExits(kept);
-    return { state: { ...state, [command.mode === 'brt' ? 'brtRoads' : 'rails']: tiles }, events: [] };
+    const next = { ...state, [command.mode === 'brt' ? 'brtRoads' : 'rails']: tiles };
+    if (strandsBuilding(state, next)) return fail('error.lastAccessOfBuilding');
+    return { state: next, events: [] };
   }
   if (command.type === 'RepairTransitNetwork') {
     const tiles = repairNetwork(state, command.mode);

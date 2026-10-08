@@ -280,7 +280,7 @@ export const FR: Record<MessageKey, string> = {
   'error.needsRoadOrBrt': "La façade de ce bâtiment doit toucher une route ou un couloir BRT.",
   'error.storehouseExists': 'Vous avez déjà un entrepôt.',
   'error.notEnoughUrbs': 'Pas assez de {U}.',
-  'error.lastRoadOfBuilding': "C'est la seule route d'un bâtiment.",
+  'error.lastAccessOfBuilding': "C'est la seule route ou le seul couloir BRT d'un bâtiment.",
   'error.noRoadHere': "Il n'y a pas de route ici.",
   'error.invalidCrossing': 'Un passage piéton demande une route droite.',
   'error.maxRoadTier': 'Cette route a déjà le nombre maximal de voies.',

@@ -278,7 +278,7 @@ export const MESSAGES = {
   'error.needsRoadOrBrt': 'The front of this building must touch a road or a BRT corridor.',
   'error.storehouseExists': 'You already have a Storehouse.',
   'error.notEnoughUrbs': 'Not enough {U}.',
-  'error.lastRoadOfBuilding': 'This is the only road of a building.',
+  'error.lastAccessOfBuilding': 'This is the only road or BRT corridor of a building.',
   'error.noRoadHere': 'There is no road here.',
   'error.invalidCrossing': 'A crossing needs a straight road.',
   'error.maxRoadTier': 'This road already has the maximum number of lanes.',

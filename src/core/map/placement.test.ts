@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { autoRotation, dispatch, frontAccessModes, frontTiles, newGame, placementIssue, type Command, type GameState } from '../index';
+import { autoRotation, createBuilding, dispatch, frontAccessModes, frontTiles, newGame, placementIssue, type Command, type GameState } from '../index';
 
 const NOW = 1_700_000_000_000;
 const initial = newGame({ seed: 'amber-fox-4821', now: NOW });
@@ -121,7 +121,7 @@ describe('DemolishRoad', () => {
 
   it('refuses to demolish the last road touching the front of a building', () => {
     const state = succeed(initial, { type: 'DemolishRoad', x: 54, y: 58 });
-    expect(failureKey(state, { type: 'DemolishRoad', x: 55, y: 58 })).toBe('error.lastRoadOfBuilding');
+    expect(failureKey(state, { type: 'DemolishRoad', x: 55, y: 58 })).toBe('error.lastAccessOfBuilding');
   });
 
   it('refuses to demolish where there is no road', () => {
@@ -244,5 +244,36 @@ describe('access modes', () => {
 
   it('keeps stations on their own network', () => {
     expect(placementIssue(withBrt('brtStation', 0), 'brtStation', at.x, at.y, 0)).toBeNull();
+  });
+});
+
+describe('last access of a building', () => {
+  const home = createBuilding(900, 'home', 62, 66, 0);
+  const [front] = frontTiles('home', 62, 66, 0);
+  const brtOnly: GameState = { ...initial, roads: [], rails: [], brtRoads: [{ ...front!, exits: [] }], buildings: [...initial.buildings, home] };
+  const brtTile = { type: 'DemolishTransit', mode: 'brt', from: front!, to: front! } as const;
+
+  it('refuses to remove the BRT tile that is the only access of a Home', () => {
+    expect(failureKey(brtOnly, brtTile)).toBe('error.lastAccessOfBuilding');
+  });
+
+  it('allows removing the BRT tile when a road still touches the front', () => {
+    const both: GameState = { ...brtOnly, roads: [{ ...front!, kind: 'road' }] };
+    expect(succeed(both, brtTile).brtRoads).toEqual([]);
+  });
+
+  it('allows removing the road when a BRT tile still touches the front', () => {
+    const both: GameState = { ...brtOnly, roads: [{ ...front!, kind: 'road' }] };
+    expect(succeed(both, { type: 'DemolishRoad', x: front!.x, y: front!.y }).roads).toEqual([]);
+  });
+
+  it('refuses to remove the last road even when only the BRT mode would have been allowed', () => {
+    const roadOnly: GameState = { ...brtOnly, brtRoads: [], roads: [{ ...front!, kind: 'road' }] };
+    expect(failureKey(roadOnly, { type: 'DemolishRoad', x: front!.x, y: front!.y })).toBe('error.lastAccessOfBuilding');
+  });
+
+  it('ignores a building that already had no access', () => {
+    const stranded: GameState = { ...brtOnly, brtRoads: [], roads: [{ x: 70, y: 70, kind: 'road' }] };
+    expect(succeed(stranded, { type: 'DemolishRoad', x: 70, y: 70 }).roads).toEqual([]);
   });
 });
