@@ -1951,3 +1951,37 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   right: 12px;
   transform: none;
 }
+
+.venue-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100vw - 150px);
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--panel-bg);
+  color: var(--panel-fg);
+  font-size: 0.9rem;
+  z-index: 12;
+}
+
+.venue-hint button {
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.14);
+  color: inherit;
+}
+
+[data-layout='A'] .venue-hint {
+  bottom: 84px;
+}
+
+[data-layout='B'] .venue-hint {
+  left: calc(50% + 40px);
+}

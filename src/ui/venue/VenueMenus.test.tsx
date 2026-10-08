@@ -69,6 +69,20 @@ describe('Venue main menu', () => {
   });
 });
 
+describe('Choosing an item', () => {
+  it('closes the menu and starts the add mode, and leaves the menu open when the choice is undone', () => {
+    const store = venueStore.getState();
+    store.open(1);
+    store.togglePanel('build');
+    store.chooseFixture('spaceShooter');
+    expect(venueStore.getState()).toMatchObject({ panel: null, selectedFixture: 'spaceShooter', placedId: null, movingId: null });
+    store.togglePanel('build');
+    expect(venueStore.getState()).toMatchObject({ panel: 'build', selectedFixture: 'spaceShooter' });
+    store.selectFixture(null);
+    expect(venueStore.getState()).toMatchObject({ panel: 'build', selectedFixture: null });
+  });
+});
+
 describe('Venue menus by layout', () => {
   const html = (layout: 'A' | 'B' | 'C' = 'C') => renderToStaticMarkup(<VenueMenus venue={arcade} layout={layout} />).replaceAll('&#x27;', "'");
 

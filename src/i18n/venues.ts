@@ -49,6 +49,7 @@ type VenueMessageKey =
   | 'venue.hint.noHost'
   | 'venue.fixtureEarnings'
   | 'venue.manage'
+  | 'venue.cancel'
   | 'venue.menu.back'
   | 'venue.fixture.panel'
   | 'venue.back'
@@ -212,6 +213,7 @@ const texts: Record<VenueMessageKey, readonly [string, string]> = {
   'venue.fixtureEarnings': ['Earns per hour', 'Rapporte par heure'],
   'venue.menu.back': ['City', 'Ville'],
   'venue.fixture.panel': ['Fixture', 'Équipement'],
+  'venue.cancel': ['Cancel', 'Annuler'],
   'venue.manage': ['Manage', 'Gérer'],
   'venue.back': ['Back to the city', 'Retour à la ville'],
   'venue.build': ['Build', 'Construire'],

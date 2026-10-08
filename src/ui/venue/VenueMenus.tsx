@@ -6,6 +6,7 @@ import { Dock } from '../layout/Dock';
 import { RadialMenu } from '../layout/RadialMenu';
 import { TopBar } from '../layout/TopBar';
 import { VenueFlyout } from './VenueFlyout';
+import { VenuePlacementHint } from './VenuePlacementHint';
 import { VenueMinimalStats } from './VenueMinimalStats';
 import { VenueSheet } from './VenueSheet';
 import { VenueSidePanel } from './VenueSidePanel';
@@ -25,6 +26,7 @@ export function VenueMenus({ venue, layout: forced }: VenueMenusProps) {
   if (layout === 'A') {
     return (
       <>
+        <VenuePlacementHint />
         <TopBar><VenueStats venue={venue} /></TopBar>
         <VenueSheet venue={venue} />
         <BottomBar actions={actions} />
@@ -34,6 +36,7 @@ export function VenueMenus({ venue, layout: forced }: VenueMenusProps) {
   if (layout === 'B') {
     return (
       <>
+        <VenuePlacementHint />
         <VenueMinimalStats venue={venue} />
         <VenueSheet venue={venue} />
         <RadialMenu actions={actions} />
@@ -42,6 +45,7 @@ export function VenueMenus({ venue, layout: forced }: VenueMenusProps) {
   }
   return (
     <>
+      <VenuePlacementHint />
       <Dock actions={actions} header={<VenueStats venue={venue} />} bottomId="back" />
       <VenueFlyout venue={venue} />
       <VenueSidePanel venueId={venue.id} />

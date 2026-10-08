@@ -15,6 +15,7 @@ interface VenueBuildMenuProps {
 export function VenueBuildMenu({ tier, venueType }: VenueBuildMenuProps) {
   const selected = useStore(venueStore, store => store.selectedFixture);
   const select = useStore(venueStore, store => store.selectFixture);
+  const choose = useStore(venueStore, store => store.chooseFixture);
   const categories = FIXTURE_CATEGORIES[venueType];
   const [opened, setOpened] = useState<FixtureCategory>(categories[0]!);
   const menuId = useId();
@@ -36,11 +37,11 @@ export function VenueBuildMenu({ tier, venueType }: VenueBuildMenuProps) {
           onToggle={() => setOpened(category)}
         >
           {fixtureIdsInCategory(venueType, category).map(id => (
-            <VenueFixtureItem key={id} id={id} tier={tier} selected={selected === id} onChoose={() => select(selected === id ? null : id)} />
+            <VenueFixtureItem key={id} id={id} tier={tier} selected={selected === id} onChoose={() => (selected === id ? select(null) : choose(id))} />
           ))}
         </AccordionSection>
       ))}
-      <p className="note note--muted">{selected ? t('venue.placeHint') : t('venue.chooseFixture')}</p>
+      <p className="note note--muted">{t('venue.chooseFixture')}</p>
     </section>
   );
 }

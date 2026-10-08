@@ -15,6 +15,8 @@ export interface VenueStore {
   closePanel: () => void;
   close: () => void;
   selectFixture: (fixture: FixtureId | null) => void;
+  // Picks an item from the build menu: the menu closes and the add mode starts.
+  chooseFixture: (fixture: FixtureId) => void;
   selectPlaced: (fixtureId: number | null) => void;
   startMove: (fixtureId: number) => void;
   stopMove: () => void;
@@ -30,6 +32,7 @@ export const venueStore = createStore<VenueStore>((set) => ({
   closePanel: () => set({ panel: null, selectedFixture: null }),
   close: () => set({ venueId: null, ...idle }),
   selectFixture: (selectedFixture) => set({ selectedFixture, placedId: null, movingId: null }),
+  chooseFixture: (selectedFixture) => set({ selectedFixture, panel: null, placedId: null, movingId: null }),
   selectPlaced: (placedId) => set({ placedId, selectedFixture: null, movingId: null }),
   startMove: (movingId) => set({ movingId, selectedFixture: null }),
   stopMove: () => set({ movingId: null }),
