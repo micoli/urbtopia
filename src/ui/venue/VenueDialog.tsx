@@ -7,6 +7,7 @@ import { CloseButton } from '../common/CloseButton';
 import { useGame } from '../common/hooks';
 import { VenueBuildMenu } from './VenueBuildMenu';
 import { VenueCanvas } from './VenueCanvas';
+import { VenueEvents } from './VenueEvents';
 import { VenueFixtureActions } from './VenueFixtureActions';
 import { VenueStaff } from './VenueStaff';
 import { VenueTakings } from './VenueTakings';
@@ -35,6 +36,7 @@ export function VenueDialog() {
         <VenueFixtureActions venueId={venue.id} />
         <VenueBuildMenu tier={venue.tier} />
         <VenueStaff venueId={venue.id} />
+        <VenueEvents venueId={venue.id} />
         <section className="venue-takings">
           <h3>{t('venue.takings')}</h3>
           <VenueTakings building={venue} editable />

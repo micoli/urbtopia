@@ -15,6 +15,21 @@ type VenueMessageKey =
   | 'codex.fact.posts'
   | 'codex.fact.takingsCap'
   | 'codex.fact.fixtures'
+  | 'error.invalidEventStart'
+  | 'error.eventBusy'
+  | 'error.eventCooldown'
+  | 'error.eventStarted'
+  | 'error.noEvent'
+  | 'venue.events'
+  | 'venue.eventTournament'
+  | 'venue.eventStartsIn'
+  | 'venue.eventCost'
+  | 'venue.eventSchedule'
+  | 'venue.eventCancel'
+  | 'venue.eventScheduled'
+  | 'venue.eventActive'
+  | 'venue.eventCooldown'
+  | 'venue.eventNeedsManager'
   | 'venue.shut'
   | 'venue.staff'
   | 'venue.wage'
@@ -68,6 +83,21 @@ const texts: Record<VenueMessageKey, readonly [string, string]> = {
   'codex.fact.posts': ['Staff posts', 'Postes de personnel'],
   'codex.fact.takingsCap': ['Takings cap', 'Plafond des recettes'],
   'codex.fact.fixtures': ['Fixtures available', 'Équipements disponibles'],
+  'error.invalidEventStart': ['This start time is not allowed.', 'Cette heure de début n’est pas autorisée.'],
+  'error.eventBusy': ['An event is already planned.', 'Un événement est déjà prévu.'],
+  'error.eventCooldown': ['The last event is too recent.', 'Le dernier événement est trop récent.'],
+  'error.eventStarted': ['This event has already started.', 'Cet événement a déjà commencé.'],
+  'error.noEvent': ['No event is planned.', 'Aucun événement n’est prévu.'],
+  'venue.events': ['Events', 'Événements'],
+  'venue.eventTournament': ['Tournament', 'Tournoi'],
+  'venue.eventStartsIn': ['Starts in (hours)', 'Début dans (heures)'],
+  'venue.eventCost': ['Budget', 'Budget'],
+  'venue.eventSchedule': ['Schedule', 'Programmer'],
+  'venue.eventCancel': ['Cancel (half refunded)', 'Annuler (moitié remboursée)'],
+  'venue.eventScheduled': ['Tournament planned: more Visitors for a few hours.', 'Tournoi prévu : plus de visiteurs pendant quelques heures.'],
+  'venue.eventActive': ['Tournament under way: more Visitors.', 'Tournoi en cours : plus de visiteurs.'],
+  'venue.eventCooldown': ['Next event possible in', 'Prochain événement possible dans'],
+  'venue.eventNeedsManager': ['Only a manager can plan events.', 'Seul un manager peut programmer des événements.'],
   'venue.shut': ['Shut: not enough power', 'Fermé : électricité insuffisante'],
   'venue.staff': ['Staff', 'Personnel'],
   'venue.wage': ['per day', 'par jour'],

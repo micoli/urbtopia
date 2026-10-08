@@ -1,5 +1,6 @@
 import { ARCADE_FIXTURES } from './fixtures';
 import { LAYOUT, layoutOf, type Layout } from './layout';
+import { EVENT, eventBoundaries, eventBudgetOf, eventMultiplier, inCooldown, isEventActive } from './events';
 import { drawBreakdowns, isBroken, repairCost, restored, technicianRepairs, wearFixtures } from './wear';
 import { hashSeed } from '../engine/random';
 import { STAFF_ROLES, employeeRate, hiredOf, managerYield, postsOf, securityRate, wagesPerHour } from './staff';
@@ -27,6 +28,7 @@ export const VENUE = {
 
 export { ARCADE_FIXTURES, ARCADE_FIXTURE_IDS, type FixtureSpec } from './fixtures';
 export type { Layout, LayoutHint } from './layout';
+export { EVENT, eventBudgetOf, eventMultiplierOf, isEventActive, isEventScheduled, inCooldown, eventBoundaries } from './events';
 export { WEAR, conditionOf, isBroken, repairCost, technicianRepairCost } from './wear';
 export { STAFF, STAFF_ROLES, hiredOf, postsOf, totalStaff, wagesPerHour } from './staff';
 
@@ -94,12 +96,12 @@ export function isVenuePowered(state: GameState, venue: Building, supplied?: Rea
   return ((supplied ?? energyStats(state).supplied).get(venue.id) ?? 0) >= economicPower(venue) - POWER_EPSILON;
 }
 
-export function venuePerformance(state: GameState, venue: Building & { venue: VenueData }, powered = isVenuePowered(state, venue)): VenuePerformance {
+export function venuePerformance(state: GameState, venue: Building & { venue: VenueData }, powered = isVenuePowered(state, venue), at = state.lastSeen): VenuePerformance {
   const price = priceOf(venue.venue);
   const working: VenueData = { ...venue.venue, fixtures: venue.venue.fixtures.filter(fixture => !isBroken(fixture)) };
   const layout = layoutOf(working, entranceCell(venue.tier));
   const visitors = visitorsPerHour(state, venue);
-  const accepted = visitors * priceAcceptance(price) * layout.attractiveness * securityRate(venue.venue);
+  const accepted = visitors * priceAcceptance(price) * layout.attractiveness * securityRate(venue.venue) * eventMultiplier(venue.venue, venue.tier, at);
   const raw = playsCapacityPerHour(working, layout);
   const capacity = raw * layout.counterRate * employeeRate(venue.venue);
   const served = Math.min(accepted, capacity);
@@ -128,7 +130,7 @@ export const netPerHour = (performance: VenuePerformance): number => performance
 const isHourBoundary = (state: GameState, time: number): boolean => (time + (state.timeOffset ?? 0)) % VENUE.hourMs === 0;
 
 function advanceVenue(state: GameState, building: Building & { venue: VenueData }, from: number, to: number, supplied?: ReadonlyMap<number, number>): Building {
-  const performance = venuePerformance(state, building, isVenuePowered(state, building, supplied));
+  const performance = venuePerformance(state, building, isVenuePowered(state, building, supplied), from);
   if (performance.closed || !performance.powered) return building;
   const hours = (to - from) / VENUE.hourMs;
   const technicians = hiredOf(building.venue, 'technician');
@@ -144,7 +146,12 @@ function advanceVenue(state: GameState, building: Building & { venue: VenueData 
     fixtures = repaired.fixtures;
     takings -= repaired.spent;
   }
-  return { ...building, venue: { ...building.venue, fixtures, takings, ...(rng === undefined ? {} : { rng }) } };
+  const next: VenueData = { ...building.venue, fixtures, takings, ...(rng === undefined ? {} : { rng }) };
+  if (next.event && next.event.endsAt <= to) {
+    next.cooldownUntil = next.event.endsAt + EVENT.cooldownMs;
+    delete next.event;
+  }
+  return { ...building, venue: next };
 }
 
 export function advanceVenues(state: GameState, from: number, to: number, supplied?: ReadonlyMap<number, number>): GameState {
@@ -257,3 +264,30 @@ export function repairFixture(state: GameState, buildingId: number, fixtureId: n
   if (state.urbs < cost) return { key: 'error.notEnoughUrbs' };
   return { state: withVenue(state, building, { ...building.venue, fixtures: building.venue.fixtures.map(candidate => candidate === fixture ? restored(fixture) : candidate) }, state.urbs - cost), events: [] };
 }
+
+export function scheduleEvent(state: GameState, buildingId: number, startsInHours: number): CommandOutcome {
+  const building = state.buildings.find(candidate => candidate.id === buildingId);
+  if (!building || !isVenue(building)) return { key: 'error.unknownBuilding' };
+  if (hiredOf(building.venue, 'manager') === 0) return { key: 'error.managerRequired' };
+  if (!Number.isInteger(startsInHours) || startsInHours < 0 || startsInHours > EVENT.maxDelayHours) return { key: 'error.invalidEventStart' };
+  if (building.venue.event) return { key: 'error.eventBusy' };
+  if (inCooldown(building.venue, state.lastSeen)) return { key: 'error.eventCooldown' };
+  const budget = eventBudgetOf(building.tier);
+  if (state.urbs < budget) return { key: 'error.notEnoughUrbs' };
+  const startsAt = state.lastSeen + startsInHours * VENUE.hourMs;
+  return { state: withVenue(state, building, { ...building.venue, event: { startsAt, endsAt: startsAt + EVENT.durationMs, budget } }, state.urbs - budget), events: [] };
+}
+
+export function cancelEvent(state: GameState, buildingId: number): CommandOutcome {
+  const building = state.buildings.find(candidate => candidate.id === buildingId);
+  if (!building || !isVenue(building)) return { key: 'error.unknownBuilding' };
+  const event = building.venue.event;
+  if (!event) return { key: 'error.noEvent' };
+  if (isEventActive(building.venue, state.lastSeen)) return { key: 'error.eventStarted' };
+  const venue: VenueData = { ...building.venue };
+  delete venue.event;
+  return { state: withVenue(state, building, venue, state.urbs + Math.floor(event.budget * EVENT.cancelRefund)), events: [] };
+}
+
+export const venueEventBoundaries = (state: GameState, after: number): number[] =>
+  state.buildings.flatMap(building => (isVenue(building) ? eventBoundaries(building.venue, after) : []));

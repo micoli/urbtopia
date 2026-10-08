@@ -65,6 +65,12 @@ export interface VenueFixture extends Coord {
   broken?: boolean;
 }
 
+export interface VenueEvent {
+  startsAt: number;
+  endsAt: number;
+  budget: number;
+}
+
 export type StaffRole = 'manager' | 'employee' | 'technician' | 'security';
 
 export interface VenueData {
@@ -74,6 +80,8 @@ export interface VenueData {
   price?: number;
   staff?: Partial<Record<StaffRole, number>>;
   rng?: number;
+  event?: VenueEvent;
+  cooldownUntil?: number;
 }
 
 export interface Building extends Coord {

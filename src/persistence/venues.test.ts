@@ -40,4 +40,14 @@ describe('Venue save', () => {
     const tooWorn = { ...worn, buildings: [{ ...worn.buildings[0]!, venue: { ...worn.buildings[0]!.venue, fixtures: [{ ...fixtures[0]!, condition: 140 }] } }] };
     expect(parseEnvelope(serializeEnvelope(tooWorn as never, 0)).ok).toBe(false);
   });
+
+  it('keeps a planned event and a cooldown, and refuses an event that ends before it starts', () => {
+    const event = { startsAt: 1000, endsAt: 5000, budget: 300 };
+    const planned = { ...base, buildings: [{ ...base.buildings[0]!, venue: { ...base.buildings[0]!.venue!, event, cooldownUntil: 9000 } }] };
+    const loaded = parseEnvelope(serializeEnvelope(planned, 0));
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.buildings[0]!.venue).toMatchObject({ event, cooldownUntil: 9000 });
+    const backwards = { ...planned, buildings: [{ ...planned.buildings[0]!, venue: { ...planned.buildings[0]!.venue, event: { ...event, endsAt: 500 } } }] };
+    expect(parseEnvelope(serializeEnvelope(backwards as never, 0)).ok).toBe(false);
+  });
 });

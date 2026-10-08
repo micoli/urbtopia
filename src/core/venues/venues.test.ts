@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { advance, createBuilding, dispatch, newGame, type Building, type Command, type GameState, type StaffRole } from '../index';
 import { economicPower, energyStats } from '../index';
+import { EVENT, eventBudgetOf, eventMultiplierOf } from './venues';
 import { jobsOf } from '../traffic/jobs';
 import { conditionOf, isBroken, repairCost, technicianRepairCost, STAFF, hiredOf, postsOf, wagesPerHour, priceOf } from './venues';
 import { ARCADE_FIXTURES, gridSizeOf, entranceCell, fixtureRefund, priceAcceptance, takingsCapOf, takingsDue, takingsPerHour, venuePerformance, visitorsPerHour, VENUE } from './venues';
@@ -454,5 +455,92 @@ describe('Arcade Tiers and power', () => {
     const supplied = energyStats(short).supplied;
     expect(supplied.get(1)).toBeCloseTo(economicPower(short.buildings[0]!), 9);
     expect(supplied.get(2)!).toBeLessThan(economicPower(short.buildings[1]!));
+  });
+});
+
+describe('Arcade events', () => {
+  const H = 3_600_000;
+  const staffedCity = () => {
+    const base = hire(hire(city(100_000), 'manager'), 'employee', 2);
+    return [['counter', 3, 1], ['barrelClimber', 1, 2], ['spaceShooter', 2, 4], ['airHockey', 5, 3]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), base);
+  };
+  const schedule = (state: GameState, hours = 1) => send(state, { type: 'ScheduleEvent', buildingId: 1, startsInHours: hours });
+  const takings = (state: GameState) => arcadeOf(state).venue!.takings;
+
+  it('needs a manager, a valid start, and the budget', () => {
+    expect(failure(hire(city(100_000), 'employee'), { type: 'ScheduleEvent', buildingId: 1, startsInHours: 1 })).toBe('error.managerRequired');
+    expect(failure(staffedCity(), { type: 'ScheduleEvent', buildingId: 1, startsInHours: -1 })).toBe('error.invalidEventStart');
+    expect(failure(staffedCity(), { type: 'ScheduleEvent', buildingId: 1, startsInHours: EVENT.maxDelayHours + 1 })).toBe('error.invalidEventStart');
+    expect(failure({ ...staffedCity(), urbs: 10 }, { type: 'ScheduleEvent', buildingId: 1, startsInHours: 1 })).toBe('error.notEnoughUrbs');
+  });
+
+  it('debits the budget at scheduling, and allows one event at a time', () => {
+    const before = staffedCity();
+    const planned = schedule(before);
+    expect(planned.urbs).toBe(before.urbs - eventBudgetOf(1));
+    expect(arcadeOf(planned).venue!.event).toMatchObject({ budget: eventBudgetOf(1), endsAt: arcadeOf(planned).venue!.event!.startsAt + EVENT.durationMs });
+    expect(failure(planned, { type: 'ScheduleEvent', buildingId: 1, startsInHours: 5 })).toBe('error.eventBusy');
+  });
+
+  it('multiplies the Visitors only while the event runs', () => {
+    const planned = { ...schedule(staffedCity(), 2), lastSeen: 0 };
+    const at = (time: number) => venuePerformance({ ...planned, lastSeen: time }, arcadeOf(planned) as never).visitors;
+    const accepted = (time: number) => venuePerformance({ ...planned, lastSeen: time }, arcadeOf(planned) as never).accepted;
+    expect(accepted(1 * H)).toBe(accepted(0));
+    expect(accepted(2.5 * H)).toBeCloseTo(accepted(0) * eventMultiplierOf(1), 9);
+    expect(accepted(6 * H)).toBe(accepted(0));
+    expect(at(2.5 * H)).toBe(at(0));
+  });
+
+  it('raises the Takings of the event window, within the capacity of the Fixtures', () => {
+    const plain = { ...staffedCity(), lastSeen: 0 };
+    const planned = { ...schedule(staffedCity(), 1), lastSeen: 0 };
+    const withEvent = advance(planned, 6 * H).state;
+    const without = advance(plain, 6 * H).state;
+    expect(takings(withEvent)).toBeGreaterThan(takings(without));
+    const free = venuePerformance({ ...planned, lastSeen: 1.5 * H }, arcadeOf(planned) as never);
+    expect(free.served).toBeLessThanOrEqual(free.capacity + 1e-9);
+  });
+
+  it('survives a Catch-up over the event, the same as stepping through it', () => {
+    const planned = { ...schedule(staffedCity(), 2), lastSeen: 0 };
+    const once = advance(planned, 12 * H).state;
+    let stepped = planned;
+    for (let hour = 1; hour <= 12; hour++) stepped = advance(stepped, hour * H).state;
+    expect(takings(stepped)).toBeCloseTo(takings(once), 6);
+    expect(arcadeOf(once).venue!.event).toBeUndefined();
+    expect(arcadeOf(stepped).venue!.event).toBeUndefined();
+    expect(arcadeOf(once).venue!.cooldownUntil).toBe(2 * H + EVENT.durationMs + EVENT.cooldownMs);
+  });
+
+  it('starts and ends on the exact boundaries, even inside a long gap', () => {
+    const planned = { ...schedule(staffedCity(), 1), lastSeen: 0 };
+    const half = advance(planned, 2 * H).state;
+    expect(arcadeOf(half).venue!.event).toBeDefined();
+    const done = advance(half, 4 * H + 1).state;
+    expect(arcadeOf(done).venue!.event).toBeUndefined();
+  });
+
+  it('keeps a cooldown after an event', () => {
+    const planned = { ...schedule(staffedCity(), 0), lastSeen: 0 };
+    const after = advance(planned, EVENT.durationMs + H).state;
+    expect(failure(after, { type: 'ScheduleEvent', buildingId: 1, startsInHours: 0 })).toBe('error.eventCooldown');
+    const later = advance(after, EVENT.durationMs + EVENT.cooldownMs + H).state;
+    expect(failure(later, { type: 'ScheduleEvent', buildingId: 1, startsInHours: 0 })).toBeNull();
+  });
+
+  it('cancels a planned event for half the budget, but not one that has started', () => {
+    const planned = schedule(staffedCity(), 3);
+    const cancelled = send(planned, { type: 'CancelEvent', buildingId: 1 });
+    expect(cancelled.urbs).toBe(planned.urbs + Math.floor(eventBudgetOf(1) / 2));
+    expect(arcadeOf(cancelled).venue!.event).toBeUndefined();
+    expect(failure(cancelled, { type: 'CancelEvent', buildingId: 1 })).toBe('error.noEvent');
+    const running = advance({ ...schedule(staffedCity(), 0), lastSeen: 0 }, H).state;
+    expect(failure(running, { type: 'CancelEvent', buildingId: 1 })).toBe('error.eventStarted');
+  });
+
+  it('grows the multiplier and the budget with the Tier', () => {
+    expect(eventMultiplierOf(3)).toBeGreaterThan(eventMultiplierOf(1));
+    expect(eventBudgetOf(3)).toBeGreaterThan(eventBudgetOf(1));
   });
 });

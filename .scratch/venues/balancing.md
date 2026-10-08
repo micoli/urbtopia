@@ -48,3 +48,7 @@ Placeholders to tune by play. Values live in `VENUE` and `ARCADE_FIXTURES` (`src
 ## Tiers and power
 - Upgrade: 2500 Urbs (Tier 2), 6000 (Tier 3). Grid 6x6 / 8x8 / 10x10.
 - Power Demand: 1.5 x Tier (Casino Tier 1 is 4.5; Casino Tier 3 is 13.5).
+
+## Events (`EVENT`)
+- Budget by Tier: 300 / 600 / 1200 Urbs, debited when planning; half refunded on cancel before the start.
+- Visitors x1.5 / x2 / x2.5 for 3 hours; cooldown of 6 hours; start within 24 hours.
