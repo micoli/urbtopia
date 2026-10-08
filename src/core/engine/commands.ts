@@ -17,6 +17,7 @@ import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
+import { collectTakings, isVenue, placeFixture } from '../venues/venues';
 import { bridgeAt, bridgeKeys, placeBridge, refundOf, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
@@ -35,7 +36,7 @@ import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import type { BlackjackAction } from '../leisure/blackjack';
-import type { BoatFamily, Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
+import type { ArcadeFixtureId, BoatFamily, Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -76,6 +77,7 @@ export type Command =
   | { readonly type: 'SellSeeds'; readonly crop: CropId; readonly quantity: number }
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
+  | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: ArcadeFixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
   | { readonly type: 'SellToMarket'; readonly good: GoodId; readonly quantity: number }
   | { readonly type: 'UpgradeBuilding'; readonly buildingId: number }
@@ -244,6 +246,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return queueProduction(state, command.buildingId, command.item, now);
     case 'Collect':
       return collect(state, command.buildingId);
+    case 'PlaceFixture':
+      return placeFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
     case 'StockShop':
       return stockShop(state, command.buildingId, command.good, now);
     case 'SellToMarket':
@@ -492,6 +496,7 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
   if (!building) return fail('error.unknownBuilding');
   if (building.type === 'shop') return collectShopEarnings(state, building);
   if (building.type === 'home') return collectTax(state, building);
+  if (isVenue(building)) return collectTakings(state, building);
   if (!building.queue.some((entry) => entry.done)) return fail('error.nothingToCollect');
   if (!hasStorage(state)) return fail('error.noStorehouse');
 

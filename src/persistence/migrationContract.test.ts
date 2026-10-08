@@ -9,7 +9,7 @@ const versions = Array.from({ length: CURRENT_VERSION }, (_, index) => index + 1
 
 // Update this snapshot together with CURRENT_VERSION: a schema change needs a migration and a new frozen fixture.
 const SCHEMA_SNAPSHOT = {
-  version: 11,
+  version: 12,
   keys: [
     'adaptationUntil', 'brtRoads', 'buildings', 'busLines', 'casinoRng', 'fields', 'lastSeen', 'market', 'marketUnlocked', 'nextId',
     'ownedParcels', 'rails', 'rngState', 'roads', 'roundabouts', 'seed', 'seedStock', 'storage', 'transitFleet', 'transitLines', 'tutorial', 'urbs',

@@ -1,5 +1,6 @@
 // Generated from assets/buildings.json by scripts/buildingTypes.ts. Do not edit.
 export type BuildingId =
+  | 'arcade'
   | 'backup'
   | 'baseballField'
   | 'battery'

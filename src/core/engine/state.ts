@@ -40,6 +40,20 @@ export interface MarketPrice {
   updatedAt: number;
 }
 
+export type ArcadeFixtureId = 'arcadeMachine';
+
+export interface VenueFixture extends Coord {
+  id: number;
+  type: ArcadeFixtureId;
+  rotation: Rotation;
+}
+
+export interface VenueData {
+  fixtures: VenueFixture[];
+  nextFixtureId: number;
+  takings: number;
+}
+
 export interface Building extends Coord {
   id: number;
   type: BuildingType;
@@ -54,6 +68,7 @@ export interface Building extends Coord {
   colorVariant?: HomeColorVariant;
   storedEnergy?: number;
   coalEnabled?: boolean;
+  venue?: VenueData;
 }
 
 export interface Storage {

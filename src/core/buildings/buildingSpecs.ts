@@ -52,7 +52,7 @@ export function emptyStack(): ShopStack {
 export function createBuilding(id: number, type: BuildingType, x: number, y: number, rotation: Rotation): Building {
   const slotCount = BUILDING_SPECS[type].initialSlots;
   const stacks = type === 'shop' ? Array.from({ length: slotCount }, emptyStack) : [];
-  return { id, type, x, y, rotation, slotCount, queue: [], stacks, tier: 1, taxCitizenMs: 0, ...(type === 'coalPlant' ? { coalEnabled: true } : {}) };
+  return { id, type, x, y, rotation, slotCount, queue: [], stacks, tier: 1, taxCitizenMs: 0, ...(type === 'coalPlant' ? { coalEnabled: true } : {}), ...(type === 'arcade' ? { venue: { fixtures: [], nextFixtureId: 1, takings: 0 } } : {}) };
 }
 
 export function placementCost(type: BuildingType): number {

@@ -11,6 +11,7 @@ import { GAME_CONFIG } from './config';
 import type { GameEvent } from './events';
 import { advanceProduction, shiftRunningTimers } from '../economy/production';
 import type { Building, GameState } from './state';
+import { advanceVenues } from '../venues/venues';
 import { progressTutorial } from '../progression/tutorial';
 
 export interface AdvanceResult {
@@ -91,7 +92,7 @@ function replay(state: GameState, until: number): AdvanceResult {
     events.push(...produced.events);
     current = {
       ...produced.state, storage: transport.coalPerHour > 0 ? { ...produced.state.storage, materials: { ...produced.state.storage.materials, coal: end === coalEnd ? 0 : remainingCoal(current, transport.coalPerHour, elapsed) } } : produced.state.storage, lastSeen: end, urbs: end === budgetEnd ? 0 : Math.max(0, current.urbs - cost * elapsed / ECOLOGY.hourMs),
-      buildings: produced.state.buildings.map(b => updateBattery(b, energy.batteryRates.get(b.id) ?? 0, batteryEnds.get(b.id), end, elapsed))
+      buildings: advanceVenues(produced.state, elapsed).buildings.map(b => updateBattery(b, energy.batteryRates.get(b.id) ?? 0, batteryEnds.get(b.id), end, elapsed))
     };
   }
   return { state: progressTutorial(current), events };

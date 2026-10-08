@@ -1,4 +1,4 @@
-import { MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
+import { ARCADE_FIXTURE_IDS, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -42,6 +42,15 @@ function isStack(value: unknown): boolean {
   );
 }
 
+function isVenueData(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    isInt(value.nextFixtureId, 1) &&
+    isNonNegative(value.takings) &&
+    isArrayOf(value.fixtures, fixture => isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, (value.nextFixtureId as number) - 1) && ARCADE_FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3))
+  );
+}
+
 function isBuilding(value: unknown): boolean {
   return (
     isRecord(value) &&
@@ -59,6 +68,7 @@ function isBuilding(value: unknown): boolean {
     (value.insulated === undefined || (value.type === 'home' && typeof value.insulated === 'boolean')) &&
     (value.solar === undefined || (value.type === 'home' && typeof value.solar === 'boolean')) &&
     (value.colorVariant === undefined || (value.type === 'home' && ['default', 'a', 'b', 'c'].includes(value.colorVariant as string))) &&
+    (value.venue === undefined || (value.type === 'arcade' && isVenueData(value.venue))) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&
     (value.storedEnergy === undefined || (value.type === 'battery' && isNonNegative(value.storedEnergy) && value.storedEnergy <= 24))
   );

@@ -9,7 +9,7 @@ describe('nature save compatibility', () => {
     const loaded = parseEnvelope(JSON.stringify(saveV6));
     expect(loaded).toEqual({ ok: true, state: { ...saveV6.state, seedStock: {}, fields: [], adaptationUntil: saveV6.state.lastSeen + 24 * 3_600_000 }, savedAt: saveV6.savedAt });
     if (!loaded.ok) return;
-    expect(JSON.parse(serializeEnvelope(loaded.state, loaded.savedAt)).version).toBe(11);
+    expect(JSON.parse(serializeEnvelope(loaded.state, loaded.savedAt)).version).toBe(12);
     expect(parseEnvelope(serializeEnvelope(loaded.state, loaded.savedAt), { currentVersion: 7 })).toEqual({ ok: false, reason: 'newer-version' });
   });
 
