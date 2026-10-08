@@ -6,6 +6,7 @@ import { t } from '../../i18n/t';
 import { FacilityPanel } from './FacilityPanel';
 import { CasinoPanel } from '../casino/CasinoPanel';
 import { FarmPanel } from './FarmPanel';
+import { BuildingAccess } from './BuildingAccess';
 import { HomePanel } from './HomePanel';
 import { useUi } from '../common/hooks';
 import { ProductionPanel } from './ProductionPanel';
@@ -29,6 +30,7 @@ export function SelectionContentPanel() {
   return (
     <>
       <PanelHeader title={t(`building.${building.type}`)} subtitle={building.tier} onClose={() => select(null)} />
+      <BuildingAccess building={building} />
       {building.type === 'workshop' || building.type === 'factory' || building.type === 'packhouse' ? <ProductionPanel building={building} /> : null}
       {building.type === 'farm' ? <FarmPanel building={building} /> : null}
       {building.type === 'home' ? <HomePanel building={building} /> : null}

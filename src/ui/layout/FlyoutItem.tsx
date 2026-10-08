@@ -4,6 +4,7 @@ import type { CodexId } from '../../codex/catalog';
 
 interface FlyoutItemProps {
   label: string;
+  badge?: string;
   cost?: ReactNode;
   guided?: boolean;
   onChoose: () => void;
@@ -12,10 +13,11 @@ interface FlyoutItemProps {
   preview?: string;
 }
 
-export function FlyoutItem({ label, cost, guided = false, onChoose, codexId, onInfo, preview }: FlyoutItemProps) {
+export function FlyoutItem({ label, badge, cost, guided = false, onChoose, codexId, onInfo, preview }: FlyoutItemProps) {
   const item = (
       <button type="button" className="flyout-item" data-guided={guided} onClick={onInfo ?? onChoose}>
       <span>{label}</span>
+      {badge ? <small className="flyout-badge">{badge}</small> : null}
     </button>
   );
   if (!onInfo) return item;

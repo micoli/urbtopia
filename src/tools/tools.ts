@@ -9,6 +9,7 @@ import {
   FACILITIES,
   footprintOf,
   footprintTiles,
+  frontAccessModes,
   isFacilityType,
   isWithinReach,
   previewFacilityCoverage,
@@ -70,7 +71,7 @@ export interface GhostSpec {
   tiles: Coord[];
   rects: GhostRect[];
   valid: boolean;
-  front: { x: number; z: number; direction: Direction } | null;
+  front: { x: number; z: number; direction: Direction; access?: 'road' | 'brt' } | null;
   range?: Coord[];
 }
 
@@ -108,7 +109,7 @@ function evaluation(tiles: Coord[], command: Command | null, state: GameState, e
   };
 }
 
-function frontMarker(type: BuildingType, tile: Coord, rotation: Rotation, tier: number): GhostSpec['front'] {
+function frontMarker(state: GameState, type: BuildingType, tile: Coord, rotation: Rotation, tier: number): GhostSpec['front'] {
   const { width, depth } = footprintOf(type, rotation, tier);
   const direction = frontDirection(rotation);
   const centerX = tile.x + width / 2;
@@ -119,7 +120,9 @@ function frontMarker(type: BuildingType, tile: Coord, rotation: Rotation, tier: 
     W: { x: -width / 2, z: 0 },
     E: { x: width / 2, z: 0 },
   };
-  return { x: centerX + reach[direction].x, z: centerZ + reach[direction].z, direction };
+  const modes = frontAccessModes(state, type, tile.x, tile.y, rotation, tier);
+  const access = modes.includes('road') ? 'road' : modes.includes('brt') ? 'brt' : undefined;
+  return { x: centerX + reach[direction].x, z: centerZ + reach[direction].z, direction, ...(access ? { access } : {}) };
 }
 
 const SELECTION_MARGIN = 0.3;
@@ -174,7 +177,7 @@ function evaluateBuilding(
   const command: Command = { ...base, x: tile.x, y: tile.y, rotation };
   const tiles = footprintTiles({ type, x: tile.x, y: tile.y, rotation, tier });
   const result = evaluation(tiles, command, state, { cost, rotation });
-  if (BUILDING_SPECS[type].requiresRoad) result.ghost.front = frontMarker(type, tile, rotation, tier);
+  if (BUILDING_SPECS[type].requiresRoad) result.ghost.front = frontMarker(reference, type, tile, rotation, tier);
   if (isFacilityType(type)) addCoveragePreview(result, reference, type, tile, rotation);
   return result;
 }

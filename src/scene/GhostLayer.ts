@@ -4,6 +4,7 @@ import type { GhostSpec } from '../tools/tools';
 const VALID_COLOR = 0x35d07f;
 const INVALID_COLOR = 0xe5484d;
 const HINT_COLOR = 0xffd23f;
+const BRT_COLOR = 0x3ea6ff;
 const RANGE_COLOR = 0xff9500;
 const FRONT_ROTATION: Record<string, number> = { N: 0, W: Math.PI / 2, S: Math.PI, E: -Math.PI / 2 };
 
@@ -14,6 +15,7 @@ export class GhostLayer {
   private validMaterial = new THREE.MeshBasicMaterial({ color: VALID_COLOR, transparent: true, opacity: 0.6, depthTest: false });
   private hintMaterial = new THREE.MeshBasicMaterial({ color: HINT_COLOR, transparent: true, opacity: 0.25, depthTest: false });
   private rangeMaterial = new THREE.MeshBasicMaterial({ color: RANGE_COLOR, transparent: true, opacity: 0.25, depthTest: false });
+  private brtMaterial = new THREE.MeshBasicMaterial({ color: BRT_COLOR, transparent: true, opacity: 0.8, depthTest: false });
   private invalidMaterial = new THREE.MeshBasicMaterial({ color: INVALID_COLOR, transparent: true, opacity: 0.6, depthTest: false });
 
   constructor(validColor = VALID_COLOR, { underBuildings = false } = {}) {
@@ -42,7 +44,7 @@ export class GhostLayer {
     }
     if (ghost.range?.length) this.addRange(ghost.range);
     if (!ghost.front) return;
-    const arrow = new THREE.Mesh(this.arrowGeometry, material);
+    const arrow = new THREE.Mesh(this.arrowGeometry, ghost.valid && ghost.front.access === 'brt' ? this.brtMaterial : material);
     arrow.rotation.x = -Math.PI / 2;
     arrow.rotation.z = FRONT_ROTATION[ghost.front.direction] ?? 0;
     arrow.position.set(ghost.front.x, 0.3, ghost.front.z);
@@ -75,5 +77,6 @@ export class GhostLayer {
     this.arrowGeometry.dispose();
     this.validMaterial.dispose();
     this.invalidMaterial.dispose();
+    this.brtMaterial.dispose();
   }
 }
