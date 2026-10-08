@@ -1,6 +1,6 @@
 # Buildings next to a BRT corridor
 
-Status: ready-for-agent
+Status: implemented
 
 Follow-up to [dedicated-transit](../dedicated-transit/spec.md), [traffic-congestion](../traffic-congestion/spec.md), [pedestrian-network](../pedestrian-network/spec.md) and [bus-in-traffic](../bus-in-traffic/spec.md). Vocabulary (**Home**, **BRT corridor**, **BRT station**, **Access mode**, **Rider**, **Commute**, **Pedestrian path**, **Service vehicle**) is in `CONTEXT.md`. Respects [ADR 0006](../../docs/adr/0006-independent-transit-networks-and-purchased-fleets.md) (networks stay independent) and [ADR 0017](../../docs/adr/0017-building-access-modes.md) (access modes).
 

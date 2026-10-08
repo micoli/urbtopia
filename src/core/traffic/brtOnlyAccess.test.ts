@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from './walking';
+import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 import { GOODS, SHOP, advance, congestionStats, createBuilding, newGame, transportStats, type GameState, type TransitTile } from '../index';
 
 const walkingEnabled = WALKING.enabled;
@@ -30,8 +31,8 @@ function brtDistrict({ withLine = true, roads = false } = {}): GameState {
     roads: roads ? strip(30, 0, 5).map(({ x, y }) => ({ x, y, kind: 'road' as const })) : [],
     roundabouts: [],
     brtRoads: strip(0, 0, 21),
-    transitLines: withLine ? [{ id: 3, mode: 'brt', stops: [1, 2], peakHeadway: 5, offPeakHeadway: 12 }] : [],
-    transitFleet: withLine ? [{ id: 4, kind: 'brtElectric', purchasePrice: 900, lineId: 3 }] : [],
+    transitLines: withLine ? [{ id: 30, mode: 'brt', stops: [1, 2], peakHeadway: 5, offPeakHeadway: 12 }] : [],
+    transitFleet: withLine ? [{ id: 31, kind: 'brtElectric', purchasePrice: 900, lineId: 30 }] : [],
   };
 }
 
@@ -122,5 +123,16 @@ describe('Shop reached only by a BRT corridor', () => {
     const stalled = advance(withShop(brtDistrict({ withLine: false })), 3_600_000).state;
     const served = { ...brtDistrict(), buildings: stalled.buildings, lastSeen: stalled.lastSeen };
     expect(advance(served, stalled.lastSeen + 3_600_000).state.buildings.find((b) => b.id === 5)!.stacks[0]!.stock).toBeLessThan(SHOP.stackSize);
+  });
+});
+
+describe('saved cities', () => {
+  it('keep their shape: access modes live in the data, not in the save', () => {
+    const state = brtDistrict();
+    const text = serializeEnvelope(state, 0);
+    expect(text).not.toContain('accessModes');
+    const loaded = parseEnvelope(text);
+    expect(loaded.ok).toBe(true);
+    if (loaded.ok) expect(congestionStats(loaded.state).homes.get(4)).toEqual(congestionStats(state).homes.get(4));
   });
 });

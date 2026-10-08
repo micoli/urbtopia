@@ -4,7 +4,7 @@ Accepted. Supersedes [ADR 0013](0013-simple-buildings-defined-in-models-json.md)
 
 `assets/buildings.json` holds one entry per building, keyed by its id (the `BuildingType`), in menu order:
 
-- Common fields: `section` (a build menu section), `model` (the model key, the Tier 1 model for buildings that grow), `footprint`, `cost`, `unlockCitizens`, `requiresRoad`, optional `initialSlots`, `name` (en, fr) and optional `description` (en, fr).
+- Common fields: `section` (a build menu section), `model` (the model key, the Tier 1 model for buildings that grow), `footprint`, `cost`, `unlockCitizens`, `requiresRoad`, optional `accessModes` (see ADR 0017), optional `initialSlots`, `name` (en, fr) and optional `description` (en, fr).
 - `sport`: `radius` and `wellbeingBonus`, for venues whose only effect is a Well-being radius.
 - `nature`: the `family`. Footprint, cost, unlock, section and benefits then come from `NATURE_FAMILIES`, so such an entry has none of the common fields except `model` and `name`.
 
