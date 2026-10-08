@@ -17,7 +17,7 @@ import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
-import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice } from '../venues/venues';
+import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, stockShelf } from '../venues/venues';
 import { bridgeAt, bridgeKeys, placeBridge, refundOf, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
@@ -36,7 +36,7 @@ import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import type { BlackjackAction } from '../leisure/blackjack';
-import type { ArcadeFixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
+import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -83,9 +83,10 @@ export type Command =
   | { readonly type: 'SetVenuePrice'; readonly buildingId: number; readonly price: number }
   | { readonly type: 'ScheduleEvent'; readonly buildingId: number; readonly startsInHours: number }
   | { readonly type: 'CancelEvent'; readonly buildingId: number }
+  | { readonly type: 'StockShelf'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId }
   | { readonly type: 'RepairFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
-  | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: ArcadeFixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
   | { readonly type: 'SellToMarket'; readonly good: GoodId; readonly quantity: number }
   | { readonly type: 'UpgradeBuilding'; readonly buildingId: number }
@@ -109,6 +110,8 @@ export type ErrorKey =
   | 'error.invalidPrice'
   | 'error.managerRequired'
   | 'error.nothingToRepair'
+  | 'error.shelfBusy'
+  | 'error.shelfFull'
   | 'error.invalidEventStart'
   | 'error.eventBusy'
   | 'error.eventCooldown'
@@ -277,6 +280,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return scheduleEvent(state, command.buildingId, command.startsInHours);
     case 'CancelEvent':
       return cancelEvent(state, command.buildingId);
+    case 'StockShelf':
+      return stockShelf(state, command.buildingId, command.fixtureId, command.good);
     case 'RepairFixture':
       return repairFixture(state, command.buildingId, command.fixtureId);
     case 'RemoveFixture':

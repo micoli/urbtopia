@@ -4,6 +4,7 @@ import { footprintOf } from '../buildings/buildingSpecs';
 import { FACILITIES, isFacilityType } from '../services/facilities';
 import { HOME_TIERS } from '../economy/economy';
 import { casinoPower } from '../leisure/casino';
+import { isVenueType, venuePower } from '../venues/profiles';
 import type { Building, BuildingType, GameState } from '../engine/state';
 
 export const ECOLOGY = {
@@ -42,7 +43,7 @@ export function economicPower(b: Building): number {
   if (b.type === 'shop') return 0.5;
   if (isFacilityType(b.type)) return FACILITIES[b.type].power;
   if (b.type === 'casino') return casinoPower(b.tier);
-  if (b.type === 'arcade') return 1.5 * b.tier;
+  if (isVenueType(b.type)) return venuePower(b);
   return 0;
 }
 

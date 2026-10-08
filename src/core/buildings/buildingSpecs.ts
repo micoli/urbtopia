@@ -4,6 +4,7 @@ import { NATURE_FAMILIES } from '../environment/natureFamilies';
 import type { Coord } from '../map/coord';
 import { HOME_FOOTPRINTS } from '../economy/economy';
 import { casinoFootprint } from '../leisure/casino';
+import { isVenueType } from '../venues/profiles';
 import type { Building, BuildingType, Rotation, ShopStack } from '../engine/state';
 
 export interface Footprint {
@@ -52,7 +53,7 @@ export function emptyStack(): ShopStack {
 export function createBuilding(id: number, type: BuildingType, x: number, y: number, rotation: Rotation): Building {
   const slotCount = BUILDING_SPECS[type].initialSlots;
   const stacks = type === 'shop' ? Array.from({ length: slotCount }, emptyStack) : [];
-  return { id, type, x, y, rotation, slotCount, queue: [], stacks, tier: 1, taxCitizenMs: 0, ...(type === 'coalPlant' ? { coalEnabled: true } : {}), ...(type === 'arcade' ? { venue: { fixtures: [], nextFixtureId: 1, takings: 0 } } : {}) };
+  return { id, type, x, y, rotation, slotCount, queue: [], stacks, tier: 1, taxCitizenMs: 0, ...(type === 'coalPlant' ? { coalEnabled: true } : {}), ...(isVenueType(type) ? { venue: { fixtures: [], nextFixtureId: 1, takings: 0 } } : {}) };
 }
 
 export function placementCost(type: BuildingType): number {

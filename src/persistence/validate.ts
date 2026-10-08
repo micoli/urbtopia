@@ -1,4 +1,4 @@
-import { ARCADE_FIXTURE_IDS, STAFF_ROLES, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
+import { FIXTURE_IDS, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -49,10 +49,11 @@ function isVenueData(value: unknown): boolean {
     isNonNegative(value.takings) &&
     (value.price === undefined || isInt(value.price, 1, 20)) &&
     (value.rng === undefined || isNumber(value.rng)) &&
+    (value.reputation === undefined || (isNumber(value.reputation) && value.reputation >= 0 && value.reputation <= 100)) &&
     (value.cooldownUntil === undefined || isNumber(value.cooldownUntil)) &&
     (value.event === undefined || (isRecord(value.event) && isNumber(value.event.startsAt) && isNumber(value.event.endsAt) && value.event.endsAt > value.event.startsAt && isNonNegative(value.event.budget))) &&
     (value.staff === undefined || (isRecord(value.staff) && Object.entries(value.staff).every(([role, count]) => STAFF_ROLES.includes(role as never) && isInt(count, 0, 20)))) &&
-    isArrayOf(value.fixtures, fixture => isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, (value.nextFixtureId as number) - 1) && ARCADE_FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3) && (fixture.condition === undefined || (isNumber(fixture.condition) && fixture.condition >= 0 && fixture.condition <= 100)) && (fixture.broken === undefined || typeof fixture.broken === 'boolean'))
+    isArrayOf(value.fixtures, fixture => isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, (value.nextFixtureId as number) - 1) && FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3) && (fixture.condition === undefined || (isNumber(fixture.condition) && fixture.condition >= 0 && fixture.condition <= 100)) && (fixture.broken === undefined || typeof fixture.broken === 'boolean') && (fixture.good === undefined || (typeof fixture.good === 'string' && fixture.good in GOODS)) && (fixture.stock === undefined || isNonNegative(fixture.stock)))
   );
 }
 
@@ -73,7 +74,7 @@ function isBuilding(value: unknown): boolean {
     (value.insulated === undefined || (value.type === 'home' && typeof value.insulated === 'boolean')) &&
     (value.solar === undefined || (value.type === 'home' && typeof value.solar === 'boolean')) &&
     (value.colorVariant === undefined || (value.type === 'home' && ['default', 'a', 'b', 'c'].includes(value.colorVariant as string))) &&
-    (value.venue === undefined || (value.type === 'arcade' && isVenueData(value.venue))) &&
+    (value.venue === undefined || (typeof value.type === 'string' && isVenueType(value.type) && isVenueData(value.venue))) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&
     (value.storedEnergy === undefined || (value.type === 'battery' && isNonNegative(value.storedEnergy) && value.storedEnergy <= 24))
   );

@@ -1,4 +1,4 @@
-import { STAFF, STAFF_ROLES, hiredOf, isVenue, postsOf } from '../../core';
+import { STAFF, hiredOf, isVenue, postsOf, staffRolesOf, venueTypeOf } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
@@ -17,7 +17,7 @@ export function VenueStaff({ venueId }: VenueStaffProps) {
     <section className="venue-build" aria-label={t('venue.staff')}>
       <h3>{t('venue.staff')}</h3>
       <div className="venue-build__items">
-        {STAFF_ROLES.map(role => {
+        {staffRolesOf(venueTypeOf(building)).map(role => {
           const hired = hiredOf(building.venue, role);
           const posts = postsOf(role, building.tier);
           return (

@@ -40,6 +40,8 @@ export interface MarketPrice {
   updatedAt: number;
 }
 
+export type VenueType = 'arcade' | 'supermarket' | 'hotel';
+
 export type ArcadeFixtureId =
   | 'counter'
   | 'barrelClimber'
@@ -57,12 +59,44 @@ export type ArcadeFixtureId =
   | 'prizeWheel'
   | 'ticketMachine';
 
+export type SupermarketFixtureId =
+  | 'checkout'
+  | 'shelfBags'
+  | 'shelfBoxes'
+  | 'displayBread'
+  | 'displayFruit'
+  | 'freezer'
+  | 'freezerStanding'
+  | 'shoppingBasket'
+  | 'shoppingCart'
+  | 'bottleReturn';
+
+export type HotelFixtureId =
+  | 'receptionDesk'
+  | 'singleBed'
+  | 'doubleBed'
+  | 'bunkBed'
+  | 'toilet'
+  | 'shower'
+  | 'bathtub'
+  | 'sofa'
+  | 'television'
+  | 'floorLamp'
+  | 'rug'
+  | 'pottedPlant'
+  | 'coffeeCorner'
+  | 'miniFridge';
+
+export type FixtureId = ArcadeFixtureId | SupermarketFixtureId | HotelFixtureId;
+
 export interface VenueFixture extends Coord {
   id: number;
-  type: ArcadeFixtureId;
+  type: FixtureId;
   rotation: Rotation;
   condition?: number;
   broken?: boolean;
+  good?: GoodId;
+  stock?: number;
 }
 
 export interface VenueEvent {
@@ -71,7 +105,7 @@ export interface VenueEvent {
   budget: number;
 }
 
-export type StaffRole = 'manager' | 'employee' | 'technician' | 'security';
+export type StaffRole = 'manager' | 'employee' | 'technician' | 'security' | 'cashier' | 'stocker' | 'receptionist' | 'housekeeper';
 
 export interface VenueData {
   fixtures: VenueFixture[];
@@ -80,6 +114,7 @@ export interface VenueData {
   price?: number;
   staff?: Partial<Record<StaffRole, number>>;
   rng?: number;
+  reputation?: number;
   event?: VenueEvent;
   cooldownUntil?: number;
 }

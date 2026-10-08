@@ -1,4 +1,4 @@
-import { ARCADE_FIXTURES } from './fixtures';
+import { FIXTURES } from './fixtures';
 import type { VenueData, VenueFixture } from '../engine/state';
 
 export const LAYOUT = {
@@ -12,7 +12,7 @@ export const LAYOUT = {
   playsPerSeat: 2,
 };
 
-export type LayoutHint = 'counterFar' | 'noise' | 'noHost';
+export type LayoutHint = 'counterFar' | 'noise' | 'noHost' | 'emptyShelf' | 'noBath';
 
 export interface Layout {
   counterRate: number;
@@ -23,14 +23,14 @@ export interface Layout {
 
 type Cell = { x: number; y: number };
 
-const tilesOf = (fixture: VenueFixture): Cell[] => {
-  const [width, depth] = ARCADE_FIXTURES[fixture.type].footprint;
+export const tilesOf = (fixture: VenueFixture): Cell[] => {
+  const [width, depth] = FIXTURES[fixture.type].footprint;
   const [w, d] = fixture.rotation % 2 === 0 ? [width, depth] : [depth, width];
   return Array.from({ length: w * d }, (_, index) => ({ x: fixture.x + (index % w), y: fixture.y + Math.floor(index / w) }));
 };
 
 const gap = (a: Cell, b: Cell): number => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-const distanceBetween = (a: VenueFixture, b: VenueFixture): number => Math.min(...tilesOf(a).flatMap(first => tilesOf(b).map(second => gap(first, second))));
+export const distanceBetween = (a: VenueFixture, b: VenueFixture): number => Math.min(...tilesOf(a).flatMap(first => tilesOf(b).map(second => gap(first, second))));
 
 export function layoutOf(venue: VenueData, entrance: Cell): Layout {
   const hints = new Map<number, LayoutHint[]>();
@@ -45,7 +45,7 @@ export function layoutOf(venue: VenueData, entrance: Cell): Layout {
     if (distances[index]! > LAYOUT.farCounterDistance) addHint(counter.id, 'counterFar');
   });
 
-  const loud = fixtures.filter(fixture => ARCADE_FIXTURES[fixture.type].loud);
+  const loud = fixtures.filter(fixture => FIXTURES[fixture.type].loud);
   let noisyPairs = 0;
   const noisy = new Set<number>();
   loud.forEach((first, index) => {

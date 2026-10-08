@@ -1,4 +1,4 @@
-import { ARCADE_FIXTURE_IDS, ARCADE_FIXTURES } from '../../core';
+import { FIXTURES, fixtureIdsOf, type VenueType } from '../../core';
 import { t } from '../../i18n/t';
 import { useStore } from 'zustand';
 import { venueStore } from '../../store/venueStore';
@@ -7,9 +7,10 @@ import { UrbsAmount } from '../common/UrbsAmount';
 
 interface VenueBuildMenuProps {
   tier: number;
+  venueType: VenueType;
 }
 
-export function VenueBuildMenu({ tier }: VenueBuildMenuProps) {
+export function VenueBuildMenu({ tier, venueType }: VenueBuildMenuProps) {
   const selected = useStore(venueStore, store => store.selectedFixture);
   const select = useStore(venueStore, store => store.selectFixture);
   const urbs = useGame(store => store.state.urbs);
@@ -17,8 +18,8 @@ export function VenueBuildMenu({ tier }: VenueBuildMenuProps) {
     <section className="venue-build" aria-label={t('venue.build')}>
       <h3>{t('venue.build')}</h3>
       <div className="venue-build__items">
-        {ARCADE_FIXTURE_IDS.map(id => {
-          const { price, minTier } = ARCADE_FIXTURES[id];
+        {fixtureIdsOf(venueType).map(id => {
+          const { price, minTier } = FIXTURES[id];
           const locked = tier < minTier;
           return (
             <button

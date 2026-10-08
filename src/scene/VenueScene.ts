@@ -1,11 +1,10 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { ARCADE_FIXTURES, entranceCell, fixtureFootprint, type Coord, type VenueFixture } from '../core';
+import { FIXTURES, entranceCell, fixtureFootprint, fixtureIdsOf, type Coord, type VenueFixture, type VenueType } from '../core';
 import { ModelLibrary } from './modelLibrary';
-import { VENUE_CROWD_MODELS, VENUE_SHELL_MODELS } from './renderItems';
+import { VENUE_CORNER_PLACEMENT, VENUE_CROWD_MODELS, VENUE_SHELL_MODELS } from './renderItems';
 import type { Figure } from './venueCrowd';
 
-const { floor: FLOOR_MODEL, wall: WALL_MODEL, corner: CORNER_MODEL } = VENUE_SHELL_MODELS;
 const TAP_DISTANCE = 6;
 const CROWD_SCALE = 0.7;
 const QUEUE_TINT = 0xffd9a8;
@@ -49,7 +48,12 @@ export class VenueScene {
   onTapCell: (cell: Coord) => void = () => {};
   onHoverCell: (cell: Coord | null) => void = () => {};
 
-  constructor(private canvas: HTMLCanvasElement, private size: number, private tier = 1) {
+  private shellModels: { floor: string; wall: string; corner: string };
+  private cornerPlacement: { x: number; z: number; rotation: number };
+
+  constructor(private canvas: HTMLCanvasElement, private size: number, private tier = 1, venueType: VenueType = 'arcade') {
+    this.shellModels = VENUE_SHELL_MODELS[venueType];
+    this.cornerPlacement = VENUE_CORNER_PLACEMENT[venueType];
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.toneMapping = THREE.NeutralToneMapping;
@@ -59,7 +63,7 @@ export class VenueScene {
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
     this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowdRoot, this.warningRoot, this.brokenRoot, this.selectionRoot, this.ghostRoot);
-    this.ready = this.library.ensure([FLOOR_MODEL, WALL_MODEL, CORNER_MODEL, ...new Set([...Object.values(ARCADE_FIXTURES).map(spec => spec.model), ...Object.values(VENUE_CROWD_MODELS)])]).then(() => {
+    this.ready = this.library.ensure([...Object.values(this.shellModels), ...new Set([...fixtureIdsOf(venueType).map(id => FIXTURES[id].model), ...Object.values(VENUE_CROWD_MODELS)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
       this.rebuildFixtures();
@@ -143,18 +147,18 @@ export class VenueScene {
   }
 
   private buildShell(): void {
-    if (!this.library.has(FLOOR_MODEL) || this.builtSize === this.size) return;
+    if (!this.library.has(this.shellModels.floor) || this.builtSize === this.size) return;
     this.builtSize = this.size;
     this.clear(this.shell);
     const entrance = entranceCell(this.tier);
     for (let x = 0; x < this.size; x++) {
-      for (let y = 0; y < this.size; y++) this.place(this.shell, FLOOR_MODEL, x + 0.5, y + 0.5, 0);
+      for (let y = 0; y < this.size; y++) this.place(this.shell, this.shellModels.floor, x + 0.5, y + 0.5, 0);
     }
     for (let index = 0; index < this.size; index++) {
-      if (index !== entrance.x) this.place(this.shell, WALL_MODEL, index + 0.5, 0, 0);
-      this.place(this.shell, WALL_MODEL, 0, index + 0.5, Math.PI / 2);
+      if (index !== entrance.x) this.place(this.shell, this.shellModels.wall, index + 0.5, 0, 0);
+      this.place(this.shell, this.shellModels.wall, 0, index + 0.5, Math.PI / 2);
     }
-    this.place(this.shell, CORNER_MODEL, -0.1, -0.1, Math.PI / 2);
+    this.place(this.shell, this.shellModels.corner, this.cornerPlacement.x, this.cornerPlacement.z, this.cornerPlacement.rotation);
     const mat = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), new THREE.MeshBasicMaterial({ color: ENTRANCE_COLOR }));
     mat.rotation.x = -Math.PI / 2;
     mat.position.set(entrance.x + 0.5, 0.04, entrance.y + 0.5);
@@ -163,10 +167,10 @@ export class VenueScene {
   }
 
   private rebuildFixtures(): void {
-    if (!this.library.has(FLOOR_MODEL)) return;
+    if (!this.library.has(this.shellModels.floor)) return;
     this.clear(this.fixtureRoot);
     for (const fixture of this.lastFixtures) {
-      const spec = ARCADE_FIXTURES[fixture.type];
+      const spec = FIXTURES[fixture.type];
       const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
       const object = this.place(this.fixtureRoot, spec.model, fixture.x + width / 2, fixture.y + depth / 2, -fixture.rotation * Math.PI / 2);
       if (spec.tint !== undefined) this.tint(object, spec.tint);
@@ -175,7 +179,7 @@ export class VenueScene {
   }
 
   private rebuildCrowd(): void {
-    if (!this.library.has(FLOOR_MODEL)) return;
+    if (!this.library.has(this.shellModels.floor)) return;
     this.clear(this.crowdRoot);
     for (const figure of this.lastCrowd) {
       const holder = this.place(this.crowdRoot, VENUE_CROWD_MODELS[figure.kind], figure.x + 0.5, figure.y + 0.5, figure.facing);

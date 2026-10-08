@@ -1,3 +1,4 @@
+import { isVenueType } from '../venues/profiles';
 import { transitServices } from '../transit/transitService';
 import { ECOLOGY, distance, economicPower, homePower } from './ecology';
 import { COAL_CAPACITY, UTILITY_CAPACITY } from '../economy/economy';
@@ -16,7 +17,7 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   const transitDemand = transitServices(state, now).reduce((n, line) => n + line.powerDemand, 0);
   let transitSupplied: number;
   const buildings = [...state.buildings].sort((a, b) => a.id - b.id);
-  const homes = buildings.filter(b => b.type === 'home'), casinos = buildings.filter(b => b.type === 'casino'), arcades = buildings.filter(b => b.type === 'arcade'), economic = buildings.filter(b => b.type !== 'casino' && b.type !== 'arcade' && economicPower(b) > 0);
+  const homes = buildings.filter(b => b.type === 'home'), casinos = buildings.filter(b => b.type === 'casino'), arcades = buildings.filter(b => isVenueType(b.type)), economic = buildings.filter(b => b.type !== 'casino' && !isVenueType(b.type) && economicPower(b) > 0);
   const factors = productionFactors(now + (state.timeOffset ?? 0));
   const need = new Map(buildings.map(b => [b.id, b.type === 'home' ? homePower(b) : economicPower(b)]));
   const supplied = new Map(buildings.map(b => [b.id, 0]));

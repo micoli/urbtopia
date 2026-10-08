@@ -1,8 +1,9 @@
 import type { Building, BuildingType } from '../engine/state';
 import { totalStaff } from '../venues/staff';
+import { VENUE_TYPES, isVenueType } from '../venues/profiles';
 import { FACILITIES, FACILITY_TYPES, facilityCapacity, isFacilityType } from '../services/facilities';
 
-export const workplaceTypes: readonly BuildingType[] = ['workshop', 'factory', 'shop', 'casino', 'arcade', ...FACILITY_TYPES];
+export const workplaceTypes: readonly BuildingType[] = ['workshop', 'factory', 'shop', 'casino', ...VENUE_TYPES, ...FACILITY_TYPES];
 
 export const JOBS = {
   workshopPerTier: 25,
@@ -23,9 +24,8 @@ export function jobsOf(building: Building): number {
       return JOBS.shop;
     case 'casino':
       return JOBS.casinoPerTier * building.tier;
-    case 'arcade':
-      return building.venue ? totalStaff(building.venue) : 0;
   }
+  if (isVenueType(building.type)) return building.venue ? totalStaff(building.venue) : 0;
   if (!isFacilityType(building.type)) return 0;
   const capacity = FACILITIES[building.type].capacity === null ? null : facilityCapacity(building.type, building.tier);
   return capacity === null ? JOBS.uncappedFacility : Math.round(capacity / JOBS.facilityCapacityDivisor);

@@ -4,7 +4,7 @@ import { economicPower, energyStats } from '../index';
 import { EVENT, eventBudgetOf, eventMultiplierOf } from './venues';
 import { jobsOf } from '../traffic/jobs';
 import { conditionOf, isBroken, repairCost, technicianRepairCost, STAFF, hiredOf, postsOf, wagesPerHour, priceOf } from './venues';
-import { ARCADE_FIXTURES, gridSizeOf, entranceCell, fixtureRefund, priceAcceptance, takingsCapOf, takingsDue, takingsPerHour, venuePerformance, visitorsPerHour, VENUE } from './venues';
+import { VENUE_PROFILES, FIXTURES, gridSizeOf, entranceCell, fixtureRefund, priceAcceptance, takingsCapOf, takingsDue, takingsPerHour, venuePerformance, visitorsPerHour, VENUE } from './venues';
 
 const HOUR = 3_600_000;
 const building = (id: number, type: Building['type'], x: number, y: number, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
@@ -45,10 +45,10 @@ describe('Arcade Venue', () => {
   });
 
   it('draws Visitors only from the Homes within reach', () => {
-    const near = visitorsPerHour(city(), arcadeOf(city()));
+    const near = visitorsPerHour(city(), arcadeOf(city()) as never);
     expect(near).toBeGreaterThan(0);
     const far = city(10_000, [building(1, 'arcade', 55, 50), building(2, 'home', 55 + VENUE.reachRadius + 20, 50, { tier: 4 }), building(3, 'coalPlant', 90, 40, { tier: 4 })]);
-    expect(visitorsPerHour(far, arcadeOf(far))).toBe(0);
+    expect(visitorsPerHour(far, arcadeOf(far) as never)).toBe(0);
   });
 
   it('earns nothing without a Fixture, then Visitors x play price up to its capacity', () => {
@@ -107,7 +107,7 @@ describe('Arcade Venue', () => {
       const removed = send(placed, { type: 'RemoveFixture', buildingId: 1, fixtureId: 1 });
       expect(fixtures(removed)).toEqual([]);
       expect(removed.urbs).toBe(placed.urbs + fixtureRefund('barrelClimber'));
-      expect(fixtureRefund('barrelClimber')).toBe(ARCADE_FIXTURES.barrelClimber.price / 2);
+      expect(fixtureRefund('barrelClimber')).toBe(FIXTURES.barrelClimber.price / 2);
       expect(failure(removed, { type: 'RemoveFixture', buildingId: 1, fixtureId: 1 })).toBe('error.unknownFixture');
     });
 
@@ -379,7 +379,7 @@ describe('Arcade wear and repair', () => {
     const state = withCondition(base(), 'barrelClimber', 20);
     const fixture = fixtureOf(state, 'barrelClimber');
     expect(repairCost(fixture)).toBeGreaterThan(0);
-    expect(repairCost(fixture)).toBeLessThan(ARCADE_FIXTURES.barrelClimber.price);
+    expect(repairCost(fixture)).toBeLessThan(FIXTURES.barrelClimber.price);
     const repaired = send(state, { type: 'RepairFixture', buildingId: 1, fixtureId: fixture.id });
     expect(conditionOf(fixtureOf(repaired, 'barrelClimber'))).toBe(100);
     expect(repaired.urbs).toBe(state.urbs - repairCost(fixture));
@@ -407,7 +407,7 @@ describe('Arcade Tiers and power', () => {
     const start = equipped(city(100_000));
     const upgraded = send(start, { type: 'UpgradeBuilding', buildingId: 1 });
     expect(arcadeOf(upgraded).tier).toBe(2);
-    expect(upgraded.urbs).toBe(start.urbs - VENUE.upgradeCosts[2]!);
+    expect(upgraded.urbs).toBe(start.urbs - VENUE_PROFILES.arcade.upgradeCosts[2]!);
     expect(arcadeOf(upgraded).venue!.fixtures).toEqual(arcadeOf(start).venue!.fixtures);
     expect(gridSizeOf(2)).toBeGreaterThan(gridSizeOf(1));
     expect(failure(city(10), { type: 'UpgradeBuilding', buildingId: 1 })).toBe('error.notEnoughUrbs');

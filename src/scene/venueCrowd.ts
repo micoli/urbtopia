@@ -1,4 +1,4 @@
-import { ARCADE_FIXTURES, fixtureTiles, type Coord, type VenueFixture } from '../core';
+import { fixtureTiles, type Coord, type FixtureId, type VenueFixture } from '../core';
 
 export type FigureKind = 'gamer' | 'queue' | 'employee';
 
@@ -11,13 +11,16 @@ export interface CrowdInput {
   size: number;
   entrance: Coord;
   fixtures: readonly VenueFixture[];
-  playsByFixture: ReadonlyMap<number, number>;
+  usageByFixture: ReadonlyMap<number, number>;
   saturation: number;
   demandRatio: number;
   employees: number;
 }
 
 export const CROWD = { maxQueue: 6, maxFigures: 24 };
+
+// Fixtures where Visitors queue: the counter of an Arcade, a checkout, the reception desk of a Hotel.
+const COUNTERS: readonly FixtureId[] = ['counter', 'checkout', 'receptionDesk'];
 
 const FRONT: readonly Coord[] = [{ x: 0, y: 1 }, { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 1, y: 0 }];
 const AROUND: readonly Coord[] = [{ x: 0, y: 1 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: -1 }];
@@ -45,7 +48,7 @@ export function planCrowd(input: CrowdInput): Figure[] {
     return cells.sort((a, b) => gap(a, origin) - gap(b, origin) || a.y - b.y || a.x - b.x).slice(0, count);
   };
 
-  const games = fixtures.filter(fixture => (input.playsByFixture.get(fixture.id) ?? 0) > 0 && ARCADE_FIXTURES[fixture.type].playsPerHour > 0).sort((a, b) => a.id - b.id);
+  const games = fixtures.filter(fixture => (input.usageByFixture.get(fixture.id) ?? 0) > 0 && !COUNTERS.includes(fixture.type)).sort((a, b) => a.id - b.id);
   const players = games.length === 0 ? 0 : Math.max(1, Math.min(games.length, Math.round(input.saturation * games.length)));
   for (const fixture of games.slice(0, players)) {
     const tiles = fixtureTiles(fixture);
@@ -56,7 +59,7 @@ export function planCrowd(input: CrowdInput): Figure[] {
     if (spot) add('gamer', spot, center);
   }
 
-  const counter = fixtures.find(fixture => fixture.type === 'counter');
+  const counter = fixtures.find(fixture => COUNTERS.includes(fixture.type));
   const hub = counter ? centerOf(fixtureTiles(counter)) : entrance;
   for (const cell of nearest(hub, Math.min(input.employees, 3))) add('employee', cell, hub);
 

@@ -141,7 +141,7 @@ An item the player places inside a Venue's interior: a counter, a table, a chair
 _Avoid_: Furniture, equipment, decoration
 
 **Staff**:
-The workers of a Venue, held as roles (manager, employee, technician, security), not as individuals. Each role fills a post of the Venue's Tier, is staffed by Citizens like a Job, and costs a daily wage in Urbs.
+The workers of a Venue, held as roles, not as individuals: manager, employee, technician and security in an Arcade; manager, cashier, stocker and security in a Supermarket; manager, receptionist, housekeeper and technician in a Hotel. Each role fills a post of the Venue's Tier, is staffed by Citizens like a Job, and costs a daily wage in Urbs.
 _Avoid_: Employee (one of the roles), worker, personnel
 
 **Condition**:
@@ -152,12 +152,28 @@ _Avoid_: Durability, health, usury
 The act of restoring a Fixture's Condition, paid in Urbs, by the player or by a Technician. A Repair always costs less than buying the Fixture again.
 _Avoid_: Maintenance, replacement, fix
 
+**Shelf**:
+A Supermarket Fixture that holds units of one Good taken from the Storehouse, for a handling fee. It sells them to Shoppers at the value of the Good plus a markup; an empty Shelf earns nothing.
+_Avoid_: Stand, rack, Shop stack
+
+**Room**:
+A Hotel bed with a bathroom piece within reach. A bed without one counts for nothing. The comfort Fixtures near it set its Standing.
+_Avoid_: Suite, unit
+
+**Standing**:
+The class of a Room, from 1 to 3, set by the comfort of the Fixtures around its bed. It sets the rate of the Room.
+_Avoid_: Stars, grade, Tier
+
+**Reputation**:
+The note, from 0 to 100, of a Hotel. It rises with the Standing and the cleanliness of its Rooms and falls with breakdowns, a shortage of housekeepers, or closure; it draws more or fewer guests from outside the city.
+_Avoid_: Rating, score, fame
+
 **Takings**:
 The Urbs a Venue has earned and not yet collected, net of Staff wages and Fixture upkeep. Capped by the Venue's Tier like Tax, and collected by hand. A Venue whose wages cannot be paid closes.
 _Avoid_: Revenue, income, till
 
 **Visitor**:
-A simulated customer of a Venue, modelled in aggregate. Arcade and Supermarket draw them from the surrounding Citizens; a Hotel draws them from outside the city, by the city's attractiveness. Only a visual silhouette is shown, never saved.
+A simulated customer of a Venue, modelled in aggregate. Arcade and Supermarket draw them from the surrounding Citizens; a Hotel draws them from outside the city, by the city's attractiveness and its Reputation. In a Supermarket they are called Shoppers, in a Hotel guests. Only a visual silhouette is shown, never saved.
 _Avoid_: Customer, guest, Citizen
 
 **Vehicle**:

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useStore } from 'zustand';
+import { venueTypeOf } from '../../core';
 import { t } from '../../i18n/t';
 import { sceneHandle } from '../../store/sceneHandle';
 import { venueStore } from '../../store/venueStore';
@@ -27,14 +28,14 @@ export function VenueDialog() {
   if (!open) return null;
   return (
     <div className="venue-view" role="dialog" aria-modal="true" aria-label={t('venue.manage')}>
-      <VenueCanvas venueId={venueId} />
+      <VenueCanvas venueId={venueId} venueType={venueTypeOf(venue)} />
       <header className="venue-view__header">
         <h2>{t(`building.${venue.type}`)}</h2>
         <CloseButton onClick={close} label={t('venue.back')} />
       </header>
       <aside className="venue-view__side">
         <VenueFixtureActions venueId={venue.id} />
-        <VenueBuildMenu tier={venue.tier} />
+        <VenueBuildMenu tier={venue.tier} venueType={venueTypeOf(venue)} />
         <VenueStaff venueId={venue.id} />
         <VenueEvents venueId={venue.id} />
         <section className="venue-takings">

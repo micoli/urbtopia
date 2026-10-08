@@ -2412,5 +2412,313 @@
       1,
       1
     ]
+  },
+  "mini-market/cash-register": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/shelf-bags": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/shelf-boxes": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/display-bread": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/display-fruit": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/freezer": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/freezers-standing": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/shopping-basket": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/shopping-cart": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/bottle-return": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/floor": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/wall": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market/wall-corner": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "furniture/desk": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.9,
+      "height": 0.6
+    }
+  },
+  "furniture/bedSingle": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      2
+    ],
+    "fit": {
+      "width": 1.15,
+      "height": 0.6
+    }
+  },
+  "furniture/bedDouble": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 1.9,
+      "height": 0.8
+    }
+  },
+  "furniture/bedBunk": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      2
+    ],
+    "fit": {
+      "width": 1.15,
+      "height": 0.9
+    }
+  },
+  "furniture/toilet": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.9,
+      "height": 0.9
+    }
+  },
+  "furniture/shower": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.95,
+      "height": 1.4
+    }
+  },
+  "furniture/bathtub": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      2,
+      1
+    ],
+    "fit": {
+      "width": 1.8,
+      "height": 0.7
+    }
+  },
+  "furniture/loungeSofa": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.95,
+      "height": 0.6
+    }
+  },
+  "furniture/televisionModern": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.8,
+      "height": 0.7
+    }
+  },
+  "furniture/lampRoundFloor": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.5,
+      "height": 1.0
+    }
+  },
+  "furniture/rugRectangle": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      2,
+      1
+    ],
+    "fit": {
+      "width": 1.9,
+      "height": 0.1
+    }
+  },
+  "furniture/pottedPlant": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.6,
+      "height": 0.8
+    }
+  },
+  "furniture/kitchenCoffeeMachine": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.5,
+      "height": 0.5
+    }
+  },
+  "furniture/kitchenFridgeSmall": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.7,
+      "height": 0.9
+    }
+  },
+  "furniture/floorFull": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 1.0,
+      "height": 1.0
+    }
+  },
+  "furniture/wall": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 1.0,
+      "height": 1.4
+    }
+  },
+  "furniture/wallCorner": {
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.6,
+      "height": 1.4
+    }
   }
 }

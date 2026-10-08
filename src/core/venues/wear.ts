@@ -1,4 +1,4 @@
-import { ARCADE_FIXTURES } from './fixtures';
+import { FIXTURES } from './fixtures';
 import { nextRandom } from '../engine/random';
 import type { VenueFixture } from '../engine/state';
 
@@ -17,7 +17,7 @@ export const isBroken = (fixture: VenueFixture): boolean => fixture.broken === t
 
 export const isWorn = (fixture: VenueFixture): boolean => conditionOf(fixture) < 100;
 
-export const repairCost = (fixture: VenueFixture): number => Math.ceil(ARCADE_FIXTURES[fixture.type].price * WEAR.repairRatio * (100 - conditionOf(fixture)) / 100);
+export const repairCost = (fixture: VenueFixture): number => Math.ceil(FIXTURES[fixture.type].price * WEAR.repairRatio * (100 - conditionOf(fixture)) / 100);
 
 export const technicianRepairCost = (fixture: VenueFixture): number => Math.ceil(repairCost(fixture) * WEAR.technicianRepairRatio);
 
@@ -28,7 +28,7 @@ export function wearFixtures(fixtures: readonly VenueFixture[], playsServed: Rea
   return fixtures.map(fixture => {
     const plays = playsServed.get(fixture.id) ?? 0;
     if (plays === 0 || isBroken(fixture)) return fixture;
-    return { ...fixture, condition: Math.max(0, conditionOf(fixture) - WEAR.perPlay * plays * hours * factor) };
+    return { ...fixture, condition: Math.max(0, conditionOf(fixture) - WEAR.perPlay * (FIXTURES[fixture.type].wear ?? 1) * plays * hours * factor) };
   });
 }
 
@@ -64,5 +64,7 @@ export function technicianRepairs(fixtures: readonly VenueFixture[], technicians
 }
 
 export function restored(fixture: VenueFixture): VenueFixture {
-  return { id: fixture.id, type: fixture.type, x: fixture.x, y: fixture.y, rotation: fixture.rotation, condition: 100 };
+  const next: VenueFixture = { ...fixture, condition: 100 };
+  delete next.broken;
+  return next;
 }

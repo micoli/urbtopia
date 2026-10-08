@@ -1,5 +1,5 @@
 import { BUILDING_ENTRIES } from '../core/buildings/buildingDefinitions';
-import { ARCADE_FIXTURES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type BoatFamily, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
+import { FIXTURE_MODELS, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type BoatFamily, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
 import { VEHICLE_MODELS } from './vehicleModels';
@@ -102,7 +102,18 @@ export const TRAIN_MODELS = ['trains/train-electric-city-a', 'trains/train-elect
 
 const RAIL_MODELS = ['trains/railroad-straight', 'trains/railroad-corner-small'];
 
-export const VENUE_SHELL_MODELS = { floor: 'mini-arcade/floor', wall: 'mini-arcade/wall', corner: 'mini-arcade/wall-corner' } as const;
+// Where the corner piece stands, by kind of Venue: the models of each kit are cut around different origins.
+export const VENUE_CORNER_PLACEMENT = {
+  arcade: { x: -0.1, z: -0.1, rotation: Math.PI / 2 },
+  supermarket: { x: -0.1, z: -0.1, rotation: Math.PI / 2 },
+  hotel: { x: 0, z: 0, rotation: 0 },
+} as const;
+
+export const VENUE_SHELL_MODELS = {
+  arcade: { floor: 'mini-arcade/floor', wall: 'mini-arcade/wall', corner: 'mini-arcade/wall-corner' },
+  supermarket: { floor: 'mini-market/floor', wall: 'mini-market/wall', corner: 'mini-market/wall-corner' },
+  hotel: { floor: 'furniture/floorFull', wall: 'furniture/wall', corner: 'furniture/wallCorner' },
+} as const;
 
 export const VENUE_CROWD_MODELS = { gamer: 'mini-arcade/character-gamer', queue: 'mini-arcade/character-gamer', employee: 'mini-arcade/character-employee' } as const;
 
@@ -122,9 +133,9 @@ export const MODEL_KEYS: readonly string[] = [
     ROOF_PANEL_MODEL,
     SOLAR_PANEL_MODEL,
     ...ROAD_MODELS,
-    ...Object.values(VENUE_SHELL_MODELS),
+    ...Object.values(VENUE_SHELL_MODELS).flatMap(shell => Object.values(shell)),
     ...Object.values(VENUE_CROWD_MODELS),
-    ...Object.values(ARCADE_FIXTURES).map(({ model }) => model),
+    ...FIXTURE_MODELS,
     ...RAIL_MODELS,
     ...TRAIN_MODELS,
     ...VEHICLE_MODELS,

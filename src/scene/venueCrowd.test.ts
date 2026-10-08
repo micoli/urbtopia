@@ -5,7 +5,7 @@ import { CROWD, planCrowd, type CrowdInput } from './venueCrowd';
 const fixture = (id: number, type: VenueFixture['type'], x: number, y: number, rotation: VenueFixture['rotation'] = 0): VenueFixture => ({ id, type, x, y, rotation });
 const input = (extra: Partial<CrowdInput> = {}): CrowdInput => {
   const fixtures = [fixture(1, 'counter', 3, 1), fixture(2, 'barrelClimber', 1, 2), fixture(3, 'spaceShooter', 2, 4), fixture(4, 'billiard', 4, 4)];
-  return { size: 6, entrance: { x: 3, y: 0 }, fixtures, playsByFixture: new Map([[2, 4], [3, 5], [4, 2]]), saturation: 1, demandRatio: 1, employees: 2, ...extra };
+  return { size: 6, entrance: { x: 3, y: 0 }, fixtures, usageByFixture: new Map([[2, 4], [3, 5], [4, 2]]), saturation: 1, demandRatio: 1, employees: 2, ...extra };
 };
 const cells = (figures: ReturnType<typeof planCrowd>) => figures.map(figure => `${figure.x}:${figure.y}`);
 
@@ -18,7 +18,7 @@ describe('Venue crowd', () => {
   it('shows fewer gamers when the Venue is quiet, but one as soon as someone plays', () => {
     expect(planCrowd(input({ saturation: 0.34 })).filter(figure => figure.kind === 'gamer')).toHaveLength(1);
     expect(planCrowd(input({ saturation: 0.01 })).filter(figure => figure.kind === 'gamer')).toHaveLength(1);
-    expect(planCrowd(input({ saturation: 0, playsByFixture: new Map() })).filter(figure => figure.kind === 'gamer')).toHaveLength(0);
+    expect(planCrowd(input({ saturation: 0, usageByFixture: new Map() })).filter(figure => figure.kind === 'gamer')).toHaveLength(0);
   });
 
   it('never stacks two figures on a cell, a Fixture or the entrance', () => {
@@ -56,6 +56,6 @@ describe('Venue crowd', () => {
   });
 
   it('works in an empty Venue', () => {
-    expect(planCrowd({ size: 6, entrance: { x: 3, y: 0 }, fixtures: [], playsByFixture: new Map(), saturation: 0, demandRatio: 0, employees: 0 })).toEqual([]);
+    expect(planCrowd({ size: 6, entrance: { x: 3, y: 0 }, fixtures: [], usageByFixture: new Map(), saturation: 0, demandRatio: 0, employees: 0 })).toEqual([]);
   });
 });

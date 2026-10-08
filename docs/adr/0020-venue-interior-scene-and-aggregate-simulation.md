@@ -20,6 +20,12 @@ The interior grid is what makes the Management view a game rather than a spreads
 - **Live simulated customers in the interior**: prettier, but it needs pathfinding and per-Visitor state, cannot be replayed by Catch-up cheaply and cannot be saved. Rejected; silhouettes are drawn from the aggregate.
 - **Extending the Casino into a general venue**: would blur Stake and Minigame vocabulary and tie every Venue to chance and a bankroll. Rejected.
 
+## Later decisions
+
+- **One shape, one set of rules per type.** Arcade, Supermarket and Hotel share the scene, the saved state, the Takings, the Staff, the wear and the events. What differs is an `Evaluate` function per type (`arcade.ts`, `supermarket.ts`, `hotel.ts`) that turns the Fixtures into Visitors, a capacity and earnings; the generic code adds the manager yield, wages, closure, power and wear around it.
+- **A Supermarket draws on the Storehouse.** Its Shelves hold Goods taken from the city's storage, so advancing a Venue can change `storage.goods`. A Shelf running out is a boundary of the Catch-up loop, like a battery running flat, so one long Catch-up and many short ones give the same result.
+- **Hour boundaries carry the discrete steps.** Breakdown draws, technician repairs, stocker refills and the Reputation of a Hotel move only at game-hour boundaries, so they stay deterministic whatever the step of the simulation.
+
 ## Consequences
 
 - A second scene to maintain, with its own picking, camera and disposal; the city scene must pause cleanly and resume.

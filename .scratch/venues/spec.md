@@ -1,6 +1,6 @@
 # Venues (manageable buildings: Arcade, Supermarket, Hotel)
 
-Status: ready-for-agent
+Status: done (tickets 01 to 11)
 
 Vocabulary and rules: `CONTEXT.md` (Venue, Management view, Fixture, Staff, Visitor, Condition, Repair, Takings). Architecture: ADR 0020.
 

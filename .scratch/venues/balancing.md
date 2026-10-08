@@ -52,3 +52,15 @@ Placeholders to tune by play. Values live in `VENUE` and `ARCADE_FIXTURES` (`src
 ## Events (`EVENT`)
 - Budget by Tier: 300 / 600 / 1200 Urbs, debited when planning; half refunded on cancel before the start.
 - Visitors x1.5 / x2 / x2.5 for 3 hours; cooldown of 6 hours; start within 24 hours.
+
+## Supermarket (`SUPERMARKET`)
+- Unlock 150 Citizens, cost 2000 Urbs, 3x2; upgrades 3500 / 8000; power 2 per Tier.
+- Shoppers 0.3 per Citizen in reach and per hour; basket 3 units; markup 10% per step (reference step 2).
+- Checkout 20 shoppers per hour (cashier rate as for the Arcade employees); stocker refills 8 units per hour; handling fee 10% of value.
+- Shelves hold 8 (bread, fruit), 12 (bags, boxes), 16 (freezer), 20 (standing freezers). Decor up to +15% attractiveness.
+
+## Hotel (`HOTEL`)
+- Unlock 400 Citizens, cost 5000 Urbs, 3x3; upgrades 6000 / 14000; power 2.5 per Tier.
+- Requests 0.35 per hour x city attractiveness (0.6 to 1.0) x `0.5 + Reputation / 100`; one night is 24 hours.
+- Room rates 40 / 70 / 120 per night; price level multiplies by `0.5 + 0.25 x level`.
+- Housekeeper cleans 10 rooms a day; Reputation starts at 50 and moves 5% an hour toward its target.

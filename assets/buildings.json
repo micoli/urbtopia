@@ -86,6 +86,29 @@
       "fr": "Vend des produits aux habitants contre des Urbs. Approvisionnez ses emplacements depuis le stockage, puis collectez les recettes."
     }
   },
+  "supermarket": {
+    "section": "build.production",
+    "model": "commercial/building-g",
+    "footprint": [
+      3,
+      2
+    ],
+    "cost": 2000,
+    "unlockCitizens": 150,
+    "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
+    "name": {
+      "en": "Supermarket",
+      "fr": "Supermarché"
+    },
+    "description": {
+      "en": "A Venue you fit out and run from the inside. Stock its shelves with Goods from the Storehouse, open checkouts and sell to the neighbourhood.",
+      "fr": "Un établissement que vous aménagez et gérez de l'intérieur. Garnissez ses rayons avec les marchandises de l'entrepôt, ouvrez des caisses et vendez au quartier."
+    }
+  },
   "farm": {
     "section": "build.production",
     "model": "farm/Barn",
@@ -665,6 +688,29 @@
     "description": {
       "en": "A Venue you fit out and run from the inside. Place game machines, attract Visitors from the neighbourhood and collect the Takings.",
       "fr": "Un établissement que vous aménagez et gérez de l'intérieur. Placez des bornes de jeu, attirez les visiteurs du quartier et encaissez les recettes."
+    }
+  },
+  "hotel": {
+    "section": "build.leisure",
+    "model": "commercial/building-l",
+    "footprint": [
+      3,
+      3
+    ],
+    "cost": 5000,
+    "unlockCitizens": 400,
+    "requiresRoad": true,
+    "accessModes": [
+      "road",
+      "brt"
+    ],
+    "name": {
+      "en": "Hotel",
+      "fr": "Hôtel"
+    },
+    "description": {
+      "en": "A Venue you fit out and run from the inside. Build rooms with a bed and a bathroom, furnish them and earn a reputation that draws guests from outside the city.",
+      "fr": "Un établissement que vous aménagez et gérez de l'intérieur. Construisez des chambres avec un lit et une salle de bain, meublez-les et gagnez une réputation qui attire des clients de l'extérieur."
     }
   },
   "baseballField": {

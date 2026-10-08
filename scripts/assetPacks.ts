@@ -126,14 +126,14 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'mini-market',
     url: 'https://kenney.nl/media/pages/assets/mini-market/463f38da51-1729865423/kenney_mini-market.zip',
     archive: 'kenney_mini-market.zip',
-    files: [],
+    files: ['cash-register', 'shelf-bags', 'shelf-boxes', 'display-bread', 'display-fruit', 'freezer', 'freezers-standing', 'shopping-basket', 'shopping-cart', 'bottle-return', 'floor', 'wall', 'wall-corner'],
   },
   {
     name: 'furniture',
     colormap: false,
     url: 'https://kenney.nl/media/pages/assets/furniture-kit/440e0608a4-1677580847/kenney_furniture-kit.zip',
     archive: 'kenney_furniture-kit.zip',
-    files: ['table', 'chair', 'stoolBar'],
+    files: ['table', 'chair', 'stoolBar', 'desk', 'bedSingle', 'bedDouble', 'bedBunk', 'toilet', 'shower', 'bathtub', 'loungeSofa', 'televisionModern', 'lampRoundFloor', 'rugRectangle', 'pottedPlant', 'kitchenCoffeeMachine', 'kitchenFridgeSmall', 'floorFull', 'wall', 'wallCorner'],
   },
   ...extraPacks.kenney.map(({ name, archive, colormap }) => ({ name, url: '', archive, files: [], colormap })),
 ];

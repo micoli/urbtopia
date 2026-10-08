@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, entranceCell, fixtureTiles, gridSizeOf, hiredOf, isBroken, isVenue, venueLayout, venuePerformance, type Building, type Coord, type VenueData } from '../../core';
+import { canPlaceFixture, entranceCell, fixtureTiles, gridSizeOf, hiredOf, isBroken, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type VenueData, type VenueType } from '../../core';
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
 import { gameStore } from '../../store/gameStore';
@@ -12,16 +12,17 @@ const venueOf = (venueId: number): (Building & { venue: VenueData }) | undefined
 
 interface VenueCanvasProps {
   venueId: number;
+  venueType: VenueType;
 }
 
-export function VenueCanvas({ venueId }: VenueCanvasProps) {
+export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const initial = venueOf(venueId);
     if (!canvas || !initial) return;
-    const scene = new VenueScene(canvas, gridSizeOf(initial.tier), initial.tier);
+    const scene = new VenueScene(canvas, gridSizeOf(initial.tier), initial.tier, venueType);
     let hovered: Coord | null = null;
 
     const showGhost = () => {
@@ -41,7 +42,7 @@ export function VenueCanvas({ venueId }: VenueCanvasProps) {
     const showWarnings = () => {
       const venue = venueOf(venueId);
       if (!venue) return;
-      const { hints } = venueLayout(venue);
+      const { hints } = venuePerformance(gameStore.getState().state, venue).layout;
       scene.setWarnings(venue.venue.fixtures.filter(fixture => hints.has(fixture.id) && !isBroken(fixture)).flatMap(fixtureTiles));
       scene.setBroken(venue.venue.fixtures.filter(isBroken).flatMap(fixtureTiles));
     };
@@ -54,10 +55,10 @@ export function VenueCanvas({ venueId }: VenueCanvasProps) {
         size: gridSizeOf(venue.tier),
         entrance: entranceCell(venue.tier),
         fixtures: venue.venue.fixtures,
-        playsByFixture: performance.playsByFixture,
+        usageByFixture: performance.usageByFixture,
         saturation: performance.capacity > 0 ? performance.served / performance.capacity : 0,
         demandRatio,
-        employees: performance.powered && !performance.closed ? hiredOf(venue.venue, 'employee') : 0,
+        employees: performance.powered && !performance.closed ? hiredOf(venue.venue, FRONT_ROLE[venueType]) : 0,
       }));
     };
     const sync = () => {
@@ -97,7 +98,7 @@ export function VenueCanvas({ venueId }: VenueCanvasProps) {
       unsubscribeVenue();
       scene.dispose();
     };
-  }, [venueId]);
+  }, [venueId, venueType]);
 
   return <canvas ref={canvasRef} className="venue-canvas" />;
 }

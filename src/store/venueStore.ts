@@ -1,14 +1,14 @@
 import { createStore } from 'zustand/vanilla';
-import type { ArcadeFixtureId } from '../core';
+import type { FixtureId } from '../core';
 
 export interface VenueStore {
   venueId: number | null;
-  selectedFixture: ArcadeFixtureId | null;
+  selectedFixture: FixtureId | null;
   placedId: number | null;
   movingId: number | null;
   open: (venueId: number) => void;
   close: () => void;
-  selectFixture: (fixture: ArcadeFixtureId | null) => void;
+  selectFixture: (fixture: FixtureId | null) => void;
   selectPlaced: (fixtureId: number | null) => void;
   startMove: (fixtureId: number) => void;
   stopMove: () => void;

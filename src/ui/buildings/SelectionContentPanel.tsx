@@ -1,7 +1,7 @@
 import { EcologicalBuildingPanel } from './EcologicalBuildingPanel';
 import { DecorationRotation } from './DecorationRotation';
 import { CoalPlantPanel } from './CoalPlantPanel';
-import { GAME_CONFIG, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost } from '../../core';
+import { GAME_CONFIG, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost } from '../../core';
 import { t } from '../../i18n/t';
 import { FacilityPanel } from './FacilityPanel';
 import { CasinoPanel } from '../casino/CasinoPanel';
@@ -39,7 +39,7 @@ export function SelectionContentPanel() {
       {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}
       {building.type === 'marina' ? <MarinaPanel building={building} /> : null}
       {building.type === 'casino' ? <CasinoPanel building={building} /> : null}
-      {building.type === 'arcade' ? <VenuePanel building={building} /> : null}
+      {isVenueType(building.type) ? <VenuePanel building={building} /> : null}
       {building.type === 'shop' ? <ShopPanel building={building} /> : null}
       {isStorageType(building.type) ? <StoragePanel building={building} /> : null}
       {building.type === 'powerPlant' || building.type === 'waterTower' ? <UtilityPanel building={building} type={building.type} /> : null}
