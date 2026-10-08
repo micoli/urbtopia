@@ -21,7 +21,7 @@ import { isAdjacentToOwned, isInsideMap, isOwned, parcelPrice } from '../map/par
 import { FACILITIES, isFacilityType } from '../services/facilities';
 import { missingServices, serviceCoverage } from '../services/services';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from '../map/occupancy';
-import { autoRotation, frontTouchesRoad, placementIssue } from '../map/placement';
+import { autoRotation, frontHasAccess, placementIssue } from '../map/placement';
 import { newQueueEntry, restartRunningProduction, shiftRunningTimers, taxDue } from '../economy/production';
 import { roadBuildCost, missingRoadTiles } from '../map/roadCost';
 import { roadPath } from '../map/roads';
@@ -91,6 +91,7 @@ export type ErrorKey =
   | 'error.noOpenRound'
   | 'error.invalidRound'
   | 'error.needsRoad'
+  | 'error.needsRoadOrBrt'
   | 'error.storehouseExists'
   | 'error.siloExists'
   | 'error.vaultExists'
@@ -331,7 +332,7 @@ function demolishRoad(state: GameState, tiles: Coord[]): CommandOutcome {
     roundabouts: state.roundabouts.filter((center) => !roundabouts.includes(center)),
   };
   const orphaned = next.buildings.some(
-    (building) => !['busStop', 'brtStation', 'railStation'].includes(building.type) && BUILDING_SPECS[building.type].requiresRoad && !frontTouchesRoad(next, building.type, building.x, building.y, building.rotation, building.tier),
+    (building) => !['busStop', 'brtStation', 'railStation'].includes(building.type) && BUILDING_SPECS[building.type].requiresRoad && !frontHasAccess(next, building.type, building.x, building.y, building.rotation, building.tier),
   );
   if (orphaned) return fail('error.lastRoadOfBuilding');
   return { state: next, events: [] };

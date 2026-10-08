@@ -6,7 +6,7 @@ import { writeBuildingTypes } from './buildingTypes.ts';
 
 export const BUILDINGS_FILE = 'assets/buildings.json';
 
-const FIELD_ORDER: (keyof BuildingDefinition)[] = ['section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'initialSlots', 'name', 'description', 'sport', 'nature'];
+const FIELD_ORDER: (keyof BuildingDefinition)[] = ['section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'initialSlots', 'name', 'description', 'sport', 'nature'];
 const BUILDING_ID = /^[a-z][A-Za-z0-9-]*$/;
 const isCount = (value: unknown) => Number.isInteger(value) && (value as number) >= 0;
 const isBlank = (text: string | undefined) => !text?.trim();
@@ -19,7 +19,7 @@ export function buildingProblems(definition: BuildingDefinition): string[] {
   if (definition.sport && definition.nature) problems.push('a building cannot be both sport and nature');
   if (definition.nature) {
     if (!(definition.nature.family in NATURE_FAMILIES)) problems.push('unknown nature family');
-    const ownedByFamily = (['section', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'initialSlots'] as const).filter(field => definition[field] !== undefined);
+    const ownedByFamily = (['section', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'initialSlots'] as const).filter(field => definition[field] !== undefined);
     if (ownedByFamily.length) problems.push(`${ownedByFamily.join(', ')} come from the nature family`);
     return problems;
   }
@@ -28,6 +28,8 @@ export function buildingProblems(definition: BuildingDefinition): string[] {
   if (!isCount(definition.cost)) problems.push('cost must be an integer >= 0');
   if (!isCount(definition.unlockCitizens)) problems.push('unlockCitizens must be an integer >= 0');
   if (typeof definition.requiresRoad !== 'boolean') problems.push('requiresRoad must be true or false');
+  if (definition.accessModes && (!definition.accessModes.length || definition.accessModes.some(mode => mode !== 'road' && mode !== 'brt'))) problems.push("accessModes must list 'road' and/or 'brt'");
+  if (definition.accessModes && !definition.requiresRoad) problems.push('accessModes needs requiresRoad');
   if (definition.initialSlots !== undefined && !isCount(definition.initialSlots)) problems.push('initialSlots must be an integer >= 0');
   if (definition.sport && (!Number.isInteger(definition.sport.radius) || definition.sport.radius < 1 || !isCount(definition.sport.wellbeingBonus))) problems.push('sport needs radius >= 1 and wellbeingBonus >= 0');
   return problems;

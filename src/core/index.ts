@@ -7,7 +7,7 @@ export type { GameEvent } from './engine/events';
 export { BUILDING_SPECS, footprintOf, footprintTiles, placementCost } from './buildings/buildingSpecs';
 export type { BuildingSpec, Footprint } from './buildings/buildingSpecs';
 export { isInsideOwnedParcels, isRoadLike, occupiedTiles, roadExits, roundaboutTiles } from './map/occupancy';
-export { autoRotation, frontTiles, frontTouchesRoad, placementIssue } from './map/placement';
+export { autoRotation, frontTiles, frontAccessModes, frontHasAccess, placementIssue } from './map/placement';
 export type { PlacementIssue } from './map/placement';
 export { GAME_CONFIG } from './engine/config';
 export { newGame } from './engine/newGame';

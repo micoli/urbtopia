@@ -1,4 +1,5 @@
 import { BUILDING_ENTRIES, type BuildingEntry } from './buildingDefinitions';
+import type { AccessMode } from './buildingDefinition';
 import { NATURE_FAMILIES } from '../environment/natureFamilies';
 import type { Coord } from '../map/coord';
 import { HOME_FOOTPRINTS } from '../economy/economy';
@@ -14,16 +15,17 @@ export interface BuildingSpec {
   footprint: Footprint;
   cost: number;
   requiresRoad: boolean;
+  accessModes: readonly AccessMode[];
   initialSlots: number;
 }
 
-function specOf({ footprint, cost, requiresRoad, initialSlots, nature }: BuildingEntry): BuildingSpec {
+function specOf({ footprint, cost, requiresRoad, accessModes, initialSlots, nature }: BuildingEntry): BuildingSpec {
   if (nature) {
     const profile = NATURE_FAMILIES[nature.family];
-    return { footprint: { width: profile.size, depth: profile.size }, cost: profile.cost, requiresRoad: false, initialSlots: 0 };
+    return { footprint: { width: profile.size, depth: profile.size }, cost: profile.cost, requiresRoad: false, accessModes: [], initialSlots: 0 };
   }
   const [width, depth] = footprint!;
-  return { footprint: { width, depth }, cost: cost!, requiresRoad: requiresRoad!, initialSlots: initialSlots ?? 0 };
+  return { footprint: { width, depth }, cost: cost!, requiresRoad: requiresRoad!, accessModes: accessModes ?? (requiresRoad ? ['road'] : []), initialSlots: initialSlots ?? 0 };
 }
 
 export const BUILDING_SPECS = Object.fromEntries(BUILDING_ENTRIES.map(entry => [entry.id, specOf(entry)])) as Record<BuildingType, BuildingSpec>;

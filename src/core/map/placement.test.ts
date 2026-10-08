@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dispatch, newGame, type Command, type GameState } from '../index';
+import { autoRotation, dispatch, frontAccessModes, frontTiles, newGame, placementIssue, type Command, type GameState } from '../index';
 
 const NOW = 1_700_000_000_000;
 const initial = newGame({ seed: 'amber-fox-4821', now: NOW });
@@ -69,11 +69,11 @@ describe('PlaceBuilding', () => {
   });
 
   it('lets the player override the rotation, which can then fail the road rule', () => {
-    expect(failureKey(initial, place('shop', 56, 57, 0))).toBe('error.needsRoad');
+    expect(failureKey(initial, place('shop', 56, 57, 0))).toBe('error.needsRoadOrBrt');
   });
 
   it('refuses a building whose front does not touch a road', () => {
-    expect(failureKey(initial, place('shop', 70, 70))).toBe('error.needsRoad');
+    expect(failureKey(initial, place('shop', 70, 70))).toBe('error.needsRoadOrBrt');
   });
 
   it('does not need a road for a Power plant or a Water tower', () => {
@@ -189,5 +189,60 @@ describe('dispatch clock', () => {
     const earlier = run(later.state, place('waterTower', 72, 70), NOW);
     if (!earlier.ok) throw new Error('expected success');
     expect(earlier.state.lastSeen).toBe(NOW + 5000);
+  });
+});
+
+describe('access modes', () => {
+  const at = { x: 62, y: 66 };
+  const withBrt = (type: 'home' | 'workshop' | 'brtStation', rotation: 0 | 1 | 2 | 3, roads: GameState['roads'] = []): GameState => {
+    const front = frontTiles(type, at.x, at.y, rotation);
+    return { ...initial, roads, rails: [], brtRoads: front.map((tile) => ({ ...tile, exits: ['E', 'W'] as const })) as never };
+  };
+  const withRoad = (type: 'home' | 'workshop', rotation: 0 | 1 | 2 | 3): GameState => ({
+    ...initial,
+    roads: frontTiles(type, at.x, at.y, rotation).map((tile) => ({ ...tile, kind: 'road' as const })),
+  });
+
+  it('accepts a BRT corridor in front of a Home without a road', () => {
+    expect(placementIssue(withBrt('home', 0), 'home', at.x, at.y, 0)).toBeNull();
+  });
+
+  it('accepts a road in front of a Home as before', () => {
+    expect(placementIssue(withRoad('home', 0), 'home', at.x, at.y, 0)).toBeNull();
+  });
+
+  it('refuses a Home with neither a road nor a BRT corridor, naming both', () => {
+    expect(placementIssue({ ...initial, brtRoads: [] }, 'home', at.x, at.y, 0)).toBe('error.needsRoadOrBrt');
+  });
+
+  it('keeps asking for a road from buildings that do not accept the BRT', () => {
+    expect(placementIssue(withBrt('workshop', 0), 'workshop', at.x, at.y, 0)).toBe('error.needsRoad');
+  });
+
+  it('does not accept a rail tile as access', () => {
+    const rails = frontTiles('home', at.x, at.y, 0).map((tile) => ({ ...tile, exits: ['E', 'W'] as const }));
+    expect(placementIssue({ ...initial, brtRoads: [], rails: rails as never }, 'home', at.x, at.y, 0)).toBe('error.needsRoadOrBrt');
+  });
+
+  it('lists the modes that touch the front', () => {
+    const both: GameState = { ...withBrt('home', 0), roads: frontTiles('home', at.x, at.y, 0).map((tile) => ({ ...tile, kind: 'road' as const })) };
+    expect(frontAccessModes(both, 'home', at.x, at.y, 0)).toEqual(['road', 'brt']);
+    expect(frontAccessModes(withBrt('home', 0), 'home', at.x, at.y, 0)).toEqual(['brt']);
+  });
+
+  it('faces the BRT corridor when there is no road', () => {
+    const state = withBrt('home', 1);
+    expect(autoRotation(state, 'home', at.x, at.y)).toBe(1);
+  });
+
+  it('prefers the road over the BRT corridor', () => {
+    const roadFront = frontTiles('home', at.x, at.y, 3).map((tile) => ({ ...tile, kind: 'road' as const }));
+    const brtFront = frontTiles('home', at.x, at.y, 1).map((tile) => ({ ...tile, exits: ['E', 'W'] as const }));
+    const state: GameState = { ...initial, roads: roadFront, rails: [], brtRoads: brtFront as never };
+    expect(autoRotation(state, 'home', at.x, at.y)).toBe(3);
+  });
+
+  it('keeps stations on their own network', () => {
+    expect(placementIssue(withBrt('brtStation', 0), 'brtStation', at.x, at.y, 0)).toBeNull();
   });
 });

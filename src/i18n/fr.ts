@@ -277,6 +277,7 @@ export const FR: Record<MessageKey, string> = {
   'error.tilesOccupied': 'Cet emplacement est déjà occupé.',
   'error.homeExpansionBlocked': "Ce logement doit s’agrandir pour évoluer. Une route ou un bâtiment occupe l’espace nécessaire : libérez cet espace ou déplacez le logement.",
   'error.needsRoad': "La façade de ce bâtiment doit toucher une route.",
+  'error.needsRoadOrBrt': "La façade de ce bâtiment doit toucher une route ou un couloir BRT.",
   'error.storehouseExists': 'Vous avez déjà un entrepôt.',
   'error.notEnoughUrbs': 'Pas assez de {U}.',
   'error.lastRoadOfBuilding': "C'est la seule route d'un bâtiment.",

@@ -275,6 +275,7 @@ export const MESSAGES = {
   'error.tilesOccupied': 'This place is already taken.',
   'error.homeExpansionBlocked': 'This Home needs more space to upgrade. A road or building blocks its expansion: clear that space or move the Home.',
   'error.needsRoad': 'The front of this building must touch a road.',
+  'error.needsRoadOrBrt': 'The front of this building must touch a road or a BRT corridor.',
   'error.storehouseExists': 'You already have a Storehouse.',
   'error.notEnoughUrbs': 'Not enough {U}.',
   'error.lastRoadOfBuilding': 'This is the only road of a building.',

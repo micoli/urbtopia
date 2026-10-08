@@ -22,6 +22,9 @@ describe('buildings file', () => {
 
   it('refuses incomplete buildings', () => {
     expect(buildingProblems({ ...standard, footprint: undefined })).toContain('footprint must be two integers >= 1');
+    expect(buildingProblems({ ...standard, accessModes: [] })).toHaveLength(1);
+    expect(buildingProblems({ ...standard, accessModes: ['rail' as never] })).toHaveLength(1);
+    expect(buildingProblems({ ...standard, requiresRoad: false, accessModes: ['road'] })).toContain('accessModes needs requiresRoad');
     expect(buildingProblems({ ...standard, cost: -1 })).toContain('cost must be an integer >= 0');
     expect(buildingProblems({ ...standard, section: 'build.nowhere' as never })).toContain('unknown section');
     expect(buildingProblems({ ...standard, name: { en: 'Workshop', fr: ' ' } })).toContain('name is required in en and fr');
@@ -41,6 +44,7 @@ describe('buildings file', () => {
     writeBuildings({ zebra: standard, alpha: nature, middle: sport }, file);
     expect(Object.keys(readBuildings(file))).toEqual(['zebra', 'alpha', 'middle']);
     expect(Object.keys(readBuildings(file).zebra!)).toEqual(['section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'name']);
+    expect(Object.keys(readBuildings(file).zebra!)).not.toContain('accessModes');
     expect(readFileSync(file, 'utf8')).toBe(stableBuildingsJson(readBuildings(file)));
   });
 

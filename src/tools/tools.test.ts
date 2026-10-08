@@ -18,13 +18,13 @@ describe('building tool', () => {
   it('explains why a ghost is invalid', () => {
     const evaluation = evaluateTool(shopTool, { state, tile: { x: 70, y: 70 }, rotation: null });
     expect(evaluation.valid).toBe(false);
-    expect(evaluation.issue).toBe('error.needsRoad');
+    expect(evaluation.issue).toBe('error.needsRoadOrBrt');
   });
 
   it('respects a rotation chosen by the player', () => {
     const evaluation = evaluateTool(shopTool, { state, tile: { x: 56, y: 57 }, rotation: 0 });
     expect(evaluation.rotation).toBe(0);
-    expect(evaluation.issue).toBe('error.needsRoad');
+    expect(evaluation.issue).toBe('error.needsRoadOrBrt');
   });
 
   it('covers the whole footprint of a large building', () => {
