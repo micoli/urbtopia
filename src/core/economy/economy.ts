@@ -1,3 +1,4 @@
+import { tiersOf } from '../buildings/buildingDefinitions';
 import type { GoodId } from './items';
 
 export const MAX_SLOTS = 5;
@@ -72,16 +73,7 @@ export const MARKET = {
 
 export const PARCEL_PRICING = { base: 300, factor: 1.12, roundTo: 10 };
 
-export const HOME_TIERS: readonly { citizens: number; power: number; water: number }[] = [
-  { citizens: 6, power: 1, water: 1 },
-  { citizens: 15, power: 2, water: 2 },
-  { citizens: 32, power: 3, water: 3 },
-  { citizens: 60, power: 6, water: 6 },
-  { citizens: 100, power: 10, water: 10 },
-  { citizens: 160, power: 16, water: 16 },
-  { citizens: 250, power: 25, water: 25 },
-  { citizens: 400, power: 40, water: 40 },
-];
+export const HOME_TIERS: readonly { citizens: number; power: number; water: number }[] = tiersOf('home').map(({ citizens, power, water }) => ({ citizens: citizens!, power: power!, water: water! }));
 
 export const UTILITY_CAPACITY: Record<'powerPlant' | 'waterTower', readonly number[]> = {
   powerPlant: [12, 24, 40],
@@ -103,25 +95,12 @@ export const UTILITY_UPGRADE_COSTS: Record<'powerPlant' | 'waterTower', Record<n
 
 export const TAX = { urbsPerCitizenPerHour: 1, capHours: 8, hourMs: 3_600_000 };
 
-export const HOME_FOOTPRINTS: readonly { width: number; depth: number }[] = [
-  { width: 1, depth: 1 },
-  { width: 2, depth: 1 },
-  { width: 2, depth: 1 },
-  { width: 2, depth: 1 },
-  { width: 2, depth: 2 },
-  { width: 2, depth: 2 },
-  { width: 2, depth: 2 },
-  { width: 2, depth: 2 },
-];
+const HOME_TIER_LIST = tiersOf('home');
 
-export const HOME_UPGRADE_COSTS: Record<number, UpgradeCostSpec> = {
-  2: { urbs: 150, goods: { planks: 3 } },
-  3: { urbs: 400, goods: { bricks: 4, planks: 2 } },
-  4: { urbs: 1000, goods: { tiles: 4, bricks: 3 } },
-  5: { urbs: 2500, goods: { tools: 4, tiles: 3 } },
-  6: { urbs: 6000, goods: { glass: 4, circuits: 3 } },
-  7: { urbs: 15000, goods: { steel: 4, cement: 4 } },
-  8: { urbs: 40000, goods: { crystal: 3, jewelry: 3 } },
-};
+export const HOME_FOOTPRINTS: readonly { width: number; depth: number }[] = HOME_TIER_LIST.map(({ footprint }) => ({ width: footprint![0], depth: footprint![1] }));
 
-export const MAX_HOME_TIER = 8;
+export const HOME_UPGRADE_COSTS: Record<number, UpgradeCostSpec> = Object.fromEntries(
+  HOME_TIER_LIST.flatMap(({ upgradeCost }, index) => (upgradeCost ? [[index + 1, { urbs: upgradeCost.urbs, goods: (upgradeCost.goods ?? {}) as UpgradeCostSpec['goods'] }]] : [])),
+);
+
+export const MAX_HOME_TIER = HOME_TIER_LIST.length;

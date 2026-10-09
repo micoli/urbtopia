@@ -1,4 +1,4 @@
-import { BUILDING_ENTRIES } from '../core/buildings/buildingDefinitions';
+import { BUILDING_ENTRIES, tiersOf, variantTiersOf } from '../core/buildings/buildingDefinitions';
 import { modelFileOf } from '../core/models/modelFiles';
 import { FIXTURE_MODELS, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type BoatFamily, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
@@ -85,18 +85,9 @@ const GRAIN_SILO_MODELS = ['farm/Silo_House', 'farm/Silo_House', 'farm/Silo_Hous
 
 const CASINO_MODELS = ['buildings/2Story_Stairs_Mat', 'buildings/2Story_Wide_Mat', 'buildings/2Story_Wide_2Doors_Mat'];
 
-const HOME_MODELS = [
-  'suburban/building-type-k',
-  'suburban/building-type-h',
-  'suburban/building-type-a',
-  'suburban/building-type-h',
-  'suburban/building-type-f',
-  'suburban/building-type-n',
-  'suburban/building-type-t',
-  'suburban/building-type-m',
-];
+const HOME_MODELS = tiersOf('home').map(({ model }) => modelFileOf(model!));
 
-const SOLAR_HOME_MODELS = ['suburban/building-type-j', 'suburban/building-type-u', 'suburban/building-type-b'];
+const SOLAR_HOME_MODELS = variantTiersOf('home', 'solar').map(({ model }) => modelFileOf(model!));
 const ROOF_PANEL_MODEL = 'industrial/solar-panel-flat';
 const SOLAR_PANEL_MODEL = 'industrial/solar-panel-landscape';
 
@@ -158,9 +149,7 @@ export function modelOf(type: BuildingType, tier: number): string {
 }
 
 export function modelOfBuilding(building: Building): string {
-  if (building.type === 'home' && building.solar && building.tier <= 4) {
-    return SOLAR_HOME_MODELS[building.tier === 1 ? 0 : building.tier === 4 ? 2 : 1] as string;
-  }
+  if (building.type === 'home' && building.solar && building.tier <= SOLAR_HOME_MODELS.length) return SOLAR_HOME_MODELS[building.tier - 1]!;
   return modelOf(building.type, building.tier);
 }
 

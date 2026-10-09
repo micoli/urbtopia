@@ -14,6 +14,7 @@ interface Props {
   modelSlot?: (path: FieldPath) => ModelSlot
   custom?: (field: FieldSpec) => ReactNode
   hints?: Record<string, string>
+  compact?: boolean
 }
 
 const errorsOf = (problems: Problem[], key: string) =>
@@ -22,9 +23,9 @@ const errorsOf = (problems: Problem[], key: string) =>
 const within = (problems: Problem[], prefix: string) => problems.filter(({ path }) => path.startsWith(`${prefix}.`)).map(problem => ({ ...problem, path: problem.path.slice(prefix.length + 1) }))
 
 // Required fields come from the schema; an optional field can be unset to fall back to its default.
-export function SchemaForm({ fields, value, problems, onChange, path = [], modelSlot, custom, hints }: Props) {
+export function SchemaForm({ fields, value, problems, onChange, path = [], modelSlot, custom, hints, compact }: Props) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className={`flex flex-col ${compact ? 'gap-2' : 'gap-3'}`}>
       {fields.map(field => {
         const current = value[field.key]
         const at = [...path, field.key]
@@ -58,9 +59,10 @@ export function SchemaForm({ fields, value, problems, onChange, path = [], model
             required={field.required}
             errors={containerErrors}
             hint={hints?.[field.key]}
+            compact={compact}
             onClear={!field.required && current !== undefined && field.type !== 'custom' ? () => onChange(field.key, undefined) : undefined}
           >
-            <FieldControl field={field} value={current} path={at} onChange={next => onChange(field.key, next)} modelSlot={modelSlot} nested={nested} custom={custom} />
+            <FieldControl field={field} value={current} path={at} onChange={next => onChange(field.key, next)} modelSlot={modelSlot} nested={nested} custom={custom} compact={compact} />
           </FieldShell>
         )
       })}

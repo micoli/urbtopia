@@ -34,6 +34,8 @@ export interface CollectionSpec {
 
 const idsWhere = <T>(definitions: Record<string, T>, keep: (definition: T) => boolean = () => true) => Object.keys(definitions).filter(id => keep(definitions[id]!)).sort();
 
+const goodReferences = (goods: Record<string, number> | undefined, path: string): Reference[] => Object.keys(goods ?? {}).map(id => ({ target: ['goods'], id, path: `${path}.${id}` }));
+
 const modelReference = (id: string | undefined, path: string): Reference[] => (id ? [{ target: 'models', id, path }] : []);
 
 export const COLLECTIONS = {
@@ -53,7 +55,11 @@ export const COLLECTIONS = {
     idPattern: BUILDING_ID_PATTERN,
     idRule: 'start with a letter and use letters, digits or hyphens',
     fieldOrder: ['kind', 'order', 'retired', 'section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'initialSlots', 'name', 'description', 'radius', 'wellbeingBonus', 'family'],
-    references: (building: FlatBuilding) => modelReference(building.model, 'model'),
+    references: (building: FlatBuilding) => [
+      ...modelReference(building.model, 'model'),
+      ...(building.tiers ?? []).flatMap((tier, index) => [...modelReference(tier.model, `tiers.${index}.model`), ...goodReferences(tier.upgradeCost?.goods, `tiers.${index}.upgradeCost.goods`)]),
+      ...Object.entries(building.variants ?? {}).flatMap(([name, { tiers }]) => tiers.flatMap((tier, index) => modelReference(tier.model, `variants.${name}.tiers.${index}.model`))),
+    ],
   },
   materials: {
     dir: 'materials',

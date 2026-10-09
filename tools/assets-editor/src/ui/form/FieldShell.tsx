@@ -6,13 +6,15 @@ interface Props {
   errors: string[]
   onClear?: () => void
   hint?: string
+  // Label above the control, for narrow places such as a Tier cell.
+  compact?: boolean
   children: ReactNode
 }
 
-export function FieldShell({ label, required, errors, onClear, hint, children }: Props) {
+export function FieldShell({ label, required, errors, onClear, hint, compact, children }: Props) {
   return (
-    <div className="grid gap-1 sm:grid-cols-[11rem_minmax(0,1fr)] sm:items-start sm:gap-3">
-      <div className="flex items-center gap-1 pt-1.5 text-sm text-zinc-600">
+    <div className={compact ? 'grid gap-1' : 'grid gap-1 sm:grid-cols-[11rem_minmax(0,1fr)] sm:items-start sm:gap-3'}>
+      <div className={`flex items-center gap-1 text-zinc-600 ${compact ? 'text-xs' : 'pt-1.5 text-sm'}`}>
         <span>{label}</span>
         {required && <span className="text-red-500" aria-label="required">*</span>}
         {onClear && (

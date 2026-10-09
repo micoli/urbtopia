@@ -1,3 +1,4 @@
+import { resolveTiers, resolveVariant } from '../../../../src/core/buildings/tiers'
 import { specOf } from '../../../../scripts/collections'
 import { useEffect, useRef, useState } from 'react'
 import { footprintOf } from '../fitted'
@@ -7,12 +8,19 @@ import { buildPlacement, SceneStage } from '../sceneStage'
 import { useDocument, type Doc, type Selection } from '../store/documentStore'
 import { button, panel } from './styles'
 
-// The model a Game object shows: a Crop shows its last growth stage.
-function modelOfSelection(doc: Doc, selection: Selection | null): string | undefined {
+type Tier = { model?: string }
+
+// The model a Game object shows: the previewed Tier of one that grows, the last growth stage of a Crop.
+function modelOfSelection(doc: Doc, selection: Selection | null, preview: { tier: number; variant?: string }): string | undefined {
   if (!selection || selection.kind === 'singletons') return undefined
   if (selection.kind === 'models') return selection.id
   const definition = doc.collections[selection.kind][selection.id]
   if (!definition) return undefined
+  if (Array.isArray(definition.tiers)) {
+    const base = resolveTiers<Tier>(definition.tiers as Tier[])
+    const variant = preview.variant ? (definition.variants as Record<string, { tiers: Tier[] }> | undefined)?.[preview.variant]?.tiers : undefined
+    return (variant ? resolveVariant(base, variant) : base)[preview.tier]?.model ?? base[0]?.model
+  }
   const models = specOf(selection.kind).references(definition as never).filter(({ target }) => target === 'models')
   return (models.find(({ path }) => path === 'models.growth.3') ?? models[0])?.id
 }
@@ -24,7 +32,7 @@ export function Preview() {
   const stageRef = useRef<SceneStage | null>(null)
   const [rotation, setRotation] = useState(0)
   const [info, setInfo] = useState<ModelInfo | null>(null)
-  const modelId = useDocument(state => modelOfSelection(state.doc, state.selection))
+  const modelId = useDocument(state => modelOfSelection(state.doc, state.selection, state.preview))
   const settings = useDocument(state => (modelId ? state.doc.models[modelId] : undefined))
   const location = useLibrary().byFile.get(settings?.file ?? '')
 

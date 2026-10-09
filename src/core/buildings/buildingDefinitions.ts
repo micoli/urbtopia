@@ -1,16 +1,22 @@
+import { entriesOf } from '../defs/entries.ts';
 import type { FlatBuilding } from './buildingDefinition.ts';
 import type { BuildingId, NatureType, SportVenueType } from './buildingTypes.generated.ts';
+import { resolveTiers, resolveVariant } from './tiers.ts';
 
-export type BuildingEntry = FlatBuilding & { id: BuildingId };
+type Tier = NonNullable<FlatBuilding['tiers']>[number];
+
+// A building that grows shows the model and takes the footprint of its Tier 1.
+export type BuildingEntry = FlatBuilding & { id: BuildingId; model: string };
 
 // Checked against the schema by the definitions plugin at dev start and build, and by the tests.
 const files = import.meta.glob<FlatBuilding>('../../../assets/defs/buildings/*.json', { eager: true, import: 'default' });
 
-const idOf = (path: string) => path.slice(path.lastIndexOf('/') + 1, -'.json'.length) as BuildingId;
+const withTierOne = (definition: FlatBuilding & { id: BuildingId }): BuildingEntry => {
+  const [first] = resolveTiers<Tier>(definition.tiers ?? []);
+  return { ...definition, model: definition.model ?? first?.model ?? '', footprint: definition.footprint ?? first?.footprint };
+};
 
-export const BUILDING_ENTRIES: readonly BuildingEntry[] = Object.entries(files)
-  .map(([path, { $schema: _schema, ...definition }]: [string, FlatBuilding & { $schema?: string }]) => ({ id: idOf(path), ...definition }))
-  .sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || a.id.localeCompare(b.id));
+export const BUILDING_ENTRIES: readonly BuildingEntry[] = entriesOf<FlatBuilding, BuildingId>(files).map(withTierOne);
 
 export const BUILDING_IDS: readonly BuildingId[] = BUILDING_ENTRIES.map(({ id }) => id);
 
@@ -19,6 +25,14 @@ const entriesById = new Map<string, BuildingEntry>(BUILDING_ENTRIES.map(entry =>
 export const definitionOf = (id: BuildingId): BuildingEntry => entriesById.get(id)!;
 
 export const isRetired = (id: BuildingId): boolean => entriesById.get(id)?.retired === true;
+
+// Every Tier with what it inherits; a variant overrides the look of its first Tiers.
+export const tiersOf = (id: BuildingId): Tier[] => resolveTiers<Tier>(definitionOf(id).tiers ?? []);
+
+export const variantTiersOf = (id: BuildingId, variant: string): Tier[] => {
+  const tiers = definitionOf(id).variants?.[variant]?.tiers;
+  return tiers ? resolveVariant(tiersOf(id), tiers).slice(0, tiers.length) : [];
+};
 
 export type SportEntry = BuildingEntry & { id: SportVenueType; kind: 'sport'; radius: number; wellbeingBonus: number };
 export type NatureEntry = BuildingEntry & { id: NatureType; kind: 'nature'; family: NonNullable<FlatBuilding['family']> };

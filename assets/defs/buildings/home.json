@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "home",
   "order": 10,
   "section": "build.housing",
-  "model": "suburban-building-type-k",
-  "footprint": [1, 1],
   "cost": 150,
   "unlockCitizens": 0,
   "requiresRoad": true,
@@ -16,5 +14,122 @@
   "description": {
     "en": "Houses Citizens who generate Tax. Upgrades increase population, utility Demand and, at some Tiers, the space occupied by the building.",
     "fr": "Accueille des habitants qui génèrent des impôts. Les améliorations augmentent la population, les besoins en eau et en électricité et, à certains niveaux, la surface du bâtiment."
+  },
+  "tiers": [
+    {
+      "model": "suburban-building-type-k",
+      "footprint": [1, 1],
+      "citizens": 6,
+      "power": 1,
+      "water": 1
+    },
+    {
+      "model": "suburban-building-type-h",
+      "footprint": [2, 1],
+      "citizens": 15,
+      "power": 2,
+      "water": 2,
+      "upgradeCost": {
+        "urbs": 150,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "model": "suburban-building-type-a",
+      "citizens": 32,
+      "power": 3,
+      "water": 3,
+      "upgradeCost": {
+        "urbs": 400,
+        "goods": {
+          "bricks": 4,
+          "planks": 2
+        }
+      }
+    },
+    {
+      "model": "suburban-building-type-h",
+      "citizens": 60,
+      "power": 6,
+      "water": 6,
+      "upgradeCost": {
+        "urbs": 1000,
+        "goods": {
+          "tiles": 4,
+          "bricks": 3
+        }
+      }
+    },
+    {
+      "model": "suburban-building-type-f",
+      "footprint": [2, 2],
+      "citizens": 100,
+      "power": 10,
+      "water": 10,
+      "upgradeCost": {
+        "urbs": 2500,
+        "goods": {
+          "tools": 4,
+          "tiles": 3
+        }
+      }
+    },
+    {
+      "model": "suburban-building-type-n",
+      "citizens": 160,
+      "power": 16,
+      "water": 16,
+      "upgradeCost": {
+        "urbs": 6000,
+        "goods": {
+          "glass": 4,
+          "circuits": 3
+        }
+      }
+    },
+    {
+      "model": "suburban-building-type-t",
+      "citizens": 250,
+      "power": 25,
+      "water": 25,
+      "upgradeCost": {
+        "urbs": 15000,
+        "goods": {
+          "steel": 4,
+          "cement": 4
+        }
+      }
+    },
+    {
+      "model": "suburban-building-type-m",
+      "citizens": 400,
+      "power": 40,
+      "water": 40,
+      "upgradeCost": {
+        "urbs": 40000,
+        "goods": {
+          "crystal": 3,
+          "jewelry": 3
+        }
+      }
+    }
+  ],
+  "variants": {
+    "solar": {
+      "tiers": [
+        {
+          "model": "suburban-building-type-j"
+        },
+        {
+          "model": "suburban-building-type-u"
+        },
+        {},
+        {
+          "model": "suburban-building-type-b"
+        }
+      ]
+    }
   }
 }

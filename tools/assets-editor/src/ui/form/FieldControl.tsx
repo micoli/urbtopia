@@ -27,12 +27,13 @@ interface Props {
   modelSlot?: (path: FieldPath) => ModelSlot
   nested: (field: FieldSpec & { type: 'object' | 'list' }) => ReactNode
   custom?: (field: FieldSpec) => ReactNode
+  compact?: boolean
 }
 
-export function FieldControl({ field, value, path, onChange, modelSlot, nested, custom }: Props) {
+export function FieldControl({ field, value, path, onChange, modelSlot, nested, custom, compact }: Props) {
   const modelControl = (current: string | undefined, at: FieldPath, label: string, set: (id: string) => void) => {
     const slot = modelSlot?.(at)
-    return slot ? <ModelControl value={current} label={label} dropId={slot.dropId} assign={slot.assign} onChange={set} /> : null
+    return slot ? <ModelControl value={current} label={label} dropId={slot.dropId} assign={slot.assign} onChange={set} compact={compact} /> : null
   }
 
   switch (field.type) {
@@ -63,10 +64,12 @@ export function FieldControl({ field, value, path, onChange, modelSlot, nested, 
     case 'localized':
       return <LocalizedControl value={value as LocalizedText | undefined} label={field.label} onChange={onChange} />
     case 'record':
-      return <RecordControl value={value as Record<string, number> | undefined} targets={field.targets} integer={field.integer} min={field.min} label={field.label} onChange={onChange} />
+      return <RecordControl value={value as Record<string, number> | undefined} targets={field.targets} integer={field.integer} min={field.min} label={field.label} onChange={onChange} compact={compact} />
     case 'object':
     case 'list':
       return nested(field)
+    case 'map':
+      return null
     case 'custom':
       return custom?.(field) ?? null
   }

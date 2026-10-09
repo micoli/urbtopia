@@ -7,13 +7,13 @@ import type { QuaterniusPack } from './quaternius.ts';
 
 const modelFiles = readModels();
 const collections = readCollections();
-const definitionModels = COLLECTION_NAMES.flatMap(name =>
+export const DEFINITION_MODEL_FILES = COLLECTION_NAMES.flatMap(name =>
   Object.values(collections[name]).flatMap(definition => specOf(name).references(definition as never).filter(({ target }) => target === 'models').map(({ id }) => modelFiles[id]?.file ?? id)),
 );
 
 // A pack installs the files listed below plus every model a definition uses: a Game object can take any model of an installable pack.
 const withDefinitionModels = <T extends { name: string; files: string[] }>(pack: T): T => {
-  const used = definitionModels.filter(model => model.startsWith(`${pack.name}/`)).map(model => model.slice(pack.name.length + 1));
+  const used = DEFINITION_MODEL_FILES.filter(model => model.startsWith(`${pack.name}/`)).map(model => model.slice(pack.name.length + 1));
   return { ...pack, files: [...new Set([...pack.files, ...used])] };
 };
 

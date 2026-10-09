@@ -1,4 +1,5 @@
 import type { BuildingKind, FlatBuilding } from '../../../../src/core/buildings/buildingDefinition'
+import { resolveTiers } from '../../../../src/core/buildings/tiers'
 import { BUILD_SECTION_TITLES, type BuildSection } from '../../../../src/core/buildings/buildSections'
 import type { ModelEntry } from '../../../../src/core/models/modelSchema'
 import type { CollectionName, Definition } from '../../../../scripts/collections'
@@ -51,6 +52,7 @@ const PLACED_DEFAULTS = { footprint: [1, 1] as [number, number], cost: 0, unlock
 export function blankBuilding(kind: BuildingKind, model: string): FlatBuilding {
   const name = { en: '', fr: '' }
   if (kind === 'nature') return { kind, model, name, family: 'decoration' }
+  if (kind === 'home') return { kind, name, section: 'build.housing', cost: 0, unlockCitizens: 0, requiresRoad: true, tiers: [{ model, footprint: [1, 1], citizens: 1, power: 1, water: 1 }] }
   if (kind === 'sport') return { kind, model, name, section: 'build.sport', ...PLACED_DEFAULTS, radius: 1, wellbeingBonus: 0 }
   return { kind, model, name, section: 'build.production', ...PLACED_DEFAULTS }
 }
@@ -67,10 +69,14 @@ export function blankDefinition(collection: CollectionName, model: string): Defi
 
 // Switching kind keeps what both kinds share and fills what the new one requires.
 export function convertBuilding(building: FlatBuilding, kind: BuildingKind): FlatBuilding {
-  const { model, name: text, description, retired } = building
-  const shared = { model, name: text, ...(description ? { description } : {}), ...(retired ? { retired } : {}) }
+  const { name: text, description, retired } = building
+  const [firstTier] = resolveTiers<NonNullable<FlatBuilding['tiers']>[number]>(building.tiers ?? [])
+  const model = building.model ?? firstTier?.model ?? ''
+  const footprint = building.footprint ?? firstTier?.footprint ?? PLACED_DEFAULTS.footprint
+  const shared = { name: text, ...(description ? { description } : {}), ...(retired ? { retired } : {}) }
   const blank = blankBuilding(kind, model)
-  if (kind === 'nature') return { ...blank, ...shared }
-  const placed = { section: building.section ?? blank.section, footprint: building.footprint ?? PLACED_DEFAULTS.footprint, cost: building.cost ?? 0, unlockCitizens: building.unlockCitizens ?? 0, requiresRoad: building.requiresRoad ?? true, ...(building.accessModes ? { accessModes: building.accessModes } : {}), ...(building.initialSlots !== undefined ? { initialSlots: building.initialSlots } : {}) }
-  return { ...blank, ...placed, ...shared, kind }
+  if (kind === 'nature') return { ...blank, ...shared, model }
+  const placed = { section: building.section ?? blank.section, cost: building.cost ?? 0, unlockCitizens: building.unlockCitizens ?? 0, requiresRoad: building.requiresRoad ?? true, ...(building.accessModes ? { accessModes: building.accessModes } : {}), ...(building.initialSlots !== undefined ? { initialSlots: building.initialSlots } : {}) }
+  if (kind === 'home') return { ...blank, ...placed, ...shared, tiers: [{ ...blank.tiers![0], model, footprint }] }
+  return { ...blank, ...placed, ...shared, model, footprint, kind }
 }

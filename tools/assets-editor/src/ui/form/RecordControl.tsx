@@ -9,11 +9,12 @@ interface Props {
   integer: boolean
   min?: number
   label: string
+  compact?: boolean
   onChange: (value: Record<string, number>) => void
 }
 
 // A record keyed by ids of other collections, such as a recipe of Materials and Crops.
-export function RecordControl({ value, targets, integer, min, label, onChange }: Props) {
+export function RecordControl({ value, targets, integer, min, label, compact, onChange }: Props) {
   const collections = useDocument(state => state.doc.collections)
   const entries = Object.entries(value ?? {})
   const options = targets.flatMap(target => Object.keys(collections[target]))
@@ -23,7 +24,7 @@ export function RecordControl({ value, targets, integer, min, label, onChange }:
   return (
     <div className="flex flex-col gap-1.5">
       {entries.map(([key, amount]) => (
-        <div key={key} className="grid grid-cols-[minmax(0,1fr)_6rem_auto] items-center gap-2">
+        <div key={key} className={`grid items-center gap-2 ${compact ? 'grid-cols-[minmax(0,1fr)_4rem_auto]' : 'grid-cols-[minmax(0,1fr)_6rem_auto]'}`}>
           <select className={input} aria-label={`${label} id`} value={key} onChange={event => replaceKey(key, event.target.value)}>
             {[key, ...unused].map(option => <option key={option}>{option}</option>)}
           </select>

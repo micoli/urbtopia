@@ -11,9 +11,10 @@ interface Props {
   dropId: string
   assign: (doc: Doc, modelId: string) => Doc
   onChange: (modelId: string) => void
+  compact?: boolean
 }
 
-export function ModelControl({ value, label, dropId, assign, onChange }: Props) {
+export function ModelControl({ value, label, dropId, assign, onChange, compact }: Props) {
   const models = useDocument(state => state.doc.models)
   const listId = useId()
   const data: ModelDrop = { type: 'model-field', assign }
@@ -24,9 +25,9 @@ export function ModelControl({ value, label, dropId, assign, onChange }: Props) 
   return (
     <div
       ref={setNodeRef}
-      className={`flex items-center gap-3 rounded-lg p-2 ring-1 transition ${isOver ? 'bg-indigo-50 ring-2 ring-indigo-500' : dragging ? 'bg-indigo-50/40 ring-indigo-300 ring-dashed' : 'ring-zinc-200'}`}
+      className={`flex gap-2 rounded-lg p-2 ring-1 transition ${compact ? 'flex-col items-stretch' : 'items-center gap-3'} ${isOver ? 'bg-indigo-50 ring-2 ring-indigo-500' : dragging ? 'bg-indigo-50/40 ring-indigo-300 ring-dashed' : 'ring-zinc-200'}`}
     >
-      <Thumbnail file={file} className="h-16 w-16 shrink-0" />
+      <Thumbnail file={file} className={compact ? 'h-20 w-full' : 'h-16 w-16 shrink-0'} />
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <CommitInput list={listId} aria-label={label} value={value ?? ''} onCommit={next => next.trim() && onChange(next.trim())} />
         <datalist id={listId}>

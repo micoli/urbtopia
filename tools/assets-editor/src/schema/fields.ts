@@ -39,6 +39,7 @@ export type FieldSpec = Base &
     | { type: 'object'; fields: FieldSpec[] }
     | { type: 'record'; targets: readonly CollectionName[]; integer: boolean; min?: number }
     | { type: 'list'; fields: FieldSpec[] }
+    | { type: 'map'; fields: FieldSpec[] }
     | { type: 'custom' }
   )
 
@@ -68,7 +69,7 @@ const PAIR_PARTS: Record<string, [string, string]> = { footprint: ['W', 'D'], ce
 const MODEL_KEYS = new Set(['model', 'produce', 'harvested', 'growth'])
 
 // Records keyed by ids of other collections.
-const RECORD_TARGETS: Record<string, readonly CollectionName[]> = { recipe: ['materials', 'crops'] }
+const RECORD_TARGETS: Record<string, readonly CollectionName[]> = { recipe: ['materials', 'crops'], goods: ['goods'] }
 
 export const labelOf = (key: string) => LABELS[key] ?? key.replace(/([A-Z])/g, ' $1').replace(/^./, letter => letter.toUpperCase())
 
@@ -95,6 +96,7 @@ function fieldOf(key: string, schema: JsonSchema, required: boolean, options: Fi
   if (schema.type === 'array' && schema.items && schema.items.enum) return { ...base, type: 'choices', options: schema.items.enum }
   if (schema.type === 'array' && schema.items && schema.items.type === 'object') return { ...base, type: 'list', fields: fieldsOf(schema.items, options) }
   if (isLocalized(schema)) return { ...base, type: 'localized' }
+  if (schema.type === 'object' && !schema.properties && typeof schema.additionalProperties === 'object' && schema.additionalProperties.properties) return { ...base, type: 'map', fields: fieldsOf(schema.additionalProperties, options) }
   if (schema.type === 'object' && !schema.properties && typeof schema.additionalProperties === 'object') {
     const values = schema.additionalProperties
     return { ...base, type: 'record', targets: RECORD_TARGETS[key] ?? [], integer: values.type === 'integer', min: values.minimum }

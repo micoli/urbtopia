@@ -13,7 +13,7 @@ export type BuildingKind = BuildingDefinition['kind'];
 
 type KeysOfUnion<T> = T extends unknown ? keyof T : never;
 type ValueInUnion<T, K extends PropertyKey> = T extends unknown ? (K extends keyof T ? T[K] : never) : never;
-type SharedKey = 'kind' | 'model' | 'name';
+type SharedKey = 'kind' | 'name';
 
 // Every field of every kind, optional unless all kinds require it, so that code can read any field without narrowing on the kind.
 export type FlatBuilding = Pick<BuildingDefinition, SharedKey> & {

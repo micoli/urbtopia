@@ -37,7 +37,7 @@ describe('document edits', () => {
 
   it('converts a building to another kind into a valid one', () => {
     const named = { ...(building('build.leisure') as unknown as FlatBuilding), description: { en: 'D', fr: 'D' }, accessModes: ['road', 'brt'] as FlatBuilding['accessModes'] }
-    for (const kind of ['sport', 'nature', 'standard'] as const) {
+    for (const kind of ['sport', 'nature', 'home', 'standard'] as const) {
       const converted = { ...convertBuilding(named, kind), order: 10 }
       expect(converted.kind).toBe(kind)
       expect(buildingProblemsOf('x', converted)).toEqual([])

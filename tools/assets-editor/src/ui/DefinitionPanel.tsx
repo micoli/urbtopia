@@ -12,9 +12,11 @@ import { CreateDialog } from './CreateDialog'
 import type { FieldPath } from './form/FieldControl'
 import { SchemaForm } from './form/SchemaForm'
 import { badge, button, input, panel } from './styles'
-import { Tabs } from './Tabs'
+import { Tabs, type Tab } from './Tabs'
+import { TiersTab } from './tiers/TiersTab'
+import { VariantsTab } from './tiers/VariantsTab'
 
-const BUILDING_KINDS: readonly BuildingKind[] = ['standard', 'sport', 'nature']
+const BUILDING_KINDS: readonly BuildingKind[] = ['standard', 'sport', 'nature', 'home']
 
 interface Props {
   collection: CollectionName
@@ -38,7 +40,22 @@ export function DefinitionPanel({ collection, id }: Props) {
     assign: (doc: Doc, modelId: string) => setDefinition(doc, collection, id, setIn(doc.collections[collection][id], path, modelId) as Definition),
   })
   const form = (shown: typeof fields) => <SchemaForm fields={shown} value={definition} problems={problems} onChange={setField} modelSlot={modelSlot} />
-  const textProblems = problems.filter(({ path }) => path.startsWith('name') || path.startsWith('description')).length
+  const countWhere = (prefix: string) => problems.filter(({ path }) => path.startsWith(prefix)).length
+  const textProblems = countWhere('name') + countWhere('description')
+  const tiersField = fields.find(field => field.key === 'tiers' && field.type === 'list')
+  const variantsField = fields.find(field => field.key === 'variants' && field.type === 'map')
+  const general = fields.filter(field => !isTextField(field) && field !== tiersField && field !== variantsField)
+  const variantTierFields = variantsField?.type === 'map' ? variantsField.fields.find(field => field.key === 'tiers') : undefined
+  const tabs: Tab[] = [
+    { id: 'general', label: 'General', badge: problems.length - textProblems - countWhere('tiers') - countWhere('variants'), content: form(general) },
+    ...(tiersField?.type === 'list'
+      ? [{ id: 'tiers', label: `Tiers · ${(definition.tiers as unknown[]).length}`, badge: countWhere('tiers'), content: <TiersTab tiers={definition.tiers as Record<string, unknown>[]} fields={tiersField.fields} problems={problems} modelSlot={modelSlot} onChange={tiers => setField('tiers', tiers)} /> }]
+      : []),
+    ...(variantTierFields?.type === 'list'
+      ? [{ id: 'variants', label: 'Variants', badge: countWhere('variants'), content: <VariantsTab variants={(definition.variants ?? {}) as Record<string, { tiers: Record<string, unknown>[] }>} baseTiers={definition.tiers as Record<string, unknown>[]} fields={variantTierFields.fields} problems={problems} modelSlot={modelSlot} onChange={variants => setField('variants', variants)} /> }]
+      : []),
+    { id: 'description', label: 'Description', badge: textProblems, content: form(fields.filter(isTextField)) },
+  ]
   const name = (definition.name as { en?: string } | undefined)?.en
   const retirable = collection === 'buildings'
 
@@ -84,12 +101,7 @@ export function DefinitionPanel({ collection, id }: Props) {
           <button className={button('danger')} onClick={() => setDeleting(true)}>Delete</button>
         </div>
       </header>
-      <Tabs
-        tabs={[
-          { id: 'general', label: 'General', badge: problems.length - textProblems, content: form(fields.filter(field => !isTextField(field))) },
-          { id: 'description', label: 'Description', badge: textProblems, content: form(fields.filter(isTextField)) },
-        ]}
-      />
+      <Tabs tabs={tabs} />
       {duplicating && <CreateDialog collection={collection} source={id} onClose={() => setDuplicating(false)} />}
       {deleting && (
         <ConfirmDialog

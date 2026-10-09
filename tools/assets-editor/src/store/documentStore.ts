@@ -30,6 +30,8 @@ interface DocumentState {
   selection: Selection | null
   kind: Kind
   status: string
+  // The Tier, and the variant if any, the preview shows for a Game object with Tiers.
+  preview: { tier: number; variant?: string }
   load: (catalog: Catalog) => void
   adoptCatalog: (catalog: Catalog) => void
   change: (edit: (doc: Doc) => Doc) => void
@@ -37,6 +39,7 @@ interface DocumentState {
   redo: () => void
   select: (selection: Selection | null) => void
   showKind: (kind: Kind) => void
+  showTier: (tier: number, variant?: string) => void
   markSaved: () => void
   setStatus: (status: string) => void
 }
@@ -54,6 +57,7 @@ export const useDocument = create<DocumentState>()(set => ({
   selection: null,
   kind: 'buildings',
   status: '',
+  preview: { tier: 0 },
   load: catalog => {
     const doc: Doc = { models: catalog.models, collections: catalog.collections, singletons: catalog.singletons }
     set({ doc, saved: doc, past: [], future: [], status: '', assets: assetsOf(catalog) })
@@ -86,7 +90,8 @@ export const useDocument = create<DocumentState>()(set => ({
       if (!next) return state
       return { doc: next, past: [...state.past, state.doc], future: state.future.slice(1), status: '' }
     }),
-  select: selection => set(selection ? { selection, kind: selection.kind } : { selection }),
+  select: selection => set(selection ? { selection, kind: selection.kind, preview: { tier: 0 } } : { selection }),
+  showTier: (tier, variant) => set({ preview: { tier, variant } }),
   showKind: kind => set({ kind }),
   markSaved: () => set(state => ({ saved: state.doc })),
   setStatus: status => set({ status }),

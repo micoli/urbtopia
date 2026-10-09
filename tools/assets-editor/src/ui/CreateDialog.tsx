@@ -6,7 +6,7 @@ import { useDocument } from '../store/documentStore'
 import { blankBuilding, blankDefinition, insertDefinitionAfter } from '../store/edits'
 import { button, dialogContent, dialogOverlay, input } from './styles'
 
-const BUILDING_KINDS: readonly BuildingKind[] = ['standard', 'sport', 'nature']
+const BUILDING_KINDS: readonly BuildingKind[] = ['standard', 'sport', 'nature', 'home']
 
 interface Props {
   collection: CollectionName
