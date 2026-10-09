@@ -1,11 +1,10 @@
+import { BUILDING_ENTRIES, tiersOf } from '../buildings/buildingDefinitions';
 import {
-  HOME_UPGRADE_COSTS,
   COAL_UPGRADE_COSTS,
-  FARM_TIERS,
-  PRODUCTION_TIERS,
   PRODUCTION_UPGRADE_COSTS,
   STORAGE_TIERS,
   UTILITY_UPGRADE_COSTS,
+  upgradeCostsOf,
   type FarmTier,
   type ProductionTier,
   type UpgradeCostSpec,
@@ -20,13 +19,9 @@ export type UpgradeCost = UpgradeCostSpec;
 const storageCosts = (type: keyof typeof STORAGE_TIERS): Record<number, UpgradeCost> =>
   Object.fromEntries(STORAGE_TIERS[type].upgradeCosts.map((urbs, index) => [index + 2, { urbs, goods: {} }]));
 
+// Buildings defined with Tiers carry their upgrade costs; the others keep a table until they move to data.
 const UPGRADE_COSTS: Partial<Record<BuildingType, Record<number, UpgradeCost>>> = {
-  home: HOME_UPGRADE_COSTS,
-  workshop: PRODUCTION_UPGRADE_COSTS,
-  factory: PRODUCTION_UPGRADE_COSTS,
   storehouse: storageCosts('storehouse'),
-  farm: PRODUCTION_UPGRADE_COSTS,
-  packhouse: PRODUCTION_UPGRADE_COSTS,
   silo: storageCosts('silo'),
   vault: storageCosts('vault'),
   grainSilo: storageCosts('grainSilo'),
@@ -37,6 +32,7 @@ const UPGRADE_COSTS: Partial<Record<BuildingType, Record<number, UpgradeCost>>> 
   casino: Object.fromEntries(Object.entries(CASINO.upgradeCosts).map(([tier, urbs]) => [tier, { urbs, goods: {} }])),
   ...Object.fromEntries((['arcade', 'supermarket', 'hotel'] as const).map(type => [type, Object.fromEntries(Object.entries(VENUE_PROFILES[type].upgradeCosts).map(([tier, urbs]) => [tier, { urbs, goods: {} }]))])),
   ...Object.fromEntries(FACILITY_TYPES.map((type) => [type, facilityUpgradeCosts(type)])),
+  ...Object.fromEntries(BUILDING_ENTRIES.filter(({ tiers }) => tiers).map(({ id }) => [id, upgradeCostsOf(id)])),
 };
 
 export function maxTierOf(type: BuildingType): number {
@@ -49,10 +45,17 @@ export function upgradeCostOf(type: BuildingType, tier: number): UpgradeCost | u
   return UPGRADE_COSTS[type]?.[tier];
 }
 
-export function productionTierOf(building: Pick<Building, 'tier'>): ProductionTier {
-  return PRODUCTION_TIERS[building.tier - 1] ?? PRODUCTION_TIERS[0]!;
+const tierOf = (type: BuildingType, tier: number) => {
+  const tiers = tiersOf(type);
+  return tiers[tier - 1] ?? tiers[0]!;
+};
+
+export function productionTierOf(building: Pick<Building, 'type' | 'tier'>): ProductionTier {
+  const { durationFactor, maxSlots, yield: perCycle } = tierOf(building.type, building.tier);
+  return { durationFactor: durationFactor!, maxSlots: maxSlots!, yield: perCycle! };
 }
 
-export function farmTier(building: Pick<Building, 'tier'>): FarmTier {
-  return FARM_TIERS[building.tier - 1] ?? FARM_TIERS[0]!;
+export function farmTier(building: Pick<Building, 'type' | 'tier'>): FarmTier {
+  const { seedCapacity, fieldCap } = tierOf(building.type, building.tier);
+  return { seedCapacity: seedCapacity!, fieldCap: fieldCap! };
 }

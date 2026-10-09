@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { BuildingKind, FlatBuilding } from '../../../../src/core/buildings/buildingDefinition'
+import { BUILDING_KINDS } from '../../../../src/core/buildings/buildingSchema'
 import { specOf, type CollectionName, type Definition } from '../../../../scripts/collections'
 import { callAssets, fetchCatalog } from '../api'
 import { useDirty } from '../hooks/useDirty'
@@ -13,10 +14,10 @@ import type { FieldPath } from './form/FieldControl'
 import { SchemaForm } from './form/SchemaForm'
 import { badge, button, input, panel } from './styles'
 import { Tabs, type Tab } from './Tabs'
+import { unlocksByTier } from './tiers/unlocks'
 import { TiersTab } from './tiers/TiersTab'
 import { VariantsTab } from './tiers/VariantsTab'
 
-const BUILDING_KINDS: readonly BuildingKind[] = ['standard', 'sport', 'nature', 'home']
 
 interface Props {
   collection: CollectionName
@@ -25,6 +26,7 @@ interface Props {
 
 export function DefinitionPanel({ collection, id }: Props) {
   const definition = useDocument(state => state.doc.collections[collection][id]!)
+  const collections = useDocument(state => state.doc.collections)
   const savedBefore = useDocument(state => id in state.saved.collections[collection])
   const { change, setStatus, load, select } = useDocument.getState()
   const problems = useProblems().of(collection, id)
@@ -49,7 +51,7 @@ export function DefinitionPanel({ collection, id }: Props) {
   const tabs: Tab[] = [
     { id: 'general', label: 'General', badge: problems.length - textProblems - countWhere('tiers') - countWhere('variants'), content: form(general) },
     ...(tiersField?.type === 'list'
-      ? [{ id: 'tiers', label: `Tiers · ${(definition.tiers as unknown[]).length}`, badge: countWhere('tiers'), content: <TiersTab tiers={definition.tiers as Record<string, unknown>[]} fields={tiersField.fields} problems={problems} modelSlot={modelSlot} onChange={tiers => setField('tiers', tiers)} /> }]
+      ? [{ id: 'tiers', label: `Tiers · ${(definition.tiers as unknown[]).length}`, badge: countWhere('tiers'), content: <TiersTab tiers={definition.tiers as Record<string, unknown>[]} fields={tiersField.fields} problems={problems} modelSlot={modelSlot} unlocks={unlocksByTier(collections, collection, id, (definition.tiers as unknown[]).length)} onChange={tiers => setField('tiers', tiers)} /> }]
       : []),
     ...(variantTierFields?.type === 'list'
       ? [{ id: 'variants', label: 'Variants', badge: countWhere('variants'), content: <VariantsTab variants={(definition.variants ?? {}) as Record<string, { tiers: Record<string, unknown>[] }>} baseTiers={definition.tiers as Record<string, unknown>[]} fields={variantTierFields.fields} problems={problems} modelSlot={modelSlot} onChange={variants => setField('variants', variants)} /> }]

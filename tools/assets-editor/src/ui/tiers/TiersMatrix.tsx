@@ -16,6 +16,8 @@ interface Props {
   // What a Tier inherits from: the previous Tier, or the base Tier for a variant.
   inheritsFirst: boolean
   modelSlot: (path: FieldPath) => ModelSlot
+  // Read-only: what each Tier makes available, set on the unlocked objects themselves.
+  unlocks?: string[][]
   newTier: (tiers: Tier[]) => Tier
   onSelect: (tier: number) => void
   onChange: (tiers: Tier[]) => void
@@ -27,7 +29,7 @@ const problemsAt = (problems: Problem[], prefix: string) =>
   problems.filter(({ path }) => path === prefix || path.startsWith(`${prefix}.`)).map(problem => ({ ...problem, path: problem.path.slice(prefix.length + 1) }))
 
 // Rows are fields and columns are Tiers, so a progression reads at a glance.
-export function TiersMatrix({ fields, own, effective, path, problems, selected, inheritsFirst, modelSlot, newTier, onSelect, onChange }: Props) {
+export function TiersMatrix({ fields, own, effective, path, problems, selected, inheritsFirst, modelSlot, unlocks, newTier, onSelect, onChange }: Props) {
   const setCell = (index: number, key: string, value: unknown) =>
     onChange(own.map((tier, position) => (position !== index ? tier : Object.fromEntries(Object.entries({ ...tier, [key]: value }).filter(([, part]) => part !== undefined)))))
 
@@ -76,6 +78,15 @@ export function TiersMatrix({ fields, own, effective, path, problems, selected, 
               <td />
             </tr>
           ))}
+          {unlocks && (
+            <tr className="border-t border-zinc-100 align-top">
+              <th className="sticky left-0 z-10 bg-white px-3 py-2 text-left text-xs font-medium whitespace-nowrap text-zinc-600" title="Set by the minimum Tier of each Material or Good">Unlocks</th>
+              {own.map((_, index) => (
+                <td key={index} className="px-2 py-2 text-xs text-zinc-500">{unlocks[index]?.length ? unlocks[index]!.join(', ') : '—'}</td>
+              ))}
+              <td />
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

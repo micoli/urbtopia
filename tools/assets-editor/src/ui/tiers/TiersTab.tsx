@@ -12,6 +12,7 @@ interface Props {
   fields: FieldSpec[]
   problems: Problem[]
   modelSlot: (path: FieldPath) => ModelSlot
+  unlocks?: string[][]
   onChange: (tiers: Tier[]) => void
 }
 
@@ -21,7 +22,7 @@ const nextTier = (tiers: Tier[]): Tier => {
   return { upgradeCost: { urbs: previous?.urbs ?? 0, goods: {} } }
 }
 
-export function TiersTab({ tiers, fields, problems, modelSlot, onChange }: Props) {
+export function TiersTab({ tiers, fields, problems, modelSlot, unlocks, onChange }: Props) {
   const preview = useDocument(state => state.preview)
   const showTier = useDocument(state => state.showTier)
   const relative = problems.filter(({ path }) => path.startsWith('tiers.')).map(problem => ({ ...problem, path: problem.path.slice('tiers.'.length) }))
@@ -38,6 +39,7 @@ export function TiersTab({ tiers, fields, problems, modelSlot, onChange }: Props
         selected={preview.variant ? undefined : preview.tier}
         inheritsFirst={false}
         modelSlot={modelSlot}
+        unlocks={unlocks}
         newTier={nextTier}
         onSelect={tier => showTier(tier)}
         onChange={onChange}

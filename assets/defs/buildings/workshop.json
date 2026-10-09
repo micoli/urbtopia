@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "production",
   "order": 20,
   "section": "build.production",
-  "model": "industrial-building-h",
-  "footprint": [2, 2],
   "cost": 100,
   "unlockCitizens": 0,
   "requiresRoad": true,
@@ -16,5 +14,49 @@
   "description": {
     "en": "Produces Materials over time. Higher Tiers improve production and make more Materials available. Production needs electricity and a road connection.",
     "fr": "Produit des matériaux au fil du temps. Les niveaux supérieurs améliorent la production et donnent accès à davantage de matériaux. Il nécessite de l’électricité et une connexion à une route."
-  }
+  },
+  "tiers": [
+    {
+      "model": "industrial-building-h",
+      "footprint": [2, 2],
+      "durationFactor": 1,
+      "maxSlots": 5,
+      "yield": 1
+    },
+    {
+      "durationFactor": 0.75,
+      "upgradeCost": {
+        "urbs": 300,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "maxSlots": 8,
+      "upgradeCost": {
+        "urbs": 800,
+        "goods": {
+          "bricks": 4
+        }
+      }
+    },
+    {
+      "yield": 2,
+      "upgradeCost": {
+        "urbs": 2000,
+        "goods": {
+          "tiles": 4
+        }
+      }
+    },
+    {
+      "upgradeCost": {
+        "urbs": 5000,
+        "goods": {
+          "tools": 4
+        }
+      }
+    }
+  ]
 }

@@ -1,4 +1,5 @@
 import { tiersOf } from '../buildings/buildingDefinitions';
+import type { BuildingId } from '../buildings/buildingTypes.generated';
 import type { GoodId } from './items';
 
 export const MAX_SLOTS = 5;
@@ -16,33 +17,20 @@ export interface ProductionTier {
   yield: number;
 }
 
-export const PRODUCTION_TIERS: readonly ProductionTier[] = [
-  { durationFactor: 1, maxSlots: 5, yield: 1 },
-  { durationFactor: 0.75, maxSlots: 5, yield: 1 },
-  { durationFactor: 0.75, maxSlots: 8, yield: 1 },
-  { durationFactor: 0.75, maxSlots: 8, yield: 2 },
-  { durationFactor: 0.75, maxSlots: 8, yield: 2 },
-];
+// Every production building has Tiers of its own; these follow the Workshop, for the facts shown without a building.
+export const PRODUCTION_TIERS: readonly ProductionTier[] = tiersOf('workshop').map(({ durationFactor, maxSlots, yield: perCycle }) => ({ durationFactor: durationFactor!, maxSlots: maxSlots!, yield: perCycle! }));
 
-export const PRODUCTION_UPGRADE_COSTS: Record<number, UpgradeCostSpec> = {
-  2: { urbs: 300, goods: { planks: 3 } },
-  3: { urbs: 800, goods: { bricks: 4 } },
-  4: { urbs: 2000, goods: { tiles: 4 } },
-  5: { urbs: 5000, goods: { tools: 4 } },
-};
+export const upgradeCostsOf = (type: BuildingId): Record<number, UpgradeCostSpec> =>
+  Object.fromEntries(tiersOf(type).flatMap(({ upgradeCost }, index) => (upgradeCost ? [[index + 1, { urbs: upgradeCost.urbs, goods: (upgradeCost.goods ?? {}) as UpgradeCostSpec['goods'] }]] : [])));
+
+export const PRODUCTION_UPGRADE_COSTS: Record<number, UpgradeCostSpec> = upgradeCostsOf('workshop');
 
 export interface FarmTier {
   seedCapacity: number;
   fieldCap: number;
 }
 
-export const FARM_TIERS: readonly FarmTier[] = [
-  { seedCapacity: 20, fieldCap: 12 },
-  { seedCapacity: 40, fieldCap: 24 },
-  { seedCapacity: 70, fieldCap: 40 },
-  { seedCapacity: 110, fieldCap: 60 },
-  { seedCapacity: 160, fieldCap: 90 },
-];
+export const FARM_TIERS: readonly FarmTier[] = tiersOf('farm').map(({ seedCapacity, fieldCap }) => ({ seedCapacity: seedCapacity!, fieldCap: fieldCap! }));
 
 export type StorageType = 'storehouse' | 'silo' | 'vault' | 'grainSilo';
 
@@ -99,8 +87,6 @@ const HOME_TIER_LIST = tiersOf('home');
 
 export const HOME_FOOTPRINTS: readonly { width: number; depth: number }[] = HOME_TIER_LIST.map(({ footprint }) => ({ width: footprint![0], depth: footprint![1] }));
 
-export const HOME_UPGRADE_COSTS: Record<number, UpgradeCostSpec> = Object.fromEntries(
-  HOME_TIER_LIST.flatMap(({ upgradeCost }, index) => (upgradeCost ? [[index + 1, { urbs: upgradeCost.urbs, goods: (upgradeCost.goods ?? {}) as UpgradeCostSpec['goods'] }]] : [])),
-);
+export const HOME_UPGRADE_COSTS: Record<number, UpgradeCostSpec> = upgradeCostsOf('home');
 
 export const MAX_HOME_TIER = HOME_TIER_LIST.length;

@@ -75,8 +75,6 @@ export function facilityFootprint(building: Pick<Building, 'type'>): number | nu
   return ((width + depth) / 2) * (FOOTPRINT_BOOST[building.type] ?? 1);
 }
 
-const FACTORY_MODELS = ['industrial/building-b', 'industrial/building-e', 'industrial/building-f', 'industrial/building-l', 'industrial/building-c'];
-
 const COAL_MODELS = ['industrial/chimney-basic', 'industrial/chimney-small', 'industrial/chimney-medium', 'industrial/chimney-large'];
 
 const STOREHOUSE_MODELS = ['industrial/building-a', 'industrial/building-a', 'industrial/building-a', 'industrial/building-q', 'industrial/building-q', 'industrial/building-q'];
@@ -85,7 +83,8 @@ const GRAIN_SILO_MODELS = ['farm/Silo_House', 'farm/Silo_House', 'farm/Silo_Hous
 
 const CASINO_MODELS = ['buildings/2Story_Stairs_Mat', 'buildings/2Story_Wide_Mat', 'buildings/2Story_Wide_2Doors_Mat'];
 
-const HOME_MODELS = tiersOf('home').map(({ model }) => modelFileOf(model!));
+// The model of each Tier of the buildings defined with Tiers.
+const TIER_MODELS = new Map(BUILDING_ENTRIES.filter(({ tiers }) => tiers).map(({ id }) => [id, tiersOf(id).map(({ model }) => modelFileOf(model!))]));
 
 const SOLAR_HOME_MODELS = variantTiersOf('home', 'solar').map(({ model }) => modelFileOf(model!));
 const ROOF_PANEL_MODEL = 'industrial/solar-panel-flat';
@@ -113,12 +112,11 @@ const ROAD_MODELS = ['square', 'end', 'straight', 'bend', 'intersection', 'cross
 export const MODEL_KEYS: readonly string[] = [
   ...new Set([
     ...Object.values(MODEL_BY_BUILDING),
-    ...FACTORY_MODELS,
     ...COAL_MODELS,
     ...STOREHOUSE_MODELS,
     ...GRAIN_SILO_MODELS,
     ...CASINO_MODELS,
-    ...HOME_MODELS,
+    ...[...TIER_MODELS.values()].flat(),
     ...SOLAR_HOME_MODELS,
     ...FACILITY_TYPES.map(type => FACILITY_DETAILS[type]),
     ROOF_PANEL_MODEL,
@@ -139,8 +137,8 @@ export const MODEL_KEYS: readonly string[] = [
 ];
 
 export function modelOf(type: BuildingType, tier: number): string {
-  if (type === 'home') return HOME_MODELS[tier - 1] ?? MODEL_BY_BUILDING.home;
-  if (type === 'factory') return FACTORY_MODELS[tier - 1] ?? MODEL_BY_BUILDING.factory;
+  const tiered = TIER_MODELS.get(type);
+  if (tiered) return tiered[tier - 1] ?? tiered[0]!;
   if (type === 'coalPlant') return COAL_MODELS[tier - 1] ?? MODEL_BY_BUILDING.coalPlant;
   if (type === 'storehouse') return STOREHOUSE_MODELS[tier - 1] ?? MODEL_BY_BUILDING.storehouse;
   if (type === 'grainSilo') return GRAIN_SILO_MODELS[tier - 1] ?? MODEL_BY_BUILDING.grainSilo;

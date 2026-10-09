@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { FlatBuilding } from '../../../../src/core/buildings/buildingDefinition'
 import type { Collections, Definition } from '../../../../scripts/collections'
+import { BUILDING_KINDS } from '../../../../src/core/buildings/buildingSchema'
 import { buildingProblemsOf, collectionProblems } from '../../../../scripts/definitionProblems'
 import type { Doc } from './documentStore'
 import { blankBuilding, blankDefinition, convertBuilding, insertDefinitionAfter, reorderGroup, sectionOf, setIn } from './edits'
@@ -37,7 +38,7 @@ describe('document edits', () => {
 
   it('converts a building to another kind into a valid one', () => {
     const named = { ...(building('build.leisure') as unknown as FlatBuilding), description: { en: 'D', fr: 'D' }, accessModes: ['road', 'brt'] as FlatBuilding['accessModes'] }
-    for (const kind of ['sport', 'nature', 'home', 'standard'] as const) {
+    for (const kind of BUILDING_KINDS) {
       const converted = { ...convertBuilding(named, kind), order: 10 }
       expect(converted.kind).toBe(kind)
       expect(buildingProblemsOf('x', converted)).toEqual([])

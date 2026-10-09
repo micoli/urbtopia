@@ -52,9 +52,27 @@ const homeBuilding = z.strictObject({
   variants: variantsOf(homeLook).optional(),
 });
 
+// Workshop, Factory, Packhouse: a higher Tier crafts faster, holds more Slots and yields more per cycle.
+const productionBuilding = z.strictObject({
+  kind: z.literal('production'),
+  ...identity,
+  ...sited,
+  tiers: tiersOf({ ...homeLook, durationFactor: z.number().positive(), maxSlots: z.int().min(1), yield: z.int().min(1) }, ['model', 'footprint', 'durationFactor', 'maxSlots', 'yield']),
+});
+
+// The Farm holds the seed stock and bounds the number of Field tiles.
+const farmBuilding = z.strictObject({
+  kind: z.literal('farm'),
+  ...identity,
+  ...sited,
+  tiers: tiersOf({ ...homeLook, seedCapacity: count, fieldCap: count }, ['model', 'footprint', 'seedCapacity', 'fieldCap']),
+});
+
 export const buildingSchema = z
-  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding])
+  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding])
   .refine(building => building.kind === 'nature' || !building.accessModes || building.requiresRoad, { message: 'accessModes needs requiresRoad', path: ['accessModes'] })
   .meta({ title: 'Building', description: 'A building of Urbtopia, one file per building id in assets/defs/buildings.' });
 
 export type BuildingDefinition = z.infer<typeof buildingSchema>;
+
+export const BUILDING_KINDS = buildingSchema.options.map(option => option.shape.kind.value);

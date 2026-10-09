@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "production",
   "order": 70,
   "section": "build.production",
-  "model": "farm-openbarn",
-  "footprint": [2, 2],
   "cost": 250,
   "unlockCitizens": 20,
   "requiresRoad": true,
@@ -16,5 +14,49 @@
   "description": {
     "en": "Packs Crop Materials into packed Goods, the only way to sell a Harvest. Only one Packhouse can be built; upgrades add speed, Slots and yield.",
     "fr": "Conditionne les matières de récolte en produits emballés, seul moyen de vendre une récolte. Un seul conditionnement peut être construit ; ses améliorations augmentent vitesse, emplacements et rendement."
-  }
+  },
+  "tiers": [
+    {
+      "model": "farm-openbarn",
+      "footprint": [2, 2],
+      "durationFactor": 1,
+      "maxSlots": 5,
+      "yield": 1
+    },
+    {
+      "durationFactor": 0.75,
+      "upgradeCost": {
+        "urbs": 300,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "maxSlots": 8,
+      "upgradeCost": {
+        "urbs": 800,
+        "goods": {
+          "bricks": 4
+        }
+      }
+    },
+    {
+      "yield": 2,
+      "upgradeCost": {
+        "urbs": 2000,
+        "goods": {
+          "tiles": 4
+        }
+      }
+    },
+    {
+      "upgradeCost": {
+        "urbs": 5000,
+        "goods": {
+          "tools": 4
+        }
+      }
+    }
+  ]
 }

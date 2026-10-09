@@ -21,3 +21,8 @@ export type FlatBuilding = Pick<BuildingDefinition, SharedKey> & {
 };
 
 export type BuildingDefinitions = Record<string, FlatBuilding>;
+
+type TierUnion = NonNullable<FlatBuilding['tiers']>[number];
+
+// Every field of the Tiers of every kind, all optional.
+export type FlatTier = { [K in KeysOfUnion<TierUnion>]?: Exclude<ValueInUnion<TierUnion, K>, undefined> };

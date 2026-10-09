@@ -1,9 +1,9 @@
 import { entriesOf } from '../defs/entries.ts';
-import type { FlatBuilding } from './buildingDefinition.ts';
+import type { FlatBuilding, FlatTier } from './buildingDefinition.ts';
 import type { BuildingId, NatureType, SportVenueType } from './buildingTypes.generated.ts';
 import { resolveTiers, resolveVariant } from './tiers.ts';
 
-type Tier = NonNullable<FlatBuilding['tiers']>[number];
+type Tier = FlatTier;
 
 // A building that grows shows the model and takes the footprint of its Tier 1.
 export type BuildingEntry = FlatBuilding & { id: BuildingId; model: string };
@@ -26,12 +26,14 @@ export const definitionOf = (id: BuildingId): BuildingEntry => entriesById.get(i
 
 export const isRetired = (id: BuildingId): boolean => entriesById.get(id)?.retired === true;
 
-// Every Tier with what it inherits; a variant overrides the look of its first Tiers.
-export const tiersOf = (id: BuildingId): Tier[] => resolveTiers<Tier>(definitionOf(id).tiers ?? []);
+const resolvedTiers = new Map<string, Tier[]>(BUILDING_ENTRIES.map(({ id, tiers }) => [id, resolveTiers<Tier>(tiers ?? [])]));
+
+// Every Tier with what it inherits, empty for a building without Tiers; a variant overrides the look of its first Tiers.
+export const tiersOf = (id: BuildingId): readonly Tier[] => resolvedTiers.get(id) ?? [];
 
 export const variantTiersOf = (id: BuildingId, variant: string): Tier[] => {
   const tiers = definitionOf(id).variants?.[variant]?.tiers;
-  return tiers ? resolveVariant(tiersOf(id), tiers).slice(0, tiers.length) : [];
+  return tiers ? resolveVariant([...tiersOf(id)], tiers).slice(0, tiers.length) : [];
 };
 
 export type SportEntry = BuildingEntry & { id: SportVenueType; kind: 'sport'; radius: number; wellbeingBonus: number };
