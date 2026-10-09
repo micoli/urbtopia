@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "storage",
   "order": 100,
   "section": "build.storage",
-  "model": "farm-silo-house",
-  "footprint": [2, 2],
   "cost": 300,
   "unlockCitizens": 0,
   "requiresRoad": true,
@@ -15,5 +13,50 @@
   "description": {
     "en": "Adds storage capacity for Crops, kept apart from other Materials. The Farm provides a small starting capacity. Only one Grain silo can be built, once you have a Farm; upgrades increase this capacity.",
     "fr": "Ajoute de la capacité de stockage pour les récoltes, séparée des autres matériaux. La ferme fournit une petite capacité de départ. Un seul silo agricole peut être construit, une fois la ferme posée ; ses améliorations augmentent cette capacité."
-  }
+  },
+  "tiers": [
+    {
+      "model": "farm-silo-house",
+      "footprint": [2, 2],
+      "materials": 0,
+      "goods": 0,
+      "crops": 40
+    },
+    {
+      "crops": 60,
+      "upgradeCost": {
+        "urbs": 250,
+        "goods": {}
+      }
+    },
+    {
+      "crops": 80,
+      "upgradeCost": {
+        "urbs": 600,
+        "goods": {}
+      }
+    },
+    {
+      "model": "farm-silo",
+      "crops": 100,
+      "upgradeCost": {
+        "urbs": 1500,
+        "goods": {}
+      }
+    },
+    {
+      "crops": 120,
+      "upgradeCost": {
+        "urbs": 4000,
+        "goods": {}
+      }
+    },
+    {
+      "crops": 140,
+      "upgradeCost": {
+        "urbs": 9000,
+        "goods": {}
+      }
+    }
+  ]
 }

@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "storage",
   "order": 110,
   "section": "build.storage",
-  "model": "industrial-building-s",
-  "footprint": [2, 1],
   "cost": 300,
   "unlockCitizens": 0,
   "requiresRoad": true,
@@ -15,5 +13,49 @@
   "description": {
     "en": "Adds storage capacity for Goods. Only one Vault can be built; upgrades increase this capacity.",
     "fr": "Ajoute de la capacité de stockage pour les produits. Une seule chambre forte peut être construite ; ses améliorations augmentent cette capacité."
-  }
+  },
+  "tiers": [
+    {
+      "model": "industrial-building-s",
+      "footprint": [2, 1],
+      "materials": 0,
+      "goods": 80,
+      "crops": 0
+    },
+    {
+      "goods": 120,
+      "upgradeCost": {
+        "urbs": 250,
+        "goods": {}
+      }
+    },
+    {
+      "goods": 160,
+      "upgradeCost": {
+        "urbs": 600,
+        "goods": {}
+      }
+    },
+    {
+      "goods": 200,
+      "upgradeCost": {
+        "urbs": 1500,
+        "goods": {}
+      }
+    },
+    {
+      "goods": 240,
+      "upgradeCost": {
+        "urbs": 4000,
+        "goods": {}
+      }
+    },
+    {
+      "goods": 280,
+      "upgradeCost": {
+        "urbs": 9000,
+        "goods": {}
+      }
+    }
+  ]
 }

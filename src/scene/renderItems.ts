@@ -77,10 +77,6 @@ export function facilityFootprint(building: Pick<Building, 'type'>): number | nu
 
 const COAL_MODELS = ['industrial/chimney-basic', 'industrial/chimney-small', 'industrial/chimney-medium', 'industrial/chimney-large'];
 
-const STOREHOUSE_MODELS = ['industrial/building-a', 'industrial/building-a', 'industrial/building-a', 'industrial/building-q', 'industrial/building-q', 'industrial/building-q'];
-
-const GRAIN_SILO_MODELS = ['farm/Silo_House', 'farm/Silo_House', 'farm/Silo_House', 'farm/Silo', 'farm/Silo', 'farm/Silo'];
-
 const CASINO_MODELS = ['buildings/2Story_Stairs_Mat', 'buildings/2Story_Wide_Mat', 'buildings/2Story_Wide_2Doors_Mat'];
 
 // The model of each Tier of the buildings defined with Tiers.
@@ -113,8 +109,6 @@ export const MODEL_KEYS: readonly string[] = [
   ...new Set([
     ...Object.values(MODEL_BY_BUILDING),
     ...COAL_MODELS,
-    ...STOREHOUSE_MODELS,
-    ...GRAIN_SILO_MODELS,
     ...CASINO_MODELS,
     ...[...TIER_MODELS.values()].flat(),
     ...SOLAR_HOME_MODELS,
@@ -140,8 +134,6 @@ export function modelOf(type: BuildingType, tier: number): string {
   const tiered = TIER_MODELS.get(type);
   if (tiered) return tiered[tier - 1] ?? tiered[0]!;
   if (type === 'coalPlant') return COAL_MODELS[tier - 1] ?? MODEL_BY_BUILDING.coalPlant;
-  if (type === 'storehouse') return STOREHOUSE_MODELS[tier - 1] ?? MODEL_BY_BUILDING.storehouse;
-  if (type === 'grainSilo') return GRAIN_SILO_MODELS[tier - 1] ?? MODEL_BY_BUILDING.grainSilo;
   if (type === 'casino') return CASINO_MODELS[tier - 1] ?? MODEL_BY_BUILDING.casino;
   return MODEL_BY_BUILDING[type];
 }

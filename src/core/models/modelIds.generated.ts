@@ -123,6 +123,7 @@ export type ModelId =
   | 'crops-wheat-crop'
   | 'farm-barn'
   | 'farm-openbarn'
+  | 'farm-silo'
   | 'farm-silo-house'
   | 'furniture-bathtub'
   | 'furniture-bedbunk'

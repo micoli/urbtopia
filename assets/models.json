@@ -686,6 +686,11 @@
     "source": "quaternius",
     "license": "CC0"
   },
+  "farm-silo": {
+    "file": "farm/Silo",
+    "source": "quaternius",
+    "license": "CC0"
+  },
   "farm-silo-house": {
     "file": "farm/Silo_House",
     "source": "quaternius",

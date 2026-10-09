@@ -1,5 +1,5 @@
 import {
-  CASINO_GAMES, COAL_CAPACITY, MARINA_TIERS, FACILITIES, HOME_TIERS, STORAGE_TIERS, UTILITY_CAPACITY, farmTier, productionTierOf,
+  CASINO_GAMES, COAL_CAPACITY, MARINA_TIERS, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
   FIXTURES, VENUE_PROFILES, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
   type StorageType,
@@ -44,13 +44,13 @@ const homeTier = (level: number) => HOME_TIERS[level - 1] ?? HOME_TIERS[0]!;
 
 function storageFacts(type: StorageType, level: number): LevelFact[] {
   const compartments = [
-    ['codex.fact.materials', STORAGE_TIERS[type].materials],
-    ['codex.fact.goods', STORAGE_TIERS[type].goods],
-    ['codex.fact.crops', STORAGE_TIERS[type].crops],
+    ['codex.fact.materials', 'materials'],
+    ['codex.fact.goods', 'goods'],
+    ['codex.fact.crops', 'crops'],
   ] as const;
   return compartments
-    .filter(([, capacity]) => capacity.base > 0)
-    .map(([label, capacity]) => numericFact(label, tier => capacity.base + capacity.perTier * (tier - 1), level));
+    .filter(([, compartment]) => storageTierOf(type, 1)[compartment] > 0)
+    .map(([label, compartment]) => numericFact(label, tier => storageTierOf(type, tier)[compartment], level));
 }
 
 function casinoFacts(level: number): LevelFact[] {

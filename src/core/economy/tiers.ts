@@ -2,7 +2,6 @@ import { BUILDING_ENTRIES, tiersOf } from '../buildings/buildingDefinitions';
 import {
   COAL_UPGRADE_COSTS,
   PRODUCTION_UPGRADE_COSTS,
-  STORAGE_TIERS,
   UTILITY_UPGRADE_COSTS,
   upgradeCostsOf,
   type FarmTier,
@@ -16,15 +15,8 @@ import type { Building, BuildingType } from '../engine/state';
 
 export type UpgradeCost = UpgradeCostSpec;
 
-const storageCosts = (type: keyof typeof STORAGE_TIERS): Record<number, UpgradeCost> =>
-  Object.fromEntries(STORAGE_TIERS[type].upgradeCosts.map((urbs, index) => [index + 2, { urbs, goods: {} }]));
-
 // Buildings defined with Tiers carry their upgrade costs; the others keep a table until they move to data.
 const UPGRADE_COSTS: Partial<Record<BuildingType, Record<number, UpgradeCost>>> = {
-  storehouse: storageCosts('storehouse'),
-  silo: storageCosts('silo'),
-  vault: storageCosts('vault'),
-  grainSilo: storageCosts('grainSilo'),
   powerPlant: UTILITY_UPGRADE_COSTS.powerPlant,
   coalPlant: COAL_UPGRADE_COSTS,
   waterTower: UTILITY_UPGRADE_COSTS.waterTower,

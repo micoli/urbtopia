@@ -1,5 +1,5 @@
-import { tiersOf } from '../buildings/buildingDefinitions';
-import type { BuildingId } from '../buildings/buildingTypes.generated';
+import { BUILDING_ENTRIES, tiersOf } from '../buildings/buildingDefinitions';
+import type { BuildingId, StorageType } from '../buildings/buildingTypes.generated';
 import type { GoodId } from './items';
 
 export const MAX_SLOTS = 5;
@@ -32,21 +32,22 @@ export interface FarmTier {
 
 export const FARM_TIERS: readonly FarmTier[] = tiersOf('farm').map(({ seedCapacity, fieldCap }) => ({ seedCapacity: seedCapacity!, fieldCap: fieldCap! }));
 
-export type StorageType = 'storehouse' | 'silo' | 'vault' | 'grainSilo';
+export type { StorageType };
 
-interface CompartmentCapacity {
-  base: number;
-  perTier: number;
+export interface StorageTier {
+  materials: number;
+  goods: number;
+  crops: number;
 }
 
-const NO_CAPACITY: CompartmentCapacity = { base: 0, perTier: 0 };
+export const STORAGE_TYPES = BUILDING_ENTRIES.filter(({ kind }) => kind === 'storage').map(({ id }) => id as StorageType);
 
-export const STORAGE_TIERS: Record<StorageType, { materials: CompartmentCapacity; goods: CompartmentCapacity; crops: CompartmentCapacity; upgradeCosts: readonly number[] }> = {
-  storehouse: { materials: { base: 20, perTier: 10 }, goods: { base: 40, perTier: 20 }, crops: NO_CAPACITY, upgradeCosts: [300, 800, 2000, 5000, 12000] },
-  silo: { materials: { base: 40, perTier: 20 }, goods: NO_CAPACITY, crops: NO_CAPACITY, upgradeCosts: [250, 600, 1500, 4000, 9000] },
-  vault: { materials: NO_CAPACITY, goods: { base: 80, perTier: 40 }, crops: NO_CAPACITY, upgradeCosts: [250, 600, 1500, 4000, 9000] },
-  grainSilo: { materials: NO_CAPACITY, goods: NO_CAPACITY, crops: { base: 40, perTier: 20 }, upgradeCosts: [250, 600, 1500, 4000, 9000] },
-};
+// The capacity a storage of this Tier adds to each compartment.
+export function storageTierOf(type: StorageType, tier: number): StorageTier {
+  const tiers = tiersOf(type);
+  const { materials, goods, crops } = tiers[tier - 1] ?? tiers[0]!;
+  return { materials: materials!, goods: goods!, crops: crops! };
+}
 
 export const FARM_CROP_CAPACITY = 10;
 

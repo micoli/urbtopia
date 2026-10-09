@@ -68,8 +68,16 @@ const farmBuilding = z.strictObject({
   tiers: tiersOf({ ...homeLook, seedCapacity: count, fieldCap: count }, ['model', 'footprint', 'seedCapacity', 'fieldCap']),
 });
 
+// Storehouse, Silo, Vault, Grain silo: the capacity each Tier adds to each compartment, summed over the city's storages.
+const storageBuilding = z.strictObject({
+  kind: z.literal('storage'),
+  ...identity,
+  ...sited,
+  tiers: tiersOf({ ...homeLook, materials: count, goods: count, crops: count }, ['model', 'footprint', 'materials', 'goods', 'crops']),
+});
+
 export const buildingSchema = z
-  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding])
+  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding])
   .refine(building => building.kind === 'nature' || !building.accessModes || building.requiresRoad, { message: 'accessModes needs requiresRoad', path: ['accessModes'] })
   .meta({ title: 'Building', description: 'A building of Urbtopia, one file per building id in assets/defs/buildings.' });
 

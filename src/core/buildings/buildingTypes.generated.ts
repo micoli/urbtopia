@@ -407,3 +407,9 @@ export type NatureType =
   | 'pirate-palm-straight'
   | 'pirate-patch-grass'
   | 'pirate-patch-grass-foliage';
+
+export type StorageType =
+  | 'grainSilo'
+  | 'silo'
+  | 'storehouse'
+  | 'vault';

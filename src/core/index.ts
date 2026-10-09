@@ -42,8 +42,8 @@ export { GOODS, MATERIALS, PACK_FORMATS, durationOf, isGood, isMaterial, minTier
 export type { BaseGoodId, CropBoxId, CropCrateId, CropPackId, CropPalletId, GoodId, GoodSpec, ItemId, MaterialId } from './economy/items';
 export { buyableParcels, isInsideMap, parcelPrice } from './map/parcels';
 export { marketPoints, marketQuote } from './economy/market';
-export { MARKET, MAX_SLOTS, SHOP, SLOT_PRICES, STORAGE_TIERS } from './economy/economy';
-export type { StorageType } from './economy/economy';
+export { MARKET, MAX_SLOTS, SHOP, SLOT_PRICES, STORAGE_TYPES, storageTierOf } from './economy/economy';
+export type { StorageTier, StorageType } from './economy/economy';
 export { canRemoveStorage, compartmentOf, hasStorage, isStorageEmpty, isStorageType, storageCapacity, storageUsed } from './economy/storage';
 export { createBuilding } from './buildings/buildingSpecs';
 export { citizensOf, totalCitizens, utilityCapacity, utilityDemand } from './buildings/city';

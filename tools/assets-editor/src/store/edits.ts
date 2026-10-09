@@ -54,9 +54,10 @@ const TIER_ONE: Partial<Record<BuildingKind, Record<string, number>>> = {
   home: { citizens: 1, power: 1, water: 1 },
   production: { durationFactor: 1, maxSlots: 2, yield: 1 },
   farm: { seedCapacity: 10, fieldCap: 4 },
+  storage: { materials: 0, goods: 0, crops: 0 },
 }
 
-const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { home: 'build.housing', sport: 'build.sport' }
+const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { home: 'build.housing', sport: 'build.sport', storage: 'build.storage' }
 
 export function blankBuilding(kind: BuildingKind, model: string): FlatBuilding {
   const name = { en: '', fr: '' }
