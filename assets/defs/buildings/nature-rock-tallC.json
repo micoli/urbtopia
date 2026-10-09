@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1250,
-  "model": "nature/rock_tallC",
+  "model": "nature-rock-tallc",
   "name": {
     "en": "Rock tall C",
     "fr": "Rocher haut C"

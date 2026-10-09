@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 590,
-  "model": "nature/tent_detailedOpen",
+  "model": "nature-tent-detailedopen",
   "name": {
     "en": "Tent open",
     "fr": "Tente ouverte"

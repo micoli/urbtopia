@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1920,
-  "model": "nature/tree_pineSmallC",
+  "model": "nature-tree-pinesmallc",
   "name": {
     "en": "Tree pine small C",
     "fr": "Pin petit C"

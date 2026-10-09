@@ -13,7 +13,7 @@ Every building is one file `assets/defs/buildings/<id>.json`, validated by the z
 
 Read the files of the chosen section in `assets/defs/buildings/` and `src/core/buildings/buildSections.ts` (the sections). Ask with `AskUserQuestion` (one call, several questions) and skip any answer the user already gave.
 
-- **Model key** `<theme>/<name>` in `assets/models.json`. If it is not defined there, stop and tell the user to add the model first (assets editor); never invent a key.
+- **Model id** (`suburban-building-type-k`), a key of `assets/models.json` whose `file` is the model. If the model has no entry, add one first (`file`, `source`, `license`; the assets editor does it for Kenney and Quaternius models); never invent an id.
 - **Category** (section): `build.housing`, `build.production`, `build.storage`, `build.utilities`, `build.transport`, `build.publicFacilities`, `build.leisure`, `build.sport`, `build.decoration`, `build.greenSpaces`.
 - **Unlock threshold** in Citizens: propose a value from the neighbours in the chosen section.
 - **Price** in Urbs: propose a value from comparable buildings.

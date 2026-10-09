@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1530,
-  "model": "nature/stone_tallG",
+  "model": "nature-stone-tallg",
   "name": {
     "en": "Stone tall G",
     "fr": "Pierre haut G"

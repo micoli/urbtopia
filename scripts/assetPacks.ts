@@ -3,9 +3,11 @@ import { cropModelsOf } from '../src/scene/cropModels.ts';
 import { MINI_CHARACTER_FILES } from '../src/scene/venueCrowdModels.ts';
 import { existsSync, readFileSync } from 'node:fs';
 import { readBuildings } from './buildingsDir.ts';
+import { readModels } from './modelsFile.ts';
 import type { QuaterniusPack } from './quaternius.ts';
 
-const natureModels = Object.values(readBuildings()).filter(({ kind }) => kind === 'nature').map(({ model }) => model);
+const modelFiles = readModels();
+const natureModels = Object.values(readBuildings()).filter(({ kind }) => kind === 'nature').map(({ model }) => modelFiles[model]?.file ?? model);
 
 const natureFiles = (pack: string) => natureModels.filter(model => model.startsWith(`${pack}/`)).map(model => model.slice(pack.length + 1));
 

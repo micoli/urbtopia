@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 2090,
-  "model": "nature/tree_tall_fall",
+  "model": "nature-tree-tall-fall",
   "name": {
     "en": "Tree tall autumn",
     "fr": "Arbre haut automne"

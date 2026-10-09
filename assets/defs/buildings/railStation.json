@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 200,
   "section": "build.transport",
-  "model": "industrial/building-q",
+  "model": "industrial-building-q",
   "footprint": [2, 1],
   "cost": 600,
   "unlockCitizens": 600,

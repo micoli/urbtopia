@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 340,
   "section": "build.leisure",
-  "model": "commercial/building-l",
+  "model": "commercial-building-l",
   "footprint": [3, 3],
   "cost": 9000,
   "unlockCitizens": 600,

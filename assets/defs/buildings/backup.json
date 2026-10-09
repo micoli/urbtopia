@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 170,
   "section": "build.utilities",
-  "model": "industrial/building-d",
+  "model": "industrial-building-d",
   "footprint": [2, 2],
   "cost": 500,
   "unlockCitizens": 32,

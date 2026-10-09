@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 390,
-  "model": "mini-forest/building-platform",
+  "model": "mini-forest-building-platform",
   "name": {
     "en": "Wooden platform",
     "fr": "Plateforme en bois"

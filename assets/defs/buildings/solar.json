@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 150,
   "section": "build.utilities",
-  "model": "industrial/solar-panel-landscape-group",
+  "model": "industrial-solar-panel-landscape-group",
   "footprint": [2, 2],
   "cost": 400,
   "unlockCitizens": 32,

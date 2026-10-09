@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1570,
-  "model": "nature/stump_old",
+  "model": "nature-stump-old",
   "name": {
     "en": "Stump old",
     "fr": "Souche ancienne"

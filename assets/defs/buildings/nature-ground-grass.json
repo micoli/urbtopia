@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 850,
-  "model": "nature/ground_grass",
+  "model": "nature-ground-grass",
   "name": {
     "en": "Low Grass",
     "fr": "Sol herbeux"

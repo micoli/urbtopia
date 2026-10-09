@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 140,
   "section": "build.utilities",
-  "model": "industrial/water-tower",
+  "model": "industrial-water-tower",
   "footprint": [1, 1],
   "cost": 200,
   "unlockCitizens": 0,

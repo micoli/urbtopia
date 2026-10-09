@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 710,
-  "model": "nature/cactus_tall",
+  "model": "nature-cactus-tall",
   "name": {
     "en": "Cactus tall",
     "fr": "Cactus haut"

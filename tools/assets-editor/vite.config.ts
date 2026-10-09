@@ -6,9 +6,8 @@ import { defineConfig, type Plugin } from 'vite'
 import { MANAGED_MODELS_DIR, POLY_PIZZA_DIR } from '../../scripts/assetPacks.ts'
 import { archiveFile, archiveManifest, contentTypeOf, kenneyPackNames } from './archiveSources.ts'
 import { managedModelKeys } from '../../scripts/managedModels.ts'
-import { readBuildings, writeBuildings } from '../../scripts/buildingsFile.ts'
-import { readModels, writeModels } from '../../scripts/modelsFile.ts'
-import { addGlb, addPack, addPolyPizzaModel, removeModel } from '../../scripts/assetOperations.ts'
+import { buildingsByModelFile, modelsByFile, writeBuildingsByModelFile, writeModelsByFile } from '../../scripts/editorViews.ts'
+import { addGlb, addPack, addPolyPizzaModel, removeModel, renameModel } from '../../scripts/assetOperations.ts'
 import { fetchPolyPizzaModel } from '../../scripts/polyPizza.ts'
 
 const editorDir = dirname(fileURLToPath(import.meta.url))
@@ -92,9 +91,9 @@ const modelsApi = (): Plugin => ({
     })
     server.middlewares.use('/api/buildings', async (req, res) => {
       res.setHeader('Content-Type', 'application/json')
-      if (req.method !== 'PUT') return res.end(JSON.stringify(readBuildings()))
+      if (req.method !== 'PUT') return res.end(JSON.stringify(buildingsByModelFile()))
       try {
-        writeBuildings(JSON.parse(await readBody(req)))
+        writeBuildingsByModelFile(JSON.parse(await readBody(req)))
         res.end(JSON.stringify({ ok: true }))
       } catch (error) {
         res.statusCode = 400
@@ -103,9 +102,9 @@ const modelsApi = (): Plugin => ({
     })
     server.middlewares.use('/api/models', async (req, res) => {
       res.setHeader('Content-Type', 'application/json')
-      if (req.method !== 'PUT') return res.end(JSON.stringify(readModels()))
+      if (req.method !== 'PUT') return res.end(JSON.stringify(modelsByFile()))
       try {
-        writeModels(JSON.parse(await readBody(req)))
+        writeModelsByFile(JSON.parse(await readBody(req)))
         res.end(JSON.stringify({ ok: true }))
       } catch (error) {
         res.statusCode = 400
@@ -127,6 +126,7 @@ const OPERATIONS: Record<string, Operation> = {
   'add-poly': operation(async ({ input, license }: { input: string; license: string }) => addPolyPizzaModel(await fetchPolyPizzaModel(input), license)),
   'add-pack': operation(({ dataBase64, ...input }: WithFile<Parameters<typeof addPack>[0]>) => addPack({ ...input, data: bytesOf(dataBase64) })),
   remove: operation(({ key, usedKeys }: { key: string; usedKeys: string[] }) => removeModel(key, usedKeys)),
+  'rename-model': operation(({ from, to }: { from: string; to: string }) => renameModel(from, to)),
 }
 
 // Operations change the sources, so the game's generated public/models is refreshed afterwards.

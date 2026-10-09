@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1720,
-  "model": "nature/tree_fat_fall",
+  "model": "nature-tree-fat-fall",
   "name": {
     "en": "Tree broad autumn",
     "fr": "Arbre large automne"

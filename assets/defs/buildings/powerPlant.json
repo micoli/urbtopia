@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 120,
   "section": "build.utilities",
-  "model": "industrial/windmill",
+  "model": "industrial-windmill",
   "footprint": [1, 1],
   "cost": 250,
   "unlockCitizens": 0,

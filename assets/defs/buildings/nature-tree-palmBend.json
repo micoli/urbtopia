@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1770,
-  "model": "nature/tree_palmBend",
+  "model": "nature-tree-palmbend",
   "name": {
     "en": "Tree palm curved",
     "fr": "Palmier courbé"

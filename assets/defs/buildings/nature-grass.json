@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 810,
-  "model": "nature/grass",
+  "model": "nature-grass",
   "name": {
     "en": "Grass",
     "fr": "Herbe"

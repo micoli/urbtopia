@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { ModelDefinition } from '../src/scene/modelDefinitions.ts';
-import { MODELS_FILE, readModels, writeModels } from './modelsFile.ts';
+import { MODELS_FILE, idByFile, modelIdOf, readModels, writeModels } from './modelsFile.ts';
 
 const SITE = 'https://poly.pizza';
 const STATIC = 'https://static.poly.pizza';
@@ -91,9 +91,11 @@ export async function fetchPolyPizzaList(listId: string, targetDir: string, mode
     writeFileSync(join(dir, 'license.txt'), licenseText(asset));
   }
   const models = readModels(modelsFile);
+  const ids = idByFile(models);
   for (const asset of assets) {
-    const key = `poly.pizza/${asset.slug}`;
-    models[key] = { ...polyPizzaDefinition(asset), ...models[key] };
+    const file = `poly.pizza/${asset.slug}`;
+    const id = ids.get(file) ?? modelIdOf(file);
+    models[id] = { file, ...polyPizzaDefinition(asset), ...models[id] };
   }
   writeModels(models, modelsFile);
   return assets.length;

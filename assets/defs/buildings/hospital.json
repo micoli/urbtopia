@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 290,
   "section": "build.publicFacilities",
-  "model": "commercial/building-i",
+  "model": "commercial-building-i",
   "footprint": [3, 3],
   "cost": 1500,
   "unlockCitizens": 100,

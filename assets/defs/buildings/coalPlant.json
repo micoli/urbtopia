@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 130,
   "section": "build.utilities",
-  "model": "industrial/chimney-basic",
+  "model": "industrial-chimney-basic",
   "footprint": [1, 1],
   "cost": 150,
   "unlockCitizens": 0,

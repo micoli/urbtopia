@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 320,
   "section": "build.leisure",
-  "model": "buildings/2Story_Stairs_Mat",
+  "model": "buildings-2story-stairs-mat",
   "footprint": [2, 2],
   "cost": 2500,
   "unlockCitizens": 250,

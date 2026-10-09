@@ -1,6 +1,6 @@
 # Asset catalog (Kenney City Kits)
 
-Machine-readable data: [`assets/models.json`](../assets/models.json) (Model definitions, see [ADR 0012](adr/0012-models-json-single-source-of-model-definitions.md)). Decided with the owner in the assets editor (`tools/assets-editor/`). Source facts: [`research/kenney-city-kits.md`](research/kenney-city-kits.md).
+Machine-readable data: [`assets/models.json`](../assets/models.json) (Model definitions keyed by Model id, each with its `file`, see [ADR 0012](adr/0012-models-json-single-source-of-model-definitions.md) and [ADR 0022](adr/0022-model-ids-decoupled-from-file-paths.md)). Decided with the owner in the assets editor (`tools/assets-editor/`). Source facts: [`research/kenney-city-kits.md`](research/kenney-city-kits.md).
 
 ## Conventions
 

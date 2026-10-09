@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1970,
-  "model": "nature/tree_pineTallD",
+  "model": "nature-tree-pinetalld",
   "name": {
     "en": "Tree pine tall D",
     "fr": "Pin haut D"

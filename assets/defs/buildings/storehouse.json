@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 80,
   "section": "build.storage",
-  "model": "industrial/building-a",
+  "model": "industrial-building-a",
   "footprint": [2, 2],
   "cost": 400,
   "unlockCitizens": 0,

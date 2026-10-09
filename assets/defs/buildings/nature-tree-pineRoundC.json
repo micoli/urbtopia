@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1860,
-  "model": "nature/tree_pineRoundC",
+  "model": "nature-tree-pineroundc",
   "name": {
     "en": "Tree pine round C",
     "fr": "Pin rond C"

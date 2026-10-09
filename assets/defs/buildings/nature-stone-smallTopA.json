@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1450,
-  "model": "nature/stone_smallTopA",
+  "model": "nature-stone-smalltopa",
   "name": {
     "en": "Stone small topped A",
     "fr": "Petite pierre sommet A"

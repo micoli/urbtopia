@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 910,
-  "model": "nature/log_stackLarge",
+  "model": "nature-log-stacklarge",
   "name": {
     "en": "Log stack large",
     "fr": "Tronc tas grande"

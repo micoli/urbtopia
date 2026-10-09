@@ -1,28 +1,19 @@
-import definitions from '../../assets/models.json';
+import { MODEL_ENTRIES } from '../core/models/modelFiles';
+import type { ModelEntry, ModelSource } from '../core/models/modelSchema';
 
-export type ModelSource = 'kenney' | 'quaternius' | 'managed' | 'poly.pizza';
+export type { ModelSource };
 
-export interface ModelDefinition {
-  source: ModelSource;
-  license: string;
-  author?: string;
-  url?: string;
-  footprint?: [number, number];
-  scale?: number;
-  center?: [number, number];
-  fit?: { width: number; height: number };
-  rotationOffset?: number;
-  bakeNodeScale?: boolean;
-  recolor?: { color: string; variants?: Record<string, string> };
-  note?: string;
-}
+// How the scene shows a model; the scene keys models by file.
+export type ModelDefinition = Omit<ModelEntry, 'file'>;
 
-export const MODEL_DEFINITIONS = definitions as unknown as Record<string, ModelDefinition>;
+const settingsOf = ({ file: _file, ...settings }: ModelEntry): ModelDefinition => settings;
 
-export const definitionOf = (key: string): ModelDefinition | undefined => MODEL_DEFINITIONS[key];
+export const MODEL_DEFINITIONS: Record<string, ModelDefinition> = Object.fromEntries(Object.values(MODEL_ENTRIES).map(entry => [entry.file, settingsOf(entry)]));
 
-export function recolorOf(key: string, variant?: string): number | undefined {
-  const recolor = definitionOf(key)?.recolor;
+export const definitionOf = (file: string): ModelDefinition | undefined => MODEL_DEFINITIONS[file];
+
+export function recolorOf(file: string, variant?: string): number | undefined {
+  const recolor = definitionOf(file)?.recolor;
   const hex = variant ? recolor?.variants?.[variant] : recolor?.color;
   return hex ? Number.parseInt(hex.slice(1), 16) : undefined;
 }

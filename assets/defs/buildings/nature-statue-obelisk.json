@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 500,
-  "model": "nature/statue_obelisk",
+  "model": "nature-statue-obelisk",
   "name": {
     "en": "Obelisk",
     "fr": "Obélisque"

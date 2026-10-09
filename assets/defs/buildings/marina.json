@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 2200,
   "section": "build.water",
-  "model": "watercraft/boat-house-a",
+  "model": "watercraft-boat-house-a",
   "footprint": [2, 2],
   "cost": 600,
   "unlockCitizens": 60,

@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1620,
-  "model": "nature/tree_blocks_dark",
+  "model": "nature-tree-blocks-dark",
   "name": {
     "en": "Tree block crown dark",
     "fr": "Arbre couronne cubique sombre"

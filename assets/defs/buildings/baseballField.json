@@ -3,7 +3,7 @@
   "kind": "sport",
   "order": 350,
   "section": "build.sport",
-  "model": "poly.pizza/ballpark-45ez39jsdz6",
+  "model": "poly-pizza-ballpark-45ez39jsdz6",
   "footprint": [7, 7],
   "cost": 2500,
   "unlockCitizens": 300,

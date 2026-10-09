@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 930,
-  "model": "nature/mushroom_redGroup",
+  "model": "nature-mushroom-redgroup",
   "name": {
     "en": "Mushrooms red group",
     "fr": "Champignons rouges groupe"

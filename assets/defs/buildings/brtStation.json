@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 190,
   "section": "build.transport",
-  "model": "roads/road-sign-empty",
+  "model": "roads-road-sign-empty",
   "footprint": [1, 1],
   "cost": 180,
   "unlockCitizens": 200,

@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 480,
-  "model": "nature/statue_column",
+  "model": "nature-statue-column",
   "name": {
     "en": "Statue column",
     "fr": "Colonne"

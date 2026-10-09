@@ -3,7 +3,7 @@
   "kind": "sport",
   "order": 360,
   "section": "build.sport",
-  "model": "sport/athletics-stadium",
+  "model": "sport-athletics-stadium",
   "footprint": [9, 5],
   "cost": 1000,
   "unlockCitizens": 400,

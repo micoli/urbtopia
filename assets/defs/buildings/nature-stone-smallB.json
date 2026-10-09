@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1340,
-  "model": "nature/stone_smallB",
+  "model": "nature-stone-smallb",
   "name": {
     "en": "Stone small B",
     "fr": "Petite pierre B"

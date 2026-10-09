@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 450,
-  "model": "nature/cliff_steps_rock",
+  "model": "nature-cliff-steps-rock",
   "name": {
     "en": "Cliff steps",
     "fr": "Falaise en escalier"

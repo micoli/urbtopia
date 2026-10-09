@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 2190,
-  "model": "pirate/patch-grass-foliage",
+  "model": "pirate-patch-grass-foliage",
   "name": {
     "en": "Patch Grass foliage · Pirate",
     "fr": "Touffe Herbe feuillage · Pirate"

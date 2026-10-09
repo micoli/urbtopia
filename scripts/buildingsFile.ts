@@ -5,7 +5,7 @@ import type { BuildingDefinitions, FlatBuilding } from '../src/core/buildings/bu
 import { BUILDING_ID_PATTERN, buildingSchema } from '../src/core/buildings/buildingSchema.ts';
 import { BUILDINGS_DIR, buildingFilesIn, idOfBuildingFile } from './buildingsDir.ts';
 import { writeBuildingTypes } from './buildingTypes.ts';
-import { availableModelKeys, modelReferenceProblems } from './modelReferences.ts';
+import { modelReferenceProblems, shippedModelCatalog, type ModelCatalog } from './modelReferences.ts';
 
 export { BUILDINGS_DIR, readBuildings } from './buildingsDir.ts';
 
@@ -21,7 +21,7 @@ export function buildingProblems(definition: unknown): string[] {
   return result.error.issues.map(issue => (issue.path.length ? `${issue.path.join('.')}: ${issue.message}` : issue.message));
 }
 
-export function buildingsProblems(definitions: BuildingDefinitions, models?: ReadonlySet<string>): string[] {
+export function buildingsProblems(definitions: BuildingDefinitions, catalog?: ModelCatalog): string[] {
   const seen = new Set<string>();
   const idProblems = Object.keys(definitions).flatMap(id => {
     const folded = id.toLowerCase();
@@ -33,7 +33,7 @@ export function buildingsProblems(definitions: BuildingDefinitions, models?: Rea
     ];
   });
   const definitionProblems = Object.entries(definitions).flatMap(([id, definition]) => buildingProblems(definition).map(problem => `${id}: ${problem}`));
-  return [...idProblems, ...definitionProblems, ...(models ? modelReferenceProblems(definitions, models) : [])];
+  return [...idProblems, ...definitionProblems, ...(catalog ? modelReferenceProblems(definitions, catalog) : [])];
 }
 
 // JSON strings never hold a raw newline, so only real arrays of scalars are put on one line.
@@ -58,7 +58,7 @@ const writeIfChanged = (file: string, content: string) => {
 export function writeBuildings(definitions: BuildingDefinitions, dir = BUILDINGS_DIR): void {
   const ordered: BuildingDefinitions = Object.fromEntries(Object.entries(definitions).map(([id, definition], index) => [id, { ...definition, order: (index + 1) * ORDER_STEP }]));
   const real = dir === BUILDINGS_DIR;
-  const problems = buildingsProblems(ordered, real ? availableModelKeys() : undefined);
+  const problems = buildingsProblems(ordered, real ? shippedModelCatalog() : undefined);
   if (problems.length) throw new Error(problems.join('; '));
   mkdirSync(dir, { recursive: true });
   for (const [id, definition] of Object.entries(ordered)) writeIfChanged(join(dir, `${id}.json`), stableBuildingJson(definition));

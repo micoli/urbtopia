@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 100,
   "section": "build.storage",
-  "model": "farm/Silo_House",
+  "model": "farm-silo-house",
   "footprint": [2, 2],
   "cost": 300,
   "unlockCitizens": 0,

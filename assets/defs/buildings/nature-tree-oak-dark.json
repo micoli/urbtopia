@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1740,
-  "model": "nature/tree_oak_dark",
+  "model": "nature-tree-oak-dark",
   "name": {
     "en": "Tree oak dark",
     "fr": "Chêne sombre"

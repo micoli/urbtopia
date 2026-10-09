@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1730,
-  "model": "nature/tree_oak",
+  "model": "nature-tree-oak",
   "name": {
     "en": "Tree oak",
     "fr": "Chêne"

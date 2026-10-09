@@ -1,10 +1,14 @@
 import type { Plugin } from 'vite';
 import { buildingsProblems, readBuildings } from '../scripts/buildingsFile.ts';
-import { availableModelKeys } from '../scripts/modelReferences.ts';
+import { shippedModelCatalog } from '../scripts/modelReferences.ts';
+import { modelsProblems } from '../scripts/modelsFile.ts';
 
-const DEFINITIONS_DIR = 'assets/defs/';
+const WATCHED = ['assets/defs/', 'assets/models.json'];
 
-export const definitionProblems = (): string[] => buildingsProblems(readBuildings(), availableModelKeys());
+export function definitionProblems(): string[] {
+  const catalog = shippedModelCatalog();
+  return [...modelsProblems(catalog.models), ...buildingsProblems(readBuildings(), catalog)];
+}
 
 const report = (problems: string[]) => `Invalid game object definitions:\n${problems.join('\n')}`;
 
@@ -24,7 +28,7 @@ export function validateDefinitions(): Plugin {
     },
     configureServer(server) {
       server.watcher.on('all', (_event, file) => {
-        if (!file.includes(DEFINITIONS_DIR)) return;
+        if (!WATCHED.some(path => file.includes(path))) return;
         const problems = definitionProblems();
         if (!problems.length) return;
         server.config.logger.error(report(problems));

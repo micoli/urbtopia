@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 2120,
-  "model": "nature/tree_thin_fall",
+  "model": "nature-tree-thin-fall",
   "name": {
     "en": "Tree slender autumn",
     "fr": "Arbre fin automne"

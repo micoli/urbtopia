@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "file": {
+        "type": "string",
+        "pattern": "^[^/]+\\/.+$"
+      },
+      "source": {
+        "type": "string",
+        "enum": [
+          "kenney",
+          "quaternius",
+          "managed",
+          "poly.pizza"
+        ]
+      },
+      "license": {
+        "type": "string",
+        "pattern": "\\S"
+      },
+      "author": {
+        "type": "string"
+      },
+      "url": {
+        "type": "string"
+      },
+      "footprint": {
+        "type": "array",
+        "prefixItems": [
+          {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        ],
+        "items": false,
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "scale": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "center": {
+        "type": "array",
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "items": false,
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "fit": {
+        "type": "object",
+        "properties": {
+          "width": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "height": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "required": [
+          "width",
+          "height"
+        ],
+        "additionalProperties": false
+      },
+      "rotationOffset": {
+        "type": "number"
+      },
+      "bakeNodeScale": {
+        "type": "boolean"
+      },
+      "recolor": {
+        "type": "object",
+        "properties": {
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-f]{6}$"
+          },
+          "variants": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$"
+            }
+          }
+        },
+        "required": [
+          "color"
+        ],
+        "additionalProperties": false
+      },
+      "note": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "file",
+      "source",
+      "license"
+    ],
+    "additionalProperties": false
+  },
+  "title": "Model definitions",
+  "description": "assets/models.json: one entry per Model id, its file and how the game shows it."
+}

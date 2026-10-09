@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 10,
   "section": "build.housing",
-  "model": "suburban/building-type-k",
+  "model": "suburban-building-type-k",
   "footprint": [1, 1],
   "cost": 150,
   "unlockCitizens": 0,

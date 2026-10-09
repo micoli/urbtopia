@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 520,
-  "model": "nature/stone_largeA",
+  "model": "nature-stone-largea",
   "name": {
     "en": "Stone large A",
     "fr": "Grande pierre A"

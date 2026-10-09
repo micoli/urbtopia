@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 610,
   "section": "build.greenSpaces",
-  "model": "suburban/tree-large",
+  "model": "suburban-tree-large",
   "footprint": [2, 2],
   "cost": 120,
   "unlockCitizens": 15,

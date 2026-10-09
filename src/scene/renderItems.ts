@@ -1,4 +1,5 @@
 import { BUILDING_ENTRIES } from '../core/buildings/buildingDefinitions';
+import { modelFileOf } from '../core/models/modelFiles';
 import { FIXTURE_MODELS, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type BoatFamily, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -25,7 +26,7 @@ export interface RenderItem {
   tint?: number;
 }
 
-export const MODEL_BY_BUILDING = Object.fromEntries(BUILDING_ENTRIES.map(({ id, model }) => [id, model])) as Record<BuildingType, string>;
+export const MODEL_BY_BUILDING = Object.fromEntries(BUILDING_ENTRIES.map(({ id, model }) => [id, modelFileOf(model)])) as Record<BuildingType, string>;
 
 const FACILITY_DETAILS: Record<FacilityType, string> = {
   school: 'commercial/detail-awning',

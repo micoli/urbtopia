@@ -2,7 +2,8 @@ import { existsSync, mkdirSync, readdirSync, rmSync, rmdirSync, writeFileSync } 
 import { dirname, join } from 'node:path';
 import { EXTRA_PACKS_FILE, MANAGED_MODELS_DIR, POLY_PIZZA_DIR, ARCHIVES_DIR, QUATERNIUS_ARCHIVES_DIR, readExtraPacks } from './assetPacks.ts';
 import { extractFbx, extractPack } from './extractPack.ts';
-import { MODELS_FILE, readModels, writeModels } from './modelsFile.ts';
+import { BUILDINGS_DIR, readBuildings, writeBuildings } from './buildingsFile.ts';
+import { MODELS_FILE, idByFile, modelIdOf, readModels, writeModels } from './modelsFile.ts';
 import { licenseText, type PolyPizzaModel } from './polyPizza.ts';
 
 export interface AssetPaths {
@@ -12,9 +13,10 @@ export interface AssetPaths {
   quaternius: string;
   models: string;
   extraPacks: string;
+  buildings: string;
 }
 
-export const ASSET_PATHS: AssetPaths = { managed: MANAGED_MODELS_DIR, polyPizza: POLY_PIZZA_DIR, kenney: ARCHIVES_DIR, quaternius: QUATERNIUS_ARCHIVES_DIR, models: MODELS_FILE, extraPacks: EXTRA_PACKS_FILE };
+export const ASSET_PATHS: AssetPaths = { managed: MANAGED_MODELS_DIR, polyPizza: POLY_PIZZA_DIR, kenney: ARCHIVES_DIR, quaternius: QUATERNIUS_ARCHIVES_DIR, models: MODELS_FILE, extraPacks: EXTRA_PACKS_FILE, buildings: BUILDINGS_DIR };
 
 export interface Attribution {
   license: string;
@@ -41,10 +43,11 @@ export function addGlb(input: { category: string; name: string; data: Uint8Array
   const target = join(paths.managed, `${key}.glb`);
   if (existsSync(target)) throw new Error(`${key} already exists`);
   const models = readModels(paths.models);
-  if (models[key]) throw new Error(`${key} already has a definition`);
+  const id = modelIdOf(key);
+  if (models[id] || idByFile(models).has(key)) throw new Error(`${key} already has a definition`);
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(target, input.data);
-  writeModels({ ...models, [key]: defined({ source: 'managed' as const, license: input.license.trim(), author: input.author?.trim(), url: input.url?.trim(), note: input.note?.trim() }) }, paths.models);
+  writeModels({ ...models, [id]: defined({ file: key, source: 'managed' as const, license: input.license.trim(), author: input.author?.trim(), url: input.url?.trim(), note: input.note?.trim() }) }, paths.models);
   return key;
 }
 
@@ -57,7 +60,7 @@ export function addPolyPizzaModel(model: PolyPizzaModel, license: string, paths 
   mkdirSync(directory, { recursive: true });
   writeFileSync(join(directory, `${model.slug}.glb`), model.glb);
   writeFileSync(join(directory, 'license.txt'), licenseText({ title: model.title, author: model.author, publicID: model.url.split('/m/')[1] ?? '', licence: license.trim() }));
-  writeModels({ ...models, [key]: defined({ source: 'poly.pizza' as const, license: license.trim(), author: model.author, url: model.url }) }, paths.models);
+  writeModels({ ...models, [modelIdOf(key)]: defined({ file: key, source: 'poly.pizza' as const, license: license.trim(), author: model.author, url: model.url }) }, paths.models);
   return key;
 }
 
@@ -103,6 +106,20 @@ export function removeModel(key: string, usedKeys: readonly string[], paths = AS
     const directory = dirname(file);
     if (readdirSync(directory).length === 0) rmdirSync(directory);
   }
-  if (!(key in models)) return;
-  writeModels(Object.fromEntries(Object.entries(models).filter(([candidate]) => candidate !== key)), paths.models);
+  if (!idByFile(models).has(key)) return;
+  writeModels(Object.fromEntries(Object.entries(models).filter(([, { file }]) => file !== key)), paths.models);
+}
+
+// Model ids live in definitions only, never in saves: a rename rewrites every building that uses the model.
+export function renameModel(from: string, to: string, paths = ASSET_PATHS): void {
+  const models = readModels(paths.models);
+  if (!models[from]) throw new Error(`Unknown Model id ${from}`);
+  if (models[to]) throw new Error(`Model id ${to} already exists`);
+  const renamed = Object.fromEntries(Object.entries(models).map(([id, definition]) => [id === from ? to : id, definition]));
+  const buildings = readBuildings(paths.buildings);
+  const rewired = Object.fromEntries(Object.entries(buildings).map(([id, building]) => [id, building.model === from ? { ...building, model: to } : building]));
+  const dangling = Object.entries(rewired).filter(([, { model }]) => !renamed[model]).map(([id]) => id);
+  if (dangling.length) throw new Error(`Buildings with an unknown model: ${dangling.join(', ')}`);
+  writeModels(renamed, paths.models);
+  writeBuildings(rewired, paths.buildings);
 }

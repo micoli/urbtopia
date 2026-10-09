@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1170,
-  "model": "nature/rock_smallFlatA",
+  "model": "nature-rock-smallflata",
   "name": {
     "en": "Rock small flat A",
     "fr": "Rocher petit plat A"

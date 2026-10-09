@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 400,
-  "model": "mini-forest/building-roof",
+  "model": "mini-forest-building-roof",
   "name": {
     "en": "Wooden roof",
     "fr": "Toit en bois"

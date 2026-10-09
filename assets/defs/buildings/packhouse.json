@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 70,
   "section": "build.production",
-  "model": "farm/OpenBarn",
+  "model": "farm-openbarn",
   "footprint": [2, 2],
   "cost": 250,
   "unlockCitizens": 20,

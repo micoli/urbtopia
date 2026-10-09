@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 420,
-  "model": "nature/cliff_blockCave_rock",
+  "model": "nature-cliff-blockcave-rock",
   "name": {
     "en": "Cliff cave block",
     "fr": "Bloc de falaise à grotte"

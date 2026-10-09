@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 380,
-  "model": "holiday/lantern",
+  "model": "holiday-lantern",
   "name": {
     "en": "Lantern",
     "fr": "Lanterne"

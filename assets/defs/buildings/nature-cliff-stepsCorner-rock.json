@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 440,
-  "model": "nature/cliff_stepsCorner_rock",
+  "model": "nature-cliff-stepscorner-rock",
   "name": {
     "en": "Cliff steps corner",
     "fr": "Falaise en escalier, angle"

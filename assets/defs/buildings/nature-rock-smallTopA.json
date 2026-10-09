@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1230,
-  "model": "nature/rock_smallTopA",
+  "model": "nature-rock-smalltopa",
   "name": {
     "en": "Rock small topped A",
     "fr": "Rocher petit sommet A"

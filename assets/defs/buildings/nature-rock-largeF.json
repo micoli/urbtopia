@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1100,
-  "model": "nature/rock_largeF",
+  "model": "nature-rock-largef",
   "name": {
     "en": "Rock large F",
     "fr": "Grand rocher F"

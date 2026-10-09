@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1990,
-  "model": "nature/tree_plateau_dark",
+  "model": "nature-tree-plateau-dark",
   "name": {
     "en": "Tree flat crown dark",
     "fr": "Arbre couronne plate sombre"

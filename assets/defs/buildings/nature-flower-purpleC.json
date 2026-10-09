@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 740,
-  "model": "nature/flower_purpleC",
+  "model": "nature-flower-purplec",
   "name": {
     "en": "Flowers purple C",
     "fr": "Fleurs violettes C"

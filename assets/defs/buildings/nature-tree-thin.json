@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 2100,
-  "model": "nature/tree_thin",
+  "model": "nature-tree-thin",
   "name": {
     "en": "Tree slender",
     "fr": "Arbre fin"

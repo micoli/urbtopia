@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 840,
-  "model": "nature/grass_leafsLarge",
+  "model": "nature-grass-leafslarge",
   "name": {
     "en": "Grass leafy large",
     "fr": "Herbe feuillue grande"

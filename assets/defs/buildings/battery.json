@@ -3,7 +3,7 @@
   "kind": "standard",
   "order": 160,
   "section": "build.utilities",
-  "model": "industrial/shipping-container-a",
+  "model": "industrial-shipping-container-a",
   "footprint": [1, 1],
   "cost": 350,
   "unlockCitizens": 32,

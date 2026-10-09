@@ -18,7 +18,7 @@ Turn `tools/assets-editor` into a game design tool: every Game object (Building,
 - Crop packs (Crate, Box, Pallet) stay derived from Crops and `packFormats.json`.
 - Material and Good icons are generated from their model.
 - `retired: true` instead of deletion; ids of Game objects are immutable.
-- Model definitions keyed by Model id (`<pack>-<basename>` at migration), `file` field for the path; `legacyKeys` (path → id) only while code still holds path literals.
+- Model definitions keyed by Model id (`<pack>-<basename>` at migration), `file` field for the path. The scene keys loaded models by file; definitions are translated from id to file where the game reads them, so no legacy table is needed.
 
 ## Code
 

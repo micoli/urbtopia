@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 2010,
-  "model": "nature/tree_simple",
+  "model": "nature-tree-simple",
   "name": {
     "en": "Tree simple",
     "fr": "Arbre simple"

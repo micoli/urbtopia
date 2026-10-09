@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1040,
-  "model": "nature/plant_flatTall",
+  "model": "nature-plant-flattall",
   "name": {
     "en": "Plant flat tall",
     "fr": "Plante haute à feuilles plates"

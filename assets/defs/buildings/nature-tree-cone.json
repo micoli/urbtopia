@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1640,
-  "model": "nature/tree_cone",
+  "model": "nature-tree-cone",
   "name": {
     "en": "Tree conical",
     "fr": "Arbre conique"

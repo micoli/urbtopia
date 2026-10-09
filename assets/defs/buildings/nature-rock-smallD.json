@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
   "order": 1140,
-  "model": "nature/rock_smallD",
+  "model": "nature-rock-smalld",
   "name": {
     "en": "Rock small D",
     "fr": "Rocher petit D"
