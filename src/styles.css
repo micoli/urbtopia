@@ -1909,8 +1909,6 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 34dvh;
-  overflow-y: auto;
 }
 
 .venue-staff {
