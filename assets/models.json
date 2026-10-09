@@ -5,6 +5,16 @@
     "source": "quaternius",
     "license": "CC0"
   },
+  "buildings-2story-wide-2doors-mat": {
+    "file": "buildings/2Story_Wide_2Doors_Mat",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "buildings-2story-wide-mat": {
+    "file": "buildings/2Story_Wide_Mat",
+    "source": "quaternius",
+    "license": "CC0"
+  },
   "commercial-building-a": {
     "file": "commercial/building-a",
     "source": "kenney",

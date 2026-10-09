@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "casino",
   "order": 320,
   "section": "build.leisure",
-  "model": "buildings-2story-stairs-mat",
-  "footprint": [2, 2],
   "cost": 2500,
   "unlockCitizens": 250,
   "requiresRoad": true,
@@ -12,5 +10,48 @@
   "name": {
     "en": "Casino",
     "fr": "Casino"
+  },
+  "tiers": [
+    {
+      "model": "buildings-2story-stairs-mat",
+      "footprint": [2, 2],
+      "radius": 8,
+      "wellbeingBonus": 6,
+      "maxStake": 100,
+      "power": 6,
+      "blockmatchLevel": 4
+    },
+    {
+      "model": "buildings-2story-wide-mat",
+      "footprint": [3, 2],
+      "radius": 10,
+      "wellbeingBonus": 7,
+      "maxStake": 500,
+      "power": 9,
+      "blockmatchLevel": 8,
+      "upgradeCost": {
+        "urbs": 4000,
+        "goods": {}
+      }
+    },
+    {
+      "model": "buildings-2story-wide-2doors-mat",
+      "footprint": [6, 2],
+      "radius": 12,
+      "wellbeingBonus": 8,
+      "maxStake": 2000,
+      "power": 13.5,
+      "blockmatchLevel": 14,
+      "upgradeCost": {
+        "urbs": 8000,
+        "goods": {}
+      }
+    }
+  ],
+  "stakeSteps": [10, 50, 100, 500, 1000, 2000],
+  "gameMinTier": {
+    "slotMachine": 1,
+    "blackjack": 2,
+    "blockmatch": 3
   }
 }

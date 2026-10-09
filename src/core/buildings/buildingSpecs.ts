@@ -2,7 +2,6 @@ import { BUILDING_ENTRIES, tiersOf, type BuildingEntry } from './buildingDefinit
 import type { AccessMode } from './buildingDefinition';
 import { NATURE_FAMILIES } from '../environment/natureFamilies';
 import type { Coord } from '../map/coord';
-import { casinoFootprint } from '../leisure/casino';
 import { isVenueType } from '../venues/profiles';
 import type { Building, BuildingType, Rotation, ShopStack } from '../engine/state';
 
@@ -32,7 +31,7 @@ export const BUILDING_SPECS = Object.fromEntries(BUILDING_ENTRIES.map(entry => [
 
 export function footprintOf(type: BuildingType, rotation: number, tier = 1): Footprint {
   const tierFootprint = tiersOf(type)[tier - 1]?.footprint;
-  const tiered = tierFootprint ? { width: tierFootprint[0], depth: tierFootprint[1] } : type === 'casino' ? casinoFootprint(tier) : undefined;
+  const tiered = tierFootprint ? { width: tierFootprint[0], depth: tierFootprint[1] } : undefined;
   const { width, depth } = tiered ?? BUILDING_SPECS[type].footprint;
   return rotation % 2 === 0 ? { width, depth } : { width: depth, depth: width };
 }

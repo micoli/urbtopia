@@ -1,6 +1,8 @@
 // Generated from assets/models.json by scripts/modelsFile.ts. Do not edit.
 export type ModelId =
   | 'buildings-2story-stairs-mat'
+  | 'buildings-2story-wide-2doors-mat'
+  | 'buildings-2story-wide-mat'
   | 'commercial-building-a'
   | 'commercial-building-b'
   | 'commercial-building-c'

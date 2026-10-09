@@ -1,36 +1,31 @@
-import { definitionOf } from '../buildings/buildingDefinitions';
+import { definitionOf, tiersOf } from '../buildings/buildingDefinitions';
 import type { Footprint } from '../buildings/buildingSpecs';
+import { CASINO_GAMES, type CasinoGame } from './casinoGames';
 
-export type CasinoGame = 'slotMachine' | 'blackjack' | 'blockmatch';
-
-export const CASINO_GAMES: readonly CasinoGame[] = ['slotMachine', 'blackjack', 'blockmatch'];
-
-const THEATER_POWER = 2;
+export { CASINO_GAMES, type CasinoGame };
 
 const definition = definitionOf('casino');
+const tiers = tiersOf('casino');
 
+// Everything per Tier comes from the Casino definition; the Casino boat follows the same Tiers.
 export const CASINO = {
   unlockCitizens: definition.unlockCitizens!,
   cost: definition.cost!,
-  upgradeCosts: { 2: 4000, 3: 8000 } as Record<number, number>,
-  footprints: [
-    { width: definition.footprint![0], depth: definition.footprint![1] },
-    { width: 3, depth: 2 },
-    { width: 6, depth: 2 },
-  ] as readonly Footprint[],
-  radii: [8, 10, 12] as readonly number[],
-  wellbeingBonus: [6, 7, 8] as readonly number[],
-  maxStakes: [100, 500, 2000] as readonly number[],
-  stakeSteps: [10, 50, 100, 500, 1000, 2000] as readonly number[],
-  powerFactor: 3,
-  powerGrowth: 1.5,
-  gameMinTier: { slotMachine: 1, blackjack: 2, blockmatch: 3 } as Record<CasinoGame, number>,
+  upgradeCosts: Object.fromEntries(tiers.flatMap(({ upgradeCost }, index) => (upgradeCost ? [[index + 1, upgradeCost.urbs]] : []))) as Record<number, number>,
+  footprints: tiers.map(({ footprint }) => ({ width: footprint![0], depth: footprint![1] })) as readonly Footprint[],
+  radii: tiers.map(({ radius }) => radius!) as readonly number[],
+  wellbeingBonus: tiers.map(({ wellbeingBonus }) => wellbeingBonus!) as readonly number[],
+  maxStakes: tiers.map(({ maxStake }) => maxStake!) as readonly number[],
+  stakeSteps: definition.stakeSteps! as readonly number[],
+  gameMinTier: definition.gameMinTier! as Record<CasinoGame, number>,
 };
 
-export const MAX_CASINO_TIER = CASINO.footprints.length;
+export const MAX_CASINO_TIER = tiers.length;
+
+const tierOf = (tier: number) => tiers[tier - 1] ?? tiers[0]!;
 
 export function casinoPower(tier: number): number {
-  return THEATER_POWER * CASINO.powerFactor * CASINO.powerGrowth ** (tier - 1);
+  return tierOf(tier).power!;
 }
 
 export function casinoFootprint(tier: number): Footprint {
@@ -48,6 +43,8 @@ export function casinoWellbeingBonus(tier: number): number {
 export function maxStake(tier: number): number {
   return CASINO.maxStakes[tier - 1] ?? CASINO.maxStakes[0]!;
 }
+
+export const blockmatchLevelOfTier = (tier: number): number => tierOf(tier).blockmatchLevel!;
 
 export function stakeStepsOf(tier: number): number[] {
   return CASINO.stakeSteps.filter(step => step <= maxStake(tier));

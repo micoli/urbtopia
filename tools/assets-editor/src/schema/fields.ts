@@ -35,6 +35,7 @@ export type FieldSpec = Base &
     | { type: 'select'; options: string[] }
     | { type: 'pair'; integer: boolean; min?: number; parts: [string, string] }
     | { type: 'choices'; options: string[] }
+    | { type: 'numberList'; integer: boolean }
     | { type: 'localized' }
     | { type: 'object'; fields: FieldSpec[] }
     | { type: 'record'; targets: readonly CollectionName[]; integer: boolean; min?: number }
@@ -94,6 +95,7 @@ function fieldOf(key: string, schema: JsonSchema, required: boolean, options: Fi
     return { ...base, type: 'pair', integer: first!.type === 'integer', min: first!.minimum, parts: PAIR_PARTS[key] ?? ['A', 'B'] }
   }
   if (schema.type === 'array' && schema.items && schema.items.enum) return { ...base, type: 'choices', options: schema.items.enum }
+  if (schema.type === 'array' && schema.items && (schema.items.type === 'integer' || schema.items.type === 'number')) return { ...base, type: 'numberList', integer: schema.items.type === 'integer' }
   if (schema.type === 'array' && schema.items && schema.items.type === 'object') return { ...base, type: 'list', fields: fieldsOf(schema.items, options) }
   if (isLocalized(schema)) return { ...base, type: 'localized' }
   if (schema.type === 'object' && !schema.properties && typeof schema.additionalProperties === 'object' && schema.additionalProperties.properties) return { ...base, type: 'map', fields: fieldsOf(schema.additionalProperties, options) }

@@ -6,6 +6,7 @@ import { ChoicesControl } from './ChoicesControl'
 import { LocalizedControl } from './LocalizedControl'
 import { ModelControl } from './ModelControl'
 import { NumberControl } from './NumberControl'
+import { NumberListControl } from './NumberListControl'
 import { PairControl } from './PairControl'
 import { RecordControl } from './RecordControl'
 import { SelectControl } from './SelectControl'
@@ -61,6 +62,8 @@ export function FieldControl({ field, value, path, onChange, modelSlot, nested, 
       return <PairControl value={value as [number, number] | undefined} integer={field.integer} min={field.min} parts={field.parts} label={field.label} onChange={onChange} />
     case 'choices':
       return <ChoicesControl value={value as string[] | undefined} options={field.options} onChange={onChange} />
+    case 'numberList':
+      return <NumberListControl value={value as number[] | undefined} label={field.label} onChange={onChange} />
     case 'localized':
       return <LocalizedControl value={value as LocalizedText | undefined} label={field.label} onChange={onChange} />
     case 'record':

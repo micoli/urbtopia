@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { NATURE_FAMILIES, type NatureFamily } from '../environment/natureFamilies.ts';
 import { BUILD_SECTION_TITLES } from './buildSections.ts';
+import { CASINO_GAMES } from '../leisure/casinoGames.ts';
 import { SERVICE_CATEGORIES } from '../services/serviceCategories.ts';
 import { pairSchema, tiersOf, variantsOf } from './tierSchema.ts';
 
@@ -110,8 +111,21 @@ const facilityBuilding = z.strictObject({
   tiers: tiersOf({ ...homeLook, capacity: z.int().min(1) }, ['model', 'footprint']),
 });
 
+// The Casino: Stake steps, the Tier each Minigame opens at, and per Tier its reach, Well-being bonus, highest Stake, power and blockmatch level.
+const casinoBuilding = z.strictObject({
+  kind: z.literal('casino'),
+  ...identity,
+  ...sited,
+  stakeSteps: z.array(z.int().min(1)).min(1),
+  gameMinTier: z.strictObject(Object.fromEntries(CASINO_GAMES.map(game => [game, z.int().min(1)])) as Record<(typeof CASINO_GAMES)[number], z.ZodInt>),
+  tiers: tiersOf(
+    { ...homeLook, radius: z.int().min(1), wellbeingBonus: count, maxStake: z.int().min(1), power: positive, blockmatchLevel: z.int().min(1) },
+    ['model', 'footprint', 'radius', 'wellbeingBonus', 'maxStake', 'power', 'blockmatchLevel'],
+  ),
+});
+
 export const buildingSchema = z
-  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding])
+  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding])
   .refine(building => building.kind === 'nature' || !building.accessModes || building.requiresRoad, { message: 'accessModes needs requiresRoad', path: ['accessModes'] })
   .meta({ title: 'Building', description: 'A building of Urbtopia, one file per building id in assets/defs/buildings.' });
 

@@ -57,10 +57,12 @@ const TIER_ONE: Partial<Record<BuildingKind, Record<string, number>>> = {
   storage: { materials: 0, goods: 0, crops: 0 },
   utility: { capacity: 1 },
   facility: { capacity: 100 },
+  casino: { radius: 8, wellbeingBonus: 0, maxStake: 100, power: 1, blockmatchLevel: 1 },
 }
 
 // The fields a kind adds to a placed building, besides its Tiers.
-const EXTRA: Partial<Record<BuildingKind, Record<string, number | string>>> = {
+const EXTRA: Partial<Record<BuildingKind, Record<string, unknown>>> = {
+  casino: { stakeSteps: [10], gameMinTier: { slotMachine: 1, blackjack: 1, blockmatch: 1 } },
   facility: { category: 'education', radius: 10, power: 1, water: 0 },
   sport: { radius: 1, wellbeingBonus: 0 },
   solar: { output: 1 },
