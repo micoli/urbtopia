@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { NATURE_FAMILIES, type NatureFamily } from '../environment/natureFamilies.ts';
 import { BUILD_SECTION_TITLES } from './buildSections.ts';
+import { SERVICE_CATEGORIES } from '../services/serviceCategories.ts';
 import { pairSchema, tiersOf, variantsOf } from './tierSchema.ts';
 
 export const BUILDING_ID_PATTERN = /^[a-z][A-Za-z0-9-]*$/;
@@ -95,8 +96,22 @@ const batteryBuilding = z.strictObject({ kind: z.literal('battery'), ...placed, 
 // A Backup Power plant supplies deficits, up to its capacity per hour, at a cost in Urbs per unit.
 const backupBuilding = z.strictObject({ kind: z.literal('backup'), ...placed, capacity: positive, costPerUnit: positive });
 
+// A Public facility serves the Homes within its radius (the whole city without one), up to the Citizen capacity of its Tier (unlimited without one).
+const facilityBuilding = z.strictObject({
+  kind: z.literal('facility'),
+  ...identity,
+  ...sited,
+  category: z.enum(SERVICE_CATEGORIES),
+  radius: z.int().min(1).optional(),
+  power: count,
+  water: count,
+  // Only one can be built.
+  unique: z.literal(true).optional(),
+  tiers: tiersOf({ ...homeLook, capacity: z.int().min(1) }, ['model', 'footprint']),
+});
+
 export const buildingSchema = z
-  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, solarBuilding, batteryBuilding, backupBuilding])
+  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding])
   .refine(building => building.kind === 'nature' || !building.accessModes || building.requiresRoad, { message: 'accessModes needs requiresRoad', path: ['accessModes'] })
   .meta({ title: 'Building', description: 'A building of Urbtopia, one file per building id in assets/defs/buildings.' });
 

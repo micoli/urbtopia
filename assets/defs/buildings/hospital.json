@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "facility",
   "order": 290,
   "section": "build.publicFacilities",
-  "model": "commercial-building-i",
-  "footprint": [3, 3],
   "cost": 1500,
   "unlockCitizens": 100,
   "requiresRoad": true,
@@ -16,5 +14,65 @@
   "description": {
     "en": "Cares for nearby Citizens and needs water. Required for Home Tier 5. Sends ambulances to covered Homes.",
     "fr": "Soigne les citoyens proches et consomme de l’eau. Requis pour les logements de niveau 5. Envoie des ambulances vers les logements couverts."
-  }
+  },
+  "radius": 14,
+  "tiers": [
+    {
+      "model": "commercial-building-i",
+      "footprint": [3, 3],
+      "capacity": 800
+    },
+    {
+      "capacity": 1200,
+      "upgradeCost": {
+        "urbs": 900,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1600,
+      "upgradeCost": {
+        "urbs": 1800,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 2400,
+      "upgradeCost": {
+        "urbs": 3600,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 3200,
+      "upgradeCost": {
+        "urbs": 6000,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 4400,
+      "upgradeCost": {
+        "urbs": 9000,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 5600,
+      "upgradeCost": {
+        "urbs": 13500,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 7200,
+      "upgradeCost": {
+        "urbs": 19500,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "health",
+  "power": 2,
+  "water": 2
 }

@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "facility",
   "order": 210,
   "section": "build.publicFacilities",
-  "model": "commercial-building-d",
-  "footprint": [2, 2],
   "cost": 300,
   "unlockCitizens": 15,
   "requiresRoad": true,
@@ -16,5 +14,65 @@
   "description": {
     "en": "Teaches the nearby Citizens. Homes cannot reach Tier 3 without School coverage.",
     "fr": "Instruit les citoyens proches. Les logements ne peuvent pas atteindre le niveau 3 sans couverture d’une école."
-  }
+  },
+  "radius": 10,
+  "tiers": [
+    {
+      "model": "commercial-building-d",
+      "footprint": [2, 2],
+      "capacity": 300
+    },
+    {
+      "capacity": 450,
+      "upgradeCost": {
+        "urbs": 180,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 600,
+      "upgradeCost": {
+        "urbs": 360,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 900,
+      "upgradeCost": {
+        "urbs": 720,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1200,
+      "upgradeCost": {
+        "urbs": 1200,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1650,
+      "upgradeCost": {
+        "urbs": 1800,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 2100,
+      "upgradeCost": {
+        "urbs": 2700,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 2700,
+      "upgradeCost": {
+        "urbs": 3900,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "education",
+  "power": 2,
+  "water": 0
 }

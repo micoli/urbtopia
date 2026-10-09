@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "facility",
   "order": 240,
   "section": "build.publicFacilities",
-  "model": "commercial-building-l",
-  "footprint": [3, 3],
   "cost": 3000,
   "unlockCitizens": 400,
   "requiresRoad": true,
@@ -16,5 +14,64 @@
   "description": {
     "en": "Serves the whole city; several Universities add their capacity. Optional: it raises Well-being.",
     "fr": "Dessert toute la ville ; plusieurs universités additionnent leur capacité. Facultative : elle augmente le bien-être."
-  }
+  },
+  "tiers": [
+    {
+      "model": "commercial-building-l",
+      "footprint": [3, 3],
+      "capacity": 2000
+    },
+    {
+      "capacity": 3000,
+      "upgradeCost": {
+        "urbs": 1800,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 4000,
+      "upgradeCost": {
+        "urbs": 3600,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 6000,
+      "upgradeCost": {
+        "urbs": 7200,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 8000,
+      "upgradeCost": {
+        "urbs": 12000,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 11000,
+      "upgradeCost": {
+        "urbs": 18000,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 14000,
+      "upgradeCost": {
+        "urbs": 27000,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 18000,
+      "upgradeCost": {
+        "urbs": 39000,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "education",
+  "power": 2,
+  "water": 0
 }

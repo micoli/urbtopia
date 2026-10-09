@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "facility",
   "order": 280,
   "section": "build.publicFacilities",
-  "model": "commercial-building-n",
-  "footprint": [3, 3],
   "cost": 2000,
   "unlockCitizens": 600,
   "requiresRoad": true,
@@ -16,5 +14,65 @@
   "description": {
     "en": "A large Culture facility. Optional: it raises Well-being.",
     "fr": "Un grand équipement culturel. Facultatif : il augmente le bien-être."
-  }
+  },
+  "radius": 14,
+  "tiers": [
+    {
+      "model": "commercial-building-n",
+      "footprint": [3, 3],
+      "capacity": 1200
+    },
+    {
+      "capacity": 1800,
+      "upgradeCost": {
+        "urbs": 1200,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 2400,
+      "upgradeCost": {
+        "urbs": 2400,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 3600,
+      "upgradeCost": {
+        "urbs": 4800,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 4800,
+      "upgradeCost": {
+        "urbs": 8000,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 6600,
+      "upgradeCost": {
+        "urbs": 12000,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 8400,
+      "upgradeCost": {
+        "urbs": 18000,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 10800,
+      "upgradeCost": {
+        "urbs": 26000,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "culture",
+  "power": 2,
+  "water": 0
 }

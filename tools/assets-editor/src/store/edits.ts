@@ -56,24 +56,26 @@ const TIER_ONE: Partial<Record<BuildingKind, Record<string, number>>> = {
   farm: { seedCapacity: 10, fieldCap: 4 },
   storage: { materials: 0, goods: 0, crops: 0 },
   utility: { capacity: 1 },
+  facility: { capacity: 100 },
 }
 
-// The fields a kind without Tiers adds to a placed building.
-const EXTRA: Partial<Record<BuildingKind, Record<string, number>>> = {
+// The fields a kind adds to a placed building, besides its Tiers.
+const EXTRA: Partial<Record<BuildingKind, Record<string, number | string>>> = {
+  facility: { category: 'education', radius: 10, power: 1, water: 0 },
   sport: { radius: 1, wellbeingBonus: 0 },
   solar: { output: 1 },
   battery: { storage: 1, rate: 1, radius: 1 },
   backup: { capacity: 1, costPerUnit: 1 },
 }
 
-const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { home: 'build.housing', sport: 'build.sport', storage: 'build.storage', utility: 'build.utilities', solar: 'build.utilities', battery: 'build.utilities', backup: 'build.utilities' }
+const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { facility: 'build.publicFacilities', home: 'build.housing', sport: 'build.sport', storage: 'build.storage', utility: 'build.utilities', solar: 'build.utilities', battery: 'build.utilities', backup: 'build.utilities' }
 
 export function blankBuilding(kind: BuildingKind, model: string): FlatBuilding {
   const name = { en: '', fr: '' }
   if (kind === 'nature') return { kind, model, name, family: 'decoration' }
   const sited = { section: SECTIONS[kind] ?? 'build.production', cost: 0, unlockCitizens: 0, requiresRoad: true }
   const tierOne = TIER_ONE[kind]
-  if (tierOne) return { kind, name, ...sited, tiers: [{ model, footprint: PLACED_DEFAULTS.footprint, ...tierOne }] } as FlatBuilding
+  if (tierOne) return { kind, name, ...sited, ...EXTRA[kind], tiers: [{ model, footprint: PLACED_DEFAULTS.footprint, ...tierOne }] } as FlatBuilding
   return { kind, model, name, ...sited, footprint: PLACED_DEFAULTS.footprint, ...EXTRA[kind] } as FlatBuilding
 }
 

@@ -413,3 +413,16 @@ export type StorageType =
   | 'silo'
   | 'storehouse'
   | 'vault';
+
+export type FacilityType =
+  | 'communityHall'
+  | 'concertHall'
+  | 'fireStation'
+  | 'highSchool'
+  | 'hospital'
+  | 'middleSchool'
+  | 'policeStation'
+  | 'school'
+  | 'theater'
+  | 'townHall'
+  | 'university';

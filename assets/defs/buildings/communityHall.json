@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "facility",
   "order": 260,
   "section": "build.publicFacilities",
-  "model": "commercial-building-a",
-  "footprint": [1, 1],
   "cost": 150,
   "unlockCitizens": 32,
   "requiresRoad": true,
@@ -16,5 +14,65 @@
   "description": {
     "en": "A small Culture facility for nearby Citizens. Optional: different Culture facilities stack their Well-being.",
     "fr": "Un petit équipement culturel pour les citoyens proches. Facultatif : les équipements culturels différents cumulent leur bien-être."
-  }
+  },
+  "radius": 6,
+  "tiers": [
+    {
+      "model": "commercial-building-a",
+      "footprint": [1, 1],
+      "capacity": 150
+    },
+    {
+      "capacity": 225,
+      "upgradeCost": {
+        "urbs": 90,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 300,
+      "upgradeCost": {
+        "urbs": 180,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 450,
+      "upgradeCost": {
+        "urbs": 360,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 600,
+      "upgradeCost": {
+        "urbs": 600,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 825,
+      "upgradeCost": {
+        "urbs": 900,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1050,
+      "upgradeCost": {
+        "urbs": 1350,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1350,
+      "upgradeCost": {
+        "urbs": 1950,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "culture",
+  "power": 2,
+  "water": 0
 }

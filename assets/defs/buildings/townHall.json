@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "facility",
   "order": 250,
   "section": "build.publicFacilities",
-  "model": "commercial-building-k",
-  "footprint": [3, 2],
   "cost": 2000,
   "unlockCitizens": 160,
   "requiresRoad": true,
@@ -16,5 +14,15 @@
   "description": {
     "en": "Administers the whole city, with no capacity limit. Only one can be built. Required for Home Tier 6.",
     "fr": "Administre toute la ville, sans limite de capacité. Un seul peut être construit. Requis pour les logements de niveau 6."
-  }
+  },
+  "tiers": [
+    {
+      "model": "commercial-building-k",
+      "footprint": [3, 2]
+    }
+  ],
+  "category": "administration",
+  "power": 2,
+  "water": 0,
+  "unique": true
 }

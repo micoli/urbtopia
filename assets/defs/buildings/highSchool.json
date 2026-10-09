@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "facility",
   "order": 230,
   "section": "build.publicFacilities",
-  "model": "commercial-building-g",
-  "footprint": [3, 2],
   "cost": 1000,
   "unlockCitizens": 100,
   "requiresRoad": true,
@@ -16,5 +14,65 @@
   "description": {
     "en": "Prepares nearby Citizens for higher studies. Optional: it raises Well-being.",
     "fr": "Prépare les citoyens proches aux études supérieures. Facultatif : il augmente le bien-être."
-  }
+  },
+  "radius": 14,
+  "tiers": [
+    {
+      "model": "commercial-building-g",
+      "footprint": [3, 2],
+      "capacity": 600
+    },
+    {
+      "capacity": 900,
+      "upgradeCost": {
+        "urbs": 600,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1200,
+      "upgradeCost": {
+        "urbs": 1200,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1800,
+      "upgradeCost": {
+        "urbs": 2400,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 2400,
+      "upgradeCost": {
+        "urbs": 4000,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 3300,
+      "upgradeCost": {
+        "urbs": 6000,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 4200,
+      "upgradeCost": {
+        "urbs": 9000,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 5400,
+      "upgradeCost": {
+        "urbs": 13000,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "education",
+  "power": 2,
+  "water": 0
 }
