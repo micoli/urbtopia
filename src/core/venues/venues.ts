@@ -8,7 +8,8 @@ import { entranceCell, gridSizeOf, takingsCapOf, VENUE as SHARED } from './share
 import { EVENT, eventBoundaries, eventBudgetOf, eventMultiplier, inCooldown, isEventActive } from './events';
 import { drawBreakdowns, isBroken, repairCost, restored, technicianRepairs, wearFixtures } from './wear';
 import { hashSeed } from '../engine/random';
-import { hiredOf, managerYield, postsOf, staffRolesOf, wagesPerHour } from './staff';
+import { hiredOf, hireFeeOf, managerYield, postsOf, staffRolesOf, wagesPerHour } from './staff';
+import { earnedOf, rankOf } from './rank';
 import { isAdapting } from '../environment/adaptation';
 import { energyStats } from '../environment/energy';
 import { isGood, type GoodId } from '../economy/items';
@@ -28,7 +29,8 @@ export type { Layout, LayoutHint } from './layout';
 export type { RoomReport } from './rules';
 export { EVENT, eventBudgetOf, eventMultiplierOf, isEventActive, isEventScheduled, inCooldown, eventBoundaries } from './events';
 export { WEAR, conditionOf, isBroken, repairCost, technicianRepairCost } from './wear';
-export { STAFF, STAFF_ROLES, FRONT_ROLE, hiredOf, postsOf, staffRolesOf, totalStaff, wagesPerHour } from './staff';
+export { STAFF, STAFF_ROLES, FRONT_ROLE, hiredOf, hireFeeOf, minTierOfRole, postsOf, staffRolesOf, totalStaff, wagesPerHour } from './staff';
+export { MAX_RANK, earnedOf, nextRankAt, rankOf } from './rank';
 
 export const isVenue = (building: Building): building is Building & { venue: VenueData } => building.venue !== undefined && isVenueType(building.type);
 
@@ -139,6 +141,7 @@ function advanceVenue(state: GameState, building: Building & { venue: VenueData 
   const technicians = hiredOf(building.venue, 'technician');
   const net = (performance.grossPerHour - performance.wagesPerHour) * hours;
   let takings = Math.max(0, Math.min(takingsCapOf(building.tier), building.venue.takings + net));
+  const earned = earnedOf(building.venue) + Math.max(0, takings - building.venue.takings);
   let fixtures = wearFixtures(building.venue.fixtures, performance.usageByFixture, hours, technicians);
   if (type === 'supermarket') fixtures = sellStock(fixtures, performance.salesByFixture, hours);
   let rng = building.venue.rng;
@@ -159,7 +162,7 @@ function advanceVenue(state: GameState, building: Building & { venue: VenueData 
     }
     if (type === 'hotel') reputation = stepReputation(building.venue, performance.reputationTarget ?? 0);
   }
-  const next: VenueData = { ...building.venue, fixtures, takings, ...(rng === undefined ? {} : { rng }), ...(reputation === undefined ? {} : { reputation }) };
+  const next: VenueData = { ...building.venue, fixtures, takings, earned, ...(rng === undefined ? {} : { rng }), ...(reputation === undefined ? {} : { reputation }) };
   if (next.event && next.event.endsAt <= to) {
     next.cooldownUntil = next.event.endsAt + EVENT.cooldownMs;
     delete next.event;
@@ -202,6 +205,8 @@ export function canPlaceFixture(building: Building & { venue: VenueData }, fixtu
   return fixtureTiles(fixture).every(tile => tile.x >= 0 && tile.y >= 0 && tile.x < size && tile.y < size && !occupied.has(`${tile.x}:${tile.y}`) && !(tile.x === entrance.x && tile.y === entrance.y));
 }
 
+export const venueRankOf = (building: Building & { venue: VenueData }): number => rankOf(venueTypeOf(building), building.venue);
+
 const venueOf = (state: GameState, buildingId: number): (Building & { venue: VenueData }) | undefined => {
   const building = state.buildings.find(candidate => candidate.id === buildingId);
   return building && isVenue(building) ? building : undefined;
@@ -212,6 +217,7 @@ export function placeFixture(state: GameState, buildingId: number, type: Fixture
   if (!building) return { key: 'error.unknownBuilding' };
   if (!(type in FIXTURES) || FIXTURES[type].venue !== venueTypeOf(building)) return { key: 'error.unknownCommand' };
   if (building.tier < FIXTURES[type].minTier) return { key: 'error.tierTooLow' };
+  if (venueRankOf(building) < (FIXTURES[type].minRank ?? 1)) return { key: 'error.rankTooLow' };
   const fixture = { type, x, y, rotation };
   if (!canPlaceFixture(building, fixture)) return { key: 'error.tilesOccupied' };
   const price = FIXTURES[type].price;
@@ -279,8 +285,12 @@ export function hireStaff(state: GameState, buildingId: number, role: StaffRole)
   if (!building) return { key: 'error.unknownBuilding' };
   if (!staffRolesOf(venueTypeOf(building)).includes(role)) return { key: 'error.unknownCommand' };
   const hired = hiredOf(building.venue, role);
-  if (hired >= postsOf(role, building.tier)) return { key: 'error.noStaffPost' };
-  return { state: withVenue(state, building, { ...building.venue, staff: { ...building.venue.staff, [role]: hired + 1 } }), events: [] };
+  const posts = postsOf(role, building.tier);
+  if (posts === 0) return { key: 'error.tierTooLow' };
+  if (hired >= posts) return { key: 'error.noStaffPost' };
+  const fee = hireFeeOf(role);
+  if (state.urbs < fee) return { key: 'error.notEnoughUrbs' };
+  return { state: withVenue(state, building, { ...building.venue, staff: { ...building.venue.staff, [role]: hired + 1 } }, state.urbs - fee), events: [] };
 }
 
 export function releaseStaff(state: GameState, buildingId: number, role: StaffRole): CommandOutcome {
@@ -323,6 +333,7 @@ export function scheduleEvent(state: GameState, buildingId: number, startsInHour
   const building = venueOf(state, buildingId);
   if (!building) return { key: 'error.unknownBuilding' };
   if (hiredOf(building.venue, 'manager') === 0) return { key: 'error.managerRequired' };
+  if (venueRankOf(building) < EVENT.minRank) return { key: 'error.rankTooLow' };
   if (!Number.isInteger(startsInHours) || startsInHours < 0 || startsInHours > EVENT.maxDelayHours) return { key: 'error.invalidEventStart' };
   if (building.venue.event) return { key: 'error.eventBusy' };
   if (inCooldown(building.venue, state.lastSeen)) return { key: 'error.eventCooldown' };

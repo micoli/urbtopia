@@ -16,16 +16,19 @@ export const FRONT_ROLE: Record<VenueType, StaffRole> = { arcade: 'employee', su
 export const STAFF = {
   dayHours: 24,
   dailyWage: { manager: 60, employee: 30, technician: 40, security: 35, cashier: 30, stocker: 28, receptionist: 32, housekeeper: 26 } as Record<StaffRole, number>,
+  // Posts by Tier; a role with no post at a Tier cannot be hired there yet.
   posts: {
-    manager: [1, 1, 1],
-    employee: [2, 3, 4],
-    technician: [1, 1, 2],
-    security: [1, 1, 2],
-    cashier: [2, 3, 4],
-    stocker: [1, 1, 2],
-    receptionist: [1, 2, 2],
-    housekeeper: [2, 3, 4],
+    manager: [0, 1, 1],
+    employee: [1, 2, 3],
+    technician: [0, 0, 2],
+    security: [0, 1, 2],
+    cashier: [1, 2, 3],
+    stocker: [0, 1, 2],
+    receptionist: [1, 1, 2],
+    housekeeper: [1, 2, 3],
   } as Record<StaffRole, readonly number[]>,
+  // Hiring costs this many days of wages, once.
+  hireFeeDays: 5,
   managerYield: 1.1,
   frontBaseRate: 0.4,
   frontRatePerHire: 0.3,
@@ -33,6 +36,10 @@ export const STAFF = {
 };
 
 export const postsOf = (role: StaffRole, tier: number): number => STAFF.posts[role][tier - 1] ?? STAFF.posts[role][STAFF.posts[role].length - 1]!;
+
+export const hireFeeOf = (role: StaffRole): number => STAFF.dailyWage[role] * STAFF.hireFeeDays;
+
+export const minTierOfRole = (role: StaffRole): number => STAFF.posts[role].findIndex(posts => posts > 0) + 1;
 
 export const hiredOf = (venue: VenueData, role: StaffRole): number => venue.staff?.[role] ?? 0;
 

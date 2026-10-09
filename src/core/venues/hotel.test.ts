@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { advance, createBuilding, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type StaffRole } from '../index';
-import { HOTEL, cityAttractiveness, priceMultiplier, reputationOf, roomsOf, venuePerformance } from './venues';
+import { HOTEL, VENUE_PROFILES, cityAttractiveness, priceMultiplier, reputationOf, roomsOf, venuePerformance } from './venues';
 
 const H = 3_600_000;
 const building = (id: number, type: Building['type'], x: number, y: number, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
@@ -20,10 +20,16 @@ const failure = (state: GameState, command: Command) => {
 const inn = (state: GameState) => state.buildings.find(b => b.type === 'hotel')!;
 const place = (fixture: FixtureId, x: number, y: number): Command => ({ type: 'PlaceFixture', buildingId: 1, fixture, x, y });
 const furnish = (state: GameState, ...items: [FixtureId, number, number][]) => items.reduce((current, [fixture, x, y]) => send(current, place(fixture, x, y)), state);
-const hire = (state: GameState, role: StaffRole, count = 1) => Array.from({ length: count }).reduce<GameState>(current => send(current, { type: 'HireStaff', buildingId: 1, role }), state);
+// Staff set straight in the state: the tests of the rules are not about the hiring conditions, which have their own tests.
+const hire = (state: GameState, role: StaffRole, count = 1): GameState => ({
+  ...state,
+  buildings: state.buildings.map(candidate => (candidate.id === 1 && candidate.venue ? { ...candidate, venue: { ...candidate.venue, staff: { ...candidate.venue.staff, [role]: (candidate.venue.staff?.[role] ?? 0) + count } } } : candidate)),
+});
 const performance = (state: GameState) => venuePerformance(state, inn(state) as never);
 const funded = (state: GameState, takings = 1000): GameState => ({ ...state, buildings: state.buildings.map(b => b.type === 'hotel' ? { ...b, venue: { ...b.venue!, takings } } : b) });
-const upgraded = (state: GameState) => send(send(state, { type: 'UpgradeBuilding', buildingId: 1 }), { type: 'UpgradeBuilding', buildingId: 1 });
+const ranked = (state: GameState, earned: number): GameState => ({ ...state, buildings: state.buildings.map(b => (b.type === 'hotel' ? { ...b, venue: { ...b.venue!, earned } } : b)) });
+// Tier 3 and the top Rank: the whole catalogue.
+const upgraded = (state: GameState) => ranked(send(send(state, { type: 'UpgradeBuilding', buildingId: 1 }), { type: 'UpgradeBuilding', buildingId: 1 }), VENUE_PROFILES.hotel.rankAt[1]);
 
 // One complete room: a bed and a toilet, next to a reception desk.
 const basic = () => hire(furnish(city(), ['receptionDesk', 3, 1], ['singleBed', 0, 3], ['toilet', 1, 3]), 'receptionist');

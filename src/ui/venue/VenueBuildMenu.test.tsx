@@ -10,7 +10,7 @@ afterEach(() => {
   prefsStore.getState().setLanguage('en');
 });
 
-const html = (tier: number, type: (typeof VENUE_TYPES)[number]) => renderToStaticMarkup(<VenueBuildMenu tier={tier} venueType={type} />).replaceAll('&#x27;', "'");
+const html = (tier: number, type: (typeof VENUE_TYPES)[number], rank = 1) => renderToStaticMarkup(<VenueBuildMenu tier={tier} rank={rank} venueType={type} />).replaceAll('&#x27;', "'");
 
 describe('Venue categories', () => {
   it('put every Fixture in exactly one section of its own kind of Venue', () => {
@@ -45,12 +45,12 @@ describe('Venue build menu', () => {
     const pinball = markup.match(new RegExp(`<button[^>]*flyout-item[^>]*>\\s*<span>${t('venue.fixture.pinball')}</span>[\\s\\S]*?</button>`))?.[0] ?? '';
     expect(pinball).toContain('disabled');
     expect(pinball).toContain(`${t('venue.tierNeeded')} 2`);
-    const open = html(2, 'arcade').match(new RegExp(`<button[^>]*flyout-item[^>]*>\\s*<span>${t('venue.fixture.pinball')}</span>[\\s\\S]*?</button>`))?.[0] ?? '';
+    const open = html(2, 'arcade', 2).match(new RegExp(`<button[^>]*flyout-item[^>]*>\\s*<span>${t('venue.fixture.pinball')}</span>[\\s\\S]*?</button>`))?.[0] ?? '';
     expect(open).not.toContain('disabled');
   });
 
   it('marks the selected item', () => {
-    const row = (selected: boolean) => renderToStaticMarkup(<VenueFixtureItem id="spaceShooter" tier={1} selected={selected} onChoose={() => {}} />);
+    const row = (selected: boolean) => renderToStaticMarkup(<VenueFixtureItem id="spaceShooter" tier={1} rank={1} selected={selected} onChoose={() => {}} />);
     expect(row(true)).toContain('data-selected="true"');
     expect(row(false)).not.toContain('data-selected="true"');
     expect(html(1, 'arcade')).toContain(t('venue.chooseFixture'));
@@ -62,5 +62,15 @@ describe('Venue build menu', () => {
     expect(html(1, 'hotel')).toContain(t('venue.category.beds'));
     expect(html(1, 'hotel')).toContain(t('venue.fixture.singleBed'));
     expect(html(1, 'hotel')).not.toContain(t('venue.fixture.barrelClimber'));
+  });
+});
+
+describe('Venue build menu ranks', () => {
+  const row = (rank: number) => renderToStaticMarkup(<VenueFixtureItem id="pinball" tier={2} rank={rank} selected={false} onChoose={() => {}} />);
+
+  it('locks an item the Venue has not earned the Rank for, and says which Rank', () => {
+    expect(row(1)).toContain(`${t('venue.rankNeeded')} 2`);
+    expect(row(1)).toContain('disabled');
+    expect(row(2)).not.toContain(t('venue.rankNeeded'));
   });
 });

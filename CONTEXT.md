@@ -141,7 +141,7 @@ An item the player places inside a Venue's interior: a counter, a table, a chair
 _Avoid_: Furniture, equipment, decoration
 
 **Staff**:
-The workers of a Venue, held as roles, not as individuals: manager, employee, technician and security in an Arcade; manager, cashier, stocker and security in a Supermarket; manager, receptionist, housekeeper and technician in a Hotel. Each role fills a post of the Venue's Tier, is staffed by Citizens like a Job, and costs a daily wage in Urbs.
+The workers of a Venue, held as roles, not as individuals: manager, employee, technician and security in an Arcade; manager, cashier, stocker and security in a Supermarket; manager, receptionist, housekeeper and technician in a Hotel. Each role fills a post of the Venue's Tier (the manager from Tier 2, the technician from Tier 3), is staffed by Citizens like a Job, costs a one-off hiring fee of five days of wages, then a daily wage in Urbs.
 _Avoid_: Employee (one of the roles), worker, personnel
 
 **Condition**:
@@ -163,6 +163,10 @@ _Avoid_: Suite, unit
 **Standing**:
 The class of a Room, from 1 to 3, set by the comfort of the Fixtures around its bed. It sets the rate of the Room.
 _Avoid_: Stars, grade, Tier
+
+**Rank**:
+The standing of a Venue, from 1 to 3, earned by the net Urbs it has made since it opened. It never costs Urbs and is kept through upgrades. The strongest Fixtures need a Rank as well as a Tier, and events open at Rank 2.
+_Avoid_: Level, Tier, Standing, Reputation
 
 **Reputation**:
 The note, from 0 to 100, of a Hotel. It rises with the Standing and the cleanliness of its Rooms and falls with breakdowns, a shortage of housekeepers, or closure; it draws more or fewer guests from outside the city.

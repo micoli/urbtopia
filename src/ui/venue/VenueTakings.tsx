@@ -1,4 +1,4 @@
-import { VENUE, hiredOf, isVenue, markupOf, netPerHour, priceOf, takingsCapOf, takingsDue, venueTypeOf, type Building } from '../../core';
+import { MAX_RANK, VENUE, earnedOf, hiredOf, isVenue, markupOf, netPerHour, nextRankAt, priceOf, takingsCapOf, takingsDue, venueRankOf, venueTypeOf, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
@@ -18,6 +18,8 @@ export function VenueTakings({ building, editable = false }: VenueTakingsProps) 
   if (!isVenue(building) || !performance) return null;
   const due = takingsDue(building.venue);
   const type = venueTypeOf(building);
+  const rank = venueRankOf(building);
+  const nextAt = nextRankAt(type, rank);
   const full = building.venue.takings >= takingsCapOf(building.tier);
   return (
     <>
@@ -27,6 +29,7 @@ export function VenueTakings({ building, editable = false }: VenueTakingsProps) 
       <DrawerPanel.LabelValue label={t('venue.attractiveness')} value={`${Math.round(performance.layout.attractiveness * 100)} %`} />
       <DrawerPanel.LabelValue label={t('venue.serviceRate')} value={`${Math.round(performance.layout.counterRate * 100)} %`} />
       {type === 'hotel' ? null : <DrawerPanel.LabelValue label={t(`venue.served.${type}`)} value={performance.served.toFixed(1)} />}
+      <DrawerPanel.LabelValue label={t('venue.rank')} value={rank >= MAX_RANK || nextAt === undefined ? `${rank}` : `${rank} · ${Math.floor(earnedOf(building.venue))} / ${nextAt}`} />
       <DrawerPanel.LabelValue label={t('venue.earnings')} value={<UrbsAmount value={performance.earningsPerHour} />} />
       {editable && hiredOf(building.venue, 'manager') > 0 ? (
         <NumberStepper label={t(`venue.price.${type}`)} value={priceOf(building.venue)} min={VENUE.minPrice} max={VENUE.maxPrice} onChange={price => gameStore.getState().send({ type: 'SetVenuePrice', buildingId: building.id, price })} />

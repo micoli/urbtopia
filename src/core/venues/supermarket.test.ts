@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { advance, createBuilding, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type StaffRole } from '../index';
 import { GOODS } from '../economy/items';
-import { SUPERMARKET, hasStock, markupOf, restockFee, stockOf, takingsCapOf, unitPrice, venueBoundaries, venuePerformance } from './venues';
+import { SUPERMARKET, VENUE_PROFILES, hasStock, markupOf, restockFee, stockOf, takingsCapOf, unitPrice, venueBoundaries, venuePerformance } from './venues';
 
 const H = 3_600_000;
 const building = (id: number, type: Building['type'], x: number, y: number, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
@@ -21,7 +21,11 @@ const failure = (state: GameState, command: Command) => {
 };
 const store = (state: GameState) => state.buildings.find(b => b.type === 'supermarket')!;
 const place = (fixture: FixtureId, x: number, y: number): Command => ({ type: 'PlaceFixture', buildingId: 1, fixture, x, y });
-const hire = (state: GameState, role: StaffRole, count = 1) => Array.from({ length: count }).reduce<GameState>(current => send(current, { type: 'HireStaff', buildingId: 1, role }), state);
+// Staff set straight in the state: the tests of the rules are not about the hiring conditions, which have their own tests.
+const hire = (state: GameState, role: StaffRole, count = 1): GameState => ({
+  ...state,
+  buildings: state.buildings.map(candidate => (candidate.id === 1 && candidate.venue ? { ...candidate, venue: { ...candidate.venue, staff: { ...candidate.venue.staff, [role]: (candidate.venue.staff?.[role] ?? 0) + count } } } : candidate)),
+});
 const performance = (state: GameState) => venuePerformance(state, store(state) as never);
 const shelfOf = (state: GameState, index = 0) => store(state).venue!.fixtures.filter(f => f.type.startsWith('shelf') || f.type.startsWith('display') || f.type === 'freezer')[index]!;
 const fitted = (state = market()) => {
@@ -156,9 +160,11 @@ describe('Supermarket Venue', () => {
   it('upgrades for Urbs and offers more Fixtures, posts and Takings', () => {
     const state = stocked();
     const upgraded = send(state, { type: 'UpgradeBuilding', buildingId: 1 });
+    const earned = { ...upgraded, buildings: upgraded.buildings.map(b => (b.type === 'supermarket' ? { ...b, venue: { ...b.venue!, earned: VENUE_PROFILES.supermarket.rankAt[0] } } : b)) };
     expect(store(upgraded).tier).toBe(2);
     expect(takingsCapOf(2)).toBeGreaterThan(takingsCapOf(1));
     expect(failure(state, place('freezer', 5, 5))).toBe('error.tierTooLow');
-    expect(failure(upgraded, place('freezer', 5, 5))).toBeNull();
+    expect(failure(upgraded, place('freezer', 5, 5))).toBe('error.rankTooLow');
+    expect(failure(earned, place('freezer', 5, 5))).toBeNull();
   });
 });

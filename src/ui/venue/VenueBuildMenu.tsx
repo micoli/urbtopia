@@ -8,11 +8,12 @@ import { VenueFixtureItem } from './VenueFixtureItem';
 
 interface VenueBuildMenuProps {
   tier: number;
+  rank: number;
   venueType: VenueType;
 }
 
 // The same menu as the city: one section open at a time, with the items of the section as rows with a picture and a cost.
-export function VenueBuildMenu({ tier, venueType }: VenueBuildMenuProps) {
+export function VenueBuildMenu({ tier, rank, venueType }: VenueBuildMenuProps) {
   const selected = useStore(venueStore, store => store.selectedFixture);
   const select = useStore(venueStore, store => store.selectFixture);
   const choose = useStore(venueStore, store => store.chooseFixture);
@@ -37,7 +38,7 @@ export function VenueBuildMenu({ tier, venueType }: VenueBuildMenuProps) {
           onToggle={() => setOpened(category)}
         >
           {fixtureIdsInCategory(venueType, category).map(id => (
-            <VenueFixtureItem key={id} id={id} tier={tier} selected={selected === id} onChoose={() => (selected === id ? select(null) : choose(id))} />
+            <VenueFixtureItem key={id} id={id} tier={tier} rank={rank} selected={selected === id} onChoose={() => (selected === id ? select(null) : choose(id))} />
           ))}
         </AccordionSection>
       ))}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { EVENT, eventBudgetOf, hiredOf, inCooldown, isEventActive, isVenue } from '../../core';
+import { EVENT, eventBudgetOf, hiredOf, inCooldown, isEventActive, isVenue, venueRankOf } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
@@ -20,9 +20,11 @@ export function VenueEvents({ venueId }: VenueEventsProps) {
   const { send } = gameStore.getState();
   const venue = building.venue;
   const active = isEventActive(venue, now);
+  const rankReached = venueRankOf(building) >= EVENT.minRank;
   return (
     <section className="venue-build" aria-label={t('venue.events')}>
       {hiredOf(venue, 'manager') === 0 ? <p className="note note--muted">{t('venue.eventNeedsManager')}</p> : null}
+      {rankReached ? null : <p className="note note--muted">{t('venue.eventNeedsRank')}</p>}
       {venue.event ? (
         <>
           <p className="note note--muted">{active ? t('venue.eventActive') : t('venue.eventScheduled')} · {formatDuration(Math.max(0, (active ? venue.event.endsAt : venue.event.startsAt) - now))}</p>
@@ -33,7 +35,7 @@ export function VenueEvents({ venueId }: VenueEventsProps) {
       ) : (
         <>
           <NumberStepper label={t('venue.eventStartsIn')} value={startsIn} min={0} max={EVENT.maxDelayHours} onChange={setStartsIn} />
-          <ActionButton variant="primary" block disabled={hiredOf(venue, 'manager') === 0} onClick={() => send({ type: 'ScheduleEvent', buildingId: venueId, startsInHours: startsIn })}>
+          <ActionButton variant="primary" block disabled={hiredOf(venue, 'manager') === 0 || !rankReached} onClick={() => send({ type: 'ScheduleEvent', buildingId: venueId, startsInHours: startsIn })}>
             {t('venue.eventTournament')} · {t('venue.eventCost')} <UrbsAmount value={eventBudgetOf(building.tier)} />
           </ActionButton>
         </>

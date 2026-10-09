@@ -67,4 +67,13 @@ describe('Venue save', () => {
     expect(kept.state.buildings[0]!.venue).toMatchObject({ reputation: 72.5, staff: { receptionist: 1, housekeeper: 2 } });
     expect(parseEnvelope(serializeEnvelope({ ...hotel, buildings: [{ ...hotel.buildings[0]!, venue: { ...hotel.buildings[0]!.venue, reputation: 140 } }] } as never, 0)).ok).toBe(false);
   });
+
+  it('keeps what a Venue has earned, and refuses a negative amount', () => {
+    const earned = { ...base, buildings: [{ ...base.buildings[0]!, venue: { ...base.buildings[0]!.venue!, earned: 420.5 } }] };
+    const loaded = parseEnvelope(serializeEnvelope(earned, 0));
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.buildings[0]!.venue).toMatchObject({ earned: 420.5 });
+    const negative = { ...base, buildings: [{ ...base.buildings[0]!, venue: { ...base.buildings[0]!.venue!, earned: -1 } }] };
+    expect(parseEnvelope(serializeEnvelope(negative, 0)).ok).toBe(false);
+  });
 });

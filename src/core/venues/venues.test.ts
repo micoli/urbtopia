@@ -4,13 +4,15 @@ import { economicPower, energyStats } from '../index';
 import { EVENT, eventBudgetOf, eventMultiplierOf } from './venues';
 import { jobsOf } from '../traffic/jobs';
 import { conditionOf, isBroken, repairCost, technicianRepairCost, STAFF, hiredOf, postsOf, wagesPerHour, priceOf } from './venues';
-import { VENUE_PROFILES, FIXTURES, gridSizeOf, entranceCell, fixtureRefund, priceAcceptance, takingsCapOf, takingsDue, takingsPerHour, venuePerformance, visitorsPerHour, VENUE } from './venues';
+import { VENUE_PROFILES, FIXTURES, hireFeeOf, minTierOfRole, rankOf, gridSizeOf, entranceCell, fixtureRefund, priceAcceptance, takingsCapOf, takingsDue, takingsPerHour, venuePerformance, visitorsPerHour, VENUE } from './venues';
 
 const HOUR = 3_600_000;
 const building = (id: number, type: Building['type'], x: number, y: number, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
 const city = (urbs = 10_000, buildings: Building[] = [building(1, 'arcade', 55, 50), building(2, 'home', 52, 50, { tier: 4 }), building(3, 'coalPlant', 90, 40, { tier: 4 })]): GameState => ({
   ...newGame({ seed: 'venues', now: 0 }), nextId: 100, urbs, tutorial: null, adaptationUntil: 0, buildings,
 });
+// An Arcade at Tier 2 that has already earned Rank 2: its catalogue opens, events included.
+const grown = (urbs = 100_000): GameState => city(urbs, [building(1, 'arcade', 55, 50, { tier: 2, venue: { fixtures: [], nextFixtureId: 1, takings: 0, earned: VENUE_PROFILES.arcade.rankAt[0] } }), building(2, 'home', 52, 50, { tier: 4 }), building(3, 'coalPlant', 90, 40, { tier: 4 })]);
 const send = (state: GameState, command: Command, now = 0) => {
   const result = dispatch(state, command, now);
   if (!result.ok) throw new Error(result.error.key);
@@ -22,7 +24,11 @@ const failure = (state: GameState, command: Command) => {
 };
 const arcadeOf = (state: GameState) => state.buildings.find(b => b.type === 'arcade')!;
 const place = (fixture: Extract<Command, { type: 'PlaceFixture' }>['fixture'], x: number, y: number, rotation?: 0 | 1 | 2 | 3): Command => ({ type: 'PlaceFixture', buildingId: 1, fixture, x, y, rotation });
-const hire = (state: GameState, role: StaffRole, count = 1): GameState => Array.from({ length: count }).reduce<GameState>(current => send(current, { type: 'HireStaff', buildingId: 1, role }), state);
+// Staff set straight in the state: the tests of the rules are not about the hiring conditions, which have their own tests.
+const hire = (state: GameState, role: StaffRole, count = 1): GameState => ({
+  ...state,
+  buildings: state.buildings.map(candidate => (candidate.id === 1 && candidate.venue ? { ...candidate, venue: { ...candidate.venue, staff: { ...candidate.venue.staff, [role]: (candidate.venue.staff?.[role] ?? 0) + count } } } : candidate)),
+});
 const machine = (x: number, y: number): Command => ({ type: 'PlaceFixture', buildingId: 1, fixture: 'barrelClimber', x, y });
 
 describe('Arcade Venue', () => {
@@ -128,7 +134,7 @@ describe('Arcade Venue', () => {
   });
 
   describe('Revenue model', () => {
-    const equipped = (...fixtures: [Parameters<typeof place>[0], number, number][]) => fixtures.reduce((state, [fixture, x, y]) => send(state, place(fixture, x, y)), city(100_000));
+    const equipped = (...fixtures: [Parameters<typeof place>[0], number, number][]) => fixtures.reduce((state, [fixture, x, y]) => send(state, place(fixture, x, y)), grown());
     const performance = (state: GameState) => venuePerformance(state, arcadeOf(state) as never);
 
     it('limits service to the game capacity, and halves it without a counter', () => {
@@ -173,15 +179,15 @@ describe('Arcade Venue', () => {
     it('caps Takings by Tier', () => {
       expect(takingsCapOf(2)).toBeGreaterThan(takingsCapOf(1));
       const staffed = hire(equipped(['barrelClimber', 1, 1], ['counter', 3, 1]), 'employee', 2);
-      const nearlyFull: GameState = { ...staffed, lastSeen: 0, buildings: staffed.buildings.map(b => b.type === 'arcade' ? { ...b, venue: { ...b.venue!, takings: takingsCapOf(1) - 1 } } : b) };
-      expect(arcadeOf(advance(nearlyFull, 3_600_000).state).venue!.takings).toBe(takingsCapOf(1));
+      const nearlyFull: GameState = { ...staffed, lastSeen: 0, buildings: staffed.buildings.map(b => b.type === 'arcade' ? { ...b, venue: { ...b.venue!, takings: takingsCapOf(2) - 1 } } : b) };
+      expect(arcadeOf(advance(nearlyFull, 3_600_000).state).venue!.takings).toBe(takingsCapOf(2));
     });
   });
 });
 
 describe('Arcade layout rules', () => {
   const entrance = entranceCell(1);
-  const furnished = (...fixtures: [Parameters<typeof place>[0], number, number][]) => fixtures.reduce((state, [fixture, x, y]) => send(state, place(fixture, x, y)), city(100_000));
+  const furnished = (...fixtures: [Parameters<typeof place>[0], number, number][]) => fixtures.reduce((state, [fixture, x, y]) => send(state, place(fixture, x, y)), grown());
   const layoutOf = (state: GameState) => venuePerformance(state, arcadeOf(state) as never).layout;
   const hintsOf = (state: GameState, id: number) => layoutOf(state).hints.get(id) ?? [];
 
@@ -246,7 +252,7 @@ describe('Arcade layout rules', () => {
 });
 
 describe('Arcade Staff', () => {
-  const fitted = () => [['counter', 3, 1], ['barrelClimber', 1, 2], ['spaceShooter', 4, 4]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), city(100_000));
+  const fitted = () => [['counter', 3, 1], ['barrelClimber', 1, 2], ['spaceShooter', 4, 4]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), grown());
   const performance = (state: GameState) => venuePerformance(state, arcadeOf(state) as never);
 
   it('hires and releases by role, within the posts of the Tier', () => {
@@ -323,7 +329,7 @@ describe('Arcade wear and repair', () => {
   const HOURS = 3_600_000;
   const run = (state: GameState, hours: number) => advance({ ...state, lastSeen: 0 }, hours * HOURS).state;
   const base = () => hire(
-    [['counter', 3, 1], ['barrelClimber', 1, 2], ['chair', 5, 5]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), city(100_000)),
+    [['counter', 3, 1], ['barrelClimber', 1, 2], ['chair', 5, 5]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), grown()),
     'employee', 2,
   );
   const fixtureOf = (state: GameState, type: string) => arcadeOf(state).venue!.fixtures.find(fixture => fixture.type === type)!;
@@ -461,7 +467,7 @@ describe('Arcade Tiers and power', () => {
 describe('Arcade events', () => {
   const H = 3_600_000;
   const staffedCity = () => {
-    const base = hire(hire(city(100_000), 'manager'), 'employee', 2);
+    const base = hire(hire(grown(), 'manager'), 'employee', 2);
     return [['counter', 3, 1], ['barrelClimber', 1, 2], ['spaceShooter', 2, 4], ['airHockey', 5, 3]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), base);
   };
   const schedule = (state: GameState, hours = 1) => send(state, { type: 'ScheduleEvent', buildingId: 1, startsInHours: hours });
@@ -477,8 +483,8 @@ describe('Arcade events', () => {
   it('debits the budget at scheduling, and allows one event at a time', () => {
     const before = staffedCity();
     const planned = schedule(before);
-    expect(planned.urbs).toBe(before.urbs - eventBudgetOf(1));
-    expect(arcadeOf(planned).venue!.event).toMatchObject({ budget: eventBudgetOf(1), endsAt: arcadeOf(planned).venue!.event!.startsAt + EVENT.durationMs });
+    expect(planned.urbs).toBe(before.urbs - eventBudgetOf(2));
+    expect(arcadeOf(planned).venue!.event).toMatchObject({ budget: eventBudgetOf(2), endsAt: arcadeOf(planned).venue!.event!.startsAt + EVENT.durationMs });
     expect(failure(planned, { type: 'ScheduleEvent', buildingId: 1, startsInHours: 5 })).toBe('error.eventBusy');
   });
 
@@ -487,7 +493,7 @@ describe('Arcade events', () => {
     const at = (time: number) => venuePerformance({ ...planned, lastSeen: time }, arcadeOf(planned) as never).visitors;
     const accepted = (time: number) => venuePerformance({ ...planned, lastSeen: time }, arcadeOf(planned) as never).accepted;
     expect(accepted(1 * H)).toBe(accepted(0));
-    expect(accepted(2.5 * H)).toBeCloseTo(accepted(0) * eventMultiplierOf(1), 9);
+    expect(accepted(2.5 * H)).toBeCloseTo(accepted(0) * eventMultiplierOf(2), 9);
     expect(accepted(6 * H)).toBe(accepted(0));
     expect(at(2.5 * H)).toBe(at(0));
   });
@@ -532,7 +538,7 @@ describe('Arcade events', () => {
   it('cancels a planned event for half the budget, but not one that has started', () => {
     const planned = schedule(staffedCity(), 3);
     const cancelled = send(planned, { type: 'CancelEvent', buildingId: 1 });
-    expect(cancelled.urbs).toBe(planned.urbs + Math.floor(eventBudgetOf(1) / 2));
+    expect(cancelled.urbs).toBe(planned.urbs + Math.floor(eventBudgetOf(2) / 2));
     expect(arcadeOf(cancelled).venue!.event).toBeUndefined();
     expect(failure(cancelled, { type: 'CancelEvent', buildingId: 1 })).toBe('error.noEvent');
     const running = advance({ ...schedule(staffedCity(), 0), lastSeen: 0 }, H).state;
@@ -546,7 +552,7 @@ describe('Arcade events', () => {
 });
 
 describe('Visitor satisfaction', () => {
-  const fixtured = () => [['counter', 3, 1], ['barrelClimber', 1, 2], ['spaceShooter', 4, 4]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), hire(city(100_000), 'employee', 2));
+  const fixtured = () => [['counter', 3, 1], ['barrelClimber', 1, 2], ['spaceShooter', 4, 4]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), hire(grown(), 'employee', 2));
   const mood = (state: GameState) => venuePerformance(state, arcadeOf(state) as never).satisfaction;
 
   it('stays between 0 and 1', () => {
@@ -567,13 +573,13 @@ describe('Visitor satisfaction', () => {
 
   it('rises with a counter near the entrance and quiet machines', () => {
     const near = mood(fixtured());
-    const far = mood([['counter', 0, 5], ['barrelClimber', 1, 2], ['spaceShooter', 2, 2]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), hire(city(100_000), 'employee', 2)));
+    const far = mood([['counter', 0, 5], ['barrelClimber', 1, 2], ['spaceShooter', 2, 2]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), hire(grown(), 'employee', 2)));
     expect(far).toBeLessThan(near);
   });
 });
 
 describe('Walls', () => {
-  const walled = () => [['arcadeWall', 0, 3], ['arcadeWall', 1, 3], ['arcadeWindow', 2, 3]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), city(100_000));
+  const walled = () => [['arcadeWall', 0, 3], ['arcadeWall', 1, 3], ['arcadeWindow', 2, 3]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), grown());
   const staffedGame = (state: GameState) => hire([['counter', 3, 1], ['barrelClimber', 1, 2]].reduce((current, [fixture, x, y]) => send(current, place(fixture as never, x as number, y as number)), state), 'employee', 2);
 
   it('are Fixtures of their own kind of Venue, in a section of their own', () => {
@@ -620,5 +626,71 @@ describe('Walls', () => {
       expect(fixture.condition).toBeUndefined();
       expect(fixture.broken).toBeUndefined();
     }
+  });
+});
+
+describe('Venue progression', () => {
+  const withEarned = (state: GameState, earned: number): GameState => ({ ...state, buildings: state.buildings.map(b => (b.type === 'arcade' ? { ...b, venue: { ...b.venue!, earned } } : b)) });
+  const [rank2, rank3] = VENUE_PROFILES.arcade.rankAt;
+
+  it('earns its Rank by trading, not by paying', () => {
+    expect(rankOf('arcade', { fixtures: [], nextFixtureId: 1, takings: 0 })).toBe(1);
+    expect(rankOf('arcade', { fixtures: [], nextFixtureId: 1, takings: 0, earned: rank2 - 1 })).toBe(1);
+    expect(rankOf('arcade', { fixtures: [], nextFixtureId: 1, takings: 0, earned: rank2 })).toBe(2);
+    expect(rankOf('arcade', { fixtures: [], nextFixtureId: 1, takings: 0, earned: rank3 })).toBe(3);
+  });
+
+  it('adds what the Venue nets to its earnings, and nothing while it is shut or full', () => {
+    const staffed = { ...hire(grown(), 'employee'), lastSeen: 0 };
+    const open = [['counter', 3, 1], ['barrelClimber', 1, 2]].reduce((state, [fixture, x, y]) => send(state, place(fixture as never, x as number, y as number)), staffed);
+    const later = advance(open, 3 * HOUR).state;
+    expect(arcadeOf(later).venue!.earned! - rank2).toBeCloseTo(arcadeOf(later).venue!.takings, 6);
+    const nearlyFull: GameState = { ...open, buildings: open.buildings.map(b => (b.type === 'arcade' ? { ...b, venue: { ...b.venue!, takings: takingsCapOf(2) - 1, earned: 0 } } : b)) };
+    const full = advance(nearlyFull, HOUR).state;
+    expect(arcadeOf(full).venue!.takings).toBe(takingsCapOf(2));
+    expect(arcadeOf(full).venue!.earned).toBeCloseTo(1, 6);
+    const capped = advance(full, 2 * HOUR).state;
+    expect(arcadeOf(capped).venue!.earned).toBeCloseTo(1, 6);
+  });
+
+  it('locks the strongest Fixtures behind the Rank as well as the Tier', () => {
+    const tier2 = withEarned(grown(), 0);
+    expect(failure(tier2, place('pinball', 0, 0))).toBe('error.rankTooLow');
+    expect(failure(withEarned(tier2, rank2), place('pinball', 0, 0))).toBeNull();
+  });
+
+  it('opens events from Rank 2', () => {
+    const staffed = hire(withEarned(grown(), rank2 - 1), 'manager');
+    expect(failure(staffed, { type: 'ScheduleEvent', buildingId: 1, startsInHours: 1 })).toBe('error.rankTooLow');
+    expect(failure(withEarned(staffed, rank2), { type: 'ScheduleEvent', buildingId: 1, startsInHours: 1 })).toBeNull();
+  });
+});
+
+describe('Venue hiring', () => {
+  const hireCommand = (role: StaffRole): Command => ({ type: 'HireStaff', buildingId: 1, role });
+
+  it('keeps the roles of the later Tiers locked until the Venue grows', () => {
+    expect(failure(city(), hireCommand('manager'))).toBe('error.tierTooLow');
+    expect(failure(city(), hireCommand('technician'))).toBe('error.tierTooLow');
+    expect(failure(grown(), hireCommand('technician'))).toBe('error.tierTooLow');
+    expect(failure(grown(), hireCommand('manager'))).toBeNull();
+    expect(minTierOfRole('manager')).toBe(2);
+    expect(minTierOfRole('technician')).toBe(3);
+    expect(minTierOfRole('employee')).toBe(1);
+  });
+
+  it('charges the hiring fee once, in Urbs', () => {
+    const state = city(1_000);
+    const hired = send(state, hireCommand('employee'));
+    expect(hired.urbs).toBe(1_000 - hireFeeOf('employee'));
+    expect(hireFeeOf('employee')).toBe(STAFF.dailyWage.employee * STAFF.hireFeeDays);
+    const released = send(hired, { type: 'ReleaseStaff', buildingId: 1, role: 'employee' });
+    expect(released.urbs).toBe(hired.urbs);
+    expect(failure(city(hireFeeOf('employee') - 1), hireCommand('employee'))).toBe('error.notEnoughUrbs');
+  });
+
+  it('starts a Venue with a single employee post', () => {
+    expect(postsOf('employee', 1)).toBe(1);
+    expect(failure(hire(city(), 'employee'), hireCommand('employee'))).toBe('error.noStaffPost');
   });
 });

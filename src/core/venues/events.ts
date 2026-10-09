@@ -9,6 +9,8 @@ export const EVENT = {
   cooldownMs: 6 * HOUR_MS,
   cancelRefund: 0.5,
   maxDelayHours: 24,
+  // Rank a Venue must have reached before it can plan events.
+  minRank: 2,
 };
 
 const byTier = (values: readonly number[], tier: number): number => values[tier - 1] ?? values[values.length - 1]!;

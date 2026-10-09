@@ -47,6 +47,7 @@ function isVenueData(value: unknown): boolean {
     isRecord(value) &&
     isInt(value.nextFixtureId, 1) &&
     isNonNegative(value.takings) &&
+    (value.earned === undefined || isNonNegative(value.earned)) &&
     (value.price === undefined || isInt(value.price, 1, 20)) &&
     (value.rng === undefined || isNumber(value.rng)) &&
     (value.reputation === undefined || (isNumber(value.reputation) && value.reputation >= 0 && value.reputation <= 100)) &&

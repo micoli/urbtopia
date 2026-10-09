@@ -93,8 +93,8 @@
       3,
       2
     ],
-    "cost": 2000,
-    "unlockCitizens": 150,
+    "cost": 5000,
+    "unlockCitizens": 400,
     "requiresRoad": true,
     "accessModes": [
       "road",
@@ -674,8 +674,8 @@
       2,
       2
     ],
-    "cost": 1200,
-    "unlockCitizens": 100,
+    "cost": 2500,
+    "unlockCitizens": 250,
     "requiresRoad": true,
     "accessModes": [
       "road",
@@ -697,8 +697,8 @@
       3,
       3
     ],
-    "cost": 5000,
-    "unlockCitizens": 400,
+    "cost": 9000,
+    "unlockCitizens": 600,
     "requiresRoad": true,
     "accessModes": [
       "road",

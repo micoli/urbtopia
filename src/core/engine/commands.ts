@@ -109,6 +109,7 @@ export type ErrorKey =
   | 'error.unknownFixture'
   | 'error.invalidPrice'
   | 'error.managerRequired'
+  | 'error.rankTooLow'
   | 'error.nothingToRepair'
   | 'error.shelfBusy'
   | 'error.shelfFull'

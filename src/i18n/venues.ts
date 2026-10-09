@@ -5,6 +5,11 @@ type VenueMessageKey =
   | 'error.unknownFixture'
   | 'error.invalidPrice'
   | 'error.managerRequired'
+  | 'error.rankTooLow'
+  | 'venue.rank'
+  | 'venue.rankNeeded'
+  | 'venue.eventNeedsRank'
+  | 'venue.hireFee'
   | 'error.nothingToRepair'
   | 'venue.repair'
   | 'venue.condition'
@@ -173,6 +178,11 @@ const texts: Record<VenueMessageKey, readonly [string, string]> = {
   'venue.broken': ['Out of order: it earns nothing until repaired.', 'En panne : il ne rapporte rien tant qu’il n’est pas réparé.'],
   'venue.worn': ['Worn: it may break down soon.', 'Usé : il risque de tomber en panne.'],
   'error.managerRequired': ['Hire a manager first.', 'Embauchez d’abord un manager.'],
+  'error.rankTooLow': ['This Venue has not earned a high enough Rank yet.', 'Cet établissement n’a pas encore un rang assez élevé.'],
+  'venue.rank': ['Rank', 'Rang'],
+  'venue.rankNeeded': ['Rank', 'Rang'],
+  'venue.eventNeedsRank': ['Events open at Rank 2: keep trading to earn it.', 'Les événements s’ouvrent au rang 2 : continuez d’exploiter pour l’atteindre.'],
+  'venue.hireFee': ['Hiring fee', 'Frais d’embauche'],
   'error.noStaffPost': ['All the posts of this role are filled.', 'Tous les postes de ce rôle sont pourvus.'],
   'error.noStaffToRelease': ['Nobody to release in this role.', 'Personne à licencier dans ce rôle.'],
   'codex.fact.grid': ['Interior', 'Intérieur'],

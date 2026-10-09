@@ -1,5 +1,5 @@
 import { useStore } from 'zustand';
-import { venueTypeOf, type Building } from '../../core';
+import { isVenue, venueRankOf, venueTypeOf, type Building } from '../../core';
 import { venueStore } from '../../store/venueStore';
 import { VenueBuildMenu } from './VenueBuildMenu';
 
@@ -13,7 +13,7 @@ export function VenueFlyout({ venue }: VenueFlyoutProps) {
   if (panel !== 'build') return null;
   return (
     <div className="flyout">
-      <VenueBuildMenu tier={venue.tier} venueType={venueTypeOf(venue)} />
+      <VenueBuildMenu tier={venue.tier} rank={isVenue(venue) ? venueRankOf(venue) : 1} venueType={venueTypeOf(venue)} />
     </div>
   );
 }

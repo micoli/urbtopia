@@ -117,6 +117,8 @@ export interface VenueData {
   fixtures: VenueFixture[];
   nextFixtureId: number;
   takings: number;
+  // Net earnings made since the Venue opened; it sets the Rank.
+  earned?: number;
   price?: number;
   staff?: Partial<Record<StaffRole, number>>;
   rng?: number;
