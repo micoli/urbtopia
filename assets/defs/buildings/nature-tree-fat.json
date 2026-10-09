@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1700,
+  "model": "nature/tree_fat",
+  "name": {
+    "en": "Tree broad",
+    "fr": "Arbre large"
+  },
+  "family": "tree"
+}

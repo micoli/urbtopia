@@ -14,10 +14,10 @@ export interface SportVenue {
   intro: readonly [en: string, fr: string];
 }
 
-export const SPORT_VENUES = Object.fromEntries(SPORT_ENTRIES.map(({ id, model, footprint, unlockCitizens, cost, sport, name, description }): [string, SportVenue] => {
+export const SPORT_VENUES = Object.fromEntries(SPORT_ENTRIES.map(({ id, model, footprint, unlockCitizens, cost, radius, wellbeingBonus, name, description }): [string, SportVenue] => {
   const [width, depth] = footprint!;
   const intro = description ?? name;
-  return [id, { model, unlockCitizens: unlockCitizens!, cost: cost!, footprint: { width, depth }, radius: sport.radius, wellbeingBonus: sport.wellbeingBonus, name: [name.en, name.fr], intro: [intro.en, intro.fr] }];
+  return [id, { model, unlockCitizens: unlockCitizens!, cost: cost!, footprint: { width, depth }, radius, wellbeingBonus, name: [name.en, name.fr], intro: [intro.en, intro.fr] }];
 })) as Record<SportVenueType, SportVenue>;
 
 export const SPORT_VENUE_TYPES = Object.keys(SPORT_VENUES) as SportVenueType[];

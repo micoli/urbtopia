@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1390,
+  "model": "nature/stone_smallFlatA",
+  "name": {
+    "en": "Stone small flat A",
+    "fr": "Petite pierre plat A"
+  },
+  "family": "habitat"
+}

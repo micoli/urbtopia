@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1940,
+  "model": "nature/tree_pineTallA",
+  "name": {
+    "en": "Tree pine tall A",
+    "fr": "Pin haut A"
+  },
+  "family": "conifer"
+}

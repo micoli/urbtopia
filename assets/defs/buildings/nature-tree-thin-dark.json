@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 2110,
+  "model": "nature/tree_thin_dark",
+  "name": {
+    "en": "Tree slender dark",
+    "fr": "Arbre fin sombre"
+  },
+  "family": "tree"
+}

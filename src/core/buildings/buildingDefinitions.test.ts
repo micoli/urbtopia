@@ -9,13 +9,13 @@ import { FACILITY_TYPES } from '../services/facilities';
 import { BUILDING_SPECS } from './buildingSpecs';
 import { BUILDING_ENTRIES, BUILDING_IDS } from './buildingDefinitions';
 
-describe('building definitions from buildings.json', () => {
+describe('building definitions from assets/defs/buildings', () => {
   it('gives every building a spec, a name and, outside nature, a description in both languages', () => {
-    for (const { id, nature } of BUILDING_ENTRIES) {
+    for (const { id, kind } of BUILDING_ENTRIES) {
       expect(BUILDING_SPECS[id], id).toBeDefined();
       expect(MESSAGES[`building.${id}`], id).toBeTruthy();
       expect(FR[`building.${id}`], id).toBeTruthy();
-      if (nature) continue;
+      if (kind === 'nature') continue;
       expect(MESSAGES[`codex.description.${id}`], id).toBeTruthy();
       expect(FR[`codex.description.${id}`], id).toBeTruthy();
     }

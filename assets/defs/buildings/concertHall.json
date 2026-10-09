@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 280,
+  "section": "build.publicFacilities",
+  "model": "commercial/building-n",
+  "footprint": [3, 3],
+  "cost": 2000,
+  "unlockCitizens": 600,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Concert hall",
+    "fr": "Salle de concert"
+  },
+  "description": {
+    "en": "A large Culture facility. Optional: it raises Well-being.",
+    "fr": "Un grand équipement culturel. Facultatif : il augmente le bien-être."
+  }
+}

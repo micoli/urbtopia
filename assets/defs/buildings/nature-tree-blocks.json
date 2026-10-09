@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1610,
+  "model": "nature/tree_blocks",
+  "name": {
+    "en": "Tree block crown",
+    "fr": "Arbre couronne cubique"
+  },
+  "family": "tree"
+}

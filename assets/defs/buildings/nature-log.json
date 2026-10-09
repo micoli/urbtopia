@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 880,
+  "model": "nature/log",
+  "name": {
+    "en": "Log",
+    "fr": "Tronc"
+  },
+  "family": "habitat"
+}

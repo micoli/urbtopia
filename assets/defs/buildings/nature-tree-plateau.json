@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1980,
+  "model": "nature/tree_plateau",
+  "name": {
+    "en": "Tree flat crown",
+    "fr": "Arbre couronne plate"
+  },
+  "family": "tree"
+}

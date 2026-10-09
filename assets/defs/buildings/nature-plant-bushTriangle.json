@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1020,
+  "model": "nature/plant_bushTriangle",
+  "name": {
+    "en": "Plant bush triangular",
+    "fr": "Buisson triangulaire"
+  },
+  "family": "shrub"
+}

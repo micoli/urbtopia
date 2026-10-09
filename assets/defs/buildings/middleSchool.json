@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 220,
+  "section": "build.publicFacilities",
+  "model": "commercial/building-f",
+  "footprint": [2, 2],
+  "cost": 600,
+  "unlockCitizens": 60,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Middle school",
+    "fr": "Collège"
+  },
+  "description": {
+    "en": "Continues the education of nearby Citizens. Optional: it raises Well-being.",
+    "fr": "Poursuit l’éducation des citoyens proches. Facultatif : il augmente le bien-être."
+  }
+}

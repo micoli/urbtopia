@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 700,
+  "model": "nature/cactus_short",
+  "name": {
+    "en": "Cactus short",
+    "fr": "Cactus court"
+  },
+  "family": "shrub"
+}

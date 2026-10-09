@@ -1,0 +1,361 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "standard"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "model": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "description": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "section": {
+          "type": "string",
+          "enum": [
+            "build.housing",
+            "build.production",
+            "build.storage",
+            "build.utilities",
+            "build.transport",
+            "build.water",
+            "build.publicFacilities",
+            "build.leisure",
+            "build.sport",
+            "build.decoration",
+            "build.greenSpaces"
+          ]
+        },
+        "footprint": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "cost": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "unlockCitizens": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "requiresRoad": {
+          "type": "boolean"
+        },
+        "accessModes": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "road",
+              "brt"
+            ]
+          }
+        },
+        "initialSlots": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "kind",
+        "order",
+        "model",
+        "name",
+        "section",
+        "footprint",
+        "cost",
+        "unlockCitizens",
+        "requiresRoad"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "sport"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "model": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "description": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "section": {
+          "type": "string",
+          "enum": [
+            "build.housing",
+            "build.production",
+            "build.storage",
+            "build.utilities",
+            "build.transport",
+            "build.water",
+            "build.publicFacilities",
+            "build.leisure",
+            "build.sport",
+            "build.decoration",
+            "build.greenSpaces"
+          ]
+        },
+        "footprint": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "cost": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "unlockCitizens": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "requiresRoad": {
+          "type": "boolean"
+        },
+        "accessModes": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "road",
+              "brt"
+            ]
+          }
+        },
+        "initialSlots": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "radius": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "wellbeingBonus": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "kind",
+        "order",
+        "model",
+        "name",
+        "section",
+        "footprint",
+        "cost",
+        "unlockCitizens",
+        "requiresRoad",
+        "radius",
+        "wellbeingBonus"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "nature"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "model": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "description": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "family": {
+          "type": "string",
+          "enum": [
+            "tree",
+            "grass",
+            "shrub",
+            "flower",
+            "habitat",
+            "conifer",
+            "decoration",
+            "palm"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "order",
+        "model",
+        "name",
+        "family"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "title": "Building",
+  "description": "A building of Urbtopia, one file per building id in assets/defs/buildings."
+}

@@ -4,7 +4,7 @@ import { FACILITIES, SERVICE_CATEGORIES, isFacilityType, type BuildingType } fro
 
 export type { BuildSection };
 
-const sectionOf = ({ nature, section }: BuildingEntry): BuildSection => (nature ? (nature.family === 'decoration' ? 'build.decoration' : 'build.greenSpaces') : section!);
+const sectionOf = ({ family, section }: BuildingEntry): BuildSection => (family ? (family === 'decoration' ? 'build.decoration' : 'build.greenSpaces') : section!);
 
 const typesOf = (title: BuildSection): BuildingType[] => BUILDING_ENTRIES.filter(entry => sectionOf(entry) === title).map(({ id }) => id);
 

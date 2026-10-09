@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 320,
+  "section": "build.leisure",
+  "model": "buildings/2Story_Stairs_Mat",
+  "footprint": [2, 2],
+  "cost": 2500,
+  "unlockCitizens": 250,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Casino",
+    "fr": "Casino"
+  }
+}

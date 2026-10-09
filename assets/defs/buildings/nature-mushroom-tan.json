@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 950,
+  "model": "nature/mushroom_tan",
+  "name": {
+    "en": "Mushrooms tan",
+    "fr": "Champignons beiges"
+  },
+  "family": "flower"
+}

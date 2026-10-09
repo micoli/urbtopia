@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1720,
+  "model": "nature/tree_fat_fall",
+  "name": {
+    "en": "Tree broad autumn",
+    "fr": "Arbre large automne"
+  },
+  "family": "tree"
+}

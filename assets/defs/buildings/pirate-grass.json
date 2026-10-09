@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 2130,
+  "model": "pirate/grass",
+  "name": {
+    "en": "Grass · Pirate",
+    "fr": "Herbe · Pirate"
+  },
+  "family": "grass"
+}

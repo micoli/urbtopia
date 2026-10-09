@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1030,
+  "model": "nature/plant_flatShort",
+  "name": {
+    "en": "Plant flat short",
+    "fr": "Plante basse à feuilles plates"
+  },
+  "family": "shrub"
+}

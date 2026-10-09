@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 40,
+  "section": "build.production",
+  "model": "commercial/building-a",
+  "footprint": [1, 1],
+  "cost": 300,
+  "unlockCitizens": 0,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "initialSlots": 3,
+  "name": {
+    "en": "Shop",
+    "fr": "Boutique"
+  },
+  "description": {
+    "en": "Sells Goods to Citizens for Urbs. Stock its sales slots with Goods from storage, then collect the earnings.",
+    "fr": "Vend des produits aux habitants contre des Urbs. Approvisionnez ses emplacements depuis le stockage, puis collectez les recettes."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "sport",
+  "order": 350,
+  "section": "build.sport",
+  "model": "poly.pizza/ballpark-45ez39jsdz6",
+  "footprint": [7, 7],
+  "cost": 2500,
+  "unlockCitizens": 300,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Baseball field",
+    "fr": "Terrain de baseball"
+  },
+  "description": {
+    "en": "A large Sport building with a diamond, an outfield and stands.",
+    "fr": "Un grand bâtiment de sport avec un losange, un champ extérieur et des tribunes."
+  },
+  "radius": 12,
+  "wellbeingBonus": 10
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 150,
+  "section": "build.utilities",
+  "model": "industrial/solar-panel-landscape-group",
+  "footprint": [2, 2],
+  "cost": 400,
+  "unlockCitizens": 32,
+  "requiresRoad": false,
+  "name": {
+    "en": "Solar installation",
+    "fr": "Installation solaire"
+  },
+  "description": {
+    "en": "Produces renewable electricity during daylight. Nearby batteries can store surplus for periods with less generation.",
+    "fr": "Produit de l’électricité renouvelable pendant la journée. Les batteries voisines peuvent conserver le surplus pour les périodes de faible production."
+  }
+}

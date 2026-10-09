@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 240,
+  "section": "build.publicFacilities",
+  "model": "commercial/building-l",
+  "footprint": [3, 3],
+  "cost": 3000,
+  "unlockCitizens": 400,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "University",
+    "fr": "Université"
+  },
+  "description": {
+    "en": "Serves the whole city; several Universities add their capacity. Optional: it raises Well-being.",
+    "fr": "Dessert toute la ville ; plusieurs universités additionnent leur capacité. Facultative : elle augmente le bien-être."
+  }
+}

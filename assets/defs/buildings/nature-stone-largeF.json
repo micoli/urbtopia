@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 570,
+  "model": "nature/stone_largeF",
+  "name": {
+    "en": "Stone large F",
+    "fr": "Grande pierre F"
+  },
+  "family": "decoration"
+}

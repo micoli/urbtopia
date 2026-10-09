@@ -6,8 +6,8 @@ type BuildingMessageKey = `building.${BuildingId}` | `codex.description.${Buildi
 
 // Descriptions of buildings with a stats sentence (public facilities, sport venues) are completed by their own message module.
 export function buildingMessages(language: 'en' | 'fr'): Record<BuildingMessageKey, string> {
-  return Object.fromEntries(BUILDING_ENTRIES.flatMap(({ id, name, description, sport }) => [
+  return Object.fromEntries(BUILDING_ENTRIES.flatMap(({ id, kind, name, description }) => [
     [`building.${id}`, name[language]],
-    ...(description && !sport && !isFacilityType(id) ? [[`codex.description.${id}`, description[language]]] : []),
+    ...(description && kind !== 'sport' && !isFacilityType(id) ? [[`codex.description.${id}`, description[language]]] : []),
   ])) as Record<BuildingMessageKey, string>;
 }

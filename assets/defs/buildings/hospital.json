@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 290,
+  "section": "build.publicFacilities",
+  "model": "commercial/building-i",
+  "footprint": [3, 3],
+  "cost": 1500,
+  "unlockCitizens": 100,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Hospital",
+    "fr": "Hôpital"
+  },
+  "description": {
+    "en": "Cares for nearby Citizens and needs water. Required for Home Tier 5. Sends ambulances to covered Homes.",
+    "fr": "Soigne les citoyens proches et consomme de l’eau. Requis pour les logements de niveau 5. Envoie des ambulances vers les logements couverts."
+  }
+}

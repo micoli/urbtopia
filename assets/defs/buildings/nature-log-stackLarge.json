@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 910,
+  "model": "nature/log_stackLarge",
+  "name": {
+    "en": "Log stack large",
+    "fr": "Tronc tas grande"
+  },
+  "family": "habitat"
+}

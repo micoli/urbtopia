@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 120,
+  "section": "build.utilities",
+  "model": "industrial/windmill",
+  "footprint": [1, 1],
+  "cost": 250,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "name": {
+    "en": "Wind turbine",
+    "fr": "Éolienne"
+  },
+  "description": {
+    "en": "Produces renewable electricity from wind. Output varies with the weather; upgrades increase its capacity.",
+    "fr": "Produit de l’électricité renouvelable grâce au vent. Sa production varie avec la météo ; les améliorations augmentent sa capacité."
+  }
+}

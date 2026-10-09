@@ -82,7 +82,7 @@ const readBody = (req: NodeJS.ReadableStream) => new Promise<string>((done) => {
   req.on('end', () => done(body))
 })
 
-// Dev-only adapter: the editor reads and writes assets/models.json and assets/buildings.json through it.
+// Dev-only adapter: the editor reads and writes assets/models.json and assets/defs/buildings through it.
 const modelsApi = (): Plugin => ({
   name: 'models-api',
   configureServer(server) {
@@ -152,4 +152,4 @@ const assetOperationsApi = (): Plugin => ({
   },
 })
 
-export default defineConfig({ root: dirname(fileURLToPath(import.meta.url)), plugins: [liveManifest(), liveSources(), modelsApi(), assetOperationsApi()], server: { fs: { allow: ['../..'] }, watch: { ignored: ['**/assets/models.json', '**/assets/buildings.json'] } } })
+export default defineConfig({ root: dirname(fileURLToPath(import.meta.url)), plugins: [liveManifest(), liveSources(), modelsApi(), assetOperationsApi()], server: { fs: { allow: ['../..'] }, watch: { ignored: ['**/assets/models.json', '**/assets/defs/**'] } } })

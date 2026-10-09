@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1680,
+  "model": "nature/tree_default_dark",
+  "name": {
+    "en": "Tree classic dark",
+    "fr": "Arbre classique sombre"
+  },
+  "family": "tree"
+}

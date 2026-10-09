@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 210,
+  "section": "build.publicFacilities",
+  "model": "commercial/building-d",
+  "footprint": [2, 2],
+  "cost": 300,
+  "unlockCitizens": 15,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "School",
+    "fr": "École"
+  },
+  "description": {
+    "en": "Teaches the nearby Citizens. Homes cannot reach Tier 3 without School coverage.",
+    "fr": "Instruit les citoyens proches. Les logements ne peuvent pas atteindre le niveau 3 sans couverture d’une école."
+  }
+}

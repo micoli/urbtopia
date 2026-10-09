@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 30,
+  "section": "build.production",
+  "model": "industrial/building-b",
+  "footprint": [2, 2],
+  "cost": 250,
+  "unlockCitizens": 0,
+  "requiresRoad": true,
+  "initialSlots": 2,
+  "name": {
+    "en": "Factory",
+    "fr": "Usine"
+  },
+  "description": {
+    "en": "Turns Materials into Goods. Higher Tiers improve production and unlock more recipes. Production needs electricity and a road connection.",
+    "fr": "Transforme les matériaux en produits. Les niveaux supérieurs améliorent la production et débloquent de nouvelles recettes. Elle nécessite de l’électricité et une connexion à une route."
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1650,
+  "model": "nature/tree_cone_dark",
+  "name": {
+    "en": "Tree conical dark",
+    "fr": "Arbre conique sombre"
+  },
+  "family": "tree"
+}

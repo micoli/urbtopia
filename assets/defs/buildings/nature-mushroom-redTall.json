@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 940,
+  "model": "nature/mushroom_redTall",
+  "name": {
+    "en": "Mushrooms red tall",
+    "fr": "Champignons rouges haut"
+  },
+  "family": "flower"
+}

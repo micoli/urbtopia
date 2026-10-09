@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 310,
+  "section": "build.publicFacilities",
+  "model": "commercial/building-j",
+  "footprint": [2, 2],
+  "cost": 1000,
+  "unlockCitizens": 160,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Police station",
+    "fr": "Commissariat"
+  },
+  "description": {
+    "en": "Protects nearby Citizens. Required for Home Tier 6. Sends police cars to covered Homes.",
+    "fr": "Protège les citoyens proches. Requis pour les logements de niveau 6. Envoie des voitures de police vers les logements couverts."
+  }
+}

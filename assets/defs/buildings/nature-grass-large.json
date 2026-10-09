@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 820,
+  "model": "nature/grass_large",
+  "name": {
+    "en": "Grass large",
+    "fr": "Herbe grande"
+  },
+  "family": "grass"
+}

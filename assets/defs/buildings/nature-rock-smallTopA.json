@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1230,
+  "model": "nature/rock_smallTopA",
+  "name": {
+    "en": "Rock small topped A",
+    "fr": "Rocher petit sommet A"
+  },
+  "family": "habitat"
+}

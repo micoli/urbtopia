@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 90,
+  "section": "build.storage",
+  "model": "industrial/building-p",
+  "footprint": [2, 1],
+  "cost": 300,
+  "unlockCitizens": 0,
+  "requiresRoad": true,
+  "name": {
+    "en": "Silo",
+    "fr": "Silo"
+  },
+  "description": {
+    "en": "Adds storage capacity for Materials. Only one Silo can be built; upgrades increase this capacity.",
+    "fr": "Ajoute de la capacité de stockage pour les matériaux. Un seul silo peut être construit ; ses améliorations augmentent cette capacité."
+  }
+}

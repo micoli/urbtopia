@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1000,
+  "model": "nature/plant_bushLargeTriangle",
+  "name": {
+    "en": "Plant bush large triangular",
+    "fr": "Grand buisson triangulaire"
+  },
+  "family": "shrub"
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1760,
+  "model": "nature/tree_palm",
+  "name": {
+    "en": "Tree palm",
+    "fr": "Palmier"
+  },
+  "family": "palm"
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 890,
+  "model": "nature/log_large",
+  "name": {
+    "en": "Log large",
+    "fr": "Grand tronc"
+  },
+  "family": "habitat"
+}

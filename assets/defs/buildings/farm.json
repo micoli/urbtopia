@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 60,
+  "section": "build.production",
+  "model": "farm/Barn",
+  "footprint": [2, 2],
+  "cost": 200,
+  "unlockCitizens": 20,
+  "requiresRoad": true,
+  "name": {
+    "en": "Farm",
+    "fr": "Ferme"
+  },
+  "description": {
+    "en": "Holds the seed stock and is the entry point of cultivation. Only one Farm can be built; upgrades raise the seed stock capacity and the number of Field tiles.",
+    "fr": "Contient le stock de graines et sert de point d'entrée à la culture. Une seule ferme peut être construite ; ses améliorations augmentent le stock de graines et le nombre de parcelles de champ."
+  }
+}

@@ -14,6 +14,7 @@
     "predev": "npm run assets && npm run codex:generate",
     "prebuild": "npm run assets && npm run codex:generate",
     "codex:generate": "node scripts/generate-codex.ts",
+    "defs:generate": "node scripts/generate-definitions.ts",
     "test:codex": "playwright test",
     "test:codex:images": "playwright test --grep @images",
     "test:gameplay": "playwright test --config playwright.gameplay.config.ts",
@@ -46,7 +47,8 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.0",
     "vite": "^8.3.2",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "zod": "^4.6.5"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",

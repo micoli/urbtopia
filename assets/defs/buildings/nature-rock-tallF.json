@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1280,
+  "model": "nature/rock_tallF",
+  "name": {
+    "en": "Rock tall F",
+    "fr": "Rocher haut F"
+  },
+  "family": "habitat"
+}

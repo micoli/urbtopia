@@ -1,11 +1,13 @@
-import { NATURE_MODELS } from '../src/core/environment/nature.ts';
 import { CROP_IDS } from '../src/core/farming/crops.ts';
 import { cropModelsOf } from '../src/scene/cropModels.ts';
 import { MINI_CHARACTER_FILES } from '../src/scene/venueCrowdModels.ts';
 import { existsSync, readFileSync } from 'node:fs';
+import { readBuildings } from './buildingsDir.ts';
 import type { QuaterniusPack } from './quaternius.ts';
 
-const natureFiles = (pack: string) => NATURE_MODELS.filter(([, model]) => model.startsWith(`${pack}/`)).map(([, model]) => model.slice(pack.length + 1));
+const natureModels = Object.values(readBuildings()).filter(({ kind }) => kind === 'nature').map(({ model }) => model);
+
+const natureFiles = (pack: string) => natureModels.filter(model => model.startsWith(`${pack}/`)).map(model => model.slice(pack.length + 1));
 
 export interface AssetPack {
   name: string;

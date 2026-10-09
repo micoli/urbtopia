@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 250,
+  "section": "build.publicFacilities",
+  "model": "commercial/building-k",
+  "footprint": [3, 2],
+  "cost": 2000,
+  "unlockCitizens": 160,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Town hall",
+    "fr": "Hôtel de ville"
+  },
+  "description": {
+    "en": "Administers the whole city, with no capacity limit. Only one can be built. Required for Home Tier 6.",
+    "fr": "Administre toute la ville, sans limite de capacité. Un seul peut être construit. Requis pour les logements de niveau 6."
+  }
+}

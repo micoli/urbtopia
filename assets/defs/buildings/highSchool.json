@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 230,
+  "section": "build.publicFacilities",
+  "model": "commercial/building-g",
+  "footprint": [3, 2],
+  "cost": 1000,
+  "unlockCitizens": 100,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "High school",
+    "fr": "Lycée"
+  },
+  "description": {
+    "en": "Prepares nearby Citizens for higher studies. Optional: it raises Well-being.",
+    "fr": "Prépare les citoyens proches aux études supérieures. Facultatif : il augmente le bien-être."
+  }
+}

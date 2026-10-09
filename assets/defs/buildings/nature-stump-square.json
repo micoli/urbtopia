@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1600,
+  "model": "nature/stump_square",
+  "name": {
+    "en": "Stump square",
+    "fr": "Souche carrée"
+  },
+  "family": "habitat"
+}

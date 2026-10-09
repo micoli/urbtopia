@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 260,
+  "section": "build.publicFacilities",
+  "model": "commercial/building-a",
+  "footprint": [1, 1],
+  "cost": 150,
+  "unlockCitizens": 32,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Community hall",
+    "fr": "Salle des fêtes"
+  },
+  "description": {
+    "en": "A small Culture facility for nearby Citizens. Optional: different Culture facilities stack their Well-being.",
+    "fr": "Un petit équipement culturel pour les citoyens proches. Facultatif : les équipements culturels différents cumulent leur bien-être."
+  }
+}

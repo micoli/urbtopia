@@ -13,7 +13,7 @@ export type CodexId = BuildingType | 'solarHome' | RoadConstructionId | WaterCon
 export type CodexSection = BuildSection | 'codex.roads' | 'codex.water' | 'codex.crops';
 
 const DESCRIPTIONS = {
-  ...Object.fromEntries(BUILDING_ENTRIES.map(({ id, nature }) => [id, nature ? `codex.description.nature.${nature.family}` : `codex.description.${id}`])) as Record<BuildingType, MessageKey>,
+  ...Object.fromEntries(BUILDING_ENTRIES.map(({ id, family }) => [id, family ? `codex.description.nature.${family}` : `codex.description.${id}`])) as Record<BuildingType, MessageKey>,
   solarHome: 'codex.description.solarHome',
   road: 'codex.description.road',
   crossing: 'codex.description.crossing',

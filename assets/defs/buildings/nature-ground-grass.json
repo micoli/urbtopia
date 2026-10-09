@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 850,
+  "model": "nature/ground_grass",
+  "name": {
+    "en": "Low Grass",
+    "fr": "Sol herbeux"
+  },
+  "family": "grass"
+}

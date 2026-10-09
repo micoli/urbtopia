@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 620,
+  "model": "mini-forest/patch-grass",
+  "name": {
+    "en": "Patch Grass · Mini Forest",
+    "fr": "Touffe Herbe · Mini Forest"
+  },
+  "family": "grass"
+}

@@ -1,57 +1,70 @@
-import { readFileSync, renameSync, writeFileSync } from 'node:fs';
-import { BUILD_SECTION_TITLES } from '../src/core/buildings/buildSections.ts';
-import type { BuildingDefinition, BuildingDefinitions } from '../src/core/buildings/buildingDefinition.ts';
-import { NATURE_FAMILIES } from '../src/core/environment/natureFamilies.ts';
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { z } from 'zod';
+import type { BuildingDefinitions, FlatBuilding } from '../src/core/buildings/buildingDefinition.ts';
+import { BUILDING_ID_PATTERN, buildingSchema } from '../src/core/buildings/buildingSchema.ts';
+import { BUILDINGS_DIR, buildingFilesIn, idOfBuildingFile } from './buildingsDir.ts';
 import { writeBuildingTypes } from './buildingTypes.ts';
+import { availableModelKeys, modelReferenceProblems } from './modelReferences.ts';
 
-export const BUILDINGS_FILE = 'assets/buildings.json';
+export { BUILDINGS_DIR, readBuildings } from './buildingsDir.ts';
 
-const FIELD_ORDER: (keyof BuildingDefinition)[] = ['section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'initialSlots', 'name', 'description', 'sport', 'nature'];
-const BUILDING_ID = /^[a-z][A-Za-z0-9-]*$/;
-const isCount = (value: unknown) => Number.isInteger(value) && (value as number) >= 0;
-const isBlank = (text: string | undefined) => !text?.trim();
+export const BUILDING_SCHEMA_FILE = 'assets/defs/schemas/building.schema.json';
 
-export function buildingProblems(definition: BuildingDefinition): string[] {
-  const problems: string[] = [];
-  if (isBlank(definition.model)) problems.push('model is required');
-  if (isBlank(definition.name?.en) || isBlank(definition.name?.fr)) problems.push('name is required in en and fr');
-  if (definition.description && (isBlank(definition.description.en) || isBlank(definition.description.fr))) problems.push('description must be filled in en and fr, or removed');
-  if (definition.sport && definition.nature) problems.push('a building cannot be both sport and nature');
-  if (definition.nature) {
-    if (!(definition.nature.family in NATURE_FAMILIES)) problems.push('unknown nature family');
-    const ownedByFamily = (['section', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'initialSlots'] as const).filter(field => definition[field] !== undefined);
-    if (ownedByFamily.length) problems.push(`${ownedByFamily.join(', ')} come from the nature family`);
-    return problems;
-  }
-  if (!definition.section || !BUILD_SECTION_TITLES.includes(definition.section)) problems.push('unknown section');
-  if (!definition.footprint || definition.footprint.length !== 2 || definition.footprint.some(side => !Number.isInteger(side) || side < 1)) problems.push('footprint must be two integers >= 1');
-  if (!isCount(definition.cost)) problems.push('cost must be an integer >= 0');
-  if (!isCount(definition.unlockCitizens)) problems.push('unlockCitizens must be an integer >= 0');
-  if (typeof definition.requiresRoad !== 'boolean') problems.push('requiresRoad must be true or false');
-  if (definition.accessModes && (!definition.accessModes.length || definition.accessModes.some(mode => mode !== 'road' && mode !== 'brt'))) problems.push("accessModes must list 'road' and/or 'brt'");
-  if (definition.accessModes && !definition.requiresRoad) problems.push('accessModes needs requiresRoad');
-  if (definition.initialSlots !== undefined && !isCount(definition.initialSlots)) problems.push('initialSlots must be an integer >= 0');
-  if (definition.sport && (!Number.isInteger(definition.sport.radius) || definition.sport.radius < 1 || !isCount(definition.sport.wellbeingBonus))) problems.push('sport needs radius >= 1 and wellbeingBonus >= 0');
-  return problems;
+const SCHEMA_REFERENCE = '../schemas/building.schema.json';
+const ORDER_STEP = 10;
+const FIELD_ORDER = ['$schema', 'kind', 'order', 'section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'initialSlots', 'name', 'description', 'radius', 'wellbeingBonus', 'family'];
+
+export function buildingProblems(definition: unknown): string[] {
+  const result = buildingSchema.safeParse(definition);
+  if (result.success) return [];
+  return result.error.issues.map(issue => (issue.path.length ? `${issue.path.join('.')}: ${issue.message}` : issue.message));
 }
 
-export function stableBuildingsJson(definitions: BuildingDefinitions): string {
-  const ordered = Object.fromEntries(
-    Object.entries(definitions).map(([id, definition]) => [id, Object.fromEntries(FIELD_ORDER.filter(field => definition[field] !== undefined).map(field => [field, definition[field]]))]),
-  );
-  return `${JSON.stringify(ordered, null, 2)}\n`;
+export function buildingsProblems(definitions: BuildingDefinitions, models?: ReadonlySet<string>): string[] {
+  const seen = new Set<string>();
+  const idProblems = Object.keys(definitions).flatMap(id => {
+    const folded = id.toLowerCase();
+    const duplicate = seen.has(folded);
+    seen.add(folded);
+    return [
+      ...(BUILDING_ID_PATTERN.test(id) ? [] : [`${id}: id must start with a letter and use letters, digits or hyphens`]),
+      ...(duplicate ? [`${id}: id differs from another one by case only`] : []),
+    ];
+  });
+  const definitionProblems = Object.entries(definitions).flatMap(([id, definition]) => buildingProblems(definition).map(problem => `${id}: ${problem}`));
+  return [...idProblems, ...definitionProblems, ...(models ? modelReferenceProblems(definitions, models) : [])];
 }
 
-export const readBuildings = (file = BUILDINGS_FILE): BuildingDefinitions => JSON.parse(readFileSync(file, 'utf8'));
+// JSON strings never hold a raw newline, so only real arrays of scalars are put on one line.
+const inlineScalarArrays = (json: string) => json.replace(/\[\n\s+([^[\]{}]*?)\n\s*\]/g, (_, items: string) => `[${items.split(/,\n\s+/).join(', ')}]`);
 
-export function writeBuildings(definitions: BuildingDefinitions, file = BUILDINGS_FILE): void {
-  const problems = Object.entries(definitions).flatMap(([id, definition]) => [
-    ...(BUILDING_ID.test(id) ? [] : [`${id}: id must start with a letter and use letters, digits or hyphens`]),
-    ...buildingProblems(definition).map(problem => `${id}: ${problem}`),
-  ]);
-  if (problems.length) throw new Error(problems.join('; '));
+export function stableBuildingJson(definition: FlatBuilding): string {
+  const fields: Record<string, unknown> = { $schema: SCHEMA_REFERENCE, ...definition };
+  const keys = [...FIELD_ORDER.filter(key => key in fields), ...Object.keys(fields).filter(key => !FIELD_ORDER.includes(key))];
+  return `${inlineScalarArrays(JSON.stringify(Object.fromEntries(keys.filter(key => fields[key] !== undefined).map(key => [key, fields[key]])), null, 2))}\n`;
+}
+
+export const buildingJsonSchema = (): string => `${JSON.stringify(z.toJSONSchema(buildingSchema), null, 2)}\n`;
+
+const writeIfChanged = (file: string, content: string) => {
+  if (existsSync(file) && readFileSync(file, 'utf8') === content) return;
   const temporary = `${file}.tmp`;
-  writeFileSync(temporary, stableBuildingsJson(definitions));
+  writeFileSync(temporary, content);
   renameSync(temporary, file);
-  if (file === BUILDINGS_FILE) writeBuildingTypes(definitions);
+};
+
+// The order of the entries is the build menu order: it is stored as `order`, in steps of ten.
+export function writeBuildings(definitions: BuildingDefinitions, dir = BUILDINGS_DIR): void {
+  const ordered: BuildingDefinitions = Object.fromEntries(Object.entries(definitions).map(([id, definition], index) => [id, { ...definition, order: (index + 1) * ORDER_STEP }]));
+  const real = dir === BUILDINGS_DIR;
+  const problems = buildingsProblems(ordered, real ? availableModelKeys() : undefined);
+  if (problems.length) throw new Error(problems.join('; '));
+  mkdirSync(dir, { recursive: true });
+  for (const [id, definition] of Object.entries(ordered)) writeIfChanged(join(dir, `${id}.json`), stableBuildingJson(definition));
+  for (const file of buildingFilesIn(dir)) if (!(idOfBuildingFile(file) in ordered)) rmSync(join(dir, file));
+  if (!real) return;
+  writeBuildingTypes(ordered);
+  mkdirSync(dirname(BUILDING_SCHEMA_FILE), { recursive: true });
+  writeIfChanged(BUILDING_SCHEMA_FILE, buildingJsonSchema());
 }

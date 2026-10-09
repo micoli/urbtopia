@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 640,
+  "model": "mini-forest/rocks-high",
+  "name": {
+    "en": "Rocks high · Mini Forest",
+    "fr": "Rochers haut · Mini Forest"
+  },
+  "family": "habitat"
+}

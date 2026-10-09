@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 50,
+  "section": "build.production",
+  "model": "commercial/building-g",
+  "footprint": [3, 2],
+  "cost": 5000,
+  "unlockCitizens": 400,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Supermarket",
+    "fr": "Supermarché"
+  },
+  "description": {
+    "en": "A Venue you fit out and run from the inside. Stock its shelves with Goods from the Storehouse, open checkouts and sell to the neighbourhood.",
+    "fr": "Un établissement que vous aménagez et gérez de l'intérieur. Garnissez ses rayons avec les marchandises de l'entrepôt, ouvrez des caisses et vendez au quartier."
+  }
+}

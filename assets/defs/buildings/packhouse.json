@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 70,
+  "section": "build.production",
+  "model": "farm/OpenBarn",
+  "footprint": [2, 2],
+  "cost": 250,
+  "unlockCitizens": 20,
+  "requiresRoad": true,
+  "initialSlots": 2,
+  "name": {
+    "en": "Packhouse",
+    "fr": "Atelier de conditionnement"
+  },
+  "description": {
+    "en": "Packs Crop Materials into packed Goods, the only way to sell a Harvest. Only one Packhouse can be built; upgrades add speed, Slots and yield.",
+    "fr": "Conditionne les matières de récolte en produits emballés, seul moyen de vendre une récolte. Un seul conditionnement peut être construit ; ses améliorations augmentent vitesse, emplacements et rendement."
+  }
+}

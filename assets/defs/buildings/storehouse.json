@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 80,
+  "section": "build.storage",
+  "model": "industrial/building-a",
+  "footprint": [2, 2],
+  "cost": 400,
+  "unlockCitizens": 0,
+  "requiresRoad": true,
+  "name": {
+    "en": "Storehouse",
+    "fr": "Entrepôt"
+  },
+  "description": {
+    "en": "Stores Materials and Goods. Only one Storehouse can be built; upgrades increase its storage capacity.",
+    "fr": "Stocke les matériaux et les produits. Un seul entrepôt peut être construit ; ses améliorations augmentent sa capacité."
+  }
+}

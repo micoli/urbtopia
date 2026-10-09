@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 2180,
+  "model": "pirate/patch-grass",
+  "name": {
+    "en": "Patch Grass · Pirate",
+    "fr": "Touffe Herbe · Pirate"
+  },
+  "family": "grass"
+}

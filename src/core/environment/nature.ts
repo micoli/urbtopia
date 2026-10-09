@@ -6,7 +6,7 @@ export { NATURE_FAMILIES, type NatureFamily, type NatureType };
 
 export type NatureModel = readonly [type: NatureType, model: string, family: NatureFamily, name: readonly [en: string, fr: string]];
 
-export const NATURE_MODELS: readonly NatureModel[] = NATURE_ENTRIES.map(({ id, model, nature, name }) => [id, model, nature.family, [name.en, name.fr]]);
+export const NATURE_MODELS: readonly NatureModel[] = NATURE_ENTRIES.map(({ id, model, family, name }) => [id, model, family, [name.en, name.fr]]);
 
 export const NATURE_TYPES = NATURE_MODELS.map(([type]) => type);
 const modelsByType = new Map<string, NatureModel>(NATURE_MODELS.map(model => [model[0], model]));

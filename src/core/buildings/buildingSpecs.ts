@@ -20,9 +20,9 @@ export interface BuildingSpec {
   initialSlots: number;
 }
 
-function specOf({ footprint, cost, requiresRoad, accessModes, initialSlots, nature }: BuildingEntry): BuildingSpec {
-  if (nature) {
-    const profile = NATURE_FAMILIES[nature.family];
+function specOf({ footprint, cost, requiresRoad, accessModes, initialSlots, family }: BuildingEntry): BuildingSpec {
+  if (family) {
+    const profile = NATURE_FAMILIES[family];
     return { footprint: { width: profile.size, depth: profile.size }, cost: profile.cost, requiresRoad: false, accessModes: [], initialSlots: 0 };
   }
   const [width, depth] = footprint!;

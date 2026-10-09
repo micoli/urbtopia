@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 270,
+  "section": "build.publicFacilities",
+  "model": "commercial/building-b",
+  "footprint": [2, 2],
+  "cost": 800,
+  "unlockCitizens": 250,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Theater",
+    "fr": "Théâtre"
+  },
+  "description": {
+    "en": "A Culture facility for nearby Citizens. Optional: different Culture facilities stack their Well-being.",
+    "fr": "Un équipement culturel pour les citoyens proches. Facultatif : les équipements culturels différents cumulent leur bien-être."
+  }
+}

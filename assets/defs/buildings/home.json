@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 10,
+  "section": "build.housing",
+  "model": "suburban/building-type-k",
+  "footprint": [1, 1],
+  "cost": 150,
+  "unlockCitizens": 0,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Home",
+    "fr": "Logement"
+  },
+  "description": {
+    "en": "Houses Citizens who generate Tax. Upgrades increase population, utility Demand and, at some Tiers, the space occupied by the building.",
+    "fr": "Accueille des habitants qui génèrent des impôts. Les améliorations augmentent la population, les besoins en eau et en électricité et, à certains niveaux, la surface du bâtiment."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 330,
+  "section": "build.leisure",
+  "model": "commercial/building-j",
+  "footprint": [2, 2],
+  "cost": 2500,
+  "unlockCitizens": 250,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Arcade",
+    "fr": "Salle d'arcade"
+  },
+  "description": {
+    "en": "A Venue you fit out and run from the inside. Place game machines, attract Visitors from the neighbourhood and collect the Takings.",
+    "fr": "Un établissement que vous aménagez et gérez de l'intérieur. Placez des bornes de jeu, attirez les visiteurs du quartier et encaissez les recettes."
+  }
+}

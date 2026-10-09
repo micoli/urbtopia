@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 180,
+  "section": "build.transport",
+  "model": "roads/road-sign-empty",
+  "footprint": [1, 1],
+  "cost": 60,
+  "unlockCitizens": 32,
+  "requiresRoad": true,
+  "name": {
+    "en": "Bus stop",
+    "fr": "Arrêt de bus"
+  },
+  "description": {
+    "en": "Marks a stop on an ordinary bus line. Connect stops by roads and arrange a line linking Homes and activity locations in City management.",
+    "fr": "Marque un arrêt sur une ligne de bus ordinaire. Reliez les arrêts par des routes, puis créez une ligne entre logements et lieux d’activité dans la gestion de la ville."
+  }
+}

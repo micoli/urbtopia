@@ -1,4 +1,4 @@
-// Generated from assets/buildings.json by scripts/buildingTypes.ts. Do not edit.
+// Generated from assets/defs/buildings by scripts/buildingTypes.ts. Do not edit.
 export type BuildingId =
   | 'arcade'
   | 'backup'

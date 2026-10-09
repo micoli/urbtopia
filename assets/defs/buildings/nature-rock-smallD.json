@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1140,
+  "model": "nature/rock_smallD",
+  "name": {
+    "en": "Rock small D",
+    "fr": "Rocher petit D"
+  },
+  "family": "habitat"
+}

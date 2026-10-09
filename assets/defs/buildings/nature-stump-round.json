@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1590,
+  "model": "nature/stump_round",
+  "name": {
+    "en": "Stump round",
+    "fr": "Souche rond"
+  },
+  "family": "habitat"
+}

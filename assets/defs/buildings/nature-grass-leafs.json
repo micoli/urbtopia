@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 830,
+  "model": "nature/grass_leafs",
+  "name": {
+    "en": "Grass leafy",
+    "fr": "Herbe feuillue"
+  },
+  "family": "grass"
+}

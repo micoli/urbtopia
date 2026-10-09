@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 340,
+  "section": "build.leisure",
+  "model": "commercial/building-l",
+  "footprint": [3, 3],
+  "cost": 9000,
+  "unlockCitizens": 600,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Hotel",
+    "fr": "Hôtel"
+  },
+  "description": {
+    "en": "A Venue you fit out and run from the inside. Build rooms with a bed and a bathroom, furnish them and earn a reputation that draws guests from outside the city.",
+    "fr": "Un établissement que vous aménagez et gérez de l'intérieur. Construisez des chambres avec un lit et une salle de bain, meublez-les et gagnez une réputation qui attire des clients de l'extérieur."
+  }
+}

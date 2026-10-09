@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1900,
+  "model": "nature/tree_pineSmallA",
+  "name": {
+    "en": "Tree pine small A",
+    "fr": "Pin petit A"
+  },
+  "family": "conifer"
+}

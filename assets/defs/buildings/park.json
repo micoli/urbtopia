@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 610,
+  "section": "build.greenSpaces",
+  "model": "suburban/tree-large",
+  "footprint": [2, 2],
+  "cost": 120,
+  "unlockCitizens": 15,
+  "requiresRoad": false,
+  "name": {
+    "en": "Small park",
+    "fr": "Petit parc"
+  },
+  "description": {
+    "en": "A green space made of several trees. Benefits nearby Homes through cooling, biodiversity and Citizen well-being; overlapping benefits have diminishing returns.",
+    "fr": "Un espace vert composé de plusieurs arbres. Il améliore la fraîcheur, la biodiversité et le bien-être autour des logements ; les bénéfices se cumulent avec un rendement décroissant."
+  }
+}

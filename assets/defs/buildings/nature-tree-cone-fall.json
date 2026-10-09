@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1660,
+  "model": "nature/tree_cone_fall",
+  "name": {
+    "en": "Tree conical autumn",
+    "fr": "Arbre conique automne"
+  },
+  "family": "tree"
+}

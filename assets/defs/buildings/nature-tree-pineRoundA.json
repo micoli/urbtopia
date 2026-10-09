@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1840,
+  "model": "nature/tree_pineRoundA",
+  "name": {
+    "en": "Tree pine round A",
+    "fr": "Pin rond A"
+  },
+  "family": "conifer"
+}

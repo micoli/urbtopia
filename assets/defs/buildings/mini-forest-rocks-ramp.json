@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 660,
+  "model": "mini-forest/rocks-ramp",
+  "name": {
+    "en": "Rocks sloped · Mini Forest",
+    "fr": "Rochers incliné · Mini Forest"
+  },
+  "family": "habitat"
+}

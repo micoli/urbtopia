@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 300,
+  "section": "build.publicFacilities",
+  "model": "industrial/building-s",
+  "footprint": [3, 2],
+  "cost": 1000,
+  "unlockCitizens": 160,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Fire station",
+    "fr": "Caserne de pompiers"
+  },
+  "description": {
+    "en": "Protects nearby Citizens. Required for Home Tier 6. Sends fire trucks to covered Homes.",
+    "fr": "Protège les citoyens proches. Requise pour les logements de niveau 6. Envoie des camions de pompiers vers les logements couverts."
+  }
+}

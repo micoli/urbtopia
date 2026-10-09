@@ -16,7 +16,7 @@ export const ECOLOGY = {
 };
 
 export const ECOLOGY_UNLOCKS: Partial<Record<BuildingType, number>> = Object.fromEntries(
-  BUILDING_ENTRIES.map(({ id, nature, unlockCitizens }) => [id, nature ? NATURE_FAMILIES[nature.family].unlock : unlockCitizens ?? 0]),
+  BUILDING_ENTRIES.map(({ id, family, unlockCitizens }) => [id, family ? NATURE_FAMILIES[family].unlock : unlockCitizens ?? 0]),
 );
 
 export function citizenCount(state: GameState): number {

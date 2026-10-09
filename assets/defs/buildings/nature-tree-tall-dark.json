@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 2080,
+  "model": "nature/tree_tall_dark",
+  "name": {
+    "en": "Tree tall dark",
+    "fr": "Arbre haut sombre"
+  },
+  "family": "tree"
+}
