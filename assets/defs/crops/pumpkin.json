@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 100,
+  "name": {
+    "en": "Pumpkins",
+    "fr": "Citrouilles"
+  },
+  "growthMinutes": 22,
+  "water": 3,
+  "yield": 5,
+  "seedShare": 0.3,
+  "seedPrice": 16,
+  "unlockCitizens": 250,
+  "packingMinutes": 4,
+  "packedValue": 95,
+  "models": {
+    "growth": ["crops-pumpkin-1", "crops-pumpkin-2", "crops-pumpkin-3", "crops-pumpkin-4"],
+    "produce": "crops-pumpkin-crop",
+    "harvested": "crops-pumpkin-harvested"
+  }
+}

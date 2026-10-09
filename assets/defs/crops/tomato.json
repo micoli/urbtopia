@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 90,
+  "name": {
+    "en": "Tomatoes",
+    "fr": "Tomates"
+  },
+  "growthMinutes": 14,
+  "water": 3,
+  "yield": 4,
+  "seedShare": 0.35,
+  "seedPrice": 10,
+  "unlockCitizens": 120,
+  "packingMinutes": 3,
+  "packedValue": 60,
+  "models": {
+    "growth": ["crops-tomato-1", "crops-tomato-2", "crops-tomato-3", "crops-tomato-4"],
+    "produce": "crops-tomato-crop",
+    "harvested": "crops-tomato-harvested"
+  }
+}

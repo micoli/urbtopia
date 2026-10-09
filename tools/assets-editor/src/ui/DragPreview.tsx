@@ -7,7 +7,7 @@ interface Props {
 }
 
 export function DragPreview({ data }: Props) {
-  const name = useDocument(state => (data.type === 'building' ? state.doc.buildings[data.id]?.name.en : undefined))
+  const name = useDocument(state => (data.type === 'definition' ? (state.doc.collections[data.collection][data.id]?.name as { en?: string } | undefined)?.en : undefined))
   if (data.type === 'model')
     return (
       <div className="flex w-40 items-center gap-2 rounded-lg bg-white p-1.5 shadow-xl ring-1 ring-indigo-300">

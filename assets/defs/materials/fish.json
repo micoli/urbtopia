@@ -1,0 +1,13 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "order": 90,
+  "name": {
+    "en": "Fish",
+    "fr": "Poisson"
+  },
+  "producedBy": "fishingBoat",
+  "durationMinutes": 6,
+  "unlockCitizens": 100,
+  "minTier": 1
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 40,
+  "name": {
+    "en": "Carrots",
+    "fr": "Carottes"
+  },
+  "growthMinutes": 8,
+  "water": 2,
+  "yield": 3,
+  "seedShare": 0.4,
+  "seedPrice": 5,
+  "unlockCitizens": 60,
+  "packingMinutes": 2,
+  "packedValue": 30,
+  "models": {
+    "growth": ["crops-carrot-1", "crops-carrot-2", "crops-carrot-3", "crops-carrot-4"],
+    "produce": "crops-carrot-crop"
+  }
+}

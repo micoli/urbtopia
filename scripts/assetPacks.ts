@@ -1,17 +1,19 @@
-import { CROP_IDS } from '../src/core/farming/crops.ts';
-import { cropModelsOf } from '../src/scene/cropModels.ts';
 import { MINI_CHARACTER_FILES } from '../src/scene/venueCrowdModels.ts';
 import { existsSync, readFileSync } from 'node:fs';
-import { readBuildings } from './buildingsDir.ts';
+import { readCollections } from './collectionRead.ts';
+import { COLLECTION_NAMES, specOf } from './collections.ts';
 import { readModels } from './modelsFile.ts';
 import type { QuaterniusPack } from './quaternius.ts';
 
 const modelFiles = readModels();
-const buildingModels = Object.values(readBuildings()).map(({ model }) => modelFiles[model]?.file ?? model);
+const collections = readCollections();
+const definitionModels = COLLECTION_NAMES.flatMap(name =>
+  Object.values(collections[name]).flatMap(definition => specOf(name).references(definition as never).filter(({ target }) => target === 'models').map(({ id }) => modelFiles[id]?.file ?? id)),
+);
 
-// A pack installs the files listed below plus every model a building uses: a building can take any model of an installable pack.
-const withBuildingModels = <T extends { name: string; files: string[] }>(pack: T): T => {
-  const used = buildingModels.filter(model => model.startsWith(`${pack.name}/`)).map(model => model.slice(pack.name.length + 1));
+// A pack installs the files listed below plus every model a definition uses: a Game object can take any model of an installable pack.
+const withDefinitionModels = <T extends { name: string; files: string[] }>(pack: T): T => {
+  const used = definitionModels.filter(model => model.startsWith(`${pack.name}/`)).map(model => model.slice(pack.name.length + 1));
   return { ...pack, files: [...new Set([...pack.files, ...used])] };
 };
 
@@ -151,15 +153,15 @@ export const ASSET_PACKS: AssetPack[] = [
     files: ['table', 'chair', 'stoolBar', 'desk', 'bedSingle', 'bedDouble', 'bedBunk', 'toilet', 'shower', 'bathtub', 'loungeSofa', 'televisionModern', 'lampRoundFloor', 'rugRectangle', 'pottedPlant', 'kitchenCoffeeMachine', 'kitchenFridgeSmall', 'floorFull', 'wall', 'wallCorner', 'wallWindow'],
   },
   ...extraPacks.kenney.map(({ name, archive, colormap }) => ({ name, url: '', archive, files: [], colormap })),
-].map(withBuildingModels);
+].map(withDefinitionModels);
 
 // Quaternius packs (CC0) ship FBX only: they are converted to GLB at install time so the runtime keeps one GLTF loader.
 export const QUATERNIUS_PACKS: QuaterniusPack[] = [
-  { name: 'crops', archive: 'crops.zip', files: CROP_IDS.flatMap((species) => cropModelsOf(species)).map((model) => model.slice('crops/'.length)) },
+  { name: 'crops', archive: 'crops.zip', files: [] },
   { name: 'farm', archive: 'farm-buildings.zip', files: ['Barn', 'OpenBarn', 'Silo_House', 'Silo'] },
   { name: 'buildings', archive: 'buildings.zip', files: ['2Story_Stairs_Mat', '2Story_Wide_Mat', '2Story_Wide_2Doors_Mat'] },
   ...extraPacks.quaternius.map(({ name, archive }) => ({ name, archive, files: [] })),
-].map(withBuildingModels);
+].map(withDefinitionModels);
 
 export const QUATERNIUS_ARCHIVES_DIR = 'assets/quaternus';
 export const MODELS_DIR = 'public/models';

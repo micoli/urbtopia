@@ -1,7 +1,9 @@
 import type { z } from 'zod';
 import type { BuildingDefinitions } from '../src/core/buildings/buildingDefinition.ts';
-import { BUILDING_ID_PATTERN, buildingSchema } from '../src/core/buildings/buildingSchema.ts';
+import { buildingSchema } from '../src/core/buildings/buildingSchema.ts';
 import { MODEL_ID_PATTERN, modelSchema, type ModelEntry } from '../src/core/models/modelSchema.ts';
+import { COLLECTION_NAMES, specOf, type CollectionName, type Collections, type Definition, type Reference } from './collections.ts';
+import { SINGLETON_NAMES, singletonSpecOf, type SingletonName, type Singletons } from './singletons.ts';
 
 // Pure checks shared by the scripts, the build and the assets editor, which runs them live in the browser.
 
@@ -11,12 +13,19 @@ export interface Problem {
   message: string;
 }
 
+export type CollectionProblem = Problem & { collection: CollectionName };
+
 export type ModelDefinitions = Record<string, ModelEntry>;
 
 export interface ModelCatalog {
   models: ModelDefinitions;
   // Whether the game can install the file: a model of an installable pack, a hand-made or a Poly Pizza model.
   ships: (file: string) => boolean;
+}
+
+export interface ReferenceContext {
+  collections: Partial<Collections>;
+  catalog?: ModelCatalog;
 }
 
 export const describeProblem = ({ id, path, message }: Problem): string => `${id}: ${path ? `${path}: ` : ''}${message}`;
@@ -31,28 +40,45 @@ export const buildingProblemsOf = (id: string, definition: unknown): Problem[] =
 
 export const modelProblemsOf = (id: string, definition: unknown): Problem[] => schemaProblems(id, modelSchema, definition);
 
-export function modelReferenceProblems(definitions: Record<string, { model: string }>, { models, ships }: ModelCatalog): Problem[] {
-  return Object.entries(definitions).flatMap(([id, { model }]) => {
-    const file = models[model]?.file;
-    if (!file) return [{ id, path: 'model', message: `unknown Model id ${model}` }];
-    return ships(file) ? [] : [{ id, path: 'model', message: `model ${model} has no installable file ${file}` }];
-  });
+function referenceProblem(owner: string, { target, id, path }: Reference, { collections, catalog }: ReferenceContext): Problem[] {
+  if (target === 'models') {
+    if (!catalog) return [];
+    const file = catalog.models[id]?.file;
+    if (!file) return [{ id: owner, path, message: `unknown Model id ${id}` }];
+    return catalog.ships(file) ? [] : [{ id: owner, path, message: `model ${id} has no installable file ${file}` }];
+  }
+  const known = target.filter(name => collections[name as CollectionName]);
+  if (!known.length || known.some(name => id in collections[name as CollectionName]!)) return [];
+  return [{ id: owner, path, message: `unknown ${target.join(' or ')} id ${id}` }];
 }
 
-export function allBuildingProblems(definitions: BuildingDefinitions, catalog?: ModelCatalog): Problem[] {
+// Ids, shape and references of one collection; references are only checked against what the context holds.
+export function collectionProblems(name: CollectionName, definitions: Record<string, Definition>, context?: ReferenceContext): Problem[] {
+  const spec = specOf(name);
   const seen = new Set<string>();
   const idProblems = Object.keys(definitions).flatMap((id): Problem[] => {
     const folded = id.toLowerCase();
     const duplicate = seen.has(folded);
     seen.add(folded);
     return [
-      ...(BUILDING_ID_PATTERN.test(id) ? [] : [{ id, path: '', message: 'id must start with a letter and use letters, digits or hyphens' }]),
+      ...(spec.idPattern.test(id) ? [] : [{ id, path: '', message: `id must ${spec.idRule}` }]),
       ...(duplicate ? [{ id, path: '', message: 'id differs from another one by case only' }] : []),
     ];
   });
-  const definitionProblems = Object.entries(definitions).flatMap(([id, definition]) => buildingProblemsOf(id, definition));
-  return [...idProblems, ...definitionProblems, ...(catalog ? modelReferenceProblems(definitions, catalog) : [])];
+  const shapeProblems = Object.entries(definitions).flatMap(([id, definition]) => schemaProblems(id, spec.schema, definition));
+  const references = context ? Object.entries(definitions).flatMap(([id, definition]) => spec.references(definition as never).flatMap(reference => referenceProblem(id, reference, context))) : [];
+  return [...idProblems, ...shapeProblems, ...references];
 }
+
+export const allCollectionProblems = (collections: Collections, catalog: ModelCatalog): CollectionProblem[] =>
+  COLLECTION_NAMES.flatMap(name => collectionProblems(name, collections[name], { collections, catalog }).map(problem => ({ ...problem, collection: name })));
+
+export const singletonProblems = (name: SingletonName, value: unknown): Problem[] => schemaProblems(name, singletonSpecOf(name).schema, value);
+
+export const allSingletonProblems = (singletons: Singletons): Problem[] => SINGLETON_NAMES.flatMap(name => singletonProblems(name, singletons[name]));
+
+export const allBuildingProblems = (definitions: BuildingDefinitions, catalog?: ModelCatalog): Problem[] =>
+  collectionProblems('buildings', definitions as Record<string, Definition>, catalog ? { collections: {}, catalog } : undefined);
 
 export function allModelProblems(definitions: ModelDefinitions): Problem[] {
   const owners = new Map<string, string>();

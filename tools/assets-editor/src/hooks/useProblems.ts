@@ -1,4 +1,4 @@
-import { allBuildingProblems, allModelProblems, type Problem } from '../../../../scripts/definitionProblems'
+import { allCollectionProblems, allModelProblems, allSingletonProblems, type Problem } from '../../../../scripts/definitionProblems'
 import { useDocument, type Doc, type Kind } from '../store/documentStore'
 
 export type KindProblem = Problem & { kind: Kind }
@@ -10,8 +10,9 @@ export interface Problems {
 
 function problemsOf(doc: Doc, ships: (file: string) => boolean): Problems {
   const all: KindProblem[] = [
-    ...allModelProblems(doc.models).map(problem => ({ ...problem, kind: 'model' as const })),
-    ...allBuildingProblems(doc.buildings, { models: doc.models, ships }).map(problem => ({ ...problem, kind: 'building' as const })),
+    ...allModelProblems(doc.models).map(problem => ({ ...problem, kind: 'models' as const })),
+    ...allCollectionProblems(doc.collections, { models: doc.models, ships }).map(({ collection, ...problem }) => ({ ...problem, kind: collection })),
+    ...allSingletonProblems(doc.singletons).map(problem => ({ ...problem, kind: 'singletons' as const })),
   ]
   const byKey = Map.groupBy(all, ({ kind, id }) => `${kind}:${id}`)
   return { all, of: (kind, id) => byKey.get(`${kind}:${id}`) ?? [] }

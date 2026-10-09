@@ -7,9 +7,12 @@ import { LocalizedControl } from './LocalizedControl'
 import { ModelControl } from './ModelControl'
 import { NumberControl } from './NumberControl'
 import { PairControl } from './PairControl'
+import { RecordControl } from './RecordControl'
 import { SelectControl } from './SelectControl'
 import { SwitchControl } from './SwitchControl'
 import { TextControl } from './TextControl'
+
+export type FieldPath = readonly (string | number)[]
 
 export interface ModelSlot {
   dropId: string
@@ -19,18 +22,34 @@ export interface ModelSlot {
 interface Props {
   field: FieldSpec
   value: unknown
+  path: FieldPath
   onChange: (value: unknown) => void
-  modelSlot?: ModelSlot
-  nested?: (field: FieldSpec & { type: 'object' }) => ReactNode
+  modelSlot?: (path: FieldPath) => ModelSlot
+  nested: (field: FieldSpec & { type: 'object' | 'list' }) => ReactNode
   custom?: (field: FieldSpec) => ReactNode
 }
 
-export function FieldControl({ field, value, onChange, modelSlot, nested, custom }: Props) {
+export function FieldControl({ field, value, path, onChange, modelSlot, nested, custom }: Props) {
+  const modelControl = (current: string | undefined, at: FieldPath, label: string, set: (id: string) => void) => {
+    const slot = modelSlot?.(at)
+    return slot ? <ModelControl value={current} label={label} dropId={slot.dropId} assign={slot.assign} onChange={set} /> : null
+  }
+
   switch (field.type) {
     case 'text':
       return <TextControl value={value as string | undefined} label={field.label} readOnly={field.readOnly} onChange={onChange} />
     case 'model':
-      return modelSlot ? <ModelControl value={value as string | undefined} label={field.label} dropId={modelSlot.dropId} assign={modelSlot.assign} onChange={onChange} /> : null
+      return modelControl(value as string | undefined, path, field.label, onChange)
+    case 'modelList': {
+      const ids = (value as string[] | undefined) ?? []
+      return (
+        <div className="grid gap-2">
+          {Array.from({ length: field.count }, (_, index) => (
+            <div key={index}>{modelControl(ids[index], [...path, index], `${field.label} ${index + 1}`, id => onChange(Array.from({ length: field.count }, (_, position) => (position === index ? id : (ids[position] ?? id)))))}</div>
+          ))}
+        </div>
+      )
+    }
     case 'number':
       return <NumberControl value={value as number | undefined} integer={field.integer} min={field.min} label={field.label} onChange={onChange} />
     case 'switch':
@@ -43,8 +62,11 @@ export function FieldControl({ field, value, onChange, modelSlot, nested, custom
       return <ChoicesControl value={value as string[] | undefined} options={field.options} onChange={onChange} />
     case 'localized':
       return <LocalizedControl value={value as LocalizedText | undefined} label={field.label} onChange={onChange} />
+    case 'record':
+      return <RecordControl value={value as Record<string, number> | undefined} targets={field.targets} integer={field.integer} min={field.min} label={field.label} onChange={onChange} />
     case 'object':
-      return nested?.(field) ?? null
+    case 'list':
+      return nested(field)
     case 'custom':
       return custom?.(field) ?? null
   }

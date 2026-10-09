@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "order": 10,
+  "name": {
+    "en": "Planks",
+    "fr": "Planches"
+  },
+  "recipe": {
+    "wood": 2
+  },
+  "durationMinutes": 2,
+  "value": 14,
+  "unlockCitizens": 0,
+  "minTier": 1
+}

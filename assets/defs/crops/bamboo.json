@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 140,
+  "name": {
+    "en": "Bamboo",
+    "fr": "Bambou"
+  },
+  "growthMinutes": 30,
+  "water": 3,
+  "yield": 6,
+  "seedShare": 0.25,
+  "seedPrice": 26,
+  "unlockCitizens": 450,
+  "packingMinutes": 5,
+  "packedValue": 155,
+  "models": {
+    "growth": ["crops-bamboo-1", "crops-bamboo-2", "crops-bamboo-3", "crops-bamboo-4"],
+    "produce": "crops-bamboo-crop"
+  }
+}

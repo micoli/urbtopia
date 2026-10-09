@@ -1,3 +1,4 @@
+import type { CollectionName } from '../../../scripts/collections'
 import type { Doc } from './store/documentStore'
 
 // Payloads carried by dnd-kit draggables and droppables.
@@ -7,10 +8,10 @@ export interface ModelDrag {
   file: string
 }
 
-export interface BuildingDrag {
-  type: 'building'
+export interface DefinitionDrag {
+  type: 'definition'
+  collection: CollectionName
   id: string
-  section: string
 }
 
 export interface ModelDrop {
@@ -18,4 +19,4 @@ export interface ModelDrop {
   assign: (doc: Doc, modelId: string) => Doc
 }
 
-export type DragData = ModelDrag | BuildingDrag
+export type DragData = ModelDrag | DefinitionDrag

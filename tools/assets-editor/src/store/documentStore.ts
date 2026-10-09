@@ -1,16 +1,12 @@
 import { create } from 'zustand'
-import type { BuildingDefinitions } from '../../../../src/core/buildings/buildingDefinition'
 import type { ModelSource } from '../../../../src/core/models/modelSchema'
-import type { ModelDefinitions } from '../../../../scripts/definitionProblems'
-import type { Catalog } from '../api'
+import type { CollectionName } from '../../../../scripts/collections'
+import type { Catalog, Definitions } from '../api'
 import { shipsFrom } from '../library/modelFiles'
 
-export interface Doc {
-  models: ModelDefinitions
-  buildings: BuildingDefinitions
-}
+export type Doc = Definitions
 
-export type Kind = 'building' | 'model'
+export type Kind = CollectionName | 'models' | 'singletons'
 
 export interface Selection {
   kind: Kind
@@ -45,7 +41,9 @@ interface DocumentState {
   setStatus: (status: string) => void
 }
 
-const empty: Doc = { models: {}, buildings: {} }
+const empty = { models: {}, collections: {}, singletons: {} } as Doc
+
+const assetsOf = ({ manifest, sourceByPack, installablePacks }: Catalog): Assets => ({ ships: shipsFrom(manifest, sourceByPack, installablePacks), manifest, sourceByPack })
 
 export const useDocument = create<DocumentState>()(set => ({
   doc: empty,
@@ -54,18 +52,20 @@ export const useDocument = create<DocumentState>()(set => ({
   future: [],
   assets: { ships: () => false, manifest: {}, sourceByPack: {} },
   selection: null,
-  kind: 'building',
+  kind: 'buildings',
   status: '',
-  load: ({ models, buildings, installablePacks, manifest, sourceByPack }) =>
-    set({ doc: { models, buildings }, saved: { models, buildings }, past: [], future: [], status: '', assets: { ships: shipsFrom(manifest, sourceByPack, installablePacks), manifest, sourceByPack } }),
+  load: catalog => {
+    const doc: Doc = { models: catalog.models, collections: catalog.collections, singletons: catalog.singletons }
+    set({ doc, saved: doc, past: [], future: [], status: '', assets: assetsOf(catalog) })
+  },
   // Models added on disk by an import join both the document and its saved state, so pending edits survive.
-  adoptCatalog: ({ models, installablePacks, manifest, sourceByPack }) =>
+  adoptCatalog: catalog =>
     set(state => {
-      const added = Object.fromEntries(Object.entries(models).filter(([id]) => !(id in state.saved.models)))
+      const added = Object.fromEntries(Object.entries(catalog.models).filter(([id]) => !(id in state.saved.models)))
       return {
         doc: { ...state.doc, models: { ...state.doc.models, ...added } },
         saved: { ...state.saved, models: { ...state.saved.models, ...added } },
-        assets: { ships: shipsFrom(manifest, sourceByPack, installablePacks), manifest, sourceByPack },
+        assets: assetsOf(catalog),
       }
     }),
   change: edit =>

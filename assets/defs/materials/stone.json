@@ -1,0 +1,13 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "order": 20,
+  "name": {
+    "en": "Stone",
+    "fr": "Pierre"
+  },
+  "producedBy": "workshop",
+  "durationMinutes": 2,
+  "unlockCitizens": 0,
+  "minTier": 1
+}

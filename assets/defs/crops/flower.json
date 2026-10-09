@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 20,
+  "name": {
+    "en": "Flowers",
+    "fr": "Fleurs"
+  },
+  "growthMinutes": 4,
+  "water": 1,
+  "yield": 2,
+  "seedShare": 0.5,
+  "seedPrice": 2,
+  "unlockCitizens": 20,
+  "packingMinutes": 1,
+  "packedValue": 24,
+  "models": {
+    "growth": ["crops-flower-1", "crops-flower-2", "crops-flower-3", "crops-flower-4"],
+    "produce": "crops-flowers-crop",
+    "harvested": "crops-flowers-harvested"
+  }
+}

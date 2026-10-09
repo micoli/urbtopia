@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 30,
+  "name": {
+    "en": "Wheat",
+    "fr": "Blé"
+  },
+  "growthMinutes": 5,
+  "water": 1,
+  "yield": 3,
+  "seedShare": 0.4,
+  "seedPrice": 3,
+  "unlockCitizens": 20,
+  "packingMinutes": 1,
+  "packedValue": 20,
+  "models": {
+    "growth": ["crops-wheat-1", "crops-wheat-2", "crops-wheat-3", "crops-wheat-4"],
+    "produce": "crops-wheat-crop"
+  }
+}

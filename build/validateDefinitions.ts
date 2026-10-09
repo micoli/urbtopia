@@ -1,5 +1,6 @@
 import type { Plugin } from 'vite';
-import { buildingsProblems, readBuildings } from '../scripts/buildingsFile.ts';
+import { readCollections, readSingletons } from '../scripts/collectionRead.ts';
+import { allCollectionProblems, allSingletonProblems, describeProblem } from '../scripts/definitionProblems.ts';
 import { shippedModelCatalog } from '../scripts/modelReferences.ts';
 import { modelsProblems } from '../scripts/modelsFile.ts';
 
@@ -7,7 +8,11 @@ const WATCHED = ['assets/defs/', 'assets/models.json'];
 
 export function definitionProblems(): string[] {
   const catalog = shippedModelCatalog();
-  return [...modelsProblems(catalog.models), ...buildingsProblems(readBuildings(), catalog)];
+  return [
+    ...modelsProblems(catalog.models),
+    ...allCollectionProblems(readCollections(), catalog).map(problem => `${problem.collection}/${describeProblem(problem)}`),
+    ...allSingletonProblems(readSingletons()).map(describeProblem),
+  ];
 }
 
 const report = (problems: string[]) => `Invalid game object definitions:\n${problems.join('\n')}`;

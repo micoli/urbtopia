@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 110,
+  "name": {
+    "en": "Watermelons",
+    "fr": "Pastèques"
+  },
+  "growthMinutes": 26,
+  "water": 4,
+  "yield": 6,
+  "seedShare": 0.3,
+  "seedPrice": 20,
+  "unlockCitizens": 250,
+  "packingMinutes": 4,
+  "packedValue": 120,
+  "models": {
+    "growth": ["crops-watermelon-1", "crops-watermelon-2", "crops-watermelon-3", "crops-watermelon-4"],
+    "produce": "crops-watermelon-crop",
+    "harvested": "crops-watermelon-harvested"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "order": 50,
+  "name": {
+    "en": "Silicon",
+    "fr": "Silicium"
+  },
+  "producedBy": "workshop",
+  "durationMinutes": 16,
+  "unlockCitizens": 200,
+  "minTier": 5
+}

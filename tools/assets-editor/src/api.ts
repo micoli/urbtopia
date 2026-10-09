@@ -1,10 +1,15 @@
-import type { BuildingDefinitions } from '../../../src/core/buildings/buildingDefinition'
 import type { ModelSource } from '../../../src/core/models/modelSchema'
+import type { Collections } from '../../../scripts/collections'
 import type { ModelDefinitions } from '../../../scripts/definitionProblems'
+import type { Singletons } from '../../../scripts/singletons'
 
-export interface Catalog {
+export interface Definitions {
   models: ModelDefinitions
-  buildings: BuildingDefinitions
+  collections: Collections
+  singletons: Singletons
+}
+
+export interface Catalog extends Definitions {
   installablePacks: string[]
   manifest: Record<string, string[]>
   sourceByPack: Record<string, ModelSource | undefined>
@@ -14,7 +19,7 @@ const errorOf = async (response: Response) => (response.ok ? null : ((await resp
 
 export const fetchCatalog = async (): Promise<Catalog> => (await fetch('/api/catalog')).json()
 
-export const saveDefinitions = async (definitions: Pick<Catalog, 'models' | 'buildings'>): Promise<string | null> =>
+export const saveDefinitions = async (definitions: Definitions): Promise<string | null> =>
   errorOf(await fetch('/api/definitions', { method: 'PUT', body: JSON.stringify(definitions) }))
 
 export const callAssets = async (operation: string, body: object): Promise<string | null> =>

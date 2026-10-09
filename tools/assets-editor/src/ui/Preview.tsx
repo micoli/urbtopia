@@ -1,10 +1,21 @@
+import { specOf } from '../../../../scripts/collections'
 import { useEffect, useRef, useState } from 'react'
 import { footprintOf } from '../fitted'
 import { useLibrary } from '../hooks/useLibrary'
 import type { ModelInfo } from '../modelLoader'
 import { buildPlacement, SceneStage } from '../sceneStage'
-import { useDocument } from '../store/documentStore'
+import { useDocument, type Doc, type Selection } from '../store/documentStore'
 import { button, panel } from './styles'
+
+// The model a Game object shows: a Crop shows its last growth stage.
+function modelOfSelection(doc: Doc, selection: Selection | null): string | undefined {
+  if (!selection || selection.kind === 'singletons') return undefined
+  if (selection.kind === 'models') return selection.id
+  const definition = doc.collections[selection.kind][selection.id]
+  if (!definition) return undefined
+  const models = specOf(selection.kind).references(definition as never).filter(({ target }) => target === 'models')
+  return (models.find(({ path }) => path === 'models.growth.3') ?? models[0])?.id
+}
 
 // The model of the selected Game object, placed as the game places it, with its footprint and the street side (-Z).
 export function Preview() {
@@ -13,7 +24,7 @@ export function Preview() {
   const stageRef = useRef<SceneStage | null>(null)
   const [rotation, setRotation] = useState(0)
   const [info, setInfo] = useState<ModelInfo | null>(null)
-  const modelId = useDocument(state => (state.selection?.kind === 'building' ? state.doc.buildings[state.selection.id]?.model : state.selection?.id))
+  const modelId = useDocument(state => modelOfSelection(state.doc, state.selection))
   const settings = useDocument(state => (modelId ? state.doc.models[modelId] : undefined))
   const location = useLibrary().byFile.get(settings?.file ?? '')
 

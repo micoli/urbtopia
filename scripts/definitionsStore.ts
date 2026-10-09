@@ -1,42 +1,49 @@
 import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
-import type { BuildingDefinitions } from '../src/core/buildings/buildingDefinition.ts';
-import { BUILDINGS_DIR, readBuildings, writeBuildings } from './buildingsFile.ts';
-import { allBuildingProblems, allModelProblems, describeProblem, type ModelDefinitions } from './definitionProblems.ts';
+import { writeCollection, writeSingleton } from './collectionFiles.ts';
+import { collectionDir, readCollections, readSingletons } from './collectionRead.ts';
+import { COLLECTION_NAMES, type CollectionName, type Collections } from './collections.ts';
+import { allCollectionProblems, allModelProblems, allSingletonProblems, describeProblem, type ModelDefinitions } from './definitionProblems.ts';
 import { installablePacks, shipsModel } from './modelReferences.ts';
 import { readModels, writeModels } from './modelsFile.ts';
+import { SINGLETON_NAMES, type Singletons } from './singletons.ts';
 
 export const SAVE_FIXTURES_DIR = 'src/persistence/fixtures';
 
 export interface Definitions {
   models: ModelDefinitions;
-  buildings: BuildingDefinitions;
+  collections: Collections;
+  singletons: Singletons;
 }
 
 export interface Catalog extends Definitions {
   installablePacks: string[];
 }
 
-export const readCatalog = (): Catalog => ({ models: readModels(), buildings: readBuildings(), installablePacks: installablePacks() });
+export const readCatalog = (): Catalog => ({ models: readModels(), collections: readCollections(), singletons: readSingletons(), installablePacks: installablePacks() });
 
-// Both files are checked together before either is written, so a save never leaves a building pointing to a missing model.
-export function saveDefinitions({ models, buildings }: Definitions): void {
-  const problems = [...allModelProblems(models), ...allBuildingProblems(buildings, { models, ships: shipsModel() })];
-  if (problems.length) throw new Error(problems.map(describeProblem).join('\n'));
+// Everything is checked together before anything is written, so a save never leaves a reference to a missing definition.
+export function saveDefinitions({ models, collections, singletons }: Definitions): void {
+  const problems = [
+    ...allModelProblems(models).map(describeProblem),
+    ...allCollectionProblems(collections, { models, ships: shipsModel() }).map(problem => `${problem.collection}/${describeProblem(problem)}`),
+    ...allSingletonProblems(singletons).map(describeProblem),
+  ];
+  if (problems.length) throw new Error(problems.join('\n'));
   writeModels(models);
-  writeBuildings(buildings);
+  for (const name of COLLECTION_NAMES) writeCollection(name, collections[name]);
+  for (const name of SINGLETON_NAMES) writeSingleton(name, singletons[name]);
 }
 
 const savesHolding = (id: string, fixtures: string): string[] => {
   if (!existsSync(fixtures)) return [];
-  const pattern = new RegExp(`"type":\\s*"${id}"`);
-  return readdirSync(fixtures).filter(file => file.endsWith('.json') && pattern.test(readFileSync(join(fixtures, file), 'utf8')));
+  return readdirSync(fixtures).filter(file => file.endsWith('.json') && readFileSync(join(fixtures, file), 'utf8').includes(`"${id}"`));
 };
 
-// A building id lives in saves: it is removed for real only when no save fixture holds it; otherwise it is retired.
-export function deleteBuilding(id: string, paths = { buildings: BUILDINGS_DIR, fixtures: SAVE_FIXTURES_DIR }): void {
-  const file = join(paths.buildings, `${id}.json`);
-  if (!existsSync(file)) throw new Error(`Unknown building ${id}`);
+// A Game object id lives in saves: it is removed for real only when no save fixture mentions it; otherwise it is retired.
+export function deleteDefinition(collection: CollectionName, id: string, paths = { dir: collectionDir(collection), fixtures: SAVE_FIXTURES_DIR }): void {
+  const file = join(paths.dir, `${id}.json`);
+  if (!existsSync(file)) throw new Error(`Unknown ${collection} id ${id}`);
   const saves = savesHolding(id, paths.fixtures);
   if (saves.length) throw new Error(`${id} is in saves (${saves.join(', ')}): retire it instead`);
   rmSync(file);

@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "order": 90,
+  "name": {
+    "en": "Cement",
+    "fr": "Ciment"
+  },
+  "recipe": {
+    "sand": 1,
+    "stone": 2
+  },
+  "durationMinutes": 14,
+  "value": 270,
+  "unlockCitizens": 350,
+  "minTier": 4
+}

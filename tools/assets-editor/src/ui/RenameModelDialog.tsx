@@ -25,7 +25,7 @@ export function RenameModelDialog({ id, onClose }: Props) {
     if (problem) return setFailure(problem)
     const { load, select, setStatus } = useDocument.getState()
     load(await fetchCatalog())
-    select({ kind: 'model', id: next })
+    select({ kind: 'models', id: next })
     setStatus(`Renamed ${id} to ${next}`)
     onClose()
   }

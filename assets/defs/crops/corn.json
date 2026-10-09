@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 70,
+  "name": {
+    "en": "Corn",
+    "fr": "Maïs"
+  },
+  "growthMinutes": 14,
+  "water": 2,
+  "yield": 4,
+  "seedShare": 0.35,
+  "seedPrice": 9,
+  "unlockCitizens": 120,
+  "packingMinutes": 3,
+  "packedValue": 55,
+  "models": {
+    "growth": ["crops-corn-1", "crops-corn-2", "crops-corn-3", "crops-corn-4"],
+    "produce": "crops-corn-crop",
+    "harvested": "crops-corn-harvested"
+  }
+}

@@ -1,15 +1,17 @@
 import type { ReactNode } from 'react'
 import type { Problem } from '../../../../../scripts/definitionProblems'
 import type { FieldSpec } from '../../schema/fields'
-import { FieldControl, type ModelSlot } from './FieldControl'
+import { FieldControl, type FieldPath, type ModelSlot } from './FieldControl'
 import { FieldShell } from './FieldShell'
+import { ListControl } from './ListControl'
 
 interface Props {
   fields: FieldSpec[]
   value: Record<string, unknown>
   problems: Problem[]
   onChange: (key: string, value: unknown) => void
-  modelSlot?: (key: string) => ModelSlot
+  path?: FieldPath
+  modelSlot?: (path: FieldPath) => ModelSlot
   custom?: (field: FieldSpec) => ReactNode
   hints?: Record<string, string>
 }
@@ -17,32 +19,48 @@ interface Props {
 const errorsOf = (problems: Problem[], key: string) =>
   problems.filter(({ path }) => path === key || path.startsWith(`${key}.`)).map(({ path, message }) => (path === key ? message : `${path.slice(key.length + 1)}: ${message}`))
 
+const within = (problems: Problem[], prefix: string) => problems.filter(({ path }) => path.startsWith(`${prefix}.`)).map(problem => ({ ...problem, path: problem.path.slice(prefix.length + 1) }))
+
 // Required fields come from the schema; an optional field can be unset to fall back to its default.
-export function SchemaForm({ fields, value, problems, onChange, modelSlot, custom, hints }: Props) {
+export function SchemaForm({ fields, value, problems, onChange, path = [], modelSlot, custom, hints }: Props) {
   return (
     <div className="flex flex-col gap-3">
       {fields.map(field => {
         const current = value[field.key]
-        const nested = (object: FieldSpec & { type: 'object' }) => (
-          <div className="rounded-lg bg-zinc-50 p-3 ring-1 ring-zinc-200">
-            <SchemaForm
-              fields={object.fields}
-              value={(current as Record<string, unknown> | undefined) ?? {}}
-              problems={problems.filter(({ path }) => path.startsWith(`${field.key}.`)).map(problem => ({ ...problem, path: problem.path.slice(field.key.length + 1) }))}
-              onChange={(key, next) => onChange(field.key, { ...((current as object | undefined) ?? {}), [key]: next })}
+        const at = [...path, field.key]
+        const nested = (container: FieldSpec & { type: 'object' | 'list' }) =>
+          container.type === 'object' ? (
+            <div className="rounded-lg bg-zinc-50 p-3 ring-1 ring-zinc-200">
+              <SchemaForm
+                fields={container.fields}
+                value={(current as Record<string, unknown> | undefined) ?? {}}
+                problems={within(problems, field.key)}
+                path={at}
+                modelSlot={modelSlot}
+                onChange={(key, next) => onChange(field.key, { ...((current as object | undefined) ?? {}), [key]: next })}
+              />
+            </div>
+          ) : (
+            <ListControl
+              value={current as Record<string, unknown>[] | undefined}
+              fields={container.fields}
+              onChange={next => onChange(field.key, next)}
+              renderItem={(item, index, onItem) => (
+                <SchemaForm fields={container.fields} value={item} problems={within(problems, `${field.key}.${index}`)} path={[...at, index]} modelSlot={modelSlot} onChange={(key, next) => onItem({ ...item, [key]: next })} />
+              )}
             />
-          </div>
-        )
+          )
+        const containerErrors = field.type === 'object' || field.type === 'list' ? problems.filter(({ path: problemPath }) => problemPath === field.key).map(({ message }) => message) : errorsOf(problems, field.key)
         return (
           <FieldShell
             key={field.key}
             label={field.label}
             required={field.required}
-            errors={field.type === 'object' ? [] : errorsOf(problems, field.key)}
+            errors={containerErrors}
             hint={hints?.[field.key]}
             onClear={!field.required && current !== undefined && field.type !== 'custom' ? () => onChange(field.key, undefined) : undefined}
           >
-            <FieldControl field={field} value={current} onChange={next => onChange(field.key, next)} modelSlot={modelSlot?.(field.key)} nested={nested} custom={custom} />
+            <FieldControl field={field} value={current} path={at} onChange={next => onChange(field.key, next)} modelSlot={modelSlot} nested={nested} custom={custom} />
           </FieldShell>
         )
       })}

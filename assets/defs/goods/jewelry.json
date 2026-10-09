@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "order": 100,
+  "name": {
+    "en": "Jewelry",
+    "fr": "Bijoux"
+  },
+  "recipe": {
+    "gold": 1,
+    "clay": 2
+  },
+  "durationMinutes": 24,
+  "value": 600,
+  "unlockCitizens": 1000,
+  "minTier": 5
+}

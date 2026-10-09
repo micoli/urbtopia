@@ -28,11 +28,11 @@ export function LibraryDrawer() {
   // Picking an undefined CC0 model defines it, so it can be edited and used at once.
   const pick = (entry: LibraryEntry) => {
     const { change, select, setStatus } = useDocument.getState()
-    if (entry.id) return select({ kind: 'model', id: entry.id })
+    if (entry.id) return select({ kind: 'models', id: entry.id })
     if (!isFreelyDefinable(entry.source)) return setStatus(`${entry.file} is not part of a managed source`)
     const id = modelIdOf(entry.file)
     change(doc => setModel(doc, id, { file: entry.file, source: entry.source!, license: 'CC0' }))
-    select({ kind: 'model', id })
+    select({ kind: 'models', id })
   }
 
   return (
@@ -62,7 +62,7 @@ export function LibraryDrawer() {
               entry={entry}
               users={entry.id ? library.usersOf(entry.id).length : 0}
               inScene={library.inScene(entry.file)}
-              selected={selection?.kind === 'model' && selection.id === entry.id}
+              selected={selection?.kind === 'models' && selection.id === entry.id}
               onPick={() => pick(entry)}
             />
           ))}

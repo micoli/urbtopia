@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 80,
+  "name": {
+    "en": "Rice",
+    "fr": "Riz"
+  },
+  "growthMinutes": 16,
+  "water": 4,
+  "yield": 5,
+  "seedShare": 0.35,
+  "seedPrice": 11,
+  "unlockCitizens": 120,
+  "packingMinutes": 3,
+  "packedValue": 65,
+  "models": {
+    "growth": ["crops-rice-1", "crops-rice-2", "crops-rice-3", "crops-rice-4"],
+    "produce": "crops-rice-crop"
+  }
+}

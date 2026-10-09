@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 160,
+  "name": {
+    "en": "Apples",
+    "fr": "Pommes"
+  },
+  "growthMinutes": 44,
+  "water": 4,
+  "yield": 8,
+  "seedShare": 0.2,
+  "seedPrice": 45,
+  "unlockCitizens": 800,
+  "packingMinutes": 6,
+  "packedValue": 190,
+  "models": {
+    "growth": ["crops-apple-1", "crops-apple-2", "crops-apple-3", "crops-apple-4"],
+    "produce": "crops-apple-crop",
+    "harvested": "crops-apple-harvested"
+  }
+}

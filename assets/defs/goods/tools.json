@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "order": 50,
+  "name": {
+    "en": "Tools",
+    "fr": "Outils"
+  },
+  "recipe": {
+    "metal": 1,
+    "wood": 1
+  },
+  "durationMinutes": 8,
+  "value": 80,
+  "unlockCitizens": 80,
+  "minTier": 1
+}

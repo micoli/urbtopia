@@ -5,12 +5,14 @@ import { zipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
 import { addGlb, addPack, addPolyPizzaModel, removeModel, renameModel, type AssetPaths } from './assetOperations';
 import { readBuildings, writeBuildings } from './buildingsFile';
+import { readCollectionDir } from './collectionRead';
+import { writeCollection } from './collectionFiles';
 import { readModels } from './modelsFile';
 import { fetchPolyPizzaModel, publicIdOf } from './polyPizza';
 
 const workspace = (): AssetPaths => {
   const root = mkdtempSync(join(tmpdir(), 'assets-'));
-  const paths = { managed: join(root, 'managed'), polyPizza: join(root, 'poly'), kenney: join(root, 'kenney'), quaternius: join(root, 'quaternius'), models: join(root, 'models.json'), extraPacks: join(root, 'extra.json'), buildings: join(root, 'buildings') };
+  const paths = { managed: join(root, 'managed'), polyPizza: join(root, 'poly'), kenney: join(root, 'kenney'), quaternius: join(root, 'quaternius'), models: join(root, 'models.json'), extraPacks: join(root, 'extra.json'), defs: join(root, 'defs') };
   writeFileSync(paths.models, '{}\n');
   return paths;
 };
@@ -56,13 +58,17 @@ describe('asset operations', () => {
     const paths = workspace();
     addGlb({ category: 'sport', name: 'pool', data, license: 'CC0' }, paths);
     const pool = { kind: 'standard' as const, section: 'build.sport' as const, model: 'sport-pool', footprint: [1, 1] as [number, number], cost: 1, unlockCitizens: 0, requiresRoad: true, name: { en: 'Pool', fr: 'Piscine' } };
-    writeBuildings({ pool, other: { ...pool, model: 'sport-pool' } }, paths.buildings);
+    const buildings = join(paths.defs, 'buildings');
+    writeBuildings({ pool, other: { ...pool, model: 'sport-pool' } }, buildings);
+    const crop = { kind: 'crop', name: { en: 'Kelp', fr: 'Algue' }, growthMinutes: 1, water: 1, yield: 1, seedShare: 0.5, seedPrice: 1, unlockCitizens: 0, packingMinutes: 1, packedValue: 1, models: { growth: ['sport-pool', 'sport-pool', 'sport-pool', 'sport-pool'] } };
+    writeCollection('crops', { kelp: crop }, join(paths.defs, 'crops'));
     expect(() => renameModel('sport-pool', 'Bad Id', paths)).toThrow('id must be lowercase');
     expect(() => renameModel('missing', 'pool', paths)).toThrow('Unknown Model id');
     renameModel('sport-pool', 'swimming-pool', paths);
     expect(readModels(paths.models)['swimming-pool']).toMatchObject({ file: 'sport/pool' });
-    expect(Object.values(readBuildings(paths.buildings)).map(({ model }) => model)).toEqual(['swimming-pool', 'swimming-pool']);
-    expect(readdirSync(paths.buildings).map(file => readFileSync(join(paths.buildings, file), 'utf8')).join('')).not.toContain('sport-pool');
+    expect(Object.values(readBuildings(buildings)).map(({ model }) => model)).toEqual(['swimming-pool', 'swimming-pool']);
+    expect(readCollectionDir(join(paths.defs, 'crops')).kelp).toMatchObject({ models: { growth: ['swimming-pool', 'swimming-pool', 'swimming-pool', 'swimming-pool'] } });
+    expect(readdirSync(buildings).map(file => readFileSync(join(buildings, file), 'utf8')).join('')).not.toContain('sport-pool');
   });
 
   it('registers a Quaternius zip only if it holds FBX files', () => {

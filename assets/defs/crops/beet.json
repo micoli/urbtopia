@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 50,
+  "name": {
+    "en": "Beets",
+    "fr": "Betteraves"
+  },
+  "growthMinutes": 10,
+  "water": 2,
+  "yield": 3,
+  "seedShare": 0.4,
+  "seedPrice": 6,
+  "unlockCitizens": 60,
+  "packingMinutes": 2,
+  "packedValue": 36,
+  "models": {
+    "growth": ["crops-beet-1", "crops-beet-2", "crops-beet-3", "crops-beet-4"],
+    "produce": "crops-beet-crop"
+  }
+}

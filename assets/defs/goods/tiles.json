@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "order": 40,
+  "name": {
+    "en": "Tiles",
+    "fr": "Tuiles"
+  },
+  "recipe": {
+    "clay": 2
+  },
+  "durationMinutes": 6,
+  "value": 62,
+  "unlockCitizens": 30,
+  "minTier": 1
+}

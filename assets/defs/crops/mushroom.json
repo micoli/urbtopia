@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 120,
+  "name": {
+    "en": "Mushrooms",
+    "fr": "Champignons"
+  },
+  "growthMinutes": 20,
+  "water": 2,
+  "yield": 4,
+  "seedShare": 0.3,
+  "seedPrice": 14,
+  "unlockCitizens": 250,
+  "packingMinutes": 4,
+  "packedValue": 85,
+  "models": {
+    "growth": ["crops-mushroom-1", "crops-mushroom-2", "crops-mushroom-3", "crops-mushroom-4"],
+    "produce": "crops-mushroom-crop",
+    "harvested": "crops-mushroom-harvested"
+  }
+}

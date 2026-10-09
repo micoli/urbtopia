@@ -1,35 +1,50 @@
 import type { BuildingKind, FlatBuilding } from '../../../../src/core/buildings/buildingDefinition'
 import { BUILD_SECTION_TITLES, type BuildSection } from '../../../../src/core/buildings/buildSections'
 import type { ModelEntry } from '../../../../src/core/models/modelSchema'
+import type { CollectionName, Definition } from '../../../../scripts/collections'
+import type { SingletonName } from '../../../../scripts/singletons'
 import type { Doc } from './documentStore'
 
-export const sectionOf = (building: FlatBuilding): BuildSection =>
-  building.kind === 'nature' ? (building.family === 'decoration' ? 'build.decoration' : 'build.greenSpaces') : (building.section ?? BUILD_SECTION_TITLES[0])
+export const definitionsOf = (doc: Doc, collection: CollectionName): Record<string, Definition> => doc.collections[collection]
 
-export const setBuilding = (doc: Doc, id: string, building: FlatBuilding): Doc => ({ ...doc, buildings: { ...doc.buildings, [id]: building } })
+const withCollection = (doc: Doc, collection: CollectionName, definitions: Record<string, Definition>): Doc => ({ ...doc, collections: { ...doc.collections, [collection]: definitions } })
 
-export const removeBuilding = (doc: Doc, id: string): Doc => ({ ...doc, buildings: Object.fromEntries(Object.entries(doc.buildings).filter(([key]) => key !== id)) })
+export const setDefinition = (doc: Doc, collection: CollectionName, id: string, definition: Definition): Doc => withCollection(doc, collection, { ...definitionsOf(doc, collection), [id]: definition })
 
-export function insertBuildingAfter(doc: Doc, afterId: string | undefined, id: string, building: FlatBuilding): Doc {
-  const entries = Object.entries(doc.buildings)
+export const removeDefinition = (doc: Doc, collection: CollectionName, id: string): Doc =>
+  withCollection(doc, collection, Object.fromEntries(Object.entries(definitionsOf(doc, collection)).filter(([key]) => key !== id)))
+
+export function insertDefinitionAfter(doc: Doc, collection: CollectionName, afterId: string | undefined, id: string, definition: Definition): Doc {
+  const entries = Object.entries(definitionsOf(doc, collection))
   const index = afterId ? entries.findIndex(([key]) => key === afterId) : -1
   const at = index < 0 ? entries.length : index + 1
-  return { ...doc, buildings: Object.fromEntries([...entries.slice(0, at), [id, building], ...entries.slice(at)]) }
+  return withCollection(doc, collection, Object.fromEntries([...entries.slice(0, at), [id, definition], ...entries.slice(at)]))
 }
 
-// The members of a section take the positions they already held, in their new order: other sections keep their place.
-export function reorderSection(doc: Doc, orderedIds: readonly string[]): Doc {
+// The members of a group take the positions they already held, in their new order: other groups keep their place.
+export function reorderGroup(doc: Doc, collection: CollectionName, orderedIds: readonly string[]): Doc {
+  const definitions = definitionsOf(doc, collection)
   const members = new Set(orderedIds)
   const queue = [...orderedIds]
-  const ids = Object.keys(doc.buildings).map(id => (members.has(id) ? queue.shift()! : id))
-  return { ...doc, buildings: Object.fromEntries(ids.map(id => [id, doc.buildings[id]!])) }
+  const ids = Object.keys(definitions).map(id => (members.has(id) ? queue.shift()! : id))
+  return withCollection(doc, collection, Object.fromEntries(ids.map(id => [id, definitions[id]!])))
 }
 
-export const toggleRetired = ({ retired, ...building }: FlatBuilding): FlatBuilding => (retired ? building : { ...building, retired: true })
+export const setSingleton = (doc: Doc, name: SingletonName, value: Record<string, unknown>): Doc => ({ ...doc, singletons: { ...doc.singletons, [name]: value } })
 
 export const setModel = (doc: Doc, id: string, model: ModelEntry): Doc => ({ ...doc, models: { ...doc.models, [id]: model } })
 
 export const removeModel = (doc: Doc, id: string): Doc => ({ ...doc, models: Object.fromEntries(Object.entries(doc.models).filter(([key]) => key !== id)) })
+
+export { setIn } from '../../../../scripts/paths'
+
+export const toggleRetired = ({ retired, ...definition }: Definition): Definition => (retired ? definition : { ...definition, retired: true })
+
+export const sectionOf = (building: FlatBuilding): BuildSection =>
+  building.kind === 'nature' ? (building.family === 'decoration' ? 'build.decoration' : 'build.greenSpaces') : (building.section ?? BUILD_SECTION_TITLES[0])
+
+// The list groups of a collection: build menu sections for buildings, one group otherwise.
+export const groupOf = (collection: CollectionName, definition: Definition): string => (collection === 'buildings' ? sectionOf(definition as unknown as FlatBuilding) : collection)
 
 const PLACED_DEFAULTS = { footprint: [1, 1] as [number, number], cost: 0, unlockCitizens: 0, requiresRoad: true }
 
@@ -40,10 +55,20 @@ export function blankBuilding(kind: BuildingKind, model: string): FlatBuilding {
   return { kind, model, name, section: 'build.production', ...PLACED_DEFAULTS }
 }
 
+const name = { en: '', fr: '' }
+
+// What a new Game object of each collection starts from; its form shows what is still missing.
+export function blankDefinition(collection: CollectionName, model: string): Definition {
+  if (collection === 'buildings') return blankBuilding('standard', model) as unknown as Definition
+  if (collection === 'materials') return { kind: 'material', name, producedBy: 'workshop', durationMinutes: 1, unlockCitizens: 0, minTier: 1 }
+  if (collection === 'goods') return { kind: 'good', name, recipe: {}, durationMinutes: 1, value: 0, unlockCitizens: 0, minTier: 1 }
+  return { kind: 'crop', name, growthMinutes: 1, water: 1, yield: 1, seedShare: 0.5, seedPrice: 1, unlockCitizens: 0, packingMinutes: 1, packedValue: 0, models: { growth: [model, model, model, model] } }
+}
+
 // Switching kind keeps what both kinds share and fills what the new one requires.
 export function convertBuilding(building: FlatBuilding, kind: BuildingKind): FlatBuilding {
-  const { model, name, description, retired } = building
-  const shared = { model, name, ...(description ? { description } : {}), ...(retired ? { retired } : {}) }
+  const { model, name: text, description, retired } = building
+  const shared = { model, name: text, ...(description ? { description } : {}), ...(retired ? { retired } : {}) }
   const blank = blankBuilding(kind, model)
   if (kind === 'nature') return { ...blank, ...shared }
   const placed = { section: building.section ?? blank.section, footprint: building.footprint ?? PLACED_DEFAULTS.footprint, cost: building.cost ?? 0, unlockCitizens: building.unlockCitizens ?? 0, requiresRoad: building.requiresRoad ?? true, ...(building.accessModes ? { accessModes: building.accessModes } : {}), ...(building.initialSlots !== undefined ? { initialSlots: building.initialSlots } : {}) }

@@ -33,15 +33,15 @@ export function ModelList() {
       </div>
       <div className="min-h-0 flex-1 overflow-auto p-1">
         {ids.slice(0, PAGE).map(id => {
-          const selected = selection?.kind === 'model' && selection.id === id
-          const count = problems.of('model', id).length
+          const selected = selection?.kind === 'models' && selection.id === id
+          const count = problems.of('models', id).length
           return (
-            <button key={id} onClick={() => select({ kind: 'model', id })} className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm ${selected ? 'bg-indigo-50 ring-1 ring-indigo-200' : 'hover:bg-zinc-100'}`}>
+            <button key={id} onClick={() => select({ kind: 'models', id })} className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm ${selected ? 'bg-indigo-50 ring-1 ring-indigo-200' : 'hover:bg-zinc-100'}`}>
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate font-medium text-zinc-800">{id}</span>
                 <span className="truncate text-xs text-zinc-500">{models[id]!.file}</span>
               </span>
-              {dirty.has('model', id) && <span className="h-2 w-2 rounded-full bg-amber-400" title="Modified" />}
+              {dirty.has('models', id) && <span className="h-2 w-2 rounded-full bg-amber-400" title="Modified" />}
               {count > 0 && <span className={badge('red')}>{count}</span>}
             </button>
           )

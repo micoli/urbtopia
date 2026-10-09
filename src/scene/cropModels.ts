@@ -1,44 +1,23 @@
 import type { CropId, CropStage } from '../core';
-
-export const CROP_MODEL_NAMES: Record<CropId, string> = {
-  grass: 'Grass',
-  flower: 'Flower',
-  wheat: 'Wheat',
-  carrot: 'Carrot',
-  beet: 'Beet',
-  lettuce: 'Lettuce',
-  corn: 'Corn',
-  rice: 'Rice',
-  tomato: 'Tomato',
-  pumpkin: 'Pumpkin',
-  watermelon: 'Watermelon',
-  mushroom: 'Mushroom',
-  bushBerries: 'BushBerries',
-  bamboo: 'Bamboo',
-  cactus: 'Cactus',
-  apple: 'Apple',
-  orange: 'Orange',
-  palmtree: 'PalmTree',
-};
-
-const PRODUCE_NAME_OVERRIDES: Partial<Record<CropId, string>> = { flower: 'Flowers' };
-const WITHOUT_PRODUCE: readonly CropId[] = ['grass'];
-const WITHOUT_HARVESTED: readonly CropId[] = ['bamboo', 'beet', 'carrot', 'grass', 'rice', 'wheat'];
+import { CROP_DEFINITIONS } from '../core/farming/crops';
+import { modelFileOf } from '../core/models/modelFiles';
 
 export type GrowthStage = Exclude<CropStage, 'ready'>;
 
+const modelsOf = new Map(CROP_DEFINITIONS.map(({ id, models }) => [id, models]));
+
 export function growthModelOf(species: CropId, stage: GrowthStage): string {
-  return `crops/${CROP_MODEL_NAMES[species]}_${stage}`;
+  return modelFileOf(modelsOf.get(species)!.growth[stage - 1]!);
 }
 
 export function produceModelOf(species: CropId): string | null {
-  if (WITHOUT_PRODUCE.includes(species)) return null;
-  return `crops/${PRODUCE_NAME_OVERRIDES[species] ?? CROP_MODEL_NAMES[species]}_Crop`;
+  const produce = modelsOf.get(species)?.produce;
+  return produce ? modelFileOf(produce) : null;
 }
 
 export function harvestedModelOf(species: CropId): string | null {
-  if (WITHOUT_HARVESTED.includes(species)) return null;
-  return `crops/${PRODUCE_NAME_OVERRIDES[species] ?? CROP_MODEL_NAMES[species]}_Harvested`;
+  const harvested = modelsOf.get(species)?.harvested;
+  return harvested ? modelFileOf(harvested) : null;
 }
 
 export function cropModelsOf(species: CropId): string[] {

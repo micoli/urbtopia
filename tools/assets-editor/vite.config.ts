@@ -7,7 +7,7 @@ import { defineConfig, type Plugin } from 'vite'
 import { MANAGED_MODELS_DIR, POLY_PIZZA_DIR } from '../../scripts/assetPacks.ts'
 import { archiveFile, archiveManifest, contentTypeOf, kenneyPackNames } from './archiveSources.ts'
 import { managedModelKeys } from '../../scripts/managedModels.ts'
-import { deleteBuilding, readCatalog, saveDefinitions } from '../../scripts/definitionsStore.ts'
+import { deleteDefinition, readCatalog, saveDefinitions } from '../../scripts/definitionsStore.ts'
 import { addGlb, addPack, addPolyPizzaModel, removeModel, renameModel } from '../../scripts/assetOperations.ts'
 import { fetchPolyPizzaModel } from '../../scripts/polyPizza.ts'
 
@@ -127,7 +127,7 @@ const OPERATIONS: Record<string, Operation> = {
   'add-pack': operation(({ dataBase64, ...input }: WithFile<Parameters<typeof addPack>[0]>) => addPack({ ...input, data: bytesOf(dataBase64) })),
   remove: operation(({ key, usedKeys }: { key: string; usedKeys: string[] }) => removeModel(key, usedKeys)),
   'rename-model': operation(({ from, to }: { from: string; to: string }) => renameModel(from, to)),
-  'delete-building': operation(({ id }: { id: string }) => deleteBuilding(id)),
+  'delete-definition': operation(({ collection, id }: { collection: Parameters<typeof deleteDefinition>[0]; id: string }) => deleteDefinition(collection, id)),
 }
 
 // Operations change the sources, so the game's generated public/models is refreshed afterwards.

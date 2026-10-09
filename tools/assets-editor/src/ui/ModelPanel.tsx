@@ -26,8 +26,8 @@ interface Props {
 export function ModelPanel({ id }: Props) {
   const model = useDocument(state => state.doc.models[id]!)
   const { change, select } = useDocument.getState()
-  const problems = useProblems().of('model', id)
-  const dirty = useDirty().has('model', id)
+  const problems = useProblems().of('models', id)
+  const dirty = useDirty().has('models', id)
   const library = useLibrary()
   const users = library.usersOf(id)
   const [renaming, setRenaming] = useState(false)

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "formats": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "suffix": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Za-z]*$"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "valueBonus": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "required": [
+          "suffix",
+          "size",
+          "valueBonus"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "formats"
+  ],
+  "additionalProperties": false,
+  "title": "Pack formats",
+  "description": "assets/defs/packFormats.json: how the Packhouse packs a Crop Material into Goods."
+}

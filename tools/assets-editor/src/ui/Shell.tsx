@@ -1,6 +1,7 @@
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import { useState } from 'react'
+import type { CollectionName } from '../../../../scripts/collections'
 import { modelIdOf } from '../../../../scripts/definitionProblems'
 import type { DragData, ModelDrop } from '../dnd'
 import { useLibrary } from '../hooks/useLibrary'
@@ -8,8 +9,8 @@ import { useSave } from '../hooks/useSave'
 import { useShortcuts } from '../hooks/useShortcuts'
 import { isFreelyDefinable } from '../library/modelFiles'
 import { useDocument } from '../store/documentStore'
-import { reorderSection, sectionOf, setModel } from '../store/edits'
-import { BuildingList } from './BuildingList'
+import { groupOf, reorderGroup, setModel } from '../store/edits'
+import { CollectionList } from './CollectionList'
 import { DragPreview } from './DragPreview'
 import { FileDropZone } from './FileDropZone'
 import { KindNav } from './KindNav'
@@ -17,6 +18,7 @@ import { LibraryDrawer } from './LibraryDrawer'
 import { ModelList } from './ModelList'
 import { ObjectPanel } from './ObjectPanel'
 import { Preview } from './Preview'
+import { SingletonList } from './SingletonList'
 import { TopBar } from './TopBar'
 
 export function Shell() {
@@ -38,13 +40,14 @@ export function Shell() {
     })
   }
 
-  const moveBuilding = (id: string, overId: string) => {
+  const moveDefinition = (collection: CollectionName, id: string, overKey: string) => {
     const { doc, change } = useDocument.getState()
-    const section = sectionOf(doc.buildings[id]!)
-    const members = Object.keys(doc.buildings).filter(key => sectionOf(doc.buildings[key]!) === section)
-    const from = members.indexOf(id), to = members.indexOf(overId)
+    const definitions = doc.collections[collection]
+    const group = groupOf(collection, definitions[id]!)
+    const members = Object.keys(definitions).filter(key => groupOf(collection, definitions[key]!) === group)
+    const from = members.indexOf(id), to = members.indexOf(overKey.slice(collection.length + 1))
     if (from < 0 || to < 0 || from === to) return
-    change(current => reorderSection(current, arrayMove(members, from, to)))
+    change(current => reorderGroup(current, collection, arrayMove(members, from, to)))
   }
 
   const onDragEnd = ({ active, over }: DragEndEvent) => {
@@ -52,7 +55,7 @@ export function Shell() {
     const data = active.data.current as DragData | undefined
     if (!data || !over) return
     if (data.type === 'model' && over.data.current?.type === 'model-field') dropModel(data.file, over.data.current as ModelDrop)
-    if (data.type === 'building') moveBuilding(data.id, String(over.id))
+    if (data.type === 'definition') moveDefinition(data.collection, data.id, String(over.id))
   }
 
   return (
@@ -62,7 +65,7 @@ export function Shell() {
         <div className="grid min-h-0 grid-cols-1 gap-3 overflow-auto p-3 lg:grid-cols-[19rem_minmax(0,1fr)_24rem] lg:overflow-hidden">
           <aside className="flex min-h-[24rem] flex-col gap-2 lg:min-h-0">
             <KindNav />
-            {kind === 'building' ? <BuildingList /> : <ModelList />}
+            {kind === 'models' ? <ModelList /> : kind === 'singletons' ? <SingletonList /> : <CollectionList key={kind} collection={kind} />}
           </aside>
           <main className="min-h-0 lg:overflow-auto">
             <ObjectPanel />

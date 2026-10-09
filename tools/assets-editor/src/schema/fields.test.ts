@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MODEL_FIELDS, buildingFieldsOf } from './fields'
+import { MODEL_FIELDS, buildingFieldsOf, collectionFieldsOf, singletonFieldsOf } from './fields'
 
 describe('form fields from the JSON Schemas', () => {
   it('describes a sport building with typed controls and no internal field', () => {
@@ -17,6 +17,19 @@ describe('form fields from the JSON Schemas', () => {
 
   it('gives a nature building only its own fields', () => {
     expect(buildingFieldsOf('nature').map(({ key }) => key)).toEqual(['model', 'name', 'description', 'family'])
+  })
+
+  it('describes a Good recipe as a record of Materials and Crops, and Crop stages as models', () => {
+    const good = Object.fromEntries(collectionFieldsOf('goods', { kind: 'good' }).map(field => [field.key, field]))
+    expect(good.recipe).toMatchObject({ type: 'record', targets: ['materials', 'crops'], integer: true, min: 1 })
+    expect(good.model).toMatchObject({ type: 'model', required: false })
+    const models = collectionFieldsOf('crops', { kind: 'crop' }).find(field => field.key === 'models')
+    expect(models).toMatchObject({ type: 'object' })
+    expect(models?.type === 'object' && models.fields.map(({ key, type }) => `${key}:${type}`)).toEqual(['growth:modelList', 'produce:model', 'harvested:model'])
+  })
+
+  it('describes pack formats as a list of objects', () => {
+    expect(singletonFieldsOf('packFormats')).toMatchObject([{ key: 'formats', type: 'list' }])
   })
 
   it('describes a model definition with a read-only file and nested fit', () => {

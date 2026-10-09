@@ -2,7 +2,10 @@ import { existsSync, mkdirSync, readdirSync, rmSync, rmdirSync, writeFileSync } 
 import { dirname, join } from 'node:path';
 import { EXTRA_PACKS_FILE, MANAGED_MODELS_DIR, POLY_PIZZA_DIR, ARCHIVES_DIR, QUATERNIUS_ARCHIVES_DIR, readExtraPacks } from './assetPacks.ts';
 import { extractFbx, extractPack } from './extractPack.ts';
-import { BUILDINGS_DIR, readBuildings, writeBuildings } from './buildingsFile.ts';
+import { writeCollection } from './collectionFiles.ts';
+import { DEFS_ROOT, collectionDir, readCollection } from './collectionRead.ts';
+import { COLLECTION_NAMES, specOf, type Definition } from './collections.ts';
+import { pathOf, setIn } from './paths.ts';
 import { MODELS_FILE, idByFile, modelIdOf, readModels, writeModels } from './modelsFile.ts';
 import { licenseText, type PolyPizzaModel } from './polyPizza.ts';
 
@@ -13,10 +16,10 @@ export interface AssetPaths {
   quaternius: string;
   models: string;
   extraPacks: string;
-  buildings: string;
+  defs: string;
 }
 
-export const ASSET_PATHS: AssetPaths = { managed: MANAGED_MODELS_DIR, polyPizza: POLY_PIZZA_DIR, kenney: ARCHIVES_DIR, quaternius: QUATERNIUS_ARCHIVES_DIR, models: MODELS_FILE, extraPacks: EXTRA_PACKS_FILE, buildings: BUILDINGS_DIR };
+export const ASSET_PATHS: AssetPaths = { managed: MANAGED_MODELS_DIR, polyPizza: POLY_PIZZA_DIR, kenney: ARCHIVES_DIR, quaternius: QUATERNIUS_ARCHIVES_DIR, models: MODELS_FILE, extraPacks: EXTRA_PACKS_FILE, defs: DEFS_ROOT };
 
 export interface Attribution {
   license: string;
@@ -110,16 +113,22 @@ export function removeModel(key: string, usedKeys: readonly string[], paths = AS
   writeModels(Object.fromEntries(Object.entries(models).filter(([, { file }]) => file !== key)), paths.models);
 }
 
-// Model ids live in definitions only, never in saves: a rename rewrites every building that uses the model.
+const rewire = (definition: Definition, references: { id: string; path: string }[], from: string, to: string): Definition =>
+  references.filter(({ id }) => id === from).reduce((current, { path }) => setIn(current, pathOf(path), to) as Definition, definition);
+
+// Model ids live in definitions only, never in saves: a rename rewrites every Game object that uses the model.
 export function renameModel(from: string, to: string, paths = ASSET_PATHS): void {
   const models = readModels(paths.models);
   if (!models[from]) throw new Error(`Unknown Model id ${from}`);
   if (models[to]) throw new Error(`Model id ${to} already exists`);
   const renamed = Object.fromEntries(Object.entries(models).map(([id, definition]) => [id === from ? to : id, definition]));
-  const buildings = readBuildings(paths.buildings);
-  const rewired = Object.fromEntries(Object.entries(buildings).map(([id, building]) => [id, building.model === from ? { ...building, model: to } : building]));
-  const dangling = Object.entries(rewired).filter(([, { model }]) => !renamed[model]).map(([id]) => id);
-  if (dangling.length) throw new Error(`Buildings with an unknown model: ${dangling.join(', ')}`);
+  const rewired = COLLECTION_NAMES.map(name => {
+    const modelReferences = (definition: Definition) => specOf(name).references(definition as never).filter(({ target }) => target === 'models');
+    const definitions = Object.fromEntries(Object.entries(readCollection(name, paths.defs)).map(([id, definition]) => [id, rewire(definition, modelReferences(definition), from, to)]));
+    const dangling = Object.entries(definitions).filter(([, definition]) => modelReferences(definition).some(({ id }) => !renamed[id])).map(([id]) => id);
+    if (dangling.length) throw new Error(`${specOf(name).title} with an unknown model: ${dangling.join(', ')}`);
+    return { name, definitions };
+  });
   writeModels(renamed, paths.models);
-  writeBuildings(rewired, paths.buildings);
+  for (const { name, definitions } of rewired) writeCollection(name, definitions, collectionDir(name, paths.defs));
 }
