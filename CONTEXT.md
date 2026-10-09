@@ -8,8 +8,20 @@ Urbtopia is a solo, serverless isometric city builder: the player produces resou
 The soft currency of the game, earned by selling goods and spent on building and upgrading.
 _Avoid_: Coins, cash, money
 
+**Game object**:
+Any kind of thing of the game described by data rather than code: a Building, a Fixture, a Vehicle, a Service vehicle, a Transit fleet vehicle, a Boat, a Material, a Good or a Crop. Its definition, including its values per Tier, is edited in `tools/assets-editor`; the rules that use those values stay in code.
+_Avoid_: Item (a Good), asset, entity, prefab
+
+**Retired**:
+The state of a Game object that can no longer be built, bought or unlocked, but still exists and works in the cities that already have it. A Game object is retired rather than removed, because its id lives in saves.
+_Avoid_: Deleted, deprecated, removed
+
+**Model id**:
+The stable name of a 3D model, chosen by hand and independent of where its file lives. Game objects refer to models by Model id only; moving or renaming the file never changes it.
+_Avoid_: Model key, model path, asset id
+
 **Model definition**:
-The entry of a 3D model in `assets/models.json`: footprint, scale or fit, rotation offset, recolor, and source license. Edited with `tools/assets-editor`; a model without one uses computed defaults.
+The entry of a 3D model, identified by its Model id: its file, footprint, scale or fit, rotation offset, recolor, and source license. Edited with `tools/assets-editor`; a model without one uses computed defaults.
 _Avoid_: Asset config, model metadata
 
 **Material**:

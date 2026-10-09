@@ -12,4 +12,4 @@ Storage is split into three unique buildings (Storehouse, Silo, Vault) whose cap
 
 - State shape changes: `storehouseLevel` is removed and every building has a `tier` (existing non-Home buildings become Tier 1, the existing Storehouse takes `storehouseLevel + 1`). Requires a save version bump, a migration and a frozen fixture (ADR 0003).
 - Demolishing a storage that still holds items beyond the remaining capacity must be refused, as the Storehouse is today.
-- Per-Tier effects are data tables; the balancing pass changes data only.
+- Per-Tier effects are data tables; the balancing pass changes data only. Those tables now live in the Game object files ([ADR 0023](0023-tier-values-and-balancing-as-data-formulas-in-code.md)).
