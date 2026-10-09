@@ -1,7 +1,10 @@
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { z } from 'zod';
-import { MODEL_ID_PATTERN, modelSchema, modelsFileSchema, type ModelEntry } from '../src/core/models/modelSchema.ts';
+import { modelsFileSchema, type ModelEntry } from '../src/core/models/modelSchema.ts';
+import { allModelProblems, describeProblem, modelProblemsOf, type ModelDefinitions } from './definitionProblems.ts';
+
+export { modelIdOf, type ModelDefinitions } from './definitionProblems.ts';
 
 export const MODELS_FILE = 'assets/models.json';
 export const MODELS_SCHEMA_FILE = 'assets/defs/schemas/models.schema.json';
@@ -10,29 +13,9 @@ export const MODEL_IDS_FILE = 'src/core/models/modelIds.generated.ts';
 const SCHEMA_REFERENCE = 'defs/schemas/models.schema.json';
 const FIELD_ORDER: (keyof ModelEntry)[] = ['file', 'source', 'license', 'author', 'url', 'footprint', 'scale', 'center', 'fit', 'rotationOffset', 'bakeNodeScale', 'recolor', 'note'];
 
-export type ModelDefinitions = Record<string, ModelEntry>;
+export const modelProblems = (definition: unknown): string[] => modelProblemsOf('', definition).map(({ path, message }) => (path ? `${path}: ${message}` : message));
 
-// The Model id given to a file at migration or import: `suburban/building-type-k` becomes `suburban-building-type-k`.
-export const modelIdOf = (file: string): string => file.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-
-export function modelProblems(definition: unknown): string[] {
-  const result = modelSchema.safeParse(definition);
-  if (result.success) return [];
-  return result.error.issues.map(issue => (issue.path.length ? `${issue.path.join('.')} ${issue.message}` : issue.message));
-}
-
-export function modelsProblems(definitions: ModelDefinitions): string[] {
-  const owners = new Map<string, string>();
-  return Object.entries(definitions).flatMap(([id, definition]) => {
-    const owner = owners.get(definition.file);
-    owners.set(definition.file, id);
-    return [
-      ...(MODEL_ID_PATTERN.test(id) ? [] : [`${id}: id must be lowercase letters and digits separated by single dashes`]),
-      ...(owner ? [`${id}: file ${definition.file} already belongs to ${owner}`] : []),
-      ...modelProblems(definition).map(problem => `${id}: ${problem}`),
-    ];
-  });
-}
+export const modelsProblems = (definitions: ModelDefinitions): string[] => allModelProblems(definitions).map(describeProblem);
 
 export function stableModelsJson(definitions: ModelDefinitions): string {
   const ordered = Object.keys(definitions).sort().map(id => {

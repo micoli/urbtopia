@@ -1,4 +1,5 @@
 import { totalCitizens } from '../buildings/city';
+import { isRetired } from '../buildings/buildingDefinitions';
 import { FACILITIES, FACILITY_TYPES, type FacilityType } from '../services/facilities';
 import { GOODS, MATERIALS, unlockCitizensOf, type ItemId } from '../economy/items';
 import { CASINO } from '../leisure/casino';
@@ -37,5 +38,5 @@ export function facilitiesUnlockedBetween(before: GameState, after: GameState): 
     ...FACILITY_TYPES.filter(type => unlocked(FACILITIES[type].unlockCitizens)),
     ...(unlocked(CASINO.unlockCitizens) ? ['casino' as const] : []),
     ...SPORT_VENUE_TYPES.filter(type => unlocked(SPORT_VENUES[type].unlockCitizens)),
-  ];
+  ].filter(type => !isRetired(type));
 }

@@ -11,6 +11,8 @@ const localizedText = z.strictObject({ en: filled, fr: filled });
 const common = {
   $schema: z.string().optional(),
   order: count,
+  // Retired: no longer built nor unlocked, but still loaded in the cities that have it.
+  retired: z.literal(true).optional(),
   model: filled,
   name: localizedText,
   description: localizedText.optional(),

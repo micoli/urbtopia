@@ -1,55 +1,22 @@
-html,body,#root{margin:0;height:100%;overflow:hidden;background:#cfd8e3;font:12px monospace}
-  #app{display:grid;grid-template-columns:250px 1fr 260px;grid-template-rows:auto 1fr;height:100%}
-  @media (max-width:800px){#app{grid-template-columns:1fr;grid-template-rows:auto 25% 40% 1fr}#bar,#assets,#view,#side{grid-column:1}}
-  #bar{grid-column:1/4;background:#222;color:#fff;padding:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-  button,select,input{font:inherit}
-  button,.toolbar-button,.select-trigger{padding:4px 8px;cursor:pointer}
-  .pack-trigger{padding:4px 6px}
-  .toolbar-button[data-state=on]{background:#fc0}
-  .packs{display:contents}
-  #assets{display:flex;flex-direction:column;min-height:0;background:#fff;border-right:1px solid #888;min-width:0}
-  .tree-header{display:flex;gap:6px;padding:6px;align-items:center}
-  .tree-header input{min-width:0;flex:1;padding:4px}
-  .scroll-root{flex:1;min-height:0;overflow:hidden;position:relative}
-  .scroll-viewport{width:100%;height:100%}
-  .scroll-viewport>div{display:block!important;min-width:0!important;width:100%;box-sizing:border-box;padding-right:10px}
-  .pack-header,.source-header{margin:0}
-  .source-trigger{width:100%;display:flex;align-items:center;gap:6px;border:0;background:#cdd;text-align:left;padding:5px 6px;font-weight:bold;text-transform:uppercase}
-  .source-trigger:hover{background:#bcc}
-  .source-trigger[data-state=open] .chevron{transform:rotate(90deg)}
-  .source-content{margin-left:6px}
-  .pack-trigger{width:100%;display:flex;align-items:center;gap:6px;border:0;background:#eef;text-align:left;padding:4px 6px;font-weight:bold}
-  .pack-trigger:hover{background:#dde}
-  .chevron{display:inline-block;transition:transform .12s}
-  .pack-trigger[data-state=open] .chevron{transform:rotate(90deg)}
-  .count{margin-left:auto;font-weight:normal;color:#666}
-  .pack-content{margin-left:10px;border-left:1px solid #bbb}
-  .asset-row{padding:3px 6px;cursor:pointer;display:flex;justify-content:space-between}
-  .asset-row:hover{background:#eef}
-  .asset-row.sel{background:#fc0}
-  .asset-row.done{color:#070}
-  .scrollbar{width:8px;padding:1px;background:#0001}
-  .scrollbar-thumb{background:#888;border-radius:4px}
-  #view{position:relative;min-width:0}
-  canvas{display:block;width:100%;height:100%}
-  #side{background:#fff;border-left:1px solid #888;padding:8px;overflow:auto}
-  #side h3{margin:0 0 6px}
-  #side .row{margin:6px 0}
-  #side button{padding:3px 6px}
-  #legend{position:absolute;left:6px;bottom:6px;max-width:90%;background:#fffc;padding:4px;pointer-events:none}
-#side .row input{max-width:100%}
-#side .row{margin:6px 0}
-button.select-trigger{background:#fff;border:1px solid #888;color:#000;display:inline-flex;gap:6px;align-items:center}
-.select-content{background:#fff;border:1px solid #888;z-index:20;min-width:var(--radix-select-trigger-width)}
-.select-item{padding:4px 8px;cursor:pointer;outline:none}
-.select-item[data-highlighted]{background:#fc0}
-.checkbox{width:16px;height:16px;padding:0;background:#fff;border:1px solid #888;line-height:1;vertical-align:middle}
-.checkbox[data-state=checked]{background:#fc0}
-.dialog-overlay{position:fixed;inset:0;background:#0006;z-index:10}
-.dialog-content{position:fixed;z-index:11;top:50%;left:50%;transform:translate(-50%,-50%);width:min(420px,90vw);background:#fff;border:1px solid #888;padding:12px;display:flex;flex-direction:column;gap:6px}
-.dialog-content h2{margin:0;font-size:14px}
-.dialog-content p{margin:0}
-.dialog-content .row{margin:2px 0}
-.dialog-actions{display:flex;gap:6px;justify-content:flex-end}
-.popover-content{background:#fff;border:1px solid #888;padding:6px;display:flex;gap:6px;z-index:20}
-.popover-arrow{fill:#888}
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--color-zinc-100);
+  color: var(--color-zinc-900);
+  -webkit-font-smoothing: antialiased;
+}
+
+canvas {
+  display: block;
+}

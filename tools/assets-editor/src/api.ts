@@ -1,30 +1,24 @@
-import type { ModelSource } from '../../../src/scene/modelDefinitions'
 import type { BuildingDefinitions } from '../../../src/core/buildings/buildingDefinition'
-import type { Definitions } from './assetKeys'
+import type { ModelSource } from '../../../src/core/models/modelSchema'
+import type { ModelDefinitions } from '../../../scripts/definitionProblems'
 
-const getJson = async <T>(url: string): Promise<T> => (await fetch(url)).json()
-
-export const fetchManifest = () => getJson<Record<string, string[]>>('/manifest.json')
-export const fetchSourceByPack = () => getJson<Record<string, ModelSource | undefined>>('/api/packs')
-export const fetchDefinitions = () => getJson<Definitions>('/api/models')
-
-export const fetchBuildings = () => getJson<BuildingDefinitions>('/api/buildings')
-
-export async function saveBuildings(buildings: BuildingDefinitions): Promise<string> {
-  const response = await fetch('/api/buildings', { method: 'PUT', body: JSON.stringify(buildings) })
-  return response.ok ? 'saved' : ((await response.json()) as { error: string }).error
+export interface Catalog {
+  models: ModelDefinitions
+  buildings: BuildingDefinitions
+  installablePacks: string[]
+  manifest: Record<string, string[]>
+  sourceByPack: Record<string, ModelSource | undefined>
 }
 
-export async function saveDefinitions(definitions: Definitions): Promise<string> {
-  const response = await fetch('/api/models', { method: 'PUT', body: JSON.stringify(definitions) })
-  return response.ok ? 'saved' : ((await response.json()) as { error: string }).error
-}
+const errorOf = async (response: Response) => (response.ok ? null : ((await response.json()) as { error: string }).error)
 
-export async function callAssets(operation: string, body: object): Promise<string | null> {
-  const response = await fetch(`/api/assets/${operation}`, { method: 'POST', body: JSON.stringify(body) })
-  if (response.ok) return null
-  return ((await response.json()) as { error: string }).error
-}
+export const fetchCatalog = async (): Promise<Catalog> => (await fetch('/api/catalog')).json()
+
+export const saveDefinitions = async (definitions: Pick<Catalog, 'models' | 'buildings'>): Promise<string | null> =>
+  errorOf(await fetch('/api/definitions', { method: 'PUT', body: JSON.stringify(definitions) }))
+
+export const callAssets = async (operation: string, body: object): Promise<string | null> =>
+  errorOf(await fetch(`/api/assets/${operation}`, { method: 'POST', body: JSON.stringify(body) }))
 
 export async function base64Of(file: File): Promise<string> {
   const bytes = new Uint8Array(await file.arrayBuffer())

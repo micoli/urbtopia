@@ -18,6 +18,8 @@ const entriesById = new Map<string, BuildingEntry>(BUILDING_ENTRIES.map(entry =>
 
 export const definitionOf = (id: BuildingId): BuildingEntry => entriesById.get(id)!;
 
+export const isRetired = (id: BuildingId): boolean => entriesById.get(id)?.retired === true;
+
 export type SportEntry = BuildingEntry & { id: SportVenueType; kind: 'sport'; radius: number; wellbeingBonus: number };
 export type NatureEntry = BuildingEntry & { id: NatureType; kind: 'nature'; family: NonNullable<FlatBuilding['family']> };
 

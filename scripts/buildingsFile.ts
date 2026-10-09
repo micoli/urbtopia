@@ -2,10 +2,11 @@ import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync 
 import { dirname, join } from 'node:path';
 import { z } from 'zod';
 import type { BuildingDefinitions, FlatBuilding } from '../src/core/buildings/buildingDefinition.ts';
-import { BUILDING_ID_PATTERN, buildingSchema } from '../src/core/buildings/buildingSchema.ts';
+import { buildingSchema } from '../src/core/buildings/buildingSchema.ts';
 import { BUILDINGS_DIR, buildingFilesIn, idOfBuildingFile } from './buildingsDir.ts';
 import { writeBuildingTypes } from './buildingTypes.ts';
-import { modelReferenceProblems, shippedModelCatalog, type ModelCatalog } from './modelReferences.ts';
+import { allBuildingProblems, buildingProblemsOf, describeProblem, type ModelCatalog } from './definitionProblems.ts';
+import { shippedModelCatalog } from './modelReferences.ts';
 
 export { BUILDINGS_DIR, readBuildings } from './buildingsDir.ts';
 
@@ -13,28 +14,11 @@ export const BUILDING_SCHEMA_FILE = 'assets/defs/schemas/building.schema.json';
 
 const SCHEMA_REFERENCE = '../schemas/building.schema.json';
 const ORDER_STEP = 10;
-const FIELD_ORDER = ['$schema', 'kind', 'order', 'section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'initialSlots', 'name', 'description', 'radius', 'wellbeingBonus', 'family'];
+const FIELD_ORDER = ['$schema', 'kind', 'order', 'retired', 'section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'initialSlots', 'name', 'description', 'radius', 'wellbeingBonus', 'family'];
 
-export function buildingProblems(definition: unknown): string[] {
-  const result = buildingSchema.safeParse(definition);
-  if (result.success) return [];
-  return result.error.issues.map(issue => (issue.path.length ? `${issue.path.join('.')}: ${issue.message}` : issue.message));
-}
+export const buildingProblems = (definition: unknown): string[] => buildingProblemsOf('', definition).map(({ path, message }) => (path ? `${path}: ${message}` : message));
 
-export function buildingsProblems(definitions: BuildingDefinitions, catalog?: ModelCatalog): string[] {
-  const seen = new Set<string>();
-  const idProblems = Object.keys(definitions).flatMap(id => {
-    const folded = id.toLowerCase();
-    const duplicate = seen.has(folded);
-    seen.add(folded);
-    return [
-      ...(BUILDING_ID_PATTERN.test(id) ? [] : [`${id}: id must start with a letter and use letters, digits or hyphens`]),
-      ...(duplicate ? [`${id}: id differs from another one by case only`] : []),
-    ];
-  });
-  const definitionProblems = Object.entries(definitions).flatMap(([id, definition]) => buildingProblems(definition).map(problem => `${id}: ${problem}`));
-  return [...idProblems, ...definitionProblems, ...(catalog ? modelReferenceProblems(definitions, catalog) : [])];
-}
+export const buildingsProblems = (definitions: BuildingDefinitions, catalog?: ModelCatalog): string[] => allBuildingProblems(definitions, catalog).map(describeProblem);
 
 // JSON strings never hold a raw newline, so only real arrays of scalars are put on one line.
 const inlineScalarArrays = (json: string) => json.replace(/\[\n\s+([^[\]{}]*?)\n\s*\]/g, (_, items: string) => `[${items.split(/,\n\s+/).join(', ')}]`);

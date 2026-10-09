@@ -2,6 +2,7 @@ import { TRANSIT, extendNetwork, networkTiles, repairNetwork, validNetworkCrossi
 import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
 import { routeFailure, routeForLine } from '../transit/transport';
 import { BUILDING_SPECS, createBuilding, emptyStack, placementCost } from '../buildings/buildingSpecs';
+import { isRetired } from '../buildings/buildingDefinitions';
 import { advance } from './advance';
 import { GAME_CONFIG } from './config';
 import type { Coord } from '../map/coord';
@@ -438,7 +439,7 @@ function strandsBuilding(before: GameState, after: GameState): boolean {
 }
 
 function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, requestedRotation?: Rotation, solar = false, colorVariant?: HomeColorVariant): CommandOutcome {
-  if (citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < ECOLOGY.solarUnlockCitizens)) return fail('error.itemLocked');
+  if (isRetired(type) || citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < ECOLOGY.solarUnlockCitizens)) return fail('error.itemLocked');
   if (solar && type !== 'home') return fail('error.cannotProduce');
   const extraCost = solar ? ECOLOGY.solarCost : 0;
   const rotation = requestedRotation ?? autoRotation(state, type, x, y);

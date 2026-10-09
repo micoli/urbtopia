@@ -18,17 +18,17 @@ describe('models file', () => {
   });
 
   it('refuses a definition without a license, with a bad footprint, a bad color or no file', () => {
-    expect(modelProblems({ file: 'a/b', source: 'kenney', license: ' ' })).toContain('license is required');
+    expect(modelProblems({ file: 'a/b', source: 'kenney', license: ' ' })).toContain('license: is required');
     expect(modelProblems({ file: 'a/b', source: 'kenney', license: 'CC0', footprint: [0, 1] })).toHaveLength(1);
     expect(modelProblems({ file: 'a/b', source: 'kenney', license: 'CC0', recolor: { color: 'red' } })).toHaveLength(1);
     expect(modelProblems({ source: 'kenney', license: 'CC0' })).toHaveLength(1);
-    expect(() => writeModels({ 'a-b': { file: 'a/b', source: 'kenney', license: '' } }, temporaryFile())).toThrow('license is required');
+    expect(() => writeModels({ 'a-b': { file: 'a/b', source: 'kenney', license: '' } }, temporaryFile())).toThrow('license: is required');
   });
 
   it('refuses a bad id and a file shared by two ids', () => {
     const model = { file: 'a/b', source: 'kenney' as const, license: 'CC0' };
     expect(modelsProblems({ 'A_b': model })).toEqual(['A_b: id must be lowercase letters and digits separated by single dashes']);
-    expect(modelsProblems({ 'a-b': model, other: model })).toEqual(['other: file a/b already belongs to a-b']);
+    expect(modelsProblems({ 'a-b': model, other: model })).toEqual(['other: file: a/b already belongs to a-b']);
   });
 
   it('names a model after its file', () => {

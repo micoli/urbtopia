@@ -7,9 +7,13 @@ import { readModels } from './modelsFile.ts';
 import type { QuaterniusPack } from './quaternius.ts';
 
 const modelFiles = readModels();
-const natureModels = Object.values(readBuildings()).filter(({ kind }) => kind === 'nature').map(({ model }) => modelFiles[model]?.file ?? model);
+const buildingModels = Object.values(readBuildings()).map(({ model }) => modelFiles[model]?.file ?? model);
 
-const natureFiles = (pack: string) => natureModels.filter(model => model.startsWith(`${pack}/`)).map(model => model.slice(pack.length + 1));
+// A pack installs the files listed below plus every model a building uses: a building can take any model of an installable pack.
+const withBuildingModels = <T extends { name: string; files: string[] }>(pack: T): T => {
+  const used = buildingModels.filter(model => model.startsWith(`${pack.name}/`)).map(model => model.slice(pack.name.length + 1));
+  return { ...pack, files: [...new Set([...pack.files, ...used])] };
+};
 
 export interface AssetPack {
   name: string;
@@ -83,13 +87,13 @@ export const ASSET_PACKS: AssetPack[] = [
     colormap: false,
     url: 'https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip',
     archive: 'kenney_nature-kit.zip',
-    files: natureFiles('nature'),
+    files: [],
   },
   {
     name: 'mini-forest',
     url: 'https://kenney.nl/media/pages/assets/mini-forest/44a89aed7f-1784024079/kenney_mini-forest_1.0.zip',
     archive: 'kenney_mini-forest_1.0.zip',
-    files: natureFiles('mini-forest'),
+    files: [],
   },
   {
     name: 'graveyard',
@@ -101,13 +105,13 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'holiday',
     url: 'https://kenney.nl/media/pages/assets/holiday-kit/3976a6496a-1733923970/kenney_holiday-kit.zip',
     archive: 'kenney_holiday-kit.zip',
-    files: natureFiles('holiday'),
+    files: [],
   },
   {
     name: 'pirate',
     url: 'https://kenney.nl/media/pages/assets/pirate-kit/e6d4bb1525-1771333093/kenney_pirate-kit.zip',
     archive: 'kenney_pirate-kit.zip',
-    files: natureFiles('pirate'),
+    files: [],
   },
   {
     name: 'watercraft',
@@ -147,7 +151,7 @@ export const ASSET_PACKS: AssetPack[] = [
     files: ['table', 'chair', 'stoolBar', 'desk', 'bedSingle', 'bedDouble', 'bedBunk', 'toilet', 'shower', 'bathtub', 'loungeSofa', 'televisionModern', 'lampRoundFloor', 'rugRectangle', 'pottedPlant', 'kitchenCoffeeMachine', 'kitchenFridgeSmall', 'floorFull', 'wall', 'wallCorner', 'wallWindow'],
   },
   ...extraPacks.kenney.map(({ name, archive, colormap }) => ({ name, url: '', archive, files: [], colormap })),
-];
+].map(withBuildingModels);
 
 // Quaternius packs (CC0) ship FBX only: they are converted to GLB at install time so the runtime keeps one GLTF loader.
 export const QUATERNIUS_PACKS: QuaterniusPack[] = [
@@ -155,7 +159,7 @@ export const QUATERNIUS_PACKS: QuaterniusPack[] = [
   { name: 'farm', archive: 'farm-buildings.zip', files: ['Barn', 'OpenBarn', 'Silo_House', 'Silo'] },
   { name: 'buildings', archive: 'buildings.zip', files: ['2Story_Stairs_Mat', '2Story_Wide_Mat', '2Story_Wide_2Doors_Mat'] },
   ...extraPacks.quaternius.map(({ name, archive }) => ({ name, archive, files: [] })),
-];
+].map(withBuildingModels);
 
 export const QUATERNIUS_ARCHIVES_DIR = 'assets/quaternus';
 export const MODELS_DIR = 'public/models';

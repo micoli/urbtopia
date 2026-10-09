@@ -1,21 +1,20 @@
 import { ASSET_PACKS, QUATERNIUS_PACKS } from './assetPacks.ts';
 import { managedModelKeys, polyPizzaModelKeys } from './managedModels.ts';
-import { readModels, type ModelDefinitions } from './modelsFile.ts';
+import type { ModelCatalog } from './definitionProblems.ts';
+import { readModels } from './modelsFile.ts';
+
+export type { ModelCatalog } from './definitionProblems.ts';
 
 // The model files the game ships: the files declared by each pack, hand-made models and Poly Pizza models.
 export const availableModelKeys = (): Set<string> =>
   new Set([...[...ASSET_PACKS, ...QUATERNIUS_PACKS].flatMap(pack => pack.files.map(file => `${pack.name}/${file}`)), ...managedModelKeys(), ...polyPizzaModelKeys()]);
 
-export interface ModelCatalog {
-  models: ModelDefinitions;
-  files: ReadonlySet<string>;
+export const installablePacks = (): string[] => [...ASSET_PACKS, ...QUATERNIUS_PACKS].map(({ name }) => name);
+
+export function shipsModel(): (file: string) => boolean {
+  const packs = new Set(installablePacks());
+  const handMade = new Set([...managedModelKeys(), ...polyPizzaModelKeys()]);
+  return file => handMade.has(file) || packs.has(file.split('/')[0]!);
 }
 
-export const shippedModelCatalog = (): ModelCatalog => ({ models: readModels(), files: availableModelKeys() });
-
-export const modelReferenceProblems = (definitions: Record<string, { model: string }>, { models, files }: ModelCatalog): string[] =>
-  Object.entries(definitions).flatMap(([id, { model }]) => {
-    const file = models[model]?.file;
-    if (!file) return [`${id}: unknown Model id ${model}`];
-    return files.has(file) ? [] : [`${id}: model ${model} has no shipped file ${file}`];
-  });
+export const shippedModelCatalog = (): ModelCatalog => ({ models: readModels(), ships: shipsModel() });
