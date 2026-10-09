@@ -64,23 +64,13 @@ export const PARCEL_PRICING = { base: 300, factor: 1.12, roundTo: 10 };
 
 export const HOME_TIERS: readonly { citizens: number; power: number; water: number }[] = tiersOf('home').map(({ citizens, power, water }) => ({ citizens: citizens!, power: power!, water: water! }));
 
-export const UTILITY_CAPACITY: Record<'powerPlant' | 'waterTower', readonly number[]> = {
-  powerPlant: [12, 24, 40],
-  waterTower: [12, 24, 40],
-};
+const capacitiesOf = (type: BuildingId): readonly number[] => tiersOf(type).map(({ capacity }) => capacity!);
 
-export const COAL_CAPACITY: readonly number[] = [12, 24, 40, 64];
+export const UTILITY_CAPACITY: Record<'powerPlant' | 'waterTower', readonly number[]> = { powerPlant: capacitiesOf('powerPlant'), waterTower: capacitiesOf('waterTower') };
 
-export const COAL_UPGRADE_COSTS: Record<number, UpgradeCostSpec> = {
-  2: { urbs: 300, goods: {} },
-  3: { urbs: 900, goods: {} },
-  4: { urbs: 1800, goods: {} },
-};
+export const COAL_CAPACITY: readonly number[] = capacitiesOf('coalPlant');
 
-export const UTILITY_UPGRADE_COSTS: Record<'powerPlant' | 'waterTower', Record<number, UpgradeCostSpec>> = {
-  powerPlant: { 2: { urbs: 500, goods: { bricks: 3 } }, 3: { urbs: 1500, goods: { tools: 3 } } },
-  waterTower: { 2: { urbs: 400, goods: { bricks: 3 } }, 3: { urbs: 1200, goods: { tools: 3 } } },
-};
+
 
 export const TAX = { urbsPerCitizenPerHour: 1, capHours: 8, hourMs: 3_600_000 };
 

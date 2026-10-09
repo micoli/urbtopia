@@ -22,7 +22,7 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   const need = new Map(buildings.map(b => [b.id, b.type === 'home' ? homePower(b) : economicPower(b)]));
   const supplied = new Map(buildings.map(b => [b.id, 0]));
   const generation = buildings.filter(b => b.type === 'solar' || b.type === 'powerPlant' || (b.type === 'home' && b.solar));
-  const output = (b: Building) => b.type === 'powerPlant' ? (UTILITY_CAPACITY.powerPlant[b.tier - 1] ?? 0) * factors.wind : (b.type === 'solar' ? 16 : 2 * b.tier) * factors.solar;
+  const output = (b: Building) => b.type === 'powerPlant' ? (UTILITY_CAPACITY.powerPlant[b.tier - 1] ?? 0) * factors.wind : (b.type === 'solar' ? ECOLOGY.solarOutput : 2 * b.tier) * factors.solar;
   const surplus = new Map(generation.map(b => [b.id, output(b)]));
   const transfers: { from: number; to: number; amount: number; }[] = [];
   const allocate = (b: Building, amount: number) => {

@@ -1,6 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "backup",
   "order": 170,
   "section": "build.utilities",
   "model": "industrial-building-d",
@@ -15,5 +15,7 @@
   "description": {
     "en": "Supplies electricity when renewable generation and storage cannot cover Demand. Operation costs Urbs and creates emissions.",
     "fr": "Fournit de l’électricité lorsque les renouvelables et le stockage ne couvrent plus les besoins. Son fonctionnement consomme des Urbs et génère des émissions."
-  }
+  },
+  "capacity": 24,
+  "costPerUnit": 0.5
 }

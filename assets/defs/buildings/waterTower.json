@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "utility",
   "order": 140,
   "section": "build.utilities",
-  "model": "industrial-water-tower",
-  "footprint": [1, 1],
   "cost": 200,
   "unlockCitizens": 0,
   "requiresRoad": false,
@@ -15,5 +13,30 @@
   "description": {
     "en": "Supplies water to the city. Upgrades increase its capacity so more Homes can be built and improved.",
     "fr": "Alimente la ville en eau. Ses améliorations augmentent la capacité pour permettre de construire et d’améliorer davantage de logements."
-  }
+  },
+  "tiers": [
+    {
+      "model": "industrial-water-tower",
+      "footprint": [1, 1],
+      "capacity": 12
+    },
+    {
+      "capacity": 24,
+      "upgradeCost": {
+        "urbs": 400,
+        "goods": {
+          "bricks": 3
+        }
+      }
+    },
+    {
+      "capacity": 40,
+      "upgradeCost": {
+        "urbs": 1200,
+        "goods": {
+          "tools": 3
+        }
+      }
+    }
+  ]
 }

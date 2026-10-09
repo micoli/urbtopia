@@ -1,6 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "battery",
   "order": 160,
   "section": "build.utilities",
   "model": "industrial-shipping-container-a",
@@ -15,5 +15,8 @@
   "description": {
     "en": "Stores nearby renewable electricity when generation exceeds Demand, then supplies nearby deficits. It does not generate electricity.",
     "fr": "Stocke le surplus d’électricité renouvelable à proximité, puis couvre les déficits voisins. Elle ne produit pas d’électricité."
-  }
+  },
+  "radius": 8,
+  "storage": 24,
+  "rate": 12
 }

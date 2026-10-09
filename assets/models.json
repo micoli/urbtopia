@@ -1169,6 +1169,21 @@
     "source": "kenney",
     "license": "CC0"
   },
+  "industrial-chimney-large": {
+    "file": "industrial/chimney-large",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "industrial-chimney-medium": {
+    "file": "industrial/chimney-medium",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "industrial-chimney-small": {
+    "file": "industrial/chimney-small",
+    "source": "kenney",
+    "license": "CC0"
+  },
   "industrial-shipping-container-a": {
     "file": "industrial/shipping-container-a",
     "source": "kenney",

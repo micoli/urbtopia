@@ -76,8 +76,27 @@ const storageBuilding = z.strictObject({
   tiers: tiersOf({ ...homeLook, materials: count, goods: count, crops: count }, ['model', 'footprint', 'materials', 'goods', 'crops']),
 });
 
+// Power plant, Water tower, Coal Power plant: the power or water Capacity of each Tier.
+const utilityBuilding = z.strictObject({
+  kind: z.literal('utility'),
+  ...identity,
+  ...sited,
+  tiers: tiersOf({ ...homeLook, capacity: count }, ['model', 'footprint', 'capacity']),
+});
+
+const positive = z.number().positive();
+
+// A Solar installation's power at full daylight.
+const solarBuilding = z.strictObject({ kind: z.literal('solar'), ...placed, output: positive });
+
+// A Neighborhood battery stores surplus and feeds nearby Demand, within its radius, at its rate per hour.
+const batteryBuilding = z.strictObject({ kind: z.literal('battery'), ...placed, storage: positive, rate: positive, radius: z.int().min(1) });
+
+// A Backup Power plant supplies deficits, up to its capacity per hour, at a cost in Urbs per unit.
+const backupBuilding = z.strictObject({ kind: z.literal('backup'), ...placed, capacity: positive, costPerUnit: positive });
+
 export const buildingSchema = z
-  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding])
+  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, solarBuilding, batteryBuilding, backupBuilding])
   .refine(building => building.kind === 'nature' || !building.accessModes || building.requiresRoad, { message: 'accessModes needs requiresRoad', path: ['accessModes'] })
   .meta({ title: 'Building', description: 'A building of Urbtopia, one file per building id in assets/defs/buildings.' });
 

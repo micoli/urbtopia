@@ -1,8 +1,6 @@
 import { BUILDING_ENTRIES, tiersOf } from '../buildings/buildingDefinitions';
 import {
-  COAL_UPGRADE_COSTS,
   PRODUCTION_UPGRADE_COSTS,
-  UTILITY_UPGRADE_COSTS,
   upgradeCostsOf,
   type FarmTier,
   type ProductionTier,
@@ -17,9 +15,6 @@ export type UpgradeCost = UpgradeCostSpec;
 
 // Buildings defined with Tiers carry their upgrade costs; the others keep a table until they move to data.
 const UPGRADE_COSTS: Partial<Record<BuildingType, Record<number, UpgradeCost>>> = {
-  powerPlant: UTILITY_UPGRADE_COSTS.powerPlant,
-  coalPlant: COAL_UPGRADE_COSTS,
-  waterTower: UTILITY_UPGRADE_COSTS.waterTower,
   marina: { 2: PRODUCTION_UPGRADE_COSTS[2]!, 3: PRODUCTION_UPGRADE_COSTS[3]! },
   casino: Object.fromEntries(Object.entries(CASINO.upgradeCosts).map(([tier, urbs]) => [tier, { urbs, goods: {} }])),
   ...Object.fromEntries((['arcade', 'supermarket', 'hotel'] as const).map(type => [type, Object.fromEntries(Object.entries(VENUE_PROFILES[type].upgradeCosts).map(([tier, urbs]) => [tier, { urbs, goods: {} }]))])),

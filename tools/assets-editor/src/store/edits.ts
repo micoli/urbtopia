@@ -55,9 +55,18 @@ const TIER_ONE: Partial<Record<BuildingKind, Record<string, number>>> = {
   production: { durationFactor: 1, maxSlots: 2, yield: 1 },
   farm: { seedCapacity: 10, fieldCap: 4 },
   storage: { materials: 0, goods: 0, crops: 0 },
+  utility: { capacity: 1 },
 }
 
-const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { home: 'build.housing', sport: 'build.sport', storage: 'build.storage' }
+// The fields a kind without Tiers adds to a placed building.
+const EXTRA: Partial<Record<BuildingKind, Record<string, number>>> = {
+  sport: { radius: 1, wellbeingBonus: 0 },
+  solar: { output: 1 },
+  battery: { storage: 1, rate: 1, radius: 1 },
+  backup: { capacity: 1, costPerUnit: 1 },
+}
+
+const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { home: 'build.housing', sport: 'build.sport', storage: 'build.storage', utility: 'build.utilities', solar: 'build.utilities', battery: 'build.utilities', backup: 'build.utilities' }
 
 export function blankBuilding(kind: BuildingKind, model: string): FlatBuilding {
   const name = { en: '', fr: '' }
@@ -65,8 +74,7 @@ export function blankBuilding(kind: BuildingKind, model: string): FlatBuilding {
   const sited = { section: SECTIONS[kind] ?? 'build.production', cost: 0, unlockCitizens: 0, requiresRoad: true }
   const tierOne = TIER_ONE[kind]
   if (tierOne) return { kind, name, ...sited, tiers: [{ model, footprint: PLACED_DEFAULTS.footprint, ...tierOne }] } as FlatBuilding
-  if (kind === 'sport') return { kind, model, name, ...sited, footprint: PLACED_DEFAULTS.footprint, radius: 1, wellbeingBonus: 0 }
-  return { kind, model, name, ...sited, footprint: PLACED_DEFAULTS.footprint }
+  return { kind, model, name, ...sited, footprint: PLACED_DEFAULTS.footprint, ...EXTRA[kind] } as FlatBuilding
 }
 
 const name = { en: '', fr: '' }
