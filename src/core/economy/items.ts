@@ -19,7 +19,7 @@ export type ItemId = MaterialId | GoodId;
 
 const MINUTE_MS = 60_000;
 
-type MaterialSpec = { durationMs: number; unlockCitizens: number; minTier: number };
+type MaterialSpec = { durationMs: number; unlockCitizens: number; minTier: number; value: number };
 
 // Checked against their schema by the definitions plugin at dev start and build, and by the tests.
 const materialFiles = import.meta.glob<MaterialDefinition>('../../../assets/defs/materials/*.json', { eager: true, import: 'default' });
@@ -28,13 +28,13 @@ const goodFiles = import.meta.glob<GoodDefinition>('../../../assets/defs/goods/*
 export const MATERIAL_ENTRIES = entriesOf<MaterialDefinition, DefinedMaterialId>(materialFiles);
 export const GOOD_ENTRIES = entriesOf<GoodDefinition, BaseGoodId>(goodFiles);
 
-const materialSpecOf = ({ durationMinutes, unlockCitizens, minTier }: MaterialDefinition): MaterialSpec => ({ durationMs: durationMinutes * MINUTE_MS, unlockCitizens, minTier });
+const materialSpecOf = ({ durationMinutes, unlockCitizens, minTier, value }: MaterialDefinition): MaterialSpec => ({ durationMs: durationMinutes * MINUTE_MS, unlockCitizens, minTier, value });
 
 const materialsWhere = (keep: (material: MaterialDefinition) => boolean) =>
   Object.fromEntries(MATERIAL_ENTRIES.filter(keep).map(material => [material.id, materialSpecOf(material)]));
 
 const CROP_MATERIALS = Object.fromEntries(
-  CROP_IDS.map((id): [CropId, MaterialSpec] => [id, { durationMs: CROPS[id].growthMs, unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 }]),
+  CROP_IDS.map((id): [CropId, MaterialSpec] => [id, { durationMs: CROPS[id].growthMs, unlockCitizens: CROPS[id].unlockCitizens, minTier: 1, value: 0 }]),
 ) as Record<CropId, MaterialSpec>;
 
 export const MATERIALS = { ...materialsWhere(({ producedBy }) => producedBy === 'workshop'), ...CROP_MATERIALS, ...materialsWhere(({ producedBy }) => producedBy !== 'workshop') } as Record<MaterialId, MaterialSpec>;
@@ -86,6 +86,10 @@ export function isGood(item: string): item is GoodId {
 
 export function durationOf(item: ItemId): number {
   return isMaterial(item) ? MATERIALS[item].durationMs : GOODS[item].durationMs;
+}
+
+export function valueOf(item: ItemId): number {
+  return isMaterial(item) ? MATERIALS[item].value : GOODS[item].value;
 }
 
 export function unlockCitizensOf(item: ItemId): number {

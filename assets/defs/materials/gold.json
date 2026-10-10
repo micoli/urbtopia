@@ -9,5 +9,6 @@
   "producedBy": "workshop",
   "durationMinutes": 48,
   "unlockCitizens": 1000,
-  "minTier": 5
+  "minTier": 5,
+  "value": 80
 }

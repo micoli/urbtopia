@@ -94,7 +94,7 @@ const name = { en: '', fr: '' }
 // What a new Game object of each collection starts from; its form shows what is still missing.
 export function blankDefinition(collection: CollectionName, model: string): Definition {
   if (collection === 'buildings') return blankBuilding('standard', model) as unknown as Definition
-  if (collection === 'materials') return { kind: 'material', name, producedBy: 'workshop', durationMinutes: 1, unlockCitizens: 0, minTier: 1 }
+  if (collection === 'materials') return { kind: 'material', name, producedBy: 'workshop', durationMinutes: 1, unlockCitizens: 0, minTier: 1, value: 0 }
   if (collection === 'fixtures') return { kind: 'fixture', venue: 'arcade', category: 'games', name, model, footprint: [1, 1], price: 0, minTier: 1, playsPerHour: 0 }
   if (collection === 'boats') return { kind: 'boat', family: 'pleasure', name, model, cost: 0, unlockCitizens: 0, radius: 1, wellbeingBonus: 0, operatingCostPerHour: 0 }
   if (collection === 'transitVehicles') return { kind: 'transitVehicle', mode: 'bus', name, model }

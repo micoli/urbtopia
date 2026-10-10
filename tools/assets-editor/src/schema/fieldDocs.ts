@@ -127,7 +127,7 @@ const DOCS: Record<string, FieldDoc> = {
   // Materials, goods, crops
   producedBy: d('Where the Material comes from.', 'Production chains.'),
   durationMinutes: d('How long it takes to make, in minutes.', 'Production.'),
-  value: d('Urbs a unit sells for.', 'Shops and the market.'),
+  value: d('Urbs a unit sells for, and the base of the price of a Rush.', 'Shops, the market and Rushing a Slot.'),
   recipe: d('The Materials and Crops it consumes, by id and quantity.', 'Production.'),
   growthMinutes: d('How long the Crop takes to grow, in minutes.', 'Farming.'),
   'crops.yield': d('Units gathered per harvest.', 'Farming.'),
@@ -174,6 +174,9 @@ const DOCS: Record<string, FieldDoc> = {
   pointsLostPerUnit: d('Points the price loses for each unit sold.', 'Selling on the market.'),
   recoveryMinutes: d('Time the price takes to recover from the floor to full, in minutes.', 'Selling on the market.'),
   slotPrices: d('Price of a Slot, by the number of Slots it brings a building to.', 'Buying Slots.'),
+  rush: d('Price of the Rush, the Urbs paid to complete a production at once.', 'Rushing a Slot.'),
+  priceFactor: d('Price of a Rush with all the time left, as a multiple of the value of what is produced; it falls to the minimum as time runs out.', 'Rushing a Slot.'),
+  minPrice: d('The lowest price of a Rush, in Urbs.', 'Rushing a Slot.'),
   parcelPricing: d('Price of the next Parcel: base × factor ^ Parcels bought, rounded.', 'Buying Parcels.'),
   base: d('Price of the first Parcel.', 'Buying Parcels.'),
   factor: d('Growth of the price with each Parcel bought.', 'Buying Parcels.'),

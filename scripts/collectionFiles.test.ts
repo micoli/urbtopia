@@ -8,7 +8,7 @@ import { COLLECTION_NAMES, specOf } from './collections';
 import { collectionProblems } from './definitionProblems';
 import { SINGLETON_NAMES } from './singletons';
 
-const wood = { kind: 'material', name: { en: 'Wood', fr: 'Bois' }, producedBy: 'workshop', durationMinutes: 1, unlockCitizens: 0, minTier: 1 };
+const wood = { kind: 'material', name: { en: 'Wood', fr: 'Bois' }, producedBy: 'workshop', durationMinutes: 1, unlockCitizens: 0, minTier: 1, value: 3 };
 const planks = { kind: 'good', order: 10, category: 'construction', name: { en: 'Planks', fr: 'Planches' }, recipe: { wood: 2 }, durationMinutes: 2, value: 14, unlockCitizens: 0, minTier: 1 };
 
 describe('collections on disk', () => {

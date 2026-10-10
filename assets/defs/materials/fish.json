@@ -9,5 +9,6 @@
   "producedBy": "fishingBoat",
   "durationMinutes": 6,
   "unlockCitizens": 100,
-  "minTier": 1
+  "minTier": 1,
+  "value": 10
 }

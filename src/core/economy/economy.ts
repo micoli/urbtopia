@@ -63,6 +63,8 @@ export const MARKET = {
   recoveryMs: economy.market.recoveryMinutes * MINUTE_MS,
 };
 
+export const RUSH = economy.rush;
+
 export const PARCEL_PRICING = economy.parcelPricing;
 
 export const HOME_TIERS: readonly { citizens: number; power: number; water: number }[] = tiersOf('home').map(({ citizens, power, water }) => ({ citizens: citizens!, power: power!, water: water! }));

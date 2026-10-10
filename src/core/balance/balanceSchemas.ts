@@ -15,6 +15,8 @@ export const economyBalanceSchema = z
     market: z.strictObject({ fullPoints: positive, floorPoints: positive, pointsLostPerUnit: positive, recoveryMinutes: positive }),
     // Price of the Slot of each rank, by the number of Slots it brings the Workshop to.
     slotPrices: z.record(z.string().regex(/^\d+$/, 'must be a Slot count'), count),
+    // The Rush price is priceFactor × the value of the running production × the share of time left, never below minPrice.
+    rush: z.strictObject({ priceFactor: positive, minPrice: count }),
     parcelPricing: z.strictObject({ base: positive, factor: positive, roundTo: z.int().min(1) }),
     shop: z.strictObject({ stackSize: z.int().min(1), saleIntervalMinutes: positive }),
   })

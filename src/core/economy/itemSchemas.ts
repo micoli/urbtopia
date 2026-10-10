@@ -28,6 +28,7 @@ export const materialSchema = z
     durationMinutes: minutes,
     unlockCitizens: count,
     minTier: z.int().min(1),
+    value: count,
   })
   .meta({ title: 'Material', description: 'A raw resource, one file per Material id in assets/defs/materials. Crop Materials come from assets/defs/crops.' });
 

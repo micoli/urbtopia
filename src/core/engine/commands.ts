@@ -30,7 +30,7 @@ import { FACILITIES, isFacilityType } from '../services/facilities';
 import { missingServices, serviceCoverage } from '../services/services';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from '../map/occupancy';
 import { autoRotation, frontHasAccess, placementIssue } from '../map/placement';
-import { newQueueEntry, restartRunningProduction, shiftRunningTimers, taxDue } from '../economy/production';
+import { newQueueEntry, restartRunningProduction, runningEntry, rushPrice, rushRunningProduction, shiftRunningTimers, taxDue } from '../economy/production';
 import { roadBuildCost, missingRoadTiles } from '../map/roadCost';
 import { roadPath } from '../map/roads';
 import { roadTierUpgradeCost } from '../traffic/roadTier';
@@ -79,6 +79,7 @@ export type Command =
   | { readonly type: 'SellSeeds'; readonly crop: CropId; readonly quantity: number }
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
+  | { readonly type: 'RushProduction'; readonly buildingId: number }
   | { readonly type: 'MoveFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'HireStaff'; readonly buildingId: number; readonly role: StaffRole }
   | { readonly type: 'ReleaseStaff'; readonly buildingId: number; readonly role: StaffRole }
@@ -165,6 +166,7 @@ export type ErrorKey =
   | 'error.networkIntact'
   | 'error.cannotProduce'
   | 'error.queueFull'
+  | 'error.nothingToRush'
   | 'error.nothingToCollect'
   | 'error.noStorehouse'
   | 'error.storageFull'
@@ -270,6 +272,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return sellSeeds(state, command.crop, command.quantity);
     case 'QueueProduction':
       return queueProduction(state, command.buildingId, command.item, now);
+    case 'RushProduction':
+      return rushProduction(state, command.buildingId, now);
     case 'Collect':
       return collect(state, command.buildingId);
     case 'MoveFixture':
@@ -532,6 +536,23 @@ function queueProduction(state: GameState, buildingId: number, item: string, now
       buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, queue: [...building.queue, entry] } : candidate)),
     },
     events: [],
+  };
+}
+
+function rushProduction(state: GameState, buildingId: number, now: number): CommandOutcome {
+  const building = state.buildings.find((candidate) => candidate.id === buildingId);
+  if (!building) return fail('error.unknownBuilding');
+  const running = runningEntry(building);
+  if (!running) return fail('error.nothingToRush');
+  const price = rushPrice(running, now);
+  if (state.urbs < price) return fail('error.notEnoughUrbs');
+  return {
+    state: {
+      ...state,
+      urbs: state.urbs - price,
+      buildings: state.buildings.map((candidate) => (candidate === building ? rushRunningProduction(building, now) : candidate)),
+    },
+    events: [{ type: 'ProductionCompleted', buildingId, item: running.item, at: now }],
   };
 }
 

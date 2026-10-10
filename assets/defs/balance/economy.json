@@ -18,6 +18,10 @@
     "7": 12000,
     "8": 20000
   },
+  "rush": {
+    "priceFactor": 2,
+    "minPrice": 1
+  },
   "parcelPricing": {
     "base": 300,
     "factor": 1.12,
