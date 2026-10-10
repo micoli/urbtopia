@@ -41,8 +41,16 @@ A building that turns Materials into Goods.
 _Avoid_: Plant, mill
 
 **Shop**:
-A building that sells Goods to citizens for Urbs.
+A building that sells Goods to citizens for Urbs. There is one Shop per Good category, each with four Tiers; it sells only the Goods of its Good category that its Tier makes available. The General shop is the exception: it sells the Goods of every Good category available at its Tier, and costs more to build, to upgrade and to extend with Slots.
 _Avoid_: Store, boutique
+
+**Good category**:
+The family a Good belongs to (Construction, Food, Equipment or Luxury). A Good belongs to exactly one Good category. Each Shop is tied to one Good category and sells only Goods of that category; the General shop is tied to all of them.
+_Avoid_: Shop type, Service category (that is for Public facilities)
+
+**General shop**:
+The original Shop, kept in the cities that have it and still buildable: it sells Goods of every Good category but costs more than a specialised Shop.
+_Avoid_: Universal shop, Retired shop
 
 **Farm**:
 A building that holds the player's seed stock and is the entry point of cultivation. It does not produce anything itself.
@@ -89,7 +97,7 @@ A residential building with eight Tiers (1 to 8) that houses citizens and upgrad
 _Avoid_: House, residence, dwelling
 
 **Tier**:
-The level of an upgradable building (Home, Workshop, Factory, Storehouse, Power plant, Water tower). A higher Tier improves the building: a Home houses more Citizens and has a higher Demand; a Workshop or Factory produces faster, gains Slots, yields more per cycle and can produce exclusive Materials or Goods.
+The level of an upgradable building (Home, Workshop, Factory, Shop, Storehouse, Power plant, Water tower). A higher Tier improves the building: a Home houses more Citizens and has a higher Demand; a Workshop or Factory produces faster, gains Slots, yields more per cycle and can produce exclusive Materials or Goods.
 _Avoid_: Level, grade
 
 **Capacity**:
