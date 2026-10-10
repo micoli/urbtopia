@@ -25,3 +25,11 @@ dir = "."
 ready_http = "http://localhost:5182/"
 boot_start = false
 retry = false
+
+[daemons.issues]
+run = "bash -c 'npm ci --no-fund --no-audit && npm run build && npm start'"
+dir = "tools/issues-server"
+ready-port = 4380
+boot_start = false
+retry = true
+
