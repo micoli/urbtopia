@@ -1,3 +1,4 @@
+import { isShopType } from '../economy/shops';
 import { ECOLOGY, homePower } from '../environment/ecology';
 import { homeBenefits, wellbeingTaxFactor } from '../environment/wellbeing';
 import { congestionStats } from '../traffic/congestion';
@@ -33,7 +34,7 @@ export function advance(state: GameState, now: number): AdvanceResult {
 }
 
 function idleShopIds(state: GameState, now: number): ReadonlySet<number> {
-  const brtOnlyShops = state.buildings.filter(b => b.type === 'shop' && hasBrtOnlyAccess(state, b));
+  const brtOnlyShops = state.buildings.filter(b => isShopType(b.type) && hasBrtOnlyAccess(state, b));
   if (brtOnlyShops.length === 0) return new Set();
   const { coveredActivities } = transportStats(state, now);
   return new Set(brtOnlyShops.filter(b => !coveredActivities.has(b.id)).map(b => b.id));

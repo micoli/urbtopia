@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 820,
+  "order": 860,
   "model": "nature-grass-large",
   "name": {
     "en": "Grass large",

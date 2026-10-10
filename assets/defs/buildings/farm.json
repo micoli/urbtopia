@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "farm",
-  "order": 60,
+  "order": 100,
   "section": "build.production",
   "cost": 200,
   "unlockCitizens": 20,

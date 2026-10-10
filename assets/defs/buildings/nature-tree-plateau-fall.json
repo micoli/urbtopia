@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 2000,
+  "order": 2040,
   "model": "nature-tree-plateau-fall",
   "name": {
     "en": "Tree flat crown autumn",

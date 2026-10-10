@@ -59,6 +59,7 @@ const TIER_ONE: Partial<Record<BuildingKind, Record<string, unknown>>> = {
   utility: { capacity: 1 },
   facility: { capacity: 100 },
   marina: { boats: 3 },
+  shop: { maxSlots: 3, sells: [], saleIntervalFactor: 1, jobs: 15 },
   casino: { radius: 8, wellbeingBonus: 0, maxStake: 100, power: 1, blockmatchLevel: 1 },
   venue: { gridSize: 6, takingsCap: 400, power: 1, eventBudget: 0, eventMultiplier: 1, posts: { manager: 0 } },
 }
@@ -69,6 +70,7 @@ const extraOf = (kind: BuildingKind, model: string): Record<string, unknown> | u
     facility: { category: 'education', detailModel: model, radius: 10, power: 1, water: 0 },
     casino: { stakeSteps: [10], gameMinTier: { slotMachine: 1, blackjack: 1, blockmatch: 1 } },
     venue: { rankAt: [0, 0], staffRoles: ['manager'], frontRole: 'manager', fixtureCategories: ['walls'], shell: { floor: model, wall: model, corner: model, cornerX: 0, cornerZ: 0, cornerRotation: 0 }, staffModels: [model] },
+    shop: { goodCategory: 'all' },
     sport: { radius: 1, wellbeingBonus: 0 },
     transitStop: { mode: 'bus' },
     solar: { output: 1 },
@@ -76,7 +78,7 @@ const extraOf = (kind: BuildingKind, model: string): Record<string, unknown> | u
     backup: { capacity: 1, costPerUnit: 1 },
   })[kind as string]
 
-const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { venue: 'build.leisure', marina: 'build.water', casino: 'build.leisure', facility: 'build.publicFacilities', home: 'build.housing', sport: 'build.sport', storage: 'build.storage', utility: 'build.utilities', solar: 'build.utilities', battery: 'build.utilities', backup: 'build.utilities' }
+const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { shop: 'build.shops', venue: 'build.leisure', marina: 'build.water', casino: 'build.leisure', facility: 'build.publicFacilities', home: 'build.housing', sport: 'build.sport', storage: 'build.storage', utility: 'build.utilities', solar: 'build.utilities', battery: 'build.utilities', backup: 'build.utilities' }
 
 export function blankBuilding(kind: BuildingKind, model: string): FlatBuilding {
   const name = { en: '', fr: '' }

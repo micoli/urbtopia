@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "casino",
-  "order": 320,
+  "order": 360,
   "section": "build.leisure",
   "cost": 2500,
   "unlockCitizens": 250,

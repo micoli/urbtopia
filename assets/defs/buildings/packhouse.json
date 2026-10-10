@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "production",
-  "order": 70,
+  "order": 110,
   "section": "build.production",
   "cost": 250,
   "unlockCitizens": 20,

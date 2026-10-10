@@ -208,6 +208,10 @@ export type BuildingId =
   | 'railStation'
   | 'school'
   | 'shop'
+  | 'shopConstruction'
+  | 'shopEquipment'
+  | 'shopFood'
+  | 'shopLuxury'
   | 'silo'
   | 'solar'
   | 'stadium'
@@ -431,3 +435,10 @@ export type VenueType =
   | 'arcade'
   | 'hotel'
   | 'supermarket';
+
+export type ShopType =
+  | 'shop'
+  | 'shopConstruction'
+  | 'shopEquipment'
+  | 'shopFood'
+  | 'shopLuxury';

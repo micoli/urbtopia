@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1170,
+  "order": 1210,
   "model": "nature-rock-smallflata",
   "name": {
     "en": "Rock small flat A",

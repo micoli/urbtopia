@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Building, Command, isVenue, taxDue, takingsDue } from '../../core';
+import { Building, Command, isShopType, isVenue, taxDue, takingsDue } from '../../core';
 import { gameStore } from '../../store/gameStore';
 import { useProjectedPosition } from '../common/useProjectedPosition';
 import { registerCollector, startSweep } from './collectSweep';
@@ -13,7 +13,7 @@ interface CollectBadgeProps {
   command: Command;
 }
 export function collectBadgeLabel(building: Building): string | null {
-  if (building.type === 'shop') {
+  if (isShopType(building.type)) {
     const earned = building.stacks.reduce((total, stack) => total + stack.earned, 0);
     return earned > 0 ? `+${earned}` : null;
   }

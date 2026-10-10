@@ -1,3 +1,4 @@
+import { isShopType } from '../core/economy/shops';
 import { TransitLayer } from './TransitLayer';
 import * as THREE from 'three';
 import { energyStats, greenProfileOf, transportStats, footprintOf, type GameState } from '../core';
@@ -49,7 +50,7 @@ export class EcologyLayer {
       this.path([{ x: p.x - radius, y: p.y }, { x: p.x, y: p.y - radius }, { x: p.x + radius, y: p.y }, { x: p.x, y: p.y + radius }, { x: p.x - radius, y: p.y }]);
     }
     for (const line of stats.lines.filter(l => l.stops.includes(selected.id) && l.route)) this.path(line.route!);
-    if (radius) for (const b of state.buildings.filter(b => b.type === 'home' || b.type === 'workshop' || b.type === 'factory' || b.type === 'shop')) {
+    if (radius) for (const b of state.buildings.filter(b => b.type === 'home' || b.type === 'workshop' || b.type === 'factory' || isShopType(b.type))) {
       const p = centerOf(selected), q = centerOf(b); if (Math.abs(p.x - q.x) + Math.abs(p.y - q.y) > radius) continue;
       const f = footprintOf(b.type, b.rotation, b.tier);
       this.path([{ x: b.x, y: b.y }, { x: b.x + f.width, y: b.y }, { x: b.x + f.width, y: b.y + f.depth }, { x: b.x, y: b.y + f.depth }, { x: b.x, y: b.y }]);

@@ -1,3 +1,4 @@
+import { isShopType } from '../economy/shops';
 import { ECOLOGY, citizenCount, distance } from '../environment/ecology';
 import { HOME_TIERS } from '../economy/economy';
 import { energyStats } from '../environment/energy';
@@ -69,7 +70,7 @@ function calculateTransport(state: GameState, now: number, speedFactors?: SpeedF
   const lines = services.map(line => ({ ...line, riders: 0, homeIds: [] as number[], covered: 0 }));
   const byId = new Map(lines.map(l => [l.id, l]));
   const homes = state.buildings.filter(b => b.type === 'home').sort((a, b) => a.id - b.id);
-  const activities = state.buildings.filter(b => ['workshop', 'factory', 'shop'].includes(b.type) || (workplaceTypes.includes(b.type) && hasBrtOnlyAccess(state, b)));
+  const activities = state.buildings.filter(b => ['workshop', 'factory'].includes(b.type) || isShopType(b.type) || (workplaceTypes.includes(b.type) && hasBrtOnlyAccess(state, b)));
   const stops = new Map(state.buildings.filter(b => ['busStop', 'brtStation', 'railStation'].includes(b.type)).map(b => [b.id, b]));
   const optionsByStop = new Map<string, Itinerary[]>();
   const homeRiders = new Map<number, number>();

@@ -102,7 +102,7 @@ describe('UpgradeBuilding on a Home', () => {
   });
 
   it('refuses a building that has no Tier to reach', () => {
-    const withShop: GameState = { ...withHome, buildings: withHome.buildings.map((b) => (b.id === 1 ? { ...b, type: 'shop' as const } : b)) };
+    const withShop: GameState = { ...withHome, buildings: withHome.buildings.map((b) => (b.id === 1 ? { ...b, type: 'busStop' as const } : b)) };
     expect(failureKey(withShop, { type: 'UpgradeBuilding', buildingId: 1 })).toBe('error.maxTier');
   });
 

@@ -9,7 +9,8 @@ import type { Coord } from '../map/coord';
 import type { GameEvent } from './events';
 import { neighbour, tileKey } from '../map/geometry';
 import { utilityCapacity, utilityDemand, type UtilityTotals } from '../buildings/city';
-import { HOME_TIERS, MAX_SLOTS, SHOP, TAX, SLOT_PRICES } from '../economy/economy';
+import { HOME_TIERS, SHOP, TAX, SLOT_PRICES } from '../economy/economy';
+import { canSell, isShopType, saleIntervalOf, shopTierOf, slotPriceOf } from '../economy/shops';
 import { GOODS, isGood, isMaterial, minTierOf, producibleItems, recipeOf, type GoodId } from '../economy/items';
 import { marketQuote } from '../economy/market';
 import { harvestFields, layFields, plantFields, removeFields } from '../farming/fields';
@@ -171,6 +172,7 @@ export type ErrorKey =
   | 'error.missingMaterials'
   | 'error.maxSlots'
   | 'error.notAShop'
+  | 'error.notSoldHere'
   | 'error.missingGoods'
   | 'error.marketLocked'
   | 'error.invalidQuantity'
@@ -536,7 +538,7 @@ function queueProduction(state: GameState, buildingId: number, item: string, now
 function collect(state: GameState, buildingId: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
-  if (building.type === 'shop') return collectShopEarnings(state, building);
+  if (isShopType(building.type)) return collectShopEarnings(state, building);
   if (building.type === 'home') return collectTax(state, building);
   if (isVenue(building)) return collectTakings(state, building);
   if (!building.queue.some((entry) => entry.done)) return fail('error.nothingToCollect');
@@ -574,7 +576,7 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
 }
 
 function maxSlotsOf(building: Building): number {
-  return building.type === 'shop' ? MAX_SLOTS : productionTierOf(building).maxSlots;
+  return isShopType(building.type) ? shopTierOf(building).maxSlots : productionTierOf(building).maxSlots;
 }
 
 function buySlot(state: GameState, buildingId: number): CommandOutcome {
@@ -582,13 +584,13 @@ function buySlot(state: GameState, buildingId: number): CommandOutcome {
   if (!building) return fail('error.unknownBuilding');
   if (BUILDING_SPECS[building.type].initialSlots === 0) return fail('error.cannotProduce');
   if (building.slotCount >= maxSlotsOf(building)) return fail('error.maxSlots');
-  const price = SLOT_PRICES[building.slotCount + 1] ?? 0;
+  const price = isShopType(building.type) ? slotPriceOf(building, building.slotCount + 1) : (SLOT_PRICES[building.slotCount + 1] ?? 0);
   if (state.urbs < price) return fail('error.notEnoughUrbs');
   return {
     state: {
       ...state,
       urbs: state.urbs - price,
-      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, slotCount: building.slotCount + 1, stacks: building.type === 'shop' ? [...building.stacks, emptyStack()] : building.stacks } : candidate)),
+      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, slotCount: building.slotCount + 1, stacks: isShopType(building.type) ? [...building.stacks, emptyStack()] : building.stacks } : candidate)),
     },
     events: [],
   };
@@ -612,13 +614,14 @@ function collectShopEarnings(state: GameState, building: Building): CommandOutco
 function stockShop(state: GameState, buildingId: number, good: GoodId, now: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
-  if (building.type !== 'shop' || !(good in GOODS)) return fail('error.notAShop');
+  if (!isShopType(building.type) || !(good in GOODS)) return fail('error.notAShop');
+  if (!canSell(building, good)) return fail('error.notSoldHere');
   const slotIndex = building.stacks.findIndex((stack) => stack.stock === 0);
   if (slotIndex === -1) return fail('error.queueFull');
   const available = state.storage.goods[good] ?? 0;
   if (available < SHOP.stackSize) return fail('error.missingGoods');
   const stacks = building.stacks.map((stack, index) =>
-    index === slotIndex ? { ...stack, good, stock: SHOP.stackSize, nextSaleAt: now + SHOP.saleIntervalMs } : stack,
+    index === slotIndex ? { ...stack, good, stock: SHOP.stackSize, nextSaleAt: now + saleIntervalOf(building) } : stack,
   );
   return {
     state: {

@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "venue",
-  "order": 340,
+  "order": 380,
   "section": "build.leisure",
   "cost": 9000,
   "unlockCitizens": 600,

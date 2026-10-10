@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 450,
+  "order": 490,
   "model": "nature-cliff-steps-rock",
   "name": {
     "en": "Cliff steps",

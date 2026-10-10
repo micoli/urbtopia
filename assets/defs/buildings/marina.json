@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "marina",
-  "order": 2200,
+  "order": 2240,
   "section": "build.water",
   "cost": 600,
   "unlockCitizens": 60,

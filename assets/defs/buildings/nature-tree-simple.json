@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 2010,
+  "order": 2050,
   "model": "nature-tree-simple",
   "name": {
     "en": "Tree simple",

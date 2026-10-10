@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 400,
+  "order": 440,
   "model": "mini-forest-building-roof",
   "name": {
     "en": "Wooden roof",

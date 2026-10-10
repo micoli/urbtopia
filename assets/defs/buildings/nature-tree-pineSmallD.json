@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1930,
+  "order": 1970,
   "model": "nature-tree-pinesmalld",
   "name": {
     "en": "Tree pine small D",

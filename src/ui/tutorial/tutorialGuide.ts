@@ -10,7 +10,7 @@ const BUILDING_STEPS: Partial<Record<TutorialStep, readonly BuildingType[]>> = {
   workshop: ['workshop'],
   factory: ['factory'],
   storehouse: ['storehouse'],
-  shop: ['shop'],
+  shop: ['shopConstruction'],
   utilities: ['powerPlant', 'waterTower'],
   home: ['home'],
 };

@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 660,
+  "order": 700,
   "model": "mini-forest-rocks-ramp",
   "name": {
     "en": "Rocks sloped · Mini Forest",

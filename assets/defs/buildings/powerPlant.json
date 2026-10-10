@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "utility",
-  "order": 120,
+  "order": 160,
   "section": "build.utilities",
   "cost": 250,
   "unlockCitizens": 0,

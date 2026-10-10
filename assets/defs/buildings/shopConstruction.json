@@ -1,0 +1,69 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "shop",
+  "order": 40,
+  "section": "build.shops",
+  "cost": 300,
+  "unlockCitizens": 0,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "initialSlots": 3,
+  "name": {
+    "en": "Building shop",
+    "fr": "Magasin de matériaux"
+  },
+  "description": {
+    "en": "Sells building Goods to Citizens for Urbs. Higher Tiers sell more of them, faster.",
+    "fr": "Vend des produits de construction aux habitants contre des Urbs. Les niveaux supérieurs en vendent davantage, plus vite."
+  },
+  "tiers": [
+    {
+      "footprint": [1, 1],
+      "model": "commercial-building-a",
+      "maxSlots": 4,
+      "sells": ["planks", "bricks"],
+      "saleIntervalFactor": 1,
+      "jobs": 15
+    },
+    {
+      "model": "commercial-building-b",
+      "maxSlots": 5,
+      "sells": ["planks", "bricks", "tiles"],
+      "saleIntervalFactor": 0.85,
+      "jobs": 25,
+      "upgradeCost": {
+        "urbs": 300,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "model": "commercial-building-c",
+      "maxSlots": 6,
+      "sells": ["planks", "bricks", "tiles", "cement"],
+      "saleIntervalFactor": 0.7,
+      "jobs": 40,
+      "upgradeCost": {
+        "urbs": 800,
+        "goods": {
+          "bricks": 4
+        }
+      }
+    },
+    {
+      "model": "commercial-building-d",
+      "maxSlots": 8,
+      "sells": ["planks", "bricks", "tiles", "cement", "steel", "glass"],
+      "saleIntervalFactor": 0.55,
+      "jobs": 60,
+      "upgradeCost": {
+        "urbs": 2000,
+        "goods": {
+          "tiles": 4
+        }
+      }
+    }
+  ],
+  "goodCategory": "construction"
+}

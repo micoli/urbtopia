@@ -74,6 +74,8 @@ const CROP_GOODS = Object.fromEntries(
 
 export const GOODS: Record<GoodId, GoodSpec> = { ...BASE_GOODS, ...CROP_GOODS };
 
+export const CROP_PACK_IDS = Object.keys(CROP_GOODS) as CropPackId[];
+
 export function isMaterial(item: string): item is MaterialId {
   return item in MATERIALS;
 }

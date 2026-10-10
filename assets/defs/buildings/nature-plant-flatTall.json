@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1040,
+  "order": 1080,
   "model": "nature-plant-flattall",
   "name": {
     "en": "Plant flat tall",

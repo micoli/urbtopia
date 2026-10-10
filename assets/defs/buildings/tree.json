@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "standard",
-  "order": 600,
+  "order": 640,
   "section": "build.greenSpaces",
   "model": "suburban-tree-small",
   "footprint": [1, 1],

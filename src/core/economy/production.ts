@@ -1,6 +1,7 @@
 import { shiftCropTimers } from '../farming/growth';
 import { citizensOf } from '../buildings/city';
 import { SHOP, TAX } from './economy';
+import { isShopType, saleIntervalOf } from './shops';
 import type { GameEvent } from '../engine/events';
 import { GOODS } from './items';
 import { durationOf, type ItemId } from './items';
@@ -21,7 +22,7 @@ export function workProgress(building: Building, now: number): number | null {
   if (running?.startedAt != null) return clamp01((now - running.startedAt) / running.duration);
   const nextSales = building.stacks.flatMap((stack) => (stack.stock > 0 && stack.nextSaleAt !== null ? [stack.nextSaleAt] : []));
   if (nextSales.length === 0) return null;
-  return clamp01(1 - (Math.min(...nextSales) - now) / SHOP.saleIntervalMs);
+  return clamp01(1 - (Math.min(...nextSales) - now) / saleIntervalOf(building));
 }
 
 const clamp01 = (value: number): number => Math.min(1, Math.max(0, value));
@@ -54,7 +55,7 @@ function advanceBuilding(building: Building, now: number): Advanced {
   return { building: { ...building, queue }, events };
 }
 
-function advanceStack(stack: ShopStack, now: number): ShopStack {
+function advanceStack(stack: ShopStack, now: number, saleIntervalMs: number): ShopStack {
   if (stack.good === null || stack.stock === 0 || stack.nextSaleAt === null) return stack;
   const unitValue = GOODS[stack.good].value;
   const cap = SHOP.stackSize * unitValue;
@@ -63,14 +64,14 @@ function advanceStack(stack: ShopStack, now: number): ShopStack {
   while (stock > 0 && nextSaleAt !== null && nextSaleAt <= now) {
     stock -= 1;
     earned = Math.min(cap, earned + unitValue);
-    nextSaleAt = stock > 0 ? nextSaleAt + SHOP.saleIntervalMs : null;
+    nextSaleAt = stock > 0 ? nextSaleAt + saleIntervalMs : null;
   }
   return { ...stack, stock, nextSaleAt, earned };
 }
 
 function advanceShop(building: Building, now: number): Building {
   if (building.stacks.length === 0) return building;
-  return { ...building, stacks: building.stacks.map((stack) => advanceStack(stack, now)) };
+  return { ...building, stacks: building.stacks.map((stack) => advanceStack(stack, now, saleIntervalOf(building))) };
 }
 
 function advanceHome(building: Building, elapsedMs: number): Building {
@@ -88,7 +89,7 @@ export function advanceProduction(state: GameState, now: number, elapsedMs: numb
   const results = state.buildings.map((building) => {
     const idle = idleShops.has(building.id);
     const delay = idle ? elapsedMs : elapsedMs * (1 - economicRatio);
-    const slowed = building.type === 'workshop' || building.type === 'factory' || building.type === 'shop' ? {
+    const slowed = building.type === 'workshop' || building.type === 'factory' || isShopType(building.type) ? {
       ...building,
       queue: building.queue.map(entry => entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + delay }),
       stacks: building.stacks.map(stack => stack.nextSaleAt === null ? stack : { ...stack, nextSaleAt: stack.nextSaleAt + delay }),

@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 390,
+  "order": 430,
   "model": "mini-forest-building-platform",
   "name": {
     "en": "Wooden platform",

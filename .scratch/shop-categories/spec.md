@@ -11,8 +11,10 @@ Today the Shop is a `standard` building (`assets/defs/buildings/shop.json`): no 
 - **Tiers.** Four per Shop. Per Tier: model (when assets exist), `maxSlots`, the Goods it sells, sales cadence, Jobs, `upgradeCost` (Urbs and Goods, like the Workshop). Values balanced later in the assets editor.
 - **Sellable Goods.** Explicit list per Shop Tier in the Shop file. Only Goods are sold in Shops; Materials still go to the Market.
 - **Unlocks.** Construction 0 Citizens, Food 50, Equipment 150, Luxury 400 (to balance).
-- **General shop.** The current Shop becomes the General shop: still buildable, tied to every category, sells the union of the specialised Shops' Goods at the same Tier. Purchase cost, Tier upgrade costs and extra Slot prices are x2, through a `slotPriceFactor` field (default 1) and its own `cost` / `upgradeCost`.
-- **Saves.** Existing Shops migrate to General shop, Tier 1 (versioned save envelope, ADR 0003).
+- **General shop.** The current Shop becomes the General shop: still buildable, tied to every category, sells the union of the specialised Shops' Goods at the same Tier (written out in its file, not computed). Its id stays `shop`, so saves and the Shop count in existing cities are untouched. Purchase cost, Tier upgrade costs and extra Slot prices are x2, through a `slotPriceFactor` field (default 1) and its own `cost` / `upgradeCost`.
+- **Saves.** Existing Shops keep the id `shop`, now the General shop, at their Tier 1: no save migration needed beyond checking it.
+- **Packed Crops.** They are Food Goods, always sold by a Shop that sells Food (Food and General).
+- **Tutorial.** Uses the Construction shop (the General shop now costs 600 Urbs).
 
 ## Amendment to ADR 0023
 

@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "storage",
-  "order": 110,
+  "order": 150,
   "section": "build.storage",
   "cost": 300,
   "unlockCitizens": 0,

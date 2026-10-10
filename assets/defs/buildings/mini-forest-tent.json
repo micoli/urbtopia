@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 410,
+  "order": 450,
   "model": "mini-forest-tent",
   "name": {
     "en": "Camp tent",

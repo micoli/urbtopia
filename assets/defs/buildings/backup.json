@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "backup",
-  "order": 170,
+  "order": 210,
   "section": "build.utilities",
   "model": "industrial-building-d",
   "footprint": [2, 2],

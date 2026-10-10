@@ -1,6 +1,7 @@
 export const BUILD_SECTION_TITLES = [
   'build.housing',
   'build.production',
+  'build.shops',
   'build.storage',
   'build.utilities',
   'build.transport',

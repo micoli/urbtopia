@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { FlatBuilding } from '../src/core/buildings/buildingDefinition.ts';
+import type { FlatBuilding, FlatTier } from '../src/core/buildings/buildingDefinition.ts';
 import { BUILDING_ID_PATTERN, buildingSchema } from '../src/core/buildings/buildingSchema.ts';
 import { ITEM_ID_PATTERN, goodSchema, materialSchema, type GoodDefinition, type MaterialDefinition } from '../src/core/economy/itemSchemas.ts';
 import { cropSchema, type CropDefinition } from '../src/core/farming/cropSchema.ts';
@@ -55,6 +55,7 @@ export const COLLECTIONS = {
         StorageType: idsWhere(buildings, ({ kind }) => kind === 'storage'),
         FacilityType: idsWhere(buildings, ({ kind }) => kind === 'facility'),
         VenueType: idsWhere(buildings, ({ kind }) => kind === 'venue'),
+        ShopType: idsWhere(buildings, ({ kind }) => kind === 'shop'),
       }),
     },
     schema: buildingSchema,
@@ -64,7 +65,7 @@ export const COLLECTIONS = {
     references: (building: FlatBuilding) => [
       ...modelReference(building.model, 'model'),
       ...modelReference(building.detailModel, 'detailModel'),
-      ...(building.tiers ?? []).flatMap((tier, index) => [...modelReference(tier.model, `tiers.${index}.model`), ...goodReferences(tier.upgradeCost?.goods, `tiers.${index}.upgradeCost.goods`)]),
+      ...(building.tiers ?? []).flatMap((tier, index) => [...modelReference(tier.model, `tiers.${index}.model`), ...goodReferences(tier.upgradeCost?.goods, `tiers.${index}.upgradeCost.goods`), ...((tier as FlatTier).sells ?? []).map((id, position) => ({ target: ['goods'], id, path: `tiers.${index}.sells.${position}` }))]),
       ...Object.entries(building.variants ?? {}).flatMap(([name, { tiers }]) => tiers.flatMap((tier, index) => modelReference(tier.model, `variants.${name}.tiers.${index}.model`))),
       ...(['floor', 'wall', 'corner'] as const).flatMap(part => modelReference(building.shell?.[part], `shell.${part}`)),
       ...(building.staffModels ?? []).flatMap((model, index) => modelReference(model, `staffModels.${index}`)),

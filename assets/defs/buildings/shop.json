@@ -1,11 +1,9 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
-  "order": 40,
-  "section": "build.production",
-  "model": "commercial-building-a",
-  "footprint": [1, 1],
-  "cost": 300,
+  "kind": "shop",
+  "order": 80,
+  "section": "build.shops",
+  "cost": 600,
   "unlockCitizens": 0,
   "requiresRoad": true,
   "accessModes": ["road", "brt"],
@@ -15,7 +13,58 @@
     "fr": "Boutique"
   },
   "description": {
-    "en": "Sells Goods to Citizens for Urbs. Stock its sales slots with Goods from storage, then collect the earnings.",
-    "fr": "Vend des produits aux habitants contre des Urbs. Approvisionnez ses emplacements depuis le stockage, puis collectez les recettes."
-  }
+    "en": "Sells the Goods of every category to Citizens for Urbs, at a premium. Stock its sales slots with Goods from storage, then collect the earnings.",
+    "fr": "Vend les produits de toutes les catégories aux habitants contre des Urbs, à prix fort. Approvisionnez ses emplacements depuis le stockage, puis collectez les recettes."
+  },
+  "tiers": [
+    {
+      "footprint": [1, 1],
+      "model": "commercial-building-a",
+      "maxSlots": 5,
+      "sells": ["bricks", "cannedFish", "jewelry", "planks", "tools"],
+      "saleIntervalFactor": 1,
+      "jobs": 15
+    },
+    {
+      "model": "commercial-building-b",
+      "maxSlots": 6,
+      "sells": ["bricks", "cannedFish", "jewelry", "planks", "tiles", "tools"],
+      "saleIntervalFactor": 0.85,
+      "jobs": 25,
+      "upgradeCost": {
+        "urbs": 600,
+        "goods": {
+          "planks": 6
+        }
+      }
+    },
+    {
+      "model": "commercial-building-c",
+      "maxSlots": 7,
+      "sells": ["bricks", "cannedFish", "cement", "circuits", "crystal", "jewelry", "planks", "tiles", "tools"],
+      "saleIntervalFactor": 0.7,
+      "jobs": 40,
+      "upgradeCost": {
+        "urbs": 1600,
+        "goods": {
+          "bricks": 8
+        }
+      }
+    },
+    {
+      "model": "commercial-building-d",
+      "maxSlots": 8,
+      "sells": ["bricks", "cannedFish", "cement", "circuits", "crystal", "glass", "jewelry", "planks", "steel", "tiles", "tools"],
+      "saleIntervalFactor": 0.55,
+      "jobs": 60,
+      "upgradeCost": {
+        "urbs": 4000,
+        "goods": {
+          "tiles": 8
+        }
+      }
+    }
+  ],
+  "goodCategory": "all",
+  "slotPriceFactor": 2
 }

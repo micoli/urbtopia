@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1600,
+  "order": 1640,
   "model": "nature-stump-square",
   "name": {
     "en": "Stump square",

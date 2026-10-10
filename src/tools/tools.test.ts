@@ -4,7 +4,7 @@ import { confirmTool, evaluateTool, extendBrush, selectionGhost, type Tool } fro
 
 const state: GameState = newGame({ seed: 'amber-fox-4821', now: 0 });
 
-const shopTool: Tool = { kind: 'building', buildingType: 'shop' };
+const shopTool: Tool = { kind: 'building', buildingType: 'shopConstruction' };
 
 describe('building tool', () => {
   it('shows a valid ghost turned toward the adjacent road and the placement command', () => {
@@ -12,7 +12,7 @@ describe('building tool', () => {
     expect(evaluation.valid).toBe(true);
     expect(evaluation.rotation).toBe(2);
     expect(evaluation.cost).toBe(300);
-    expect(evaluation.command).toEqual({ type: 'PlaceBuilding', buildingType: 'shop', x: 56, y: 57, rotation: 2 });
+    expect(evaluation.command).toEqual({ type: 'PlaceBuilding', buildingType: 'shopConstruction', x: 56, y: 57, rotation: 2 });
   });
 
   it('explains why a ghost is invalid', () => {

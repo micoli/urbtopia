@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1820,
+  "order": 1860,
   "model": "nature-tree-pinegrounda",
   "name": {
     "en": "Tree pine low A",

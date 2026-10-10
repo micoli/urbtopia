@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1010,
+  "order": 1050,
   "model": "nature-plant-bushsmall",
   "name": {
     "en": "Plant bush small",

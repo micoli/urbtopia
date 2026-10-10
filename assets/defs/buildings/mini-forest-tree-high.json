@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 690,
+  "order": 730,
   "model": "mini-forest-tree-high",
   "name": {
     "en": "Tree high · Mini Forest",

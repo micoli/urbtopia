@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 510,
+  "order": 550,
   "model": "nature-statue-ring",
   "name": {
     "en": "Statue ring",

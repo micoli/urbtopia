@@ -1,6 +1,6 @@
 # Shop kind with Tiers, General shop and sellable Goods
 
-Status: ready-for-agent
+Status: resolved
 Spec: [shop-categories](../spec.md)
 Blocked by: 01
 

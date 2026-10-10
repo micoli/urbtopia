@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "transitStop",
-  "order": 200,
+  "order": 240,
   "section": "build.transport",
   "model": "industrial-building-q",
   "footprint": [2, 1],

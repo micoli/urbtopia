@@ -19,7 +19,7 @@ function failureKey(state: GameState, command: Command): string | null {
   return result.ok ? null : result.error.key;
 }
 
-const place = (buildingType: 'shop' | 'storehouse' | 'home' | 'powerPlant' | 'waterTower' | 'workshop' | 'factory', x: number, y: number, rotation?: 0 | 1 | 2 | 3): Command => ({
+const place = (buildingType: 'shopConstruction' | 'storehouse' | 'home' | 'powerPlant' | 'waterTower' | 'workshop' | 'factory', x: number, y: number, rotation?: 0 | 1 | 2 | 3): Command => ({
   type: 'PlaceBuilding',
   buildingType,
   x,
@@ -57,23 +57,23 @@ describe('BuildRoad', () => {
 
 describe('PlaceBuilding', () => {
   it('turns the front toward the adjacent road and charges the cost', () => {
-    const state = succeed(initial, place('shop', 56, 57));
-    const shop = state.buildings.find((building) => building.type === 'shop');
+    const state = succeed(initial, place('shopConstruction', 56, 57));
+    const shop = state.buildings.find((building) => building.type === 'shopConstruction');
     expect(shop).toMatchObject({ x: 56, y: 57, rotation: 2 });
     expect(state.urbs).toBe(300);
   });
 
   it('turns the front toward the road above when placed below it', () => {
-    const below = succeed(initial, place('shop', 56, 59));
-    expect(below.buildings.find((b) => b.type === 'shop')?.rotation).toBe(0);
+    const below = succeed(initial, place('shopConstruction', 56, 59));
+    expect(below.buildings.find((b) => b.type === 'shopConstruction')?.rotation).toBe(0);
   });
 
   it('lets the player override the rotation, which can then fail the road rule', () => {
-    expect(failureKey(initial, place('shop', 56, 57, 0))).toBe('error.needsRoadOrBrt');
+    expect(failureKey(initial, place('shopConstruction', 56, 57, 0))).toBe('error.needsRoadOrBrt');
   });
 
   it('refuses a building whose front does not touch a road', () => {
-    expect(failureKey(initial, place('shop', 70, 70))).toBe('error.needsRoadOrBrt');
+    expect(failureKey(initial, place('shopConstruction', 70, 70))).toBe('error.needsRoadOrBrt');
   });
 
   it('does not need a road for a Power plant or a Water tower', () => {
@@ -173,7 +173,7 @@ describe('PlaceRoundabout', () => {
 
   it('counts as a road for the front of a building', () => {
     const state = succeed(initial, { type: 'PlaceRoundabout', x: 70, y: 70 });
-    expect(failureKey(state, place('shop', 70, 72))).toBeNull();
+    expect(failureKey(state, place('shopConstruction', 70, 72))).toBeNull();
   });
 
   it('refuses a square leaving the owned Parcels', () => {

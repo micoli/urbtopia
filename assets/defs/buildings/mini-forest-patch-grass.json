@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 620,
+  "order": 660,
   "model": "mini-forest-patch-grass",
   "name": {
     "en": "Patch Grass · Mini Forest",

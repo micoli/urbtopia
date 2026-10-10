@@ -2,7 +2,7 @@ import {
   CASINO_GAMES, COAL_CAPACITY, marinaCapacity, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
   FIXTURES, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
-  type StorageType,
+  type StorageType, isShopType, sellableGoodsOf, shopTierOf,
 } from '../core';
 import { t } from '../i18n/t';
 import type { MessageKey } from '../i18n/messages';
@@ -97,6 +97,12 @@ export function levelFactsOf(id: CodexId, level: number): LevelFact[] {
   if (id === 'powerPlant' || id === 'waterTower') return [numericFact('codex.fact.output', tier => UTILITY_CAPACITY[id][tier - 1] ?? 0, level)];
   if (id === 'coalPlant') return [numericFact('codex.fact.output', tier => COAL_CAPACITY[tier - 1] ?? 0, level)];
   if (id === 'marina') return [numericFact('codex.fact.boats', tier => marinaCapacity({ tier }), level)];
+  if (isShopType(id)) return [
+    numericFact('codex.fact.saleSlots', tier => shopTierOf({ type: id, tier }).maxSlots, level),
+    numericFact('codex.fact.saleTime', tier => shopTierOf({ type: id, tier }).saleIntervalFactor, level, percent),
+    numericFact('codex.fact.goodsSold', tier => sellableGoodsOf({ type: id, tier }).length, level),
+    numericFact('codex.fact.jobs', tier => shopTierOf({ type: id, tier }).jobs, level),
+  ];
   if (id === 'casino') return casinoFacts(level);
   if (isVenueType(id)) return venueFacts(id, level);
   if (isFacilityType(id) && FACILITIES[id].capacity !== null) {

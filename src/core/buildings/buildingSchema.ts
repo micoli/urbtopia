@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { GOOD_CATEGORIES } from '../economy/itemSchemas.ts';
 import { NATURE_FAMILIES, type NatureFamily } from '../environment/natureFamilies.ts';
 import { BUILD_SECTION_TITLES } from './buildSections.ts';
 import { CASINO_GAMES } from '../leisure/casinoGames.ts';
@@ -127,6 +128,20 @@ const casinoBuilding = z.strictObject({
   ),
 });
 
+// A Shop sells the Goods of one Good category (every one for the General shop), those its Tier lists; a Tier sells faster than the previous when its factor is lower.
+const shopBuilding = z.strictObject({
+  kind: z.literal('shop'),
+  ...identity,
+  ...sited,
+  goodCategory: z.enum([...GOOD_CATEGORIES, 'all']),
+  // Multiplies the price of every extra Slot.
+  slotPriceFactor: positive.optional(),
+  tiers: tiersOf(
+    { ...homeLook, maxSlots: z.int().min(1), sells: z.array(filled), saleIntervalFactor: positive, jobs: count },
+    ['model', 'footprint', 'maxSlots', 'sells', 'saleIntervalFactor', 'jobs'],
+  ),
+});
+
 // The Marina: the number of Boats each Tier moors.
 const marinaBuilding = z.strictObject({
   kind: z.literal('marina'),
@@ -163,7 +178,7 @@ const venueBuilding = z.strictObject({
 });
 
 export const buildingSchema = z
-  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, venueBuilding, marinaBuilding, transitStopBuilding])
+  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, shopBuilding, venueBuilding, marinaBuilding, transitStopBuilding])
   .refine(building => building.kind === 'nature' || !building.accessModes || building.requiresRoad, { message: 'accessModes needs requiresRoad', path: ['accessModes'] })
   .meta({ title: 'Building', description: 'A building of Urbtopia, one file per building id in assets/defs/buildings.' });
 

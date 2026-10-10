@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 760,
+  "order": 800,
   "model": "nature-flower-redb",
   "name": {
     "en": "Flowers red B",

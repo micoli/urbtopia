@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1450,
+  "order": 1490,
   "model": "nature-stone-smalltopa",
   "name": {
     "en": "Stone small topped A",

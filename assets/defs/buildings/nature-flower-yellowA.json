@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 780,
+  "order": 820,
   "model": "nature-flower-yellowa",
   "name": {
     "en": "Flowers yellow A",

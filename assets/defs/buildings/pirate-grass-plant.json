@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 2150,
+  "order": 2190,
   "model": "pirate-grass-plant",
   "name": {
     "en": "Grass Plant · Pirate",

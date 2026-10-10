@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "facility",
-  "order": 280,
+  "order": 320,
   "section": "build.publicFacilities",
   "cost": 2000,
   "unlockCitizens": 600,

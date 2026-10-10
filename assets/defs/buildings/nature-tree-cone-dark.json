@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1650,
+  "order": 1690,
   "model": "nature-tree-cone-dark",
   "name": {
     "en": "Tree conical dark",

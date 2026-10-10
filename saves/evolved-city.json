@@ -446,7 +446,7 @@
           {
             "good": "tiles",
             "stock": 5,
-            "nextSaleAt": 1790000045000,
+            "nextSaleAt": 1790000038250,
             "earned": 0
           },
           {
@@ -474,7 +474,7 @@
             "earned": 0
           }
         ],
-        "tier": 1,
+        "tier": 2,
         "taxCitizenMs": 0
       },
       {
@@ -532,7 +532,7 @@
           {
             "good": "crystal",
             "stock": 5,
-            "nextSaleAt": 1790000045000,
+            "nextSaleAt": 1790000031500,
             "earned": 0
           },
           {
@@ -560,7 +560,7 @@
             "earned": 0
           }
         ],
-        "tier": 1,
+        "tier": 3,
         "taxCitizenMs": 0
       },
       {
