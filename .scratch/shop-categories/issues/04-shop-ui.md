@@ -1,6 +1,6 @@
 # Shop panel and upgrade UI
 
-Status: ready-for-agent
+Status: resolved
 Spec: [shop-categories](../spec.md)
 Blocked by: 02
 

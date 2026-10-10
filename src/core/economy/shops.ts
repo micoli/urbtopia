@@ -8,6 +8,8 @@ export const SHOP_TYPES: readonly ShopType[] = BUILDING_ENTRIES.filter(({ kind }
 
 export const isShopType = (type: string): type is ShopType => (SHOP_TYPES as readonly string[]).includes(type);
 
+type ShopGoodCategory = NonNullable<ReturnType<typeof definitionOf>['goodCategory']>;
+
 type ShopBuilding = Pick<Building, 'type' | 'tier'>;
 
 export interface ShopTier {
@@ -30,6 +32,16 @@ export function sellableGoodsOf(building: ShopBuilding): readonly GoodId[] {
   const { goodCategory } = definitionOf(building.type as ShopType);
   const packs = goodCategory === 'food' || goodCategory === 'all' ? CROP_PACK_IDS : [];
   return [...shopTierOf(building).sells, ...packs];
+}
+
+export const goodCategoryOf = (building: ShopBuilding): ShopGoodCategory => definitionOf(building.type as ShopType).goodCategory!;
+
+// The base Goods the next Tier adds to those the Shop already sells.
+export function newGoodsAtNextTier(building: ShopBuilding): readonly GoodId[] {
+  const next = tiersOf(building.type as ShopType)[building.tier];
+  if (!next) return [];
+  const current = shopTierOf(building).sells;
+  return (next.sells as GoodId[]).filter((good) => !current.includes(good));
 }
 
 export const canSell = (building: ShopBuilding, good: GoodId): boolean => good in GOODS && sellableGoodsOf(building).includes(good);
