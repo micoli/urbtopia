@@ -198,4 +198,15 @@ describe('build menu sections', () => {
     expect(html).toContain('assets/icons/lac.png');
     expect(html).toContain('assets/icons/bridge.png');
   });
+
+  it('opens the Codex from the Water and Bridge tool names', () => {
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 700 }, (_, id) => ({ ...home, id })) };
+    context.flyout = 'roads';
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    expect(html).toContain('data-codex-label="water"');
+    expect(html).toContain('data-codex-label="bridge"');
+    expect(html).toContain('src="/assets/icons/lac.png"');
+    expect(html).toContain('src="/assets/icons/bridge.png"');
+  });
 });

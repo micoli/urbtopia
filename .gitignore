@@ -1,6 +1,8 @@
 TODO.md
 .claude/*
+.codex/*
 !.claude/skills/
+!.codex/skills/
 .ssh/
 .DS_Store
 node_modules/
@@ -21,3 +23,4 @@ assets/**/*.blend1
 supabase/.temp/
 supabase/.branches/
 .mcp.json
+.agents
