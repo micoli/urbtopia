@@ -13,6 +13,13 @@ export interface Selection {
   id: string
 }
 
+export interface View {
+  kind: Kind
+  selection: Selection | null
+  comparing: boolean
+  tab: string | null
+}
+
 export interface Assets {
   ships: (file: string) => boolean
   manifest: Record<string, string[]>
@@ -32,6 +39,8 @@ interface DocumentState {
   status: string
   // Shows the comparison of the Game objects of a kind instead of one object.
   comparing: boolean
+  // The tab open in the panel of the selected object; the first one when unset.
+  tab: string | null
   // The Tier, and the variant if any, the preview shows for a Game object with Tiers.
   preview: { tier: number; variant?: string }
   load: (catalog: Catalog) => void
@@ -45,6 +54,9 @@ interface DocumentState {
   markSaved: () => void
   setStatus: (status: string) => void
   setComparing: (comparing: boolean) => void
+  setTab: (tab: string | null) => void
+  // Replaces the whole view at once, as a URL does.
+  showView: (view: View) => void
 }
 
 const empty = { models: {}, collections: {}, singletons: {} } as Doc
@@ -61,6 +73,7 @@ export const useDocument = create<DocumentState>()(set => ({
   kind: 'buildings',
   status: '',
   comparing: false,
+  tab: null,
   preview: { tier: 0 },
   load: catalog => {
     const doc: Doc = { models: catalog.models, collections: catalog.collections, singletons: catalog.singletons }
@@ -94,10 +107,12 @@ export const useDocument = create<DocumentState>()(set => ({
       if (!next) return state
       return { doc: next, past: [...state.past, state.doc], future: state.future.slice(1), status: '' }
     }),
-  select: selection => set(selection ? { selection, kind: selection.kind, comparing: false, preview: { tier: 0 } } : { selection }),
+  select: selection => set(selection ? { selection, kind: selection.kind, comparing: false, tab: null, preview: { tier: 0 } } : { selection, tab: null }),
   showTier: (tier, variant) => set({ preview: { tier, variant } }),
   showKind: kind => set({ kind, comparing: false }),
   setComparing: comparing => set({ comparing }),
+  setTab: tab => set({ tab }),
+  showView: view => set({ ...view, preview: { tier: 0 } }),
   markSaved: () => set(state => ({ saved: state.doc })),
   setStatus: status => set({ status }),
 }))

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchCatalog } from '../api'
 import { useDocument } from '../store/documentStore'
+import { startRouter } from '../router'
 import { Shell } from './Shell'
 
 export function App() {
@@ -16,6 +17,8 @@ export function App() {
       })
       .catch(reason => setError(String(reason)))
   }, [load])
+
+  useEffect(() => (ready ? startRouter() : undefined), [ready])
 
   if (error) return <div className="p-6 text-sm text-red-700">Cannot load the catalog: {error}</div>
   if (!ready) return <div className="p-6 text-sm text-zinc-500">Loading the catalog…</div>

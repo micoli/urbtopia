@@ -1,5 +1,6 @@
 import { Tabs as RadixTabs } from 'radix-ui'
 import type { ReactNode } from 'react'
+import { useDocument } from '../store/documentStore'
 
 export interface Tab {
   id: string
@@ -12,9 +13,13 @@ interface Props {
   tabs: Tab[]
 }
 
+// The open tab lives in the store, hence in the URL.
 export function Tabs({ tabs }: Props) {
+  const stored = useDocument(state => state.tab)
+  const setTab = useDocument(state => state.setTab)
+  const value = tabs.some(tab => tab.id === stored) ? stored! : tabs[0]?.id
   return (
-    <RadixTabs.Root defaultValue={tabs[0]?.id} className="flex flex-col">
+    <RadixTabs.Root value={value} onValueChange={setTab} className="flex flex-col">
       <RadixTabs.List className="flex gap-1 border-b border-zinc-200 px-4">
         {tabs.map(tab => (
           <RadixTabs.Trigger
