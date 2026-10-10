@@ -52,7 +52,7 @@ export type { UtilityTotals } from './buildings/city';
 export { FARM_TIERS, PRODUCTION_UPGRADE_COSTS, HOME_FOOTPRINTS, HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, TAX, UTILITY_CAPACITY, COAL_CAPACITY } from './economy/economy';
 export { SHOP_TYPES, canSell, goodCategoryOf, newGoodsAtNextTier, isShopType, saleIntervalOf, sellableGoodsOf, shopTierOf, slotPriceOf } from './economy/shops';
 export type { ShopTier } from './economy/shops';
-export { isWorking, rushPrice, taxDue, workProgress } from './economy/production';
+export { isWorking, productionDurationOf, rushPrice, taxDue, workProgress } from './economy/production';
 export { farmTier, maxTierOf, productionTierOf, upgradeCostOf } from './economy/tiers';
 export type { UpgradeCost } from './economy/tiers';
 export { isCropUnlocked, isItemUnlocked, nextUnlock } from './progression/unlocks';
