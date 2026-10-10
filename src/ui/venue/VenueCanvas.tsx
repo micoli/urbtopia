@@ -22,7 +22,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
     const canvas = canvasRef.current;
     const initial = venueOf(venueId);
     if (!canvas || !initial) return;
-    const scene = new VenueScene(canvas, gridSizeOf(initial.tier), initial.tier, venueType, venueId);
+    const scene = new VenueScene(canvas, gridSizeOf(venueType, initial.tier), initial.tier, venueType, venueId);
     let hovered: Coord | null = null;
 
     const showGhost = () => {
@@ -52,7 +52,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       const performance = venuePerformance(gameStore.getState().state, venue);
       const demandRatio = performance.capacity > 0 ? performance.accepted / performance.capacity : performance.accepted > 0 ? 2 : 0;
       scene.setCrowd(planCrowd({
-        size: gridSizeOf(venue.tier),
+        size: gridSizeOf(venueType, venue.tier),
         entrance: entranceCell(venue.tier),
         fixtures: venue.venue.fixtures,
         usageByFixture: performance.usageByFixture,
@@ -64,7 +64,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
     const sync = () => {
       const venue = venueOf(venueId);
       if (venue) {
-        scene.setSize(gridSizeOf(venue.tier));
+        scene.setSize(gridSizeOf(venueType, venue.tier));
         scene.setFixtures(venue.venue.fixtures);
       }
       showCrowd();

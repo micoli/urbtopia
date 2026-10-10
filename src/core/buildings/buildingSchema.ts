@@ -3,6 +3,7 @@ import { NATURE_FAMILIES, type NatureFamily } from '../environment/natureFamilie
 import { BUILD_SECTION_TITLES } from './buildSections.ts';
 import { CASINO_GAMES } from '../leisure/casinoGames.ts';
 import { SERVICE_CATEGORIES } from '../services/serviceCategories.ts';
+import { FIXTURE_CATEGORIES_ALL, STAFF_ROLES_ALL } from '../venues/venueVocabulary.ts';
 import { pairSchema, tiersOf, variantsOf } from './tierSchema.ts';
 
 export const BUILDING_ID_PATTERN = /^[a-z][A-Za-z0-9-]*$/;
@@ -124,8 +125,27 @@ const casinoBuilding = z.strictObject({
   ),
 });
 
+// A Venue (Arcade, Supermarket, Hotel): its Staff, its Fixture menu, its interior shell, and per Tier its interior size, Takings cap, power, events and Staff posts.
+const venueBuilding = z.strictObject({
+  kind: z.literal('venue'),
+  ...identity,
+  ...sited,
+  // Net Urbs earned since opening to reach Rank 2 and Rank 3.
+  rankAt: z.tuple([count, count]),
+  staffRoles: z.array(z.enum(STAFF_ROLES_ALL)).min(1),
+  // The role serving the front desk.
+  frontRole: z.enum(STAFF_ROLES_ALL),
+  fixtureCategories: z.array(z.enum(FIXTURE_CATEGORIES_ALL)).min(1),
+  shell: z.strictObject({ floor: filled, wall: filled, corner: filled, cornerX: z.number(), cornerZ: z.number(), cornerRotation: z.number() }),
+  staffModels: z.array(filled).min(1),
+  tiers: tiersOf(
+    { ...homeLook, gridSize: z.int().min(2), takingsCap: count, power: positive, eventBudget: count, eventMultiplier: positive, posts: z.record(z.string(), count) },
+    ['model', 'footprint', 'gridSize', 'takingsCap', 'power', 'eventBudget', 'eventMultiplier', 'posts'],
+  ),
+});
+
 export const buildingSchema = z
-  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding])
+  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, venueBuilding])
   .refine(building => building.kind === 'nature' || !building.accessModes || building.requiresRoad, { message: 'accessModes needs requiresRoad', path: ['accessModes'] })
   .meta({ title: 'Building', description: 'A building of Urbtopia, one file per building id in assets/defs/buildings.' });
 

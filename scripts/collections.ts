@@ -3,6 +3,7 @@ import type { FlatBuilding } from '../src/core/buildings/buildingDefinition.ts';
 import { BUILDING_ID_PATTERN, buildingSchema } from '../src/core/buildings/buildingSchema.ts';
 import { ITEM_ID_PATTERN, goodSchema, materialSchema, type GoodDefinition, type MaterialDefinition } from '../src/core/economy/itemSchemas.ts';
 import { cropSchema, type CropDefinition } from '../src/core/farming/cropSchema.ts';
+import { fixtureSchema, type FixtureDefinition } from '../src/core/venues/fixtureSchema.ts';
 
 // Every kind of Game object stored one file per id under assets/defs/<dir>. Pure: shared by the scripts, the build and the editor.
 
@@ -51,6 +52,7 @@ export const COLLECTIONS = {
         NatureType: idsWhere(buildings, ({ kind }) => kind === 'nature'),
         StorageType: idsWhere(buildings, ({ kind }) => kind === 'storage'),
         FacilityType: idsWhere(buildings, ({ kind }) => kind === 'facility'),
+        VenueType: idsWhere(buildings, ({ kind }) => kind === 'venue'),
       }),
     },
     schema: buildingSchema,
@@ -61,6 +63,8 @@ export const COLLECTIONS = {
       ...modelReference(building.model, 'model'),
       ...(building.tiers ?? []).flatMap((tier, index) => [...modelReference(tier.model, `tiers.${index}.model`), ...goodReferences(tier.upgradeCost?.goods, `tiers.${index}.upgradeCost.goods`)]),
       ...Object.entries(building.variants ?? {}).flatMap(([name, { tiers }]) => tiers.flatMap((tier, index) => modelReference(tier.model, `variants.${name}.tiers.${index}.model`))),
+      ...(['floor', 'wall', 'corner'] as const).flatMap(part => modelReference(building.shell?.[part], `shell.${part}`)),
+      ...(building.staffModels ?? []).flatMap((model, index) => modelReference(model, `staffModels.${index}`)),
     ],
   },
   materials: {
@@ -102,6 +106,25 @@ export const COLLECTIONS = {
       ...modelReference(models?.produce, 'models.produce'),
       ...modelReference(models?.harvested, 'models.harvested'),
     ],
+  },
+  fixtures: {
+    dir: 'fixtures',
+    title: 'Fixtures',
+    schemaName: 'fixture',
+    idTypes: {
+      file: 'src/core/venues/fixtureTypes.generated.ts',
+      unions: (fixtures: Record<string, FixtureDefinition>) => ({
+        FixtureId: idsWhere(fixtures),
+        ArcadeFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'arcade'),
+        SupermarketFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'supermarket'),
+        HotelFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'hotel'),
+      }),
+    },
+    schema: fixtureSchema,
+    idPattern: ITEM_ID_PATTERN,
+    idRule: 'be camelCase letters and digits',
+    fieldOrder: ['kind', 'order', 'venue', 'category'],
+    references: (fixture: FixtureDefinition) => [...modelReference(fixture.model, 'model'), { target: ['buildings'], id: fixture.venue, path: 'venue' }],
   },
 } satisfies Record<string, CollectionSpec>;
 

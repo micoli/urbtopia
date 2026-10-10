@@ -10,7 +10,7 @@ const building = (section: FlatBuilding['section']): Definition => ({ ...blankBu
 
 const doc: Doc = {
   models: {},
-  collections: { buildings: { a: building('build.housing'), b: building('build.storage'), c: building('build.housing'), d: building('build.storage'), e: building('build.housing') }, materials: {}, goods: {}, crops: {} } as Collections,
+  collections: { buildings: { a: building('build.housing'), b: building('build.storage'), c: building('build.housing'), d: building('build.storage'), e: building('build.housing') }, materials: {}, goods: {}, crops: {}, fixtures: {} } as Collections,
   singletons: { packFormats: { formats: [] } },
 }
 
@@ -47,7 +47,7 @@ describe('document edits', () => {
   })
 
   it('starts new materials and crops from a shape that only lacks a name', () => {
-    for (const collection of ['materials', 'crops'] as const) {
+    for (const collection of ['materials', 'crops', 'fixtures'] as const) {
       const problems = collectionProblems(collection, { fresh: { ...blankDefinition(collection, 'm'), order: 10 } })
       expect(problems.map(({ path }) => path).sort()).toEqual(['name.en', 'name.fr'])
     }

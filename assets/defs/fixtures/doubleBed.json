@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 320,
+  "venue": "hotel",
+  "category": "beds",
+  "name": {
+    "en": "Double bed",
+    "fr": "Lit double"
+  },
+  "model": "furniture-beddouble",
+  "footprint": [2, 2],
+  "price": 380,
+  "minTier": 1,
+  "wear": 0.05,
+  "sleeps": 2
+}

@@ -18,7 +18,7 @@ export function VenueStaff({ venueId }: VenueStaffProps) {
       <div className="venue-build__items">
         {staffRolesOf(venueTypeOf(building)).map(role => {
           const hired = hiredOf(building.venue, role);
-          const posts = postsOf(role, building.tier);
+          const posts = postsOf(venueTypeOf(building), role, building.tier);
           const locked = posts === 0;
           return (
             <div key={role} className="venue-staff">
@@ -26,7 +26,7 @@ export function VenueStaff({ venueId }: VenueStaffProps) {
                 <strong>{t(`venue.role.${role}`)} · {hired}/{posts}</strong>
                 <span className="note note--muted">{t(`venue.roleEffect.${role}`)} · <UrbsAmount value={STAFF.dailyWage[role]} /> {t('venue.wage')}</span>
                 <span className="note note--muted">
-                  {locked ? `${t('venue.tierNeeded')} ${minTierOfRole(role)}` : <>{t('venue.hireFee')} <UrbsAmount value={hireFeeOf(role)} /></>}
+                  {locked ? `${t('venue.tierNeeded')} ${minTierOfRole(venueTypeOf(building), role)}` : <>{t('venue.hireFee')} <UrbsAmount value={hireFeeOf(role)} /></>}
                 </span>
               </div>
               <div className="venue-staff__actions">

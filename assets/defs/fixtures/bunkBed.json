@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 330,
+  "venue": "hotel",
+  "category": "beds",
+  "name": {
+    "en": "Bunk bed",
+    "fr": "Lits superposés"
+  },
+  "model": "furniture-bedbunk",
+  "footprint": [1, 2],
+  "price": 280,
+  "minTier": 2,
+  "wear": 0.05,
+  "sleeps": 2
+}

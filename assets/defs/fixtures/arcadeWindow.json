@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 160,
+  "venue": "arcade",
+  "category": "walls",
+  "name": {
+    "en": "Wall with a window",
+    "fr": "Mur à fenêtre"
+  },
+  "model": "mini-arcade-wall-window",
+  "footprint": [1, 1],
+  "price": 60,
+  "minTier": 1,
+  "partition": true,
+  "playsPerHour": 0
+}

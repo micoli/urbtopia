@@ -1,6 +1,6 @@
 import {
   CASINO_GAMES, COAL_CAPACITY, MARINA_TIERS, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
-  FIXTURES, VENUE_PROFILES, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType,
+  FIXTURES, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
   type StorageType,
 } from '../core';
@@ -65,14 +65,14 @@ function casinoFacts(level: number): LevelFact[] {
 }
 
 function venueFacts(type: VenueType, level: number): LevelFact[] {
-  const gridText = (tier: number) => `${gridSizeOf(tier)}×${gridSizeOf(tier)}`;
+  const gridText = (tier: number) => `${gridSizeOf(type, tier)}×${gridSizeOf(type, tier)}`;
   const fixturesText = (tier: number) => fixtureIdsOf(type).filter(id => FIXTURES[id].minTier <= tier).map(id => t(`venue.fixture.${id}`)).join(', ');
-  const posts = (tier: number) => staffRolesOf(type).reduce((total, role) => total + postsOf(role, tier), 0);
+  const posts = (tier: number) => staffRolesOf(type).reduce((total, role) => total + postsOf(type, role, tier), 0);
   return [
     textFact('codex.fact.grid', gridText, level),
     numericFact('codex.fact.posts', posts, level),
-    numericFact('codex.fact.takingsCap', takingsCapOf, level),
-    numericFact('codex.fact.power', tier => VENUE_PROFILES[type].power * tier, level),
+    numericFact('codex.fact.takingsCap', tier => takingsCapOf(type, tier), level),
+    numericFact('codex.fact.power', tier => venuePower({ type, tier }), level),
     textFact('codex.fact.fixtures', fixturesText, level),
   ];
 }

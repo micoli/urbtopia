@@ -1,8 +1,11 @@
 import type { VenueType } from '../core';
+import { definitionOf } from '../core/buildings/buildingDefinitions';
+import { modelFileOf } from '../core/models/modelFiles';
+import { VENUE_TYPES } from '../core/venues/profiles';
 
-const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f'] as const;
+import { MINI_CHARACTER_LETTERS as LETTERS } from './miniCharacters';
 
-export const MINI_CHARACTER_FILES: readonly string[] = (['female', 'male'] as const).flatMap(gender => LETTERS.map(letter => `character-${gender}-${letter}`));
+export { MINI_CHARACTER_FILES } from './miniCharacters';
 
 const miniCharacter = (gender: 'female' | 'male', letter: (typeof LETTERS)[number]): string => `mini-characters/character-${gender}-${letter}`;
 
@@ -10,10 +13,6 @@ const miniCharacter = (gender: 'female' | 'male', letter: (typeof LETTERS)[numbe
 export const VENUE_CUSTOMER_MODELS: readonly string[] = LETTERS.flatMap(letter => [miniCharacter('female', letter), miniCharacter('male', letter)]);
 
 // The staff of a Venue is the character shipped with its own pack. The Hotel is built from the furniture kit, which has none.
-export const VENUE_STAFF_MODELS: Record<VenueType, readonly string[]> = {
-  arcade: ['mini-arcade/character-employee'],
-  supermarket: ['mini-market/character-employee'],
-  hotel: [miniCharacter('female', 'a'), miniCharacter('male', 'a'), miniCharacter('female', 'd'), miniCharacter('male', 'd')],
-};
+export const VENUE_STAFF_MODELS = Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).staffModels!.map(modelFileOf)])) as unknown as Record<VenueType, readonly string[]>;
 
 export const venueCrowdModelsOf = (venue: VenueType): readonly string[] => [...new Set([...VENUE_CUSTOMER_MODELS, ...VENUE_STAFF_MODELS[venue]])];

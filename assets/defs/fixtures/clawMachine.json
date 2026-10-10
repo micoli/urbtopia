@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 110,
+  "venue": "arcade",
+  "category": "games",
+  "name": {
+    "en": "Claw machine",
+    "fr": "Pince à peluches"
+  },
+  "model": "mini-arcade-claw-machine",
+  "footprint": [1, 1],
+  "price": 320,
+  "minTier": 2,
+  "minRank": 2,
+  "playsPerHour": 5
+}

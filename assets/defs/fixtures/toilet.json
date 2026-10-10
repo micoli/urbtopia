@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 340,
+  "venue": "hotel",
+  "category": "bathroom",
+  "name": {
+    "en": "Toilet",
+    "fr": "Toilettes"
+  },
+  "model": "furniture-toilet",
+  "footprint": [1, 1],
+  "price": 120,
+  "minTier": 1,
+  "wear": 0.05,
+  "bath": 1
+}

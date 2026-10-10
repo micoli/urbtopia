@@ -22,6 +22,7 @@ export function CollectionList({ collection }: Props) {
   const [creating, setCreating] = useState(false)
   const search = query.trim().toLowerCase()
   const sectioned = collection === 'buildings'
+  const grouped = sectioned || collection === 'fixtures'
 
   const groups = useMemo(() => {
     const text = (id: string) => `${id} ${JSON.stringify((definitions[id] as { name?: unknown }).name ?? '')}`.toLowerCase()
@@ -48,7 +49,7 @@ export function CollectionList({ collection }: Props) {
       <div className="min-h-0 flex-1 overflow-auto p-1">
         {groups.map(({ title, ids }) => (
           <section key={title} className="mb-2">
-            {sectioned && <h2 className="sticky top-0 z-10 bg-white/95 px-2 py-1 text-[11px] font-semibold tracking-wide text-zinc-500 uppercase backdrop-blur">{groupLabel(title)} <span className="font-normal text-zinc-400">{ids.length}</span></h2>}
+            {grouped && <h2 className="sticky top-0 z-10 bg-white/95 px-2 py-1 text-[11px] font-semibold tracking-wide text-zinc-500 uppercase backdrop-blur">{groupLabel(title)} <span className="font-normal text-zinc-400">{ids.length}</span></h2>}
             <SortableContext items={ids.map(id => `${collection}:${id}`)} strategy={verticalListSortingStrategy} disabled={search !== ''}>
               {ids.map(id => <DefinitionRow key={id} collection={collection} id={id} />)}
             </SortableContext>

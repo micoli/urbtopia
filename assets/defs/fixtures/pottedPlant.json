@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 410,
+  "venue": "hotel",
+  "category": "comfort",
+  "name": {
+    "en": "Potted plant",
+    "fr": "Plante en pot"
+  },
+  "model": "furniture-pottedplant",
+  "footprint": [1, 1],
+  "price": 35,
+  "minTier": 1,
+  "comfort": 0.5
+}

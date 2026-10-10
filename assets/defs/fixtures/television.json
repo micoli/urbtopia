@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 380,
+  "venue": "hotel",
+  "category": "comfort",
+  "name": {
+    "en": "Television",
+    "fr": "Télévision"
+  },
+  "model": "furniture-televisionmodern",
+  "footprint": [1, 1],
+  "price": 160,
+  "minTier": 2,
+  "minRank": 2,
+  "comfort": 1
+}

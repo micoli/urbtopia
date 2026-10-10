@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import type { BuildingKind } from '../../../../src/core/buildings/buildingDefinition'
 import { modelSchema } from '../../../../src/core/models/modelSchema'
+import { STAFF_ROLES_ALL } from '../../../../src/core/venues/venueVocabulary'
 import { specOf, type CollectionName, type Definition } from '../../../../scripts/collections'
 import { singletonSpecOf, type SingletonName } from '../../../../scripts/singletons'
 
@@ -38,7 +39,7 @@ export type FieldSpec = Base &
     | { type: 'numberList'; integer: boolean }
     | { type: 'localized' }
     | { type: 'object'; fields: FieldSpec[] }
-    | { type: 'record'; targets: readonly CollectionName[]; integer: boolean; min?: number }
+    | { type: 'record'; targets: readonly CollectionName[]; keys?: readonly string[]; integer: boolean; min?: number }
     | { type: 'list'; fields: FieldSpec[] }
     | { type: 'map'; fields: FieldSpec[] }
     | { type: 'custom' }
@@ -72,6 +73,9 @@ const MODEL_KEYS = new Set(['model', 'produce', 'harvested', 'growth'])
 // Records keyed by ids of other collections.
 const RECORD_TARGETS: Record<string, readonly CollectionName[]> = { recipe: ['materials', 'crops'], goods: ['goods'] }
 
+// Records keyed by a closed vocabulary.
+const RECORD_KEYS: Record<string, readonly string[]> = { posts: STAFF_ROLES_ALL }
+
 export const labelOf = (key: string) => LABELS[key] ?? key.replace(/([A-Z])/g, ' $1').replace(/^./, letter => letter.toUpperCase())
 
 const isLocalized = (schema: JsonSchema) => schema.type === 'object' && Object.keys(schema.properties ?? {}).join() === 'en,fr'
@@ -101,7 +105,7 @@ function fieldOf(key: string, schema: JsonSchema, required: boolean, options: Fi
   if (schema.type === 'object' && !schema.properties && typeof schema.additionalProperties === 'object' && schema.additionalProperties.properties) return { ...base, type: 'map', fields: fieldsOf(schema.additionalProperties, options) }
   if (schema.type === 'object' && !schema.properties && typeof schema.additionalProperties === 'object') {
     const values = schema.additionalProperties
-    return { ...base, type: 'record', targets: RECORD_TARGETS[key] ?? [], integer: values.type === 'integer', min: values.minimum }
+    return { ...base, type: 'record', targets: RECORD_TARGETS[key] ?? [], keys: RECORD_KEYS[key], integer: values.type === 'integer', min: values.minimum }
   }
   if (schema.type === 'object' && schema.properties) return { ...base, type: 'object', fields: fieldsOf(schema, options) }
   return { ...base, type: 'text', readOnly: options.readOnly?.includes(key) }
@@ -120,12 +124,13 @@ const jsonOf = (schema: z.ZodType) => z.toJSONSchema(schema) as JsonSchema
 
 const collectionJson = new Map<CollectionName, JsonSchema>()
 
-// A discriminated union (buildings) shows the branch of the definition's kind.
+// A discriminated union shows the branch whose constants (kind, Venue) the definition holds.
 export function collectionFieldsOf(collection: CollectionName, definition: Definition): FieldSpec[] {
   if (!collectionJson.has(collection)) collectionJson.set(collection, jsonOf(specOf(collection).schema))
   const json = collectionJson.get(collection)!
-  const branch = json.oneOf ? json.oneOf.find(candidate => candidate.properties?.kind?.const === definition.kind) : json
-  return branch ? fieldsOf(branch, { hidden: HIDDEN }) : []
+  const matches = (candidate: JsonSchema) => (candidate.required ?? []).every(key => candidate.properties?.[key]?.const === undefined || candidate.properties[key].const === definition[key])
+  const branch = json.oneOf ? json.oneOf.find(matches) : json
+  return branch ? fieldsOf(branch, { hidden: HIDDEN, readOnly: ['venue'] }) : []
 }
 
 export const buildingFieldsOf = (kind: BuildingKind): FieldSpec[] => collectionFieldsOf('buildings', { kind })

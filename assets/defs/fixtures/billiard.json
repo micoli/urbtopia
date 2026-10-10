@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 90,
+  "venue": "arcade",
+  "category": "games",
+  "name": {
+    "en": "Billiard table",
+    "fr": "Table de billard"
+  },
+  "model": "poly-pizza-pool-table",
+  "footprint": [2, 1],
+  "price": 350,
+  "minTier": 2,
+  "playsPerHour": 3
+}

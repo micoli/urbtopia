@@ -1,6 +1,8 @@
-import { BUILDING_ENTRIES, tiersOf, variantTiersOf } from '../core/buildings/buildingDefinitions';
+import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core/buildings/buildingDefinitions';
+import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { FIXTURE_MODELS, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type BoatFamily, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
+import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
 import { VEHICLE_MODELS } from './vehicleModels';
@@ -86,18 +88,16 @@ export const TRAIN_MODELS = ['trains/train-electric-city-a', 'trains/train-elect
 
 const RAIL_MODELS = ['trains/railroad-straight', 'trains/railroad-corner-small'];
 
-// Where the corner piece stands, by kind of Venue: the models of each kit are cut around different origins.
-export const VENUE_CORNER_PLACEMENT = {
-  arcade: { x: -0.1, z: -0.1, rotation: Math.PI / 2 },
-  supermarket: { x: -0.1, z: -0.1, rotation: Math.PI / 2 },
-  hotel: { x: 0, z: 0, rotation: 0 },
-} as const;
+const shellOf = (type: VenueType) => definitionOf(type).shell!;
 
-export const VENUE_SHELL_MODELS = {
-  arcade: { floor: 'mini-arcade/floor', wall: 'mini-arcade/wall', corner: 'mini-arcade/wall-corner' },
-  supermarket: { floor: 'mini-market/floor', wall: 'mini-market/wall', corner: 'mini-market/wall-corner' },
-  hotel: { floor: 'furniture/floorFull', wall: 'furniture/wall', corner: 'furniture/wallCorner' },
-} as const;
+// Where the corner piece stands, by kind of Venue: the models of each kit are cut around different origins.
+export const VENUE_CORNER_PLACEMENT = Object.fromEntries(
+  VENUE_TYPES.map(type => [type, { x: shellOf(type).cornerX, z: shellOf(type).cornerZ, rotation: (shellOf(type).cornerRotation * Math.PI) / 180 }]),
+) as Record<VenueType, { x: number; z: number; rotation: number }>;
+
+export const VENUE_SHELL_MODELS = Object.fromEntries(
+  VENUE_TYPES.map(type => [type, { floor: modelFileOf(shellOf(type).floor), wall: modelFileOf(shellOf(type).wall), corner: modelFileOf(shellOf(type).corner) }]),
+) as Record<VenueType, { floor: string; wall: string; corner: string }>;
 
 const ROAD_MODELS = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout'].map((piece) => `roads/road-${piece}`);
 

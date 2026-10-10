@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 240,
+  "venue": "supermarket",
+  "category": "shelves",
+  "name": {
+    "en": "Standing freezers",
+    "fr": "Armoires frigorifiques"
+  },
+  "model": "mini-market-freezers-standing",
+  "footprint": [1, 1],
+  "price": 380,
+  "minTier": 3,
+  "minRank": 3,
+  "wear": 0.05,
+  "shelf": 20
+}

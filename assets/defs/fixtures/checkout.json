@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 180,
+  "venue": "supermarket",
+  "category": "checkouts",
+  "name": {
+    "en": "Checkout",
+    "fr": "Caisse"
+  },
+  "model": "mini-market-cash-register",
+  "footprint": [1, 1],
+  "price": 100,
+  "minTier": 1,
+  "wear": 0.1,
+  "checkout": 20
+}

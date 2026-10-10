@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 420,
+  "venue": "hotel",
+  "category": "comfort",
+  "name": {
+    "en": "Coffee corner",
+    "fr": "Coin café"
+  },
+  "model": "furniture-kitchencoffeemachine",
+  "footprint": [1, 1],
+  "price": 180,
+  "minTier": 2,
+  "minRank": 2,
+  "comfort": 1.5
+}

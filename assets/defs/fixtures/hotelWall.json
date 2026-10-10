@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 430,
+  "venue": "hotel",
+  "category": "walls",
+  "name": {
+    "en": "Wall",
+    "fr": "Mur"
+  },
+  "model": "furniture-wall",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "partition": true
+}

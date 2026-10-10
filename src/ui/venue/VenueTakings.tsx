@@ -20,7 +20,7 @@ export function VenueTakings({ building, editable = false }: VenueTakingsProps) 
   const type = venueTypeOf(building);
   const rank = venueRankOf(building);
   const nextAt = nextRankAt(type, rank);
-  const full = building.venue.takings >= takingsCapOf(building.tier);
+  const full = building.venue.takings >= takingsCapOf(venueTypeOf(building), building.tier);
   return (
     <>
       {performance.powered ? null : <p className="note note--warn">{t('venue.shut')}</p>}
@@ -44,7 +44,7 @@ export function VenueTakings({ building, editable = false }: VenueTakingsProps) 
       {type === 'hotel' ? <VenueHotelStats venue={building.venue} performance={performance} /> : null}
       {full ? <p className="note note--warn">{t('venue.cap')}</p> : null}
       <ActionButton variant="primary" block disabled={due === 0} onClick={() => gameStore.getState().send({ type: 'Collect', buildingId: building.id })}>
-        {t('venue.collect')} · <UrbsAmount value={due} /> / <UrbsAmount value={takingsCapOf(building.tier)} />
+        {t('venue.collect')} · <UrbsAmount value={due} /> / <UrbsAmount value={takingsCapOf(venueTypeOf(building), building.tier)} />
       </ActionButton>
     </>
   );

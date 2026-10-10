@@ -1,5 +1,5 @@
 import type { FixtureId, StaffRole, VenueType } from '../core/engine/state';
-import type { FixtureCategory } from '../core/venues/fixtures';
+import { FIXTURE_ENTRIES, type FixtureCategory } from '../core/venues/fixtures';
 
 type VenueMessageKey =
   | 'error.unknownFixture'
@@ -94,7 +94,7 @@ type VenueMessageKey =
   | 'venue.reputation'
   | 'venue.cleanliness';
 
-const texts: Record<VenueMessageKey, readonly [string, string]> = {
+const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, readonly [string, string]> = {
   'venue.price.arcade': ['Price of a play', 'Prix d’une partie'],
   'venue.price.supermarket': ['Markup step (10% each)', 'Marge (10 % par palier)'],
   'venue.price.hotel': ['Room rate level', 'Niveau des tarifs'],
@@ -130,37 +130,7 @@ const texts: Record<VenueMessageKey, readonly [string, string]> = {
   'venue.roleEffect.stocker': ['Refills a shelf each hour from the Storehouse', 'Remplit un rayon par heure depuis l’entrepôt'],
   'venue.roleEffect.receptionist': ['Checks guests in: more stays', 'Accueille les clients : plus de séjours'],
   'venue.roleEffect.housekeeper': ['Cleans 10 rooms a day: a clean hotel keeps its reputation', 'Nettoie 10 chambres par jour : un hôtel propre garde sa réputation'],
-  'venue.fixture.checkout': ['Checkout', 'Caisse'],
-  'venue.fixture.shelfBags': ['Shelf of bags', 'Rayon de sachets'],
-  'venue.fixture.shelfBoxes': ['Shelf of boxes', 'Rayon de cartons'],
-  'venue.fixture.displayBread': ['Bread display', 'Étal de pain'],
-  'venue.fixture.displayFruit': ['Fruit display', 'Étal de fruits'],
-  'venue.fixture.freezer': ['Freezer', 'Congélateur'],
-  'venue.fixture.freezerStanding': ['Standing freezers', 'Armoires frigorifiques'],
-  'venue.fixture.shoppingBasket': ['Shopping basket', 'Panier'],
-  'venue.fixture.shoppingCart': ['Shopping cart', 'Chariot'],
-  'venue.fixture.bottleReturn': ['Bottle return', 'Consigne de bouteilles'],
-  'venue.fixture.receptionDesk': ['Reception desk', 'Réception'],
-  'venue.fixture.singleBed': ['Single bed', 'Lit simple'],
-  'venue.fixture.doubleBed': ['Double bed', 'Lit double'],
-  'venue.fixture.bunkBed': ['Bunk bed', 'Lits superposés'],
-  'venue.fixture.toilet': ['Toilet', 'Toilettes'],
-  'venue.fixture.shower': ['Shower', 'Douche'],
-  'venue.fixture.bathtub': ['Bathtub', 'Baignoire'],
-  'venue.fixture.sofa': ['Sofa', 'Canapé'],
-  'venue.fixture.television': ['Television', 'Télévision'],
-  'venue.fixture.floorLamp': ['Floor lamp', 'Lampadaire'],
-  'venue.fixture.rug': ['Rug', 'Tapis'],
-  'venue.fixture.pottedPlant': ['Potted plant', 'Plante en pot'],
-  'venue.fixture.coffeeCorner': ['Coffee corner', 'Coin café'],
-  'venue.fixture.miniFridge': ['Mini fridge', 'Mini-réfrigérateur'],
   'venue.category.walls': ['Walls', 'Murs'],
-  'venue.fixture.arcadeWall': ['Wall', 'Mur'],
-  'venue.fixture.arcadeWindow': ['Wall with a window', 'Mur à fenêtre'],
-  'venue.fixture.marketWall': ['Wall', 'Mur'],
-  'venue.fixture.marketWindow': ['Wall with a window', 'Mur à fenêtre'],
-  'venue.fixture.hotelWall': ['Wall', 'Mur'],
-  'venue.fixture.hotelWindow': ['Wall with a window', 'Mur à fenêtre'],
   'venue.category.games': ['Games', 'Jeux'],
   'venue.category.service': ['Service', 'Services'],
   'venue.category.furniture': ['Furniture', 'Mobilier'],
@@ -249,24 +219,10 @@ const texts: Record<VenueMessageKey, readonly [string, string]> = {
   'venue.move': ['Move', 'Déplacer'],
   'venue.remove': ['Remove', 'Retirer'],
   'venue.entrance': ['Entrance', 'Entrée'],
-  'venue.fixture.counter': ['Counter', 'Comptoir'],
-  'venue.fixture.barrelClimber': ['Barrel climber', 'Grimpeur de tonneaux'],
-  'venue.fixture.spaceShooter': ['Space shooter', 'Tir spatial'],
-  'venue.fixture.airHockey': ['Air hockey table', 'Table d’air hockey'],
-  'venue.fixture.table': ['Table', 'Table'],
-  'venue.fixture.chair': ['Chair', 'Chaise'],
-  'venue.fixture.barStool': ['Bar stool', 'Tabouret de bar'],
-  'venue.fixture.pinball': ['Pinball', 'Flipper'],
-  'venue.fixture.billiard': ['Billiard table', 'Table de billard'],
-  'venue.fixture.vendingMachine': ['Snack machine', 'Distributeur de snacks'],
-  'venue.fixture.clawMachine': ['Claw machine', 'Pince à peluches'],
-  'venue.fixture.basketball': ['Basketball game', 'Jeu de basket'],
-  'venue.fixture.danceMachine': ['Dance machine', 'Borne de danse'],
-  'venue.fixture.prizeWheel': ['Prize wheel', 'Roue des lots'],
-  'venue.fixture.ticketMachine': ['Ticket machine', 'Distributeur de tickets'],
 };
 
 export function venueMessages(language: 'en' | 'fr'): Record<VenueMessageKey, string> {
   const index = language === 'en' ? 0 : 1;
-  return Object.fromEntries(Object.entries(texts).map(([key, pair]) => [key, pair[index]])) as Record<VenueMessageKey, string>;
+  const fixtureNames = FIXTURE_ENTRIES.map(({ id, name }) => [`venue.fixture.${id}`, name[language]]);
+  return Object.fromEntries([...Object.entries(texts).map(([key, pair]) => [key, pair[index]]), ...fixtureNames]) as Record<VenueMessageKey, string>;
 }

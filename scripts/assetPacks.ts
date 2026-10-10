@@ -1,4 +1,4 @@
-import { MINI_CHARACTER_FILES } from '../src/scene/venueCrowdModels.ts';
+import { MINI_CHARACTER_FILES } from '../src/scene/miniCharacters.ts';
 import { existsSync, readFileSync } from 'node:fs';
 import { readCollections } from './collectionRead.ts';
 import { COLLECTION_NAMES, specOf } from './collections.ts';

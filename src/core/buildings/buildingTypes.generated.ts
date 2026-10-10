@@ -426,3 +426,8 @@ export type FacilityType =
   | 'theater'
   | 'townHall'
   | 'university';
+
+export type VenueType =
+  | 'arcade'
+  | 'hotel'
+  | 'supermarket';

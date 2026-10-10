@@ -1,7 +1,8 @@
 import { citizensOf } from '../buildings/city';
 import { centerOf } from '../environment/ecology';
 import { isWithinReach } from '../services/facilities';
-import type { Building, GameState } from '../engine/state';
+import type { Building, GameState, VenueType } from '../engine/state';
+import { venueTierOf } from './profiles';
 
 export const VENUE = {
   hourMs: 3_600_000,
@@ -10,17 +11,15 @@ export const VENUE = {
   minPrice: 1,
   maxPrice: 6,
   priceTolerance: 0.2,
-  takingsCaps: [400, 900, 1800] as readonly number[],
-  gridSizes: [6, 8, 10] as readonly number[],
   refundRatio: 0.5,
 };
 
 // The entrance stays on the same cell of the north wall at every Tier, so growing the grid never moves it under a Fixture.
 export const entranceCell = (_tier = 1): { x: number; y: number } => ({ x: 3, y: 0 });
 
-export const gridSizeOf = (tier: number): number => VENUE.gridSizes[tier - 1] ?? VENUE.gridSizes[0]!;
+export const gridSizeOf = (type: VenueType, tier: number): number => venueTierOf(type, tier).gridSize!;
 
-export const takingsCapOf = (tier: number): number => VENUE.takingsCaps[tier - 1] ?? VENUE.takingsCaps[VENUE.takingsCaps.length - 1]!;
+export const takingsCapOf = (type: VenueType, tier: number): number => venueTierOf(type, tier).takingsCap!;
 
 export const priceAcceptance = (price: number): number => Math.min(1, Math.max(0, 1 - VENUE.priceTolerance * (price - VENUE.playPrice)));
 

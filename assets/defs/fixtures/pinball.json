@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 80,
+  "venue": "arcade",
+  "category": "games",
+  "name": {
+    "en": "Pinball",
+    "fr": "Flipper"
+  },
+  "model": "mini-arcade-pinball",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 2,
+  "minRank": 2,
+  "loud": true,
+  "playsPerHour": 6
+}

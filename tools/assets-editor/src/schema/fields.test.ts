@@ -28,6 +28,13 @@ describe('form fields from the JSON Schemas', () => {
     expect(models?.type === 'object' && models.fields.map(({ key, type }) => `${key}:${type}`)).toEqual(['growth:modelList', 'produce:model', 'harvested:model'])
   })
 
+  it('gives a Fixture the fields of its own Venue', () => {
+    const keys = (venue: string) => collectionFieldsOf('fixtures', { kind: 'fixture', venue }).map(({ key }) => key)
+    expect(keys('hotel')).toContain('sleeps')
+    expect(keys('hotel')).not.toContain('playsPerHour')
+    expect(keys('arcade')).toContain('playsPerHour')
+  })
+
   it('describes pack formats as a list of objects', () => {
     expect(singletonFieldsOf('packFormats')).toMatchObject([{ key: 'formats', type: 'list' }])
   })

@@ -40,60 +40,9 @@ export interface MarketPrice {
   updatedAt: number;
 }
 
-export type VenueType = 'arcade' | 'supermarket' | 'hotel';
-
-export type ArcadeFixtureId =
-  | 'counter'
-  | 'barrelClimber'
-  | 'spaceShooter'
-  | 'airHockey'
-  | 'table'
-  | 'chair'
-  | 'barStool'
-  | 'pinball'
-  | 'billiard'
-  | 'vendingMachine'
-  | 'clawMachine'
-  | 'basketball'
-  | 'danceMachine'
-  | 'prizeWheel'
-  | 'ticketMachine'
-  | 'arcadeWall'
-  | 'arcadeWindow';
-
-export type SupermarketFixtureId =
-  | 'checkout'
-  | 'shelfBags'
-  | 'shelfBoxes'
-  | 'displayBread'
-  | 'displayFruit'
-  | 'freezer'
-  | 'freezerStanding'
-  | 'shoppingBasket'
-  | 'shoppingCart'
-  | 'bottleReturn'
-  | 'marketWall'
-  | 'marketWindow';
-
-export type HotelFixtureId =
-  | 'receptionDesk'
-  | 'singleBed'
-  | 'doubleBed'
-  | 'bunkBed'
-  | 'toilet'
-  | 'shower'
-  | 'bathtub'
-  | 'sofa'
-  | 'television'
-  | 'floorLamp'
-  | 'rug'
-  | 'pottedPlant'
-  | 'coffeeCorner'
-  | 'miniFridge'
-  | 'hotelWall'
-  | 'hotelWindow';
-
-export type FixtureId = ArcadeFixtureId | SupermarketFixtureId | HotelFixtureId;
+export type { VenueType } from '../buildings/buildingTypes.generated';
+export type { ArcadeFixtureId, FixtureId, HotelFixtureId, SupermarketFixtureId } from '../venues/fixtureTypes.generated';
+import type { FixtureId } from '../venues/fixtureTypes.generated';
 
 export interface VenueFixture extends Coord {
   id: number;

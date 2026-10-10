@@ -6,6 +6,7 @@ import { NumberControl } from './NumberControl'
 interface Props {
   value: Record<string, number> | undefined
   targets: readonly CollectionName[]
+  keys?: readonly string[]
   integer: boolean
   min?: number
   label: string
@@ -14,10 +15,10 @@ interface Props {
 }
 
 // A record keyed by ids of other collections, such as a recipe of Materials and Crops.
-export function RecordControl({ value, targets, integer, min, label, compact, onChange }: Props) {
+export function RecordControl({ value, targets, keys, integer, min, label, compact, onChange }: Props) {
   const collections = useDocument(state => state.doc.collections)
   const entries = Object.entries(value ?? {})
-  const options = targets.flatMap(target => Object.keys(collections[target]))
+  const options = keys ?? targets.flatMap(target => Object.keys(collections[target]))
   const unused = options.filter(option => !(option in (value ?? {})))
   const replaceKey = (from: string, to: string) => onChange(Object.fromEntries(entries.map(([key, amount]) => [key === from ? to : key, amount])))
 

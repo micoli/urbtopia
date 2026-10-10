@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 100,
+  "venue": "arcade",
+  "category": "service",
+  "name": {
+    "en": "Snack machine",
+    "fr": "Distributeur de snacks"
+  },
+  "model": "mini-arcade-vending-machine",
+  "footprint": [1, 1],
+  "price": 200,
+  "minTier": 2,
+  "playsPerHour": 0
+}

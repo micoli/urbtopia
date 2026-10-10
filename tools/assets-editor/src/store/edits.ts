@@ -44,13 +44,14 @@ export const toggleRetired = ({ retired, ...definition }: Definition): Definitio
 export const sectionOf = (building: FlatBuilding): BuildSection =>
   building.kind === 'nature' ? (building.family === 'decoration' ? 'build.decoration' : 'build.greenSpaces') : (building.section ?? BUILD_SECTION_TITLES[0])
 
-// The list groups of a collection: build menu sections for buildings, one group otherwise.
-export const groupOf = (collection: CollectionName, definition: Definition): string => (collection === 'buildings' ? sectionOf(definition as unknown as FlatBuilding) : collection)
+// The list groups of a collection: build menu sections for buildings, their Venue for Fixtures, one group otherwise.
+export const groupOf = (collection: CollectionName, definition: Definition): string =>
+  collection === 'buildings' ? sectionOf(definition as unknown as FlatBuilding) : collection === 'fixtures' ? String(definition.venue) : collection
 
 const PLACED_DEFAULTS = { footprint: [1, 1] as [number, number], cost: 0, unlockCitizens: 0, requiresRoad: true }
 
 // What Tier 1 of a kind with Tiers needs besides its model and footprint.
-const TIER_ONE: Partial<Record<BuildingKind, Record<string, number>>> = {
+const TIER_ONE: Partial<Record<BuildingKind, Record<string, unknown>>> = {
   home: { citizens: 1, power: 1, water: 1 },
   production: { durationFactor: 1, maxSlots: 2, yield: 1 },
   farm: { seedCapacity: 10, fieldCap: 4 },
@@ -58,27 +59,30 @@ const TIER_ONE: Partial<Record<BuildingKind, Record<string, number>>> = {
   utility: { capacity: 1 },
   facility: { capacity: 100 },
   casino: { radius: 8, wellbeingBonus: 0, maxStake: 100, power: 1, blockmatchLevel: 1 },
+  venue: { gridSize: 6, takingsCap: 400, power: 1, eventBudget: 0, eventMultiplier: 1, posts: { manager: 0 } },
 }
 
 // The fields a kind adds to a placed building, besides its Tiers.
-const EXTRA: Partial<Record<BuildingKind, Record<string, unknown>>> = {
-  casino: { stakeSteps: [10], gameMinTier: { slotMachine: 1, blackjack: 1, blockmatch: 1 } },
-  facility: { category: 'education', radius: 10, power: 1, water: 0 },
-  sport: { radius: 1, wellbeingBonus: 0 },
-  solar: { output: 1 },
-  battery: { storage: 1, rate: 1, radius: 1 },
-  backup: { capacity: 1, costPerUnit: 1 },
-}
+const extraOf = (kind: BuildingKind, model: string): Record<string, unknown> | undefined =>
+  ({
+    facility: { category: 'education', radius: 10, power: 1, water: 0 },
+    casino: { stakeSteps: [10], gameMinTier: { slotMachine: 1, blackjack: 1, blockmatch: 1 } },
+    venue: { rankAt: [0, 0], staffRoles: ['manager'], frontRole: 'manager', fixtureCategories: ['walls'], shell: { floor: model, wall: model, corner: model, cornerX: 0, cornerZ: 0, cornerRotation: 0 }, staffModels: [model] },
+    sport: { radius: 1, wellbeingBonus: 0 },
+    solar: { output: 1 },
+    battery: { storage: 1, rate: 1, radius: 1 },
+    backup: { capacity: 1, costPerUnit: 1 },
+  })[kind as string]
 
-const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { facility: 'build.publicFacilities', home: 'build.housing', sport: 'build.sport', storage: 'build.storage', utility: 'build.utilities', solar: 'build.utilities', battery: 'build.utilities', backup: 'build.utilities' }
+const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { venue: 'build.leisure', casino: 'build.leisure', facility: 'build.publicFacilities', home: 'build.housing', sport: 'build.sport', storage: 'build.storage', utility: 'build.utilities', solar: 'build.utilities', battery: 'build.utilities', backup: 'build.utilities' }
 
 export function blankBuilding(kind: BuildingKind, model: string): FlatBuilding {
   const name = { en: '', fr: '' }
   if (kind === 'nature') return { kind, model, name, family: 'decoration' }
   const sited = { section: SECTIONS[kind] ?? 'build.production', cost: 0, unlockCitizens: 0, requiresRoad: true }
   const tierOne = TIER_ONE[kind]
-  if (tierOne) return { kind, name, ...sited, ...EXTRA[kind], tiers: [{ model, footprint: PLACED_DEFAULTS.footprint, ...tierOne }] } as FlatBuilding
-  return { kind, model, name, ...sited, footprint: PLACED_DEFAULTS.footprint, ...EXTRA[kind] } as FlatBuilding
+  if (tierOne) return { kind, name, ...sited, ...extraOf(kind, model), tiers: [{ model, footprint: PLACED_DEFAULTS.footprint, ...tierOne }] } as FlatBuilding
+  return { kind, model, name, ...sited, footprint: PLACED_DEFAULTS.footprint, ...extraOf(kind, model) } as FlatBuilding
 }
 
 const name = { en: '', fr: '' }
@@ -87,6 +91,7 @@ const name = { en: '', fr: '' }
 export function blankDefinition(collection: CollectionName, model: string): Definition {
   if (collection === 'buildings') return blankBuilding('standard', model) as unknown as Definition
   if (collection === 'materials') return { kind: 'material', name, producedBy: 'workshop', durationMinutes: 1, unlockCitizens: 0, minTier: 1 }
+  if (collection === 'fixtures') return { kind: 'fixture', venue: 'arcade', category: 'games', name, model, footprint: [1, 1], price: 0, minTier: 1, playsPerHour: 0 }
   if (collection === 'goods') return { kind: 'good', name, recipe: {}, durationMinutes: 1, value: 0, unlockCitizens: 0, minTier: 1 }
   return { kind: 'crop', name, growthMinutes: 1, water: 1, yield: 1, seedShare: 0.5, seedPrice: 1, unlockCitizens: 0, packingMinutes: 1, packedValue: 0, models: { growth: [model, model, model, model] } }
 }

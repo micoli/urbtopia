@@ -1,0 +1,413 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "venue": {
+          "type": "string",
+          "const": "arcade"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "const": "fixture"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "games",
+            "service",
+            "furniture",
+            "shelves",
+            "checkouts",
+            "decor",
+            "beds",
+            "bathroom",
+            "comfort",
+            "reception",
+            "walls"
+          ]
+        },
+        "model": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "footprint": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "price": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "minTier": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "minRank": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "wear": {
+          "type": "number",
+          "minimum": 0
+        },
+        "tint": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "loud": {
+          "type": "boolean",
+          "const": true
+        },
+        "partition": {
+          "type": "boolean",
+          "const": true
+        },
+        "attract": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "playsPerHour": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "venue",
+        "kind",
+        "order",
+        "name",
+        "category",
+        "model",
+        "footprint",
+        "price",
+        "minTier",
+        "playsPerHour"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "venue": {
+          "type": "string",
+          "const": "supermarket"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "const": "fixture"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "games",
+            "service",
+            "furniture",
+            "shelves",
+            "checkouts",
+            "decor",
+            "beds",
+            "bathroom",
+            "comfort",
+            "reception",
+            "walls"
+          ]
+        },
+        "model": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "footprint": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "price": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "minTier": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "minRank": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "wear": {
+          "type": "number",
+          "minimum": 0
+        },
+        "tint": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "loud": {
+          "type": "boolean",
+          "const": true
+        },
+        "partition": {
+          "type": "boolean",
+          "const": true
+        },
+        "attract": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "shelf": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "checkout": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "venue",
+        "kind",
+        "order",
+        "name",
+        "category",
+        "model",
+        "footprint",
+        "price",
+        "minTier"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "venue": {
+          "type": "string",
+          "const": "hotel"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "const": "fixture"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "games",
+            "service",
+            "furniture",
+            "shelves",
+            "checkouts",
+            "decor",
+            "beds",
+            "bathroom",
+            "comfort",
+            "reception",
+            "walls"
+          ]
+        },
+        "model": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "footprint": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "price": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "minTier": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "minRank": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "wear": {
+          "type": "number",
+          "minimum": 0
+        },
+        "tint": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "loud": {
+          "type": "boolean",
+          "const": true
+        },
+        "partition": {
+          "type": "boolean",
+          "const": true
+        },
+        "attract": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "reception": {
+          "type": "boolean",
+          "const": true
+        },
+        "sleeps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "bath": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "comfort": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "venue",
+        "kind",
+        "order",
+        "name",
+        "category",
+        "model",
+        "footprint",
+        "price",
+        "minTier"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "title": "Fixture",
+  "description": "An item placed inside a Venue, one file per Fixture id in assets/defs/fixtures."
+}

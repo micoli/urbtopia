@@ -162,7 +162,7 @@ describe('Supermarket Venue', () => {
     const upgraded = send(state, { type: 'UpgradeBuilding', buildingId: 1 });
     const earned = { ...upgraded, buildings: upgraded.buildings.map(b => (b.type === 'supermarket' ? { ...b, venue: { ...b.venue!, earned: VENUE_PROFILES.supermarket.rankAt[0] } } : b)) };
     expect(store(upgraded).tier).toBe(2);
-    expect(takingsCapOf(2)).toBeGreaterThan(takingsCapOf(1));
+    expect(takingsCapOf('supermarket', 2)).toBeGreaterThan(takingsCapOf('supermarket', 1));
     expect(failure(state, place('freezer', 5, 5))).toBe('error.tierTooLow');
     expect(failure(upgraded, place('freezer', 5, 5))).toBe('error.rankTooLow');
     expect(failure(earned, place('freezer', 5, 5))).toBeNull();

@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 60,
+  "venue": "arcade",
+  "category": "furniture",
+  "name": {
+    "en": "Chair",
+    "fr": "Chaise"
+  },
+  "model": "furniture-chair",
+  "footprint": [1, 1],
+  "price": 25,
+  "minTier": 1,
+  "playsPerHour": 0
+}

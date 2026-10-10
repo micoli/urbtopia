@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { EVENT, eventBudgetOf, hiredOf, inCooldown, isEventActive, isVenue, venueRankOf } from '../../core';
+import { EVENT, eventBudgetOf, hiredOf, inCooldown, isEventActive, isVenue, venueRankOf, venueTypeOf } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
@@ -36,7 +36,7 @@ export function VenueEvents({ venueId }: VenueEventsProps) {
         <>
           <NumberStepper label={t('venue.eventStartsIn')} value={startsIn} min={0} max={EVENT.maxDelayHours} onChange={setStartsIn} />
           <ActionButton variant="primary" block disabled={hiredOf(venue, 'manager') === 0 || !rankReached} onClick={() => send({ type: 'ScheduleEvent', buildingId: venueId, startsInHours: startsIn })}>
-            {t('venue.eventTournament')} · {t('venue.eventCost')} <UrbsAmount value={eventBudgetOf(building.tier)} />
+            {t('venue.eventTournament')} · {t('venue.eventCost')} <UrbsAmount value={eventBudgetOf(venueTypeOf(building), building.tier)} />
           </ActionButton>
         </>
       )}

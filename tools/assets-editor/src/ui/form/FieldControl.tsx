@@ -67,7 +67,7 @@ export function FieldControl({ field, value, path, onChange, modelSlot, nested, 
     case 'localized':
       return <LocalizedControl value={value as LocalizedText | undefined} label={field.label} onChange={onChange} />
     case 'record':
-      return <RecordControl value={value as Record<string, number> | undefined} targets={field.targets} integer={field.integer} min={field.min} label={field.label} onChange={onChange} compact={compact} />
+      return <RecordControl value={value as Record<string, number> | undefined} targets={field.targets} keys={field.keys} integer={field.integer} min={field.min} label={field.label} onChange={onChange} compact={compact} />
     case 'object':
     case 'list':
       return nested(field)

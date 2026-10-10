@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 200,
+  "venue": "supermarket",
+  "category": "shelves",
+  "name": {
+    "en": "Shelf of boxes",
+    "fr": "Rayon de cartons"
+  },
+  "model": "mini-market-shelf-boxes",
+  "footprint": [1, 1],
+  "price": 120,
+  "minTier": 1,
+  "wear": 0.02,
+  "shelf": 12
+}

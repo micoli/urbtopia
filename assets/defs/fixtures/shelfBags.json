@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 190,
+  "venue": "supermarket",
+  "category": "shelves",
+  "name": {
+    "en": "Shelf of bags",
+    "fr": "Rayon de sachets"
+  },
+  "model": "mini-market-shelf-bags",
+  "footprint": [1, 1],
+  "price": 120,
+  "minTier": 1,
+  "wear": 0.02,
+  "shelf": 12
+}

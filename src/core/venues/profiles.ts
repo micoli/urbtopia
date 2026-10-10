@@ -1,14 +1,19 @@
+import { BUILDING_ENTRIES, definitionOf, tiersOf } from '../buildings/buildingDefinitions';
 import type { Building, VenueType } from '../engine/state';
 
-export const VENUE_TYPES: readonly VenueType[] = ['arcade', 'supermarket', 'hotel'];
+export const VENUE_TYPES: readonly VenueType[] = BUILDING_ENTRIES.filter(({ kind }) => kind === 'venue').map(({ id }) => id as VenueType);
 
-export const isVenueType = (type: string): type is VenueType => (VENUE_TYPES as readonly string[]).includes(type);
+const VENUE_SET: ReadonlySet<string> = new Set(VENUE_TYPES);
+
+export const isVenueType = (type: string): type is VenueType => VENUE_SET.has(type);
 
 // `rankAt`: net earnings a Venue must have made since it opened to reach Rank 2 and Rank 3.
-export const VENUE_PROFILES: Record<VenueType, { power: number; upgradeCosts: Record<number, number>; rankAt: readonly [number, number] }> = {
-  arcade: { power: 1.5, upgradeCosts: { 2: 5000, 3: 12000 }, rankAt: [600, 2500] },
-  supermarket: { power: 2, upgradeCosts: { 2: 8000, 3: 18000 }, rankAt: [1200, 5000] },
-  hotel: { power: 2.5, upgradeCosts: { 2: 12000, 3: 28000 }, rankAt: [2000, 9000] },
+export const VENUE_PROFILES = Object.fromEntries(VENUE_TYPES.map(type => [type, { rankAt: definitionOf(type).rankAt! }])) as unknown as Record<VenueType, { rankAt: readonly [number, number] }>;
+
+// Everything a Venue's Tier sets: interior size, Takings cap, power, events and Staff posts.
+export const venueTierOf = (type: VenueType, tier: number) => {
+  const tiers = tiersOf(type);
+  return tiers[tier - 1] ?? tiers[tiers.length - 1]!;
 };
 
-export const venuePower = (building: Pick<Building, 'type' | 'tier'>): number => (isVenueType(building.type) ? VENUE_PROFILES[building.type].power * building.tier : 0);
+export const venuePower = (building: Pick<Building, 'type' | 'tier'>): number => (isVenueType(building.type) ? venueTierOf(building.type, building.tier).power! : 0);

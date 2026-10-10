@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 450,
+  "venue": "hotel",
+  "category": "comfort",
+  "name": {
+    "en": "Mini fridge",
+    "fr": "Mini-réfrigérateur"
+  },
+  "model": "furniture-kitchenfridgesmall",
+  "footprint": [1, 1],
+  "price": 220,
+  "minTier": 3,
+  "minRank": 3,
+  "comfort": 1.5
+}

@@ -1,10 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "venue",
   "order": 330,
   "section": "build.leisure",
-  "model": "commercial-building-j",
-  "footprint": [2, 2],
   "cost": 2500,
   "unlockCitizens": 250,
   "requiresRoad": true,
@@ -16,5 +14,69 @@
   "description": {
     "en": "A Venue you fit out and run from the inside. Place game machines, attract Visitors from the neighbourhood and collect the Takings.",
     "fr": "Un établissement que vous aménagez et gérez de l'intérieur. Placez des bornes de jeu, attirez les visiteurs du quartier et encaissez les recettes."
-  }
+  },
+  "tiers": [
+    {
+      "model": "commercial-building-j",
+      "footprint": [2, 2],
+      "gridSize": 6,
+      "takingsCap": 400,
+      "power": 1.5,
+      "eventBudget": 300,
+      "eventMultiplier": 1.5,
+      "posts": {
+        "manager": 0,
+        "employee": 1,
+        "technician": 0,
+        "security": 0
+      }
+    },
+    {
+      "gridSize": 8,
+      "takingsCap": 900,
+      "power": 3,
+      "eventBudget": 600,
+      "eventMultiplier": 2,
+      "posts": {
+        "manager": 1,
+        "employee": 2,
+        "technician": 0,
+        "security": 1
+      },
+      "upgradeCost": {
+        "urbs": 5000,
+        "goods": {}
+      }
+    },
+    {
+      "gridSize": 10,
+      "takingsCap": 1800,
+      "power": 4.5,
+      "eventBudget": 1200,
+      "eventMultiplier": 2.5,
+      "posts": {
+        "manager": 1,
+        "employee": 3,
+        "technician": 2,
+        "security": 2
+      },
+      "upgradeCost": {
+        "urbs": 12000,
+        "goods": {}
+      }
+    }
+  ],
+  "rankAt": [600, 2500],
+  "staffRoles": ["manager", "employee", "technician", "security"],
+  "frontRole": "employee",
+  "fixtureCategories": ["games", "service", "furniture", "walls"],
+  "shell": {
+    "floor": "mini-arcade-floor",
+    "wall": "mini-arcade-wall",
+    "corner": "mini-arcade-wall-corner",
+    "cornerX": -0.1,
+    "cornerZ": -0.1,
+    "cornerRotation": 90
+  },
+  "staffModels": ["mini-arcade-character-employee"]
 }
