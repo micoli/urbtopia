@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { advance, dispatch, newGame, upgradeCostOf, type Command, type GameState } from '../index';
 import { createBuilding } from '../buildings/buildingSpecs';
 import { jobsOf } from '../traffic/jobs';
-import { canSell, saleIntervalOf, sellableGoodsOf, shopTierOf, slotPriceOf } from './shops';
+import { definitionOf, tiersOf } from '../buildings/buildingDefinitions';
+import { GOODS } from './items';
+import { SHOP_TYPES, canSell, saleIntervalOf, sellableGoodsOf, shopTierOf, slotPriceOf } from './shops';
 
 const T0 = 1_700_000_000_000;
 
@@ -106,5 +108,31 @@ describe('General shop premium', () => {
   it('keeps working through advance', () => {
     const { state } = city('shop');
     expect(advance(state, T0 + 60_000).state.buildings).toHaveLength(state.buildings.length);
+  });
+});
+
+describe('Shops in the build menu', () => {
+  const entries = SHOP_TYPES.map((type) => definitionOf(type));
+
+  it('offers every Shop in the Shops section', () => {
+    expect(SHOP_TYPES).toHaveLength(5);
+    expect(entries.every(({ section }) => section === 'build.shops')).toBe(true);
+  });
+
+  it('unlocks the specialised Shops with the city', () => {
+    const unlocks = Object.fromEntries(entries.map(({ id, unlockCitizens }) => [id, unlockCitizens]));
+    expect(unlocks).toMatchObject({ shop: 0, shopConstruction: 0, shopFood: 50, shopEquipment: 150, shopLuxury: 400 });
+  });
+
+  it('gives each specialised Shop its own Good category and four Tiers', () => {
+    const categories = entries.filter(({ id }) => id !== 'shop').map(({ goodCategory }) => goodCategory).sort();
+    expect(categories).toEqual(['construction', 'equipment', 'food', 'luxury']);
+    for (const { id } of entries) expect(tiersOf(id)).toHaveLength(4);
+  });
+
+  it('only lists Goods of the Shop category in a specialised Shop', () => {
+    for (const { id, goodCategory } of entries.filter(({ id }) => id !== 'shop')) {
+      for (const tier of [1, 2, 3, 4]) for (const good of shopTierOf({ type: id, tier }).sells) expect(GOODS[good].category).toBe(goodCategory);
+    }
   });
 });

@@ -1,6 +1,6 @@
 # Four specialised Shops in the build menu
 
-Status: ready-for-agent
+Status: resolved
 Spec: [shop-categories](../spec.md)
 Blocked by: 02
 
