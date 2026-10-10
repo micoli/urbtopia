@@ -1,6 +1,7 @@
 import type { Problem } from '../../../../../scripts/definitionProblems'
 import type { FieldSpec } from '../../schema/fields'
 import type { FieldPath, ModelSlot } from '../form/FieldControl'
+import { FieldHelp } from '../form/FieldHelp'
 import { button } from '../styles'
 import { TierCell } from './TierCell'
 
@@ -61,7 +62,7 @@ export function TiersMatrix({ fill, fields, own, effective, path, problems, sele
         <tbody>
           {fields.map(field => (
             <tr key={field.key} className="border-t border-zinc-100 align-top">
-              <th className="sticky left-0 z-10 bg-white px-3 py-2 text-left text-xs font-medium whitespace-nowrap text-zinc-600">{field.label}</th>
+              <th className="sticky left-0 z-10 bg-white px-3 py-2 text-left text-xs font-medium whitespace-nowrap text-zinc-600"><FieldHelp name={field.key}>{field.label}</FieldHelp></th>
               {own.map((tier, index) => (
                 <td key={index} className={`px-1 py-1 ${selected === index ? 'bg-indigo-50/40' : ''}`}>
                   <TierCell

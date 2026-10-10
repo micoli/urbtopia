@@ -5,6 +5,7 @@ import { singletonFieldsOf } from '../schema/fields'
 import { useDocument, type Doc } from '../store/documentStore'
 import { setIn, setSingleton } from '../store/edits'
 import type { FieldPath } from './form/FieldControl'
+import { FieldDocsScope } from './form/fieldDocsScope'
 import { SchemaForm } from './form/SchemaForm'
 import { badge, panel } from './styles'
 
@@ -25,6 +26,7 @@ export function SingletonPanel({ name }: Props) {
   })
 
   return (
+    <FieldDocsScope value={[name]}>
     <article className={`${panel} flex flex-col`}>
       <header className="flex flex-wrap items-center gap-2 border-b border-zinc-200 p-4">
         <h2 className="text-lg font-semibold">{spec.title}</h2>
@@ -35,5 +37,6 @@ export function SingletonPanel({ name }: Props) {
         <SchemaForm fields={singletonFieldsOf(name)} value={value} problems={problems} modelSlot={modelSlot} onChange={(key, next) => change(doc => setSingleton(doc, name, setIn(value, [key], next) as Record<string, unknown>))} />
       </div>
     </article>
+    </FieldDocsScope>
   )
 }

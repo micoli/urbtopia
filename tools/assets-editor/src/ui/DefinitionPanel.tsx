@@ -12,6 +12,7 @@ import { ConfirmDialog } from './ConfirmDialog'
 import { CreateDialog } from './CreateDialog'
 import { DescriptionTab } from './description/DescriptionTab'
 import type { FieldPath } from './form/FieldControl'
+import { FieldDocsScope } from './form/fieldDocsScope'
 import { SchemaForm } from './form/SchemaForm'
 import { badge, button, input, panel } from './styles'
 import { Tabs, type Tab } from './Tabs'
@@ -88,6 +89,7 @@ export function DefinitionPanel({ collection, id }: Props) {
   }
 
   return (
+    <FieldDocsScope value={[String(definition.kind), collection]}>
     <article className={`${panel} flex h-full min-h-0 flex-col`}>
       <header className="flex shrink-0 flex-wrap items-start gap-3 border-b border-zinc-200 p-4">
         <div className="min-w-0 flex-1">
@@ -130,5 +132,6 @@ export function DefinitionPanel({ collection, id }: Props) {
         />
       )}
     </article>
+    </FieldDocsScope>
   )
 }

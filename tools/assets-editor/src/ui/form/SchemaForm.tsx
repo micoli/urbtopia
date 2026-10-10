@@ -55,6 +55,7 @@ export function SchemaForm({ fields, value, problems, onChange, path = [], model
         return (
           <FieldShell
             key={field.key}
+            name={field.key}
             label={field.label}
             required={field.required}
             errors={containerErrors}
