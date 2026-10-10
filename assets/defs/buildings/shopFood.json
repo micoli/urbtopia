@@ -1,0 +1,69 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "shop",
+  "order": 50,
+  "section": "build.shops",
+  "cost": 300,
+  "unlockCitizens": 50,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "initialSlots": 3,
+  "name": {
+    "en": "Grocery",
+    "fr": "Épicerie"
+  },
+  "description": {
+    "en": "Sells food Goods, canned fish and packed Crops, to Citizens for Urbs. Up to {maxTierMaxSlots} sales slots.",
+    "fr": "Vend des produits alimentaires, conserves de poisson et récoltes emballées, aux habitants contre des Urbs. Jusqu’à {maxTierMaxSlots} emplacements de vente."
+  },
+  "tiers": [
+    {
+      "footprint": [1, 1],
+      "model": "commercial-building-a",
+      "maxSlots": 4,
+      "sells": ["cannedFish"],
+      "saleIntervalFactor": 1,
+      "jobs": 15
+    },
+    {
+      "model": "commercial-building-b",
+      "maxSlots": 5,
+      "sells": ["cannedFish"],
+      "saleIntervalFactor": 0.85,
+      "jobs": 25,
+      "upgradeCost": {
+        "urbs": 300,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "model": "commercial-building-c",
+      "maxSlots": 6,
+      "sells": ["cannedFish"],
+      "saleIntervalFactor": 0.7,
+      "jobs": 40,
+      "upgradeCost": {
+        "urbs": 800,
+        "goods": {
+          "bricks": 4
+        }
+      }
+    },
+    {
+      "model": "commercial-building-d",
+      "maxSlots": 8,
+      "sells": ["cannedFish"],
+      "saleIntervalFactor": 0.55,
+      "jobs": 60,
+      "upgradeCost": {
+        "urbs": 2000,
+        "goods": {
+          "tiles": 4
+        }
+      }
+    }
+  ],
+  "goodCategory": "food"
+}

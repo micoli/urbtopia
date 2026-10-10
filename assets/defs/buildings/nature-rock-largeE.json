@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1130,
+  "model": "nature-rock-largee",
+  "name": {
+    "en": "Rock large E",
+    "fr": "Grand rocher E"
+  },
+  "family": "habitat"
+}

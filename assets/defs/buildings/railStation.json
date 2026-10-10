@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "transitStop",
+  "order": 240,
+  "section": "build.transport",
+  "model": "industrial-building-q",
+  "footprint": [2, 1],
+  "cost": 600,
+  "unlockCitizens": 600,
+  "requiresRoad": true,
+  "name": {
+    "en": "Railway station",
+    "fr": "Gare ferroviaire"
+  },
+  "description": {
+    "en": "A passenger stop on a Railway. Create a connected line and assign purchased electric or coal Trains in City management.",
+    "fr": "Un arrêt voyageurs sur une voie ferrée. Créez une ligne connectée et affectez-y des trains électriques ou à charbon achetés dans la gestion de la ville."
+  },
+  "mode": "rail",
+  "network": {
+    "tileCost": 24,
+    "speed": 5,
+    "capacity": 400
+  }
+}

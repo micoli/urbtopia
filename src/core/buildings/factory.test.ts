@@ -134,3 +134,39 @@ describe('UpgradeBuilding on the Storehouse', () => {
     expect(storageCapacity(rebuilt)).toEqual({ materials: 20, crops: 0, goods: 40 });
   });
 });
+
+describe('RushProduction', () => {
+  const rush: Command = { type: 'RushProduction', buildingId: FACTORY_ID };
+  const queuedBricks = succeed(stocked, { type: 'QueueProduction', buildingId: FACTORY_ID, item: 'bricks' });
+
+  it('charges twice the value of the item when all the time is left', () => {
+    const rushed = succeed(queuedBricks, rush);
+    expect(queuedBricks.urbs - rushed.urbs).toBe(68);
+  });
+
+  it('charges less as time runs out, but never less than 1 Urb', () => {
+    const halfway = succeed(queuedBricks, rush, T0 + 2 * MINUTE);
+    expect(queuedBricks.urbs - halfway.urbs).toBe(34);
+    const almost = succeed(queuedBricks, rush, T0 + 4 * MINUTE - 1);
+    expect(queuedBricks.urbs - almost.urbs).toBe(1);
+  });
+
+  it('completes the production like a natural end, ready to collect', () => {
+    const rushed = succeed(queuedBricks, rush, T0 + MINUTE);
+    expect(factoryQueue(rushed)[0]?.done).toBe(true);
+    const collected = succeed(rushed, { type: 'Collect', buildingId: FACTORY_ID }, T0 + MINUTE);
+    expect(collected.storage.goods).toEqual({ bricks: 1 });
+  });
+
+  it('starts the next waiting production at once', () => {
+    const twice = succeed(queuedBricks, { type: 'QueueProduction', buildingId: FACTORY_ID, item: 'planks' });
+    const rushed = succeed(twice, rush, T0 + MINUTE);
+    expect(factoryQueue(rushed)[1]).toMatchObject({ item: 'planks', startedAt: T0 + MINUTE, done: false });
+  });
+
+  it('refuses when nothing is running, when Urbs are missing or for an unknown building', () => {
+    expect(failureKey(stocked, rush)).toBe('error.nothingToRush');
+    expect(failureKey({ ...queuedBricks, urbs: 10 }, rush)).toBe('error.notEnoughUrbs');
+    expect(failureKey(queuedBricks, { type: 'RushProduction', buildingId: 999 })).toBe('error.unknownBuilding');
+  });
+});

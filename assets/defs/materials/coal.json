@@ -1,0 +1,14 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "order": 70,
+  "name": {
+    "en": "Coal",
+    "fr": "Charbon"
+  },
+  "producedBy": "workshop",
+  "durationMinutes": 32,
+  "unlockCitizens": 600,
+  "minTier": 4,
+  "value": 24
+}

@@ -1,15 +1,40 @@
 import { shiftCropTimers } from '../farming/growth';
 import { citizensOf } from '../buildings/city';
-import { SHOP, TAX } from './economy';
+import { RUSH, SHOP, TAX } from './economy';
+import { isShopType, saleIntervalOf } from './shops';
 import type { GameEvent } from '../engine/events';
 import { GOODS } from './items';
-import { durationOf, type ItemId } from './items';
+import { durationOf, valueOf, type ItemId } from './items';
 import type { Building, GameState, QueueEntry, ShopStack } from '../engine/state';
 import { productionTierOf } from './tiers';
 
 export function newQueueEntry(building: Building, item: ItemId, now: number): QueueEntry {
   const { durationFactor, yield: quantity } = productionTierOf(building);
   return { item, duration: Math.round(durationOf(item) * durationFactor), startedAt: isIdle(building) ? now : null, done: false, quantity };
+}
+
+export function runningEntry(building: Building): QueueEntry | undefined {
+  return building.queue.find((entry) => !entry.done && entry.startedAt !== null);
+}
+
+export function rushPrice(entry: QueueEntry, now: number): number {
+  if (entry.startedAt === null) return 0;
+  const remaining = clamp01((entry.startedAt + entry.duration - now) / entry.duration);
+  return Math.max(RUSH.minPrice, Math.ceil(RUSH.priceFactor * valueOf(entry.item) * entry.quantity * remaining));
+}
+
+export function rushRunningProduction(building: Building, now: number): Building {
+  const running = runningEntry(building);
+  if (!running) return building;
+  const next = building.queue.find((entry) => entry !== running && !entry.done);
+  return {
+    ...building,
+    queue: building.queue.map((entry) => {
+      if (entry === running) return { ...entry, done: true };
+      if (entry === next) return { ...entry, startedAt: now };
+      return entry;
+    }),
+  };
 }
 
 export function isIdle(building: Building): boolean {
@@ -21,7 +46,7 @@ export function workProgress(building: Building, now: number): number | null {
   if (running?.startedAt != null) return clamp01((now - running.startedAt) / running.duration);
   const nextSales = building.stacks.flatMap((stack) => (stack.stock > 0 && stack.nextSaleAt !== null ? [stack.nextSaleAt] : []));
   if (nextSales.length === 0) return null;
-  return clamp01(1 - (Math.min(...nextSales) - now) / SHOP.saleIntervalMs);
+  return clamp01(1 - (Math.min(...nextSales) - now) / saleIntervalOf(building));
 }
 
 const clamp01 = (value: number): number => Math.min(1, Math.max(0, value));
@@ -54,7 +79,7 @@ function advanceBuilding(building: Building, now: number): Advanced {
   return { building: { ...building, queue }, events };
 }
 
-function advanceStack(stack: ShopStack, now: number): ShopStack {
+function advanceStack(stack: ShopStack, now: number, saleIntervalMs: number): ShopStack {
   if (stack.good === null || stack.stock === 0 || stack.nextSaleAt === null) return stack;
   const unitValue = GOODS[stack.good].value;
   const cap = SHOP.stackSize * unitValue;
@@ -63,14 +88,14 @@ function advanceStack(stack: ShopStack, now: number): ShopStack {
   while (stock > 0 && nextSaleAt !== null && nextSaleAt <= now) {
     stock -= 1;
     earned = Math.min(cap, earned + unitValue);
-    nextSaleAt = stock > 0 ? nextSaleAt + SHOP.saleIntervalMs : null;
+    nextSaleAt = stock > 0 ? nextSaleAt + saleIntervalMs : null;
   }
   return { ...stack, stock, nextSaleAt, earned };
 }
 
 function advanceShop(building: Building, now: number): Building {
   if (building.stacks.length === 0) return building;
-  return { ...building, stacks: building.stacks.map((stack) => advanceStack(stack, now)) };
+  return { ...building, stacks: building.stacks.map((stack) => advanceStack(stack, now, saleIntervalOf(building))) };
 }
 
 function advanceHome(building: Building, elapsedMs: number): Building {
@@ -88,7 +113,7 @@ export function advanceProduction(state: GameState, now: number, elapsedMs: numb
   const results = state.buildings.map((building) => {
     const idle = idleShops.has(building.id);
     const delay = idle ? elapsedMs : elapsedMs * (1 - economicRatio);
-    const slowed = building.type === 'workshop' || building.type === 'factory' || building.type === 'shop' ? {
+    const slowed = building.type === 'workshop' || building.type === 'factory' || isShopType(building.type) ? {
       ...building,
       queue: building.queue.map(entry => entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + delay }),
       stacks: building.stacks.map(stack => stack.nextSaleAt === null ? stack : { ...stack, nextSaleAt: stack.nextSaleAt + delay }),

@@ -1,4 +1,4 @@
-import { FARM_CROP_CAPACITY, STORAGE_TIERS, type StorageType } from './economy';
+import { FARM_CROP_CAPACITY, STORAGE_TYPES, storageTierOf, type StorageType } from './economy';
 import { CROPS } from '../farming/crops';
 import type { GameState, Storage } from '../engine/state';
 import { isMaterial } from './items';
@@ -12,10 +12,10 @@ interface Compartments {
 
 export type Compartment = keyof Compartments;
 
-const STORAGE_TYPES = Object.keys(STORAGE_TIERS) as StorageType[];
+const STORAGE_SET: ReadonlySet<string> = new Set(STORAGE_TYPES);
 
 export function isStorageType(type: string): type is StorageType {
-  return type in STORAGE_TIERS;
+  return STORAGE_SET.has(type);
 }
 
 export function hasStorage(state: GameState): boolean {
@@ -33,10 +33,8 @@ export function storageCapacity(state: GameState): Compartments {
   }
   for (const building of state.buildings) {
     if (!isStorageType(building.type)) continue;
-    const spec = STORAGE_TIERS[building.type];
-    const materials = spec.materials.base + (building.tier - 1) * spec.materials.perTier;
-    const goods = spec.goods.base + (building.tier - 1) * spec.goods.perTier;
-    capacity.crops += spec.crops.base + (building.tier - 1) * spec.crops.perTier;
+    const { materials, goods, crops } = storageTierOf(building.type, building.tier);
+    capacity.crops += crops;
     capacity.materials += building.type === 'storehouse' ? Math.max(materials, production.materials) : materials;
     capacity.goods += building.type === 'storehouse' ? Math.max(goods, production.goods) : goods;
   }

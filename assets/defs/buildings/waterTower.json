@@ -1,0 +1,42 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "utility",
+  "order": 180,
+  "section": "build.utilities",
+  "cost": 200,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "name": {
+    "en": "Water tower",
+    "fr": "Château d'eau"
+  },
+  "description": {
+    "en": "Supplies water to the city. Upgrades increase its capacity so more Homes can be built and improved.",
+    "fr": "Alimente la ville en eau. Ses améliorations augmentent la capacité pour permettre de construire et d’améliorer davantage de logements."
+  },
+  "tiers": [
+    {
+      "model": "industrial-water-tower",
+      "footprint": [1, 1],
+      "capacity": 12
+    },
+    {
+      "capacity": 24,
+      "upgradeCost": {
+        "urbs": 400,
+        "goods": {
+          "bricks": 3
+        }
+      }
+    },
+    {
+      "capacity": 40,
+      "upgradeCost": {
+        "urbs": 1200,
+        "goods": {
+          "tools": 3
+        }
+      }
+    }
+  ]
+}

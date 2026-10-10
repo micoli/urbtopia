@@ -1,13 +1,13 @@
+import { tiersOf } from '../buildings/buildingDefinitions';
 import { footprintTiles } from '../buildings/buildingSpecs';
 import { DIRECTIONS, neighbour, tileKey } from '../map/geometry';
 import type { Coord } from '../map/coord';
 import type { Building, GameState } from '../engine/state';
 import { waterKeys } from './waterTiles';
 
-export const MARINA_TIERS: readonly { boats: number }[] = [{ boats: 3 }, { boats: 6 }, { boats: 10 }];
-
 export function marinaCapacity(marina: Pick<Building, 'tier'>): number {
-  return (MARINA_TIERS[marina.tier - 1] ?? MARINA_TIERS[0]!).boats;
+  const tiers = tiersOf('marina');
+  return (tiers[marina.tier - 1] ?? tiers[0]!).boats!;
 }
 
 export function shoreWaterKeys(state: GameState, marina: Pick<Building, 'type' | 'x' | 'y' | 'rotation' | 'tier'>): string[] {

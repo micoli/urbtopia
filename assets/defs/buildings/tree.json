@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "order": 640,
+  "section": "build.greenSpaces",
+  "model": "suburban-tree-small",
+  "footprint": [1, 1],
+  "cost": 40,
+  "unlockCitizens": 6,
+  "requiresRoad": false,
+  "name": {
+    "en": "Tree",
+    "fr": "Arbre"
+  },
+  "description": {
+    "en": "A small green space that improves nearby cooling, biodiversity and Citizen well-being.",
+    "fr": "Un petit espace vert qui améliore la fraîcheur, la biodiversité et le bien-être des habitants à proximité."
+  }
+}

@@ -1,9 +1,10 @@
-export const BLOCKMATCH_LEVEL_BY_TIER: readonly number[] = [4, 8, 14];
+import { blockmatchLevelOfTier } from './casino';
+
 export const BLOCKMATCH_STAR_BONUS: readonly number[] = [0.25, 0.5, 1];
 export const MAX_BLOCKMATCH_STARS = BLOCKMATCH_STAR_BONUS.length;
 
 export function blockmatchLevelNumber(tier: number): number {
-  return BLOCKMATCH_LEVEL_BY_TIER[tier - 1] ?? BLOCKMATCH_LEVEL_BY_TIER[0]!;
+  return blockmatchLevelOfTier(tier);
 }
 
 export function blockmatchSeed(roundSeed: number): string {

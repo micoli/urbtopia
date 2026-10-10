@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/transit-vehicle.schema.json",
+  "kind": "transitVehicle",
+  "order": 20,
+  "mode": "brt",
+  "propulsion": "electric",
+  "price": 900,
+  "power": 3,
+  "coal": 0,
+  "cost": 4,
+  "emissions": 0,
+  "models": ["trains-train-electric-city-a", "trains-train-electric-city-c"],
+  "name": {
+    "en": "Electric BRT",
+    "fr": "BHNS électrique"
+  }
+}

@@ -1,3 +1,4 @@
+import { isShopType } from '../economy/shops';
 import type { Building, BuildingType } from '../engine/state';
 import { greenProfileOf, natureModelOf } from '../environment/nature';
 import type { CongestionStats } from './congestion';
@@ -40,7 +41,7 @@ const CULTURE: readonly BuildingType[] = ['theater', 'concertHall', 'communityHa
 const SCHOOLS: readonly BuildingType[] = ['school', 'middleSchool', 'highSchool', 'university'];
 
 export function walkDestinationOf(building: Building): WalkDestination | null {
-  if (building.type === 'shop') return 'shop';
+  if (isShopType(building.type)) return 'shop';
   if (building.type === 'casino') return 'casino';
   if (building.type === 'hospital') return 'health';
   if (SCHOOLS.includes(building.type)) return 'school';

@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/transit-vehicle.schema.json",
+  "kind": "transitVehicle",
+  "order": 10,
+  "mode": "bus",
+  "model": "trains-train-electric-subway-a",
+  "name": {
+    "en": "Bus",
+    "fr": "Bus"
+  }
+}

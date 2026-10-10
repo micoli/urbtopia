@@ -1,5 +1,6 @@
-import type { NatureFamily } from '../environment/natureFamilies';
-import type { BuildSection } from './buildSections';
+import type { BuildingDefinition } from './buildingSchema.ts';
+
+export type { BuildingDefinition } from './buildingSchema.ts';
 
 export type AccessMode = 'road' | 'brt';
 
@@ -8,19 +9,20 @@ export interface LocalizedText {
   fr: string;
 }
 
-export interface BuildingDefinition {
-  section?: BuildSection;
-  model: string;
-  footprint?: [number, number];
-  cost?: number;
-  unlockCitizens?: number;
-  requiresRoad?: boolean;
-  accessModes?: AccessMode[];
-  initialSlots?: number;
-  name: LocalizedText;
-  description?: LocalizedText;
-  sport?: { radius: number; wellbeingBonus: number };
-  nature?: { family: NatureFamily };
-}
+export type BuildingKind = BuildingDefinition['kind'];
 
-export type BuildingDefinitions = Record<string, BuildingDefinition>;
+type KeysOfUnion<T> = T extends unknown ? keyof T : never;
+type ValueInUnion<T, K extends PropertyKey> = T extends unknown ? (K extends keyof T ? T[K] : never) : never;
+type SharedKey = 'kind' | 'name';
+
+// Every field of every kind, optional unless all kinds require it, so that code can read any field without narrowing on the kind.
+export type FlatBuilding = Pick<BuildingDefinition, SharedKey> & {
+  [K in Exclude<KeysOfUnion<BuildingDefinition>, SharedKey | '$schema'>]?: Exclude<ValueInUnion<BuildingDefinition, K>, undefined>;
+};
+
+export type BuildingDefinitions = Record<string, FlatBuilding>;
+
+type TierUnion = NonNullable<FlatBuilding['tiers']>[number];
+
+// Every field of the Tiers of every kind, all optional.
+export type FlatTier = { [K in KeysOfUnion<TierUnion>]?: Exclude<ValueInUnion<TierUnion, K>, undefined> };

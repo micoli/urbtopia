@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1620,
+  "model": "nature-stump-oldtall",
+  "name": {
+    "en": "Stump old tall",
+    "fr": "Souche ancienne haut"
+  },
+  "family": "habitat"
+}

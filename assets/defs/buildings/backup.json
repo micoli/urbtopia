@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "backup",
+  "order": 210,
+  "section": "build.utilities",
+  "model": "industrial-building-d",
+  "footprint": [2, 2],
+  "cost": 500,
+  "unlockCitizens": 32,
+  "requiresRoad": false,
+  "name": {
+    "en": "Backup power plant",
+    "fr": "Centrale de secours"
+  },
+  "description": {
+    "en": "Supplies electricity when renewable generation and storage cannot cover Demand. Operation costs Urbs and creates emissions.",
+    "fr": "Fournit de l’électricité lorsque les renouvelables et le stockage ne couvrent plus les besoins. Son fonctionnement consomme des Urbs et génère des émissions."
+  },
+  "capacity": 24,
+  "costPerUnit": 0.5
+}

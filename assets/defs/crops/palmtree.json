@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 180,
+  "name": {
+    "en": "Palm nuts",
+    "fr": "Noix de palme"
+  },
+  "growthMinutes": 52,
+  "water": 3,
+  "yield": 8,
+  "seedShare": 0.2,
+  "seedPrice": 52,
+  "unlockCitizens": 800,
+  "packingMinutes": 6,
+  "packedValue": 215,
+  "models": {
+    "growth": ["crops-palmtree-1", "crops-palmtree-2", "crops-palmtree-3", "crops-palmtree-4"],
+    "produce": "crops-palmtree-crop",
+    "harvested": "crops-palmtree-harvested"
+  }
+}

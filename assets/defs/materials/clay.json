@@ -1,0 +1,14 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "order": 30,
+  "name": {
+    "en": "Clay",
+    "fr": "Argile"
+  },
+  "producedBy": "workshop",
+  "durationMinutes": 4,
+  "unlockCitizens": 30,
+  "minTier": 1,
+  "value": 8
+}

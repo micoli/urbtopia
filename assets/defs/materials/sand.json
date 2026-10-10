@@ -1,0 +1,14 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "order": 60,
+  "name": {
+    "en": "Sand",
+    "fr": "Sable"
+  },
+  "producedBy": "workshop",
+  "durationMinutes": 24,
+  "unlockCitizens": 350,
+  "minTier": 4,
+  "value": 14
+}

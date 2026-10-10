@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/boat.schema.json",
+  "kind": "boat",
+  "order": 10,
+  "family": "pleasure",
+  "model": "watercraft-boat-sail-a",
+  "cost": 400,
+  "unlockCitizens": 80,
+  "name": {
+    "en": "Pleasure boat",
+    "fr": "Bateau de plaisance"
+  },
+  "radius": 6,
+  "wellbeingBonus": 4,
+  "operatingCostPerHour": 2
+}

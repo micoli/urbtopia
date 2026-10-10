@@ -96,7 +96,7 @@ export function transitServices(state: GameState, now = state.lastSeen, powerRat
     const fleet = (state.transitFleet ?? []).filter(v => v.lineId === line.id);
     const duty = fleet.length > 0 ? Math.min(1, cycle / (targetHeadway * fleet.length)) : 0;
     const powered = state.urbs > 1e-9 && details !== null;
-    const available = fleet.map(v => ({ ...v, ratio: !powered ? 0 : v.kind === 'trainCoal' ? (state.storage.materials.coal ?? 0) > 1e-9 ? 1 : 0 : powerRatio }));
+    const available = fleet.map(v => ({ ...v, ratio: !powered ? 0 : TRANSIT[v.kind].propulsion === 'coal' ? (state.storage.materials.coal ?? 0) > 1e-9 ? 1 : 0 : powerRatio }));
     const effectiveFleet = available.reduce((n, v) => n + v.ratio, 0);
     const headway = mode === 'bus' ? targetHeadway : effectiveFleet > 0 ? Math.max(targetHeadway, cycle / (effectiveFleet * duty)) : Infinity;
     const active = powered && (mode === 'bus' || effectiveFleet > 0);

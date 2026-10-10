@@ -1,0 +1,61 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "casino",
+  "order": 360,
+  "section": "build.leisure",
+  "cost": 2500,
+  "unlockCitizens": 250,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Casino",
+    "fr": "Casino"
+  },
+  "description": {
+    "en": "A Leisure building where Citizens play Minigames with Urbs. It raises the Well-being of Homes in a {side}-tile square around it, but needs much power and shuts down when it is not powered. Tier 1: slot machine; Tier 2: blackjack; Tier 3: blockmatch; up to Tier {tierCount} (highest Stake {maxTierMaxStake}). Demand {tier1Power} power; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs.",
+    "fr": "Un bâtiment de loisirs où les citoyens jouent à des mini-jeux avec des Urbs. Il augmente le bien-être des logements à moins de {side} cases, mais consomme beaucoup d’électricité et ferme s’il n’est pas alimenté. Niveau 1 : machine à sous ; niveau 2 : blackjack ; niveau 3 : blockmatch ; jusqu’au niveau {tierCount} (mise maximale {maxTierMaxStake}). Consomme {tier1Power} d’électricité ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs."
+  },
+  "tiers": [
+    {
+      "model": "buildings-2story-stairs-mat",
+      "footprint": [2, 2],
+      "radius": 8,
+      "wellbeingBonus": 6,
+      "maxStake": 100,
+      "power": 6,
+      "blockmatchLevel": 4
+    },
+    {
+      "model": "buildings-2story-wide-mat",
+      "footprint": [3, 2],
+      "radius": 10,
+      "wellbeingBonus": 7,
+      "maxStake": 500,
+      "power": 9,
+      "blockmatchLevel": 8,
+      "upgradeCost": {
+        "urbs": 4000,
+        "goods": {}
+      }
+    },
+    {
+      "model": "buildings-2story-wide-2doors-mat",
+      "footprint": [6, 2],
+      "radius": 12,
+      "wellbeingBonus": 8,
+      "maxStake": 2000,
+      "power": 13.5,
+      "blockmatchLevel": 14,
+      "upgradeCost": {
+        "urbs": 8000,
+        "goods": {}
+      }
+    }
+  ],
+  "stakeSteps": [10, 50, 100, 500, 1000, 2000],
+  "gameMinTier": {
+    "slotMachine": 1,
+    "blackjack": 2,
+    "blockmatch": 3
+  }
+}

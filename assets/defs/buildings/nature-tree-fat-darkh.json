@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1750,
+  "model": "nature-tree-fat-darkh",
+  "name": {
+    "en": "Tree broad dark",
+    "fr": "Arbre large sombre"
+  },
+  "family": "tree"
+}

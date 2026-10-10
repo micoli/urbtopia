@@ -36,7 +36,7 @@ npm run dev      # http://localhost:5173, prepares models and codex previews fir
 | `npm run assets` | Extract the 3D models from the versioned archives into `public/models` |
 | `npm run assets:fetch` | Refresh the archives from kenney.nl (see [Assets](#assets)) |
 | `npm run assets:prototypes` | Copy the models the prototypes load (render-bench, touch-ux) |
-| `npm run assets:editor` | Assets editor: browse every model source, edit `assets/models.json`, add or delete assets |
+| `npm run assets:editor` | Game editor: edit buildings (`assets/defs/`) and Model definitions (`assets/models.json`) with live validation, browse every model source, import assets |
 | `npm run casino:sim` | Casino simulator: play each Minigame with 100 000 Urbs, one URL per game (`/slot-machine`, `/blackjack`, `/blockmatch`, optional `?tier=`) |
 | `npm run codex:generate` | Generate static codex images; append `-- --force` to regenerate |
 | `npm run test:codex` | Browser checks against a production build, including mobile and offline access |

@@ -1,0 +1,70 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "shop",
+  "order": 80,
+  "section": "build.shops",
+  "cost": 600,
+  "unlockCitizens": 0,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "initialSlots": 3,
+  "name": {
+    "en": "Shop",
+    "fr": "Boutique"
+  },
+  "description": {
+    "en": "Sells the Goods of every category to Citizens for Urbs, at a premium. Up to {maxTierMaxSlots} sales slots and {maxTierGoodsSold} Goods at the highest Tier.",
+    "fr": "Vend les produits de toutes les catégories aux habitants contre des Urbs, à prix fort. Jusqu’à {maxTierMaxSlots} emplacements de vente et {maxTierGoodsSold} produits au niveau maximal."
+  },
+  "tiers": [
+    {
+      "footprint": [1, 1],
+      "model": "commercial-building-a",
+      "maxSlots": 5,
+      "sells": ["bricks", "cannedFish", "jewelry", "planks", "tools"],
+      "saleIntervalFactor": 1,
+      "jobs": 15
+    },
+    {
+      "model": "commercial-building-b",
+      "maxSlots": 6,
+      "sells": ["bricks", "cannedFish", "jewelry", "planks", "tiles", "tools"],
+      "saleIntervalFactor": 0.85,
+      "jobs": 25,
+      "upgradeCost": {
+        "urbs": 600,
+        "goods": {
+          "planks": 6
+        }
+      }
+    },
+    {
+      "model": "commercial-building-c",
+      "maxSlots": 7,
+      "sells": ["bricks", "cannedFish", "cement", "circuits", "crystal", "jewelry", "planks", "tiles", "tools"],
+      "saleIntervalFactor": 0.7,
+      "jobs": 40,
+      "upgradeCost": {
+        "urbs": 1600,
+        "goods": {
+          "bricks": 8
+        }
+      }
+    },
+    {
+      "model": "commercial-building-d",
+      "maxSlots": 8,
+      "sells": ["bricks", "cannedFish", "cement", "circuits", "crystal", "glass", "jewelry", "planks", "steel", "tiles", "tools"],
+      "saleIntervalFactor": 0.55,
+      "jobs": 60,
+      "upgradeCost": {
+        "urbs": 4000,
+        "goods": {
+          "tiles": 8
+        }
+      }
+    }
+  ],
+  "goodCategory": "all",
+  "slotPriceFactor": 2
+}

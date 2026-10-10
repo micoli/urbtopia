@@ -1,0 +1,79 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "facility",
+  "order": 260,
+  "section": "build.publicFacilities",
+  "cost": 600,
+  "unlockCitizens": 60,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Middle school",
+    "fr": "Collège"
+  },
+  "description": {
+    "en": "Continues the education of nearby Citizens. Optional: it raises Well-being. {reach, select, city {Covers the whole city} other {Square reach of {side} tiles}}, {limit, select, unlimited {unlimited capacity} other {capacity {tier1Capacity} Citizens, up to {maxTierCapacity} at Tier {tierCount}}}; demand {power} power{hasWater, select, yes { and {water} water} other {}}; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs, no operating cost.",
+    "fr": "Poursuit l’éducation des citoyens proches. Facultatif : il augmente le bien-être. {reach, select, city {Couvre toute la ville} other {Portée carrée de {side} cases}}, {limit, select, unlimited {capacité illimitée} other {capacité {tier1Capacity} citoyens, jusqu’à {maxTierCapacity} au niveau {tierCount}}}; consomme {power} d’électricité{hasWater, select, yes { et {water} d’eau} other {}}; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs, sans coût de fonctionnement."
+  },
+  "radius": 12,
+  "tiers": [
+    {
+      "model": "commercial-building-f",
+      "footprint": [2, 2],
+      "capacity": 400
+    },
+    {
+      "capacity": 600,
+      "upgradeCost": {
+        "urbs": 360,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 800,
+      "upgradeCost": {
+        "urbs": 720,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1200,
+      "upgradeCost": {
+        "urbs": 1440,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1600,
+      "upgradeCost": {
+        "urbs": 2400,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 2200,
+      "upgradeCost": {
+        "urbs": 3600,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 2800,
+      "upgradeCost": {
+        "urbs": 5400,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 3600,
+      "upgradeCost": {
+        "urbs": 7800,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "education",
+  "detailModel": "commercial-detail-overhang",
+  "power": 2,
+  "water": 0
+}

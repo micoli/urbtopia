@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 440,
+  "venue": "hotel",
+  "category": "walls",
+  "name": {
+    "en": "Wall with a window",
+    "fr": "Mur à fenêtre"
+  },
+  "model": "furniture-wallwindow",
+  "footprint": [1, 1],
+  "price": 60,
+  "minTier": 1,
+  "partition": true
+}

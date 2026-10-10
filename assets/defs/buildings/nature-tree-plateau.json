@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 2020,
+  "model": "nature-tree-plateau",
+  "name": {
+    "en": "Tree flat crown",
+    "fr": "Arbre couronne plate"
+  },
+  "family": "tree"
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 70,
+  "venue": "arcade",
+  "category": "furniture",
+  "name": {
+    "en": "Bar stool",
+    "fr": "Tabouret de bar"
+  },
+  "model": "furniture-stoolbar",
+  "footprint": [1, 1],
+  "price": 30,
+  "minTier": 1,
+  "playsPerHour": 0
+}

@@ -2,6 +2,7 @@ import { CityManagement } from '../stats/CityManagement.tsx';
 import { CreditsDialog } from '../system/CreditsDialog';
 import { CodexDialog } from '../codex/CodexDialog';
 import { CasinoDialog } from '../casino/CasinoDialog';
+import { VenueDialog } from '../venue/VenueDialog';
 import { MarketModal } from '../market/MarketModal';
 import { StaticButtons } from './StaticButtons.tsx';
 import { CollectBadges } from '../collect/CollectBadges';
@@ -25,6 +26,7 @@ export function Overlays() {
       <CityManagement />
       <CodexDialog />
       <CasinoDialog />
+      <VenueDialog />
       <MarketModal />
       <WorkingIndicators />
       <CollectBadges />

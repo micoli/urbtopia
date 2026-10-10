@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1030,
+  "model": "nature-plant-bushlarge",
+  "name": {
+    "en": "Plant bush large",
+    "fr": "Grand buisson"
+  },
+  "family": "shrub"
+}

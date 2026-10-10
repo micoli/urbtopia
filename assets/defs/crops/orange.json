@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 170,
+  "name": {
+    "en": "Oranges",
+    "fr": "Oranges"
+  },
+  "growthMinutes": 48,
+  "water": 4,
+  "yield": 8,
+  "seedShare": 0.2,
+  "seedPrice": 50,
+  "unlockCitizens": 800,
+  "packingMinutes": 6,
+  "packedValue": 205,
+  "models": {
+    "growth": ["crops-orange-1", "crops-orange-2", "crops-orange-3", "crops-orange-4"],
+    "produce": "crops-orange-crop",
+    "harvested": "crops-orange-harvested"
+  }
+}

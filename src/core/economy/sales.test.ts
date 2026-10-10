@@ -18,8 +18,8 @@ function failureKey(state: GameState, command: Command, now = T0): string | null
 }
 
 const initial = newGame({ seed: 'amber-fox-4821', now: T0 });
-const withShop = succeed({ ...initial, urbs: 10_000 }, { type: 'PlaceBuilding', buildingType: 'shop', x: 56, y: 57 });
-const SHOP_ID = withShop.buildings.find((b) => b.type === 'shop')?.id ?? 0;
+const withShop = succeed({ ...initial, urbs: 10_000 }, { type: 'PlaceBuilding', buildingType: 'shopConstruction', x: 56, y: 57 });
+const SHOP_ID = withShop.buildings.find((b) => b.type === 'shopConstruction')?.id ?? 0;
 const stocked: GameState = { ...withShop, storage: { materials: {}, goods: { planks: 12, bricks: 12 } }, marketUnlocked: true };
 const stack = (state: GameState, index = 0) => state.buildings.find((b) => b.id === SHOP_ID)?.stacks[index];
 const stockShop = (good: 'planks' | 'bricks'): Command => ({ type: 'StockShop', buildingId: SHOP_ID, good });

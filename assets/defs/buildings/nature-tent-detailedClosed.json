@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 620,
+  "model": "nature-tent-detailedclosed",
+  "name": {
+    "en": "Tent closed",
+    "fr": "Tente fermée"
+  },
+  "family": "decoration"
+}

@@ -1,0 +1,82 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "venue",
+  "order": 380,
+  "section": "build.leisure",
+  "cost": 9000,
+  "unlockCitizens": 600,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Hotel",
+    "fr": "Hôtel"
+  },
+  "description": {
+    "en": "A Venue you fit out and run from the inside. Build rooms with a bed and a bathroom, furnish them and earn a reputation that draws guests from outside the city.",
+    "fr": "Un établissement que vous aménagez et gérez de l'intérieur. Construisez des chambres avec un lit et une salle de bain, meublez-les et gagnez une réputation qui attire des clients de l'extérieur."
+  },
+  "tiers": [
+    {
+      "model": "commercial-building-l",
+      "footprint": [3, 3],
+      "gridSize": 6,
+      "takingsCap": 400,
+      "power": 2.5,
+      "eventBudget": 300,
+      "eventMultiplier": 1.5,
+      "posts": {
+        "manager": 0,
+        "receptionist": 1,
+        "housekeeper": 1,
+        "technician": 0
+      }
+    },
+    {
+      "gridSize": 8,
+      "takingsCap": 900,
+      "power": 5,
+      "eventBudget": 600,
+      "eventMultiplier": 2,
+      "posts": {
+        "manager": 1,
+        "receptionist": 1,
+        "housekeeper": 2,
+        "technician": 0
+      },
+      "upgradeCost": {
+        "urbs": 12000,
+        "goods": {}
+      }
+    },
+    {
+      "gridSize": 10,
+      "takingsCap": 1800,
+      "power": 7.5,
+      "eventBudget": 1200,
+      "eventMultiplier": 2.5,
+      "posts": {
+        "manager": 1,
+        "receptionist": 2,
+        "housekeeper": 3,
+        "technician": 2
+      },
+      "upgradeCost": {
+        "urbs": 28000,
+        "goods": {}
+      }
+    }
+  ],
+  "rankAt": [2000, 9000],
+  "staffRoles": ["manager", "receptionist", "housekeeper", "technician"],
+  "frontRole": "receptionist",
+  "fixtureCategories": ["beds", "bathroom", "comfort", "reception", "walls"],
+  "shell": {
+    "floor": "furniture-floorfull",
+    "wall": "furniture-wall",
+    "corner": "furniture-wallcorner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
+  },
+  "staffModels": ["mini-characters-character-female-a", "mini-characters-character-male-a", "mini-characters-character-female-d", "mini-characters-character-male-d"]
+}

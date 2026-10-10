@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1020,
+  "model": "nature-plant-bush",
+  "name": {
+    "en": "Plant bush",
+    "fr": "Buisson"
+  },
+  "family": "shrub"
+}

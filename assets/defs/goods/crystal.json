@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "order": 110,
+  "name": {
+    "en": "Crystal",
+    "fr": "Cristal"
+  },
+  "category": "luxury",
+  "recipe": {
+    "sand": 1,
+    "gold": 1
+  },
+  "durationMinutes": 28,
+  "value": 850,
+  "unlockCitizens": 1000,
+  "minTier": 5
+}

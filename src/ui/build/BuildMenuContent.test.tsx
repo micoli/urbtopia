@@ -29,21 +29,22 @@ describe('build menu sections', () => {
     context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 600 }, (_, id) => ({ ...home, id })) };
     const html = renderToStaticMarkup(<BuildMenuContent />).replaceAll('&#x27;', "'");
     const sections = html.match(/<section\b[^>]*>[\s\S]*?<\/section>/g) ?? [];
-    expect(sections).toHaveLength(11);
+    expect(sections).toHaveLength(12);
     expect(sections[0]).toContain(t('building.home'));
     expect(sections[0]).toContain(t('eco.solarHome'));
     expect(sections[1]).toContain(t('building.workshop'));
-    expect(sections[2]).toContain(t('building.storehouse'));
-    expect(sections[3]).toContain(t('building.waterTower'));
-    expect(sections[4]).toContain(t('building.railStation'));
-    expect(sections[5]).toContain(t('building.marina'));
-    expect(sections[5]).not.toContain(t('water.lay'));
-    expect(sections[6]).toContain(t('build.publicFacilities'));
-    expect(sections[7]).toContain(t('building.casino'));
-    expect(sections[8]).toContain(t('building.stadium'));
-    expect(sections[9]).toContain(t('building.nature-cliff-steps-rock'));
-    expect(sections[10]).toContain(t('building.park'));
-    for (const category of ['education', 'administration', 'culture', 'health', 'safety'] as const) expect(sections[6]).toContain(`<h4 class="build-category">${t(`service.${category}`)}</h4>`);
+    expect(sections[2]).toContain(t('building.shopConstruction'));
+    expect(sections[3]).toContain(t('building.storehouse'));
+    expect(sections[4]).toContain(t('building.waterTower'));
+    expect(sections[5]).toContain(t('building.railStation'));
+    expect(sections[6]).toContain(t('building.marina'));
+    expect(sections[6]).not.toContain(t('water.lay'));
+    expect(sections[7]).toContain(t('build.publicFacilities'));
+    expect(sections[8]).toContain(t('building.casino'));
+    expect(sections[9]).toContain(t('building.stadium'));
+    expect(sections[10]).toContain(t('building.nature-cliff-steps-rock'));
+    expect(sections[11]).toContain(t('building.park'));
+    for (const category of ['education', 'administration', 'culture', 'health', 'safety'] as const) expect(sections[7]).toContain(`<h4 class="build-category">${t(`service.${category}`)}</h4>`);
     for (const type of Object.keys(BUILDING_SPECS) as (keyof typeof BUILDING_SPECS)[]) {
       expect(html.split(`<span>${t(`building.${type}`)}</span>`)).toHaveLength(2);
       expect(html).toContain(`data-codex-id="${type}"`);
@@ -162,8 +163,8 @@ describe('build menu sections', () => {
     expect(localStorage.getItem(BUILD_SECTION_KEY)).toBe('build.storage');
     const html = renderToStaticMarkup(<BuildMenuContent />);
     const sections = html.match(/<section\b[^>]*>[\s\S]*?<\/section>/g) ?? [];
-    expect(sections[2]).toContain('aria-expanded="true"');
-    expect(sections[2]).not.toContain('hidden=""');
+    expect(sections[3]).toContain('aria-expanded="true"');
+    expect(sections[3]).not.toContain('hidden=""');
     expect(html.match(/aria-expanded="true"/g)).toHaveLength(1);
   });
 
@@ -196,5 +197,16 @@ describe('build menu sections', () => {
     expect(html).toContain('data-codex-label="bridge"');
     expect(html).toContain('assets/icons/lac.png');
     expect(html).toContain('assets/icons/bridge.png');
+  });
+
+  it('opens the Codex from the Water and Bridge tool names', () => {
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 700 }, (_, id) => ({ ...home, id })) };
+    context.flyout = 'roads';
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    expect(html).toContain('data-codex-label="water"');
+    expect(html).toContain('data-codex-label="bridge"');
+    expect(html).toContain('src="/assets/icons/lac.png"');
+    expect(html).toContain('src="/assets/icons/bridge.png"');
   });
 });

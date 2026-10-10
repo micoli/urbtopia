@@ -1,40 +1,55 @@
-import { readFileSync, renameSync, writeFileSync } from 'node:fs';
-import type { ModelDefinition } from '../src/scene/modelDefinitions.ts';
+import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
+import { z } from 'zod';
+import { modelsFileSchema, type ModelEntry } from '../src/core/models/modelSchema.ts';
+import { allModelProblems, describeProblem, modelProblemsOf, type ModelDefinitions } from './definitionProblems.ts';
+
+export { modelIdOf, type ModelDefinitions } from './definitionProblems.ts';
 
 export const MODELS_FILE = 'assets/models.json';
+export const MODELS_SCHEMA_FILE = 'assets/defs/schemas/models.schema.json';
+export const MODEL_IDS_FILE = 'src/core/models/modelIds.generated.ts';
 
-const FIELD_ORDER: (keyof ModelDefinition)[] = ['source', 'license', 'author', 'url', 'footprint', 'scale', 'center', 'fit', 'rotationOffset', 'bakeNodeScale', 'recolor', 'note'];
-const SOURCES = ['kenney', 'quaternius', 'managed', 'poly.pizza'];
-const HEX = /^#[0-9a-f]{6}$/i;
+const SCHEMA_REFERENCE = 'defs/schemas/models.schema.json';
+const FIELD_ORDER: (keyof ModelEntry)[] = ['file', 'source', 'license', 'author', 'url', 'footprint', 'scale', 'center', 'fit', 'rotationOffset', 'bakeNodeScale', 'recolor', 'note'];
 
-export type ModelDefinitions = Record<string, ModelDefinition>;
+export const modelProblems = (definition: unknown): string[] => modelProblemsOf('', definition).map(({ path, message }) => (path ? `${path}: ${message}` : message));
 
-export function definitionProblems(definition: ModelDefinition): string[] {
-  const problems: string[] = [];
-  if (!SOURCES.includes(definition.source)) problems.push('unknown source');
-  if (!definition.license?.trim()) problems.push('license is required');
-  if (definition.footprint?.some((side) => !Number.isInteger(side) || side < 1)) problems.push('footprint sides must be integers >= 1');
-  const colors = definition.recolor ? [definition.recolor.color, ...Object.values(definition.recolor.variants ?? {})] : [];
-  if (colors.some((color) => !HEX.test(color))) problems.push('recolor colors must be #rrggbb');
-  return problems;
-}
+export const modelsProblems = (definitions: ModelDefinitions): string[] => allModelProblems(definitions).map(describeProblem);
 
 export function stableModelsJson(definitions: ModelDefinitions): string {
-  const ordered = Object.fromEntries(
-    Object.keys(definitions).sort().map((key) => {
-      const definition = definitions[key] as ModelDefinition;
-      return [key, Object.fromEntries(FIELD_ORDER.filter((field) => definition[field] !== undefined).map((field) => [field, definition[field]]))];
-    }),
-  );
-  return `${JSON.stringify(ordered, null, 2)}\n`;
+  const ordered = Object.keys(definitions).sort().map(id => {
+    const definition = definitions[id]!;
+    return [id, Object.fromEntries(FIELD_ORDER.filter(field => definition[field] !== undefined).map(field => [field, definition[field]]))];
+  });
+  return `${JSON.stringify({ $schema: SCHEMA_REFERENCE, ...Object.fromEntries(ordered) }, null, 2)}\n`;
 }
 
-export const readModels = (file = MODELS_FILE): ModelDefinitions => JSON.parse(readFileSync(file, 'utf8'));
+export const modelsJsonSchema = (): string => `${JSON.stringify(z.toJSONSchema(modelsFileSchema), null, 2)}\n`;
+
+export const modelIdsSource = (definitions: ModelDefinitions): string => {
+  const ids = Object.keys(definitions).sort();
+  return ['// Generated from assets/models.json by scripts/modelsFile.ts. Do not edit.', `export type ModelId =${ids.length ? ids.map(id => `\n  | '${id}'`).join('') : ' never'};`, ''].join('\n');
+};
+
+const withoutSchema = ({ $schema: _schema, ...definitions }: ModelDefinitions & { $schema?: unknown }): ModelDefinitions => definitions as ModelDefinitions;
+
+export const readModels = (file = MODELS_FILE): ModelDefinitions => withoutSchema(JSON.parse(readFileSync(file, 'utf8')));
+
+const writeAtomically = (file: string, content: string) => {
+  const temporary = `${file}.tmp`;
+  writeFileSync(temporary, content);
+  renameSync(temporary, file);
+};
 
 export function writeModels(definitions: ModelDefinitions, file = MODELS_FILE): void {
-  const problems = Object.entries(definitions).flatMap(([key, definition]) => definitionProblems(definition).map((problem) => `${key}: ${problem}`));
+  const problems = modelsProblems(definitions);
   if (problems.length) throw new Error(problems.join('; '));
-  const temporary = `${file}.tmp`;
-  writeFileSync(temporary, stableModelsJson(definitions));
-  renameSync(temporary, file);
+  writeAtomically(file, stableModelsJson(definitions));
+  if (file !== MODELS_FILE) return;
+  writeFileSync(MODEL_IDS_FILE, modelIdsSource(definitions));
+  mkdirSync(dirname(MODELS_SCHEMA_FILE), { recursive: true });
+  writeFileSync(MODELS_SCHEMA_FILE, modelsJsonSchema());
 }
+
+export const idByFile = (definitions: ModelDefinitions): Map<string, string> => new Map(Object.entries(definitions).map(([id, { file }]) => [file, id]));

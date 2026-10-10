@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1580,
+  "model": "nature-stone-tallh",
+  "name": {
+    "en": "Stone tall H",
+    "fr": "Pierre haut H"
+  },
+  "family": "habitat"
+}

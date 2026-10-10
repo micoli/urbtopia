@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 420,
+  "model": "holiday-lantern",
+  "name": {
+    "en": "Lantern",
+    "fr": "Lanterne"
+  },
+  "family": "decoration"
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1500,
+  "model": "nature-stone-smalltopb",
+  "name": {
+    "en": "Stone small topped B",
+    "fr": "Petite pierre sommet B"
+  },
+  "family": "habitat"
+}

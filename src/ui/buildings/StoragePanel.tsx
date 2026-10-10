@@ -1,4 +1,4 @@
-import { STORAGE_TIERS, compartmentOf, isStorageType, storageCapacity, storageUsed, type Building, type GoodId, type MaterialId } from '../../core';
+import { compartmentOf, storageTierOf, isStorageType, storageCapacity, storageUsed, type Building, type GoodId, type MaterialId } from '../../core';
 import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
 import { useGame } from '../common/hooks';
@@ -20,7 +20,7 @@ export function StoragePanel({ building }: StoragePanelProps) {
     crops: stocked.filter(([item]) => compartmentOf(item) === 'crops'),
     goods: Object.entries(state.storage.goods).filter(([, amount]) => (amount ?? 0) > 0),
   };
-  const compartments = (['materials', 'crops', 'goods'] as const).filter((compartment) => isStorageType(building.type) && STORAGE_TIERS[building.type][compartment].base > 0);
+  const compartments = (['materials', 'crops', 'goods'] as const).filter((compartment) => isStorageType(building.type) && storageTierOf(building.type, building.tier)[compartment] > 0);
 
   return (
     <DrawerPanel>

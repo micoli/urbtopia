@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 2200,
+  "model": "pirate-palm-bend",
+  "name": {
+    "en": "Palm curved · Pirate",
+    "fr": "Palmier courbé · Pirate"
+  },
+  "family": "palm"
+}

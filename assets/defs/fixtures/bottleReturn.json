@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 290,
+  "venue": "supermarket",
+  "category": "decor",
+  "name": {
+    "en": "Bottle return",
+    "fr": "Consigne de bouteilles"
+  },
+  "model": "mini-market-bottle-return",
+  "footprint": [1, 1],
+  "price": 200,
+  "minTier": 2,
+  "minRank": 2,
+  "attract": 0.06
+}

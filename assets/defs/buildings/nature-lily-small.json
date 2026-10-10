@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 910,
+  "model": "nature-lily-small",
+  "name": {
+    "en": "Lily small",
+    "fr": "Nénuphar petit"
+  },
+  "family": "flower"
+}

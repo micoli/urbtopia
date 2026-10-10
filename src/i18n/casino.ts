@@ -1,7 +1,4 @@
-import { CASINO, MAX_CASINO_TIER, casinoPower, casinoRadius, maxStake } from '../core/leisure/casino';
-
 type CasinoMessageKey =
-  | 'codex.description.casino'
   | 'event.unlocked.casino'
   | 'build.leisure'
   | 'error.casinoExpansionBlocked'
@@ -53,7 +50,6 @@ type CasinoMessageKey =
   | 'casino.maxTier';
 
 const texts: Record<CasinoMessageKey, readonly [string, string]> = {
-  'codex.description.casino': ['', ''],
   'event.unlocked.casino': ['New leisure building available: Casino.', 'Nouveau bâtiment de loisirs disponible : Casino.'],
   'build.leisure': ['Leisure', 'Loisirs'],
   'error.casinoExpansionBlocked': [
@@ -108,16 +104,8 @@ const texts: Record<CasinoMessageKey, readonly [string, string]> = {
   'casino.maxTier': ['Highest Tier reached', 'Niveau maximal atteint'],
 };
 
-function description(index: number): string {
-  const radius = casinoRadius(1);
-  const power = casinoPower(1);
-  return index === 0
-    ? `A Leisure building where Citizens play Minigames with Urbs. It raises the Well-being of Homes in a ${2 * radius}-tile square around it, but needs much power and shuts down when it is not powered. Tier 1: slot machine; Tier 2: blackjack; Tier 3: blockmatch; up to Tier ${MAX_CASINO_TIER} (highest Stake ${maxStake(MAX_CASINO_TIER)}). Demand ${power} power; unlocks at ${CASINO.unlockCitizens} Citizens, costs ${CASINO.cost} Urbs.`
-    : `Un bâtiment de loisirs où les citoyens jouent à des mini-jeux avec des Urbs. Il augmente le bien-être des logements à moins de ${2 * radius} cases, mais consomme beaucoup d’électricité et ferme s’il n’est pas alimenté. Niveau 1 : machine à sous ; niveau 2 : blackjack ; niveau 3 : blockmatch ; jusqu’au niveau ${MAX_CASINO_TIER} (mise maximale ${maxStake(MAX_CASINO_TIER)}). Consomme ${power} d’électricité ; se débloque à ${CASINO.unlockCitizens} citoyens, coûte ${CASINO.cost} Urbs.`;
-}
-
 export function casinoMessages(language: 'en' | 'fr'): Record<CasinoMessageKey, string> {
   const index = language === 'en' ? 0 : 1;
-  const entries = Object.entries(texts).map(([key, pair]) => [key, key === 'codex.description.casino' ? description(index) : pair[index]]);
+  const entries = Object.entries(texts).map(([key, pair]) => [key, pair[index]]);
   return Object.fromEntries(entries) as Record<CasinoMessageKey, string>;
 }

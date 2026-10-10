@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 230,
+  "venue": "supermarket",
+  "category": "shelves",
+  "name": {
+    "en": "Freezer",
+    "fr": "Congélateur"
+  },
+  "model": "mini-market-freezer",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 2,
+  "minRank": 2,
+  "wear": 0.05,
+  "shelf": 16
+}

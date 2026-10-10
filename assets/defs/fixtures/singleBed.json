@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 310,
+  "venue": "hotel",
+  "category": "beds",
+  "name": {
+    "en": "Single bed",
+    "fr": "Lit simple"
+  },
+  "model": "furniture-bedsingle",
+  "footprint": [1, 2],
+  "price": 200,
+  "minTier": 1,
+  "wear": 0.05,
+  "sleeps": 1
+}

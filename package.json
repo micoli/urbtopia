@@ -14,8 +14,9 @@
     "predev": "npm run assets && npm run codex:generate",
     "prebuild": "npm run assets && npm run codex:generate",
     "codex:generate": "node scripts/generate-codex.ts",
+    "defs:generate": "node scripts/generate-definitions.ts",
     "test:codex": "playwright test",
-    "test:codex:images": "playwright test --grep @images",
+    "test:codex:images": "vitest run scripts/codexImages.test.ts",
     "test:gameplay": "playwright test --config playwright.gameplay.config.ts",
     "assets:fetch": "node scripts/fetch-assets.ts",
     "assets:prototypes": "node scripts/prototype-assets.ts",
@@ -32,8 +33,12 @@
     "prepare": "lefthook install"
   },
   "devDependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.6.4",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
@@ -43,13 +48,16 @@
     "fflate": "^0.8.3",
     "lefthook": "^2.2.0",
     "radix-ui": "^1.7.0",
+    "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.0",
     "vite": "^8.3.2",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "zod": "^4.6.5"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",
+    "intl-messageformat": "^12.1.3",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "three": "^0.186.1",

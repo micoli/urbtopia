@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "order": 80,
+  "name": {
+    "en": "Steel",
+    "fr": "Acier"
+  },
+  "category": "construction",
+  "recipe": {
+    "coal": 1,
+    "metal": 1
+  },
+  "durationMinutes": 20,
+  "value": 420,
+  "unlockCitizens": 600,
+  "minTier": 4
+}

@@ -8,8 +8,20 @@ Urbtopia is a solo, serverless isometric city builder: the player produces resou
 The soft currency of the game, earned by selling goods and spent on building and upgrading.
 _Avoid_: Coins, cash, money
 
+**Game object**:
+Any kind of thing of the game described by data rather than code: a Building, a Fixture, a Vehicle, a Service vehicle, a Transit fleet vehicle, a Boat, a Material, a Good or a Crop. Its definition, including its values per Tier, is edited in `tools/assets-editor`; the rules that use those values stay in code.
+_Avoid_: Item (a Good), asset, entity, prefab
+
+**Retired**:
+The state of a Game object that can no longer be built, bought or unlocked, but still exists and works in the cities that already have it. A Game object is retired rather than removed, because its id lives in saves.
+_Avoid_: Deleted, deprecated, removed
+
+**Model id**:
+The stable name of a 3D model, chosen by hand and independent of where its file lives. Game objects refer to models by Model id only; moving or renaming the file never changes it.
+_Avoid_: Model key, model path, asset id
+
 **Model definition**:
-The entry of a 3D model in `assets/models.json`: footprint, scale or fit, rotation offset, recolor, and source license. Edited with `tools/assets-editor`; a model without one uses computed defaults.
+The entry of a 3D model, identified by its Model id: its file, footprint, scale or fit, rotation offset, recolor, and source license. Edited with `tools/assets-editor`; a model without one uses computed defaults.
 _Avoid_: Asset config, model metadata
 
 **Material**:
@@ -29,8 +41,16 @@ A building that turns Materials into Goods.
 _Avoid_: Plant, mill
 
 **Shop**:
-A building that sells Goods to citizens for Urbs.
+A building that sells Goods to citizens for Urbs. There is one Shop per Good category, each with four Tiers; it sells only the Goods of its Good category that its Tier makes available. The General shop is the exception: it sells the Goods of every Good category available at its Tier, and costs more to build, to upgrade and to extend with Slots.
 _Avoid_: Store, boutique
+
+**Good category**:
+The family a Good belongs to (Construction, Food, Equipment or Luxury). A Good belongs to exactly one Good category. Each Shop is tied to one Good category and sells only Goods of that category; the General shop is tied to all of them.
+_Avoid_: Shop type, Service category (that is for Public facilities)
+
+**General shop**:
+The original Shop, kept in the cities that have it and still buildable: it sells Goods of every Good category but costs more than a specialised Shop.
+_Avoid_: Universal shop, Retired shop
 
 **Farm**:
 A building that holds the player's seed stock and is the entry point of cultivation. It does not produce anything itself.
@@ -77,7 +97,7 @@ A residential building with eight Tiers (1 to 8) that houses citizens and upgrad
 _Avoid_: House, residence, dwelling
 
 **Tier**:
-The level of an upgradable building (Home, Workshop, Factory, Storehouse, Power plant, Water tower). A higher Tier improves the building: a Home houses more Citizens and has a higher Demand; a Workshop or Factory produces faster, gains Slots, yields more per cycle and can produce exclusive Materials or Goods.
+The level of an upgradable building (Home, Workshop, Factory, Shop, Storehouse, Power plant, Water tower). A higher Tier improves the building: a Home houses more Citizens and has a higher Demand; a Workshop or Factory produces faster, gains Slots, yields more per cycle and can produce exclusive Materials or Goods.
 _Avoid_: Level, grade
 
 **Capacity**:
@@ -127,6 +147,58 @@ _Avoid_: Hand, spin, game
 **Stake**:
 The Urbs the player puts on a Minigame round, from fixed steps capped by the Casino's Tier and never above the Urbs balance. It is debited when the round starts and lost if the round is left unfinished.
 _Avoid_: Bet, wager, buy-in
+
+**Venue**:
+A building the player fits out and runs from the inside: Arcade, Supermarket or Hotel. Unlike a Casino, the player never plays in it: simulated visitors do, and the player manages Fixtures, Staff and prices to earn Urbs. Its Tier sets the size of its interior and its number of Staff posts.
+_Avoid_: Establishment, business, Casino
+
+**Management view**:
+The page that opens from a Venue's side panel and shows its interior, where the player builds Fixtures and hires Staff.
+_Avoid_: Interior, editor, back office
+
+**Fixture**:
+An item the player places inside a Venue's interior: a counter, a table, a chair, a game machine, a billiard table, an air hockey table. Its position relative to the other Fixtures affects the Venue's performance.
+_Avoid_: Furniture, equipment, decoration
+
+**Staff**:
+The workers of a Venue, held as roles, not as individuals: manager, employee, technician and security in an Arcade; manager, cashier, stocker and security in a Supermarket; manager, receptionist, housekeeper and technician in a Hotel. Each role fills a post of the Venue's Tier (the manager from Tier 2, the technician from Tier 3), is staffed by Citizens like a Job, costs a one-off hiring fee of five days of wages, then a daily wage in Urbs.
+_Avoid_: Employee (one of the roles), worker, personnel
+
+**Condition**:
+The wear state of a Fixture, lowered by use. A Fixture whose Condition is too low breaks down and stops earning. It is never discarded for wear: it is repaired.
+_Avoid_: Durability, health, usury
+
+**Repair**:
+The act of restoring a Fixture's Condition, paid in Urbs, by the player or by a Technician. A Repair always costs less than buying the Fixture again.
+_Avoid_: Maintenance, replacement, fix
+
+**Shelf**:
+A Supermarket Fixture that holds units of one Good taken from the Storehouse, for a handling fee. It sells them to Shoppers at the value of the Good plus a markup; an empty Shelf earns nothing.
+_Avoid_: Stand, rack, Shop stack
+
+**Room**:
+A Hotel bed with a bathroom piece within reach. A bed without one counts for nothing. The comfort Fixtures near it set its Standing.
+_Avoid_: Suite, unit
+
+**Standing**:
+The class of a Room, from 1 to 3, set by the comfort of the Fixtures around its bed. It sets the rate of the Room.
+_Avoid_: Stars, grade, Tier
+
+**Rank**:
+The standing of a Venue, from 1 to 3, earned by the net Urbs it has made since it opened. It never costs Urbs and is kept through upgrades. The strongest Fixtures need a Rank as well as a Tier, and events open at Rank 2.
+_Avoid_: Level, Tier, Standing, Reputation
+
+**Reputation**:
+The note, from 0 to 100, of a Hotel. It rises with the Standing and the cleanliness of its Rooms and falls with breakdowns, a shortage of housekeepers, or closure; it draws more or fewer guests from outside the city.
+_Avoid_: Rating, score, fame
+
+**Takings**:
+The Urbs a Venue has earned and not yet collected, net of Staff wages and Fixture upkeep. Capped by the Venue's Tier like Tax, and collected by hand. A Venue whose wages cannot be paid closes.
+_Avoid_: Revenue, income, till
+
+**Visitor**:
+A simulated customer of a Venue, modelled in aggregate. Arcade and Supermarket draw them from the surrounding Citizens; a Hotel draws them from outside the city, by the city's attractiveness and its Reputation. In a Supermarket they are called Shoppers, in a Hotel guests. Only a visual silhouette is shown, never saved.
+_Avoid_: Customer, guest, Citizen
 
 **Vehicle**:
 A visual automobile that drives along the roads. It is a projection of the city's Congestion: its presence follows the Commuters who drive, two Vehicles never overlap, and individual Vehicles are not saved.
@@ -243,6 +315,10 @@ _Avoid_: Trade hub, exchange, auction
 **Slot**:
 A position in a building's production queue (or a Shop's sales stack). A building has 2 to 5 Slots; extra Slots are bought with Urbs.
 _Avoid_: Lane, tray
+
+**Rush**:
+The purchase, with Urbs, that immediately completes the production running in a Slot of a Workshop, Factory or Packhouse. Its price rises with the value of the item and falls as the remaining time shrinks, never reaching zero. The result is the same as a natural completion, and the next waiting Slot starts at once. Labelled "Finaliser" in French.
+_Avoid_: Skip, Boost, Speed-up, Instant build
 
 **Tax**:
 Urbs produced over time by the citizens of a Home, collected by hand.
@@ -372,6 +448,9 @@ _Avoid_: Merge, overwrite
 
 - A Cloud save never replaces the local save without the player's consent when a Save conflict exists.
 - A Casino is a Leisure building, never a Public facility.
+- A Venue is distinct from a Casino and a Shop: Minigames and Stakes belong to the Casino only.
+- A breakdown of a Fixture is drawn from the Venue's own stream of the game's Seed, so reloading never dodges it.
+- A Venue is simulated in aggregate per game tick, collected by hand like Tax, and replayed by Catch-up.
 - A Pleasure boat is a Leisure building and a Casino boat is a Casino, both hosted by a Boat on a Water tile.
 - Removing a Water tile that carries a Boat or a Bridge, a Marina that holds Boats, or a Water tile that would cut a Boat off its Marina is refused.
 - A Bridge is part of the Road graph: Commute, Congestion and Pedestrian paths use it like any Road. Bridge openings lower its capacity in proportion to the Boats that can reach it.

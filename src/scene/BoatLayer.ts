@@ -1,6 +1,5 @@
 import * as THREE from 'three';
-import { bridgeKeys, hashSeed, nextRandom, waterKeys, type GameState } from '../core';
-import { BOAT_MODELS } from './renderItems';
+import { BOAT_MODELS, bridgeKeys, hashSeed, nextRandom, waterKeys, type GameState } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { advanceDrift, driftPosition, keyOf, releaseDrift, startDrift, waitingFor, type DriftBoat } from './boatDrift';
 

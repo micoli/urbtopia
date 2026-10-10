@@ -1,0 +1,13 @@
+{
+  "$schema": "../schemas/boat.schema.json",
+  "kind": "boat",
+  "order": 30,
+  "family": "casino",
+  "model": "watercraft-ship-ocean-liner-small",
+  "cost": 3000,
+  "unlockCitizens": 300,
+  "name": {
+    "en": "Casino boat",
+    "fr": "Bateau casino"
+  }
+}

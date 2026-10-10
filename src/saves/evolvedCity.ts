@@ -42,7 +42,7 @@ export function buildEvolvedCity(): GameState {
   place('storehouse', 56, 59, 6);
   place('silo', 58, 59, 4);
   place('vault', 60, 59, 4);
-  const shops = [62, 63, 64].map((x) => place('shop', x, 59));
+  const shops = [place('shop', 62, 59, 2), place('shop', 63, 59), place('shop', 64, 59, 3)];
 
   const homeTiers: [number, number, number][] = [
     [50, 59, 8], [52, 59, 8], [54, 59, 7], [66, 59, 6], [68, 59, 6], [70, 59, 5], [72, 59, 5],

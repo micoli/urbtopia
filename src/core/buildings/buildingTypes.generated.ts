@@ -1,5 +1,6 @@
-// Generated from assets/buildings.json by scripts/buildingTypes.ts. Do not edit.
+// Generated from assets/defs/buildings by scripts/collectionFiles.ts. Do not edit.
 export type BuildingId =
+  | 'arcade'
   | 'backup'
   | 'baseballField'
   | 'battery'
@@ -18,6 +19,7 @@ export type BuildingId =
   | 'holiday-lantern'
   | 'home'
   | 'hospital'
+  | 'hotel'
   | 'marina'
   | 'middleSchool'
   | 'mini-forest-building-platform'
@@ -206,10 +208,15 @@ export type BuildingId =
   | 'railStation'
   | 'school'
   | 'shop'
+  | 'shopConstruction'
+  | 'shopEquipment'
+  | 'shopFood'
+  | 'shopLuxury'
   | 'silo'
   | 'solar'
   | 'stadium'
   | 'storehouse'
+  | 'supermarket'
   | 'theater'
   | 'townHall'
   | 'tree'
@@ -404,3 +411,34 @@ export type NatureType =
   | 'pirate-palm-straight'
   | 'pirate-patch-grass'
   | 'pirate-patch-grass-foliage';
+
+export type StorageType =
+  | 'grainSilo'
+  | 'silo'
+  | 'storehouse'
+  | 'vault';
+
+export type FacilityType =
+  | 'communityHall'
+  | 'concertHall'
+  | 'fireStation'
+  | 'highSchool'
+  | 'hospital'
+  | 'middleSchool'
+  | 'policeStation'
+  | 'school'
+  | 'theater'
+  | 'townHall'
+  | 'university';
+
+export type VenueType =
+  | 'arcade'
+  | 'hotel'
+  | 'supermarket';
+
+export type ShopType =
+  | 'shop'
+  | 'shopConstruction'
+  | 'shopEquipment'
+  | 'shopFood'
+  | 'shopLuxury';

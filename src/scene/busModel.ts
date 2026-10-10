@@ -1,1 +1,1 @@
-export const BUS_MODEL = 'trains/train-electric-subway-a';
+export { BUS_MODEL_FILE as BUS_MODEL } from '../core';

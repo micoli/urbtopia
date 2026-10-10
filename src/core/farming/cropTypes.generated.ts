@@ -1,0 +1,20 @@
+// Generated from assets/defs/crops by scripts/collectionFiles.ts. Do not edit.
+export type CropId =
+  | 'apple'
+  | 'bamboo'
+  | 'beet'
+  | 'bushBerries'
+  | 'cactus'
+  | 'carrot'
+  | 'corn'
+  | 'flower'
+  | 'grass'
+  | 'lettuce'
+  | 'mushroom'
+  | 'orange'
+  | 'palmtree'
+  | 'pumpkin'
+  | 'rice'
+  | 'tomato'
+  | 'watermelon'
+  | 'wheat';

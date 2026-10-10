@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 810,
+  "model": "nature-flower-redc",
+  "name": {
+    "en": "Flowers red C",
+    "fr": "Fleurs rouges C"
+  },
+  "family": "flower"
+}

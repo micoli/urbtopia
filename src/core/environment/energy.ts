@@ -1,3 +1,4 @@
+import { isVenueType } from '../venues/profiles';
 import { transitServices } from '../transit/transitService';
 import { ECOLOGY, distance, economicPower, homePower } from './ecology';
 import { COAL_CAPACITY, UTILITY_CAPACITY } from '../economy/economy';
@@ -16,12 +17,12 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   const transitDemand = transitServices(state, now).reduce((n, line) => n + line.powerDemand, 0);
   let transitSupplied: number;
   const buildings = [...state.buildings].sort((a, b) => a.id - b.id);
-  const homes = buildings.filter(b => b.type === 'home'), casinos = buildings.filter(b => b.type === 'casino'), economic = buildings.filter(b => b.type !== 'casino' && economicPower(b) > 0);
+  const homes = buildings.filter(b => b.type === 'home'), casinos = buildings.filter(b => b.type === 'casino'), arcades = buildings.filter(b => isVenueType(b.type)), economic = buildings.filter(b => b.type !== 'casino' && !isVenueType(b.type) && economicPower(b) > 0);
   const factors = productionFactors(now + (state.timeOffset ?? 0));
   const need = new Map(buildings.map(b => [b.id, b.type === 'home' ? homePower(b) : economicPower(b)]));
   const supplied = new Map(buildings.map(b => [b.id, 0]));
   const generation = buildings.filter(b => b.type === 'solar' || b.type === 'powerPlant' || (b.type === 'home' && b.solar));
-  const output = (b: Building) => b.type === 'powerPlant' ? (UTILITY_CAPACITY.powerPlant[b.tier - 1] ?? 0) * factors.wind : (b.type === 'solar' ? 16 : 2 * b.tier) * factors.solar;
+  const output = (b: Building) => b.type === 'powerPlant' ? (UTILITY_CAPACITY.powerPlant[b.tier - 1] ?? 0) * factors.wind : (b.type === 'solar' ? ECOLOGY.solarOutput : 2 * b.tier) * factors.solar;
   const surplus = new Map(generation.map(b => [b.id, output(b)]));
   const transfers: { from: number; to: number; amount: number; }[] = [];
   const allocate = (b: Building, amount: number) => {
@@ -50,7 +51,7 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   let grid = [...surplus.values()].reduce((n, x) => n + x, 0);
   grid -= distribute(homes, grid); grid -= distribute(economic, grid);
   transitSupplied = Math.min(grid, transitDemand); grid -= transitSupplied;
-  grid -= distribute(casinos, grid);
+  grid -= distribute(arcades, grid); grid -= distribute(casinos, grid);
   const beforeGrid = [...surplus.values()].reduce((n, x) => n + x, 0);
   for (const source of generation) surplus.set(source.id, beforeGrid > 0 ? (surplus.get(source.id) ?? 0) * grid / beforeGrid : 0);
   const coalPlants = buildings.filter(b => b.type === 'coalPlant');
@@ -62,7 +63,7 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   const transitCoal = Math.min(coal - coalSupplied, transitDemand - transitSupplied);
   transitSupplied += transitCoal;
   coalSupplied += transitCoal;
-  coalSupplied += distribute(casinos, coal - coalSupplied);
+  coalSupplied += distribute(arcades, coal - coalSupplied); coalSupplied += distribute(casinos, coal - coalSupplied);
   const coalRates = new Map(coalPlants.map(b => [b.id,
     b.coalEnabled !== false && coalCapacity > 0 ? coalSupplied * (COAL_CAPACITY[b.tier - 1] ?? 0) / coalCapacity : 0]));
   const batteries = buildings.filter(b => b.type === 'battery');
@@ -89,8 +90,8 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   let backed = distribute(homes, backup); backed += distribute(economic, backup - backed);
   const transitBackup = Math.min(backup - backed, transitDemand - transitSupplied);
   transitSupplied += transitBackup; backed += transitBackup;
-  backed += distribute(casinos, backup - backed);
-  const demand = homes.reduce((n, b) => n + homePower(b), 0) + economic.reduce((n, b) => n + economicPower(b), 0) + casinos.reduce((n, b) => n + economicPower(b), 0) + transitDemand;
+  backed += distribute(arcades, backup - backed); backed += distribute(casinos, backup - backed);
+  const demand = homes.reduce((n, b) => n + homePower(b), 0) + economic.reduce((n, b) => n + economicPower(b), 0) + arcades.reduce((n, b) => n + economicPower(b), 0) + casinos.reduce((n, b) => n + economicPower(b), 0) + transitDemand;
   const economicDemand = economic.reduce((n, b) => n + economicPower(b), 0);
   const economicSupplied = economic.reduce((n, b) => n + (supplied.get(b.id) ?? 0), 0);
   const solar = generation.filter(b => b.type !== 'powerPlant').reduce((n, b) => n + output(b), 0);

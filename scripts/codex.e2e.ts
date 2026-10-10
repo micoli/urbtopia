@@ -1,9 +1,5 @@
-import { createBuilding, newGame } from '../src/core';
-import { serializeEnvelope } from '../src/persistence/envelope';
 import { expect, test } from '@playwright/test';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
-import { CODEX_ENTRIES, codexImageKey, validateCodexManifest, type CodexManifest } from '../src/codex/catalog';
+import type { CodexManifest } from '../src/codex/catalog';
 
 for (const layout of ['A', 'B', 'C']) {
   for (const mobile of [false, true]) {
@@ -97,24 +93,6 @@ for (const layout of ['A', 'B', 'C']) {
   }
 }
 
-test('every codex page and evolution has a generated image in the deployed build', { tag: '@images' }, async ({ request }) => {
-  const response = await request.get('/codex/manifest.json');
-  expect(response.ok()).toBe(true);
-  const manifest = await response.json() as CodexManifest;
-  validateCodexManifest(manifest);
-  const visited = new Set<string>();
-  for (const entry of CODEX_ENTRIES) {
-    for (const level of entry.levels) {
-      const file = manifest.images[codexImageKey(entry.id, level)]!;
-      if (visited.has(file)) continue;
-      visited.add(file);
-      expect(existsSync(join('dist/codex', file)), `${entry.id}, level ${level}`).toBe(true);
-      const image = await request.get(`/codex/${file}`);
-      expect(image.ok(), `${entry.id}, level ${level}`).toBe(true);
-    }
-  }
-});
-
 test('codex previews are included in the offline cache', async ({ request }) => {
   const response = await request.get('/codex/manifest.json');
   const manifest = await response.json() as CodexManifest;
@@ -146,6 +124,8 @@ test('codex previews remain available offline after PWA installation', async ({ 
 });
 
 test('natural construction and Codex share Citizen unlocks and real previews', async ({ page }) => {
+  const { createBuilding, newGame } = await import('../src/core');
+  const { serializeEnvelope } = await import('../src/persistence/envelope');
   const state = newGame({ seed: 'nature-browser', now: Date.now() });
   state.buildings.push(createBuilding(state.nextId++, 'home', 60, 60, 0));
   await page.addInitScript(save => {

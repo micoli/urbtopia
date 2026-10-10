@@ -1,0 +1,79 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "facility",
+  "order": 310,
+  "section": "build.publicFacilities",
+  "cost": 800,
+  "unlockCitizens": 250,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Theater",
+    "fr": "Théâtre"
+  },
+  "description": {
+    "en": "A Culture facility for nearby Citizens. Optional: different Culture facilities stack their Well-being. {reach, select, city {Covers the whole city} other {Square reach of {side} tiles}}, {limit, select, unlimited {unlimited capacity} other {capacity {tier1Capacity} Citizens, up to {maxTierCapacity} at Tier {tierCount}}}; demand {power} power{hasWater, select, yes { and {water} water} other {}}; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs, no operating cost.",
+    "fr": "Un équipement culturel pour les citoyens proches. Facultatif : les équipements culturels différents cumulent leur bien-être. {reach, select, city {Couvre toute la ville} other {Portée carrée de {side} cases}}, {limit, select, unlimited {capacité illimitée} other {capacité {tier1Capacity} citoyens, jusqu’à {maxTierCapacity} au niveau {tierCount}}}; consomme {power} d’électricité{hasWater, select, yes { et {water} d’eau} other {}}; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs, sans coût de fonctionnement."
+  },
+  "radius": 10,
+  "tiers": [
+    {
+      "model": "commercial-building-b",
+      "footprint": [2, 2],
+      "capacity": 500
+    },
+    {
+      "capacity": 750,
+      "upgradeCost": {
+        "urbs": 480,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1000,
+      "upgradeCost": {
+        "urbs": 960,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1500,
+      "upgradeCost": {
+        "urbs": 1920,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 2000,
+      "upgradeCost": {
+        "urbs": 3200,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 2750,
+      "upgradeCost": {
+        "urbs": 4800,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 3500,
+      "upgradeCost": {
+        "urbs": 7200,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 4500,
+      "upgradeCost": {
+        "urbs": 10400,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "culture",
+  "detailModel": "commercial-detail-overhang-wide",
+  "power": 2,
+  "water": 0
+}

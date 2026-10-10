@@ -2,13 +2,13 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, type Plugin } from 'vite'
 import { MANAGED_MODELS_DIR, POLY_PIZZA_DIR } from '../../scripts/assetPacks.ts'
 import { archiveFile, archiveManifest, contentTypeOf, kenneyPackNames } from './archiveSources.ts'
 import { managedModelKeys } from '../../scripts/managedModels.ts'
-import { readBuildings, writeBuildings } from '../../scripts/buildingsFile.ts'
-import { readModels, writeModels } from '../../scripts/modelsFile.ts'
-import { addGlb, addPack, addPolyPizzaModel, removeModel } from '../../scripts/assetOperations.ts'
+import { deleteDefinition, readCatalog, saveDefinitions } from '../../scripts/definitionsStore.ts'
+import { addGlb, addPack, addPolyPizzaModel, removeModel, renameModel } from '../../scripts/assetOperations.ts'
 import { fetchPolyPizzaModel } from '../../scripts/polyPizza.ts'
 
 const editorDir = dirname(fileURLToPath(import.meta.url))
@@ -19,17 +19,20 @@ const miscellaneousNamesIn = (dir: string) =>
     ? readdirSync(dir, { recursive: true }).map(String).filter((file) => file.endsWith('.obj') || file.endsWith('.3mf') || file.endsWith('.glb')).map((file) => file.replace(/\.obj$/, '')).sort()
     : []
 
+const liveManifestData = (): Record<string, string[]> => {
+  const manifest = archiveManifest()
+  const miscellaneous = miscellaneousNamesIn(miscellaneousDir)
+  if (miscellaneous.length) manifest.miscellaneous = miscellaneous
+  return Object.assign(manifest, managedPacks(), polyPizzaPacks())
+}
+
 // Builds the manifest on each request: archives are unzipped on demand and the miscellaneous folder (subfolders included) is rescanned, so dropped-in OBJ, 3MF and GLB files show up without a restart.
 const liveManifest = (): Plugin => ({
   name: 'live-manifest',
   configureServer(server) {
     server.middlewares.use('/manifest.json', (_req, res) => {
-      const manifest = archiveManifest()
-      const miscellaneous = miscellaneousNamesIn(miscellaneousDir)
-      if (miscellaneous.length) manifest.miscellaneous = miscellaneous
-      Object.assign(manifest, managedPacks(), polyPizzaPacks())
       res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify(manifest))
+      res.end(JSON.stringify(liveManifestData()))
     })
   },
 })
@@ -82,7 +85,7 @@ const readBody = (req: NodeJS.ReadableStream) => new Promise<string>((done) => {
   req.on('end', () => done(body))
 })
 
-// Dev-only adapter: the editor reads and writes assets/models.json and assets/buildings.json through it.
+// Dev-only adapter: the editor reads the catalog and saves assets/models.json and assets/defs/buildings through it.
 const modelsApi = (): Plugin => ({
   name: 'models-api',
   configureServer(server) {
@@ -90,22 +93,18 @@ const modelsApi = (): Plugin => ({
       res.setHeader('Content-Type', 'application/json')
       res.end(JSON.stringify(sourcesByPack()))
     })
-    server.middlewares.use('/api/buildings', async (req, res) => {
+    server.middlewares.use('/api/catalog', (_req, res) => {
       res.setHeader('Content-Type', 'application/json')
-      if (req.method !== 'PUT') return res.end(JSON.stringify(readBuildings()))
-      try {
-        writeBuildings(JSON.parse(await readBody(req)))
-        res.end(JSON.stringify({ ok: true }))
-      } catch (error) {
-        res.statusCode = 400
-        res.end(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }))
-      }
+      res.end(JSON.stringify({ ...readCatalog(), manifest: liveManifestData(), sourceByPack: sourcesByPack() }))
     })
-    server.middlewares.use('/api/models', async (req, res) => {
+    server.middlewares.use('/api/definitions', async (req, res) => {
       res.setHeader('Content-Type', 'application/json')
-      if (req.method !== 'PUT') return res.end(JSON.stringify(readModels()))
+      if (req.method !== 'PUT') {
+        res.statusCode = 405
+        return res.end(JSON.stringify({ error: 'PUT only' }))
+      }
       try {
-        writeModels(JSON.parse(await readBody(req)))
+        saveDefinitions(JSON.parse(await readBody(req)))
         res.end(JSON.stringify({ ok: true }))
       } catch (error) {
         res.statusCode = 400
@@ -127,6 +126,8 @@ const OPERATIONS: Record<string, Operation> = {
   'add-poly': operation(async ({ input, license }: { input: string; license: string }) => addPolyPizzaModel(await fetchPolyPizzaModel(input), license)),
   'add-pack': operation(({ dataBase64, ...input }: WithFile<Parameters<typeof addPack>[0]>) => addPack({ ...input, data: bytesOf(dataBase64) })),
   remove: operation(({ key, usedKeys }: { key: string; usedKeys: string[] }) => removeModel(key, usedKeys)),
+  'rename-model': operation(({ from, to }: { from: string; to: string }) => renameModel(from, to)),
+  'delete-definition': operation(({ collection, id }: { collection: Parameters<typeof deleteDefinition>[0]; id: string }) => deleteDefinition(collection, id)),
 }
 
 // Operations change the sources, so the game's generated public/models is refreshed afterwards.
@@ -152,4 +153,4 @@ const assetOperationsApi = (): Plugin => ({
   },
 })
 
-export default defineConfig({ root: dirname(fileURLToPath(import.meta.url)), plugins: [liveManifest(), liveSources(), modelsApi(), assetOperationsApi()], server: { fs: { allow: ['../..'] }, watch: { ignored: ['**/assets/models.json', '**/assets/buildings.json'] } } })
+export default defineConfig({ root: dirname(fileURLToPath(import.meta.url)), plugins: [tailwindcss(), liveManifest(), liveSources(), modelsApi(), assetOperationsApi()], server: { fs: { allow: ['../..'] }, watch: { ignored: ['**/assets/models.json', '**/assets/defs/**'] } } })

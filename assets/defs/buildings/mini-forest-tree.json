@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 720,
+  "model": "mini-forest-tree",
+  "name": {
+    "en": "Tree · Mini Forest",
+    "fr": "Arbre · Mini Forest"
+  },
+  "family": "conifer"
+}

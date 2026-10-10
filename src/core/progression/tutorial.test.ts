@@ -16,7 +16,7 @@ function refusal(state: GameState, command: Command): string | null {
 }
 
 const idOf = (state: GameState, type: string) => state.buildings.find((building) => building.type === type)?.id ?? 0;
-const place = (buildingType: 'workshop' | 'factory' | 'storehouse' | 'shop' | 'home' | 'powerPlant' | 'waterTower', x: number, y: number): Command => ({
+const place = (buildingType: 'workshop' | 'factory' | 'storehouse' | 'shopConstruction' | 'home' | 'powerPlant' | 'waterTower', x: number, y: number): Command => ({
   type: 'PlaceBuilding',
   buildingType,
   x,
@@ -43,8 +43,8 @@ function upToStep(target: (typeof TUTORIAL_STEPS)[number]): GameState {
     storehouse: (current) => run(current, place('storehouse', 56, 59)),
     wood: (current) => produce(current, 'workshop', 'wood', 2),
     planks: (current) => produce(produce(produce(current, 'factory', 'planks', 2), 'factory', 'planks', 2), 'factory', 'planks', 1),
-    shop: (current) => run(current, place('shop', 57, 57)),
-    stock: (current) => run(current, { type: 'StockShop', buildingId: idOf(current, 'shop'), good: 'planks' }),
+    shop: (current) => run(current, place('shopConstruction', 57, 57)),
+    stock: (current) => run(current, { type: 'StockShop', buildingId: idOf(current, 'shopConstruction'), good: 'planks' }),
     sell: (current) => run(current, { type: 'SkipTutorialStep' }),
     utilities: (current) => run(run(current, place('powerPlant', 70, 70)), place('waterTower', 72, 70)),
     home: (current) => run(current, place('home', 58, 57)),

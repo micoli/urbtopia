@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "order": 70,
+  "name": {
+    "en": "Circuits",
+    "fr": "Circuits"
+  },
+  "category": "equipment",
+  "recipe": {
+    "metal": 1,
+    "silicon": 1
+  },
+  "durationMinutes": 16,
+  "value": 230,
+  "unlockCitizens": 200,
+  "minTier": 5
+}

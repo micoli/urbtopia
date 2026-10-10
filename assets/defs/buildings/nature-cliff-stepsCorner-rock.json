@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 480,
+  "model": "nature-cliff-stepscorner-rock",
+  "name": {
+    "en": "Cliff steps corner",
+    "fr": "Falaise en escalier, angle"
+  },
+  "family": "decoration"
+}

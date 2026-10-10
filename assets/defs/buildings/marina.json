@@ -1,0 +1,42 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "marina",
+  "order": 2240,
+  "section": "build.water",
+  "cost": 600,
+  "unlockCitizens": 60,
+  "requiresRoad": true,
+  "name": {
+    "en": "Marina",
+    "fr": "Marina"
+  },
+  "description": {
+    "en": "A harbour on the shore where Boats are moored. It must touch a Water tile and a road. Boats can only be placed on the Water tiles connected to it; upgrades raise how many it holds.",
+    "fr": "Un port sur la rive où sont amarrés les bateaux. Il doit toucher une tuile d’eau et une route. Les bateaux ne se posent que sur les tuiles d’eau qui lui sont reliées ; ses améliorations augmentent le nombre de bateaux."
+  },
+  "tiers": [
+    {
+      "model": "watercraft-boat-house-a",
+      "footprint": [2, 2],
+      "boats": 3
+    },
+    {
+      "boats": 6,
+      "upgradeCost": {
+        "urbs": 300,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "boats": 10,
+      "upgradeCost": {
+        "urbs": 800,
+        "goods": {
+          "bricks": 4
+        }
+      }
+    }
+  ]
+}

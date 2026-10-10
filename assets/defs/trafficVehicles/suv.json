@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/traffic-vehicle.schema.json",
+  "kind": "trafficVehicle",
+  "order": 40,
+  "name": {
+    "en": "SUV",
+    "fr": "SUV"
+  },
+  "model": "cars-suv",
+  "weight": 1
+}

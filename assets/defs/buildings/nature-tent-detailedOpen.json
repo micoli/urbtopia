@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 630,
+  "model": "nature-tent-detailedopen",
+  "name": {
+    "en": "Tent open",
+    "fr": "Tente ouverte"
+  },
+  "family": "decoration"
+}

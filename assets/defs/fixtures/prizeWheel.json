@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 140,
+  "venue": "arcade",
+  "category": "games",
+  "name": {
+    "en": "Prize wheel",
+    "fr": "Roue des lots"
+  },
+  "model": "mini-arcade-prize-wheel",
+  "footprint": [1, 1],
+  "price": 450,
+  "minTier": 3,
+  "minRank": 3,
+  "playsPerHour": 5
+}

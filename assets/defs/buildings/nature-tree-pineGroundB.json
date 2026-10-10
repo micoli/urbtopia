@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1870,
+  "model": "nature-tree-pinegroundb",
+  "name": {
+    "en": "Tree pine low B",
+    "fr": "Pin bas B"
+  },
+  "family": "conifer"
+}

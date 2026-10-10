@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 170,
+  "venue": "arcade",
+  "category": "service",
+  "name": {
+    "en": "Ticket machine",
+    "fr": "Distributeur de tickets"
+  },
+  "model": "mini-arcade-ticket-machine",
+  "footprint": [1, 1],
+  "price": 350,
+  "minTier": 3,
+  "minRank": 3,
+  "playsPerHour": 0
+}

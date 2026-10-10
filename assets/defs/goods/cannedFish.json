@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "order": 20,
+  "name": {
+    "en": "Canned fish",
+    "fr": "Conserve de poisson"
+  },
+  "category": "food",
+  "recipe": {
+    "fish": 2
+  },
+  "durationMinutes": 5,
+  "value": 80,
+  "unlockCitizens": 100,
+  "minTier": 1
+}

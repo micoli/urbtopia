@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1670,
+  "model": "nature-tree-blocks-fall",
+  "name": {
+    "en": "Tree block crown autumn",
+    "fr": "Arbre couronne cubique automne"
+  },
+  "family": "tree"
+}

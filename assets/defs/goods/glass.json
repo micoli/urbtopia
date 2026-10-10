@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "order": 60,
+  "name": {
+    "en": "Glass",
+    "fr": "Verre"
+  },
+  "category": "construction",
+  "recipe": {
+    "clay": 2,
+    "silicon": 1
+  },
+  "durationMinutes": 12,
+  "value": 190,
+  "unlockCitizens": 200,
+  "minTier": 5
+}

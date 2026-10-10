@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BUILDING_SPECS, CROPS, CROP_IDS, FIELD_COST, GOODS, HOME_TIERS, MATERIALS, PACK_FORMATS, STORAGE_TIERS, citizensOf, maxTierOf, placementCost, producibleItems, upgradeCostOf, type BuildingType, type GoodId } from '../index';
+import { BUILDING_SPECS, CROPS, CROP_IDS, FIELD_COST, GOODS, HOME_TIERS, MATERIALS, PACK_FORMATS, storageTierOf, citizensOf, maxTierOf, placementCost, producibleItems, upgradeCostOf, type BuildingType, type GoodId } from '../index';
 
 const MINUTE = 60_000;
 
@@ -45,7 +45,7 @@ describe('Late game reach', () => {
 
 describe('Specialized storages', () => {
   it('give more capacity per Urb than the Storehouse', () => {
-    const perUrb = (type: 'storehouse' | 'silo' | 'vault', compartment: 'materials' | 'goods') => STORAGE_TIERS[type][compartment].base / placementCost(type);
+    const perUrb = (type: 'storehouse' | 'silo' | 'vault', compartment: 'materials' | 'goods') => storageTierOf(type, 1)[compartment] / placementCost(type);
     expect(perUrb('silo', 'materials')).toBeGreaterThan(perUrb('storehouse', 'materials'));
     expect(perUrb('vault', 'goods')).toBeGreaterThan(perUrb('storehouse', 'goods'));
     expect(BUILDING_SPECS.silo.cost).toBeLessThan(BUILDING_SPECS.storehouse.cost);

@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/service-vehicle.schema.json",
+  "kind": "serviceVehicle",
+  "order": 30,
+  "facility": "policeStation",
+  "model": "cars-police",
+  "name": {
+    "en": "Police car",
+    "fr": "Voiture de police"
+  }
+}

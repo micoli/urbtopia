@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 260,
+  "venue": "supermarket",
+  "category": "decor",
+  "name": {
+    "en": "Shopping cart",
+    "fr": "Chariot"
+  },
+  "model": "mini-market-shopping-cart",
+  "footprint": [1, 1],
+  "price": 30,
+  "minTier": 1,
+  "attract": 0.03
+}

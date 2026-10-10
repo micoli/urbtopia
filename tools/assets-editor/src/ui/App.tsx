@@ -1,24 +1,26 @@
 import { useEffect, useState } from 'react'
-import type { ModelSource } from '../../../../src/scene/modelDefinitions'
-import type { BuildingDefinitions } from '../../../../src/core/buildings/buildingDefinition'
-import type { Definitions } from '../assetKeys'
-import { fetchBuildings, fetchDefinitions, fetchManifest, fetchSourceByPack } from '../api'
-import { Editor } from './Editor'
-
-interface Catalog {
-  manifest: Record<string, string[]>
-  sourceByPack: Record<string, ModelSource | undefined>
-  definitions: Definitions
-  buildings: BuildingDefinitions
-}
+import { fetchCatalog } from '../api'
+import { useDocument } from '../store/documentStore'
+import { startRouter } from '../router'
+import { Shell } from './Shell'
 
 export function App() {
-  const [catalog, setCatalog] = useState<Catalog | null>(null)
+  const load = useDocument(state => state.load)
+  const [ready, setReady] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    void Promise.all([fetchManifest(), fetchSourceByPack(), fetchDefinitions(), fetchBuildings()]).then(([manifest, sourceByPack, definitions, buildings]) => setCatalog({ manifest, sourceByPack, definitions, buildings }))
-  }, [])
+    fetchCatalog()
+      .then(catalog => {
+        load(catalog)
+        setReady(true)
+      })
+      .catch(reason => setError(String(reason)))
+  }, [load])
 
-  if (!catalog) return <div id="side">loading</div>
-  return <Editor manifest={catalog.manifest} sourceByPack={catalog.sourceByPack} initialDefinitions={catalog.definitions} initialBuildings={catalog.buildings} />
+  useEffect(() => (ready ? startRouter() : undefined), [ready])
+
+  if (error) return <div className="p-6 text-sm text-red-700">Cannot load the catalog: {error}</div>
+  if (!ready) return <div className="p-6 text-sm text-zinc-500">Loading the catalog…</div>
+  return <Shell />
 }

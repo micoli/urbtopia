@@ -1,16 +1,13 @@
 import type { ModelLibrary } from './modelLibrary';
 import { TRAIN_MODELS } from './renderItems';
 import * as THREE from 'three';
-import { tileKey, type GameState, type TransitVehicleKind } from '../core';
+import { modelFileOf } from '../core/models/modelFiles';
+import { FLEET_VEHICLES, tileKey, type GameState, type TransitVehicleKind } from '../core';
 import type { transitServices } from '../core/transit/transitService';
 
 type Service = ReturnType<typeof transitServices>[number];
 
-const VEHICLE_MODELS: Record<TransitVehicleKind, [string, string]> = {
-  brtElectric: [TRAIN_MODELS[0]!, TRAIN_MODELS[4]!],
-  trainElectric: [TRAIN_MODELS[0]!, TRAIN_MODELS[1]!],
-  trainCoal: [TRAIN_MODELS[2]!, TRAIN_MODELS[3]!],
-};
+const VEHICLE_MODELS = Object.fromEntries(FLEET_VEHICLES.map(({ id, models }) => [id, models.map(modelFileOf)])) as Record<TransitVehicleKind, string[]>;
 
 export class TransitLayer {
   readonly root = new THREE.Group();

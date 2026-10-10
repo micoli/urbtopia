@@ -31,7 +31,7 @@ const BUILDING_STEPS: Partial<Record<TutorialStep, BuildingType[]>> = {
   workshop: ['workshop'],
   factory: ['factory'],
   storehouse: ['storehouse'],
-  shop: ['shop'],
+  shop: ['shopConstruction'],
   utilities: ['powerPlant', 'waterTower'],
   home: ['home'],
 };

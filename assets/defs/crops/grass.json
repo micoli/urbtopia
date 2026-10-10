@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 10,
+  "name": {
+    "en": "Grass",
+    "fr": "Herbe"
+  },
+  "growthMinutes": 3,
+  "water": 1,
+  "yield": 2,
+  "seedShare": 0.5,
+  "seedPrice": 2,
+  "unlockCitizens": 20,
+  "packingMinutes": 1,
+  "packedValue": 18,
+  "models": {
+    "growth": ["crops-grass-1", "crops-grass-2", "crops-grass-3", "crops-grass-4"]
+  }
+}

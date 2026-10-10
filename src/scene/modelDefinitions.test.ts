@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { ARCHIVES_DIR, ASSET_PACKS, MANAGED_MODELS_DIR, POLY_PIZZA_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS } from '../../scripts/assetPacks';
 import { extractFbx, extractPack } from '../../scripts/extractPack';
 import { managedModelKeys } from '../../scripts/managedModels';
-import { definitionProblems } from '../../scripts/modelsFile';
+import { modelProblems } from '../../scripts/modelsFile';
 import { MODEL_DEFINITIONS, recolorOf, type ModelSource } from './modelDefinitions';
 
 const keysBySource = (): Map<string, ModelSource> => {
@@ -29,9 +29,9 @@ const keysBySource = (): Map<string, ModelSource> => {
 describe('models.json', () => {
   const keys = keysBySource();
 
-  it.each(Object.entries(MODEL_DEFINITIONS))('%s is a valid definition of an existing model', (key, definition) => {
-    expect(keys.get(key), 'no such model in any source').toBe(definition.source);
-    expect(definitionProblems(definition)).toEqual([]);
+  it.each(Object.entries(MODEL_DEFINITIONS))('%s is a valid definition of an existing model', (file, definition) => {
+    expect(keys.get(file), 'no such model in any source').toBe(definition.source);
+    expect(modelProblems({ file, ...definition })).toEqual([]);
   });
 
   it('falls back to no recolor for an unknown model or variant', () => {

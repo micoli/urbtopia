@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 550,
+  "model": "nature-statue-ring",
+  "name": {
+    "en": "Statue ring",
+    "fr": "Anneau de pierre"
+  },
+  "family": "decoration"
+}

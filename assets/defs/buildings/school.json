@@ -1,0 +1,79 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "facility",
+  "order": 250,
+  "section": "build.publicFacilities",
+  "cost": 300,
+  "unlockCitizens": 15,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "School",
+    "fr": "École"
+  },
+  "description": {
+    "en": "Teaches the nearby Citizens. Homes cannot reach Tier 3 without School coverage. {reach, select, city {Covers the whole city} other {Square reach of {side} tiles}}, {limit, select, unlimited {unlimited capacity} other {capacity {tier1Capacity} Citizens, up to {maxTierCapacity} at Tier {tierCount}}}; demand {power} power{hasWater, select, yes { and {water} water} other {}}; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs, no operating cost.",
+    "fr": "Instruit les citoyens proches. Les logements ne peuvent pas atteindre le niveau 3 sans couverture d’une école. {reach, select, city {Couvre toute la ville} other {Portée carrée de {side} cases}}, {limit, select, unlimited {capacité illimitée} other {capacité {tier1Capacity} citoyens, jusqu’à {maxTierCapacity} au niveau {tierCount}}}; consomme {power} d’électricité{hasWater, select, yes { et {water} d’eau} other {}}; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs, sans coût de fonctionnement."
+  },
+  "radius": 10,
+  "tiers": [
+    {
+      "model": "commercial-building-d",
+      "footprint": [2, 2],
+      "capacity": 300
+    },
+    {
+      "capacity": 450,
+      "upgradeCost": {
+        "urbs": 180,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 600,
+      "upgradeCost": {
+        "urbs": 360,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 900,
+      "upgradeCost": {
+        "urbs": 720,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1200,
+      "upgradeCost": {
+        "urbs": 1200,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1650,
+      "upgradeCost": {
+        "urbs": 1800,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 2100,
+      "upgradeCost": {
+        "urbs": 2700,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 2700,
+      "upgradeCost": {
+        "urbs": 3900,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "education",
+  "detailModel": "commercial-detail-awning",
+  "power": 2,
+  "water": 0
+}

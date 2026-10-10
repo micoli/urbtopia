@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 130,
+  "name": {
+    "en": "Berries",
+    "fr": "Baies"
+  },
+  "growthMinutes": 32,
+  "water": 3,
+  "yield": 6,
+  "seedShare": 0.25,
+  "seedPrice": 28,
+  "unlockCitizens": 450,
+  "packingMinutes": 5,
+  "packedValue": 170,
+  "models": {
+    "growth": ["crops-bushberries-1", "crops-bushberries-2", "crops-bushberries-3", "crops-bushberries-4"],
+    "produce": "crops-bushberries-crop",
+    "harvested": "crops-bushberries-harvested"
+  }
+}

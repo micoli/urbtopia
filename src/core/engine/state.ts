@@ -1,3 +1,4 @@
+import type { FleetVehicleId } from '../transit/transitVehicleTypes.generated';
 import type { BuildingId } from '../buildings/buildingTypes.generated';
 import type { Direction } from '../map/geometry';
 import type { Coord } from '../map/coord';
@@ -40,6 +41,42 @@ export interface MarketPrice {
   updatedAt: number;
 }
 
+export type { VenueType } from '../buildings/buildingTypes.generated';
+export type { ArcadeFixtureId, FixtureId, HotelFixtureId, SupermarketFixtureId } from '../venues/fixtureTypes.generated';
+import type { FixtureId } from '../venues/fixtureTypes.generated';
+
+export interface VenueFixture extends Coord {
+  id: number;
+  type: FixtureId;
+  rotation: Rotation;
+  condition?: number;
+  broken?: boolean;
+  good?: GoodId;
+  stock?: number;
+}
+
+export interface VenueEvent {
+  startsAt: number;
+  endsAt: number;
+  budget: number;
+}
+
+export type StaffRole = 'manager' | 'employee' | 'technician' | 'security' | 'cashier' | 'stocker' | 'receptionist' | 'housekeeper';
+
+export interface VenueData {
+  fixtures: VenueFixture[];
+  nextFixtureId: number;
+  takings: number;
+  // Net earnings made since the Venue opened; it sets the Rank.
+  earned?: number;
+  price?: number;
+  staff?: Partial<Record<StaffRole, number>>;
+  rng?: number;
+  reputation?: number;
+  event?: VenueEvent;
+  cooldownUntil?: number;
+}
+
 export interface Building extends Coord {
   id: number;
   type: BuildingType;
@@ -54,6 +91,7 @@ export interface Building extends Coord {
   colorVariant?: HomeColorVariant;
   storedEnergy?: number;
   coalEnabled?: boolean;
+  venue?: VenueData;
 }
 
 export interface Storage {
@@ -72,7 +110,7 @@ export interface BusLine {
 }
 
 export type TransitMode = 'bus' | 'brt' | 'rail';
-export type TransitVehicleKind = 'brtElectric' | 'trainElectric' | 'trainCoal';
+export type TransitVehicleKind = FleetVehicleId;
 export interface TransitVehicle {
   id: number;
   kind: TransitVehicleKind;

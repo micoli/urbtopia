@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 250,
+  "venue": "supermarket",
+  "category": "decor",
+  "name": {
+    "en": "Shopping basket",
+    "fr": "Panier"
+  },
+  "model": "mini-market-shopping-basket",
+  "footprint": [1, 1],
+  "price": 15,
+  "minTier": 1,
+  "attract": 0.02
+}

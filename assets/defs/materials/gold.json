@@ -1,0 +1,14 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "order": 80,
+  "name": {
+    "en": "Gold",
+    "fr": "Or"
+  },
+  "producedBy": "workshop",
+  "durationMinutes": 48,
+  "unlockCitizens": 1000,
+  "minTier": 5,
+  "value": 80
+}

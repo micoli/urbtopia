@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1810,
+  "model": "nature-tree-palmbend",
+  "name": {
+    "en": "Tree palm curved",
+    "fr": "Palmier courbé"
+  },
+  "family": "palm"
+}

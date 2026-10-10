@@ -1,0 +1,5 @@
+{
+  "$schema": "../schemas/infrastructure-rails.schema.json",
+  "straight": "trains-railroad-straight",
+  "corner": "trains-railroad-corner-small"
+}

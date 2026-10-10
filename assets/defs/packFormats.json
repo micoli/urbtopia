@@ -1,0 +1,20 @@
+{
+  "$schema": "schemas/packFormats.schema.json",
+  "formats": [
+    {
+      "suffix": "Crate",
+      "size": 2,
+      "valueBonus": 1
+    },
+    {
+      "suffix": "Box",
+      "size": 5,
+      "valueBonus": 1.1
+    },
+    {
+      "suffix": "Pallet",
+      "size": 10,
+      "valueBonus": 1.25
+    }
+  ]
+}

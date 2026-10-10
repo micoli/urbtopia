@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/crop.schema.json",
+  "kind": "crop",
+  "order": 150,
+  "name": {
+    "en": "Cactus",
+    "fr": "Cactus"
+  },
+  "growthMinutes": 36,
+  "water": 1,
+  "yield": 5,
+  "seedShare": 0.25,
+  "seedPrice": 30,
+  "unlockCitizens": 450,
+  "packingMinutes": 5,
+  "packedValue": 180,
+  "models": {
+    "growth": ["crops-cactus-1", "crops-cactus-2", "crops-cactus-3", "crops-cactus-4"],
+    "produce": "crops-cactus-crop",
+    "harvested": "crops-cactus-harvested"
+  }
+}

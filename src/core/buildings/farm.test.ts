@@ -35,7 +35,7 @@ describe('Farm building', () => {
   });
 
   it('follows the Farm tier table for seed stock and Field cap', () => {
-    expect([1, 2, 3, 4, 5].map(tier => farmTier({ tier }))).toEqual([
+    expect([1, 2, 3, 4, 5].map(tier => farmTier({ type: 'farm', tier }))).toEqual([
       { seedCapacity: 20, fieldCap: 12 },
       { seedCapacity: 40, fieldCap: 24 },
       { seedCapacity: 70, fieldCap: 40 },

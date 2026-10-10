@@ -1,9 +1,9 @@
 import {
-  CASINO_GAMES, COAL_CAPACITY, MARINA_TIERS, FACILITIES, FARM_TIERS, HOME_TIERS, STORAGE_TIERS, UTILITY_CAPACITY,
+  CASINO_GAMES, COAL_CAPACITY, marinaCapacity, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
+  FIXTURES, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
-  type StorageType,
+  type StorageType, isShopType, sellableGoodsOf, shopTierOf,
 } from '../core';
-import { PRODUCTION_TIERS } from '../core/economy/economy';
 import { t } from '../i18n/t';
 import type { MessageKey } from '../i18n/messages';
 import type { CodexId } from './catalog';
@@ -40,19 +40,17 @@ function buildingFootprintFact(type: 'home' | 'casino', level: number): LevelFac
 }
 
 const percent = (value: number) => `${Math.round(value * 100)}%`;
-const productionTier = (level: number) => PRODUCTION_TIERS[level - 1] ?? PRODUCTION_TIERS[0]!;
-const farmTier = (level: number) => FARM_TIERS[level - 1] ?? FARM_TIERS[0]!;
 const homeTier = (level: number) => HOME_TIERS[level - 1] ?? HOME_TIERS[0]!;
 
 function storageFacts(type: StorageType, level: number): LevelFact[] {
   const compartments = [
-    ['codex.fact.materials', STORAGE_TIERS[type].materials],
-    ['codex.fact.goods', STORAGE_TIERS[type].goods],
-    ['codex.fact.crops', STORAGE_TIERS[type].crops],
+    ['codex.fact.materials', 'materials'],
+    ['codex.fact.goods', 'goods'],
+    ['codex.fact.crops', 'crops'],
   ] as const;
   return compartments
-    .filter(([, capacity]) => capacity.base > 0)
-    .map(([label, capacity]) => numericFact(label, tier => capacity.base + capacity.perTier * (tier - 1), level));
+    .filter(([, compartment]) => storageTierOf(type, 1)[compartment] > 0)
+    .map(([label, compartment]) => numericFact(label, tier => storageTierOf(type, tier)[compartment], level));
 }
 
 function casinoFacts(level: number): LevelFact[] {
@@ -66,6 +64,19 @@ function casinoFacts(level: number): LevelFact[] {
   ];
 }
 
+function venueFacts(type: VenueType, level: number): LevelFact[] {
+  const gridText = (tier: number) => `${gridSizeOf(type, tier)}×${gridSizeOf(type, tier)}`;
+  const fixturesText = (tier: number) => fixtureIdsOf(type).filter(id => FIXTURES[id].minTier <= tier).map(id => t(`venue.fixture.${id}`)).join(', ');
+  const posts = (tier: number) => staffRolesOf(type).reduce((total, role) => total + postsOf(type, role, tier), 0);
+  return [
+    textFact('codex.fact.grid', gridText, level),
+    numericFact('codex.fact.posts', posts, level),
+    numericFact('codex.fact.takingsCap', tier => takingsCapOf(type, tier), level),
+    numericFact('codex.fact.power', tier => venuePower({ type, tier }), level),
+    textFact('codex.fact.fixtures', fixturesText, level),
+  ];
+}
+
 export function levelFactsOf(id: CodexId, level: number): LevelFact[] {
   if (id === 'home' || id === 'solarHome') return [
     numericFact('codex.fact.citizens', tier => homeTier(tier).citizens, level),
@@ -74,19 +85,26 @@ export function levelFactsOf(id: CodexId, level: number): LevelFact[] {
     buildingFootprintFact('home', level),
   ];
   if (id === 'workshop' || id === 'factory' || id === 'packhouse') return [
-    numericFact('codex.fact.craftTime', tier => productionTier(tier).durationFactor, level, percent),
-    numericFact('codex.fact.slots', tier => productionTier(tier).maxSlots, level),
-    numericFact('codex.fact.yield', tier => productionTier(tier).yield, level),
+    numericFact('codex.fact.craftTime', tier => productionTierOf({ type: id, tier }).durationFactor, level, percent),
+    numericFact('codex.fact.slots', tier => productionTierOf({ type: id, tier }).maxSlots, level),
+    numericFact('codex.fact.yield', tier => productionTierOf({ type: id, tier }).yield, level),
   ];
   if (id === 'farm') return [
-    numericFact('codex.fact.seedCapacity', tier => farmTier(tier).seedCapacity, level),
-    numericFact('codex.fact.fieldCap', tier => farmTier(tier).fieldCap, level),
+    numericFact('codex.fact.seedCapacity', tier => farmTier({ type: id, tier }).seedCapacity, level),
+    numericFact('codex.fact.fieldCap', tier => farmTier({ type: id, tier }).fieldCap, level),
   ];
   if (id === 'storehouse' || id === 'silo' || id === 'vault' || id === 'grainSilo') return storageFacts(id, level);
   if (id === 'powerPlant' || id === 'waterTower') return [numericFact('codex.fact.output', tier => UTILITY_CAPACITY[id][tier - 1] ?? 0, level)];
   if (id === 'coalPlant') return [numericFact('codex.fact.output', tier => COAL_CAPACITY[tier - 1] ?? 0, level)];
-  if (id === 'marina') return [numericFact('codex.fact.boats', tier => MARINA_TIERS[tier - 1]?.boats ?? 0, level)];
+  if (id === 'marina') return [numericFact('codex.fact.boats', tier => marinaCapacity({ tier }), level)];
+  if (isShopType(id)) return [
+    numericFact('codex.fact.saleSlots', tier => shopTierOf({ type: id, tier }).maxSlots, level),
+    numericFact('codex.fact.saleTime', tier => shopTierOf({ type: id, tier }).saleIntervalFactor, level, percent),
+    numericFact('codex.fact.goodsSold', tier => sellableGoodsOf({ type: id, tier }).length, level),
+    numericFact('codex.fact.jobs', tier => shopTierOf({ type: id, tier }).jobs, level),
+  ];
   if (id === 'casino') return casinoFacts(level);
+  if (isVenueType(id)) return venueFacts(id, level);
   if (isFacilityType(id) && FACILITIES[id].capacity !== null) {
     return [numericFact('codex.fact.capacity', tier => facilityCapacity(id, tier) ?? 0, level)];
   }

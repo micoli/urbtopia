@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 530,
+  "model": "nature-statue-head",
+  "name": {
+    "en": "Statue head",
+    "fr": "Tête de statue"
+  },
+  "family": "decoration"
+}

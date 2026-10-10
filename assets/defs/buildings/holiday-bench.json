@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 410,
+  "model": "holiday-bench",
+  "name": {
+    "en": "Bench",
+    "fr": "Banc"
+  },
+  "family": "decoration"
+}

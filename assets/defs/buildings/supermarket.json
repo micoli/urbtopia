@@ -1,0 +1,82 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "venue",
+  "order": 90,
+  "section": "build.production",
+  "cost": 5000,
+  "unlockCitizens": 400,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Supermarket",
+    "fr": "Supermarché"
+  },
+  "description": {
+    "en": "A Venue you fit out and run from the inside. Stock its shelves with Goods from the Storehouse, open checkouts and sell to the neighbourhood.",
+    "fr": "Un établissement que vous aménagez et gérez de l'intérieur. Garnissez ses rayons avec les marchandises de l'entrepôt, ouvrez des caisses et vendez au quartier."
+  },
+  "tiers": [
+    {
+      "model": "commercial-building-g",
+      "footprint": [3, 2],
+      "gridSize": 6,
+      "takingsCap": 400,
+      "power": 2,
+      "eventBudget": 300,
+      "eventMultiplier": 1.5,
+      "posts": {
+        "manager": 0,
+        "cashier": 1,
+        "stocker": 0,
+        "security": 0
+      }
+    },
+    {
+      "gridSize": 8,
+      "takingsCap": 900,
+      "power": 4,
+      "eventBudget": 600,
+      "eventMultiplier": 2,
+      "posts": {
+        "manager": 1,
+        "cashier": 2,
+        "stocker": 1,
+        "security": 1
+      },
+      "upgradeCost": {
+        "urbs": 8000,
+        "goods": {}
+      }
+    },
+    {
+      "gridSize": 10,
+      "takingsCap": 1800,
+      "power": 6,
+      "eventBudget": 1200,
+      "eventMultiplier": 2.5,
+      "posts": {
+        "manager": 1,
+        "cashier": 3,
+        "stocker": 2,
+        "security": 2
+      },
+      "upgradeCost": {
+        "urbs": 18000,
+        "goods": {}
+      }
+    }
+  ],
+  "rankAt": [1200, 5000],
+  "staffRoles": ["manager", "cashier", "stocker", "security"],
+  "frontRole": "cashier",
+  "fixtureCategories": ["shelves", "checkouts", "decor", "walls"],
+  "shell": {
+    "floor": "mini-market-floor",
+    "wall": "mini-market-wall",
+    "corner": "mini-market-wall-corner",
+    "cornerX": -0.1,
+    "cornerZ": -0.1,
+    "cornerRotation": 90
+  },
+  "staffModels": ["mini-market-character-employee"]
+}

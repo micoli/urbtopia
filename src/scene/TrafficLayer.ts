@@ -4,7 +4,7 @@ import { BUS_MODEL } from './busModel';
 import type { ModelLibrary } from './modelLibrary';
 import { buildRoadGraph, emptyRoadGraph, type RoadGraph } from './roadGraph';
 import { targetVehicleCount } from './trafficTarget';
-import { VEHICLE_MODELS } from './vehicleModels';
+import { VEHICLE_CUMULATIVE_WEIGHTS, VEHICLE_MODELS } from './vehicleModels';
 import { poseOf } from './vehicleMotion';
 import { cumulativeWeights, pickByWeight } from './trafficSpawn';
 import { advanceTrafficVehicle, isOnTrafficRoad, isSpotFree, laneTileCount, startBusVehicle, startTrafficVehicle, type TrafficVehicle } from './vehicleTraffic';
@@ -197,7 +197,7 @@ export class TrafficLayer {
     let tile = this.randomRoadTile();
     for (let attempt = 1; attempt < SPAWN_ATTEMPTS && this.isInView(tile); attempt++) tile = this.randomRoadTile();
     const speed = BASE_SPEED * (1 - SPEED_VARIATION + 2 * SPEED_VARIATION * this.random());
-    const model = Math.floor(this.random() * VEHICLE_MODELS.length);
+    const model = pickByWeight(VEHICLE_CUMULATIVE_WEIGHTS, this.random());
     const vehicle = startTrafficVehicle(this.graph, tile, this.nextVehicleId, model, speed, this.lanesAt, this.random);
     if (!vehicle || !isSpotFree(vehicle, this.vehicles)) return;
     this.nextVehicleId++;

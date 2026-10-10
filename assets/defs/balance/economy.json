@@ -1,0 +1,34 @@
+{
+  "$schema": "../schemas/balance-economy.schema.json",
+  "tax": {
+    "urbsPerCitizenPerHour": 1,
+    "capHours": 8
+  },
+  "market": {
+    "fullPoints": 60,
+    "floorPoints": 30,
+    "pointsLostPerUnit": 5,
+    "recoveryMinutes": 60
+  },
+  "slotPrices": {
+    "3": 500,
+    "4": 1500,
+    "5": 4000,
+    "6": 8000,
+    "7": 12000,
+    "8": 20000
+  },
+  "rush": {
+    "priceFactor": 2,
+    "minPrice": 1
+  },
+  "parcelPricing": {
+    "base": 300,
+    "factor": 1.12,
+    "roundTo": 10
+  },
+  "shop": {
+    "stackSize": 5,
+    "saleIntervalMinutes": 0.75
+  }
+}

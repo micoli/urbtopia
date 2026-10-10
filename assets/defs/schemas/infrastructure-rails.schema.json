@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "straight": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    },
+    "corner": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    }
+  },
+  "required": [
+    "straight",
+    "corner"
+  ],
+  "additionalProperties": false,
+  "title": "Rails",
+  "description": "assets/defs/infrastructure/rails.json: the Model ids of the rail pieces."
+}

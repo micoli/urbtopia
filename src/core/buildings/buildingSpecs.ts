@@ -1,9 +1,9 @@
-import { BUILDING_ENTRIES, type BuildingEntry } from './buildingDefinitions';
+import { BUILDING_ENTRIES, tiersOf, type BuildingEntry } from './buildingDefinitions';
 import type { AccessMode } from './buildingDefinition';
+import { isShopType } from '../economy/shops';
 import { NATURE_FAMILIES } from '../environment/natureFamilies';
 import type { Coord } from '../map/coord';
-import { HOME_FOOTPRINTS } from '../economy/economy';
-import { casinoFootprint } from '../leisure/casino';
+import { isVenueType } from '../venues/profiles';
 import type { Building, BuildingType, Rotation, ShopStack } from '../engine/state';
 
 export interface Footprint {
@@ -19,9 +19,9 @@ export interface BuildingSpec {
   initialSlots: number;
 }
 
-function specOf({ footprint, cost, requiresRoad, accessModes, initialSlots, nature }: BuildingEntry): BuildingSpec {
-  if (nature) {
-    const profile = NATURE_FAMILIES[nature.family];
+function specOf({ footprint, cost, requiresRoad, accessModes, initialSlots, family }: BuildingEntry): BuildingSpec {
+  if (family) {
+    const profile = NATURE_FAMILIES[family];
     return { footprint: { width: profile.size, depth: profile.size }, cost: profile.cost, requiresRoad: false, accessModes: [], initialSlots: 0 };
   }
   const [width, depth] = footprint!;
@@ -31,7 +31,8 @@ function specOf({ footprint, cost, requiresRoad, accessModes, initialSlots, natu
 export const BUILDING_SPECS = Object.fromEntries(BUILDING_ENTRIES.map(entry => [entry.id, specOf(entry)])) as Record<BuildingType, BuildingSpec>;
 
 export function footprintOf(type: BuildingType, rotation: number, tier = 1): Footprint {
-  const tiered = type === 'home' ? HOME_FOOTPRINTS[tier - 1] : type === 'casino' ? casinoFootprint(tier) : undefined;
+  const tierFootprint = tiersOf(type)[tier - 1]?.footprint;
+  const tiered = tierFootprint ? { width: tierFootprint[0], depth: tierFootprint[1] } : undefined;
   const { width, depth } = tiered ?? BUILDING_SPECS[type].footprint;
   return rotation % 2 === 0 ? { width, depth } : { width: depth, depth: width };
 }
@@ -51,8 +52,8 @@ export function emptyStack(): ShopStack {
 
 export function createBuilding(id: number, type: BuildingType, x: number, y: number, rotation: Rotation): Building {
   const slotCount = BUILDING_SPECS[type].initialSlots;
-  const stacks = type === 'shop' ? Array.from({ length: slotCount }, emptyStack) : [];
-  return { id, type, x, y, rotation, slotCount, queue: [], stacks, tier: 1, taxCitizenMs: 0, ...(type === 'coalPlant' ? { coalEnabled: true } : {}) };
+  const stacks = isShopType(type) ? Array.from({ length: slotCount }, emptyStack) : [];
+  return { id, type, x, y, rotation, slotCount, queue: [], stacks, tier: 1, taxCitizenMs: 0, ...(type === 'coalPlant' ? { coalEnabled: true } : {}), ...(isVenueType(type) ? { venue: { fixtures: [], nextFixtureId: 1, takings: 0 } } : {}) };
 }
 
 export function placementCost(type: BuildingType): number {

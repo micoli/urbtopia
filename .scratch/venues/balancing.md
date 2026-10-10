@@ -1,0 +1,73 @@
+# Venues: balancing
+
+Placeholders to tune by play. Values live in `VENUE` and `ARCADE_FIXTURES` (`src/core/venues/`).
+
+## Arcade revenue
+- Reach radius 12 tiles around the Arcade; Visitors = Citizens of Homes in reach x 0.2 per hour.
+- Reference price of a play: 2 Urbs; allowed 1 to 6. Acceptance = `1 - 0.2 x (price - 2)`, between 0 and 1.
+- Capacity = sum of `playsPerHour` of the game Fixtures; halved without a counter.
+- Served = min(accepted Visitors, capacity); earnings per hour = served x price.
+- Takings cap by Tier: 400 / 900 / 1800 Urbs (Tax is capped at 8 h of production).
+- Refund when removing a Fixture: 50% of its price.
+
+## Fixtures (price, plays per hour, minimum Tier)
+| Fixture | Price | Plays/h | Tier |
+|---|---|---|---|
+| Counter | 100 | 0 | 1 |
+| Barrel climber | 150 | 6 | 1 |
+| Space shooter | 180 | 8 | 1 |
+| Air hockey | 220 | 4 | 1 |
+| Table / Chair / Bar stool | 60 / 25 / 30 | 0 | 1 |
+| Pinball | 300 | 6 | 2 |
+| Billiard | 350 | 3 | 2 |
+| Snack machine | 200 | 0 | 2 |
+| Claw machine | 320 | 5 | 2 |
+| Basketball | 400 | 6 | 3 |
+| Dance machine | 500 | 8 | 3 |
+| Prize wheel | 450 | 5 | 3 |
+| Ticket machine | 350 | 0 | 3 |
+
+## Building
+- Unlock at 250 Citizens (400 for the Supermarket, 600 for the Hotel), cost 2500 Urbs, footprint 2x2. Costs follow the Casino: about ten hours of Tax at the unlock threshold (Tax is 1 Urb per Citizen per hour).
+
+## Layout rules (`LAYOUT`)
+- Counter rate: 1 at distance 1 from the entrance, minus 6% per extra tile, floor 60%; 50% with no counter.
+- Noise: each pair of adjacent loud machines costs 8% attractiveness, floor 50%.
+- Seats: a chair needs a table next to it (a bar stool also a counter); 4 seats per table or counter; a seat adds 2 plays per hour.
+
+## Staff (`STAFF`)
+- Wages per day: manager 60, employee 30, technician 40, security 35 Urbs; paid per hour out of the Takings.
+- Posts Tier 1/2/3 (0 = locked): manager 0/1/1, employee 1/2/3, technician 0/0/2, security 0/1/2.
+- Hiring fee: 5 days of wages, once, debited from the Urbs of the city.
+- Employee rate `min(1, 0.4 + 0.3 x employees)`; manager +10% yield and unlocks the price; no security: Visitors x 0.9.
+
+## Wear (`WEAR`)
+- Wear: 0.5 Condition points per play served; technician x0.6.
+- Breakdown below Condition 40: chance `0.5 x (40 - condition) / 40` per game hour.
+- Repair by hand: `0.6 x price x damage`; by a technician 60% of that, paid from the Takings.
+
+## Tiers and power
+- Upgrade: 5000 Urbs (Tier 2), 12000 (Tier 3). Grid 6x6 / 8x8 / 10x10.
+- Power Demand: 1.5 x Tier (Casino Tier 1 is 4.5; Casino Tier 3 is 13.5).
+
+## Events (`EVENT`)
+- Budget by Tier: 300 / 600 / 1200 Urbs, debited when planning; half refunded on cancel before the start.
+- Visitors x1.5 / x2 / x2.5 for 3 hours; cooldown of 6 hours; start within 24 hours.
+
+## Supermarket (`SUPERMARKET`)
+- Unlock 400 Citizens, cost 2000 Urbs, 3x2; upgrades 3500 / 8000; power 2 per Tier.
+- Shoppers 0.3 per Citizen in reach and per hour; basket 3 units; markup 10% per step (reference step 2).
+- Checkout 20 shoppers per hour (cashier rate as for the Arcade employees); stocker refills 8 units per hour; handling fee 10% of value.
+- Shelves hold 8 (bread, fruit), 12 (bags, boxes), 16 (freezer), 20 (standing freezers). Decor up to +15% attractiveness.
+
+## Hotel (`HOTEL`)
+- Unlock 600 Citizens, cost 5000 Urbs, 3x3; upgrades 6000 / 14000; power 2.5 per Tier.
+- Requests 0.35 per hour x city attractiveness (0.6 to 1.0) x `0.5 + Reputation / 100`; one night is 24 hours.
+- Room rates 40 / 70 / 120 per night; price level multiplies by `0.5 + 0.25 x level`.
+- Housekeeper cleans 10 rooms a day; Reputation starts at 50 and moves 5% an hour toward its target.
+
+## Rank (`VENUE_PROFILES.rankAt`)
+- Rank = 1 + number of thresholds reached by the net Takings earned since opening (`VenueData.earned`; nothing counts while shut or at the cap).
+- Rank 2 / 3 at: Arcade 600 / 2500, Supermarket 1200 / 5000, Hotel 2000 / 9000 Urbs.
+- Rank 2 unlocks events and the mid-range Fixtures (pinball, claw machine, freezer, bottle return, bathtub, television, coffee corner); Rank 3 the top ones (basketball, dance machine, prize wheel, ticket machine, standing freezers, mini fridge). A Fixture needs its Tier and its Rank.
+- Tier 1 Arcade: counter, barrel climber, air hockey (space shooter moved to Tier 2).

@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 750,
+  "model": "nature-cactus-tall",
+  "name": {
+    "en": "Cactus tall",
+    "fr": "Cactus haut"
+  },
+  "family": "shrub"
+}

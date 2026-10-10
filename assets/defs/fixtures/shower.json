@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 350,
+  "venue": "hotel",
+  "category": "bathroom",
+  "name": {
+    "en": "Shower",
+    "fr": "Douche"
+  },
+  "model": "furniture-shower",
+  "footprint": [1, 1],
+  "price": 220,
+  "minTier": 1,
+  "wear": 0.05,
+  "bath": 1
+}

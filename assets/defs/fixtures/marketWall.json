@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 270,
+  "venue": "supermarket",
+  "category": "walls",
+  "name": {
+    "en": "Wall",
+    "fr": "Mur"
+  },
+  "model": "mini-market-wall",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "partition": true
+}

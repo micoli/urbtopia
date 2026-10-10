@@ -1,0 +1,14 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "order": 10,
+  "name": {
+    "en": "Wood",
+    "fr": "Bois"
+  },
+  "producedBy": "workshop",
+  "durationMinutes": 1,
+  "unlockCitizens": 0,
+  "minTier": 1,
+  "value": 3
+}

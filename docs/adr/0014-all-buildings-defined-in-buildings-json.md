@@ -1,6 +1,6 @@
 # Every building is defined in assets/buildings.json, edited by tools/assets-editor
 
-Accepted. Supersedes [ADR 0013](0013-simple-buildings-defined-in-models-json.md), which attached a `building` block to the model entry for sport venues and nature elements only. A building is not a model: Homes, Factories and Casinos use one model per Tier, and a model may serve several buildings or none.
+Superseded by [ADR 0021](0021-game-objects-one-file-each-validated-by-generated-json-schemas.md) and [ADR 0023](0023-tier-values-and-balancing-as-data-formulas-in-code.md). Supersedes [ADR 0013](0013-simple-buildings-defined-in-models-json.md), which attached a `building` block to the model entry for sport venues and nature elements only. A building is not a model: Homes, Factories and Casinos use one model per Tier, and a model may serve several buildings or none.
 
 `assets/buildings.json` holds one entry per building, keyed by its id (the `BuildingType`), in menu order:
 

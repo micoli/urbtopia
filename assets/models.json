@@ -1,5 +1,72 @@
 {
-  "commercial/building-a": {
+  "$schema": "defs/schemas/models.schema.json",
+  "buildings-2story-stairs-mat": {
+    "file": "buildings/2Story_Stairs_Mat",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "buildings-2story-wide-2doors-mat": {
+    "file": "buildings/2Story_Wide_2Doors_Mat",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "buildings-2story-wide-mat": {
+    "file": "buildings/2Story_Wide_Mat",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "cars-ambulance": {
+    "file": "cars/ambulance",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-firetruck": {
+    "file": "cars/firetruck",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-hatchback-sports": {
+    "file": "cars/hatchback-sports",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-police": {
+    "file": "cars/police",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-sedan": {
+    "file": "cars/sedan",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-sedan-sports": {
+    "file": "cars/sedan-sports",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-suv": {
+    "file": "cars/suv",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-suv-luxury": {
+    "file": "cars/suv-luxury",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-taxi": {
+    "file": "cars/taxi",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-van": {
+    "file": "cars/van",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "commercial-building-a": {
+    "file": "commercial/building-a",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -7,7 +74,8 @@
       1
     ]
   },
-  "commercial/building-b": {
+  "commercial-building-b": {
+    "file": "commercial/building-b",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -15,7 +83,8 @@
       1
     ]
   },
-  "commercial/building-c": {
+  "commercial-building-c": {
+    "file": "commercial/building-c",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -23,7 +92,8 @@
       1
     ]
   },
-  "commercial/building-d": {
+  "commercial-building-d": {
+    "file": "commercial/building-d",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -31,7 +101,8 @@
       1
     ]
   },
-  "commercial/building-e": {
+  "commercial-building-e": {
+    "file": "commercial/building-e",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -39,7 +110,8 @@
       1
     ]
   },
-  "commercial/building-f": {
+  "commercial-building-f": {
+    "file": "commercial/building-f",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -47,7 +119,8 @@
       1
     ]
   },
-  "commercial/building-g": {
+  "commercial-building-g": {
+    "file": "commercial/building-g",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -55,7 +128,8 @@
       1
     ]
   },
-  "commercial/building-h": {
+  "commercial-building-h": {
+    "file": "commercial/building-h",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -63,7 +137,8 @@
       1
     ]
   },
-  "commercial/building-i": {
+  "commercial-building-i": {
+    "file": "commercial/building-i",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -72,7 +147,13 @@
     ],
     "note": "catalog suggested x1.5 to fill 2x2; the game scales facilities from their footprint instead"
   },
-  "commercial/building-k": {
+  "commercial-building-j": {
+    "file": "commercial/building-j",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "commercial-building-k": {
+    "file": "commercial/building-k",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -80,7 +161,8 @@
       1
     ]
   },
-  "commercial/building-l": {
+  "commercial-building-l": {
+    "file": "commercial/building-l",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -89,7 +171,8 @@
     ],
     "note": "catalog suggested x1.5 to fill 2x2; the game scales facilities from their footprint instead"
   },
-  "commercial/building-m": {
+  "commercial-building-m": {
+    "file": "commercial/building-m",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -98,7 +181,13 @@
     ],
     "note": "catalog suggested x1.5 to fill 2x2; the game scales facilities from their footprint instead"
   },
-  "commercial/building-skyscraper-a": {
+  "commercial-building-n": {
+    "file": "commercial/building-n",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "commercial-building-skyscraper-a": {
+    "file": "commercial/building-skyscraper-a",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -106,7 +195,8 @@
       2
     ]
   },
-  "commercial/building-skyscraper-b": {
+  "commercial-building-skyscraper-b": {
+    "file": "commercial/building-skyscraper-b",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -114,7 +204,8 @@
       2
     ]
   },
-  "commercial/building-skyscraper-c": {
+  "commercial-building-skyscraper-c": {
+    "file": "commercial/building-skyscraper-c",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -122,7 +213,8 @@
       2
     ]
   },
-  "commercial/building-skyscraper-d": {
+  "commercial-building-skyscraper-d": {
+    "file": "commercial/building-skyscraper-d",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -130,7 +222,8 @@
       2
     ]
   },
-  "commercial/building-skyscraper-e": {
+  "commercial-building-skyscraper-e": {
+    "file": "commercial/building-skyscraper-e",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -138,7 +231,846 @@
       2
     ]
   },
-  "industrial/building-a": {
+  "commercial-detail-awning": {
+    "file": "commercial/detail-awning",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "commercial-detail-awning-wide": {
+    "file": "commercial/detail-awning-wide",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "commercial-detail-overhang": {
+    "file": "commercial/detail-overhang",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "commercial-detail-overhang-wide": {
+    "file": "commercial/detail-overhang-wide",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "commercial-detail-parasol-a": {
+    "file": "commercial/detail-parasol-a",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "commercial-detail-parasol-b": {
+    "file": "commercial/detail-parasol-b",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "crops-apple-1": {
+    "file": "crops/Apple_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-apple-2": {
+    "file": "crops/Apple_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-apple-3": {
+    "file": "crops/Apple_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-apple-4": {
+    "file": "crops/Apple_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-apple-crop": {
+    "file": "crops/Apple_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-apple-harvested": {
+    "file": "crops/Apple_Harvested",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-bamboo-1": {
+    "file": "crops/Bamboo_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-bamboo-2": {
+    "file": "crops/Bamboo_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-bamboo-3": {
+    "file": "crops/Bamboo_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-bamboo-4": {
+    "file": "crops/Bamboo_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-bamboo-crop": {
+    "file": "crops/Bamboo_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-beet-1": {
+    "file": "crops/Beet_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-beet-2": {
+    "file": "crops/Beet_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-beet-3": {
+    "file": "crops/Beet_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-beet-4": {
+    "file": "crops/Beet_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-beet-crop": {
+    "file": "crops/Beet_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-bushberries-1": {
+    "file": "crops/BushBerries_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-bushberries-2": {
+    "file": "crops/BushBerries_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-bushberries-3": {
+    "file": "crops/BushBerries_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-bushberries-4": {
+    "file": "crops/BushBerries_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-bushberries-crop": {
+    "file": "crops/BushBerries_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-bushberries-harvested": {
+    "file": "crops/BushBerries_Harvested",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-cactus-1": {
+    "file": "crops/Cactus_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-cactus-2": {
+    "file": "crops/Cactus_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-cactus-3": {
+    "file": "crops/Cactus_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-cactus-4": {
+    "file": "crops/Cactus_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-cactus-crop": {
+    "file": "crops/Cactus_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-cactus-harvested": {
+    "file": "crops/Cactus_Harvested",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-carrot-1": {
+    "file": "crops/Carrot_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-carrot-2": {
+    "file": "crops/Carrot_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-carrot-3": {
+    "file": "crops/Carrot_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-carrot-4": {
+    "file": "crops/Carrot_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-carrot-crop": {
+    "file": "crops/Carrot_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-corn-1": {
+    "file": "crops/Corn_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-corn-2": {
+    "file": "crops/Corn_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-corn-3": {
+    "file": "crops/Corn_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-corn-4": {
+    "file": "crops/Corn_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-corn-crop": {
+    "file": "crops/Corn_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-corn-harvested": {
+    "file": "crops/Corn_Harvested",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-flower-1": {
+    "file": "crops/Flower_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-flower-2": {
+    "file": "crops/Flower_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-flower-3": {
+    "file": "crops/Flower_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-flower-4": {
+    "file": "crops/Flower_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-flowers-crop": {
+    "file": "crops/Flowers_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-flowers-harvested": {
+    "file": "crops/Flowers_Harvested",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-grass-1": {
+    "file": "crops/Grass_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-grass-2": {
+    "file": "crops/Grass_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-grass-3": {
+    "file": "crops/Grass_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-grass-4": {
+    "file": "crops/Grass_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-lettuce-1": {
+    "file": "crops/Lettuce_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-lettuce-2": {
+    "file": "crops/Lettuce_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-lettuce-3": {
+    "file": "crops/Lettuce_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-lettuce-4": {
+    "file": "crops/Lettuce_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-lettuce-crop": {
+    "file": "crops/Lettuce_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-lettuce-harvested": {
+    "file": "crops/Lettuce_Harvested",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-mushroom-1": {
+    "file": "crops/Mushroom_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-mushroom-2": {
+    "file": "crops/Mushroom_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-mushroom-3": {
+    "file": "crops/Mushroom_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-mushroom-4": {
+    "file": "crops/Mushroom_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-mushroom-crop": {
+    "file": "crops/Mushroom_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-mushroom-harvested": {
+    "file": "crops/Mushroom_Harvested",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-orange-1": {
+    "file": "crops/Orange_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-orange-2": {
+    "file": "crops/Orange_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-orange-3": {
+    "file": "crops/Orange_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-orange-4": {
+    "file": "crops/Orange_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-orange-crop": {
+    "file": "crops/Orange_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-orange-harvested": {
+    "file": "crops/Orange_Harvested",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-palmtree-1": {
+    "file": "crops/PalmTree_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-palmtree-2": {
+    "file": "crops/PalmTree_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-palmtree-3": {
+    "file": "crops/PalmTree_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-palmtree-4": {
+    "file": "crops/PalmTree_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-palmtree-crop": {
+    "file": "crops/PalmTree_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-palmtree-harvested": {
+    "file": "crops/PalmTree_Harvested",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-pumpkin-1": {
+    "file": "crops/Pumpkin_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-pumpkin-2": {
+    "file": "crops/Pumpkin_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-pumpkin-3": {
+    "file": "crops/Pumpkin_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-pumpkin-4": {
+    "file": "crops/Pumpkin_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-pumpkin-crop": {
+    "file": "crops/Pumpkin_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-pumpkin-harvested": {
+    "file": "crops/Pumpkin_Harvested",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-rice-1": {
+    "file": "crops/Rice_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-rice-2": {
+    "file": "crops/Rice_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-rice-3": {
+    "file": "crops/Rice_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-rice-4": {
+    "file": "crops/Rice_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-rice-crop": {
+    "file": "crops/Rice_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-tomato-1": {
+    "file": "crops/Tomato_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-tomato-2": {
+    "file": "crops/Tomato_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-tomato-3": {
+    "file": "crops/Tomato_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-tomato-4": {
+    "file": "crops/Tomato_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-tomato-crop": {
+    "file": "crops/Tomato_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-tomato-harvested": {
+    "file": "crops/Tomato_Harvested",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-watermelon-1": {
+    "file": "crops/Watermelon_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-watermelon-2": {
+    "file": "crops/Watermelon_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-watermelon-3": {
+    "file": "crops/Watermelon_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-watermelon-4": {
+    "file": "crops/Watermelon_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-watermelon-crop": {
+    "file": "crops/Watermelon_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-watermelon-harvested": {
+    "file": "crops/Watermelon_Harvested",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-wheat-1": {
+    "file": "crops/Wheat_1",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-wheat-2": {
+    "file": "crops/Wheat_2",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-wheat-3": {
+    "file": "crops/Wheat_3",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-wheat-4": {
+    "file": "crops/Wheat_4",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "crops-wheat-crop": {
+    "file": "crops/Wheat_Crop",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "farm-barn": {
+    "file": "farm/Barn",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "farm-openbarn": {
+    "file": "farm/OpenBarn",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "farm-silo": {
+    "file": "farm/Silo",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "farm-silo-house": {
+    "file": "farm/Silo_House",
+    "source": "quaternius",
+    "license": "CC0"
+  },
+  "furniture-bathtub": {
+    "file": "furniture/bathtub",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      2,
+      1
+    ],
+    "fit": {
+      "width": 1.8,
+      "height": 0.7
+    }
+  },
+  "furniture-bedbunk": {
+    "file": "furniture/bedBunk",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      2
+    ],
+    "fit": {
+      "width": 1.15,
+      "height": 0.9
+    }
+  },
+  "furniture-beddouble": {
+    "file": "furniture/bedDouble",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 1.9,
+      "height": 0.8
+    }
+  },
+  "furniture-bedsingle": {
+    "file": "furniture/bedSingle",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      2
+    ],
+    "fit": {
+      "width": 1.15,
+      "height": 0.6
+    }
+  },
+  "furniture-chair": {
+    "file": "furniture/chair",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.5,
+      "height": 0.9
+    }
+  },
+  "furniture-desk": {
+    "file": "furniture/desk",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.9,
+      "height": 0.6
+    }
+  },
+  "furniture-floorfull": {
+    "file": "furniture/floorFull",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 1,
+      "height": 1
+    }
+  },
+  "furniture-kitchencoffeemachine": {
+    "file": "furniture/kitchenCoffeeMachine",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.5,
+      "height": 0.5
+    }
+  },
+  "furniture-kitchenfridgesmall": {
+    "file": "furniture/kitchenFridgeSmall",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.7,
+      "height": 0.9
+    }
+  },
+  "furniture-lamproundfloor": {
+    "file": "furniture/lampRoundFloor",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.5,
+      "height": 1
+    }
+  },
+  "furniture-loungesofa": {
+    "file": "furniture/loungeSofa",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.95,
+      "height": 0.6
+    }
+  },
+  "furniture-pottedplant": {
+    "file": "furniture/pottedPlant",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.6,
+      "height": 0.8
+    }
+  },
+  "furniture-rugrectangle": {
+    "file": "furniture/rugRectangle",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      2,
+      1
+    ],
+    "fit": {
+      "width": 1.9,
+      "height": 0.1
+    }
+  },
+  "furniture-shower": {
+    "file": "furniture/shower",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.95,
+      "height": 1.4
+    }
+  },
+  "furniture-stoolbar": {
+    "file": "furniture/stoolBar",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.5,
+      "height": 0.9
+    }
+  },
+  "furniture-table": {
+    "file": "furniture/table",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.9,
+      "height": 0.6
+    }
+  },
+  "furniture-televisionmodern": {
+    "file": "furniture/televisionModern",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.8,
+      "height": 0.7
+    }
+  },
+  "furniture-toilet": {
+    "file": "furniture/toilet",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.9,
+      "height": 0.9
+    }
+  },
+  "furniture-wall": {
+    "file": "furniture/wall",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 1,
+      "height": 1.4
+    }
+  },
+  "furniture-wallcorner": {
+    "file": "furniture/wallCorner",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 0.6,
+      "height": 1.4
+    }
+  },
+  "furniture-wallwindow": {
+    "file": "furniture/wallWindow",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 1,
+      "height": 1.4
+    }
+  },
+  "holiday-bench": {
+    "file": "holiday/bench",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "holiday-lantern": {
+    "file": "holiday/lantern",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "industrial-building-a": {
+    "file": "industrial/building-a",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -146,7 +1078,8 @@
       2
     ]
   },
-  "industrial/building-b": {
+  "industrial-building-b": {
+    "file": "industrial/building-b",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -154,7 +1087,8 @@
       2
     ]
   },
-  "industrial/building-c": {
+  "industrial-building-c": {
+    "file": "industrial/building-c",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -162,7 +1096,8 @@
       2
     ]
   },
-  "industrial/building-d": {
+  "industrial-building-d": {
+    "file": "industrial/building-d",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -170,7 +1105,8 @@
       2
     ]
   },
-  "industrial/building-e": {
+  "industrial-building-e": {
+    "file": "industrial/building-e",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -178,7 +1114,8 @@
       2
     ]
   },
-  "industrial/building-f": {
+  "industrial-building-f": {
+    "file": "industrial/building-f",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -186,7 +1123,8 @@
       2
     ]
   },
-  "industrial/building-g": {
+  "industrial-building-g": {
+    "file": "industrial/building-g",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -194,7 +1132,8 @@
       2
     ]
   },
-  "industrial/building-h": {
+  "industrial-building-h": {
+    "file": "industrial/building-h",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -207,7 +1146,8 @@
       0.28
     ]
   },
-  "industrial/building-i": {
+  "industrial-building-i": {
+    "file": "industrial/building-i",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -215,7 +1155,8 @@
       2
     ]
   },
-  "industrial/building-j": {
+  "industrial-building-j": {
+    "file": "industrial/building-j",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -223,7 +1164,8 @@
       2
     ]
   },
-  "industrial/building-k": {
+  "industrial-building-k": {
+    "file": "industrial/building-k",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -231,7 +1173,8 @@
       1
     ]
   },
-  "industrial/building-l": {
+  "industrial-building-l": {
+    "file": "industrial/building-l",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -239,7 +1182,8 @@
       2
     ]
   },
-  "industrial/building-m": {
+  "industrial-building-m": {
+    "file": "industrial/building-m",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -247,7 +1191,8 @@
       2
     ]
   },
-  "industrial/building-n": {
+  "industrial-building-n": {
+    "file": "industrial/building-n",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -255,7 +1200,8 @@
       2
     ]
   },
-  "industrial/building-o": {
+  "industrial-building-o": {
+    "file": "industrial/building-o",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -263,7 +1209,8 @@
       2
     ]
   },
-  "industrial/building-p": {
+  "industrial-building-p": {
+    "file": "industrial/building-p",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -271,7 +1218,8 @@
       1
     ]
   },
-  "industrial/building-q": {
+  "industrial-building-q": {
+    "file": "industrial/building-q",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -279,7 +1227,8 @@
       2
     ]
   },
-  "industrial/building-r": {
+  "industrial-building-r": {
+    "file": "industrial/building-r",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -287,7 +1236,8 @@
       2
     ]
   },
-  "industrial/building-s": {
+  "industrial-building-s": {
+    "file": "industrial/building-s",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -295,7 +1245,8 @@
       1
     ]
   },
-  "industrial/building-t": {
+  "industrial-building-t": {
+    "file": "industrial/building-t",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -303,7 +1254,43 @@
       2
     ]
   },
-  "industrial/solar-panel-landscape-group": {
+  "industrial-chimney-basic": {
+    "file": "industrial/chimney-basic",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "industrial-chimney-large": {
+    "file": "industrial/chimney-large",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "industrial-chimney-medium": {
+    "file": "industrial/chimney-medium",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "industrial-chimney-small": {
+    "file": "industrial/chimney-small",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "industrial-shipping-container-a": {
+    "file": "industrial/shipping-container-a",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "industrial-solar-panel-flat": {
+    "file": "industrial/solar-panel-flat",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "industrial-solar-panel-landscape": {
+    "file": "industrial/solar-panel-landscape",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "industrial-solar-panel-landscape-group": {
+    "file": "industrial/solar-panel-landscape-group",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -311,7 +1298,8 @@
       1
     ]
   },
-  "industrial/solar-panel-portrait-group": {
+  "industrial-solar-panel-portrait-group": {
+    "file": "industrial/solar-panel-portrait-group",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -319,7 +1307,8 @@
       2
     ]
   },
-  "industrial/water-tower": {
+  "industrial-water-tower": {
+    "file": "industrial/water-tower",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -328,7 +1317,8 @@
     ],
     "bakeNodeScale": true
   },
-  "industrial/windmill": {
+  "industrial-windmill": {
+    "file": "industrial/windmill",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -336,7 +1326,441 @@
       1
     ]
   },
-  "nature/cactus_short": {
+  "mini-arcade-air-hockey": {
+    "file": "mini-arcade/air-hockey",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-arcade-machine": {
+    "file": "mini-arcade/arcade-machine",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-basketball-game": {
+    "file": "mini-arcade/basketball-game",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-cash-register": {
+    "file": "mini-arcade/cash-register",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-character-employee": {
+    "file": "mini-arcade/character-employee",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-claw-machine": {
+    "file": "mini-arcade/claw-machine",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-dance-machine": {
+    "file": "mini-arcade/dance-machine",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-floor": {
+    "file": "mini-arcade/floor",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-pinball": {
+    "file": "mini-arcade/pinball",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-prize-wheel": {
+    "file": "mini-arcade/prize-wheel",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-ticket-machine": {
+    "file": "mini-arcade/ticket-machine",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-vending-machine": {
+    "file": "mini-arcade/vending-machine",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-wall": {
+    "file": "mini-arcade/wall",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-wall-corner": {
+    "file": "mini-arcade/wall-corner",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-arcade-wall-window": {
+    "file": "mini-arcade/wall-window",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters-character-female-a": {
+    "file": "mini-characters/character-female-a",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters-character-female-b": {
+    "file": "mini-characters/character-female-b",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters-character-female-c": {
+    "file": "mini-characters/character-female-c",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters-character-female-d": {
+    "file": "mini-characters/character-female-d",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters-character-female-e": {
+    "file": "mini-characters/character-female-e",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters-character-female-f": {
+    "file": "mini-characters/character-female-f",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters-character-male-a": {
+    "file": "mini-characters/character-male-a",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters-character-male-b": {
+    "file": "mini-characters/character-male-b",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters-character-male-c": {
+    "file": "mini-characters/character-male-c",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters-character-male-d": {
+    "file": "mini-characters/character-male-d",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters-character-male-e": {
+    "file": "mini-characters/character-male-e",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-characters-character-male-f": {
+    "file": "mini-characters/character-male-f",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-forest-building-platform": {
+    "file": "mini-forest/building-platform",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "mini-forest-building-roof": {
+    "file": "mini-forest/building-roof",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "mini-forest-patch-grass": {
+    "file": "mini-forest/patch-grass",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "mini-forest-plant": {
+    "file": "mini-forest/plant",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "mini-forest-rocks-high": {
+    "file": "mini-forest/rocks-high",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "mini-forest-rocks-low": {
+    "file": "mini-forest/rocks-low",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "mini-forest-rocks-ramp": {
+    "file": "mini-forest/rocks-ramp",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "mini-forest-stones": {
+    "file": "mini-forest/stones",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "mini-forest-tent": {
+    "file": "mini-forest/tent",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "mini-forest-tree": {
+    "file": "mini-forest/tree",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "mini-forest-tree-high": {
+    "file": "mini-forest/tree-high",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "mini-market-bottle-return": {
+    "file": "mini-market/bottle-return",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-cash-register": {
+    "file": "mini-market/cash-register",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-character-employee": {
+    "file": "mini-market/character-employee",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-display-bread": {
+    "file": "mini-market/display-bread",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-display-fruit": {
+    "file": "mini-market/display-fruit",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-floor": {
+    "file": "mini-market/floor",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-freezer": {
+    "file": "mini-market/freezer",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-freezers-standing": {
+    "file": "mini-market/freezers-standing",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-shelf-bags": {
+    "file": "mini-market/shelf-bags",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-shelf-boxes": {
+    "file": "mini-market/shelf-boxes",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-shopping-basket": {
+    "file": "mini-market/shopping-basket",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-shopping-cart": {
+    "file": "mini-market/shopping-cart",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-wall": {
+    "file": "mini-market/wall",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-wall-corner": {
+    "file": "mini-market/wall-corner",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "mini-market-wall-window": {
+    "file": "mini-market/wall-window",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "nature-cactus-short": {
+    "file": "nature/cactus_short",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -344,7 +1768,8 @@
       "height": 1
     }
   },
-  "nature/cactus_tall": {
+  "nature-cactus-tall": {
+    "file": "nature/cactus_tall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -352,7 +1777,28 @@
       "height": 1
     }
   },
-  "nature/flower_purpleA": {
+  "nature-cliff-blockcave-rock": {
+    "file": "nature/cliff_blockCave_rock",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "nature-cliff-steps-rock": {
+    "file": "nature/cliff_steps_rock",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "nature-cliff-stepscorner-rock": {
+    "file": "nature/cliff_stepsCorner_rock",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "nature-cliff-stepscornerinner-rock": {
+    "file": "nature/cliff_stepsCornerInner_rock",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "nature-flower-purplea": {
+    "file": "nature/flower_purpleA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -360,7 +1806,8 @@
       "height": 0.5
     }
   },
-  "nature/flower_purpleB": {
+  "nature-flower-purpleb": {
+    "file": "nature/flower_purpleB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -368,7 +1815,8 @@
       "height": 0.5
     }
   },
-  "nature/flower_purpleC": {
+  "nature-flower-purplec": {
+    "file": "nature/flower_purpleC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -376,7 +1824,8 @@
       "height": 0.5
     }
   },
-  "nature/flower_redA": {
+  "nature-flower-reda": {
+    "file": "nature/flower_redA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -384,7 +1833,8 @@
       "height": 0.5
     }
   },
-  "nature/flower_redB": {
+  "nature-flower-redb": {
+    "file": "nature/flower_redB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -392,7 +1842,8 @@
       "height": 0.5
     }
   },
-  "nature/flower_redC": {
+  "nature-flower-redc": {
+    "file": "nature/flower_redC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -400,7 +1851,8 @@
       "height": 0.5
     }
   },
-  "nature/flower_yellowA": {
+  "nature-flower-yellowa": {
+    "file": "nature/flower_yellowA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -408,7 +1860,8 @@
       "height": 0.5
     }
   },
-  "nature/flower_yellowB": {
+  "nature-flower-yellowb": {
+    "file": "nature/flower_yellowB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -416,7 +1869,8 @@
       "height": 0.5
     }
   },
-  "nature/flower_yellowC": {
+  "nature-flower-yellowc": {
+    "file": "nature/flower_yellowC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -424,7 +1878,8 @@
       "height": 0.5
     }
   },
-  "nature/grass": {
+  "nature-grass": {
+    "file": "nature/grass",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -432,7 +1887,8 @@
       "height": 0.35
     }
   },
-  "nature/grass_large": {
+  "nature-grass-large": {
+    "file": "nature/grass_large",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -440,7 +1896,8 @@
       "height": 0.35
     }
   },
-  "nature/grass_leafs": {
+  "nature-grass-leafs": {
+    "file": "nature/grass_leafs",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -448,7 +1905,8 @@
       "height": 0.35
     }
   },
-  "nature/grass_leafsLarge": {
+  "nature-grass-leafslarge": {
+    "file": "nature/grass_leafsLarge",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -456,7 +1914,8 @@
       "height": 0.35
     }
   },
-  "nature/ground_grass": {
+  "nature-ground-grass": {
+    "file": "nature/ground_grass",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -464,7 +1923,8 @@
       "height": 0.35
     }
   },
-  "nature/lily_large": {
+  "nature-lily-large": {
+    "file": "nature/lily_large",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -472,7 +1932,8 @@
       "height": 0.5
     }
   },
-  "nature/lily_small": {
+  "nature-lily-small": {
+    "file": "nature/lily_small",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -480,7 +1941,8 @@
       "height": 0.5
     }
   },
-  "nature/log": {
+  "nature-log": {
+    "file": "nature/log",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -488,7 +1950,8 @@
       "height": 0.8
     }
   },
-  "nature/log_large": {
+  "nature-log-large": {
+    "file": "nature/log_large",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -496,7 +1959,8 @@
       "height": 0.8
     }
   },
-  "nature/log_stack": {
+  "nature-log-stack": {
+    "file": "nature/log_stack",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -504,7 +1968,8 @@
       "height": 0.8
     }
   },
-  "nature/log_stackLarge": {
+  "nature-log-stacklarge": {
+    "file": "nature/log_stackLarge",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -512,7 +1977,8 @@
       "height": 0.8
     }
   },
-  "nature/mushroom_red": {
+  "nature-mushroom-red": {
+    "file": "nature/mushroom_red",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -520,7 +1986,8 @@
       "height": 0.5
     }
   },
-  "nature/mushroom_redGroup": {
+  "nature-mushroom-redgroup": {
+    "file": "nature/mushroom_redGroup",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -528,7 +1995,8 @@
       "height": 0.5
     }
   },
-  "nature/mushroom_redTall": {
+  "nature-mushroom-redtall": {
+    "file": "nature/mushroom_redTall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -536,7 +2004,8 @@
       "height": 0.5
     }
   },
-  "nature/mushroom_tan": {
+  "nature-mushroom-tan": {
+    "file": "nature/mushroom_tan",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -544,7 +2013,8 @@
       "height": 0.5
     }
   },
-  "nature/mushroom_tanGroup": {
+  "nature-mushroom-tangroup": {
+    "file": "nature/mushroom_tanGroup",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -552,7 +2022,8 @@
       "height": 0.5
     }
   },
-  "nature/mushroom_tanTall": {
+  "nature-mushroom-tantall": {
+    "file": "nature/mushroom_tanTall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -560,7 +2031,8 @@
       "height": 0.5
     }
   },
-  "nature/plant_bush": {
+  "nature-plant-bush": {
+    "file": "nature/plant_bush",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -568,7 +2040,8 @@
       "height": 1
     }
   },
-  "nature/plant_bushLarge": {
+  "nature-plant-bushlarge": {
+    "file": "nature/plant_bushLarge",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -576,7 +2049,8 @@
       "height": 1
     }
   },
-  "nature/plant_bushLargeTriangle": {
+  "nature-plant-bushlargetriangle": {
+    "file": "nature/plant_bushLargeTriangle",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -584,7 +2058,8 @@
       "height": 1
     }
   },
-  "nature/plant_bushSmall": {
+  "nature-plant-bushsmall": {
+    "file": "nature/plant_bushSmall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -592,7 +2067,8 @@
       "height": 1
     }
   },
-  "nature/plant_bushTriangle": {
+  "nature-plant-bushtriangle": {
+    "file": "nature/plant_bushTriangle",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -600,7 +2076,8 @@
       "height": 1
     }
   },
-  "nature/plant_flatShort": {
+  "nature-plant-flatshort": {
+    "file": "nature/plant_flatShort",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -608,7 +2085,8 @@
       "height": 1
     }
   },
-  "nature/plant_flatTall": {
+  "nature-plant-flattall": {
+    "file": "nature/plant_flatTall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -616,7 +2094,8 @@
       "height": 1
     }
   },
-  "nature/rock_largeA": {
+  "nature-rock-largea": {
+    "file": "nature/rock_largeA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -624,7 +2103,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_largeB": {
+  "nature-rock-largeb": {
+    "file": "nature/rock_largeB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -632,7 +2112,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_largeC": {
+  "nature-rock-largec": {
+    "file": "nature/rock_largeC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -640,7 +2121,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_largeD": {
+  "nature-rock-larged": {
+    "file": "nature/rock_largeD",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -648,7 +2130,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_largeE": {
+  "nature-rock-largee": {
+    "file": "nature/rock_largeE",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -656,7 +2139,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_largeF": {
+  "nature-rock-largef": {
+    "file": "nature/rock_largeF",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -664,7 +2148,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallA": {
+  "nature-rock-smalla": {
+    "file": "nature/rock_smallA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -672,7 +2157,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallB": {
+  "nature-rock-smallb": {
+    "file": "nature/rock_smallB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -680,7 +2166,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallC": {
+  "nature-rock-smallc": {
+    "file": "nature/rock_smallC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -688,7 +2175,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallD": {
+  "nature-rock-smalld": {
+    "file": "nature/rock_smallD",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -696,7 +2184,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallE": {
+  "nature-rock-smalle": {
+    "file": "nature/rock_smallE",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -704,7 +2193,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallF": {
+  "nature-rock-smallf": {
+    "file": "nature/rock_smallF",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -712,7 +2202,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallFlatA": {
+  "nature-rock-smallflata": {
+    "file": "nature/rock_smallFlatA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -720,7 +2211,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallFlatB": {
+  "nature-rock-smallflatb": {
+    "file": "nature/rock_smallFlatB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -728,7 +2220,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallFlatC": {
+  "nature-rock-smallflatc": {
+    "file": "nature/rock_smallFlatC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -736,7 +2229,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallG": {
+  "nature-rock-smallg": {
+    "file": "nature/rock_smallG",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -744,7 +2238,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallH": {
+  "nature-rock-smallh": {
+    "file": "nature/rock_smallH",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -752,7 +2247,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallI": {
+  "nature-rock-smalli": {
+    "file": "nature/rock_smallI",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -760,7 +2256,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallTopA": {
+  "nature-rock-smalltopa": {
+    "file": "nature/rock_smallTopA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -768,7 +2265,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_smallTopB": {
+  "nature-rock-smalltopb": {
+    "file": "nature/rock_smallTopB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -776,7 +2274,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_tallA": {
+  "nature-rock-talla": {
+    "file": "nature/rock_tallA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -784,7 +2283,8 @@
       "height": 1.2
     }
   },
-  "nature/rock_tallB": {
+  "nature-rock-tallb": {
+    "file": "nature/rock_tallB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -792,7 +2292,8 @@
       "height": 1.2
     }
   },
-  "nature/rock_tallC": {
+  "nature-rock-tallc": {
+    "file": "nature/rock_tallC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -800,7 +2301,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_tallD": {
+  "nature-rock-talld": {
+    "file": "nature/rock_tallD",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -808,7 +2310,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_tallE": {
+  "nature-rock-talle": {
+    "file": "nature/rock_tallE",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -816,7 +2319,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_tallF": {
+  "nature-rock-tallf": {
+    "file": "nature/rock_tallF",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -824,7 +2328,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_tallG": {
+  "nature-rock-tallg": {
+    "file": "nature/rock_tallG",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -832,7 +2337,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_tallH": {
+  "nature-rock-tallh": {
+    "file": "nature/rock_tallH",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -840,7 +2346,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_tallI": {
+  "nature-rock-talli": {
+    "file": "nature/rock_tallI",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -848,7 +2355,8 @@
       "height": 0.8
     }
   },
-  "nature/rock_tallJ": {
+  "nature-rock-tallj": {
+    "file": "nature/rock_tallJ",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -856,7 +2364,8 @@
       "height": 0.8
     }
   },
-  "nature/statue_column": {
+  "nature-statue-column": {
+    "file": "nature/statue_column",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -864,7 +2373,8 @@
       "height": 1.2
     }
   },
-  "nature/statue_head": {
+  "nature-statue-head": {
+    "file": "nature/statue_head",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -872,7 +2382,8 @@
       "height": 1.2
     }
   },
-  "nature/statue_obelisk": {
+  "nature-statue-obelisk": {
+    "file": "nature/statue_obelisk",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -880,7 +2391,8 @@
       "height": 1.2
     }
   },
-  "nature/statue_ring": {
+  "nature-statue-ring": {
+    "file": "nature/statue_ring",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -888,7 +2400,8 @@
       "height": 1.2
     }
   },
-  "nature/stone_largeA": {
+  "nature-stone-largea": {
+    "file": "nature/stone_largeA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -896,7 +2409,8 @@
       "height": 1.2
     }
   },
-  "nature/stone_largeB": {
+  "nature-stone-largeb": {
+    "file": "nature/stone_largeB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -904,7 +2418,8 @@
       "height": 1.2
     }
   },
-  "nature/stone_largeC": {
+  "nature-stone-largec": {
+    "file": "nature/stone_largeC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -912,7 +2427,8 @@
       "height": 1.2
     }
   },
-  "nature/stone_largeD": {
+  "nature-stone-larged": {
+    "file": "nature/stone_largeD",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -920,7 +2436,8 @@
       "height": 1.2
     }
   },
-  "nature/stone_largeE": {
+  "nature-stone-largee": {
+    "file": "nature/stone_largeE",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -928,7 +2445,8 @@
       "height": 1.2
     }
   },
-  "nature/stone_largeF": {
+  "nature-stone-largef": {
+    "file": "nature/stone_largeF",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -936,7 +2454,8 @@
       "height": 1.2
     }
   },
-  "nature/stone_smallA": {
+  "nature-stone-smalla": {
+    "file": "nature/stone_smallA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -944,7 +2463,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_smallB": {
+  "nature-stone-smallb": {
+    "file": "nature/stone_smallB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -952,7 +2472,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_smallC": {
+  "nature-stone-smallc": {
+    "file": "nature/stone_smallC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -960,7 +2481,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_smallD": {
+  "nature-stone-smalld": {
+    "file": "nature/stone_smallD",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -968,7 +2490,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_smallE": {
+  "nature-stone-smalle": {
+    "file": "nature/stone_smallE",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -976,7 +2499,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_smallF": {
+  "nature-stone-smallf": {
+    "file": "nature/stone_smallF",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -984,7 +2508,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_smallFlatA": {
+  "nature-stone-smallflata": {
+    "file": "nature/stone_smallFlatA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -992,7 +2517,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_smallFlatB": {
+  "nature-stone-smallflatb": {
+    "file": "nature/stone_smallFlatB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1000,7 +2526,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_smallFlatC": {
+  "nature-stone-smallflatc": {
+    "file": "nature/stone_smallFlatC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1008,7 +2535,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_smallG": {
+  "nature-stone-smallg": {
+    "file": "nature/stone_smallG",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1016,7 +2544,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_smallH": {
+  "nature-stone-smallh": {
+    "file": "nature/stone_smallH",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1024,7 +2553,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_smallI": {
+  "nature-stone-smalli": {
+    "file": "nature/stone_smallI",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1032,7 +2562,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_smallTopA": {
+  "nature-stone-smalltopa": {
+    "file": "nature/stone_smallTopA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1040,7 +2571,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_smallTopB": {
+  "nature-stone-smalltopb": {
+    "file": "nature/stone_smallTopB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1048,7 +2580,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_tallA": {
+  "nature-stone-talla": {
+    "file": "nature/stone_tallA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1056,7 +2589,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_tallB": {
+  "nature-stone-tallb": {
+    "file": "nature/stone_tallB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1064,7 +2598,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_tallC": {
+  "nature-stone-tallc": {
+    "file": "nature/stone_tallC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1072,7 +2607,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_tallD": {
+  "nature-stone-talld": {
+    "file": "nature/stone_tallD",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1080,7 +2616,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_tallE": {
+  "nature-stone-talle": {
+    "file": "nature/stone_tallE",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1088,7 +2625,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_tallF": {
+  "nature-stone-tallf": {
+    "file": "nature/stone_tallF",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1096,7 +2634,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_tallG": {
+  "nature-stone-tallg": {
+    "file": "nature/stone_tallG",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1104,7 +2643,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_tallH": {
+  "nature-stone-tallh": {
+    "file": "nature/stone_tallH",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1112,7 +2652,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_tallI": {
+  "nature-stone-talli": {
+    "file": "nature/stone_tallI",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1120,7 +2661,8 @@
       "height": 0.8
     }
   },
-  "nature/stone_tallJ": {
+  "nature-stone-tallj": {
+    "file": "nature/stone_tallJ",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1128,7 +2670,8 @@
       "height": 0.8
     }
   },
-  "nature/stump_old": {
+  "nature-stump-old": {
+    "file": "nature/stump_old",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1136,7 +2679,8 @@
       "height": 0.8
     }
   },
-  "nature/stump_oldTall": {
+  "nature-stump-oldtall": {
+    "file": "nature/stump_oldTall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1144,7 +2688,8 @@
       "height": 0.8
     }
   },
-  "nature/stump_round": {
+  "nature-stump-round": {
+    "file": "nature/stump_round",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1152,7 +2697,8 @@
       "height": 0.8
     }
   },
-  "nature/stump_square": {
+  "nature-stump-square": {
+    "file": "nature/stump_square",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1160,7 +2706,8 @@
       "height": 0.8
     }
   },
-  "nature/tent_detailedClosed": {
+  "nature-tent-detailedclosed": {
+    "file": "nature/tent_detailedClosed",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1168,7 +2715,8 @@
       "height": 1.2
     }
   },
-  "nature/tent_detailedOpen": {
+  "nature-tent-detailedopen": {
+    "file": "nature/tent_detailedOpen",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1176,7 +2724,8 @@
       "height": 1.2
     }
   },
-  "nature/tree_blocks": {
+  "nature-tree-blocks": {
+    "file": "nature/tree_blocks",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1184,7 +2733,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_blocks_dark": {
+  "nature-tree-blocks-dark": {
+    "file": "nature/tree_blocks_dark",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1192,7 +2742,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_blocks_fall": {
+  "nature-tree-blocks-fall": {
+    "file": "nature/tree_blocks_fall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1200,7 +2751,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_cone": {
+  "nature-tree-cone": {
+    "file": "nature/tree_cone",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1208,7 +2760,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_cone_dark": {
+  "nature-tree-cone-dark": {
+    "file": "nature/tree_cone_dark",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1216,7 +2769,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_cone_fall": {
+  "nature-tree-cone-fall": {
+    "file": "nature/tree_cone_fall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1224,7 +2778,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_default": {
+  "nature-tree-default": {
+    "file": "nature/tree_default",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1232,7 +2787,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_default_dark": {
+  "nature-tree-default-dark": {
+    "file": "nature/tree_default_dark",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1240,7 +2796,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_default_fall": {
+  "nature-tree-default-fall": {
+    "file": "nature/tree_default_fall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1248,7 +2805,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_fat": {
+  "nature-tree-fat": {
+    "file": "nature/tree_fat",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1256,7 +2814,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_fat_darkh": {
+  "nature-tree-fat-darkh": {
+    "file": "nature/tree_fat_darkh",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1264,7 +2823,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_fat_fall": {
+  "nature-tree-fat-fall": {
+    "file": "nature/tree_fat_fall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1272,7 +2832,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_oak": {
+  "nature-tree-oak": {
+    "file": "nature/tree_oak",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1280,7 +2841,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_oak_dark": {
+  "nature-tree-oak-dark": {
+    "file": "nature/tree_oak_dark",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1288,7 +2850,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_oak_fall": {
+  "nature-tree-oak-fall": {
+    "file": "nature/tree_oak_fall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1296,7 +2859,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_palm": {
+  "nature-tree-palm": {
+    "file": "nature/tree_palm",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1304,7 +2868,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_palmBend": {
+  "nature-tree-palmbend": {
+    "file": "nature/tree_palmBend",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1312,7 +2877,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_palmShort": {
+  "nature-tree-palmshort": {
+    "file": "nature/tree_palmShort",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1320,7 +2886,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_palmTall": {
+  "nature-tree-palmtall": {
+    "file": "nature/tree_palmTall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1328,7 +2895,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineDefaultA": {
+  "nature-tree-pinedefaulta": {
+    "file": "nature/tree_pineDefaultA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1336,7 +2904,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineDefaultB": {
+  "nature-tree-pinedefaultb": {
+    "file": "nature/tree_pineDefaultB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1344,7 +2913,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineGroundA": {
+  "nature-tree-pinegrounda": {
+    "file": "nature/tree_pineGroundA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1352,7 +2922,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineGroundB": {
+  "nature-tree-pinegroundb": {
+    "file": "nature/tree_pineGroundB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1360,7 +2931,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineRoundA": {
+  "nature-tree-pinerounda": {
+    "file": "nature/tree_pineRoundA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1368,7 +2940,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineRoundB": {
+  "nature-tree-pineroundb": {
+    "file": "nature/tree_pineRoundB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1376,7 +2949,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineRoundC": {
+  "nature-tree-pineroundc": {
+    "file": "nature/tree_pineRoundC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1384,7 +2958,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineRoundD": {
+  "nature-tree-pineroundd": {
+    "file": "nature/tree_pineRoundD",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1392,7 +2967,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineRoundE": {
+  "nature-tree-pinerounde": {
+    "file": "nature/tree_pineRoundE",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1400,7 +2976,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineRoundF": {
+  "nature-tree-pineroundf": {
+    "file": "nature/tree_pineRoundF",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1408,7 +2985,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineSmallA": {
+  "nature-tree-pinesmalla": {
+    "file": "nature/tree_pineSmallA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1416,7 +2994,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineSmallB": {
+  "nature-tree-pinesmallb": {
+    "file": "nature/tree_pineSmallB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1424,7 +3003,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineSmallC": {
+  "nature-tree-pinesmallc": {
+    "file": "nature/tree_pineSmallC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1432,7 +3012,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineSmallD": {
+  "nature-tree-pinesmalld": {
+    "file": "nature/tree_pineSmallD",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1440,7 +3021,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineTallA": {
+  "nature-tree-pinetalla": {
+    "file": "nature/tree_pineTallA",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1448,7 +3030,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineTallB": {
+  "nature-tree-pinetallb": {
+    "file": "nature/tree_pineTallB",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1456,7 +3039,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineTallC": {
+  "nature-tree-pinetallc": {
+    "file": "nature/tree_pineTallC",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1464,7 +3048,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_pineTallD": {
+  "nature-tree-pinetalld": {
+    "file": "nature/tree_pineTallD",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1472,7 +3057,8 @@
       "height": 2.8
     }
   },
-  "nature/tree_plateau": {
+  "nature-tree-plateau": {
+    "file": "nature/tree_plateau",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1480,7 +3066,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_plateau_dark": {
+  "nature-tree-plateau-dark": {
+    "file": "nature/tree_plateau_dark",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1488,7 +3075,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_plateau_fall": {
+  "nature-tree-plateau-fall": {
+    "file": "nature/tree_plateau_fall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1496,7 +3084,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_simple": {
+  "nature-tree-simple": {
+    "file": "nature/tree_simple",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1504,7 +3093,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_simple_dark": {
+  "nature-tree-simple-dark": {
+    "file": "nature/tree_simple_dark",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1512,7 +3102,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_simple_fall": {
+  "nature-tree-simple-fall": {
+    "file": "nature/tree_simple_fall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1520,7 +3111,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_small": {
+  "nature-tree-small": {
+    "file": "nature/tree_small",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1528,7 +3120,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_small_dark": {
+  "nature-tree-small-dark": {
+    "file": "nature/tree_small_dark",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1536,7 +3129,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_small_fall": {
+  "nature-tree-small-fall": {
+    "file": "nature/tree_small_fall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1544,7 +3138,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_tall": {
+  "nature-tree-tall": {
+    "file": "nature/tree_tall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1552,7 +3147,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_tall_dark": {
+  "nature-tree-tall-dark": {
+    "file": "nature/tree_tall_dark",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1560,7 +3156,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_tall_fall": {
+  "nature-tree-tall-fall": {
+    "file": "nature/tree_tall_fall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1568,7 +3165,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_thin": {
+  "nature-tree-thin": {
+    "file": "nature/tree_thin",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1576,7 +3174,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_thin_dark": {
+  "nature-tree-thin-dark": {
+    "file": "nature/tree_thin_dark",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1584,7 +3183,8 @@
       "height": 2.5
     }
   },
-  "nature/tree_thin_fall": {
+  "nature-tree-thin-fall": {
+    "file": "nature/tree_thin_fall",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -1592,28 +3192,67 @@
       "height": 2.5
     }
   },
-  "poly.pizza/above-ground-swimming-pool": {
+  "pirate-grass": {
+    "file": "pirate/grass",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "pirate-grass-patch": {
+    "file": "pirate/grass-patch",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "pirate-grass-plant": {
+    "file": "pirate/grass-plant",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "pirate-palm-bend": {
+    "file": "pirate/palm-bend",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "pirate-palm-straight": {
+    "file": "pirate/palm-straight",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "pirate-patch-grass": {
+    "file": "pirate/patch-grass",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "pirate-patch-grass-foliage": {
+    "file": "pirate/patch-grass-foliage",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "poly-pizza-above-ground-swimming-pool": {
+    "file": "poly.pizza/above-ground-swimming-pool",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/2R5gjVusWRN",
     "note": "Above ground swimming pool"
   },
-  "poly.pizza/archway": {
+  "poly-pizza-archway": {
+    "file": "poly.pizza/archway",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/erbvRcGd7YA",
     "note": "Archway"
   },
-  "poly.pizza/bakery": {
+  "poly-pizza-bakery": {
+    "file": "poly.pizza/bakery",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/6BGhNQlUzRR",
     "note": "Bakery"
   },
-  "poly.pizza/ballpark-45ez39jsdz6": {
+  "poly-pizza-ballpark-45ez39jsdz6": {
+    "file": "poly.pizza/ballpark-45ez39jsdz6",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
@@ -1629,336 +3268,400 @@
     "rotationOffset": 45,
     "note": "Ballpark"
   },
-  "poly.pizza/ballpark-8p3rzdaoytp": {
+  "poly-pizza-ballpark-8p3rzdaoytp": {
+    "file": "poly.pizza/ballpark-8p3rzdaoytp",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/8P3RzdaoYTP",
     "note": "Ballpark"
   },
-  "poly.pizza/bank": {
+  "poly-pizza-bank": {
+    "file": "poly.pizza/bank",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/f1GOJtZFtsR",
     "note": "Bank"
   },
-  "poly.pizza/bar": {
+  "poly-pizza-bar": {
+    "file": "poly.pizza/bar",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/cr_gfObT2-R",
     "note": "Bar"
   },
-  "poly.pizza/barn-0qthkuzrye": {
+  "poly-pizza-barn-0qthkuzrye": {
+    "file": "poly.pizza/barn-0qthkuzrye",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/0QTh_KUZRYE",
     "note": "Barn"
   },
-  "poly.pizza/barn-6oqd70uscs": {
+  "poly-pizza-barn-6oqd70uscs": {
+    "file": "poly.pizza/barn-6oqd70uscs",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/6OQd70uscs-",
     "note": "Barn"
   },
-  "poly.pizza/big-barn": {
+  "poly-pizza-big-barn": {
+    "file": "poly.pizza/big-barn",
     "source": "poly.pizza",
     "license": "CC0 1.0",
     "author": "Quaternius",
     "url": "https://poly.pizza/m/q1N3xn2SpC",
     "note": "Big Barn"
   },
-  "poly.pizza/casino": {
+  "poly-pizza-casino": {
+    "file": "poly.pizza/casino",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/ch4RRNmqTUI",
     "note": "Casino"
   },
-  "poly.pizza/chickencoop": {
+  "poly-pizza-chickencoop": {
+    "file": "poly.pizza/chickencoop",
     "source": "poly.pizza",
     "license": "CC0 1.0",
     "author": "Quaternius",
     "url": "https://poly.pizza/m/DM0F8siLam",
     "note": "ChickenCoop"
   },
-  "poly.pizza/cinema": {
+  "poly-pizza-cinema": {
+    "file": "poly.pizza/cinema",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/c-5balfj4bu",
     "note": "Cinema"
   },
-  "poly.pizza/cloister-garden": {
+  "poly-pizza-cloister-garden": {
+    "file": "poly.pizza/cloister-garden",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Bruno Oliveira",
     "url": "https://poly.pizza/m/9kOXKJvTgKS",
     "note": "Cloister Garden"
   },
-  "poly.pizza/club": {
+  "poly-pizza-club": {
+    "file": "poly.pizza/club",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/bnNROJXnfsP",
     "note": "Club"
   },
-  "poly.pizza/colosseum": {
+  "poly-pizza-colosseum": {
+    "file": "poly.pizza/colosseum",
     "source": "poly.pizza",
     "license": "CC0 1.0",
     "author": "CreativeTrio",
     "url": "https://poly.pizza/m/83ftBPyiSf",
     "note": "Colosseum"
   },
-  "poly.pizza/concert-stage": {
+  "poly-pizza-concert-stage": {
+    "file": "poly.pizza/concert-stage",
     "source": "poly.pizza",
     "license": "CC0 1.0",
     "author": "iPoly3D",
     "url": "https://poly.pizza/m/BQPFzsjXJF",
     "note": "Concert Stage"
   },
-  "poly.pizza/dettweiler-block-stage-no-fx": {
+  "poly-pizza-dettweiler-block-stage-no-fx": {
+    "file": "poly.pizza/dettweiler-block-stage-no-fx",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Ulric Dettweiler",
     "url": "https://poly.pizza/m/1oeJ9IH1igP",
     "note": "Dettweiler Block Stage (No FX)"
   },
-  "poly.pizza/ferris-wheel-5kivenxn5cw": {
+  "poly-pizza-ferris-wheel-5kivenxn5cw": {
+    "file": "poly.pizza/ferris-wheel-5kivenxn5cw",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/5KiVEnXN5Cw",
     "note": "Ferris wheel"
   },
-  "poly.pizza/ferris-wheel-6cepszjxbw": {
+  "poly-pizza-ferris-wheel-6cepszjxbw": {
+    "file": "poly.pizza/ferris-wheel-6cepszjxbw",
     "source": "poly.pizza",
     "license": "CC0 1.0",
     "author": "CreativeTrio",
     "url": "https://poly.pizza/m/6CepsZjXBw",
     "note": "Ferris Wheel"
   },
-  "poly.pizza/fire-engine": {
+  "poly-pizza-fire-engine": {
+    "file": "poly.pizza/fire-engine",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "J-Toastie",
     "url": "https://poly.pizza/m/P4XkeNmBLj",
     "note": "Fire Engine"
   },
-  "poly.pizza/fire-station-with-fire-trucks": {
+  "poly-pizza-fire-station-with-fire-trucks": {
+    "file": "poly.pizza/fire-station-with-fire-trucks",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Ivan Klus",
     "url": "https://poly.pizza/m/akzBrALzbei",
     "note": "Fire Station with Fire Trucks"
   },
-  "poly.pizza/fire-truck": {
+  "poly-pizza-fire-truck": {
+    "file": "poly.pizza/fire-truck",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Ivan Klus",
     "url": "https://poly.pizza/m/7iHJ519SwxG",
     "note": "Fire Truck"
   },
-  "poly.pizza/football-stadium": {
+  "poly-pizza-football-stadium": {
+    "file": "poly.pizza/football-stadium",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/6TZCkGh76m5",
     "note": "Football stadium"
   },
-  "poly.pizza/fountain": {
+  "poly-pizza-fountain": {
+    "file": "poly.pizza/fountain",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/0YTMlW0CUHU",
     "note": "Fountain"
   },
-  "poly.pizza/greek-temple": {
+  "poly-pizza-greek-temple": {
+    "file": "poly.pizza/greek-temple",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Alexandre Thomas (Ashtom)",
     "url": "https://poly.pizza/m/cdMQnl19MB9",
     "note": "Greek Temple"
   },
-  "poly.pizza/hospital": {
+  "poly-pizza-hospital": {
+    "file": "poly.pizza/hospital",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/asNvyjkcSG1",
     "note": "Hospital"
   },
-  "poly.pizza/japanese-torii": {
+  "poly-pizza-japanese-torii": {
+    "file": "poly.pizza/japanese-torii",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Jacques Fourie",
     "url": "https://poly.pizza/m/cXyQGUwmlA5",
     "note": "Japanese Torii"
   },
-  "poly.pizza/lighthouse-6gfe4vkpyaj": {
+  "poly-pizza-lighthouse-6gfe4vkpyaj": {
+    "file": "poly.pizza/lighthouse-6gfe4vkpyaj",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/6gFE4VkpYAJ",
     "note": "Lighthouse"
   },
-  "poly.pizza/lighthouse-b7ttdcccjcf": {
+  "poly-pizza-lighthouse-b7ttdcccjcf": {
+    "file": "poly.pizza/lighthouse-b7ttdcccjcf",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/b7tTDCCCjcF",
     "note": "Lighthouse"
   },
-  "poly.pizza/lighthouse-bk72chfpgo": {
+  "poly-pizza-lighthouse-bk72chfpgo": {
+    "file": "poly.pizza/lighthouse-bk72chfpgo",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/bk72ChfpGo-",
     "note": "Lighthouse"
   },
-  "poly.pizza/lighthouse-c1hm3zs8u": {
+  "poly-pizza-lighthouse-c1hm3zs8u": {
+    "file": "poly.pizza/lighthouse-c1hm3zs8u",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "CG ART Creation",
     "url": "https://poly.pizza/m/c1-hm3Zs-8U",
     "note": "Lighthouse"
   },
-  "poly.pizza/market-stalls-compact": {
+  "poly-pizza-market-stalls-compact": {
+    "file": "poly.pizza/market-stalls-compact",
     "source": "poly.pizza",
     "license": "CC0 1.0",
     "author": "Quaternius",
     "url": "https://poly.pizza/m/fmHUuX9AS3",
     "note": "Market Stalls Compact"
   },
-  "poly.pizza/mayan-ziggurat": {
+  "poly-pizza-mayan-ziggurat": {
+    "file": "poly.pizza/mayan-ziggurat",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Bruno Oliveira",
     "url": "https://poly.pizza/m/0rEriuH2sVr",
     "note": "Mayan Ziggurat"
   },
-  "poly.pizza/mine": {
+  "poly-pizza-mine": {
+    "file": "poly.pizza/mine",
     "source": "poly.pizza",
     "license": "CC0 1.0",
     "author": "Quaternius",
     "url": "https://poly.pizza/m/wOJ61Fa0Lt",
     "note": "Mine"
   },
-  "poly.pizza/pagoda-1zs7ucaad4j": {
+  "poly-pizza-pagoda-1zs7ucaad4j": {
+    "file": "poly.pizza/pagoda-1zs7ucaad4j",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/1zS7ucaAd4J",
     "note": "Pagoda"
   },
-  "poly.pizza/pagoda-d1m5ncmbudi": {
+  "poly-pizza-pagoda-d1m5ncmbudi": {
+    "file": "poly.pizza/pagoda-d1m5ncmbudi",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/d1M5ncMBUDi",
     "note": "Pagoda"
   },
-  "poly.pizza/pagoda-ehoi2vgw1ol": {
+  "poly-pizza-pagoda-ehoi2vgw1ol": {
+    "file": "poly.pizza/pagoda-ehoi2vgw1ol",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/eHOI2VgW1ol",
     "note": "Pagoda"
   },
-  "poly.pizza/palace-1d1nn3qb1e7": {
+  "poly-pizza-palace-1d1nn3qb1e7": {
+    "file": "poly.pizza/palace-1d1nn3qb1e7",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "jeremy",
     "url": "https://poly.pizza/m/1d1nN3qb1E7",
     "note": "Palace"
   },
-  "poly.pizza/palace-3xf6koesac": {
+  "poly-pizza-palace-3xf6koesac": {
+    "file": "poly.pizza/palace-3xf6koesac",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/3Xf6ko_eSAC",
     "note": "Palace"
   },
-  "poly.pizza/santo-spirito-fountain": {
+  "poly-pizza-pool-table": {
+    "file": "poly.pizza/pool-table",
+    "source": "poly.pizza",
+    "license": "CC-BY 3.0",
+    "author": "Evol-Love",
+    "url": "https://poly.pizza/m/7GzmqI1M0fC",
+    "footprint": [
+      2,
+      1
+    ],
+    "fit": {
+      "width": 1.9,
+      "height": 0.9
+    },
+    "note": "Pool Table"
+  },
+  "poly-pizza-santo-spirito-fountain": {
+    "file": "poly.pizza/santo-spirito-fountain",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Don Carson",
     "url": "https://poly.pizza/m/7b_tCaBRLCI",
     "note": "Santo Spirito Fountain"
   },
-  "poly.pizza/school-bus": {
+  "poly-pizza-school-bus": {
+    "file": "poly.pizza/school-bus",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Kyle Li",
     "url": "https://poly.pizza/m/2_1dZHNPJqJ",
     "note": "SCHOOL BUS"
   },
-  "poly.pizza/stadium": {
+  "poly-pizza-stadium": {
+    "file": "poly.pizza/stadium",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Zsky",
     "url": "https://poly.pizza/m/FNOmnIZJLs",
     "note": "Stadium"
   },
-  "poly.pizza/stadium-seats": {
+  "poly-pizza-stadium-seats": {
+    "file": "poly.pizza/stadium-seats",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Zsky",
     "url": "https://poly.pizza/m/KAHX68dbXO",
     "note": "Stadium Seats"
   },
-  "poly.pizza/stage": {
+  "poly-pizza-stage": {
+    "file": "poly.pizza/stage",
     "source": "poly.pizza",
     "license": "CC0 1.0",
     "author": "iPoly3D",
     "url": "https://poly.pizza/m/dGRAisemWy",
     "note": "Stage"
   },
-  "poly.pizza/swimming-pool": {
+  "poly-pizza-swimming-pool": {
+    "file": "poly.pizza/swimming-pool",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/fZTY7mCI_lv",
     "note": "Swimming pool"
   },
-  "poly.pizza/temple-for-tilt-integration": {
+  "poly-pizza-temple-for-tilt-integration": {
+    "file": "poly.pizza/temple-for-tilt-integration",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "kris pilcher",
     "url": "https://poly.pizza/m/2c77k-iimuh",
     "note": "temple for tilt integration"
   },
-  "poly.pizza/temple-of-prophecy-ruined": {
+  "poly-pizza-temple-of-prophecy-ruined": {
+    "file": "poly.pizza/temple-of-prophecy-ruined",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Duncan Anderson",
     "url": "https://poly.pizza/m/7LV6QMkGBNo",
     "note": "Temple of Prophecy: Ruined"
   },
-  "poly.pizza/village-market": {
+  "poly-pizza-village-market": {
+    "file": "poly.pizza/village-market",
     "source": "poly.pizza",
     "license": "CC0 1.0",
     "author": "Quaternius",
     "url": "https://poly.pizza/m/0TsHLxX6CB",
     "note": "Village Market"
   },
-  "poly.pizza/water-tank": {
+  "poly-pizza-water-tank": {
+    "file": "poly.pizza/water-tank",
     "source": "poly.pizza",
     "license": "CC0 1.0",
     "author": "Quaternius",
     "url": "https://poly.pizza/m/XVB8vUbnZb",
     "note": "Water Tank"
   },
-  "poly.pizza/water-tower": {
+  "poly-pizza-water-tower": {
+    "file": "poly.pizza/water-tower",
     "source": "poly.pizza",
     "license": "CC-BY 3.0",
     "author": "Alex Safayan",
     "url": "https://poly.pizza/m/9JYqZyTiVkU",
     "note": "Water Tower"
   },
-  "roads/road-bend": {
+  "roads-road-bend": {
+    "file": "roads/road-bend",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -1966,7 +3669,8 @@
       1
     ]
   },
-  "roads/road-crossing": {
+  "roads-road-crossing": {
+    "file": "roads/road-crossing",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -1974,7 +3678,8 @@
       1
     ]
   },
-  "roads/road-crossroad": {
+  "roads-road-crossroad": {
+    "file": "roads/road-crossroad",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -1982,7 +3687,8 @@
       1
     ]
   },
-  "roads/road-end": {
+  "roads-road-end": {
+    "file": "roads/road-end",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -1990,7 +3696,8 @@
       1
     ]
   },
-  "roads/road-intersection": {
+  "roads-road-intersection": {
+    "file": "roads/road-intersection",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -1998,7 +3705,8 @@
       1
     ]
   },
-  "roads/road-roundabout": {
+  "roads-road-roundabout": {
+    "file": "roads/road-roundabout",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2007,7 +3715,13 @@
     ],
     "note": "exits assumed at the middle of each side; to verify"
   },
-  "roads/road-square": {
+  "roads-road-sign-empty": {
+    "file": "roads/road-sign-empty",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "roads-road-square": {
+    "file": "roads/road-square",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2015,7 +3729,8 @@
       1
     ]
   },
-  "roads/road-straight": {
+  "roads-road-straight": {
+    "file": "roads/road-straight",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2023,11 +3738,13 @@
       1
     ]
   },
-  "sport/athletics-stadium": {
+  "sport-athletics-stadium": {
+    "file": "sport/athletics-stadium",
     "source": "managed",
     "license": "Own work"
   },
-  "suburban/building-type-a": {
+  "suburban-building-type-a": {
+    "file": "suburban/building-type-a",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2035,7 +3752,8 @@
       1
     ]
   },
-  "suburban/building-type-b": {
+  "suburban-building-type-b": {
+    "file": "suburban/building-type-b",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2043,7 +3761,8 @@
       1
     ]
   },
-  "suburban/building-type-c": {
+  "suburban-building-type-c": {
+    "file": "suburban/building-type-c",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2051,7 +3770,8 @@
       1
     ]
   },
-  "suburban/building-type-d": {
+  "suburban-building-type-d": {
+    "file": "suburban/building-type-d",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2059,7 +3779,8 @@
       1
     ]
   },
-  "suburban/building-type-e": {
+  "suburban-building-type-e": {
+    "file": "suburban/building-type-e",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2067,7 +3788,8 @@
       1
     ]
   },
-  "suburban/building-type-f": {
+  "suburban-building-type-f": {
+    "file": "suburban/building-type-f",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2075,7 +3797,8 @@
       2
     ]
   },
-  "suburban/building-type-g": {
+  "suburban-building-type-g": {
+    "file": "suburban/building-type-g",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2084,7 +3807,8 @@
     ],
     "note": "bbox 1.45x1.18: overridden to 2x1 (rule gives 2x2)"
   },
-  "suburban/building-type-h": {
+  "suburban-building-type-h": {
+    "file": "suburban/building-type-h",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2092,7 +3816,8 @@
       1
     ]
   },
-  "suburban/building-type-i": {
+  "suburban-building-type-i": {
+    "file": "suburban/building-type-i",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2100,7 +3825,8 @@
       1
     ]
   },
-  "suburban/building-type-j": {
+  "suburban-building-type-j": {
+    "file": "suburban/building-type-j",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2108,7 +3834,8 @@
       1
     ]
   },
-  "suburban/building-type-k": {
+  "suburban-building-type-k": {
+    "file": "suburban/building-type-k",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2116,7 +3843,8 @@
       1
     ]
   },
-  "suburban/building-type-l": {
+  "suburban-building-type-l": {
+    "file": "suburban/building-type-l",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2124,7 +3852,8 @@
       1
     ]
   },
-  "suburban/building-type-m": {
+  "suburban-building-type-m": {
+    "file": "suburban/building-type-m",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2132,7 +3861,8 @@
       2
     ]
   },
-  "suburban/building-type-n": {
+  "suburban-building-type-n": {
+    "file": "suburban/building-type-n",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2140,7 +3870,8 @@
       2
     ]
   },
-  "suburban/building-type-o": {
+  "suburban-building-type-o": {
+    "file": "suburban/building-type-o",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2148,7 +3879,8 @@
       1
     ]
   },
-  "suburban/building-type-p": {
+  "suburban-building-type-p": {
+    "file": "suburban/building-type-p",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2156,7 +3888,8 @@
       1
     ]
   },
-  "suburban/building-type-q": {
+  "suburban-building-type-q": {
+    "file": "suburban/building-type-q",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2164,7 +3897,8 @@
       1
     ]
   },
-  "suburban/building-type-r": {
+  "suburban-building-type-r": {
+    "file": "suburban/building-type-r",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2172,7 +3906,8 @@
       1
     ]
   },
-  "suburban/building-type-s": {
+  "suburban-building-type-s": {
+    "file": "suburban/building-type-s",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2180,7 +3915,8 @@
       1
     ]
   },
-  "suburban/building-type-t": {
+  "suburban-building-type-t": {
+    "file": "suburban/building-type-t",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2188,7 +3924,8 @@
       2
     ]
   },
-  "suburban/building-type-u": {
+  "suburban-building-type-u": {
+    "file": "suburban/building-type-u",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2196,17 +3933,69 @@
       1
     ]
   },
-  "suburban/tree-large": {
+  "suburban-tree-large": {
+    "file": "suburban/tree-large",
     "source": "kenney",
     "license": "CC0",
     "scale": 1.5
   },
-  "suburban/tree-small": {
+  "suburban-tree-small": {
+    "file": "suburban/tree-small",
     "source": "kenney",
     "license": "CC0",
     "scale": 1.5
   },
-  "watercraft/boat-house-a": {
+  "trains-railroad-corner-small": {
+    "file": "trains/railroad-corner-small",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-railroad-straight": {
+    "file": "trains/railroad-straight",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-train-electric-city-a": {
+    "file": "trains/train-electric-city-a",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-train-electric-city-b": {
+    "file": "trains/train-electric-city-b",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-train-electric-city-c": {
+    "file": "trains/train-electric-city-c",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-train-electric-subway-a": {
+    "file": "trains/train-electric-subway-a",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-train-locomotive-a": {
+    "file": "trains/train-locomotive-a",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-train-locomotive-passenger-a": {
+    "file": "trains/train-locomotive-passenger-a",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "watercraft-boat-fishing-small": {
+    "file": "watercraft/boat-fishing-small",
+    "source": "kenney",
+    "license": "CC0",
+    "fit": {
+      "width": 0.9,
+      "height": 0.8
+    }
+  },
+  "watercraft-boat-house-a": {
+    "file": "watercraft/boat-house-a",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -2218,7 +4007,8 @@
       "height": 1.6
     }
   },
-  "watercraft/boat-sail-a": {
+  "watercraft-boat-sail-a": {
+    "file": "watercraft/boat-sail-a",
     "source": "kenney",
     "license": "CC0",
     "fit": {
@@ -2226,15 +4016,8 @@
       "height": 1.1
     }
   },
-  "watercraft/boat-fishing-small": {
-    "source": "kenney",
-    "license": "CC0",
-    "fit": {
-      "width": 0.9,
-      "height": 0.8
-    }
-  },
-  "watercraft/ship-ocean-liner-small": {
+  "watercraft-ship-ocean-liner-small": {
+    "file": "watercraft/ship-ocean-liner-small",
     "source": "kenney",
     "license": "CC0",
     "fit": {

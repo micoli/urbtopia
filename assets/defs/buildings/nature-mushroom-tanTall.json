@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 1010,
+  "model": "nature-mushroom-tantall",
+  "name": {
+    "en": "Mushrooms tan tall",
+    "fr": "Champignons beiges haut"
+  },
+  "family": "flower"
+}

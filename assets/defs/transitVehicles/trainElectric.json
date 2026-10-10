@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/transit-vehicle.schema.json",
+  "kind": "transitVehicle",
+  "order": 30,
+  "mode": "rail",
+  "propulsion": "electric",
+  "price": 2400,
+  "power": 8,
+  "coal": 0,
+  "cost": 8,
+  "emissions": 0,
+  "models": ["trains-train-electric-city-a", "trains-train-electric-city-b"],
+  "name": {
+    "en": "Electric train",
+    "fr": "Train électrique"
+  }
+}

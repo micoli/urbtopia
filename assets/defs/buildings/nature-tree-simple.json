@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 2050,
+  "model": "nature-tree-simple",
+  "name": {
+    "en": "Tree simple",
+    "fr": "Arbre simple"
+  },
+  "family": "tree"
+}

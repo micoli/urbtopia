@@ -1,0 +1,67 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "storage",
+  "order": 120,
+  "section": "build.storage",
+  "cost": 400,
+  "unlockCitizens": 0,
+  "requiresRoad": true,
+  "name": {
+    "en": "Storehouse",
+    "fr": "Entrepôt"
+  },
+  "description": {
+    "en": "Stores Materials and Goods. Only one Storehouse can be built; upgrades increase its storage capacity.",
+    "fr": "Stocke les matériaux et les produits. Un seul entrepôt peut être construit ; ses améliorations augmentent sa capacité."
+  },
+  "tiers": [
+    {
+      "model": "industrial-building-a",
+      "footprint": [2, 2],
+      "materials": 20,
+      "goods": 40,
+      "crops": 0
+    },
+    {
+      "materials": 30,
+      "goods": 60,
+      "upgradeCost": {
+        "urbs": 300,
+        "goods": {}
+      }
+    },
+    {
+      "materials": 40,
+      "goods": 80,
+      "upgradeCost": {
+        "urbs": 800,
+        "goods": {}
+      }
+    },
+    {
+      "model": "industrial-building-q",
+      "materials": 50,
+      "goods": 100,
+      "upgradeCost": {
+        "urbs": 2000,
+        "goods": {}
+      }
+    },
+    {
+      "materials": 60,
+      "goods": 120,
+      "upgradeCost": {
+        "urbs": 5000,
+        "goods": {}
+      }
+    },
+    {
+      "materials": 70,
+      "goods": 140,
+      "upgradeCost": {
+        "urbs": 12000,
+        "goods": {}
+      }
+    }
+  ]
+}

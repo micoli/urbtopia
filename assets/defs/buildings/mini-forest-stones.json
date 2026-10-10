@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 710,
+  "model": "mini-forest-stones",
+  "name": {
+    "en": "Stones · Mini Forest",
+    "fr": "Pierres · Mini Forest"
+  },
+  "family": "habitat"
+}

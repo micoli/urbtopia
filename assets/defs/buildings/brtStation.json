@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "transitStop",
+  "order": 230,
+  "section": "build.transport",
+  "model": "roads-road-sign-empty",
+  "footprint": [1, 1],
+  "cost": 180,
+  "unlockCitizens": 200,
+  "requiresRoad": true,
+  "name": {
+    "en": "BRT station",
+    "fr": "Station BHNS"
+  },
+  "description": {
+    "en": "A stop on a dedicated BRT corridor. Create a connected line and assign purchased electric BRT vehicles in City management.",
+    "fr": "Un arrêt sur un corridor BHNS dédié. Créez une ligne connectée et affectez-y des véhicules BHNS électriques achetés dans la gestion de la ville."
+  },
+  "mode": "brt",
+  "network": {
+    "tileCost": 12,
+    "speed": 3,
+    "capacity": 160
+  }
+}

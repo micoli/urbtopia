@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/transit-vehicle.schema.json",
+  "kind": "transitVehicle",
+  "order": 40,
+  "mode": "rail",
+  "propulsion": "coal",
+  "price": 1600,
+  "power": 0,
+  "coal": 2,
+  "cost": 10,
+  "emissions": 8,
+  "models": ["trains-train-locomotive-a", "trains-train-locomotive-passenger-a"],
+  "name": {
+    "en": "Coal train",
+    "fr": "Train à charbon"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 880,
+  "model": "nature-grass-leafslarge",
+  "name": {
+    "en": "Grass leafy large",
+    "fr": "Herbe feuillue grande"
+  },
+  "family": "grass"
+}

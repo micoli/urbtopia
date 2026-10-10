@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "order": 460,
+  "model": "nature-cliff-blockcave-rock",
+  "name": {
+    "en": "Cliff cave block",
+    "fr": "Bloc de falaise à grotte"
+  },
+  "family": "decoration"
+}

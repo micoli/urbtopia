@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 10,
+  "venue": "arcade",
+  "category": "service",
+  "name": {
+    "en": "Counter",
+    "fr": "Comptoir"
+  },
+  "model": "mini-arcade-cash-register",
+  "footprint": [1, 1],
+  "price": 100,
+  "minTier": 1,
+  "playsPerHour": 0
+}

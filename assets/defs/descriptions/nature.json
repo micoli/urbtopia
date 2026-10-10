@@ -1,0 +1,37 @@
+{
+  "$schema": "../schemas/descriptions-nature.schema.json",
+  "families": {
+    "tree": {
+      "en": "Trees strongly improve cooling, biodiversity and nearby Citizen well-being. Range: {radius} tiles. Adjacent vegetation gains 20%; benefits have diminishing returns and never cancel emissions. No road, power, water or maintenance required.",
+      "fr": "Les arbres améliorent fortement la fraîcheur, la biodiversité et le bien-être des citoyens proches. Rayon : {radius} cases. La végétation adjacente gagne 20 % ; les bénéfices ont un rendement décroissant et ne compensent jamais les émissions. Aucune route, électricité, eau ou entretien requis."
+    },
+    "grass": {
+      "en": "Grass improves cooling, biodiversity and nearby Citizen well-being. Range: {radius} tiles. Adjacent vegetation gains 20%; benefits have diminishing returns and never cancel emissions. No road, power, water or maintenance required.",
+      "fr": "L’herbe améliore la fraîcheur, la biodiversité et le bien-être des citoyens proches. Rayon : {radius} cases. La végétation adjacente gagne 20 % ; les bénéfices ont un rendement décroissant et ne compensent jamais les émissions. Aucune route, électricité, eau ou entretien requis."
+    },
+    "shrub": {
+      "en": "Shrubs support biodiversity, cooling and nearby Citizen well-being. Range: {radius} tiles. Adjacent vegetation gains 20%; benefits have diminishing returns and never cancel emissions. No road, power, water or maintenance required.",
+      "fr": "Les buissons et plantes favorisent la biodiversité, la fraîcheur et le bien-être des citoyens proches. Rayon : {radius} cases. La végétation adjacente gagne 20 % ; les bénéfices ont un rendement décroissant et ne compensent jamais les émissions. Aucune route, électricité, eau ou entretien requis."
+    },
+    "flower": {
+      "en": "Flowers, mushrooms and lilies strongly support biodiversity and Citizen well-being, with a small cooling benefit. Range: {radius} tiles. Adjacent vegetation gains 20%; benefits have diminishing returns and never cancel emissions. No road, power, water or maintenance required.",
+      "fr": "Les fleurs, champignons et nénuphars favorisent fortement la biodiversité et le bien-être, avec un petit bénéfice de fraîcheur. Rayon : {radius} cases. La végétation adjacente gagne 20 % ; les bénéfices ont un rendement décroissant et ne compensent jamais les émissions. Aucune route, électricité, eau ou entretien requis."
+    },
+    "habitat": {
+      "en": "Rocks, logs and stumps support biodiversity only within two tiles of vegetation. They provide no cooling or direct well-being. Range: {radius} tiles. Adjacent vegetation gains 20%; benefits have diminishing returns and never cancel emissions. No road, power, water or maintenance required.",
+      "fr": "Les rochers, troncs et souches favorisent la biodiversité uniquement à deux cases maximum de végétation. Ils n’apportent ni fraîcheur ni bien-être direct. Rayon : {radius} cases. La végétation adjacente gagne 20 % ; les bénéfices ont un rendement décroissant et ne compensent jamais les émissions. Aucune route, électricité, eau ou entretien requis."
+    },
+    "conifer": {
+      "en": "Forest trees strongly improve cooling, biodiversity and nearby Citizen well-being. Range: {radius} tiles. Adjacent vegetation gains 20%; benefits have diminishing returns and never cancel emissions. No road, power, water or maintenance required.",
+      "fr": "Les arbres forestiers améliorent fortement la fraîcheur, la biodiversité et le bien-être des citoyens proches. Rayon : {radius} cases. La végétation adjacente gagne 20 % ; les bénéfices ont un rendement décroissant et ne compensent jamais les émissions. Aucune route, électricité, eau ou entretien requis."
+    },
+    "decoration": {
+      "en": "Cliffs are purely decorative: they only bring a little nearby Citizen well-being. Range: {radius} tiles. Adjacent vegetation gains 20%; benefits have diminishing returns and never cancel emissions. No road, power, water or maintenance required.",
+      "fr": "Les falaises sont purement décoratives : elles n’apportent qu’un peu de bien-être aux citoyens proches. Rayon : {radius} cases. La végétation adjacente gagne 20 % ; les bénéfices ont un rendement décroissant et ne compensent jamais les émissions. Aucune route, électricité, eau ou entretien requis."
+    },
+    "palm": {
+      "en": "Palms improve cooling, biodiversity and nearby Citizen well-being. Range: {radius} tiles. Adjacent vegetation gains 20%; benefits have diminishing returns and never cancel emissions. No road, power, water or maintenance required.",
+      "fr": "Les palmiers améliorent la fraîcheur, la biodiversité et le bien-être des citoyens proches. Rayon : {radius} cases. La végétation adjacente gagne 20 % ; les bénéfices ont un rendement décroissant et ne compensent jamais les émissions. Aucune route, électricité, eau ou entretien requis."
+    }
+  }
+}

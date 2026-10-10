@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 40,
+  "venue": "arcade",
+  "category": "games",
+  "name": {
+    "en": "Air hockey table",
+    "fr": "Table d’air hockey"
+  },
+  "model": "mini-arcade-air-hockey",
+  "footprint": [1, 1],
+  "price": 220,
+  "minTier": 1,
+  "loud": true,
+  "playsPerHour": 4
+}

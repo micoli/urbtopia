@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "const": "material"
+    },
+    "$schema": {
+      "type": "string"
+    },
+    "order": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "name": {
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "fr": {
+          "type": "string",
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "en",
+        "fr"
+      ],
+      "additionalProperties": false
+    },
+    "model": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "producedBy": {
+      "type": "string",
+      "enum": [
+        "workshop",
+        "fishingBoat"
+      ]
+    },
+    "durationMinutes": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "unlockCitizens": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "minTier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "value": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "kind",
+    "order",
+    "name",
+    "producedBy",
+    "durationMinutes",
+    "unlockCitizens",
+    "minTier",
+    "value"
+  ],
+  "additionalProperties": false,
+  "title": "Material",
+  "description": "A raw resource, one file per Material id in assets/defs/materials. Crop Materials come from assets/defs/crops."
+}

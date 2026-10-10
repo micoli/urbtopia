@@ -1,4 +1,4 @@
-import { MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, type GameState, type TutorialStep } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -42,6 +42,22 @@ function isStack(value: unknown): boolean {
   );
 }
 
+function isVenueData(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    isInt(value.nextFixtureId, 1) &&
+    isNonNegative(value.takings) &&
+    (value.earned === undefined || isNonNegative(value.earned)) &&
+    (value.price === undefined || isInt(value.price, 1, 20)) &&
+    (value.rng === undefined || isNumber(value.rng)) &&
+    (value.reputation === undefined || (isNumber(value.reputation) && value.reputation >= 0 && value.reputation <= 100)) &&
+    (value.cooldownUntil === undefined || isNumber(value.cooldownUntil)) &&
+    (value.event === undefined || (isRecord(value.event) && isNumber(value.event.startsAt) && isNumber(value.event.endsAt) && value.event.endsAt > value.event.startsAt && isNonNegative(value.event.budget))) &&
+    (value.staff === undefined || (isRecord(value.staff) && Object.entries(value.staff).every(([role, count]) => STAFF_ROLES.includes(role as never) && isInt(count, 0, 20)))) &&
+    isArrayOf(value.fixtures, fixture => isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, (value.nextFixtureId as number) - 1) && FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3) && (fixture.condition === undefined || (isNumber(fixture.condition) && fixture.condition >= 0 && fixture.condition <= 100)) && (fixture.broken === undefined || typeof fixture.broken === 'boolean') && (fixture.good === undefined || (typeof fixture.good === 'string' && fixture.good in GOODS)) && (fixture.stock === undefined || isNonNegative(fixture.stock)))
+  );
+}
+
 function isBuilding(value: unknown): boolean {
   return (
     isRecord(value) &&
@@ -59,6 +75,7 @@ function isBuilding(value: unknown): boolean {
     (value.insulated === undefined || (value.type === 'home' && typeof value.insulated === 'boolean')) &&
     (value.solar === undefined || (value.type === 'home' && typeof value.solar === 'boolean')) &&
     (value.colorVariant === undefined || (value.type === 'home' && ['default', 'a', 'b', 'c'].includes(value.colorVariant as string))) &&
+    (value.venue === undefined || (typeof value.type === 'string' && isVenueType(value.type) && isVenueData(value.venue))) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&
     (value.storedEnergy === undefined || (value.type === 'battery' && isNonNegative(value.storedEnergy) && value.storedEnergy <= 24))
   );
@@ -118,7 +135,7 @@ export function validateGameState(value: unknown): GameState | null {
     isArrayOf(l.stops, id => isInt(id, 0)) && (l.stops as number[]).length >= 2 && new Set(l.stops as number[]).size === (l.stops as number[]).length &&
     isNumber(l.peakHeadway) && isNumber(l.offPeakHeadway) && l.peakHeadway > 0 && l.offPeakHeadway > 0 && l.peakHeadway <= 60 && l.offPeakHeadway <= 60 &&
     (l.mode !== 'brt' || (l.peakHeadway >= 5 && l.peakHeadway <= 10 && l.offPeakHeadway >= 10 && l.offPeakHeadway <= 15)))) return null;
-  if (value.transitFleet !== undefined && !isArrayOf(value.transitFleet, v => isRecord(v) && isInt(v.id, 1) && ['brtElectric', 'trainElectric', 'trainCoal'].includes(v.kind as string) && isNonNegative(v.purchasePrice) && (v.lineId === undefined || isInt(v.lineId, 1)))) return null;
+  if (value.transitFleet !== undefined && !isArrayOf(value.transitFleet, v => isRecord(v) && isInt(v.id, 1) && FLEET_VEHICLES.some(({ id }) => id === v.kind) && isNonNegative(v.purchasePrice) && (v.lineId === undefined || isInt(v.lineId, 1)))) return null;
   const state = value as unknown as GameState;
   const ids = [...state.buildings.map(b => b.id), ...(state.boats ?? []).map(b => b.id), ...(state.busLines ?? []).map(l => l.id), ...(state.transitLines ?? []).map(l => l.id), ...(state.transitFleet ?? []).map(v => v.id)];
   if (new Set(ids).size !== ids.length || ids.some(id => id >= state.nextId)) return null;
@@ -146,7 +163,7 @@ export function validateGameState(value: unknown): GameState | null {
   for (const vehicle of state.transitFleet ?? []) {
     if (vehicle.lineId === undefined) continue;
     const line = state.transitLines?.find(l => l.id === vehicle.lineId);
-    if (!line || (line.mode === 'brt') !== (vehicle.kind === 'brtElectric')) return null;
+    if (!line || line.mode !== TRANSIT[vehicle.kind].mode) return null;
   }
   return state;
 }

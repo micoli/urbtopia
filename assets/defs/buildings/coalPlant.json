@@ -1,0 +1,48 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "utility",
+  "order": 170,
+  "section": "build.utilities",
+  "cost": 150,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "name": {
+    "en": "Coal power plant",
+    "fr": "Centrale à charbon"
+  },
+  "description": {
+    "en": "Provides stable electricity from coal, with four Tiers and lower construction and upgrade costs than wind at comparable capacity. Fuel is paid in Urbs, without using stored coal. Nearby Homes lose well-being; generation creates emissions. Can be switched off.",
+    "fr": "Fournit une électricité stable grâce au charbon, avec quatre Tiers et des coûts de construction et d’évolution inférieurs à l’éolienne à capacité comparable. Le combustible est payé en Urbs, sans utiliser le charbon stocké. Les Homes proches perdent du bien-être ; la production génère des émissions. Peut être éteinte."
+  },
+  "tiers": [
+    {
+      "model": "industrial-chimney-basic",
+      "footprint": [1, 1],
+      "capacity": 12
+    },
+    {
+      "model": "industrial-chimney-small",
+      "capacity": 24,
+      "upgradeCost": {
+        "urbs": 300,
+        "goods": {}
+      }
+    },
+    {
+      "model": "industrial-chimney-medium",
+      "capacity": 40,
+      "upgradeCost": {
+        "urbs": 900,
+        "goods": {}
+      }
+    },
+    {
+      "model": "industrial-chimney-large",
+      "capacity": 64,
+      "upgradeCost": {
+        "urbs": 1800,
+        "goods": {}
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import type { GameState, transportStats } from '../../../../core';
+import { TRANSIT, type GameState, type transportStats } from '../../../../core';
 import { t } from '../../../../i18n/t.ts';
 import { FleetRow } from './FleetRow.tsx';
 
@@ -24,7 +24,7 @@ export function FleetTable({ state, transport }: FleetTableProps) {
       {fleet.map(vehicle => <FleetRow
         key={vehicle.id}
         vehicle={vehicle}
-        compatibleLines={lines.filter(line => (line.mode === 'brt') === (vehicle.kind === 'brtElectric'))}
+        compatibleLines={lines.filter(line => line.mode === TRANSIT[vehicle.kind].mode)}
         summary={transport.lines.find(line => line.id === vehicle.lineId)}
       />)}
     </tbody>

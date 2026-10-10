@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 120,
+  "venue": "arcade",
+  "category": "games",
+  "name": {
+    "en": "Basketball game",
+    "fr": "Jeu de basket"
+  },
+  "model": "mini-arcade-basketball-game",
+  "footprint": [1, 1],
+  "price": 400,
+  "minTier": 3,
+  "minRank": 3,
+  "loud": true,
+  "playsPerHour": 6
+}

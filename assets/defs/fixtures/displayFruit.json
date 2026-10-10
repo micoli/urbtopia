@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "order": 220,
+  "venue": "supermarket",
+  "category": "shelves",
+  "name": {
+    "en": "Fruit display",
+    "fr": "Étal de fruits"
+  },
+  "model": "mini-market-display-fruit",
+  "footprint": [1, 1],
+  "price": 150,
+  "minTier": 1,
+  "wear": 0.02,
+  "shelf": 8
+}

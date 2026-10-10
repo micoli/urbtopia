@@ -2,13 +2,15 @@ import { TRANSIT, extendNetwork, networkTiles, repairNetwork, validNetworkCrossi
 import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
 import { routeFailure, routeForLine } from '../transit/transport';
 import { BUILDING_SPECS, createBuilding, emptyStack, placementCost } from '../buildings/buildingSpecs';
+import { isRetired } from '../buildings/buildingDefinitions';
 import { advance } from './advance';
 import { GAME_CONFIG } from './config';
 import type { Coord } from '../map/coord';
 import type { GameEvent } from './events';
 import { neighbour, tileKey } from '../map/geometry';
 import { utilityCapacity, utilityDemand, type UtilityTotals } from '../buildings/city';
-import { HOME_TIERS, MAX_SLOTS, SHOP, TAX, SLOT_PRICES } from '../economy/economy';
+import { HOME_TIERS, SHOP, TAX, SLOT_PRICES } from '../economy/economy';
+import { canSell, isShopType, saleIntervalOf, shopTierOf, slotPriceOf } from '../economy/shops';
 import { GOODS, isGood, isMaterial, minTierOf, producibleItems, recipeOf, type GoodId } from '../economy/items';
 import { marketQuote } from '../economy/market';
 import { harvestFields, layFields, plantFields, removeFields } from '../farming/fields';
@@ -17,6 +19,7 @@ import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
+import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, stockShelf } from '../venues/venues';
 import { bridgeAt, bridgeKeys, placeBridge, refundOf, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
@@ -27,7 +30,7 @@ import { FACILITIES, isFacilityType } from '../services/facilities';
 import { missingServices, serviceCoverage } from '../services/services';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from '../map/occupancy';
 import { autoRotation, frontHasAccess, placementIssue } from '../map/placement';
-import { newQueueEntry, restartRunningProduction, shiftRunningTimers, taxDue } from '../economy/production';
+import { newQueueEntry, restartRunningProduction, runningEntry, rushPrice, rushRunningProduction, shiftRunningTimers, taxDue } from '../economy/production';
 import { roadBuildCost, missingRoadTiles } from '../map/roadCost';
 import { roadPath } from '../map/roads';
 import { roadTierUpgradeCost } from '../traffic/roadTier';
@@ -35,7 +38,7 @@ import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import type { BlackjackAction } from '../leisure/blackjack';
-import type { BoatFamily, Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
+import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -76,6 +79,17 @@ export type Command =
   | { readonly type: 'SellSeeds'; readonly crop: CropId; readonly quantity: number }
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
+  | { readonly type: 'RushProduction'; readonly buildingId: number }
+  | { readonly type: 'MoveFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'HireStaff'; readonly buildingId: number; readonly role: StaffRole }
+  | { readonly type: 'ReleaseStaff'; readonly buildingId: number; readonly role: StaffRole }
+  | { readonly type: 'SetVenuePrice'; readonly buildingId: number; readonly price: number }
+  | { readonly type: 'ScheduleEvent'; readonly buildingId: number; readonly startsInHours: number }
+  | { readonly type: 'CancelEvent'; readonly buildingId: number }
+  | { readonly type: 'StockShelf'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId }
+  | { readonly type: 'RepairFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
   | { readonly type: 'SellToMarket'; readonly good: GoodId; readonly quantity: number }
   | { readonly type: 'UpgradeBuilding'; readonly buildingId: number }
@@ -95,6 +109,20 @@ export type Command =
 export type ErrorKey =
   | 'error.unknownCommand'
   | 'error.unknownBuilding'
+  | 'error.unknownFixture'
+  | 'error.invalidPrice'
+  | 'error.managerRequired'
+  | 'error.rankTooLow'
+  | 'error.nothingToRepair'
+  | 'error.shelfBusy'
+  | 'error.shelfFull'
+  | 'error.invalidEventStart'
+  | 'error.eventBusy'
+  | 'error.eventCooldown'
+  | 'error.eventStarted'
+  | 'error.noEvent'
+  | 'error.noStaffPost'
+  | 'error.noStaffToRelease'
   | 'error.outsideOwnedParcels'
   | 'error.tilesOccupied'
   | 'error.homeExpansionBlocked'
@@ -138,6 +166,7 @@ export type ErrorKey =
   | 'error.networkIntact'
   | 'error.cannotProduce'
   | 'error.queueFull'
+  | 'error.nothingToRush'
   | 'error.nothingToCollect'
   | 'error.noStorehouse'
   | 'error.storageFull'
@@ -145,6 +174,7 @@ export type ErrorKey =
   | 'error.missingMaterials'
   | 'error.maxSlots'
   | 'error.notAShop'
+  | 'error.notSoldHere'
   | 'error.missingGoods'
   | 'error.marketLocked'
   | 'error.invalidQuantity'
@@ -242,8 +272,30 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return sellSeeds(state, command.crop, command.quantity);
     case 'QueueProduction':
       return queueProduction(state, command.buildingId, command.item, now);
+    case 'RushProduction':
+      return rushProduction(state, command.buildingId, now);
     case 'Collect':
       return collect(state, command.buildingId);
+    case 'MoveFixture':
+      return moveFixture(state, command.buildingId, command.fixtureId, command.x, command.y, command.rotation);
+    case 'HireStaff':
+      return hireStaff(state, command.buildingId, command.role);
+    case 'ReleaseStaff':
+      return releaseStaff(state, command.buildingId, command.role);
+    case 'SetVenuePrice':
+      return setVenuePrice(state, command.buildingId, command.price);
+    case 'ScheduleEvent':
+      return scheduleEvent(state, command.buildingId, command.startsInHours);
+    case 'CancelEvent':
+      return cancelEvent(state, command.buildingId);
+    case 'StockShelf':
+      return stockShelf(state, command.buildingId, command.fixtureId, command.good);
+    case 'RepairFixture':
+      return repairFixture(state, command.buildingId, command.fixtureId);
+    case 'RemoveFixture':
+      return removeFixture(state, command.buildingId, command.fixtureId);
+    case 'PlaceFixture':
+      return placeFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
     case 'StockShop':
       return stockShop(state, command.buildingId, command.good, now);
     case 'SellToMarket':
@@ -393,7 +445,7 @@ function strandsBuilding(before: GameState, after: GameState): boolean {
 }
 
 function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, requestedRotation?: Rotation, solar = false, colorVariant?: HomeColorVariant): CommandOutcome {
-  if (citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < ECOLOGY.solarUnlockCitizens)) return fail('error.itemLocked');
+  if (isRetired(type) || citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < ECOLOGY.solarUnlockCitizens)) return fail('error.itemLocked');
   if (solar && type !== 'home') return fail('error.cannotProduce');
   const extraCost = solar ? ECOLOGY.solarCost : 0;
   const rotation = requestedRotation ?? autoRotation(state, type, x, y);
@@ -487,11 +539,29 @@ function queueProduction(state: GameState, buildingId: number, item: string, now
   };
 }
 
+function rushProduction(state: GameState, buildingId: number, now: number): CommandOutcome {
+  const building = state.buildings.find((candidate) => candidate.id === buildingId);
+  if (!building) return fail('error.unknownBuilding');
+  const running = runningEntry(building);
+  if (!running) return fail('error.nothingToRush');
+  const price = rushPrice(running, now);
+  if (state.urbs < price) return fail('error.notEnoughUrbs');
+  return {
+    state: {
+      ...state,
+      urbs: state.urbs - price,
+      buildings: state.buildings.map((candidate) => (candidate === building ? rushRunningProduction(building, now) : candidate)),
+    },
+    events: [{ type: 'ProductionCompleted', buildingId, item: running.item, at: now }],
+  };
+}
+
 function collect(state: GameState, buildingId: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
-  if (building.type === 'shop') return collectShopEarnings(state, building);
+  if (isShopType(building.type)) return collectShopEarnings(state, building);
   if (building.type === 'home') return collectTax(state, building);
+  if (isVenue(building)) return collectTakings(state, building);
   if (!building.queue.some((entry) => entry.done)) return fail('error.nothingToCollect');
   if (!hasStorage(state)) return fail('error.noStorehouse');
 
@@ -527,7 +597,7 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
 }
 
 function maxSlotsOf(building: Building): number {
-  return building.type === 'shop' ? MAX_SLOTS : productionTierOf(building).maxSlots;
+  return isShopType(building.type) ? shopTierOf(building).maxSlots : productionTierOf(building).maxSlots;
 }
 
 function buySlot(state: GameState, buildingId: number): CommandOutcome {
@@ -535,13 +605,13 @@ function buySlot(state: GameState, buildingId: number): CommandOutcome {
   if (!building) return fail('error.unknownBuilding');
   if (BUILDING_SPECS[building.type].initialSlots === 0) return fail('error.cannotProduce');
   if (building.slotCount >= maxSlotsOf(building)) return fail('error.maxSlots');
-  const price = SLOT_PRICES[building.slotCount + 1] ?? 0;
+  const price = isShopType(building.type) ? slotPriceOf(building, building.slotCount + 1) : (SLOT_PRICES[building.slotCount + 1] ?? 0);
   if (state.urbs < price) return fail('error.notEnoughUrbs');
   return {
     state: {
       ...state,
       urbs: state.urbs - price,
-      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, slotCount: building.slotCount + 1, stacks: building.type === 'shop' ? [...building.stacks, emptyStack()] : building.stacks } : candidate)),
+      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, slotCount: building.slotCount + 1, stacks: isShopType(building.type) ? [...building.stacks, emptyStack()] : building.stacks } : candidate)),
     },
     events: [],
   };
@@ -565,13 +635,14 @@ function collectShopEarnings(state: GameState, building: Building): CommandOutco
 function stockShop(state: GameState, buildingId: number, good: GoodId, now: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
-  if (building.type !== 'shop' || !(good in GOODS)) return fail('error.notAShop');
+  if (!isShopType(building.type) || !(good in GOODS)) return fail('error.notAShop');
+  if (!canSell(building, good)) return fail('error.notSoldHere');
   const slotIndex = building.stacks.findIndex((stack) => stack.stock === 0);
   if (slotIndex === -1) return fail('error.queueFull');
   const available = state.storage.goods[good] ?? 0;
   if (available < SHOP.stackSize) return fail('error.missingGoods');
   const stacks = building.stacks.map((stack, index) =>
-    index === slotIndex ? { ...stack, good, stock: SHOP.stackSize, nextSaleAt: now + SHOP.saleIntervalMs } : stack,
+    index === slotIndex ? { ...stack, good, stock: SHOP.stackSize, nextSaleAt: now + saleIntervalOf(building) } : stack,
   );
   return {
     state: {
@@ -745,9 +816,9 @@ function transitCommand(state: GameState, command: Extract<Command, { type: 'Bui
     return { state: { ...state, nextId: command.id === undefined ? state.nextId + 1 : state.nextId, transitLines: [...lines.filter(l => l.id !== line.id), line] }, events: [] };
   }
   if (command.type === 'BuyTransitVehicle') {
-    if (!(command.kind in TRANSIT) || !['brtElectric', 'trainElectric', 'trainCoal'].includes(command.kind)) return fail('error.invalidQuantity');
+    if (!Object.hasOwn(TRANSIT, command.kind) || !('price' in TRANSIT[command.kind])) return fail('error.invalidQuantity');
     const spec = TRANSIT[command.kind];
-    if (citizenCount(state) < TRANSIT[command.kind === 'brtElectric' ? 'brt' : 'rail'].unlock) return fail('error.itemLocked');
+    if (citizenCount(state) < TRANSIT[spec.mode].unlock) return fail('error.itemLocked');
     if (state.urbs < spec.price) return fail('error.notEnoughUrbs');
     return { state: { ...state, urbs: state.urbs - spec.price, nextId: state.nextId + 1, transitFleet: [...fleet, { id: state.nextId, kind: command.kind, purchasePrice: spec.price }] }, events: [] };
   }
@@ -755,6 +826,6 @@ function transitCommand(state: GameState, command: Extract<Command, { type: 'Bui
   if (!vehicle) return fail('error.invalidQuantity');
   if (command.type === 'SellTransitVehicle') return { state: { ...state, urbs: state.urbs + vehicle.purchasePrice / 2, transitFleet: fleet.filter(v => v.id !== vehicle.id) }, events: [] };
   const line = lines.find(l => l.id === command.lineId);
-  if (command.lineId !== undefined && (!line || (line.mode === 'brt') !== (vehicle.kind === 'brtElectric'))) return fail('error.invalidBusLine');
+  if (command.lineId !== undefined && (!line || line.mode !== TRANSIT[vehicle.kind].mode)) return fail('error.invalidBusLine');
   return { state: { ...state, transitFleet: fleet.map(v => v.id === vehicle.id ? { ...v, lineId: command.lineId } : v) }, events: [] };
 }

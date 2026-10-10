@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SLOT_PRICES, isItemUnlocked, minTierOf, producibleItems, productionTierOf, recipeOf, unlockCitizensOf, type Building, type ItemId, type MaterialId } from '../../core';
+import { SLOT_PRICES, isItemUnlocked, minTierOf, producibleItems, productionTierOf, recipeOf, rushPrice, unlockCitizensOf, type Building, type ItemId, type MaterialId, type QueueEntry } from '../../core';
 import { t } from '../../i18n/t';
 import { isPack, itemName } from '../../i18n/itemName';
 import { formatDuration } from '../common/formatDuration';
@@ -51,9 +51,14 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
               ? t('panel.waiting')
               : formatDuration(entry.startedAt + entry.duration - now);
           return (
-            <SlotList.Slot key={index} status={entry.done ? 'ready' : undefined}>
+            <SlotList.Slot key={index} status={entry.done ? 'ready' : undefined} progress={slotProgress(entry, now)}>
               <span>{itemName(entry.item)}</span>
               <span>{status}</span>
+              {isRunning(entry) ? (
+                <ActionButton className="slot-rush" disabled={state.urbs < rushPrice(entry, now)} onClick={() => send({ type: 'RushProduction', buildingId: building.id })}>
+                  {t('panel.rush')} (<UrbsAmount value={rushPrice(entry, now)} />)
+                </ActionButton>
+              ) : null}
             </SlotList.Slot>
           );
         })}
@@ -89,6 +94,14 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
         </ActionButton>
       ) : null}
   </DrawerPanel>;
+}
+
+const isRunning = (entry: QueueEntry): boolean => !entry.done && entry.startedAt !== null;
+
+function slotProgress(entry: QueueEntry, now: number): number {
+  if (entry.done) return 1;
+  if (entry.startedAt === null) return 0;
+  return Math.min(1, Math.max(0, (now - entry.startedAt) / entry.duration));
 }
 
 function recipeLabel(item: ItemId): string {

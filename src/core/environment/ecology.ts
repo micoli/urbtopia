@@ -1,21 +1,26 @@
+import { isShopType } from '../economy/shops';
 import { NATURE_FAMILIES, greenProfileOf, natureModelOf } from './nature';
-import { BUILDING_ENTRIES } from '../buildings/buildingDefinitions';
+import { BUILDING_ENTRIES, definitionOf } from '../buildings/buildingDefinitions';
 import { footprintOf } from '../buildings/buildingSpecs';
 import { FACILITIES, isFacilityType } from '../services/facilities';
 import { HOME_TIERS } from '../economy/economy';
 import { casinoPower } from '../leisure/casino';
+import { isVenueType, venuePower } from '../venues/profiles';
 import type { Building, BuildingType, GameState } from '../engine/state';
+
+const battery = definitionOf('battery'), backup = definitionOf('backup');
 
 export const ECOLOGY = {
   optimalTemperature: 26, maxTemperature: 40, temperaturePerEmission: 0.1,
   hourMs: 3_600_000, solarCost: 180, solarUnlockCitizens: 15, insulationCost: 80, sharingRadius: 6,
-  batteryCapacity: 24, batteryRate: 12, batteryRadius: 8, backupCapacity: 24,
-  backupCost: 0.5, busCost: 2, stopRadius: 6, lineCapacity: 120,
+  // From the Neighborhood battery, Backup Power plant and Solar installation definitions.
+  batteryCapacity: battery.storage!, batteryRate: battery.rate!, batteryRadius: battery.radius!, backupCapacity: backup.capacity!,
+  backupCost: backup.costPerUnit!, solarOutput: definitionOf('solar').output!, busCost: 2, stopRadius: 6, lineCapacity: 120,
   coalCost: 0.05, coalEmissions: 2, coalPollutionRadius: 6, coalWellbeingPenalty: 10, coalWellbeingCap: 20,
 };
 
 export const ECOLOGY_UNLOCKS: Partial<Record<BuildingType, number>> = Object.fromEntries(
-  BUILDING_ENTRIES.map(({ id, nature, unlockCitizens }) => [id, nature ? NATURE_FAMILIES[nature.family].unlock : unlockCitizens ?? 0]),
+  BUILDING_ENTRIES.map(({ id, family, unlockCitizens }) => [id, family ? NATURE_FAMILIES[family].unlock : unlockCitizens ?? 0]),
 );
 
 export function citizenCount(state: GameState): number {
@@ -39,9 +44,10 @@ export function homePower(b: Building): number {
 export function economicPower(b: Building): number {
   if (b.type === 'workshop') return b.tier;
   if (b.type === 'factory') return 2 * b.tier;
-  if (b.type === 'shop') return 0.5;
+  if (isShopType(b.type)) return 0.5;
   if (isFacilityType(b.type)) return FACILITIES[b.type].power;
   if (b.type === 'casino') return casinoPower(b.tier);
+  if (isVenueType(b.type)) return venuePower(b);
   return 0;
 }
 

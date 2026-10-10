@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "order": 30,
+  "name": {
+    "en": "Bricks",
+    "fr": "Briques"
+  },
+  "category": "construction",
+  "recipe": {
+    "stone": 2,
+    "wood": 1
+  },
+  "durationMinutes": 4,
+  "value": 34,
+  "unlockCitizens": 0,
+  "minTier": 1
+}
