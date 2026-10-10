@@ -37,10 +37,10 @@ describe('preferences', () => {
   });
 
   it('reads stored preferences and falls back on bad values', () => {
-    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'B', traffic: false, confirmSale: false, showReach: false }))).toEqual({ language: 'fr', layout: 'B', traffic: false, confirmSale: false, showReach: false });
-    expect(parsePrefs(JSON.stringify({ language: 'de', layout: 'Z', traffic: 'yes' }), 'fr-FR')).toEqual({ language: 'fr', layout: 'C', traffic: true, confirmSale: true, showReach: true });
-    expect(parsePrefs('not json', 'en-GB')).toEqual({ language: 'en', layout: 'C', traffic: true, confirmSale: true, showReach: true });
-    expect(parsePrefs(null)).toEqual({ language: 'en', layout: 'C', traffic: true, confirmSale: true, showReach: true });
+    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'B', traffic: false, confirmSale: false, showReach: false, showProductionPreview: false }))).toEqual({ language: 'fr', layout: 'B', traffic: false, confirmSale: false, showReach: false, showProductionPreview: false });
+    expect(parsePrefs(JSON.stringify({ language: 'de', layout: 'Z', traffic: 'yes' }), 'fr-FR')).toEqual({ language: 'fr', layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true });
+    expect(parsePrefs('not json', 'en-GB')).toEqual({ language: 'en', layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true });
+    expect(parsePrefs(null)).toEqual({ language: 'en', layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true });
   });
 
   it('shows the reach of public buildings by default', () => {
@@ -48,6 +48,6 @@ describe('preferences', () => {
   });
 
   it('keeps Traffic on for preferences saved before it existed', () => {
-    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'A' }))).toEqual({ language: 'fr', layout: 'A', traffic: true, confirmSale: true, showReach: true });
+    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'A' }))).toEqual({ language: 'fr', layout: 'A', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true });
   });
 });

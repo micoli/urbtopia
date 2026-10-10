@@ -6,6 +6,7 @@
     "en": "Silicon",
     "fr": "Silicium"
   },
+  "model": "materials-silicon",
   "producedBy": "workshop",
   "durationMinutes": 16,
   "unlockCitizens": 200,

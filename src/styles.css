@@ -396,6 +396,22 @@ button {
   animation: badge-bob 1.2s ease-in-out infinite alternate;
 }
 
+.collect-badge-radial {
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(3px);
+}
+
+.collect-badge-preview {
+  position: absolute;
+  left: calc(50% - 16px);
+  top: calc(50% - 16px);
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+}
+
 @keyframes badge-bob {
   from {
     margin-top: 0;
@@ -434,7 +450,7 @@ button {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: rgba(24, 28, 40, 0.85);
+  background: rgba(24, 28, 40, 0.75);
   color: #ffd23f;
   font-size: 16px;
   line-height: 1;
@@ -470,6 +486,49 @@ button {
   animation: gear-spin 2.4s linear infinite;
 }
 
+.work-wheel {
+  width: 100%;
+  height: 100%;
+}
+
+.work-wheel-turn {
+  animation: wheel-turn 6s linear infinite;
+}
+
+@keyframes wheel-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.work-wheel-edge {
+  fill: none;
+  stroke: #202020;
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+.work-wheel-track {
+  fill: rgba(255, 255, 255, 0.24);
+}
+
+.work-wheel-segment--waiting .work-wheel-track {
+  fill: rgba(255, 255, 255, 0.15);
+}
+
+.work-wheel-segment--running .work-wheel-fill {
+  animation: wheel-pulse 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes wheel-pulse {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes gear-spin {
   to {
     transform: rotate(360deg);
@@ -477,7 +536,9 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .working-gear {
+  .working-gear,
+  .work-wheel-turn,
+  .work-wheel-segment--running .work-wheel-fill {
     animation: none;
   }
 }

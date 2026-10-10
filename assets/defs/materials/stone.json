@@ -6,6 +6,7 @@
     "en": "Stone",
     "fr": "Pierre"
   },
+  "model": "materials-stone",
   "producedBy": "workshop",
   "durationMinutes": 2,
   "unlockCitizens": 0,

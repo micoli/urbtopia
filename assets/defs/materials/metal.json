@@ -6,6 +6,7 @@
     "en": "Metal",
     "fr": "Métal"
   },
+  "model": "materials-metal",
   "producedBy": "workshop",
   "durationMinutes": 8,
   "unlockCitizens": 80,
