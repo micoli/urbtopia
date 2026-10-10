@@ -9,5 +9,5 @@ export default defineConfig({
   base: './',
   define: { __BUILD_ID__: JSON.stringify(BUILD_ID), __RELEASE_NAME__: JSON.stringify(RELEASE_NAME) },
   plugins: [validateDefinitions(), stampServiceWorker(BUILD_ID)],
-  test: { environment: 'node', include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'build/**/*.test.ts', 'scripts/**/*.test.ts', 'tools/**/*.test.ts'] },
+  test: { environment: 'node', include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'build/**/*.test.ts', 'scripts/**/*.test.ts', 'tools/**/*.test.ts'], exclude: ['**/node_modules/**', 'tools/issues-server/**'] },
 });
