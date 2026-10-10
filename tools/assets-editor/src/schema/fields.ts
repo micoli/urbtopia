@@ -38,6 +38,7 @@ export type FieldSpec = Base &
     | { type: 'select'; options: string[] }
     | { type: 'pair'; integer: boolean; min?: number; parts: [string, string] }
     | { type: 'choices'; options: string[] }
+    | { type: 'itemList'; targets: readonly CollectionName[] }
     | { type: 'numberList'; integer: boolean }
     | { type: 'localized' }
     | { type: 'object'; fields: FieldSpec[] }
@@ -64,6 +65,10 @@ const LABELS: Record<string, string> = {
   growthMinutes: 'Growth (min)',
   packingMinutes: 'Packing (min)',
   seedShare: 'Seed share',
+  goodCategory: 'Good category',
+  slotPriceFactor: 'Slot price factor',
+  sells: 'Goods sold',
+  saleIntervalFactor: 'Sale interval factor',
   model: 'Model',
 }
 
@@ -74,6 +79,9 @@ const MODEL_KEYS = new Set(['model', 'detailModel', 'produce', 'harvested', 'gro
 
 // Records keyed by ids of other collections.
 const RECORD_TARGETS: Record<string, readonly CollectionName[]> = { recipe: ['materials', 'crops'], goods: ['goods'] }
+
+// Lists of ids of other collections.
+const LIST_TARGETS: Record<string, readonly CollectionName[]> = { sells: ['goods'] }
 
 // Records keyed by a closed vocabulary.
 const RECORD_KEYS: Record<string, readonly string[]> = { posts: STAFF_ROLES_ALL, dailyWage: STAFF_ROLES_ALL }
@@ -94,6 +102,7 @@ function fieldOf(key: string, schema: JsonSchema, required: boolean, options: Fi
   if (schema.type === 'array' && schema.items && schema.items.modelId) return { ...base, type: 'modelArray' }
   if ((MODEL_KEYS.has(key) || schema.modelId) && schema.type === 'string') return { ...base, type: 'model' }
   if (MODEL_KEYS.has(key) && schema.type === 'array' && schema.prefixItems) return { ...base, type: 'modelList', count: schema.prefixItems.length }
+  if (schema.type === 'array' && LIST_TARGETS[key]) return { ...base, type: 'itemList', targets: LIST_TARGETS[key] }
   if (schema.enum) return { ...base, type: 'select', options: schema.enum }
   if (schema.type === 'boolean') return { ...base, type: 'switch' }
   if (schema.type === 'integer' || schema.type === 'number') return { ...base, type: 'number', integer: schema.type === 'integer', min: schema.minimum ?? schema.exclusiveMinimum }

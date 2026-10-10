@@ -13,8 +13,8 @@
     "fr": "Quincaillerie"
   },
   "description": {
-    "en": "Sells tools and electronics to Citizens for Urbs. Higher Tiers sell more of them, faster.",
-    "fr": "Vend des outils et de l'électronique aux habitants contre des Urbs. Les niveaux supérieurs en vendent davantage, plus vite."
+    "en": "Sells tools and electronics to Citizens for Urbs. Up to {maxTierMaxSlots} sales slots and {maxTierGoodsSold} Goods at the highest Tier.",
+    "fr": "Vend des outils et de l’électronique aux habitants contre des Urbs. Jusqu’à {maxTierMaxSlots} emplacements de vente et {maxTierGoodsSold} produits au niveau maximal."
   },
   "tiers": [
     {

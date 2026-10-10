@@ -13,8 +13,8 @@
     "fr": "Boutique"
   },
   "description": {
-    "en": "Sells the Goods of every category to Citizens for Urbs, at a premium. Stock its sales slots with Goods from storage, then collect the earnings.",
-    "fr": "Vend les produits de toutes les catégories aux habitants contre des Urbs, à prix fort. Approvisionnez ses emplacements depuis le stockage, puis collectez les recettes."
+    "en": "Sells the Goods of every category to Citizens for Urbs, at a premium. Up to {maxTierMaxSlots} sales slots and {maxTierGoodsSold} Goods at the highest Tier.",
+    "fr": "Vend les produits de toutes les catégories aux habitants contre des Urbs, à prix fort. Jusqu’à {maxTierMaxSlots} emplacements de vente et {maxTierGoodsSold} produits au niveau maximal."
   },
   "tiers": [
     {

@@ -3,6 +3,7 @@ import type { LocalizedText } from '../../../../../src/core/buildings/buildingDe
 import type { FieldSpec } from '../../schema/fields'
 import type { Doc } from '../../store/documentStore'
 import { ChoicesControl } from './ChoicesControl'
+import { ItemListControl } from './ItemListControl'
 import { LocalizedControl } from './LocalizedControl'
 import { ModelControl } from './ModelControl'
 import { NumberControl } from './NumberControl'
@@ -76,6 +77,8 @@ export function FieldControl({ field, value, path, onChange, modelSlot, nested, 
       return <PairControl value={value as [number, number] | undefined} integer={field.integer} min={field.min} parts={field.parts} label={field.label} onChange={onChange} />
     case 'choices':
       return <ChoicesControl value={value as string[] | undefined} options={field.options} onChange={onChange} />
+    case 'itemList':
+      return <ItemListControl value={value as string[] | undefined} targets={field.targets} onChange={onChange} />
     case 'numberList':
       return <NumberListControl value={value as number[] | undefined} label={field.label} onChange={onChange} />
     case 'localized':

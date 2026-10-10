@@ -27,6 +27,28 @@ describe('collections on disk', () => {
   });
 });
 
+describe('Shop definitions', () => {
+  const collections = readCollections();
+  const shop = (patch: Record<string, unknown>, sells: string[]) => ({ ...collections.buildings.shopConstruction!, ...patch, tiers: [{ ...(collections.buildings.shopConstruction!.tiers as Record<string, unknown>[])[0], sells }] });
+  const problems = (definition: unknown) => collectionProblems('buildings', { shopCopy: definition as never }, { collections }).filter(({ path }) => path.includes('sells'));
+
+  it('accepts the Goods of the Shop category', () => {
+    expect(problems(shop({}, ['planks', 'bricks']))).toEqual([]);
+  });
+
+  it('reports a Good of another category in a specialised Shop', () => {
+    expect(problems(shop({}, ['planks', 'tools']))).toEqual([{ id: 'shopCopy', path: 'tiers.0.sells.1', message: 'tools is a equipment Good, not construction' }]);
+  });
+
+  it('lets the General shop list every category', () => {
+    expect(problems(shop({ goodCategory: 'all' }, ['planks', 'tools']))).toEqual([]);
+  });
+
+  it('reports a Good that does not exist', () => {
+    expect(problems(shop({}, ['planks', 'unobtainium']))).toEqual([{ id: 'shopCopy', path: 'tiers.0.sells.1', message: 'unknown goods id unobtainium' }]);
+  });
+});
+
 describe('collection files', () => {
   it('writes and reads a collection in its order, with camelCase item ids', () => {
     const dir = mkdtempSync(join(tmpdir(), 'materials-'));

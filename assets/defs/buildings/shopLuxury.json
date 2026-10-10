@@ -13,8 +13,8 @@
     "fr": "Bijouterie"
   },
   "description": {
-    "en": "Sells luxury Goods to Citizens for Urbs. Higher Tiers sell more of them, faster.",
-    "fr": "Vend des produits de luxe aux habitants contre des Urbs. Les niveaux supérieurs en vendent davantage, plus vite."
+    "en": "Sells luxury Goods to Citizens for Urbs. Up to {maxTierMaxSlots} sales slots and {maxTierGoodsSold} Goods at the highest Tier.",
+    "fr": "Vend des produits de luxe aux habitants contre des Urbs. Jusqu’à {maxTierMaxSlots} emplacements de vente et {maxTierGoodsSold} produits au niveau maximal."
   },
   "tiers": [
     {

@@ -15,6 +15,18 @@ describe('form fields from the JSON Schemas', () => {
     expect(fields.requiresRoad?.type).toBe('switch')
   })
 
+  it('describes a Shop with its Good category and the Goods each Tier sells', () => {
+    const shop = collectionFieldsOf('buildings', { kind: 'shop' })
+    const keys = Object.fromEntries(shop.map(field => [field.key, field]))
+    expect(keys.goodCategory).toMatchObject({ type: 'select', options: ['construction', 'food', 'equipment', 'luxury', 'all'], required: true })
+    expect(keys.slotPriceFactor).toMatchObject({ type: 'number', required: false })
+    const tiers = keys.tiers
+    const tierFields = tiers?.type === 'list' ? Object.fromEntries(tiers.fields.map(field => [field.key, field])) : {}
+    expect(tierFields.sells).toMatchObject({ type: 'itemList', targets: ['goods'], label: 'Goods sold' })
+    expect(tierFields.jobs).toMatchObject({ type: 'number', integer: true })
+    expect(tierFields.saleIntervalFactor).toMatchObject({ type: 'number' })
+  })
+
   it('gives a nature building only its own fields', () => {
     expect(buildingFieldsOf('nature').map(({ key }) => key)).toEqual(['model', 'name', 'description', 'family'])
   })

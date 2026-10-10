@@ -13,8 +13,8 @@
     "fr": "Épicerie"
   },
   "description": {
-    "en": "Sells food Goods, canned fish and packed Crops, to Citizens for Urbs.",
-    "fr": "Vend des produits alimentaires, conserves de poisson et récoltes emballées, aux habitants contre des Urbs."
+    "en": "Sells food Goods, canned fish and packed Crops, to Citizens for Urbs. Up to {maxTierMaxSlots} sales slots.",
+    "fr": "Vend des produits alimentaires, conserves de poisson et récoltes emballées, aux habitants contre des Urbs. Jusqu’à {maxTierMaxSlots} emplacements de vente."
   },
   "tiers": [
     {

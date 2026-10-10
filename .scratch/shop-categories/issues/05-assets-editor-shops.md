@@ -1,6 +1,6 @@
 # Assets editor: Shops and Good category
 
-Status: ready-for-agent
+Status: resolved
 Spec: [shop-categories](../spec.md)
 Blocked by: 02
 

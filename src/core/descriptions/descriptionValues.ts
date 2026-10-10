@@ -38,6 +38,10 @@ export const COMPUTED_VALUES: Partial<Record<BuildingKind, Record<string, Comput
     width: { label: 'Width of the footprint (tiles)', value: definition => footprintOf(definition)?.[0] },
     depth: { label: 'Depth of the footprint (tiles)', value: definition => footprintOf(definition)?.[1] },
   },
+  shop: {
+    tier1GoodsSold: { label: 'Goods sold at Tier 1', value: definition => (tiersOf(definition)[0]?.sells as string[] | undefined)?.length },
+    maxTierGoodsSold: { label: 'Goods sold at the highest Tier', value: definition => (tiersOf(definition).at(-1)?.sells as string[] | undefined)?.length },
+  },
   casino: {
     side: { label: 'Side of the square reach at Tier 1 (tiles)', value: definition => 2 * (tiersOf(definition)[0]!.radius as number) },
   },

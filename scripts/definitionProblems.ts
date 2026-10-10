@@ -53,6 +53,16 @@ function referenceProblem(owner: string, { target, id, path }: Reference, { coll
   return [{ id: owner, path, message: `unknown ${target.join(' or ')} id ${id}` }];
 }
 
+// A specialised Shop lists, at every Tier, only Goods of its own Good category.
+function shopCategoryProblems(id: string, definition: FlatBuilding, goods: Record<string, Definition>): Problem[] {
+  if (definition.kind !== 'shop' || definition.goodCategory === 'all') return [];
+  return (definition.tiers ?? []).flatMap((tier, index) =>
+    ((tier as { sells?: string[] }).sells ?? []).flatMap((good, position): Problem[] =>
+      !goods[good] || goods[good].category === definition.goodCategory ? [] : [{ id, path: `tiers.${index}.sells.${position}`, message: `${good} is a ${String(goods[good].category)} Good, not ${definition.goodCategory}` }],
+    ),
+  );
+}
+
 // Ids, shape and references of one collection; references are only checked against what the context holds.
 export function collectionProblems(name: CollectionName, definitions: Record<string, Definition>, context?: ReferenceContext): Problem[] {
   const spec = specOf(name);
@@ -71,7 +81,9 @@ export function collectionProblems(name: CollectionName, definitions: Record<str
     return shape.length || name !== 'buildings' ? shape : descriptionProblemsOf(definition as FlatBuilding).map(problem => ({ id, ...problem }));
   });
   const references = context ? Object.entries(definitions).flatMap(([id, definition]) => spec.references(definition as never).flatMap(reference => referenceProblem(id, reference, context))) : [];
-  return [...idProblems, ...shapeProblems, ...references];
+  const goods = context?.collections.goods;
+  const categories = goods && name === 'buildings' ? Object.entries(definitions).flatMap(([id, definition]) => shopCategoryProblems(id, definition as FlatBuilding, goods)) : [];
+  return [...idProblems, ...shapeProblems, ...references, ...categories];
 }
 
 export const allCollectionProblems = (collections: Collections, catalog: ModelCatalog): CollectionProblem[] =>
