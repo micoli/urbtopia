@@ -396,6 +396,7 @@ export const FR: Record<MessageKey, string> = {
   'dock.market': 'Marché',
   'dock.settings': 'Réglages',
   'settings.title': 'Réglages',
+  'settings.seed': 'Seed',
   'settings.newGame': 'Nouvelle partie',
   'settings.newGameConfirm': 'Commencer une nouvelle ville ? La ville actuelle sera effacée.',
   'error.saveFailed': "Sauvegarde impossible : le stockage du navigateur est plein.",

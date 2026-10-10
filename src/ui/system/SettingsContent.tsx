@@ -9,7 +9,7 @@ import { t } from '../../i18n/t';
 import { dialogStore } from '../../store/dialogStore';
 import { gameStore } from '../../store/gameStore';
 import { toastStore } from '../../store/toastStore';
-import { useUi } from '../common/hooks';
+import { useGame, useUi } from '../common/hooks';
 import { reloadApp } from '../../pwa/reloadApp';
 import { useInstallPrompt } from '../../pwa/useInstallPrompt';
 import { CloudSaveSection } from './CloudSaveSection';
@@ -19,6 +19,7 @@ import { PanelHeader } from '../common/PanelHeader';
 
 export function SettingsContent() {
   const toggle = useUi((store) => store.toggleSettings);
+  const seed = useGame((store) => store.state.seed);
   const [confirming, setConfirming] = useState(false);
   const skipTime = (hours: number) => {
     gameStore.getState().send({ type: 'SkipTime', hours });
@@ -48,6 +49,9 @@ export function SettingsContent() {
   return (
     <>
       <PanelHeader title={t('settings.title')} onClose={toggle} />
+      <p className="settings-seed">
+        {t('settings.seed')} <code>{seed}</code>
+      </p>
       <ButtonRow align="stretch" spaced className="side-panel-actions">
         {canInstall ? (
           <ActionButton variant="primary" onClick={install}>

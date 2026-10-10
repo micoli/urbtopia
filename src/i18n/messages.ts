@@ -394,6 +394,7 @@ export const MESSAGES = {
   'dock.market': 'Market',
   'dock.settings': 'Settings',
   'settings.title': 'Settings',
+  'settings.seed': 'Seed',
   'settings.newGame': 'New game',
   'settings.newGameConfirm': 'Start a new city? The current one will be erased.',
   'error.saveFailed': 'Could not save: the browser storage is full.',
