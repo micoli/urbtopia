@@ -4,6 +4,7 @@ import { useDocument } from '../store/documentStore'
 import { ImportDialog } from './ImportDialog'
 import { ProblemsPopover } from './ProblemsPopover'
 import { button } from './styles'
+import { ThemeSwitch } from './ThemeSwitch'
 
 interface Props {
   onSave: () => void
@@ -25,6 +26,7 @@ export function TopBar({ onSave }: Props) {
       </div>
       <div className="ml-auto flex flex-wrap items-center gap-2">
         <span className="text-xs text-zinc-500" role="status">{status}</span>
+        <ThemeSwitch />
         <ProblemsPopover />
         <button className={button('ghost')} onClick={undo} disabled={!canUndo} title="Undo (⌘Z)">↶ Undo</button>
         <button className={button('ghost')} onClick={redo} disabled={!canRedo} title="Redo (⇧⌘Z)">↷ Redo</button>
