@@ -6,6 +6,7 @@
     "en": "Steel",
     "fr": "Acier"
   },
+  "category": "construction",
   "recipe": {
     "coal": 1,
     "metal": 1

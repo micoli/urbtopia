@@ -36,6 +36,15 @@
       "type": "string",
       "pattern": "\\S"
     },
+    "category": {
+      "type": "string",
+      "enum": [
+        "construction",
+        "food",
+        "equipment",
+        "luxury"
+      ]
+    },
     "recipe": {
       "type": "object",
       "propertyNames": {
@@ -71,6 +80,7 @@
     "kind",
     "order",
     "name",
+    "category",
     "recipe",
     "durationMinutes",
     "value",

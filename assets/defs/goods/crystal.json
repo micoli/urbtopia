@@ -6,6 +6,7 @@
     "en": "Crystal",
     "fr": "Cristal"
   },
+  "category": "luxury",
   "recipe": {
     "sand": 1,
     "gold": 1

@@ -9,7 +9,7 @@ import { collectionProblems } from './definitionProblems';
 import { SINGLETON_NAMES } from './singletons';
 
 const wood = { kind: 'material', name: { en: 'Wood', fr: 'Bois' }, producedBy: 'workshop', durationMinutes: 1, unlockCitizens: 0, minTier: 1 };
-const planks = { kind: 'good', order: 10, name: { en: 'Planks', fr: 'Planches' }, recipe: { wood: 2 }, durationMinutes: 2, value: 14, unlockCitizens: 0, minTier: 1 };
+const planks = { kind: 'good', order: 10, category: 'construction', name: { en: 'Planks', fr: 'Planches' }, recipe: { wood: 2 }, durationMinutes: 2, value: 14, unlockCitizens: 0, minTier: 1 };
 
 describe('collections on disk', () => {
   it.each(COLLECTION_NAMES)('keeps the generated id unions and JSON Schema of %s in sync (npm run defs:generate)', name => {

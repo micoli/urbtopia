@@ -6,6 +6,7 @@
     "en": "Planks",
     "fr": "Planches"
   },
+  "category": "construction",
   "recipe": {
     "wood": 2
   },

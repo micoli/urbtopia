@@ -98,7 +98,7 @@ export function blankDefinition(collection: CollectionName, model: string): Defi
   if (collection === 'transitVehicles') return { kind: 'transitVehicle', mode: 'bus', name, model }
   if (collection === 'trafficVehicles') return { kind: 'trafficVehicle', name, model, weight: 1 }
   if (collection === 'serviceVehicles') return { kind: 'serviceVehicle', name, facility: 'hospital', model }
-  if (collection === 'goods') return { kind: 'good', name, recipe: {}, durationMinutes: 1, value: 0, unlockCitizens: 0, minTier: 1 }
+  if (collection === 'goods') return { kind: 'good', category: 'construction', name, recipe: {}, durationMinutes: 1, value: 0, unlockCitizens: 0, minTier: 1 }
   return { kind: 'crop', name, growthMinutes: 1, water: 1, yield: 1, seedShare: 0.5, seedPrice: 1, unlockCitizens: 0, packingMinutes: 1, packedValue: 0, models: { growth: [model, model, model, model] } }
 }
 

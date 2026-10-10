@@ -59,6 +59,7 @@ const DOCS: Record<string, FieldDoc> = {
 
   // Public facilities, sport, casino
   category: d('The Service category the facility provides.', 'Service coverage and the Home Tiers that require it.'),
+  'goods.category': d('The Good category the Good belongs to. A Shop sells only the Goods of its own category.', 'Shops; crop packs are always Food.'),
   'fixtures.category': d('The section of the Venue build menu where the Fixture is offered.', 'The Venue build menu.'),
   detailModel: d('The awning, overhang or parasol set over the entrance.', 'The scene.'),
   unique: d('Only one can be built in a city.', 'Placement.'),

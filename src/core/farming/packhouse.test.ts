@@ -43,9 +43,9 @@ describe('Packhouse building', () => {
 describe('Packed Goods', () => {
   it('has a crate, a box and a pallet per species packing 2, 5 and 10 Crop Materials', () => {
     for (const id of CROP_IDS) {
-      expect(GOODS[`${id}Crate`]).toEqual({ recipe: { [id]: 2 }, durationMs: CROPS[id].packingMs, value: CROPS[id].packedValue, unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 });
-      expect(GOODS[`${id}Box`]).toEqual({ recipe: { [id]: 5 }, durationMs: CROPS[id].packingMs * 2.5, value: Math.round(CROPS[id].packedValue * 2.5 * 1.1), unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 });
-      expect(GOODS[`${id}Pallet`]).toEqual({ recipe: { [id]: 10 }, durationMs: CROPS[id].packingMs * 5, value: Math.round(CROPS[id].packedValue * 5 * 1.25), unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 });
+      expect(GOODS[`${id}Crate`]).toEqual({ category: 'food', recipe: { [id]: 2 }, durationMs: CROPS[id].packingMs, value: CROPS[id].packedValue, unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 });
+      expect(GOODS[`${id}Box`]).toEqual({ category: 'food', recipe: { [id]: 5 }, durationMs: CROPS[id].packingMs * 2.5, value: Math.round(CROPS[id].packedValue * 2.5 * 1.1), unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 });
+      expect(GOODS[`${id}Pallet`]).toEqual({ category: 'food', recipe: { [id]: 10 }, durationMs: CROPS[id].packingMs * 5, value: Math.round(CROPS[id].packedValue * 5 * 1.25), unlockCitizens: CROPS[id].unlockCitizens, minTier: 1 });
     }
     expect(GOODS.wheatBox).toMatchObject({ durationMs: 2.5 * MINUTE, value: 55 });
     expect(GOODS.wheatPallet).toMatchObject({ durationMs: 5 * MINUTE, value: 125 });

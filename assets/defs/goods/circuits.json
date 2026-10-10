@@ -6,6 +6,7 @@
     "en": "Circuits",
     "fr": "Circuits"
   },
+  "category": "equipment",
   "recipe": {
     "metal": 1,
     "silicon": 1

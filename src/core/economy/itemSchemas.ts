@@ -16,6 +16,8 @@ const common = {
   model: filled.optional(),
 };
 
+export const GOOD_CATEGORIES = ['construction', 'food', 'equipment', 'luxury'] as const;
+
 export const MATERIAL_PRODUCERS = ['workshop', 'fishingBoat'] as const;
 
 export const materialSchema = z
@@ -33,6 +35,7 @@ export const goodSchema = z
   .strictObject({
     kind: z.literal('good'),
     ...common,
+    category: z.enum(GOOD_CATEGORIES),
     recipe: z.record(z.string(), z.int().min(1)).refine(recipe => Object.keys(recipe).length > 0, 'needs at least one Material'),
     durationMinutes: minutes,
     value: count,
@@ -49,5 +52,6 @@ export const packFormatsSchema = z
   .meta({ title: 'Pack formats', description: 'assets/defs/packFormats.json: how the Packhouse packs a Crop Material into Goods.' });
 
 export type MaterialDefinition = z.infer<typeof materialSchema>;
+export type GoodCategory = (typeof GOOD_CATEGORIES)[number];
 export type GoodDefinition = z.infer<typeof goodSchema>;
 export type PackFormats = z.infer<typeof packFormatsSchema>;

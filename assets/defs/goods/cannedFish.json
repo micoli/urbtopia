@@ -6,6 +6,7 @@
     "en": "Canned fish",
     "fr": "Conserve de poisson"
   },
+  "category": "food",
   "recipe": {
     "fish": 2
   },

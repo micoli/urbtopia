@@ -3,7 +3,7 @@ import { entriesOf } from '../defs/entries';
 import { CROPS, CROP_IDS, type CropId } from '../farming/crops';
 import type { BuildingType } from '../engine/state';
 import type { BaseGoodId } from './goodTypes.generated';
-import type { GoodDefinition, MaterialDefinition } from './itemSchemas';
+import type { GoodCategory, GoodDefinition, MaterialDefinition } from './itemSchemas';
 import type { DefinedMaterialId, WorkshopMaterialId } from './materialTypes.generated';
 
 export type { BaseGoodId };
@@ -42,6 +42,7 @@ export const MATERIALS = { ...materialsWhere(({ producedBy }) => producedBy === 
 export const FISH_MATERIAL: MaterialSpec = MATERIALS.fish;
 
 export interface GoodSpec {
+  category: GoodCategory;
   recipe: Partial<Record<MaterialId, number>>;
   durationMs: number;
   value: number;
@@ -50,7 +51,7 @@ export interface GoodSpec {
 }
 
 const BASE_GOODS = Object.fromEntries(
-  GOOD_ENTRIES.map(({ id, recipe, durationMinutes, value, unlockCitizens, minTier }): [BaseGoodId, GoodSpec] => [id, { recipe: recipe as GoodSpec['recipe'], durationMs: durationMinutes * MINUTE_MS, value, unlockCitizens, minTier }]),
+  GOOD_ENTRIES.map(({ id, category, recipe, durationMinutes, value, unlockCitizens, minTier }): [BaseGoodId, GoodSpec] => [id, { category, recipe: recipe as GoodSpec['recipe'], durationMs: durationMinutes * MINUTE_MS, value, unlockCitizens, minTier }]),
 ) as Record<BaseGoodId, GoodSpec>;
 
 export const PACK_FORMATS = packFormats.formats as readonly { suffix: PackSuffix; size: number; valueBonus: number }[];
@@ -60,6 +61,7 @@ const CROP_GOODS = Object.fromEntries(
     PACK_FORMATS.map(({ suffix, size, valueBonus }): [CropPackId, GoodSpec] => [
       `${id}${suffix}`,
       {
+        category: 'food',
         recipe: { [id]: size },
         durationMs: (CROPS[id].packingMs * size) / 2,
         value: Math.round((CROPS[id].packedValue * size * valueBonus) / 2),
