@@ -19,3 +19,4 @@ Shops used to be one untiered building selling any Good. Each Good now has a cat
 
 - Hard to reverse: the Good category and the Shop file shape reach saves and every definition file.
 - Exception to ADR 0023: the Goods a Shop sells are an explicit list per Tier in the Shop file, not a `minTier` on the Good, because `minTier` on a Good already means the Factory Tier that produces it. The editor's Tiers view reads these lists.
+- The General shop keeps the id `shop`, so saved Shops load as General shops at their Tier 1 with no save migration; a stack of a Good the Tier no longer lists keeps selling.
