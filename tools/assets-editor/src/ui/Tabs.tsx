@@ -7,6 +7,8 @@ export interface Tab {
   label: string
   badge?: number
   content: ReactNode
+  // The tab sizes its own scrolling (a table) instead of scrolling as a whole.
+  fill?: boolean
 }
 
 interface Props {
@@ -19,8 +21,8 @@ export function Tabs({ tabs }: Props) {
   const setTab = useDocument(state => state.setTab)
   const value = tabs.some(tab => tab.id === stored) ? stored! : tabs[0]?.id
   return (
-    <RadixTabs.Root value={value} onValueChange={setTab} className="flex flex-col">
-      <RadixTabs.List className="flex gap-1 border-b border-zinc-200 px-4">
+    <RadixTabs.Root value={value} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
+      <RadixTabs.List className="flex shrink-0 gap-1 border-b border-zinc-200 px-4">
         {tabs.map(tab => (
           <RadixTabs.Trigger
             key={tab.id}
@@ -33,7 +35,7 @@ export function Tabs({ tabs }: Props) {
         ))}
       </RadixTabs.List>
       {tabs.map(tab => (
-        <RadixTabs.Content key={tab.id} value={tab.id} className="p-4 outline-none">
+        <RadixTabs.Content key={tab.id} value={tab.id} className={`min-h-0 flex-1 p-4 outline-none ${tab.fill ? 'flex flex-col' : 'overflow-auto'}`}>
           {tab.content}
         </RadixTabs.Content>
       ))}

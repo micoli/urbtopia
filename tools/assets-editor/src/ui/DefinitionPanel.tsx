@@ -52,7 +52,7 @@ export function DefinitionPanel({ collection, id }: Props) {
   const tabs: Tab[] = [
     { id: 'general', label: 'General', badge: problems.length - textProblems - countWhere('tiers') - countWhere('variants'), content: form(general) },
     ...(tiersField?.type === 'list'
-      ? [{ id: 'tiers', label: `Tiers · ${(definition.tiers as unknown[]).length}`, badge: countWhere('tiers'), content: <TiersTab tiers={definition.tiers as Record<string, unknown>[]} fields={tiersField.fields} problems={problems} modelSlot={modelSlot} unlocks={unlocksByTier(collections, collection, id, (definition.tiers as unknown[]).length)} onChange={tiers => setField('tiers', tiers)} /> }]
+      ? [{ id: 'tiers', fill: true, label: `Tiers · ${(definition.tiers as unknown[]).length}`, badge: countWhere('tiers'), content: <TiersTab tiers={definition.tiers as Record<string, unknown>[]} fields={tiersField.fields} problems={problems} modelSlot={modelSlot} unlocks={unlocksByTier(collections, collection, id, (definition.tiers as unknown[]).length)} onChange={tiers => setField('tiers', tiers)} /> }]
       : []),
     ...(variantTierFields?.type === 'list'
       ? [{ id: 'variants', label: 'Variants', badge: countWhere('variants'), content: <VariantsTab variants={(definition.variants ?? {}) as Record<string, { tiers: Record<string, unknown>[] }>} baseTiers={definition.tiers as Record<string, unknown>[]} fields={variantTierFields.fields} problems={problems} modelSlot={modelSlot} onChange={variants => setField('variants', variants)} /> }]
@@ -88,8 +88,8 @@ export function DefinitionPanel({ collection, id }: Props) {
   }
 
   return (
-    <article className={`${panel} flex flex-col`}>
-      <header className="flex flex-wrap items-start gap-3 border-b border-zinc-200 p-4">
+    <article className={`${panel} flex h-full min-h-0 flex-col`}>
+      <header className="flex shrink-0 flex-wrap items-start gap-3 border-b border-zinc-200 p-4">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="truncate text-lg font-semibold">{name || id}</h2>

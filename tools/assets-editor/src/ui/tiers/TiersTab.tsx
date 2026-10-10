@@ -28,9 +28,10 @@ export function TiersTab({ tiers, fields, problems, modelSlot, unlocks, onChange
   const relative = problems.filter(({ path }) => path.startsWith('tiers.')).map(problem => ({ ...problem, path: problem.path.slice('tiers.'.length) }))
 
   return (
-    <div className="flex flex-col gap-2">
-      <p className="text-xs text-zinc-500">A Tier inherits every value it leaves out from the previous Tier, except its upgrade cost. Greyed values are inherited.</p>
+    <div className="flex min-h-0 flex-1 flex-col gap-2">
+      <p className="shrink-0 text-xs text-zinc-500">A Tier inherits every value it leaves out from the previous Tier, except its upgrade cost. Greyed values are inherited.</p>
       <TiersMatrix
+        fill
         fields={fields}
         own={tiers}
         effective={resolveTiers<Tier>(tiers)}
