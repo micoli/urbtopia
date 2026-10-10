@@ -396,6 +396,22 @@ button {
   animation: badge-bob 1.2s ease-in-out infinite alternate;
 }
 
+.collect-badge-radial {
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(3px);
+}
+
+.collect-badge-preview {
+  position: absolute;
+  left: calc(50% - 16px);
+  top: calc(50% - 16px);
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+}
+
 @keyframes badge-bob {
   from {
     margin-top: 0;

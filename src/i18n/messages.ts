@@ -531,6 +531,7 @@ export const MESSAGES = {
   'prefs.traffic': 'Traffic',
   'facility.showReach': "Show reach",
   'prefs.showReach': "Show the reach of public buildings",
+  'prefs.showProductionPreview': 'Display production preview',
   'lang.en': 'English',
   'lang.fr': 'Français',
   'radial.open': 'Open the menu',

@@ -1,6 +1,6 @@
 import { footprintOf } from '../../core';
 import { useGame } from '../common/hooks';
-import { CollectBadge, collectBadgeLabel } from './CollectBadge';
+import { CollectBadge, collectBadgeLabel, readyItemModels } from './CollectBadge';
 import { ReadyFieldBadges } from './ReadyFieldBadges';
 
 export function CollectBadges() {
@@ -17,6 +17,7 @@ export function CollectBadges() {
             worldX={building.x + width / 2}
             worldZ={building.y + depth / 2}
             label={label}
+            models={readyItemModels(building)}
             command={{ type: 'Collect', buildingId: building.id }}
           />
         );

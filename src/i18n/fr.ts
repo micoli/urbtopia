@@ -533,6 +533,7 @@ export const FR: Record<MessageKey, string> = {
   'prefs.traffic': 'Trafic',
   'facility.showReach': "Afficher l'emprise",
   'prefs.showReach': "Afficher l'emprise des bâtiments publics",
+  'prefs.showProductionPreview': "Afficher l'aperçu de la production",
   'lang.en': 'English',
   'lang.fr': 'Français',
   'radial.open': 'Ouvrir le menu',

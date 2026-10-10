@@ -1059,6 +1059,61 @@
       "height": 1.4
     }
   },
+  "goods-bricks": {
+    "file": "goods/bricks",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-cannedfish": {
+    "file": "goods/cannedFish",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-cement": {
+    "file": "goods/cement",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-circuits": {
+    "file": "goods/circuits",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-crystal": {
+    "file": "goods/crystal",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-glass": {
+    "file": "goods/glass",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-jewelry": {
+    "file": "goods/jewelry",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-planks": {
+    "file": "goods/planks",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-steel": {
+    "file": "goods/steel",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-tiles": {
+    "file": "goods/tiles",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-tools": {
+    "file": "goods/tools",
+    "source": "managed",
+    "license": "Own work"
+  },
   "holiday-bench": {
     "file": "holiday/bench",
     "source": "kenney",
@@ -1325,6 +1380,51 @@
       1,
       1
     ]
+  },
+  "materials-clay": {
+    "file": "materials/clay",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-coal": {
+    "file": "materials/coal",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-fish": {
+    "file": "materials/fish",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-gold": {
+    "file": "materials/gold",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-metal": {
+    "file": "materials/metal",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-sand": {
+    "file": "materials/sand",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-silicon": {
+    "file": "materials/silicon",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-stone": {
+    "file": "materials/stone",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-wood": {
+    "file": "materials/wood",
+    "source": "managed",
+    "license": "Own work"
   },
   "mini-arcade-air-hockey": {
     "file": "mini-arcade/air-hockey",

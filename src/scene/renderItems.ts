@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_ROAD_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
+import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -109,6 +109,7 @@ export const MODEL_KEYS: readonly string[] = [
     BUS_MODEL,
     ...Object.values(BOAT_MODELS),
     ...CROP_IDS.flatMap((species) => cropModelsOf(species)),
+    ...ITEM_MODEL_FILES,
   ])
 ];
 

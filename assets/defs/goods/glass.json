@@ -6,6 +6,7 @@
     "en": "Glass",
     "fr": "Verre"
   },
+  "model": "goods-glass",
   "category": "construction",
   "recipe": {
     "clay": 2,

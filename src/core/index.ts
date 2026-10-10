@@ -38,6 +38,7 @@ export { cropReturns, type CropReturns } from './farming/returns';
 export { seedSellPrice, seedStockCapacity, seedStockUsed } from './farming/seeds';
 export { CROPS, CROP_IDS, isCrop } from './farming/crops';
 export type { CropId, CropSpec } from './farming/crops';
+export { ITEM_MODEL_FILES, itemModelOf } from './economy/itemModel';
 export { GOODS, MATERIALS, PACK_FORMATS, durationOf, isGood, isMaterial, minTierOf, producibleItems, recipeOf, unlockCitizensOf } from './economy/items';
 export type { BaseGoodId, CropBoxId, CropCrateId, CropPackId, CropPalletId, GoodId, GoodSpec, ItemId, MaterialId } from './economy/items';
 export { buyableParcels, isInsideMap, parcelPrice } from './map/parcels';
