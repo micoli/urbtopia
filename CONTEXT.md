@@ -316,6 +316,10 @@ _Avoid_: Trade hub, exchange, auction
 A position in a building's production queue (or a Shop's sales stack). A building has 2 to 5 Slots; extra Slots are bought with Urbs.
 _Avoid_: Lane, tray
 
+**Rush**:
+The purchase, with Urbs, that immediately completes the production running in a Slot of a Workshop, Factory or Packhouse. Its price rises with the value of the item and falls as the remaining time shrinks, never reaching zero. The result is the same as a natural completion, and the next waiting Slot starts at once. Labelled "Finaliser" in French.
+_Avoid_: Skip, Boost, Speed-up, Instant build
+
 **Tax**:
 Urbs produced over time by the citizens of a Home, collected by hand.
 _Avoid_: Rent, income
