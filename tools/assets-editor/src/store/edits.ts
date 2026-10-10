@@ -58,6 +58,7 @@ const TIER_ONE: Partial<Record<BuildingKind, Record<string, unknown>>> = {
   storage: { materials: 0, goods: 0, crops: 0 },
   utility: { capacity: 1 },
   facility: { capacity: 100 },
+  marina: { boats: 3 },
   casino: { radius: 8, wellbeingBonus: 0, maxStake: 100, power: 1, blockmatchLevel: 1 },
   venue: { gridSize: 6, takingsCap: 400, power: 1, eventBudget: 0, eventMultiplier: 1, posts: { manager: 0 } },
 }
@@ -65,16 +66,17 @@ const TIER_ONE: Partial<Record<BuildingKind, Record<string, unknown>>> = {
 // The fields a kind adds to a placed building, besides its Tiers.
 const extraOf = (kind: BuildingKind, model: string): Record<string, unknown> | undefined =>
   ({
-    facility: { category: 'education', radius: 10, power: 1, water: 0 },
+    facility: { category: 'education', detailModel: model, radius: 10, power: 1, water: 0 },
     casino: { stakeSteps: [10], gameMinTier: { slotMachine: 1, blackjack: 1, blockmatch: 1 } },
     venue: { rankAt: [0, 0], staffRoles: ['manager'], frontRole: 'manager', fixtureCategories: ['walls'], shell: { floor: model, wall: model, corner: model, cornerX: 0, cornerZ: 0, cornerRotation: 0 }, staffModels: [model] },
     sport: { radius: 1, wellbeingBonus: 0 },
+    transitStop: { mode: 'bus' },
     solar: { output: 1 },
     battery: { storage: 1, rate: 1, radius: 1 },
     backup: { capacity: 1, costPerUnit: 1 },
   })[kind as string]
 
-const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { venue: 'build.leisure', casino: 'build.leisure', facility: 'build.publicFacilities', home: 'build.housing', sport: 'build.sport', storage: 'build.storage', utility: 'build.utilities', solar: 'build.utilities', battery: 'build.utilities', backup: 'build.utilities' }
+const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { venue: 'build.leisure', marina: 'build.water', casino: 'build.leisure', facility: 'build.publicFacilities', home: 'build.housing', sport: 'build.sport', storage: 'build.storage', utility: 'build.utilities', solar: 'build.utilities', battery: 'build.utilities', backup: 'build.utilities' }
 
 export function blankBuilding(kind: BuildingKind, model: string): FlatBuilding {
   const name = { en: '', fr: '' }
@@ -92,6 +94,10 @@ export function blankDefinition(collection: CollectionName, model: string): Defi
   if (collection === 'buildings') return blankBuilding('standard', model) as unknown as Definition
   if (collection === 'materials') return { kind: 'material', name, producedBy: 'workshop', durationMinutes: 1, unlockCitizens: 0, minTier: 1 }
   if (collection === 'fixtures') return { kind: 'fixture', venue: 'arcade', category: 'games', name, model, footprint: [1, 1], price: 0, minTier: 1, playsPerHour: 0 }
+  if (collection === 'boats') return { kind: 'boat', family: 'pleasure', name, model, cost: 0, unlockCitizens: 0, radius: 1, wellbeingBonus: 0, operatingCostPerHour: 0 }
+  if (collection === 'transitVehicles') return { kind: 'transitVehicle', mode: 'bus', name, model }
+  if (collection === 'trafficVehicles') return { kind: 'trafficVehicle', name, model, weight: 1 }
+  if (collection === 'serviceVehicles') return { kind: 'serviceVehicle', name, facility: 'hospital', model }
   if (collection === 'goods') return { kind: 'good', name, recipe: {}, durationMinutes: 1, value: 0, unlockCitizens: 0, minTier: 1 }
   return { kind: 'crop', name, growthMinutes: 1, water: 1, yield: 1, seedShare: 0.5, seedPrice: 1, unlockCitizens: 0, packingMinutes: 1, packedValue: 0, models: { growth: [model, model, model, model] } }
 }

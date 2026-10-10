@@ -1,11 +1,12 @@
 import * as THREE from 'three';
+import { RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL } from '../core/infrastructure/infrastructure';
 import { definitionOf } from './modelDefinitions';
 
 const IDENTITY = new THREE.Matrix4();
 
 export function fitMatrixOf(model: string): THREE.Matrix4 {
-  if (model === 'trains/railroad-straight') return new THREE.Matrix4().makeScale(.7, 1, .25).multiply(new THREE.Matrix4().makeTranslation(0, 1, -2));
-  if (model === 'trains/railroad-corner-small') return new THREE.Matrix4().makeTranslation(0, 1, 0);
+  if (model === RAIL_STRAIGHT_MODEL) return new THREE.Matrix4().makeScale(.7, 1, .25).multiply(new THREE.Matrix4().makeTranslation(0, 1, -2));
+  if (model === RAIL_CORNER_MODEL) return new THREE.Matrix4().makeTranslation(0, 1, 0);
   const definition = definitionOf(model);
   if (definition?.scale === undefined || definition.fit) return IDENTITY;
   const [centerX, centerZ] = definition.center ?? [0, 0];

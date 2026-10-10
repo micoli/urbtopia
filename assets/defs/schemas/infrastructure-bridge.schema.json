@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "road": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    }
+  },
+  "required": [
+    "road"
+  ],
+  "additionalProperties": false,
+  "title": "Bridge",
+  "description": "assets/defs/infrastructure/bridge.json: the Model id of a bridge approach."
+}

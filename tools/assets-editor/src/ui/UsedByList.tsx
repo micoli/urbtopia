@@ -1,4 +1,5 @@
 import { specOf } from '../../../../scripts/collections'
+import { singletonSpecOf, type SingletonName } from '../../../../scripts/singletons'
 import { useLibrary } from '../hooks/useLibrary'
 import { useDocument } from '../store/documentStore'
 
@@ -22,8 +23,8 @@ export function UsedByList({ modelId }: Props) {
           {users.map(({ collection, id }) => (
             <li key={`${collection}:${id}`}>
               <button className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-zinc-50" onClick={() => select({ kind: collection, id })}>
-                <span className="font-medium text-zinc-800">{(collections[collection][id]?.name as { en?: string } | undefined)?.en || id}</span>
-                <span className="font-mono text-xs text-zinc-500">{specOf(collection).title.toLowerCase()} · {id}</span>
+                <span className="font-medium text-zinc-800">{collection === 'singletons' ? singletonSpecOf(id as SingletonName).title : (collections[collection][id]?.name as { en?: string } | undefined)?.en || id}</span>
+                <span className="font-mono text-xs text-zinc-500">{collection === 'singletons' ? 'settings' : specOf(collection).title.toLowerCase()} · {id}</span>
               </button>
             </li>
           ))}

@@ -12,8 +12,8 @@
     "fr": "École"
   },
   "description": {
-    "en": "Teaches the nearby Citizens. Homes cannot reach Tier 3 without School coverage.",
-    "fr": "Instruit les citoyens proches. Les logements ne peuvent pas atteindre le niveau 3 sans couverture d’une école."
+    "en": "Teaches the nearby Citizens. Homes cannot reach Tier 3 without School coverage. {reach, select, city {Covers the whole city} other {Square reach of {side} tiles}}, {limit, select, unlimited {unlimited capacity} other {capacity {tier1Capacity} Citizens, up to {maxTierCapacity} at Tier {tierCount}}}; demand {power} power{hasWater, select, yes { and {water} water} other {}}; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs, no operating cost.",
+    "fr": "Instruit les citoyens proches. Les logements ne peuvent pas atteindre le niveau 3 sans couverture d’une école. {reach, select, city {Couvre toute la ville} other {Portée carrée de {side} cases}}, {limit, select, unlimited {capacité illimitée} other {capacité {tier1Capacity} citoyens, jusqu’à {maxTierCapacity} au niveau {tierCount}}}; consomme {power} d’électricité{hasWater, select, yes { et {water} d’eau} other {}}; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs, sans coût de fonctionnement."
   },
   "radius": 10,
   "tiers": [
@@ -73,6 +73,7 @@
     }
   ],
   "category": "education",
+  "detailModel": "commercial-detail-awning",
   "power": 2,
   "water": 0
 }

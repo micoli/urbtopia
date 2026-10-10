@@ -1,0 +1,36 @@
+{
+  "$schema": "../schemas/balance-venues.schema.json",
+  "staff": {
+    "dayHours": 24,
+    "dailyWage": {
+      "manager": 60,
+      "employee": 30,
+      "technician": 40,
+      "security": 35,
+      "cashier": 30,
+      "stocker": 28,
+      "receptionist": 32,
+      "housekeeper": 26
+    },
+    "hireFeeDays": 5,
+    "managerYield": 1.1,
+    "frontBaseRate": 0.4,
+    "frontRatePerHire": 0.3,
+    "withoutSecurityRate": 0.9
+  },
+  "venue": {
+    "reachRadius": 12,
+    "playPrice": 2,
+    "minPrice": 1,
+    "maxPrice": 6,
+    "priceTolerance": 0.2,
+    "refundRatio": 0.5
+  },
+  "events": {
+    "durationMinutes": 180,
+    "cooldownMinutes": 360,
+    "cancelRefund": 0.5,
+    "maxDelayHours": 24,
+    "minRank": 2
+  }
+}

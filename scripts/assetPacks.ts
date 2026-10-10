@@ -1,15 +1,17 @@
-import { MINI_CHARACTER_FILES } from '../src/scene/miniCharacters.ts';
 import { existsSync, readFileSync } from 'node:fs';
-import { readCollections } from './collectionRead.ts';
+import { readCollections, readSingleton } from './collectionRead.ts';
+import { SINGLETON_NAMES, singletonSpecOf } from './singletons.ts';
 import { COLLECTION_NAMES, specOf } from './collections.ts';
 import { readModels } from './modelsFile.ts';
 import type { QuaterniusPack } from './quaternius.ts';
 
 const modelFiles = readModels();
 const collections = readCollections();
-export const DEFINITION_MODEL_FILES = COLLECTION_NAMES.flatMap(name =>
-  Object.values(collections[name]).flatMap(definition => specOf(name).references(definition as never).filter(({ target }) => target === 'models').map(({ id }) => modelFiles[id]?.file ?? id)),
-);
+const fileOf = ({ id }: { id: string }) => modelFiles[id]?.file ?? id;
+export const DEFINITION_MODEL_FILES = [
+  ...COLLECTION_NAMES.flatMap(name => Object.values(collections[name]).flatMap(definition => specOf(name).references(definition as never).filter(({ target }) => target === 'models').map(fileOf))),
+  ...SINGLETON_NAMES.flatMap(name => (singletonSpecOf(name).references?.(readSingleton(name) as never) ?? []).map(fileOf)),
+];
 
 // A pack installs the files listed below plus every model a definition uses: a Game object can take any model of an installable pack.
 const withDefinitionModels = <T extends { name: string; files: string[] }>(pack: T): T => {
@@ -143,7 +145,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'mini-characters',
     url: 'https://kenney.nl/media/pages/assets/mini-characters/bfc7e272b4-1774770718/kenney_mini-characters.zip',
     archive: 'kenney_mini-characters.zip',
-    files: [...MINI_CHARACTER_FILES],
+    files: [],
   },
   {
     name: 'furniture',

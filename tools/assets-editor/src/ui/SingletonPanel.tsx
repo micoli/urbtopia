@@ -2,8 +2,9 @@ import { singletonSpecOf, type SingletonName } from '../../../../scripts/singlet
 import { useDirty } from '../hooks/useDirty'
 import { useProblems } from '../hooks/useProblems'
 import { singletonFieldsOf } from '../schema/fields'
-import { useDocument } from '../store/documentStore'
+import { useDocument, type Doc } from '../store/documentStore'
 import { setIn, setSingleton } from '../store/edits'
+import type { FieldPath } from './form/FieldControl'
 import { SchemaForm } from './form/SchemaForm'
 import { badge, panel } from './styles'
 
@@ -18,6 +19,11 @@ export function SingletonPanel({ name }: Props) {
   const dirty = useDirty().has('singletons', name)
   const spec = singletonSpecOf(name)
 
+  const modelSlot = (path: FieldPath) => ({
+    dropId: `singletons:${name}:${path.join('.')}`,
+    assign: (doc: Doc, modelId: string) => setSingleton(doc, name, setIn(doc.singletons[name], path, modelId) as Record<string, unknown>),
+  })
+
   return (
     <article className={`${panel} flex flex-col`}>
       <header className="flex flex-wrap items-center gap-2 border-b border-zinc-200 p-4">
@@ -26,7 +32,7 @@ export function SingletonPanel({ name }: Props) {
         <p className="w-full font-mono text-xs text-zinc-500">{spec.file}</p>
       </header>
       <div className="p-4">
-        <SchemaForm fields={singletonFieldsOf(name)} value={value} problems={problems} onChange={(key, next) => change(doc => setSingleton(doc, name, setIn(value, [key], next) as Record<string, unknown>))} />
+        <SchemaForm fields={singletonFieldsOf(name)} value={value} problems={problems} modelSlot={modelSlot} onChange={(key, next) => change(doc => setSingleton(doc, name, setIn(value, [key], next) as Record<string, unknown>))} />
       </div>
     </article>
   )

@@ -792,9 +792,9 @@ function transitCommand(state: GameState, command: Extract<Command, { type: 'Bui
     return { state: { ...state, nextId: command.id === undefined ? state.nextId + 1 : state.nextId, transitLines: [...lines.filter(l => l.id !== line.id), line] }, events: [] };
   }
   if (command.type === 'BuyTransitVehicle') {
-    if (!(command.kind in TRANSIT) || !['brtElectric', 'trainElectric', 'trainCoal'].includes(command.kind)) return fail('error.invalidQuantity');
+    if (!Object.hasOwn(TRANSIT, command.kind) || !('price' in TRANSIT[command.kind])) return fail('error.invalidQuantity');
     const spec = TRANSIT[command.kind];
-    if (citizenCount(state) < TRANSIT[command.kind === 'brtElectric' ? 'brt' : 'rail'].unlock) return fail('error.itemLocked');
+    if (citizenCount(state) < TRANSIT[spec.mode].unlock) return fail('error.itemLocked');
     if (state.urbs < spec.price) return fail('error.notEnoughUrbs');
     return { state: { ...state, urbs: state.urbs - spec.price, nextId: state.nextId + 1, transitFleet: [...fleet, { id: state.nextId, kind: command.kind, purchasePrice: spec.price }] }, events: [] };
   }
@@ -802,6 +802,6 @@ function transitCommand(state: GameState, command: Extract<Command, { type: 'Bui
   if (!vehicle) return fail('error.invalidQuantity');
   if (command.type === 'SellTransitVehicle') return { state: { ...state, urbs: state.urbs + vehicle.purchasePrice / 2, transitFleet: fleet.filter(v => v.id !== vehicle.id) }, events: [] };
   const line = lines.find(l => l.id === command.lineId);
-  if (command.lineId !== undefined && (!line || (line.mode === 'brt') !== (vehicle.kind === 'brtElectric'))) return fail('error.invalidBusLine');
+  if (command.lineId !== undefined && (!line || line.mode !== TRANSIT[vehicle.kind].mode)) return fail('error.invalidBusLine');
   return { state: { ...state, transitFleet: fleet.map(v => v.id === vehicle.id ? { ...v, lineId: command.lineId } : v) }, events: [] };
 }

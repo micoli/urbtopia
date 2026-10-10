@@ -30,6 +30,8 @@ interface DocumentState {
   selection: Selection | null
   kind: Kind
   status: string
+  // Shows the comparison of the Game objects of a kind instead of one object.
+  comparing: boolean
   // The Tier, and the variant if any, the preview shows for a Game object with Tiers.
   preview: { tier: number; variant?: string }
   load: (catalog: Catalog) => void
@@ -42,6 +44,7 @@ interface DocumentState {
   showTier: (tier: number, variant?: string) => void
   markSaved: () => void
   setStatus: (status: string) => void
+  setComparing: (comparing: boolean) => void
 }
 
 const empty = { models: {}, collections: {}, singletons: {} } as Doc
@@ -57,6 +60,7 @@ export const useDocument = create<DocumentState>()(set => ({
   selection: null,
   kind: 'buildings',
   status: '',
+  comparing: false,
   preview: { tier: 0 },
   load: catalog => {
     const doc: Doc = { models: catalog.models, collections: catalog.collections, singletons: catalog.singletons }
@@ -90,9 +94,10 @@ export const useDocument = create<DocumentState>()(set => ({
       if (!next) return state
       return { doc: next, past: [...state.past, state.doc], future: state.future.slice(1), status: '' }
     }),
-  select: selection => set(selection ? { selection, kind: selection.kind, preview: { tier: 0 } } : { selection }),
+  select: selection => set(selection ? { selection, kind: selection.kind, comparing: false, preview: { tier: 0 } } : { selection }),
   showTier: (tier, variant) => set({ preview: { tier, variant } }),
-  showKind: kind => set({ kind }),
+  showKind: kind => set({ kind, comparing: false }),
+  setComparing: comparing => set({ comparing }),
   markSaved: () => set(state => ({ saved: state.doc })),
   setStatus: status => set({ status }),
 }))

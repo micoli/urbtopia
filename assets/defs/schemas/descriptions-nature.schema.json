@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "families": {
+      "type": "object",
+      "properties": {
+        "tree": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "grass": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "shrub": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "flower": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "habitat": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "conifer": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "decoration": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "palm": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "tree",
+        "grass",
+        "shrub",
+        "flower",
+        "habitat",
+        "conifer",
+        "decoration",
+        "palm"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "families"
+  ],
+  "additionalProperties": false,
+  "title": "Nature descriptions",
+  "description": "assets/defs/descriptions/nature.json: the codex description of each family of nature elements."
+}

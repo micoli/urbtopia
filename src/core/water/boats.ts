@@ -1,3 +1,8 @@
+import { entriesOf } from '../defs/entries';
+import { modelFileOf } from '../models/modelFiles';
+import { BOAT_FAMILIES } from './boatFamilies';
+import type { BoatId } from './boatTypes.generated';
+import type { BoatDefinition } from './boatSchema';
 import { citizenCount } from '../environment/ecology';
 import { GAME_CONFIG } from '../engine/config';
 import { tileKey } from '../map/geometry';
@@ -9,13 +14,22 @@ import { CASINO, MAX_CASINO_TIER, casinoPower } from '../leisure/casino';
 import { ECOLOGY } from '../environment/ecology';
 import { connectedWaterKeys, marinaCapacity } from './marina';
 
-export const BOAT_FAMILIES: readonly BoatFamily[] = ['pleasure', 'fishing', 'casino'];
+export { BOAT_FAMILIES };
+
+// Checked against their schema by the definitions plugin at dev start and build, and by the tests.
+const files = import.meta.glob<BoatDefinition>('../../../assets/defs/boats/*.json', { eager: true, import: 'default' });
+
+export const BOAT_ENTRIES = entriesOf<BoatDefinition, BoatId>(files);
+
+const liveBoat = <Family extends BoatFamily>(family: Family) => BOAT_ENTRIES.find((entry): entry is Extract<typeof entry, { family: Family }> => entry.family === family && !entry.retired)!;
 
 export const BOATS = {
-  pleasure: { cost: 400, unlockCitizens: 80, radius: 6, wellbeingBonus: 4, operatingCostPerHour: 2 },
-  fishing: { cost: 800, unlockCitizens: 100 },
-  casino: { cost: 3000, unlockCitizens: 300 },
-} as const;
+  pleasure: liveBoat('pleasure'),
+  fishing: liveBoat('fishing'),
+  casino: liveBoat('casino'),
+};
+
+export const BOAT_MODELS: Record<BoatFamily, string> = Object.fromEntries(BOAT_FAMILIES.map(family => [family, modelFileOf(BOATS[family].model)])) as Record<BoatFamily, string>;
 
 const FUNDS_EPSILON = 1e-9;
 

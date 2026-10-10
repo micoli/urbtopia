@@ -10,6 +10,7 @@ import { useDocument, type Doc } from '../store/documentStore'
 import { convertBuilding, removeDefinition, setDefinition, setIn, toggleRetired } from '../store/edits'
 import { ConfirmDialog } from './ConfirmDialog'
 import { CreateDialog } from './CreateDialog'
+import { DescriptionTab } from './description/DescriptionTab'
 import type { FieldPath } from './form/FieldControl'
 import { SchemaForm } from './form/SchemaForm'
 import { badge, button, input, panel } from './styles'
@@ -56,7 +57,21 @@ export function DefinitionPanel({ collection, id }: Props) {
     ...(variantTierFields?.type === 'list'
       ? [{ id: 'variants', label: 'Variants', badge: countWhere('variants'), content: <VariantsTab variants={(definition.variants ?? {}) as Record<string, { tiers: Record<string, unknown>[] }>} baseTiers={definition.tiers as Record<string, unknown>[]} fields={variantTierFields.fields} problems={problems} modelSlot={modelSlot} onChange={variants => setField('variants', variants)} /> }]
       : []),
-    { id: 'description', label: 'Description', badge: textProblems, content: form(fields.filter(isTextField)) },
+    {
+      id: 'description',
+      label: 'Description',
+      badge: textProblems,
+      content:
+        collection === 'buildings' ? (
+          <div className="flex flex-col gap-4">
+            {form(fields.filter(field => isTextField(field) && field.key !== 'description'))}
+            <DescriptionTab definition={definition as unknown as FlatBuilding} onChange={description => setField('description', description)} />
+            {problems.filter(({ path }) => path.startsWith('description')).map(({ path, message }) => <p key={`${path}${message}`} className="text-xs text-red-600">{path}: {message}</p>)}
+          </div>
+        ) : (
+          form(fields.filter(isTextField))
+        ),
+    },
   ]
   const name = (definition.name as { en?: string } | undefined)?.en
   const retirable = collection === 'buildings'

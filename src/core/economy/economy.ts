@@ -1,10 +1,13 @@
+import economy from '../../../assets/defs/balance/economy.json' with { type: 'json' };
 import { BUILDING_ENTRIES, tiersOf } from '../buildings/buildingDefinitions';
 import type { BuildingId, StorageType } from '../buildings/buildingTypes.generated';
 import type { GoodId } from './items';
 
+const MINUTE_MS = 60_000;
+
 export const MAX_SLOTS = 5;
 
-export const SLOT_PRICES: Record<number, number> = { 3: 500, 4: 1500, 5: 4000, 6: 8000, 7: 12000, 8: 20000 };
+export const SLOT_PRICES: Record<number, number> = economy.slotPrices;
 
 export interface UpgradeCostSpec {
   urbs: number;
@@ -51,16 +54,16 @@ export function storageTierOf(type: StorageType, tier: number): StorageTier {
 
 export const FARM_CROP_CAPACITY = 10;
 
-export const SHOP = { stackSize: 5, saleIntervalMs: 45_000 };
+export const SHOP = { stackSize: economy.shop.stackSize, saleIntervalMs: economy.shop.saleIntervalMinutes * MINUTE_MS };
 
 export const MARKET = {
-  fullPoints: 60,
-  floorPoints: 30,
-  pointsLostPerUnit: 5,
-  recoveryMs: 60 * 60_000,
+  fullPoints: economy.market.fullPoints,
+  floorPoints: economy.market.floorPoints,
+  pointsLostPerUnit: economy.market.pointsLostPerUnit,
+  recoveryMs: economy.market.recoveryMinutes * MINUTE_MS,
 };
 
-export const PARCEL_PRICING = { base: 300, factor: 1.12, roundTo: 10 };
+export const PARCEL_PRICING = economy.parcelPricing;
 
 export const HOME_TIERS: readonly { citizens: number; power: number; water: number }[] = tiersOf('home').map(({ citizens, power, water }) => ({ citizens: citizens!, power: power!, water: water! }));
 
@@ -72,7 +75,7 @@ export const COAL_CAPACITY: readonly number[] = capacitiesOf('coalPlant');
 
 
 
-export const TAX = { urbsPerCitizenPerHour: 1, capHours: 8, hourMs: 3_600_000 };
+export const TAX = { ...economy.tax, hourMs: 3_600_000 };
 
 const HOME_TIER_LIST = tiersOf('home');
 

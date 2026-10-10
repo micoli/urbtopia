@@ -3,6 +3,8 @@ import type { FlatBuilding } from '../src/core/buildings/buildingDefinition.ts';
 import { BUILDING_ID_PATTERN, buildingSchema } from '../src/core/buildings/buildingSchema.ts';
 import { ITEM_ID_PATTERN, goodSchema, materialSchema, type GoodDefinition, type MaterialDefinition } from '../src/core/economy/itemSchemas.ts';
 import { cropSchema, type CropDefinition } from '../src/core/farming/cropSchema.ts';
+import { boatSchema, type BoatDefinition } from '../src/core/water/boatSchema.ts';
+import { serviceVehicleSchema, trafficVehicleSchema, transitVehicleSchema, type ServiceVehicleDefinition, type TrafficVehicleDefinition, type TransitVehicleDefinition } from '../src/core/transit/vehicleSchemas.ts';
 import { fixtureSchema, type FixtureDefinition } from '../src/core/venues/fixtureSchema.ts';
 
 // Every kind of Game object stored one file per id under assets/defs/<dir>. Pure: shared by the scripts, the build and the editor.
@@ -61,6 +63,7 @@ export const COLLECTIONS = {
     fieldOrder: ['kind', 'order', 'retired', 'section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'initialSlots', 'name', 'description', 'radius', 'wellbeingBonus', 'family'],
     references: (building: FlatBuilding) => [
       ...modelReference(building.model, 'model'),
+      ...modelReference(building.detailModel, 'detailModel'),
       ...(building.tiers ?? []).flatMap((tier, index) => [...modelReference(tier.model, `tiers.${index}.model`), ...goodReferences(tier.upgradeCost?.goods, `tiers.${index}.upgradeCost.goods`)]),
       ...Object.entries(building.variants ?? {}).flatMap(([name, { tiers }]) => tiers.flatMap((tier, index) => modelReference(tier.model, `variants.${name}.tiers.${index}.model`))),
       ...(['floor', 'wall', 'corner'] as const).flatMap(part => modelReference(building.shell?.[part], `shell.${part}`)),
@@ -125,6 +128,52 @@ export const COLLECTIONS = {
     idRule: 'be camelCase letters and digits',
     fieldOrder: ['kind', 'order', 'venue', 'category'],
     references: (fixture: FixtureDefinition) => [...modelReference(fixture.model, 'model'), { target: ['buildings'], id: fixture.venue, path: 'venue' }],
+  },
+  boats: {
+    dir: 'boats',
+    title: 'Boats',
+    schemaName: 'boat',
+    idTypes: { file: 'src/core/water/boatTypes.generated.ts', unions: (boats: Record<string, BoatDefinition>) => ({ BoatId: idsWhere(boats) }) },
+    schema: boatSchema,
+    idPattern: ITEM_ID_PATTERN,
+    idRule: 'be camelCase letters and digits',
+    fieldOrder: ['kind', 'order', 'retired', 'family', 'model', 'cost', 'unlockCitizens'],
+    references: (boat: BoatDefinition) => modelReference(boat.model, 'model'),
+  },
+  transitVehicles: {
+    dir: 'transitVehicles',
+    title: 'Transit vehicles',
+    schemaName: 'transit-vehicle',
+    idTypes: {
+      file: 'src/core/transit/transitVehicleTypes.generated.ts',
+      unions: (vehicles: Record<string, TransitVehicleDefinition>) => ({ TransitVehicleId: idsWhere(vehicles), FleetVehicleId: idsWhere(vehicles, ({ mode }) => mode !== 'bus') }),
+    },
+    schema: transitVehicleSchema,
+    idPattern: ITEM_ID_PATTERN,
+    idRule: 'be camelCase letters and digits',
+    fieldOrder: ['kind', 'order', 'mode', 'propulsion', 'price', 'power', 'coal', 'cost', 'emissions', 'model', 'models'],
+    references: (vehicle: TransitVehicleDefinition) => (vehicle.mode === 'bus' ? modelReference(vehicle.model, 'model') : vehicle.models.flatMap((model, index) => modelReference(model, `models.${index}`))),
+  },
+  trafficVehicles: {
+    dir: 'trafficVehicles',
+    title: 'Traffic vehicles',
+    schemaName: 'traffic-vehicle',
+    idTypes: { file: 'src/core/transit/trafficVehicleTypes.generated.ts', unions: (vehicles: Record<string, TrafficVehicleDefinition>) => ({ TrafficVehicleId: idsWhere(vehicles) }) },
+    schema: trafficVehicleSchema,
+    idPattern: ITEM_ID_PATTERN,
+    idRule: 'be camelCase letters and digits',
+    references: (vehicle: TrafficVehicleDefinition) => modelReference(vehicle.model, 'model'),
+  },
+  serviceVehicles: {
+    dir: 'serviceVehicles',
+    title: 'Service vehicles',
+    schemaName: 'service-vehicle',
+    idTypes: { file: 'src/core/transit/serviceVehicleTypes.generated.ts', unions: (vehicles: Record<string, ServiceVehicleDefinition>) => ({ ServiceVehicleId: idsWhere(vehicles) }) },
+    schema: serviceVehicleSchema,
+    idPattern: ITEM_ID_PATTERN,
+    idRule: 'be camelCase letters and digits',
+    fieldOrder: ['kind', 'order', 'facility', 'model'],
+    references: (vehicle: ServiceVehicleDefinition) => [...modelReference(vehicle.model, 'model'), { target: ['buildings'], id: vehicle.facility, path: 'facility' } as Reference],
   },
 } satisfies Record<string, CollectionSpec>;
 

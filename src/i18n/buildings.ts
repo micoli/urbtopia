@@ -1,13 +1,14 @@
 import { BUILDING_ENTRIES } from '../core/buildings/buildingDefinitions';
 import type { BuildingId } from '../core/buildings/buildingTypes.generated';
-import { isFacilityType } from '../core/services/facilities';
+import { descriptionValuesOf } from '../core/descriptions/descriptionValues';
+import { renderDescription } from '../core/descriptions/messageFormat';
 
 type BuildingMessageKey = `building.${BuildingId}` | `codex.description.${BuildingId}`;
 
-// Descriptions of buildings with a stats sentence (public facilities, sport venues) are completed by their own message module.
+// Descriptions are ICU templates over the numbers of the building; the codex shows them rendered.
 export function buildingMessages(language: 'en' | 'fr'): Record<BuildingMessageKey, string> {
-  return Object.fromEntries(BUILDING_ENTRIES.flatMap(({ id, kind, name, description }) => [
-    [`building.${id}`, name[language]],
-    ...(description && kind !== 'sport' && !isFacilityType(id) ? [[`codex.description.${id}`, description[language]]] : []),
+  return Object.fromEntries(BUILDING_ENTRIES.flatMap(entry => [
+    [`building.${entry.id}`, entry.name[language]],
+    ...(entry.description ? [[`codex.description.${entry.id}`, renderDescription(entry.description[language], language, descriptionValuesOf(entry))]] : []),
   ])) as Record<BuildingMessageKey, string>;
 }

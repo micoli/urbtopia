@@ -1,15 +1,16 @@
+import venues from '../../../assets/defs/balance/venues.json' with { type: 'json' };
 import type { VenueData, VenueType } from '../engine/state';
 import { venueTierOf } from './profiles';
 
-const HOUR_MS = 3_600_000;
+const MINUTE_MS = 60_000;
 
 export const EVENT = {
-  durationMs: 3 * HOUR_MS,
-  cooldownMs: 6 * HOUR_MS,
-  cancelRefund: 0.5,
-  maxDelayHours: 24,
+  durationMs: venues.events.durationMinutes * MINUTE_MS,
+  cooldownMs: venues.events.cooldownMinutes * MINUTE_MS,
+  cancelRefund: venues.events.cancelRefund,
+  maxDelayHours: venues.events.maxDelayHours,
   // Rank a Venue must have reached before it can plan events.
-  minRank: 2,
+  minRank: venues.events.minRank,
 };
 
 export const eventBudgetOf = (type: VenueType, tier: number): number => venueTierOf(type, tier).eventBudget!;

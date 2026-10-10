@@ -1,6 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "transitStop",
   "order": 200,
   "section": "build.transport",
   "model": "industrial-building-q",
@@ -15,5 +15,11 @@
   "description": {
     "en": "A passenger stop on a Railway. Create a connected line and assign purchased electric or coal Trains in City management.",
     "fr": "Un arrêt voyageurs sur une voie ferrée. Créez une ligne connectée et affectez-y des trains électriques ou à charbon achetés dans la gestion de la ville."
+  },
+  "mode": "rail",
+  "network": {
+    "tileCost": 24,
+    "speed": 5,
+    "capacity": 400
   }
 }

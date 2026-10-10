@@ -14,8 +14,8 @@
     "fr": "Terrain de baseball"
   },
   "description": {
-    "en": "A large Sport building with a diamond, an outfield and stands.",
-    "fr": "Un grand bâtiment de sport avec un losange, un champ extérieur et des tribunes."
+    "en": "A large Sport building with a diamond, an outfield and stands. It raises the Well-being of Homes in a {side}-tile square around it (+{wellbeingBonus}, like a service) and needs no power. It covers {width}×{depth} tiles; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs.",
+    "fr": "Un grand bâtiment de sport avec un losange, un champ extérieur et des tribunes. Il augmente le bien-être des logements à moins de {side} cases (+{wellbeingBonus}) et ne consomme pas d’électricité. Il occupe {width}×{depth} cases ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs."
   },
   "radius": 12,
   "wellbeingBonus": 10

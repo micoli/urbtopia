@@ -18,6 +18,7 @@ interface JsonSchema {
   prefixItems?: JsonSchema[]
   items?: JsonSchema | false
   oneOf?: JsonSchema[]
+  modelId?: boolean
 }
 
 interface Base {
@@ -31,6 +32,7 @@ export type FieldSpec = Base &
     | { type: 'text'; readOnly?: boolean }
     | { type: 'model' }
     | { type: 'modelList'; count: number }
+    | { type: 'modelArray' }
     | { type: 'number'; integer: boolean; min?: number }
     | { type: 'switch' }
     | { type: 'select'; options: string[] }
@@ -68,13 +70,13 @@ const LABELS: Record<string, string> = {
 const PAIR_PARTS: Record<string, [string, string]> = { footprint: ['W', 'D'], center: ['X', 'Z'] }
 
 // Fields that hold Model ids, wherever they sit.
-const MODEL_KEYS = new Set(['model', 'produce', 'harvested', 'growth'])
+const MODEL_KEYS = new Set(['model', 'detailModel', 'produce', 'harvested', 'growth'])
 
 // Records keyed by ids of other collections.
 const RECORD_TARGETS: Record<string, readonly CollectionName[]> = { recipe: ['materials', 'crops'], goods: ['goods'] }
 
 // Records keyed by a closed vocabulary.
-const RECORD_KEYS: Record<string, readonly string[]> = { posts: STAFF_ROLES_ALL }
+const RECORD_KEYS: Record<string, readonly string[]> = { posts: STAFF_ROLES_ALL, dailyWage: STAFF_ROLES_ALL }
 
 export const labelOf = (key: string) => LABELS[key] ?? key.replace(/([A-Z])/g, ' $1').replace(/^./, letter => letter.toUpperCase())
 
@@ -89,7 +91,8 @@ export interface FieldOptions {
 function fieldOf(key: string, schema: JsonSchema, required: boolean, options: FieldOptions): FieldSpec {
   const base = { key, label: labelOf(key), required }
   if (options.custom?.includes(key)) return { ...base, type: 'custom' }
-  if (MODEL_KEYS.has(key) && schema.type === 'string') return { ...base, type: 'model' }
+  if (schema.type === 'array' && schema.items && schema.items.modelId) return { ...base, type: 'modelArray' }
+  if ((MODEL_KEYS.has(key) || schema.modelId) && schema.type === 'string') return { ...base, type: 'model' }
   if (MODEL_KEYS.has(key) && schema.type === 'array' && schema.prefixItems) return { ...base, type: 'modelList', count: schema.prefixItems.length }
   if (schema.enum) return { ...base, type: 'select', options: schema.enum }
   if (schema.type === 'boolean') return { ...base, type: 'switch' }
@@ -124,13 +127,16 @@ const jsonOf = (schema: z.ZodType) => z.toJSONSchema(schema) as JsonSchema
 
 const collectionJson = new Map<CollectionName, JsonSchema>()
 
+// What picks the branch of a collection cannot change once the object exists.
+const BRANCH_KEYS: Partial<Record<CollectionName, string[]>> = { fixtures: ['venue'], boats: ['family'], transitVehicles: ['mode'] }
+
 // A discriminated union shows the branch whose constants (kind, Venue) the definition holds.
 export function collectionFieldsOf(collection: CollectionName, definition: Definition): FieldSpec[] {
   if (!collectionJson.has(collection)) collectionJson.set(collection, jsonOf(specOf(collection).schema))
   const json = collectionJson.get(collection)!
   const matches = (candidate: JsonSchema) => (candidate.required ?? []).every(key => candidate.properties?.[key]?.const === undefined || candidate.properties[key].const === definition[key])
   const branch = json.oneOf ? json.oneOf.find(matches) : json
-  return branch ? fieldsOf(branch, { hidden: HIDDEN, readOnly: ['venue'] }) : []
+  return branch ? fieldsOf(branch, { hidden: HIDDEN, readOnly: BRANCH_KEYS[collection] }) : []
 }
 
 export const buildingFieldsOf = (kind: BuildingKind): FieldSpec[] => collectionFieldsOf('buildings', { kind })

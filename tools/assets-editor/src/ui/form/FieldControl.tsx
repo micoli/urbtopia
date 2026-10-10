@@ -52,6 +52,20 @@ export function FieldControl({ field, value, path, onChange, modelSlot, nested, 
         </div>
       )
     }
+    case 'modelArray': {
+      const ids = (value as string[] | undefined) ?? []
+      return (
+        <div className="grid gap-2">
+          {ids.map((id, index) => (
+            <div key={index} className="flex items-start gap-2">
+              <div className="min-w-0 flex-1">{modelControl(id, [...path, index], `${field.label} ${index + 1}`, next => onChange(ids.map((current, position) => (position === index ? next : current))))}</div>
+              <button type="button" className="text-xs text-zinc-500 hover:text-red-600" onClick={() => onChange(ids.filter((_, position) => position !== index))}>Remove</button>
+            </div>
+          ))}
+          {ids.length > 0 && <button type="button" className="justify-self-start text-xs text-indigo-600 hover:underline" onClick={() => onChange([...ids, ids.at(-1)])}>Add</button>}
+        </div>
+      )
+    }
     case 'number':
       return <NumberControl value={value as number | undefined} integer={field.integer} min={field.min} label={field.label} onChange={onChange} />
     case 'switch':

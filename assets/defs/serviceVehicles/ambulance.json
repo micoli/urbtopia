@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/service-vehicle.schema.json",
+  "kind": "serviceVehicle",
+  "order": 10,
+  "facility": "hospital",
+  "model": "cars-ambulance",
+  "name": {
+    "en": "Ambulance",
+    "fr": "Ambulance"
+  }
+}

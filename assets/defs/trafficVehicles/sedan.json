@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/traffic-vehicle.schema.json",
+  "kind": "trafficVehicle",
+  "order": 10,
+  "name": {
+    "en": "Sedan",
+    "fr": "Berline"
+  },
+  "model": "cars-sedan",
+  "weight": 1
+}

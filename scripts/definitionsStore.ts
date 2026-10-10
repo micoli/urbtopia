@@ -24,10 +24,11 @@ export const readCatalog = (): Catalog => ({ models: readModels(), collections: 
 
 // Everything is checked together before anything is written, so a save never leaves a reference to a missing definition.
 export function saveDefinitions({ models, collections, singletons }: Definitions): void {
+  const catalog = { models, ships: shipsModel() };
   const problems = [
     ...allModelProblems(models).map(describeProblem),
-    ...allCollectionProblems(collections, { models, ships: shipsModel() }).map(problem => `${problem.collection}/${describeProblem(problem)}`),
-    ...allSingletonProblems(singletons).map(describeProblem),
+    ...allCollectionProblems(collections, catalog).map(problem => `${problem.collection}/${describeProblem(problem)}`),
+    ...allSingletonProblems(singletons, { collections, catalog }).map(describeProblem),
   ];
   if (problems.length) throw new Error(problems.join('\n'));
   writeModels(models);

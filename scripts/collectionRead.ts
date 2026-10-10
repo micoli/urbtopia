@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { basename, join } from 'node:path';
+import { basename, join, relative } from 'node:path';
 import { COLLECTION_NAMES, specOf, type CollectionName, type Collections, type Definition } from './collections.ts';
 import { SINGLETON_NAMES, singletonSpecOf, type SingletonName, type Singletons } from './singletons.ts';
 
@@ -23,7 +23,9 @@ export function readCollectionDir(dir: string): Record<string, Definition> {
 
 export const readCollection = (name: CollectionName, root = DEFS_ROOT) => readCollectionDir(collectionDir(name, root));
 
-export const readSingleton = (name: SingletonName): Record<string, unknown> => withoutSchema(JSON.parse(readFileSync(singletonSpecOf(name).file, 'utf8')));
+export const singletonFileIn = (name: SingletonName, root = DEFS_ROOT) => join(root, relative(DEFS_ROOT, singletonSpecOf(name).file));
+
+export const readSingleton = (name: SingletonName, root = DEFS_ROOT): Record<string, unknown> => withoutSchema(JSON.parse(readFileSync(singletonFileIn(name, root), 'utf8')));
 
 export const readSingletons = (): Singletons => Object.fromEntries(SINGLETON_NAMES.map(name => [name, readSingleton(name)])) as Singletons;
 

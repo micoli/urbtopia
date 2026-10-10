@@ -12,8 +12,8 @@
     "fr": "Hôtel de ville"
   },
   "description": {
-    "en": "Administers the whole city, with no capacity limit. Only one can be built. Required for Home Tier 6.",
-    "fr": "Administre toute la ville, sans limite de capacité. Un seul peut être construit. Requis pour les logements de niveau 6."
+    "en": "Administers the whole city, with no capacity limit. Only one can be built. Required for Home Tier 6. {reach, select, city {Covers the whole city} other {Square reach of {side} tiles}}, {limit, select, unlimited {unlimited capacity} other {capacity {tier1Capacity} Citizens, up to {maxTierCapacity} at Tier {tierCount}}}; demand {power} power{hasWater, select, yes { and {water} water} other {}}; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs, no operating cost.",
+    "fr": "Administre toute la ville, sans limite de capacité. Un seul peut être construit. Requis pour les logements de niveau 6. {reach, select, city {Couvre toute la ville} other {Portée carrée de {side} cases}}, {limit, select, unlimited {capacité illimitée} other {capacité {tier1Capacity} citoyens, jusqu’à {maxTierCapacity} au niveau {tierCount}}}; consomme {power} d’électricité{hasWater, select, yes { et {water} d’eau} other {}}; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs, sans coût de fonctionnement."
   },
   "tiers": [
     {
@@ -22,6 +22,7 @@
     }
   ],
   "category": "administration",
+  "detailModel": "commercial-detail-awning-wide",
   "power": 2,
   "water": 0,
   "unique": true

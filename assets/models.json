@@ -15,6 +15,56 @@
     "source": "quaternius",
     "license": "CC0"
   },
+  "cars-ambulance": {
+    "file": "cars/ambulance",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-firetruck": {
+    "file": "cars/firetruck",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-hatchback-sports": {
+    "file": "cars/hatchback-sports",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-police": {
+    "file": "cars/police",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-sedan": {
+    "file": "cars/sedan",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-sedan-sports": {
+    "file": "cars/sedan-sports",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-suv": {
+    "file": "cars/suv",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-suv-luxury": {
+    "file": "cars/suv-luxury",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-taxi": {
+    "file": "cars/taxi",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "cars-van": {
+    "file": "cars/van",
+    "source": "kenney",
+    "license": "CC0"
+  },
   "commercial-building-a": {
     "file": "commercial/building-a",
     "source": "kenney",
@@ -180,6 +230,36 @@
       2,
       2
     ]
+  },
+  "commercial-detail-awning": {
+    "file": "commercial/detail-awning",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "commercial-detail-awning-wide": {
+    "file": "commercial/detail-awning-wide",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "commercial-detail-overhang": {
+    "file": "commercial/detail-overhang",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "commercial-detail-overhang-wide": {
+    "file": "commercial/detail-overhang-wide",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "commercial-detail-parasol-a": {
+    "file": "commercial/detail-parasol-a",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "commercial-detail-parasol-b": {
+    "file": "commercial/detail-parasol-b",
+    "source": "kenney",
+    "license": "CC0"
   },
   "crops-apple-1": {
     "file": "crops/Apple_1",
@@ -1196,6 +1276,16 @@
   },
   "industrial-shipping-container-a": {
     "file": "industrial/shipping-container-a",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "industrial-solar-panel-flat": {
+    "file": "industrial/solar-panel-flat",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "industrial-solar-panel-landscape": {
+    "file": "industrial/solar-panel-landscape",
     "source": "kenney",
     "license": "CC0"
   },
@@ -3854,6 +3944,46 @@
     "source": "kenney",
     "license": "CC0",
     "scale": 1.5
+  },
+  "trains-railroad-corner-small": {
+    "file": "trains/railroad-corner-small",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-railroad-straight": {
+    "file": "trains/railroad-straight",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-train-electric-city-a": {
+    "file": "trains/train-electric-city-a",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-train-electric-city-b": {
+    "file": "trains/train-electric-city-b",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-train-electric-city-c": {
+    "file": "trains/train-electric-city-c",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-train-electric-subway-a": {
+    "file": "trains/train-electric-subway-a",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-train-locomotive-a": {
+    "file": "trains/train-locomotive-a",
+    "source": "kenney",
+    "license": "CC0"
+  },
+  "trains-train-locomotive-passenger-a": {
+    "file": "trains/train-locomotive-passenger-a",
+    "source": "kenney",
+    "license": "CC0"
   },
   "watercraft-boat-fishing-small": {
     "file": "watercraft/boat-fishing-small",

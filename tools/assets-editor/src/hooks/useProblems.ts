@@ -9,10 +9,11 @@ export interface Problems {
 }
 
 function problemsOf(doc: Doc, ships: (file: string) => boolean): Problems {
+  const catalog = { models: doc.models, ships }
   const all: KindProblem[] = [
     ...allModelProblems(doc.models).map(problem => ({ ...problem, kind: 'models' as const })),
-    ...allCollectionProblems(doc.collections, { models: doc.models, ships }).map(({ collection, ...problem }) => ({ ...problem, kind: collection })),
-    ...allSingletonProblems(doc.singletons).map(problem => ({ ...problem, kind: 'singletons' as const })),
+    ...allCollectionProblems(doc.collections, catalog).map(({ collection, ...problem }) => ({ ...problem, kind: collection })),
+    ...allSingletonProblems(doc.singletons, { collections: doc.collections, catalog }).map(problem => ({ ...problem, kind: 'singletons' as const })),
   ]
   const byKey = Map.groupBy(all, ({ kind, id }) => `${kind}:${id}`)
   return { all, of: (kind, id) => byKey.get(`${kind}:${id}`) ?? [] }

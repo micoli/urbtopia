@@ -11,6 +11,10 @@
     "en": "Casino",
     "fr": "Casino"
   },
+  "description": {
+    "en": "A Leisure building where Citizens play Minigames with Urbs. It raises the Well-being of Homes in a {side}-tile square around it, but needs much power and shuts down when it is not powered. Tier 1: slot machine; Tier 2: blackjack; Tier 3: blockmatch; up to Tier {tierCount} (highest Stake {maxTierMaxStake}). Demand {tier1Power} power; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs.",
+    "fr": "Un bâtiment de loisirs où les citoyens jouent à des mini-jeux avec des Urbs. Il augmente le bien-être des logements à moins de {side} cases, mais consomme beaucoup d’électricité et ferme s’il n’est pas alimenté. Niveau 1 : machine à sous ; niveau 2 : blackjack ; niveau 3 : blockmatch ; jusqu’au niveau {tierCount} (mise maximale {maxTierMaxStake}). Consomme {tier1Power} d’électricité ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs."
+  },
   "tiers": [
     {
       "model": "buildings-2story-stairs-mat",

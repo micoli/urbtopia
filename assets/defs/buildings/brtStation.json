@@ -1,6 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "transitStop",
   "order": 190,
   "section": "build.transport",
   "model": "roads-road-sign-empty",
@@ -15,5 +15,11 @@
   "description": {
     "en": "A stop on a dedicated BRT corridor. Create a connected line and assign purchased electric BRT vehicles in City management.",
     "fr": "Un arrêt sur un corridor BHNS dédié. Créez une ligne connectée et affectez-y des véhicules BHNS électriques achetés dans la gestion de la ville."
+  },
+  "mode": "brt",
+  "network": {
+    "tileCost": 12,
+    "speed": 3,
+    "capacity": 160
   }
 }

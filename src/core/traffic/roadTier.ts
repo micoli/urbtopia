@@ -1,9 +1,10 @@
+import traffic from '../../../assets/defs/balance/traffic.json' with { type: 'json' };
 import type { Coord } from '../map/coord';
 import type { GameState } from '../engine/state';
 
-export const MAX_ROAD_TIER = 3;
+export const ROAD_TIER_COSTS: readonly number[] = traffic.roadTierCosts;
 
-export const ROAD_TIER_COSTS: readonly number[] = [0, 8, 20];
+export const MAX_ROAD_TIER = ROAD_TIER_COSTS.length;
 
 export const CONGESTION = {
   laneCapacities: [100, 250, 500],

@@ -1,17 +1,26 @@
+import { definitionOf } from '../buildings/buildingDefinitions';
 import { footprintTiles } from '../buildings/buildingSpecs';
 import { DIRECTIONS, neighbour, tileKey, type Direction } from '../map/geometry';
 import { isInsideOwnedParcels, roadExits, roundaboutTiles } from '../map/occupancy';
 import { roadPath } from '../map/roads';
 import type { Coord } from '../map/coord';
 import type { GameState, TransitTile } from '../engine/state';
+import type { FleetVehicleId } from './transitVehicleTypes.generated';
+import { FLEET_VEHICLES, type FleetVehicleEntry } from './vehicles';
 import { emptyRoadGraph, type RoadGraph } from '../map/roadGraph';
 
+const networkOf = (station: 'brtStation' | 'railStation') => {
+  const { unlockCitizens, network } = definitionOf(station);
+  return { unlock: unlockCitizens!, ...network! };
+};
+
+const fleetSpecOf = ({ mode, propulsion, price, power, coal, cost, emissions }: FleetVehicleEntry) => ({ mode, propulsion, price, power, coal, cost, emissions });
+
+// The BRT and rail networks come from their stations, each vehicle of the fleet from its file.
 export const TRANSIT = {
-  brt: { unlock: 200, tileCost: 12, speed: 3, capacity: 160 },
-  rail: { unlock: 600, tileCost: 24, speed: 5, capacity: 400 },
-  brtElectric: { price: 900, power: 3, coal: 0, cost: 4, emissions: 0 },
-  trainElectric: { price: 2400, power: 8, coal: 0, cost: 8, emissions: 0 },
-  trainCoal: { price: 1600, power: 0, coal: 2, cost: 10, emissions: 8 },
+  brt: networkOf('brtStation'),
+  rail: networkOf('railStation'),
+  ...(Object.fromEntries(FLEET_VEHICLES.map(vehicle => [vehicle.id, fleetSpecOf(vehicle)])) as Record<FleetVehicleId, ReturnType<typeof fleetSpecOf>>),
 };
 
 export const opposite = (d: Direction): Direction => ({ N: 'S', S: 'N', E: 'W', W: 'E' } as const)[d];

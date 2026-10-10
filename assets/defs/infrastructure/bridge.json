@@ -1,0 +1,4 @@
+{
+  "$schema": "../schemas/infrastructure-bridge.schema.json",
+  "road": "roads-road-straight"
+}

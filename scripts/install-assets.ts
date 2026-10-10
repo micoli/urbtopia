@@ -52,9 +52,8 @@ function installManagedModels(): void {
 }
 
 function installPolyPizzaModels(): void {
-  const sceneModels = ['src/scene/renderItems.ts', 'src/core/venues/fixtures.ts'].map(file => readFileSync(file, 'utf8')).join('\n');
   const definitionModels = new Set(DEFINITION_MODEL_FILES);
-  const keys = polyPizzaModelKeys().filter(key => definitionModels.has(key) || sceneModels.includes(`'${key}'`));
+  const keys = polyPizzaModelKeys().filter(key => definitionModels.has(key));
   for (const key of keys) {
     const slug = key.slice('poly.pizza/'.length);
     const data = readFileSync(join(POLY_PIZZA_DIR, slug, `${slug}.glb`));

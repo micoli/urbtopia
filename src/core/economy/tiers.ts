@@ -1,6 +1,5 @@
 import { BUILDING_ENTRIES, tiersOf } from '../buildings/buildingDefinitions';
 import {
-  PRODUCTION_UPGRADE_COSTS,
   upgradeCostsOf,
   type FarmTier,
   type ProductionTier,
@@ -12,7 +11,6 @@ export type UpgradeCost = UpgradeCostSpec;
 
 // Buildings defined with Tiers carry their upgrade costs; the others keep a table until they move to data.
 const UPGRADE_COSTS: Partial<Record<BuildingType, Record<number, UpgradeCost>>> = {
-  marina: { 2: PRODUCTION_UPGRADE_COSTS[2]!, 3: PRODUCTION_UPGRADE_COSTS[3]! },
   ...Object.fromEntries(BUILDING_ENTRIES.filter(({ tiers }) => tiers).map(({ id }) => [id, upgradeCostsOf(id)])),
 };
 

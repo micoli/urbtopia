@@ -1,10 +1,11 @@
 import { MODEL_KEYS } from '../../../../src/scene/renderItems'
 import { COLLECTION_NAMES, specOf, type CollectionName } from '../../../../scripts/collections'
+import { SINGLETON_NAMES, singletonSpecOf } from '../../../../scripts/singletons'
 import { libraryEntries, locationOf, type LibraryEntry } from '../library/modelFiles'
 import { useDocument, type Assets, type Doc } from '../store/documentStore'
 
 export interface ModelUser {
-  collection: CollectionName
+  collection: CollectionName | 'singletons'
   id: string
 }
 
@@ -24,7 +25,10 @@ function libraryOf(assets: Assets, doc: Doc): Library {
       specOf(collection).references(definition as never).filter(({ target }) => target === 'models').map(({ id: model }) => ({ model, user: { collection, id } })),
     ),
   )
-  const users = Map.groupBy(references, ({ model }) => model)
+  const singletonReferences = SINGLETON_NAMES.flatMap(name =>
+    (singletonSpecOf(name).references?.(doc.singletons[name] as never) ?? []).map(({ id: model }) => ({ model, user: { collection: 'singletons' as const, id: name } })),
+  )
+  const users = Map.groupBy([...references, ...singletonReferences], ({ model }) => model)
   return {
     entries,
     byFile: locationOf(entries),

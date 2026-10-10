@@ -93,7 +93,7 @@ export class ServiceVehicleLayer {
     const facility = this.state.buildings.find((building) => building.id === dispatcher.id);
     const path = facility ? planServiceTrip(this.state, this.graphs, facility, dispatcher.tripIndex) : null;
     if (!facility || !path || !sendsServiceVehicles(facility.type)) return this.rest(dispatcher);
-    const object = this.library.get(SERVICE_VEHICLE_MODELS[facility.type]).clone(true);
+    const object = this.library.get(SERVICE_VEHICLE_MODELS[facility.type]!).clone(true);
     object.scale.setScalar(VEHICLE_SCALE);
     this.root.add(object);
     dispatcher.trip = { ...startServiceTrip(path, -dispatcher.id, SPEED), object };

@@ -1,5 +1,6 @@
 import { fitNatureModel } from './natureModelFit';
 import { waterOutline } from './waterShape';
+import { RAIL_CORNER_MODEL } from '../core/infrastructure/infrastructure';
 import { fitRailCorner } from './railModelFit';
 import * as THREE from 'three';
 import { FIELD_SOIL_MODEL, GARAGE_DOOR_MODEL, RED_CROSS_MODEL, WATER_TILE_MODEL, BRIDGE_DECK_MODEL, type TextureVariant } from './renderItems';
@@ -100,7 +101,7 @@ export class ModelLibrary {
     if (inFlight) return inFlight;
     const promise = this.loader.loadAsync(`${import.meta.env.BASE_URL}models/${key}.glb`).then((gltf) => {
       fitNatureModel(gltf.scene, key);
-      if (key === 'trains/railroad-corner-small') fitRailCorner(gltf.scene);
+      if (key === RAIL_CORNER_MODEL) fitRailCorner(gltf.scene);
       gltf.scene.updateMatrixWorld(true);
       this.models.set(key, gltf.scene);
       if (gltf.animations.length > 0) this.clips.set(key, gltf.animations);

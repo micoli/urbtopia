@@ -104,6 +104,8 @@ const facilityBuilding = z.strictObject({
   ...identity,
   ...sited,
   category: z.enum(SERVICE_CATEGORIES),
+  // The awning, overhang or parasol set over the entrance.
+  detailModel: filled,
   radius: z.int().min(1).optional(),
   power: count,
   water: count,
@@ -123,6 +125,22 @@ const casinoBuilding = z.strictObject({
     { ...homeLook, radius: z.int().min(1), wellbeingBonus: count, maxStake: z.int().min(1), power: positive, blockmatchLevel: z.int().min(1) },
     ['model', 'footprint', 'radius', 'wellbeingBonus', 'maxStake', 'power', 'blockmatchLevel'],
   ),
+});
+
+// The Marina: the number of Boats each Tier moors.
+const marinaBuilding = z.strictObject({
+  kind: z.literal('marina'),
+  ...identity,
+  ...sited,
+  tiers: tiersOf({ ...homeLook, boats: z.int().min(1) }, ['model', 'footprint', 'boats']),
+});
+
+// A stop or station of a transit mode; the BRT and the rail also set what their network costs, how fast it runs and what a vehicle carries.
+const transitStopBuilding = z.strictObject({
+  kind: z.literal('transitStop'),
+  ...placed,
+  mode: z.enum(['bus', 'brt', 'rail']),
+  network: z.strictObject({ tileCost: count, speed: positive, capacity: z.int().min(1) }).optional(),
 });
 
 // A Venue (Arcade, Supermarket, Hotel): its Staff, its Fixture menu, its interior shell, and per Tier its interior size, Takings cap, power, events and Staff posts.
@@ -145,7 +163,7 @@ const venueBuilding = z.strictObject({
 });
 
 export const buildingSchema = z
-  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, venueBuilding])
+  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, venueBuilding, marinaBuilding, transitStopBuilding])
   .refine(building => building.kind === 'nature' || !building.accessModes || building.requiresRoad, { message: 'accessModes needs requiresRoad', path: ['accessModes'] })
   .meta({ title: 'Building', description: 'A building of Urbtopia, one file per building id in assets/defs/buildings.' });
 

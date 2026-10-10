@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "transitVehicle"
+        },
+        "mode": {
+          "type": "string",
+          "const": "bus"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "model": {
+          "type": "string",
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "kind",
+        "mode",
+        "order",
+        "name",
+        "model"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "transitVehicle"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "brt",
+            "rail"
+          ]
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "propulsion": {
+          "type": "string",
+          "enum": [
+            "electric",
+            "coal"
+          ]
+        },
+        "price": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "power": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "coal": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "cost": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "emissions": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "models": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "required": [
+        "kind",
+        "mode",
+        "order",
+        "name",
+        "propulsion",
+        "price",
+        "power",
+        "coal",
+        "cost",
+        "emissions",
+        "models"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "title": "Transit vehicle",
+  "description": "A vehicle of a transit mode, one file per vehicle id in assets/defs/transitVehicles."
+}

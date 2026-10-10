@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "const": "serviceVehicle"
+    },
+    "$schema": {
+      "type": "string"
+    },
+    "order": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "name": {
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "fr": {
+          "type": "string",
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "en",
+        "fr"
+      ],
+      "additionalProperties": false
+    },
+    "facility": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "model": {
+      "type": "string",
+      "pattern": "\\S"
+    }
+  },
+  "required": [
+    "kind",
+    "order",
+    "name",
+    "facility",
+    "model"
+  ],
+  "additionalProperties": false,
+  "title": "Service vehicle",
+  "description": "A vehicle sent by a Public facility, one file per vehicle id in assets/defs/serviceVehicles."
+}

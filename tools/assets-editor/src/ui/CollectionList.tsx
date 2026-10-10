@@ -37,6 +37,7 @@ export function CollectionList({ collection }: Props) {
       <div className="flex flex-col gap-2 border-b border-zinc-200 p-2">
         <div className="flex gap-2">
           <input className={input} placeholder={`Search ${specOf(collection).title.toLowerCase()}`} value={query} onChange={event => setQuery(event.target.value)} aria-label="Search" />
+          {collection === 'buildings' && <button className={button()} onClick={() => useDocument.getState().setComparing(true)}>Compare</button>}
           <button className={button('primary')} onClick={() => setCreating(true)}>New</button>
         </div>
         {sectioned && (

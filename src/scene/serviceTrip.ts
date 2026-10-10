@@ -1,13 +1,10 @@
-import { frontTiles, hashSeed, isFacilityType, nextRandom, serviceCoverage, tileKey, type Building, type Coord, type GameState } from '../core';
+import { SERVICE_VEHICLE_ENTRIES, frontTiles, hashSeed, isFacilityType, nextRandom, serviceCoverage, tileKey, type Building, type Coord, type FacilityType, type GameState } from '../core';
+import { modelFileOf } from '../core/models/modelFiles';
 import { neighboursOf, type RoadGraph } from './roadGraph';
 
-export const SERVICE_VEHICLE_MODELS = {
-  hospital: 'cars/ambulance',
-  fireStation: 'cars/firetruck',
-  policeStation: 'cars/police',
-} as const;
+export const SERVICE_VEHICLE_MODELS: Readonly<Record<string, string>> = Object.fromEntries(SERVICE_VEHICLE_ENTRIES.map(({ facility, model }) => [facility, modelFileOf(model)]));
 
-export type ServiceVehicleFacility = keyof typeof SERVICE_VEHICLE_MODELS;
+export type ServiceVehicleFacility = FacilityType;
 
 export function sendsServiceVehicles(type: string): type is ServiceVehicleFacility {
   return Object.hasOwn(SERVICE_VEHICLE_MODELS, type);

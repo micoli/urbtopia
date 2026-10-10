@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 import { bridgeTiles, bridgesOf, roadPiece, tileKey, type Bridge, type GameState } from '../core';
+import { BRIDGE_ROAD_MODEL as ROAD_MODEL } from '../core/infrastructure/infrastructure';
 import { fitMatrixOf } from './modelFit';
 import type { ModelLibrary } from './modelLibrary';
 import { BRIDGE_DECK_MODEL } from './renderItems';
 import { boatsMayPass, closedBridge, deckBusy, gateEdges, isStoppingTraffic, leafAngle, leafLayout, stepOpening, type BridgeOpening } from './bridgeOpening';
 import type { TrafficVehicle } from './vehicleTraffic';
 
-const ROAD_MODEL = 'roads/road-straight';
 const DECK_THICKNESS = 0.1;
 
 interface Leaf {

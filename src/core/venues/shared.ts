@@ -1,18 +1,11 @@
+import venues from '../../../assets/defs/balance/venues.json' with { type: 'json' };
 import { citizensOf } from '../buildings/city';
 import { centerOf } from '../environment/ecology';
 import { isWithinReach } from '../services/facilities';
 import type { Building, GameState, VenueType } from '../engine/state';
 import { venueTierOf } from './profiles';
 
-export const VENUE = {
-  hourMs: 3_600_000,
-  reachRadius: 12,
-  playPrice: 2,
-  minPrice: 1,
-  maxPrice: 6,
-  priceTolerance: 0.2,
-  refundRatio: 0.5,
-};
+export const VENUE = { hourMs: 3_600_000, ...venues.venue };
 
 // The entrance stays on the same cell of the north wall at every Tier, so growing the grid never moves it under a Fixture.
 export const entranceCell = (_tier = 1): { x: number; y: number } => ({ x: 3, y: 0 });

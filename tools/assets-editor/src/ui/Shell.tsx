@@ -10,6 +10,7 @@ import { useShortcuts } from '../hooks/useShortcuts'
 import { isFreelyDefinable } from '../library/modelFiles'
 import { useDocument } from '../store/documentStore'
 import { groupOf, reorderGroup, setModel } from '../store/edits'
+import { ComparisonView } from './comparison/ComparisonView'
 import { CollectionList } from './CollectionList'
 import { DragPreview } from './DragPreview'
 import { FileDropZone } from './FileDropZone'
@@ -23,6 +24,7 @@ import { TopBar } from './TopBar'
 
 export function Shell() {
   const kind = useDocument(state => state.kind)
+  const comparing = useDocument(state => state.comparing && state.kind === 'buildings')
   const save = useSave()
   const library = useLibrary()
   const [dragging, setDragging] = useState<DragData | null>(null)
@@ -68,7 +70,7 @@ export function Shell() {
             {kind === 'models' ? <ModelList /> : kind === 'singletons' ? <SingletonList /> : <CollectionList key={kind} collection={kind} />}
           </aside>
           <main className="min-h-0 lg:overflow-auto">
-            <ObjectPanel />
+            {comparing ? <ComparisonView /> : <ObjectPanel />}
           </main>
           <aside className="grid min-h-[36rem] grid-rows-[15rem_minmax(0,1fr)] gap-3 lg:min-h-0">
             <Preview />

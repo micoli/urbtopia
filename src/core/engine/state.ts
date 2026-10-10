@@ -1,3 +1,4 @@
+import type { FleetVehicleId } from '../transit/transitVehicleTypes.generated';
 import type { BuildingId } from '../buildings/buildingTypes.generated';
 import type { Direction } from '../map/geometry';
 import type { Coord } from '../map/coord';
@@ -109,7 +110,7 @@ export interface BusLine {
 }
 
 export type TransitMode = 'bus' | 'brt' | 'rail';
-export type TransitVehicleKind = 'brtElectric' | 'trainElectric' | 'trainCoal';
+export type TransitVehicleKind = FleetVehicleId;
 export interface TransitVehicle {
   id: number;
   kind: TransitVehicleKind;

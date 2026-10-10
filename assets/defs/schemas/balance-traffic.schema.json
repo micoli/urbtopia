@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "roadTierCosts": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    }
+  },
+  "required": [
+    "roadTierCosts"
+  ],
+  "additionalProperties": false,
+  "title": "Traffic balance",
+  "description": "assets/defs/balance/traffic.json: the cost of a road tile by Tier."
+}

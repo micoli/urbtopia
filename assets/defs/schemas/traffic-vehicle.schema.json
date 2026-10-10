@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "const": "trafficVehicle"
+    },
+    "$schema": {
+      "type": "string"
+    },
+    "order": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "name": {
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "fr": {
+          "type": "string",
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "en",
+        "fr"
+      ],
+      "additionalProperties": false
+    },
+    "model": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "weight": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    }
+  },
+  "required": [
+    "kind",
+    "order",
+    "name",
+    "model",
+    "weight"
+  ],
+  "additionalProperties": false,
+  "title": "Traffic vehicle",
+  "description": "A car driving on the roads, one file per car id in assets/defs/trafficVehicles."
+}

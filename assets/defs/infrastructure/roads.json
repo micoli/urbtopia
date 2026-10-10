@@ -1,0 +1,13 @@
+{
+  "$schema": "../schemas/infrastructure-roads.schema.json",
+  "pieces": {
+    "square": "roads-road-square",
+    "end": "roads-road-end",
+    "straight": "roads-road-straight",
+    "bend": "roads-road-bend",
+    "intersection": "roads-road-intersection",
+    "crossroad": "roads-road-crossroad",
+    "crossing": "roads-road-crossing",
+    "roundabout": "roads-road-roundabout"
+  }
+}

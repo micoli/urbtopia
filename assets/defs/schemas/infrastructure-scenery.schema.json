@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "parkTree": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    },
+    "roofPanel": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    },
+    "groundPanel": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    },
+    "customers": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "\\S",
+        "modelId": true
+      }
+    }
+  },
+  "required": [
+    "parkTree",
+    "roofPanel",
+    "groundPanel",
+    "customers"
+  ],
+  "additionalProperties": false,
+  "title": "Scenery",
+  "description": "assets/defs/infrastructure/scenery.json: park trees, solar panels and Venue visitors."
+}

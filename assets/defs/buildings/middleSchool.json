@@ -12,8 +12,8 @@
     "fr": "Collège"
   },
   "description": {
-    "en": "Continues the education of nearby Citizens. Optional: it raises Well-being.",
-    "fr": "Poursuit l’éducation des citoyens proches. Facultatif : il augmente le bien-être."
+    "en": "Continues the education of nearby Citizens. Optional: it raises Well-being. {reach, select, city {Covers the whole city} other {Square reach of {side} tiles}}, {limit, select, unlimited {unlimited capacity} other {capacity {tier1Capacity} Citizens, up to {maxTierCapacity} at Tier {tierCount}}}; demand {power} power{hasWater, select, yes { and {water} water} other {}}; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs, no operating cost.",
+    "fr": "Poursuit l’éducation des citoyens proches. Facultatif : il augmente le bien-être. {reach, select, city {Couvre toute la ville} other {Portée carrée de {side} cases}}, {limit, select, unlimited {capacité illimitée} other {capacité {tier1Capacity} citoyens, jusqu’à {maxTierCapacity} au niveau {tierCount}}}; consomme {power} d’électricité{hasWater, select, yes { et {water} d’eau} other {}}; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs, sans coût de fonctionnement."
   },
   "radius": 12,
   "tiers": [
@@ -73,6 +73,7 @@
     }
   ],
   "category": "education",
+  "detailModel": "commercial-detail-overhang",
   "power": 2,
   "water": 0
 }

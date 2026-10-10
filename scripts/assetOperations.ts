@@ -2,9 +2,10 @@ import { existsSync, mkdirSync, readdirSync, rmSync, rmdirSync, writeFileSync } 
 import { dirname, join } from 'node:path';
 import { EXTRA_PACKS_FILE, MANAGED_MODELS_DIR, POLY_PIZZA_DIR, ARCHIVES_DIR, QUATERNIUS_ARCHIVES_DIR, readExtraPacks } from './assetPacks.ts';
 import { extractFbx, extractPack } from './extractPack.ts';
-import { writeCollection } from './collectionFiles.ts';
-import { DEFS_ROOT, collectionDir, readCollection } from './collectionRead.ts';
+import { writeCollection, writeSingleton } from './collectionFiles.ts';
+import { DEFS_ROOT, collectionDir, readCollection, readSingleton, singletonFileIn } from './collectionRead.ts';
 import { COLLECTION_NAMES, specOf, type Definition } from './collections.ts';
+import { SINGLETON_NAMES, singletonSpecOf } from './singletons.ts';
 import { pathOf, setIn } from './paths.ts';
 import { MODELS_FILE, idByFile, modelIdOf, readModels, writeModels } from './modelsFile.ts';
 import { licenseText, type PolyPizzaModel } from './polyPizza.ts';
@@ -129,6 +130,12 @@ export function renameModel(from: string, to: string, paths = ASSET_PATHS): void
     if (dangling.length) throw new Error(`${specOf(name).title} with an unknown model: ${dangling.join(', ')}`);
     return { name, definitions };
   });
+  const singletons = SINGLETON_NAMES.filter(name => existsSync(singletonFileIn(name, paths.defs))).map(name => {
+    const value = readSingleton(name, paths.defs);
+    const references = singletonSpecOf(name).references?.(value as never) ?? [];
+    return { name, value: references.reduce((current, { id, path }) => (id === from ? (setIn(current, pathOf(path), to) as Record<string, unknown>) : current), value) };
+  });
   writeModels(renamed, paths.models);
   for (const { name, definitions } of rewired) writeCollection(name, definitions, collectionDir(name, paths.defs));
+  for (const { name, value } of singletons) writeSingleton(name, value, paths.defs);
 }

@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/traffic-vehicle.schema.json",
+  "kind": "trafficVehicle",
+  "order": 20,
+  "name": {
+    "en": "Sports sedan",
+    "fr": "Berline sportive"
+  },
+  "model": "cars-sedan-sports",
+  "weight": 1
+}

@@ -1,0 +1,7 @@
+{
+  "$schema": "../schemas/infrastructure-scenery.schema.json",
+  "parkTree": "suburban-tree-small",
+  "roofPanel": "industrial-solar-panel-flat",
+  "groundPanel": "industrial-solar-panel-landscape",
+  "customers": ["mini-characters-character-female-a", "mini-characters-character-male-a", "mini-characters-character-female-b", "mini-characters-character-male-b", "mini-characters-character-female-c", "mini-characters-character-male-c", "mini-characters-character-female-d", "mini-characters-character-male-d", "mini-characters-character-female-e", "mini-characters-character-male-e", "mini-characters-character-female-f", "mini-characters-character-male-f"]
+}

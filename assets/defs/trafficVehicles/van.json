@@ -1,0 +1,11 @@
+{
+  "$schema": "../schemas/traffic-vehicle.schema.json",
+  "kind": "trafficVehicle",
+  "order": 70,
+  "name": {
+    "en": "Van",
+    "fr": "Fourgonnette"
+  },
+  "model": "cars-van",
+  "weight": 1
+}

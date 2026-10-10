@@ -29,11 +29,11 @@ export { GROWTH_STAGES, cropStage, cropWaterDemand, isCropReady } from './farmin
 export type { CropStage } from './farming/growth';
 export { FIELD_COST, fieldCap } from './farming/fields';
 export { WATER, isWaterTile, waterKeys, waterTilesOf } from './water/waterTiles';
-export { BOATS, BOAT_FAMILIES, boatOperatingCost, casinoOf, boatTier, boatsOf, boatsOfMarina, isBoatOperating, waterStats } from './water/boats';
+export { BOATS, BOAT_FAMILIES, BOAT_MODELS, boatOperatingCost, casinoOf, boatTier, boatsOf, boatsOfMarina, isBoatOperating, waterStats } from './water/boats';
 export { BRIDGE_OPENING, boatsUsingBridge, closedFraction, closedFractionsByTile } from './water/bridgeOpenings';
 export { BRIDGES, BRIDGE_LENGTHS, bridgeAt, bridgeCost, bridgeEnds, bridgeKeys, bridgeTiles, bridgesOf } from './water/bridges';
 export { FISHING, fishingSlots, readyCycles, readyFish } from './water/fishing';
-export { MARINA_TIERS, connectedWaterKeys, marinaCapacity, touchesWater } from './water/marina';
+export { connectedWaterKeys, marinaCapacity, touchesWater } from './water/marina';
 export { cropReturns, type CropReturns } from './farming/returns';
 export { seedSellPrice, seedStockCapacity, seedStockUsed } from './farming/seeds';
 export { CROPS, CROP_IDS, isCrop } from './farming/crops';
@@ -64,6 +64,7 @@ export { climateStats } from './environment/climate';
 export { transportStats, routeForLine, routeFailure } from './transit/transport';
 export type { BusLine } from './engine/state';
 
+export { FLEET_VEHICLES, BUS_MODEL_FILE, TRAFFIC_VEHICLE_ENTRIES, SERVICE_VEHICLE_ENTRIES, TRANSIT_VEHICLE_ENTRIES } from './transit/vehicles';
 export { TRANSIT, networkTiles, networkNeighbours, validNetworkCrossings, extendNetwork, brokenLinkCount, buildNetworkGraph } from './transit/transitNetwork';
 export type { TransitLine, TransitMode, TransitTile, TransitVehicle, TransitVehicleKind } from './engine/state';
 

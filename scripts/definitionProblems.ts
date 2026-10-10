@@ -1,5 +1,6 @@
 import type { z } from 'zod';
-import type { BuildingDefinitions } from '../src/core/buildings/buildingDefinition.ts';
+import type { BuildingDefinitions, FlatBuilding } from '../src/core/buildings/buildingDefinition.ts';
+import { descriptionProblemsOf } from '../src/core/descriptions/descriptionProblems.ts';
 import { buildingSchema } from '../src/core/buildings/buildingSchema.ts';
 import { MODEL_ID_PATTERN, modelSchema, type ModelEntry } from '../src/core/models/modelSchema.ts';
 import { COLLECTION_NAMES, specOf, type CollectionName, type Collections, type Definition, type Reference } from './collections.ts';
@@ -65,7 +66,10 @@ export function collectionProblems(name: CollectionName, definitions: Record<str
       ...(duplicate ? [{ id, path: '', message: 'id differs from another one by case only' }] : []),
     ];
   });
-  const shapeProblems = Object.entries(definitions).flatMap(([id, definition]) => schemaProblems(id, spec.schema, definition));
+  const shapeProblems = Object.entries(definitions).flatMap(([id, definition]) => {
+    const shape = schemaProblems(id, spec.schema, definition);
+    return shape.length || name !== 'buildings' ? shape : descriptionProblemsOf(definition as FlatBuilding).map(problem => ({ id, ...problem }));
+  });
   const references = context ? Object.entries(definitions).flatMap(([id, definition]) => spec.references(definition as never).flatMap(reference => referenceProblem(id, reference, context))) : [];
   return [...idProblems, ...shapeProblems, ...references];
 }
@@ -73,9 +77,17 @@ export function collectionProblems(name: CollectionName, definitions: Record<str
 export const allCollectionProblems = (collections: Collections, catalog: ModelCatalog): CollectionProblem[] =>
   COLLECTION_NAMES.flatMap(name => collectionProblems(name, collections[name], { collections, catalog }).map(problem => ({ ...problem, collection: name })));
 
-export const singletonProblems = (name: SingletonName, value: unknown): Problem[] => schemaProblems(name, singletonSpecOf(name).schema, value);
+// Shape and, given a context, the Model ids it points to; references are only checked when the shape holds.
+export function singletonProblems(name: SingletonName, value: unknown, context?: ReferenceContext): Problem[] {
+  const spec = singletonSpecOf(name);
+  const shape = schemaProblems(name, spec.schema, value);
+  if (shape.length) return shape;
+  const checks = (spec.problems?.(value as never) ?? []).map(problem => ({ id: name, ...problem }));
+  const references = context && spec.references ? spec.references(value as never).flatMap(reference => referenceProblem(name, reference, context)) : [];
+  return [...checks, ...references];
+}
 
-export const allSingletonProblems = (singletons: Singletons): Problem[] => SINGLETON_NAMES.flatMap(name => singletonProblems(name, singletons[name]));
+export const allSingletonProblems = (singletons: Singletons, context?: ReferenceContext): Problem[] => SINGLETON_NAMES.flatMap(name => singletonProblems(name, singletons[name], context));
 
 export const allBuildingProblems = (definitions: BuildingDefinitions, catalog?: ModelCatalog): Problem[] =>
   collectionProblems('buildings', definitions as Record<string, Definition>, catalog ? { collections: {}, catalog } : undefined);

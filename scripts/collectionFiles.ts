@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { z } from 'zod';
-import { DEFS_ROOT, collectionDir, idOfFile, jsonFilesIn, readCollections } from './collectionRead.ts';
+import { DEFS_ROOT, collectionDir, singletonFileIn, idOfFile, jsonFilesIn, readCollections } from './collectionRead.ts';
 import { singletonSpecOf, type SingletonName } from './singletons.ts';
 import { fieldOrderOf, specOf, type CollectionName, type Definition } from './collections.ts';
 import { collectionProblems, describeProblem, singletonProblems, type ReferenceContext } from './definitionProblems.ts';
@@ -27,13 +27,13 @@ export const singletonSchemaFileOf = (name: SingletonName) => `${SCHEMAS_DIR}/${
 export const singletonJsonSchemaOf = (name: SingletonName): string => `${JSON.stringify(z.toJSONSchema(singletonSpecOf(name).schema), null, 2)}\n`;
 
 export const stableSingletonJson = (name: SingletonName, value: Record<string, unknown>): string =>
-  `${inlineScalarArrays(JSON.stringify({ $schema: `schemas/${singletonSpecOf(name).schemaName}.schema.json`, ...value }, null, 2))}\n`;
+  `${inlineScalarArrays(JSON.stringify({ $schema: relative(dirname(singletonSpecOf(name).file), singletonSchemaFileOf(name)), ...value }, null, 2))}\n`;
 
-export function writeSingleton(name: SingletonName, value: Record<string, unknown>): void {
+export function writeSingleton(name: SingletonName, value: Record<string, unknown>, root = DEFS_ROOT): void {
   const problems = singletonProblems(name, value);
   if (problems.length) throw new Error(problems.map(describeProblem).join('; '));
-  writeIfChanged(singletonSpecOf(name).file, stableSingletonJson(name, value));
-  writeIfChanged(singletonSchemaFileOf(name), singletonJsonSchemaOf(name));
+  writeIfChanged(singletonFileIn(name, root), stableSingletonJson(name, value));
+  if (root === DEFS_ROOT) writeIfChanged(singletonSchemaFileOf(name), singletonJsonSchemaOf(name));
 }
 
 export const jsonSchemaOf = (name: CollectionName): string => `${JSON.stringify(z.toJSONSchema(specOf(name).schema), null, 2)}\n`;
