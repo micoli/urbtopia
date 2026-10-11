@@ -1,5 +1,5 @@
 import { Fragment, useId, useState } from 'react';
-import { BUILDING_SPECS, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, isFacilityType, totalCitizens, placementCost } from '../../core';
+import { BUILDING_SPECS, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, isFacilityType, totalCitizens, placementCost, isHomeType } from '../../core';
 import { t } from '../../i18n/t';
 import { FlyoutItem } from '../layout/FlyoutItem';
 import { useGame, useUi } from '../common/hooks';
@@ -8,7 +8,7 @@ import { UrbsAmount } from '../common/UrbsAmount';
 import { FieldTools } from './FieldTools';
 import { RoadMenu } from './RoadMenu';
 import { BUILDING_SECTIONS, readBuildSection, writeBuildSection, type BuildSection } from './buildMenuSections';
-import { codexImageKey, type CodexId } from '../../codex/catalog';
+import { codexImageKey, isHomeCodexId, solarCodexIdOf, type CodexId } from '../../codex/catalog';
 import { useCodexManifest } from '../codex/useCodexManifest';
 import type { HomeColorVariant } from '../../core';
 import { HOME_COLOR_VARIANTS, readHomeColor, writeHomeColor } from '../buildings/homeColor';
@@ -28,7 +28,7 @@ export function BuildMenuContent() {
   const menuId = useId();
   const { manifest } = useCodexManifest();
   const previewOf = (id: CodexId) => {
-    const variant = id === 'home' || id === 'solarHome' ? homeColor : undefined;
+    const variant = isHomeCodexId(id) ? homeColor : undefined;
     const image = manifest?.images[codexImageKey(id, 1, variant)];
     return image ? `${import.meta.env.BASE_URL}codex/${image}` : undefined;
   };
@@ -51,33 +51,86 @@ export function BuildMenuContent() {
           const expanded = activeSection === section.title;
           const sectionId = `${menuId}-${section.title}`;
           return (
-            <AccordionSection key={section.title} id={sectionId} title={t(section.title)} expanded={expanded} chevron lockWhenExpanded guided={section.types.some(type => guide.buildings.includes(type))} className="build-section" toggleClassName="build-section-toggle" contentClassName="build-section-items" onToggle={() => selectSection(section.title)}>
+              <AccordionSection
+                  key={section.title}
+                  id={sectionId}
+                  title={t(section.title)}
+                  expanded={expanded}
+                  chevron
+                  lockWhenExpanded
+                  guided={section.types.some(type => guide.buildings.includes(type))}
+                  className="build-section"
+                  toggleClassName="build-section-toggle"
+                  contentClassName="build-section-items"
+                  onToggle={() => selectSection(section.title)}
+              >
                 {section.title === 'build.housing' && <RadioChipGroup
-                  variant="toggle"
-                  className="home-color-picker"
-                  label={t('build.homeColor')}
-                  options={HOME_COLOR_VARIANTS.map(variant => ({ value: variant, label: <><span className={`home-color-swatch home-color-swatch-${variant}`} aria-hidden="true" /><span>{t(`build.homeColor.${variant}`)}</span></> }))}
-                  value={homeColor}
-                  onChange={variant => { setHomeColor(variant); writeHomeColor(variant); }}
+                    variant="toggle"
+                    className="home-color-picker"
+                    label={t('build.homeColor')}
+                    options={HOME_COLOR_VARIANTS.map(variant => ({
+                      value: variant,
+                      label: <><span className={`home-color-swatch home-color-swatch-${variant}`}
+                                     aria-hidden="true"/><span>{t(`build.homeColor.${variant}`)}</span></>
+                    }))}
+                    value={homeColor}
+                    onChange={variant => {
+                      setHomeColor(variant);
+                      writeHomeColor(variant);
+                    }}
                 />}
                 {section.types.map((type, index) => (
-                  <Fragment key={type}>
-                  {isFacilityType(type) && FACILITIES[type].category !== categoryOf(section.types[index - 1]) && <h4 className="build-category">{t(`service.${FACILITIES[type].category}`)}</h4>}
-                  <FlyoutItem
-                    label={t(`building.${type}`)}
-                    badge={BUILDING_SPECS[type].accessModes.includes('brt') ? t('build.brtCompatible') : undefined}
-                    cost={<UrbsAmount value={placementCost(type)} />}
-                    guided={guide.buildings.includes(type)}
-                    onChoose={() => chooseTool({ kind: 'building', buildingType: type, ...(type === 'home' ? { colorVariant: homeColor } : {}) })}
-                    codexId={type}
-                    preview={previewOf(type)}
-                    onInfo={() => openCodex(type)}
-                  />
-                  </Fragment>
+                    <Fragment key={type}>
+                      {isFacilityType(type) && FACILITIES[type].category !== categoryOf(section.types[index - 1]) &&
+                          <h4 className="build-category">{t(`service.${FACILITIES[type].category}`)}</h4>}
+                      <FlyoutItem
+                          label={t(`building.${type}`)}
+                          badge={undefined/*BUILDING_SPECS[type].accessModes.includes('brt') ? t('build.brtCompatible') : undefined*/}
+                          cost={<UrbsAmount value={placementCost(type)}/>}
+                          guided={guide.buildings.includes(type)}
+                          onChoose={() => chooseTool({
+                            kind: 'building',
+                            buildingType: type, ...(isHomeType(type) ? {colorVariant: homeColor} : {})
+                          })}
+                          codexId={type}
+                          preview={previewOf(type)}
+                          onInfo={() => openCodex(type)}
+                      />
+                    </Fragment>
                 ))}
-                {section.title === 'build.production' && <FieldTools />}
-                {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem label={t('eco.solarHome')} badge={BUILDING_SPECS.home.accessModes.includes('brt') ? t('build.brtCompatible') : undefined} cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost} />} onChoose={() => chooseTool({ kind: 'building', buildingType: 'home', solar: true, colorVariant: homeColor })} codexId="solarHome" preview={previewOf('solarHome')} onInfo={() => openCodex('solarHome')} />}
-            </AccordionSection>
+                {section.title === 'build.production' && <FieldTools/>}
+                {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem
+                    label={t('eco.solarHome')}
+                    badge={BUILDING_SPECS.home.accessModes.includes('brt') ? t('build.brtCompatible') : undefined}
+                    cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost}/>}
+                    onChoose={() => chooseTool({
+                      kind: 'building',
+                      buildingType: 'home',
+                      solar: true,
+                      colorVariant: homeColor
+                    })}
+                    codexId="solarHome"
+                    preview={previewOf('solarHome')}
+                    onInfo={() => openCodex('solarHome')}
+                />}
+                {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && section.types.filter(type => isHomeType(type) && type !== 'home').map(type => (
+                    <FlyoutItem
+                        key={`${type}-solar`}
+                        label={t(`building.solar-${type}`)}
+                        badge={undefined/*BUILDING_SPECS[type].accessModes.includes('brt') ? t('build.brtCompatible') : undefined*/}
+                        cost={<UrbsAmount value={placementCost(type) + ECOLOGY.solarCost}/>}
+                        onChoose={() => chooseTool({
+                          kind: 'building',
+                          buildingType: type,
+                          solar: true,
+                          colorVariant: homeColor
+                        })}
+                        codexId={solarCodexIdOf(type)}
+                        preview={previewOf(solarCodexIdOf(type))}
+                        onInfo={() => openCodex(solarCodexIdOf(type))}
+                    />
+                ))}
+              </AccordionSection>
           );
         })}
       </>

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useStore } from 'zustand';
-import { Building, Command, isShopType, isVenue, itemModelOf, taxDue, takingsDue } from '../../core';
+import { Building, Command, isShopType, isVenue, itemModelOf, taxDue, takingsDue, isHomeType } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { gameStore } from '../../store/gameStore';
 import { useProjectedPosition } from '../common/useProjectedPosition';
@@ -23,7 +23,7 @@ export function collectBadgeLabel(building: Building): string | null {
     const earned = building.stacks.reduce((total, stack) => total + stack.earned, 0);
     return earned > 0 ? `+${earned}` : null;
   }
-  if (building.type === 'home') {
+  if (isHomeType(building.type)) {
     const due = taxDue(building);
     return due > 0 ? `+${due}` : null;
   }

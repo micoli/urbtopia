@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { BUILDING_SPECS, CROPS, CROP_IDS, FACILITIES, FACILITY_TYPES, ECOLOGY, ECOLOGY_UNLOCKS, TRANSIT, WATER, BRIDGES, maxTierOf, type BuildingType } from '../core';
-import { CODEX_ENTRIES, codexImageKey, HOME_COLOR_VARIANTS, validateCodex, validateCodexManifest } from './catalog';
+import { BUILDING_SPECS, CROPS, CROP_IDS, FACILITIES, FACILITY_TYPES, ECOLOGY, ECOLOGY_UNLOCKS, TRANSIT, WATER, BRIDGES, isHomeType, maxTierOf, type BuildingType } from '../core';
+import { CODEX_ENTRIES, codexImageKey, isHomeCodexId, solarBaseOf, solarCodexIdOf, HOME_COLOR_VARIANTS, validateCodex, validateCodexManifest } from './catalog';
 import { ROAD_CONSTRUCTIONS } from './construction';
 import { WATER_CONSTRUCTIONS } from './waterConstructions';
 import { codexSnapshot } from './snapshot';
@@ -58,7 +58,7 @@ describe('codex coverage gate', () => {
 
   it('requires a complete page for every constructible, including locked objects', () => {
     expect(() => validateCodex()).not.toThrow();
-    const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...ROAD_CONSTRUCTIONS.map(item => item.id), ...WATER_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
+    const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...Object.keys(BUILDING_SPECS).filter(type => isHomeType(type) && type !== 'home').map(type => solarCodexIdOf(type as BuildingType)), ...ROAD_CONSTRUCTIONS.map(item => item.id), ...WATER_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
     expect(CODEX_ENTRIES.map(entry => entry.id).sort()).toEqual(expected.sort());
     for (const id of expected) {
       expect(() => validateCodex(CODEX_ENTRIES.filter(entry => entry.id !== id)), id).toThrow('Every constructible');
@@ -92,7 +92,7 @@ describe('codex coverage gate', () => {
 
   it('blocks a manifest when any level image is missing', () => {
     const images = Object.fromEntries(CODEX_ENTRIES.flatMap(entry => entry.levels.flatMap(level => {
-      const colors = entry.id === 'home' || entry.id === 'solarHome' ? HOME_COLOR_VARIANTS : [undefined];
+      const colors = isHomeCodexId(entry.id) ? HOME_COLOR_VARIANTS : [undefined];
       return colors.map(color => [codexImageKey(entry.id, level, color), 'preview.png']);
     })));
     expect(() => validateCodexManifest({ fingerprint: 'test', images })).not.toThrow();
@@ -106,7 +106,7 @@ describe('codex coverage gate', () => {
 
 describe('codex snapshots', () => {
   it('uses real models for all building tiers and keeps all solar Home panels', () => {
-    for (const entry of CODEX_ENTRIES.filter(entry => entry.id in BUILDING_SPECS || entry.id === 'solarHome')) {
+    for (const entry of CODEX_ENTRIES.filter(entry => entry.id in BUILDING_SPECS || solarBaseOf(entry.id))) {
       for (const level of entry.levels) {
         const state = codexSnapshot(entry.id, level);
         const building = state.buildings[0]!;
@@ -114,9 +114,9 @@ describe('codex snapshots', () => {
         expect(state.buildings).toHaveLength(1);
         const items = renderItemsOf(state);
         expect(items[0]?.model).toBe(modelOfBuilding(building));
-        if (entry.id === 'solarHome') {
+        if (solarBaseOf(entry.id)) {
           expect(building.solar).toBe(true);
-          if (level > 4) expect(items.some(item => !!item.roofBase)).toBe(true);
+          if (entry.id === 'solarHome' && level > 4) expect(items.some(item => !!item.roofBase)).toBe(true);
         }
       }
     }

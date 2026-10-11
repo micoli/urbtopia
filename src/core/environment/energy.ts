@@ -3,6 +3,7 @@ import { transitServices } from '../transit/transitService';
 import { ECOLOGY, distance, economicPower, homePower } from './ecology';
 import { COAL_CAPACITY, UTILITY_CAPACITY } from '../economy/economy';
 import type { Building, GameState } from '../engine/state';
+import { isHomeType } from '../buildings/buildingDefinitions';
 
 export function productionFactors(now: number) {
   const hour = Math.floor(now / ECOLOGY.hourMs);
@@ -17,11 +18,11 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   const transitDemand = transitServices(state, now).reduce((n, line) => n + line.powerDemand, 0);
   let transitSupplied: number;
   const buildings = [...state.buildings].sort((a, b) => a.id - b.id);
-  const homes = buildings.filter(b => b.type === 'home'), casinos = buildings.filter(b => b.type === 'casino'), arcades = buildings.filter(b => isVenueType(b.type)), economic = buildings.filter(b => b.type !== 'casino' && !isVenueType(b.type) && economicPower(b) > 0);
+  const homes = buildings.filter(b => isHomeType(b.type)), casinos = buildings.filter(b => b.type === 'casino'), arcades = buildings.filter(b => isVenueType(b.type)), economic = buildings.filter(b => b.type !== 'casino' && !isVenueType(b.type) && economicPower(b) > 0);
   const factors = productionFactors(now + (state.timeOffset ?? 0));
-  const need = new Map(buildings.map(b => [b.id, b.type === 'home' ? homePower(b) : economicPower(b)]));
+  const need = new Map(buildings.map(b => [b.id, isHomeType(b.type) ? homePower(b) : economicPower(b)]));
   const supplied = new Map(buildings.map(b => [b.id, 0]));
-  const generation = buildings.filter(b => b.type === 'solar' || b.type === 'powerPlant' || (b.type === 'home' && b.solar));
+  const generation = buildings.filter(b => b.type === 'solar' || b.type === 'powerPlant' || (isHomeType(b.type) && b.solar));
   const output = (b: Building) => b.type === 'powerPlant' ? (UTILITY_CAPACITY.powerPlant[b.tier - 1] ?? 0) * factors.wind : (b.type === 'solar' ? ECOLOGY.solarOutput : 2 * b.tier) * factors.solar;
   const surplus = new Map(generation.map(b => [b.id, output(b)]));
   const transfers: { from: number; to: number; amount: number; }[] = [];
@@ -72,8 +73,8 @@ export function energyStats(state: GameState, now = state.lastSeen) {
     const nearby = [...homes, ...economic].filter(b => distance(b, battery) <= ECOLOGY.batteryRadius);
     const missing = nearby.reduce((n, b) => n + (need.get(b.id) ?? 0), 0);
     const discharge = (battery.storedEnergy ?? 0) > 1e-9 ? Math.min(ECOLOGY.batteryRate, missing) : 0;
-    let used = distribute(nearby.filter(b => b.type === 'home'), discharge);
-    used += distribute(nearby.filter(b => b.type !== 'home'), discharge - used);
+    let used = distribute(nearby.filter(b => isHomeType(b.type)), discharge);
+    used += distribute(nearby.filter(b => !isHomeType(b.type)), discharge - used);
     const transitDischarge = (battery.storedEnergy ?? 0) > 1e-9 ? Math.min(ECOLOGY.batteryRate - used, transitDemand - transitSupplied) : 0;
     transitSupplied += transitDischarge; used += transitDischarge;
     batteryRates.set(battery.id, -used);

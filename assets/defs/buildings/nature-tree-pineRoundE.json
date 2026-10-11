@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1920,
+  "order": 1930,
   "model": "nature-tree-pinerounde",
   "name": {
     "en": "Tree pine round E",

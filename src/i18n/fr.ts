@@ -215,7 +215,7 @@ export const FR: Record<MessageKey, string> = {
   "codex.description.rail": "Une voie ferrée reliant les gares. Les trains électriques et à charbon partagent les mêmes rails ; les croisements préservent chaque réseau indépendamment.",
   'build.housing': 'Logements',
   'build.homeColor': 'Couleur des logements',
-  'build.brtCompatible': 'Compatible BRT',
+  'build.brtCompatible': 'BRT',
   'build.homeColor.default': 'Vert',
   'build.homeColor.a': 'Bleu',
   'build.homeColor.b': 'Rouge',

@@ -1,12 +1,12 @@
 import {
   CASINO_GAMES, COAL_CAPACITY, marinaCapacity, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
-  FIXTURES, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType,
+  FIXTURES, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
   type StorageType, isShopType, sellableGoodsOf, shopTierOf,
 } from '../core';
 import { t } from '../i18n/t';
 import type { MessageKey } from '../i18n/messages';
-import type { CodexId } from './catalog';
+import { isHomeCodexId, solarBaseOf, type CodexId } from './catalog';
 
 export interface LevelFact {
   label: MessageKey;
@@ -31,7 +31,7 @@ function textFact(label: MessageKey, textOf: (level: number) => string, level: n
 
 const footprintText = (width: number, depth: number) => `${Math.max(width, depth)}×${Math.min(width, depth)}`;
 
-function buildingFootprintFact(type: 'home' | 'casino', level: number): LevelFact {
+function buildingFootprintFact(type: BuildingType, level: number): LevelFact {
   const text = (tier: number) => {
     const { width, depth } = footprintOf(type, 0, tier);
     return footprintText(width, depth);
@@ -78,11 +78,11 @@ function venueFacts(type: VenueType, level: number): LevelFact[] {
 }
 
 export function levelFactsOf(id: CodexId, level: number): LevelFact[] {
-  if (id === 'home' || id === 'solarHome') return [
+  if (isHomeCodexId(id)) return [
     numericFact('codex.fact.citizens', tier => homeTier(tier).citizens, level),
     numericFact('codex.fact.power', tier => homeTier(tier).power, level),
     numericFact('codex.fact.water', tier => homeTier(tier).water, level),
-    buildingFootprintFact('home', level),
+    buildingFootprintFact(solarBaseOf(id) ?? id as BuildingType, level),
   ];
   if (id === 'workshop' || id === 'factory' || id === 'packhouse') return [
     numericFact('codex.fact.craftTime', tier => productionTierOf({ type: id, tier }).durationFactor, level, percent),

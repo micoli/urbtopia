@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1670,
+  "order": 1680,
   "model": "nature-tree-blocks-fall",
   "name": {
     "en": "Tree block crown autumn",

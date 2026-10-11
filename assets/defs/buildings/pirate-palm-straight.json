@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 2210,
+  "order": 2220,
   "model": "pirate-palm-straight",
   "name": {
     "en": "Palm straight · Pirate",

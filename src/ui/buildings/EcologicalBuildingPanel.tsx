@@ -5,8 +5,7 @@ import {
     greenSpaceCoverage,
     homePower,
     transportStats,
-    type Building
-} from '../../core';
+    type Building, isHomeType } from '../../core';
 import {lineStatusKey} from '../stats/management/transit/lineStatusKey';
 import {t} from '../../i18n/t';
 import {useGame, useUi} from '../common/hooks';
@@ -68,7 +67,7 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
             }
         </DrawerPanel.LabelValue>}
 
-        {building.type === 'home' && building.solar && <DrawerPanel.LabelValue
+        {isHomeType(building.type) && building.solar && <DrawerPanel.LabelValue
             label={t('eco.solar')}
             value={<>{(2 * building.tier * productionFactors(state.lastSeen + (state.timeOffset ?? 0)).solar).toFixed(1)} /
                 h</>}

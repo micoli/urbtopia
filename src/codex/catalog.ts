@@ -1,5 +1,5 @@
 import { BUILDING_ENTRIES } from '../core/buildings/buildingDefinitions';
-import { BUILDING_SPECS, CROPS, CROP_IDS, ECOLOGY, ECOLOGY_UNLOCKS, isCrop, maxTierOf, type BuildingType, type CropId } from '../core';
+import { BUILDING_SPECS, CROPS, CROP_IDS, ECOLOGY, ECOLOGY_UNLOCKS, isCrop, isHomeType, maxTierOf, type BuildingType, type CropId } from '../core';
 import { MESSAGES, type MessageKey } from '../i18n/messages';
 import { FR } from '../i18n/fr';
 import { BUILDING_SECTIONS, type BuildSection } from './buildingSections';
@@ -9,12 +9,14 @@ import type { HomeColorVariant } from '../core';
 
 export const HOME_COLOR_VARIANTS: readonly HomeColorVariant[] = ['default', 'a', 'b', 'c'];
 
-export type CodexId = BuildingType | 'solarHome' | RoadConstructionId | WaterConstructionId | CropId;
+export type SolarHomeCodexId = `solar-${BuildingType}`;
+export type CodexId = BuildingType | 'solarHome' | SolarHomeCodexId | RoadConstructionId | WaterConstructionId | CropId;
 export type CodexSection = BuildSection | 'codex.roads' | 'codex.water' | 'codex.crops';
 
 const DESCRIPTIONS = {
   ...Object.fromEntries(BUILDING_ENTRIES.map(({ id, family }) => [id, family ? `codex.description.nature.${family}` : `codex.description.${id}`])) as Record<BuildingType, MessageKey>,
   solarHome: 'codex.description.solarHome',
+  ...Object.fromEntries(BUILDING_ENTRIES.map(({ id }) => [`solar-${id}`, 'codex.description.solarHome'])) as Record<SolarHomeCodexId, MessageKey>,
   road: 'codex.description.road',
   crossing: 'codex.description.crossing',
   roundabout: 'codex.description.roundabout',
@@ -38,6 +40,8 @@ export interface CodexManifest {
   fingerprint: string;
   images: Record<string, string>;
 }
+
+export const solarCodexIdOf = (type: BuildingType): SolarHomeCodexId => `solar-${type}`;
 
 const levelsOf = (type: BuildingType) => Array.from({ length: maxTierOf(type) }, (_, i) => i + 1);
 
@@ -64,7 +68,10 @@ export const CODEX_ENTRIES: readonly CodexEntry[] = [
     if (section.title === 'build.housing') entries.push({
       id: 'solarHome', section: section.title, name: 'eco.solarHome', description: DESCRIPTIONS.solarHome,
       unlockCitizens: ECOLOGY.solarUnlockCitizens, levels: levelsOf('home'),
-    });
+    }, ...section.types.filter(type => isHomeType(type) && type !== 'home').map((type): CodexEntry => ({
+      id: solarCodexIdOf(type), section: section.title, name: `building.solar-${type}` as MessageKey, description: DESCRIPTIONS.solarHome,
+      unlockCitizens: ECOLOGY.solarUnlockCitizens, levels: levelsOf(type),
+    })));
     return entries;
   }),
   ...CROP_IDS.map((id): CodexEntry => ({
@@ -81,14 +88,22 @@ export const CODEX_ENTRIES: readonly CodexEntry[] = [
   })),
 ];
 
+// The Home a solar codex page shows, or null for any other page.
+export function solarBaseOf(id: string): BuildingType | null {
+  if (id === 'solarHome') return 'home';
+  return id.startsWith('solar-') ? id.slice('solar-'.length) as BuildingType : null;
+}
+
+export const isHomeCodexId = (id: string): boolean => solarBaseOf(id) !== null || isHomeType(id);
+
 export function codexImageKey(id: CodexId, level: number, colorVariant?: HomeColorVariant): string {
   const key = `${id}:${level}`;
-  if (id !== 'home' && id !== 'solarHome') return key;
+  if (!isHomeCodexId(id)) return key;
   return `${key}:${colorVariant ?? 'default'}`;
 }
 
 export function validateCodex(entries: readonly CodexEntry[] = CODEX_ENTRIES): void {
-  const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...ROAD_CONSTRUCTIONS.map(item => item.id), ...WATER_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
+  const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...Object.keys(BUILDING_SPECS).filter(type => isHomeType(type) && type !== 'home').map(type => solarCodexIdOf(type as BuildingType)), ...ROAD_CONSTRUCTIONS.map(item => item.id), ...WATER_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
   if (entries.length !== expected.length || expected.some(id => entries.filter(entry => entry.id === id).length !== 1)) {
     throw new Error('Every constructible must have exactly one codex entry');
   }
@@ -97,7 +112,7 @@ export function validateCodex(entries: readonly CodexEntry[] = CODEX_ENTRIES): v
     for (const key of [entry.name, entry.section, entry.description]) {
       if (!MESSAGES[key]?.trim() || !FR[key]?.trim()) throw new Error(`Missing codex translation: ${key}`);
     }
-    const buildingType = entry.id === 'solarHome' ? 'home' : entry.id;
+    const buildingType = solarBaseOf(entry.id) ?? entry.id;
     const levels = buildingType in BUILDING_SPECS ? levelsOf(buildingType as BuildingType) : isCrop(entry.id) ? CROP_CODEX_LEVELS : [1];
     if (JSON.stringify(entry.levels) !== JSON.stringify(levels)) throw new Error(`Missing codex levels: ${entry.id}`);
     if (!Number.isInteger(entry.unlockCitizens) || entry.unlockCitizens < 0) throw new Error(`Invalid codex unlock: ${entry.id}`);
@@ -109,7 +124,7 @@ export function validateCodexManifest(manifest: CodexManifest): void {
   if (!manifest.fingerprint || !manifest.images) throw new Error('Invalid codex manifest');
   for (const entry of CODEX_ENTRIES) {
     for (const level of entry.levels) {
-      const variants = entry.id === 'home' || entry.id === 'solarHome' ? HOME_COLOR_VARIANTS : [undefined];
+      const variants = isHomeCodexId(entry.id) ? HOME_COLOR_VARIANTS : [undefined];
       for (const colorVariant of variants) {
         const image = manifest.images[codexImageKey(entry.id, level, colorVariant)];
         if (!image || !/^[a-zA-Z0-9-]+\.png$/.test(image)) throw new Error(`Missing codex image: ${entry.id}, level ${level}, color ${colorVariant ?? 'default'}`);

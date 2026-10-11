@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1600,
+  "order": 1610,
   "model": "nature-stone-tallj",
   "name": {
     "en": "Stone tall J",

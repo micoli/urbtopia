@@ -4,6 +4,7 @@ import { centerOf } from '../environment/ecology';
 import { isWithinReach } from '../services/facilities';
 import type { Building, GameState, VenueType } from '../engine/state';
 import { venueTierOf } from './profiles';
+import { isHomeType } from '../buildings/buildingDefinitions';
 
 export const VENUE = { hourMs: 3_600_000, ...venues.venue };
 
@@ -19,7 +20,7 @@ export const priceAcceptance = (price: number): number => Math.min(1, Math.max(0
 export function neighbourhoodVisitors(state: GameState, venue: Building, perCitizen: number): number {
   const to = centerOf(venue);
   const citizens = state.buildings.reduce((total, home) => {
-    if (home.type !== 'home') return total;
+    if (!isHomeType(home.type)) return total;
     const from = centerOf(home);
     return isWithinReach(from.x - to.x, from.y - to.y, VENUE.reachRadius) ? total + citizensOf(home.tier) : total;
   }, 0);

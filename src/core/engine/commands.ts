@@ -39,6 +39,7 @@ import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapa
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import type { BlackjackAction } from '../leisure/blackjack';
 import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
+import { isHomeType } from '../buildings/buildingDefinitions';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -446,14 +447,14 @@ function strandsBuilding(before: GameState, after: GameState): boolean {
 
 function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, requestedRotation?: Rotation, solar = false, colorVariant?: HomeColorVariant): CommandOutcome {
   if (isRetired(type) || citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < ECOLOGY.solarUnlockCitizens)) return fail('error.itemLocked');
-  if (solar && type !== 'home') return fail('error.cannotProduce');
+  if (solar && !isHomeType(type)) return fail('error.cannotProduce');
   const extraCost = solar ? ECOLOGY.solarCost : 0;
   const rotation = requestedRotation ?? autoRotation(state, type, x, y);
   const issue = placementIssue(state, type, x, y, rotation);
   if (issue) return fail(issue);
   if (state.urbs < placementCost(type) + extraCost) return fail('error.notEnoughUrbs');
-  const building = { ...createBuilding(state.nextId, type, x, y, rotation), ...(solar ? { solar: true } : {}), ...(type === 'home' && colorVariant ? { colorVariant } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
-  const utilityIssue = type === 'home' ? utilityIssueFor(state, tierDemand(1)) : isFacilityType(type) ? utilityIssueFor(state, { power: 0, water: FACILITIES[type].water }) : null;
+  const building = { ...createBuilding(state.nextId, type, x, y, rotation), ...(solar ? { solar: true } : {}), ...(isHomeType(type) && colorVariant ? { colorVariant } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
+  const utilityIssue = isHomeType(type) ? utilityIssueFor(state, tierDemand(1)) : isFacilityType(type) ? utilityIssueFor(state, { power: 0, water: FACILITIES[type].water }) : null;
   if (utilityIssue) return fail(utilityIssue);
   return {
     state: { ...state, urbs: state.urbs - placementCost(type) - extraCost, nextId: state.nextId + 1, buildings: [...state.buildings, building] },
@@ -560,7 +561,7 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
   if (isShopType(building.type)) return collectShopEarnings(state, building);
-  if (building.type === 'home') return collectTax(state, building);
+  if (isHomeType(building.type)) return collectTax(state, building);
   if (isVenue(building)) return collectTakings(state, building);
   if (!building.queue.some((entry) => entry.done)) return fail('error.nothingToCollect');
   if (!hasStorage(state)) return fail('error.noStorehouse');
@@ -721,7 +722,7 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
   const nextTier = building.tier + 1;
   const cost = upgradeCostOf(building.type, nextTier);
   if (!cost) return fail('error.maxTier');
-  const isHome = building.type === 'home';
+  const isHome = isHomeType(building.type);
   if (isHome && missingServices(serviceCoverage(state), building, nextTier).length > 0) return fail('error.serviceRequired');
   if (isHome || building.type === 'casino') {
     const footprintIssue = placementIssue(state, building.type, building.x, building.y, building.rotation, {
@@ -760,7 +761,7 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
 
 function equipHome(state: GameState, id: number, equipment: 'solar' | 'insulation'): CommandOutcome {
   const home = state.buildings.find(b => b.id === id);
-  if (!home || home.type !== 'home') return fail('error.unknownBuilding');
+  if (!home || !isHomeType(home.type)) return fail('error.unknownBuilding');
   const field = equipment === 'solar' ? 'solar' : 'insulated';
   if (home[field]) return fail('error.alreadyEquipped');
   if (citizenCount(state) < (equipment === 'solar' ? ECOLOGY.solarUnlockCitizens : 6)) return fail('error.itemLocked');

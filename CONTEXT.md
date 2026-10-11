@@ -352,6 +352,10 @@ _Avoid_: Random key, map code
 A Home equipped with panels that first cover its own power Demand and can share surplus with nearby Homes.
 _Avoid_: Solar house, solar residence
 
+**Mansard Home**:
+A Home sold in three fixed footprints (1×1, 1×2, 2×2) whose five Tiers each add a floor, available in three colors and with solar panels. It shares the population and utility Demand of the first five Tiers of a Home.
+_Avoid_: Mansard house, attic home
+
 **Insulation**:
 A paid Home improvement that reduces power Demand independently of solar equipment.
 _Avoid_: Energy generation, Home Tier

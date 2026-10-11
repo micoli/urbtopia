@@ -11,6 +11,7 @@ import { WALKING } from '../traffic/walking';
 import { leisureRetention } from '../leisure/leisure';
 import { poweredCasinoIds } from '../leisure/poweredCasinos';
 import type { Building, GameState } from '../engine/state';
+import { isHomeType } from '../buildings/buildingDefinitions';
 
 const WELLBEING_LIMIT = 100;
 
@@ -52,7 +53,7 @@ export function cityBenefits(state: GameState, coalRates: ReadonlyMap<number, nu
   const congestion = congestionStats(state);
   const total = { wellbeing: 0, pollutionPenalty: 0, servicePenalty: 0, congestionPenalty: 0 };
   for (const home of state.buildings) {
-    if (home.type !== 'home') continue;
+    if (!isHomeType(home.type)) continue;
     const weight = citizensOf(home.tier) / citizens;
     const benefits = homeBenefits(state, home, coalRates, coverage, poweredCasinos, congestion);
     total.wellbeing += benefits.wellbeing * weight;

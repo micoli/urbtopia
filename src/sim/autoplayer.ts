@@ -45,8 +45,7 @@ import {
   type CropId,
   type GoodId,
   type ItemId,
-  type MaterialId,
-} from '../core';
+  type MaterialId, isHomeType } from '../core';
 
 export interface Player {
   state(): GameState;
@@ -110,12 +109,12 @@ const ROADS = {
 };
 
 export function isGoalReached(state: GameState): boolean {
-  return state.buildings.some((building) => building.type === 'home' && building.tier >= maxTierOf('home'));
+  return state.buildings.some((building) => isHomeType(building.type) && building.tier >= maxTierOf('home'));
 }
 
 const countOf = (state: GameState, type: BuildingType): number => state.buildings.filter((building) => building.type === type).length;
 
-const topHomeTier = (state: GameState): number => Math.max(1, ...state.buildings.filter((building) => building.type === 'home').map((building) => building.tier));
+const topHomeTier = (state: GameState): number => Math.max(1, ...state.buildings.filter((building) => isHomeType(building.type)).map((building) => building.tier));
 
 function targetCount(state: GameState, type: BuildingType): number {
   const stage = topHomeTier(state);
@@ -285,7 +284,7 @@ function upgradeNext(player: Player, blocked: Set<number>): boolean {
   const state = player.state();
   for (const candidate of upgradeCandidates(state)) {
     if (blocked.has(candidate.building.id)) continue;
-    if (candidate.building.type === 'home' && lacksServices(state, candidate.building)) {
+    if (isHomeType(candidate.building.type) && lacksServices(state, candidate.building)) {
       if (provideService(player, candidate.building)) return true;
       blocked.add(candidate.building.id);
       continue;
@@ -327,7 +326,7 @@ type Needs = Partial<Record<GoodId, number>>;
 function goodsNeeded(state: GameState): { missing: Needs; reserved: Needs } {
   const missing: Needs = {};
   const reserved: Needs = {};
-  const ready = upgradeCandidates(state).filter((candidate) => candidate.building.type !== 'home' || !lacksServices(state, candidate.building));
+  const ready = upgradeCandidates(state).filter((candidate) => !isHomeType(candidate.building.type) || !lacksServices(state, candidate.building));
   for (const candidate of ready.slice(0, NEED_LOOKAHEAD)) {
     for (const [good, amount] of Object.entries(candidate.goods) as [GoodId, number][]) {
       reserved[good] = (reserved[good] ?? 0) + amount;
@@ -480,6 +479,6 @@ export function playTurn(player: Player): number {
 }
 
 export function describeProgress(state: GameState): string {
-  const homes = state.buildings.filter((building) => building.type === 'home').map((building) => building.tier);
+  const homes = state.buildings.filter((building) => isHomeType(building.type)).map((building) => building.tier);
   return `${homes.length} homes · top Tier ${Math.max(0, ...homes)} · ${totalCitizens(state)} Citizens · ${state.urbs} Urbs`;
 }

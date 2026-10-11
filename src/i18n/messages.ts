@@ -213,7 +213,7 @@ export const MESSAGES = {
   "codex.description.rail": "A Railway connecting stations. Electric and coal Trains use the same tracks; crossings preserve each network independently.",
   'build.housing': 'Housing',
   'build.homeColor': 'Housing color',
-  'build.brtCompatible': 'BRT compatible',
+  'build.brtCompatible': 'BRT',
   'build.homeColor.default': 'Green',
   'build.homeColor.a': 'Blue',
   'build.homeColor.b': 'Red',

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CODEX_ENTRIES, codexImageKey, HOME_COLOR_VARIANTS, validateCodex } from '../src/codex/catalog';
+import { CODEX_ENTRIES, codexImageKey, HOME_COLOR_VARIANTS, isHomeCodexId, validateCodex } from '../src/codex/catalog';
 import { codexSnapshot } from '../src/codex/snapshot';
 import { BridgeLayer } from '../src/scene/BridgeLayer';
 import { ChunkedWorld } from '../src/scene/ChunkedWorld';
@@ -28,7 +28,7 @@ scene.add(objects, sun, new THREE.AmbientLight(0xffffff, 1.2));
 const camera = new THREE.OrthographicCamera(-3, 3, 3, -3, 0.01, 1000);
 
 const variants = CODEX_ENTRIES.flatMap(entry => entry.levels.flatMap(level => {
-  const colors = entry.id === 'home' || entry.id === 'solarHome' ? HOME_COLOR_VARIANTS : [undefined];
+  const colors = isHomeCodexId(entry.id) ? HOME_COLOR_VARIANTS : [undefined];
   return colors.map(colorVariant => {
   const state = codexSnapshot(entry.id, level, colorVariant);
   const signature = JSON.stringify([

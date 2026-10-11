@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 620,
+  "order": 630,
   "model": "nature-tent-detailedclosed",
   "name": {
     "en": "Tent closed",
