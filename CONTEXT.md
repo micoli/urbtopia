@@ -504,6 +504,14 @@ _Avoid_: Contact, buddy
 A player's choice to hide themselves from another Player account: they no longer appear in that account's searches and its Friend requests are silently refused.
 _Avoid_: Ban, mute
 
+**Message**:
+A short plain-text note, 500 characters at most, that a Friend sends to another in their Conversation. Messages older than 30 days disappear.
+_Avoid_: Chat line, DM
+
+**Conversation**:
+The exchange of Messages between two Friends. It ends, with all its Messages, when the Friendship ends or one side blocks the other.
+_Avoid_: Thread, channel
+
 **Trade offer**:
 A lot of Materials and/or Goods that one Friend proposes to another in their conversation, for a price in Urbs set by the sender (0 for a gift). The recipient accepts or refuses; an offer left open expires after 72 hours. Seed packs, buildings and bare Urbs cannot be offered.
 _Avoid_: Deal, auction, barter
