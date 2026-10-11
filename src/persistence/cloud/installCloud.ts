@@ -8,6 +8,7 @@ import { SAVE_KEY } from '../saveStore';
 import { cloudEnabled } from './cloudConfig';
 import { CloudSync } from './cloudSync';
 import { isPlausibleEmail } from './email';
+import { isKeepLocalRequested } from './keepLocalFlag';
 import { loadCloudClient } from './loadCloudClient';
 import { CloudError, type CloudAccount } from './types';
 
@@ -29,6 +30,7 @@ export function installCloudSync(): () => void {
       store: saveStore,
       now: Date.now,
       canPush: () => !readOnlyStore.getState().readOnly,
+      keepLocal: isKeepLocalRequested(window.location.search),
       onStatus: (status) => cloudStore.getState().setStatus(status),
       onAccount: (account) => {
         knownUserId = account?.userId ?? null;

@@ -5,7 +5,7 @@ for (const touch of [false, true]) {
     test.use({ hasTouch: touch, isMobile: touch, viewport: touch ? { width: 390, height: 844 } : { width: 1280, height: 900 } });
     test('selecting a Storehouse does not click through to its sale button', async ({ page }) => {
       await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
-      await page.goto('/');
+      await page.goto('/?bypass-tutorial&keep-local');
       await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
       await page.evaluate(async () => {
         const { gameStore } = await import('../src/store/gameStore.ts');
@@ -50,10 +50,8 @@ for (const touch of [false, true]) {
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
-      await page.goto('/');
+      await page.goto('/?bypass-tutorial&keep-local');
       await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
-      await page.getByRole('button', { name: 'Passer le didacticiel', exact: true }).click();
-      await page.getByRole('button', { name: 'Passer', exact: true }).click();
       await page.getByRole('button', { name: 'Construire', exact: true }).click();
       await page.getByRole('button', { name: 'Énergie et eau', exact: true }).click();
       await expect(page.locator('[data-codex-id="coalPlant"]')).toBeVisible();
@@ -107,7 +105,7 @@ for (const touch of [false, true]) {
 for (const layout of ['B', 'C']) {
   test(`city management shortcut opens from layout ${layout} navigation`, async ({ page }) => {
     await page.addInitScript(layout => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout })), layout);
-    await page.goto('/');
+    await page.goto('/?bypass-tutorial&keep-local');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     if (layout === 'B') await page.getByRole('button', { name: 'Ouvrir le menu', exact: true }).click();
     const shortcut = page.locator('[data-action="stats"]');
@@ -129,7 +127,7 @@ test('dragging the brush lays Fields, plants them and harvests them by sweeping 
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
-  await page.goto('/');
+  await page.goto('/?bypass-tutorial&keep-local');
   await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   await page.evaluate(async () => {
     const { gameStore } = await import('../src/store/gameStore.ts');

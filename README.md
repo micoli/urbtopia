@@ -37,6 +37,8 @@ npm run dev      # http://localhost:5173, prepares models and codex previews fir
 | `npm run assets:fetch` | Refresh the archives from kenney.nl (see [Assets](#assets)) |
 | `npm run assets:prototypes` | Copy the models the prototypes load (render-bench, touch-ux) |
 | `npm run assets:editor` | Game editor: edit buildings (`assets/defs/`) and Model definitions (`assets/models.json`) with live validation, browse every model source, import assets |
+| `?bypass-tutorial` (URL parameter) | Starts a new game without the tutorial; use it in end-to-end and Playwright tests, e.g. `http://localhost:5173/?bypass-tutorial` |
+| `?keep-local` (URL parameter) | When the local city and the Cloud save diverged, keeps the local city without the Save conflict dialog; use it in end-to-end and Playwright tests, with `?bypass-tutorial` |
 | `npm run casino:sim` | Casino simulator: play each Minigame with 100 000 Urbs, one URL per game (`/slot-machine`, `/blackjack`, `/blockmatch`, optional `?tier=`) |
 | `npm run codex:generate` | Generate static codex images; append `-- --force` to regenerate |
 | `npm run test:codex` | Browser checks against a production build, including mobile and offline access |
