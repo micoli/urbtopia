@@ -2,8 +2,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { CloudConfig } from '../persistence/cloud/cloudConfig';
 import type { Database } from '../persistence/cloud/database.types';
 import { loadSharedSupabase } from '../persistence/cloud/sharedSupabase';
-import { parseSnapshot } from './parseSnapshot';
-import { SocialError, type SocialClient, type SocialErrorKind, type SocialSnapshot } from './types';
+import { parseMessages, parseSnapshot } from './parseSnapshot';
+import { SocialError, type Message, type SocialClient, type SocialErrorKind, type SocialSnapshot } from './types';
 
 type Client = SupabaseClient<Database>;
 
@@ -22,6 +22,8 @@ const MESSAGE_KINDS: ReadonlyArray<readonly [string, SocialErrorKind]> = [
   ['urb_handle_taken', 'handle-taken'],
   ['urb_handle_change_too_soon', 'handle-change-too-soon'],
   ['urb_rate_limited', 'rate-limited'],
+  ['urb_message_invalid', 'message-invalid'],
+  ['urb_not_friends', 'not-friends'],
   ['urb_cap_friends', 'cap-friends'],
   ['urb_cap_outgoing', 'cap-outgoing'],
   ['urb_not_found', 'not-found'],
@@ -84,6 +86,17 @@ class SupabaseSocialClient implements SocialClient {
   async list(cursor: number | null = null): Promise<SocialSnapshot> {
     const data = await this.call(() => this.client.rpc('urb_list_social', cursor === null ? {} : { p_cursor: cursor }));
     return parseSnapshot(data);
+  }
+
+  async sendMessage(userId: string, body: string): Promise<number> {
+    const id = await this.call(() => this.client.rpc('urb_send_message', { p_to: userId, p_body: body }));
+    if (id === null) throw new SocialError('unknown');
+    return id;
+  }
+
+  async listMessages(userId: string, afterId = 0): Promise<Message[]> {
+    const data = await this.call(() => this.client.rpc('urb_list_messages', { p_with: userId, p_after: afterId }));
+    return parseMessages(data);
   }
 
   private async call<T>(request: () => PromiseLike<{ data: T; error: PostgrestFailure | null }>): Promise<T> {

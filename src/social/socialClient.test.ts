@@ -17,6 +17,8 @@ describe('toSocialError', () => {
     ['urb_handle_taken', 'handle-taken'],
     ['urb_cap_outgoing', 'cap-outgoing'],
     ['urb_not_found', 'not-found'],
+    ['urb_message_invalid', 'message-invalid'],
+    ['urb_not_friends', 'not-friends'],
   ])('maps %s to %s', (message, kind) => {
     expect(toSocialError({ message }).kind).toBe(kind);
   });
@@ -41,7 +43,7 @@ describe('parseSnapshot', () => {
     handle: 'Alice',
     findable: true,
     handleChangedAt: '2026-10-11T10:00:00Z',
-    friends: [{ userId: 'b', handle: 'Bob', since: '2026-10-11T11:00:00Z' }],
+    friends: [{ userId: 'b', handle: 'Bob', since: '2026-10-11T11:00:00Z', unread: 2, lastMessageAt: '2026-10-11T11:30:00Z' }],
     incoming: [{ userId: 'c', handle: 'Carol', at: '2026-10-11T12:00:00Z' }],
     outgoing: [],
     blocked: [{ userId: 'd', handle: 'Dave' }],
@@ -54,7 +56,7 @@ describe('parseSnapshot', () => {
       handle: 'Alice',
       findable: true,
       handleChangedAt: Date.parse('2026-10-11T10:00:00Z'),
-      friends: [{ userId: 'b', handle: 'Bob', since: Date.parse('2026-10-11T11:00:00Z') }],
+      friends: [{ userId: 'b', handle: 'Bob', since: Date.parse('2026-10-11T11:00:00Z'), unread: 2, lastMessageAt: Date.parse('2026-10-11T11:30:00Z') }],
       incoming: [{ userId: 'c', handle: 'Carol', at: Date.parse('2026-10-11T12:00:00Z') }],
       outgoing: [],
       blocked: [{ userId: 'd', handle: 'Dave' }],
@@ -152,5 +154,62 @@ describe('FakeSocialClient', () => {
     const { alice } = setup();
     alice.goOffline();
     await expect(alice.list()).rejects.toMatchObject({ kind: 'offline' });
+  });
+});
+
+describe('FakeSocialClient messages', () => {
+  async function friends() {
+    let now = 0;
+    const world = new FakeSocialWorld(() => now);
+    const alice = world.addPlayer('a');
+    const bob = world.addPlayer('b', 'b@example.com');
+    const carol = world.addPlayer('c', 'c@example.com');
+    await alice.setHandle('Alice');
+    await bob.setHandle('Bob');
+    await carol.setHandle('Carol');
+    await alice.sendRequestByEmail('b@example.com');
+    await bob.acceptRequest('a');
+    return { alice, bob, carol, advance: (ms: number) => (now += ms) };
+  }
+
+  it('delivers a trimmed message and counts it as unread until it is read', async () => {
+    const { alice, bob } = await friends();
+    await alice.sendMessage('b', '  Hello  ');
+    expect(await bob.list()).toMatchObject({ friends: [{ handle: 'Alice', unread: 1, lastMessageAt: 0 }] });
+    expect(await bob.listMessages('a')).toMatchObject([{ body: 'Hello', fromMe: false }]);
+    expect(await bob.list()).toMatchObject({ friends: [{ unread: 0 }] });
+    expect(await alice.listMessages('b')).toMatchObject([{ body: 'Hello', fromMe: true }]);
+  });
+
+  it('only returns the messages after the given id', async () => {
+    const { alice, bob } = await friends();
+    const first = await alice.sendMessage('b', 'one');
+    await alice.sendMessage('b', 'two');
+    expect(await bob.listMessages('a', first)).toMatchObject([{ body: 'two' }]);
+  });
+
+  it('refuses invalid messages and non Friends', async () => {
+    const { alice, carol } = await friends();
+    await expect(alice.sendMessage('b', '   ')).rejects.toMatchObject({ kind: 'message-invalid' });
+    await expect(alice.sendMessage('b', 'x'.repeat(501))).rejects.toMatchObject({ kind: 'message-invalid' });
+    await expect(alice.sendMessage('c', 'hi')).rejects.toMatchObject({ kind: 'not-friends' });
+    await expect(carol.listMessages('a')).rejects.toMatchObject({ kind: 'not-friends' });
+  });
+
+  it('rate limits to 30 messages a minute and reports the delay', async () => {
+    const { alice } = await friends();
+    for (let i = 0; i < 30; i += 1) await alice.sendMessage('b', `m${i}`);
+    await expect(alice.sendMessage('b', 'too many')).rejects.toMatchObject({ kind: 'rate-limited', retryAfterSeconds: 60 });
+  });
+
+  it('ends the Conversation with the Friendship or a Block', async () => {
+    const { alice, bob } = await friends();
+    await alice.sendMessage('b', 'hi');
+    await bob.block('a');
+    await expect(alice.listMessages('b')).rejects.toMatchObject({ kind: 'not-friends' });
+    await bob.unblock('a');
+    await alice.sendRequestByEmail('b@example.com');
+    await bob.acceptRequest('a');
+    expect(await alice.listMessages('b')).toEqual([]);
   });
 });

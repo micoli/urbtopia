@@ -1,7 +1,10 @@
 import { isValidHandle } from './handle';
 import { HANDLE_CHANGE_DELAY_DAYS, MAX_FRIENDS, MAX_OUTGOING_REQUESTS, SEARCHES_PER_DAY, SEARCHES_PER_HOUR } from './limits';
-import { SocialError, type SocialClient, type SocialSnapshot } from './types';
+import { SocialError, type Message, type SocialClient, type SocialSnapshot } from './types';
 
+const MINUTE_MS = 60_000;
+const MAX_MESSAGES_PER_MINUTE = 30;
+const MAX_MESSAGE_LENGTH = 500;
 const HOUR_MS = 3_600_000;
 const DAY_MS = 24 * HOUR_MS;
 const FORBIDDEN_WORDS = ['admin', 'moderator', 'support', 'urbtopia', 'urbix'];
@@ -14,6 +17,15 @@ interface Member {
   handleChangedAt: number;
   revision: number;
   searches: number[];
+}
+
+interface StoredMessage {
+  id: number;
+  senderId: string;
+  recipientId: string;
+  body: string;
+  createdAt: number;
+  read: boolean;
 }
 
 interface Link {
@@ -29,6 +41,8 @@ interface Link {
 export class FakeSocialWorld {
   private members = new Map<string, Member>();
   private links: Link[] = [];
+  messages: StoredMessage[] = [];
+  private nextMessageId = 1;
 
   constructor(readonly clock: () => number = () => 0) {}
 
@@ -80,13 +94,27 @@ export class FakeSocialWorld {
       const [low, high] = a < b ? [a, b] : [b, a];
       this.links.push({ low, high, state, actorId, createdAt: now, updatedAt: now });
     }
+    if (state === 'blocked') this.deleteConversation(a, b);
     this.bump(a, b);
+  }
+
+  addMessage(senderId: string, recipientId: string, body: string): number {
+    const id = this.nextMessageId;
+    this.nextMessageId += 1;
+    this.messages.push({ id, senderId, recipientId, body, createdAt: this.clock(), read: false });
+    this.bump(senderId, recipientId);
+    return id;
+  }
+
+  deleteConversation(a: string, b: string): void {
+    this.messages = this.messages.filter((message) => !((message.senderId === a && message.recipientId === b) || (message.senderId === b && message.recipientId === a)));
   }
 
   remove(a: string, b: string, state: Link['state']): void {
     const existing = this.link(a, b);
     if (!existing || existing.state !== state) return;
     this.links = this.links.filter((link) => link !== existing);
+    if (state === 'accepted') this.deleteConversation(a, b);
     this.bump(a, b);
   }
 
@@ -199,7 +227,7 @@ export class FakeSocialClient implements SocialClient {
       handleChangedAt: me.handleChangedAt,
       friends: links
         .filter((link) => link.state === 'accepted')
-        .map((link) => ({ userId: userIdOf(link), handle: handleOf(link), since: link.updatedAt }))
+        .map((link) => ({ userId: userIdOf(link), handle: handleOf(link), since: link.updatedAt, ...this.conversationSummary(userIdOf(link)) }))
         .sort((a, b) => a.handle.toLowerCase().localeCompare(b.handle.toLowerCase())),
       incoming: links
         .filter((link) => link.state === 'pending' && link.actorId !== this.userId)
@@ -210,6 +238,39 @@ export class FakeSocialClient implements SocialClient {
       blocked: links
         .filter((link) => link.state === 'blocked' && link.actorId === this.userId)
         .map((link) => ({ userId: userIdOf(link), handle: handleOf(link) })),
+    };
+  }
+
+  async sendMessage(userId: string, body: string): Promise<number> {
+    this.guard();
+    const trimmed = body.trim();
+    if (trimmed.length < 1 || trimmed.length > MAX_MESSAGE_LENGTH) throw new SocialError('message-invalid');
+    if (this.world.link(this.userId, userId)?.state !== 'accepted') throw new SocialError('not-friends');
+    const now = this.world.clock();
+    const recent = this.world.messages.filter((message) => message.senderId === this.userId && message.createdAt > now - MINUTE_MS);
+    if (recent.length >= MAX_MESSAGES_PER_MINUTE) {
+      throw new SocialError('rate-limited', Math.max(1, Math.ceil((Math.min(...recent.map((message) => message.createdAt)) + MINUTE_MS - now) / 1000)));
+    }
+    return this.world.addMessage(this.userId, userId, trimmed);
+  }
+
+  async listMessages(userId: string, afterId = 0): Promise<Message[]> {
+    const me = this.guard();
+    if (this.world.link(this.userId, userId)?.state !== 'accepted') throw new SocialError('not-friends');
+    const unread = this.world.messages.filter((message) => message.recipientId === this.userId && message.senderId === userId && !message.read);
+    for (const message of unread) message.read = true;
+    if (unread.length > 0) this.world.bump(me.userId);
+    return this.world.messages
+      .filter((message) => message.id > afterId && ((message.senderId === this.userId && message.recipientId === userId) || (message.senderId === userId && message.recipientId === this.userId)))
+      .slice(-100)
+      .map((message) => ({ id: message.id, fromMe: message.senderId === this.userId, body: message.body, at: message.createdAt }));
+  }
+
+  private conversationSummary(friendId: string): { unread: number; lastMessageAt: number | null } {
+    const talk = this.world.messages.filter((message) => (message.senderId === this.userId && message.recipientId === friendId) || (message.senderId === friendId && message.recipientId === this.userId));
+    return {
+      unread: talk.filter((message) => message.recipientId === this.userId && !message.read).length,
+      lastMessageAt: talk.length === 0 ? null : Math.max(...talk.map((message) => message.createdAt)),
     };
   }
 

@@ -13,7 +13,7 @@ const noop = () => {};
 const asyncNoop = async () => {};
 const DAY_MS = 86_400_000;
 
-const withLists = { friends: [{ userId: 'b', handle: 'Bob', since: 0 }], incoming: [{ userId: 'c', handle: 'Carol', at: 0 }], outgoing: [{ userId: 'd', handle: 'Dave', at: 0 }], blocked: [{ userId: 'e', handle: 'Erin' }] };
+const withLists = { friends: [{ userId: 'b', handle: 'Bob', since: 0, unread: 0, lastMessageAt: null }], incoming: [{ userId: 'c', handle: 'Carol', at: 0 }], outgoing: [{ userId: 'd', handle: 'Dave', at: 0 }], blocked: [{ userId: 'e', handle: 'Erin' }] };
 
 const profile: SocialState = {
   revision: 1,

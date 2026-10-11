@@ -8,6 +8,8 @@ export type SocialErrorKind =
   | 'handle-taken'
   | 'handle-change-too-soon'
   | 'rate-limited'
+  | 'message-invalid'
+  | 'not-friends'
   | 'cap-friends'
   | 'cap-outgoing'
   | 'not-found'
@@ -26,6 +28,15 @@ export interface Friend {
   userId: string;
   handle: string;
   since: number;
+  unread: number;
+  lastMessageAt: number | null;
+}
+
+export interface Message {
+  id: number;
+  fromMe: boolean;
+  body: string;
+  at: number;
 }
 
 export interface FriendRequest {
@@ -62,4 +73,6 @@ export interface SocialClient {
   block(userId: string): Promise<void>;
   unblock(userId: string): Promise<void>;
   list(cursor?: number | null): Promise<SocialSnapshot>;
+  sendMessage(userId: string, body: string): Promise<number>;
+  listMessages(userId: string, afterId?: number): Promise<Message[]>;
 }

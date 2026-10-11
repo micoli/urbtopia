@@ -1,4 +1,4 @@
-import { SocialError, type BlockedPlayer, type Friend, type FriendRequest, type SocialSnapshot } from './types';
+import { SocialError, type BlockedPlayer, type Friend, type FriendRequest, type Message, type SocialSnapshot } from './types';
 
 type Row = Record<string, unknown>;
 
@@ -40,9 +40,16 @@ export function parseSnapshot(json: unknown): SocialSnapshot {
     handle: text(json, 'handle'),
     findable: json.findable,
     handleChangedAt: time(json, 'handleChangedAt'),
-    friends: rows(json.friends).map((row): Friend => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), since: time(row, 'since') })),
+    friends: rows(json.friends).map((row): Friend => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), since: time(row, 'since'), unread: number(row, 'unread'), lastMessageAt: row.lastMessageAt === null ? null : time(row, 'lastMessageAt') })),
     incoming: rows(json.incoming).map((row): FriendRequest => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), at: time(row, 'at') })),
     outgoing: rows(json.outgoing).map((row): FriendRequest => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), at: time(row, 'at') })),
     blocked: rows(json.blocked).map((row): BlockedPlayer => ({ userId: text(row, 'userId'), handle: text(row, 'handle') })),
   };
+}
+
+export function parseMessages(json: unknown): Message[] {
+  return rows(json).map((row): Message => {
+    if (typeof row.fromMe !== 'boolean') throw new SocialError('unknown');
+    return { id: number(row, 'id'), fromMe: row.fromMe, body: text(row, 'body'), at: time(row, 'at') };
+  });
 }
