@@ -78,6 +78,24 @@ function withEntry(state: GameState, entry: TradeLedgerEntry): GameState {
   return { ...state, tradeLedger: [...kept, entry] };
 }
 
+function applyEffect(state: GameState, effect: TradeEffect, lot: readonly TradeLine[] | undefined, urbs: number | undefined): TradeResult {
+  if (effect === 'reserve-lot') {
+    const storage = debit(state.storage, lot!);
+    return typeof storage === 'string' ? { error: storage } : { state: { ...state, storage } };
+  }
+  if (effect === 'pay') {
+    const issue = lotReceiveIssue(state, lot!, true);
+    if (issue) return { error: issue };
+    if (state.urbs < urbs!) return { error: 'error.notEnoughUrbs' };
+    return { state: { ...state, urbs: state.urbs - urbs! } };
+  }
+  if (effect === 'receive-lot' || effect === 'return-lot') {
+    const issue = lotReceiveIssue(state, lot!, false);
+    return issue ? { error: issue } : { state: { ...state, storage: credit(state.storage, lot!) } };
+  }
+  return { state: { ...state, urbs: state.urbs + urbs! } };
+}
+
 // Applies one local effect of a Trade offer exactly once: a second call with the same (offerId, effect) changes nothing.
 export function applyTradeEffect(state: GameState, input: TradeApplyInput, now: number): TradeResult {
   const { offerId, effect, lot, urbs, peer } = input;
@@ -86,29 +104,14 @@ export function applyTradeEffect(state: GameState, input: TradeApplyInput, now: 
   if (LOT_EFFECTS.has(effect) && !isValidLot(lot)) return { error: 'error.invalidTradeLot' };
   if (URBS_EFFECTS.has(effect) && !isWholeNumber(urbs, 0, TRADE_LIMITS.maxPrice)) return { error: 'error.invalidPrice' };
 
-  let next: GameState = state;
-  if (effect === 'reserve-lot') {
-    const storage = debit(state.storage, lot!);
-    if (typeof storage === 'string') return { error: storage };
-    next = { ...state, storage };
-  } else if (effect === 'pay') {
-    const issue = lotReceiveIssue(state, lot!, true);
-    if (issue) return { error: issue };
-    if (state.urbs < urbs!) return { error: 'error.notEnoughUrbs' };
-    next = { ...state, urbs: state.urbs - urbs! };
-  } else if (effect === 'receive-lot' || effect === 'return-lot') {
-    const issue = lotReceiveIssue(state, lot!, false);
-    if (issue) return { error: issue };
-    next = { ...state, storage: credit(state.storage, lot!) };
-  } else {
-    next = { ...state, urbs: state.urbs + urbs! };
-  }
+  const next = applyEffect(state, effect, lot, urbs);
+  if ('error' in next) return next;
 
   const entry: TradeLedgerEntry = { offerId, effect, at: now, confirmed: false };
   if (lot) entry.lot = lot.map((line) => ({ item: line.item, quantity: line.quantity }));
   if (urbs !== undefined) entry.urbs = urbs;
   if (peer !== undefined) entry.peer = peer;
-  return { state: withEntry(next, entry) };
+  return { state: withEntry(next.state, entry) };
 }
 
 export function confirmTradeEffect(state: GameState, offerId: string, effect: TradeEffect): TradeResult {
