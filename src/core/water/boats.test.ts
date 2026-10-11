@@ -141,7 +141,7 @@ describe('Protecting the Marina and the water', () => {
   it('removes the free Water tiles of a drag and keeps the others', () => {
     const state = succeed(harbour(), buy(52));
     const after = succeed(state, { type: 'RemoveWater', tiles: row(6) });
-    expect(after.waterTiles).toEqual([{ x: 51, y: 50 }, { x: 52, y: 50 }]);
+    expect(after.waterTiles).toEqual([{ x: 50, y: 50 },{ x: 51, y: 50 }, { x: 52, y: 50 }]);
   });
 });
 

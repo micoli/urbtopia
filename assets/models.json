@@ -615,6 +615,32 @@
     "source": "managed",
     "license": "Own work"
   },
+  "buildings-marina-captaincy": {
+    "file": "buildings/marina-captaincy",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "fit": {
+      "width": 1.5,
+      "height": 1
+    }
+  },
+  "buildings-marina-captaincy-narrow": {
+    "file": "buildings/marina-captaincy-narrow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "fit": {
+      "width": 1,
+      "height": 2
+    }
+  },
   "cars-ambulance": {
     "file": "cars/ambulance",
     "source": "kenney",
@@ -4684,6 +4710,34 @@
     "file": "trains/train-locomotive-passenger-a",
     "source": "kenney",
     "license": "CC0"
+  },
+  "venue-arcade-center-dinner": {
+    "file": "venue/arcade-center-dinner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "fit": {
+      "width": 2,
+      "height": 1.5
+    },
+    "rotationOffset": 180
+  },
+  "venue-arcade-center-small": {
+    "file": "venue/arcade-center-small",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 1.5,
+      "height": 1.5
+    },
+    "rotationOffset": 180
   },
   "venue-supermarket-large": {
     "file": "venue/supermarket-large",

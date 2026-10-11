@@ -17,7 +17,7 @@
   },
   "tiers": [
     {
-      "model": "commercial-building-j",
+      "model": "venue-arcade-center-small",
       "footprint": [2, 2],
       "gridSize": 6,
       "takingsCap": 400,
@@ -46,7 +46,9 @@
       "upgradeCost": {
         "urbs": 5000,
         "goods": {}
-      }
+      },
+      "model": "venue-arcade-center-dinner",
+      "footprint": [3, 2]
     },
     {
       "gridSize": 10,
