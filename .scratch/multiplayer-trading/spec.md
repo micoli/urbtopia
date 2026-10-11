@@ -17,7 +17,7 @@ Settled in the grilling (Q12-Q17) and recorded in [ADR 0025](../../docs/adr/0025
 
 **Lifecycle**
 - The sender creates the offer: the Lot leaves their local stock and the server holds it in Escrow. The client generates the offer id; the creating RPC is idempotent on it.
-- The recipient accepts: the price leaves their Urbs and the server holds it in Escrow. The recipient then claims the Lot (it enters their stock, only when the compartments have room) and the sender claims the payment (Urbs enter their balance). Each claim happens once.
+- The recipient accepts: the price leaves their Urbs and the server holds it in Escrow. The recipient then claims the Lot (it enters their stock, only when the compartments have room) and, only once the Lot is claimed, the sender claims the payment (Urbs enter their balance), so a Lot can never lapse after its payment was taken. Each claim happens once.
 - The recipient can refuse, the sender can cancel while the offer is open; both return the Lot to the sender, who claims it back.
 - An open offer expires 72 hours after creation: the Lot returns to the sender. An accepted offer whose Lot is not claimed within 72 hours of acceptance lapses: the Lot returns to the sender and the payment to the recipient.
 - Removing a Friend or a Block closes every offer between the two, returning each Escrow to its owner. Deleting cloud data deletes the player's offers and returns what they held to the other side.

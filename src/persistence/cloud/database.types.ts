@@ -177,17 +177,91 @@ export type Database = {
         };
         Relationships: [];
       };
+      urb_trade_offers: {
+        Row: {
+          accepted_at: string | null;
+          claim_deadline: string | null;
+          created_at: string;
+          expires_at: string;
+          id: string;
+          lot: NonNullable<Json>;
+          lot_claimed_at: string | null;
+          payment_claimed_at: string | null;
+          price: number;
+          recipient_id: string | null;
+          sender_id: string | null;
+          state: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          accepted_at?: string | null;
+          claim_deadline?: string | null;
+          created_at?: string;
+          expires_at: string;
+          id: string;
+          lot: NonNullable<Json>;
+          lot_claimed_at?: string | null;
+          payment_claimed_at?: string | null;
+          price: number;
+          recipient_id?: string | null;
+          sender_id?: string | null;
+          state?: string;
+          updated_at?: string;
+        };
+        Update: {
+          accepted_at?: string | null;
+          claim_deadline?: string | null;
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          lot?: NonNullable<Json>;
+          lot_claimed_at?: string | null;
+          payment_claimed_at?: string | null;
+          price?: number;
+          recipient_id?: string | null;
+          sender_id?: string | null;
+          state?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_trade_offers_recipient_id_fkey";
+            columns: ["recipient_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+          {
+            foreignKeyName: "urb_trade_offers_sender_id_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
       urb_accept_friend_request: { Args: { p_user: string }; Returns: undefined };
+      urb_accept_trade_offer: { Args: { p_id: string }; Returns: undefined };
       urb_are_friends: { Args: { p_a: string; p_b: string }; Returns: boolean };
       urb_block_user: { Args: { p_user: string }; Returns: undefined };
       urb_bump_social: { Args: { p_user: string }; Returns: undefined };
+      urb_claim_trade: { Args: { p_id: string; p_slot: string }; Returns: Json };
+      urb_close_offer: { Args: { p_id: string }; Returns: undefined };
+      urb_close_offers_between: { Args: { p_a: string; p_b: string }; Returns: undefined };
+      urb_create_trade_offer: {
+        Args: { p_id: string; p_lot: Json; p_price: number; p_to: string };
+        Returns: string;
+      };
+      urb_decline_trade_offer: { Args: { p_id: string }; Returns: undefined };
       urb_delete_conversation: { Args: { p_a: string; p_b: string }; Returns: undefined };
       urb_delete_my_saves: { Args: Record<PropertyKey, never>; Returns: undefined };
+      urb_expire_offers: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_friend_count: { Args: { p_user: string }; Returns: number };
       urb_list_messages: { Args: { p_after?: number; p_with: string }; Returns: Json };
       urb_list_saves: {
@@ -201,6 +275,8 @@ export type Database = {
         }[];
       };
       urb_list_social: { Args: { p_cursor?: number }; Returns: Json };
+      urb_lot_is_valid: { Args: { p_lot: Json }; Returns: boolean };
+      urb_offers_json: { Args: { p_user: string }; Returns: Json };
       urb_open_request: { Args: { p_from: string; p_to: string }; Returns: undefined };
       urb_outgoing_count: { Args: { p_user: string }; Returns: number };
       urb_purge_inactive_anonymous_users: { Args: Record<PropertyKey, never>; Returns: undefined };
@@ -222,6 +298,7 @@ export type Database = {
       urb_send_message: { Args: { p_body: string; p_to: string }; Returns: number };
       urb_set_findable: { Args: { p_findable: boolean }; Returns: undefined };
       urb_set_handle: { Args: { p_handle: string }; Returns: undefined };
+      urb_settle_offer: { Args: { p_id: string }; Returns: undefined };
       urb_social_member: { Args: Record<PropertyKey, never>; Returns: string };
       urb_unblock_user: { Args: { p_user: string }; Returns: undefined };
     };
