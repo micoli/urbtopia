@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(53);
+select plan(58);
 
 insert into auth.users (id, instance_id, aud, role, email, email_confirmed_at, is_anonymous, created_at, last_sign_in_at)
   select ('00000000-0000-0000-0004-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', n || '@example.com', now(), false, now(), now()
@@ -72,7 +72,7 @@ select pg_temp.act_as('00000000000c');
 select throws_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1)) $$, 'urb_trade_unavailable', 'a third party cannot accept');
 select pg_temp.act_as('00000000000b');
 select lives_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1)) $$, 'the recipient accepts');
-select throws_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1)) $$, 'urb_trade_unavailable', 'an offer cannot be accepted twice');
+select lives_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1)) $$, 'accepting twice changes nothing');
 select pg_temp.act_as('00000000000a');
 select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(1), 'payment') $$, 'urb_trade_unavailable', 'the sender is not paid before the recipient has the Lot');
 select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(1), 'lot') $$, 'urb_trade_unavailable', 'the sender cannot claim a Lot that went to the recipient');
@@ -82,6 +82,15 @@ select is((public.urb_claim_trade(pg_temp.offer(1), 'lot') ->> 'alreadyClaimed')
 select pg_temp.act_as('00000000000a');
 select is((public.urb_claim_trade(pg_temp.offer(1), 'payment') ->> 'urbs')::int, 50, 'the sender then claims the payment');
 select is((public.urb_claim_trade(pg_temp.offer(1), 'payment') ->> 'alreadyClaimed')::boolean, true, 'and again without a second payment');
+
+-- Replays: accepting again is a no-op, claimed slots stay listed
+select pg_temp.act_as('00000000000b');
+select lives_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1)) $$, 'accepting an offer already accepted is a no-op');
+select is(public.urb_list_social() -> 'offers' -> 0 -> 'claimed', '["lot"]'::jsonb, 'a claimed Lot stays listed to its recipient');
+select is(public.urb_list_social() -> 'offers' -> 0 -> 'claimable', '[]'::jsonb, 'and is no longer claimable');
+select pg_temp.act_as('00000000000a');
+select is((select o ->> 'id' from jsonb_array_elements(public.urb_list_social() -> 'offers') o where o ->> 'id' = pg_temp.offer(1)::text), pg_temp.offer(1)::text, 'a claimed payment stays listed to its sender');
+select throws_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(2)) $$, 'urb_trade_unavailable', 'the sender still cannot accept');
 
 -- Refuse and cancel
 select pg_temp.act_as('00000000000b');
