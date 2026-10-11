@@ -22,6 +22,7 @@ import {UrbsAmount} from "../common/UrbsAmount.tsx";
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { PanelHeader } from '../common/PanelHeader';
+import { CodexLinks } from './CodexLinks';
 
 export function SelectionContentPanel() {
   const building = useSelectedBuilding();
@@ -54,6 +55,7 @@ export function SelectionContentPanel() {
         <ActionButton onClick={moveSelected}>
           ✥ {t('panel.move')}
         </ActionButton>
+        <CodexLinks building={building} />
         <ActionButton onClick={sellSelected}>
           ❌ +<UrbsAmount value={refund}/>
         </ActionButton>

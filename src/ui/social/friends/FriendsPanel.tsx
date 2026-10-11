@@ -4,7 +4,9 @@ import type { ActionFailure, ConversationState, HandleFormState, SearchState, So
 import type { CloudAccount } from '../../../persistence/cloud/types';
 import type { SocialState } from '../../../social/types';
 import { Note } from '../../common/Note';
+import { HandleLabel } from '../HandleLabel';
 import { EmailCodeForm } from '../../system/EmailCodeForm';
+import { AvatarPicker } from './AvatarPicker';
 import { ConversationView } from './ConversationView';
 import { BlockedList } from './BlockedList';
 import { FindableToggle } from './FindableToggle';
@@ -28,7 +30,7 @@ interface FriendsPanelProps {
     changeDelayMs: number;
     codeActions: EmailCodeActions;
     onTrade: (userId: string) => void;
-    actions: Pick<SocialActions, 'setHandle' | 'setFindable' | 'sendRequest' | 'accept' | 'refuse' | 'remove' | 'block' | 'unblock' | 'openConversation' | 'closeConversation' | 'sendMessage' | 'refreshConversation'>;
+    actions: Pick<SocialActions, 'setHandle' | 'setAvatar' | 'setFindable' | 'sendRequest' | 'accept' | 'refuse' | 'remove' | 'block' | 'unblock' | 'openConversation' | 'closeConversation' | 'sendMessage' | 'refreshConversation'>;
 }
 
 export function FriendsPanel({account, emailCode, status, profile, handleForm, search, actionFailure, conversation, now, changeDelayMs, codeActions, onTrade, actions}: FriendsPanelProps) {
@@ -40,7 +42,7 @@ export function FriendsPanel({account, emailCode, status, profile, handleForm, s
     if (status === 'offline') return <Note>{t('friends.offline')}</Note>;
     if (status === 'no-handle') return <HandleForm current={null} changeWaitSeconds={0} state={handleForm} onSubmit={handle => void actions.setHandle(handle)}/>;
     if (!profile) return <p>{t('friends.connecting')}</p>;
-    if (conversation) return <ConversationView conversation={conversation} onBack={() => void actions.closeConversation()} onSend={body => void actions.sendMessage(body)} onRefresh={() => actions.refreshConversation()}/>;
+    if (conversation) return <ConversationView conversation={conversation} avatar={profile.friends.find(friend => friend.userId === conversation.userId)?.avatar ?? null} onBack={() => void actions.closeConversation()} onSend={body => void actions.sendMessage(body)} onRefresh={() => actions.refreshConversation()}/>;
     const waitSeconds = Math.ceil((profile.handleChangedAt + changeDelayMs - now) / 1000);
     return <>
         <FriendSearchForm state={search} onSend={email => void actions.sendRequest(email)}/>
@@ -49,7 +51,8 @@ export function FriendsPanel({account, emailCode, status, profile, handleForm, s
         <FriendList friends={profile.friends} onMessage={friend => void actions.openConversation(friend.userId, friend.handle)} onTrade={friend => onTrade(friend.userId)} onRemove={id => void actions.remove(id)} onBlock={id => void actions.block(id)}/>
         <OutgoingRequests requests={profile.outgoing} onCancel={id => void actions.refuse(id)}/>
         <BlockedList blocked={profile.blocked} onUnblock={id => void actions.unblock(id)}/>
-        <p>{t('friends.handle.current')}: <strong>{profile.handle}</strong></p>
+        <p>{t('friends.handle.current')}: <HandleLabel userId={account.userId} handle={profile.handle} avatar={profile.avatar}/></p>
+        <AvatarPicker userId={account.userId} chosen={profile.avatar} onChoose={avatar => void actions.setAvatar(avatar)}/>
         <HandleForm key={profile.handle} current={profile.handle} changeWaitSeconds={waitSeconds} state={handleForm} onSubmit={handle => void actions.setHandle(handle)}/>
         <FindableToggle findable={profile.findable} onChange={findable => void actions.setFindable(findable)}/>
     </>;

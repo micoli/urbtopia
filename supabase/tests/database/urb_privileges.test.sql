@@ -18,7 +18,7 @@ select results_eq(
        'urb_accept_friend_request', 'urb_accept_trade_offer', 'urb_block_user', 'urb_claim_trade', 'urb_create_trade_offer',
        'urb_decline_trade_offer', 'urb_delete_my_saves', 'urb_list_messages', 'urb_list_saves', 'urb_list_social',
        'urb_push_save', 'urb_refuse_friend_request', 'urb_remove_friend', 'urb_restore_save', 'urb_send_friend_request_by_email',
-       'urb_send_message', 'urb_set_findable', 'urb_set_handle', 'urb_unblock_user'
+       'urb_send_message', 'urb_set_avatar', 'urb_set_findable', 'urb_set_handle', 'urb_unblock_user'
      ]) order by 1 $$,
   'authenticated can execute only the client-facing urb_ functions'
 );

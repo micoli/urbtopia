@@ -45,6 +45,7 @@ describe('parseSnapshot', () => {
     revision: 4,
     changed: true,
     handle: 'Alice',
+    avatar: 'character-male-a',
     findable: true,
     handleChangedAt: '2026-10-11T10:00:00Z',
     friends: [{ userId: 'b', handle: 'Bob', since: '2026-10-11T11:00:00Z', unread: 2, lastMessageAt: '2026-10-11T11:30:00Z' }],
@@ -58,12 +59,13 @@ describe('parseSnapshot', () => {
       changed: true,
       revision: 4,
       handle: 'Alice',
+      avatar: 'character-male-a',
       findable: true,
       handleChangedAt: Date.parse('2026-10-11T10:00:00Z'),
-      friends: [{ userId: 'b', handle: 'Bob', since: Date.parse('2026-10-11T11:00:00Z'), unread: 2, lastMessageAt: Date.parse('2026-10-11T11:30:00Z') }],
-      incoming: [{ userId: 'c', handle: 'Carol', at: Date.parse('2026-10-11T12:00:00Z') }],
+      friends: [{ userId: 'b', handle: 'Bob', avatar: null, since: Date.parse('2026-10-11T11:00:00Z'), unread: 2, lastMessageAt: Date.parse('2026-10-11T11:30:00Z') }],
+      incoming: [{ userId: 'c', handle: 'Carol', avatar: null, at: Date.parse('2026-10-11T12:00:00Z') }],
       outgoing: [],
-      blocked: [{ userId: 'd', handle: 'Dave' }],
+      blocked: [{ userId: 'd', handle: 'Dave', avatar: null }],
       offers: [],
     });
   });
@@ -117,6 +119,21 @@ describe('FakeSocialClient', () => {
     expect(await bob.list()).toMatchObject({ incoming: [{ userId: 'a', handle: 'Alice' }] });
     await bob.acceptRequest('a');
     expect(await alice.list()).toMatchObject({ friends: [{ userId: 'b', handle: 'Bob' }], outgoing: [] });
+  });
+
+  it('shares an Avatar with Friends and rejects unknown ones', async () => {
+    const { alice, bob } = setup();
+    await alice.setHandle('Alice');
+    await bob.setHandle('Bob');
+    await alice.sendRequestByEmail('b@example.com');
+    await bob.acceptRequest('a');
+    const before = await bob.list();
+    await expect(alice.setAvatar('character-unknown')).rejects.toMatchObject({ kind: 'avatar-invalid' });
+    await alice.setAvatar('character-female-c');
+    expect(await alice.list()).toMatchObject({ avatar: 'character-female-c' });
+    expect(await bob.list(before.revision)).toMatchObject({ changed: true, friends: [{ userId: 'a', avatar: 'character-female-c' }] });
+    await alice.setAvatar(null);
+    expect(await alice.list()).toMatchObject({ avatar: null });
   });
 
   it('answers the same way for an unknown email and a hidden account', async () => {

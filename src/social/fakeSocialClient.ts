@@ -1,4 +1,5 @@
 import type { TradeLine } from '../core';
+import { isAvatarId } from './avatar';
 import { FakeTradeBook } from './fakeTradeBook';
 import { isValidHandle } from './handle';
 import { HANDLE_CHANGE_DELAY_DAYS, MAX_FRIENDS, MAX_MESSAGE_LENGTH, MAX_MESSAGES_PER_MINUTE, MAX_OUTGOING_REQUESTS, SEARCHES_PER_DAY, SEARCHES_PER_HOUR } from './limits';
@@ -13,6 +14,7 @@ interface Member {
   userId: string;
   email: string;
   handle: string | null;
+  avatar: string | null;
   findable: boolean;
   handleChangedAt: number;
   revision: number;
@@ -51,11 +53,12 @@ export class FakeSocialWorld {
       bump: (...userIds) => this.bump(...userIds),
       areFriends: (a, b) => this.link(a, b)?.state === 'accepted',
       handleOf: (userId) => this.member(userId).handle ?? '',
+      avatarOf: (userId) => this.member(userId).avatar,
     });
   }
 
   addPlayer(userId: string, email: string | null = `${userId}@example.com`, handle: string | null = null): FakeSocialClient {
-    this.members.set(userId, { userId, email: email ?? '', handle, findable: true, handleChangedAt: 0, revision: 1, searches: [] });
+    this.members.set(userId, { userId, email: email ?? '', handle, avatar: null, findable: true, handleChangedAt: 0, revision: 1, searches: [] });
     return new FakeSocialClient(this, userId, email !== null);
   }
 
@@ -171,6 +174,14 @@ export class FakeSocialClient implements SocialClient {
     this.world.bump(this.userId);
   }
 
+  async setAvatar(avatar: string | null): Promise<void> {
+    const me = this.guard();
+    if (avatar !== null && !isAvatarId(avatar)) throw new SocialError('avatar-invalid');
+    if (me.avatar === avatar) return;
+    me.avatar = avatar;
+    this.world.bump(this.userId, ...this.world.linksOf(this.userId).filter((link) => link.state === 'accepted' || link.state === 'pending').map((link) => this.world.other(link, this.userId)));
+  }
+
   async setFindable(findable: boolean): Promise<void> {
     const me = this.guard();
     me.findable = findable;
@@ -232,26 +243,28 @@ export class FakeSocialClient implements SocialClient {
     if (cursor === me.revision) return { changed: false, revision: me.revision };
     const links = this.world.linksOf(this.userId);
     const handleOf = (link: (typeof links)[number]) => this.world.member(this.world.other(link, this.userId)).handle ?? '';
+    const avatarOf = (link: (typeof links)[number]) => this.world.member(this.world.other(link, this.userId)).avatar;
     const userIdOf = (link: (typeof links)[number]) => this.world.other(link, this.userId);
     return {
       changed: true,
       revision: me.revision,
       handle: me.handle ?? '',
+      avatar: me.avatar,
       findable: me.findable,
       handleChangedAt: me.handleChangedAt,
       friends: links
         .filter((link) => link.state === 'accepted')
-        .map((link) => ({ userId: userIdOf(link), handle: handleOf(link), since: link.updatedAt, ...this.conversationSummary(userIdOf(link)) }))
+        .map((link) => ({ userId: userIdOf(link), handle: handleOf(link), avatar: avatarOf(link), since: link.updatedAt, ...this.conversationSummary(userIdOf(link)) }))
         .sort((a, b) => a.handle.toLowerCase().localeCompare(b.handle.toLowerCase())),
       incoming: links
         .filter((link) => link.state === 'pending' && link.actorId !== this.userId)
-        .map((link) => ({ userId: userIdOf(link), handle: handleOf(link), at: link.createdAt })),
+        .map((link) => ({ userId: userIdOf(link), handle: handleOf(link), avatar: avatarOf(link), at: link.createdAt })),
       outgoing: links
         .filter((link) => link.state === 'pending' && link.actorId === this.userId)
-        .map((link) => ({ userId: userIdOf(link), handle: handleOf(link), at: link.createdAt })),
+        .map((link) => ({ userId: userIdOf(link), handle: handleOf(link), avatar: avatarOf(link), at: link.createdAt })),
       blocked: links
         .filter((link) => link.state === 'blocked' && link.actorId === this.userId)
-        .map((link) => ({ userId: userIdOf(link), handle: handleOf(link) })),
+        .map((link) => ({ userId: userIdOf(link), handle: handleOf(link), avatar: avatarOf(link) })),
       offers: this.world.trades.listFor(this.userId),
     };
   }

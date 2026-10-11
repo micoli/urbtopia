@@ -1,6 +1,7 @@
 import { t } from '../../../i18n/t';
 import type { FriendRequest } from '../../../social/types';
 import { ActionButton } from '../../common/ActionButton';
+import { HandleLabel } from '../HandleLabel';
 
 interface IncomingRequestsProps {
     requests: FriendRequest[];
@@ -15,7 +16,7 @@ export function IncomingRequests({requests, onAccept, onRefuse, onBlock}: Incomi
         <h4>{t('friends.incoming')}</h4>
         <ul>
             {requests.map(request => <li key={request.userId} className="friends-row">
-                <strong>{request.handle}</strong>
+                <HandleLabel userId={request.userId} handle={request.handle} avatar={request.avatar}/>
                 <ActionButton variant="primary" onClick={() => onAccept(request.userId)}>{t('friends.accept')}</ActionButton>
                 <ActionButton onClick={() => onRefuse(request.userId)}>{t('friends.refuse')}</ActionButton>
                 <ActionButton onClick={() => onBlock(request.userId)}>{t('friends.block')}</ActionButton>

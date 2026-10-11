@@ -22,6 +22,7 @@ const MESSAGE_KINDS: ReadonlyArray<readonly [string, SocialErrorKind]> = [
   ['urb_handle_forbidden', 'handle-forbidden'],
   ['urb_handle_taken', 'handle-taken'],
   ['urb_handle_change_too_soon', 'handle-change-too-soon'],
+  ['urb_avatar_invalid', 'avatar-invalid'],
   ['urb_rate_limited', 'rate-limited'],
   ['urb_message_invalid', 'message-invalid'],
   ['urb_not_friends', 'not-friends'],
@@ -58,6 +59,10 @@ class SupabaseSocialClient implements SocialClient {
 
   async setHandle(handle: string): Promise<void> {
     await this.call(() => this.client.rpc('urb_set_handle', { p_handle: handle }));
+  }
+
+  async setAvatar(avatar: string | null): Promise<void> {
+    await this.call(() => this.client.rpc('urb_set_avatar', { p_avatar: avatar as string }));
   }
 
   async setFindable(findable: boolean): Promise<void> {

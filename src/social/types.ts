@@ -9,6 +9,7 @@ export type SocialErrorKind =
   | 'handle-forbidden'
   | 'handle-taken'
   | 'handle-change-too-soon'
+  | 'avatar-invalid'
   | 'rate-limited'
   | 'message-invalid'
   | 'not-friends'
@@ -33,6 +34,7 @@ export class SocialError extends Error {
 export interface Friend {
   userId: string;
   handle: string;
+  avatar: string | null;
   since: number;
   unread: number;
   lastMessageAt: number | null;
@@ -48,12 +50,14 @@ export interface Message {
 export interface FriendRequest {
   userId: string;
   handle: string;
+  avatar: string | null;
   at: number;
 }
 
 export interface BlockedPlayer {
   userId: string;
   handle: string;
+  avatar: string | null;
 }
 
 export type TradeOfferState = 'open' | 'accepted' | 'refused' | 'cancelled' | 'expired' | 'lapsed';
@@ -64,6 +68,7 @@ export interface TradeOffer {
   role: 'sender' | 'recipient';
   peerId: string;
   peerHandle: string;
+  peerAvatar: string | null;
   lot: TradeLine[];
   price: number;
   state: TradeOfferState;
@@ -86,6 +91,7 @@ export interface TradeClaim {
 export interface SocialState {
   revision: number;
   handle: string;
+  avatar: string | null;
   findable: boolean;
   handleChangedAt: number;
   friends: Friend[];
@@ -99,6 +105,7 @@ export type SocialSnapshot = { changed: false; revision: number } | ({ changed: 
 
 export interface SocialClient {
   setHandle(handle: string): Promise<void>;
+  setAvatar(avatar: string | null): Promise<void>;
   setFindable(findable: boolean): Promise<void>;
   sendRequestByEmail(email: string): Promise<void>;
   acceptRequest(userId: string): Promise<void>;

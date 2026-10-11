@@ -147,7 +147,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'mini-characters',
     url: 'https://kenney.nl/media/pages/assets/mini-characters/bfc7e272b4-1774770718/kenney_mini-characters.zip',
     archive: 'kenney_mini-characters.zip',
-    files: [],
+    files: ['female', 'male'].flatMap((sex) => ['a', 'b', 'c', 'd', 'e', 'f'].map((letter) => `character-${sex}-${letter}`)),
   },
   {
     name: 'furniture',

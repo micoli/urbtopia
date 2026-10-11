@@ -24,6 +24,13 @@ function time(row: Row, key: string): number {
   return parsed;
 }
 
+function optionalText(row: Row, key: string): string | null {
+  const value = row[key];
+  if (value === null || value === undefined) return null;
+  if (typeof value !== 'string') throw new SocialError('unknown');
+  return value;
+}
+
 function number(row: Row, key: string): number {
   const value = row[key];
   if (typeof value !== 'number') throw new SocialError('unknown');
@@ -39,13 +46,14 @@ export function parseSnapshot(json: unknown): SocialSnapshot {
     changed: true,
     revision,
     handle: text(json, 'handle'),
+    avatar: optionalText(json, 'avatar'),
     findable: json.findable,
     handleChangedAt: time(json, 'handleChangedAt'),
-    friends: rows(json.friends).map((row): Friend => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), since: time(row, 'since'), unread: number(row, 'unread'), lastMessageAt: row.lastMessageAt === null ? null : time(row, 'lastMessageAt') })),
-    incoming: rows(json.incoming).map((row): FriendRequest => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), at: time(row, 'at') })),
-    outgoing: rows(json.outgoing).map((row): FriendRequest => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), at: time(row, 'at') })),
+    friends: rows(json.friends).map((row): Friend => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), avatar: optionalText(row, 'avatar'), since: time(row, 'since'), unread: number(row, 'unread'), lastMessageAt: row.lastMessageAt === null ? null : time(row, 'lastMessageAt') })),
+    incoming: rows(json.incoming).map((row): FriendRequest => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), avatar: optionalText(row, 'avatar'), at: time(row, 'at') })),
+    outgoing: rows(json.outgoing).map((row): FriendRequest => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), avatar: optionalText(row, 'avatar'), at: time(row, 'at') })),
     offers: json.offers === undefined ? [] : rows(json.offers).map(parseOffer),
-    blocked: rows(json.blocked).map((row): BlockedPlayer => ({ userId: text(row, 'userId'), handle: text(row, 'handle') })),
+    blocked: rows(json.blocked).map((row): BlockedPlayer => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), avatar: optionalText(row, 'avatar') })),
   };
 }
 
@@ -84,6 +92,7 @@ function parseOffer(row: Row): TradeOffer {
     role: oneOf(row, 'role', ['sender', 'recipient'] as const),
     peerId: text(row, 'peerId'),
     peerHandle: text(row, 'peerHandle'),
+    peerAvatar: optionalText(row, 'peerAvatar'),
     lot: parseLot(row.lot),
     price: number(row, 'price'),
     state: oneOf(row, 'state', OFFER_STATES),

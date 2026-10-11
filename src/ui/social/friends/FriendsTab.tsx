@@ -4,7 +4,7 @@ import { FriendsPanel } from './FriendsPanel';
 
 const DAY_MS = 86_400_000;
 const noop = async () => {};
-const NO_ACTIONS = {setHandle: noop, setFindable: noop, sendRequest: noop, accept: noop, refuse: noop, remove: noop, block: noop, unblock: noop, openConversation: noop, closeConversation: noop, sendMessage: noop, refreshConversation: noop};
+const NO_ACTIONS = {setHandle: noop, setAvatar: noop, setFindable: noop, sendRequest: noop, accept: noop, refuse: noop, remove: noop, block: noop, unblock: noop, openConversation: noop, closeConversation: noop, sendMessage: noop, refreshConversation: noop};
 
 export function FriendsTab() {
     const account = useCloud(s => s.account);

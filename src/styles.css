@@ -2010,6 +2010,11 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .friends-list ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
 .friends-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
 .friends-row strong { flex: 1 1 8rem; }
+.handle-label { display: inline-flex; align-items: center; gap: 0.5rem; flex: 1 1 8rem; }
+.avatar { width: 2.5rem; height: 2.5rem; border-radius: 50%; background: rgba(0, 0, 0, 0.08); object-fit: cover; flex: none; }
+.avatar-picker { display: flex; flex-wrap: wrap; gap: 0.25rem; margin: 0.5rem 0; padding: 0; border: 0; }
+.avatar-option { padding: 0.125rem; border: 2px solid transparent; border-radius: 50%; background: none; cursor: pointer; }
+.avatar-option[aria-pressed='true'] { border-color: currentColor; }
 .friends-handle label { display: grid; gap: 0.25rem; }
 .friends-handle input[type='text'] { padding: 0.4rem 0.5rem; font: inherit; }
 

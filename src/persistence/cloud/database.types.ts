@@ -104,6 +104,7 @@ export type Database = {
       };
       urb_profiles: {
         Row: {
+          avatar: string | null;
           created_at: string;
           findable: boolean;
           handle: string;
@@ -113,6 +114,7 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          avatar?: string | null;
           created_at?: string;
           findable?: boolean;
           handle: string;
@@ -121,6 +123,7 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          avatar?: string | null;
           created_at?: string;
           findable?: boolean;
           handle?: string;
@@ -297,6 +300,7 @@ export type Database = {
       urb_restore_save: { Args: { p_revision: number }; Returns: number };
       urb_send_friend_request_by_email: { Args: { p_email: string }; Returns: undefined };
       urb_send_message: { Args: { p_body: string; p_to: string }; Returns: number };
+      urb_set_avatar: { Args: { p_avatar: string }; Returns: undefined };
       urb_set_findable: { Args: { p_findable: boolean }; Returns: undefined };
       urb_set_handle: { Args: { p_handle: string }; Returns: undefined };
       urb_settle_offer: { Args: { p_id: string }; Returns: undefined };

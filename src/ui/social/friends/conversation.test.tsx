@@ -26,8 +26,8 @@ const conversation = (props: Partial<ConversationState> = {}): ConversationState
 
 describe('conversation view', () => {
   it('shows the Handle, both sides of the talk and the composer', () => {
-    const html = renderToStaticMarkup(<ConversationView conversation={conversation()} onBack={noop} onSend={noop} onRefresh={asyncNoop} />);
-    expect(html).toContain('<h4>Bob</h4>');
+    const html = renderToStaticMarkup(<ConversationView conversation={conversation()} avatar={null} onBack={noop} onSend={noop} onRefresh={asyncNoop} />);
+    expect(html).toContain('<strong>Bob</strong>');
     expect(html).toContain('Hello Alice');
     expect(html).toContain('data-from-me="true"');
     expect(html).toContain('maxLength="500"');
@@ -35,18 +35,18 @@ describe('conversation view', () => {
   });
 
   it('puts a small refresh button after Send', () => {
-    const html = renderToStaticMarkup(<ConversationView conversation={conversation()} onBack={noop} onSend={noop} onRefresh={asyncNoop} />);
+    const html = renderToStaticMarkup(<ConversationView conversation={conversation()} avatar={null} onBack={noop} onSend={noop} onRefresh={asyncNoop} />);
     expect(html).toContain(`aria-label="${t('friends.conversation.refresh')}"`);
     expect(html.indexOf(t('friends.conversation.send'))).toBeLessThan(html.indexOf('friends-refresh'));
   });
 
   it('invites to say hello in an empty Conversation', () => {
-    expect(renderToStaticMarkup(<ConversationView conversation={conversation({ messages: [] })} onBack={noop} onSend={noop} onRefresh={asyncNoop} />)).toContain(t('friends.conversation.empty'));
+    expect(renderToStaticMarkup(<ConversationView avatar={null} conversation={conversation({ messages: [] })} onBack={noop} onSend={noop} onRefresh={asyncNoop} />)).toContain(t('friends.conversation.empty'));
   });
 
   it('shows send errors, with the delay of a rate limit in seconds', () => {
     const failed = (error: 'not-friends' | 'message-invalid' | 'rate-limited', retryAfterSeconds: number | null) =>
-      renderToStaticMarkup(<ConversationView conversation={conversation({ failure: { error, retryAfterSeconds } })} onBack={noop} onSend={noop} onRefresh={asyncNoop} />);
+      renderToStaticMarkup(<ConversationView avatar={null} conversation={conversation({ failure: { error, retryAfterSeconds } })} onBack={noop} onSend={noop} onRefresh={asyncNoop} />);
     expect(failed('not-friends', null)).toContain(t('friends.error.not-friends'));
     expect(failed('message-invalid', null)).toContain(t('friends.error.message-invalid'));
     expect(failed('rate-limited', 42)).toContain(t('friends.error.message-rate-limited').replace('{N}', '42'));
@@ -56,13 +56,13 @@ describe('conversation view', () => {
 
 describe('friend list with messages', () => {
   it('offers Message with the unread count', () => {
-    const html = renderToStaticMarkup(<FriendList friends={[{ userId: 'b', handle: 'Bob', since: 0, unread: 3, lastMessageAt: 0 }]} onMessage={noop} onTrade={noop} onRemove={noop} onBlock={noop} />);
+    const html = renderToStaticMarkup(<FriendList friends={[{ userId: 'b', handle: 'Bob', avatar: null, since: 0, unread: 3, lastMessageAt: 0 }]} onMessage={noop} onTrade={noop} onRemove={noop} onBlock={noop} />);
     expect(html).toContain(t('friends.message'));
     expect(html).toContain('>3<');
   });
 
   it('shows no count without unread messages', () => {
-    const html = renderToStaticMarkup(<FriendList friends={[{ userId: 'b', handle: 'Bob', since: 0, unread: 0, lastMessageAt: null }]} onMessage={noop} onTrade={noop} onRemove={noop} onBlock={noop} />);
+    const html = renderToStaticMarkup(<FriendList friends={[{ userId: 'b', handle: 'Bob', avatar: null, since: 0, unread: 0, lastMessageAt: null }]} onMessage={noop} onTrade={noop} onRemove={noop} onBlock={noop} />);
     expect(html).not.toContain('friends-unread');
   });
 });

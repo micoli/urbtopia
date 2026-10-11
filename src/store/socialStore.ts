@@ -42,6 +42,7 @@ export interface SocialActions {
   declineTradeOffer: (offerId: string) => Promise<TradeOutcome>;
   reconcileTrades: () => Promise<void>;
   setHandle: (handle: string) => Promise<void>;
+  setAvatar: (avatar: string | null) => Promise<void>;
   setFindable: (findable: boolean) => Promise<void>;
 }
 

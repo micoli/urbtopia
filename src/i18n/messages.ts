@@ -533,6 +533,8 @@ export const MESSAGES = {
   'friends.handle.label': 'Handle',
   'friends.handle.hint': '3 to 20 letters, digits, _ or -.',
   'friends.handle.current': 'Your Handle',
+  'friends.avatar.label': 'Avatar',
+  'friends.avatar.pick': 'Pick avatar {N}',
   'friends.handle.choose': 'Choose',
   'friends.handle.change': 'Change',
   'friends.handle.saving': 'Saving…',

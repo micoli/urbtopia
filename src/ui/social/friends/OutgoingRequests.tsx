@@ -1,6 +1,7 @@
 import { t } from '../../../i18n/t';
 import type { FriendRequest } from '../../../social/types';
 import { ActionButton } from '../../common/ActionButton';
+import { HandleLabel } from '../HandleLabel';
 
 interface OutgoingRequestsProps {
     requests: FriendRequest[];
@@ -13,7 +14,7 @@ export function OutgoingRequests({requests, onCancel}: OutgoingRequestsProps) {
         <h4>{t('friends.outgoing')}</h4>
         <ul>
             {requests.map(request => <li key={request.userId} className="friends-row">
-                <strong>{request.handle}</strong>
+                <HandleLabel userId={request.userId} handle={request.handle} avatar={request.avatar}/>
                 <ActionButton onClick={() => onCancel(request.userId)}>{t('friends.cancel')}</ActionButton>
             </li>)}
         </ul>

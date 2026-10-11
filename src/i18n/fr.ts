@@ -535,6 +535,8 @@ export const FR: Record<MessageKey, string> = {
   'friends.handle.label': 'Pseudo',
   'friends.handle.hint': '3 à 20 lettres, chiffres, _ ou -.',
   'friends.handle.current': 'Votre pseudo',
+  'friends.avatar.label': 'Avatar',
+  'friends.avatar.pick': "Choisir l'avatar {N}",
   'friends.handle.choose': 'Choisir',
   'friends.handle.change': 'Changer',
   'friends.handle.saving': 'Enregistrement…',

@@ -492,6 +492,10 @@ _Avoid_: Merge, overwrite
 The unique public name of a Player account in multiplayer, the only identity shown to other players. It is required to enter multiplayer, which also requires an attached email. The email is never shown.
 _Avoid_: Username, nickname, pseudo
 
+**Avatar**:
+The picture of a character chosen by a Player account from a closed set of twelve, shown next to its Handle everywhere the Handle appears. It is optional and can be changed at any time; an account without one shows a default Avatar derived from its identity.
+_Avoid_: Portrait, profile picture, icon
+
 **Friend request**:
 An invitation from one Player account to another, found by exact email, that the other accepts or ignores. Searching an email never reveals whether an account exists.
 _Avoid_: Follow, invite
