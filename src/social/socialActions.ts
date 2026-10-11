@@ -1,15 +1,19 @@
 import type { ConversationState, SocialActions, SocialStore } from '../store/socialStore';
 import { isPlausibleEmail } from '../persistence/cloud/email';
 import { isValidHandle } from './handle';
-import { SocialError, type Message, type SocialClient } from './types';
+import type { TradeLine } from '../core';
+import type { TradeCoordinator, TradeOutcome } from './tradeCoordinator';
+import { SocialError, type Message, type SocialClient, type TradeOffer } from './types';
 
-type Target = Pick<SocialStore, 'setStatus' | 'setProfile' | 'setHandleForm' | 'setSearch' | 'setActionFailure' | 'setConversation'>;
+type Target = Pick<SocialStore, 'setStatus' | 'setProfile' | 'setHandleForm' | 'setSearch' | 'setActionFailure' | 'setConversation' | 'setTrade'>;
 
 export function createSocialActions(
   client: SocialClient,
   target: Target,
   currentRevision: () => number | null = () => null,
   currentConversation: () => ConversationState | null = () => null,
+  trades: TradeCoordinator | null = null,
+  currentOffers: () => TradeOffer[] = () => [],
 ): SocialActions {
   const refresh = async () => {
     target.setStatus('loading');
@@ -144,7 +148,26 @@ export function createSocialActions(
     }
   };
 
+  const unavailable: TradeOutcome = { ok: false, failure: { kind: 'read-only' }, pending: false };
+
+  const runTrade = async (step: () => Promise<TradeOutcome>): Promise<TradeOutcome> => {
+    if (!trades) return unavailable;
+    target.setTrade({ busy: true, failure: null });
+    const outcome = await step();
+    target.setTrade({ busy: false, failure: outcome.ok ? null : outcome.failure });
+    await poll();
+    return outcome;
+  };
+
+  const reconcileTrades = async () => {
+    await trades?.reconcile(currentOffers());
+  };
+
   return {
+    createTradeOffer: (to: string, lot: TradeLine[], price: number) => runTrade(() => trades!.createOffer(to, lot, price)),
+    acceptTradeOffer: (offer: TradeOffer) => runTrade(() => trades!.acceptOffer(offer)),
+    declineTradeOffer: (offerId: string) => runTrade(() => trades!.declineOffer(offerId)),
+    reconcileTrades,
     openConversation,
     closeConversation,
     sendMessage,

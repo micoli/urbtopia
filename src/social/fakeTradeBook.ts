@@ -18,6 +18,7 @@ interface StoredOffer {
   createdAt: number;
   expiresAt: number;
   claimDeadline: number | null;
+  acceptedAt: number | null;
   lotClaimed: boolean;
   paymentClaimed: boolean;
 }
@@ -57,15 +58,18 @@ export class FakeTradeBook {
     }
     this.offers.push({
       id, senderId, recipientId: to, lot: lot.map((line) => ({ ...line })), price, state: 'open', createdAt: now, expiresAt: now + OPEN_WINDOW_MS,
-      claimDeadline: null, lotClaimed: false, paymentClaimed: false,
+      claimDeadline: null, acceptedAt: null, lotClaimed: false, paymentClaimed: false,
     });
     this.hooks.bump(senderId, to);
   }
 
   accept(userId: string, id: string): void {
     const offer = this.find(id);
-    if (offer.recipientId !== userId || offer.state !== 'open') throw new SocialError('trade-unavailable');
+    if (offer.recipientId !== userId) throw new SocialError('trade-unavailable');
+    if (offer.acceptedAt !== null) return;
+    if (offer.state !== 'open') throw new SocialError('trade-unavailable');
     offer.state = 'accepted';
+    offer.acceptedAt = this.hooks.clock();
     offer.claimDeadline = this.hooks.clock() + CLAIM_WINDOW_MS;
     this.hooks.bump(offer.senderId, offer.recipientId);
   }
@@ -118,7 +122,7 @@ export class FakeTradeBook {
         return {
           id: offer.id, role: offer.senderId === userId ? 'sender' : 'recipient', peerId, peerHandle: this.hooks.handleOf(peerId),
           lot: offer.lot.map((line) => ({ ...line })), price: offer.price, state: offer.state, createdAt: offer.createdAt, expiresAt: offer.expiresAt,
-          claimDeadline: offer.claimDeadline, claimable: this.claimable(offer, userId),
+          claimDeadline: offer.claimDeadline, claimable: this.claimable(offer, userId), claimed: this.claimed(offer, userId),
         };
       });
   }
@@ -132,10 +136,21 @@ export class FakeTradeBook {
     return slots;
   }
 
+  private claimed(offer: StoredOffer, userId: string): TradeSlot[] {
+    const slots: TradeSlot[] = [];
+    const lotOwner = offer.state === 'accepted' ? offer.recipientId : RETURNED.includes(offer.state) ? offer.senderId : null;
+    if (offer.lotClaimed && lotOwner === userId) slots.push('lot');
+    const paymentOwner = offer.state === 'accepted' ? offer.senderId : offer.state === 'lapsed' ? offer.recipientId : null;
+    if (offer.paymentClaimed && paymentOwner === userId) slots.push('payment');
+    return slots;
+  }
+
+  // Same rule as the server: what is open, what still awaits a claim, and what a claim left behind for a replay.
   private isListed(offer: StoredOffer, userId: string): boolean {
     if (offer.state === 'open') return true;
     if (offer.state === 'accepted' && !offer.lotClaimed) return true;
-    return this.claimable(offer, userId).length > 0;
+    if (offer.senderId === userId) return true;
+    return offer.recipientId === userId && (offer.state === 'accepted' || offer.state === 'lapsed');
   }
 
   private settleAll(userId: string): void {

@@ -71,9 +71,14 @@ function oneOf<T extends string>(row: Row, key: string, allowed: readonly T[]): 
   return value as T;
 }
 
+function slotsOf(value: unknown): TradeSlot[] {
+  if (!Array.isArray(value) || !value.every((slot) => SLOTS.includes(slot as TradeSlot))) throw new SocialError('unknown');
+  return value as TradeSlot[];
+}
+
 function parseOffer(row: Row): TradeOffer {
-  const claimable = row.claimable;
-  if (!Array.isArray(claimable) || !claimable.every((slot) => SLOTS.includes(slot as TradeSlot))) throw new SocialError('unknown');
+  const claimable = slotsOf(row.claimable);
+  const claimed = row.claimed === undefined ? [] : slotsOf(row.claimed);
   return {
     id: text(row, 'id'),
     role: oneOf(row, 'role', ['sender', 'recipient'] as const),
@@ -85,7 +90,8 @@ function parseOffer(row: Row): TradeOffer {
     createdAt: time(row, 'createdAt'),
     expiresAt: time(row, 'expiresAt'),
     claimDeadline: row.claimDeadline === null || row.claimDeadline === undefined ? null : time(row, 'claimDeadline'),
-    claimable: claimable as TradeSlot[],
+    claimable,
+    claimed,
   };
 }
 

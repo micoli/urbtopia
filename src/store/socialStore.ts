@@ -1,5 +1,7 @@
 import { createStore } from 'zustand/vanilla';
-import type { Message, SocialErrorKind, SocialState } from '../social/types';
+import type { TradeLine } from '../core';
+import type { TradeFailure, TradeOutcome } from '../social/tradeCoordinator';
+import type { Message, SocialErrorKind, SocialState, TradeOffer } from '../social/types';
 
 export type SocialStatus = 'idle' | 'loading' | 'no-handle' | 'ready' | 'offline';
 
@@ -34,6 +36,10 @@ export interface SocialActions {
   closeConversation: () => Promise<void>;
   sendMessage: (body: string) => Promise<void>;
   pollConversation: () => Promise<void>;
+  createTradeOffer: (to: string, lot: TradeLine[], price: number) => Promise<TradeOutcome>;
+  acceptTradeOffer: (offer: TradeOffer) => Promise<TradeOutcome>;
+  declineTradeOffer: (offerId: string) => Promise<TradeOutcome>;
+  reconcileTrades: () => Promise<void>;
   setHandle: (handle: string) => Promise<void>;
   setFindable: (findable: boolean) => Promise<void>;
 }
@@ -46,6 +52,8 @@ export interface SocialStore {
   search: SearchState;
   actionFailure: ActionFailure | null;
   conversation: ConversationState | null;
+  tradeBusy: boolean;
+  tradeFailure: TradeFailure | null;
   actions: SocialActions | null;
   enable: (actions: SocialActions) => void;
   setStatus: (status: SocialStatus) => void;
@@ -54,6 +62,7 @@ export interface SocialStore {
   setSearch: (search: SearchState) => void;
   setActionFailure: (failure: ActionFailure | null) => void;
   setConversation: (conversation: ConversationState | null) => void;
+  setTrade: (trade: { busy: boolean; failure: TradeFailure | null }) => void;
 }
 
 export const socialStore = createStore<SocialStore>((set) => ({
@@ -64,6 +73,8 @@ export const socialStore = createStore<SocialStore>((set) => ({
   search: { kind: 'idle' },
   actionFailure: null,
   conversation: null,
+  tradeBusy: false,
+  tradeFailure: null,
   actions: null,
   enable: (actions) => set({ enabled: true, actions }),
   setStatus: (status) => set({ status }),
@@ -72,4 +83,5 @@ export const socialStore = createStore<SocialStore>((set) => ({
   setSearch: (search) => set({ search }),
   setActionFailure: (actionFailure) => set({ actionFailure }),
   setConversation: (conversation) => set({ conversation }),
+  setTrade: ({ busy, failure }) => set({ tradeBusy: busy, tradeFailure: failure }),
 }));

@@ -71,6 +71,7 @@ export interface TradeOffer {
   expiresAt: number;
   claimDeadline: number | null;
   claimable: TradeSlot[];
+  claimed: TradeSlot[];
 }
 
 export interface TradeClaim {

@@ -3,6 +3,7 @@ import { dialogStore } from '../store/dialogStore';
 import { bootResult, gameStore } from '../store/gameStore';
 import { readOnlyStore } from '../store/readOnlyStore';
 import { createAutosave } from './autosave';
+import { saveNowHandle } from './saveNow';
 import { installSocial } from '../social/installSocial';
 import { installCloudSync } from './cloud/installCloud';
 import { saveSession, saveStore } from './instance';
@@ -36,6 +37,8 @@ export function installPersistence(): () => void {
       if (outcome.reason === 'quota') dialogStore.getState().setSaveFailed(true);
     },
   });
+
+  saveNowHandle.current = autosave.flush;
 
   const ownership = new TabOwnership(saveStore, newToken(), {
     onLost: () => readOnlyStore.getState().set(true),
@@ -72,6 +75,7 @@ export function installPersistence(): () => void {
   const disposeSocial = installSocial();
 
   return () => {
+    saveNowHandle.current = () => {};
     disposeCloud();
     disposeSocial();
     unsubscribe();

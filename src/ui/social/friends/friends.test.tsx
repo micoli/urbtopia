@@ -46,7 +46,7 @@ const panel = (props: Partial<Parameters<typeof FriendsPanel>[0]> = {}) =>
     />,
   );
 
-function storeOf(): Pick<SocialStore, 'setStatus' | 'setProfile' | 'setHandleForm' | 'setSearch' | 'setActionFailure' | 'setConversation'> {
+function storeOf(): Pick<SocialStore, 'setStatus' | 'setProfile' | 'setHandleForm' | 'setSearch' | 'setActionFailure' | 'setConversation' | 'setTrade'> {
   socialStore.setState({ status: 'idle', profile: null, handleForm: { kind: 'idle' }, search: { kind: 'idle' }, actionFailure: null, conversation: null });
   return socialStore.getState();
 }
