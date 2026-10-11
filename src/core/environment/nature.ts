@@ -1,6 +1,6 @@
-import { NATURE_ENTRIES } from '../buildings/buildingDefinitions.ts';
+import { NATURE_ENTRIES, tiersOf } from '../buildings/buildingDefinitions.ts';
 import { modelFileOf } from '../models/modelFiles.ts';
-import type { NatureType } from '../buildings/buildingTypes.generated.ts';
+import type { BuildingId, NatureType } from '../buildings/buildingTypes.generated.ts';
 import { NATURE_FAMILIES, type NatureFamily } from './natureFamilies.ts';
 
 export { NATURE_FAMILIES, type NatureFamily, type NatureType };
@@ -16,9 +16,12 @@ export function natureModelOf(type: string): NatureModel | undefined {
   return modelsByType.get(type);
 }
 
-export function greenProfileOf(type: string) {
-  if (type === 'tree') return { radius: 4, cooling: 1, biodiversity: 1, wellbeing: 1 };
-  if (type === 'park') return { radius: 6, cooling: 3, biodiversity: 3, wellbeing: 3 };
+export function greenProfileOf(type: string, tier = 1) {
+  const tiers = tiersOf(type as BuildingId);
+  if (tiers[0]?.cooling !== undefined) {
+    const { radius, cooling, biodiversity, wellbeing } = tiers[tier - 1] ?? tiers[0]!;
+    return { radius: radius!, cooling: cooling!, biodiversity: biodiversity!, wellbeing: wellbeing! };
+  }
   const model = natureModelOf(type);
   return model ? NATURE_FAMILIES[model[2]] : undefined;
 }

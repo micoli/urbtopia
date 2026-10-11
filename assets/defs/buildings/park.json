@@ -1,9 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "green",
   "section": "build.greenSpaces",
-  "model": "suburban-tree-large",
-  "footprint": [2, 2],
   "cost": 120,
   "unlockCitizens": 15,
   "requiresRoad": false,
@@ -14,5 +12,55 @@
   "description": {
     "en": "A green space made of several trees. Benefits nearby Homes through cooling, biodiversity and Citizen well-being; overlapping benefits have diminishing returns.",
     "fr": "Un espace vert composé de plusieurs arbres. Il améliore la fraîcheur, la biodiversité et le bien-être autour des logements ; les bénéfices se cumulent avec un rendement décroissant."
-  }
+  },
+  "tiers": [
+    {
+      "model": "suburban-tree-large",
+      "footprint": [2, 2],
+      "radius": 6,
+      "cooling": 3,
+      "biodiversity": 3,
+      "wellbeing": 3
+    },
+    {
+      "radius": 6,
+      "cooling": 4,
+      "biodiversity": 4,
+      "wellbeing": 4,
+      "upgradeCost": {
+        "urbs": 180
+      },
+      "scale": 1.05
+    },
+    {
+      "radius": 7,
+      "cooling": 5,
+      "biodiversity": 5,
+      "wellbeing": 5,
+      "upgradeCost": {
+        "urbs": 270
+      },
+      "scale": 1.1
+    },
+    {
+      "radius": 7,
+      "cooling": 6,
+      "biodiversity": 6,
+      "wellbeing": 6,
+      "upgradeCost": {
+        "urbs": 400
+      },
+      "scale": 1.15
+    },
+    {
+      "radius": 8,
+      "cooling": 7.5,
+      "biodiversity": 7.5,
+      "wellbeing": 7.5,
+      "upgradeCost": {
+        "urbs": 600
+      },
+      "scale": 1.2
+    }
+  ]
 }

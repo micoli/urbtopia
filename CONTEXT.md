@@ -105,7 +105,7 @@ A residential building with eight Tiers (1 to 8) that houses citizens and upgrad
 _Avoid_: House, residence, dwelling
 
 **Tier**:
-The level of an upgradable building (Home, Workshop, Factory, Shop, Storehouse, Power plant, Water tower). A higher Tier improves the building: a Home houses more Citizens and has a higher Demand; a Workshop or Factory produces faster, gains Slots, yields more per cycle and can produce exclusive Materials or Goods.
+The level of an upgradable building (Home, Workshop, Factory, Shop, Storehouse, Power plant, Water tower, Tree, Tall tree, Park). A higher Tier improves the building: a Home houses more Citizens and has a higher Demand; a Workshop or Factory produces faster, gains Slots, yields more per cycle and can produce exclusive Materials or Goods; a Tree or Park reaches farther and gives more cooling, biodiversity and Well-being, without changing its footprint.
 _Avoid_: Level, grade
 
 **Capacity**:
