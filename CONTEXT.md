@@ -53,7 +53,7 @@ The original Shop, kept in the cities that have it and still buildable: it sells
 _Avoid_: Universal shop, Retired shop
 
 **Build limit**:
-The number of copies of a building the player may own at once. It rises with the Citizens count, by thresholds set for each building, and its list of thresholds gives the maximum. Applies to the Farm, Packhouse, Storehouse, Material depot, Vault and Grain silo.
+The number of copies of a building the player may own at once. It rises with the Citizens count, by thresholds set for each building, and its list of thresholds gives the maximum. Applies to the Farm, Packhouse, Storehouse, Material depot, Vault, Grain silo, Hydro power plant and Geothermal power plant.
 _Avoid_: Quota, cap (already the Field cap)
 
 **Escalating price**:
@@ -265,12 +265,24 @@ The state of a Road section whose Commuters exceed its Lane capacity. The bottle
 _Avoid_: Jam, bouchon
 
 **Power plant**:
-A building that supplies power to the city, using wind or coal. Backup generation is a separate service role.
+A building that supplies power to the city, using wind, water, the heat of the ground or coal. The code name `powerPlant` is the wind one; the others have their own names. Backup generation is a separate service role.
 _Avoid_: Generator, energy station
 
 **Coal Power plant**:
 A polluting Power plant that supplies stable power from coal and reduces nearby Citizen well-being. It allows the player to power an entire city with coal.
 _Avoid_: Wind turbine, Factory
+
+**Hydro power plant**:
+A clean Power plant built on land touching a Water tile. Its Capacity is scaled by its Flow factor and varies slowly over the day. It costs nothing to run and pollutes nothing.
+_Avoid_: Dam, watermill, Wind turbine
+
+**Flow factor**:
+The share of a Hydro power plant's Capacity that its water supplies: the Water tiles connected to it divided by 8, at most 1. Without a connected Water tile it is 0.
+_Avoid_: Water level, Demand (that is the city's need for water)
+
+**Geothermal power plant**:
+A clean Power plant that supplies the same Capacity around the clock whatever the weather or the hour. It is the only constant renewable source, paid for by a late unlock, a high price and a Build limit. It costs nothing to run and pollutes nothing.
+_Avoid_: Heat pump, boiler, Coal Power plant
 
 **Water tower**:
 A building that supplies water capacity to the city.
