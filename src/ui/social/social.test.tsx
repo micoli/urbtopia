@@ -1,7 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { t } from '../../i18n/t';
-import { ExchangesTab } from './ExchangesTab';
 import { SocialTabs } from './SocialTabs';
 
 const noop = () => {};
@@ -20,9 +19,5 @@ describe('social tabs', () => {
     expect(renderToStaticMarkup(<SocialTabs tab="friends" pending={3} onSelect={noop} />)).toContain('>3<');
     expect(renderToStaticMarkup(<SocialTabs tab="friends" pending={12} onSelect={noop} />)).toContain('>9+<');
     expect(renderToStaticMarkup(<SocialTabs tab="friends" pending={0} onSelect={noop} />)).not.toContain('social-tab-badge');
-  });
-
-  it('announces that exchanges are coming', () => {
-    expect(renderToStaticMarkup(<ExchangesTab />)).toContain(t('social.exchanges.soon'));
   });
 });

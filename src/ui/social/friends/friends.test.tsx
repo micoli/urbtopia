@@ -41,6 +41,7 @@ const panel = (props: Partial<Parameters<typeof FriendsPanel>[0]> = {}) =>
       actionFailure={null}
       conversation={null}
       codeActions={{ send: noop, verify: noop, cancel: noop }}
+      onTrade={noop}
       actions={{ setHandle: asyncNoop, setFindable: asyncNoop, sendRequest: asyncNoop, accept: asyncNoop, refuse: asyncNoop, remove: asyncNoop, block: asyncNoop, unblock: asyncNoop, openConversation: asyncNoop, closeConversation: asyncNoop, sendMessage: asyncNoop }}
       {...props}
     />,

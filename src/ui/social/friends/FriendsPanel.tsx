@@ -27,10 +27,11 @@ interface FriendsPanelProps {
     now: number;
     changeDelayMs: number;
     codeActions: EmailCodeActions;
+    onTrade: (userId: string) => void;
     actions: Pick<SocialActions, 'setHandle' | 'setFindable' | 'sendRequest' | 'accept' | 'refuse' | 'remove' | 'block' | 'unblock' | 'openConversation' | 'closeConversation' | 'sendMessage'>;
 }
 
-export function FriendsPanel({account, emailCode, status, profile, handleForm, search, actionFailure, conversation, now, changeDelayMs, codeActions, actions}: FriendsPanelProps) {
+export function FriendsPanel({account, emailCode, status, profile, handleForm, search, actionFailure, conversation, now, changeDelayMs, codeActions, onTrade, actions}: FriendsPanelProps) {
     if (!account) return <p>{t('friends.connecting')}</p>;
     if (!account.email) return <>
         <p>{t('friends.needEmail')}</p>
@@ -45,7 +46,7 @@ export function FriendsPanel({account, emailCode, status, profile, handleForm, s
         <FriendSearchForm state={search} onSend={email => void actions.sendRequest(email)}/>
         {actionFailure ? <Note>{friendsErrorMessage(actionFailure.error, actionFailure.retryAfterSeconds)}</Note> : null}
         <IncomingRequests requests={profile.incoming} onAccept={id => void actions.accept(id)} onRefuse={id => void actions.refuse(id)} onBlock={id => void actions.block(id)}/>
-        <FriendList friends={profile.friends} onMessage={friend => void actions.openConversation(friend.userId, friend.handle)} onRemove={id => void actions.remove(id)} onBlock={id => void actions.block(id)}/>
+        <FriendList friends={profile.friends} onMessage={friend => void actions.openConversation(friend.userId, friend.handle)} onTrade={friend => onTrade(friend.userId)} onRemove={id => void actions.remove(id)} onBlock={id => void actions.block(id)}/>
         <OutgoingRequests requests={profile.outgoing} onCancel={id => void actions.refuse(id)}/>
         <BlockedList blocked={profile.blocked} onUnblock={id => void actions.unblock(id)}/>
         <p>{t('friends.handle.current')}: <strong>{profile.handle}</strong></p>

@@ -26,6 +26,9 @@ export interface UiStore {
   socialTab: SocialTab;
   toggleSocial: () => void;
   setSocialTab: (tab: SocialTab) => void;
+  tradeWith: string | null;
+  startTrade: (userId: string) => void;
+  clearTradeWith: () => void;
   showTile: (tile: Coord) => void;
   marketOpen: boolean;
   settingsOpen: boolean;
@@ -117,6 +120,9 @@ export const uiStore = createStore<UiStore>((set, get) => {
       set({ socialOpen: !get().socialOpen, statsOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
     },
     setSocialTab: (socialTab) => set({ socialTab }),
+    tradeWith: null,
+    startTrade: (userId) => set({ tradeWith: userId, socialTab: 'exchanges' }),
+    clearTradeWith: () => set({ tradeWith: null }),
     marketOpen: false,
     settingsOpen: false,
     codexOpen: false,

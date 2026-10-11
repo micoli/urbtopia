@@ -49,13 +49,13 @@ describe('conversation view', () => {
 
 describe('friend list with messages', () => {
   it('offers Message with the unread count', () => {
-    const html = renderToStaticMarkup(<FriendList friends={[{ userId: 'b', handle: 'Bob', since: 0, unread: 3, lastMessageAt: 0 }]} onMessage={noop} onRemove={noop} onBlock={noop} />);
+    const html = renderToStaticMarkup(<FriendList friends={[{ userId: 'b', handle: 'Bob', since: 0, unread: 3, lastMessageAt: 0 }]} onMessage={noop} onTrade={noop} onRemove={noop} onBlock={noop} />);
     expect(html).toContain(t('friends.message'));
     expect(html).toContain('>3<');
   });
 
   it('shows no count without unread messages', () => {
-    const html = renderToStaticMarkup(<FriendList friends={[{ userId: 'b', handle: 'Bob', since: 0, unread: 0, lastMessageAt: null }]} onMessage={noop} onRemove={noop} onBlock={noop} />);
+    const html = renderToStaticMarkup(<FriendList friends={[{ userId: 'b', handle: 'Bob', since: 0, unread: 0, lastMessageAt: null }]} onMessage={noop} onTrade={noop} onRemove={noop} onBlock={noop} />);
     expect(html).not.toContain('friends-unread');
   });
 });
