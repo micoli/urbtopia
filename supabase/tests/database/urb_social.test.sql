@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(41);
+select plan(45);
 
 -- Fixtures: a..f confirmed email accounts, x anonymous, h has an email but never sets a Handle
 insert into auth.users (id, instance_id, aud, role, email, email_confirmed_at, is_anonymous, created_at, last_sign_in_at) values
@@ -105,6 +105,7 @@ select is(jsonb_array_length(public.urb_list_social() -> 'incoming'), 0, 'refusi
 select pg_temp.act_as('00000000000b');
 select public.urb_block_user(('00000000-0000-0000-0001-00000000000a')::uuid);
 select is(public.urb_list_social() -> 'blocked' -> 0 ->> 'handle', 'Alicia', 'the blocker sees the blocked account');
+select set_config('urb_test.blocker_revision', public.urb_list_social() ->> 'revision', true);
 select pg_temp.act_as('00000000000a');
 select is(
   (public.urb_list_social() -> 'blocked') = '[]'::jsonb and (public.urb_list_social() -> 'friends' -> 0 ->> 'handle') is distinct from 'Bob',
@@ -112,8 +113,14 @@ select is(
   'the blocked account sees no block and loses the Friend'
 );
 select public.urb_send_friend_request_by_email('b@example.com');
+select public.urb_block_user(('00000000-0000-0000-0001-00000000000b')::uuid);
+select public.urb_unblock_user(('00000000-0000-0000-0001-00000000000b')::uuid);
+select is(public.urb_list_social() -> 'blocked', '[]'::jsonb, 'the blocked account cannot take over the block');
 select pg_temp.act_as('00000000000b');
+select is(public.urb_list_social() -> 'blocked' -> 0 ->> 'handle', 'Alicia', 'nor lift it by blocking then unblocking');
 select is(jsonb_array_length(public.urb_list_social() -> 'incoming'), 0, 'a request from a blocked account is silently dropped');
+select is(public.urb_list_social() ->> 'revision', current_setting('urb_test.blocker_revision'), 'the blocker is not bumped by any of it');
+select lives_ok($$ select public.urb_block_user(('00000000-0000-0000-0001-00000000000a')::uuid) $$, 'blocking again is a no-op');
 select public.urb_unblock_user(('00000000-0000-0000-0001-00000000000a')::uuid);
 select is(jsonb_array_length(public.urb_list_social() -> 'blocked'), 0, 'unblocking clears the block');
 
