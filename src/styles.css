@@ -2166,3 +2166,18 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   .eco-needs-pyramid li[data-level='safety'] { --width: 90; }
   .eco-needs-table { display: block; overflow-x: auto; }
 }
+
+.radial-item, .dock-button, .bottom-bar-button { position: relative; }
+.nav-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #e5484d;
+  color: #fff;
+  font-size: 11px;
+  line-height: 16px;
+  text-align: center;
+}

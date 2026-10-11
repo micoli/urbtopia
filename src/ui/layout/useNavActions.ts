@@ -1,5 +1,5 @@
 import { t } from '../../i18n/t';
-import { useGame, useUi } from '../common/hooks';
+import { useGame, useSocial, useUi } from '../common/hooks';
 import { guideOf } from '../tutorial/tutorialGuide';
 
 export interface NavAction {
@@ -10,6 +10,7 @@ export interface NavAction {
   pressed: boolean;
   disabled: boolean;
   guided: boolean;
+  badge?: number;
   onClick: () => void;
 }
 
@@ -28,6 +29,7 @@ export function useNavActions(): NavAction[] {
   const toggleMarket = useUi((store) => store.toggleMarket);
   const toggleSettings = useUi((store) => store.toggleSettings);
   const marketUnlocked = useGame((store) => store.state.marketUnlocked);
+  const pendingRequests = useSocial(store => store.profile?.incoming.length ?? 0);
   const guidedFlyout = guideOf(useGame((store) => store.state.tutorial)).flyout;
 
   return [
@@ -35,7 +37,7 @@ export function useNavActions(): NavAction[] {
     { id: 'roads', icon: '🛣', image: 'infrastructure-networks.png', label: t('dock.networks'), pressed: flyout === 'roads', disabled: false, guided: guidedFlyout === 'roads', onClick: () => openFlyout('roads') },
     { id: 'parcels', icon: '🗺', image: 'map.png', label: t('dock.parcels'), pressed: tool?.kind === 'parcel', disabled: false, guided: false, onClick: () => (tool?.kind === 'parcel' ? cancelTool() : chooseTool({ kind: 'parcel' })) },
     { id: 'market', icon: '💱', image: 'market.png', label: t('dock.market'), pressed: marketOpen, disabled: !marketUnlocked, guided: false, onClick: toggleMarket },
-    { id: 'stats', icon: '📊', image: 'town-management.png', label: t('eco.title'), pressed: statsOpen, disabled: false, guided: false, onClick: toggleStats },
+    { id: 'stats', icon: '📊', image: 'town-management.png', label: t('eco.title'), pressed: statsOpen, disabled: false, guided: false, badge: pendingRequests, onClick: toggleStats },
     { id: 'codex', icon: '📖', image: 'codex.png', label: t('codex.title'), pressed: codexOpen, disabled: false, guided: false, onClick: () => openCodex() },
     { id: 'settings', icon: '⚙', image: 'settings.png', label: t('dock.settings'), pressed: settingsOpen, disabled: false, guided: false, onClick: toggleSettings },
   ];

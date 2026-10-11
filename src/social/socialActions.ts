@@ -5,7 +5,7 @@ import { SocialError, type SocialClient } from './types';
 
 type Target = Pick<SocialStore, 'setStatus' | 'setProfile' | 'setHandleForm' | 'setSearch' | 'setActionFailure'>;
 
-export function createSocialActions(client: SocialClient, target: Target): SocialActions {
+export function createSocialActions(client: SocialClient, target: Target, currentRevision: () => number | null = () => null): SocialActions {
   const refresh = async () => {
     target.setStatus('loading');
     try {
@@ -20,6 +20,17 @@ export function createSocialActions(client: SocialClient, target: Target): Socia
         return;
       }
       target.setStatus(error instanceof SocialError && error.kind === 'email-required' ? 'idle' : 'offline');
+    }
+  };
+
+  const poll = async () => {
+    try {
+      const snapshot = await client.list(currentRevision());
+      if (!snapshot.changed) return;
+      target.setProfile(snapshot);
+      target.setStatus('ready');
+    } catch (error) {
+      if (error instanceof SocialError && error.kind === 'handle-required') await refresh();
     }
   };
 
@@ -75,6 +86,7 @@ export function createSocialActions(client: SocialClient, target: Target): Socia
 
   return {
     refresh,
+    poll,
     setHandle,
     setFindable,
     sendRequest,

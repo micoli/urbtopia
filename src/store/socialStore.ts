@@ -14,6 +14,7 @@ export interface ActionFailure {
 
 export interface SocialActions {
   refresh: () => Promise<void>;
+  poll: () => Promise<void>;
   sendRequest: (email: string) => Promise<void>;
   accept: (userId: string) => Promise<void>;
   refuse: (userId: string) => Promise<void>;

@@ -13,6 +13,7 @@ const arcade = createBuilding(1, 'arcade', 55, 50, 0);
 vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: { urbs: number; buildings: unknown[] } }) => unknown) => selector({ state: { urbs: 1234, buildings: [] } }),
   useUi: () => undefined,
+  useSocial: (selector: (store: { profile: null }) => unknown) => selector({ profile: null }),
 }));
 
 vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: () => {}, state: { urbs: 0, buildings: [] } }) } }));
