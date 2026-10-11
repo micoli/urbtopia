@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TutorialStep, isHomeType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -88,6 +88,18 @@ function isFieldTile(value: unknown): boolean {
   return isRecord(value.crop) && cropIds.includes(value.crop.species as string) && isNumber(value.crop.plantedAt);
 }
 
+function isTradeLine(value: unknown): boolean {
+  return isRecord(value) && typeof value.item === 'string' && (value.item in MATERIALS || value.item in GOODS) && isInt(value.quantity, 1, TRADE_LIMITS.maxQuantity);
+}
+
+function isTradeLedgerEntry(value: unknown): boolean {
+  if (!isRecord(value) || typeof value.offerId !== 'string' || value.offerId === '') return false;
+  if (!TRADE_EFFECTS.includes(value.effect as TradeEffect) || !isNumber(value.at) || typeof value.confirmed !== 'boolean') return false;
+  if (value.lot !== undefined && !(isArrayOf(value.lot, isTradeLine) && (value.lot as unknown[]).length <= TRADE_LIMITS.maxLines)) return false;
+  if (value.urbs !== undefined && !isInt(value.urbs, 0, TRADE_LIMITS.maxPrice)) return false;
+  return value.peer === undefined || typeof value.peer === 'string';
+}
+
 function isMarket(value: unknown): boolean {
   return isRecord(value) && Object.entries(value).every(([good, price]) => good in GOODS && isRecord(price) && isNumber(price.points) && isNumber(price.updatedAt));
 }
@@ -113,7 +125,8 @@ export function validateGameState(value: unknown): GameState | null {
     isMarket(value.market) &&
     isArrayOf(value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string) && ((road as Json).tier === undefined || isInt((road as Json).tier, 1, MAX_ROAD_TIER))) &&
     isArrayOf(value.roundabouts, (center) => isCoord(center)) &&
-    (value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep));
+    (value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep)) &&
+    isArrayOf(value.tradeLedger, isTradeLedgerEntry);
   if (!valid) return null;
   if (value.timeOffset !== undefined && (!isNonNegative(value.timeOffset) || value.timeOffset > Number.MAX_SAFE_INTEGER)) return null;
   if (value.adaptationUntil !== undefined && !isNumber(value.adaptationUntil)) return null;

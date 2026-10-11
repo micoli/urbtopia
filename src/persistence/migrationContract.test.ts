@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { newGame } from '../core';
-import { CURRENT_VERSION, parseEnvelope } from './envelope';
+import { CURRENT_VERSION, parseEnvelope, serializeEnvelope } from './envelope';
 import { MIGRATIONS } from './migrations';
 
 const fixtureText = (version: number) => readFileSync(new URL(`./fixtures/save-v${version}.json`, import.meta.url), 'utf8');
@@ -9,10 +9,10 @@ const versions = Array.from({ length: CURRENT_VERSION }, (_, index) => index + 1
 
 // Update this snapshot together with CURRENT_VERSION: a schema change needs a migration and a new frozen fixture.
 const SCHEMA_SNAPSHOT = {
-  version: 13,
+  version: 14,
   keys: [
     'adaptationUntil', 'brtRoads', 'buildings', 'busLines', 'casinoRng', 'fields', 'lastSeen', 'market', 'marketUnlocked', 'nextId',
-    'ownedParcels', 'rails', 'rngState', 'roads', 'roundabouts', 'seed', 'seedStock', 'storage', 'transitFleet', 'transitLines', 'tutorial', 'urbs',
+    'ownedParcels', 'rails', 'rngState', 'roads', 'roundabouts', 'seed', 'seedStock', 'storage', 'tradeLedger', 'transitFleet', 'transitLines', 'tutorial', 'urbs',
   ],
 };
 
@@ -37,6 +37,31 @@ describe('save migration contract', () => {
     if (!loaded.ok) throw new Error(loaded.reason);
     expect(loaded.state.buildings.map((building) => building.type)).toContain('materialDepot');
     expect(loaded.state.buildings.map((building) => building.type)).not.toContain('silo');
+  });
+
+  it('gives a version-13 city an empty trade ledger and changes nothing else', () => {
+    const v13 = JSON.parse(fixtureText(13));
+    const loaded = parseEnvelope(JSON.stringify(v13));
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state).toEqual({ ...v13.state, tradeLedger: [] });
+  });
+
+  it('keeps a trade ledger across a round trip and refuses a damaged one', () => {
+    const v14 = JSON.parse(fixtureText(14));
+    const entry = { offerId: 'offer-1', effect: 'reserve-lot', at: 1, lot: [{ item: 'wood', quantity: 3 }], peer: 'someone', confirmed: false };
+    const withLedger = { ...v14, state: { ...v14.state, tradeLedger: [entry] } };
+    const loaded = parseEnvelope(JSON.stringify(withLedger));
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.tradeLedger).toEqual([entry]);
+    expect(parseEnvelope(serializeEnvelope(loaded.state, loaded.savedAt))).toEqual(loaded);
+
+    const damaged = (change: object) => parseEnvelope(JSON.stringify({ ...v14, state: { ...v14.state, tradeLedger: [{ ...entry, ...change }] } }));
+    expect(damaged({ effect: 'teleport' })).toEqual({ ok: false, reason: 'invalid-state' });
+    expect(damaged({ lot: [{ item: 'unobtainium', quantity: 1 }] })).toEqual({ ok: false, reason: 'invalid-state' });
+    expect(damaged({ lot: [{ item: 'wood', quantity: 0 }] })).toEqual({ ok: false, reason: 'invalid-state' });
+    expect(damaged({ confirmed: 'yes' })).toEqual({ ok: false, reason: 'invalid-state' });
+    expect(damaged({ urbs: -1 })).toEqual({ ok: false, reason: 'invalid-state' });
+    expect(parseEnvelope(JSON.stringify({ ...v14, state: { ...v14.state, tradeLedger: 'nope' } }))).toEqual({ ok: false, reason: 'invalid-state' });
   });
 
   it('has one migration step per released version', () => {

@@ -37,6 +37,8 @@ import { roadPath } from '../map/roads';
 import { roadTierUpgradeCost } from '../traffic/roadTier';
 import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
+import { applyTradeEffect, confirmTradeEffect, rollbackTradeEffect, type TradeResult } from '../trade/tradeLedger';
+import type { TradeEffect, TradeLine } from '../trade/types';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import type { BlackjackAction } from '../leisure/blackjack';
 import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
@@ -106,6 +108,9 @@ export type Command =
   | { readonly type: 'BuySlot'; readonly buildingId: number }
   | { readonly type: 'SellBuilding'; readonly id: number }
   | { readonly type: 'MoveBuilding'; readonly id: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'TradeApply'; readonly offerId: string; readonly effect: TradeEffect; readonly lot?: readonly TradeLine[]; readonly urbs?: number; readonly peer?: string }
+  | { readonly type: 'TradeConfirm'; readonly offerId: string; readonly effect: TradeEffect }
+  | { readonly type: 'TradeRollback'; readonly offerId: string; readonly effect: TradeEffect }
   | { readonly type: 'SkipTime'; readonly hours: number }
   | { readonly type: 'SkipTutorialStep' }
   | { readonly type: 'SkipTutorial' };
@@ -192,7 +197,9 @@ export type ErrorKey =
   | 'error.invalidBusLine'
   | 'error.stopNotOnNetwork'
   | 'error.networkNotConnected'
-  | 'error.alreadyEquipped';
+  | 'error.alreadyEquipped'
+  | 'error.invalidTradeLot'
+  | 'error.unknownTrade';
 
 export interface CommandError {
   key: ErrorKey;
@@ -322,6 +329,12 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return sellBuilding(state, command.id);
     case 'MoveBuilding':
       return moveBuilding(state, command.id, command.x, command.y, command.rotation, now);
+    case 'TradeApply':
+      return tradeOutcome(applyTradeEffect(state, command, now));
+    case 'TradeConfirm':
+      return tradeOutcome(confirmTradeEffect(state, command.offerId, command.effect));
+    case 'TradeRollback':
+      return tradeOutcome(rollbackTradeEffect(state, command.offerId, command.effect));
     case 'SkipTime':
       return skipTime(state, command.hours, now);
     case 'SkipTutorialStep':
@@ -664,6 +677,10 @@ function stockShop(state: GameState, buildingId: number, good: GoodId, now: numb
     },
     events: [],
   };
+}
+
+function tradeOutcome(result: TradeResult): CommandOutcome {
+  return 'error' in result ? fail(result.error) : { state: result.state, events: [] };
 }
 
 function sellToMarket(state: GameState, good: GoodId, quantity: number, now: number): CommandOutcome {

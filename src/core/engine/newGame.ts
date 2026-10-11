@@ -32,6 +32,7 @@ export function newGame(options: NewGameOptions): GameState {
     roads: [],
     roundabouts: [],
     tutorial: null,
+    tradeLedger: [],
   };
   if (!options.tutorial) return withStartingCity(empty);
   const { startingUrbs, startingWood } = GAME_CONFIG.tutorial;

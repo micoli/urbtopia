@@ -114,3 +114,7 @@ export type { PedestrianGraph } from './map/pedestrianGraph';
 export { WALKING, WALK_DESTINATIONS, modeShares } from './traffic/walking';
 export type { ModeShares, WalkDestination } from './traffic/walking';
 export { FIXTURES, FIXTURE_IDS, FIXTURE_MODELS, FIXTURE_CATEGORIES, fixtureIdsOf, fixtureIdsInCategory, VENUE, VENUE_TYPES, VENUE_PROFILES, isVenueType, venuePower, venueTypeOf, priceAcceptance, priceOf, takingsCapOf, venuePerformance, venueLayout, isVenuePowered, venueBoundaries, canPlaceFixture, entranceCell, fixtureRefund, fixtureFootprint, fixtureTiles, gridSizeOf, isVenue, playsCapacityPerHour, takingsDue, takingsPerHour, visitorsPerHour, netPerHour, HOTEL, SUPERMARKET, cityAttractiveness, priceMultiplier, reputationOf, roomsOf, markupOf, unitPrice, stockOf, isShelf, hasStock, EVENT, eventBudgetOf, eventMultiplierOf, isEventActive, isEventScheduled, inCooldown, eventBoundaries, WEAR, conditionOf, isBroken, repairCost, technicianRepairCost, STAFF, STAFF_ROLES, FRONT_ROLE, hiredOf, hireFeeOf, minTierOfRole, postsOf, staffRolesOf, totalStaff, wagesPerHour, MAX_RANK, earnedOf, nextRankAt, rankOf, venueRankOf } from './venues/venues';
+export { applyTradeEffect, findLedgerEntry, isValidLot, lotReceiveIssue, pendingTradeEntries } from './trade/tradeLedger';
+export type { TradeApplyInput } from './trade/tradeLedger';
+export { TRADE_EFFECTS, TRADE_LIMITS } from './trade/types';
+export type { TradeEffect, TradeLedgerEntry, TradeLine } from './trade/types';

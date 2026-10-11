@@ -66,6 +66,8 @@ export const FR: Record<MessageKey, string> = {
   'error.stopNotOnNetwork': 'Un arrêt ne fait pas face au réseau. Oriente-le ou construis le réseau devant lui.',
   'error.networkNotConnected': 'Les arrêts ne sont pas connectés : le réseau est coupé entre eux. Utilise Corriger le réseau.',
   'error.alreadyEquipped': 'Cet équipement est déjà installé.',
+  'error.invalidTradeLot': 'Ce lot ne peut pas être échangé.',
+  'error.unknownTrade': 'Cet échange est inconnu.',
   'eco.title': 'Gestion de la ville',
   'eco.units': 'Indicateurs du jeu, sans valeur scientifique. Puissance : unités/heure ; stockage : unités d’énergie.',
   'eco.insulate': 'Isoler',

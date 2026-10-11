@@ -61,6 +61,8 @@ export const MESSAGES = {
   'error.stopNotOnNetwork': 'A stop is not facing the network. Rotate it or build the network in front of it.',
   'error.networkNotConnected': 'Stops are not connected: the network is broken between them. Use Fix network.',
   'error.alreadyEquipped': 'This equipment is already installed.',
+  'error.invalidTradeLot': 'This lot cannot be traded.',
+  'error.unknownTrade': 'This trade is unknown.',
   'eco.title': 'City management',
   'eco.units': 'Game indicators, not scientific measurements. Power: units/hour; storage: energy units.',
   'eco.insulate': 'Insulate',
