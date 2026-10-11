@@ -488,8 +488,34 @@ _Avoid_: Remote save, sync, server save
 The situation where the local save and the Cloud save have both advanced since they last matched. The player chooses which one to keep; the other is kept as a previous version.
 _Avoid_: Merge, overwrite
 
+**Handle**:
+The unique public name of a Player account in multiplayer, the only identity shown to other players. It is required to enter multiplayer, which also requires an attached email. The email is never shown.
+_Avoid_: Username, nickname, pseudo
+
+**Friend request**:
+An invitation from one Player account to another, found by exact email, that the other accepts or ignores. Searching an email never reveals whether an account exists.
+_Avoid_: Follow, invite
+
+**Friend**:
+A Player account linked to another by an accepted Friend request. The link is mutual and either side can end it.
+_Avoid_: Contact, buddy
+
+**Block**:
+A player's choice to hide themselves from another Player account: they no longer appear in that account's searches and its Friend requests are silently refused.
+_Avoid_: Ban, mute
+
+**Trade offer**:
+A lot of Materials and/or Goods that one Friend proposes to another in their conversation, for a price in Urbs set by the sender (0 for a gift). The recipient accepts or refuses; an offer left open expires after 72 hours. Seed packs, buildings and bare Urbs cannot be offered.
+_Avoid_: Deal, auction, barter
+
+**Escrow**:
+The hold the server keeps on a lot or a payment between the creation of a Trade offer and its claim, so that each side claims once and a refused or expired offer returns everything to its owner. The server does not check that the lot ever existed in the sender's city.
+_Avoid_: Deposit, lock
+
 ## Relationships
 
+- A Trade offer can only be accepted if the recipient's Storehouse compartment has room for the lot and their Urbs cover the price.
+- Blocking a Friend closes their conversation and returns any open Trade offer between them.
 - A Cloud save never replaces the local save without the player's consent when a Save conflict exists.
 - A Casino is a Leisure building, never a Public facility.
 - A Venue is distinct from a Casino and a Shop: Minigames and Stakes belong to the Casino only.
