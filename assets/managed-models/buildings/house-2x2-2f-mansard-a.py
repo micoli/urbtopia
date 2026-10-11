@@ -13,7 +13,7 @@ SPEC = {
     "floors": 2,
     "roof": "mansard",
     "window_sizes": "same",
-    "colors": {"roof": "cobalt"},
+    "colors": {"roof": "softgreen"},
     "wing": None,
     "features": [{"type": "awning"}, {"type": "bushes"}],
 }

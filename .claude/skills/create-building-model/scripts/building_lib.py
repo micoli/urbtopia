@@ -28,6 +28,7 @@ PALETTE_ENTRIES = [
     ("offwhite", "#e8e8e6"), ("slate", "#6d7390"), ("slate_dark", "#464b63"), ("softgreen", "#7cc08f"),
     ("glass_blue", "#9fcdea"), ("bush", "#4f9a62"), ("solar", "#26304f"),
     ("bluegrey", "#8ea3bd"), ("salmon", "#ff9c80"),
+    ("paleblue", "#b6d0ea"), ("grey", "#a4a9ad"), ("greygreen", "#6f8f7c"),
 ]
 PALETTE_NAMES = [name for name, _ in PALETTE_ENTRIES]
 
@@ -592,9 +593,36 @@ def slope_frame(spec):
     return side * short_side / 2, high_across, low_z, low_z + height
 
 
+def add_mansard_solar_panels(spec, parts):
+    """Panels on the shallow upper slope facing the game camera, kept inside the trapezoid of that slope."""
+    long_side, short_side = max(spec["footprint"]), min(spec["footprint"])
+    lower, inset, run, upper = mansard_dimensions(spec)
+    side = visible_side(spec)
+    base_z = spec["floors"] * spec["floor_height"] + lower
+    eave_across = side * (short_side / 2 - inset)
+    count_a, count_s = 3, 2
+    span_a, gap_a, gap_s = (long_side / 2 - inset - run) * 2 * 0.9, 0.015, 0.03
+    panel_a = (span_a - gap_a * (count_a - 1)) / count_a
+    panel_s = (0.8 - gap_s * (count_s - 1)) / count_s
+    solar = PALETTE_NAMES.index("solar")
+    for i in range(count_a):
+        for j in range(count_s):
+            a0 = -span_a / 2 + i * (panel_a + gap_a)
+            s0 = 0.1 + j * (panel_s + gap_s)
+            corners = [(a0, s0), (a0 + panel_a, s0), (a0 + panel_a, s0 + panel_s), (a0, s0 + panel_s)]
+            points = [(*_to_xy(spec, a, eave_across - side * s * run), base_z + s * upper + DECAL_OFFSET) for a, s in corners]
+            edge_a, edge_b = Vector(points[1]) - Vector(points[0]), Vector(points[3]) - Vector(points[0])
+            if edge_a.cross(edge_b).z < 0:
+                points.reverse()
+            parts.append(_decal(f"decal_solar_{i}_{j}", points, solar))
+
+
 def add_solar_panels(spec, parts):
+    if spec["roof"] == "mansard":
+        add_mansard_solar_panels(spec, parts)
+        return
     if spec["roof"] not in ("gable_half", "gable_third", "shed"):
-        raise ValueError("solar_panels need a gable_half, gable_third or shed roof")
+        raise ValueError("solar_panels need a gable_half, gable_third, shed or mansard roof")
     long_side, _, _ = roof_dimensions(spec)
     low_b, high_b, low_z, high_z = slope_frame(spec)
     count_a, count_s = 3, 2

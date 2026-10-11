@@ -4,6 +4,7 @@ import { unzipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
 import { MODEL_KEYS } from '../src/scene/renderItems';
 import { QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS } from './assetPacks';
+import { managedModelKeys } from './managedModels';
 import { convertQuaterniusPack, fitScale, plantScale, TILE_FILL } from './quaternius';
 
 const archiveOf = (name: string) => new Uint8Array(readFileSync(join(QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS.find((pack) => pack.name === name)!.archive)));
@@ -11,7 +12,8 @@ const archiveOf = (name: string) => new Uint8Array(readFileSync(join(QUATERNIUS_
 describe('Quaternius packs', () => {
   it('provide every crop, farm and casino model the scene can ask for', () => {
     const provided = new Set(QUATERNIUS_PACKS.flatMap((pack) => pack.files.map((file) => `${pack.name}/${file}`)));
-    const asked = MODEL_KEYS.filter((key) => key.startsWith('crops/') || key.startsWith('farm/') || key.startsWith('buildings/'));
+    const managed = new Set(managedModelKeys());
+    const asked = MODEL_KEYS.filter((key) => !managed.has(key) && (key.startsWith('crops/') || key.startsWith('farm/') || key.startsWith('buildings/')));
     expect(asked.filter((key) => !provided.has(key))).toEqual([]);
     expect([...provided].filter((key) => !MODEL_KEYS.includes(key))).toEqual([]);
   });
