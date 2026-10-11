@@ -4,7 +4,6 @@ import { count, filled, localizedText } from '../economy/itemSchemas.ts';
 const common = {
   $schema: z.string().optional(),
   kind: z.literal('boat'),
-  order: count,
   retired: z.literal(true).optional(),
   name: localizedText,
   model: filled,

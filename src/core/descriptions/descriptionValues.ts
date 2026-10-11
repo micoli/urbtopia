@@ -11,7 +11,7 @@ export interface ComputedValue {
 
 type Tier = Record<string, unknown>;
 
-const NOT_VALUES = new Set(['order', 'model', 'footprint', 'upgradeCost', 'posts']);
+const NOT_VALUES = new Set(['model', 'footprint', 'upgradeCost', 'posts']);
 
 const tiersOf = (definition: FlatBuilding): Tier[] => resolveTiers<Tier>((definition.tiers ?? []) as Tier[]);
 

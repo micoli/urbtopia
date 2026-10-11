@@ -1,4 +1,5 @@
 import { entriesOf } from '../defs/entries';
+import cropOrder from '../../../assets/defs/order/crops.json' with { type: 'json' };
 import type { CropDefinition } from './cropSchema';
 import type { CropId } from './cropTypes.generated';
 
@@ -20,7 +21,7 @@ export interface CropSpec {
 // Checked against their schema by the definitions plugin at dev start and build, and by the tests.
 const files = import.meta.glob<CropDefinition>('../../../assets/defs/crops/*.json', { eager: true, import: 'default' });
 
-export const CROP_DEFINITIONS = entriesOf<CropDefinition, CropId>(files);
+export const CROP_DEFINITIONS = entriesOf<CropDefinition, CropId>(files, cropOrder);
 
 export const CROP_IDS: CropId[] = CROP_DEFINITIONS.map(({ id }) => id);
 

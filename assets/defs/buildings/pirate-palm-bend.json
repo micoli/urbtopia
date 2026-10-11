@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 2230,
   "model": "pirate-palm-bend",
   "name": {
     "en": "Palm curved · Pirate",

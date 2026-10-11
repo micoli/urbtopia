@@ -27,7 +27,7 @@ Confirm the recap in one short message before editing.
 
 ## 2. Add the entry
 
-Edit through `scripts/buildingsFile.ts` so the building is validated (schema and model), its `order` is set and `src/core/buildings/buildingTypes.generated.ts` and `assets/defs/schemas/building.schema.json` are regenerated in the same step. `readBuildings` returns the buildings in menu order (their `order` field) and `writeBuildings` renumbers them from that order: insert the new one after the last entry of its section.
+Edit through `scripts/buildingsFile.ts` so the building is validated (schema and model), its place in the menu is recorded and `src/core/buildings/buildingTypes.generated.ts` and `assets/defs/schemas/building.schema.json` are regenerated in the same step. `readBuildings` returns the buildings in menu order (the list of ids in `assets/defs/order/buildings.json`) and `writeBuildings` rewrites that list from the order of the object it receives: insert the new one after the last entry of its section.
 
 ```bash
 node -e "import('./scripts/buildingsFile.ts').then(({ readBuildings, writeBuildings }) => {
@@ -38,7 +38,7 @@ node -e "import('./scripts/buildingsFile.ts').then(({ readBuildings, writeBuildi
 })"
 ```
 
-Entry shapes (`order` and `$schema` are added by `writeBuildings`):
+Entry shapes (`$schema` is added by `writeBuildings`):
 
 ```json
 "myVenue": {

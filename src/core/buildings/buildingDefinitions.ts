@@ -1,4 +1,5 @@
 import { entriesOf } from '../defs/entries.ts';
+import buildingOrder from '../../../assets/defs/order/buildings.json' with { type: 'json' };
 import type { FlatBuilding, FlatTier } from './buildingDefinition.ts';
 import type { BuildingId, NatureType, SportVenueType } from './buildingTypes.generated.ts';
 import { resolveTiers, resolveVariant } from './tiers.ts';
@@ -16,7 +17,7 @@ const withTierOne = (definition: FlatBuilding & { id: BuildingId }): BuildingEnt
   return { ...definition, model: definition.model ?? first?.model ?? '', footprint: definition.footprint ?? first?.footprint };
 };
 
-export const BUILDING_ENTRIES: readonly BuildingEntry[] = entriesOf<FlatBuilding, BuildingId>(files).map(withTierOne);
+export const BUILDING_ENTRIES: readonly BuildingEntry[] = entriesOf<FlatBuilding, BuildingId>(files, buildingOrder).map(withTierOne);
 
 export const BUILDING_IDS: readonly BuildingId[] = BUILDING_ENTRIES.map(({ id }) => id);
 

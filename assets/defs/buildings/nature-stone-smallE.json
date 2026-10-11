@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1440,
   "model": "nature-stone-smalle",
   "name": {
     "en": "Stone small E",

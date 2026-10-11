@@ -39,7 +39,7 @@ describe('document edits', () => {
   it('converts a building to another kind into a valid one', () => {
     const named = { ...(building('build.leisure') as unknown as FlatBuilding), description: { en: 'D', fr: 'D' }, accessModes: ['road', 'brt'] as FlatBuilding['accessModes'] }
     for (const kind of BUILDING_KINDS) {
-      const converted = { ...convertBuilding(named, kind), order: 10 }
+      const converted = convertBuilding(named, kind)
       expect(converted.kind).toBe(kind)
       expect(buildingProblemsOf('x', converted)).toEqual([])
     }
@@ -48,7 +48,7 @@ describe('document edits', () => {
 
   it('starts new materials and crops from a shape that only lacks a name', () => {
     for (const collection of ['materials', 'crops', 'fixtures'] as const) {
-      const problems = collectionProblems(collection, { fresh: { ...blankDefinition(collection, 'm'), order: 10 } })
+      const problems = collectionProblems(collection, { fresh: blankDefinition(collection, 'm') })
       expect(problems.map(({ path }) => path).sort()).toEqual(['name.en', 'name.fr'])
     }
   })

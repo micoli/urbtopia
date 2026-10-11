@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/good.schema.json",
   "kind": "good",
-  "order": 20,
   "name": {
     "en": "Canned fish",
     "fr": "Conserve de poisson"

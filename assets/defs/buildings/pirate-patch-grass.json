@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 2250,
   "model": "pirate-patch-grass",
   "name": {
     "en": "Patch Grass · Pirate",

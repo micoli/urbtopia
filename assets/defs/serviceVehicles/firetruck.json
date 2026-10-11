@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/service-vehicle.schema.json",
   "kind": "serviceVehicle",
-  "order": 20,
   "facility": "fireStation",
   "model": "cars-firetruck",
   "name": {

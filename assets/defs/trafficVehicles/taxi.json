@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/traffic-vehicle.schema.json",
   "kind": "trafficVehicle",
-  "order": 60,
   "name": {
     "en": "Taxi",
     "fr": "Taxi"

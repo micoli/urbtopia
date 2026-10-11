@@ -15,11 +15,6 @@
           "type": "string",
           "const": "fixture"
         },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
-        },
         "name": {
           "type": "object",
           "properties": {
@@ -120,7 +115,6 @@
       "required": [
         "venue",
         "kind",
-        "order",
         "name",
         "category",
         "model",
@@ -144,11 +138,6 @@
         "kind": {
           "type": "string",
           "const": "fixture"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "name": {
           "type": "object",
@@ -255,7 +244,6 @@
       "required": [
         "venue",
         "kind",
-        "order",
         "name",
         "category",
         "model",
@@ -278,11 +266,6 @@
         "kind": {
           "type": "string",
           "const": "fixture"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "name": {
           "type": "object",
@@ -397,7 +380,6 @@
       "required": [
         "venue",
         "kind",
-        "order",
         "name",
         "category",
         "model",

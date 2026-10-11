@@ -10,7 +10,6 @@ const minutes = z.number().positive();
 
 const common = {
   $schema: z.string().optional(),
-  order: count,
   name: localizedText,
   // The model its icon is drawn from.
   model: filled.optional(),

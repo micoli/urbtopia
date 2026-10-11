@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/crop.schema.json",
   "kind": "crop",
-  "order": 50,
   "name": {
     "en": "Beets",
     "fr": "Betteraves"

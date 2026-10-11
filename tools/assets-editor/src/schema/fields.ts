@@ -132,7 +132,7 @@ export function fieldsOf(schema: JsonSchema, options: FieldOptions = {}): FieldS
     .map(([key, property]) => fieldOf(key, property, required.has(key), options))
 }
 
-const HIDDEN = ['$schema', 'kind', 'order', 'retired']
+const HIDDEN = ['$schema', 'kind', 'retired']
 
 const jsonOf = (schema: z.ZodType) => z.toJSONSchema(schema) as JsonSchema
 

@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/good.schema.json",
   "kind": "good",
-  "order": 50,
   "name": {
     "en": "Tools",
     "fr": "Outils"

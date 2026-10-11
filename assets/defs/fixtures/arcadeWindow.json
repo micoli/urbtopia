@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/fixture.schema.json",
   "kind": "fixture",
-  "order": 160,
   "venue": "arcade",
   "category": "walls",
   "name": {

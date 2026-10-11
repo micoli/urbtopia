@@ -1,4 +1,5 @@
 import { entriesOf } from '../defs/entries';
+import boatOrder from '../../../assets/defs/order/boats.json' with { type: 'json' };
 import { modelFileOf } from '../models/modelFiles';
 import { BOAT_FAMILIES } from './boatFamilies';
 import type { BoatId } from './boatTypes.generated';
@@ -19,7 +20,7 @@ export { BOAT_FAMILIES };
 // Checked against their schema by the definitions plugin at dev start and build, and by the tests.
 const files = import.meta.glob<BoatDefinition>('../../../assets/defs/boats/*.json', { eager: true, import: 'default' });
 
-export const BOAT_ENTRIES = entriesOf<BoatDefinition, BoatId>(files);
+export const BOAT_ENTRIES = entriesOf<BoatDefinition, BoatId>(files, boatOrder);
 
 const liveBoat = <Family extends BoatFamily>(family: Family) => BOAT_ENTRIES.find((entry): entry is Extract<typeof entry, { family: Family }> => entry.family === family && !entry.retired)!;
 

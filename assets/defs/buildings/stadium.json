@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "sport",
-  "order": 430,
   "section": "build.sport",
   "model": "sport-athletics-stadium",
   "footprint": [9, 5],

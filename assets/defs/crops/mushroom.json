@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/crop.schema.json",
   "kind": "crop",
-  "order": 120,
   "name": {
     "en": "Mushrooms",
     "fr": "Champignons"

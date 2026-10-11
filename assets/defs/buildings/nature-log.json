@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 950,
   "model": "nature-log",
   "name": {
     "en": "Log",

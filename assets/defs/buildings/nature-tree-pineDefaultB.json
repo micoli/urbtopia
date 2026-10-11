@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1880,
   "model": "nature-tree-pinedefaultb",
   "name": {
     "en": "Tree pine classic B",

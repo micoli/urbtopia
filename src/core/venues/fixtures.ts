@@ -1,5 +1,6 @@
 import { definitionOf } from '../buildings/buildingDefinitions';
 import { entriesOf } from '../defs/entries';
+import fixtureOrder from '../../../assets/defs/order/fixtures.json' with { type: 'json' };
 import type { FixtureId, VenueType } from '../engine/state';
 import { modelFileOf } from '../models/modelFiles';
 import type { FixtureDefinition } from './fixtureSchema';
@@ -43,7 +44,7 @@ export interface FixtureSpec {
 // Checked against their schema by the definitions plugin at dev start and build, and by the tests.
 const files = import.meta.glob<FixtureDefinition>('../../../assets/defs/fixtures/*.json', { eager: true, import: 'default' });
 
-const specOf = ({ id: _id, kind: _kind, order: _order, name: _name, model, tint, footprint, ...fixture }: FixtureDefinition & { id: FixtureId }): FixtureSpec => ({
+const specOf = ({ id: _id, kind: _kind, name: _name, model, tint, footprint, ...fixture }: FixtureDefinition & { id: FixtureId }): FixtureSpec => ({
   playsPerHour: 0,
   ...fixture,
   model: modelFileOf(model),
@@ -51,7 +52,7 @@ const specOf = ({ id: _id, kind: _kind, order: _order, name: _name, model, tint,
   ...(tint ? { tint: Number.parseInt(tint.slice(1), 16) } : {}),
 });
 
-export const FIXTURE_ENTRIES = entriesOf<FixtureDefinition, FixtureId>(files);
+export const FIXTURE_ENTRIES = entriesOf<FixtureDefinition, FixtureId>(files, fixtureOrder);
 
 export const FIXTURES = Object.fromEntries(FIXTURE_ENTRIES.map(entry => [entry.id, specOf(entry)])) as Record<FixtureId, FixtureSpec>;
 

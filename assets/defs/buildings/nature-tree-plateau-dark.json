@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 2060,
   "model": "nature-tree-plateau-dark",
   "name": {
     "en": "Tree flat crown dark",

@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { basename, join, relative } from 'node:path';
+import { basename, dirname, join, relative } from 'node:path';
 import { COLLECTION_NAMES, specOf, type CollectionName, type Collections, type Definition } from './collections.ts';
 import { SINGLETON_NAMES, singletonSpecOf, type SingletonName, type Singletons } from './singletons.ts';
 
@@ -13,12 +13,20 @@ export const jsonFilesIn = (dir: string) => (existsSync(dir) ? readdirSync(dir).
 
 const withoutSchema = ({ $schema: _schema, ...definition }: Definition): Definition => definition;
 
-const orderOf = (definition: Definition) => (typeof definition.order === 'number' ? definition.order : 0);
+// The menu order of a directory's ids lives in its own file, next to the directories: assets/defs/buildings -> assets/defs/order/buildings.json.
+export const orderFileOf = (dir: string) => join(dirname(dir), 'order', `${basename(dir)}.json`);
 
-// Node side of the game's import.meta.glob: the files of a directory, in their `order`.
+export const readOrder = (dir: string): string[] => {
+  const file = orderFileOf(dir);
+  return existsSync(file) ? (JSON.parse(readFileSync(file, 'utf8')) as string[]) : [];
+};
+
+// Node side of the game's import.meta.glob: the files of a directory, in the order of its order file.
 export function readCollectionDir(dir: string): Record<string, Definition> {
+  const order = readOrder(dir);
+  const position = (id: string) => (order.includes(id) ? order.indexOf(id) : order.length);
   const entries = jsonFilesIn(dir).map((file): [string, Definition] => [idOfFile(file), withoutSchema(JSON.parse(readFileSync(join(dir, file), 'utf8')))]);
-  return Object.fromEntries(entries.sort(([idA, a], [idB, b]) => orderOf(a) - orderOf(b) || idA.localeCompare(idB)));
+  return Object.fromEntries(entries.sort(([idA], [idB]) => position(idA) - position(idB) || idA.localeCompare(idB)));
 }
 
 export const readCollection = (name: CollectionName, root = DEFS_ROOT) => readCollectionDir(collectionDir(name, root));

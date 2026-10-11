@@ -11,11 +11,6 @@
         "$schema": {
           "type": "string"
         },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
-        },
         "retired": {
           "type": "boolean",
           "const": true
@@ -127,7 +122,6 @@
       },
       "required": [
         "kind",
-        "order",
         "model",
         "name",
         "section",
@@ -147,11 +141,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -274,7 +263,6 @@
       },
       "required": [
         "kind",
-        "order",
         "model",
         "name",
         "section",
@@ -296,11 +284,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -362,7 +345,6 @@
       },
       "required": [
         "kind",
-        "order",
         "model",
         "name",
         "family"
@@ -378,11 +360,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -593,7 +570,6 @@
       },
       "required": [
         "kind",
-        "order",
         "name",
         "section",
         "cost",
@@ -612,11 +588,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -791,7 +762,6 @@
       },
       "required": [
         "kind",
-        "order",
         "name",
         "section",
         "cost",
@@ -810,11 +780,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -985,7 +950,6 @@
       },
       "required": [
         "kind",
-        "order",
         "name",
         "section",
         "cost",
@@ -1004,11 +968,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -1184,7 +1143,6 @@
       },
       "required": [
         "kind",
-        "order",
         "name",
         "section",
         "cost",
@@ -1203,11 +1161,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -1373,7 +1326,6 @@
       },
       "required": [
         "kind",
-        "order",
         "name",
         "section",
         "cost",
@@ -1392,11 +1344,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -1513,7 +1460,6 @@
       },
       "required": [
         "kind",
-        "order",
         "model",
         "name",
         "section",
@@ -1534,11 +1480,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -1664,7 +1605,6 @@
       },
       "required": [
         "kind",
-        "order",
         "model",
         "name",
         "section",
@@ -1687,11 +1627,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -1812,7 +1747,6 @@
       },
       "required": [
         "kind",
-        "order",
         "model",
         "name",
         "section",
@@ -1834,11 +1768,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -2024,7 +1953,6 @@
       },
       "required": [
         "kind",
-        "order",
         "name",
         "section",
         "cost",
@@ -2047,11 +1975,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -2258,7 +2181,6 @@
       },
       "required": [
         "kind",
-        "order",
         "name",
         "section",
         "cost",
@@ -2279,11 +2201,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -2466,7 +2383,6 @@
       },
       "required": [
         "kind",
-        "order",
         "name",
         "section",
         "cost",
@@ -2486,11 +2402,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -2783,7 +2694,6 @@
       },
       "required": [
         "kind",
-        "order",
         "name",
         "section",
         "cost",
@@ -2808,11 +2718,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -2965,7 +2870,6 @@
       },
       "required": [
         "kind",
-        "order",
         "name",
         "section",
         "cost",
@@ -2984,11 +2888,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "retired": {
           "type": "boolean",
@@ -3134,7 +3033,6 @@
       },
       "required": [
         "kind",
-        "order",
         "model",
         "name",
         "section",

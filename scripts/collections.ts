@@ -61,7 +61,7 @@ export const COLLECTIONS = {
     schema: buildingSchema,
     idPattern: BUILDING_ID_PATTERN,
     idRule: 'start with a letter and use letters, digits or hyphens',
-    fieldOrder: ['kind', 'order', 'retired', 'section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'initialSlots', 'name', 'description', 'radius', 'wellbeingBonus', 'family'],
+    fieldOrder: ['kind', 'retired', 'section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'initialSlots', 'name', 'description', 'radius', 'wellbeingBonus', 'family'],
     references: (building: FlatBuilding) => [
       ...modelReference(building.model, 'model'),
       ...modelReference(building.detailModel, 'detailModel'),
@@ -127,7 +127,7 @@ export const COLLECTIONS = {
     schema: fixtureSchema,
     idPattern: ITEM_ID_PATTERN,
     idRule: 'be camelCase letters and digits',
-    fieldOrder: ['kind', 'order', 'venue', 'category'],
+    fieldOrder: ['kind', 'venue', 'category'],
     references: (fixture: FixtureDefinition) => [...modelReference(fixture.model, 'model'), { target: ['buildings'], id: fixture.venue, path: 'venue' }],
   },
   boats: {
@@ -138,7 +138,7 @@ export const COLLECTIONS = {
     schema: boatSchema,
     idPattern: ITEM_ID_PATTERN,
     idRule: 'be camelCase letters and digits',
-    fieldOrder: ['kind', 'order', 'retired', 'family', 'model', 'cost', 'unlockCitizens'],
+    fieldOrder: ['kind', 'retired', 'family', 'model', 'cost', 'unlockCitizens'],
     references: (boat: BoatDefinition) => modelReference(boat.model, 'model'),
   },
   transitVehicles: {
@@ -152,7 +152,7 @@ export const COLLECTIONS = {
     schema: transitVehicleSchema,
     idPattern: ITEM_ID_PATTERN,
     idRule: 'be camelCase letters and digits',
-    fieldOrder: ['kind', 'order', 'mode', 'propulsion', 'price', 'power', 'coal', 'cost', 'emissions', 'model', 'models'],
+    fieldOrder: ['kind', 'mode', 'propulsion', 'price', 'power', 'coal', 'cost', 'emissions', 'model', 'models'],
     references: (vehicle: TransitVehicleDefinition) => (vehicle.mode === 'bus' ? modelReference(vehicle.model, 'model') : vehicle.models.flatMap((model, index) => modelReference(model, `models.${index}`))),
   },
   trafficVehicles: {
@@ -173,7 +173,7 @@ export const COLLECTIONS = {
     schema: serviceVehicleSchema,
     idPattern: ITEM_ID_PATTERN,
     idRule: 'be camelCase letters and digits',
-    fieldOrder: ['kind', 'order', 'facility', 'model'],
+    fieldOrder: ['kind', 'facility', 'model'],
     references: (vehicle: ServiceVehicleDefinition) => [...modelReference(vehicle.model, 'model'), { target: ['buildings'], id: vehicle.facility, path: 'facility' } as Reference],
   },
 } satisfies Record<string, CollectionSpec>;
@@ -196,5 +196,5 @@ const shapeKeys = (schema: z.ZodType): string[] => {
 
 export const fieldOrderOf = (name: CollectionName): string[] => {
   const spec = specOf(name);
-  return [...new Set(['$schema', 'kind', 'order', ...(spec.fieldOrder ?? []), ...shapeKeys(spec.schema)])];
+  return [...new Set(['$schema', 'kind', ...(spec.fieldOrder ?? []), ...shapeKeys(spec.schema)])];
 };

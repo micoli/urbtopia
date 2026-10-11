@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/material.schema.json",
   "kind": "material",
-  "order": 70,
   "name": {
     "en": "Coal",
     "fr": "Charbon"

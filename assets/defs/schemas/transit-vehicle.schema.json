@@ -15,11 +15,6 @@
         "$schema": {
           "type": "string"
         },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
-        },
         "name": {
           "type": "object",
           "properties": {
@@ -46,7 +41,6 @@
       "required": [
         "kind",
         "mode",
-        "order",
         "name",
         "model"
       ],
@@ -68,11 +62,6 @@
         },
         "$schema": {
           "type": "string"
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
         },
         "name": {
           "type": "object",
@@ -144,7 +133,6 @@
       "required": [
         "kind",
         "mode",
-        "order",
         "name",
         "propulsion",
         "price",

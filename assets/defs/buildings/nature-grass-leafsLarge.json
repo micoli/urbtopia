@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 910,
   "model": "nature-grass-leafslarge",
   "name": {
     "en": "Grass leafy large",

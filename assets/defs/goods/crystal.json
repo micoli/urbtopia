@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/good.schema.json",
   "kind": "good",
-  "order": 110,
   "name": {
     "en": "Crystal",
     "fr": "Cristal"

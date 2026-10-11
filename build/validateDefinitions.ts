@@ -1,14 +1,22 @@
 import type { Plugin } from 'vite';
-import { readCollections, readSingletons } from '../scripts/collectionRead.ts';
-import { allCollectionProblems, allSingletonProblems, describeProblem } from '../scripts/definitionProblems.ts';
+import { collectionDir, idOfFile, jsonFilesIn, readCollections, readOrder, readSingletons } from '../scripts/collectionRead.ts';
+import { COLLECTION_NAMES } from '../scripts/collections.ts';
+import { allCollectionProblems, allSingletonProblems, describeProblem, orderProblems } from '../scripts/definitionProblems.ts';
 import { shippedModelCatalog } from '../scripts/modelReferences.ts';
 import { modelsProblems } from '../scripts/modelsFile.ts';
 
 const WATCHED = ['assets/defs/', 'assets/models.json'];
 
+const allOrderProblems = (): string[] =>
+  COLLECTION_NAMES.flatMap(name => {
+    const dir = collectionDir(name);
+    return orderProblems(readOrder(dir), jsonFilesIn(dir).map(idOfFile)).map(problem => `order/${name}/${describeProblem(problem)}`);
+  });
+
 export function definitionProblems(): string[] {
   const catalog = shippedModelCatalog();
   return [
+    ...allOrderProblems(),
     ...modelsProblems(catalog.models),
     ...allCollectionProblems(readCollections(), catalog).map(problem => `${problem.collection}/${describeProblem(problem)}`),
     ...allSingletonProblems(readSingletons()).map(describeProblem),

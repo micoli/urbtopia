@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/crop.schema.json",
   "kind": "crop",
-  "order": 180,
   "name": {
     "en": "Palm nuts",
     "fr": "Noix de palme"

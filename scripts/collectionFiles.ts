@@ -1,14 +1,13 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { z } from 'zod';
-import { DEFS_ROOT, collectionDir, singletonFileIn, idOfFile, jsonFilesIn, readCollections } from './collectionRead.ts';
+import { DEFS_ROOT, collectionDir, singletonFileIn, idOfFile, jsonFilesIn, orderFileOf, readCollections } from './collectionRead.ts';
 import { singletonSpecOf, type SingletonName } from './singletons.ts';
 import { fieldOrderOf, specOf, type CollectionName, type Definition } from './collections.ts';
 import { collectionProblems, describeProblem, singletonProblems, type ReferenceContext } from './definitionProblems.ts';
 import { shippedModelCatalog } from './modelReferences.ts';
 
 export const SCHEMAS_DIR = `${DEFS_ROOT}/schemas`;
-const ORDER_STEP = 10;
 
 export const schemaFileOf = (name: CollectionName) => `${SCHEMAS_DIR}/${specOf(name).schemaName}.schema.json`;
 
@@ -53,21 +52,21 @@ export const writeIfChanged = (file: string, content: string) => {
   renameSync(temporary, file);
 };
 
-export const ordered = (definitions: Record<string, Definition>): Record<string, Definition> =>
-  Object.fromEntries(Object.entries(definitions).map(([id, definition], index) => [id, { ...definition, order: (index + 1) * ORDER_STEP }]));
+// One id per line, so that adding or moving a Game object changes a single line of the file.
+export const orderJson = (ids: readonly string[]): string => `${JSON.stringify(ids, null, 2)}\n`;
 
 const realContext = (name: CollectionName, definitions: Record<string, Definition>): ReferenceContext => ({ collections: { ...readCollections(), [name]: definitions }, catalog: shippedModelCatalog() });
 
-// The order of the entries is the menu order, stored as `order` in steps of ten. Writing the real directory also regenerates its id unions and JSON Schema.
+// The order of the entries is the menu order, stored as a list of ids in the order file of the directory. Writing the real directory also regenerates its id unions and JSON Schema.
 export function writeCollection(name: CollectionName, definitions: Record<string, Definition>, dir = collectionDir(name)): void {
-  const entries = ordered(definitions);
   const real = dir === collectionDir(name);
-  const problems = collectionProblems(name, entries, real ? realContext(name, entries) : undefined);
+  const problems = collectionProblems(name, definitions, real ? realContext(name, definitions) : undefined);
   if (problems.length) throw new Error(problems.map(describeProblem).join('; '));
   mkdirSync(dir, { recursive: true });
-  for (const [id, definition] of Object.entries(entries)) writeIfChanged(join(dir, `${id}.json`), stableDefinitionJson(name, definition));
-  for (const file of jsonFilesIn(dir)) if (!(idOfFile(file) in entries)) rmSync(join(dir, file));
+  for (const [id, definition] of Object.entries(definitions)) writeIfChanged(join(dir, `${id}.json`), stableDefinitionJson(name, definition));
+  for (const file of jsonFilesIn(dir)) if (!(idOfFile(file) in definitions)) rmSync(join(dir, file));
+  writeIfChanged(orderFileOf(dir), orderJson(Object.keys(definitions)));
   if (!real) return;
-  writeIfChanged(specOf(name).idTypes.file, idTypesSource(name, entries));
+  writeIfChanged(specOf(name).idTypes.file, idTypesSource(name, definitions));
   writeIfChanged(schemaFileOf(name), jsonSchemaOf(name));
 }

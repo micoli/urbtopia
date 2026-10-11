@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/good.schema.json",
   "kind": "good",
-  "order": 10,
   "name": {
     "en": "Planks",
     "fr": "Planches"

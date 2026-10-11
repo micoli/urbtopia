@@ -5,7 +5,6 @@ export const cropSchema = z
   .strictObject({
     $schema: z.string().optional(),
     kind: z.literal('crop'),
-    order: count,
     name: localizedText,
     growthMinutes: z.number().positive(),
     water: count,

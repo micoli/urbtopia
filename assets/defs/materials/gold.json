@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/material.schema.json",
   "kind": "material",
-  "order": 80,
   "name": {
     "en": "Gold",
     "fr": "Or"

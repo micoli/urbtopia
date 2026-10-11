@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1660,
   "model": "nature-stump-round",
   "name": {
     "en": "Stump round",

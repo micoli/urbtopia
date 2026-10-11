@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 930,
   "model": "nature-lily-large",
   "name": {
     "en": "Lily large",

@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/crop.schema.json",
   "kind": "crop",
-  "order": 140,
   "name": {
     "en": "Bamboo",
     "fr": "Bambou"

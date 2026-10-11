@@ -1,13 +1,19 @@
-import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { definitionProblems } from '../build/validateDefinitions';
 import type { FlatBuilding } from '../src/core/buildings/buildingDefinition';
+import { orderFileOf } from './collectionRead';
 import { BUILDING_TYPES_FILE, buildingTypesSource } from './buildingTypes';
 import { BUILDING_SCHEMA_FILE, buildingJsonSchema, buildingProblems, buildingsProblems, readBuildings, stableBuildingJson, writeBuildings } from './buildingsFile';
 
-const temporaryDir = () => mkdtempSync(join(tmpdir(), 'buildings-'));
+// The order file sits next to the directory, so the directory gets a root of its own.
+const temporaryDir = () => {
+  const dir = join(mkdtempSync(join(tmpdir(), 'buildings-')), 'buildings');
+  mkdirSync(dir);
+  return dir;
+};
 
 const standard: FlatBuilding = {
   kind: 'standard', section: 'build.production', model: 'industrial/building-h', footprint: [2, 2], cost: 100, unlockCitizens: 0, requiresRoad: true,
@@ -15,15 +21,14 @@ const standard: FlatBuilding = {
 };
 const sport: FlatBuilding = { ...standard, kind: 'sport', section: 'build.sport', description: { en: 'An arena.', fr: 'Une arène.' }, radius: 6, wellbeingBonus: 4 };
 const nature: FlatBuilding = { kind: 'nature', model: 'nature/tree_oak', name: { en: 'Oak', fr: 'Chêne' }, family: 'tree' };
-const ordered = (building: FlatBuilding) => ({ ...building, order: 10 });
 
 describe('building files', () => {
   it('accepts standard, sport and nature buildings', () => {
-    for (const definition of [standard, sport, nature]) expect(buildingProblems(ordered(definition))).toEqual([]);
+    for (const definition of [standard, sport, nature]) expect(buildingProblems(definition)).toEqual([]);
   });
 
   it('refuses incomplete buildings', () => {
-    const problemsOf = (definition: object) => buildingProblems(ordered(definition as FlatBuilding)).join('; ');
+    const problemsOf = (definition: object) => buildingProblems(definition as FlatBuilding).join('; ');
     expect(problemsOf({ ...standard, footprint: undefined })).toContain('footprint');
     expect(problemsOf({ ...standard, footprint: [0, 1] })).toContain('footprint.0');
     expect(problemsOf({ ...standard, accessModes: [] })).toContain('accessModes');
@@ -43,10 +48,10 @@ describe('building files', () => {
 
   it('refuses bad ids, ids differing by case only and unknown models', () => {
     expect(() => writeBuildings({ '1bad': standard }, temporaryDir())).toThrow('id must start with a letter');
-    expect(buildingsProblems({ parka: ordered(nature), parkA: ordered(nature) })).toEqual(['parkA: id differs from another one by case only']);
+    expect(buildingsProblems({ parka: nature, parkA: nature })).toEqual(['parkA: id differs from another one by case only']);
     const catalog = { models: { 'nature-tree-oak': { file: 'nature/tree_oak', source: 'kenney' as const, license: 'CC0' } }, ships: (file: string) => file === 'nature/tree_pine' };
-    expect(buildingsProblems({ oak: ordered(nature) }, catalog)).toEqual(['oak: model: unknown Model id nature/tree_oak']);
-    expect(buildingsProblems({ oak: ordered({ ...nature, model: 'nature-tree-oak' }) }, catalog)).toEqual(['oak: model: model nature-tree-oak has no installable file nature/tree_oak']);
+    expect(buildingsProblems({ oak: nature }, catalog)).toEqual(['oak: model: unknown Model id nature/tree_oak']);
+    expect(buildingsProblems({ oak: { ...nature, model: 'nature-tree-oak' } }, catalog)).toEqual(['oak: model: model nature-tree-oak has no installable file nature/tree_oak']);
   });
 
   it('writes one file per building, in menu order, and removes the files of removed buildings', () => {
@@ -54,7 +59,6 @@ describe('building files', () => {
     writeBuildings({ zebra: standard, alpha: nature, middle: sport }, dir);
     expect(readdirSync(dir).sort()).toEqual(['alpha.json', 'middle.json', 'zebra.json']);
     expect(Object.keys(readBuildings(dir))).toEqual(['zebra', 'alpha', 'middle']);
-    expect(readBuildings(dir).zebra!.order).toBe(10);
     writeBuildings({ middle: sport, zebra: standard }, dir);
     expect(existsSync(join(dir, 'alpha.json'))).toBe(false);
     expect(Object.keys(readBuildings(dir))).toEqual(['middle', 'zebra']);
@@ -64,17 +68,26 @@ describe('building files', () => {
     const dir = temporaryDir();
     writeBuildings({ zebra: { ...standard, accessModes: ['road', 'brt'] } }, dir);
     const content = readFileSync(join(dir, 'zebra.json'), 'utf8');
-    expect(Object.keys(JSON.parse(content))).toEqual(['$schema', 'kind', 'order', 'section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'name']);
+    expect(Object.keys(JSON.parse(content))).toEqual(['$schema', 'kind', 'section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'name']);
     expect(content).toContain('"footprint": [2, 2],');
     expect(content).toContain('"accessModes": ["road", "brt"],');
     expect(content).toBe(stableBuildingJson(readBuildings(dir).zebra!));
   });
 
-  it('orders hand-edited buildings of equal order by id', () => {
+  it('keeps the order file in step with the buildings written', () => {
     const dir = temporaryDir();
-    writeFileSync(join(dir, 'beta.json'), JSON.stringify({ ...nature, order: 5 }));
-    writeFileSync(join(dir, 'alpha.json'), JSON.stringify({ ...nature, order: 5 }));
-    expect(Object.keys(readBuildings(dir))).toEqual(['alpha', 'beta']);
+    writeBuildings({ zebra: standard, alpha: nature, middle: sport }, dir);
+    expect(JSON.parse(readFileSync(orderFileOf(dir), 'utf8'))).toEqual(['zebra', 'alpha', 'middle']);
+    writeBuildings({ middle: sport, zebra: standard }, dir);
+    expect(JSON.parse(readFileSync(orderFileOf(dir), 'utf8'))).toEqual(['middle', 'zebra']);
+  });
+
+  it('puts hand-added buildings missing from the order file last, by id', () => {
+    const dir = temporaryDir();
+    writeBuildings({ zebra: standard }, dir);
+    writeFileSync(join(dir, 'beta.json'), JSON.stringify(nature));
+    writeFileSync(join(dir, 'alpha.json'), JSON.stringify(nature));
+    expect(Object.keys(readBuildings(dir))).toEqual(['zebra', 'alpha', 'beta']);
   });
 });
 

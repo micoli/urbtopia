@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "solar",
-  "order": 220,
   "section": "build.utilities",
   "model": "industrial-solar-panel-landscape-group",
   "footprint": [2, 2],

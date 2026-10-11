@@ -1,5 +1,7 @@
 import packFormats from '../../../assets/defs/packFormats.json' with { type: 'json' };
 import { entriesOf } from '../defs/entries';
+import materialOrder from '../../../assets/defs/order/materials.json' with { type: 'json' };
+import goodOrder from '../../../assets/defs/order/goods.json' with { type: 'json' };
 import { CROPS, CROP_IDS, type CropId } from '../farming/crops';
 import type { BuildingType } from '../engine/state';
 import type { BaseGoodId } from './goodTypes.generated';
@@ -25,8 +27,8 @@ type MaterialSpec = { durationMs: number; unlockCitizens: number; minTier: numbe
 const materialFiles = import.meta.glob<MaterialDefinition>('../../../assets/defs/materials/*.json', { eager: true, import: 'default' });
 const goodFiles = import.meta.glob<GoodDefinition>('../../../assets/defs/goods/*.json', { eager: true, import: 'default' });
 
-export const MATERIAL_ENTRIES = entriesOf<MaterialDefinition, DefinedMaterialId>(materialFiles);
-export const GOOD_ENTRIES = entriesOf<GoodDefinition, BaseGoodId>(goodFiles);
+export const MATERIAL_ENTRIES = entriesOf<MaterialDefinition, DefinedMaterialId>(materialFiles, materialOrder);
+export const GOOD_ENTRIES = entriesOf<GoodDefinition, BaseGoodId>(goodFiles, goodOrder);
 
 const materialSpecOf = ({ durationMinutes, unlockCitizens, minTier, value }: MaterialDefinition): MaterialSpec => ({ durationMs: durationMinutes * MINUTE_MS, unlockCitizens, minTier, value });
 

@@ -15,11 +15,6 @@
           "type": "string",
           "const": "boat"
         },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
-        },
         "retired": {
           "type": "boolean",
           "const": true
@@ -75,7 +70,6 @@
       "required": [
         "family",
         "kind",
-        "order",
         "name",
         "model",
         "cost",
@@ -100,11 +94,6 @@
           "type": "string",
           "const": "boat"
         },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
-        },
         "retired": {
           "type": "boolean",
           "const": true
@@ -145,7 +134,6 @@
       "required": [
         "family",
         "kind",
-        "order",
         "name",
         "model",
         "cost",
@@ -167,11 +155,6 @@
           "type": "string",
           "const": "boat"
         },
-        "order": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
-        },
         "retired": {
           "type": "boolean",
           "const": true
@@ -212,7 +195,6 @@
       "required": [
         "family",
         "kind",
-        "order",
         "name",
         "model",
         "cost",

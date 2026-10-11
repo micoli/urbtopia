@@ -86,6 +86,22 @@ export function collectionProblems(name: CollectionName, definitions: Record<str
   return [...idProblems, ...shapeProblems, ...references, ...categories];
 }
 
+// The order file of a collection lists every id of its directory exactly once, and nothing else.
+export function orderProblems(order: readonly string[], ids: readonly string[]): Problem[] {
+  const known = new Set(ids);
+  const seen = new Set<string>();
+  const listed = order.flatMap((id): Problem[] => {
+    const duplicate = seen.has(id);
+    seen.add(id);
+    return [
+      ...(known.has(id) ? [] : [{ id, path: '', message: 'listed in the order file but has no definition' }]),
+      ...(duplicate ? [{ id, path: '', message: 'listed twice in the order file' }] : []),
+    ];
+  });
+  const missing = ids.filter(id => !seen.has(id)).map((id): Problem => ({ id, path: '', message: 'missing from the order file' }));
+  return [...listed, ...missing];
+}
+
 export const allCollectionProblems = (collections: Collections, catalog: ModelCatalog): CollectionProblem[] =>
   COLLECTION_NAMES.flatMap(name => collectionProblems(name, collections[name], { collections, catalog }).map(problem => ({ ...problem, collection: name })));
 

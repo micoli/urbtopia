@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/fixture.schema.json",
   "kind": "fixture",
-  "order": 240,
   "venue": "supermarket",
   "category": "shelves",
   "name": {

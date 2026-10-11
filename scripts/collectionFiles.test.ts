@@ -9,7 +9,7 @@ import { collectionProblems } from './definitionProblems';
 import { SINGLETON_NAMES } from './singletons';
 
 const wood = { kind: 'material', name: { en: 'Wood', fr: 'Bois' }, producedBy: 'workshop', durationMinutes: 1, unlockCitizens: 0, minTier: 1, value: 3 };
-const planks = { kind: 'good', order: 10, category: 'construction', name: { en: 'Planks', fr: 'Planches' }, recipe: { wood: 2 }, durationMinutes: 2, value: 14, unlockCitizens: 0, minTier: 1 };
+const planks = { kind: 'good', category: 'construction', name: { en: 'Planks', fr: 'Planches' }, recipe: { wood: 2 }, durationMinutes: 2, value: 14, unlockCitizens: 0, minTier: 1 };
 
 describe('collections on disk', () => {
   it.each(COLLECTION_NAMES)('keeps the generated id unions and JSON Schema of %s in sync (npm run defs:generate)', name => {
@@ -51,7 +51,7 @@ describe('Shop definitions', () => {
 
 describe('collection files', () => {
   it('writes and reads a collection in its order, with camelCase item ids', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'materials-'));
+    const dir = join(mkdtempSync(join(tmpdir(), 'materials-')), 'materials');
     writeCollection('materials', { wood, stone: { ...wood, name: { en: 'Stone', fr: 'Pierre' } } }, dir);
     expect(Object.keys(readCollectionDir(dir))).toEqual(['wood', 'stone']);
     expect(() => writeCollection('materials', { 'bad-id': wood }, dir)).toThrow('id must be camelCase');

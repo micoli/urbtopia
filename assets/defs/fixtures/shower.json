@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/fixture.schema.json",
   "kind": "fixture",
-  "order": 350,
   "venue": "hotel",
   "category": "bathroom",
   "name": {

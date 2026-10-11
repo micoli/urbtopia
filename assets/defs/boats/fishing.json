@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/boat.schema.json",
   "kind": "boat",
-  "order": 20,
   "family": "fishing",
   "model": "watercraft-boat-fishing-small",
   "cost": 800,

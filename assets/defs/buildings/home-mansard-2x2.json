@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "home",
-  "order": 2300,
   "section": "build.housing",
   "cost": 600,
   "unlockCitizens": 400,

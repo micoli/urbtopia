@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1180,
   "model": "nature-rock-smalla",
   "name": {
     "en": "Rock small A",

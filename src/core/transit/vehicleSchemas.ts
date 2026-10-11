@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { count, filled, localizedText } from '../economy/itemSchemas.ts';
 
-const common = { $schema: z.string().optional(), order: count, name: localizedText };
+const common = { $schema: z.string().optional(), name: localizedText };
 
 const positive = z.number().positive();
 

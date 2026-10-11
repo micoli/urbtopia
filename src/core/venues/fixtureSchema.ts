@@ -6,7 +6,6 @@ import { FIXTURE_CATEGORIES_ALL } from './venueVocabulary.ts';
 const common = {
   $schema: z.string().optional(),
   kind: z.literal('fixture'),
-  order: count,
   name: localizedText,
   category: z.enum(FIXTURE_CATEGORIES_ALL),
   model: filled,

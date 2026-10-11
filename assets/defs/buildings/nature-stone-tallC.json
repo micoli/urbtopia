@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1560,
   "model": "nature-stone-tallc",
   "name": {
     "en": "Stone tall C",

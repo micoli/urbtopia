@@ -1,7 +1,6 @@
 {
   "$schema": "../schemas/transit-vehicle.schema.json",
   "kind": "transitVehicle",
-  "order": 40,
   "mode": "rail",
   "propulsion": "coal",
   "price": 1600,
