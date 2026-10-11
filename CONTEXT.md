@@ -513,8 +513,12 @@ The exchange of Messages between two Friends. It ends, with all its Messages, wh
 _Avoid_: Thread, channel
 
 **Trade offer**:
-A lot of Materials and/or Goods that one Friend proposes to another in their conversation, for a price in Urbs set by the sender (0 for a gift). The recipient accepts or refuses; an offer left open expires after 72 hours. Seed packs, buildings and bare Urbs cannot be offered.
+A Lot of Materials and/or Goods that one Friend proposes to another, for a price in Urbs set by the sender (0 for a gift). The recipient accepts or refuses; an offer left open expires after 72 hours. Seed packs, buildings and bare Urbs cannot be offered.
 _Avoid_: Deal, auction, barter
+
+**Lot**:
+The Materials and Goods of a Trade offer: up to ten lines, one item each, with a quantity.
+_Avoid_: Bundle, parcel, cargo
 
 **Escrow**:
 The hold the server keeps on a lot or a payment between the creation of a Trade offer and its claim, so that each side claims once and a refused or expired offer returns everything to its owner. The server does not check that the lot ever existed in the sender's city.
