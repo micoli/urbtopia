@@ -42,6 +42,20 @@ export function frontHasAccess(state: GameState, type: BuildingType, x: number, 
   return frontAccessModes(state, type, x, y, rotation, tier).length > 0;
 }
 
+export function validFronts(state: GameState, type: BuildingType, x: number, y: number, tier = 1): Rotation[] {
+  if (!BUILDING_SPECS[type].requiresRoad) return [];
+  return ROTATIONS.filter((rotation) => frontHasAccess(state, type, x, y, rotation, tier));
+}
+
+export function nextFront(fronts: readonly Rotation[], current: Rotation, step: 1 | -1 = 1): Rotation {
+  if (fronts.length === 0) return current;
+  const index = fronts.indexOf(current);
+  if (index !== -1) return fronts[(index + step + fronts.length) % fronts.length] ?? current;
+  const ordered = step === 1 ? fronts : [...fronts].reverse();
+  const beyond = ordered.find((front) => (step === 1 ? front > current : front < current));
+  return beyond ?? ordered[0] ?? current;
+}
+
 export function autoRotation(state: GameState, type: BuildingType, x: number, y: number, tier = 1): Rotation {
   if (!BUILDING_SPECS[type].requiresRoad) return 0;
   const onRoad = ROTATIONS.find((rotation) => frontAccessModes(state, type, x, y, rotation, tier).includes('road'));

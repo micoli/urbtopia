@@ -8,6 +8,7 @@ import {
   buyableParcels,
   parcelPrice,
   autoRotation,
+  validFronts,
   dispatch,
   FACILITIES,
   footprintOf,
@@ -89,6 +90,7 @@ export interface Evaluation {
   command: Command | null;
   cost: number | null;
   rotation: Rotation | null;
+  fronts?: Rotation[];
   coverage?: { cityWide: boolean; homes: number };
 }
 
@@ -186,10 +188,12 @@ function evaluateBuilding(
 ): Evaluation {
   const reference =
     base.type === 'MoveBuilding' ? { ...state, buildings: state.buildings.filter((building) => building.id !== base.id) } : state;
-  const rotation = requestedRotation ?? autoRotation(reference, type, tile.x, tile.y, tier);
+  const fronts = validFronts(reference, type, tile.x, tile.y, tier);
+  const keepsRequested = requestedRotation !== null && (fronts.length === 0 || fronts.includes(requestedRotation));
+  const rotation = keepsRequested ? requestedRotation : autoRotation(reference, type, tile.x, tile.y, tier);
   const command: Command = { ...base, x: tile.x, y: tile.y, rotation };
   const tiles = footprintTiles({ type, x: tile.x, y: tile.y, rotation, tier });
-  const result = evaluation(tiles, command, state, { cost, rotation });
+  const result = evaluation(tiles, command, state, { cost, rotation, ...(fronts.length ? { fronts } : {}) });
   if (BUILDING_SPECS[type].requiresRoad) result.ghost.front = frontMarker(reference, type, tile, rotation, tier);
   if (isFacilityType(type)) addCoveragePreview(result, reference, type, tile, rotation);
   return result;

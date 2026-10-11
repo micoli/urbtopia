@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import { footprintTiles, type Coord, type CropId, type Rotation } from '../core';
+import { footprintTiles, nextFront, type Coord, type CropId, type Rotation } from '../core';
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
 import { confirmTool, evaluateTool, extendBrush, isPathTool, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
@@ -141,7 +141,8 @@ export const uiStore = createStore<UiStore>((set, get) => {
       const { tool, evaluation } = get();
       if (isPathTool(tool)) return reevaluate({ tool: { ...tool, horizontalFirst: !tool.horizontalFirst } });
       if (evaluation?.rotation == null) return;
-      reevaluate({ rotation: ((evaluation.rotation + 1) % 4) as Rotation });
+      if (!evaluation.fronts) return reevaluate({ rotation: ((evaluation.rotation + 1) % 4) as Rotation });
+      reevaluate({ rotation: nextFront(evaluation.fronts, evaluation.rotation) });
     },
     confirm: (keepTool = false) => {
       const { tool, evaluation, pointerKind, hovered, centerTile, pinnedTile } = get();

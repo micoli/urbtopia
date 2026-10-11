@@ -21,9 +21,21 @@ describe('building tool', () => {
     expect(evaluation.issue).toBe('error.needsRoadOrBrt');
   });
 
-  it('respects a rotation chosen by the player', () => {
+  it('respects a rotation chosen by the player when that side has access', () => {
+    const evaluation = evaluateTool(shopTool, { state, tile: { x: 56, y: 57 }, rotation: 2 });
+    expect(evaluation.rotation).toBe(2);
+    expect(evaluation.valid).toBe(true);
+  });
+
+  it('falls back to the automatic front when the chosen side has no access', () => {
     const evaluation = evaluateTool(shopTool, { state, tile: { x: 56, y: 57 }, rotation: 0 });
-    expect(evaluation.rotation).toBe(0);
+    expect(evaluation.rotation).toBe(2);
+    expect(evaluation.valid).toBe(true);
+  });
+
+  it('keeps the chosen rotation where no side has access', () => {
+    const evaluation = evaluateTool(shopTool, { state, tile: { x: 70, y: 70 }, rotation: 1 });
+    expect(evaluation.rotation).toBe(1);
     expect(evaluation.issue).toBe('error.needsRoadOrBrt');
   });
 

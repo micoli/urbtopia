@@ -1,5 +1,6 @@
 import { EcologicalBuildingPanel } from './EcologicalBuildingPanel';
 import { DecorationRotation } from './DecorationRotation';
+import { FrontRotation } from './FrontRotation';
 import { CoalPlantPanel } from './CoalPlantPanel';
 import { StopNameField } from './StopNameField';
 import { GAME_CONFIG, isShopType, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost, isHomeType, isUtilityType, isTransitStopType } from '../../core';
@@ -48,6 +49,7 @@ export function SelectionContentPanel() {
       {building.type === 'coalPlant' ? <CoalPlantPanel building={building} /> : null}
       {greenProfileOf(building.type) || ['solar','battery','backup','busStop','brtStation','railStation'].includes(building.type) || (isHomeType(building.type) && building.solar) ? <EcologicalBuildingPanel building={building} /> : null}
       {natureModelOf(building.type)?.[2] === 'decoration' ? <DecorationRotation building={building} /> : null}
+      <FrontRotation building={building} />
       <ButtonRow align="stretch" spaced className="side-panel-actions">
         <ActionButton onClick={moveSelected}>
           ✥ {t('panel.move')}

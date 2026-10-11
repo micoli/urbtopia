@@ -464,6 +464,10 @@ _Avoid_: BRT station, Freight terminal
 A network a building can be reached from: the Road or the BRT corridor. Each building declares the modes it accepts. Homes, Leisure buildings, Shops and Public facilities accept both; every other building accepts the Road only. A position is valid when any accepted mode has a tile in front of the building.
 _Avoid_: Entrance, connection type, requiresRoad
 
+**Front**:
+The side of a building turned towards its access. A building has one Front among its four sides. A side is a valid Front when it touches at least one accepted Access mode. A building touching several Roads (a corner, up to four) therefore has several valid Fronts; the player picks among them, and the Road side wins over a BRT side by default.
+_Avoid_: Facade, entrance, orientation
+
 **BRT-only access**:
 The state of a building reached by a BRT corridor but not by a Road. It has no Commute by car and no Pedestrian path: its Citizens use public transport, and the Jobs of its workplaces are filled by Riders only. A BRT-only Home with no BRT station covering it is marked disconnected.
 _Avoid_: Roadless building, transit-only building

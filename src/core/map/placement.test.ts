@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { autoRotation, createBuilding, dispatch, frontAccessModes, frontTiles, newGame, placementIssue, type Command, type GameState } from '../index';
+import { autoRotation, createBuilding, dispatch, frontAccessModes, frontTiles, newGame, nextFront, placementIssue, validFronts, type Command, type GameState } from '../index';
 
 const NOW = 1_700_000_000_000;
 const initial = newGame({ seed: 'amber-fox-4821', now: NOW });
@@ -275,5 +275,32 @@ describe('last access of a building', () => {
   it('ignores a building that already had no access', () => {
     const stranded: GameState = { ...brtOnly, brtRoads: [], roads: [{ x: 70, y: 70, kind: 'road' }] };
     expect(succeed(stranded, { type: 'DemolishRoad', x: 70, y: 70 }).roads).toEqual([]);
+  });
+});
+
+describe('fronts of a corner building', () => {
+  const at = { x: 62, y: 66 };
+  const roadsOn = (...rotations: (0 | 1 | 2 | 3)[]): GameState => ({
+    ...initial,
+    roads: rotations.flatMap((rotation) => frontTiles('home', at.x, at.y, rotation).map((tile) => ({ ...tile, kind: 'road' as const }))),
+  });
+
+  it('lists every side that touches a road, up to four', () => {
+    expect(validFronts(roadsOn(0, 3), 'home', at.x, at.y)).toEqual([0, 3]);
+    expect(validFronts(roadsOn(0, 1, 2, 3), 'home', at.x, at.y)).toEqual([0, 1, 2, 3]);
+  });
+
+  it('cycles among the valid fronts only', () => {
+    expect(nextFront([0, 2, 3], 0)).toBe(2);
+    expect(nextFront([0, 2, 3], 3)).toBe(0);
+    expect(nextFront([0, 2, 3], 0, -1)).toBe(3);
+    expect(nextFront([0, 2, 3], 1)).toBe(2);
+  });
+
+  it('turns a placed home to another road side', () => {
+    const state: GameState = { ...roadsOn(0, 3), buildings: [createBuilding(1, 'home', at.x, at.y, 0)] };
+    const result = dispatch(state, { type: 'MoveBuilding', id: 1, x: at.x, y: at.y, rotation: 3 }, 0);
+    if (!result.ok) throw new Error(result.error.key);
+    expect(result.state.buildings[0]?.rotation).toBe(3);
   });
 });

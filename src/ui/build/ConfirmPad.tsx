@@ -19,7 +19,7 @@ export function ConfirmPad() {
   const isBrush = tool?.kind === 'brush';
   const needsStart = pathTool && tool.start === null;
   const canConfirm = Boolean(evaluation?.valid) || needsStart;
-  const canRotate = pathTool ? tool.start !== null : evaluation?.rotation != null;
+  const canRotate = pathTool ? tool.start !== null : evaluation?.rotation != null && (evaluation.fronts?.length ?? 2) > 1;
   useConfirmKeys({ active: Boolean(tool && evaluation), canConfirm, canRotate, onConfirm: confirm, onRotate: rotate, onCancel: cancelTool });
   if (!tool || !evaluation) return null;
   return (
