@@ -2003,6 +2003,9 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .conflict-city h3 { margin: 0; }
 .cloud-email, .cloud-account { display: grid; gap: 0.5rem; margin: 0.5rem 0; }
 .cloud-email input { padding: 0.4rem 0.5rem; font: inherit; }
+.friends-handle, .friends-findable { display: grid; gap: 0.5rem; margin: 0.5rem 0; }
+.friends-handle label { display: grid; gap: 0.25rem; }
+.friends-handle input[type='text'] { padding: 0.4rem 0.5rem; font: inherit; }
 
 .venue-view {
   position: fixed;

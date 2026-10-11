@@ -1,9 +1,11 @@
+import {cloudEnabled} from '../../../persistence/cloud/cloudConfig';
 import {t} from '../../../i18n/t';
 import type {MessageKey} from '../../../i18n/messages';
 
 const SECTIONS: [string, string, MessageKey][] = [
     ['production', '▦', 'eco.production'], ['energy', '⚡', 'eco.energy'],
     ['needs', '▲', 'needs.title'], ['nature', '♧', 'build.greenSpaces'], ['services', '✚', 'stats.services'], ['transport', '↔', 'eco.transport'], ['traffic', '🚗', 'eco.traffic'],
+    ...(cloudEnabled ? [['friends', '☺', 'friends.title'] as [string, string, MessageKey]] : []),
 ];
 
 interface SectionNavigationProps {

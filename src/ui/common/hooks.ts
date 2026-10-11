@@ -2,6 +2,7 @@ import { useStore } from 'zustand';
 import { cloudStore, type CloudStore } from '../../store/cloudStore';
 import { gameStore, type GameStore } from '../../store/gameStore';
 import { dialogStore, type DialogStore } from '../../store/dialogStore';
+import { socialStore, type SocialStore } from '../../store/socialStore';
 import { readOnlyStore } from '../../store/readOnlyStore';
 import { uiStore, type UiStore } from '../../store/uiStore';
 
@@ -23,4 +24,8 @@ export function useReadOnly(): boolean {
 
 export function useCloud<T>(selector: (store: CloudStore) => T): T {
   return useStore(cloudStore, selector);
+}
+
+export function useSocial<T>(selector: (store: SocialStore) => T): T {
+  return useStore(socialStore, selector);
 }
