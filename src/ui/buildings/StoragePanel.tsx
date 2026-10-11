@@ -1,8 +1,9 @@
-import { compartmentOf, storageTierOf, isStorageType, storageCapacity, storageUsed, type Building, type GoodId, type MaterialId } from '../../core';
+import { compartmentOf, storageTierOf, isStorageType, storageCapacity, storageUsed, type Building, type GoodId, type ItemId, type MaterialId } from '../../core';
 import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
 import { useGame } from '../common/hooks';
 import { DrawerPanel } from '../common/DrawerPanel';
+import { ItemIcon } from '../common/ItemIcon';
 
 interface StoragePanelProps {
   building: Building;
@@ -29,10 +30,14 @@ export function StoragePanel({ building }: StoragePanelProps) {
           <p>
             {t(`panel.${compartment}`)}: {used[compartment]}/{capacity[compartment]}
           </p>
-          <ul>
+          <ul className="storage-tiles">
             {stock[compartment].map(([item, amount]) => (
-              <li key={item}>
-                {compartment === 'goods' ? itemName(item as GoodId) : t(`item.${item as MaterialId}`)} × {amount}
+              <li key={item} className="storage-tile">
+                <span className="storage-tile-label">{compartment === 'goods' ? itemName(item as GoodId) : t(`item.${item as MaterialId}`)}</span>
+                <span className="storage-tile-stock">
+                  <span className="storage-tile-amount">{amount} ×</span>
+                  <ItemIcon item={item as ItemId} />
+                </span>
               </li>
             ))}
           </ul>

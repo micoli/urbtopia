@@ -629,6 +629,47 @@ button {
   background: rgba(255, 255, 255, 0.08);
 }
 
+.storage-tiles {
+  list-style: none;
+  margin: 6px 0 12px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px;
+}
+
+.storage-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.storage-tile-label {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.storage-tile-stock {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.storage-tile-amount {
+  font-weight: 600;
+}
+
+.item-icon {
+  width: 44px;
+  height: 44px;
+  flex: none;
+}
+
 .market-price {
   font-size: 12px;
   opacity: 0.75;
