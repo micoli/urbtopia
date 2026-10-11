@@ -1,7 +1,6 @@
 import {
     ECOLOGY, ECOLOGY_UNLOCKS, durationOf, energyStats, isItemUnlocked, minTierOf, producibleItems, productionTierOf,
-    totalCitizens, type BuildingType, type GameState
-} from '../../../core';
+    totalCitizens, type BuildingType, type GameState, isHomeType } from '../../../core';
 import {t} from '../../../i18n/t';
 import {itemName} from '../../../i18n/itemName';
 import {SectionHeading} from '../../common/SectionHeading';
@@ -27,7 +26,7 @@ export function ProductionSection({state, energy}: ProductionSectionProps) {
                     {locked && <small>◇ {t('eco.locked')}: {ECOLOGY_UNLOCKS[type]}</small>}
                 </span>;
             })}
-            <span><span>{t('eco.solarHome')}</span><strong>{state.buildings.filter(b => b.type === 'home' && b.solar).length}</strong></span>
+            <span><span>{t('eco.solarHome')}</span><strong>{state.buildings.filter(b => isHomeType(b.type) && b.solar).length}</strong></span>
         </div>
         <p>{t('eco.productionHelp')}</p>
         <table>

@@ -3,6 +3,7 @@ import { citizensOf } from '../buildings/city';
 import { centerOf, distance } from '../environment/ecology';
 import { FACILITIES, FACILITY_TYPES, facilityCapacity, SERVICE_CATEGORIES, facilitiesOfCategory, isWithinReach, requiredServices, type FacilityType, type ServiceCategory, type ServiceKey } from './facilities';
 import type { Building, GameState, Rotation } from '../engine/state';
+import { isHomeType } from '../buildings/buildingDefinitions';
 
 export type ServiceCoverage = ReadonlyMap<number, ReadonlySet<FacilityType>>;
 
@@ -48,7 +49,7 @@ function coveredHomes(type: FacilityType, facilities: Building[], homes: Buildin
 export function serviceCoverage(state: GameState): ServiceCoverage {
   const cached = coverageCache.get(state.buildings);
   if (cached) return cached;
-  const homes = state.buildings.filter(building => building.type === 'home').sort((a, b) => a.id - b.id);
+  const homes = state.buildings.filter(building => isHomeType(building.type)).sort((a, b) => a.id - b.id);
   const result = new Map<number, Set<FacilityType>>(homes.map(home => [home.id, new Set()]));
   for (const type of FACILITY_TYPES) {
     const facilities = state.buildings.filter(building => building.type === type).sort((a, b) => a.id - b.id);
@@ -98,7 +99,7 @@ export function categoryCoverageRatio(state: GameState, category: ServiceCategor
   let total = 0;
   let served = 0;
   for (const home of state.buildings) {
-    if (home.type !== 'home') continue;
+    if (!isHomeType(home.type)) continue;
     const citizens = citizensOf(home.tier);
     total += citizens;
     if (coveredCategories(coverage, home.id).includes(category)) served += citizens;
@@ -108,12 +109,12 @@ export function categoryCoverageRatio(state: GameState, category: ServiceCategor
 
 export function homesLackingRequiredServices(state: GameState): Building[] {
   const coverage = serviceCoverage(state);
-  return state.buildings.filter(building => building.type === 'home' && missingServices(coverage, building).length > 0);
+  return state.buildings.filter(building => isHomeType(building.type) && missingServices(coverage, building).length > 0);
 }
 
 export function previewFacilityCoverage(state: GameState, type: FacilityType, x: number, y: number, rotation: Rotation): Building[] {
   const before = serviceCoverage(state);
   const probe = createBuilding(state.nextId, type, x, y, rotation);
   const after = serviceCoverage({ ...state, buildings: [...state.buildings, probe] });
-  return state.buildings.filter(building => building.type === 'home' && after.get(building.id)?.has(type) && !before.get(building.id)?.has(type));
+  return state.buildings.filter(building => isHomeType(building.type) && after.get(building.id)?.has(type) && !before.get(building.id)?.has(type));
 }

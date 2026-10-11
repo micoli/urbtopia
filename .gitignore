@@ -24,3 +24,4 @@ supabase/.temp/
 supabase/.branches/
 .mcp.json
 .agents
+tmp

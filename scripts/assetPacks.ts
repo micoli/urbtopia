@@ -13,9 +13,11 @@ export const DEFINITION_MODEL_FILES = [
   ...SINGLETON_NAMES.flatMap(name => (singletonSpecOf(name).references?.(readSingleton(name) as never) ?? []).map(fileOf)),
 ];
 
+const MANAGED_FILES = new Set(Object.values(modelFiles).filter(({ source }) => source === 'managed').map(({ file }) => file));
+
 // A pack installs the files listed below plus every model a definition uses: a Game object can take any model of an installable pack.
 const withDefinitionModels = <T extends { name: string; files: string[] }>(pack: T): T => {
-  const used = DEFINITION_MODEL_FILES.filter(model => model.startsWith(`${pack.name}/`)).map(model => model.slice(pack.name.length + 1));
+  const used = DEFINITION_MODEL_FILES.filter(model => !MANAGED_FILES.has(model) && model.startsWith(`${pack.name}/`)).map(model => model.slice(pack.name.length + 1));
   return { ...pack, files: [...new Set([...pack.files, ...used])] };
 };
 
@@ -121,7 +123,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'watercraft',
     url: 'https://kenney.nl/media/pages/assets/watercraft-kit/a335cfed49-1713519620/kenney_watercraft-pack.zip',
     archive: 'kenney_watercraft-pack.zip',
-    files: ['boat-house-a', 'boat-sail-a', 'boat-fishing-small', 'ship-ocean-liner-small'],
+    files: ['boat-sail-a', 'boat-fishing-small', 'ship-ocean-liner-small'],
   },
   {
     name: 'trains',

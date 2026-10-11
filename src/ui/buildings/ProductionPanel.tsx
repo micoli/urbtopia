@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SLOT_PRICES, isItemUnlocked, minTierOf, producibleItems, productionTierOf, recipeOf, rushPrice, unlockCitizensOf, type Building, type ItemId, type MaterialId, type QueueEntry } from '../../core';
+import { SLOT_PRICES, isItemUnlocked, minTierOf, producibleItems, productionDurationOf, productionTierOf, recipeOf, rushPrice, unlockCitizensOf, type Building, type ItemId, type MaterialId, type QueueEntry } from '../../core';
 import { t } from '../../i18n/t';
 import { isPack, itemName } from '../../i18n/itemName';
 import { formatDuration } from '../common/formatDuration';
@@ -72,7 +72,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
             isAvailable(item) ? (
               <ActionButton key={item} disabled={lacksMaterials(item)} onClick={() => send({ type: 'QueueProduction', buildingId: building.id, item })}>
                 {itemName(item)}
-                {recipeLabel(item)}
+                {recipeLabel(item)} · {formatDuration(productionDurationOf(building, item))}
               </ActionButton>
             ) : (
               <ActionButton key={item} disabled>

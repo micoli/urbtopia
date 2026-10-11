@@ -6,6 +6,7 @@
     "en": "Jewelry",
     "fr": "Bijoux"
   },
+  "model": "goods-jewelry",
   "category": "luxury",
   "recipe": {
     "gold": 1,

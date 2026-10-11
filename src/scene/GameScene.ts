@@ -288,7 +288,7 @@ export class GameScene {
     return pickBuilding(this.raycaster.ray, buildingBoxes(this.currentBuildings, (building) => this.buildingHeight(building)));
   }
 
-  private buildingHeight(building: Building): number {
+  buildingHeight(building: Building): number {
     const model = modelOfBuilding(building);
     const footprint = facilityFootprint(building);
     if (footprint === null || !this.library.has(model)) return this.heightOf(model);

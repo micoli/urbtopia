@@ -6,6 +6,7 @@
     "en": "Wood",
     "fr": "Bois"
   },
+  "model": "materials-wood",
   "producedBy": "workshop",
   "durationMinutes": 1,
   "unlockCitizens": 0,

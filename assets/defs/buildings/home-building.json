@@ -1,0 +1,69 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "home",
+  "order": 20,
+  "section": "build.housing",
+  "cost": 1500,
+  "unlockCitizens": 300,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Home building",
+    "fr": "Immeuble"
+  },
+  "description": {
+    "en": "-",
+    "fr": "-"
+  },
+  "tiers": [
+    {
+      "model": "commercial-building-i",
+      "footprint": [1, 1],
+      "citizens": 100,
+      "power": 10,
+      "water": 10
+    },
+    {
+      "model": "commercial-building-l",
+      "footprint": [1, 1],
+      "citizens": 180,
+      "power": 18,
+      "water": 18,
+      "upgradeCost": {
+        "urbs": 2500,
+        "goods": {
+          "planks": 20
+        }
+      }
+    },
+    {
+      "model": "commercial-building-m",
+      "citizens": 300,
+      "power": 30,
+      "water": 30,
+      "upgradeCost": {
+        "urbs": 9000,
+        "goods": {
+          "bricks": 15,
+          "planks": 20
+        }
+      }
+    }
+  ],
+  "variants": {
+    "solar": {
+      "tiers": [
+        {
+          "model": "suburban-building-type-j"
+        },
+        {
+          "model": "suburban-building-type-u"
+        },
+        {},
+        {
+          "model": "suburban-building-type-b"
+        }
+      ]
+    }
+  }
+}

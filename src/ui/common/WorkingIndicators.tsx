@@ -3,12 +3,13 @@ import { footprintOf, isWorking, workProgress } from '../../core';
 import { sceneHandle } from '../../store/sceneHandle.ts';
 import { collectBadgeLabel } from '../collect/CollectBadge.tsx';
 import { useGame } from './hooks.ts';
+import { WorkWheel } from './WorkWheel.tsx';
 import { placeProjected, useFrameLoop } from './useProjectedPosition.ts';
 
-const INDICATOR_HEIGHT = 1.8;
+const ROOF_CLEARANCE = 0.1;
 const RING_RADIUS = 14;
 const RING_LENGTH = 2 * Math.PI * RING_RADIUS;
-const BESIDE_BADGE_PX = 44;
+const BELOW_BADGE_HEIGHT = 0.9;
 
 export function WorkingIndicators() {
   const buildings = useGame((store) => store.state.buildings);
@@ -20,10 +21,12 @@ export function WorkingIndicators() {
     for (const building of working) {
       const element = elements.current.get(building.id);
       const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
-      const projected = sceneHandle.current?.project(building.x + width / 2, INDICATOR_HEIGHT, building.y + depth / 2);
-      if (!element || !projected) continue;
-      const beside = collectBadgeLabel(building) !== null ? BESIDE_BADGE_PX : 0;
-      placeProjected(element, projected, 'above', beside);
+      const scene = sceneHandle.current;
+      if (!element || !scene) continue;
+      const aboveRoof = scene.buildingHeight(building) + ROOF_CLEARANCE;
+      const height = collectBadgeLabel(building) !== null ? Math.min(aboveRoof, BELOW_BADGE_HEIGHT) : aboveRoof;
+      const projected = scene.project(building.x + width / 2, height, building.y + depth / 2);
+      placeProjected(element, projected, 'above');
     }
   }, [working]);
 
@@ -39,18 +42,24 @@ export function WorkingIndicators() {
           className="working-indicator"
           aria-hidden="true"
         >
-          <svg className="working-ring" viewBox="0 0 32 32" aria-hidden="true">
-            <circle className="working-ring-track" cx="16" cy="16" r={RING_RADIUS} />
-            <circle
-              className="working-ring-progress"
-              cx="16"
-              cy="16"
-              r={RING_RADIUS}
-              strokeDasharray={RING_LENGTH}
-              strokeDashoffset={RING_LENGTH * (1 - (workProgress(building, now) ?? 0))}
-            />
-          </svg>
-          <span className="working-gear">⚙</span>
+          {building.queue.length > 0 ? (
+            <WorkWheel queue={building.queue} now={now} />
+          ) : (
+            <>
+              <svg className="working-ring" viewBox="0 0 32 32" aria-hidden="true">
+                <circle className="working-ring-track" cx="16" cy="16" r={RING_RADIUS} />
+                <circle
+                  className="working-ring-progress"
+                  cx="16"
+                  cy="16"
+                  r={RING_RADIUS}
+                  strokeDasharray={RING_LENGTH}
+                  strokeDashoffset={RING_LENGTH * (1 - (workProgress(building, now) ?? 0))}
+                />
+              </svg>
+              <span className="working-gear">⚙</span>
+            </>
+          )}
         </span>
       ))}
     </>

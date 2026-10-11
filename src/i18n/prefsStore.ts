@@ -9,6 +9,7 @@ export interface Prefs {
   traffic: boolean;
   confirmSale: boolean;
   showReach: boolean;
+  showProductionPreview: boolean;
 }
 
 export const PREFS_KEY = 'urbtopia-prefs';
@@ -21,7 +22,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true, showReach: true };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -31,6 +32,7 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       traffic: typeof parsed.traffic === 'boolean' ? parsed.traffic : fallback.traffic,
       confirmSale: typeof parsed.confirmSale === 'boolean' ? parsed.confirmSale : fallback.confirmSale,
       showReach: typeof parsed.showReach === 'boolean' ? parsed.showReach : fallback.showReach,
+      showProductionPreview: typeof parsed.showProductionPreview === 'boolean' ? parsed.showProductionPreview : fallback.showProductionPreview,
     };
   } catch {
     return fallback;
@@ -45,9 +47,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, confirmSale, showReach }: Prefs): void {
+function writeStored({ language, layout, traffic, confirmSale, showReach, showProductionPreview }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale, showReach }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale, showReach, showProductionPreview }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -59,6 +61,7 @@ export interface PrefsStore extends Prefs {
   setTraffic: (traffic: boolean) => void;
   setConfirmSale: (confirmSale: boolean) => void;
   setShowReach: (showReach: boolean) => void;
+  setShowProductionPreview: (showProductionPreview: boolean) => void;
 }
 
 const browserLanguage = typeof navigator === 'undefined' ? undefined : navigator.language;
@@ -83,6 +86,10 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   },
   setShowReach: (showReach) => {
     set({ showReach });
+    writeStored(get());
+  },
+  setShowProductionPreview: (showProductionPreview) => {
+    set({ showProductionPreview });
     writeStored(get());
   },
 }));

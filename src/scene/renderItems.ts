@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_ROAD_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ServiceCategory } from '../core';
+import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type HomeColorVariant, type ServiceCategory, isHomeType } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -68,7 +68,18 @@ export function facilityFootprint(building: Pick<Building, 'type'>): number | nu
 // The model of each Tier of the buildings defined with Tiers.
 const TIER_MODELS = new Map(BUILDING_ENTRIES.filter(({ tiers }) => tiers).map(({ id }) => [id, tiersOf(id).map(({ model }) => modelFileOf(model!))]));
 
-const SOLAR_HOME_MODELS = variantTiersOf('home', 'solar').map(({ model }) => modelFileOf(model!));
+const SOLAR_HOME_MODELS = new Map(BUILDING_ENTRIES.filter(({ kind, variants }) => kind === 'home' && variants?.solar).map(({ id }) => [id, variantTiersOf(id, 'solar').map(({ model }) => modelFileOf(model!))]));
+
+// Mansard Homes are modelled once per color, a to d (green, pale blue, red, grey green): the Home color picks the model, where other Homes recolor their texture.
+const MANSARD_MODEL_LETTER: Record<HomeColorVariant, string> = { default: 'a', a: 'b', b: 'c', c: 'd' };
+
+const isMansardModel = (model: string): boolean => model.includes('-mansard-');
+
+const mansardModelOf = (model: string, colorVariant: HomeColorVariant): string => model.replace('-mansard-a', `-mansard-${MANSARD_MODEL_LETTER[colorVariant]}`);
+
+const mansardColorsOf = (model: string): string[] => (isMansardModel(model) ? Object.keys(MANSARD_MODEL_LETTER).map(color => mansardModelOf(model, color as HomeColorVariant)) : [model]);
+
+const colorizedModel = (model: string, colorVariant: HomeColorVariant = 'default'): string => (isMansardModel(model) ? mansardModelOf(model, colorVariant) : model);
 
 export const TRAIN_MODELS: readonly string[] = [...new Set(FLEET_VEHICLES.flatMap(({ models }) => models.map(modelFileOf)))];
 
@@ -90,8 +101,8 @@ const ROAD_MODELS = Object.values(ROAD_PIECE_MODELS);
 export const MODEL_KEYS: readonly string[] = [
   ...new Set([
     ...Object.values(MODEL_BY_BUILDING),
-    ...[...TIER_MODELS.values()].flat(),
-    ...SOLAR_HOME_MODELS,
+    ...[...TIER_MODELS.values()].flat().flatMap(mansardColorsOf),
+    ...[...SOLAR_HOME_MODELS.values()].flat().flatMap(mansardColorsOf),
     ...FACILITY_TYPES.map(type => FACILITY_DETAILS[type]),
     ROOF_PANEL_MODEL,
     GROUND_PANEL_MODEL,
@@ -109,6 +120,7 @@ export const MODEL_KEYS: readonly string[] = [
     BUS_MODEL,
     ...Object.values(BOAT_MODELS),
     ...CROP_IDS.flatMap((species) => cropModelsOf(species)),
+    ...ITEM_MODEL_FILES,
   ])
 ];
 
@@ -119,8 +131,9 @@ export function modelOf(type: BuildingType, tier: number): string {
 }
 
 export function modelOfBuilding(building: Building): string {
-  if (building.type === 'home' && building.solar && building.tier <= SOLAR_HOME_MODELS.length) return SOLAR_HOME_MODELS[building.tier - 1]!;
-  return modelOf(building.type, building.tier);
+  const solarModels = building.solar ? SOLAR_HOME_MODELS.get(building.type) : undefined;
+  const model = solarModels && building.tier <= solarModels.length ? solarModels[building.tier - 1]! : modelOf(building.type, building.tier);
+  return colorizedModel(model, building.colorVariant);
 }
 
 let lastBuildingItems: RenderItem[] = [];
@@ -249,7 +262,7 @@ function buildingItems(state: GameState): RenderItem[] {
     const z = building.y + depth / 2;
     const rotation = building.rotation;
     const model = modelOfBuilding(building);
-    const items: RenderItem[] = [{ model, x, z, rotation, ...(building.type === 'home' && building.colorVariant && building.colorVariant !== 'default' ? { textureVariant: building.colorVariant } : {}) }];
+    const items: RenderItem[] = [{ model, x, z, rotation, ...(isHomeType(building.type) && !isMansardModel(model) && building.colorVariant && building.colorVariant !== 'default' ? { textureVariant: building.colorVariant } : {}) }];
     if (isFacilityType(building.type)) {
       const footprint = facilityFootprint(building)!;
       const recolor = FACILITY_RECOLORS[building.type];
@@ -262,7 +275,7 @@ function buildingItems(state: GameState): RenderItem[] {
       items.push({ model: PARK_TREE_MODEL, x: x - width / 4, z: z - depth / 4, rotation });
       items.push({ model: PARK_TREE_MODEL, x: x + width / 4, z: z + depth / 4, rotation });
     }
-    if (building.type === 'home' && building.solar && building.tier > 4) {
+    if (isHomeType(building.type) && !isMansardModel(model) && building.solar && building.tier > 4) {
       items.push({ model: ROOF_PANEL_MODEL, x, z, rotation, elevation: 1.3, roofBase: model });
     }
     return items;

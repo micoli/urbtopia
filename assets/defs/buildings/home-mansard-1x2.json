@@ -1,0 +1,99 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "home",
+  "order": 2270,
+  "section": "build.housing",
+  "cost": 350,
+  "unlockCitizens": 150,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Mansard Duplex",
+    "fr": "Duplex mansardé"
+  },
+  "description": {
+    "en": "Houses Citizens who generate Tax. Each upgrade adds a floor, with more population and utility Demand. Comes in three colors.",
+    "fr": "Accueille des habitants qui génèrent des impôts. Chaque amélioration ajoute un étage, avec plus d’habitants et de besoins en eau et en électricité. Existe en trois couleurs."
+  },
+  "tiers": [
+    {
+      "model": "buildings-house-1x2-1f-mansard-a",
+      "footprint": [1, 2],
+      "citizens": 6,
+      "power": 1,
+      "water": 1
+    },
+    {
+      "model": "buildings-house-1x2-2f-mansard-a",
+      "citizens": 15,
+      "power": 2,
+      "water": 2,
+      "upgradeCost": {
+        "urbs": 150,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-1x2-3f-mansard-a",
+      "citizens": 32,
+      "power": 3,
+      "water": 3,
+      "upgradeCost": {
+        "urbs": 400,
+        "goods": {
+          "bricks": 4,
+          "planks": 2
+        }
+      }
+    },
+    {
+      "model": "buildings-house-1x2-4f-mansard-a",
+      "citizens": 60,
+      "power": 6,
+      "water": 6,
+      "upgradeCost": {
+        "urbs": 1000,
+        "goods": {
+          "tiles": 4,
+          "bricks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-1x2-5f-mansard-a",
+      "citizens": 100,
+      "power": 10,
+      "water": 10,
+      "upgradeCost": {
+        "urbs": 2500,
+        "goods": {
+          "tools": 4,
+          "tiles": 3
+        }
+      }
+    }
+  ],
+  "variants": {
+    "solar": {
+      "tiers": [
+        {
+          "model": "buildings-house-1x2-1f-mansard-a-solar"
+        },
+        {
+          "model": "buildings-house-1x2-2f-mansard-a-solar"
+        },
+        {
+          "model": "buildings-house-1x2-3f-mansard-a-solar"
+        },
+        {
+          "model": "buildings-house-1x2-4f-mansard-a-solar"
+        },
+        {
+          "model": "buildings-house-1x2-5f-mansard-a-solar"
+        }
+      ]
+    }
+  }
+}

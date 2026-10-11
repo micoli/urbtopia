@@ -7,6 +7,7 @@ import { HOME_TIERS } from '../economy/economy';
 import { casinoPower } from '../leisure/casino';
 import { isVenueType, venuePower } from '../venues/profiles';
 import type { Building, BuildingType, GameState } from '../engine/state';
+import { isHomeType } from '../buildings/buildingDefinitions';
 
 const battery = definitionOf('battery'), backup = definitionOf('backup');
 
@@ -24,7 +25,7 @@ export const ECOLOGY_UNLOCKS: Partial<Record<BuildingType, number>> = Object.fro
 );
 
 export function citizenCount(state: GameState): number {
-  return state.buildings.reduce((sum, b) => sum + (b.type === 'home' ? HOME_TIERS[b.tier - 1]?.citizens ?? 0 : 0), 0);
+  return state.buildings.reduce((sum, b) => sum + (isHomeType(b.type) ? HOME_TIERS[b.tier - 1]?.citizens ?? 0 : 0), 0);
 }
 
 export function centerOf(b: Building): { x: number; y: number; } {
@@ -70,7 +71,7 @@ export function greenSpaceCoverage(state: GameState, space: Building): number {
   const habitat = natureModelOf(space.type)?.[2] === 'habitat';
   if (habitat && !state.buildings.some(b => isVegetation(b.type) && distance(space, b) <= 2)) return 0;
   return state.buildings.reduce((count, b) => {
-    if (b.type !== 'home' || distance(space, b) > profile.radius) return count;
+    if (!isHomeType(b.type) || distance(space, b) > profile.radius) return count;
     return count + (HOME_TIERS[b.tier - 1]?.citizens ?? 0);
   }, 0);
 }
@@ -101,7 +102,7 @@ export function cityGreenBenefits(state: GameState) {
   const total = citizenCount(state);
   const result = { cooling: 0, biodiversity: 0, wellbeing: 0, covered: 0 };
   if (!total) return result;
-  for (const home of state.buildings.filter(b => b.type === 'home')) {
+  for (const home of state.buildings.filter(b => isHomeType(b.type))) {
     const citizens = HOME_TIERS[home.tier - 1]?.citizens ?? 0, benefit = greenBenefits(state, home);
     result.cooling += benefit.cooling * citizens / total;
     result.biodiversity += benefit.biodiversity * citizens / total;

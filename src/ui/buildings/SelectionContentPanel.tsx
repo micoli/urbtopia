@@ -1,7 +1,7 @@
 import { EcologicalBuildingPanel } from './EcologicalBuildingPanel';
 import { DecorationRotation } from './DecorationRotation';
 import { CoalPlantPanel } from './CoalPlantPanel';
-import { GAME_CONFIG, isShopType, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost } from '../../core';
+import { GAME_CONFIG, isShopType, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost, isHomeType } from '../../core';
 import { t } from '../../i18n/t';
 import { FacilityPanel } from './FacilityPanel';
 import { CasinoPanel } from '../casino/CasinoPanel';
@@ -35,7 +35,7 @@ export function SelectionContentPanel() {
       <BuildingAccess building={building} />
       {building.type === 'workshop' || building.type === 'factory' || building.type === 'packhouse' ? <ProductionPanel building={building} /> : null}
       {building.type === 'farm' ? <FarmPanel building={building} /> : null}
-      {building.type === 'home' ? <HomePanel building={building} /> : null}
+      {isHomeType(building.type) ? <HomePanel building={building} /> : null}
       {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}
       {building.type === 'marina' ? <MarinaPanel building={building} /> : null}
       {building.type === 'casino' ? <CasinoPanel building={building} /> : null}
@@ -44,7 +44,7 @@ export function SelectionContentPanel() {
       {isStorageType(building.type) ? <StoragePanel building={building} /> : null}
       {building.type === 'powerPlant' || building.type === 'waterTower' ? <UtilityPanel building={building} type={building.type} /> : null}
       {building.type === 'coalPlant' ? <CoalPlantPanel building={building} /> : null}
-      {greenProfileOf(building.type) || ['solar','battery','backup','busStop','brtStation','railStation'].includes(building.type) || (building.type === 'home' && building.solar) ? <EcologicalBuildingPanel building={building} /> : null}
+      {greenProfileOf(building.type) || ['solar','battery','backup','busStop','brtStation','railStation'].includes(building.type) || (isHomeType(building.type) && building.solar) ? <EcologicalBuildingPanel building={building} /> : null}
       {natureModelOf(building.type)?.[2] === 'decoration' ? <DecorationRotation building={building} /> : null}
       <ButtonRow align="stretch" spaced className="side-panel-actions">
         <ActionButton onClick={moveSelected}>

@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "shop",
-  "order": 50,
+  "order": 60,
   "section": "build.shops",
   "cost": 300,
   "unlockCitizens": 50,

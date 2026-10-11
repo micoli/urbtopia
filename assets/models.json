@@ -15,6 +15,632 @@
     "source": "quaternius",
     "license": "CC0"
   },
+  "buildings-house-1x1-1f-mansard-a": {
+    "file": "buildings/house-1x1-1f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-1f-mansard-a-solar": {
+    "file": "buildings/house-1x1-1f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-1f-mansard-b": {
+    "file": "buildings/house-1x1-1f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-1f-mansard-b-solar": {
+    "file": "buildings/house-1x1-1f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-1f-mansard-c": {
+    "file": "buildings/house-1x1-1f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-1f-mansard-c-solar": {
+    "file": "buildings/house-1x1-1f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-1f-mansard-d": {
+    "file": "buildings/house-1x1-1f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-1f-mansard-d-solar": {
+    "file": "buildings/house-1x1-1f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-2f-mansard-a": {
+    "file": "buildings/house-1x1-2f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-2f-mansard-a-solar": {
+    "file": "buildings/house-1x1-2f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-2f-mansard-b": {
+    "file": "buildings/house-1x1-2f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-2f-mansard-b-solar": {
+    "file": "buildings/house-1x1-2f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-2f-mansard-c": {
+    "file": "buildings/house-1x1-2f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-2f-mansard-c-solar": {
+    "file": "buildings/house-1x1-2f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-2f-mansard-d": {
+    "file": "buildings/house-1x1-2f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-2f-mansard-d-solar": {
+    "file": "buildings/house-1x1-2f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-3f-mansard-a": {
+    "file": "buildings/house-1x1-3f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-3f-mansard-a-solar": {
+    "file": "buildings/house-1x1-3f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-3f-mansard-b": {
+    "file": "buildings/house-1x1-3f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-3f-mansard-b-solar": {
+    "file": "buildings/house-1x1-3f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-3f-mansard-c": {
+    "file": "buildings/house-1x1-3f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-3f-mansard-c-solar": {
+    "file": "buildings/house-1x1-3f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-3f-mansard-d": {
+    "file": "buildings/house-1x1-3f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-3f-mansard-d-solar": {
+    "file": "buildings/house-1x1-3f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-4f-mansard-a": {
+    "file": "buildings/house-1x1-4f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-4f-mansard-a-solar": {
+    "file": "buildings/house-1x1-4f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-4f-mansard-b": {
+    "file": "buildings/house-1x1-4f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-4f-mansard-b-solar": {
+    "file": "buildings/house-1x1-4f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-4f-mansard-c": {
+    "file": "buildings/house-1x1-4f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-4f-mansard-c-solar": {
+    "file": "buildings/house-1x1-4f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-4f-mansard-d": {
+    "file": "buildings/house-1x1-4f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-4f-mansard-d-solar": {
+    "file": "buildings/house-1x1-4f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-5f-mansard-a": {
+    "file": "buildings/house-1x1-5f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-5f-mansard-a-solar": {
+    "file": "buildings/house-1x1-5f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-5f-mansard-b": {
+    "file": "buildings/house-1x1-5f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-5f-mansard-b-solar": {
+    "file": "buildings/house-1x1-5f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-5f-mansard-c": {
+    "file": "buildings/house-1x1-5f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-5f-mansard-c-solar": {
+    "file": "buildings/house-1x1-5f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-5f-mansard-d": {
+    "file": "buildings/house-1x1-5f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x1-5f-mansard-d-solar": {
+    "file": "buildings/house-1x1-5f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-1f-mansard-a": {
+    "file": "buildings/house-1x2-1f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-1f-mansard-a-solar": {
+    "file": "buildings/house-1x2-1f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-1f-mansard-b": {
+    "file": "buildings/house-1x2-1f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-1f-mansard-b-solar": {
+    "file": "buildings/house-1x2-1f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-1f-mansard-c": {
+    "file": "buildings/house-1x2-1f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-1f-mansard-c-solar": {
+    "file": "buildings/house-1x2-1f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-1f-mansard-d": {
+    "file": "buildings/house-1x2-1f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-1f-mansard-d-solar": {
+    "file": "buildings/house-1x2-1f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-2f-mansard-a": {
+    "file": "buildings/house-1x2-2f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-2f-mansard-a-solar": {
+    "file": "buildings/house-1x2-2f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-2f-mansard-b": {
+    "file": "buildings/house-1x2-2f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-2f-mansard-b-solar": {
+    "file": "buildings/house-1x2-2f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-2f-mansard-c": {
+    "file": "buildings/house-1x2-2f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-2f-mansard-c-solar": {
+    "file": "buildings/house-1x2-2f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-2f-mansard-d": {
+    "file": "buildings/house-1x2-2f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-2f-mansard-d-solar": {
+    "file": "buildings/house-1x2-2f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-3f-mansard-a": {
+    "file": "buildings/house-1x2-3f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-3f-mansard-a-solar": {
+    "file": "buildings/house-1x2-3f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-3f-mansard-b": {
+    "file": "buildings/house-1x2-3f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-3f-mansard-b-solar": {
+    "file": "buildings/house-1x2-3f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-3f-mansard-c": {
+    "file": "buildings/house-1x2-3f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-3f-mansard-c-solar": {
+    "file": "buildings/house-1x2-3f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-3f-mansard-d": {
+    "file": "buildings/house-1x2-3f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-3f-mansard-d-solar": {
+    "file": "buildings/house-1x2-3f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-4f-mansard-a": {
+    "file": "buildings/house-1x2-4f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-4f-mansard-a-solar": {
+    "file": "buildings/house-1x2-4f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-4f-mansard-b": {
+    "file": "buildings/house-1x2-4f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-4f-mansard-b-solar": {
+    "file": "buildings/house-1x2-4f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-4f-mansard-c": {
+    "file": "buildings/house-1x2-4f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-4f-mansard-c-solar": {
+    "file": "buildings/house-1x2-4f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-4f-mansard-d": {
+    "file": "buildings/house-1x2-4f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-4f-mansard-d-solar": {
+    "file": "buildings/house-1x2-4f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-5f-mansard-a": {
+    "file": "buildings/house-1x2-5f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-5f-mansard-a-solar": {
+    "file": "buildings/house-1x2-5f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-5f-mansard-b": {
+    "file": "buildings/house-1x2-5f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-5f-mansard-b-solar": {
+    "file": "buildings/house-1x2-5f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-5f-mansard-c": {
+    "file": "buildings/house-1x2-5f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-5f-mansard-c-solar": {
+    "file": "buildings/house-1x2-5f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-5f-mansard-d": {
+    "file": "buildings/house-1x2-5f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-1x2-5f-mansard-d-solar": {
+    "file": "buildings/house-1x2-5f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-1f-mansard-a": {
+    "file": "buildings/house-2x2-1f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-1f-mansard-a-solar": {
+    "file": "buildings/house-2x2-1f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-1f-mansard-b": {
+    "file": "buildings/house-2x2-1f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-1f-mansard-b-solar": {
+    "file": "buildings/house-2x2-1f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-1f-mansard-c": {
+    "file": "buildings/house-2x2-1f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-1f-mansard-c-solar": {
+    "file": "buildings/house-2x2-1f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-1f-mansard-d": {
+    "file": "buildings/house-2x2-1f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-1f-mansard-d-solar": {
+    "file": "buildings/house-2x2-1f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-2f-mansard-a": {
+    "file": "buildings/house-2x2-2f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-2f-mansard-a-solar": {
+    "file": "buildings/house-2x2-2f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-2f-mansard-b": {
+    "file": "buildings/house-2x2-2f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-2f-mansard-b-solar": {
+    "file": "buildings/house-2x2-2f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-2f-mansard-c": {
+    "file": "buildings/house-2x2-2f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-2f-mansard-c-solar": {
+    "file": "buildings/house-2x2-2f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-2f-mansard-d": {
+    "file": "buildings/house-2x2-2f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-2f-mansard-d-solar": {
+    "file": "buildings/house-2x2-2f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-3f-mansard-a": {
+    "file": "buildings/house-2x2-3f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-3f-mansard-a-solar": {
+    "file": "buildings/house-2x2-3f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-3f-mansard-b": {
+    "file": "buildings/house-2x2-3f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-3f-mansard-b-solar": {
+    "file": "buildings/house-2x2-3f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-3f-mansard-c": {
+    "file": "buildings/house-2x2-3f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-3f-mansard-c-solar": {
+    "file": "buildings/house-2x2-3f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-3f-mansard-d": {
+    "file": "buildings/house-2x2-3f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-3f-mansard-d-solar": {
+    "file": "buildings/house-2x2-3f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-4f-mansard-a": {
+    "file": "buildings/house-2x2-4f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-4f-mansard-a-solar": {
+    "file": "buildings/house-2x2-4f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-4f-mansard-b": {
+    "file": "buildings/house-2x2-4f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-4f-mansard-b-solar": {
+    "file": "buildings/house-2x2-4f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-4f-mansard-c": {
+    "file": "buildings/house-2x2-4f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-4f-mansard-c-solar": {
+    "file": "buildings/house-2x2-4f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-4f-mansard-d": {
+    "file": "buildings/house-2x2-4f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-4f-mansard-d-solar": {
+    "file": "buildings/house-2x2-4f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-5f-mansard-a": {
+    "file": "buildings/house-2x2-5f-mansard-a",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-5f-mansard-a-solar": {
+    "file": "buildings/house-2x2-5f-mansard-a-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-5f-mansard-b": {
+    "file": "buildings/house-2x2-5f-mansard-b",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-5f-mansard-b-solar": {
+    "file": "buildings/house-2x2-5f-mansard-b-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-5f-mansard-c": {
+    "file": "buildings/house-2x2-5f-mansard-c",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-5f-mansard-c-solar": {
+    "file": "buildings/house-2x2-5f-mansard-c-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-5f-mansard-d": {
+    "file": "buildings/house-2x2-5f-mansard-d",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-house-2x2-5f-mansard-d-solar": {
+    "file": "buildings/house-2x2-5f-mansard-d-solar",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "buildings-marina-captaincy": {
+    "file": "buildings/marina-captaincy",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "fit": {
+      "width": 1.5,
+      "height": 1
+    }
+  },
+  "buildings-marina-captaincy-narrow": {
+    "file": "buildings/marina-captaincy-narrow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "fit": {
+      "width": 1,
+      "height": 2
+    }
+  },
   "cars-ambulance": {
     "file": "cars/ambulance",
     "source": "kenney",
@@ -1059,6 +1685,61 @@
       "height": 1.4
     }
   },
+  "goods-bricks": {
+    "file": "goods/bricks",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-cannedfish": {
+    "file": "goods/cannedFish",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-cement": {
+    "file": "goods/cement",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-circuits": {
+    "file": "goods/circuits",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-crystal": {
+    "file": "goods/crystal",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-glass": {
+    "file": "goods/glass",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-jewelry": {
+    "file": "goods/jewelry",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-planks": {
+    "file": "goods/planks",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-steel": {
+    "file": "goods/steel",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-tiles": {
+    "file": "goods/tiles",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "goods-tools": {
+    "file": "goods/tools",
+    "source": "managed",
+    "license": "Own work"
+  },
   "holiday-bench": {
     "file": "holiday/bench",
     "source": "kenney",
@@ -1325,6 +2006,51 @@
       1,
       1
     ]
+  },
+  "materials-clay": {
+    "file": "materials/clay",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-coal": {
+    "file": "materials/coal",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-fish": {
+    "file": "materials/fish",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-gold": {
+    "file": "materials/gold",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-metal": {
+    "file": "materials/metal",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-sand": {
+    "file": "materials/sand",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-silicon": {
+    "file": "materials/silicon",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-stone": {
+    "file": "materials/stone",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "materials-wood": {
+    "file": "materials/wood",
+    "source": "managed",
+    "license": "Own work"
   },
   "mini-arcade-air-hockey": {
     "file": "mini-arcade/air-hockey",
@@ -3984,6 +4710,62 @@
     "file": "trains/train-locomotive-passenger-a",
     "source": "kenney",
     "license": "CC0"
+  },
+  "venue-arcade-center-dinner": {
+    "file": "venue/arcade-center-dinner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "fit": {
+      "width": 2,
+      "height": 1.5
+    },
+    "rotationOffset": 180
+  },
+  "venue-arcade-center-small": {
+    "file": "venue/arcade-center-small",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 1.5,
+      "height": 1.5
+    },
+    "rotationOffset": 180
+  },
+  "venue-supermarket-large": {
+    "file": "venue/supermarket-large",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 2.5,
+      "height": 1.8
+    },
+    "rotationOffset": 180
+  },
+  "venue-supermarket-small": {
+    "file": "venue/supermarket-small",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 2,
+      "height": 2
+    },
+    "rotationOffset": 180
   },
   "watercraft-boat-fishing-small": {
     "file": "watercraft/boat-fishing-small",

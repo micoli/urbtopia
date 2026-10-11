@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1800,
+  "order": 1810,
   "model": "nature-tree-palm",
   "name": {
     "en": "Tree palm",

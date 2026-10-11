@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { isCrop, totalCitizens } from '../../core';
-import { codexImageKey, type CodexEntry, type CodexManifest } from '../../codex/catalog';
+import { codexImageKey, isHomeCodexId, type CodexEntry, type CodexManifest } from '../../codex/catalog';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { readHomeColor } from '../buildings/homeColor';
@@ -20,7 +20,7 @@ function captionOf(entry: CodexEntry, level: number): string {
 export function CodexEntryContent({ entry, manifest }: CodexEntryContentProps) {
   const citizens = useGame(store => totalCitizens(store.state));
   const [failedImages, setFailedImages] = useState<readonly number[]>([]);
-  const colorVariant = entry.id === 'home' || entry.id === 'solarHome' ? readHomeColor() : undefined;
+  const colorVariant = isHomeCodexId(entry.id) ? readHomeColor() : undefined;
   const available = citizens >= entry.unlockCitizens;
   return (
     <>

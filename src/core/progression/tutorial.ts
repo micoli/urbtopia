@@ -2,6 +2,7 @@ import { citizensOf } from '../buildings/city';
 import type { Command } from '../engine/commands';
 import { SHOP, TAX } from '../economy/economy';
 import type { Building, BuildingType, GameState } from '../engine/state';
+import { isHomeType } from '../buildings/buildingDefinitions';
 
 export const TUTORIAL_STEPS = [
   'road',
@@ -25,7 +26,7 @@ const PLANKS_GOAL = SHOP.stackSize;
 
 const hasBuilding = (state: GameState, type: BuildingType) => state.buildings.some((building) => building.type === type);
 
-const homeOf = (state: GameState): Building | undefined => state.buildings.find((building) => building.type === 'home');
+const homeOf = (state: GameState): Building | undefined => state.buildings.find((building) => isHomeType(building.type));
 
 const BUILDING_STEPS: Partial<Record<TutorialStep, BuildingType[]>> = {
   workshop: ['workshop'],

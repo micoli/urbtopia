@@ -6,6 +6,7 @@
     "en": "Sand",
     "fr": "Sable"
   },
+  "model": "materials-sand",
   "producedBy": "workshop",
   "durationMinutes": 24,
   "unlockCitizens": 350,

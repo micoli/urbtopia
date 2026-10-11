@@ -1,8 +1,8 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "venue",
-  "order": 90,
-  "section": "build.production",
+  "order": 100,
+  "section": "build.shops",
   "cost": 5000,
   "unlockCitizens": 400,
   "requiresRoad": true,
@@ -17,8 +17,8 @@
   },
   "tiers": [
     {
-      "model": "commercial-building-g",
-      "footprint": [3, 2],
+      "model": "venue-supermarket-small",
+      "footprint": [2, 2],
       "gridSize": 6,
       "takingsCap": 400,
       "power": 2,
@@ -46,7 +46,9 @@
       "upgradeCost": {
         "urbs": 8000,
         "goods": {}
-      }
+      },
+      "model": "venue-supermarket-large",
+      "footprint": [3, 2]
     },
     {
       "gridSize": 10,

@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "marina",
-  "order": 2240,
+  "order": 2250,
   "section": "build.water",
   "cost": 600,
   "unlockCitizens": 60,
@@ -16,8 +16,8 @@
   },
   "tiers": [
     {
-      "model": "watercraft-boat-house-a",
-      "footprint": [2, 2],
+      "model": "buildings-marina-captaincy-narrow",
+      "footprint": [1, 2],
       "boats": 3
     },
     {
@@ -27,7 +27,9 @@
         "goods": {
           "planks": 3
         }
-      }
+      },
+      "model": "buildings-marina-captaincy",
+      "footprint": [2, 2]
     },
     {
       "boats": 10,

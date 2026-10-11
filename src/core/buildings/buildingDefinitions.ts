@@ -24,6 +24,8 @@ const entriesById = new Map<string, BuildingEntry>(BUILDING_ENTRIES.map(entry =>
 
 export const definitionOf = (id: BuildingId): BuildingEntry => entriesById.get(id)!;
 
+export const isHomeType = (type: string): boolean => entriesById.get(type)?.kind === 'home';
+
 export const isRetired = (id: BuildingId): boolean => entriesById.get(id)?.retired === true;
 
 const resolvedTiers = new Map<string, Tier[]>(BUILDING_ENTRIES.map(({ id, tiers }) => [id, resolveTiers<Tier>(tiers ?? [])]));

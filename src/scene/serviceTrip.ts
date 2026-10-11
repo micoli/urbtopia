@@ -1,4 +1,4 @@
-import { SERVICE_VEHICLE_ENTRIES, frontTiles, hashSeed, isFacilityType, nextRandom, serviceCoverage, tileKey, type Building, type Coord, type FacilityType, type GameState } from '../core';
+import { SERVICE_VEHICLE_ENTRIES, frontTiles, hashSeed, isFacilityType, nextRandom, serviceCoverage, tileKey, type Building, type Coord, type FacilityType, type GameState, isHomeType } from '../core';
 import { modelFileOf } from '../core/models/modelFiles';
 import { neighboursOf, type RoadGraph } from './roadGraph';
 
@@ -47,7 +47,7 @@ function pathTo(previous: ReadonlyMap<string, Coord | null>, end: Coord): Coord[
 export function planServiceTrip(state: GameState, graphs: readonly RoadGraph[], facility: Building, tripIndex: number): Coord[] | null {
   if (!isFacilityType(facility.type)) return null;
   const coverage = serviceCoverage(state);
-  const homes = state.buildings.filter((building) => building.type === 'home' && coverage.get(building.id)?.has(facility.type as never));
+  const homes = state.buildings.filter((building) => isHomeType(building.type) && coverage.get(building.id)?.has(facility.type as never));
   if (!homes.length) return null;
   const first = Math.floor(nextRandom(hashSeed(`${state.seed}:trip:${facility.id}:${tripIndex}`)).value * homes.length);
   for (let offset = 0; offset < homes.length; offset++) {

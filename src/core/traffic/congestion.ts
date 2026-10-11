@@ -14,6 +14,7 @@ import { CONGESTION, laneCapacity } from './roadTier';
 import { BUS_TRAFFIC, busRouteTiles, busSpeedFactor, type BusRoute, type BusSpeed } from './busTraffic';
 import { WALKING, crossingCut, maxWalkCost, walkDestinationOf } from './walking';
 import { emptyTrips, walkDestinations, walkServices, type WalkingTrips } from './walkingTrips';
+import { isHomeType } from '../buildings/buildingDefinitions';
 
 export { workplaceTypes };
 
@@ -90,7 +91,7 @@ export function congestionStats(state: GameState, now = state.lastSeen): Congest
 function layoutSignature(state: GameState, now: number): string {
   const transport = transportStats(state, now);
   const buildings = state.buildings
-    .filter((building) => building.type === 'home' || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null)
+    .filter((building) => isHomeType(building.type) || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null)
     .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${transport.homeRiders.get(building.id) ?? 0}:${transport.homeLines.has(building.id) ? 1 : 0}${transport.coveredActivities.has(building.id) ? 1 : 0}:${frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier).join('+')}`);
   const lines = transport.lines.map((line) => `${line.id}:${line.capacity.toFixed(2)}:${line.riders.toFixed(2)}:${line.mode === 'bus' && line.active && line.route ? line.route.map(tileKey).join(';') : ''}`);
   const openings = [...closedFractionsByTile(state)].map(([key, fraction]) => `${key}=${fraction.toFixed(3)}`);
@@ -119,7 +120,7 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
   const tiers = new Map(state.roads.map((road) => [tileKey(road), road.tier ?? 1]));
   const closed = closedFractionsByTile(state);
   const walkable = pedestrianGraph(state);
-  const homes = endpoints(state, graph, walkable, (building) => building.type === 'home');
+  const homes = endpoints(state, graph, walkable, (building) => isHomeType(building.type));
   const workplaces = endpoints(state, graph, walkable, (building) => workplaceTypes.includes(building.type)).filter((workplace) => workplace.access.length > 0);
   const destinations = WALKING.enabled ? walkDestinations(state, walkable) : [];
   const pedestrians = new Map<string, number>();

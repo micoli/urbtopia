@@ -6,6 +6,7 @@
     "en": "Cement",
     "fr": "Ciment"
   },
+  "model": "goods-cement",
   "category": "construction",
   "recipe": {
     "sand": 1,

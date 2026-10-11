@@ -7,10 +7,12 @@ import { GOODS } from './items';
 import { durationOf, valueOf, type ItemId } from './items';
 import type { Building, GameState, QueueEntry, ShopStack } from '../engine/state';
 import { productionTierOf } from './tiers';
+import { isHomeType } from '../buildings/buildingDefinitions';
+
+export const productionDurationOf = (building: Building, item: ItemId): number => Math.round(durationOf(item) * productionTierOf(building).durationFactor);
 
 export function newQueueEntry(building: Building, item: ItemId, now: number): QueueEntry {
-  const { durationFactor, yield: quantity } = productionTierOf(building);
-  return { item, duration: Math.round(durationOf(item) * durationFactor), startedAt: isIdle(building) ? now : null, done: false, quantity };
+  return { item, duration: productionDurationOf(building, item), startedAt: isIdle(building) ? now : null, done: false, quantity: productionTierOf(building).yield };
 }
 
 export function runningEntry(building: Building): QueueEntry | undefined {
@@ -99,7 +101,7 @@ function advanceShop(building: Building, now: number): Building {
 }
 
 function advanceHome(building: Building, elapsedMs: number): Building {
-  if (building.type !== 'home' || elapsedMs <= 0) return building;
+  if (!isHomeType(building.type) || elapsedMs <= 0) return building;
   const citizens = citizensOf(building.tier);
   const cap = citizens * TAX.capHours * TAX.hourMs;
   return { ...building, taxCitizenMs: Math.min(cap, building.taxCitizenMs + citizens * elapsedMs) };

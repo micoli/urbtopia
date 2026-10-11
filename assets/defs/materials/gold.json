@@ -6,6 +6,7 @@
     "en": "Gold",
     "fr": "Or"
   },
+  "model": "materials-gold",
   "producedBy": "workshop",
   "durationMinutes": 48,
   "unlockCitizens": 1000,

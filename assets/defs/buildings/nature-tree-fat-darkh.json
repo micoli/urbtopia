@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1750,
+  "order": 1760,
   "model": "nature-tree-fat-darkh",
   "name": {
     "en": "Tree broad dark",

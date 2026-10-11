@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 520,
+  "order": 530,
   "model": "nature-statue-column",
   "name": {
     "en": "Statue column",

@@ -6,6 +6,7 @@
     "en": "Clay",
     "fr": "Argile"
   },
+  "model": "materials-clay",
   "producedBy": "workshop",
   "durationMinutes": 4,
   "unlockCitizens": 30,

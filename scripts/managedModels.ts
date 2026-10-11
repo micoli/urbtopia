@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { MANAGED_MODELS_DIR, POLY_PIZZA_DIR } from './assetPacks.ts';
 
@@ -7,6 +7,10 @@ export function managedModelKeys(directory = MANAGED_MODELS_DIR, prefix = ''): s
     if (entry.isDirectory()) return managedModelKeys(join(directory, entry.name), `${prefix}${entry.name}/`);
     return entry.name.endsWith('.glb') ? [`${prefix}${entry.name.slice(0, -'.glb'.length)}`] : [];
   }).sort();
+}
+
+export function reservedModelKeys(directory = MANAGED_MODELS_DIR): string[] {
+  return managedModelKeys(directory).filter(key => existsSync(join(directory, `${key}.reserved`)));
 }
 
 export function polyPizzaModelKeys(directory = POLY_PIZZA_DIR): string[] {

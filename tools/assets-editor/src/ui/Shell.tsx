@@ -7,7 +7,7 @@ import type { DragData, ModelDrop } from '../dnd'
 import { useLibrary } from '../hooks/useLibrary'
 import { useSave } from '../hooks/useSave'
 import { useShortcuts } from '../hooks/useShortcuts'
-import { isFreelyDefinable } from '../library/modelFiles'
+import { isFreelyDefinable, licenseOf } from '../library/modelFiles'
 import { useDocument } from '../store/documentStore'
 import { groupOf, reorderGroup, setModel } from '../store/edits'
 import { ComparisonView } from './comparison/ComparisonView'
@@ -38,7 +38,7 @@ export function Shell() {
     change(doc => {
       if (entry?.id) return drop.assign(doc, entry.id)
       const id = modelIdOf(file)
-      return drop.assign(setModel(doc, id, { file, source: entry!.source!, license: 'CC0' }), id)
+      return drop.assign(setModel(doc, id, { file, source: entry!.source!, license: licenseOf(entry!.source!) }), id)
     })
   }
 

@@ -6,6 +6,7 @@
     "en": "Fish",
     "fr": "Poisson"
   },
+  "model": "materials-fish",
   "producedBy": "fishingBoat",
   "durationMinutes": 6,
   "unlockCitizens": 100,

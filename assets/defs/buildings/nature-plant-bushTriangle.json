@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1060,
+  "order": 1070,
   "model": "nature-plant-bushtriangle",
   "name": {
     "en": "Plant bush triangular",

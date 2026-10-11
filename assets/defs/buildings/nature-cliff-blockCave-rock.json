@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 460,
+  "order": 470,
   "model": "nature-cliff-blockcave-rock",
   "name": {
     "en": "Cliff cave block",

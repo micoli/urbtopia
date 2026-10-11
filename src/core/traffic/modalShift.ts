@@ -3,6 +3,7 @@ import type { GameState } from '../engine/state';
 import type { transportStats } from '../transit/transport';
 import type { CongestionStats } from './congestion';
 import { CONGESTION } from './roadTier';
+import { isHomeType } from '../buildings/buildingDefinitions';
 
 export const SHIFT = { maxFraction: 0.5, maxRiderShare: 0.9 };
 
@@ -19,7 +20,7 @@ export function modalShift(state: GameState, transport: ReturnType<typeof transp
   const byHome = new Map<number, number>();
   const byLine = new Map<number, number>();
   let total = 0;
-  const homes = state.buildings.filter((building) => building.type === 'home').sort((a, b) => a.id - b.id);
+  const homes = state.buildings.filter((building) => isHomeType(building.type)).sort((a, b) => a.id - b.id);
   for (const home of homes) {
     const entry = congestion.homes.get(home.id);
     const options = transport.homeLines.get(home.id);

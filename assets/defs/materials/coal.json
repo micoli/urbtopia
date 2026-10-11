@@ -6,6 +6,7 @@
     "en": "Coal",
     "fr": "Charbon"
   },
+  "model": "materials-coal",
   "producedBy": "workshop",
   "durationMinutes": 32,
   "unlockCitizens": 600,

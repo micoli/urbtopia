@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 410,
+  "order": 420,
   "model": "holiday-bench",
   "name": {
     "en": "Bench",

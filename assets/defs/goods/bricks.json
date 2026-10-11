@@ -6,6 +6,7 @@
     "en": "Bricks",
     "fr": "Briques"
   },
+  "model": "goods-bricks",
   "category": "construction",
   "recipe": {
     "stone": 2,
