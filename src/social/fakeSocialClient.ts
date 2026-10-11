@@ -1,10 +1,8 @@
 import { isValidHandle } from './handle';
-import { HANDLE_CHANGE_DELAY_DAYS, MAX_FRIENDS, MAX_OUTGOING_REQUESTS, SEARCHES_PER_DAY, SEARCHES_PER_HOUR } from './limits';
+import { HANDLE_CHANGE_DELAY_DAYS, MAX_FRIENDS, MAX_MESSAGE_LENGTH, MAX_MESSAGES_PER_MINUTE, MAX_OUTGOING_REQUESTS, SEARCHES_PER_DAY, SEARCHES_PER_HOUR } from './limits';
 import { SocialError, type Message, type SocialClient, type SocialSnapshot } from './types';
 
 const MINUTE_MS = 60_000;
-const MAX_MESSAGES_PER_MINUTE = 30;
-const MAX_MESSAGE_LENGTH = 500;
 const HOUR_MS = 3_600_000;
 const DAY_MS = 24 * HOUR_MS;
 const FORBIDDEN_WORDS = ['admin', 'moderator', 'support', 'urbtopia', 'urbix'];

@@ -14,7 +14,7 @@ export function installSocial(): () => void {
 
   void loadSocialClient().then((client) => {
     if (!client || disposed) return;
-    const actions = createSocialActions(client, socialStore.getState(), () => socialStore.getState().profile?.revision ?? null);
+    const actions = createSocialActions(client, socialStore.getState(), () => socialStore.getState().profile?.revision ?? null, () => socialStore.getState().conversation);
     socialStore.getState().enable(actions);
     let knownEmail: string | null = null;
     const follow = (email: string | null) => {
@@ -24,7 +24,10 @@ export function installSocial(): () => void {
     };
     follow(cloudStore.getState().account?.email ?? null);
     const poller = new SocialPoller({
-      poll: actions.poll,
+      poll: async () => {
+        await actions.poll();
+        await actions.pollConversation();
+      },
       view: () => ({
         active: socialStore.getState().profile !== null,
         panelOpen: uiStore.getState().statsOpen,

@@ -38,14 +38,15 @@ const panel = (props: Partial<Parameters<typeof FriendsPanel>[0]> = {}) =>
       changeDelayMs={30 * DAY_MS}
       search={{ kind: 'idle' }}
       actionFailure={null}
+      conversation={null}
       codeActions={{ send: noop, verify: noop, cancel: noop }}
-      actions={{ setHandle: asyncNoop, setFindable: asyncNoop, sendRequest: asyncNoop, accept: asyncNoop, refuse: asyncNoop, remove: asyncNoop, block: asyncNoop, unblock: asyncNoop }}
+      actions={{ setHandle: asyncNoop, setFindable: asyncNoop, sendRequest: asyncNoop, accept: asyncNoop, refuse: asyncNoop, remove: asyncNoop, block: asyncNoop, unblock: asyncNoop, openConversation: asyncNoop, closeConversation: asyncNoop, sendMessage: asyncNoop }}
       {...props}
     />,
   );
 
-function storeOf(): Pick<SocialStore, 'setStatus' | 'setProfile' | 'setHandleForm' | 'setSearch' | 'setActionFailure'> {
-  socialStore.setState({ status: 'idle', profile: null, handleForm: { kind: 'idle' }, search: { kind: 'idle' }, actionFailure: null });
+function storeOf(): Pick<SocialStore, 'setStatus' | 'setProfile' | 'setHandleForm' | 'setSearch' | 'setActionFailure' | 'setConversation'> {
+  socialStore.setState({ status: 'idle', profile: null, handleForm: { kind: 'idle' }, search: { kind: 'idle' }, actionFailure: null, conversation: null });
   return socialStore.getState();
 }
 

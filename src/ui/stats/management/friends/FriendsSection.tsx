@@ -6,7 +6,7 @@ import { FriendsPanel } from './FriendsPanel';
 
 const DAY_MS = 86_400_000;
 const noop = async () => {};
-const NO_ACTIONS = {setHandle: noop, setFindable: noop, sendRequest: noop, accept: noop, refuse: noop, remove: noop, block: noop, unblock: noop};
+const NO_ACTIONS = {setHandle: noop, setFindable: noop, sendRequest: noop, accept: noop, refuse: noop, remove: noop, block: noop, unblock: noop, openConversation: noop, closeConversation: noop, sendMessage: noop};
 
 export function FriendsSection() {
     const account = useCloud(s => s.account);
@@ -17,12 +17,13 @@ export function FriendsSection() {
     const handleForm = useSocial(s => s.handleForm);
     const search = useSocial(s => s.search);
     const actionFailure = useSocial(s => s.actionFailure);
+    const conversation = useSocial(s => s.conversation);
     const actions = useSocial(s => s.actions);
     return <section id="eco-friends">
         <SectionHeading>{t('friends.title')}</SectionHeading>
         <FriendsPanel account={account} emailCode={emailCode} status={status} profile={profile} handleForm={handleForm}
                       now={Date.now()} changeDelayMs={HANDLE_CHANGE_DELAY_DAYS * DAY_MS}
                       codeActions={{send: email => void cloudActions?.sendEmailCode(email), verify: code => void cloudActions?.verifyEmailCode(code), cancel: () => cloudActions?.cancelEmailCode()}}
-                      search={search} actionFailure={actionFailure} actions={actions ?? NO_ACTIONS}/>
+                      search={search} actionFailure={actionFailure} conversation={conversation} actions={actions ?? NO_ACTIONS}/>
     </section>;
 }

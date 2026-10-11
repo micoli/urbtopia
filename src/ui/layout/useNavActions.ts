@@ -1,4 +1,5 @@
 import { t } from '../../i18n/t';
+import { pendingSocialCount } from '../../social/pendingCount';
 import { useGame, useSocial, useUi } from '../common/hooks';
 import { guideOf } from '../tutorial/tutorialGuide';
 
@@ -29,7 +30,7 @@ export function useNavActions(): NavAction[] {
   const toggleMarket = useUi((store) => store.toggleMarket);
   const toggleSettings = useUi((store) => store.toggleSettings);
   const marketUnlocked = useGame((store) => store.state.marketUnlocked);
-  const pendingRequests = useSocial(store => store.profile?.incoming.length ?? 0);
+  const pendingRequests = useSocial(store => pendingSocialCount(store.profile));
   const guidedFlyout = guideOf(useGame((store) => store.state.tutorial)).flyout;
 
   return [
