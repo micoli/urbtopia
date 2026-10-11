@@ -5,7 +5,7 @@ import {t} from '../../../i18n/t';
 import {itemName} from '../../../i18n/itemName';
 import {SectionHeading} from '../../common/SectionHeading';
 
-const COUNT_TYPES: BuildingType[] = ['home', 'workshop', 'factory', 'shop', 'casino', 'powerPlant', 'coalPlant', 'solar', 'battery', 'backup', 'tree', 'park', 'busStop', 'brtStation', 'railStation'];
+const COUNT_TYPES: BuildingType[] = ['home', 'workshop', 'factory', 'shop', 'casino', 'powerPlant', 'hydroPlant', 'geothermalPlant', 'coalPlant', 'solar', 'battery', 'backup', 'tree', 'park', 'busStop', 'brtStation', 'railStation'];
 
 interface ProductionSectionProps {
     state: GameState;

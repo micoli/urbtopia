@@ -27,7 +27,7 @@ function casinoRows(state: GameState, green: ReturnType<typeof cityBenefits>): [
 export function EnergySection({state, energy, green, transport}: EnergySectionProps) {
     const saved = state.buildings.filter(b => isHomeType(b.type)).reduce((sum, b) => sum + (HOME_TIERS[b.tier - 1]?.power ?? 0) - homePower(b), 0);
     const rows: [MessageKey, number | string][] = [
-        ['eco.demand', energy.demand], ['transit.power', energy.transitDemand], ['eco.saved', saved], ['eco.solar', energy.solar], ['eco.wind', energy.wind],
+        ['eco.demand', energy.demand], ['transit.power', energy.transitDemand], ['eco.saved', saved], ['eco.solar', energy.solar], ['eco.wind', energy.wind], ['eco.hydro', energy.hydro], ['eco.geothermal', energy.geothermal],
         ['eco.coalCapacity', energy.coalCapacity], ['eco.coal', energy.coal], ['eco.coalCost', energy.coalCostPerHour], ['eco.backup', energy.backup],
         ['eco.unmet', energy.unmet], ['eco.surplus', energy.surplus], ['eco.storage', `${energy.stored.toFixed(1)} / ${energy.storageCapacity}`],
         ['eco.cost', energy.costPerHour + transport.costPerHour],
@@ -35,7 +35,7 @@ export function EnergySection({state, energy, green, transport}: EnergySectionPr
     ];
     const forecast = Array.from({length: FORECAST_HOURS}, (_, i) => {
         const factors = productionFactors(state.lastSeen + (state.timeOffset ?? 0) + (i + 1) * ECOLOGY.hourMs);
-        return `+${i + 1}h: ${(100 * factors.solar).toFixed(0)}% / ${(100 * factors.wind).toFixed(0)}%`;
+        return `+${i + 1}h: ${(100 * factors.solar).toFixed(0)}% / ${(100 * factors.wind).toFixed(0)}% / ${(100 * factors.hydro).toFixed(0)}%`;
     });
     return <section id="eco-energy" className="eco-wide">
         <SectionHeading icon="⚡">{t('eco.energy')}</SectionHeading>

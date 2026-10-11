@@ -1,7 +1,7 @@
 import { EcologicalBuildingPanel } from './EcologicalBuildingPanel';
 import { DecorationRotation } from './DecorationRotation';
 import { CoalPlantPanel } from './CoalPlantPanel';
-import { GAME_CONFIG, isShopType, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost, isHomeType } from '../../core';
+import { GAME_CONFIG, isShopType, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost, isHomeType, isUtilityType } from '../../core';
 import { t } from '../../i18n/t';
 import { FacilityPanel } from './FacilityPanel';
 import { CasinoPanel } from '../casino/CasinoPanel';
@@ -42,7 +42,7 @@ export function SelectionContentPanel() {
       {isVenueType(building.type) ? <VenuePanel building={building} /> : null}
       {isShopType(building.type) ? <ShopPanel building={building} /> : null}
       {isStorageType(building.type) ? <StoragePanel building={building} /> : null}
-      {building.type === 'powerPlant' || building.type === 'waterTower' ? <UtilityPanel building={building} type={building.type} /> : null}
+      {isUtilityType(building.type) ? <UtilityPanel building={building} type={building.type} /> : null}
       {building.type === 'coalPlant' ? <CoalPlantPanel building={building} /> : null}
       {greenProfileOf(building.type) || ['solar','battery','backup','busStop','brtStation','railStation'].includes(building.type) || (isHomeType(building.type) && building.solar) ? <EcologicalBuildingPanel building={building} /> : null}
       {natureModelOf(building.type)?.[2] === 'decoration' ? <DecorationRotation building={building} /> : null}

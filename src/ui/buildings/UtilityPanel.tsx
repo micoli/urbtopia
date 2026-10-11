@@ -1,20 +1,22 @@
-import { productionFactors, UTILITY_CAPACITY, type Building } from '../../core';
+import { ECOLOGY, connectedWaterKeys, generatorOutput, UTILITY_CAPACITY, type Building, type UtilityType } from '../../core';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { DrawerPanel } from '../common/DrawerPanel';
 
 interface UtilityPanelProps {
   building: Building;
-  type: 'powerPlant' | 'waterTower';
+  type: UtilityType;
 }
 
 export function UtilityPanel({ building, type }: UtilityPanelProps) {
   const state = useGame(s => s.state);
-  const wind = productionFactors(state.lastSeen + (state.timeOffset ?? 0)).wind;
+  const isWater = type === 'waterTower';
+  const value = isWater ? UTILITY_CAPACITY[type][building.tier - 1] ?? 0 : generatorOutput(state, building).toFixed(1);
   return <DrawerPanel>
       <p>
-        {type === 'powerPlant' ? `⚡ ${t('stat.power')}` : `💧 ${t('stat.water')}`}: {type === 'powerPlant' ? ((UTILITY_CAPACITY[type][building.tier - 1] ?? 0) * wind).toFixed(1) : UTILITY_CAPACITY[type][building.tier - 1] ?? 0}
+        {isWater ? `💧 ${t('stat.water')}` : `⚡ ${t('stat.power')}`}: {value}
       </p>
+      {type === 'hydroPlant' && <p>{t('panel.flow').replace('{count}', String(connectedWaterKeys(state, building).size)).replace('{full}', String(ECOLOGY.hydroFullFlowTiles))}</p>}
       <DrawerPanel.Upgrade building={building} />
   </DrawerPanel>
 }
