@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1710,
+  "order": 1730,
   "model": "nature-tree-cone-fall",
   "name": {
     "en": "Tree conical autumn",

@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "battery",
-  "order": 210,
+  "order": 230,
   "section": "build.utilities",
   "model": "industrial-shipping-container-a",
   "footprint": [1, 1],

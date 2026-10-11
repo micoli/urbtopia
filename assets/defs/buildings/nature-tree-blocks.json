@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1660,
+  "order": 1680,
   "model": "nature-tree-blocks",
   "name": {
     "en": "Tree block crown",

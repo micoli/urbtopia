@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 920,
+  "order": 940,
   "model": "nature-lily-small",
   "name": {
     "en": "Lily small",

@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1720,
+  "order": 1740,
   "model": "nature-tree-default",
   "name": {
     "en": "Tree classic",

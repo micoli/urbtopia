@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1360,
+  "order": 1380,
   "model": "nature-rock-talli",
   "name": {
     "en": "Rock tall I",

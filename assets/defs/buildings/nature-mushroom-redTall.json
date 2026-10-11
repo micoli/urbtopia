@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 990,
+  "order": 1010,
   "model": "nature-mushroom-redtall",
   "name": {
     "en": "Mushrooms red tall",

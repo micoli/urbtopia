@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 950,
+  "order": 970,
   "model": "nature-log-stack",
   "name": {
     "en": "Log stack",

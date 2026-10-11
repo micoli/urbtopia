@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "nature",
-  "order": 1010,
+  "order": 1030,
   "model": "nature-mushroom-tangroup",
   "name": {
     "en": "Mushrooms tan group",
