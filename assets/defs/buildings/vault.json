@@ -10,8 +10,8 @@
     "fr": "Chambre forte"
   },
   "description": {
-    "en": "Adds storage capacity for Goods. Only one Vault can be built; upgrades increase this capacity.",
-    "fr": "Ajoute de la capacité de stockage pour les produits. Une seule chambre forte peut être construite ; ses améliorations augmentent cette capacité."
+    "en": "Adds storage capacity for Goods. Several can be built as the city grows; upgrades increase this capacity.",
+    "fr": "Ajoute de la capacité de stockage pour les produits. Plusieurs peuvent être construites à mesure que la ville grandit ; leurs améliorations augmentent cette capacité."
   },
   "tiers": [
     {

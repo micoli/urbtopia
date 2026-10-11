@@ -4,6 +4,7 @@ import { codexImageKey, isHomeCodexId, type CodexEntry, type CodexManifest } fro
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { readHomeColor } from '../buildings/homeColor';
+import { BuildLimitFacts } from './BuildLimitFacts';
 import { CropFacts } from './CropFacts';
 import { LevelFacts } from './LevelFacts';
 
@@ -32,6 +33,7 @@ export function CodexEntryContent({ entry, manifest }: CodexEntryContentProps) {
         <span>{entry.unlockCitizens === 0 ? t('codex.fromStart') : t('codex.unlock').replace('{count}', String(entry.unlockCitizens))}</span>
       </p>
       {isCrop(entry.id) ? <CropFacts crop={entry.id} /> : null}
+      <BuildLimitFacts id={entry.id} />
       <h4>{t('codex.gallery')}</h4>
       {manifest && <div className="codex-gallery">
         {entry.levels.map(level => (
