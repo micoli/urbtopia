@@ -17,24 +17,24 @@ describe('pickReleaseName', () => {
 describe('formatReleaseTag', () => {
   const now = new Date('2026-03-05T10:00:00Z');
 
-  it('starts the day at 0001', () => {
-    expect(formatReleaseTag([], now, 'calm-owl-1')).toBe('2026.03.05.0001-calm-owl-1');
+  it('starts the day at 01', () => {
+    expect(formatReleaseTag([], now, 'calm-owl-1')).toBe('2026.03.05.01-calm-owl-1');
   });
 
   it('continues after the last release of the day', () => {
-    const tags = ['2026.03.05.0001-a-b-1', '2026.03.05.0002-c-d-2'];
-    expect(formatReleaseTag(tags, now, 'calm-owl-1')).toBe('2026.03.05.0003-calm-owl-1');
+    const tags = ['2026.03.05.01-a-b-1', '2026.03.05.02-c-d-2'];
+    expect(formatReleaseTag(tags, now, 'calm-owl-1')).toBe('2026.03.05.03-calm-owl-1');
   });
 
   it('ignores other days and untagged names', () => {
-    const tags = ['2026.03.04.0007-a-b-1', 'slowly-hardy-jaguar-3365'];
-    expect(formatReleaseTag(tags, now, 'calm-owl-1')).toBe('2026.03.05.0001-calm-owl-1');
+    const tags = ['2026.03.04.07-a-b-1', 'slowly-hardy-jaguar-3365'];
+    expect(formatReleaseTag(tags, now, 'calm-owl-1')).toBe('2026.03.05.01-calm-owl-1');
   });
 });
 
 describe('nameOfTag', () => {
   it('strips the date and sequence prefix', () => {
-    expect(nameOfTag('2026.03.05.0001-calm-owl-1')).toBe('calm-owl-1');
+    expect(nameOfTag('2026.03.05.01-calm-owl-1')).toBe('calm-owl-1');
     expect(nameOfTag('slowly-hardy-jaguar-3365')).toBe('slowly-hardy-jaguar-3365');
   });
 });
