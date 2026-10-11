@@ -5,20 +5,21 @@ import type { SocialState, TradeOffer } from './types';
 const profile: SocialState = {
   revision: 1,
   handle: 'Alice',
+  avatar: null,
   findable: true,
   handleChangedAt: 0,
   friends: [
-    { userId: 'b', handle: 'Bob', since: 0, unread: 2, lastMessageAt: 0 },
-    { userId: 'c', handle: 'Carol', since: 0, unread: 1, lastMessageAt: 0 },
+    { userId: 'b', handle: 'Bob', avatar: null, since: 0, unread: 2, lastMessageAt: 0 },
+    { userId: 'c', handle: 'Carol', avatar: null, since: 0, unread: 1, lastMessageAt: 0 },
   ],
-  incoming: [{ userId: 'd', handle: 'Dave', at: 0 }],
-  outgoing: [{ userId: 'e', handle: 'Erin', at: 0 }],
+  incoming: [{ userId: 'd', handle: 'Dave', avatar: null, at: 0 }],
+  outgoing: [{ userId: 'e', handle: 'Erin', avatar: null, at: 0 }],
   blocked: [],
   offers: [],
 };
 
 const offer = (change: Partial<TradeOffer>): TradeOffer => ({
-  id: 'o', role: 'recipient', peerId: 'x', peerHandle: 'X', lot: [{ item: 'wood', quantity: 1 }], price: 1, state: 'open',
+  id: 'o', role: 'recipient', peerId: 'x', peerHandle: 'X', peerAvatar: null, lot: [{ item: 'wood', quantity: 1 }], price: 1, state: 'open',
   createdAt: 0, expiresAt: 1, claimDeadline: null, claimable: [], claimed: [], ...change,
 });
 

@@ -1,6 +1,7 @@
 import { t } from '../../../i18n/t';
 import type { BlockedPlayer } from '../../../social/types';
 import { ActionButton } from '../../common/ActionButton';
+import { HandleLabel } from '../HandleLabel';
 
 interface BlockedListProps {
     blocked: BlockedPlayer[];
@@ -13,7 +14,7 @@ export function BlockedList({blocked, onUnblock}: BlockedListProps) {
         <h4>{t('friends.blocked')}</h4>
         <ul>
             {blocked.map(player => <li key={player.userId} className="friends-row">
-                <strong>{player.handle}</strong>
+                <HandleLabel userId={player.userId} handle={player.handle} avatar={player.avatar}/>
                 <ActionButton onClick={() => onUnblock(player.userId)}>{t('friends.unblock')}</ActionButton>
             </li>)}
         </ul>

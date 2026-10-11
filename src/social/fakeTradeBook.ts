@@ -28,6 +28,7 @@ interface Hooks {
   bump: (...userIds: string[]) => void;
   areFriends: (a: string, b: string) => boolean;
   handleOf: (userId: string) => string;
+  avatarOf: (userId: string) => string | null;
 }
 
 const RETURNED: readonly TradeOfferState[] = ['refused', 'cancelled', 'expired', 'lapsed'];
@@ -120,9 +121,19 @@ export class FakeTradeBook {
       .map((offer) => {
         const peerId = offer.senderId === userId ? offer.recipientId : offer.senderId;
         return {
-          id: offer.id, role: offer.senderId === userId ? 'sender' : 'recipient', peerId, peerHandle: this.hooks.handleOf(peerId),
-          lot: offer.lot.map((line) => ({ ...line })), price: offer.price, state: offer.state, createdAt: offer.createdAt, expiresAt: offer.expiresAt,
-          claimDeadline: offer.claimDeadline, claimable: this.claimable(offer, userId), claimed: this.claimed(offer, userId),
+          id: offer.id,
+          role: offer.senderId === userId ? 'sender' : 'recipient',
+          peerId,
+          peerHandle: this.hooks.handleOf(peerId),
+          peerAvatar: this.hooks.avatarOf(peerId),
+          lot: offer.lot.map((line) => ({ ...line })),
+          price: offer.price,
+          state: offer.state,
+          createdAt: offer.createdAt,
+          expiresAt: offer.expiresAt,
+          claimDeadline: offer.claimDeadline,
+          claimable: this.claimable(offer, userId),
+          claimed: this.claimed(offer, userId),
         };
       });
   }

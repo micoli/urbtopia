@@ -13,11 +13,12 @@ const noop = () => {};
 const asyncNoop = async () => {};
 const DAY_MS = 86_400_000;
 
-const withLists = { friends: [{ userId: 'b', handle: 'Bob', since: 0, unread: 0, lastMessageAt: null }], incoming: [{ userId: 'c', handle: 'Carol', at: 0 }], outgoing: [{ userId: 'd', handle: 'Dave', at: 0 }], blocked: [{ userId: 'e', handle: 'Erin' }] };
+const withLists = { friends: [{ userId: 'b', handle: 'Bob', avatar: null, since: 0, unread: 0, lastMessageAt: null }], incoming: [{ userId: 'c', handle: 'Carol', avatar: null, at: 0 }], outgoing: [{ userId: 'd', handle: 'Dave', avatar: null, at: 0 }], blocked: [{ userId: 'e', handle: 'Erin', avatar: null }] };
 
 const profile: SocialState = {
   revision: 1,
   handle: 'Alice',
+  avatar: null,
   findable: true,
   handleChangedAt: 0,
   friends: [],
@@ -42,7 +43,7 @@ const panel = (props: Partial<Parameters<typeof FriendsPanel>[0]> = {}) =>
       conversation={null}
       codeActions={{ send: noop, verify: noop, cancel: noop }}
       onTrade={noop}
-      actions={{ setHandle: asyncNoop, setFindable: asyncNoop, sendRequest: asyncNoop, accept: asyncNoop, refuse: asyncNoop, remove: asyncNoop, block: asyncNoop, unblock: asyncNoop, openConversation: asyncNoop, closeConversation: asyncNoop, sendMessage: asyncNoop, refreshConversation: asyncNoop }}
+      actions={{ setHandle: asyncNoop, setAvatar: asyncNoop, setFindable: asyncNoop, sendRequest: asyncNoop, accept: asyncNoop, refuse: asyncNoop, remove: asyncNoop, block: asyncNoop, unblock: asyncNoop, openConversation: asyncNoop, closeConversation: asyncNoop, sendMessage: asyncNoop, refreshConversation: asyncNoop }}
       {...props}
     />,
   );

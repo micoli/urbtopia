@@ -14,7 +14,7 @@ export function FriendList({friends, onMessage, onTrade, onRemove, onBlock}: Fri
     return <div className="friends-list">
         <h4>{t('friends.list')}</h4>
         {friends.length === 0 ? <p className="note note--muted">{t('friends.none')}</p> : <ul>
-            {friends.map(friend => <FriendRow key={friend.userId} handle={friend.handle} unread={friend.unread} onMessage={() => onMessage(friend)} onTrade={() => onTrade(friend)} onRemove={() => onRemove(friend.userId)} onBlock={() => onBlock(friend.userId)}/>)}
+            {friends.map(friend => <FriendRow key={friend.userId} userId={friend.userId} handle={friend.handle} avatar={friend.avatar} unread={friend.unread} onMessage={() => onMessage(friend)} onTrade={() => onTrade(friend)} onRemove={() => onRemove(friend.userId)} onBlock={() => onBlock(friend.userId)}/>)}
         </ul>}
     </div>;
 }

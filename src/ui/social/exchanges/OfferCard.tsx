@@ -3,6 +3,7 @@ import type { ErrorKey } from '../../../core';
 import type { TradeOffer } from '../../../social/types';
 import { ActionButton } from '../../common/ActionButton';
 import { Note } from '../../common/Note';
+import { AvatarImage } from '../AvatarImage';
 import { LotSummary } from './LotSummary';
 import { offerStatusKey } from './offerStatus';
 
@@ -20,7 +21,10 @@ export function OfferCard({offer, acceptIssue, busy, onAccept, onDecline}: Offer
     const open = offer.state === 'open';
     return <li className="exchange-offer" data-state={offer.state}>
         <div className="exchange-offer-head">
-            <strong>{t(mine ? 'exchanges.toHandle' : 'exchanges.from').replace('{H}', offer.peerHandle)}</strong>
+            <span className="handle-label">
+                <AvatarImage userId={offer.peerId} avatar={offer.peerAvatar}/>
+                <strong>{t(mine ? 'exchanges.toHandle' : 'exchanges.from').replace('{H}', offer.peerHandle)}</strong>
+            </span>
             <span className="exchange-price">{price}</span>
         </div>
         <LotSummary lot={offer.lot}/>

@@ -1,5 +1,6 @@
 import type { ConversationState, SocialActions, SocialStore } from '../store/socialStore';
 import { isPlausibleEmail } from '../persistence/cloud/email';
+import { isAvatarId } from './avatar';
 import { isValidHandle } from './handle';
 import type { TradeLine } from '../core';
 import type { TradeCoordinator, TradeOutcome } from './tradeCoordinator';
@@ -54,6 +55,16 @@ export function createSocialActions(
       return target.setHandleForm({ kind: 'error', error: failure.kind, retryAfterSeconds: failure.retryAfterSeconds });
     }
     target.setHandleForm({ kind: 'idle' });
+    await refresh();
+  };
+
+  const setAvatar = async (avatar: string | null) => {
+    if (avatar !== null && !isAvatarId(avatar)) return;
+    try {
+      await client.setAvatar(avatar);
+    } catch {
+      return;
+    }
     await refresh();
   };
 
@@ -179,6 +190,7 @@ export function createSocialActions(
     refresh,
     poll,
     setHandle,
+    setAvatar,
     setFindable,
     sendRequest,
     accept: act((userId) => client.acceptRequest(userId)),

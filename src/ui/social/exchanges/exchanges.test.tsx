@@ -11,12 +11,12 @@ const noop = () => {};
 const asyncNoop = async () => true;
 
 const offer = (change: Partial<TradeOffer> = {}): TradeOffer => ({
-  id: 'o1', role: 'recipient', peerId: 'a', peerHandle: 'Alice', lot: [{ item: 'wood', quantity: 4 }], price: 30, state: 'open',
+  id: 'o1', role: 'recipient', peerId: 'a', peerHandle: 'Alice', peerAvatar: null, lot: [{ item: 'wood', quantity: 4 }], price: 30, state: 'open',
   createdAt: 0, expiresAt: 1, claimDeadline: null, claimable: [], claimed: [], ...change,
 });
 
-const profile = (offers: TradeOffer[], friends: SocialState['friends'] = [{ userId: 'a', handle: 'Alice', since: 0, unread: 0, lastMessageAt: null }]): SocialState => ({
-  revision: 1, handle: 'Bob', findable: true, handleChangedAt: 0, friends, incoming: [], outgoing: [], blocked: [], offers,
+const profile = (offers: TradeOffer[], friends: SocialState['friends'] = [{ userId: 'a', handle: 'Alice', avatar: null, since: 0, unread: 0, lastMessageAt: null }]): SocialState => ({
+  revision: 1, handle: 'Bob', avatar: null, findable: true, handleChangedAt: 0, friends, incoming: [], outgoing: [], blocked: [], offers,
 });
 
 const panel = (props: Partial<Parameters<typeof ExchangesPanel>[0]> = {}) =>
