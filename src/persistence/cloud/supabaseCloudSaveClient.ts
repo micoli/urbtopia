@@ -1,9 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { CloudConfig } from './cloudConfig';
 import type { Database, Json } from './database.types';
+import { loadSharedSupabase } from './sharedSupabase';
 import { CloudError, type CloudAccount, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
 
-const PUSH_PATH = '/rpc/urb_push_save';
 const KEEPALIVE_BODY_LIMIT = 60_000;
 
 type Client = SupabaseClient<Database>;
@@ -24,14 +24,8 @@ export function toCloudError(failure: PostgrestFailure): CloudError {
 }
 
 export async function createSupabaseCloudSaveClient(config: CloudConfig): Promise<CloudSaveClient> {
-  const { createClient } = await import('@supabase/supabase-js');
-  let keepalive = false;
-  const client: Client = createClient<Database>(config.url, config.publishableKey, {
-    global: { fetch: (input, init) => fetch(input, keepalive && String(input).includes(PUSH_PATH) ? { ...init, keepalive: true } : init) },
-  });
-  return new SupabaseCloudSaveClient(client, (value) => {
-    keepalive = value;
-  });
+  const { client, setKeepalive } = await loadSharedSupabase(config);
+  return new SupabaseCloudSaveClient(client, setKeepalive);
 }
 
 function toAccount(user: { id: string; email?: string }): CloudAccount {

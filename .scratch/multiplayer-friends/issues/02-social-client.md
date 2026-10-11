@@ -1,6 +1,6 @@
 # Social client
 
-Status: ready-for-agent
+Status: done - tsc, eslint, vitest and build pass
 Blocked by: 01
 Spec: ../spec.md
 
@@ -10,8 +10,8 @@ Spec: ../spec.md
 
 ## Acceptance criteria
 
-- [ ] `SocialClient` covers every RPC of issue 01 with typed results and typed errors (rate limit with remaining delay, cap reached, Handle taken, change too soon).
-- [ ] `supabase-js` loaded through dynamic `import()`; offline or unconfigured Supabase leaves the game playable and the Friends tab disabled.
-- [ ] Fake client implementing the same rules for UI tests.
-- [ ] `database.types.ts` regenerated and CI type check passes.
-- [ ] `src/core` untouched; unit tests with vitest.
+- [x] `SocialClient` covers every RPC of issue 01 with typed results and typed errors (rate limit with remaining delay, cap reached, Handle taken, change too soon).
+- [x] `supabase-js` loaded through dynamic `import()`; offline or unconfigured Supabase leaves the game playable and the Friends tab disabled.
+- [x] Fake client implementing the same rules for UI tests.
+- [x] `database.types.ts` regenerated and CI type check passes.
+- [x] `src/core` untouched; unit tests with vitest.
