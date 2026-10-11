@@ -28,7 +28,7 @@ interface FriendsPanelProps {
     changeDelayMs: number;
     codeActions: EmailCodeActions;
     onTrade: (userId: string) => void;
-    actions: Pick<SocialActions, 'setHandle' | 'setFindable' | 'sendRequest' | 'accept' | 'refuse' | 'remove' | 'block' | 'unblock' | 'openConversation' | 'closeConversation' | 'sendMessage'>;
+    actions: Pick<SocialActions, 'setHandle' | 'setFindable' | 'sendRequest' | 'accept' | 'refuse' | 'remove' | 'block' | 'unblock' | 'openConversation' | 'closeConversation' | 'sendMessage' | 'refreshConversation'>;
 }
 
 export function FriendsPanel({account, emailCode, status, profile, handleForm, search, actionFailure, conversation, now, changeDelayMs, codeActions, onTrade, actions}: FriendsPanelProps) {
@@ -40,7 +40,7 @@ export function FriendsPanel({account, emailCode, status, profile, handleForm, s
     if (status === 'offline') return <Note>{t('friends.offline')}</Note>;
     if (status === 'no-handle') return <HandleForm current={null} changeWaitSeconds={0} state={handleForm} onSubmit={handle => void actions.setHandle(handle)}/>;
     if (!profile) return <p>{t('friends.connecting')}</p>;
-    if (conversation) return <ConversationView conversation={conversation} onBack={() => void actions.closeConversation()} onSend={body => void actions.sendMessage(body)}/>;
+    if (conversation) return <ConversationView conversation={conversation} onBack={() => void actions.closeConversation()} onSend={body => void actions.sendMessage(body)} onRefresh={() => actions.refreshConversation()}/>;
     const waitSeconds = Math.ceil((profile.handleChangedAt + changeDelayMs - now) / 1000);
     return <>
         <FriendSearchForm state={search} onSend={email => void actions.sendRequest(email)}/>

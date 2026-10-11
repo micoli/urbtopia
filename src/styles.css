@@ -2226,3 +2226,5 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .exchange-offer-head { display: flex; justify-content: space-between; gap: 0.5rem; }
 .exchange-price { color: var(--eco-accent); font-weight: 700; white-space: nowrap; }
 .exchange-offer-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.friends-composer .friends-refresh { padding-inline: 0.75rem; font-size: 1.1rem; }

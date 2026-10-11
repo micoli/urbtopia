@@ -9,6 +9,7 @@ import { FriendList } from './FriendList';
 import { friendsErrorMessage } from './friendsErrorMessage';
 
 const noop = () => {};
+const asyncNoop = async () => {};
 
 const conversation = (props: Partial<ConversationState> = {}): ConversationState => ({
   userId: 'b',
@@ -25,7 +26,7 @@ const conversation = (props: Partial<ConversationState> = {}): ConversationState
 
 describe('conversation view', () => {
   it('shows the Handle, both sides of the talk and the composer', () => {
-    const html = renderToStaticMarkup(<ConversationView conversation={conversation()} onBack={noop} onSend={noop} />);
+    const html = renderToStaticMarkup(<ConversationView conversation={conversation()} onBack={noop} onSend={noop} onRefresh={asyncNoop} />);
     expect(html).toContain('<h4>Bob</h4>');
     expect(html).toContain('Hello Alice');
     expect(html).toContain('data-from-me="true"');
@@ -33,13 +34,19 @@ describe('conversation view', () => {
     expect(html).toContain(t('friends.conversation.back'));
   });
 
+  it('puts a small refresh button after Send', () => {
+    const html = renderToStaticMarkup(<ConversationView conversation={conversation()} onBack={noop} onSend={noop} onRefresh={asyncNoop} />);
+    expect(html).toContain(`aria-label="${t('friends.conversation.refresh')}"`);
+    expect(html.indexOf(t('friends.conversation.send'))).toBeLessThan(html.indexOf('friends-refresh'));
+  });
+
   it('invites to say hello in an empty Conversation', () => {
-    expect(renderToStaticMarkup(<ConversationView conversation={conversation({ messages: [] })} onBack={noop} onSend={noop} />)).toContain(t('friends.conversation.empty'));
+    expect(renderToStaticMarkup(<ConversationView conversation={conversation({ messages: [] })} onBack={noop} onSend={noop} onRefresh={asyncNoop} />)).toContain(t('friends.conversation.empty'));
   });
 
   it('shows send errors, with the delay of a rate limit in seconds', () => {
     const failed = (error: 'not-friends' | 'message-invalid' | 'rate-limited', retryAfterSeconds: number | null) =>
-      renderToStaticMarkup(<ConversationView conversation={conversation({ failure: { error, retryAfterSeconds } })} onBack={noop} onSend={noop} />);
+      renderToStaticMarkup(<ConversationView conversation={conversation({ failure: { error, retryAfterSeconds } })} onBack={noop} onSend={noop} onRefresh={asyncNoop} />);
     expect(failed('not-friends', null)).toContain(t('friends.error.not-friends'));
     expect(failed('message-invalid', null)).toContain(t('friends.error.message-invalid'));
     expect(failed('rate-limited', 42)).toContain(t('friends.error.message-rate-limited').replace('{N}', '42'));
@@ -94,6 +101,15 @@ describe('conversation actions with the fake client', () => {
     await aliceActions.pollConversation();
     await aliceActions.pollConversation();
     expect(socialStore.getState().conversation?.messages).toMatchObject([{ body: 'Ping', fromMe: false }]);
+  });
+
+  it('refreshes the Conversation and the unread counts on demand', async () => {
+    const { aliceActions, bob } = await pair();
+    await aliceActions.openConversation('b', 'Bob');
+    await bob.sendMessage('a', 'Are you there?');
+    await aliceActions.refreshConversation();
+    expect(socialStore.getState().conversation?.messages).toMatchObject([{ body: 'Are you there?', fromMe: false }]);
+    expect(socialStore.getState().profile?.friends[0]).toMatchObject({ unread: 0 });
   });
 
   it('shows unread messages on the Friend and clears them once the Conversation is open', async () => {

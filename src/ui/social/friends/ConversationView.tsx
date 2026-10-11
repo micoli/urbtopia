@@ -10,9 +10,10 @@ interface ConversationViewProps {
     conversation: ConversationState;
     onBack: () => void;
     onSend: (body: string) => void;
+    onRefresh: () => Promise<void>;
 }
 
-export function ConversationView({conversation, onBack, onSend}: ConversationViewProps) {
+export function ConversationView({conversation, onBack, onSend, onRefresh}: ConversationViewProps) {
     return <div className="friends-conversation">
         <div className="friends-conversation-header">
             <ActionButton onClick={onBack}>{t('friends.conversation.back')}</ActionButton>
@@ -20,6 +21,6 @@ export function ConversationView({conversation, onBack, onSend}: ConversationVie
         </div>
         <MessageList messages={conversation.messages} loading={conversation.loading}/>
         {conversation.failure ? <Note>{friendsErrorMessage(conversation.failure.error, conversation.failure.retryAfterSeconds, 'message')}</Note> : null}
-        <MessageComposer sending={conversation.sending} onSend={onSend}/>
+        <MessageComposer sending={conversation.sending} onSend={onSend} onRefresh={onRefresh}/>
     </div>;
 }

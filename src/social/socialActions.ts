@@ -172,6 +172,10 @@ export function createSocialActions(
     closeConversation,
     sendMessage,
     pollConversation,
+    refreshConversation: async () => {
+      await pollConversation();
+      await poll();
+    },
     refresh,
     poll,
     setHandle,

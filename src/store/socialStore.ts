@@ -36,6 +36,7 @@ export interface SocialActions {
   closeConversation: () => Promise<void>;
   sendMessage: (body: string) => Promise<void>;
   pollConversation: () => Promise<void>;
+  refreshConversation: () => Promise<void>;
   createTradeOffer: (to: string, lot: TradeLine[], price: number) => Promise<TradeOutcome>;
   acceptTradeOffer: (offer: TradeOffer) => Promise<TradeOutcome>;
   declineTradeOffer: (offerId: string) => Promise<TradeOutcome>;

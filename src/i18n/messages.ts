@@ -570,6 +570,7 @@ export const MESSAGES = {
   'friends.conversation.placeholder': 'Write a message…',
   'friends.conversation.send': 'Send',
   'friends.conversation.sending': 'Sending…',
+  'friends.conversation.refresh': 'Refresh the conversation',
   'friends.error.message-invalid': 'A message has 1 to 500 characters.',
   'friends.error.not-friends': 'You are no longer friends with this player.',
   'friends.error.message-rate-limited': 'Too many messages. Try again in {N} s.',

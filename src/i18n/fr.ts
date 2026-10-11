@@ -572,6 +572,7 @@ export const FR: Record<MessageKey, string> = {
   'friends.conversation.placeholder': 'Écrire un message…',
   'friends.conversation.send': 'Envoyer',
   'friends.conversation.sending': 'Envoi…',
+  'friends.conversation.refresh': 'Actualiser la conversation',
   'friends.error.message-invalid': 'Un message compte 1 à 500 caractères.',
   'friends.error.not-friends': 'Vous n\'êtes plus ami avec ce joueur.',
   'friends.error.message-rate-limited': 'Trop de messages. Réessayez dans {N} s.',
