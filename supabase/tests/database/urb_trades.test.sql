@@ -23,6 +23,9 @@ $$;
 create function pg_temp.offer(n int) returns uuid language sql as $$
   select ('00000000-0000-0000-0005-' || lpad(n::text, 12, '0'))::uuid;
 $$;
+create function pg_temp.listed_offer(n int) returns jsonb language sql as $$
+  select o from jsonb_array_elements(public.urb_list_social() -> 'offers') o where o ->> 'id' = pg_temp.offer(n)::text;
+$$;
 
 select ok((select relrowsecurity from pg_class where oid = 'public.urb_trade_offers'::regclass), 'urb_trade_offers has row level security enabled');
 select is_empty(
@@ -86,8 +89,8 @@ select is((public.urb_claim_trade(pg_temp.offer(1), 'payment') ->> 'alreadyClaim
 -- Replays: accepting again is a no-op, claimed slots stay listed
 select pg_temp.act_as('00000000000b');
 select lives_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1)) $$, 'accepting an offer already accepted is a no-op');
-select is(public.urb_list_social() -> 'offers' -> 0 -> 'claimed', '["lot"]'::jsonb, 'a claimed Lot stays listed to its recipient');
-select is(public.urb_list_social() -> 'offers' -> 0 -> 'claimable', '[]'::jsonb, 'and is no longer claimable');
+select is(pg_temp.listed_offer(1) -> 'claimed', '["lot"]'::jsonb, 'a claimed Lot stays listed to its recipient');
+select is(pg_temp.listed_offer(1) -> 'claimable', '[]'::jsonb, 'and is no longer claimable');
 select pg_temp.act_as('00000000000a');
 select is((select o ->> 'id' from jsonb_array_elements(public.urb_list_social() -> 'offers') o where o ->> 'id' = pg_temp.offer(1)::text), pg_temp.offer(1)::text, 'a claimed payment stays listed to its sender');
 select throws_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(2)) $$, 'urb_trade_unavailable', 'the sender still cannot accept');
