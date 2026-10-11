@@ -2,7 +2,7 @@ import {
   CASINO_GAMES, COAL_CAPACITY, marinaCapacity, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
   FIXTURES, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
-  type StorageType, isShopType, sellableGoodsOf, shopTierOf,
+  type StorageType, type UtilityType, ECOLOGY, isShopType, sellableGoodsOf, shopTierOf,
 } from '../core';
 import { t } from '../i18n/t';
 import type { MessageKey } from '../i18n/messages';
@@ -38,6 +38,10 @@ function buildingFootprintFact(type: BuildingType, level: number): LevelFact {
   };
   return textFact('codex.fact.footprint', text, level);
 }
+
+const utilityOutputFact = (type: UtilityType, level: number) => numericFact('codex.fact.output', tier => UTILITY_CAPACITY[type][tier - 1] ?? 0, level);
+
+const profileFact = (profile: MessageKey, level: number) => textFact('codex.fact.profile', () => t(profile), level);
 
 const percent = (value: number) => `${Math.round(value * 100)}%`;
 const homeTier = (level: number) => HOME_TIERS[level - 1] ?? HOME_TIERS[0]!;
@@ -94,7 +98,16 @@ export function levelFactsOf(id: CodexId, level: number): LevelFact[] {
     numericFact('codex.fact.fieldCap', tier => farmTier({ type: id, tier }).fieldCap, level),
   ];
   if (id === 'storehouse' || id === 'materialDepot' || id === 'vault' || id === 'grainSilo') return storageFacts(id, level);
-  if (id === 'powerPlant' || id === 'waterTower') return [numericFact('codex.fact.output', tier => UTILITY_CAPACITY[id][tier - 1] ?? 0, level)];
+  if (id === 'waterTower') return [utilityOutputFact(id, level)];
+  if (id === 'powerPlant') return [utilityOutputFact(id, level), profileFact('codex.profile.wind', level)];
+  if (id === 'geothermalPlant') return [utilityOutputFact(id, level), profileFact('codex.profile.constant', level)];
+  if (id === 'hydroPlant') return [
+    utilityOutputFact(id, level),
+    profileFact('codex.profile.hydro', level),
+    textFact('codex.fact.siting', () => t('codex.siting.water'), level),
+    numericFact('codex.fact.flowTiles', () => ECOLOGY.hydroFullFlowTiles, level),
+  ];
+  if (id === 'solar') return [profileFact('codex.profile.solar', level)];
   if (id === 'coalPlant') return [numericFact('codex.fact.output', tier => COAL_CAPACITY[tier - 1] ?? 0, level)];
   if (id === 'marina') return [numericFact('codex.fact.boats', tier => marinaCapacity({ tier }), level)];
   if (isShopType(id)) return [
