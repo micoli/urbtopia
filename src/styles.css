@@ -414,10 +414,10 @@ button {
 
 @keyframes badge-bob {
   from {
-    margin-top: 0;
+    translate: 0 0;
   }
   to {
-    margin-top: -6px;
+    translate: 0 -6px;
   }
 }
 
@@ -483,7 +483,7 @@ button {
 
 .working-gear {
   display: block;
-  animation: gear-spin 2.4s linear infinite;
+  animation: gear-spin 2.4s steps(24) infinite;
 }
 
 .work-wheel {
@@ -492,7 +492,7 @@ button {
 }
 
 .work-wheel-turn {
-  animation: wheel-turn 6s linear infinite;
+  animation: wheel-turn 6s steps(60) infinite;
 }
 
 @keyframes wheel-turn {
@@ -517,7 +517,7 @@ button {
 }
 
 .work-wheel-segment--running .work-wheel-fill {
-  animation: wheel-pulse 0.9s ease-in-out infinite alternate;
+  animation: wheel-pulse 0.9s steps(9) infinite alternate;
 }
 
 @keyframes wheel-pulse {
@@ -536,6 +536,7 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .collect-badge,
   .working-gear,
   .work-wheel-turn,
   .work-wheel-segment--running .work-wheel-fill {
