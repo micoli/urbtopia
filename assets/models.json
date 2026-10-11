@@ -1955,6 +1955,11 @@
     "source": "kenney",
     "license": "CC0"
   },
+  "industrial-detail-tank-large": {
+    "file": "industrial/detail-tank-large",
+    "source": "kenney",
+    "license": "CC0"
+  },
   "industrial-shipping-container-a": {
     "file": "industrial/shipping-container-a",
     "source": "kenney",

@@ -323,6 +323,7 @@ export type ModelId =
   | 'industrial-chimney-large'
   | 'industrial-chimney-medium'
   | 'industrial-chimney-small'
+  | 'industrial-detail-tank-large'
   | 'industrial-shipping-container-a'
   | 'industrial-solar-panel-flat'
   | 'industrial-solar-panel-landscape'
