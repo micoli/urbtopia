@@ -1,7 +1,10 @@
 import { FARM_CROP_CAPACITY, STORAGE_TYPES, storageCapacity, storageUsed } from '../../core';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
+import { BuildLimitRow } from './BuildLimitRow';
 import { StorageRulesRow } from './StorageRulesRow';
+
+const LIMITED_TYPES = [...STORAGE_TYPES, 'farm', 'packhouse'] as const;
 
 const COMPARTMENTS = [
   ['panel.materials', 'materials'],
@@ -33,15 +36,30 @@ export function StorageRulesPage() {
           <thead>
             <tr>
               <th scope="col">{t('codex.storage.building')}</th>
-              <th scope="col">{t('codex.storage.copies')}</th>
               <th scope="col">{t('codex.storage.perCopy')}</th>
-              <th scope="col">{t('codex.storage.nextPrice')}</th>
-              <th scope="col">{t('codex.storage.nextUnlock')}</th>
             </tr>
           </thead>
           <tbody>
             {STORAGE_TYPES.map((type) => (
               <StorageRulesRow key={type} type={type} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <h4>{t('codex.storage.limits')}</h4>
+      <div className="codex-economy-scroll">
+        <table className="codex-economy">
+          <thead>
+            <tr>
+              <th scope="col">{t('codex.storage.building')}</th>
+              <th scope="col">{t('codex.storage.copies')}</th>
+              <th scope="col">{t('codex.storage.nextUnlock')}</th>
+              <th scope="col">{t('codex.storage.nextPrice')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {LIMITED_TYPES.map((type) => (
+              <BuildLimitRow key={type} type={type} />
             ))}
           </tbody>
         </table>

@@ -1,4 +1,4 @@
-import { citizenCount } from '../environment/ecology';
+import { ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
 import type { BuildingType, GameState } from '../engine/state';
 import { BUILDING_SPECS } from './buildingSpecs';
 
@@ -21,6 +21,10 @@ export function allowedCopies(state: GameState, type: BuildingType): number {
 
 export function nextCopyCitizens(state: GameState, type: BuildingType): number | null {
   return BUILDING_SPECS[type].extraCopyCitizens[ownedCopies(state, type) - 1] ?? null;
+}
+
+export function copyThresholds(type: BuildingType): number[] {
+  return [ECOLOGY_UNLOCKS[type] ?? 0, ...BUILDING_SPECS[type].extraCopyCitizens];
 }
 
 export function buildLimitReached(state: GameState, type: BuildingType): boolean {

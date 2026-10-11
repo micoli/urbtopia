@@ -31,5 +31,6 @@ describe('StorageRulesPage', () => {
     const html = render(state);
     expect(html).toContain(`0/${storageCapacity(state).materials}`);
     expect(html).toContain('1/3');
+    expect(html).toContain('🔒 500');
   });
 });

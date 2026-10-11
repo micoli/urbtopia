@@ -5,7 +5,7 @@ export type { DispatchResult } from './engine/dispatch';
 export type { Command, CommandError, ErrorKey } from './engine/commands';
 export type { GameEvent } from './engine/events';
 export { BUILDING_SPECS, footprintOf, footprintTiles, placementCost } from './buildings/buildingSpecs';
-export { allowedCopies, buildLimitReached, isRepeatable, maxCopies, nextCopyCitizens, nextCopyCost, ownedCopies } from './buildings/buildLimit';
+export { allowedCopies, buildLimitReached, copyThresholds, isRepeatable, maxCopies, nextCopyCitizens, nextCopyCost, ownedCopies } from './buildings/buildLimit';
 export type { BuildingSpec, Footprint } from './buildings/buildingSpecs';
 export { isInsideOwnedParcels, isRoadLike, occupiedTiles, roadExits, roundaboutTiles } from './map/occupancy';
 export { autoRotation, frontTiles, frontAccessModes, frontHasAccess, hasBrtOnlyAccess, placementIssue } from './map/placement';
