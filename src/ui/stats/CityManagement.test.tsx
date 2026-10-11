@@ -127,4 +127,16 @@ describe('city management panel', () => {
       expect(html).toContain('01:30');
     }
   });
+  it.each(['en', 'fr'] as const)('shows the Needs pyramid with its explanation table in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    context.state = { ...newGame({ seed: 'needs-panel', now: 0 }), buildings: [createBuilding(1, 'home', 55, 57, 0)] };
+    const html = renderToStaticMarkup(<CityManagement />);
+    expect(html).toContain('id="eco-needs"');
+    expect(html).toContain(language === 'fr' ? 'Besoins' : 'Needs');
+    expect(html).toContain(language === 'fr' ? 'Épanouissement' : 'Fulfilment');
+    expect(html).toContain(language === 'fr' ? 'Satisfait par' : 'Satisfied by');
+    expect(html).toContain(language === 'fr' ? 'non modélisé' : 'not modelled');
+    expect(html).not.toContain('NaN');
+    expect(html).not.toContain('undefined');
+  });
 });

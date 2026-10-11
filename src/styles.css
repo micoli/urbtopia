@@ -2119,3 +2119,41 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 [data-layout='B'] .venue-hint {
   left: calc(50% + 40px);
 }
+
+.eco-needs-pyramid { list-style: none; margin: 16px auto; padding: 0; display: grid; gap: 3px; max-width: 640px; }
+.eco-needs-pyramid li {
+  --edge: calc(7% / var(--width) * 100);
+  --level-width: calc(var(--width) * 1%);
+  display: grid; grid-template-columns: 1fr auto; grid-template-areas: 'name score' 'bar bar' 'fragile fragile'; align-items: center; gap: 4px 8px;
+  box-sizing: border-box; width: var(--level-width); min-height: 60px; margin-inline: auto;
+  padding: 8px calc(7% + 8px);
+  background: var(--eco-surface);
+  clip-path: polygon(var(--edge) 0, calc(100% - var(--edge)) 0, 100% 100%, 0 100%);
+}
+.eco-needs-pyramid li[data-level='fulfilment'] { --width: 44; }
+.eco-needs-pyramid li[data-level='esteem'] { --width: 58; }
+.eco-needs-pyramid li[data-level='belonging'] { --width: 72; }
+.eco-needs-pyramid li[data-level='safety'] { --width: 86; }
+.eco-needs-pyramid li[data-level='vital'] { --width: 100; }
+.eco-needs-pyramid li[data-fragile='true'] { background: linear-gradient(rgba(255, 216, 135, 0.14), rgba(255, 216, 135, 0.14)), var(--eco-surface); }
+.eco-needs-name { grid-area: name; font-size: 12px; font-weight: 600; }
+.eco-needs-bar { grid-area: bar; display: block; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
+.eco-needs-bar > span { display: block; height: 100%; }
+.eco-needs-pyramid strong { grid-area: score; text-align: right; font-size: 18px; font-variant-numeric: tabular-nums; }
+.eco-needs-pyramid small { grid-area: fragile; color: #ffd887; font-size: 11px; }
+.eco-needs-table { margin-top: 12px; }
+.eco-needs-table tbody + tbody { border-top: 2px solid var(--eco-border); }
+.eco-needs-table [data-modelled='false'] td { color: var(--eco-muted); font-weight: 400; }
+.eco-needs-total th, .eco-needs-total td { font-weight: 700; }
+.eco-needs-total h3 { margin: 0; font-size: 14px; }
+.eco-dashboard .eco-needs-table td:not(:first-child) { color: inherit; font-weight: 400; }
+.eco-dashboard .eco-needs-table td:nth-child(4) { font-weight: 700; }
+.eco-dashboard .eco-needs-table .eco-needs-total td { font-weight: 700; }
+.eco-needs-table td button { text-align: left; padding: 0; border: 0; background: none; color: inherit; text-decoration: underline; cursor: pointer; font: inherit; }
+@media (max-width: 600px) {
+  .eco-needs-pyramid li[data-level='fulfilment'] { --width: 62; }
+  .eco-needs-pyramid li[data-level='esteem'] { --width: 70; }
+  .eco-needs-pyramid li[data-level='belonging'] { --width: 80; }
+  .eco-needs-pyramid li[data-level='safety'] { --width: 90; }
+  .eco-needs-table { display: block; overflow-x: auto; }
+}
