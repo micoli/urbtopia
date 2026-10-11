@@ -11,8 +11,8 @@
     "fr": "Atelier de conditionnement"
   },
   "description": {
-    "en": "Packs Crop Materials into packed Goods, the only way to sell a Harvest. Only one Packhouse can be built; upgrades add speed, Slots and yield.",
-    "fr": "Conditionne les matières de récolte en produits emballés, seul moyen de vendre une récolte. Un seul conditionnement peut être construit ; ses améliorations augmentent vitesse, emplacements et rendement."
+    "en": "Packs Crop Materials into packed Goods, the only way to sell a Harvest. Several can be built as the city grows; upgrades add speed, Slots and yield.",
+    "fr": "Conditionne les matières de récolte en produits emballés, seul moyen de vendre une récolte. Plusieurs peuvent être construits à mesure que la ville grandit ; leurs améliorations augmentent vitesse, emplacements et rendement."
   },
   "tiers": [
     {

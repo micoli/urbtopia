@@ -58,3 +58,61 @@ describe('showTile', () => {
     expect(uiStore.getState().statsOpen).toBe(false);
   });
 });
+
+describe('social window', () => {
+  beforeEach(() => uiStore.setState({ socialOpen: false, statsOpen: false, socialTab: 'friends', flyout: null, settingsOpen: false, marketOpen: false }));
+
+  it('opens and closes, one modal at a time with the city management', () => {
+    uiStore.getState().toggleStats();
+    expect(uiStore.getState().statsOpen).toBe(true);
+    uiStore.getState().toggleSocial();
+    expect(uiStore.getState()).toMatchObject({ socialOpen: true, statsOpen: false });
+    uiStore.getState().toggleStats();
+    expect(uiStore.getState()).toMatchObject({ socialOpen: false, statsOpen: true });
+    uiStore.getState().toggleStats();
+    uiStore.getState().toggleSocial();
+    uiStore.getState().toggleSocial();
+    expect(uiStore.getState().socialOpen).toBe(false);
+  });
+
+  it('opens on the first tab when connected, and on Friends when not', async () => {
+    const { cloudStore } = await import('./cloudStore');
+    const { socialStore } = await import('./socialStore');
+    cloudStore.setState({ account: null });
+    socialStore.setState({ status: 'idle' });
+    uiStore.getState().toggleSocial();
+    expect(uiStore.getState().socialTab).toBe('friends');
+    uiStore.getState().toggleSocial();
+
+    cloudStore.setState({ account: { userId: 'u', email: null } });
+    uiStore.getState().toggleSocial();
+    expect(uiStore.getState().socialTab).toBe('friends');
+    uiStore.getState().toggleSocial();
+
+    cloudStore.setState({ account: { userId: 'u', email: 'me@example.com' } });
+    socialStore.setState({ status: 'no-handle' });
+    uiStore.getState().toggleSocial();
+    expect(uiStore.getState().socialTab).toBe('friends');
+    uiStore.getState().toggleSocial();
+
+    socialStore.setState({ status: 'ready' });
+    uiStore.getState().setSocialTab('friends');
+    uiStore.getState().toggleSocial();
+    expect(uiStore.getState().socialTab).toBe('exchanges');
+    cloudStore.setState({ account: null });
+    socialStore.setState({ status: 'idle' });
+  });
+
+  it('keeps the tab while the window stays open', () => {
+    uiStore.getState().toggleSocial();
+    uiStore.getState().setSocialTab('friends');
+    expect(uiStore.getState().socialTab).toBe('friends');
+    uiStore.getState().toggleSocial();
+  });
+
+  it('closes when the codex opens', () => {
+    uiStore.getState().toggleSocial();
+    uiStore.getState().openCodex();
+    expect(uiStore.getState().socialOpen).toBe(false);
+  });
+});

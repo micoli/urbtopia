@@ -35,7 +35,7 @@ describe('cloud status', () => {
 
 describe('cloud save panel', () => {
   const panel = (props: Partial<Parameters<typeof CloudSavePanel>[0]> = {}) =>
-    renderToStaticMarkup(<CloudSavePanel status={{ kind: 'pending' }} versions={null} account={null} emailLink={{ kind: 'idle' }} onSendLink={noop} onSignOut={noop} onSaveNow={noop} onShowVersions={noop} onRestore={noop} onDelete={noop} {...props} />);
+    renderToStaticMarkup(<CloudSavePanel status={{ kind: 'pending' }} versions={null} account={null} emailCode={{ kind: 'idle' }} codeActions={{ send: noop, verify: noop, cancel: noop }} onSignOut={noop} onSaveNow={noop} onShowVersions={noop} onRestore={noop} onDelete={noop} {...props} />);
 
   it('offers saving now, previous versions and deleting the cloud data', () => {
     const html = panel();
@@ -80,13 +80,13 @@ describe('save conflict dialog', () => {
 });
 
 describe('cloud account', () => {
-  const section = (account: Parameters<typeof CloudAccountSection>[0]['account'], emailLink: Parameters<typeof CloudAccountSection>[0]['emailLink'] = { kind: 'idle' }) =>
-    renderToStaticMarkup(<CloudAccountSection account={account} emailLink={emailLink} onSendLink={noop} onSignOut={noop} />);
+  const section = (account: Parameters<typeof CloudAccountSection>[0]['account'], emailCode: Parameters<typeof CloudAccountSection>[0]['emailCode'] = { kind: 'idle' }) =>
+    renderToStaticMarkup(<CloudAccountSection account={account} emailCode={emailCode} codeActions={{ send: noop, verify: noop, cancel: noop }} onSignOut={noop} />);
 
   it('asks for an email while the account is anonymous', () => {
     const html = section({ userId: 'u', email: null });
     expect(html).toContain('type="email"');
-    expect(html).toContain(t('cloud.account.sendLink'));
+    expect(html).toContain(t('cloud.account.sendCode'));
     expect(html).toContain(t('cloud.account.anonymous'));
   });
 
@@ -97,9 +97,18 @@ describe('cloud account', () => {
     expect(html).not.toContain('type="email"');
   });
 
-  it('confirms that the link was sent and reports failures', () => {
+  it('asks for the code once it was sent, and reports a wrong code', () => {
     const anonymous = { userId: 'u', email: null };
-    expect(section(anonymous, { kind: 'sent', email: 'me@example.com' })).toContain(t('cloud.account.sent'));
+    const sent = section(anonymous, { kind: 'sent', email: 'me@example.com' });
+    expect(sent).toContain(t('cloud.account.codeSent').replace('{E}', 'me@example.com'));
+    expect(sent).toContain('autoComplete="one-time-code"');
+    expect(sent).not.toContain('type="email"');
+    expect(section(anonymous, { kind: 'sent', email: 'me@example.com', error: 'invalid-code' })).toContain(t('cloud.account.invalidCode'));
+    expect(section(anonymous, { kind: 'verifying', email: 'me@example.com' })).toContain(t('cloud.account.verifying'));
+  });
+
+  it('reports send failures', () => {
+    const anonymous = { userId: 'u', email: null };
     expect(section(anonymous, { kind: 'error', reason: 'invalid-email' })).toContain(t('cloud.account.invalidEmail'));
     expect(section(anonymous, { kind: 'error', reason: 'rate-limited' })).toContain(t('cloud.account.rateLimited'));
     expect(section(anonymous, { kind: 'sending' })).toContain(t('cloud.account.sending'));

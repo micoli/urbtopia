@@ -10,8 +10,8 @@
     "fr": "Entrepôt"
   },
   "description": {
-    "en": "Stores Materials and Goods. Only one Storehouse can be built; upgrades increase its storage capacity.",
-    "fr": "Stocke les matériaux et les produits. Un seul entrepôt peut être construit ; ses améliorations augmentent sa capacité."
+    "en": "Stores Materials and Goods. Several can be built as the city grows; upgrades increase its storage capacity.",
+    "fr": "Stocke les matériaux et les produits. Plusieurs peuvent être construits à mesure que la ville grandit ; leurs améliorations augmentent sa capacité."
   },
   "tiers": [
     {

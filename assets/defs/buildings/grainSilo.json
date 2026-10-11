@@ -10,8 +10,8 @@
     "fr": "Silo agricole"
   },
   "description": {
-    "en": "Adds storage capacity for Crops, kept apart from other Materials. The Farm provides a small starting capacity. Only one Grain silo can be built, once you have a Farm; upgrades increase this capacity.",
-    "fr": "Ajoute de la capacité de stockage pour les récoltes, séparée des autres matériaux. La ferme fournit une petite capacité de départ. Un seul silo agricole peut être construit, une fois la ferme posée ; ses améliorations augmentent cette capacité."
+    "en": "Adds storage capacity for Crops, kept apart from other Materials. The Farm provides a small starting capacity. It needs a Farm, and several can be built as the city grows; upgrades increase this capacity.",
+    "fr": "Ajoute de la capacité de stockage pour les récoltes, séparée des autres matériaux. La ferme fournit une petite capacité de départ. Il nécessite une ferme, et plusieurs peuvent être construits à mesure que la ville grandit ; leurs améliorations augmentent cette capacité."
   },
   "tiers": [
     {

@@ -1,3 +1,4 @@
+import type { TradeLedgerEntry } from '../trade/types';
 import type { FleetVehicleId } from '../transit/transitVehicleTypes.generated';
 import type { BuildingId } from '../buildings/buildingTypes.generated';
 import type { Direction } from '../map/geometry';
@@ -182,4 +183,5 @@ export interface GameState {
   roads: RoadTile[];
   roundabouts: Coord[];
   tutorial: TutorialStep | null;
+  tradeLedger: TradeLedgerEntry[];
 }

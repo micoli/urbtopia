@@ -3,12 +3,16 @@ import { footprintTiles, nextFront, type Coord, type CropId, type Rotation } fro
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
 import { confirmTool, evaluateTool, extendBrush, isPathTool, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
+import { defaultSocialTab } from '../social/defaultSocialTab';
+import { cloudStore } from './cloudStore';
 import { gameStore } from './gameStore';
 import { sceneHandle } from './sceneHandle';
+import { socialStore } from './socialStore';
 import { toastStore } from './toastStore';
 import type { CodexId } from '../codex/catalog';
 
 export type Flyout = 'build' | 'roads' | null;
+export type SocialTab = 'friends' | 'exchanges';
 
 export interface UiStore {
   tool: Tool | null;
@@ -21,6 +25,13 @@ export interface UiStore {
   flyout: Flyout;
   statsOpen: boolean;
   toggleStats: () => void;
+  socialOpen: boolean;
+  socialTab: SocialTab;
+  toggleSocial: () => void;
+  setSocialTab: (tab: SocialTab) => void;
+  tradeWith: string | null;
+  startTrade: (userId: string) => void;
+  clearTradeWith: () => void;
   showTile: (tile: Coord) => void;
   marketOpen: boolean;
   settingsOpen: boolean;
@@ -103,8 +114,20 @@ export const uiStore = createStore<UiStore>((set, get) => {
     statsOpen: false,
     toggleStats: () => {
       if (!get().statsOpen) get().cancelTool();
-      set({ statsOpen: !get().statsOpen, flyout: null, settingsOpen: false, marketOpen: false });
+      set({ statsOpen: !get().statsOpen, socialOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
     },
+    socialOpen: false,
+    socialTab: 'friends',
+    toggleSocial: () => {
+      const opening = !get().socialOpen;
+      if (opening) get().cancelTool();
+      const landing = opening ? { socialTab: defaultSocialTab({ hasEmail: Boolean(cloudStore.getState().account?.email), status: socialStore.getState().status }) } : {};
+      set({ ...landing, socialOpen: opening, statsOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
+    },
+    setSocialTab: (socialTab) => set({ socialTab }),
+    tradeWith: null,
+    startTrade: (userId) => set({ tradeWith: userId, socialTab: 'exchanges' }),
+    clearTradeWith: () => set({ tradeWith: null }),
     marketOpen: false,
     settingsOpen: false,
     codexOpen: false,
@@ -114,7 +137,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     codexShowDetail: false,
     openCodex: (entry) => {
       get().cancelTool();
-      set({ codexOpen: true, codexFromSettings: get().settingsOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined, settingsOpen: false, marketOpen: false, statsOpen: false, flyout: null, selectedBuildingId: null });
+      set({ codexOpen: true, codexFromSettings: get().settingsOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined, settingsOpen: false, marketOpen: false, statsOpen: false, socialOpen: false, flyout: null, selectedBuildingId: null });
     },
     closeCodex: () => set({ codexOpen: false, settingsOpen: get().codexFromSettings, flyout: get().codexFromFlyout, codexFromSettings: false, codexFromFlyout: null }),
     pendingSaleId: null,

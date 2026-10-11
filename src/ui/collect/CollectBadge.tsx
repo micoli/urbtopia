@@ -7,6 +7,7 @@ import { useProjectedPosition } from '../common/useProjectedPosition';
 import { ItemThumbnail } from './ItemThumbnail';
 import { registerCollector, startSweep } from './collectSweep';
 import { radialBadgeSize, radialOffsets } from './radialLayout';
+import {UrbsAmount} from "../common/UrbsAmount.tsx";
 
 const BADGE_HEIGHT = 1.8;
 const MAX_PREVIEWS = 6;
@@ -14,22 +15,22 @@ const MAX_PREVIEWS = 6;
 interface CollectBadgeProps {
   worldX: number;
   worldZ: number;
-  label: string;
+  label: string|number;
   command: Command;
   models?: readonly string[];
 }
-export function collectBadgeLabel(building: Building): string | null {
+export function collectBadgeLabel(building: Building): string | number | null {
   if (isShopType(building.type)) {
     const earned = building.stacks.reduce((total, stack) => total + stack.earned, 0);
-    return earned > 0 ? `+${earned}` : null;
+    return earned > 0 ? earned : null;
   }
   if (isHomeType(building.type)) {
     const due = taxDue(building);
-    return due > 0 ? `+${due}` : null;
+    return due > 0 ? due : null;
   }
   if (isVenue(building)) {
     const due = takingsDue(building.venue);
-    return due > 0 ? `+${due}` : null;
+    return due > 0 ? due : null;
   }
   const ready = building.queue.filter((entry) => entry.done).length;
   return ready > 0 ? `✓ ${ready}` : null;
@@ -71,7 +72,16 @@ export function CollectBadge({ worldX, worldZ, label, command, models = [] }: Co
         if (event.detail === 0) collect();
       }}
     >
-      {showPreview ? models.map((model, index) => <ItemThumbnail key={index} model={model} offset={offsets[index]!} />) : label}
+      {showPreview
+          ? models.map((model, index) => <ItemThumbnail
+              key={index}
+              model={model}
+              offset={offsets[index]!}/>)
+          : (typeof label === "number"
+                  ? <UrbsAmount value={label}/>
+                  : label
+          )
+      }
     </button>
   );
 }

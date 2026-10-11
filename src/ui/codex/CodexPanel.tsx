@@ -60,7 +60,7 @@ export function CodexPanel() {
   };
 
   return (
-    <dialog className="codex-dialog" ref={dialog} role="dialog" aria-labelledby={heading} aria-modal="true" onCancel={event => { event.preventDefault(); close(); }} onKeyDown={event => event.stopPropagation()}>
+    <dialog className="codex-dialog" ref={dialog} role="dialog" aria-labelledby={heading} aria-modal="true" onCancel={event => { event.preventDefault(); close(); }} onClick={event => { if (event.target === event.currentTarget) close(); }} onKeyDown={event => event.stopPropagation()}>
       <header className="codex-header">
         <h2 id={heading}>{t('codex.title')}</h2>
         <div className="codex-header-actions">

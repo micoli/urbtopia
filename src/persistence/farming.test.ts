@@ -5,9 +5,9 @@ import { CURRENT_VERSION, parseEnvelope, serializeEnvelope } from './envelope';
 
 describe('farming save compatibility', () => {
   it('migrates a frozen version-8 city to version 9 with an empty seed stock and a congestion Adaptation period', () => {
-    expect(CURRENT_VERSION).toBe(13);
+    expect(CURRENT_VERSION).toBe(14);
     const loaded = parseEnvelope(JSON.stringify(saveV8));
-    expect(loaded).toEqual({ ok: true, state: { ...saveV8.state, seedStock: {}, fields: [], adaptationUntil: Math.max(saveV8.state.adaptationUntil, saveV8.state.lastSeen + 24 * 3_600_000) }, savedAt: saveV8.savedAt });
+    expect(loaded).toEqual({ ok: true, state: { ...saveV8.state, seedStock: {}, fields: [], tradeLedger: [], adaptationUntil: Math.max(saveV8.state.adaptationUntil, saveV8.state.lastSeen + 24 * 3_600_000) }, savedAt: saveV8.savedAt });
   });
 
   it('round-trips a seed stock', () => {

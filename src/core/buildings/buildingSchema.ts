@@ -11,6 +11,7 @@ export const BUILDING_ID_PATTERN = /^[a-z][A-Za-z0-9-]*$/;
 
 const filled = z.string().regex(/\S/, 'must not be blank');
 const count = z.int().min(0);
+const amount = z.number().min(0);
 const localizedText = z.strictObject({ en: filled, fr: filled });
 
 const meta = {
@@ -47,8 +48,11 @@ const standardBuilding = z.strictObject({ kind: z.literal('standard'), ...placed
 // A sport venue's only effect is a Well-being radius.
 const sportBuilding = z.strictObject({ kind: z.literal('sport'), ...placed, radius: z.int().min(1), wellbeingBonus: count });
 
-// Section, footprint, cost, unlock and benefits come from the nature family.
-const natureBuilding = z.strictObject({ kind: z.literal('nature'), ...common, family: z.enum(Object.keys(NATURE_FAMILIES) as [NatureFamily, ...NatureFamily[]]) });
+const greenTierShape = { radius: z.int().min(1), cooling: amount, biodiversity: amount, wellbeing: amount, scale: z.number().positive() };
+const greenTierRequired = ['radius', 'cooling', 'biodiversity', 'wellbeing'] as const;
+
+// Section, footprint, cost, unlock and benefits come from the nature family; Tiers, when given, replace the benefits and set the size drawn.
+const natureBuilding = z.strictObject({ kind: z.literal('nature'), ...common, family: z.enum(Object.keys(NATURE_FAMILIES) as [NatureFamily, ...NatureFamily[]]), tiers: tiersOf(greenTierShape, greenTierRequired).optional() });
 
 const homeLook = { model: filled, footprint: pairSchema };
 
@@ -98,6 +102,14 @@ const utilityBuilding = z.strictObject({
 });
 
 const positive = z.number().positive();
+
+// A Tree or Park: each Tier sets how far it reaches, how much cooling, biodiversity and Well-being it gives, and how big its model is drawn (1 when unset).
+const greenBuilding = z.strictObject({
+  kind: z.literal('green'),
+  ...identity,
+  ...sited,
+  tiers: tiersOf({ ...homeLook, ...greenTierShape }, ['model', 'footprint', ...greenTierRequired]),
+});
 
 // A Solar installation's power at full daylight.
 const solarBuilding = z.strictObject({ kind: z.literal('solar'), ...placed, output: positive });
@@ -187,7 +199,7 @@ const venueBuilding = z.strictObject({
 });
 
 export const buildingSchema = z
-  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, shopBuilding, venueBuilding, marinaBuilding, transitStopBuilding])
+  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, greenBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, shopBuilding, venueBuilding, marinaBuilding, transitStopBuilding])
   .refine(building => building.kind === 'nature' || !building.accessModes || building.requiresRoad, { message: 'accessModes needs requiresRoad', path: ['accessModes'] })
   .meta({ title: 'Building', description: 'A building of Urbtopia, one file per building id in assets/defs/buildings.' });
 

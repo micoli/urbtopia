@@ -1,9 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "green",
   "section": "build.greenSpaces",
-  "model": "suburban-tree-small",
-  "footprint": [1, 1],
   "cost": 40,
   "unlockCitizens": 6,
   "requiresRoad": false,
@@ -14,5 +12,55 @@
   "description": {
     "en": "A small green space that improves nearby cooling, biodiversity and Citizen well-being.",
     "fr": "Un petit espace vert qui améliore la fraîcheur, la biodiversité et le bien-être des habitants à proximité."
-  }
+  },
+  "tiers": [
+    {
+      "model": "suburban-tree-small",
+      "footprint": [1, 1],
+      "radius": 4,
+      "cooling": 1,
+      "biodiversity": 1,
+      "wellbeing": 1
+    },
+    {
+      "radius": 4,
+      "cooling": 1.5,
+      "biodiversity": 1.5,
+      "wellbeing": 1.5,
+      "upgradeCost": {
+        "urbs": 60
+      },
+      "scale": 1.1
+    },
+    {
+      "radius": 5,
+      "cooling": 2,
+      "biodiversity": 2,
+      "wellbeing": 2,
+      "upgradeCost": {
+        "urbs": 90
+      },
+      "scale": 1.2
+    },
+    {
+      "radius": 5,
+      "cooling": 2.5,
+      "biodiversity": 2.5,
+      "wellbeing": 2.5,
+      "upgradeCost": {
+        "urbs": 135
+      },
+      "scale": 1.3
+    },
+    {
+      "radius": 6,
+      "cooling": 3,
+      "biodiversity": 3,
+      "wellbeing": 3,
+      "upgradeCost": {
+        "urbs": 200
+      },
+      "scale": 1.4
+    }
+  ]
 }

@@ -1,0 +1,26 @@
+import { HANDLE_CHANGE_DELAY_DAYS } from '../../../social/limits';
+import { useCloud, useSocial, useUi } from '../../common/hooks';
+import { FriendsPanel } from './FriendsPanel';
+
+const DAY_MS = 86_400_000;
+const noop = async () => {};
+const NO_ACTIONS = {setHandle: noop, setFindable: noop, sendRequest: noop, accept: noop, refuse: noop, remove: noop, block: noop, unblock: noop, openConversation: noop, closeConversation: noop, sendMessage: noop, refreshConversation: noop};
+
+export function FriendsTab() {
+    const account = useCloud(s => s.account);
+    const emailCode = useCloud(s => s.emailCode);
+    const cloudActions = useCloud(s => s.actions);
+    const status = useSocial(s => s.status);
+    const profile = useSocial(s => s.profile);
+    const handleForm = useSocial(s => s.handleForm);
+    const search = useSocial(s => s.search);
+    const actionFailure = useSocial(s => s.actionFailure);
+    const conversation = useSocial(s => s.conversation);
+    const actions = useSocial(s => s.actions);
+    const startTrade = useUi(s => s.startTrade);
+    return <FriendsPanel account={account} emailCode={emailCode} status={status} profile={profile} handleForm={handleForm}
+                      now={Date.now()} changeDelayMs={HANDLE_CHANGE_DELAY_DAYS * DAY_MS}
+                      codeActions={{send: email => void cloudActions?.sendEmailCode(email), verify: code => void cloudActions?.verifyEmailCode(code), cancel: () => cloudActions?.cancelEmailCode()}}
+                      onTrade={startTrade}
+                      search={search} actionFailure={actionFailure} conversation={conversation} actions={actions ?? NO_ACTIONS}/>;
+}

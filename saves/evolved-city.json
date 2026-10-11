@@ -1,6 +1,6 @@
 {
   "format": "urbtopia-save",
-  "version": 13,
+  "version": 14,
   "savedAt": 1790000000000,
   "state": {
     "brtRoads": [],
@@ -1342,6 +1342,7 @@
         "y": 63
       }
     ],
-    "tutorial": null
+    "tutorial": null,
+    "tradeLedger": []
   }
 }

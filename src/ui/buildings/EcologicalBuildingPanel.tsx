@@ -1,6 +1,7 @@
 import {
     ECOLOGY,
     greenProfileOf,
+    maxTierOf,
     energyStats,
     greenSpaceCoverage,
     homePower,
@@ -18,7 +19,7 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
     const toggleStats = useUi(s => s.toggleStats);
     const energy = energyStats(state);
     const transport = transportStats(state);
-    const greenProfile = greenProfileOf(building.type);
+    const greenProfile = greenProfileOf(building.type, building.tier);
     const coveredCitizens = greenProfile ? greenSpaceCoverage(state, building) : 0;
     return <DrawerPanel>
         {building.type === 'battery' && <>
@@ -47,6 +48,8 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
         >
             {t('eco.greenHelp')}
         </DrawerPanel.LabelValue>}
+
+        {greenProfile && maxTierOf(building.type) > 1 && <DrawerPanel.Upgrade building={building} />}
 
         {['busStop', 'brtStation', 'railStation'].includes(building.type) && <DrawerPanel.LabelValue
             label={`${t('eco.stop')} #${building.id} · (${building.x}, ${building.y})`}

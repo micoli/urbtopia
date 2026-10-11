@@ -66,7 +66,7 @@ function isVegetation(type: BuildingType): boolean {
 }
 
 export function greenSpaceCoverage(state: GameState, space: Building): number {
-  const profile = greenProfileOf(space.type);
+  const profile = greenProfileOf(space.type, space.tier);
   if (!profile) return 0;
   const habitat = natureModelOf(space.type)?.[2] === 'habitat';
   if (habitat && !state.buildings.some(b => isVegetation(b.type) && distance(space, b) <= 2)) return 0;
@@ -81,7 +81,7 @@ export function greenBenefits(state: GameState, home: Building) {
   const vegetation = spaces.filter(b => isVegetation(b.type));
   const weight = { cooling: 0, biodiversity: 0, wellbeing: 0 };
   for (const b of spaces) {
-    const profile = greenProfileOf(b.type)!;
+    const profile = greenProfileOf(b.type, b.tier)!;
     if (distance(b, home) > profile.radius) continue;
     const habitat = natureModelOf(b.type)?.[2] === 'habitat';
     if (habitat && !vegetation.some(other => distance(b, other) <= 2)) continue;

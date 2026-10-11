@@ -18,6 +18,7 @@ import { PedestrianLayer } from './PedestrianLayer';
 import { BoatLayer } from './BoatLayer';
 import { BridgeLayer } from './BridgeLayer';
 import { TrafficLayer } from './TrafficLayer';
+import { renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } from './renderBudget';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
 const GROUND_SIZE = MAP_TILES * 3;
@@ -83,14 +84,17 @@ export class GameScene {
   private syncing = false;
   private frameHandle = 0;
   private paused = false;
+  private hidden = document.hidden;
+  private stopWatchingHidden: () => void;
   private markReady: () => void = () => {};
   readonly ready = new Promise<void>((resolve) => (this.markReady = resolve));
   private lastFrame = performance.now();
   private resizeObserver: ResizeObserver;
+  private canvasRect!: DOMRect;
 
   constructor(private canvas: HTMLCanvasElement) {
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: wantsAntialias(), powerPreference: 'low-power' });
+    this.renderer.setPixelRatio(renderPixelRatio());
     this.renderer.toneMapping = THREE.NeutralToneMapping;
     this.renderer.toneMappingExposure = 0.9;
     this.scene.background = new THREE.Color(0x9ec5e8);
@@ -124,7 +128,11 @@ export class GameScene {
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
     this.resize();
-    this.frameHandle = requestAnimationFrame(this.frame);
+    this.stopWatchingHidden = watchPageHidden((hidden) => {
+      this.hidden = hidden;
+      this.restartLoop();
+    });
+    this.restartLoop();
   }
 
   get camera(): CameraController {
@@ -138,7 +146,12 @@ export class GameScene {
   setPaused(paused: boolean): void {
     if (this.paused === paused) return;
     this.paused = paused;
-    if (paused) return cancelAnimationFrame(this.frameHandle);
+    this.restartLoop();
+  }
+
+  private restartLoop(): void {
+    cancelAnimationFrame(this.frameHandle);
+    if (this.paused || this.hidden) return;
     this.lastFrame = performance.now();
     this.frameHandle = requestAnimationFrame(this.frame);
   }
@@ -175,7 +188,7 @@ export class GameScene {
 
   project(x: number, y: number, z: number): { x: number; y: number; visible: boolean } {
     const point = new THREE.Vector3(x, y, z).project(this.controller.camera);
-    const rect = this.canvas.getBoundingClientRect();
+    const rect = this.canvasRect;
     return {
       x: ((point.x + 1) / 2) * rect.width + rect.left,
       y: ((1 - point.y) / 2) * rect.height + rect.top,
@@ -202,6 +215,7 @@ export class GameScene {
 
   dispose(): void {
     cancelAnimationFrame(this.frameHandle);
+    this.stopWatchingHidden();
     this.resizeObserver.disconnect();
     this.controller.dispose();
     this.ghostLayer.dispose();
@@ -315,6 +329,7 @@ export class GameScene {
   }
 
   private resize(): void {
+    this.canvasRect = this.canvas.getBoundingClientRect();
     this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
     this.controller.resize();
   }
@@ -328,7 +343,12 @@ export class GameScene {
   }
 
   private frame = (now: number): void => {
-    const delta = Math.max(0, Math.min(0.1, (now - this.lastFrame) / 1000));
+    const elapsed = now - this.lastFrame;
+    if (!shouldRenderFrame(elapsed)) {
+      this.frameHandle = requestAnimationFrame(this.frame);
+      return;
+    }
+    const delta = Math.max(0, Math.min(0.1, elapsed / 1000));
     this.lastFrame = now;
     this.controller.update(delta);
     this.notifyCenterTile();

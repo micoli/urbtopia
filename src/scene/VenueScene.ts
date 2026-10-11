@@ -7,6 +7,7 @@ import { venueCrowdModelsOf } from './venueCrowdModels';
 import { VenueCrowdLayer } from './VenueCrowdLayer';
 import type { Figure } from './venueCrowd';
 import { clampPan, nextZoom } from './venueZoom';
+import { renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } from './renderBudget';
 
 const TAP_DISTANCE = 6;
 const SELECTION_COLOR = 0x4da3ff;
@@ -41,6 +42,8 @@ export class VenueScene {
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   private resizeObserver: ResizeObserver;
   private frameHandle = 0;
+  private hidden = document.hidden;
+  private stopWatchingHidden: () => void;
   private dirty = true;
   private pointerDown: { x: number; y: number; ground: THREE.Vector3 | null } | null = null;
   private dragged = false;
@@ -59,8 +62,8 @@ export class VenueScene {
     this.shellModels = VENUE_SHELL_MODELS[venueType];
     this.cornerPlacement = VENUE_CORNER_PLACEMENT[venueType];
     this.crowd = new VenueCrowdLayer(this.library, size, entranceCell(tier), seed, venueType);
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: wantsAntialias(), powerPreference: 'low-power' });
+    this.renderer.setPixelRatio(renderPixelRatio());
     this.renderer.toneMapping = THREE.NeutralToneMapping;
     this.renderer.toneMappingExposure = 0.9;
     this.scene.background = new THREE.Color(0x232838);
@@ -83,6 +86,14 @@ export class VenueScene {
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
     this.resize();
+    this.stopWatchingHidden = watchPageHidden((hidden) => {
+      this.hidden = hidden;
+      cancelAnimationFrame(this.frameHandle);
+      if (hidden) return;
+      this.lastFrame = performance.now();
+      this.dirty = true;
+      this.frameHandle = requestAnimationFrame(this.frame);
+    });
     this.frameHandle = requestAnimationFrame(this.frame);
   }
 
@@ -141,6 +152,7 @@ export class VenueScene {
   dispose(): void {
     this.disposed = true;
     cancelAnimationFrame(this.frameHandle);
+    this.stopWatchingHidden();
     this.resizeObserver.disconnect();
     this.canvas.removeEventListener('pointerdown', this.handlePointerDown);
     this.canvas.removeEventListener('pointerup', this.handlePointerUp);
@@ -302,7 +314,12 @@ export class VenueScene {
   }
 
   private frame = (now: number): void => {
-    const delta = Math.min(0.1, Math.max(0, (now - this.lastFrame) / 1000));
+    const elapsed = now - this.lastFrame;
+    if (!shouldRenderFrame(elapsed)) {
+      this.frameHandle = requestAnimationFrame(this.frame);
+      return;
+    }
+    const delta = Math.min(0.1, Math.max(0, elapsed / 1000));
     this.lastFrame = now;
     this.crowd.update(delta, this.camera);
     if (this.crowd.active) this.dirty = true;

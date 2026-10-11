@@ -15,7 +15,7 @@ function envelopeAt(savedAt: number): string {
   return serializeEnvelope(game, savedAt);
 }
 
-function setup(client: FakeCloudSaveClient, clock: { now: number }) {
+function setup(client: FakeCloudSaveClient, clock: { now: number }, keepLocal = false) {
   const store = new MemorySaveStore();
   const log = { adopted: [] as string[], previousKept: 0, statuses: [] as CloudStatus[], canPush: true };
   const sync = new CloudSync({
@@ -33,6 +33,7 @@ function setup(client: FakeCloudSaveClient, clock: { now: number }) {
     },
     canPush: () => log.canPush,
     onStatus: (status) => log.statuses.push(status),
+    keepLocal,
   });
   const edit = (savedAt: number) => {
     store.put(SAVE_KEY, envelopeAt(savedAt));
@@ -212,6 +213,28 @@ describe('CloudSync across devices', () => {
     clock.now += 10 * MINUTE;
     await b.sync.tick();
     expect(client.pushes.filter((push) => push.envelope === envelopeAt(clock.now - 10 * MINUTE + 1))).toHaveLength(1);
+  });
+
+  it('keeps the local city without asking when keep-local is requested', async () => {
+    const clock = { now: T0 };
+    const client = new FakeCloudSaveClient(() => clock.now);
+    const a = setup(client, clock);
+    const b = setup(client, clock, true);
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    await b.sync.start();
+
+    clock.now += 10 * MINUTE;
+    a.edit(clock.now);
+    b.edit(clock.now + 1);
+    await a.sync.tick();
+
+    await b.sync.pushNow();
+    expect(b.log.statuses.some((status) => status.kind === 'conflict')).toBe(false);
+    expect(b.sync.current.kind).toBe('synced');
+    expect(client.rows[client.rows.length - 1]?.envelope).toBe(envelopeAt(clock.now + 1));
+    expect(client.rows).toHaveLength(2);
   });
 
   it('keeps the local city and the cloud city as a previous version when local wins', async () => {

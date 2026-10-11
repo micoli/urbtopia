@@ -341,6 +341,62 @@
             "decoration",
             "palm"
           ]
+        },
+        "tiers": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "radius": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "cooling": {
+                "type": "number",
+                "minimum": 0
+              },
+              "biodiversity": {
+                "type": "number",
+                "minimum": 0
+              },
+              "wellbeing": {
+                "type": "number",
+                "minimum": 0
+              },
+              "scale": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "upgradeCost": {
+                "type": "object",
+                "properties": {
+                  "urbs": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "goods": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string"
+                    },
+                    "additionalProperties": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                "required": [
+                  "urbs"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "required": [
@@ -1293,6 +1349,192 @@
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 9007199254740991
+              },
+              "upgradeCost": {
+                "type": "object",
+                "properties": {
+                  "urbs": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "goods": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string"
+                    },
+                    "additionalProperties": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                "required": [
+                  "urbs"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "kind",
+        "name",
+        "section",
+        "cost",
+        "unlockCitizens",
+        "requiresRoad",
+        "tiers"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "green"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "retired": {
+          "type": "boolean",
+          "const": true
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "description": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "section": {
+          "type": "string",
+          "enum": [
+            "build.housing",
+            "build.production",
+            "build.shops",
+            "build.storage",
+            "build.utilities",
+            "build.transport",
+            "build.water",
+            "build.publicFacilities",
+            "build.leisure",
+            "build.sport",
+            "build.decoration",
+            "build.greenSpaces"
+          ]
+        },
+        "cost": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "unlockCitizens": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "requiresRoad": {
+          "type": "boolean"
+        },
+        "accessModes": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "road",
+              "brt"
+            ]
+          }
+        },
+        "initialSlots": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "tiers": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "model": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "footprint": {
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                ],
+                "items": false,
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "radius": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "cooling": {
+                "type": "number",
+                "minimum": 0
+              },
+              "biodiversity": {
+                "type": "number",
+                "minimum": 0
+              },
+              "wellbeing": {
+                "type": "number",
+                "minimum": 0
+              },
+              "scale": {
+                "type": "number",
+                "exclusiveMinimum": 0
               },
               "upgradeCost": {
                 "type": "object",

@@ -33,5 +33,5 @@ export const CROPS = Object.fromEntries(
 ) as Record<CropId, CropSpec>;
 
 export function isCrop(item: string): item is CropId {
-  return item in CROPS;
+  return Object.hasOwn(CROPS, item);
 }

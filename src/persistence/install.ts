@@ -3,6 +3,8 @@ import { dialogStore } from '../store/dialogStore';
 import { bootResult, gameStore } from '../store/gameStore';
 import { readOnlyStore } from '../store/readOnlyStore';
 import { createAutosave } from './autosave';
+import { saveNowHandle } from './saveNow';
+import { installSocial } from '../social/installSocial';
 import { installCloudSync } from './cloud/installCloud';
 import { saveSession, saveStore } from './instance';
 import { readMeta, shouldRemindExport } from './meta';
@@ -36,6 +38,8 @@ export function installPersistence(): () => void {
     },
   });
 
+  saveNowHandle.current = autosave.flush;
+
   const ownership = new TabOwnership(saveStore, newToken(), {
     onLost: () => readOnlyStore.getState().set(true),
     onRegained: () => {
@@ -68,9 +72,12 @@ export function installPersistence(): () => void {
   if (shouldRemindExport({ ...meta, now, lastSavedAt: gameStore.getState().state.lastSeen })) dialogStore.getState().setExportReminder(true);
 
   const disposeCloud = installCloudSync();
+  const disposeSocial = installSocial();
 
   return () => {
+    saveNowHandle.current = () => {};
     disposeCloud();
+    disposeSocial();
     unsubscribe();
     document.removeEventListener('visibilitychange', onVisibility);
     window.removeEventListener('pagehide', autosave.flush);

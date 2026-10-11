@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TutorialStep, isHomeType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -35,7 +35,7 @@ function isQueueEntry(value: unknown): boolean {
 function isStack(value: unknown): boolean {
   return (
     isRecord(value) &&
-    (value.good === null || (typeof value.good === 'string' && value.good in GOODS)) &&
+    (value.good === null || (typeof value.good === 'string' && Object.hasOwn(GOODS, value.good))) &&
     isInt(value.stock, 0) &&
     (value.nextSaleAt === null || isNumber(value.nextSaleAt)) &&
     isNonNegative(value.earned)
@@ -54,7 +54,7 @@ function isVenueData(value: unknown): boolean {
     (value.cooldownUntil === undefined || isNumber(value.cooldownUntil)) &&
     (value.event === undefined || (isRecord(value.event) && isNumber(value.event.startsAt) && isNumber(value.event.endsAt) && value.event.endsAt > value.event.startsAt && isNonNegative(value.event.budget))) &&
     (value.staff === undefined || (isRecord(value.staff) && Object.entries(value.staff).every(([role, count]) => STAFF_ROLES.includes(role as never) && isInt(count, 0, 20)))) &&
-    isArrayOf(value.fixtures, fixture => isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, (value.nextFixtureId as number) - 1) && FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3) && (fixture.condition === undefined || (isNumber(fixture.condition) && fixture.condition >= 0 && fixture.condition <= 100)) && (fixture.broken === undefined || typeof fixture.broken === 'boolean') && (fixture.good === undefined || (typeof fixture.good === 'string' && fixture.good in GOODS)) && (fixture.stock === undefined || isNonNegative(fixture.stock)))
+    isArrayOf(value.fixtures, fixture => isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, (value.nextFixtureId as number) - 1) && FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3) && (fixture.condition === undefined || (isNumber(fixture.condition) && fixture.condition >= 0 && fixture.condition <= 100)) && (fixture.broken === undefined || typeof fixture.broken === 'boolean') && (fixture.good === undefined || (typeof fixture.good === 'string' && Object.hasOwn(GOODS, fixture.good))) && (fixture.stock === undefined || isNonNegative(fixture.stock)))
   );
 }
 
@@ -88,8 +88,20 @@ function isFieldTile(value: unknown): boolean {
   return isRecord(value.crop) && cropIds.includes(value.crop.species as string) && isNumber(value.crop.plantedAt);
 }
 
+function isTradeLine(value: unknown): boolean {
+  return isRecord(value) && typeof value.item === 'string' && (Object.hasOwn(MATERIALS, value.item) || Object.hasOwn(GOODS, value.item)) && isInt(value.quantity, 1, TRADE_LIMITS.maxQuantity);
+}
+
+function isTradeLedgerEntry(value: unknown): boolean {
+  if (!isRecord(value) || typeof value.offerId !== 'string' || value.offerId === '') return false;
+  if (!TRADE_EFFECTS.includes(value.effect as TradeEffect) || !isNumber(value.at) || typeof value.confirmed !== 'boolean') return false;
+  if (value.lot !== undefined && !(isArrayOf(value.lot, isTradeLine) && (value.lot as unknown[]).length <= TRADE_LIMITS.maxLines)) return false;
+  if (value.urbs !== undefined && !isInt(value.urbs, 0, TRADE_LIMITS.maxPrice)) return false;
+  return value.peer === undefined || typeof value.peer === 'string';
+}
+
 function isMarket(value: unknown): boolean {
-  return isRecord(value) && Object.entries(value).every(([good, price]) => good in GOODS && isRecord(price) && isNumber(price.points) && isNumber(price.updatedAt));
+  return isRecord(value) && Object.entries(value).every(([good, price]) => Object.hasOwn(GOODS, good) && isRecord(price) && isNumber(price.points) && isNumber(price.updatedAt));
 }
 
 export function validateGameState(value: unknown): GameState | null {
@@ -113,7 +125,8 @@ export function validateGameState(value: unknown): GameState | null {
     isMarket(value.market) &&
     isArrayOf(value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string) && ((road as Json).tier === undefined || isInt((road as Json).tier, 1, MAX_ROAD_TIER))) &&
     isArrayOf(value.roundabouts, (center) => isCoord(center)) &&
-    (value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep));
+    (value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep)) &&
+    isArrayOf(value.tradeLedger, isTradeLedgerEntry);
   if (!valid) return null;
   if (value.timeOffset !== undefined && (!isNonNegative(value.timeOffset) || value.timeOffset > Number.MAX_SAFE_INTEGER)) return null;
   if (value.adaptationUntil !== undefined && !isNumber(value.adaptationUntil)) return null;

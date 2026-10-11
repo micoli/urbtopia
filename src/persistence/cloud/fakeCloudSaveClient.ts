@@ -12,7 +12,8 @@ export class FakeCloudSaveClient implements CloudSaveClient {
   private userId = 'user-1';
   private nextUser = 2;
   emails = new Map<string, string>();
-  sentLinks: string[] = [];
+  sentCodes: string[] = [];
+  validCode = '123456';
   private listeners = new Set<(account: CloudAccount | null) => void>();
   pushes: PushInput[] = [];
   signedIn = false;
@@ -69,9 +70,16 @@ export class FakeCloudSaveClient implements CloudSaveClient {
     return this.signedIn ? { userId: this.userId, email: this.emails.get(this.userId) ?? null } : null;
   }
 
-  async sendEmailLink(email: string): Promise<void> {
+  async sendEmailCode(email: string): Promise<void> {
     this.guard();
-    this.sentLinks.push(email);
+    this.sentCodes.push(email);
+  }
+
+  async verifyEmailCode(email: string, code: string): Promise<void> {
+    this.guard();
+    if (code.trim() !== this.validCode) throw new CloudError('invalid-code');
+    this.emails.set(this.userId, email);
+    this.emitAccount();
   }
 
   onAccountChange(listener: (account: CloudAccount | null) => void): () => void {

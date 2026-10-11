@@ -13,7 +13,7 @@ services:
     image: ghcr.io/supabase/postgres:17.11.0.004
     command: postgres -c config_file=/etc/postgresql/postgresql.conf -c log_min_messages=fatal
     ports:
-      - "54322:5432"
+      - "127.0.0.1:54322:5432"
     environment:
       POSTGRES_HOST: /var/run/postgresql
       PGPORT: "5432"
@@ -72,8 +72,10 @@ services:
       # Same templates and subjects as supabase/config.toml, served by the gateway.
       GOTRUE_MAILER_TEMPLATES_EMAIL_CHANGE: http://gateway:8088/email/email_change.html
       GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: http://gateway:8088/email/magic_link.html
-      GOTRUE_MAILER_SUBJECTS_EMAIL_CHANGE: Urbtopia - Confirmez votre adresse / Confirm your address
-      GOTRUE_MAILER_SUBJECTS_MAGIC_LINK: Urbtopia - Votre lien de connexion / Your sign-in link
+      GOTRUE_MAILER_SUBJECTS_EMAIL_CHANGE: Urbtopia - Votre code de confirmation / Your confirmation code
+      GOTRUE_MAILER_SUBJECTS_MAGIC_LINK: Urbtopia - Votre code de connexion / Your sign-in code
+      GOTRUE_MAILER_OTP_LENGTH: "6"
+      GOTRUE_MAILER_OTP_EXP: "900"
       GOTRUE_SMTP_HOST: mailpit
       GOTRUE_SMTP_PORT: "1025"
       GOTRUE_SMTP_ADMIN_EMAIL: admin@email.com
@@ -119,7 +121,7 @@ services:
       - rest
     restart: unless-stopped
     ports:
-      - "54321:8000"
+      - "127.0.0.1:54321:8000"
     volumes:
       - ./dev/supabase/gateway.conf:/etc/nginx/conf.d/default.conf:ro
       - ./supabase/templates:/templates:ro
@@ -128,7 +130,7 @@ services:
     image: public.ecr.aws/supabase/mailpit:v1.31.3
     restart: unless-stopped
     ports:
-      - "54324:8025"
+      - "127.0.0.1:54324:8025"
     environment:
       MP_SMTP_DISABLE_RDNS: "true"
 
@@ -153,7 +155,7 @@ services:
       - gateway
     restart: unless-stopped
     ports:
-      - "54323:3000"
+      - "127.0.0.1:54323:3000"
     environment:
       HOSTNAME: 0.0.0.0
       STUDIO_PG_META_URL: http://meta:8080
@@ -172,7 +174,7 @@ services:
     image: joseluisq/static-web-server:2
     restart: unless-stopped
     ports:
-      - "5170:80"
+      - "127.0.0.1:5170:80"
     environment:
       SERVER_ROOT: /public
     volumes:

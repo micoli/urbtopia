@@ -44,7 +44,7 @@ export class EcologyLayer {
       const source = state.buildings.find(b => b.id === transfer.from), target = state.buildings.find(b => b.id === transfer.to);
       if (source && target) this.path([centerOf(source), centerOf(target)]);
     }
-    const radius = ['busStop', 'brtStation', 'railStation'].includes(selected.type) ? 6 : selected.type === 'battery' ? 8 : greenProfileOf(selected.type)?.radius ?? (selected.solar ? 6 : 0);
+    const radius = ['busStop', 'brtStation', 'railStation'].includes(selected.type) ? 6 : selected.type === 'battery' ? 8 : greenProfileOf(selected.type, selected.tier)?.radius ?? (selected.solar ? 6 : 0);
     if (radius) {
       const p = centerOf(selected);
       this.path([{ x: p.x - radius, y: p.y }, { x: p.x, y: p.y - radius }, { x: p.x + radius, y: p.y }, { x: p.x, y: p.y + radius }, { x: p.x - radius, y: p.y }]);

@@ -7,7 +7,7 @@
 <title>Urbtopia</title>
 </head>
 <body style="margin:0;padding:0;background-color:#0f121b;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#0f121b;">Confirmez votre adresse pour retrouver votre ville · Confirm your address to find your city</div>
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#0f121b;">Votre code de confirmation Urbtopia · Your Urbtopia confirmation code</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0f121b" style="background-color:#0f121b;">
 <tr><td align="center" style="padding:32px 16px;">
 <table role="presentation" width="480" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:480px;">
@@ -17,9 +17,9 @@
 <tr><td style="padding:0 0 24px 0;border-bottom:1px solid #2a3042;">
 <p style="margin:0 0 4px 0;font-size:11px;letter-spacing:2px;color:#35d07f;font-weight:700;">FRANÇAIS</p>
 <h1 style="margin:0 0 12px 0;font-size:20px;line-height:26px;color:#f4f6fb;">Confirmez votre adresse e-mail</h1>
-<p style="margin:0 0 20px 0;font-size:15px;line-height:22px;color:#d5d9e6;">Vous avez demandé à lier <strong style="color:#f4f6fb;">{{ .NewEmail }}</strong> à votre ville Urbtopia. Confirmez pour la retrouver sur tous vos appareils.</p>
-<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#35d07f" style="background-color:#35d07f;border-radius:8px;"><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:13px 24px;font-size:15px;font-weight:700;color:#0b1a12;text-decoration:none;">Confirmer mon adresse</a></td></tr></table>
-<p style="margin:16px 0 0 0;font-size:12px;line-height:18px;color:#8b93a8;">Le bouton ne fonctionne pas ? Copiez ce lien dans votre navigateur :<br><a href="{{ .ConfirmationURL }}" style="color:#35d07f;word-break:break-all;">{{ .ConfirmationURL }}</a></p>
+<p style="margin:0 0 16px 0;font-size:15px;line-height:22px;color:#d5d9e6;">Vous avez demandé à lier <strong style="color:#f4f6fb;">{{ .NewEmail }}</strong> à votre ville Urbtopia. Voici votre code de confirmation, valable une seule fois.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" bgcolor="#0f121b" style="background-color:#0f121b;border:1px solid #2a3042;border-radius:8px;padding:16px 8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:32px;font-weight:700;letter-spacing:8px;color:#35d07f;">{{ .Token }}</td></tr></table>
+<p style="margin:16px 0 0 0;font-size:14px;line-height:21px;color:#d5d9e6;">Dans le jeu, collez ce code dans le champ prévu à cet effet, puis validez. Aucun lien à ouvrir.</p>
 <p style="margin:12px 0 0 0;font-size:12px;line-height:18px;color:#8b93a8;">Vous n'êtes pas à l'origine de cette demande ? Ignorez simplement ce message : rien ne sera modifié.</p>
 </td></tr>
 </table>
@@ -28,9 +28,9 @@
 <tr><td style="padding:0 0 24px 0;">
 <p style="margin:0 0 4px 0;font-size:11px;letter-spacing:2px;color:#35d07f;font-weight:700;">ENGLISH</p>
 <h1 style="margin:0 0 12px 0;font-size:20px;line-height:26px;color:#f4f6fb;">Confirm your email address</h1>
-<p style="margin:0 0 20px 0;font-size:15px;line-height:22px;color:#d5d9e6;">You asked to link <strong style="color:#f4f6fb;">{{ .NewEmail }}</strong> to your Urbtopia city. Confirm to find it again on all your devices.</p>
-<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#35d07f" style="background-color:#35d07f;border-radius:8px;"><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:13px 24px;font-size:15px;font-weight:700;color:#0b1a12;text-decoration:none;">Confirm my address</a></td></tr></table>
-<p style="margin:16px 0 0 0;font-size:12px;line-height:18px;color:#8b93a8;">Button not working? Copy this link into your browser:<br><a href="{{ .ConfirmationURL }}" style="color:#35d07f;word-break:break-all;">{{ .ConfirmationURL }}</a></p>
+<p style="margin:0 0 16px 0;font-size:15px;line-height:22px;color:#d5d9e6;">You asked to link <strong style="color:#f4f6fb;">{{ .NewEmail }}</strong> to your Urbtopia city. Here is your confirmation code, valid once.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" bgcolor="#0f121b" style="background-color:#0f121b;border:1px solid #2a3042;border-radius:8px;padding:16px 8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:32px;font-weight:700;letter-spacing:8px;color:#35d07f;">{{ .Token }}</td></tr></table>
+<p style="margin:16px 0 0 0;font-size:14px;line-height:21px;color:#d5d9e6;">In the game, paste this code into the field provided, then confirm. There is no link to open.</p>
 <p style="margin:12px 0 0 0;font-size:12px;line-height:18px;color:#8b93a8;">Did not ask for this? Just ignore this message: nothing will change.</p>
 </td></tr>
 </table>

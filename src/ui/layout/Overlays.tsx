@@ -1,4 +1,5 @@
 import { CityManagement } from '../stats/CityManagement.tsx';
+import { SocialWindow } from '../social/SocialWindow';
 import { CreditsDialog } from '../system/CreditsDialog';
 import { CodexDialog } from '../codex/CodexDialog';
 import { CasinoDialog } from '../casino/CasinoDialog';
@@ -24,6 +25,7 @@ export function Overlays() {
   return (
     <>
       <CityManagement />
+      <SocialWindow />
       <CodexDialog />
       <CasinoDialog />
       <VenueDialog />

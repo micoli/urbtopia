@@ -2,7 +2,7 @@ import {
   CASINO_GAMES, COAL_CAPACITY, marinaCapacity, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
   FIXTURES, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
-  type StorageType, type UtilityType, ECOLOGY, isShopType, sellableGoodsOf, shopTierOf,
+  type StorageType, type UtilityType, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf,
 } from '../core';
 import { t } from '../i18n/t';
 import type { MessageKey } from '../i18n/messages';
@@ -109,6 +109,12 @@ export function levelFactsOf(id: CodexId, level: number): LevelFact[] {
   ];
   if (id === 'solar') return [profileFact('codex.profile.solar', level)];
   if (id === 'coalPlant') return [numericFact('codex.fact.output', tier => COAL_CAPACITY[tier - 1] ?? 0, level)];
+  if (greenProfileOf(id)) return [
+    numericFact('codex.fact.radius', tier => greenProfileOf(id, tier)!.radius, level),
+    numericFact('eco.cooling', tier => greenProfileOf(id, tier)!.cooling, level),
+    numericFact('eco.biodiversity', tier => greenProfileOf(id, tier)!.biodiversity, level),
+    numericFact('codex.fact.wellbeing', tier => greenProfileOf(id, tier)!.wellbeing, level),
+  ];
   if (id === 'marina') return [numericFact('codex.fact.boats', tier => marinaCapacity({ tier }), level)];
   if (isShopType(id)) return [
     numericFact('codex.fact.saleSlots', tier => shopTierOf({ type: id, tier }).maxSlots, level),

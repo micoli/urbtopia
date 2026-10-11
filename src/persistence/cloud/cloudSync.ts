@@ -45,6 +45,7 @@ export interface CloudSyncDeps {
   onStatus: (status: CloudStatus) => void;
   onAccount?: (account: CloudAccount | null) => void;
   parseOptions?: ParseOptions;
+  keepLocal?: boolean;
 }
 
 interface LocalSnapshot {
@@ -271,6 +272,7 @@ export class CloudSync {
     this.cloudCity = { revision: cloud.revision, envelope: cloud.envelope, savedAt: cloud.clientSavedAt, citizens: citizensIn(cloud.envelope, this.deps.parseOptions) };
     if (cloud.revision === meta.baseRevision) return this.settle(local);
     if (!local || !meta.editedSinceSync) return this.adoptCloud(this.cloudCity);
+    if (this.deps.keepLocal) return this.pushWith(local, cloud.revision, true);
     this.setStatus({ kind: 'conflict', conflict: { local: { savedAt: local.savedAt, citizens: citizensIn(local.envelope, this.deps.parseOptions) }, cloud: this.cloudCity } });
   }
 

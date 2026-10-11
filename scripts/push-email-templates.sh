@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sends the two Auth email templates and their subjects (supabase/templates, supabase/config.toml)
+# Sends the two Auth email templates, their subjects and the one-time code settings (supabase/templates, supabase/config.toml)
 # to a Supabase project, without touching any other Auth setting (unlike `supabase config push`).
 #
 # Usage: SUPABASE_ACCESS_TOKEN=... scripts/push-email-templates.sh <project-ref> [--dry-run] [--yes]
@@ -32,12 +32,15 @@ for name in ("email_change", "magic_link"):
     with open(path, encoding="utf-8") as handle:
         payload[f"mailer_subjects_{name}"] = template["subject"]
         payload[f"mailer_templates_{name}_content"] = handle.read()
+email = config["auth"]["email"]
+payload["mailer_otp_length"] = email["otp_length"]
+payload["mailer_otp_exp"] = email["otp_expiry"]
 print(json.dumps(payload))
 PY
 )"
 
 echo "Project: $ref"
-python3 -c 'import json,sys; [print(f"  {k}: {len(v)} characters") for k, v in json.loads(sys.argv[1]).items()]' "$payload"
+python3 -c 'import json,sys; [print(f"  {k}: {v}" if isinstance(v, int) else f"  {k}: {len(v)} characters") for k, v in json.loads(sys.argv[1]).items()]' "$payload"
 
 if $dry_run; then
   echo "Dry run: nothing was sent."

@@ -5,6 +5,7 @@ import { saveSession } from '../persistence/instance';
 import type { LoadResult } from '../persistence/saveSession';
 import { isSimulationRequested } from '../sim/simulationFlag';
 import { casinoStore } from './casinoStore';
+import { isBypassTutorialRequested } from './bypassTutorialFlag';
 import { harvestEffects } from './harvestEffects';
 import { readOnlyStore } from './readOnlyStore';
 import { toastKeyForEvents, toastStore } from './toastStore';
@@ -82,16 +83,17 @@ export function createGameStore(initial: GameState) {
       set({ state: result.state, lastChange: 'tick' });
     },
     replaceState: (state, change = 'reset') => set({ state, deletionUndo: null, lastError: null, lastChange: change }),
-    newGame: (now) => set({ state: newGame({ now, tutorial: true }), deletionUndo: null, lastError: null, lastChange: 'reset' }),
+    newGame: (now) => set({ state: newGame({ now, tutorial: !bypassTutorial }), deletionUndo: null, lastError: null, lastChange: 'reset' }),
   }));
 }
 
 export const isSimulation = isSimulationRequested(window.location.search);
+const bypassTutorial = isBypassTutorialRequested(window.location.search);
 
 export const bootResult: LoadResult = isSimulation ? { kind: 'none' } : saveSession.load();
 
 const startedAt = Date.now();
-const freshGame = () => newGame({ now: startedAt, tutorial: !isSimulation });
+const freshGame = () => newGame({ now: startedAt, tutorial: !isSimulation && !bypassTutorial });
 const initialState = bootResult.kind === 'loaded' ? bootResult.state : freshGame();
 
 export const gameStore = createGameStore(initialState);

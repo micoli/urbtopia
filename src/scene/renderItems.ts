@@ -20,6 +20,7 @@ export interface RenderItem {
   rotation: number;
   elevation?: number;
   lengthScale?: number;
+  scale?: number;
   roofBase?: string;
   textureVariant?: TextureVariant;
   footprint?: number;
@@ -69,7 +70,7 @@ export function facilityFootprint(building: Pick<Building, 'type'>): number | nu
 }
 
 // The model of each Tier of the buildings defined with Tiers.
-const TIER_MODELS = new Map(BUILDING_ENTRIES.filter(({ tiers }) => tiers).map(({ id }) => [id, tiersOf(id).map(({ model }) => modelFileOf(model!))]));
+const TIER_MODELS = new Map(BUILDING_ENTRIES.filter(({ tiers }) => tiers).map(({ id, model: entryModel }) => [id, tiersOf(id).map(({ model }) => modelFileOf(model ?? entryModel))]));
 
 const SOLAR_HOME_MODELS = new Map(BUILDING_ENTRIES.filter(({ kind, variants }) => kind === 'home' && variants?.solar).map(({ id }) => [id, variantTiersOf(id, 'solar').map(({ model }) => modelFileOf(model!))]));
 
@@ -265,7 +266,8 @@ function buildingItems(state: GameState): RenderItem[] {
     const z = building.y + depth / 2;
     const rotation = building.rotation;
     const model = modelOfBuilding(building);
-    const items: RenderItem[] = [{ model, x, z, rotation, ...(isHomeType(building.type) && !isMansardModel(model) && building.colorVariant && building.colorVariant !== 'default' ? { textureVariant: building.colorVariant } : {}) }];
+    const scale = tiersOf(building.type)[building.tier - 1]?.scale;
+    const items: RenderItem[] = [{ model, x, z, rotation, ...(scale ? { scale } : {}), ...(isHomeType(building.type) && !isMansardModel(model) && building.colorVariant && building.colorVariant !== 'default' ? { textureVariant: building.colorVariant } : {}) }];
     if (isFacilityType(building.type)) {
       const footprint = facilityFootprint(building)!;
       const recolor = FACILITY_RECOLORS[building.type];
@@ -277,8 +279,8 @@ function buildingItems(state: GameState): RenderItem[] {
       if (building.type === 'fireStation') items.push(...garageDoorItems(x, z, rotation, footprint, model));
     }
     if (building.type === 'park') {
-      items.push({ model: PARK_TREE_MODEL, x: x - width / 4, z: z - depth / 4, rotation });
-      items.push({ model: PARK_TREE_MODEL, x: x + width / 4, z: z + depth / 4, rotation });
+      items.push({ model: PARK_TREE_MODEL, x: x - width / 4, z: z - depth / 4, rotation, ...(scale ? { scale } : {}) });
+      items.push({ model: PARK_TREE_MODEL, x: x + width / 4, z: z + depth / 4, rotation, ...(scale ? { scale } : {}) });
     }
     if (isHomeType(building.type) && !isMansardModel(model) && building.solar && building.tier > 4) {
       items.push({ model: ROOF_PANEL_MODEL, x, z, rotation, elevation: 1.3, roofBase: model });

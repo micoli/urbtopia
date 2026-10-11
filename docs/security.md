@@ -30,13 +30,19 @@ A fork needs its own Supabase project: create it, apply `supabase/migrations/` w
 
 ## Supabase Auth settings (production project)
 
-The Player account can be upgraded with an email link. In the Supabase dashboard, Authentication:
+The Player account can be upgraded with an email, confirmed by a one-time code the player types in the game (ADR 0027). In the Supabase dashboard, Authentication:
 
 - [ ] Sign In / Providers: **Allow anonymous sign-ins** on, **Confirm email** on (without it anyone could attach someone else's email to their account).
-- [ ] URL Configuration: add the site URL (`https://micoli.github.io/urbtopia/`) to **Redirect URLs**, otherwise the link in the email is refused.
-- [ ] Email Templates: the local `config.toml` applies them only to the local stack. Send them to production with `SUPABASE_ACCESS_TOKEN=... scripts/push-email-templates.sh <project-ref>` (add `--dry-run` to preview; the token needs write access to the Auth configuration), or paste `supabase/templates/email_change.html` into "Change email address" and `supabase/templates/magic_link.html` into "Magic link" in the dashboard. Do not use `supabase config push`: it would also overwrite the production site URL and redirect URLs with the local ones. Keep `{{ .ConfirmationURL }}` in the link.
+- [ ] Email OTP: length **6**, expiration **900** seconds. `scripts/push-email-templates.sh` sends both with the templates (`mailer_otp_length`, `mailer_otp_exp`).
+- [ ] Email Templates: the local `config.toml` applies them only to the local stack. Send them to production with `SUPABASE_ACCESS_TOKEN=... scripts/push-email-templates.sh <project-ref>` (add `--dry-run` to preview; the token needs write access to the Auth configuration), or paste `supabase/templates/email_change.html` into "Change email address" and `supabase/templates/magic_link.html` into "Magic link" in the dashboard. Do not use `supabase config push`: it would also overwrite the production site URL and redirect URLs with the local ones. The templates show `{{ .Token }}` (the code) and no link: keep it that way, a link would open another tab in embedded browsers.
 - [ ] SMTP: the built-in mailer is meant for testing only; configure a custom SMTP provider before opening to real players.
 - [ ] Rate limits: keep the default email limits; the game reports "too many emails" instead of retrying.
+- [ ] Attack Protection: enable a CAPTCHA (Cloudflare Turnstile) before opening to real players. Anonymous sign-ins are only bounded by 30 per hour and per IP, and each anonymous account may store 5 Cloud save revisions of up to 1 MB until it is purged after 90 days of inactivity.
+
+## Accepted risks
+
+- **Email to Handle**: a friend request by email always answers the same way, but once created it shows the target's Handle in the sender's outgoing requests, so a player learns which Handle an email belongs to. It is bounded by 30 searches per day per account with a confirmed email, and a player opts out with `findable = false`.
+- **Trades trust the client** (ADR 0025): the server never checks stocks or Urbs, so a modified client, or two accounts working together, can create materials and Urbs through Trade offers. Acceptable as long as no leaderboard or shared economy depends on a city's resources.
 
 ## GitHub settings to enable manually
 

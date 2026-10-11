@@ -1,4 +1,4 @@
-export type CloudErrorKind = 'offline' | 'rate-limited' | 'conflict' | 'too-large' | 'unauthenticated' | 'unknown';
+export type CloudErrorKind = 'offline' | 'rate-limited' | 'invalid-code' | 'conflict' | 'too-large' | 'unauthenticated' | 'unknown';
 
 export class CloudError extends Error {
   constructor(
@@ -38,7 +38,8 @@ export interface CloudAccount {
 export interface CloudSaveClient {
   signIn(): Promise<void>;
   account(): Promise<CloudAccount | null>;
-  sendEmailLink(email: string): Promise<void>;
+  sendEmailCode(email: string): Promise<void>;
+  verifyEmailCode(email: string, code: string): Promise<void>;
   onAccountChange(listener: (account: CloudAccount | null) => void): () => void;
   push(input: PushInput): Promise<number>;
   latest(): Promise<CloudSave | null>;

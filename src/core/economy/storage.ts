@@ -50,12 +50,12 @@ function sum(record: Partial<Record<string, number>>): number {
 }
 
 export function compartmentOf(item: string): Compartment {
-  if (item in CROPS) return 'crops';
+  if (Object.hasOwn(CROPS, item)) return 'crops';
   return isMaterial(item) ? 'materials' : 'goods';
 }
 
 export function storageUsed(storage: Storage): Compartments {
-  const cropStock = Object.fromEntries(Object.entries(storage.materials).filter(([item]) => item in CROPS));
+  const cropStock = Object.fromEntries(Object.entries(storage.materials).filter(([item]) => Object.hasOwn(CROPS, item)));
   const crops = sum(cropStock);
   return { materials: sum(storage.materials) - crops, crops, goods: sum(storage.goods) };
 }

@@ -3,7 +3,23 @@ import { t } from '../../i18n/t';
 import { NavActionButton } from './NavActionButton';
 import { useNavActions, type NavAction } from './useNavActions';
 
-const RADIUS_PX = 224;
+const RING_RADII_PX = [200, 120, 50];
+const ITEMS_PER_RINGS = [5, 3 , 1];
+
+function ringPosition(index: number, count: number): { x: number; y: number } {
+  const lastRing = ITEMS_PER_RINGS.length - 1;
+  let ring = 0;
+  let ringStart = 0;
+  while (ring < lastRing && index >= ringStart + ITEMS_PER_RINGS[ring]!) {
+    ringStart += ITEMS_PER_RINGS[ring]!;
+    ring += 1;
+  }
+  const ringCount = ring < lastRing ? Math.min(ITEMS_PER_RINGS[ring]!, count - ringStart) : count - ringStart;
+  const rank = index - ringStart;
+  const angle = ringCount === 1 ? Math.PI / 4 : (1 - rank / (ringCount - 1)) * (Math.PI / 2);
+  const radius = RING_RADII_PX[ring]!;
+  return { x: Math.cos(angle) * radius, y: -Math.sin(angle) * radius };
+}
 
 interface RadialMenuProps {
   actions?: NavAction[];
@@ -17,10 +33,8 @@ export function RadialMenu({ actions: provided }: RadialMenuProps) {
   return (
     <div className="radial">
       {open
-        ? actions.toReversed().map((action, index) => {
-            const angle = (index / (actions.length - 1)) * (Math.PI / 2);
-            const x = Math.cos(angle) * RADIUS_PX;
-            const y = -Math.sin(angle) * RADIUS_PX;
+        ? actions.map((action, index) => {
+            const { x, y } = ringPosition(index, actions.length);
             return (
               <NavActionButton
                 key={action.id}
