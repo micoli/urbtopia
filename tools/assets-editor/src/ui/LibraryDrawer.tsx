@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { modelIdOf } from '../../../../scripts/definitionProblems'
 import { useLibrary } from '../hooks/useLibrary'
-import { isFreelyDefinable, type LibraryEntry } from '../library/modelFiles'
+import { isFreelyDefinable, licenseOf, type LibraryEntry } from '../library/modelFiles'
 import { useDocument } from '../store/documentStore'
 import { setModel } from '../store/edits'
 import { LibraryItem } from './LibraryItem'
@@ -25,13 +25,13 @@ export function LibraryDrawer() {
   const statusOf = (entry: LibraryEntry): Filter => (!entry.id ? 'undefined' : library.usersOf(entry.id).length || library.inScene(entry.file) ? 'used' : 'orphan')
   const shown = library.entries.filter(entry => (!search || `${entry.file} ${entry.id ?? ''}`.toLowerCase().includes(search)) && (!source || entry.source === source) && (filter === 'all' || statusOf(entry) === filter))
 
-  // Picking an undefined CC0 model defines it, so it can be edited and used at once.
+  // Picking an undefined model defines it, so it can be edited and used at once.
   const pick = (entry: LibraryEntry) => {
     const { change, select, setStatus } = useDocument.getState()
     if (entry.id) return select({ kind: 'models', id: entry.id })
-    if (!isFreelyDefinable(entry.source)) return setStatus(`${entry.file} is not part of a managed source`)
+    if (!isFreelyDefinable(entry.source)) return setStatus(`${entry.file} cannot be defined from this source`)
     const id = modelIdOf(entry.file)
-    change(doc => setModel(doc, id, { file: entry.file, source: entry.source!, license: 'CC0' }))
+    change(doc => setModel(doc, id, { file: entry.file, source: entry.source!, license: licenseOf(entry.source!) }))
     select({ kind: 'models', id })
   }
 

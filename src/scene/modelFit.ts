@@ -10,7 +10,8 @@ export function fitMatrixOf(model: string): THREE.Matrix4 {
   const definition = definitionOf(model);
   if (definition?.scale === undefined || definition.fit) return IDENTITY;
   const [centerX, centerZ] = definition.center ?? [0, 0];
-  return new THREE.Matrix4().makeScale(definition.scale, definition.scale, definition.scale).multiply(new THREE.Matrix4().makeTranslation(-centerX, 0, -centerZ));
+  const rotation = new THREE.Matrix4().makeRotationY(THREE.MathUtils.degToRad(definition.rotationOffset ?? 0));
+  return new THREE.Matrix4().makeScale(definition.scale, definition.scale, definition.scale).multiply(rotation).multiply(new THREE.Matrix4().makeTranslation(-centerX, 0, -centerZ));
 }
 
 const FOOTPRINT_FILL = 0.9;

@@ -651,6 +651,8 @@ export type ModelId =
   | 'trains-train-electric-subway-a'
   | 'trains-train-locomotive-a'
   | 'trains-train-locomotive-passenger-a'
+  | 'venue-supermarket-large'
+  | 'venue-supermarket-small'
   | 'watercraft-boat-fishing-small'
   | 'watercraft-boat-house-a'
   | 'watercraft-boat-sail-a'

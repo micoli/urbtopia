@@ -33,5 +33,7 @@ export function shipsFrom(manifest: Record<string, string[]>, sourceByPack: Reco
 
 export const locationOf = (entries: readonly LibraryEntry[]) => new Map(entries.map(entry => [entry.file, entry]))
 
-// Kenney and Quaternius models are CC0: they get a definition the moment a Game object uses them.
-export const isFreelyDefinable = (source: ModelSource | undefined) => source === 'kenney' || source === 'quaternius'
+// Kenney and Quaternius models are CC0 and managed models are own work: they get a definition the moment a Game object uses them.
+export const isFreelyDefinable = (source: ModelSource | undefined) => source === 'kenney' || source === 'quaternius' || source === 'managed'
+
+export const licenseOf = (source: ModelSource) => (source === 'managed' ? 'Own work' : 'CC0')

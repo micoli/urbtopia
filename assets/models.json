@@ -4685,6 +4685,34 @@
     "source": "kenney",
     "license": "CC0"
   },
+  "venue-supermarket-large": {
+    "file": "venue/supermarket-large",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 2.5,
+      "height": 1.8
+    },
+    "rotationOffset": 180
+  },
+  "venue-supermarket-small": {
+    "file": "venue/supermarket-small",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 2,
+      "height": 2
+    },
+    "rotationOffset": 180
+  },
   "watercraft-boat-fishing-small": {
     "file": "watercraft/boat-fishing-small",
     "source": "kenney",

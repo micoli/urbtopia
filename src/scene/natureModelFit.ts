@@ -2,8 +2,10 @@ import * as THREE from 'three';
 import { definitionOf } from './modelDefinitions';
 
 export function fitNatureModel(model: THREE.Object3D, key: string): void {
-  const limit = definitionOf(key)?.fit;
+  const definition = definitionOf(key);
+  const limit = definition?.fit;
   if (!limit) return;
+  model.rotation.y += THREE.MathUtils.degToRad(definition.rotationOffset ?? 0);
   model.updateMatrixWorld(true);
   const bounds = new THREE.Box3().setFromObject(model);
   if (bounds.isEmpty()) return;
