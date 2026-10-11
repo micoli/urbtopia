@@ -275,6 +275,7 @@ export type Database = {
         }[];
       };
       urb_list_social: { Args: { p_cursor?: number }; Returns: Json };
+      urb_lock_pair: { Args: { p_a: string; p_b: string }; Returns: undefined };
       urb_lot_is_valid: { Args: { p_lot: Json }; Returns: boolean };
       urb_offers_json: { Args: { p_user: string }; Returns: Json };
       urb_open_request: { Args: { p_from: string; p_to: string }; Returns: undefined };
