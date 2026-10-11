@@ -153,4 +153,4 @@ const assetOperationsApi = (): Plugin => ({
   },
 })
 
-export default defineConfig({ root: dirname(fileURLToPath(import.meta.url)), plugins: [tailwindcss(), liveManifest(), liveSources(), modelsApi(), assetOperationsApi()], server: { fs: { allow: ['../..'] }, watch: { ignored: ['**/assets/models.json', '**/assets/defs/**'] } } })
+export default defineConfig({ root: dirname(fileURLToPath(import.meta.url)), cacheDir: resolve(editorDir, '../../node_modules/.vite-assets-editor'), plugins: [tailwindcss(), liveManifest(), liveSources(), modelsApi(), assetOperationsApi()], server: { fs: { allow: ['../..'] }, watch: { ignored: ['**/assets/models.json', '**/assets/defs/**'] } } })
