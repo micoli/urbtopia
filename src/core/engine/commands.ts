@@ -661,7 +661,7 @@ function collectShopEarnings(state: GameState, building: Building): CommandOutco
 function stockShop(state: GameState, buildingId: number, good: GoodId, now: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
-  if (!isShopType(building.type) || !(good in GOODS)) return fail('error.notAShop');
+  if (!isShopType(building.type) || !Object.hasOwn(GOODS, good)) return fail('error.notAShop');
   if (!canSell(building, good)) return fail('error.notSoldHere');
   const slotIndex = building.stacks.findIndex((stack) => stack.stock === 0);
   if (slotIndex === -1) return fail('error.queueFull');
@@ -686,7 +686,7 @@ function tradeOutcome(result: TradeResult): CommandOutcome {
 
 function sellToMarket(state: GameState, good: GoodId, quantity: number, now: number): CommandOutcome {
   if (!state.marketUnlocked) return fail('error.marketLocked');
-  if (!Number.isInteger(quantity) || quantity <= 0 || !(good in GOODS)) return fail('error.invalidQuantity');
+  if (!Number.isInteger(quantity) || quantity <= 0 || !Object.hasOwn(GOODS, good)) return fail('error.invalidQuantity');
   const available = state.storage.goods[good] ?? 0;
   if (available < quantity) return fail('error.missingGoods');
   const quote = marketQuote(state, good, quantity, now);

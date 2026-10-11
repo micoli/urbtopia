@@ -35,7 +35,7 @@ function isQueueEntry(value: unknown): boolean {
 function isStack(value: unknown): boolean {
   return (
     isRecord(value) &&
-    (value.good === null || (typeof value.good === 'string' && value.good in GOODS)) &&
+    (value.good === null || (typeof value.good === 'string' && Object.hasOwn(GOODS, value.good))) &&
     isInt(value.stock, 0) &&
     (value.nextSaleAt === null || isNumber(value.nextSaleAt)) &&
     isNonNegative(value.earned)
@@ -54,7 +54,7 @@ function isVenueData(value: unknown): boolean {
     (value.cooldownUntil === undefined || isNumber(value.cooldownUntil)) &&
     (value.event === undefined || (isRecord(value.event) && isNumber(value.event.startsAt) && isNumber(value.event.endsAt) && value.event.endsAt > value.event.startsAt && isNonNegative(value.event.budget))) &&
     (value.staff === undefined || (isRecord(value.staff) && Object.entries(value.staff).every(([role, count]) => STAFF_ROLES.includes(role as never) && isInt(count, 0, 20)))) &&
-    isArrayOf(value.fixtures, fixture => isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, (value.nextFixtureId as number) - 1) && FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3) && (fixture.condition === undefined || (isNumber(fixture.condition) && fixture.condition >= 0 && fixture.condition <= 100)) && (fixture.broken === undefined || typeof fixture.broken === 'boolean') && (fixture.good === undefined || (typeof fixture.good === 'string' && fixture.good in GOODS)) && (fixture.stock === undefined || isNonNegative(fixture.stock)))
+    isArrayOf(value.fixtures, fixture => isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, (value.nextFixtureId as number) - 1) && FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3) && (fixture.condition === undefined || (isNumber(fixture.condition) && fixture.condition >= 0 && fixture.condition <= 100)) && (fixture.broken === undefined || typeof fixture.broken === 'boolean') && (fixture.good === undefined || (typeof fixture.good === 'string' && Object.hasOwn(GOODS, fixture.good))) && (fixture.stock === undefined || isNonNegative(fixture.stock)))
   );
 }
 
@@ -89,7 +89,7 @@ function isFieldTile(value: unknown): boolean {
 }
 
 function isTradeLine(value: unknown): boolean {
-  return isRecord(value) && typeof value.item === 'string' && (value.item in MATERIALS || value.item in GOODS) && isInt(value.quantity, 1, TRADE_LIMITS.maxQuantity);
+  return isRecord(value) && typeof value.item === 'string' && (Object.hasOwn(MATERIALS, value.item) || Object.hasOwn(GOODS, value.item)) && isInt(value.quantity, 1, TRADE_LIMITS.maxQuantity);
 }
 
 function isTradeLedgerEntry(value: unknown): boolean {
@@ -101,7 +101,7 @@ function isTradeLedgerEntry(value: unknown): boolean {
 }
 
 function isMarket(value: unknown): boolean {
-  return isRecord(value) && Object.entries(value).every(([good, price]) => good in GOODS && isRecord(price) && isNumber(price.points) && isNumber(price.updatedAt));
+  return isRecord(value) && Object.entries(value).every(([good, price]) => Object.hasOwn(GOODS, good) && isRecord(price) && isNumber(price.points) && isNumber(price.updatedAt));
 }
 
 export function validateGameState(value: unknown): GameState | null {

@@ -57,7 +57,7 @@ export function removeFields(state: GameState, tiles: readonly Coord[]): Command
 
 export function plantFields(state: GameState, crop: CropId, tiles: readonly Coord[]): CommandOutcome {
   if (!state.buildings.some((building) => building.type === 'farm')) return { key: 'error.noFarm' };
-  if (!(crop in CROPS)) return { key: 'error.unknownCommand' };
+  if (!Object.hasOwn(CROPS, crop)) return { key: 'error.unknownCommand' };
   if (!isCropUnlocked(state, crop)) return { key: 'error.itemLocked' };
   const targets = new Set(tiles.map(tileKey));
   const capacity = utilityCapacity(state).water;

@@ -79,11 +79,11 @@ export const GOODS: Record<GoodId, GoodSpec> = { ...BASE_GOODS, ...CROP_GOODS };
 export const CROP_PACK_IDS = Object.keys(CROP_GOODS) as CropPackId[];
 
 export function isMaterial(item: string): item is MaterialId {
-  return item in MATERIALS;
+  return Object.hasOwn(MATERIALS, item);
 }
 
 export function isGood(item: string): item is GoodId {
-  return item in GOODS;
+  return Object.hasOwn(GOODS, item);
 }
 
 export function durationOf(item: ItemId): number {

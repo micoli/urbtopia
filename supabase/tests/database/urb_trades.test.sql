@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(58);
+select plan(60);
 
 insert into auth.users (id, instance_id, aud, role, email, email_confirmed_at, is_anonymous, created_at, last_sign_in_at)
   select ('00000000-0000-0000-0004-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', n || '@example.com', now(), false, now(), now()
@@ -42,6 +42,8 @@ select ok(not public.urb_lot_is_valid(pg_temp.lot('wood', 0)), 'a null quantity 
 select ok(not public.urb_lot_is_valid(pg_temp.lot('wood', 10000)), 'a quantity over 9999 is invalid');
 select ok(not public.urb_lot_is_valid('[{"item":"wood","quantity":1},{"item":"wood","quantity":2}]'), 'a duplicated item is invalid');
 select ok(not public.urb_lot_is_valid(pg_temp.lot('bad item!', 1)), 'a malformed item is invalid');
+select ok(not public.urb_lot_is_valid(pg_temp.lot('constructor', 1)), 'an inherited object key is invalid');
+select ok(not public.urb_lot_is_valid(pg_temp.lot('__proto__', 1)), 'an item starting with an underscore is invalid');
 select ok(not public.urb_lot_is_valid((select jsonb_agg(jsonb_build_object('item', 'i' || g, 'quantity', 1)) from generate_series(1, 11) g)), 'an 11 line Lot is invalid');
 select ok(public.urb_lot_is_valid((select jsonb_agg(jsonb_build_object('item', 'i' || g, 'quantity', 9999)) from generate_series(1, 10) g)), 'a 10 line Lot is valid');
 

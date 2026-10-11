@@ -103,6 +103,12 @@ describe('trade ledger: receiving', () => {
     expect(run(city(), { type: 'TradeApply', offerId: 'o1', effect: 'pay', urbs: 10_001, lot: lotOf({ item: material, quantity: 1 }) })).toEqual({ key: 'error.invalidPrice' });
   });
 
+  it('refuses a Lot naming an inherited object key', () => {
+    for (const item of ['constructor', 'toString', '__proto__', 'hasOwnProperty']) {
+      expect(run(city(), { type: 'TradeApply', offerId: 'o1', effect: 'receive-lot', lot: lotOf({ item, quantity: 1 }) })).toEqual({ key: 'error.invalidTradeLot' });
+    }
+  });
+
   it('pays the price when the Lot can be received', () => {
     const next = stateOf(run(city(), { type: 'TradeApply', offerId: 'o1', effect: 'pay', urbs: 250, lot: lotOf({ item: material, quantity: 1 }), peer: 'alice' }));
     expect(next.urbs).toBe(750);

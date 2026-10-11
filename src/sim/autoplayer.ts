@@ -376,7 +376,7 @@ function queueMaterials(player: Player, wanted: Set<MaterialId>): void {
       const state = player.state();
       const current = state.buildings.find((building) => building.id === workshop.id)!;
       const capacity = storageCapacity(state).materials;
-      const used = storageUsed(state.storage).materials + state.buildings.reduce((total, building) => total + building.queue.filter((entry) => !entry.done && entry.item in MATERIALS).length, 0);
+      const used = storageUsed(state.storage).materials + state.buildings.reduce((total, building) => total + building.queue.filter((entry) => !entry.done && Object.hasOwn(MATERIALS, entry.item)).length, 0);
       if (used >= capacity) return;
       const pending = (material: MaterialId) =>
         state.buildings.reduce((total, building) => total + building.queue.filter((entry) => !entry.done && entry.item === material).length, 0);

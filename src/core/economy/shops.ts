@@ -44,7 +44,7 @@ export function newGoodsAtNextTier(building: ShopBuilding): readonly GoodId[] {
   return (next.sells as GoodId[]).filter((good) => !current.includes(good));
 }
 
-export const canSell = (building: ShopBuilding, good: GoodId): boolean => good in GOODS && sellableGoodsOf(building).includes(good);
+export const canSell = (building: ShopBuilding, good: GoodId): boolean => Object.hasOwn(GOODS, good) && sellableGoodsOf(building).includes(good);
 
 export function slotPriceOf(building: ShopBuilding, slotNumber: number): number {
   const price = SLOT_PRICES[slotNumber] ?? 0;

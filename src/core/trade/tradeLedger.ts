@@ -23,7 +23,7 @@ function isWholeNumber(value: unknown, min: number, max: number): value is numbe
 }
 
 function isTradeItem(item: string): boolean {
-  return item in MATERIALS || item in GOODS;
+  return Object.hasOwn(MATERIALS, item) || Object.hasOwn(GOODS, item);
 }
 
 export function isValidLot(lot: readonly TradeLine[] | undefined): lot is readonly TradeLine[] {
@@ -44,9 +44,9 @@ function debit(storage: Storage, lot: readonly TradeLine[]): Storage | ErrorKey 
   const materials = { ...storage.materials } as Record<string, number | undefined>;
   const goods = { ...storage.goods } as Record<string, number | undefined>;
   for (const line of lot) {
-    const bucket = line.item in MATERIALS ? materials : goods;
+    const bucket = Object.hasOwn(MATERIALS, line.item) ? materials : goods;
     const available = bucket[line.item] ?? 0;
-    if (available < line.quantity) return line.item in MATERIALS ? 'error.missingMaterials' : 'error.missingGoods';
+    if (available < line.quantity) return Object.hasOwn(MATERIALS, line.item) ? 'error.missingMaterials' : 'error.missingGoods';
     bucket[line.item] = available - line.quantity;
   }
   return { materials: materials as Storage['materials'], goods: goods as Storage['goods'] };
@@ -56,7 +56,7 @@ function credit(storage: Storage, lot: readonly TradeLine[]): Storage {
   const materials = { ...storage.materials } as Record<string, number | undefined>;
   const goods = { ...storage.goods } as Record<string, number | undefined>;
   for (const line of lot) {
-    const bucket = line.item in MATERIALS ? materials : goods;
+    const bucket = Object.hasOwn(MATERIALS, line.item) ? materials : goods;
     bucket[line.item] = (bucket[line.item] ?? 0) + line.quantity;
   }
   return { materials: materials as Storage['materials'], goods: goods as Storage['goods'] };
