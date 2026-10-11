@@ -28,10 +28,10 @@ describe('Farm building', () => {
     expect(result.state.urbs).toBe(withCitizens(city, 3).urbs - 200);
   });
 
-  it('allows a single Farm per city', () => {
+  it('allows a second Farm only once the city has enough Citizens', () => {
     const built = dispatch(withCitizens(city, 3), placeFarm, T0);
     if (!built.ok) throw new Error(built.error.key);
-    expect(failureKey(built.state, { ...placeFarm, x: 60, y: 59 })).toBe('error.farmExists');
+    expect(failureKey(built.state, { ...placeFarm, x: 60, y: 59 })).toBe('error.buildingLimitReached');
   });
 
   it('follows the Farm tier table for seed stock and Field cap', () => {

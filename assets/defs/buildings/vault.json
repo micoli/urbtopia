@@ -57,5 +57,6 @@
         "goods": {}
       }
     }
-  ]
+  ],
+  "extraCopyCitizens": [150, 500]
 }

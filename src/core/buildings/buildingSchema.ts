@@ -35,6 +35,12 @@ const sited = {
   initialSlots: count.optional(),
 };
 
+// Several copies can be built: the Citizens the city needs for each extra copy (the first copy follows unlockCitizens), and the price factor applied per copy already built.
+const repeatable = {
+  extraCopyCitizens: z.array(count).min(1).optional(),
+  priceFactor: z.number().min(1).optional(),
+};
+
 const placed = { ...common, ...sited, footprint: pairSchema };
 
 const standardBuilding = z.strictObject({ kind: z.literal('standard'), ...placed });
@@ -61,6 +67,7 @@ const productionBuilding = z.strictObject({
   kind: z.literal('production'),
   ...identity,
   ...sited,
+  ...repeatable,
   tiers: tiersOf({ ...homeLook, durationFactor: z.number().positive(), maxSlots: z.int().min(1), yield: z.int().min(1) }, ['model', 'footprint', 'durationFactor', 'maxSlots', 'yield']),
 });
 
@@ -69,6 +76,7 @@ const farmBuilding = z.strictObject({
   kind: z.literal('farm'),
   ...identity,
   ...sited,
+  ...repeatable,
   tiers: tiersOf({ ...homeLook, seedCapacity: count, fieldCap: count }, ['model', 'footprint', 'seedCapacity', 'fieldCap']),
 });
 
@@ -77,6 +85,7 @@ const storageBuilding = z.strictObject({
   kind: z.literal('storage'),
   ...identity,
   ...sited,
+  ...repeatable,
   tiers: tiersOf({ ...homeLook, materials: count, goods: count, crops: count }, ['model', 'footprint', 'materials', 'goods', 'crops']),
 });
 

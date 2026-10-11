@@ -1,5 +1,5 @@
 import { Fragment, useId, useState } from 'react';
-import { BUILDING_SPECS, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, isFacilityType, totalCitizens, placementCost, isHomeType } from '../../core';
+import { BUILDING_SPECS, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, isFacilityType, totalCitizens, placementCost, isHomeType, isRepeatable, maxCopies, nextCopyCost, ownedCopies, buildLimitReached } from '../../core';
 import { t } from '../../i18n/t';
 import { FlyoutItem } from '../layout/FlyoutItem';
 import { useGame, useUi } from '../common/hooks';
@@ -19,6 +19,7 @@ const categoryOf = (type: string | undefined) => (type !== undefined && isFacili
 
 export function BuildMenuContent() {
   const citizens = useGame(store => totalCitizens(store.state));
+  const state = useGame(store => store.state);
   const flyout = useUi((store) => store.flyout);
   const chooseTool = useUi((store) => store.chooseTool);
   const openCodex = useUi(store => store.openCodex);
@@ -85,8 +86,9 @@ export function BuildMenuContent() {
                           <h4 className="build-category">{t(`service.${FACILITIES[type].category}`)}</h4>}
                       <FlyoutItem
                           label={t(`building.${type}`)}
-                          badge={undefined/*BUILDING_SPECS[type].accessModes.includes('brt') ? t('build.brtCompatible') : undefined*/}
-                          cost={<UrbsAmount value={placementCost(type)}/>}
+                          badge={isRepeatable(type) ? `${ownedCopies(state, type)}/${maxCopies(type)}` : undefined}
+                          disabled={buildLimitReached(state, type)}
+                          cost={<UrbsAmount value={nextCopyCost(state, type)}/>}
                           guided={guide.buildings.includes(type)}
                           onChoose={() => chooseTool({
                             kind: 'building',

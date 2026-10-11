@@ -124,8 +124,8 @@ describe('Grain silo', () => {
     expect(failureKey(withStorehouse, { type: 'PlaceBuilding', buildingType: 'grainSilo', x: 62, y: 59 })).toBe('error.noFarm');
   });
 
-  it('is unique', () => {
-    expect(failureKey(withGrainSilo, { type: 'PlaceBuilding', buildingType: 'grainSilo', x: 54, y: 59 })).toBe('error.grainSiloExists');
+  it('is limited to one until the city has enough Citizens', () => {
+    expect(failureKey(withGrainSilo, { type: 'PlaceBuilding', buildingType: 'grainSilo', x: 54, y: 59 })).toBe('error.buildingLimitReached');
   });
 
   it('relies on the Farm starting capacity of 10 crops until it is built', () => {
@@ -163,9 +163,9 @@ describe('Silo and Vault', () => {
     expect(storageCapacity(upgraded)).toEqual({ materials: 80, crops: 0, goods: 160 });
   });
 
-  it('allows a single Silo and a single Vault', () => {
-    expect(failureKey(both, { type: 'PlaceBuilding', buildingType: 'silo', x: 54, y: 59 })).toBe('error.siloExists');
-    expect(failureKey(both, { type: 'PlaceBuilding', buildingType: 'vault', x: 52, y: 59 })).toBe('error.vaultExists');
+  it('allows a single Silo and a single Vault until the city has enough Citizens', () => {
+    expect(failureKey(both, { type: 'PlaceBuilding', buildingType: 'silo', x: 54, y: 59 })).toBe('error.buildingLimitReached');
+    expect(failureKey(both, { type: 'PlaceBuilding', buildingType: 'vault', x: 52, y: 59 })).toBe('error.buildingLimitReached');
   });
 
   it('stores Materials with a Silo alone', () => {

@@ -23,8 +23,8 @@ export function hasStorage(state: GameState): boolean {
 }
 
 export function storageCapacity(state: GameState): Compartments {
-  const hasFarm = state.buildings.some((building) => building.type === 'farm');
-  const capacity: Compartments = { materials: 0, crops: hasFarm ? FARM_CROP_CAPACITY : 0, goods: 0 };
+  const farms = state.buildings.filter((building) => building.type === 'farm').length;
+  const capacity: Compartments = { materials: 0, crops: farms * FARM_CROP_CAPACITY, goods: 0 };
   const production: Compartments = { materials: 0, crops: 0, goods: 0 };
   for (const building of state.buildings) {
     if (building.type !== 'workshop' && building.type !== 'factory' && building.type !== 'packhouse') continue;
@@ -35,8 +35,12 @@ export function storageCapacity(state: GameState): Compartments {
     if (!isStorageType(building.type)) continue;
     const { materials, goods, crops } = storageTierOf(building.type, building.tier);
     capacity.crops += crops;
-    capacity.materials += building.type === 'storehouse' ? Math.max(materials, production.materials) : materials;
-    capacity.goods += building.type === 'storehouse' ? Math.max(goods, production.goods) : goods;
+    capacity.materials += materials;
+    capacity.goods += goods;
+  }
+  if (state.buildings.some((building) => building.type === 'storehouse')) {
+    capacity.materials = Math.max(capacity.materials, production.materials);
+    capacity.goods = Math.max(capacity.goods, production.goods);
   }
   return capacity;
 }

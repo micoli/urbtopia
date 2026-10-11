@@ -52,8 +52,16 @@ _Avoid_: Shop type, Service category (that is for Public facilities)
 The original Shop, kept in the cities that have it and still buildable: it sells Goods of every Good category but costs more than a specialised Shop.
 _Avoid_: Universal shop, Retired shop
 
+**Build limit**:
+The number of copies of a building the player may own at once. It rises with the Citizens count, by thresholds set for each building, and its list of thresholds gives the maximum. Applies to the Farm, Packhouse, Storehouse, Silo, Vault and Grain silo.
+_Avoid_: Quota, cap (already the Field cap)
+
+**Escalating price**:
+The cost of the next copy of a building under a Build limit: its base cost multiplied by a factor (2 by default) for each copy already built.
+_Avoid_: Repeat price, surcharge
+
 **Farm**:
-A building that holds the player's seed stock and is the entry point of cultivation. It does not produce anything itself.
+A building that holds the player's seed stock and is the entry point of cultivation. It does not produce anything itself. Several can be built, up to its Build limit; their seed capacities, Field caps and base Crop capacities add up, while Fields and the seed stock stay shared by the whole city.
 _Avoid_: Workshop, plantation
 
 **Field**:
@@ -73,23 +81,23 @@ The player gesture that collects ready Crops by pressing a ready Field's bubble 
 _Avoid_: Picking, gathering
 
 **Packhouse**:
-A building that packs Crop Materials into packed Goods, the only way to sell a Harvest. Only one can be built; it has Tiers.
+A building that packs Crop Materials into packed Goods, the only way to sell a Harvest. Several can be built, up to its Build limit; each has its own Tiers.
 _Avoid_: Factory, cannery, packing plant
 
 **Storehouse**:
-The general storage that holds Materials and Goods, with a limited capacity. Only one can be built; it has Tiers that raise its capacity.
+The general storage that holds Materials and Goods, with a limited capacity. Several can be built, up to its Build limit; each has its own Tiers that raise its capacity, and capacities add up.
 _Avoid_: Warehouse, depot, inventory
 
 **Silo**:
-A specialized storage that adds capacity to the Materials compartment only. Only one can be built; it has Tiers.
+A specialized storage that adds capacity to the Materials compartment only. Several can be built, up to its Build limit; each has its own Tiers.
 _Avoid_: Granary, bin
 
 **Grain silo**:
-A specialized storage that holds Crop Materials only, in a compartment of its own that the Storehouse and the Silo do not share. The Farm provides a small base capacity so the first Harvest is never blocked. Only one can be built; it has Tiers.
+A specialized storage that holds Crop Materials only, in a compartment of its own that the Storehouse and the Silo do not share. The Farm provides a small base capacity so the first Harvest is never blocked. Several can be built, up to its Build limit; each has its own Tiers.
 _Avoid_: Barn, granary, Silo (already the Materials storage)
 
 **Vault**:
-A specialized storage that adds capacity to the Goods compartment only. Only one can be built; it has Tiers.
+A specialized storage that adds capacity to the Goods compartment only. Several can be built, up to its Build limit; each has its own Tiers.
 _Avoid_: Cellar, depot
 
 **Home**:

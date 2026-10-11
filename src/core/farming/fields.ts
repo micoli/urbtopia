@@ -14,8 +14,7 @@ import type { FieldTile, GameState } from '../engine/state';
 export const FIELD_COST = 5;
 
 export function fieldCap(state: GameState): number {
-  const farm = state.buildings.find((building) => building.type === 'farm');
-  return farm ? farmTier(farm).fieldCap : 0;
+  return state.buildings.filter((building) => building.type === 'farm').reduce((total, farm) => total + farmTier(farm).fieldCap, 0);
 }
 
 export function layFields(state: GameState, tiles: readonly Coord[]): CommandOutcome {

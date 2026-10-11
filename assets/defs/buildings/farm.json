@@ -61,5 +61,6 @@
         }
       }
     }
-  ]
+  ],
+  "extraCopyCitizens": [300, 800]
 }

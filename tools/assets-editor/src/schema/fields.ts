@@ -55,6 +55,8 @@ const LABELS: Record<string, string> = {
   requiresRoad: 'Requires a road',
   accessModes: 'Access modes',
   initialSlots: 'Initial Slots',
+  extraCopyCitizens: 'Extra copies (Citizens)',
+  priceFactor: 'Price factor per copy',
   wellbeingBonus: 'Well-being bonus',
   radius: 'Radius (tiles)',
   rotationOffset: 'Rotation offset (deg)',

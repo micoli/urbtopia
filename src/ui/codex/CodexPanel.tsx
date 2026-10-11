@@ -4,6 +4,7 @@ import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
 import { CodexEntryContent } from './CodexEntryContent';
 import { CropEconomyPage } from './CropEconomyPage';
+import { StorageRulesPage } from './StorageRulesPage';
 import { useCodexManifest } from './useCodexManifest';
 import { CloseButton } from '../common/CloseButton';
 import { ActionButton } from '../common/ActionButton';
@@ -18,7 +19,8 @@ export function CodexPanel() {
   const heading = useId();
   const [selected, setSelected] = useState<CodexId>(initialEntry);
   const [showDetail, setShowDetail] = useState(initialDetail);
-  const [economyOpen, setEconomyOpen] = useState(false);
+  const [page, setPage] = useState<'economy' | 'storage' | null>(null);
+  const pageOpen = page !== null;
   const [openSection, setOpenSection] = useState<CodexSection>(CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
   const { manifest, failed, retry } = useCodexManifest();
   const entry = CODEX_ENTRIES.find(entry => entry.id === selected)!;
@@ -47,10 +49,10 @@ export function CodexPanel() {
     if (!showDetail) return;
     detail.current?.scrollTo(0, 0);
     detail.current?.focus();
-  }, [selected, showDetail, economyOpen]);
+  }, [selected, showDetail, page]);
 
   const select = (id: CodexId) => {
-    setEconomyOpen(false);
+    setPage(null);
     setSelected(id);
     setOpenSection(CODEX_ENTRIES.find(entry => entry.id === id)!.section);
     setShowDetail(true);
@@ -76,18 +78,23 @@ export function CodexPanel() {
             return (
               <AccordionSection key={section} id={panelId} title={t(section)} expanded={expanded} chevron toggleClassName="codex-section-toggle" onToggle={() => setOpenSection(expanded ? ('' as CodexSection) : section)}>
                 {section === 'codex.crops' && (
-                  <button type="button" aria-current={economyOpen ? 'true' : undefined} onClick={() => { setEconomyOpen(true); setShowDetail(true); }}>{t('codex.economy.title')}</button>
+                  <button type="button" aria-current={page === 'economy' ? 'true' : undefined} onClick={() => { setPage('economy'); setShowDetail(true); }}>{t('codex.economy.title')}</button>
+                )}
+                {section === 'build.storage' && (
+                  <button type="button" aria-current={page === 'storage' ? 'true' : undefined} onClick={() => { setPage('storage'); setShowDetail(true); }}>{t('codex.storage.title')}</button>
                 )}
                 {CODEX_ENTRIES.filter(entry => entry.section === section).map(entry => (
-                  <button type="button" key={entry.id} aria-current={!economyOpen && selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
+                  <button type="button" key={entry.id} aria-current={!pageOpen && selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
                 ))}
               </AccordionSection>
             );
           })}
         </nav>
-        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(economyOpen ? 'codex.economy.title' : entry.name)}>
-          {economyOpen ? <CropEconomyPage /> : <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />}
-          {!economyOpen && !manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}
+        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : entry.name)}>
+          {page === 'economy' && <CropEconomyPage />}
+          {page === 'storage' && <StorageRulesPage />}
+          {!pageOpen && <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />}
+          {!pageOpen && !manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}
         </article>
       </div>
     </dialog>

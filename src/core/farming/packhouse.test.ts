@@ -28,10 +28,10 @@ describe('Packhouse building', () => {
     expect(failureKey(base, placePackhouse)).toBe('error.itemLocked');
   });
 
-  it('costs 250 Urbs and is limited to one per city', () => {
+  it('costs 250 Urbs and is limited to one until the city has enough Citizens', () => {
     const built = succeed(city, placePackhouse);
     expect(built.urbs).toBe(city.urbs - 250);
-    expect(failureKey(built, { ...placePackhouse, x: 60 })).toBe('error.packhouseExists');
+    expect(failureKey(built, { ...placePackhouse, x: 60 })).toBe('error.buildingLimitReached');
   });
 
   it('reuses the production upgrade costs and starts with two Slots', () => {

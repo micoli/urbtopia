@@ -1,4 +1,5 @@
-import { BUILDING_SPECS, footprintTiles, placementCost } from '../buildings/buildingSpecs';
+import { BUILDING_SPECS, footprintTiles } from '../buildings/buildingSpecs';
+import { buildLimitReached, nextCopyCost } from '../buildings/buildLimit';
 import type { AccessMode } from '../buildings/buildingDefinition';
 import type { Coord } from './coord';
 import { frontDirection, neighbour, tileKey } from './geometry';
@@ -6,15 +7,9 @@ import { isInsideOwnedParcels, isRoadLike, occupiedTiles } from './occupancy';
 import { touchesWater } from '../water/marina';
 import type { BuildingType, GameState, Rotation } from '../engine/state';
 
-export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.needsWater' | 'error.storehouseExists' | 'error.siloExists' | 'error.vaultExists' | 'error.grainSiloExists' | 'error.noFarm' | 'error.farmExists' | 'error.packhouseExists' | 'error.townHallExists' | 'error.notEnoughUrbs';
+export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.needsWater' | 'error.buildingLimitReached' | 'error.noFarm' | 'error.townHallExists' | 'error.notEnoughUrbs';
 
 const UNIQUE_BUILDING_ERRORS: Partial<Record<BuildingType, PlacementIssue>> = {
-  storehouse: 'error.storehouseExists',
-  silo: 'error.siloExists',
-  vault: 'error.vaultExists',
-  grainSilo: 'error.grainSiloExists',
-  farm: 'error.farmExists',
-  packhouse: 'error.packhouseExists',
   townHall: 'error.townHallExists',
 };
 
@@ -76,7 +71,8 @@ export function placementIssue(
   if (isMove) return null;
   const existsError = UNIQUE_BUILDING_ERRORS[type];
   if (existsError && state.buildings.some((building) => building.type === type)) return existsError;
+  if (buildLimitReached(state, type)) return 'error.buildingLimitReached';
   if (type === 'grainSilo' && !state.buildings.some((building) => building.type === 'farm')) return 'error.noFarm';
-  if (state.urbs < placementCost(type)) return 'error.notEnoughUrbs';
+  if (state.urbs < nextCopyCost(state, type)) return 'error.notEnoughUrbs';
   return null;
 }

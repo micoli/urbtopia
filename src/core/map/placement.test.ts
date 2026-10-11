@@ -95,9 +95,9 @@ describe('PlaceBuilding', () => {
     expect(failureKey({ ...initial, urbs: 10 }, place('powerPlant', 70, 70))).toBe('error.notEnoughUrbs');
   });
 
-  it('allows a single Storehouse per city', () => {
+  it('allows a single Storehouse until the city has enough Citizens', () => {
     const state = succeed(initial, place('storehouse', 56, 59));
-    expect(failureKey(state, place('storehouse', 58, 59))).toBe('error.storehouseExists');
+    expect(failureKey(state, place('storehouse', 58, 59))).toBe('error.buildingLimitReached');
   });
 });
 

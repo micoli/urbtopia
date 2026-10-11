@@ -17,7 +17,7 @@ import {
   isWithinReach,
   previewFacilityCoverage,
   frontDirection,
-  placementCost,
+  nextCopyCost,
   roadBuildCost,
   roadPath,
   roundaboutTiles,
@@ -146,7 +146,7 @@ export function selectionGhost(state: GameState, buildingId: number | null, show
 export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext): Evaluation {
   switch (tool.kind) {
     case 'building':
-      return evaluateBuilding(state, tool.buildingType, tile, rotation, { type: 'PlaceBuilding', buildingType: tool.buildingType, solar: tool.solar, colorVariant: tool.colorVariant }, placementCost(tool.buildingType) + (tool.solar ? 180 : 0));
+      return evaluateBuilding(state, tool.buildingType, tile, rotation, { type: 'PlaceBuilding', buildingType: tool.buildingType, solar: tool.solar, colorVariant: tool.colorVariant }, nextCopyCost(state, tool.buildingType) + (tool.solar ? 180 : 0));
     case 'move': {
       const building = state.buildings.find((candidate) => candidate.id === tool.buildingId);
       if (!building) return evaluation([tile], null, state);

@@ -17,15 +17,17 @@ export interface BuildingSpec {
   requiresRoad: boolean;
   accessModes: readonly AccessMode[];
   initialSlots: number;
+  extraCopyCitizens: readonly number[];
+  priceFactor: number;
 }
 
-function specOf({ footprint, cost, requiresRoad, accessModes, initialSlots, family }: BuildingEntry): BuildingSpec {
+function specOf({ footprint, cost, requiresRoad, accessModes, initialSlots, extraCopyCitizens, priceFactor, family }: BuildingEntry): BuildingSpec {
   if (family) {
     const profile = NATURE_FAMILIES[family];
-    return { footprint: { width: profile.size, depth: profile.size }, cost: profile.cost, requiresRoad: false, accessModes: [], initialSlots: 0 };
+    return { footprint: { width: profile.size, depth: profile.size }, cost: profile.cost, requiresRoad: false, accessModes: [], initialSlots: 0, extraCopyCitizens: [], priceFactor: 1 };
   }
   const [width, depth] = footprint!;
-  return { footprint: { width, depth }, cost: cost!, requiresRoad: requiresRoad!, accessModes: accessModes ?? (requiresRoad ? ['road'] : []), initialSlots: initialSlots ?? 0 };
+  return { footprint: { width, depth }, cost: cost!, requiresRoad: requiresRoad!, accessModes: accessModes ?? (requiresRoad ? ['road'] : []), initialSlots: initialSlots ?? 0, extraCopyCitizens: extraCopyCitizens ?? [], priceFactor: priceFactor ?? (extraCopyCitizens ? 2 : 1) };
 }
 
 export const BUILDING_SPECS = Object.fromEntries(BUILDING_ENTRIES.map(entry => [entry.id, specOf(entry)])) as Record<BuildingType, BuildingSpec>;

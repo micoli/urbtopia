@@ -26,6 +26,8 @@ const DOCS: Record<string, FieldDoc> = {
   saleIntervalFactor: d('Multiplies the time between two sales of a stack: below 1 sells faster.', 'Shop sales.'),
   jobs: d('How many Jobs the building offers at this Tier.', 'The Commute and Citizen workplaces.'),
   'shop.maxSlots': d('How many Slots the Shop can hold at this Tier.', 'Buying Slots in a Shop.'),
+  extraCopyCitizens: d('The Citizens the city needs to build each extra copy, in order: the first copy follows Unlock (Citizens). Leave it out to allow a single copy.', 'Build limit, build menu counter and lock, “build limit reached” errors.'),
+  priceFactor: d('Multiplies the cost for each copy already built: 2 makes the second copy cost twice and the third four times. Defaults to 2 when extra copies are allowed.', 'Placement cost and the build menu price.'),
   initialSlots: d('How many Slots a new building starts with.', 'Shops and workshops when they are built.'),
   tiers: d('Its levels. Each Tier inherits what it leaves out from the previous one.', 'Upgrades, the preview, the codex levels, and every rule that reads a value per Tier.'),
   variants: d('Visual alternatives of the first Tiers, with no effect on rules.', 'The scene (for instance a Home with solar panels).'),

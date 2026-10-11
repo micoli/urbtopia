@@ -1,6 +1,7 @@
 import { TRANSIT, extendNetwork, networkTiles, repairNetwork, validNetworkCrossings } from '../transit/transitNetwork';
 import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
 import { routeFailure, routeForLine } from '../transit/transport';
+import { nextCopyCost } from '../buildings/buildLimit';
 import { BUILDING_SPECS, createBuilding, emptyStack, placementCost } from '../buildings/buildingSpecs';
 import { isRetired } from '../buildings/buildingDefinitions';
 import { advance } from './advance';
@@ -134,12 +135,7 @@ export type ErrorKey =
   | 'error.invalidRound'
   | 'error.needsRoad'
   | 'error.needsRoadOrBrt'
-  | 'error.storehouseExists'
-  | 'error.siloExists'
-  | 'error.vaultExists'
-  | 'error.grainSiloExists'
-  | 'error.farmExists'
-  | 'error.packhouseExists'
+  | 'error.buildingLimitReached'
   | 'error.noFarm'
   | 'error.fieldCapReached'
   | 'error.noFieldHere'
@@ -452,12 +448,12 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
   const rotation = requestedRotation ?? autoRotation(state, type, x, y);
   const issue = placementIssue(state, type, x, y, rotation);
   if (issue) return fail(issue);
-  if (state.urbs < placementCost(type) + extraCost) return fail('error.notEnoughUrbs');
+  if (state.urbs < nextCopyCost(state, type) + extraCost) return fail('error.notEnoughUrbs');
   const building = { ...createBuilding(state.nextId, type, x, y, rotation), ...(solar ? { solar: true } : {}), ...(isHomeType(type) && colorVariant ? { colorVariant } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
   const utilityIssue = isHomeType(type) ? utilityIssueFor(state, tierDemand(1)) : isFacilityType(type) ? utilityIssueFor(state, { power: 0, water: FACILITIES[type].water }) : null;
   if (utilityIssue) return fail(utilityIssue);
   return {
-    state: { ...state, urbs: state.urbs - placementCost(type) - extraCost, nextId: state.nextId + 1, buildings: [...state.buildings, building] },
+    state: { ...state, urbs: state.urbs - nextCopyCost(state, type) - extraCost, nextId: state.nextId + 1, buildings: [...state.buildings, building] },
     events: [{ type: 'BuildingPlaced', id: building.id }],
   };
 }

@@ -113,7 +113,8 @@ export function convertBuilding(building: FlatBuilding, kind: BuildingKind): Fla
   const shared = { name: text, ...(description ? { description } : {}), ...(retired ? { retired } : {}) }
   const blank = blankBuilding(kind, model)
   if (kind === 'nature') return { ...blank, ...shared, model }
-  const placed = { section: building.section ?? blank.section, cost: building.cost ?? 0, unlockCitizens: building.unlockCitizens ?? 0, requiresRoad: building.requiresRoad ?? true, ...(building.accessModes ? { accessModes: building.accessModes } : {}), ...(building.initialSlots !== undefined ? { initialSlots: building.initialSlots } : {}) }
+  const repeatable = ['production', 'farm', 'storage'].includes(kind) ? { ...(building.extraCopyCitizens ? { extraCopyCitizens: building.extraCopyCitizens } : {}), ...(building.priceFactor !== undefined ? { priceFactor: building.priceFactor } : {}) } : {}
+  const placed = { ...repeatable, section: building.section ?? blank.section, cost: building.cost ?? 0, unlockCitizens: building.unlockCitizens ?? 0, requiresRoad: building.requiresRoad ?? true, ...(building.accessModes ? { accessModes: building.accessModes } : {}), ...(building.initialSlots !== undefined ? { initialSlots: building.initialSlots } : {}) }
   if (blank.tiers) return { ...blank, ...placed, ...shared, tiers: [{ ...blank.tiers[0], model, footprint }] }
   return { ...blank, ...placed, ...shared, model, footprint, kind }
 }

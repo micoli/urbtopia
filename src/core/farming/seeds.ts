@@ -9,8 +9,7 @@ export function seedStockUsed(state: GameState): number {
 }
 
 export function seedStockCapacity(state: GameState): number {
-  const farm = state.buildings.find((building) => building.type === 'farm');
-  return farm ? farmTier(farm).seedCapacity : 0;
+  return state.buildings.filter((building) => building.type === 'farm').reduce((total, farm) => total + farmTier(farm).seedCapacity, 0);
 }
 
 const SELL_RATIO = 0.5;
