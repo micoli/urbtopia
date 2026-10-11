@@ -488,8 +488,9 @@ function renameStop(state: GameState, id: number, rawName: string): CommandOutco
   if (!building) return fail('error.unknownBuilding');
   if (!isTransitStopType(building.type)) return fail('error.notTransitStop');
   const name = rawName.trim().slice(0, STOP_NAME_MAX_LENGTH);
-  const { name: _previous, ...rest } = building;
-  const renamed = name ? { ...rest, name } : rest;
+  const renamed = { ...building };
+  if (name) renamed.name = name;
+  else delete renamed.name;
   return { state: { ...state, buildings: state.buildings.map(b => b === building ? renamed : b) }, events: [] };
 }
 
