@@ -2167,7 +2167,7 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   .eco-needs-table { display: block; overflow-x: auto; }
 }
 
-.radial-item, .dock-button, .bottom-bar-button { position: relative; }
+.dock-button, .bottom-bar-button { position: relative; }
 .nav-badge {
   position: absolute;
   top: 2px;
