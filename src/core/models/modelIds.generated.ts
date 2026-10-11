@@ -330,6 +330,7 @@ export type ModelId =
   | 'industrial-solar-panel-portrait-group'
   | 'industrial-water-tower'
   | 'industrial-windmill'
+  | 'industrial-windmill-low'
   | 'materials-clay'
   | 'materials-coal'
   | 'materials-fish'

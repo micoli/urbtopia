@@ -2007,6 +2007,11 @@
       1
     ]
   },
+  "industrial-windmill-low": {
+    "file": "industrial/windmill-low",
+    "source": "kenney",
+    "license": "CC0"
+  },
   "materials-clay": {
     "file": "materials/clay",
     "source": "managed",

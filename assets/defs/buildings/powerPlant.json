@@ -16,7 +16,7 @@
   },
   "tiers": [
     {
-      "model": "industrial-windmill",
+      "model": "industrial-windmill-low",
       "footprint": [1, 1],
       "capacity": 12
     },
@@ -36,7 +36,8 @@
         "goods": {
           "tools": 3
         }
-      }
+      },
+      "model": "industrial-windmill"
     }
   ]
 }
