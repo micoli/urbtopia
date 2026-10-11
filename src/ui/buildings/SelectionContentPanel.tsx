@@ -1,7 +1,8 @@
 import { EcologicalBuildingPanel } from './EcologicalBuildingPanel';
 import { DecorationRotation } from './DecorationRotation';
 import { CoalPlantPanel } from './CoalPlantPanel';
-import { GAME_CONFIG, isShopType, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost, isHomeType, isUtilityType } from '../../core';
+import { StopNameField } from './StopNameField';
+import { GAME_CONFIG, isShopType, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost, isHomeType, isUtilityType, isTransitStopType } from '../../core';
 import { t } from '../../i18n/t';
 import { FacilityPanel } from './FacilityPanel';
 import { CasinoPanel } from '../casino/CasinoPanel';
@@ -33,6 +34,7 @@ export function SelectionContentPanel() {
     <>
       <PanelHeader title={t(`building.${building.type}`)} subtitle={building.tier} onClose={() => select(null)} />
       <BuildingAccess building={building} />
+      {isTransitStopType(building.type) ? <StopNameField building={building} /> : null}
       {building.type === 'workshop' || building.type === 'factory' || building.type === 'packhouse' ? <ProductionPanel building={building} /> : null}
       {building.type === 'farm' ? <FarmPanel building={building} /> : null}
       {isHomeType(building.type) ? <HomePanel building={building} /> : null}

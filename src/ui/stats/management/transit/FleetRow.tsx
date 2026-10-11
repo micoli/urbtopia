@@ -1,19 +1,21 @@
-import type { TransitLine, TransitVehicle } from '../../../../core';
+import type { Building, TransitLine, TransitVehicle } from '../../../../core';
 import { t } from '../../../../i18n/t.ts';
 import { gameStore } from '../../../../store/gameStore.ts';
 import { Dropdown } from '../../../common/Dropdown.tsx';
 import { IconButton } from '../../../common/IconButton.tsx';
 import { UrbsAmount } from '../../../common/UrbsAmount.tsx';
 import type { LineSummary } from './LineMetrics.tsx';
+import { stopLabel } from './stopLabel.ts';
 import { vehicleStatusKey } from './vehicleStatusKey.ts';
 
 interface FleetRowProps {
   vehicle: TransitVehicle;
   compatibleLines: readonly TransitLine[];
   summary: LineSummary | undefined;
+  stopsById: ReadonlyMap<number, Building>;
 }
 
-export function FleetRow({ vehicle, compatibleLines, summary }: FleetRowProps) {
+export function FleetRow({ vehicle, compatibleLines, summary, stopsById }: FleetRowProps) {
   const assign = (lineId: number | '') => gameStore.getState().send({ type: 'AssignTransitVehicle', id: vehicle.id, lineId: lineId === '' ? undefined : lineId });
   return <tr>
     <td data-label={t('transit.vehicle')}>{t(`transit.${vehicle.kind}`)} #{vehicle.id}</td>
@@ -23,7 +25,7 @@ export function FleetRow({ vehicle, compatibleLines, summary }: FleetRowProps) {
         value={vehicle.lineId ?? ''}
         options={[
           { value: '', label: t('transit.unassigned') },
-          ...compatibleLines.map(line => ({ value: line.id, label: `#${line.id} · ${line.stops.join(' → ')}` })),
+          ...compatibleLines.map(line => ({ value: line.id, label: `#${line.id} · ${line.stops.map(id => stopLabel(stopsById.get(id), id)).join(' → ')}` })),
         ]}
         onChange={assign}
       />

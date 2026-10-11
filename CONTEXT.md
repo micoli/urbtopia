@@ -408,6 +408,10 @@ _Avoid_: Carbon offset, universal pollution compensation
 A visible roadside sign marking a public-transport stop that covers nearby Homes and activity locations.
 _Avoid_: Road STOP sign, station
 
+**Stop name**:
+A name the player gives to a Bus stop, BRT station or Railway station. It replaces the default designation of the stop wherever the stop is shown, and goes away with the stop. Without one, the stop keeps its default designation.
+_Avoid_: Label, Title
+
 **Bus line**:
 An ordered set of road-connected Bus stops, with operating costs and usage driven by useful residential and activity coverage. An active Bus line drives on the ordinary roads like any other Vehicle: it loads them and is slowed by their Congestion, which lowers its Effective speed and capacity.
 _Avoid_: Individual Citizen journey, decorative Traffic

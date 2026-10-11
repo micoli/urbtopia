@@ -224,3 +224,25 @@ describe('transit save format', () => {
     expect(validateGameState({ ...state, rails: [{ x: 1, y: 0, exits: ['up'] }] })).toBeNull();
   });
 });
+
+describe('stop names', () => {
+  const withBusStop = () => ({ ...city(), buildings: [createBuilding(1, 'busStop', 0, 1, 0)] });
+  const nameOf = (state: GameState) => state.buildings[0]!.name;
+  it('names a stop, trimming and capping the length', () => {
+    expect(nameOf(run(withBusStop(), { type: 'RenameStop', buildingId: 1, name: '  Central  ' }))).toBe('Central');
+    expect(nameOf(run(withBusStop(), { type: 'RenameStop', buildingId: 1, name: 'x'.repeat(60) }))).toHaveLength(40);
+  });
+  it('restores the default designation on an empty name', () => {
+    const named = run(withBusStop(), { type: 'RenameStop', buildingId: 1, name: 'Central' });
+    expect('name' in run(named, { type: 'RenameStop', buildingId: 1, name: '   ' }).buildings[0]!).toBe(false);
+  });
+  it('rejects buildings that are not stops', () => {
+    const result = dispatch(city(), { type: 'RenameStop', buildingId: 1, name: 'Home' }, 0);
+    expect(result.ok).toBe(false);
+  });
+  it('survives a save round trip', () => {
+    const named = run(withBusStop(), { type: 'RenameStop', buildingId: 1, name: 'Central' });
+    expect(validateGameState(JSON.parse(JSON.stringify(named)))).toBeTruthy();
+    expect(validateGameState({ ...named, buildings: [{ ...named.buildings[0]!, type: 'home' }] })).toBeFalsy();
+  });
+});

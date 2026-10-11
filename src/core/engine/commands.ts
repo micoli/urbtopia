@@ -41,6 +41,7 @@ import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch,
 import type { BlackjackAction } from '../leisure/blackjack';
 import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { STOP_NAME_MAX_LENGTH, isTransitStopType } from '../transit/stopNames';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -62,6 +63,7 @@ export type Command =
   | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation; readonly solar?: boolean; readonly colorVariant?: HomeColorVariant }
   | { readonly type: 'EquipHome'; readonly buildingId: number; readonly equipment: 'solar' | 'insulation' }
   | { readonly type: 'SetCoalEnabled'; readonly buildingId: number; readonly enabled: boolean }
+  | { readonly type: 'RenameStop'; readonly buildingId: number; readonly name: string }
   | { readonly type: 'SetBusLine'; readonly id?: number; readonly stops: number[] }
   | { readonly type: 'DeleteBusLine'; readonly id: number }
   | { readonly type: 'DismissEcology' }
@@ -162,6 +164,7 @@ export type ErrorKey =
   | 'error.maxRoadTier'
   | 'error.networkIntact'
   | 'error.cannotProduce'
+  | 'error.notTransitStop'
   | 'error.queueFull'
   | 'error.nothingToRush'
   | 'error.nothingToCollect'
@@ -233,6 +236,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return equipHome(state, command.buildingId, command.equipment);
     case 'SetCoalEnabled':
       return setCoalEnabled(state, command.buildingId, command.enabled);
+    case 'RenameStop':
+      return renameStop(state, command.buildingId, command.name);
     case 'SetBusLine':
       return setBusLine(state, command.id, command.stops);
     case 'DeleteBusLine':
@@ -463,6 +468,16 @@ function setCoalEnabled(state: GameState, id: number, enabled: boolean): Command
   if (!building) return fail('error.unknownBuilding');
   if (building.type !== 'coalPlant') return fail('error.cannotProduce');
   return { state: { ...state, buildings: state.buildings.map(b => b === building ? { ...b, coalEnabled: enabled } : b) }, events: [] };
+}
+
+function renameStop(state: GameState, id: number, rawName: string): CommandOutcome {
+  const building = state.buildings.find(b => b.id === id);
+  if (!building) return fail('error.unknownBuilding');
+  if (!isTransitStopType(building.type)) return fail('error.notTransitStop');
+  const name = rawName.trim().slice(0, STOP_NAME_MAX_LENGTH);
+  const { name: _previous, ...rest } = building;
+  const renamed = name ? { ...rest, name } : rest;
+  return { state: { ...state, buildings: state.buildings.map(b => b === building ? renamed : b) }, events: [] };
 }
 
 function sellBuilding(state: GameState, id: number): CommandOutcome {

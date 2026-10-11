@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, type GameState, type TutorialStep, isHomeType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TutorialStep, isHomeType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -76,6 +76,7 @@ function isBuilding(value: unknown): boolean {
     (value.solar === undefined || (isHomeType(value.type) && typeof value.solar === 'boolean')) &&
     (value.colorVariant === undefined || (isHomeType(value.type) && ['default', 'a', 'b', 'c'].includes(value.colorVariant as string))) &&
     (value.venue === undefined || (typeof value.type === 'string' && isVenueType(value.type) && isVenueData(value.venue))) &&
+    (value.name === undefined || (typeof value.type === 'string' && isTransitStopType(value.type) && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= STOP_NAME_MAX_LENGTH)) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&
     (value.storedEnergy === undefined || (value.type === 'battery' && isNonNegative(value.storedEnergy) && value.storedEnergy <= 24))
   );

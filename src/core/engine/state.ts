@@ -91,6 +91,7 @@ export interface Building extends Coord {
   colorVariant?: HomeColorVariant;
   storedEnergy?: number;
   coalEnabled?: boolean;
+  name?: string;
   venue?: VenueData;
 }
 

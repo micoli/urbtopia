@@ -11,6 +11,7 @@ import {
   DEFAULT_OFF_PEAK_HEADWAY, DEFAULT_PEAK_HEADWAY, HEADWAY_LIMITS, MODE_LABEL, STOP_TYPE, TRANSIT_MODES, findLine, unlockOf,
 } from './lineModels.ts';
 import { LineMetrics, type LineSummary } from './LineMetrics.tsx';
+import { stopLabel } from './stopLabel.ts';
 import { StopList } from './StopList.tsx';
 import { routeFailureKey } from './routeFailureKey.ts';
 
@@ -35,10 +36,7 @@ export function LineEditor({ lineId, summary, onSaved, onDeleted, onCancel }: Li
     return routeFailure(state, mode === 'bus' ? { id: 0, stops } : { id: 0, mode, stops, peakHeadway: peak, offPeakHeadway: offPeak });
   }, [state, mode, stops, peak, offPeak]);
   const stopsById = new Map(state.buildings.map(b => [b.id, b]));
-  const labelOf = (id: number) => {
-    const stop = stopsById.get(id);
-    return stop ? `${t(`building.${stop.type}`)} #${id} (${stop.x}, ${stop.y})` : `#${id}`;
-  };
+  const labelOf = (id: number) => stopLabel(stopsById.get(id), id);
   const candidates = state.buildings.filter(b => b.type === STOP_TYPE[mode] && !stops.includes(b.id));
   const canSave = stops.length >= 2 && !failure && citizens >= unlockOf(mode);
 

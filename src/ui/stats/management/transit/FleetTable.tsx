@@ -11,6 +11,7 @@ export function FleetTable({ state, transport }: FleetTableProps) {
   const fleet = state.transitFleet ?? [];
   if (!fleet.length) return <p>{t('transit.noVehicles')}</p>;
   const lines = state.transitLines ?? [];
+  const stopsById = new Map(state.buildings.map(b => [b.id, b]));
   return <table className="transit-table">
     <thead>
       <tr>
@@ -25,6 +26,7 @@ export function FleetTable({ state, transport }: FleetTableProps) {
         key={vehicle.id}
         vehicle={vehicle}
         compatibleLines={lines.filter(line => line.mode === TRANSIT[vehicle.kind].mode)}
+        stopsById={stopsById}
         summary={transport.lines.find(line => line.id === vehicle.lineId)}
       />)}
     </tbody>

@@ -1350,6 +1350,7 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .transit-stop-list { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; list-style: none; }
 .transit-stop { display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.06); font-size: 13px; }
 .transit-stop-index { width: 1.5em; color: var(--eco-accent); font-weight: 700; }
+.stop-name-field { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
 .transit-stop-label { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .transit-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
 .eco-dashboard .transit-error { margin: 8px 0; padding: 12px; border-left: 3px solid #ff9d8a; border-radius: 8px; background: rgba(255, 157, 138, 0.08); }
