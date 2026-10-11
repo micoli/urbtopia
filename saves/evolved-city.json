@@ -1,6 +1,6 @@
 {
   "format": "urbtopia-save",
-  "version": 12,
+  "version": 13,
   "savedAt": 1790000000000,
   "state": {
     "brtRoads": [],
@@ -412,7 +412,7 @@
       },
       {
         "id": 25,
-        "type": "silo",
+        "type": "materialDepot",
         "x": 58,
         "y": 59,
         "rotation": 0,

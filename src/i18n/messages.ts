@@ -199,7 +199,7 @@ export const MESSAGES = {
   "codex.economy.perHour": "Profit per hour",
   "codex.economy.order": "Unlock order",
   "codex.storage.title": "Storage rules",
-  "codex.storage.intro": "Every Storehouse, Silo, Vault and Grain silo adds its capacity to the city's: the totals below are the sum of all of them. Each copy has its own Tiers.",
+  "codex.storage.intro": "Every Storehouse, Material depot, Vault and Grain silo adds its capacity to the city's: the totals below are the sum of all of them. Each copy has its own Tiers.",
   "codex.storage.farm": "Each Farm adds {capacity} Crops of base capacity, so the first Harvest is never blocked.",
   "codex.storage.floor": "With a Storehouse, the Materials and Goods capacity never falls below what your Workshops, Factories and Packhouses can yield in one cycle.",
   "codex.storage.limit": "More copies of a building open as the city grows. Each copy built multiplies the price of the next one.",

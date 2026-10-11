@@ -201,7 +201,7 @@ export const FR: Record<MessageKey, string> = {
   "codex.economy.perHour": "Gain par heure",
   "codex.economy.order": "Ordre de déblocage",
   "codex.storage.title": "Règles de stockage",
-  "codex.storage.intro": "Chaque entrepôt, silo, chambre forte et silo agricole ajoute sa capacité à celle de la ville : les totaux ci-dessous sont la somme de tous. Chaque exemplaire a ses propres niveaux.",
+  "codex.storage.intro": "Chaque entrepôt, dépôt de matériaux, chambre forte et silo agricole ajoute sa capacité à celle de la ville : les totaux ci-dessous sont la somme de tous. Chaque exemplaire a ses propres niveaux.",
   "codex.storage.farm": "Chaque ferme ajoute {capacity} récoltes de capacité de base, pour que la première récolte ne soit jamais bloquée.",
   "codex.storage.floor": "Avec un entrepôt, la capacité en matériaux et en produits ne descend jamais sous ce que vos ateliers, usines et ateliers de conditionnement peuvent produire en un cycle.",
   "codex.storage.limit": "Des exemplaires supplémentaires s'ouvrent à mesure que la ville grandit. Chaque exemplaire construit multiplie le prix du suivant.",

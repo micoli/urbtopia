@@ -80,7 +80,7 @@ const farmBuilding = z.strictObject({
   tiers: tiersOf({ ...homeLook, seedCapacity: count, fieldCap: count }, ['model', 'footprint', 'seedCapacity', 'fieldCap']),
 });
 
-// Storehouse, Silo, Vault, Grain silo: the capacity each Tier adds to each compartment, summed over the city's storages.
+// Storehouse, Material depot, Vault, Grain silo: the capacity each Tier adds to each compartment, summed over the city's storages.
 const storageBuilding = z.strictObject({
   kind: z.literal('storage'),
   ...identity,

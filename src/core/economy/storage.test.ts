@@ -48,7 +48,7 @@ describe('storage capacity follows production queues', () => {
     const state = productionCity();
     const upgraded = { ...state, buildings: state.buildings.map(building => building.id === 1 ? { ...building, tier: 6 } : building) };
     expect(storageCapacity(upgraded)).toEqual({ materials: 70, crops: 0, goods: 140 });
-    expect(storageCapacity({ ...state, buildings: [...state.buildings, createBuilding(7, 'silo', 70, 55, 0), createBuilding(8, 'vault', 70, 60, 0)] })).toEqual({ materials: 60, crops: 0, goods: 120 });
+    expect(storageCapacity({ ...state, buildings: [...state.buildings, createBuilding(7, 'materialDepot', 70, 55, 0), createBuilding(8, 'vault', 70, 60, 0)] })).toEqual({ materials: 60, crops: 0, goods: 120 });
   });
 
   it('collects all full queues without running out of storage', () => {

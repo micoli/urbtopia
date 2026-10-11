@@ -7,12 +7,12 @@
   "unlockCitizens": 0,
   "requiresRoad": true,
   "name": {
-    "en": "Silo",
-    "fr": "Silo"
+    "en": "Material depot",
+    "fr": "Dépôt de matériaux"
   },
   "description": {
-    "en": "Adds storage capacity for Materials. Only one Silo can be built; upgrades increase this capacity.",
-    "fr": "Ajoute de la capacité de stockage pour les matériaux. Un seul silo peut être construit ; ses améliorations augmentent cette capacité."
+    "en": "Adds storage capacity for Materials. Several can be built as the city grows; upgrades increase each one's capacity.",
+    "fr": "Ajoute de la capacité de stockage pour les matériaux. Plusieurs peuvent être construits à mesure que la ville grandit ; leurs améliorations augmentent la capacité de chacun."
   },
   "tiers": [
     {

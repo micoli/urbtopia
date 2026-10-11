@@ -22,7 +22,7 @@ describe('Good values follow the unlock order', () => {
 });
 
 describe('Upgrade costs', () => {
-  const upgradable = (['home', 'workshop', 'factory', 'storehouse', 'silo', 'vault', 'powerPlant', 'waterTower', 'casino'] satisfies BuildingType[]);
+  const upgradable = (['home', 'workshop', 'factory', 'storehouse', 'materialDepot', 'vault', 'powerPlant', 'waterTower', 'casino'] satisfies BuildingType[]);
 
   it.each(upgradable)('%s costs strictly more Urbs at every Tier', (type) => {
     let previous = 0;
@@ -45,10 +45,10 @@ describe('Late game reach', () => {
 
 describe('Specialized storages', () => {
   it('give more capacity per Urb than the Storehouse', () => {
-    const perUrb = (type: 'storehouse' | 'silo' | 'vault', compartment: 'materials' | 'goods') => storageTierOf(type, 1)[compartment] / placementCost(type);
-    expect(perUrb('silo', 'materials')).toBeGreaterThan(perUrb('storehouse', 'materials'));
+    const perUrb = (type: 'storehouse' | 'materialDepot' | 'vault', compartment: 'materials' | 'goods') => storageTierOf(type, 1)[compartment] / placementCost(type);
+    expect(perUrb('materialDepot', 'materials')).toBeGreaterThan(perUrb('storehouse', 'materials'));
     expect(perUrb('vault', 'goods')).toBeGreaterThan(perUrb('storehouse', 'goods'));
-    expect(BUILDING_SPECS.silo.cost).toBeLessThan(BUILDING_SPECS.storehouse.cost);
+    expect(BUILDING_SPECS.materialDepot.cost).toBeLessThan(BUILDING_SPECS.storehouse.cost);
   });
 });
 

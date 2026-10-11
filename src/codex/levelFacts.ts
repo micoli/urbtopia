@@ -93,7 +93,7 @@ export function levelFactsOf(id: CodexId, level: number): LevelFact[] {
     numericFact('codex.fact.seedCapacity', tier => farmTier({ type: id, tier }).seedCapacity, level),
     numericFact('codex.fact.fieldCap', tier => farmTier({ type: id, tier }).fieldCap, level),
   ];
-  if (id === 'storehouse' || id === 'silo' || id === 'vault' || id === 'grainSilo') return storageFacts(id, level);
+  if (id === 'storehouse' || id === 'materialDepot' || id === 'vault' || id === 'grainSilo') return storageFacts(id, level);
   if (id === 'powerPlant' || id === 'waterTower') return [numericFact('codex.fact.output', tier => UTILITY_CAPACITY[id][tier - 1] ?? 0, level)];
   if (id === 'coalPlant') return [numericFact('codex.fact.output', tier => COAL_CAPACITY[tier - 1] ?? 0, level)];
   if (id === 'marina') return [numericFact('codex.fact.boats', tier => marinaCapacity({ tier }), level)];

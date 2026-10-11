@@ -25,6 +25,7 @@ export type BuildingId =
   | 'hospital'
   | 'hotel'
   | 'marina'
+  | 'materialDepot'
   | 'middleSchool'
   | 'mini-forest-building-platform'
   | 'mini-forest-building-roof'
@@ -216,7 +217,6 @@ export type BuildingId =
   | 'shopEquipment'
   | 'shopFood'
   | 'shopLuxury'
-  | 'silo'
   | 'solar'
   | 'stadium'
   | 'storehouse'
@@ -418,7 +418,7 @@ export type NatureType =
 
 export type StorageType =
   | 'grainSilo'
-  | 'silo'
+  | 'materialDepot'
   | 'storehouse'
   | 'vault';
 

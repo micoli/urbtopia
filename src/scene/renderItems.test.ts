@@ -33,7 +33,7 @@ describe('renderItemsOf Tier models', () => {
       expect(renderItemsOf({ ...newGame({ seed: 'coal-models', now: 0 }), roads: [], buildings: [building] })).toEqual([{ model, x: 10.5, z: 20.5, rotation: 1 }]);
     }
   });
-  const modelAt = (type: 'factory' | 'storehouse' | 'silo' | 'vault' | 'grainSilo', tier: number) => {
+  const modelAt = (type: 'factory' | 'storehouse' | 'materialDepot' | 'vault' | 'grainSilo', tier: number) => {
     const building = { ...createBuilding(9, type, 10, 20, 0), tier };
     return renderItemsOf({ ...newGame({ seed: 'amber-fox-4821', now: 0 }), roads: [], buildings: [building] })[0]?.model;
   };
@@ -47,8 +47,8 @@ describe('renderItemsOf Tier models', () => {
     expect(modelAt('storehouse', 3)).not.toBe(modelAt('storehouse', 4));
   });
 
-  it('shows the Silo and the Vault with models of their own', () => {
-    expect(new Set([modelAt('storehouse', 1), modelAt('silo', 1), modelAt('vault', 1)]).size).toBe(3);
+  it('shows the Material depot and the Vault with models of their own', () => {
+    expect(new Set([modelAt('storehouse', 1), modelAt('materialDepot', 1), modelAt('vault', 1)]).size).toBe(3);
   });
 });
 

@@ -53,7 +53,7 @@ The original Shop, kept in the cities that have it and still buildable: it sells
 _Avoid_: Universal shop, Retired shop
 
 **Build limit**:
-The number of copies of a building the player may own at once. It rises with the Citizens count, by thresholds set for each building, and its list of thresholds gives the maximum. Applies to the Farm, Packhouse, Storehouse, Silo, Vault and Grain silo.
+The number of copies of a building the player may own at once. It rises with the Citizens count, by thresholds set for each building, and its list of thresholds gives the maximum. Applies to the Farm, Packhouse, Storehouse, Material depot, Vault and Grain silo.
 _Avoid_: Quota, cap (already the Field cap)
 
 **Escalating price**:
@@ -86,19 +86,19 @@ _Avoid_: Factory, cannery, packing plant
 
 **Storehouse**:
 The general storage that holds Materials and Goods, with a limited capacity. Several can be built, up to its Build limit; each has its own Tiers that raise its capacity, and capacities add up.
-_Avoid_: Warehouse, depot, inventory
+_Avoid_: Warehouse, inventory
 
-**Silo**:
+**Material depot**:
 A specialized storage that adds capacity to the Materials compartment only. Several can be built, up to its Build limit; each has its own Tiers.
-_Avoid_: Granary, bin
+_Avoid_: Silo (it holds grain: see Grain silo), bin
 
 **Grain silo**:
-A specialized storage that holds Crop Materials only, in a compartment of its own that the Storehouse and the Silo do not share. The Farm provides a small base capacity so the first Harvest is never blocked. Several can be built, up to its Build limit; each has its own Tiers.
-_Avoid_: Barn, granary, Silo (already the Materials storage)
+A specialized storage that holds Crop Materials only, in a compartment of its own that the Storehouse and the Material depot do not share. The Farm provides a small base capacity so the first Harvest is never blocked. Several can be built, up to its Build limit; each has its own Tiers.
+_Avoid_: Barn, granary
 
 **Vault**:
 A specialized storage that adds capacity to the Goods compartment only. Several can be built, up to its Build limit; each has its own Tiers.
-_Avoid_: Cellar, depot
+_Avoid_: Cellar
 
 **Home**:
 A residential building with eight Tiers (1 to 8) that houses citizens and upgrades by consuming Goods.

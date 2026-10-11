@@ -1,5 +1,7 @@
 # Three unique storages and a Tier on every upgradable building
 
+Partly superseded: storages are no longer unique. Each building now has a Build limit that rises with the Citizens, an Escalating price per copy, and capacities that add up across copies (see `CONTEXT.md`). The Silo is now the Material depot, id `materialDepot`; saves are migrated at version 13. The per-building `tier` decision still stands.
+
 Storage is split into three unique buildings (Storehouse, Silo, Vault) whose capacities add up per compartment, and the upgrade level moves from a global `storehouseLevel` in the state to a `tier` carried by each building. `Tier` becomes the single upgrade concept for Home, Workshop, Factory, Storehouse, Silo, Vault, Power plant and Water tower.
 
 ## Why

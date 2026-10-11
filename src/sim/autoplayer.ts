@@ -84,7 +84,7 @@ const SLOTS: Partial<Record<BuildingType, Coord[]>> = {
   home: [...row(50, 54, 59), ...row(62, 76, 59), ...row(50, 76, 69)],
   shop: [60, 62, 64, 66].map((y) => ({ x: 48, y })),
   storehouse: [{ x: 56, y: 59 }],
-  silo: [{ x: 58, y: 59 }],
+  materialDepot: [{ x: 58, y: 59 }],
   vault: [{ x: 60, y: 59 }],
   farm: [{ x: 50, y: 52 }],
   packhouse: [{ x: 54, y: 52 }],
@@ -221,7 +221,7 @@ function buildStorage(player: Player): boolean {
   const state = player.state();
   const capacity = storageCapacity(state);
   const used = storageUsed(state.storage);
-  if (countOf(state, 'silo') === 0 && used.materials >= capacity.materials * 0.9 && build(player, 'silo') === 'built') return true;
+  if (countOf(state, 'materialDepot') === 0 && used.materials >= capacity.materials * 0.9 && build(player, 'materialDepot') === 'built') return true;
   return countOf(state, 'vault') === 0 && used.goods >= capacity.goods * 0.9 && build(player, 'vault') === 'built';
 }
 
@@ -268,7 +268,7 @@ function upgradeCandidates(state: GameState): Candidate[] {
     if (building.tier >= maxTierOf(building.type)) continue;
     if ((building.type === 'powerPlant' || building.type === 'waterTower') && !isWeakestTightUtility(state, building)) continue;
     if (building.type === 'grainSilo' && !cropsAreTight(state)) continue;
-    if ((building.type === 'storehouse' || building.type === 'silo' || building.type === 'vault') && !storageIsTight) continue;
+    if ((building.type === 'storehouse' || building.type === 'materialDepot' || building.type === 'vault') && !storageIsTight) continue;
     const cost = upgradeCostOf(building.type, building.tier + 1);
     if (cost) candidates.push({ building, urbs: cost.urbs, goods: cost.goods });
   }

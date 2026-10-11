@@ -147,37 +147,37 @@ describe('Grain silo', () => {
   });
 });
 
-describe('Silo and Vault', () => {
-  const silo = succeed(withStorehouse, { type: 'PlaceBuilding', buildingType: 'silo', x: 58, y: 59 });
-  const both = succeed(silo, { type: 'PlaceBuilding', buildingType: 'vault', x: 60, y: 59 });
+describe('Material depot and Vault', () => {
+  const depot = succeed(withStorehouse, { type: 'PlaceBuilding', buildingType: 'materialDepot', x: 58, y: 59 });
+  const both = succeed(depot, { type: 'PlaceBuilding', buildingType: 'vault', x: 60, y: 59 });
   const idOf = (state: GameState, type: string) => state.buildings.find((b) => b.type === type)?.id ?? 0;
 
-  it('adds Materials capacity only for the Silo and Goods capacity only for the Vault', () => {
+  it('adds Materials capacity only for the Material depot and Goods capacity only for the Vault', () => {
     expect(storageCapacity(withStorehouse)).toEqual({ materials: 20, crops: 0, goods: 40 });
-    expect(storageCapacity(silo)).toEqual({ materials: 60, crops: 0, goods: 40 });
+    expect(storageCapacity(depot)).toEqual({ materials: 60, crops: 0, goods: 40 });
     expect(storageCapacity(both)).toEqual({ materials: 60, crops: 0, goods: 120 });
   });
 
   it('raises each capacity with its own Tier', () => {
-    const upgraded = succeed(succeed(both, upgrade(idOf(both, 'silo'))), upgrade(idOf(both, 'vault')));
+    const upgraded = succeed(succeed(both, upgrade(idOf(both, 'materialDepot'))), upgrade(idOf(both, 'vault')));
     expect(storageCapacity(upgraded)).toEqual({ materials: 80, crops: 0, goods: 160 });
   });
 
-  it('allows a single Silo and a single Vault until the city has enough Citizens', () => {
-    expect(failureKey(both, { type: 'PlaceBuilding', buildingType: 'silo', x: 54, y: 59 })).toBe('error.buildingLimitReached');
+  it('allows a single Material depot and a single Vault until the city has enough Citizens', () => {
+    expect(failureKey(both, { type: 'PlaceBuilding', buildingType: 'materialDepot', x: 54, y: 59 })).toBe('error.buildingLimitReached');
     expect(failureKey(both, { type: 'PlaceBuilding', buildingType: 'vault', x: 52, y: 59 })).toBe('error.buildingLimitReached');
   });
 
-  it('stores Materials with a Silo alone', () => {
-    const siloOnly = succeed(rich, { type: 'PlaceBuilding', buildingType: 'silo', x: 58, y: 59 });
-    const queued = succeed(siloOnly, { type: 'QueueProduction', buildingId: WORKSHOP_ID, item: 'wood' });
+  it('stores Materials with a Material depot alone', () => {
+    const depotOnly = succeed(rich, { type: 'PlaceBuilding', buildingType: 'materialDepot', x: 58, y: 59 });
+    const queued = succeed(depotOnly, { type: 'QueueProduction', buildingId: WORKSHOP_ID, item: 'wood' });
     const collected = succeed(advance(queued, T0 + MINUTE).state, { type: 'Collect', buildingId: WORKSHOP_ID }, T0 + MINUTE);
     expect(collected.storage.materials.wood).toBe(1);
   });
 
   it('refuses to sell a storage when the stock would no longer fit', () => {
     const full: GameState = { ...both, storage: { materials: { wood: 50 }, goods: {} } };
-    expect(failureKey(full, { type: 'SellBuilding', id: idOf(full, 'silo') })).toBe('error.storageInUse');
+    expect(failureKey(full, { type: 'SellBuilding', id: idOf(full, 'materialDepot') })).toBe('error.storageInUse');
     expect(failureKey(full, { type: 'SellBuilding', id: idOf(full, 'vault') })).toBeNull();
   });
 });

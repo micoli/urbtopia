@@ -40,7 +40,7 @@ export function buildEvolvedCity(): GameState {
   const factories = [2, place('factory', 56, 56, 5), place('factory', 58, 56, 4), place('factory', 62, 56, 3), place('factory', 54, 66, 5), place('factory', 56, 66, 4), place('factory', 58, 66, 2)];
 
   place('storehouse', 56, 59, 6);
-  place('silo', 58, 59, 4);
+  place('materialDepot', 58, 59, 4);
   place('vault', 60, 59, 4);
   const shops = [place('shop', 62, 59, 2), place('shop', 63, 59), place('shop', 64, 59, 3)];
 

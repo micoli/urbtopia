@@ -16,7 +16,7 @@ afterEach(() => {
 });
 
 describe('deletion undo', () => {
-  it.each(['shop', 'storehouse', 'silo', 'vault', 'home', 'factory', 'powerPlant', 'waterTower'] as const)('restores a %s with its Tier and Slots', (type) => {
+  it.each(['shop', 'storehouse', 'materialDepot', 'vault', 'home', 'factory', 'powerPlant', 'waterTower'] as const)('restores a %s with its Tier and Slots', (type) => {
     vi.spyOn(Date, 'now').mockReturnValue(NOW);
     const building = { ...createBuilding(10, type, 65, 65, 0), tier: 2, slotCount: 3 };
     const state = { ...initial(), buildings: [building] };

@@ -3,11 +3,11 @@ import { STORAGE_TYPES, storageTierOf } from './economy';
 import { maxTierOf } from './tiers';
 
 // The unfolded Tiers keep the former rule: a base capacity plus a fixed step per Tier.
-const MAX_TIER = { storehouse: 10, silo: 6, vault: 6, grainSilo: 10 } as const;
+const MAX_TIER = { storehouse: 10, materialDepot: 6, vault: 6, grainSilo: 10 } as const;
 
 const FORMER = {
   storehouse: { materials: [20, 10], goods: [40, 20], crops: [0, 0] },
-  silo: { materials: [40, 20], goods: [0, 0], crops: [0, 0] },
+  materialDepot: { materials: [40, 20], goods: [0, 0], crops: [0, 0] },
   vault: { materials: [0, 0], goods: [80, 40], crops: [0, 0] },
   grainSilo: { materials: [0, 0], goods: [0, 0], crops: [40, 20] },
 } as const;

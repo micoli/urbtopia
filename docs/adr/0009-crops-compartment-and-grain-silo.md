@@ -1,5 +1,7 @@
 # A crops compartment filled by the Grain silo
 
+Note: the Silo this ADR refers to was later renamed the Material depot (id `materialDepot`), with a save migration at version 13, so "renaming the Silo" below was rejected at the time and done afterwards. Grain silos are now limited by a Build limit instead of being unique.
+
 Crop Materials get a storage compartment of their own, `crops`, next to `materials` and `goods`. Only the Grain silo (a new unique storage with Tiers, which requires a Farm) and the Farm itself (a base capacity of 10) add capacity to it. The Storehouse and the Silo no longer hold Crop Materials.
 
 ## Why
