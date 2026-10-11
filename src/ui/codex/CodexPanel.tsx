@@ -4,6 +4,7 @@ import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
 import { CodexEntryContent } from './CodexEntryContent';
 import { CropEconomyPage } from './CropEconomyPage';
+import { EnergyProductionPage } from './EnergyProductionPage';
 import { StorageRulesPage } from './StorageRulesPage';
 import { useCodexManifest } from './useCodexManifest';
 import { CloseButton } from '../common/CloseButton';
@@ -19,7 +20,7 @@ export function CodexPanel() {
   const heading = useId();
   const [selected, setSelected] = useState<CodexId>(initialEntry);
   const [showDetail, setShowDetail] = useState(initialDetail);
-  const [page, setPage] = useState<'economy' | 'storage' | null>(null);
+  const [page, setPage] = useState<'economy' | 'storage' | 'energy' | null>(null);
   const pageOpen = page !== null;
   const [openSection, setOpenSection] = useState<CodexSection>(CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
   const { manifest, failed, retry } = useCodexManifest();
@@ -80,6 +81,9 @@ export function CodexPanel() {
                 {section === 'codex.crops' && (
                   <button type="button" aria-current={page === 'economy' ? 'true' : undefined} onClick={() => { setPage('economy'); setShowDetail(true); }}>{t('codex.economy.title')}</button>
                 )}
+                {section === 'build.utilities' && (
+                  <button type="button" aria-current={page === 'energy' ? 'true' : undefined} onClick={() => { setPage('energy'); setShowDetail(true); }}>{t('codex.energy.title')}</button>
+                )}
                 {section === 'build.storage' && (
                   <button type="button" aria-current={page === 'storage' ? 'true' : undefined} onClick={() => { setPage('storage'); setShowDetail(true); }}>{t('codex.storage.title')}</button>
                 )}
@@ -90,9 +94,10 @@ export function CodexPanel() {
             );
           })}
         </nav>
-        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : entry.name)}>
+        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : page === 'energy' ? 'codex.energy.title' : entry.name)}>
           {page === 'economy' && <CropEconomyPage />}
           {page === 'storage' && <StorageRulesPage />}
+          {page === 'energy' && <EnergyProductionPage />}
           {!pageOpen && <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />}
           {!pageOpen && !manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}
         </article>

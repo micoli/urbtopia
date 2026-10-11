@@ -1423,6 +1423,10 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .codex-economy th:first-child { text-align: left; }
 .codex-economy th small { display: block; font-weight: 400; opacity: 0.7; }
 .codex-economy tr[data-unlocked='false'] { opacity: 0.5; }
+.codex-energy-chart { margin: 12px 0 0; }
+.codex-energy-chart svg { display: block; width: 100%; height: auto; }
+.codex-energy-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 8px 0 0; padding: 0; list-style: none; font-size: 13px; }
+.codex-energy-legend li { display: flex; align-items: center; gap: 6px; }
 .codex-back { display: none; }
 
 @media (max-width: 600px) {
