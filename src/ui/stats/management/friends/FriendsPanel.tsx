@@ -1,12 +1,18 @@
 import { t } from '../../../../i18n/t';
 import type { EmailLinkState } from '../../../../store/cloudStore';
-import type { HandleFormState, SocialStatus } from '../../../../store/socialStore';
+import type { ActionFailure, HandleFormState, SearchState, SocialActions, SocialStatus } from '../../../../store/socialStore';
 import type { CloudAccount } from '../../../../persistence/cloud/types';
 import type { SocialState } from '../../../../social/types';
 import { Note } from '../../../common/Note';
 import { EmailLinkForm } from '../../../system/EmailLinkForm';
+import { BlockedList } from './BlockedList';
 import { FindableToggle } from './FindableToggle';
+import { FriendList } from './FriendList';
+import { FriendSearchForm } from './FriendSearchForm';
 import { HandleForm } from './HandleForm';
+import { IncomingRequests } from './IncomingRequests';
+import { OutgoingRequests } from './OutgoingRequests';
+import { friendsErrorMessage } from './friendsErrorMessage';
 
 interface FriendsPanelProps {
     account: CloudAccount | null;
@@ -14,26 +20,33 @@ interface FriendsPanelProps {
     status: SocialStatus;
     profile: SocialState | null;
     handleForm: HandleFormState;
+    search: SearchState;
+    actionFailure: ActionFailure | null;
     now: number;
     changeDelayMs: number;
     onSendLink: (email: string) => void;
-    onSetHandle: (handle: string) => void;
-    onSetFindable: (findable: boolean) => void;
+    actions: Pick<SocialActions, 'setHandle' | 'setFindable' | 'sendRequest' | 'accept' | 'refuse' | 'remove' | 'block' | 'unblock'>;
 }
 
-export function FriendsPanel({account, emailLink, status, profile, handleForm, now, changeDelayMs, onSendLink, onSetHandle, onSetFindable}: FriendsPanelProps) {
+export function FriendsPanel({account, emailLink, status, profile, handleForm, search, actionFailure, now, changeDelayMs, onSendLink, actions}: FriendsPanelProps) {
     if (!account) return <p>{t('friends.connecting')}</p>;
     if (!account.email) return <>
         <p>{t('friends.needEmail')}</p>
         <EmailLinkForm state={emailLink} onSend={onSendLink}/>
     </>;
     if (status === 'offline') return <Note>{t('friends.offline')}</Note>;
-    if (status === 'no-handle') return <HandleForm current={null} changeWaitSeconds={0} state={handleForm} onSubmit={onSetHandle}/>;
+    if (status === 'no-handle') return <HandleForm current={null} changeWaitSeconds={0} state={handleForm} onSubmit={handle => void actions.setHandle(handle)}/>;
     if (!profile) return <p>{t('friends.connecting')}</p>;
     const waitSeconds = Math.ceil((profile.handleChangedAt + changeDelayMs - now) / 1000);
     return <>
+        <FriendSearchForm state={search} onSend={email => void actions.sendRequest(email)}/>
+        {actionFailure ? <Note>{friendsErrorMessage(actionFailure.error, actionFailure.retryAfterSeconds)}</Note> : null}
+        <IncomingRequests requests={profile.incoming} onAccept={id => void actions.accept(id)} onRefuse={id => void actions.refuse(id)} onBlock={id => void actions.block(id)}/>
+        <FriendList friends={profile.friends} onRemove={id => void actions.remove(id)} onBlock={id => void actions.block(id)}/>
+        <OutgoingRequests requests={profile.outgoing} onCancel={id => void actions.refuse(id)}/>
+        <BlockedList blocked={profile.blocked} onUnblock={id => void actions.unblock(id)}/>
         <p>{t('friends.handle.current')}: <strong>{profile.handle}</strong></p>
-        <HandleForm key={profile.handle} current={profile.handle} changeWaitSeconds={waitSeconds} state={handleForm} onSubmit={onSetHandle}/>
-        <FindableToggle findable={profile.findable} onChange={onSetFindable}/>
+        <HandleForm key={profile.handle} current={profile.handle} changeWaitSeconds={waitSeconds} state={handleForm} onSubmit={handle => void actions.setHandle(handle)}/>
+        <FindableToggle findable={profile.findable} onChange={findable => void actions.setFindable(findable)}/>
     </>;
 }

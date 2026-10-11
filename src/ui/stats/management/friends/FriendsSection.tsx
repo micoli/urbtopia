@@ -5,6 +5,8 @@ import { SectionHeading } from '../../../common/SectionHeading';
 import { FriendsPanel } from './FriendsPanel';
 
 const DAY_MS = 86_400_000;
+const noop = async () => {};
+const NO_ACTIONS = {setHandle: noop, setFindable: noop, sendRequest: noop, accept: noop, refuse: noop, remove: noop, block: noop, unblock: noop};
 
 export function FriendsSection() {
     const account = useCloud(s => s.account);
@@ -13,13 +15,14 @@ export function FriendsSection() {
     const status = useSocial(s => s.status);
     const profile = useSocial(s => s.profile);
     const handleForm = useSocial(s => s.handleForm);
+    const search = useSocial(s => s.search);
+    const actionFailure = useSocial(s => s.actionFailure);
     const actions = useSocial(s => s.actions);
     return <section id="eco-friends">
         <SectionHeading>{t('friends.title')}</SectionHeading>
         <FriendsPanel account={account} emailLink={emailLink} status={status} profile={profile} handleForm={handleForm}
                       now={Date.now()} changeDelayMs={HANDLE_CHANGE_DELAY_DAYS * DAY_MS}
                       onSendLink={email => void sendEmailLink?.(email)}
-                      onSetHandle={handle => void actions?.setHandle(handle)}
-                      onSetFindable={findable => void actions?.setFindable(findable)}/>
+                      search={search} actionFailure={actionFailure} actions={actions ?? NO_ACTIONS}/>
     </section>;
 }

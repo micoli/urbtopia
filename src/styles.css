@@ -2004,6 +2004,11 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .cloud-email, .cloud-account { display: grid; gap: 0.5rem; margin: 0.5rem 0; }
 .cloud-email input { padding: 0.4rem 0.5rem; font: inherit; }
 .friends-handle, .friends-findable { display: grid; gap: 0.5rem; margin: 0.5rem 0; }
+.friends-search, .friends-list { display: grid; gap: 0.5rem; margin: 0.75rem 0; }
+.friends-search input { padding: 0.4rem 0.5rem; font: inherit; }
+.friends-list ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
+.friends-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.friends-row strong { flex: 1 1 8rem; }
 .friends-handle label { display: grid; gap: 0.25rem; }
 .friends-handle input[type='text'] { padding: 0.4rem 0.5rem; font: inherit; }
 

@@ -1,8 +1,9 @@
 import type { SocialActions, SocialStore } from '../store/socialStore';
+import { isPlausibleEmail } from '../persistence/cloud/email';
 import { isValidHandle } from './handle';
 import { SocialError, type SocialClient } from './types';
 
-type Target = Pick<SocialStore, 'setStatus' | 'setProfile' | 'setHandleForm'>;
+type Target = Pick<SocialStore, 'setStatus' | 'setProfile' | 'setHandleForm' | 'setSearch' | 'setActionFailure'>;
 
 export function createSocialActions(client: SocialClient, target: Target): SocialActions {
   const refresh = async () => {
@@ -45,5 +46,42 @@ export function createSocialActions(client: SocialClient, target: Target): Socia
     await refresh();
   };
 
-  return { refresh, setHandle, setFindable };
+  const failureOf = (error: unknown): SocialError => (error instanceof SocialError ? error : new SocialError('unknown'));
+
+  const sendRequest = async (email: string) => {
+    const address = email.trim();
+    if (!isPlausibleEmail(address)) return target.setSearch({ kind: 'invalid-email' });
+    target.setSearch({ kind: 'sending' });
+    try {
+      await client.sendRequestByEmail(address);
+    } catch (error) {
+      const failure = failureOf(error);
+      return target.setSearch({ kind: 'error', error: failure.kind, retryAfterSeconds: failure.retryAfterSeconds });
+    }
+    target.setSearch({ kind: 'sent' });
+    await refresh();
+  };
+
+  const act = (run: (userId: string) => Promise<void>) => async (userId: string) => {
+    target.setActionFailure(null);
+    try {
+      await run(userId);
+    } catch (error) {
+      const failure = failureOf(error);
+      target.setActionFailure({ error: failure.kind, retryAfterSeconds: failure.retryAfterSeconds });
+    }
+    await refresh();
+  };
+
+  return {
+    refresh,
+    setHandle,
+    setFindable,
+    sendRequest,
+    accept: act((userId) => client.acceptRequest(userId)),
+    refuse: act((userId) => client.refuseRequest(userId)),
+    remove: act((userId) => client.removeFriend(userId)),
+    block: act((userId) => client.block(userId)),
+    unblock: act((userId) => client.unblock(userId)),
+  };
 }
