@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { MODEL_KEYS } from '../src/scene/renderItems';
 import { ARCHIVES_DIR, ASSET_PACKS, QUATERNIUS_PACKS } from './assetPacks';
 import { extractPack } from './extractPack';
-import { managedModelKeys } from './managedModels';
+import { managedModelKeys, reservedModelKeys } from './managedModels';
 import { availableModelKeys } from './modelReferences';
 
 const bytes = (text: string) => new TextEncoder().encode(text);
@@ -17,8 +17,8 @@ describe('asset packs', () => {
     expect(missing).toEqual([]);
   });
 
-  it('keep a hand-made model only when the scene uses it', () => {
-    const used = new Set(MODEL_KEYS);
+  it('keep a hand-made model only when the scene uses it or it is marked reserved', () => {
+    const used = new Set([...MODEL_KEYS, ...reservedModelKeys()]);
     expect(managedModelKeys().filter((key) => !used.has(key))).toEqual([]);
   });
 
