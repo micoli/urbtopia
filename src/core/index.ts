@@ -44,8 +44,8 @@ export { GOODS, MATERIALS, PACK_FORMATS, durationOf, isGood, isMaterial, minTier
 export type { BaseGoodId, CropBoxId, CropCrateId, CropPackId, CropPalletId, GoodId, GoodSpec, ItemId, MaterialId } from './economy/items';
 export { buyableParcels, isInsideMap, parcelPrice } from './map/parcels';
 export { marketPoints, marketQuote } from './economy/market';
-export { FARM_CROP_CAPACITY, MARKET, MAX_SLOTS, SHOP, SLOT_PRICES, STORAGE_TYPES, storageTierOf } from './economy/economy';
-export type { StorageTier, StorageType } from './economy/economy';
+export { FARM_CROP_CAPACITY, isUtilityType, MARKET, MAX_SLOTS, SHOP, SLOT_PRICES, STORAGE_TYPES, storageTierOf } from './economy/economy';
+export type { StorageTier, StorageType, UtilityType } from './economy/economy';
 export { canRemoveStorage, compartmentOf, hasStorage, isStorageEmpty, isStorageType, storageCapacity, storageUsed } from './economy/storage';
 export { createBuilding } from './buildings/buildingSpecs';
 export { isHomeType } from './buildings/buildingDefinitions';
@@ -63,7 +63,9 @@ export { TUTORIAL_STEPS, tutorialAllows, tutorialSkipMs } from './progression/tu
 export type { TutorialStep } from './progression/tutorial';
 
 export { ECOLOGY, ECOLOGY_UNLOCKS, distance as buildingDistance, homePower, economicPower, greenSpaceCoverage, greenBenefits, cityGreenBenefits } from './environment/ecology';
-export { energyStats, productionFactors } from './environment/energy';
+export { energyStats, generatorCapacity, generatorFactor, generatorOutput, productionFactors } from './environment/energy';
+export { ENERGY_SOURCES, energySources, sourceFactors, type EnergySource, type EnergySourceId } from './environment/energySources';
+export { flowFactor } from './water/flow';
 export { homeBenefits, cityBenefits, congestionPenaltyOf, isAdapting, wellbeingTaxFactor } from './environment/wellbeing';
 export { climateStats } from './environment/climate';
 export { transportStats, routeForLine, routeFailure } from './transit/transport';

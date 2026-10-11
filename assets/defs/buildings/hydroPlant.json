@@ -1,0 +1,43 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "utility",
+  "order": 180,
+  "section": "build.utilities",
+  "cost": 700,
+  "unlockCitizens": 60,
+  "requiresRoad": false,
+  "name": {
+    "en": "Hydro power plant",
+    "fr": "Centrale hydraulique"
+  },
+  "description": {
+    "en": "Produces clean electricity from water. It must touch a Water tile, and its output grows with the Water tiles connected to it, up to 8. Output varies slowly over the day; upgrades increase its capacity.",
+    "fr": "Produit de l’électricité propre grâce à l’eau. Elle doit toucher une tuile d’eau et sa production augmente avec les tuiles d’eau connectées, jusqu’à 8. Sa production varie lentement au fil de la journée ; les améliorations augmentent sa capacité."
+  },
+  "tiers": [
+    {
+      "model": "industrial-building-j",
+      "footprint": [1, 2],
+      "capacity": 14
+    },
+    {
+      "capacity": 28,
+      "upgradeCost": {
+        "urbs": 800,
+        "goods": {
+          "bricks": 4
+        }
+      }
+    },
+    {
+      "capacity": 45,
+      "upgradeCost": {
+        "urbs": 2200,
+        "goods": {
+          "tools": 4
+        }
+      }
+    }
+  ],
+  "extraCopyCitizens": [120, 240]
+}

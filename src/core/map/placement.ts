@@ -67,7 +67,7 @@ export function placementIssue(
   const occupied = occupiedTiles(state, ignoreBuildingId);
   if (tiles.some((tile) => occupied.has(tileKey(tile)))) return 'error.tilesOccupied';
   if (BUILDING_SPECS[type].requiresRoad && !frontHasAccess(state, type, x, y, rotation, tier)) return BUILDING_SPECS[type].accessModes.includes('brt') ? 'error.needsRoadOrBrt' : 'error.needsRoad';
-  if (type === 'marina' && !touchesWater(state, { type, x, y, rotation, tier })) return 'error.needsWater';
+  if ((type === 'marina' || type === 'hydroPlant') && !touchesWater(state, { type, x, y, rotation, tier })) return 'error.needsWater';
   if (isMove) return null;
   const existsError = UNIQUE_BUILDING_ERRORS[type];
   if (existsError && state.buildings.some((building) => building.type === type)) return existsError;

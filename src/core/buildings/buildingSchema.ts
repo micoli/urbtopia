@@ -89,11 +89,12 @@ const storageBuilding = z.strictObject({
   tiers: tiersOf({ ...homeLook, materials: count, goods: count, crops: count }, ['model', 'footprint', 'materials', 'goods', 'crops']),
 });
 
-// Power plant, Water tower, Coal Power plant: the power or water Capacity of each Tier.
+// Power plant, Water tower, Coal, Hydro and Geothermal power plant: the power or water Capacity of each Tier.
 const utilityBuilding = z.strictObject({
   kind: z.literal('utility'),
   ...identity,
   ...sited,
+  ...repeatable,
   tiers: tiersOf({ ...homeLook, capacity: count }, ['model', 'footprint', 'capacity']),
 });
 

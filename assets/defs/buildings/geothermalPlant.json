@@ -1,0 +1,43 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "utility",
+  "order": 200,
+  "section": "build.utilities",
+  "cost": 1500,
+  "unlockCitizens": 150,
+  "requiresRoad": false,
+  "name": {
+    "en": "Geothermal power plant",
+    "fr": "Centrale géothermique"
+  },
+  "description": {
+    "en": "Produces clean electricity from the heat of the ground, constant day and night whatever the weather. Costly, and the number of plants is limited; upgrades increase its capacity.",
+    "fr": "Produit de l’électricité propre grâce à la chaleur du sol, constante jour et nuit quelle que soit la météo. Coûteuse et en nombre limité ; les améliorations augmentent sa capacité."
+  },
+  "tiers": [
+    {
+      "model": "industrial-detail-tank-large",
+      "footprint": [1, 1],
+      "capacity": 10
+    },
+    {
+      "capacity": 20,
+      "upgradeCost": {
+        "urbs": 1200,
+        "goods": {
+          "bricks": 4
+        }
+      }
+    },
+    {
+      "capacity": 32,
+      "upgradeCost": {
+        "urbs": 3000,
+        "goods": {
+          "tools": 4
+        }
+      }
+    }
+  ],
+  "extraCopyCitizens": [300, 600]
+}

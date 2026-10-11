@@ -17,7 +17,7 @@ export const ECOLOGY = {
   // From the Neighborhood battery, Backup Power plant and Solar installation definitions.
   batteryCapacity: battery.storage!, batteryRate: battery.rate!, batteryRadius: battery.radius!, backupCapacity: backup.capacity!,
   backupCost: backup.costPerUnit!, solarOutput: definitionOf('solar').output!, busCost: 2, stopRadius: 6, lineCapacity: 120,
-  coalCost: 0.05, coalEmissions: 2, coalPollutionRadius: 6, coalWellbeingPenalty: 10, coalWellbeingCap: 20,
+  hydroFullFlowTiles: 8, hydroMinFactor: 0.8, coalCost: 0.05, coalEmissions: 2, coalPollutionRadius: 6, coalWellbeingPenalty: 10, coalWellbeingCap: 20,
 };
 
 export const ECOLOGY_UNLOCKS: Partial<Record<BuildingType, number>> = Object.fromEntries(

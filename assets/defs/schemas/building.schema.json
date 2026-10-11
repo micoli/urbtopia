@@ -1295,6 +1295,19 @@
           "minimum": 0,
           "maximum": 9007199254740991
         },
+        "extraCopyCitizens": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "priceFactor": {
+          "type": "number",
+          "minimum": 1
+        },
         "tiers": {
           "minItems": 1,
           "type": "array",
