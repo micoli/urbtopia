@@ -24,6 +24,7 @@ const profile: SocialState = {
   incoming: [],
   outgoing: [],
   blocked: [],
+  offers: [],
 };
 
 const panel = (props: Partial<Parameters<typeof FriendsPanel>[0]> = {}) =>

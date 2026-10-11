@@ -1,6 +1,8 @@
+import type { TradeLine } from '../core';
+import { FakeTradeBook } from './fakeTradeBook';
 import { isValidHandle } from './handle';
 import { HANDLE_CHANGE_DELAY_DAYS, MAX_FRIENDS, MAX_MESSAGE_LENGTH, MAX_MESSAGES_PER_MINUTE, MAX_OUTGOING_REQUESTS, SEARCHES_PER_DAY, SEARCHES_PER_HOUR } from './limits';
-import { SocialError, type Message, type SocialClient, type SocialSnapshot } from './types';
+import { SocialError, type Message, type SocialClient, type SocialSnapshot, type TradeClaim, type TradeSlot } from './types';
 
 const MINUTE_MS = 60_000;
 const HOUR_MS = 3_600_000;
@@ -41,8 +43,16 @@ export class FakeSocialWorld {
   private links: Link[] = [];
   messages: StoredMessage[] = [];
   private nextMessageId = 1;
+  readonly trades: FakeTradeBook;
 
-  constructor(readonly clock: () => number = () => 0) {}
+  constructor(readonly clock: () => number = () => 0) {
+    this.trades = new FakeTradeBook({
+      clock,
+      bump: (...userIds) => this.bump(...userIds),
+      areFriends: (a, b) => this.link(a, b)?.state === 'accepted',
+      handleOf: (userId) => this.member(userId).handle ?? '',
+    });
+  }
 
   addPlayer(userId: string, email: string | null = `${userId}@example.com`, handle: string | null = null): FakeSocialClient {
     this.members.set(userId, { userId, email: email ?? '', handle, findable: true, handleChangedAt: 0, revision: 1, searches: [] });
@@ -92,7 +102,10 @@ export class FakeSocialWorld {
       const [low, high] = a < b ? [a, b] : [b, a];
       this.links.push({ low, high, state, actorId, createdAt: now, updatedAt: now });
     }
-    if (state === 'blocked') this.deleteConversation(a, b);
+    if (state === 'blocked') {
+      this.deleteConversation(a, b);
+      this.trades.closeBetween(a, b);
+    }
     this.bump(a, b);
   }
 
@@ -112,7 +125,10 @@ export class FakeSocialWorld {
     const existing = this.link(a, b);
     if (!existing || existing.state !== state) return;
     this.links = this.links.filter((link) => link !== existing);
-    if (state === 'accepted') this.deleteConversation(a, b);
+    if (state === 'accepted') {
+      this.deleteConversation(a, b);
+      this.trades.closeBetween(a, b);
+    }
     this.bump(a, b);
   }
 
@@ -236,6 +252,7 @@ export class FakeSocialClient implements SocialClient {
       blocked: links
         .filter((link) => link.state === 'blocked' && link.actorId === this.userId)
         .map((link) => ({ userId: userIdOf(link), handle: handleOf(link) })),
+      offers: this.world.trades.listFor(this.userId),
     };
   }
 
@@ -262,6 +279,26 @@ export class FakeSocialClient implements SocialClient {
       .filter((message) => message.id > afterId && ((message.senderId === this.userId && message.recipientId === userId) || (message.senderId === userId && message.recipientId === this.userId)))
       .slice(-100)
       .map((message) => ({ id: message.id, fromMe: message.senderId === this.userId, body: message.body, at: message.createdAt }));
+  }
+
+  async createTradeOffer(id: string, to: string, lot: TradeLine[], price: number): Promise<void> {
+    this.guard();
+    this.world.trades.create(this.userId, id, to, lot, price);
+  }
+
+  async acceptTradeOffer(id: string): Promise<void> {
+    this.guard();
+    this.world.trades.accept(this.userId, id);
+  }
+
+  async declineTradeOffer(id: string): Promise<void> {
+    this.guard();
+    this.world.trades.decline(this.userId, id);
+  }
+
+  async claimTrade(id: string, slot: TradeSlot): Promise<TradeClaim> {
+    this.guard();
+    return this.world.trades.claim(this.userId, id, slot);
   }
 
   private conversationSummary(friendId: string): { unread: number; lastMessageAt: number | null } {

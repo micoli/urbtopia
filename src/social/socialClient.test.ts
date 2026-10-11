@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { FakeSocialWorld } from './fakeSocialClient';
 import { loadSocialClient } from './loadSocialClient';
-import { parseSnapshot } from './parseSnapshot';
+import { parseSnapshot, parseTradeClaim } from './parseSnapshot';
 import { toSocialError } from './supabaseSocialClient';
 import { SocialError } from './types';
 
@@ -19,6 +19,10 @@ describe('toSocialError', () => {
     ['urb_not_found', 'not-found'],
     ['urb_message_invalid', 'message-invalid'],
     ['urb_not_friends', 'not-friends'],
+    ['urb_trade_invalid', 'trade-invalid'],
+    ['urb_trade_conflict', 'trade-conflict'],
+    ['urb_trade_unavailable', 'trade-unavailable'],
+    ['urb_cap_trades_open', 'cap-trades-open'],
   ])('maps %s to %s', (message, kind) => {
     expect(toSocialError({ message }).kind).toBe(kind);
   });
@@ -60,6 +64,7 @@ describe('parseSnapshot', () => {
       incoming: [{ userId: 'c', handle: 'Carol', at: Date.parse('2026-10-11T12:00:00Z') }],
       outgoing: [],
       blocked: [{ userId: 'd', handle: 'Dave' }],
+      offers: [],
     });
   });
 
@@ -211,5 +216,143 @@ describe('FakeSocialClient messages', () => {
     await alice.sendRequestByEmail('b@example.com');
     await bob.acceptRequest('a');
     expect(await alice.listMessages('b')).toEqual([]);
+  });
+});
+
+describe('trade offers parsing', () => {
+  const offer = {
+    id: 'o1', role: 'recipient', peerId: 'a', peerHandle: 'Alice', lot: [{ item: 'wood', quantity: 3 }], price: 40, state: 'accepted',
+    createdAt: '2026-10-11T10:00:00Z', expiresAt: '2026-10-14T10:00:00Z', claimDeadline: '2026-10-14T11:00:00Z', claimable: ['lot'],
+  };
+  const full = { revision: 1, changed: true, handle: 'Bob', findable: true, handleChangedAt: '2026-10-11T10:00:00Z', friends: [], incoming: [], outgoing: [], blocked: [], offers: [offer] };
+
+  it('parses the offers of the social state, and defaults to none', () => {
+    const parsed = parseSnapshot(full);
+    expect(parsed).toMatchObject({ offers: [{ id: 'o1', role: 'recipient', peerHandle: 'Alice', price: 40, state: 'accepted', claimable: ['lot'], lot: [{ item: 'wood', quantity: 3 }] }] });
+    expect(parseSnapshot({ ...full, offers: undefined })).toMatchObject({ offers: [] });
+  });
+
+  it.each([
+    ['an unknown state', { ...offer, state: 'weird' }],
+    ['an unknown role', { ...offer, role: 'bystander' }],
+    ['an empty lot', { ...offer, lot: [] }],
+    ['a bad slot', { ...offer, claimable: ['key'] }],
+    ['a missing price', { ...offer, price: undefined }],
+  ])('rejects %s', (_label, bad) => {
+    expect(() => parseSnapshot({ ...full, offers: [bad] })).toThrow(SocialError);
+  });
+
+  it('parses a claim of a Lot and of a payment', () => {
+    expect(parseTradeClaim({ offerId: 'o1', slot: 'lot', effect: 'receive-lot', alreadyClaimed: false, lot: [{ item: 'wood', quantity: 3 }], urbs: null })).toEqual({
+      offerId: 'o1', slot: 'lot', effect: 'receive-lot', alreadyClaimed: false, lot: [{ item: 'wood', quantity: 3 }],
+    });
+    expect(parseTradeClaim({ offerId: 'o1', slot: 'payment', effect: 'receive-payment', alreadyClaimed: true, lot: null, urbs: 40 })).toEqual({
+      offerId: 'o1', slot: 'payment', effect: 'receive-payment', alreadyClaimed: true, urbs: 40,
+    });
+    expect(() => parseTradeClaim({ offerId: 'o1', slot: 'lot', effect: 'teleport', alreadyClaimed: false })).toThrow(SocialError);
+  });
+});
+
+describe('FakeSocialClient trade offers', () => {
+  const HOUR = 3_600_000;
+  const lot = [{ item: 'wood', quantity: 5 }];
+
+  async function friends() {
+    let now = 0;
+    const world = new FakeSocialWorld(() => now);
+    const alice = world.addPlayer('a');
+    const bob = world.addPlayer('b', 'b@example.com');
+    const carol = world.addPlayer('c', 'c@example.com');
+    await alice.setHandle('Alice');
+    await bob.setHandle('Bob');
+    await carol.setHandle('Carol');
+    await alice.sendRequestByEmail('b@example.com');
+    await bob.acceptRequest('a');
+    return { alice, bob, carol, advance: (ms: number) => (now += ms) };
+  }
+
+  const offersOf = async (client: { list(): Promise<unknown> }) => ((await client.list()) as { offers: { id: string; state: string; claimable: string[] }[] }).offers;
+
+  it('creates an offer idempotently and shows it to both sides, by Handle', async () => {
+    const { alice, bob } = await friends();
+    await alice.createTradeOffer('o1', 'b', lot, 50);
+    await alice.createTradeOffer('o1', 'b', lot, 50);
+    expect(await offersOf(alice)).toHaveLength(1);
+    expect(await bob.list()).toMatchObject({ offers: [{ id: 'o1', role: 'recipient', peerHandle: 'Alice', price: 50, state: 'open' }] });
+    await expect(alice.createTradeOffer('o1', 'b', lot, 60)).rejects.toMatchObject({ kind: 'trade-conflict' });
+  });
+
+  it('refuses invalid offers and non Friends', async () => {
+    const { alice } = await friends();
+    await expect(alice.createTradeOffer('o1', 'b', [], 5)).rejects.toMatchObject({ kind: 'trade-invalid' });
+    await expect(alice.createTradeOffer('o1', 'b', lot, 10_001)).rejects.toMatchObject({ kind: 'trade-invalid' });
+    await expect(alice.createTradeOffer('o1', 'a', lot, 5)).rejects.toMatchObject({ kind: 'trade-invalid' });
+    await expect(alice.createTradeOffer('o1', 'c', lot, 5)).rejects.toMatchObject({ kind: 'not-friends' });
+  });
+
+  it('limits open offers to 5 and offers per day to 30', async () => {
+    const { alice, bob, advance } = await friends();
+    for (let i = 0; i < 5; i += 1) await alice.createTradeOffer(`o${i}`, 'b', lot, 1);
+    await expect(alice.createTradeOffer('o5', 'b', lot, 1)).rejects.toMatchObject({ kind: 'cap-trades-open' });
+    for (let i = 0; i < 5; i += 1) await bob.declineTradeOffer(`o${i}`);
+    for (let i = 5; i < 30; i += 1) {
+      await alice.createTradeOffer(`o${i}`, 'b', lot, 1);
+      await bob.declineTradeOffer(`o${i}`);
+    }
+    await expect(alice.createTradeOffer('o30', 'b', lot, 1)).rejects.toMatchObject({ kind: 'rate-limited' });
+    advance(25 * HOUR);
+    await alice.createTradeOffer('o30', 'b', lot, 1);
+  });
+
+  it('settles a trade: the Lot goes to the recipient, then the payment to the sender, once each', async () => {
+    const { alice, bob } = await friends();
+    await alice.createTradeOffer('o1', 'b', lot, 50);
+    await expect(alice.acceptTradeOffer('o1')).rejects.toMatchObject({ kind: 'trade-unavailable' });
+    await bob.acceptTradeOffer('o1');
+    await expect(bob.acceptTradeOffer('o1')).rejects.toMatchObject({ kind: 'trade-unavailable' });
+    await expect(alice.claimTrade('o1', 'payment')).rejects.toMatchObject({ kind: 'trade-unavailable' });
+    expect((await offersOf(bob))[0]).toMatchObject({ claimable: ['lot'] });
+    expect(await bob.claimTrade('o1', 'lot')).toEqual({ offerId: 'o1', slot: 'lot', effect: 'receive-lot', alreadyClaimed: false, lot });
+    expect(await bob.claimTrade('o1', 'lot')).toMatchObject({ alreadyClaimed: true, lot });
+    expect((await offersOf(alice))[0]).toMatchObject({ claimable: ['payment'] });
+    expect(await alice.claimTrade('o1', 'payment')).toEqual({ offerId: 'o1', slot: 'payment', effect: 'receive-payment', alreadyClaimed: false, urbs: 50 });
+    expect(await alice.claimTrade('o1', 'payment')).toMatchObject({ alreadyClaimed: true });
+    await alice.claimTrade('o1', 'payment');
+    expect(await offersOf(alice)).toEqual([]);
+    expect(await offersOf(bob)).toEqual([]);
+  });
+
+  it('returns the Lot to the sender when the offer is refused or cancelled', async () => {
+    const { alice, bob } = await friends();
+    await alice.createTradeOffer('o1', 'b', lot, 5);
+    await alice.createTradeOffer('o2', 'b', lot, 5);
+    await bob.declineTradeOffer('o1');
+    await alice.declineTradeOffer('o2');
+    await expect(bob.claimTrade('o1', 'lot')).rejects.toMatchObject({ kind: 'trade-unavailable' });
+    expect(await alice.claimTrade('o1', 'lot')).toMatchObject({ effect: 'return-lot', lot });
+    expect(await alice.claimTrade('o2', 'lot')).toMatchObject({ effect: 'return-lot' });
+  });
+
+  it('expires an open offer after 72 hours and lapses an accepted one whose Lot is not claimed', async () => {
+    const { alice, bob, advance } = await friends();
+    await alice.createTradeOffer('o1', 'b', lot, 5);
+    await alice.createTradeOffer('o2', 'b', lot, 80);
+    await bob.acceptTradeOffer('o2');
+    advance(73 * HOUR);
+    expect((await offersOf(alice)).map((offer) => [offer.id, offer.state, offer.claimable])).toEqual(expect.arrayContaining([['o1', 'expired', ['lot']], ['o2', 'lapsed', ['lot']]]));
+    expect(await alice.claimTrade('o1', 'lot')).toMatchObject({ effect: 'return-lot' });
+    expect(await alice.claimTrade('o2', 'lot')).toMatchObject({ effect: 'return-lot' });
+    await expect(alice.claimTrade('o2', 'payment')).rejects.toMatchObject({ kind: 'trade-unavailable' });
+    expect(await bob.claimTrade('o2', 'payment')).toMatchObject({ effect: 'return-payment', urbs: 80 });
+  });
+
+  it('closes the offers between two players when they stop being Friends or one blocks the other', async () => {
+    const { alice, bob } = await friends();
+    await alice.createTradeOffer('o1', 'b', lot, 5);
+    await alice.createTradeOffer('o2', 'b', lot, 5);
+    await bob.acceptTradeOffer('o2');
+    await bob.block('a');
+    expect((await offersOf(alice)).map((offer) => [offer.id, offer.state])).toEqual(expect.arrayContaining([['o1', 'cancelled'], ['o2', 'lapsed']]));
+    expect(await alice.claimTrade('o1', 'lot')).toMatchObject({ effect: 'return-lot' });
   });
 });

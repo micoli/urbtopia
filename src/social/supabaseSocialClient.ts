@@ -1,9 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { CloudConfig } from '../persistence/cloud/cloudConfig';
-import type { Database } from '../persistence/cloud/database.types';
+import type { Database, Json } from '../persistence/cloud/database.types';
 import { loadSharedSupabase } from '../persistence/cloud/sharedSupabase';
-import { parseMessages, parseSnapshot } from './parseSnapshot';
-import { SocialError, type Message, type SocialClient, type SocialErrorKind, type SocialSnapshot } from './types';
+import type { TradeLine } from '../core';
+import { parseMessages, parseSnapshot, parseTradeClaim } from './parseSnapshot';
+import { SocialError, type Message, type SocialClient, type SocialErrorKind, type SocialSnapshot, type TradeClaim, type TradeSlot } from './types';
 
 type Client = SupabaseClient<Database>;
 
@@ -24,6 +25,10 @@ const MESSAGE_KINDS: ReadonlyArray<readonly [string, SocialErrorKind]> = [
   ['urb_rate_limited', 'rate-limited'],
   ['urb_message_invalid', 'message-invalid'],
   ['urb_not_friends', 'not-friends'],
+  ['urb_trade_invalid', 'trade-invalid'],
+  ['urb_trade_conflict', 'trade-conflict'],
+  ['urb_trade_unavailable', 'trade-unavailable'],
+  ['urb_cap_trades_open', 'cap-trades-open'],
   ['urb_cap_friends', 'cap-friends'],
   ['urb_cap_outgoing', 'cap-outgoing'],
   ['urb_not_found', 'not-found'],
@@ -97,6 +102,23 @@ class SupabaseSocialClient implements SocialClient {
   async listMessages(userId: string, afterId = 0): Promise<Message[]> {
     const data = await this.call(() => this.client.rpc('urb_list_messages', { p_with: userId, p_after: afterId }));
     return parseMessages(data);
+  }
+
+  async createTradeOffer(id: string, to: string, lot: TradeLine[], price: number): Promise<void> {
+    await this.call(() => this.client.rpc('urb_create_trade_offer', { p_id: id, p_to: to, p_lot: lot as unknown as Json, p_price: price }));
+  }
+
+  async acceptTradeOffer(id: string): Promise<void> {
+    await this.call(() => this.client.rpc('urb_accept_trade_offer', { p_id: id }));
+  }
+
+  async declineTradeOffer(id: string): Promise<void> {
+    await this.call(() => this.client.rpc('urb_decline_trade_offer', { p_id: id }));
+  }
+
+  async claimTrade(id: string, slot: TradeSlot): Promise<TradeClaim> {
+    const data = await this.call(() => this.client.rpc('urb_claim_trade', { p_id: id, p_slot: slot }));
+    return parseTradeClaim(data);
   }
 
   private async call<T>(request: () => PromiseLike<{ data: T; error: PostgrestFailure | null }>): Promise<T> {

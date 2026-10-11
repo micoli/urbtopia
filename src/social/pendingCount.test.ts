@@ -14,6 +14,7 @@ const profile: SocialState = {
   incoming: [{ userId: 'd', handle: 'Dave', at: 0 }],
   outgoing: [{ userId: 'e', handle: 'Erin', at: 0 }],
   blocked: [],
+  offers: [],
 };
 
 describe('pendingSocialCount', () => {

@@ -1,3 +1,5 @@
+import type { TradeEffect, TradeLine } from '../core';
+
 export type SocialErrorKind =
   | 'offline'
   | 'unauthenticated'
@@ -10,6 +12,10 @@ export type SocialErrorKind =
   | 'rate-limited'
   | 'message-invalid'
   | 'not-friends'
+  | 'trade-invalid'
+  | 'trade-conflict'
+  | 'trade-unavailable'
+  | 'cap-trades-open'
   | 'cap-friends'
   | 'cap-outgoing'
   | 'not-found'
@@ -50,6 +56,32 @@ export interface BlockedPlayer {
   handle: string;
 }
 
+export type TradeOfferState = 'open' | 'accepted' | 'refused' | 'cancelled' | 'expired' | 'lapsed';
+export type TradeSlot = 'lot' | 'payment';
+
+export interface TradeOffer {
+  id: string;
+  role: 'sender' | 'recipient';
+  peerId: string;
+  peerHandle: string;
+  lot: TradeLine[];
+  price: number;
+  state: TradeOfferState;
+  createdAt: number;
+  expiresAt: number;
+  claimDeadline: number | null;
+  claimable: TradeSlot[];
+}
+
+export interface TradeClaim {
+  offerId: string;
+  slot: TradeSlot;
+  effect: TradeEffect;
+  alreadyClaimed: boolean;
+  lot?: TradeLine[];
+  urbs?: number;
+}
+
 export interface SocialState {
   revision: number;
   handle: string;
@@ -59,6 +91,7 @@ export interface SocialState {
   incoming: FriendRequest[];
   outgoing: FriendRequest[];
   blocked: BlockedPlayer[];
+  offers: TradeOffer[];
 }
 
 export type SocialSnapshot = { changed: false; revision: number } | ({ changed: true } & SocialState);
@@ -75,4 +108,8 @@ export interface SocialClient {
   list(cursor?: number | null): Promise<SocialSnapshot>;
   sendMessage(userId: string, body: string): Promise<number>;
   listMessages(userId: string, afterId?: number): Promise<Message[]>;
+  createTradeOffer(id: string, to: string, lot: TradeLine[], price: number): Promise<void>;
+  acceptTradeOffer(id: string): Promise<void>;
+  declineTradeOffer(id: string): Promise<void>;
+  claimTrade(id: string, slot: TradeSlot): Promise<TradeClaim>;
 }
