@@ -75,11 +75,39 @@ describe('social window', () => {
     expect(uiStore.getState().socialOpen).toBe(false);
   });
 
-  it('remembers the selected tab', () => {
-    uiStore.getState().setSocialTab('exchanges');
+  it('opens on the first tab when connected, and on Friends when not', async () => {
+    const { cloudStore } = await import('./cloudStore');
+    const { socialStore } = await import('./socialStore');
+    cloudStore.setState({ account: null });
+    socialStore.setState({ status: 'idle' });
     uiStore.getState().toggleSocial();
+    expect(uiStore.getState().socialTab).toBe('friends');
+    uiStore.getState().toggleSocial();
+
+    cloudStore.setState({ account: { userId: 'u', email: null } });
+    uiStore.getState().toggleSocial();
+    expect(uiStore.getState().socialTab).toBe('friends');
+    uiStore.getState().toggleSocial();
+
+    cloudStore.setState({ account: { userId: 'u', email: 'me@example.com' } });
+    socialStore.setState({ status: 'no-handle' });
+    uiStore.getState().toggleSocial();
+    expect(uiStore.getState().socialTab).toBe('friends');
+    uiStore.getState().toggleSocial();
+
+    socialStore.setState({ status: 'ready' });
+    uiStore.getState().setSocialTab('friends');
     uiStore.getState().toggleSocial();
     expect(uiStore.getState().socialTab).toBe('exchanges');
+    cloudStore.setState({ account: null });
+    socialStore.setState({ status: 'idle' });
+  });
+
+  it('keeps the tab while the window stays open', () => {
+    uiStore.getState().toggleSocial();
+    uiStore.getState().setSocialTab('friends');
+    expect(uiStore.getState().socialTab).toBe('friends');
+    uiStore.getState().toggleSocial();
   });
 
   it('closes when the codex opens', () => {

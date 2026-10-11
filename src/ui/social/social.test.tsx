@@ -6,6 +6,11 @@ import { SocialTabs } from './SocialTabs';
 const noop = () => {};
 
 describe('social tabs', () => {
+  it('puts Exchanges first and Friends last', () => {
+    const html = renderToStaticMarkup(<SocialTabs tab="exchanges" friendsPending={0} exchangesPending={0} onSelect={noop} />);
+    expect(html.indexOf('social-tab-exchanges')).toBeLessThan(html.indexOf('social-tab-friends'));
+  });
+
   it('lists the activities and marks the selected one', () => {
     const html = renderToStaticMarkup(<SocialTabs tab="exchanges" friendsPending={0} exchangesPending={0} onSelect={noop} />);
     expect(html).toContain(t('social.tab.friends'));

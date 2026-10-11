@@ -3,8 +3,11 @@ import { footprintTiles, nextFront, type Coord, type CropId, type Rotation } fro
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
 import { confirmTool, evaluateTool, extendBrush, isPathTool, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
+import { defaultSocialTab } from '../social/defaultSocialTab';
+import { cloudStore } from './cloudStore';
 import { gameStore } from './gameStore';
 import { sceneHandle } from './sceneHandle';
+import { socialStore } from './socialStore';
 import { toastStore } from './toastStore';
 import type { CodexId } from '../codex/catalog';
 
@@ -116,8 +119,10 @@ export const uiStore = createStore<UiStore>((set, get) => {
     socialOpen: false,
     socialTab: 'friends',
     toggleSocial: () => {
-      if (!get().socialOpen) get().cancelTool();
-      set({ socialOpen: !get().socialOpen, statsOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
+      const opening = !get().socialOpen;
+      if (opening) get().cancelTool();
+      const landing = opening ? { socialTab: defaultSocialTab({ hasEmail: Boolean(cloudStore.getState().account?.email), status: socialStore.getState().status }) } : {};
+      set({ ...landing, socialOpen: opening, statsOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
     },
     setSocialTab: (socialTab) => set({ socialTab }),
     tradeWith: null,
