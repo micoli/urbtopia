@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { BUILDING_SPECS, createBuilding, isHomeType, newGame, type GameState } from '../../core';
+import { BUILDING_SPECS, createBuilding, newGame, type GameState } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { BuildMenuContent } from './BuildMenuContent';
