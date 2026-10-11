@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(22);
+select plan(23);
 
 insert into auth.users (id, instance_id, aud, role, email, email_confirmed_at, is_anonymous, created_at, last_sign_in_at) values
   ('00000000-0000-0000-0003-00000000000a', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'a@example.com', now(), false, now(), now()),
@@ -75,6 +75,17 @@ insert into public.urb_messages (sender_id, recipient_id, body, created_at)
 set local role authenticated;
 select pg_temp.act_as('00000000000b');
 select throws_ok($$ select public.urb_send_message('00000000-0000-0000-0003-00000000000a', 'one more') $$, 'urb_rate_limited', 'the 31st message within a minute is refused');
+
+-- Rate limit: 500 per day
+reset role;
+update public.urb_messages set created_at = now() - interval '2 hours' where body = 'spam';
+insert into public.urb_messages (sender_id, recipient_id, body, created_at)
+  select '00000000-0000-0000-0003-00000000000b', '00000000-0000-0000-0003-00000000000a', 'spam', now() - interval '2 hours' from generate_series(1, 470);
+set local role authenticated;
+select pg_temp.act_as('00000000000b');
+select throws_ok($$ select public.urb_send_message('00000000-0000-0000-0003-00000000000a', 'one more') $$, 'urb_rate_limited', 'the 501st message within a day is refused');
+reset role;
+delete from public.urb_messages where body = 'spam';
 
 -- Purge after 30 days, and the Conversation ends with the Friendship
 reset role;
