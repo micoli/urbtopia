@@ -1,6 +1,6 @@
 # Multiplayer, delivery 3: Trade offers between Friends
 
-Status: ready-for-agent
+Status: done - delivered in six commits, see issues/
 
 ## Problem
 

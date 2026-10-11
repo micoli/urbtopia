@@ -1,6 +1,6 @@
 # Multiplayer, delivery 2: messaging between Friends
 
-Status: ready-for-agent
+Status: done
 
 ## Problem
 

@@ -1,6 +1,6 @@
 # Multiplayer, delivery 1: Handle, search and Friends
 
-Status: ready-for-agent
+Status: done
 
 ## Problem
 

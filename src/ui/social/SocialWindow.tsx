@@ -1,4 +1,4 @@
-import { pendingSocialCount } from '../../social/pendingCount';
+import { pendingExchangesCount, pendingFriendsCount } from '../../social/pendingCount';
 import { t } from '../../i18n/t';
 import { CloseButton } from '../common/CloseButton';
 import { useSocial, useUi } from '../common/hooks';
@@ -12,7 +12,8 @@ export function SocialWindow() {
     const toggle = useUi(s => s.toggleSocial);
     const tab = useUi(s => s.socialTab);
     const setTab = useUi(s => s.setSocialTab);
-    const pending = useSocial(s => pendingSocialCount(s.profile));
+    const friendsPending = useSocial(s => pendingFriendsCount(s.profile));
+    const exchangesPending = useSocial(s => pendingExchangesCount(s.profile));
     const panel = useModalFocus(open, toggle);
     if (!open) return null;
     return <div className="dialog-backdrop city-management-backdrop" onClick={event => {
@@ -24,7 +25,7 @@ export function SocialWindow() {
                 <h2 id="social-heading">{t('social.title')}</h2>
                 <CloseButton onClick={toggle}/>
             </header>
-            <SocialTabs tab={tab} pending={pending} onSelect={setTab}/>
+            <SocialTabs tab={tab} friendsPending={friendsPending} exchangesPending={exchangesPending} onSelect={setTab}/>
             <div id="social-panel" role="tabpanel" aria-labelledby={`social-tab-${tab}`}>
                 {tab === 'friends' ? <FriendsTab/> : <ExchangesTab/>}
             </div>
