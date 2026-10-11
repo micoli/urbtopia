@@ -11,9 +11,10 @@ interface CityOverviewProps {
     congestion: CongestionStats;
     onShowTransport: () => void;
     onShowTraffic: () => void;
+    onShowNeeds: () => void;
 }
 
-export function CityOverview({state, energy, green, climate, transport, congestion, onShowTransport, onShowTraffic}: CityOverviewProps) {
+export function CityOverview({state, energy, green, climate, transport, congestion, onShowTransport, onShowTraffic, onShowNeeds}: CityOverviewProps) {
     return <div className="eco-overview">
         <OverviewTile icon="👥">
             <span>{t('stat.citizens')}</span><strong>{totalCitizens(state)}</strong>
@@ -22,10 +23,10 @@ export function CityOverview({state, energy, green, climate, transport, congesti
             <span>{t('eco.energy')}</span>
             <strong>{Math.max(0, energy.demand - energy.unmet).toFixed(1)}<small>/ {energy.demand.toFixed(1)}</small></strong>
         </OverviewTile>
-        <OverviewTile icon="♧">
-            <span>{t('eco.wellbeing')}</span>
-            <strong>{green.wellbeing.toFixed(0)} <small>/ 100</small></strong>
-        </OverviewTile>
+        <button type="button" aria-controls="eco-needs" onClick={onShowNeeds}>
+            <span aria-hidden="true">♧</span>
+            <span className="eco-overview-value"><span>{t('eco.wellbeing')}</span><strong>{green.wellbeing.toFixed(0)} <small>/ 100</small></strong></span>
+        </button>
         <OverviewTile icon="🌡️" title={t('eco.temperatureHelp')}>
             <span>{t('eco.temperature')}</span>
             <strong>{climate.temperature.toFixed(1)}{' '}<small>°C</small></strong>

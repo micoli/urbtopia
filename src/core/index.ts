@@ -67,6 +67,8 @@ export { energyStats, generatorCapacity, generatorFactor, generatorOutput, produ
 export { ENERGY_SOURCES, energySources, sourceFactors, type EnergySource, type EnergySourceId } from './environment/energySources';
 export { flowFactor } from './water/flow';
 export { homeBenefits, cityBenefits, congestionPenaltyOf, isAdapting, wellbeingTaxFactor } from './environment/wellbeing';
+export { NEEDS, NEED_LEVELS, needsPyramid } from './environment/needs';
+export type { NeedEffect, NeedFactor, NeedFactorId, NeedLevel, NeedLevelId, NeedSection, NeedsPyramid } from './environment/needs';
 export { climateStats } from './environment/climate';
 export { transportStats, routeForLine, routeFailure } from './transit/transport';
 export type { BusLine } from './engine/state';

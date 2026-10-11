@@ -9,7 +9,7 @@ interface EmissionsSectionProps {
 }
 
 export function EmissionsSection({climate, energy, transport}: EmissionsSectionProps) {
-    return <section>
+    return <section id="eco-emissions">
         <SectionHeading>{t('eco.emissions')}</SectionHeading>
         <p>
             {t('eco.activity')}: {climate.activityEmissions.toFixed(1)} · {t('eco.coal')}: {energy.coalEmissions.toFixed(1)} · {t('eco.backup')}: {energy.backupEmissions.toFixed(1)} · {t('eco.mobility')}: {transport.emissions.toFixed(1)}

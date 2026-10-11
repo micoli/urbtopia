@@ -6,6 +6,7 @@ import {ServicesSection} from '../buildings/ServicesSection';
 import {CityOverview} from './management/CityOverview';
 import {EmissionsSection} from './management/EmissionsSection';
 import {EnergySection} from './management/EnergySection';
+import {NeedsSection} from './management/NeedsSection';
 import {NatureSection} from './management/NatureSection';
 import {NextUnlockSection} from './management/NextUnlockSection';
 import {ObjectivesSection} from './management/ObjectivesSection';
@@ -39,7 +40,7 @@ export function CityManagement() {
                 <h2 id="eco-heading">{t('eco.title')}</h2>
                 <CloseButton onClick={toggle}/>
             </header>
-            <CityOverview state={state} energy={energy} green={green} climate={climate} transport={transport} congestion={congestion} onShowTransport={() => showSection('eco-transport')} onShowTraffic={() => showSection('eco-traffic')}/>
+            <CityOverview state={state} energy={energy} green={green} climate={climate} transport={transport} congestion={congestion} onShowTransport={() => showSection('eco-transport')} onShowTraffic={() => showSection('eco-traffic')} onShowNeeds={() => showSection('eco-needs')}/>
             <SectionNavigation onSelect={showSection}/>
             <p className="eco-units">{t('eco.units')}</p>
             <div className="eco-sections">
@@ -48,6 +49,7 @@ export function CityManagement() {
                 <WaterSection state={state}/>
                 <ServicesSection state={state}/>
                 <NatureSection state={state} green={green}/>
+                <NeedsSection state={state} onShowSection={showSection}/>
                 <WellbeingSection green={green}/>
                 <EmissionsSection climate={climate} energy={energy} transport={transport}/>
                 <TransportSection transport={transport}/>

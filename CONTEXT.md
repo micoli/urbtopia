@@ -124,6 +124,14 @@ _Avoid_: Inhabitant, resident, sim
 The satisfaction of a Home's Citizens, raised by nearby Green spaces and Public facility coverage, lowered by coal pollution, missing services and Congestion on its Commute. It modulates the Home's Tax.
 _Avoid_: Happiness, bonheur, mood, attractiveness
 
+**Need level**:
+One of the five stages of the Needs pyramid, from the base up: Vital, Safety, Belonging, Esteem, Fulfilment. Each has a satisfaction from 0 to 100, computed from game data that already exists, weighted by Citizens. A Need level is read-only: it explains Well-being and changes none of its effects.
+_Avoid_: Maslow level, layer, tier (already Tier)
+
+**Needs pyramid**:
+The city management view that shows the five Need levels stacked, each with its satisfaction and the factors that feed it, and a table that explains every factor. A lower Need level that is unsatisfied marks the levels above it as fragile.
+_Avoid_: Maslow pyramid, happiness chart
+
 **Public facility**:
 A building that serves Citizens with a public service in a Service category, at no operating cost. Its Tier raises its Citizen capacity; the Town hall has no Tier.
 _Avoid_: Civic building, public service, amenity
