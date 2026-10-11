@@ -1,19 +1,19 @@
 import { t } from '../../i18n/t';
 import type { CloudAccount } from '../../persistence/cloud/types';
-import type { EmailLinkState } from '../../store/cloudStore';
+import type { EmailCodeActions, EmailCodeState } from '../../store/cloudStore';
 import { ActionButton } from '../common/ActionButton';
-import { EmailLinkForm } from './EmailLinkForm';
+import { EmailCodeForm } from './EmailCodeForm';
 
 interface CloudAccountSectionProps {
   account: CloudAccount | null;
-  emailLink: EmailLinkState;
-  onSendLink: (email: string) => void;
+  emailCode: EmailCodeState;
+  codeActions: EmailCodeActions;
   onSignOut: () => void;
 }
 
-export function CloudAccountSection({ account, emailLink, onSendLink, onSignOut }: CloudAccountSectionProps) {
+export function CloudAccountSection({ account, emailCode, codeActions, onSignOut }: CloudAccountSectionProps) {
   if (!account) return null;
-  if (!account.email) return <EmailLinkForm state={emailLink} onSend={onSendLink} />;
+  if (!account.email) return <EmailCodeForm state={emailCode} actions={codeActions} />;
 
   return (
     <div className="cloud-account">

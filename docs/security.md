@@ -30,11 +30,11 @@ A fork needs its own Supabase project: create it, apply `supabase/migrations/` w
 
 ## Supabase Auth settings (production project)
 
-The Player account can be upgraded with an email link. In the Supabase dashboard, Authentication:
+The Player account can be upgraded with an email, confirmed by a one-time code the player types in the game (ADR 0027). In the Supabase dashboard, Authentication:
 
 - [ ] Sign In / Providers: **Allow anonymous sign-ins** on, **Confirm email** on (without it anyone could attach someone else's email to their account).
-- [ ] URL Configuration: add the site URL (`https://micoli.github.io/urbtopia/`) to **Redirect URLs**, otherwise the link in the email is refused.
-- [ ] Email Templates: the local `config.toml` applies them only to the local stack. Send them to production with `SUPABASE_ACCESS_TOKEN=... scripts/push-email-templates.sh <project-ref>` (add `--dry-run` to preview; the token needs write access to the Auth configuration), or paste `supabase/templates/email_change.html` into "Change email address" and `supabase/templates/magic_link.html` into "Magic link" in the dashboard. Do not use `supabase config push`: it would also overwrite the production site URL and redirect URLs with the local ones. Keep `{{ .ConfirmationURL }}` in the link.
+- [ ] Email OTP: length **6**, expiration **900** seconds. `scripts/push-email-templates.sh` sends both with the templates (`mailer_otp_length`, `mailer_otp_exp`).
+- [ ] Email Templates: the local `config.toml` applies them only to the local stack. Send them to production with `SUPABASE_ACCESS_TOKEN=... scripts/push-email-templates.sh <project-ref>` (add `--dry-run` to preview; the token needs write access to the Auth configuration), or paste `supabase/templates/email_change.html` into "Change email address" and `supabase/templates/magic_link.html` into "Magic link" in the dashboard. Do not use `supabase config push`: it would also overwrite the production site URL and redirect URLs with the local ones. The templates show `{{ .Token }}` (the code) and no link: keep it that way, a link would open another tab in embedded browsers.
 - [ ] SMTP: the built-in mailer is meant for testing only; configure a custom SMTP provider before opening to real players.
 - [ ] Rate limits: keep the default email limits; the game reports "too many emails" instead of retrying.
 

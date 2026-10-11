@@ -7,7 +7,7 @@
 <title>Urbtopia</title>
 </head>
 <body style="margin:0;padding:0;background-color:#0f121b;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#0f121b;">Ouvrez votre ville Urbtopia · Open your Urbtopia city</div>
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#0f121b;">Votre code de connexion Urbtopia · Your Urbtopia sign-in code</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0f121b" style="background-color:#0f121b;">
 <tr><td align="center" style="padding:32px 16px;">
 <table role="presentation" width="480" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:480px;">
@@ -17,10 +17,10 @@
 <tr><td style="padding:0 0 24px 0;border-bottom:1px solid #2a3042;">
 <p style="margin:0 0 4px 0;font-size:11px;letter-spacing:2px;color:#35d07f;font-weight:700;">FRANÇAIS</p>
 <h1 style="margin:0 0 12px 0;font-size:20px;line-height:26px;color:#f4f6fb;">Connexion à Urbtopia</h1>
-<p style="margin:0 0 20px 0;font-size:15px;line-height:22px;color:#d5d9e6;">Utilisez ce lien pour ouvrir votre ville sur cet appareil. Il est valable une seule fois et expire rapidement.</p>
-<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#35d07f" style="background-color:#35d07f;border-radius:8px;"><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:13px 24px;font-size:15px;font-weight:700;color:#0b1a12;text-decoration:none;">Ouvrir ma ville</a></td></tr></table>
-<p style="margin:16px 0 0 0;font-size:12px;line-height:18px;color:#8b93a8;">Le bouton ne fonctionne pas ? Copiez ce lien dans votre navigateur :<br><a href="{{ .ConfirmationURL }}" style="color:#35d07f;word-break:break-all;">{{ .ConfirmationURL }}</a></p>
-<p style="margin:12px 0 0 0;font-size:12px;line-height:18px;color:#8b93a8;">Vous n'avez rien demandé ? Ignorez simplement ce message : personne ne peut se connecter sans ce lien.</p>
+<p style="margin:0 0 16px 0;font-size:15px;line-height:22px;color:#d5d9e6;">Voici votre code de connexion. Il est valable une seule fois et expire rapidement.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" bgcolor="#0f121b" style="background-color:#0f121b;border:1px solid #2a3042;border-radius:8px;padding:16px 8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:32px;font-weight:700;letter-spacing:8px;color:#35d07f;">{{ .Token }}</td></tr></table>
+<p style="margin:16px 0 0 0;font-size:14px;line-height:21px;color:#d5d9e6;">Dans le jeu, collez ce code dans le champ prévu à cet effet, puis validez. Aucun lien à ouvrir.</p>
+<p style="margin:12px 0 0 0;font-size:12px;line-height:18px;color:#8b93a8;">Vous n'avez rien demandé ? Ignorez simplement ce message : personne ne peut se connecter sans ce code.</p>
 </td></tr>
 </table>
 <div style="height:24px;line-height:24px;">&nbsp;</div>
@@ -28,10 +28,10 @@
 <tr><td style="padding:0 0 24px 0;">
 <p style="margin:0 0 4px 0;font-size:11px;letter-spacing:2px;color:#35d07f;font-weight:700;">ENGLISH</p>
 <h1 style="margin:0 0 12px 0;font-size:20px;line-height:26px;color:#f4f6fb;">Sign in to Urbtopia</h1>
-<p style="margin:0 0 20px 0;font-size:15px;line-height:22px;color:#d5d9e6;">Use this link to open your city on this device. It works once and expires soon.</p>
-<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#35d07f" style="background-color:#35d07f;border-radius:8px;"><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:13px 24px;font-size:15px;font-weight:700;color:#0b1a12;text-decoration:none;">Open my city</a></td></tr></table>
-<p style="margin:16px 0 0 0;font-size:12px;line-height:18px;color:#8b93a8;">Button not working? Copy this link into your browser:<br><a href="{{ .ConfirmationURL }}" style="color:#35d07f;word-break:break-all;">{{ .ConfirmationURL }}</a></p>
-<p style="margin:12px 0 0 0;font-size:12px;line-height:18px;color:#8b93a8;">Did not ask for this? Just ignore this message: nobody can sign in without this link.</p>
+<p style="margin:0 0 16px 0;font-size:15px;line-height:22px;color:#d5d9e6;">Here is your sign-in code. It works once and expires soon.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" bgcolor="#0f121b" style="background-color:#0f121b;border:1px solid #2a3042;border-radius:8px;padding:16px 8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:32px;font-weight:700;letter-spacing:8px;color:#35d07f;">{{ .Token }}</td></tr></table>
+<p style="margin:16px 0 0 0;font-size:14px;line-height:21px;color:#d5d9e6;">In the game, paste this code into the field provided, then confirm. There is no link to open.</p>
+<p style="margin:12px 0 0 0;font-size:12px;line-height:18px;color:#8b93a8;">Did not ask for this? Just ignore this message: nobody can sign in without this code.</p>
 </td></tr>
 </table>
 <div style="height:8px;line-height:8px;">&nbsp;</div>

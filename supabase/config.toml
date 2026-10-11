@@ -42,11 +42,13 @@ email_sent = 4
 enable_signup = true
 double_confirm_changes = true
 enable_confirmations = true
+otp_length = 6
+otp_expiry = 900
 
 [auth.email.template.email_change]
-subject = "Urbtopia - Confirmez votre adresse / Confirm your address"
+subject = "Urbtopia - Votre code de confirmation / Your confirmation code"
 content_path = "./supabase/templates/email_change.html"
 
 [auth.email.template.magic_link]
-subject = "Urbtopia - Votre lien de connexion / Your sign-in link"
+subject = "Urbtopia - Votre code de connexion / Your sign-in code"
 content_path = "./supabase/templates/magic_link.html"

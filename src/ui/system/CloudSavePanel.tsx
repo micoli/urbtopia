@@ -1,7 +1,7 @@
 import { t } from '../../i18n/t';
 import type { CloudStatus } from '../../persistence/cloud/cloudSync';
 import type { CloudAccount, CloudSaveVersion } from '../../persistence/cloud/types';
-import type { EmailLinkState } from '../../store/cloudStore';
+import type { EmailCodeActions, EmailCodeState } from '../../store/cloudStore';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { CloudAccountSection } from './CloudAccountSection';
@@ -13,22 +13,22 @@ interface CloudSavePanelProps {
   status: CloudStatus;
   versions: CloudSaveVersion[] | null;
   account: CloudAccount | null;
-  emailLink: EmailLinkState;
+  emailCode: EmailCodeState;
   onSaveNow: () => void;
   onShowVersions: () => void;
   onRestore: (revision: number) => void;
   onDelete: () => void;
-  onSendLink: (email: string) => void;
+  codeActions: EmailCodeActions;
   onSignOut: () => void;
 }
 
-export function CloudSavePanel({ status, versions, account, emailLink, onSaveNow, onShowVersions, onRestore, onDelete, onSendLink, onSignOut }: CloudSavePanelProps) {
+export function CloudSavePanel({ status, versions, account, emailCode, onSaveNow, onShowVersions, onRestore, onDelete, codeActions, onSignOut }: CloudSavePanelProps) {
   const busy = status.kind === 'syncing' || status.kind === 'conflict';
   return (
     <section className="cloud-save">
       <h3>{t('cloud.title')}</h3>
       <CloudStatusLine status={status} />
-      <CloudAccountSection account={account} emailLink={emailLink} onSendLink={onSendLink} onSignOut={onSignOut} />
+      <CloudAccountSection account={account} emailCode={emailCode} codeActions={codeActions} onSignOut={onSignOut} />
       <ButtonRow align="stretch" spaced>
         <ActionButton disabled={busy} onClick={onSaveNow}>
           {t('cloud.saveNow')}

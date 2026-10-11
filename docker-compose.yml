@@ -72,8 +72,10 @@ services:
       # Same templates and subjects as supabase/config.toml, served by the gateway.
       GOTRUE_MAILER_TEMPLATES_EMAIL_CHANGE: http://gateway:8088/email/email_change.html
       GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: http://gateway:8088/email/magic_link.html
-      GOTRUE_MAILER_SUBJECTS_EMAIL_CHANGE: Urbtopia - Confirmez votre adresse / Confirm your address
-      GOTRUE_MAILER_SUBJECTS_MAGIC_LINK: Urbtopia - Votre lien de connexion / Your sign-in link
+      GOTRUE_MAILER_SUBJECTS_EMAIL_CHANGE: Urbtopia - Votre code de confirmation / Your confirmation code
+      GOTRUE_MAILER_SUBJECTS_MAGIC_LINK: Urbtopia - Votre code de connexion / Your sign-in code
+      GOTRUE_MAILER_OTP_LENGTH: "6"
+      GOTRUE_MAILER_OTP_EXP: "900"
       GOTRUE_SMTP_HOST: mailpit
       GOTRUE_SMTP_PORT: "1025"
       GOTRUE_SMTP_ADMIN_EMAIL: admin@email.com

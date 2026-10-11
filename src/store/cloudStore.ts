@@ -2,10 +2,23 @@ import { createStore } from 'zustand/vanilla';
 import type { CloudStatus, SaveConflictChoice } from '../persistence/cloud/cloudSync';
 import type { CloudAccount, CloudSaveVersion } from '../persistence/cloud/types';
 
-export type EmailLinkState = { kind: 'idle' } | { kind: 'sending' } | { kind: 'sent'; email: string } | { kind: 'error'; reason: 'invalid-email' | 'rate-limited' | 'failed' };
+export type EmailCodeState =
+  | { kind: 'idle' }
+  | { kind: 'sending' }
+  | { kind: 'error'; reason: 'invalid-email' | 'rate-limited' | 'failed' }
+  | { kind: 'sent'; email: string; error?: 'invalid-code' | 'rate-limited' | 'failed' }
+  | { kind: 'verifying'; email: string };
+
+export interface EmailCodeActions {
+  send: (email: string) => void;
+  verify: (code: string) => void;
+  cancel: () => void;
+}
 
 export interface CloudActions {
-  sendEmailLink: (email: string) => Promise<void>;
+  sendEmailCode: (email: string) => Promise<void>;
+  verifyEmailCode: (code: string) => Promise<void>;
+  cancelEmailCode: () => void;
   signOut: () => Promise<void>;
   syncNow: () => Promise<void>;
   resolveConflict: (choice: SaveConflictChoice) => Promise<void>;
@@ -19,13 +32,13 @@ export interface CloudStore {
   status: CloudStatus;
   versions: CloudSaveVersion[] | null;
   account: CloudAccount | null;
-  emailLink: EmailLinkState;
+  emailCode: EmailCodeState;
   actions: CloudActions | null;
   enable: (actions: CloudActions) => void;
   setStatus: (status: CloudStatus) => void;
   setVersions: (versions: CloudSaveVersion[] | null) => void;
   setAccount: (account: CloudAccount | null) => void;
-  setEmailLink: (emailLink: EmailLinkState) => void;
+  setEmailCode: (emailCode: EmailCodeState) => void;
 }
 
 export const cloudStore = createStore<CloudStore>((set) => ({
@@ -33,11 +46,11 @@ export const cloudStore = createStore<CloudStore>((set) => ({
   status: { kind: 'idle' },
   versions: null,
   account: null,
-  emailLink: { kind: 'idle' },
+  emailCode: { kind: 'idle' },
   actions: null,
   enable: (actions) => set({ enabled: true, actions }),
   setStatus: (status) => set({ status }),
   setVersions: (versions) => set({ versions }),
   setAccount: (account) => set({ account }),
-  setEmailLink: (emailLink) => set({ emailLink }),
+  setEmailCode: (emailCode) => set({ emailCode }),
 }));

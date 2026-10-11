@@ -30,7 +30,7 @@ const panel = (props: Partial<Parameters<typeof FriendsPanel>[0]> = {}) =>
   renderToStaticMarkup(
     <FriendsPanel
       account={{ userId: 'a', email: 'a@example.com' }}
-      emailLink={{ kind: 'idle' }}
+      emailCode={{ kind: 'idle' }}
       status="ready"
       profile={profile}
       handleForm={{ kind: 'idle' }}
@@ -38,7 +38,7 @@ const panel = (props: Partial<Parameters<typeof FriendsPanel>[0]> = {}) =>
       changeDelayMs={30 * DAY_MS}
       search={{ kind: 'idle' }}
       actionFailure={null}
-      onSendLink={noop}
+      codeActions={{ send: noop, verify: noop, cancel: noop }}
       actions={{ setHandle: asyncNoop, setFindable: asyncNoop, sendRequest: asyncNoop, accept: asyncNoop, refuse: asyncNoop, remove: asyncNoop, block: asyncNoop, unblock: asyncNoop }}
       {...props}
     />,
@@ -53,7 +53,7 @@ describe('friends panel', () => {
   it('explains and offers the email flow to an anonymous account', () => {
     const html = panel({ account: { userId: 'a', email: null }, profile: null, status: 'idle' });
     expect(html).toContain(t('friends.needEmail'));
-    expect(html).toContain(t('cloud.account.sendLink'));
+    expect(html).toContain(t('cloud.account.sendCode'));
   });
 
   it('asks for a Handle once the account has an email', () => {

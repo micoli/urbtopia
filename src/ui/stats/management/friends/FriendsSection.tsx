@@ -10,8 +10,8 @@ const NO_ACTIONS = {setHandle: noop, setFindable: noop, sendRequest: noop, accep
 
 export function FriendsSection() {
     const account = useCloud(s => s.account);
-    const emailLink = useCloud(s => s.emailLink);
-    const sendEmailLink = useCloud(s => s.actions?.sendEmailLink);
+    const emailCode = useCloud(s => s.emailCode);
+    const cloudActions = useCloud(s => s.actions);
     const status = useSocial(s => s.status);
     const profile = useSocial(s => s.profile);
     const handleForm = useSocial(s => s.handleForm);
@@ -20,9 +20,9 @@ export function FriendsSection() {
     const actions = useSocial(s => s.actions);
     return <section id="eco-friends">
         <SectionHeading>{t('friends.title')}</SectionHeading>
-        <FriendsPanel account={account} emailLink={emailLink} status={status} profile={profile} handleForm={handleForm}
+        <FriendsPanel account={account} emailCode={emailCode} status={status} profile={profile} handleForm={handleForm}
                       now={Date.now()} changeDelayMs={HANDLE_CHANGE_DELAY_DAYS * DAY_MS}
-                      onSendLink={email => void sendEmailLink?.(email)}
+                      codeActions={{send: email => void cloudActions?.sendEmailCode(email), verify: code => void cloudActions?.verifyEmailCode(code), cancel: () => cloudActions?.cancelEmailCode()}}
                       search={search} actionFailure={actionFailure} actions={actions ?? NO_ACTIONS}/>
     </section>;
 }

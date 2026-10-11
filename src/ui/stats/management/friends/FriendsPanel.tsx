@@ -1,10 +1,10 @@
 import { t } from '../../../../i18n/t';
-import type { EmailLinkState } from '../../../../store/cloudStore';
+import type { EmailCodeActions, EmailCodeState } from '../../../../store/cloudStore';
 import type { ActionFailure, HandleFormState, SearchState, SocialActions, SocialStatus } from '../../../../store/socialStore';
 import type { CloudAccount } from '../../../../persistence/cloud/types';
 import type { SocialState } from '../../../../social/types';
 import { Note } from '../../../common/Note';
-import { EmailLinkForm } from '../../../system/EmailLinkForm';
+import { EmailCodeForm } from '../../../system/EmailCodeForm';
 import { BlockedList } from './BlockedList';
 import { FindableToggle } from './FindableToggle';
 import { FriendList } from './FriendList';
@@ -16,7 +16,7 @@ import { friendsErrorMessage } from './friendsErrorMessage';
 
 interface FriendsPanelProps {
     account: CloudAccount | null;
-    emailLink: EmailLinkState;
+    emailCode: EmailCodeState;
     status: SocialStatus;
     profile: SocialState | null;
     handleForm: HandleFormState;
@@ -24,15 +24,15 @@ interface FriendsPanelProps {
     actionFailure: ActionFailure | null;
     now: number;
     changeDelayMs: number;
-    onSendLink: (email: string) => void;
+    codeActions: EmailCodeActions;
     actions: Pick<SocialActions, 'setHandle' | 'setFindable' | 'sendRequest' | 'accept' | 'refuse' | 'remove' | 'block' | 'unblock'>;
 }
 
-export function FriendsPanel({account, emailLink, status, profile, handleForm, search, actionFailure, now, changeDelayMs, onSendLink, actions}: FriendsPanelProps) {
+export function FriendsPanel({account, emailCode, status, profile, handleForm, search, actionFailure, now, changeDelayMs, codeActions, actions}: FriendsPanelProps) {
     if (!account) return <p>{t('friends.connecting')}</p>;
     if (!account.email) return <>
         <p>{t('friends.needEmail')}</p>
-        <EmailLinkForm state={emailLink} onSend={onSendLink}/>
+        <EmailCodeForm state={emailCode} actions={codeActions}/>
     </>;
     if (status === 'offline') return <Note>{t('friends.offline')}</Note>;
     if (status === 'no-handle') return <HandleForm current={null} changeWaitSeconds={0} state={handleForm} onSubmit={handle => void actions.setHandle(handle)}/>;

@@ -6,7 +6,7 @@ export function CloudSaveSection() {
   const status = useCloud((store) => store.status);
   const versions = useCloud((store) => store.versions);
   const account = useCloud((store) => store.account);
-  const emailLink = useCloud((store) => store.emailLink);
+  const emailCode = useCloud((store) => store.emailCode);
   const actions = useCloud((store) => store.actions);
   if (!enabled || !actions) return null;
 
@@ -15,12 +15,12 @@ export function CloudSaveSection() {
       status={status}
       versions={versions}
       account={account}
-      emailLink={emailLink}
+      emailCode={emailCode}
       onSaveNow={() => void actions.syncNow()}
       onShowVersions={() => void actions.loadVersions()}
       onRestore={(revision) => void actions.restoreVersion(revision)}
       onDelete={() => void actions.deleteCloudData()}
-      onSendLink={(email) => void actions.sendEmailLink(email)}
+      codeActions={{ send: (email) => void actions.sendEmailCode(email), verify: (code) => void actions.verifyEmailCode(code), cancel: actions.cancelEmailCode }}
       onSignOut={() => void actions.signOut()}
     />
   );

@@ -18,9 +18,14 @@ export function toCloudError(failure: PostgrestFailure): CloudError {
   if (failure.message.includes('urb_conflict')) return new CloudError('conflict', Number(failure.details ?? 0));
   if (failure.message.includes('urb_too_large')) return new CloudError('too-large');
   if (failure.message.includes('urb_unauthenticated') || failure.code === '28000' || failure.code === '42501') return new CloudError('unauthenticated');
-  if (failure.code === 'over_email_send_rate_limit' || failure.code === 'over_request_rate_limit') return new CloudError('rate-limited');
+  if (failure.code === 'otp_expired' || failure.code === 'otp_disabled' || failure.message.includes('Token has expired or is invalid')) return new CloudError('invalid-code');
+  if (failure.code === 'over_email_send_rate_limit' || failure.code === 'over_request_rate_limit' || /rate limit/i.test(failure.message)) return new CloudError('rate-limited');
   if (/fetch|network|load failed/i.test(failure.message) || failure.code === '') return new CloudError('offline');
   return new CloudError('unknown');
+}
+
+export function isEmailTaken(failure: PostgrestFailure): boolean {
+  return failure.code === 'email_exists' || /already (been )?registered|already exists/i.test(failure.message);
 }
 
 export async function createSupabaseCloudSaveClient(config: CloudConfig): Promise<CloudSaveClient> {
@@ -32,7 +37,11 @@ function toAccount(user: { id: string; email?: string }): CloudAccount {
   return { userId: user.id, email: user.email ? user.email : null };
 }
 
+type EmailCodeKind = 'email_change' | 'email';
+
 class SupabaseCloudSaveClient implements CloudSaveClient {
+  private codeKinds = new Map<string, EmailCodeKind>();
+
   constructor(
     private client: Client,
     private setKeepalive: (value: boolean) => void,
@@ -57,16 +66,34 @@ class SupabaseCloudSaveClient implements CloudSaveClient {
     return data.session ? toAccount(data.session.user) : null;
   }
 
-  async sendEmailLink(email: string): Promise<void> {
-    const emailRedirectTo = typeof window === 'undefined' ? undefined : window.location.origin + window.location.pathname;
+  async sendEmailCode(email: string): Promise<void> {
     const { data } = await this.attempt(() => this.client.auth.getSession());
     if (data.session?.user.is_anonymous) {
-      const upgraded = await this.attempt(() => this.client.auth.updateUser({ email }, { emailRedirectTo }));
-      if (!upgraded.error) return;
-      if (upgraded.error.code !== 'email_exists') throw toCloudError(upgraded.error);
+      const upgraded = await this.attempt(() => this.client.auth.updateUser({ email }));
+      if (!upgraded.error) {
+        this.codeKinds.set(email, 'email_change');
+        return;
+      }
+      if (!isEmailTaken(upgraded.error)) throw toCloudError(upgraded.error);
     }
-    const { error } = await this.attempt(() => this.client.auth.signInWithOtp({ email, options: { emailRedirectTo, shouldCreateUser: false } }));
+    const { error } = await this.attempt(() => this.client.auth.signInWithOtp({ email, options: { shouldCreateUser: false } }));
     if (error) throw toCloudError(error);
+    this.codeKinds.set(email, 'email');
+  }
+
+  async verifyEmailCode(email: string, code: string): Promise<void> {
+    const remembered = this.codeKinds.get(email);
+    const kinds: EmailCodeKind[] = remembered ? [remembered] : ['email_change', 'email'];
+    let failure: PostgrestFailure | null = null;
+    for (const type of kinds) {
+      const { error } = await this.attempt(() => this.client.auth.verifyOtp({ email, token: code.trim(), type }));
+      if (!error) {
+        this.codeKinds.delete(email);
+        return;
+      }
+      failure = error;
+    }
+    throw toCloudError(failure ?? { message: 'unknown' });
   }
 
   onAccountChange(listener: (account: CloudAccount | null) => void): () => void {

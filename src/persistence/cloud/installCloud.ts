@@ -53,20 +53,37 @@ export function installCloudSync(): () => void {
       if (knownUserId !== null && account.userId !== knownUserId) setTimeout(() => void engine.accountChanged(), 0);
     });
     cloudStore.getState().enable({
-      sendEmailLink: async (email) => {
+      sendEmailCode: async (email) => {
         const address = email.trim();
-        if (!isPlausibleEmail(address)) return cloudStore.getState().setEmailLink({ kind: 'error', reason: 'invalid-email' });
-        cloudStore.getState().setEmailLink({ kind: 'sending' });
+        if (!isPlausibleEmail(address)) return cloudStore.getState().setEmailCode({ kind: 'error', reason: 'invalid-email' });
+        cloudStore.getState().setEmailCode({ kind: 'sending' });
         try {
-          await client.sendEmailLink(address);
-          cloudStore.getState().setEmailLink({ kind: 'sent', email: address });
+          await client.sendEmailCode(address);
+          cloudStore.getState().setEmailCode({ kind: 'sent', email: address });
         } catch (error) {
           const reason = error instanceof CloudError && error.kind === 'rate-limited' ? 'rate-limited' : 'failed';
-          cloudStore.getState().setEmailLink({ kind: 'error', reason });
+          cloudStore.getState().setEmailCode({ kind: 'error', reason });
         }
       },
+      verifyEmailCode: async (code) => {
+        const pending = cloudStore.getState().emailCode;
+        if (pending.kind !== 'sent') return;
+        const { email } = pending;
+        if (code.trim() === '') return cloudStore.getState().setEmailCode({ kind: 'sent', email, error: 'invalid-code' });
+        cloudStore.getState().setEmailCode({ kind: 'verifying', email });
+        try {
+          await client.verifyEmailCode(email, code);
+        } catch (error) {
+          const error_ = error instanceof CloudError && error.kind === 'invalid-code' ? 'invalid-code' : error instanceof CloudError && error.kind === 'rate-limited' ? 'rate-limited' : 'failed';
+          return cloudStore.getState().setEmailCode({ kind: 'sent', email, error: error_ });
+        }
+        cloudStore.getState().setEmailCode({ kind: 'idle' });
+        const account = await client.account();
+        if (account) cloudStore.getState().setAccount(account);
+      },
+      cancelEmailCode: () => cloudStore.getState().setEmailCode({ kind: 'idle' }),
       signOut: async () => {
-        cloudStore.getState().setEmailLink({ kind: 'idle' });
+        cloudStore.getState().setEmailCode({ kind: 'idle' });
         await engine.signOut();
       },
       syncNow: () => engine.pushNow(),
