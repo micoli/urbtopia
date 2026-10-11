@@ -114,8 +114,8 @@ const facilityBuilding = z.strictObject({
   ...identity,
   ...sited,
   category: z.enum(SERVICE_CATEGORIES),
-  // The awning, overhang or parasol set over the entrance.
-  detailModel: filled,
+  // The awning, overhang or parasol set over the entrance, for models that have none of their own.
+  detailModel: filled.optional(),
   radius: z.int().min(1).optional(),
   power: count,
   water: count,

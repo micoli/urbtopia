@@ -31,9 +31,12 @@ export interface RenderItem {
 
 export const MODEL_BY_BUILDING = Object.fromEntries(BUILDING_ENTRIES.map(({ id, model }) => [id, modelFileOf(model)])) as Record<BuildingType, string>;
 
-const FACILITY_DETAILS = Object.fromEntries(FACILITY_TYPES.map(type => [type, modelFileOf(definitionOf(type).detailModel!)])) as Record<FacilityType, string>;
+const FACILITY_DETAILS = Object.fromEntries(FACILITY_TYPES.flatMap(type => {
+  const { detailModel } = definitionOf(type);
+  return detailModel ? [[type, modelFileOf(detailModel)]] : [];
+})) as Partial<Record<FacilityType, string>>;
 
-const CATEGORY_TINTS: Record<ServiceCategory, number> = {
+const CATEGORY_TINTS: Partial<Record<ServiceCategory, number>> = {
   education: 0xb4d0ff,
   administration: 0xf2e2b4,
   culture: 0xe0c8ff,
@@ -103,7 +106,7 @@ export const MODEL_KEYS: readonly string[] = [
     ...Object.values(MODEL_BY_BUILDING),
     ...[...TIER_MODELS.values()].flat().flatMap(mansardColorsOf),
     ...[...SOLAR_HOME_MODELS.values()].flat().flatMap(mansardColorsOf),
-    ...FACILITY_TYPES.map(type => FACILITY_DETAILS[type]),
+    ...Object.values(FACILITY_DETAILS),
     ROOF_PANEL_MODEL,
     GROUND_PANEL_MODEL,
     PARK_TREE_MODEL,
@@ -266,8 +269,10 @@ function buildingItems(state: GameState): RenderItem[] {
     if (isFacilityType(building.type)) {
       const footprint = facilityFootprint(building)!;
       const recolor = FACILITY_RECOLORS[building.type];
-      items[0] = { ...items[0]!, footprint, fitModel: model, ...(recolor === undefined ? { tint: CATEGORY_TINTS[FACILITIES[building.type].category] } : { recolor }) };
-      items.push({ model: FACILITY_DETAILS[building.type], x, z, rotation, footprint, fitModel: model });
+      const tint = CATEGORY_TINTS[FACILITIES[building.type].category];
+      items[0] = { ...items[0]!, footprint, fitModel: model, ...(recolor === undefined ? (tint === undefined ? {} : { tint }) : { recolor }) };
+      const detail = FACILITY_DETAILS[building.type];
+      if (detail) items.push({ model: detail, x, z, rotation, footprint, fitModel: model });
       if (building.type === 'hospital') items.push(...redCrossItems(x, z, rotation, footprint, model));
       if (building.type === 'fireStation') items.push(...garageDoorItems(x, z, rotation, footprint, model));
     }

@@ -49,6 +49,11 @@ describe('needs pyramid', () => {
     expect(factor(served, 'education').satisfaction).toBe(100);
   });
 
+  it('feeds the Fulfilment level with Worship coverage', () => {
+    expect(factor(withBuildings('home'), 'worship')).toMatchObject({ level: 'fulfilment', satisfaction: 0 });
+    expect(factor(withBuildings('home', 'catholicChurch'), 'worship').satisfaction).toBe(100);
+  });
+
   it('reports the weakest factor as the bottleneck', () => {
     const state = withBuildings('home');
     const pyramid = needsPyramid(state);

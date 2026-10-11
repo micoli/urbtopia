@@ -86,12 +86,14 @@ export function coveredCategories(coverage: ServiceCoverage, homeId: number): Se
   return SERVICE_CATEGORIES.filter(category => facilitiesOfCategory(category).some(type => covered.has(type)));
 }
 
+const STACKING_CATEGORIES: readonly ServiceCategory[] = ['culture', 'worship'];
+
 export function coveredServiceUnits(coverage: ServiceCoverage, homeId: number): number {
   const covered = coverage.get(homeId);
   if (!covered) return 0;
-  const cultureTypes = facilitiesOfCategory('culture').filter(type => covered.has(type)).length;
-  const otherCategories = coveredCategories(coverage, homeId).filter(category => category !== 'culture').length;
-  return otherCategories + cultureTypes;
+  const stackingTypes = STACKING_CATEGORIES.flatMap(category => facilitiesOfCategory(category)).filter(type => covered.has(type)).length;
+  const otherCategories = coveredCategories(coverage, homeId).filter(category => !STACKING_CATEGORIES.includes(category)).length;
+  return otherCategories + stackingTypes;
 }
 
 export function categoryCoverageRatio(state: GameState, category: ServiceCategory): number {

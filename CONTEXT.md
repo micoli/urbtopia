@@ -132,6 +132,10 @@ _Avoid_: Maslow level, layer, tier (already Tier)
 The city management view that shows the five Need levels stacked, each with its satisfaction and the factors that feed it, and a table that explains every factor. A lower Need level that is unsatisfied marks the levels above it as fragile.
 _Avoid_: Maslow pyramid, happiness chart
 
+**Worship place**:
+A Public facility of the Worship Service category (church, synagogue, mosque, Buddhist temple). Optional like Culture: its absence never lowers Well-being or blocks a Tier upgrade, and different Worship places stack their Well-being. It feeds the Worship factor of the Fulfilment Need level.
+_Avoid_: Religious building, temple (one of the four)
+
 **Public facility**:
 A building that serves Citizens with a public service in a Service category, at no operating cost. Its Tier raises its Citizen capacity; the Town hall has no Tier.
 _Avoid_: Civic building, public service, amenity

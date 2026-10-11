@@ -7,6 +7,7 @@ const categoryNames: Record<ServiceCategory, readonly [string, string]> = {
   education: ['Education', 'Éducation'],
   administration: ['Administration', 'Administration'],
   culture: ['Culture', 'Culture'],
+  worship: ['Worship', 'Culte'],
   health: ['Health', 'Santé'],
   safety: ['Safety', 'Sécurité'],
 };

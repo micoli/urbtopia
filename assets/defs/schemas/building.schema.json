@@ -1861,6 +1861,7 @@
             "education",
             "administration",
             "culture",
+            "worship",
             "health",
             "safety"
           ]
@@ -1959,7 +1960,6 @@
         "unlockCitizens",
         "requiresRoad",
         "category",
-        "detailModel",
         "power",
         "water",
         "tiers"

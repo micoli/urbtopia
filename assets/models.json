@@ -1392,6 +1392,62 @@
     "source": "quaternius",
     "license": "CC0"
   },
+  "cult-buddhist-temple": {
+    "file": "cult/buddhist-temple",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 2,
+      "height": 2
+    },
+    "rotationOffset": 180
+  },
+  "cult-catholic-church": {
+    "file": "cult/catholic-church",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 2,
+      "height": 2
+    },
+    "rotationOffset": 180
+  },
+  "cult-mosque": {
+    "file": "cult/mosque",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 2,
+      "height": 2
+    },
+    "rotationOffset": 180
+  },
+  "cult-synagogue": {
+    "file": "cult/synagogue",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 2,
+      "height": 2
+    },
+    "rotationOffset": 180
+  },
   "farm-barn": {
     "file": "farm/Barn",
     "source": "quaternius",

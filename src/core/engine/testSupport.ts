@@ -8,4 +8,4 @@ export function withAllServices(state: GameState, near: Coord): GameState {
   return { ...state, nextId: state.nextId + facilities.length, buildings: [...state.buildings, ...facilities] };
 }
 
-export const ALL_FACILITIES_DEMAND = { power: 22, water: 2 };
+export const ALL_FACILITIES_DEMAND = { power: 26, water: 2 };

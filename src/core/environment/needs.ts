@@ -20,7 +20,7 @@ export type NeedFactorId =
   | 'safety' | 'health' | 'pollution' | 'congestion' | 'climate'
   | 'culture' | 'leisure' | 'walking'
   | 'education' | 'administration' | 'shops'
-  | 'greenSpaces' | 'biodiversity';
+  | 'worship' | 'greenSpaces' | 'biodiversity';
 
 export type NeedEffect = 'supply' | 'wellbeing' | 'tierUpgrade' | 'none';
 
@@ -65,12 +65,13 @@ const FACTORS: readonly FactorSpec[] = [
   { id: 'education', level: 'esteem', effects: ['wellbeing', 'tierUpgrade'], section: 'eco-services' },
   { id: 'administration', level: 'esteem', effects: ['wellbeing', 'tierUpgrade'], section: 'eco-services' },
   { id: 'shops', level: 'esteem', effects: ['none'], section: null },
+  { id: 'worship', level: 'fulfilment', effects: ['wellbeing'], section: 'eco-services' },
   { id: 'greenSpaces', level: 'fulfilment', effects: ['wellbeing'], section: 'eco-nature' },
   { id: 'biodiversity', level: 'fulfilment', effects: ['none'], section: 'eco-nature' },
 ];
 
 const SERVICE_FACTORS: readonly (readonly [NeedFactorId, ServiceCategory])[] = [
-  ['safety', 'safety'], ['health', 'health'], ['culture', 'culture'], ['education', 'education'], ['administration', 'administration'],
+  ['safety', 'safety'], ['health', 'health'], ['culture', 'culture'], ['worship', 'worship'], ['education', 'education'], ['administration', 'administration'],
 ];
 
 function share(numerator: number, denominator: number): number {

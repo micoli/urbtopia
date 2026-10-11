@@ -1,0 +1,77 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "facility",
+  "section": "build.publicFacilities",
+  "cost": 900,
+  "unlockCitizens": 200,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Buddhist temple",
+    "fr": "Temple bouddhiste"
+  },
+  "description": {
+    "en": "A Buddhist temple for nearby Citizens. Optional: different Worship places stack their Well-being. {reach, select, city {Covers the whole city} other {Square reach of {side} tiles}}, {limit, select, unlimited {unlimited capacity} other {capacity {tier1Capacity} Citizens, up to {maxTierCapacity} at Tier {tierCount}}}; demand {power} power{hasWater, select, yes { and {water} water} other {}}; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs, no operating cost.",
+    "fr": "Un temple bouddhiste pour les citoyens proches. Facultatif : les lieux de culte différents cumulent leur bien-être. {reach, select, city {Couvre toute la ville} other {Portée carrée de {side} cases}}, {limit, select, unlimited {capacité illimitée} other {capacité {tier1Capacity} citoyens, jusqu’à {maxTierCapacity} au niveau {tierCount}}}; consomme {power} d’électricité{hasWater, select, yes { et {water} d’eau} other {}}; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs, sans coût de fonctionnement."
+  },
+  "radius": 11,
+  "tiers": [
+    {
+      "model": "cult-buddhist-temple",
+      "footprint": [2, 2],
+      "capacity": 450
+    },
+    {
+      "capacity": 675,
+      "upgradeCost": {
+        "urbs": 270,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 900,
+      "upgradeCost": {
+        "urbs": 540,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1350,
+      "upgradeCost": {
+        "urbs": 1080,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1800,
+      "upgradeCost": {
+        "urbs": 1800,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 2475,
+      "upgradeCost": {
+        "urbs": 2700,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 3150,
+      "upgradeCost": {
+        "urbs": 4050,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 4050,
+      "upgradeCost": {
+        "urbs": 5850,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "worship",
+  "power": 1,
+  "water": 0
+}
