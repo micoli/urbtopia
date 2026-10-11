@@ -59,6 +59,49 @@ export type Database = {
           },
         ];
       };
+      urb_messages: {
+        Row: {
+          body: string;
+          created_at: string;
+          id: number;
+          read_at: string | null;
+          recipient_id: string;
+          sender_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          body: string;
+          created_at?: string;
+          id?: never;
+          read_at?: string | null;
+          recipient_id: string;
+          sender_id: string;
+        };
+        Update: {
+          body?: string;
+          created_at?: string;
+          id?: never;
+          read_at?: string | null;
+          recipient_id?: string;
+          sender_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_messages_recipient_id_fkey";
+            columns: ["recipient_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+          {
+            foreignKeyName: "urb_messages_sender_id_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
       urb_profiles: {
         Row: {
           created_at: string;
@@ -140,10 +183,13 @@ export type Database = {
     };
     Functions: {
       urb_accept_friend_request: { Args: { p_user: string }; Returns: undefined };
+      urb_are_friends: { Args: { p_a: string; p_b: string }; Returns: boolean };
       urb_block_user: { Args: { p_user: string }; Returns: undefined };
       urb_bump_social: { Args: { p_user: string }; Returns: undefined };
+      urb_delete_conversation: { Args: { p_a: string; p_b: string }; Returns: undefined };
       urb_delete_my_saves: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_friend_count: { Args: { p_user: string }; Returns: number };
+      urb_list_messages: { Args: { p_after?: number; p_with: string }; Returns: Json };
       urb_list_saves: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -158,6 +204,7 @@ export type Database = {
       urb_open_request: { Args: { p_from: string; p_to: string }; Returns: undefined };
       urb_outgoing_count: { Args: { p_user: string }; Returns: number };
       urb_purge_inactive_anonymous_users: { Args: Record<PropertyKey, never>; Returns: undefined };
+      urb_purge_old_messages: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_push_save: {
         Args: {
           p_base_revision: number;
@@ -172,6 +219,7 @@ export type Database = {
       urb_remove_friend: { Args: { p_user: string }; Returns: undefined };
       urb_restore_save: { Args: { p_revision: number }; Returns: number };
       urb_send_friend_request_by_email: { Args: { p_email: string }; Returns: undefined };
+      urb_send_message: { Args: { p_body: string; p_to: string }; Returns: number };
       urb_set_findable: { Args: { p_findable: boolean }; Returns: undefined };
       urb_set_handle: { Args: { p_handle: string }; Returns: undefined };
       urb_social_member: { Args: Record<PropertyKey, never>; Returns: string };
