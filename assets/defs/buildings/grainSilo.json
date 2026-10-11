@@ -57,6 +57,34 @@
         "urbs": 9000,
         "goods": {}
       }
+    },
+    {
+      "crops": 160,
+      "upgradeCost": {
+        "urbs": 20000,
+        "goods": {}
+      }
+    },
+    {
+      "crops": 180,
+      "upgradeCost": {
+        "urbs": 45000,
+        "goods": {}
+      }
+    },
+    {
+      "crops": 200,
+      "upgradeCost": {
+        "urbs": 100000,
+        "goods": {}
+      }
+    },
+    {
+      "crops": 220,
+      "upgradeCost": {
+        "urbs": 200000,
+        "goods": {}
+      }
     }
   ]
 }

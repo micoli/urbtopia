@@ -114,11 +114,11 @@ describe('UpgradeBuilding on the Storehouse', () => {
     expect(storageCapacity(state)).toEqual({ materials: 70, crops: 0, goods: 140 });
   });
 
-  it('stops at Tier 6', () => {
+  it('stops at Tier 10', () => {
     const maxed: GameState = {
       ...withStorehouse,
       urbs: 100_000,
-      buildings: withStorehouse.buildings.map((b) => (b.id === storehouseId ? { ...b, tier: 6 } : b)),
+      buildings: withStorehouse.buildings.map((b) => (b.id === storehouseId ? { ...b, tier: 10 } : b)),
     };
     expect(failureKey(maxed, upgrade)).toBe('error.maxTier');
   });

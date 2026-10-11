@@ -62,6 +62,38 @@
         "urbs": 12000,
         "goods": {}
       }
+    },
+    {
+      "materials": 80,
+      "goods": 160,
+      "upgradeCost": {
+        "urbs": 30000,
+        "goods": {}
+      }
+    },
+    {
+      "materials": 90,
+      "goods": 180,
+      "upgradeCost": {
+        "urbs": 70000,
+        "goods": {}
+      }
+    },
+    {
+      "materials": 100,
+      "goods": 200,
+      "upgradeCost": {
+        "urbs": 150000,
+        "goods": {}
+      }
+    },
+    {
+      "materials": 110,
+      "goods": 220,
+      "upgradeCost": {
+        "urbs": 300000,
+        "goods": {}
+      }
     }
   ]
 }
