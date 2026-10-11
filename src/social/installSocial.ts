@@ -30,7 +30,7 @@ export function installSocial(): () => void {
       },
       view: () => ({
         active: socialStore.getState().profile !== null,
-        panelOpen: uiStore.getState().statsOpen,
+        panelOpen: uiStore.getState().socialOpen,
         hidden: document.visibilityState === 'hidden',
       }),
     });

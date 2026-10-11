@@ -1,11 +1,11 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { FakeSocialWorld } from '../../../../social/fakeSocialClient';
-import { createSocialActions } from '../../../../social/socialActions';
-import { MESSAGES } from '../../../../i18n/messages';
-import { t } from '../../../../i18n/t';
-import { socialStore, type SocialStore } from '../../../../store/socialStore';
-import type { SocialState } from '../../../../social/types';
+import { FakeSocialWorld } from '../../../social/fakeSocialClient';
+import { createSocialActions } from '../../../social/socialActions';
+import { MESSAGES } from '../../../i18n/messages';
+import { t } from '../../../i18n/t';
+import { socialStore, type SocialStore } from '../../../store/socialStore';
+import type { SocialState } from '../../../social/types';
 import { friendsErrorMessage } from './friendsErrorMessage';
 import { FriendsPanel } from './FriendsPanel';
 

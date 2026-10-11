@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { t } from '../../../../i18n/t';
-import { MAX_MESSAGE_LENGTH } from '../../../../social/limits';
-import { ActionButton } from '../../../common/ActionButton';
+import { t } from '../../../i18n/t';
+import { MAX_MESSAGE_LENGTH } from '../../../social/limits';
+import { ActionButton } from '../../common/ActionButton';
 
 interface MessageComposerProps {
     sending: boolean;

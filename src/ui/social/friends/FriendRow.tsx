@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { t } from '../../../../i18n/t';
-import { ActionButton } from '../../../common/ActionButton';
-import { InlineConfirm } from '../../../common/InlineConfirm';
+import { t } from '../../../i18n/t';
+import { ActionButton } from '../../common/ActionButton';
+import { InlineConfirm } from '../../common/InlineConfirm';
 
 interface FriendRowProps {
     handle: string;

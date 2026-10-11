@@ -1,6 +1,6 @@
-import { t } from '../../../../i18n/t';
-import type { BlockedPlayer } from '../../../../social/types';
-import { ActionButton } from '../../../common/ActionButton';
+import { t } from '../../../i18n/t';
+import type { BlockedPlayer } from '../../../social/types';
+import { ActionButton } from '../../common/ActionButton';
 
 interface BlockedListProps {
     blocked: BlockedPlayer[];

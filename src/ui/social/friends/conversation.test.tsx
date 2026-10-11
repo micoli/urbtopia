@@ -1,9 +1,9 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { t } from '../../../../i18n/t';
-import { FakeSocialWorld } from '../../../../social/fakeSocialClient';
-import { createSocialActions } from '../../../../social/socialActions';
-import { socialStore, type ConversationState } from '../../../../store/socialStore';
+import { t } from '../../../i18n/t';
+import { FakeSocialWorld } from '../../../social/fakeSocialClient';
+import { createSocialActions } from '../../../social/socialActions';
+import { socialStore, type ConversationState } from '../../../store/socialStore';
 import { ConversationView } from './ConversationView';
 import { FriendList } from './FriendList';
 import { friendsErrorMessage } from './friendsErrorMessage';

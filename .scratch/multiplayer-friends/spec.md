@@ -11,7 +11,7 @@ Urbtopia is solo. The goal is multiplayer between Friends, in three deliveries: 
 Recorded in [ADR 0025](../../docs/adr/0025-trade-escrow-trusts-the-client.md) and [ADR 0026](../../docs/adr/0026-social-features-poll-instead-of-realtime.md), building on [ADR 0015](../../docs/adr/0015-supabase-cloud-save-mirror-with-rpc-only-writes.md). Vocabulary (Handle, Friend request, Friend, Block, Player account) in `CONTEXT.md`.
 
 - Multiplayer requires a Player account with an attached email and a Handle. Anonymous accounts see no multiplayer. Solo play is unchanged.
-- Entry point: a "Friends" tab on the city management page. Without an email it first offers the existing magic-link flow, then asks for a Handle.
+- Entry point: the "Friends" tab of the Social window, opened from the Social button of the main menu (it replaced the section first placed on the city management page). Without an email it first offers the email code flow, then asks for a Handle.
 - Handle: 3 to 20 characters among letters, digits, `_` and `-`; unique case-insensitively; changeable once every 30 days; server-side forbidden-words filter; no human moderation.
 - Search by exact email only, never partial. The response is identical whether the account exists, is blocked, or is not findable: "request sent if this account exists". The email is never returned to a client.
 - A player can make themselves not findable by email (setting, default findable).

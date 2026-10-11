@@ -3,8 +3,6 @@ import {t} from '../../i18n/t';
 import {useGame, useUi} from '../common/hooks';
 import {CloseButton} from '../common/CloseButton';
 import {ServicesSection} from '../buildings/ServicesSection';
-import {cloudEnabled} from '../../persistence/cloud/cloudConfig';
-import {FriendsSection} from './management/friends/FriendsSection';
 import {CityOverview} from './management/CityOverview';
 import {EmissionsSection} from './management/EmissionsSection';
 import {EnergySection} from './management/EnergySection';
@@ -58,7 +56,6 @@ export function CityManagement() {
                 <TrafficSection congestion={congestion} transport={transport} onShowTransport={() => showSection('eco-transport')}/>
                 <ObjectivesSection state={state} energy={energy} green={green} transport={transport}/>
                 <NextUnlockSection/>
-                {cloudEnabled ? <FriendsSection/> : null}
             </div>
         </div>
     </div>;

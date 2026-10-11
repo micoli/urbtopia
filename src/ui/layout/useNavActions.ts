@@ -1,4 +1,5 @@
 import { t } from '../../i18n/t';
+import { cloudEnabled } from '../../persistence/cloud/cloudConfig';
 import { pendingSocialCount } from '../../social/pendingCount';
 import { useGame, useSocial, useUi } from '../common/hooks';
 import { guideOf } from '../tutorial/tutorialGuide';
@@ -22,6 +23,8 @@ export function useNavActions(): NavAction[] {
   const settingsOpen = useUi((store) => store.settingsOpen);
   const statsOpen = useUi(store => store.statsOpen);
   const toggleStats = useUi(store => store.toggleStats);
+  const socialOpen = useUi(store => store.socialOpen);
+  const toggleSocial = useUi(store => store.toggleSocial);
   const codexOpen = useUi(store => store.codexOpen);
   const openCodex = useUi(store => store.openCodex);
   const openFlyout = useUi((store) => store.openFlyout);
@@ -39,6 +42,7 @@ export function useNavActions(): NavAction[] {
     { id: 'parcels', icon: '🗺', image: 'map.png', label: t('dock.parcels'), pressed: tool?.kind === 'parcel', disabled: false, guided: false, onClick: () => (tool?.kind === 'parcel' ? cancelTool() : chooseTool({ kind: 'parcel' })) },
     { id: 'market', icon: '💱', image: 'market.png', label: t('dock.market'), pressed: marketOpen, disabled: !marketUnlocked, guided: false, onClick: toggleMarket },
     { id: 'stats', icon: '📊', image: 'town-management.png', label: t('eco.title'), pressed: statsOpen, disabled: false, guided: false, badge: pendingRequests, onClick: toggleStats },
+    ...(cloudEnabled ? [{ id: 'social', icon: '🌐', image: 'social-network.png', label: t('social.title'), pressed: socialOpen, disabled: false, guided: false, badge: pendingRequests, onClick: toggleSocial }] : []),
     { id: 'codex', icon: '📖', image: 'codex.png', label: t('codex.title'), pressed: codexOpen, disabled: false, guided: false, onClick: () => openCodex() },
     { id: 'settings', icon: '⚙', image: 'settings.png', label: t('dock.settings'), pressed: settingsOpen, disabled: false, guided: false, onClick: toggleSettings },
   ];

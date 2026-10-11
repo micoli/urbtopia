@@ -1,6 +1,6 @@
-import type { MessageKey } from '../../../../i18n/messages';
-import { t } from '../../../../i18n/t';
-import type { SocialErrorKind } from '../../../../social/types';
+import type { MessageKey } from '../../../i18n/messages';
+import { t } from '../../../i18n/t';
+import type { SocialErrorKind } from '../../../social/types';
 
 const DAY_SECONDS = 86_400;
 const MINUTE_SECONDS = 60;

@@ -1,5 +1,5 @@
-import { t } from '../../../../i18n/t';
-import { Note } from '../../../common/Note';
+import { t } from '../../../i18n/t';
+import { Note } from '../../common/Note';
 
 interface FindableToggleProps {
     findable: boolean;

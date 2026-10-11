@@ -2192,3 +2192,25 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .friends-message time { font-size: 10px; opacity: 0.6; align-self: flex-end; }
 .friends-composer { display: flex; gap: 0.5rem; }
 .friends-composer input { flex: 1; padding: 0.4rem 0.5rem; font: inherit; }
+
+.eco-dashboard.social-window { width: min(640px, calc(100vw - 24px)); }
+.social-tabs { display: flex; gap: 4px; margin: 12px 0; }
+.eco-dashboard .social-tabs button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: var(--tap);
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--eco-surface);
+  color: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.eco-dashboard .social-tabs button:hover { background: rgba(255, 255, 255, 0.12); }
+.eco-dashboard .social-tabs button[aria-selected='true'] { background: rgba(140, 226, 181, 0.25); box-shadow: inset 0 -3px 0 var(--eco-accent); }
+.social-tabs .social-tab-badge { padding: 0 6px; border-radius: 8px; background: #e5484d; color: #fff; font-size: 11px; line-height: 16px; }

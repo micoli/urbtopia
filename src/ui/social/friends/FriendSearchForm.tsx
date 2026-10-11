@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { t } from '../../../../i18n/t';
-import type { SearchState } from '../../../../store/socialStore';
-import { ActionButton } from '../../../common/ActionButton';
-import { Note } from '../../../common/Note';
+import { t } from '../../../i18n/t';
+import type { SearchState } from '../../../store/socialStore';
+import { ActionButton } from '../../common/ActionButton';
+import { Note } from '../../common/Note';
 import { friendsErrorMessage } from './friendsErrorMessage';
 
 interface FriendSearchFormProps {

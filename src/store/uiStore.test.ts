@@ -58,3 +58,33 @@ describe('showTile', () => {
     expect(uiStore.getState().statsOpen).toBe(false);
   });
 });
+
+describe('social window', () => {
+  beforeEach(() => uiStore.setState({ socialOpen: false, statsOpen: false, socialTab: 'friends', flyout: null, settingsOpen: false, marketOpen: false }));
+
+  it('opens and closes, one modal at a time with the city management', () => {
+    uiStore.getState().toggleStats();
+    expect(uiStore.getState().statsOpen).toBe(true);
+    uiStore.getState().toggleSocial();
+    expect(uiStore.getState()).toMatchObject({ socialOpen: true, statsOpen: false });
+    uiStore.getState().toggleStats();
+    expect(uiStore.getState()).toMatchObject({ socialOpen: false, statsOpen: true });
+    uiStore.getState().toggleStats();
+    uiStore.getState().toggleSocial();
+    uiStore.getState().toggleSocial();
+    expect(uiStore.getState().socialOpen).toBe(false);
+  });
+
+  it('remembers the selected tab', () => {
+    uiStore.getState().setSocialTab('exchanges');
+    uiStore.getState().toggleSocial();
+    uiStore.getState().toggleSocial();
+    expect(uiStore.getState().socialTab).toBe('exchanges');
+  });
+
+  it('closes when the codex opens', () => {
+    uiStore.getState().toggleSocial();
+    uiStore.getState().openCodex();
+    expect(uiStore.getState().socialOpen).toBe(false);
+  });
+});

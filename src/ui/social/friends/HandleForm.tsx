@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { t } from '../../../../i18n/t';
-import type { HandleFormState } from '../../../../store/socialStore';
-import { ActionButton } from '../../../common/ActionButton';
-import { Note } from '../../../common/Note';
+import { t } from '../../../i18n/t';
+import type { HandleFormState } from '../../../store/socialStore';
+import { ActionButton } from '../../common/ActionButton';
+import { Note } from '../../common/Note';
 import { daysFromSeconds, friendsErrorMessage } from './friendsErrorMessage';
 
 interface HandleFormProps {

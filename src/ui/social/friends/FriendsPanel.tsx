@@ -1,10 +1,10 @@
-import { t } from '../../../../i18n/t';
-import type { EmailCodeActions, EmailCodeState } from '../../../../store/cloudStore';
-import type { ActionFailure, ConversationState, HandleFormState, SearchState, SocialActions, SocialStatus } from '../../../../store/socialStore';
-import type { CloudAccount } from '../../../../persistence/cloud/types';
-import type { SocialState } from '../../../../social/types';
-import { Note } from '../../../common/Note';
-import { EmailCodeForm } from '../../../system/EmailCodeForm';
+import { t } from '../../../i18n/t';
+import type { EmailCodeActions, EmailCodeState } from '../../../store/cloudStore';
+import type { ActionFailure, ConversationState, HandleFormState, SearchState, SocialActions, SocialStatus } from '../../../store/socialStore';
+import type { CloudAccount } from '../../../persistence/cloud/types';
+import type { SocialState } from '../../../social/types';
+import { Note } from '../../common/Note';
+import { EmailCodeForm } from '../../system/EmailCodeForm';
 import { ConversationView } from './ConversationView';
 import { BlockedList } from './BlockedList';
 import { FindableToggle } from './FindableToggle';

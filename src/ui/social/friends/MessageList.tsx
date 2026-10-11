@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { t } from '../../../../i18n/t';
-import type { Message } from '../../../../social/types';
+import { t } from '../../../i18n/t';
+import type { Message } from '../../../social/types';
 
 interface MessageListProps {
     messages: Message[];
