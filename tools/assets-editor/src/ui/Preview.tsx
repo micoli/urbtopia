@@ -7,7 +7,7 @@ import type { ModelInfo } from '../modelLoader'
 import * as THREE from 'three'
 import { solarPanelPlacements } from '../../../../src/core/environment/solarPanelLayout'
 import type { SolarPanelsDefinition } from '../../../../src/core/buildings/solarPanelsSchema'
-import { buildModel, buildPlacement, SceneStage } from '../sceneStage'
+import { buildModel, buildPlacement, SceneStage, type PlacedModel } from '../sceneStage'
 import { useDocument, type Doc, type Selection } from '../store/documentStore'
 import { button, panel } from './styles'
 
@@ -41,6 +41,7 @@ export function Preview() {
   const stageRef = useRef<SceneStage | null>(null)
   const [rotation, setRotation] = useState(0)
   const [info, setInfo] = useState<ModelInfo | null>(null)
+  const [placed, setPlaced] = useState<PlacedModel | null>(null)
   const modelId = useDocument(state => modelOfSelection(state.doc, state.selection, state.preview))
   const settings = useDocument(state => (modelId ? state.doc.models[modelId] : undefined))
   const library = useLibrary()
@@ -64,39 +65,53 @@ export function Preview() {
     }
   }, [])
 
+  // The building alone: rebuilt, and the camera framed, only when its model, settings or rotation change.
   useEffect(() => {
     const stage = stageRef.current!
     stage.clear()
     setInfo(null)
+    setPlaced(null)
     if (!location) return
     let live = true
-    void buildPlacement(location.pack, location.name, settings, true).then(placed => {
+    void buildPlacement(location.pack, location.name, settings, true).then(next => {
       if (!live) return
-      placed.object.rotation.y = (rotation * Math.PI) / 2
-      stage.stage.add(placed.object)
+      next.object.rotation.y = (rotation * Math.PI) / 2
+      stage.stage.add(next.object)
       stage.frameStage()
-      setInfo(placed.info)
-      if (!solar) return
-      const { width, depth } = footprintOf(placed.info, settings)
-      for (const panel of solarPanelPlacements(width, depth, solar.panels)) {
-        const id = panel.model ?? defaultPanelId
-        const panelSettings = id ? models[id] : undefined
-        const panelLocation = library.byFile.get(panelSettings?.file ?? '')
-        if (!panelLocation) continue
-        void buildModel(panelLocation.pack, panelLocation.name, panelSettings).then(({ object }) => {
-          if (!live) return
-          const holder = new THREE.Group()
-          holder.add(object)
-          holder.rotation.set(THREE.MathUtils.degToRad(panel.rotationX), THREE.MathUtils.degToRad(panel.rotationY), 0, 'YXZ')
-          holder.position.set(panel.x, placed.top + panel.y, panel.z)
-          placed.object.add(holder)
-        })
-      }
+      setInfo(next.info)
+      setPlaced(next)
     })
     return () => {
       live = false
     }
-  }, [location, settings, rotation, solar, defaultPanelId, models, library])
+  }, [location?.pack, location?.name, settings, rotation])
+
+  // The Solar panels, redrawn on every edit without touching the camera or the building.
+  useEffect(() => {
+    if (!placed || !solar) return
+    const group = new THREE.Group()
+    placed.object.add(group)
+    let live = true
+    const { width, depth } = footprintOf(placed.info, settings)
+    for (const panel of solarPanelPlacements(width, depth, solar.panels)) {
+      const id = panel.model || defaultPanelId
+      const panelSettings = id ? models[id] : undefined
+      const panelLocation = library.byFile.get(panelSettings?.file ?? '')
+      if (!panelLocation) continue
+      void buildModel(panelLocation.pack, panelLocation.name, panelSettings).then(({ object }) => {
+        if (!live) return
+        const holder = new THREE.Group()
+        holder.add(object)
+        holder.rotation.set(THREE.MathUtils.degToRad(panel.rotationX), THREE.MathUtils.degToRad(panel.rotationY), 0, 'YXZ')
+        holder.position.set(panel.x, placed.top + panel.y, panel.z)
+        group.add(holder)
+      })
+    }
+    return () => {
+      live = false
+      placed.object.remove(group)
+    }
+  }, [placed, solar, defaultPanelId, models, library, settings])
 
   const footprint = info ? footprintOf(info, settings) : null
 
