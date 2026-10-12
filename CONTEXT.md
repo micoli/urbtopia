@@ -392,6 +392,10 @@ _Avoid_: Mansard house, attic home
 A paid Home improvement that reduces power Demand independently of solar equipment.
 _Avoid_: Energy generation, Home Tier
 
+**Repaint**:
+A paid Home improvement that changes the Home's color to another of its available colors. Its price depends only on the Home's Tier, never on the color chosen, and a Home cannot be repainted to the color it already has.
+_Avoid_: Recolor (that is a Model definition field), Color change
+
 **Solar installation**:
 A standalone neighborhood building that produces power from daylight and occupies land.
 _Avoid_: Solar Home, generator

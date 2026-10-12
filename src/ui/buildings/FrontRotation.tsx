@@ -12,8 +12,8 @@ export function FrontRotation({ building }: { building: Building }) {
   const turn = (step: 1 | -1) => gameStore.getState().send({ type: 'MoveBuilding', id: building.id, x: building.x, y: building.y, rotation: nextFront(fronts, building.rotation, step) });
   return (
     <ButtonRow align="stretch" spaced className="side-panel-actions">
-      <ActionButton aria-label={t('panel.rotateLeft')} onClick={() => turn(-1)}>←</ActionButton>
-      <ActionButton aria-label={t('panel.rotateRight')} onClick={() => turn(1)}>→</ActionButton>
+      <ActionButton aria-label={t('panel.rotateLeft')} onClick={() => turn(-1)}>⟲</ActionButton>
+      <ActionButton aria-label={t('panel.rotateRight')} onClick={() => turn(1)}>⟳</ActionButton>
     </ButtonRow>
   );
 }

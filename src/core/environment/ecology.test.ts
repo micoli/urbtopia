@@ -179,6 +179,23 @@ describe('green spaces and equipment', () => {
   });
 });
 
+describe('repaint', () => {
+  it('charges a fixed cost per Tier and changes the color', () => {
+    const s = city([{ ...b(1, 'home', 55, 57), tier: 3 }]);
+    const result = dispatch(s, { type: 'RepaintHome', buildingId: 1, colorVariant: 'b' }, s.lastSeen);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.state.urbs).toBe(s.urbs - 60);
+    expect(result.state.buildings[0]?.colorVariant).toBe('b');
+    expect(dispatch(result.state, { type: 'RepaintHome', buildingId: 1, colorVariant: 'b' }, s.lastSeen).ok).toBe(false);
+    expect(dispatch(result.state, { type: 'RepaintHome', buildingId: 1, colorVariant: 'default' }, s.lastSeen).ok).toBe(true);
+  });
+  it('refuses without enough Urbs', () => {
+    const s = city([b(1, 'home', 55, 57)]);
+    expect(dispatch({ ...s, urbs: 5 }, { type: 'RepaintHome', buildingId: 1, colorVariant: 'a' }, s.lastSeen).ok).toBe(false);
+  });
+});
+
 describe('public transport', () => {
   const transportCity = () => ({ ...city([b(1, 'home', 0, 2, { tier: 3 }), b(2, 'factory', 15, 2), b(3, 'busStop', 0, 1, { rotation: 0 }), b(4, 'busStop', 15, 1, { rotation: 0 })]), roads: Array.from({ length: 16 }, (_, x) => ({ x, y: 0, kind: 'road' as const })), busLines: [{ id: 20, stops: [3, 4] }, { id: 21, stops: [3, 4] }] });
   it('deduplicates riders across useful overlapping lines and keeps operating costs', () => {

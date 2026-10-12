@@ -13,7 +13,7 @@ const battery = definitionOf('battery'), backup = definitionOf('backup');
 
 export const ECOLOGY = {
   optimalTemperature: 26, maxTemperature: 40, temperaturePerEmission: 0.1,
-  hourMs: 3_600_000, solarCost: 180, solarUnlockCitizens: 15, insulationCost: 80, sharingRadius: 6,
+  hourMs: 3_600_000, solarCost: 180, solarUnlockCitizens: 15, insulationCost: 80, repaintCost: 20, sharingRadius: 6,
   // From the Neighborhood battery, Backup Power plant and Solar installation definitions.
   batteryCapacity: battery.storage!, batteryRate: battery.rate!, batteryRadius: battery.radius!, backupCapacity: backup.capacity!,
   backupCost: backup.costPerUnit!, solarOutput: definitionOf('solar').output!, busCost: 2, stopRadius: 6, lineCapacity: 120,

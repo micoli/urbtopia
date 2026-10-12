@@ -63,6 +63,7 @@ export type Command =
   | { readonly type: 'DemolishRoad'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoadPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation; readonly solar?: boolean; readonly colorVariant?: HomeColorVariant }
+  | { readonly type: 'RepaintHome'; readonly buildingId: number; readonly colorVariant: HomeColorVariant }
   | { readonly type: 'EquipHome'; readonly buildingId: number; readonly equipment: 'solar' | 'insulation' }
   | { readonly type: 'SetCoalEnabled'; readonly buildingId: number; readonly enabled: boolean }
   | { readonly type: 'RenameStop'; readonly buildingId: number; readonly name: string }
@@ -198,6 +199,7 @@ export type ErrorKey =
   | 'error.stopNotOnNetwork'
   | 'error.networkNotConnected'
   | 'error.alreadyEquipped'
+  | 'error.alreadyThisColor'
   | 'error.invalidTradeLot'
   | 'error.unknownTrade';
 
@@ -239,6 +241,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return demolishRoad(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
     case 'PlaceBuilding':
       return placeBuilding(state, command.buildingType, command.x, command.y, command.rotation, command.solar, command.colorVariant);
+    case 'RepaintHome':
+      return repaintHome(state, command.buildingId, command.colorVariant);
     case 'EquipHome':
       return equipHome(state, command.buildingId, command.equipment);
     case 'SetCoalEnabled':
@@ -797,6 +801,15 @@ function equipHome(state: GameState, id: number, equipment: 'solar' | 'insulatio
   const cost = (equipment === 'solar' ? ECOLOGY.solarCost : ECOLOGY.insulationCost) * home.tier;
   if (state.urbs < cost) return fail('error.notEnoughUrbs');
   return { state: { ...state, urbs: state.urbs - cost, buildings: state.buildings.map(b => b.id === id ? { ...b, [field]: true } : b) }, events: [] };
+}
+
+function repaintHome(state: GameState, id: number, colorVariant: HomeColorVariant): CommandOutcome {
+  const home = state.buildings.find(b => b.id === id);
+  if (!home || !isHomeType(home.type)) return fail('error.unknownBuilding');
+  if ((home.colorVariant ?? 'default') === colorVariant) return fail('error.alreadyThisColor');
+  const cost = ECOLOGY.repaintCost * home.tier;
+  if (state.urbs < cost) return fail('error.notEnoughUrbs');
+  return { state: { ...state, urbs: state.urbs - cost, buildings: state.buildings.map(b => b.id === id ? { ...b, colorVariant } : b) }, events: [] };
 }
 
 const ROUTE_ERRORS = { invalid: 'error.invalidBusLine', stopNotOnNetwork: 'error.stopNotOnNetwork', notConnected: 'error.networkNotConnected' } as const;

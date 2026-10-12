@@ -23,6 +23,7 @@ import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { PanelHeader } from '../common/PanelHeader';
 import { CodexLinks } from './CodexLinks';
+import {RepaintRow} from "./RepaintRow.tsx";
 
 export function SelectionContentPanel() {
   const building = useSelectedBuilding();
@@ -51,6 +52,7 @@ export function SelectionContentPanel() {
       {greenProfileOf(building.type) || ['solar','battery','backup','busStop','brtStation','railStation'].includes(building.type) || (isHomeType(building.type) && building.solar) ? <EcologicalBuildingPanel building={building} /> : null}
       {natureModelOf(building.type)?.[2] === 'decoration' ? <DecorationRotation building={building} /> : null}
       <FrontRotation building={building} />
+      {isHomeType(building.type) ? <RepaintRow building={building}/> : null}
       <ButtonRow align="stretch" spaced className="side-panel-actions">
         <ActionButton onClick={moveSelected}>
           ✥ {t('panel.move')}
