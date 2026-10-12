@@ -7,6 +7,7 @@ import type { GoodId, ItemId, MaterialId } from '../economy/items';
 import type { CropId } from '../farming/crops';
 import type { RoadKind } from '../map/roads';
 import type { TutorialStep } from '../progression/tutorial';
+import type { Difficulty } from './difficulty';
 
 export type BuildingType = BuildingId;
 
@@ -168,6 +169,7 @@ export interface GameState {
   busLines?: BusLine[];
   adaptationUntil?: number;
   ecologyDismissed?: boolean;
+  difficulty?: Difficulty;
   seed: string;
   rngState: number;
   casinoRng?: number;

@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType, isRepaintableType, colorVariantsOfType, type BuildingType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType, isDifficulty, isRepaintableType, colorVariantsOfType, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -141,6 +141,7 @@ export function validateGameState(value: unknown): GameState | null {
   if (value.boats !== undefined && !isArrayOf(value.boats, boat => isRecord(boat) && isCoord(boat) && isInt(boat.id, 1) && BOAT_FAMILIES.includes(boat.family as never) && isInt(boat.marinaId, 1) && (boat.catchSince === undefined || (boat.family === 'fishing' && isNumber(boat.catchSince))) && (boat.tier === undefined || (boat.family === 'casino' && isInt(boat.tier, 1, MAX_CASINO_TIER))))) return null;
   if (value.bridges !== undefined && !isArrayOf(value.bridges, bridge => isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string))) return null;
   if (value.casinoRng !== undefined && !isNumber(value.casinoRng)) return null;
+  if (value.difficulty !== undefined && !isDifficulty(value.difficulty)) return null;
   if (value.ecologyDismissed !== undefined && typeof value.ecologyDismissed !== 'boolean') return null;
   if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&
     isArrayOf(line.stops, id => isInt(id, 0)) && (line.stops as number[]).length >= 2 &&

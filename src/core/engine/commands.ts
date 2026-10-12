@@ -45,6 +45,7 @@ import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine,
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { colorVariantsOf, isRepaintableType } from '../buildings/paint';
 import { STOP_NAME_MAX_LENGTH, isTransitStopType } from '../transit/stopNames';
+import type { Difficulty } from './difficulty';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -71,6 +72,7 @@ export type Command =
   | { readonly type: 'SetBusLine'; readonly id?: number; readonly stops: number[] }
   | { readonly type: 'DeleteBusLine'; readonly id: number }
   | { readonly type: 'DismissEcology' }
+  | { readonly type: 'SetDifficulty'; readonly difficulty: Difficulty }
   | { readonly type: 'LayFields'; readonly tiles: readonly Coord[] }
   | { readonly type: 'RemoveFields'; readonly tiles: readonly Coord[] }
   | { readonly type: 'LayWater'; readonly tiles: readonly Coord[] }
@@ -255,6 +257,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return setBusLine(state, command.id, command.stops);
     case 'DeleteBusLine':
       return { state: { ...state, busLines: (state.busLines ?? []).filter(line => line.id !== command.id) }, events: [] };
+    case 'SetDifficulty':
+      return { state: { ...state, difficulty: command.difficulty }, events: [] };
     case 'DismissEcology':
       return { state: { ...state, ecologyDismissed: true }, events: [] };
     case 'LayFields':

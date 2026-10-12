@@ -15,6 +15,8 @@ export { newGame } from './engine/newGame';
 export type { NewGameOptions } from './engine/newGame';
 export { hashSeed, nextRandom } from './engine/random';
 export { generateSeed } from './engine/seed';
+export { DEFAULT_DIFFICULTY, DIFFICULTIES, difficultyOf, isDifficulty } from './engine/difficulty';
+export type { Difficulty } from './engine/difficulty';
 export type { Coord } from './map/coord';
 export type { Layout, LayoutHint, RoomReport, VenuePerformance, FixtureSpec, FixtureCategory } from './venues/venues';
 export type { VenueEvent } from './engine/state';
