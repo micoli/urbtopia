@@ -113,6 +113,8 @@ export class ModelLibrary {
 
 function variantTexturePath(variant: TextureVariant): string {
   if (variant === 'roads-a') return 'roads/Textures/variation-a.png';
+  const [kit, letter] = variant.split('-');
+  if (kit === 'commercial' || kit === 'industrial') return `${kit}/Textures/variation-${letter}.png`;
   return `suburban/Textures/variation-${variant}.png`;
 }
 

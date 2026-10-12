@@ -292,6 +292,13 @@ button {
 .home-color-swatch-a { background: #4d8dbd; }
 .home-color-swatch-b { background: #c75a50; }
 .home-color-swatch-c { background: #858f78; }
+.home-color-swatch-commercial-default { background: #e9e9ee; }
+.home-color-swatch-commercial-a { background: #eb9a62; }
+.home-color-swatch-commercial-b { background: #d4583a; }
+.home-color-swatch-industrial-default { background: #dcdce8; }
+.home-color-swatch-industrial-a { background: #7f7bd0; }
+.home-color-swatch-industrial-b { background: #c06a4c; }
+.home-color-swatch-industrial-c { background: #b9b8e0; }
 
 .side-panel {
   position: fixed;
@@ -394,6 +401,20 @@ button {
   z-index: 5;
   touch-action: none;
   animation: badge-bob 1.2s ease-in-out infinite alternate;
+}
+
+.sanction-badge {
+  position: fixed;
+  left: 0;
+  top: 0;
+  margin-top: 48px;
+  padding: 2px 6px;
+  border-radius: 12px;
+  background: #d62828;
+  color: #fff;
+  font-weight: 700;
+  pointer-events: none;
+  z-index: 4;
 }
 
 .collect-badge-radial {

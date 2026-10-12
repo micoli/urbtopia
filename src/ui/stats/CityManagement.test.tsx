@@ -139,4 +139,21 @@ describe('city management panel', () => {
     expect(html).not.toContain('NaN');
     expect(html).not.toContain('undefined');
   });
+  it.each(['en', 'fr'] as const)('shows no Sanction under Cozy in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    context.state = { ...newGame({ seed: 'needs-cozy', now: 0 }), buildings: [createBuilding(1, 'home', 55, 57, 0)] };
+    const html = renderToStaticMarkup(<CityManagement />);
+    expect(html).not.toContain('Sanction');
+  });
+  it.each(['en', 'fr'] as const)('explains the Sanction of the Difficulty and marks the factors it covers in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    context.state = { ...newGame({ seed: 'needs-easy', now: 0 }), difficulty: 'easy', buildings: [createBuilding(1, 'home', 55, 57, 0)] };
+    const html = renderToStaticMarkup(<CityManagement />);
+    expect(html).toContain(language === 'fr' ? 'Sanction : réduit les impôts' : 'Sanction: lowers the Tax');
+    expect(html).toContain(language === 'fr' ? 'En Facile' : 'On Easy');
+    expect(html).toContain(language === 'fr' ? '50 %' : '50%');
+    expect(html).not.toContain('{difficulty}');
+    expect(html).not.toContain('{floor}');
+    expect(html).not.toContain('undefined');
+  });
 });

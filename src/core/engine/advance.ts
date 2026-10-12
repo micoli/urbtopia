@@ -1,6 +1,6 @@
 import { isShopType } from '../economy/shops';
-import { ECOLOGY, homePower } from '../environment/ecology';
-import { homeBenefits, wellbeingTaxFactor } from '../environment/wellbeing';
+import { ECOLOGY } from '../environment/ecology';
+import { homeTaxMultiplier } from '../environment/sanction';
 import { congestionStats } from '../traffic/congestion';
 import { energyStats } from '../environment/energy';
 import { poweredCasinoIds } from '../leisure/poweredCasinos';
@@ -89,8 +89,7 @@ function replay(state: GameState, until: number): AdvanceResult {
     const poweredCasinos = poweredCasinoIds(current, energy.supplied);
     const coverage = serviceCoverage(current);
     const congestion = congestionStats(current, now);
-    const homeRatios = new Map(current.buildings.filter(b => isHomeType(b.type)).map(b => [b.id,
-    (adapting ? 1 : homePower(b) > 0 ? (energy.supplied.get(b.id) ?? 0) / homePower(b) : 1) * wellbeingTaxFactor(homeBenefits(current, b, energy.coalRates, coverage, poweredCasinos, congestion).wellbeing)]));
+    const homeRatios = new Map(current.buildings.filter(b => isHomeType(b.type)).map(b => [b.id, homeTaxMultiplier(current, b, { energy, coverage, poweredCasinos, congestion })]));
     const produced = advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios, idleShops);
     events.push(...produced.events);
     const withVenues = advanceVenues(produced.state, now, end, energy.supplied);

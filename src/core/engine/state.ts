@@ -7,6 +7,7 @@ import type { GoodId, ItemId, MaterialId } from '../economy/items';
 import type { CropId } from '../farming/crops';
 import type { RoadKind } from '../map/roads';
 import type { TutorialStep } from '../progression/tutorial';
+import type { Difficulty } from './difficulty';
 
 export type BuildingType = BuildingId;
 
@@ -18,7 +19,7 @@ export interface OpenCasinoRound {
 }
 
 export type Rotation = 0 | 1 | 2 | 3;
-export type HomeColorVariant = 'default' | 'a' | 'b' | 'c';
+export type ColorVariant = 'default' | 'a' | 'b' | 'c';
 
 export type ParcelCoord = Coord;
 
@@ -89,7 +90,7 @@ export interface Building extends Coord {
   taxCitizenMs: number;
   insulated?: boolean;
   solar?: boolean;
-  colorVariant?: HomeColorVariant;
+  colorVariant?: ColorVariant;
   storedEnergy?: number;
   coalEnabled?: boolean;
   name?: string;
@@ -168,6 +169,7 @@ export interface GameState {
   busLines?: BusLine[];
   adaptationUntil?: number;
   ecologyDismissed?: boolean;
+  difficulty?: Difficulty;
   seed: string;
   rngState: number;
   casinoRng?: number;

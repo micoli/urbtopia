@@ -1,5 +1,6 @@
-import { ECOLOGY, FACILITY_TYPES, casinosReaching, sportVenuesReaching, isSportVenueType, poweredCasinoIds, homePower, homeBenefits, missingServices, serviceCoverage, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, type Building } from '../../core';
+import { ECOLOGY, FACILITY_TYPES, casinosReaching, sportVenuesReaching, isSportVenueType, poweredCasinoIds, homePower, homeBenefits, missingServices, serviceCoverage, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, difficultyOf, homeSanction, needsContext, type Building } from '../../core';
 import { t } from '../../i18n/t';
+import type { MessageKey } from '../../i18n/messages';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 import { serviceName } from './serviceNames';
@@ -24,11 +25,14 @@ export function HomePanel({ building }: HomePanelProps) {
   const missing = missingServices(coverage, building);
   const spec = HOME_TIERS[building.tier - 1];
   const due = taxDue(building);
+  const sanction = difficultyOf(state) === 'cozy' ? null : homeSanction(state, building, needsContext(state));
+  const sanctioned = sanction?.factor ? sanction : null;
   return <DrawerPanel>
       <DrawerPanel.LabelValue label={t('home.citizens')} value={citizensOf(building.tier)}/>
 
       <DrawerPanel.LabelValue label={t('home.demand')} value={<>⚡ {homePower(building).toFixed(1)} · 💧 {spec?.water ?? 0}</>}/>
       <DrawerPanel.LabelValue label={t('home.tax')} value={<>{due}</>}/>
+      {sanctioned && <DrawerPanel.LabelValue tone="warn" label={t('home.sanction')} value={<>{t(`needs.factor.${sanctioned.factor}` as MessageKey)} · −{Math.round(100 * (1 - sanctioned.multiplier))}% {t('home.sanction.tax')}</>}/>}
       <DrawerPanel.LabelValue label={t('eco.saved')} value={<>
           {((spec?.power ?? 0) - homePower(building)).toFixed(1)}
           <br/>

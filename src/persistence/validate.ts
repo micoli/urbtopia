@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType, isDifficulty, isRepaintableType, colorVariantsOfType, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -58,6 +58,12 @@ function isVenueData(value: unknown): boolean {
   );
 }
 
+// A Home keeps whatever color it was saved with, before the kit palettes were enforced: its Tiers can come from a kit with fewer colors.
+function isColorAllowed(type: BuildingType, color: unknown): boolean {
+  const allowed: readonly string[] = isHomeType(type) ? ['default', 'a', 'b', 'c'] : colorVariantsOfType(type);
+  return allowed.includes(color as string);
+}
+
 function isBuilding(value: unknown): boolean {
   return (
     isRecord(value) &&
@@ -74,7 +80,7 @@ function isBuilding(value: unknown): boolean {
     isNonNegative(value.taxCitizenMs) &&
     (value.insulated === undefined || (isHomeType(value.type) && typeof value.insulated === 'boolean')) &&
     (value.solar === undefined || (isHomeType(value.type) && typeof value.solar === 'boolean')) &&
-    (value.colorVariant === undefined || (isHomeType(value.type) && ['default', 'a', 'b', 'c'].includes(value.colorVariant as string))) &&
+    (value.colorVariant === undefined || (isRepaintableType(value.type) && isColorAllowed(value.type as BuildingType, value.colorVariant))) &&
     (value.venue === undefined || (typeof value.type === 'string' && isVenueType(value.type) && isVenueData(value.venue))) &&
     (value.name === undefined || (typeof value.type === 'string' && isTransitStopType(value.type) && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= STOP_NAME_MAX_LENGTH)) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&
@@ -135,6 +141,7 @@ export function validateGameState(value: unknown): GameState | null {
   if (value.boats !== undefined && !isArrayOf(value.boats, boat => isRecord(boat) && isCoord(boat) && isInt(boat.id, 1) && BOAT_FAMILIES.includes(boat.family as never) && isInt(boat.marinaId, 1) && (boat.catchSince === undefined || (boat.family === 'fishing' && isNumber(boat.catchSince))) && (boat.tier === undefined || (boat.family === 'casino' && isInt(boat.tier, 1, MAX_CASINO_TIER))))) return null;
   if (value.bridges !== undefined && !isArrayOf(value.bridges, bridge => isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string))) return null;
   if (value.casinoRng !== undefined && !isNumber(value.casinoRng)) return null;
+  if (value.difficulty !== undefined && !isDifficulty(value.difficulty)) return null;
   if (value.ecologyDismissed !== undefined && typeof value.ecologyDismissed !== 'boolean') return null;
   if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&
     isArrayOf(line.stops, id => isInt(id, 0)) && (line.stops as number[]).length >= 2 &&

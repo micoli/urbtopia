@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "difficulties": {
+      "type": "object",
+      "properties": {
+        "cozy": {
+          "type": "object",
+          "properties": {
+            "factors": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "electricity",
+                  "water",
+                  "safety",
+                  "health",
+                  "pollution",
+                  "congestion",
+                  "climate"
+                ]
+              }
+            },
+            "taxFloor": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            },
+            "citizenLossSeverity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "factors",
+            "taxFloor",
+            "citizenLossSeverity"
+          ],
+          "additionalProperties": false
+        },
+        "easy": {
+          "type": "object",
+          "properties": {
+            "factors": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "electricity",
+                  "water",
+                  "safety",
+                  "health",
+                  "pollution",
+                  "congestion",
+                  "climate"
+                ]
+              }
+            },
+            "taxFloor": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            },
+            "citizenLossSeverity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "factors",
+            "taxFloor",
+            "citizenLossSeverity"
+          ],
+          "additionalProperties": false
+        },
+        "medium": {
+          "type": "object",
+          "properties": {
+            "factors": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "electricity",
+                  "water",
+                  "safety",
+                  "health",
+                  "pollution",
+                  "congestion",
+                  "climate"
+                ]
+              }
+            },
+            "taxFloor": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            },
+            "citizenLossSeverity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "factors",
+            "taxFloor",
+            "citizenLossSeverity"
+          ],
+          "additionalProperties": false
+        },
+        "hard": {
+          "type": "object",
+          "properties": {
+            "factors": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "electricity",
+                  "water",
+                  "safety",
+                  "health",
+                  "pollution",
+                  "congestion",
+                  "climate"
+                ]
+              }
+            },
+            "taxFloor": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            },
+            "citizenLossSeverity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "factors",
+            "taxFloor",
+            "citizenLossSeverity"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "cozy",
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "difficulties"
+  ],
+  "additionalProperties": false,
+  "title": "Sanctions balance",
+  "description": "assets/defs/balance/sanctions.json: what each Difficulty sanctions, and how hard."
+}

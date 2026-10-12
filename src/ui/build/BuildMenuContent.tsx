@@ -10,7 +10,7 @@ import { RoadMenu } from './RoadMenu';
 import { BUILDING_SECTIONS, readBuildSection, writeBuildSection, type BuildSection } from './buildMenuSections';
 import { codexImageKey, isHomeCodexId, solarCodexIdOf, type CodexId } from '../../codex/catalog';
 import { useCodexManifest } from '../codex/useCodexManifest';
-import type { HomeColorVariant } from '../../core';
+import type { ColorVariant } from '../../core';
 import { HOME_COLOR_VARIANTS, readHomeColor, writeHomeColor } from '../buildings/homeColor';
 import { AccordionSection } from '../common/AccordionSection';
 import { RadioChipGroup } from '../common/RadioChipGroup';
@@ -25,7 +25,7 @@ export function BuildMenuContent() {
   const openCodex = useUi(store => store.openCodex);
   const guide = guideOf(useGame((store) => store.state.tutorial));
   const [openSection, setOpenSection] = useState<BuildSection>(readBuildSection);
-  const [homeColor, setHomeColor] = useState<HomeColorVariant>(readHomeColor);
+  const [homeColor, setHomeColor] = useState<ColorVariant>(readHomeColor);
   const menuId = useId();
   const { manifest } = useCodexManifest();
   const previewOf = (id: CodexId) => {

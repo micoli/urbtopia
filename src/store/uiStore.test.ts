@@ -115,4 +115,15 @@ describe('social window', () => {
     uiStore.getState().openCodex();
     expect(uiStore.getState().socialOpen).toBe(false);
   });
+
+  it('opens the codex on a rules page, and on the first entry without one', () => {
+    uiStore.getState().openCodex(undefined, 'sanctions');
+    expect(uiStore.getState().codexPage).toBe('sanctions');
+    expect(uiStore.getState().codexShowDetail).toBe(true);
+    uiStore.getState().closeCodex();
+    uiStore.getState().openCodex();
+    expect(uiStore.getState().codexPage).toBeNull();
+    expect(uiStore.getState().codexShowDetail).toBe(false);
+    uiStore.getState().closeCodex();
+  });
 });

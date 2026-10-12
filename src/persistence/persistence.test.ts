@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { newGame, storageCapacity, type GameState } from '../core';
+import { difficultyOf, newGame, storageCapacity, type GameState } from '../core';
 import fixtureV1 from './fixtures/save-v1.json';
 import fixtureV2 from './fixtures/save-v2.json';
 import fixtureV3 from './fixtures/save-v3.json';
@@ -14,6 +14,24 @@ const T0 = 1_700_000_000_000;
 const state = newGame({ seed: 'amber-fox-4821', now: T0 });
 
 describe('validateGameState', () => {
+  it.each(['cozy', 'easy', 'medium', 'hard'] as const)('accepts the %s Difficulty and keeps it across a round trip', (difficulty) => {
+    const city = { ...state, difficulty };
+    expect(validateGameState(city)).not.toBeNull();
+    const loaded = parseEnvelope(serializeEnvelope(city, T0));
+    expect(loaded.ok && loaded.state.difficulty).toBe(difficulty);
+  });
+
+  it.each([['an unknown name', 'brutal'], ['a number', 1], ['null', null]])('rejects a Difficulty that is %s', (_label, difficulty) => {
+    expect(validateGameState({ ...state, difficulty })).toBeNull();
+  });
+
+  it('loads a city saved before Difficulty existed as Cozy, unchanged', () => {
+    const loaded = parseEnvelope(JSON.stringify(fixtureV3));
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(difficultyOf(loaded.state)).toBe('cozy');
+    expect(loaded.state.difficulty).toBeUndefined();
+  });
+
   it('accepts a fresh game and a played game', () => {
     expect(validateGameState(state)).not.toBeNull();
     expect(parseEnvelope(JSON.stringify(fixtureV3)).ok).toBe(true);

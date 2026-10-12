@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import { advance, dispatch, newGame, type Command, type CommandError, type GameState } from '../core';
+import { advance, dispatch, newGame, type Command, type CommandError, type Difficulty, type GameState } from '../core';
 import { restoreDeletion, type DeletionUndo } from '../core/engine/undo';
 import { saveSession } from '../persistence/instance';
 import type { LoadResult } from '../persistence/saveSession';
@@ -25,7 +25,7 @@ export interface GameStore {
   send: (command: Command) => void;
   tick: (now: number) => void;
   replaceState: (state: GameState, change?: Change) => void;
-  newGame: (now: number) => void;
+  newGame: (now: number, difficulty?: Difficulty) => void;
 }
 
 export function createGameStore(initial: GameState) {
@@ -83,7 +83,7 @@ export function createGameStore(initial: GameState) {
       set({ state: result.state, lastChange: 'tick' });
     },
     replaceState: (state, change = 'reset') => set({ state, deletionUndo: null, lastError: null, lastChange: change }),
-    newGame: (now) => set({ state: newGame({ now, tutorial: !bypassTutorial }), deletionUndo: null, lastError: null, lastChange: 'reset' }),
+    newGame: (now, difficulty) => set({ state: newGame({ now, tutorial: !bypassTutorial, difficulty }), deletionUndo: null, lastError: null, lastChange: 'reset' }),
   }));
 }
 

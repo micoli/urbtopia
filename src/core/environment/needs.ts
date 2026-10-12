@@ -1,28 +1,26 @@
 import { ECOLOGY, greenBenefits } from './ecology';
+import { sanctionedFactors } from '../balance/sanctions';
+import { difficultyOf } from '../engine/difficulty';
+import type { NeedFactorId } from './needFactors';
 import { climateStats } from './climate';
 import { energyStats } from './energy';
 import { homeBenefits } from './wellbeing';
 import { citizensOf, totalCitizens, utilityCapacity, utilityDemand } from '../buildings/city';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import type { ServiceCategory } from '../services/serviceCategories';
-import { coveredCategories, serviceCoverage } from '../services/services';
-import { congestionStats } from '../traffic/congestion';
+import { coveredCategories, serviceCoverage, type ServiceCoverage } from '../services/services';
+import { congestionStats, type CongestionStats } from '../traffic/congestion';
 import { CONGESTION } from '../traffic/roadTier';
 import { leisureRetention } from '../leisure/leisure';
 import { poweredCasinoIds } from '../leisure/poweredCasinos';
-import type { GameState } from '../engine/state';
+import type { Building, GameState } from '../engine/state';
 
 export const NEED_LEVELS = ['vital', 'safety', 'belonging', 'esteem', 'fulfilment'] as const;
 export type NeedLevelId = (typeof NEED_LEVELS)[number];
 
-export type NeedFactorId =
-  | 'electricity' | 'water' | 'food'
-  | 'safety' | 'health' | 'pollution' | 'congestion' | 'climate'
-  | 'culture' | 'leisure' | 'walking'
-  | 'education' | 'administration' | 'shops'
-  | 'worship' | 'greenSpaces' | 'biodiversity';
+export type { NeedFactorId };
 
-export type NeedEffect = 'supply' | 'wellbeing' | 'tierUpgrade' | 'none';
+export type NeedEffect = 'supply' | 'wellbeing' | 'tierUpgrade' | 'sanction' | 'none';
 
 export type NeedSection = 'eco-energy' | 'eco-water' | 'eco-services' | 'eco-nature' | 'eco-traffic' | 'eco-emissions';
 
@@ -78,41 +76,64 @@ function share(numerator: number, denominator: number): number {
   return denominator > 0 ? Math.max(0, Math.min(100, 100 * numerator / denominator)) : 0;
 }
 
+export interface NeedsContext {
+  energy: ReturnType<typeof energyStats>;
+  coverage: ServiceCoverage;
+  poweredCasinos: ReadonlySet<number>;
+  congestion: CongestionStats;
+}
+
+export function needsContext(state: GameState, now = state.lastSeen): NeedsContext {
+  const energy = energyStats(state, now);
+  return { energy, coverage: serviceCoverage(state), poweredCasinos: poweredCasinoIds(state, energy.supplied), congestion: congestionStats(state, now) };
+}
+
+export function homeNeedSatisfactions(state: GameState, home: Building, { energy, coverage, poweredCasinos, congestion }: NeedsContext): Map<NeedFactorId, number> {
+  const result = new Map<NeedFactorId, number>();
+  const benefits = homeBenefits(state, home, energy.coalRates, coverage, poweredCasinos, congestion);
+  const covered = coveredCategories(coverage, home.id);
+  for (const [factor, category] of SERVICE_FACTORS) result.set(factor, covered.includes(category) ? 100 : 0);
+  result.set('pollution', 100 - share(benefits.pollutionPenalty, ECOLOGY.coalWellbeingCap));
+  result.set('congestion', 100 - share(benefits.congestionPenalty, CONGESTION.penaltyCap));
+  result.set('leisure', leisureRetention(state, home, poweredCasinos, 100) < 1 ? 100 : 0);
+  result.set('walking', 100 * (congestion.homes.get(home.id)?.walkAccess ?? 0));
+  const green = greenBenefits(state, home);
+  result.set('greenSpaces', green.wellbeing);
+  result.set('biodiversity', green.biodiversity);
+  return result;
+}
+
+export function climateSatisfaction(state: GameState): number {
+  return share(NEEDS.unbearableTemperature - climateStats(state).temperature, NEEDS.unbearableTemperature - ECOLOGY.optimalTemperature);
+}
+
+export function waterSatisfaction(state: GameState): number {
+  const water = utilityDemand(state).water;
+  return water > 0 ? share(utilityCapacity(state).water, water) : 100;
+}
+
 function satisfactions(state: GameState): Map<NeedFactorId, number> {
   const result = new Map<NeedFactorId, number>();
   const citizens = totalCitizens(state);
   if (!citizens) return result;
-  const energy = energyStats(state);
-  const coverage = serviceCoverage(state);
-  const poweredCasinos = poweredCasinoIds(state);
-  const congestion = congestionStats(state);
+  const context = needsContext(state);
   const sums = new Map<NeedFactorId, number>();
-  const add = (id: NeedFactorId, value: number, weight: number) => sums.set(id, (sums.get(id) ?? 0) + value * weight);
   for (const home of state.buildings) {
     if (!isHomeType(home.type)) continue;
     const weight = citizensOf(home.tier);
-    const benefits = homeBenefits(state, home, energy.coalRates, coverage, poweredCasinos, congestion);
-    const covered = coveredCategories(coverage, home.id);
-    for (const [factor, category] of SERVICE_FACTORS) add(factor, covered.includes(category) ? 100 : 0, weight);
-    add('pollution', 100 - share(benefits.pollutionPenalty, ECOLOGY.coalWellbeingCap), weight);
-    add('congestion', 100 - share(benefits.congestionPenalty, CONGESTION.penaltyCap), weight);
-    add('leisure', leisureRetention(state, home, poweredCasinos, 100) < 1 ? 100 : 0, weight);
-    add('walking', 100 * (congestion.homes.get(home.id)?.walkAccess ?? 0), weight);
-    const green = greenBenefits(state, home);
-    add('greenSpaces', green.wellbeing, weight);
-    add('biodiversity', green.biodiversity, weight);
+    for (const [id, value] of homeNeedSatisfactions(state, home, context)) sums.set(id, (sums.get(id) ?? 0) + value * weight);
   }
   for (const [id, sum] of sums) result.set(id, Math.max(0, Math.min(100, sum / citizens)));
-  result.set('climate', share(NEEDS.unbearableTemperature - climateStats(state).temperature, NEEDS.unbearableTemperature - ECOLOGY.optimalTemperature));
-  result.set('electricity', 100 - share(energy.unmet, energy.demand));
-  const water = utilityDemand(state).water;
-  result.set('water', water > 0 ? share(utilityCapacity(state).water, water) : 100);
+  result.set('climate', climateSatisfaction(state));
+  result.set('electricity', 100 - share(context.energy.unmet, context.energy.demand));
+  result.set('water', waterSatisfaction(state));
   return result;
 }
 
 export function needsPyramid(state: GameState): NeedsPyramid {
   const values = satisfactions(state);
-  const factors = FACTORS.map((spec): NeedFactor => ({ ...spec, satisfaction: values.get(spec.id) ?? null }));
+  const sanctioned: readonly NeedFactorId[] = sanctionedFactors(difficultyOf(state));
+  const factors = FACTORS.map((spec): NeedFactor => ({ ...spec, effects: sanctioned.includes(spec.id) ? [...spec.effects.filter(effect => effect !== 'none'), 'sanction'] : spec.effects, satisfaction: values.get(spec.id) ?? null }));
   const levels: NeedLevel[] = [];
   for (const id of NEED_LEVELS) {
     const own = factors.filter(factor => factor.level === id);

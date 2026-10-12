@@ -35,12 +35,12 @@ import {
   type ErrorKey,
   type FacilityType,
   type GameState,
-  type HomeColorVariant,
+  type ColorVariant,
   type Rotation,
 } from '../core';
 
 export type Tool =
-  | { kind: 'building'; buildingType: BuildingType; solar?: boolean; colorVariant?: HomeColorVariant }
+  | { kind: 'building'; buildingType: BuildingType; solar?: boolean; colorVariant?: ColorVariant }
   | { kind: 'move'; buildingId: number }
   | { kind: 'road'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'crossing' }
@@ -182,7 +182,7 @@ function evaluateBuilding(
   type: BuildingType,
   tile: Coord,
   requestedRotation: Rotation | null,
-  base: { type: 'PlaceBuilding'; buildingType: BuildingType; solar?: boolean; colorVariant?: HomeColorVariant } | { type: 'MoveBuilding'; id: number },
+  base: { type: 'PlaceBuilding'; buildingType: BuildingType; solar?: boolean; colorVariant?: ColorVariant } | { type: 'MoveBuilding'; id: number },
   cost: number,
   tier = 1,
 ): Evaluation {

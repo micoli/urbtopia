@@ -1,4 +1,4 @@
-import {needsPyramid, totalCitizens, type GameState} from '../../../core';
+import {SANCTIONS, difficultyOf, needsPyramid, totalCitizens, type GameState} from '../../../core';
 import {t} from '../../../i18n/t';
 import type {MessageKey} from '../../../i18n/messages';
 import {SectionHeading} from '../../common/SectionHeading';
@@ -13,9 +13,15 @@ interface NeedsSectionProps {
 export function NeedsSection({state, onShowSection}: NeedsSectionProps) {
     const pyramid = needsPyramid(state);
     const bottleneck = pyramid.bottleneck;
+    const difficulty = difficultyOf(state);
+    const help = difficulty === 'cozy'
+        ? t('needs.help')
+        : t('needs.help.sanctions')
+            .replace('{difficulty}', t(`difficulty.${difficulty}` as MessageKey))
+            .replace('{floor}', String(Math.round(100 * SANCTIONS[difficulty].taxFloor)));
     return <section id="eco-needs" className="eco-wide">
         <SectionHeading icon="♧">{t('needs.title')}</SectionHeading>
-        <p>{t('needs.help')}</p>
+        <p>{help}</p>
         {totalCitizens(state) === 0 && <p>{t('needs.noCitizens')}</p>}
         <NeedsPyramidDiagram levels={pyramid.levels}/>
         {bottleneck && bottleneck.section && <p>

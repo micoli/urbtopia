@@ -1,9 +1,9 @@
-import type { HomeColorVariant } from '../../core';
+import type { ColorVariant } from '../../core';
 
 export const HOME_COLOR_KEY = 'urbtopia-home-color';
-export const HOME_COLOR_VARIANTS: HomeColorVariant[] = ['default', 'a', 'b', 'c'];
+export const HOME_COLOR_VARIANTS: ColorVariant[] = ['default', 'a', 'b', 'c'];
 
-export function readHomeColor(): HomeColorVariant {
+export function readHomeColor(): ColorVariant {
   try {
     const stored = localStorage.getItem(HOME_COLOR_KEY);
     return HOME_COLOR_VARIANTS.find(variant => variant === stored) ?? 'default';
@@ -12,7 +12,7 @@ export function readHomeColor(): HomeColorVariant {
   }
 }
 
-export function writeHomeColor(variant: HomeColorVariant): void {
+export function writeHomeColor(variant: ColorVariant): void {
   try {
     localStorage.setItem(HOME_COLOR_KEY, variant);
   } catch {

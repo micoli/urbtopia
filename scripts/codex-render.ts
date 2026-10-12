@@ -5,12 +5,12 @@ import { BridgeLayer } from '../src/scene/BridgeLayer';
 import { ChunkedWorld } from '../src/scene/ChunkedWorld';
 import { EcologyLayer } from '../src/scene/EcologyLayer';
 import { ModelLibrary } from '../src/scene/modelLibrary';
-import { MODEL_KEYS, PROCEDURAL_MODELS, renderItemsOf } from '../src/scene/renderItems';
+import { MODEL_KEYS, PROCEDURAL_MODELS, TEXTURE_VARIANTS, renderItemsOf } from '../src/scene/renderItems';
 
 validateCodex();
 const library = new ModelLibrary();
 await library.ensure([...MODEL_KEYS, ...PROCEDURAL_MODELS]);
-await library.ensureTextureVariants(['a', 'b', 'c', 'roads-a']);
+await library.ensureTextureVariants(TEXTURE_VARIANTS);
 const canvas = document.querySelector('canvas')!;
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(512, 512, false);

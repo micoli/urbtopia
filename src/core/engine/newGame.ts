@@ -2,6 +2,7 @@ import { createBuilding } from '../buildings/buildingSpecs';
 import { GAME_CONFIG } from './config';
 import { hashSeed } from './random';
 import { generateSeed } from './seed';
+import { DEFAULT_DIFFICULTY, type Difficulty } from './difficulty';
 import type { GameState } from './state';
 import { TUTORIAL_STEPS } from '../progression/tutorial';
 
@@ -9,6 +10,7 @@ export interface NewGameOptions {
   seed?: string;
   now: number;
   tutorial?: boolean;
+  difficulty?: Difficulty;
 }
 
 export function newGame(options: NewGameOptions): GameState {
@@ -33,6 +35,7 @@ export function newGame(options: NewGameOptions): GameState {
     roundabouts: [],
     tutorial: null,
     tradeLedger: [],
+    ...(options.difficulty && options.difficulty !== DEFAULT_DIFFICULTY ? { difficulty: options.difficulty } : {}),
   };
   if (!options.tutorial) return withStartingCity(empty);
   const { startingUrbs, startingWood } = GAME_CONFIG.tutorial;

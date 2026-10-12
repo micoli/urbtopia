@@ -1,6 +1,8 @@
 import { facilityMessages } from './facilities';
 import { casinoMessages } from './casino';
+import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
+import { sanctionsMessages } from './sanctions';
 import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
 import { buildingMessages } from './buildings';
@@ -12,6 +14,8 @@ export const FR: Record<MessageKey, string> = {
   ...natureMessages('fr'),
   ...casinoMessages('fr'),
   ...needsMessages('fr'),
+  ...difficultyMessages('fr'),
+  ...sanctionsMessages('fr'),
   ...venueMessages('fr'),
   ...buildingMessages('fr'),
   ...itemMessages('fr'),
@@ -66,7 +70,8 @@ export const FR: Record<MessageKey, string> = {
   'error.stopNotOnNetwork': 'Un arrêt ne fait pas face au réseau. Oriente-le ou construis le réseau devant lui.',
   'error.networkNotConnected': 'Les arrêts ne sont pas connectés : le réseau est coupé entre eux. Utilise Corriger le réseau.',
   'error.alreadyEquipped': 'Cet équipement est déjà installé.',
-  'error.alreadyThisColor': 'Ce logement a déjà cette couleur.',
+  'error.alreadyThisColor': 'Ce bâtiment a déjà cette couleur.',
+  'error.unavailableColor': 'Cette couleur n\'existe pas pour ce bâtiment.',
   'error.invalidTradeLot': 'Ce lot ne peut pas être échangé.',
   'error.unknownTrade': 'Cet échange est inconnu.',
   'eco.title': 'Gestion de la ville',
@@ -277,6 +282,13 @@ export const FR: Record<MessageKey, string> = {
   'build.homeColor.a': 'Bleu',
   'build.homeColor.b': 'Rouge',
   'build.homeColor.c': 'Gris vert',
+  'build.commercialColor.default': 'Blanc',
+  'build.commercialColor.a': 'Orange',
+  'build.commercialColor.b': 'Rouge brique',
+  'build.industrialColor.default': 'Blanc',
+  'build.industrialColor.a': 'Violet',
+  'build.industrialColor.b': 'Brique',
+  'build.industrialColor.c': 'Gris clair',
   'build.production': 'Production',
   'build.shops': 'Commerces',
   'build.storage': 'Stockage',
@@ -673,6 +685,8 @@ export const FR: Record<MessageKey, string> = {
   'panel.waiting': 'En attente',
   'panel.onlyCraftable': 'Seulement les recettes réalisables',
   'panel.freeSlot': 'Emplacement libre',
+  'power.halted': 'Pas d’énergie : la production et les ventes sont à l’arrêt. Construisez une centrale ou des panneaux solaires.',
+  'power.slowed': 'Manque d’énergie : la production et les ventes sont ralenties',
   'panel.stock': 'Stock',
   'panel.materials': 'Matériaux',
   'panel.crops': 'Récoltes',

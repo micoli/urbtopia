@@ -41,9 +41,11 @@ import { applyTradeEffect, confirmTradeEffect, rollbackTradeEffect, type TradeRe
 import type { TradeEffect, TradeLine } from '../trade/types';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import type { BlackjackAction } from '../leisure/blackjack';
-import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, HomeColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
+import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, ColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { colorVariantsOf, isRepaintableType } from '../buildings/paint';
 import { STOP_NAME_MAX_LENGTH, isTransitStopType } from '../transit/stopNames';
+import type { Difficulty } from './difficulty';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -62,14 +64,15 @@ export type Command =
   | { readonly type: 'PlaceRoundabout'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoad'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoadPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
-  | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation; readonly solar?: boolean; readonly colorVariant?: HomeColorVariant }
-  | { readonly type: 'RepaintHome'; readonly buildingId: number; readonly colorVariant: HomeColorVariant }
+  | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation; readonly solar?: boolean; readonly colorVariant?: ColorVariant }
+  | { readonly type: 'RepaintBuilding'; readonly buildingId: number; readonly colorVariant: ColorVariant }
   | { readonly type: 'EquipHome'; readonly buildingId: number; readonly equipment: 'solar' | 'insulation' }
   | { readonly type: 'SetCoalEnabled'; readonly buildingId: number; readonly enabled: boolean }
   | { readonly type: 'RenameStop'; readonly buildingId: number; readonly name: string }
   | { readonly type: 'SetBusLine'; readonly id?: number; readonly stops: number[] }
   | { readonly type: 'DeleteBusLine'; readonly id: number }
   | { readonly type: 'DismissEcology' }
+  | { readonly type: 'SetDifficulty'; readonly difficulty: Difficulty }
   | { readonly type: 'LayFields'; readonly tiles: readonly Coord[] }
   | { readonly type: 'RemoveFields'; readonly tiles: readonly Coord[] }
   | { readonly type: 'LayWater'; readonly tiles: readonly Coord[] }
@@ -200,6 +203,7 @@ export type ErrorKey =
   | 'error.networkNotConnected'
   | 'error.alreadyEquipped'
   | 'error.alreadyThisColor'
+  | 'error.unavailableColor'
   | 'error.invalidTradeLot'
   | 'error.unknownTrade';
 
@@ -241,8 +245,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return demolishRoad(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
     case 'PlaceBuilding':
       return placeBuilding(state, command.buildingType, command.x, command.y, command.rotation, command.solar, command.colorVariant);
-    case 'RepaintHome':
-      return repaintHome(state, command.buildingId, command.colorVariant);
+    case 'RepaintBuilding':
+      return repaintBuilding(state, command.buildingId, command.colorVariant);
     case 'EquipHome':
       return equipHome(state, command.buildingId, command.equipment);
     case 'SetCoalEnabled':
@@ -253,6 +257,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return setBusLine(state, command.id, command.stops);
     case 'DeleteBusLine':
       return { state: { ...state, busLines: (state.busLines ?? []).filter(line => line.id !== command.id) }, events: [] };
+    case 'SetDifficulty':
+      return { state: { ...state, difficulty: command.difficulty }, events: [] };
     case 'DismissEcology':
       return { state: { ...state, ecologyDismissed: true }, events: [] };
     case 'LayFields':
@@ -463,7 +469,7 @@ function strandsBuilding(before: GameState, after: GameState): boolean {
   );
 }
 
-function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, requestedRotation?: Rotation, solar = false, colorVariant?: HomeColorVariant): CommandOutcome {
+function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, requestedRotation?: Rotation, solar = false, colorVariant?: ColorVariant): CommandOutcome {
   if (isRetired(type) || citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < ECOLOGY.solarUnlockCitizens)) return fail('error.itemLocked');
   if (solar && !isHomeType(type)) return fail('error.cannotProduce');
   const extraCost = solar ? ECOLOGY.solarCost : 0;
@@ -786,10 +792,17 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
       ...state,
       urbs: state.urbs - cost.urbs,
       storage: { ...state.storage, goods },
-      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, tier: nextTier } : candidate)),
+      buildings: state.buildings.map((candidate) => (candidate === building ? upgradedTo(building, nextTier) : candidate)),
     },
     events: [{ type: 'BuildingUpgraded', buildingId, tier: nextTier }],
   };
+}
+
+// A new Tier can change the model's kit, and with it the colors on offer: a color the kit lacks goes back to the default.
+function upgradedTo(building: Building, tier: number): Building {
+  const { colorVariant, ...rest } = building;
+  const keptColor = colorVariant && colorVariantsOf(building.type, tier).includes(colorVariant) ? { colorVariant } : {};
+  return { ...rest, ...keptColor, tier };
 }
 
 function equipHome(state: GameState, id: number, equipment: 'solar' | 'insulation'): CommandOutcome {
@@ -803,11 +816,12 @@ function equipHome(state: GameState, id: number, equipment: 'solar' | 'insulatio
   return { state: { ...state, urbs: state.urbs - cost, buildings: state.buildings.map(b => b.id === id ? { ...b, [field]: true } : b) }, events: [] };
 }
 
-function repaintHome(state: GameState, id: number, colorVariant: HomeColorVariant): CommandOutcome {
-  const home = state.buildings.find(b => b.id === id);
-  if (!home || !isHomeType(home.type)) return fail('error.unknownBuilding');
-  if ((home.colorVariant ?? 'default') === colorVariant) return fail('error.alreadyThisColor');
-  const cost = ECOLOGY.repaintCost * home.tier;
+function repaintBuilding(state: GameState, id: number, colorVariant: ColorVariant): CommandOutcome {
+  const building = state.buildings.find(b => b.id === id);
+  if (!building || !isRepaintableType(building.type)) return fail('error.unknownBuilding');
+  if (!colorVariantsOf(building.type, building.tier).includes(colorVariant)) return fail('error.unavailableColor');
+  if ((building.colorVariant ?? 'default') === colorVariant) return fail('error.alreadyThisColor');
+  const cost = ECOLOGY.repaintCost * building.tier;
   if (state.urbs < cost) return fail('error.notEnoughUrbs');
   return { state: { ...state, urbs: state.urbs - cost, buildings: state.buildings.map(b => b.id === id ? { ...b, colorVariant } : b) }, events: [] };
 }

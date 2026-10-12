@@ -1,6 +1,8 @@
 import { facilityMessages } from './facilities';
 import { casinoMessages } from './casino';
+import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
+import { sanctionsMessages } from './sanctions';
 import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
 import { buildingMessages } from './buildings';
@@ -10,6 +12,8 @@ export const MESSAGES = {
   ...natureMessages('en'),
   ...casinoMessages('en'),
   ...needsMessages('en'),
+  ...difficultyMessages('en'),
+  ...sanctionsMessages('en'),
   ...venueMessages('en'),
   ...buildingMessages('en'),
   ...itemMessages('en'),
@@ -61,7 +65,8 @@ export const MESSAGES = {
   'error.stopNotOnNetwork': 'A stop is not facing the network. Rotate it or build the network in front of it.',
   'error.networkNotConnected': 'Stops are not connected: the network is broken between them. Use Fix network.',
   'error.alreadyEquipped': 'This equipment is already installed.',
-  'error.alreadyThisColor': 'This Home already has this color.',
+  'error.alreadyThisColor': 'This building already has this color.',
+  'error.unavailableColor': 'This color is not available for this building.',
   'error.invalidTradeLot': 'This lot cannot be traded.',
   'error.unknownTrade': 'This trade is unknown.',
   'eco.title': 'City management',
@@ -275,6 +280,13 @@ export const MESSAGES = {
   'build.homeColor.a': 'Blue',
   'build.homeColor.b': 'Red',
   'build.homeColor.c': 'Grey green',
+  'build.commercialColor.default': 'White',
+  'build.commercialColor.a': 'Orange',
+  'build.commercialColor.b': 'Brick red',
+  'build.industrialColor.default': 'White',
+  'build.industrialColor.a': 'Purple',
+  'build.industrialColor.b': 'Brick',
+  'build.industrialColor.c': 'Light grey',
   'build.production': 'Production',
   'build.shops': 'Shops',
   'build.storage': 'Storage',
@@ -671,6 +683,8 @@ export const MESSAGES = {
   'panel.waiting': 'Waiting',
   'panel.onlyCraftable': 'Only craftable recipes',
   'panel.freeSlot': 'Free Slot',
+  'power.halted': 'No power: production and sales are halted. Build a power plant or solar panels.',
+  'power.slowed': 'Power shortage: production and sales are slowed',
   'panel.stock': 'Stock',
   'panel.materials': 'Materials',
   'panel.crops': 'Crops',
