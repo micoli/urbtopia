@@ -11,6 +11,7 @@ const solarPanelSchema = z.strictObject({
   rotationX: z.number().optional(),
   rotationY: z.number().optional(),
   rotationZ: z.number().optional(),
+  scale: z.number().positive().optional(),
 });
 
 // What it takes to equip a building with Solar panels and how they sit on its roof; a field left out takes the city-wide default, and without panels the roof shows a flat panel on each tile.

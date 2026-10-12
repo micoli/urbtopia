@@ -115,6 +115,7 @@ export function Preview() {
         holder.add(object)
         holder.rotation.set(THREE.MathUtils.degToRad(panel.rotationX), THREE.MathUtils.degToRad(panel.rotationY), THREE.MathUtils.degToRad(panel.rotationZ), 'YXZ')
         holder.position.set(panel.x, placed.top + panel.y, panel.z)
+        holder.scale.setScalar(panel.scale)
         if (listed) holder.userData.panelIndex = index
         group.add(holder)
         if (listed && index === selectedPanel) {

@@ -284,7 +284,7 @@ function solarPanelItems(building: Building, roofModel: string, rotation: number
     const offset = turnedOffset(panel.x, panel.z, rotation);
     return {
       model: panel.model ? modelFileOf(panel.model) : ROOF_PANEL_MODEL, x: x + offset.x, z: z + offset.z, rotation, roofBase: roofModel,
-      ...(panel.y ? { elevation: panel.y } : {}), ...(panel.rotationX ? { pitch: panel.rotationX } : {}), ...(panel.rotationY ? { yaw: panel.rotationY } : {}), ...(panel.rotationZ ? { roll: panel.rotationZ } : {}),
+      ...(panel.y ? { elevation: panel.y } : {}), ...(panel.rotationX ? { pitch: panel.rotationX } : {}), ...(panel.rotationY ? { yaw: panel.rotationY } : {}), ...(panel.rotationZ ? { roll: panel.rotationZ } : {}), ...(panel.scale !== 1 ? { scale: panel.scale } : {}),
     };
   });
 }

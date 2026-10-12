@@ -533,6 +533,10 @@
                   },
                   "rotationZ": {
                     "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
                   }
                 },
                 "required": [
@@ -818,6 +822,10 @@
                   },
                   "rotationZ": {
                     "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
                   }
                 },
                 "required": [
@@ -1067,6 +1075,10 @@
                   },
                   "rotationZ": {
                     "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
                   }
                 },
                 "required": [
@@ -1312,6 +1324,10 @@
                   },
                   "rotationZ": {
                     "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
                   }
                 },
                 "required": [
@@ -1562,6 +1578,10 @@
                   },
                   "rotationZ": {
                     "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
                   }
                 },
                 "required": [
@@ -2412,6 +2432,10 @@
                   },
                   "rotationZ": {
                     "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
                   }
                 },
                 "required": [
@@ -2676,6 +2700,10 @@
                   },
                   "rotationZ": {
                     "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
                   }
                 },
                 "required": [
@@ -2959,6 +2987,10 @@
                   },
                   "rotationZ": {
                     "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
                   }
                 },
                 "required": [
@@ -3217,6 +3249,10 @@
                   },
                   "rotationZ": {
                     "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
                   }
                 },
                 "required": [
@@ -3590,6 +3626,10 @@
                   },
                   "rotationZ": {
                     "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
                   }
                 },
                 "required": [
