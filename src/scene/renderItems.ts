@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_ROAD_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, solarPanelsOf, solarPanelLayout, paintKitOf, colorVariantsOfKit } from '../core';
+import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -24,6 +24,9 @@ export interface RenderItem {
   lengthScale?: number;
   scale?: number;
   roofBase?: string;
+  // Degrees about the item's own X axis, then Y, on top of its rotation.
+  pitch?: number;
+  yaw?: number;
   textureVariant?: TextureVariant;
   footprint?: number;
   recolor?: number;
@@ -74,6 +77,7 @@ export function facilityFootprint(building: Pick<Building, 'type'>): number | nu
 // The model of each Tier of the buildings defined with Tiers.
 const TIER_MODELS = new Map(BUILDING_ENTRIES.filter(({ tiers }) => tiers).map(({ id, model: entryModel }) => [id, tiersOf(id).map(({ model }) => modelFileOf(model ?? entryModel))]));
 
+const SOLAR_PANEL_FILES = BUILDING_ENTRIES.flatMap(({ solarPanels }) => (solarPanels?.panels ?? []).map(({ model }) => modelFileOf(model)));
 const SOLAR_HOME_MODELS = new Map(BUILDING_ENTRIES.filter(({ kind, variants }) => kind === 'home' && variants?.solar).map(({ id }) => [id, variantTiersOf(id, 'solar').map(({ model }) => modelFileOf(model!))]));
 
 // Mansard Homes are modelled once per color, a to d (green, pale blue, red, grey green): the Home color picks the model, where other Homes recolor their texture.
@@ -119,6 +123,7 @@ export const MODEL_KEYS: readonly string[] = [
     ...Object.values(FACILITY_DETAILS),
     ROOF_PANEL_MODEL,
     GROUND_PANEL_MODEL,
+    ...SOLAR_PANEL_FILES,
     PARK_TREE_MODEL,
     BRIDGE_ROAD_MODEL,
     ...ROAD_MODELS,
@@ -156,7 +161,7 @@ let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; fields: RenderIte
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   return a.length === b.length && a.every((item, index) => {
     const other = b[index] as RenderItem;
-    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.recolor === other.recolor && item.decal?.x === other.decal?.x && item.decal?.z === other.decal?.z && item.decal?.lateral === other.decal?.lateral && item.tint === other.tint;
+    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.pitch === other.pitch && item.yaw === other.yaw && item.scale === other.scale && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.recolor === other.recolor && item.decal?.x === other.decal?.x && item.decal?.z === other.decal?.z && item.decal?.lateral === other.decal?.lateral && item.tint === other.tint;
   });
 }
 
@@ -268,19 +273,19 @@ function garageDoorItems(x: number, z: number, rotation: number, footprint: numb
   }));
 }
 
-const SOLAR_PANEL_MODELS = { flat: ROOF_PANEL_MODEL, landscape: GROUND_PANEL_MODEL } as const;
-
-// A Home whose solar models cover its Tier already shows its panels; any other equipped building gets its panels on the roof, one per tile unless its definition sets a count.
+// A Home whose solar models cover its Tier already shows its panels; any other equipped building gets the panels its definition lists on the roof, a flat panel per tile without any.
 function solarPanelItems(building: Building, roofModel: string, rotation: number, x: number, z: number): RenderItem[] {
   const panels = solarPanelsOf(building.type);
   if (!building.solar || !panels) return [];
   if (building.tier <= (SOLAR_HOME_MODELS.get(building.type)?.length ?? 0)) return [];
-  const model = SOLAR_PANEL_MODELS[panels.style ?? 'flat'];
   const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
-  return solarPanelLayout(width, depth, panels.panels).map(slot => ({
-    model, x: x + slot.x, z: z + slot.z, rotation, roofBase: roofModel,
-    ...(slot.scale < 1 ? { scale: slot.scale } : {}), ...(panels.lift ? { elevation: panels.lift } : {}),
-  }));
+  return solarPanelPlacements(width, depth, panels.panels).map(panel => {
+    const offset = turnedOffset(panel.x, panel.z, rotation);
+    return {
+      model: panel.model ? modelFileOf(panel.model) : ROOF_PANEL_MODEL, x: x + offset.x, z: z + offset.z, rotation, roofBase: roofModel,
+      ...(panel.y ? { elevation: panel.y } : {}), ...(panel.rotationX ? { pitch: panel.rotationX } : {}), ...(panel.rotationY ? { yaw: panel.rotationY } : {}),
+    };
+  });
 }
 
 function buildingItems(state: GameState): RenderItem[] {

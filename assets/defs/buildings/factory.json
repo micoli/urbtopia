@@ -62,7 +62,5 @@
       }
     }
   ],
-  "solarPanels": {
-    "style": "flat"
-  }
+  "solarPanels": {}
 }

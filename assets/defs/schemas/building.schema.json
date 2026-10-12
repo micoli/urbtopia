@@ -506,17 +506,37 @@
         "solarPanels": {
           "type": "object",
           "properties": {
-            "style": {
-              "type": "string",
-              "enum": [
-                "flat",
-                "landscape"
-              ]
-            },
             "panels": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 64
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
             },
             "cost": {
               "type": "integer",
@@ -531,9 +551,6 @@
             "output": {
               "type": "number",
               "exclusiveMinimum": 0
-            },
-            "lift": {
-              "type": "number"
             }
           },
           "additionalProperties": false,
@@ -771,17 +788,37 @@
         "solarPanels": {
           "type": "object",
           "properties": {
-            "style": {
-              "type": "string",
-              "enum": [
-                "flat",
-                "landscape"
-              ]
-            },
             "panels": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 64
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
             },
             "cost": {
               "type": "integer",
@@ -796,9 +833,6 @@
             "output": {
               "type": "number",
               "exclusiveMinimum": 0
-            },
-            "lift": {
-              "type": "number"
             }
           },
           "additionalProperties": false,
@@ -1000,17 +1034,37 @@
         "solarPanels": {
           "type": "object",
           "properties": {
-            "style": {
-              "type": "string",
-              "enum": [
-                "flat",
-                "landscape"
-              ]
-            },
             "panels": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 64
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
             },
             "cost": {
               "type": "integer",
@@ -1025,9 +1079,6 @@
             "output": {
               "type": "number",
               "exclusiveMinimum": 0
-            },
-            "lift": {
-              "type": "number"
             }
           },
           "additionalProperties": false,
@@ -1225,17 +1276,37 @@
         "solarPanels": {
           "type": "object",
           "properties": {
-            "style": {
-              "type": "string",
-              "enum": [
-                "flat",
-                "landscape"
-              ]
-            },
             "panels": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 64
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
             },
             "cost": {
               "type": "integer",
@@ -1250,9 +1321,6 @@
             "output": {
               "type": "number",
               "exclusiveMinimum": 0
-            },
-            "lift": {
-              "type": "number"
             }
           },
           "additionalProperties": false,
@@ -1455,17 +1523,37 @@
         "solarPanels": {
           "type": "object",
           "properties": {
-            "style": {
-              "type": "string",
-              "enum": [
-                "flat",
-                "landscape"
-              ]
-            },
             "panels": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 64
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
             },
             "cost": {
               "type": "integer",
@@ -1480,9 +1568,6 @@
             "output": {
               "type": "number",
               "exclusiveMinimum": 0
-            },
-            "lift": {
-              "type": "number"
             }
           },
           "additionalProperties": false,
@@ -2285,17 +2370,37 @@
         "solarPanels": {
           "type": "object",
           "properties": {
-            "style": {
-              "type": "string",
-              "enum": [
-                "flat",
-                "landscape"
-              ]
-            },
             "panels": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 64
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
             },
             "cost": {
               "type": "integer",
@@ -2310,9 +2415,6 @@
             "output": {
               "type": "number",
               "exclusiveMinimum": 0
-            },
-            "lift": {
-              "type": "number"
             }
           },
           "additionalProperties": false,
@@ -2529,17 +2631,37 @@
         "solarPanels": {
           "type": "object",
           "properties": {
-            "style": {
-              "type": "string",
-              "enum": [
-                "flat",
-                "landscape"
-              ]
-            },
             "panels": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 64
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
             },
             "cost": {
               "type": "integer",
@@ -2554,9 +2676,6 @@
             "output": {
               "type": "number",
               "exclusiveMinimum": 0
-            },
-            "lift": {
-              "type": "number"
             }
           },
           "additionalProperties": false,
@@ -2792,17 +2911,37 @@
         "solarPanels": {
           "type": "object",
           "properties": {
-            "style": {
-              "type": "string",
-              "enum": [
-                "flat",
-                "landscape"
-              ]
-            },
             "panels": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 64
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
             },
             "cost": {
               "type": "integer",
@@ -2817,9 +2956,6 @@
             "output": {
               "type": "number",
               "exclusiveMinimum": 0
-            },
-            "lift": {
-              "type": "number"
             }
           },
           "additionalProperties": false,
@@ -3030,17 +3166,37 @@
         "solarPanels": {
           "type": "object",
           "properties": {
-            "style": {
-              "type": "string",
-              "enum": [
-                "flat",
-                "landscape"
-              ]
-            },
             "panels": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 64
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
             },
             "cost": {
               "type": "integer",
@@ -3055,9 +3211,6 @@
             "output": {
               "type": "number",
               "exclusiveMinimum": 0
-            },
-            "lift": {
-              "type": "number"
             }
           },
           "additionalProperties": false,
@@ -3383,17 +3536,37 @@
         "solarPanels": {
           "type": "object",
           "properties": {
-            "style": {
-              "type": "string",
-              "enum": [
-                "flat",
-                "landscape"
-              ]
-            },
             "panels": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 64
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
             },
             "cost": {
               "type": "integer",
@@ -3408,9 +3581,6 @@
             "output": {
               "type": "number",
               "exclusiveMinimum": 0
-            },
-            "lift": {
-              "type": "number"
             }
           },
           "additionalProperties": false,

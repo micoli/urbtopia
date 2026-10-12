@@ -58,8 +58,6 @@
       }
     }
   ],
-  "solarPanels": {
-    "style": "flat"
-  },
+  "solarPanels": {},
   "extraCopyCitizens": [300, 800]
 }
