@@ -6,7 +6,14 @@ import type { BuildingId } from './buildingTypes.generated';
 export type PaintKit = 'suburban' | 'commercial' | 'industrial' | 'mansard';
 
 const ALL_COLORS: readonly ColorVariant[] = ['default', 'a', 'b', 'c'];
-const COMMERCIAL_COLORS: readonly ColorVariant[] = ['default', 'a', 'b'];
+
+// The commercial kit ships two variations, the others three.
+const PALETTES: Record<PaintKit, readonly ColorVariant[]> = {
+  suburban: ALL_COLORS,
+  mansard: ALL_COLORS,
+  commercial: ['default', 'a', 'b'],
+  industrial: ALL_COLORS,
+};
 
 // Takes a Model id or the file the scene keys it by.
 export function paintKitOf(model: string): PaintKit | undefined {
@@ -20,11 +27,15 @@ export function paintKitOf(model: string): PaintKit | undefined {
 const REPAINTABLE_KINDS: readonly string[] = ['home', 'shop', 'production', 'storage', 'utility'];
 
 // Homes, shops, the Hotel, production, storage and utility buildings, as long as their model comes from a kit with palette variations.
-export function isRepaintableType(type: string): boolean {
-  const entry = BUILDING_ENTRIES.find(({ id }) => id === type);
-  if (!entry || !(REPAINTABLE_KINDS.includes(entry.kind ?? '') || entry.id === 'hotel')) return false;
-  return paintKitOf(entry.model) !== undefined;
-}
+const REPAINTABLE_TYPES: ReadonlySet<string> = new Set(
+  BUILDING_ENTRIES
+    .filter(({ kind, id, model }) => (REPAINTABLE_KINDS.includes(kind ?? '') || id === 'hotel') && paintKitOf(model) !== undefined)
+    .map(({ id }) => id),
+);
+
+export const isRepaintableType = (type: string): boolean => REPAINTABLE_TYPES.has(type);
+
+export const colorVariantsOfKit = (kit: PaintKit): readonly ColorVariant[] => PALETTES[kit];
 
 export function paintKitAt(type: BuildingId, tier: number): PaintKit | undefined {
   const tiers = tiersOf(type);
@@ -33,6 +44,11 @@ export function paintKitAt(type: BuildingId, tier: number): PaintKit | undefined
 
 export function colorVariantsOf(type: BuildingId, tier: number): readonly ColorVariant[] {
   const kit = paintKitAt(type, tier);
-  if (!kit) return ['default'];
-  return kit === 'commercial' ? COMMERCIAL_COLORS : ALL_COLORS;
+  return kit ? PALETTES[kit] : ['default'];
+}
+
+// Every color the building can wear at some Tier, since its model may change kit as it grows.
+export function colorVariantsOfType(type: BuildingId): readonly ColorVariant[] {
+  const kits = tiersOf(type).map(({ model }) => paintKitOf(model ?? ''));
+  return ALL_COLORS.filter(color => kits.some(kit => kit && PALETTES[kit].includes(color)));
 }

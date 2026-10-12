@@ -1,4 +1,5 @@
-import { ECOLOGY, colorVariantsOf, paintKitAt, type Building } from '../../core';
+import { ECOLOGY, colorVariantsOf, paintKitAt, type Building, type PaintKit } from '../../core';
+import type { MessageKey } from '../../i18n/messages';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
@@ -9,13 +10,18 @@ interface RepaintRowProps {
   building: Building;
 }
 
+const KIT_STYLE: Record<PaintKit, { labels: string; swatch: string }> = {
+  suburban: { labels: 'build.homeColor', swatch: '' },
+  mansard: { labels: 'build.homeColor', swatch: '' },
+  commercial: { labels: 'build.commercialColor', swatch: 'commercial-' },
+  industrial: { labels: 'build.industrialColor', swatch: 'industrial-' },
+};
+
 export function RepaintRow({ building }: RepaintRowProps) {
   const urbs = useGame(s => s.state.urbs);
   const cost = ECOLOGY.repaintCost * building.tier;
   const current = building.colorVariant ?? 'default';
-  const kit = paintKitAt(building.type, building.tier);
-  const ownPalette = kit === 'commercial' || kit === 'industrial';
-  const swatchKit = ownPalette ? `${kit}-` : '';
+  const style = KIT_STYLE[paintKitAt(building.type, building.tier) ?? 'suburban'];
   return <div>
     <p>{t('eco.repaint')} · <UrbsAmount value={cost} /></p>
     <RadioChipGroup
@@ -28,10 +34,10 @@ export function RepaintRow({ building }: RepaintRowProps) {
             value: variant,
             label: <>
               <span
-                className={`home-color-swatch home-color-swatch-${swatchKit}${variant}`}
+                className={`home-color-swatch home-color-swatch-${style.swatch}${variant}`}
                 aria-hidden="true"
               /><span>
-                {t(kit === 'commercial' ? `build.commercialColor.${variant as 'default' | 'a' | 'b'}` : kit === 'industrial' ? `build.industrialColor.${variant}` : `build.homeColor.${variant}`)}
+                {t(`${style.labels}.${variant}` as MessageKey)}
               </span>
             </>,
           }))

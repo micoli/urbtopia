@@ -788,10 +788,17 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
       ...state,
       urbs: state.urbs - cost.urbs,
       storage: { ...state.storage, goods },
-      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, tier: nextTier } : candidate)),
+      buildings: state.buildings.map((candidate) => (candidate === building ? upgradedTo(building, nextTier) : candidate)),
     },
     events: [{ type: 'BuildingUpgraded', buildingId, tier: nextTier }],
   };
+}
+
+// A new Tier can change the model's kit, and with it the colors on offer: a color the kit lacks goes back to the default.
+function upgradedTo(building: Building, tier: number): Building {
+  const { colorVariant, ...rest } = building;
+  const keptColor = colorVariant && colorVariantsOf(building.type, tier).includes(colorVariant) ? { colorVariant } : {};
+  return { ...rest, ...keptColor, tier };
 }
 
 function equipHome(state: GameState, id: number, equipment: 'solar' | 'insulation'): CommandOutcome {

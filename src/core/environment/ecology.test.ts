@@ -212,6 +212,21 @@ describe('repaint', () => {
   });
 });
 
+describe('repaint after an upgrade', () => {
+  const stocked = (building: Building) => { const s = city([building]); return { ...s, storage: { ...s.storage, goods: { ...s.storage.goods, planks: 100, bricks: 100, tiles: 100 } } }; };
+  it('keeps a color the next Tier still offers', () => {
+    const s = stocked(b(1, 'shop', 55, 57, { colorVariant: 'b' }));
+    const result = dispatch(s, { type: 'UpgradeBuilding', buildingId: 1 }, s.lastSeen);
+    expect(result.ok && result.state.buildings[0]).toMatchObject({ tier: 2, colorVariant: 'b' });
+  });
+  it('goes back to the default color when the next Tier no longer offers it', () => {
+    const s = stocked(b(1, 'shop', 55, 57, { colorVariant: 'c' }));
+    const result = dispatch(s, { type: 'UpgradeBuilding', buildingId: 1 }, s.lastSeen);
+    expect(result.ok && result.state.buildings[0]?.tier).toBe(2);
+    expect(result.ok && result.state.buildings[0]?.colorVariant).toBeUndefined();
+  });
+});
+
 describe('public transport', () => {
   const transportCity = () => ({ ...city([b(1, 'home', 0, 2, { tier: 3 }), b(2, 'factory', 15, 2), b(3, 'busStop', 0, 1, { rotation: 0 }), b(4, 'busStop', 15, 1, { rotation: 0 })]), roads: Array.from({ length: 16 }, (_, x) => ({ x, y: 0, kind: 'road' as const })), busLines: [{ id: 20, stops: [3, 4] }, { id: 21, stops: [3, 4] }] });
   it('deduplicates riders across useful overlapping lines and keeps operating costs', () => {

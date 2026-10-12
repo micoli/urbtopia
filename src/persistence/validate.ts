@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType, isRepaintableType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType, isRepaintableType, colorVariantsOfType, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -58,6 +58,12 @@ function isVenueData(value: unknown): boolean {
   );
 }
 
+// A Home keeps whatever color it was saved with, before the kit palettes were enforced: its Tiers can come from a kit with fewer colors.
+function isColorAllowed(type: BuildingType, color: unknown): boolean {
+  const allowed: readonly string[] = isHomeType(type) ? ['default', 'a', 'b', 'c'] : colorVariantsOfType(type);
+  return allowed.includes(color as string);
+}
+
 function isBuilding(value: unknown): boolean {
   return (
     isRecord(value) &&
@@ -74,7 +80,7 @@ function isBuilding(value: unknown): boolean {
     isNonNegative(value.taxCitizenMs) &&
     (value.insulated === undefined || (isHomeType(value.type) && typeof value.insulated === 'boolean')) &&
     (value.solar === undefined || (isHomeType(value.type) && typeof value.solar === 'boolean')) &&
-    (value.colorVariant === undefined || (isRepaintableType(value.type) && ['default', 'a', 'b', 'c'].includes(value.colorVariant as string))) &&
+    (value.colorVariant === undefined || (isRepaintableType(value.type) && isColorAllowed(value.type as BuildingType, value.colorVariant))) &&
     (value.venue === undefined || (typeof value.type === 'string' && isVenueType(value.type) && isVenueData(value.venue))) &&
     (value.name === undefined || (typeof value.type === 'string' && isTransitStopType(value.type) && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= STOP_NAME_MAX_LENGTH)) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&

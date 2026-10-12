@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_ROAD_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, isHomeType, paintKitOf } from '../core';
+import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, isHomeType, paintKitOf, colorVariantsOfKit } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -83,14 +83,11 @@ const mansardModelOf = (model: string, colorVariant: ColorVariant): string => mo
 
 const mansardColorsOf = (model: string): string[] => (isMansardModel(model) ? Object.keys(MANSARD_MODEL_LETTER).map(color => mansardModelOf(model, color as ColorVariant)) : [model]);
 
-// Kenney models repaint by swapping their palette texture; the commercial kit has no third variation.
+// Kenney models repaint by swapping their palette texture; the mansard Homes have one model per color instead.
 const textureVariantOf = (model: string, colorVariant: ColorVariant = 'default'): TextureVariant | undefined => {
-  if (colorVariant === 'default') return undefined;
   const kit = paintKitOf(model);
-  if (kit === 'suburban') return colorVariant;
-  if (kit === 'commercial' && colorVariant !== 'c') return `commercial-${colorVariant}`;
-  if (kit === 'industrial') return `industrial-${colorVariant}`;
-  return undefined;
+  if (!kit || kit === 'mansard' || colorVariant === 'default' || !colorVariantsOfKit(kit).includes(colorVariant)) return undefined;
+  return (kit === 'suburban' ? colorVariant : `${kit}-${colorVariant}`) as TextureVariant;
 };
 
 const colorizedModel = (model: string, colorVariant: ColorVariant = 'default'): string => (isMansardModel(model) ? mansardModelOf(model, colorVariant) : model);
