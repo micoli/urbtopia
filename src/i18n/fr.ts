@@ -2,6 +2,7 @@ import { facilityMessages } from './facilities';
 import { casinoMessages } from './casino';
 import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
+import { sanctionsMessages } from './sanctions';
 import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
 import { buildingMessages } from './buildings';
@@ -14,6 +15,7 @@ export const FR: Record<MessageKey, string> = {
   ...casinoMessages('fr'),
   ...needsMessages('fr'),
   ...difficultyMessages('fr'),
+  ...sanctionsMessages('fr'),
   ...venueMessages('fr'),
   ...buildingMessages('fr'),
   ...itemMessages('fr'),

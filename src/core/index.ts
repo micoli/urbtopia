@@ -15,7 +15,7 @@ export { newGame } from './engine/newGame';
 export type { NewGameOptions } from './engine/newGame';
 export { hashSeed, nextRandom } from './engine/random';
 export { generateSeed } from './engine/seed';
-export { homeSanction, homeTaxMultiplier, sanctionAlertKey, sanctionedHomes } from './environment/sanction';
+export { homeSanction, homeTaxMultiplier, sanctionAlertKey, sanctionedHomes, taxLostPerHour } from './environment/sanction';
 export type { HomeSanction, SanctionedHome } from './environment/sanction';
 export { SANCTIONS, sanctionedFactors } from './balance/sanctions';
 export type { DifficultyRule } from './balance/sanctions';

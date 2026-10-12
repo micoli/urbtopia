@@ -1,7 +1,7 @@
 import { DIFFICULTIES, type Difficulty } from '../../core';
 import { t } from '../../i18n/t';
 import { RadioChipGroup } from '../common/RadioChipGroup';
-import { difficultyDescription } from './difficultyDescription';
+import { difficultyDescription } from '../common/difficultyDescription';
 
 interface DifficultyChoiceProps {
   label: string;

@@ -1,10 +1,12 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexId, type CodexSection } from '../../codex/catalog';
+import type { CodexPage } from '../../codex/pages';
 import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
 import { CodexEntryContent } from './CodexEntryContent';
 import { CropEconomyPage } from './CropEconomyPage';
 import { EnergyProductionPage } from './EnergyProductionPage';
+import { SanctionsPage } from './SanctionsPage';
 import { StorageRulesPage } from './StorageRulesPage';
 import { useCodexManifest } from './useCodexManifest';
 import { CloseButton } from '../common/CloseButton';
@@ -16,11 +18,12 @@ export function CodexPanel() {
   const initialEntry = useUi(store => store.codexEntryId);
   const initialDetail = useUi(store => store.codexShowDetail);
   const initialFlyout = useUi(store => store.codexFromFlyout);
+  const initialPage = useUi(store => store.codexPage);
   const dialog = useRef<HTMLDialogElement>(null);
   const heading = useId();
   const [selected, setSelected] = useState<CodexId>(initialEntry);
   const [showDetail, setShowDetail] = useState(initialDetail);
-  const [page, setPage] = useState<'economy' | 'storage' | 'energy' | null>(null);
+  const [page, setPage] = useState<CodexPage | null>(initialPage);
   const pageOpen = page !== null;
   const [openSection, setOpenSection] = useState<CodexSection>(CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
   const { manifest, failed, retry } = useCodexManifest();
@@ -87,6 +90,9 @@ export function CodexPanel() {
                 {section === 'build.storage' && (
                   <button type="button" aria-current={page === 'storage' ? 'true' : undefined} onClick={() => { setPage('storage'); setShowDetail(true); }}>{t('codex.storage.title')}</button>
                 )}
+                {section === 'build.publicFacilities' && (
+                  <button type="button" aria-current={page === 'sanctions' ? 'true' : undefined} onClick={() => { setPage('sanctions'); setShowDetail(true); }}>{t('codex.sanctions.title')}</button>
+                )}
                 {CODEX_ENTRIES.filter(entry => entry.section === section).map(entry => (
                   <button type="button" key={entry.id} aria-current={!pageOpen && selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
                 ))}
@@ -94,10 +100,11 @@ export function CodexPanel() {
             );
           })}
         </nav>
-        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : page === 'energy' ? 'codex.energy.title' : entry.name)}>
+        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : page === 'energy' ? 'codex.energy.title' : page === 'sanctions' ? 'codex.sanctions.title' : entry.name)}>
           {page === 'economy' && <CropEconomyPage />}
           {page === 'storage' && <StorageRulesPage />}
           {page === 'energy' && <EnergyProductionPage />}
+          {page === 'sanctions' && <SanctionsPage />}
           {!pageOpen && <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />}
           {!pageOpen && !manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}
         </article>

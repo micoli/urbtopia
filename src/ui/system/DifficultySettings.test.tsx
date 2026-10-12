@@ -4,7 +4,7 @@ import { DIFFICULTIES, SANCTIONS, newGame, type Difficulty, type GameState } fro
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { DifficultySettings } from './DifficultySettings';
-import { difficultyDescription } from './difficultyDescription';
+import { difficultyDescription } from '../common/difficultyDescription';
 
 const context = vi.hoisted(() => ({ state: null as GameState | null }));
 vi.mock('../common/hooks', () => ({

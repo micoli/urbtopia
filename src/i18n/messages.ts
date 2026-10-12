@@ -2,6 +2,7 @@ import { facilityMessages } from './facilities';
 import { casinoMessages } from './casino';
 import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
+import { sanctionsMessages } from './sanctions';
 import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
 import { buildingMessages } from './buildings';
@@ -12,6 +13,7 @@ export const MESSAGES = {
   ...casinoMessages('en'),
   ...needsMessages('en'),
   ...difficultyMessages('en'),
+  ...sanctionsMessages('en'),
   ...venueMessages('en'),
   ...buildingMessages('en'),
   ...itemMessages('en'),

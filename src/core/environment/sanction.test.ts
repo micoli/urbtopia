@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { COAL_CAPACITY, SANCTIONS, advance, createBuilding, difficultyOf, homeBenefits, homePower, homeSanction, homeTaxMultiplier, needsContext, newGame, sanctionAlertKey, sanctionedHomes, wellbeingTaxFactor, type Building, type Difficulty, type GameState } from '../index';
+import { COAL_CAPACITY, SANCTIONS, advance, createBuilding, difficultyOf, homeBenefits, homePower, homeSanction, homeTaxMultiplier, needsContext, newGame, sanctionAlertKey, sanctionedHomes, taxLostPerHour, citizensOf, TAX, wellbeingTaxFactor, type Building, type Difficulty, type GameState } from '../index';
 import { withAllServices } from '../engine/testSupport';
 
 const walkingEnabled = WALKING.enabled;
@@ -177,5 +177,15 @@ describe('Sanctioned Homes', () => {
     expect(sanctionAlertKey({ ...state, lastSeen: state.lastSeen + 120_000 })).not.toBe(sanctionAlertKey(state));
     expect(sanctionAlertKey({ ...state, difficulty: 'hard' })).not.toBe(sanctionAlertKey(state));
     expect(sanctionAlertKey({ ...state, buildings: state.buildings.slice(1) })).not.toBe(sanctionAlertKey(state));
+  });
+});
+
+describe('Tax lost to a Sanction', () => {
+  it('is the Tax a Home would pay per hour times the share the Sanction takes', () => {
+    const { state, home } = scenario({ difficulty: 'easy', services: false });
+    const [entry] = sanctionedHomes(state);
+    expect(entry!.home.id).toBe(home.id);
+    expect(taxLostPerHour(entry!)).toBeCloseTo(citizensOf(home.tier) * TAX.urbsPerCitizenPerHour * (1 - entry!.sanction.multiplier));
+    expect(taxLostPerHour(entry!)).toBeGreaterThan(0);
   });
 });

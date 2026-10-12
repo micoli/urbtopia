@@ -10,6 +10,7 @@ import { sceneHandle } from './sceneHandle';
 import { socialStore } from './socialStore';
 import { toastStore } from './toastStore';
 import type { CodexId } from '../codex/catalog';
+import type { CodexPage } from '../codex/pages';
 
 export type Flyout = 'build' | 'roads' | null;
 export type SocialTab = 'friends' | 'exchanges';
@@ -40,7 +41,8 @@ export interface UiStore {
   codexFromFlyout: Flyout;
   codexEntryId: CodexId;
   codexShowDetail: boolean;
-  openCodex: (entry?: CodexId) => void;
+  codexPage: CodexPage | null;
+  openCodex: (entry?: CodexId, page?: CodexPage) => void;
   closeCodex: () => void;
   pendingSaleId: number | null;
   evaluation: Evaluation | null;
@@ -135,9 +137,10 @@ export const uiStore = createStore<UiStore>((set, get) => {
     codexFromFlyout: null,
     codexEntryId: 'home',
     codexShowDetail: false,
-    openCodex: (entry) => {
+    codexPage: null,
+    openCodex: (entry, page) => {
       get().cancelTool();
-      set({ codexOpen: true, codexFromSettings: get().settingsOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined, settingsOpen: false, marketOpen: false, statsOpen: false, socialOpen: false, flyout: null, selectedBuildingId: null });
+      set({ codexOpen: true, codexFromSettings: get().settingsOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined || page !== undefined, codexPage: page ?? null, settingsOpen: false, marketOpen: false, statsOpen: false, socialOpen: false, flyout: null, selectedBuildingId: null });
     },
     closeCodex: () => set({ codexOpen: false, settingsOpen: get().codexFromSettings, flyout: get().codexFromFlyout, codexFromSettings: false, codexFromFlyout: null }),
     pendingSaleId: null,

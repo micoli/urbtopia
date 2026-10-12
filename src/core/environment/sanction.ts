@@ -7,6 +7,8 @@ import type { NeedFactorId, SanctionableFactorId } from './needFactors';
 import { homeBenefits, wellbeingTaxFactor } from './wellbeing';
 import { isAdapting } from './adaptation';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { citizensOf } from '../buildings/city';
+import { TAX } from '../economy/economy';
 
 export interface HomeSanction {
   factor: SanctionableFactorId | null;
@@ -75,4 +77,8 @@ const ALERT_REFRESH_MS = 60_000;
 // Sanctions drift with the time of day and the buildings: an alert refreshes at that pace, not on every tick.
 export function sanctionAlertKey(state: GameState): string {
   return [state.seed, difficultyOf(state), Math.floor(state.lastSeen / ALERT_REFRESH_MS), state.buildings.length, state.roads.length].join(':');
+}
+
+export function taxLostPerHour({ home, sanction }: SanctionedHome): number {
+  return citizensOf(home.tier) * TAX.urbsPerCitizenPerHour * (1 - sanction.multiplier);
 }
