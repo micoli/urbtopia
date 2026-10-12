@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { advance, createBuilding, dispatch, ECOLOGY, energyStats, greenSpaceCoverage, greenBenefits, newGame, transportStats, type Building, type GameState } from '../index';
+import { advance, createBuilding, dispatch, ECOLOGY, energyStats, solarPanelsCost, greenSpaceCoverage, greenBenefits, newGame, transportStats, type Building, type GameState } from '../index';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 import currentSave from '../../persistence/fixtures/save-v4.json';
 import oldSave from '../../persistence/fixtures/save-v3.json';
@@ -185,7 +185,7 @@ describe('solar panels on other buildings', () => {
     const result = dispatch(s, { type: 'EquipSolarPanels', buildingId: 1 }, s.lastSeen);
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.state.urbs).toBe(s.urbs - ECOLOGY.solarCost * 2);
+    expect(result.state.urbs).toBe(s.urbs - solarPanelsCost(s.buildings[0]!));
     expect(result.state.buildings.find(x => x.id === 1)?.solar).toBe(true);
     expect(dispatch(result.state, { type: 'EquipSolarPanels', buildingId: 1 }, s.lastSeen).ok).toBe(false);
     expect(dispatch(s, { type: 'EquipSolarPanels', buildingId: 2 }, s.lastSeen).ok).toBe(false);
