@@ -16,12 +16,16 @@ interface Props {
   onChange: (solar: Solar | undefined) => void
 }
 
+const lengthOf = (list: unknown) => (Array.isArray(list) ? list.length : 0)
+
 const HINTS = { panels: 'With no panel listed, a flat panel sits on each tile.' }
 
 // Turns Solar panels on or off for the building and sets how they look and what they cost; the preview shows them on its roof.
 export function SolarTab({ solar, fields, problems, modelSlot, onChange }: Props) {
   const previewing = useDocument(state => state.preview.solar !== false)
   const showSolar = useDocument(state => state.showSolar)
+  const selectedPanel = useDocument(state => state.selectedPanel)
+  const selectPanel = useDocument(state => state.selectPanel)
   const enabled = solar !== undefined
   return (
     <div className="flex flex-col gap-4">
@@ -36,7 +40,7 @@ export function SolarTab({ solar, fields, problems, modelSlot, onChange }: Props
             Show the panels in the preview
           </label>
           <FieldDocsScope value={['solarPanels']}>
-            <SchemaForm fields={fields} value={solar} problems={problems} hints={HINTS} path={['solarPanels']} modelSlot={modelSlot} onChange={(key, value) => onChange({ ...solar, [key]: value })} />
+            <SchemaForm fields={fields} value={solar} problems={problems} hints={HINTS} path={['solarPanels']} modelSlot={modelSlot} listSelection={{ selected: selectedPanel, onSelect: selectPanel }} onChange={(key, value) => { onChange({ ...solar, [key]: value }); if (key === 'panels' && lengthOf(value) < lengthOf(solar.panels)) selectPanel(null) }} />
           </FieldDocsScope>
         </>
       )}

@@ -8,7 +8,9 @@ import * as THREE from 'three'
 import { solarPanelPlacements } from '../../../../src/core/environment/solarPanelLayout'
 import type { SolarPanelsDefinition } from '../../../../src/core/buildings/solarPanelsSchema'
 import { buildModel, buildPlacement, SceneStage, type PlacedModel } from '../sceneStage'
+import type { Definition } from '../../../../scripts/collections'
 import { useDocument, type Doc, type Selection } from '../store/documentStore'
+import { setDefinition } from '../store/edits'
 import { button, panel } from './styles'
 
 type Tier = { model?: string }
@@ -27,6 +29,8 @@ function modelOfSelection(doc: Doc, selection: Selection | null, preview: { tier
   const models = specOf(selection.kind).references(definition as never).filter(({ target }) => target === 'models')
   return (models.find(({ path }) => path === 'models.growth.3') ?? models[0])?.id
 }
+
+const COMPACT = 'px-2! py-1! text-xs! whitespace-nowrap'
 
 // The Solar panels the preview puts on the roof of the selected building, unless the solar preview is turned off.
 function solarOfSelection(doc: Doc, selection: Selection | null, solar: boolean | undefined): SolarPanelsDefinition | undefined {
@@ -52,6 +56,13 @@ export function Preview() {
   const showSolar = useDocument(state => state.showSolar)
   const defaultPanelId = useDocument(state => (state.doc.singletons.scenery as { roofPanel: string } | undefined)?.roofPanel)
   const models = useDocument(state => state.doc.models)
+  const selectedPanel = useDocument(state => state.selectedPanel)
+  const gizmoMode = useDocument(state => state.gizmoMode)
+  const selectPanel = useDocument(state => state.selectPanel)
+  const setGizmoMode = useDocument(state => state.setGizmoMode)
+  const listed = (solar?.panels?.length ?? 0) > 0
+  const attached = useRef<{ holder: THREE.Object3D; index: number; top: number } | null>(null)
+  const pressed = useRef<{ x: number; y: number; onGizmo: boolean } | null>(null)
   useEffect(() => {
     const stage = new SceneStage(canvasRef.current!, containerRef.current!)
     stageRef.current = stage
@@ -93,39 +104,79 @@ export function Preview() {
     placed.object.add(group)
     let live = true
     const { width, depth } = footprintOf(placed.info, settings)
-    for (const panel of solarPanelPlacements(width, depth, solar.panels)) {
+    solarPanelPlacements(width, depth, solar.panels).forEach((panel, index) => {
       const id = panel.model || defaultPanelId
       const panelSettings = id ? models[id] : undefined
       const panelLocation = library.byFile.get(panelSettings?.file ?? '')
-      if (!panelLocation) continue
+      if (!panelLocation) return
       void buildModel(panelLocation.pack, panelLocation.name, panelSettings).then(({ object }) => {
         if (!live) return
         const holder = new THREE.Group()
         holder.add(object)
         holder.rotation.set(THREE.MathUtils.degToRad(panel.rotationX), THREE.MathUtils.degToRad(panel.rotationY), THREE.MathUtils.degToRad(panel.rotationZ), 'YXZ')
         holder.position.set(panel.x, placed.top + panel.y, panel.z)
+        if (listed) holder.userData.panelIndex = index
         group.add(holder)
+        if (listed && index === selectedPanel) {
+          attached.current = { holder, index, top: placed.top }
+          stageRef.current?.attachGizmo(holder, gizmoMode)
+        }
       })
-    }
+    })
     return () => {
       live = false
+      attached.current = null
+      stageRef.current?.attachGizmo(null, gizmoMode)
       placed.object.remove(group)
     }
-  }, [placed, solar, defaultPanelId, models, library, settings])
+  }, [placed, solar, defaultPanelId, models, library, settings, listed, selectedPanel, gizmoMode])
+
+  // Dropping the gizmo writes the panel's new position and angles to the definition: one undo step per drag.
+  useEffect(() => stageRef.current!.onGizmoRelease(() => {
+    const target = attached.current
+    const { selection, change } = useDocument.getState()
+    if (!target || selection?.kind !== 'buildings') return
+    const round = (value: number, scale: number) => Math.round(value * scale) / scale
+    const degrees = (radians: number) => round(THREE.MathUtils.radToDeg(radians), 10)
+    const { holder, index, top } = target
+    const values = { x: round(holder.position.x, 1000), y: round(holder.position.y - top, 1000), z: round(holder.position.z, 1000), rotationX: degrees(holder.rotation.x), rotationY: degrees(holder.rotation.y), rotationZ: degrees(holder.rotation.z) }
+    change(doc => {
+      const definition = doc.collections.buildings[selection.id]
+      const current = definition?.solarPanels as SolarPanelsDefinition | undefined
+      if (!definition || !current?.panels) return doc
+      const panels = current.panels.map((item, position) => (position === index ? { ...item, ...values } : item))
+      return setDefinition(doc, 'buildings', selection.id, { ...definition, solarPanels: { ...current, panels } } as Definition)
+    })
+  }), [])
+
+  // A click on a listed panel selects it for the gizmo; a drag orbits the camera and a click on the gizmo itself is left alone.
+  const onPointerDown = (event: React.PointerEvent) => {
+    pressed.current = { x: event.clientX, y: event.clientY, onGizmo: stageRef.current?.overGizmo ?? false }
+  }
+  const onPointerUp = (event: React.PointerEvent) => {
+    const start = pressed.current
+    pressed.current = null
+    if (!start || start.onGizmo || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 4) return
+    const index = stageRef.current?.pickAt(event.clientX, event.clientY, object => object.userData.panelIndex as number | undefined)
+    if (index !== undefined) selectPanel(index)
+  }
 
   const footprint = info ? footprintOf(info, settings) : null
 
   return (
     <section className={`${panel} relative overflow-hidden`}>
-      <div ref={containerRef} className="absolute inset-0">
+      <div ref={containerRef} className="absolute inset-0" onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
         <canvas ref={canvasRef} className="h-full w-full" />
       </div>
       <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">
-        <span className="rounded bg-white/85 px-2 py-1 font-mono text-[11px] text-zinc-600 shadow-sm">{settings?.file ?? 'No model'}</span>
-        <div className="pointer-events-auto flex gap-1">
-          {solarAvailable && <button className={button(solarOn ? 'primary' : 'secondary')} aria-pressed={solarOn} onClick={() => showSolar(!solarOn)}>☀ Solar {solarOn ? 'on' : 'off'}</button>}
-          <button className={button('secondary')} onClick={() => setRotation((rotation + 3) % 4)} aria-label="Rotate left">⟲</button>
-          <button className={button('secondary')} onClick={() => setRotation((rotation + 1) % 4)} aria-label="Rotate right">⟳</button>
+        <span className="min-w-0 truncate rounded bg-white/85 px-2 py-1 font-mono text-[11px] text-zinc-600 shadow-sm">{settings?.file ?? 'No model'}</span>
+        <div className="pointer-events-auto flex shrink-0 gap-1">
+          {listed && selectedPanel !== null && (['translate', 'rotate'] as const).map(mode => (
+            <button key={mode} className={`${button(gizmoMode === mode ? 'primary' : 'secondary')} ${COMPACT}`} aria-pressed={gizmoMode === mode} onClick={() => setGizmoMode(mode)}>{mode === 'translate' ? 'Move' : 'Rotate'}</button>
+          ))}
+          {solarAvailable && <button className={`${button(solarOn ? 'primary' : 'secondary')} ${COMPACT}`} aria-pressed={solarOn} onClick={() => showSolar(!solarOn)}>☀ Solar {solarOn ? 'on' : 'off'}</button>}
+          <button className={`${button('secondary')} ${COMPACT}`} onClick={() => setRotation((rotation + 3) % 4)} aria-label="Rotate left">⟲</button>
+          <button className={`${button('secondary')} ${COMPACT}`} onClick={() => setRotation((rotation + 1) % 4)} aria-label="Rotate right">⟳</button>
         </div>
       </div>
       {info && footprint && (
