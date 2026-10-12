@@ -7,6 +7,7 @@ import { VenueDialog } from '../venue/VenueDialog';
 import { MarketModal } from '../market/MarketModal';
 import { StaticButtons } from './StaticButtons.tsx';
 import { CollectBadges } from '../collect/CollectBadges';
+import { SanctionBadges } from '../sanction/SanctionBadges';
 import { ConfirmPad } from '../build/ConfirmPad';
 import { ConfirmSaleDialog } from '../build/ConfirmSaleDialog';
 import { ExportReminder } from '../system/ExportReminder';
@@ -32,6 +33,7 @@ export function Overlays() {
       <MarketModal />
       <WorkingIndicators />
       <CollectBadges />
+      <SanctionBadges />
       <ParcelTags />
       <ConfirmPad />
       <ReadOnlyBanner />

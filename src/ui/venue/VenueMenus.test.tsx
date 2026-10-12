@@ -11,7 +11,7 @@ import { venuePanelTitle } from './venuePanelTitle';
 const arcade = createBuilding(1, 'arcade', 55, 50, 0);
 
 vi.mock('../common/hooks', () => ({
-  useGame: (selector: (store: { state: { urbs: number; buildings: unknown[] } }) => unknown) => selector({ state: { urbs: 1234, buildings: [] } }),
+  useGame: (selector: (store: { state: { urbs: number; buildings: unknown[]; roads: unknown[]; seed: string; lastSeen: number } }) => unknown) => selector({ state: { urbs: 1234, buildings: [], roads: [], seed: 'menus', lastSeen: 0 } }),
   useUi: () => undefined,
   useSocial: (selector: (store: { profile: null }) => unknown) => selector({ profile: null }),
 }));

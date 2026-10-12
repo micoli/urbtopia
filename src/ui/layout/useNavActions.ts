@@ -2,6 +2,7 @@ import { t } from '../../i18n/t';
 import { cloudEnabled } from '../../persistence/cloud/cloudConfig';
 import { pendingSocialCount } from '../../social/pendingCount';
 import { useGame, useSocial, useUi } from '../common/hooks';
+import { useSanctionedHomes } from '../common/useSanctionedHomes';
 import { guideOf } from '../tutorial/tutorialGuide';
 
 export interface NavAction {
@@ -13,6 +14,7 @@ export interface NavAction {
   disabled: boolean;
   guided: boolean;
   badge?: number;
+  badgeLabel?: string;
   onClick: () => void;
 }
 
@@ -34,6 +36,7 @@ export function useNavActions(): NavAction[] {
   const toggleSettings = useUi((store) => store.toggleSettings);
   const marketUnlocked = useGame((store) => store.state.marketUnlocked);
   const pendingRequests = useSocial(store => pendingSocialCount(store.profile));
+  const sanctionedCount = useSanctionedHomes().length;
   const guidedFlyout = guideOf(useGame((store) => store.state.tutorial)).flyout;
 
   return [
@@ -41,7 +44,7 @@ export function useNavActions(): NavAction[] {
     { id: 'roads', icon: '🛣', image: 'infrastructure-networks.png', label: t('dock.networks'), pressed: flyout === 'roads', disabled: false, guided: guidedFlyout === 'roads', onClick: () => openFlyout('roads') },
     { id: 'parcels', icon: '🗺', image: 'map.png', label: t('dock.parcels'), pressed: tool?.kind === 'parcel', disabled: false, guided: false, onClick: () => (tool?.kind === 'parcel' ? cancelTool() : chooseTool({ kind: 'parcel' })) },
     { id: 'market', icon: '💱', image: 'market.png', label: t('dock.market'), pressed: marketOpen, disabled: !marketUnlocked, guided: false, onClick: toggleMarket },
-    { id: 'stats', icon: '📊', image: 'town-management.png', label: t('eco.title'), pressed: statsOpen, disabled: false, guided: false, badge: pendingRequests, onClick: toggleStats },
+    { id: 'stats', icon: '📊', image: 'town-management.png', label: t('eco.title'), pressed: statsOpen, disabled: false, guided: false, badge: sanctionedCount, badgeLabel: t('sanction.alert'), onClick: toggleStats },
     ...(cloudEnabled ? [{ id: 'social', icon: '🌐', image: 'social-network.png', label: t('social.title'), pressed: socialOpen, disabled: false, guided: false, badge: pendingRequests, onClick: toggleSocial }] : []),
     { id: 'codex', icon: '📖', image: 'codex.png', label: t('codex.title'), pressed: codexOpen, disabled: false, guided: false, onClick: () => openCodex() },
     { id: 'settings', icon: '⚙', image: 'settings.png', label: t('dock.settings'), pressed: settingsOpen, disabled: false, guided: false, onClick: toggleSettings },

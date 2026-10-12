@@ -2,10 +2,11 @@ import { SANCTIONS } from '../balance/sanctions';
 import { difficultyOf, type Difficulty } from '../engine/difficulty';
 import type { Building, GameState } from '../engine/state';
 import { homePower, greenBenefits } from './ecology';
-import { climateSatisfaction, homeNeedSatisfactions, waterSatisfaction, type NeedsContext } from './needs';
+import { climateSatisfaction, homeNeedSatisfactions, needsContext, waterSatisfaction, type NeedsContext } from './needs';
 import type { NeedFactorId, SanctionableFactorId } from './needFactors';
 import { homeBenefits, wellbeingTaxFactor } from './wellbeing';
 import { isAdapting } from './adaptation';
+import { isHomeType } from '../buildings/buildingDefinitions';
 
 export interface HomeSanction {
   factor: SanctionableFactorId | null;
@@ -53,4 +54,25 @@ export function homeTaxMultiplier(state: GameState, home: Building, context: Nee
   const wellbeing = homeBenefits(state, home, energy.coalRates, coverage, poweredCasinos, congestion).wellbeing;
   if (difficultyOf(state) === 'cozy') return powerRatio(state, home, context) * wellbeingTaxFactor(wellbeing);
   return Math.max(1, wellbeingTaxFactor(wellbeing)) * homeSanction(state, home, context).multiplier;
+}
+
+export interface SanctionedHome {
+  home: Building;
+  sanction: HomeSanction;
+}
+
+export function sanctionedHomes(state: GameState): SanctionedHome[] {
+  if (difficultyOf(state) === 'cozy' || isAdapting(state)) return [];
+  const context = needsContext(state);
+  return state.buildings
+    .filter(building => isHomeType(building.type))
+    .map(home => ({ home, sanction: homeSanction(state, home, context) }))
+    .filter(({ sanction }) => sanction.factor !== null);
+}
+
+const ALERT_REFRESH_MS = 60_000;
+
+// Sanctions drift with the time of day and the buildings: an alert refreshes at that pace, not on every tick.
+export function sanctionAlertKey(state: GameState): string {
+  return [state.seed, difficultyOf(state), Math.floor(state.lastSeen / ALERT_REFRESH_MS), state.buildings.length, state.roads.length].join(':');
 }

@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { COAL_CAPACITY, SANCTIONS, advance, createBuilding, difficultyOf, homeBenefits, homePower, homeSanction, homeTaxMultiplier, needsContext, newGame, wellbeingTaxFactor, type Building, type Difficulty, type GameState } from '../index';
+import { COAL_CAPACITY, SANCTIONS, advance, createBuilding, difficultyOf, homeBenefits, homePower, homeSanction, homeTaxMultiplier, needsContext, newGame, sanctionAlertKey, sanctionedHomes, wellbeingTaxFactor, type Building, type Difficulty, type GameState } from '../index';
 import { withAllServices } from '../engine/testSupport';
 
 const walkingEnabled = WALKING.enabled;
@@ -150,5 +150,32 @@ describe('Tax over time', () => {
     const unserved = scenario({ difficulty: 'easy', services: false }).state;
     expect(difficultyOf(advance(unserved, unserved.lastSeen + HOUR).state)).toBe('easy');
     expect(taxCitizenMs(unserved)).toBeLessThan(taxCitizenMs(served));
+  });
+});
+
+describe('Sanctioned Homes', () => {
+  it('lists no Home under Cozy, however neglected', () => {
+    const { state } = scenario({ difficulty: 'cozy', services: false, water: false });
+    expect(sanctionedHomes(state)).toEqual([]);
+  });
+
+  it('lists a neglected Home with its Sanction from Easy', () => {
+    const { state, home } = scenario({ difficulty: 'easy', services: false });
+    const listed = sanctionedHomes(state);
+    expect(listed.map(entry => entry.home.id)).toEqual([home.id]);
+    expect(listed[0]!.sanction.factor).not.toBeNull();
+  });
+
+  it('lists no Home during the Adaptation period', () => {
+    const { state } = scenario({ difficulty: 'easy', services: false, adapting: true });
+    expect(sanctionedHomes(state)).toEqual([]);
+  });
+
+  it('refreshes its alert key with the Difficulty, the minute and the buildings, but not with every tick', () => {
+    const { state } = scenario({ difficulty: 'easy' });
+    expect(sanctionAlertKey({ ...state, lastSeen: state.lastSeen + 1_000 })).toBe(sanctionAlertKey(state));
+    expect(sanctionAlertKey({ ...state, lastSeen: state.lastSeen + 120_000 })).not.toBe(sanctionAlertKey(state));
+    expect(sanctionAlertKey({ ...state, difficulty: 'hard' })).not.toBe(sanctionAlertKey(state));
+    expect(sanctionAlertKey({ ...state, buildings: state.buildings.slice(1) })).not.toBe(sanctionAlertKey(state));
   });
 });

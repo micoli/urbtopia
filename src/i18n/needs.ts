@@ -24,6 +24,8 @@ const texts = {
   'needs.effect.sanction': ['Sanction: lowers the Tax', 'Sanction : réduit les impôts'],
   'needs.effect.none': ['None yet', 'Aucun pour l’instant'],
   'home.sanction': ['Sanction', 'Sanction'],
+  'sanction.alert': ['Sanctioned Homes', 'Homes sanctionnés'],
+  'sanction.badge': ['{factor}: Tax −{percent}%', '{factor} : impôts −{percent} %'],
   'home.sanction.tax': ['Tax', 'impôts'],
   'needs.factor.electricity': ['Electricity', 'Électricité'],
   'needs.factor.water': ['Water', 'Eau'],

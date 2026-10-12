@@ -23,7 +23,7 @@ export function NavActionButton({ action, variant, onClick = action.onClick, sty
         return (
             <button {...common} className="radial-item" aria-label={action.label} style={style}>
                 <NavIcon action={action} />
-                <NavBadge count={action.badge}/>
+                <NavBadge count={action.badge} label={action.badgeLabel}/>
             </button>
         );
     }
@@ -32,7 +32,7 @@ export function NavActionButton({ action, variant, onClick = action.onClick, sty
             <button {...common} className="dock-button" aria-label={action.label}>
                 <NavIcon action={action} />
                 <span>{action.label}</span>
-                <NavBadge count={action.badge}/>
+                <NavBadge count={action.badge} label={action.badgeLabel}/>
             </button>
         );
     }
@@ -42,7 +42,7 @@ export function NavActionButton({ action, variant, onClick = action.onClick, sty
                 <NavIcon action={action} />
             </span>
             <span>{action.label}</span>
-            <NavBadge count={action.badge}/>
+            <NavBadge count={action.badge} label={action.badgeLabel}/>
         </button>
     );
 }
