@@ -1,7 +1,7 @@
-import { BUILDING_SPECS, CROPS, createBuilding, isCrop, isFacilityType, newGame, type BuildingType, type GameState, type HomeColorVariant } from '../core';
+import { BUILDING_SPECS, CROPS, createBuilding, isCrop, isFacilityType, newGame, type BuildingType, type GameState, type ColorVariant } from '../core';
 import { isHomeCodexId, solarBaseOf, type CodexId } from './catalog';
 
-export function codexSnapshot(id: CodexId, tier: number, colorVariant: HomeColorVariant = 'default'): GameState {
+export function codexSnapshot(id: CodexId, tier: number, colorVariant: ColorVariant = 'default'): GameState {
   const state: GameState = { ...newGame({ seed: 'codex', now: 0 }), buildings: [], roads: [], roundabouts: [], brtRoads: [], rails: [], busLines: [], transitLines: [], transitFleet: [] };
   const solarBase = solarBaseOf(id);
   if (solarBase || id in BUILDING_SPECS) {

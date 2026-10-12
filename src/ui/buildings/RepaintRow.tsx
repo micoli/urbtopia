@@ -1,10 +1,9 @@
-import { ECOLOGY, type Building } from '../../core';
+import { ECOLOGY, colorVariantsOf, paintKitAt, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 import { RadioChipGroup } from '../common/RadioChipGroup';
 import { UrbsAmount } from '../common/UrbsAmount';
-import { HOME_COLOR_VARIANTS } from './homeColor';
 
 interface RepaintRowProps {
   building: Building;
@@ -14,28 +13,31 @@ export function RepaintRow({ building }: RepaintRowProps) {
   const urbs = useGame(s => s.state.urbs);
   const cost = ECOLOGY.repaintCost * building.tier;
   const current = building.colorVariant ?? 'default';
+  const kit = paintKitAt(building.type, building.tier);
+  const ownPalette = kit === 'commercial' || kit === 'industrial';
+  const swatchKit = ownPalette ? `${kit}-` : '';
   return <div>
     <p>{t('eco.repaint')} · <UrbsAmount value={cost} /></p>
     <RadioChipGroup
       className="home-color-picker"
       label={t('eco.repaint')}
       disabled={urbs < cost}
-      options={HOME_COLOR_VARIANTS
+      options={colorVariantsOf(building.type, building.tier)
           .filter(variant => variant !== current)
           .map(variant => ({
             value: variant,
             label: <>
               <span
-                className={`home-color-swatch home-color-swatch-${variant}`}
+                className={`home-color-swatch home-color-swatch-${swatchKit}${variant}`}
                 aria-hidden="true"
               /><span>
-                {t(`build.homeColor.${variant}`)}
+                {t(kit === 'commercial' ? `build.commercialColor.${variant as 'default' | 'a' | 'b'}` : kit === 'industrial' ? `build.industrialColor.${variant}` : `build.homeColor.${variant}`)}
               </span>
             </>,
           }))
       }
       value={current}
-      onChange={colorVariant => gameStore.getState().send({ type: 'RepaintHome', buildingId: building.id, colorVariant })}
+      onChange={colorVariant => gameStore.getState().send({ type: 'RepaintBuilding', buildingId: building.id, colorVariant })}
     />
   </div>;
 }

@@ -3,7 +3,7 @@ import { DecorationRotation } from './DecorationRotation';
 import { FrontRotation } from './FrontRotation';
 import { CoalPlantPanel } from './CoalPlantPanel';
 import { StopNameField } from './StopNameField';
-import { GAME_CONFIG, isShopType, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost, isHomeType, isUtilityType, isTransitStopType } from '../../core';
+import { GAME_CONFIG, isShopType, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost, isHomeType, isRepaintableType, isUtilityType, isTransitStopType } from '../../core';
 import { t } from '../../i18n/t';
 import { FacilityPanel } from './FacilityPanel';
 import { CasinoPanel } from '../casino/CasinoPanel';
@@ -52,9 +52,8 @@ export function SelectionContentPanel() {
       {greenProfileOf(building.type) || ['solar','battery','backup','busStop','brtStation','railStation'].includes(building.type) || (isHomeType(building.type) && building.solar) ? <EcologicalBuildingPanel building={building} /> : null}
       {natureModelOf(building.type)?.[2] === 'decoration' ? <DecorationRotation building={building} /> : null}
       <FrontRotation building={building} />
-      {isHomeType(building.type) ? <RepaintRow building={building}/> : null}
       <ButtonRow align="stretch" spaced className="side-panel-actions">
-        {isHomeType(building.type) ? <RepaintRow building={building}/> : null}
+        {isRepaintableType(building.type) ? <RepaintRow building={building}/> : null}
         <ActionButton onClick={moveSelected}>
           ✥ {t('panel.move')}
         </ActionButton>

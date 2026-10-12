@@ -18,7 +18,7 @@ export interface OpenCasinoRound {
 }
 
 export type Rotation = 0 | 1 | 2 | 3;
-export type HomeColorVariant = 'default' | 'a' | 'b' | 'c';
+export type ColorVariant = 'default' | 'a' | 'b' | 'c';
 
 export type ParcelCoord = Coord;
 
@@ -89,7 +89,7 @@ export interface Building extends Coord {
   taxCitizenMs: number;
   insulated?: boolean;
   solar?: boolean;
-  colorVariant?: HomeColorVariant;
+  colorVariant?: ColorVariant;
   storedEnergy?: number;
   coalEnabled?: boolean;
   name?: string;

@@ -393,7 +393,7 @@ A paid Home improvement that reduces power Demand independently of solar equipme
 _Avoid_: Energy generation, Home Tier
 
 **Repaint**:
-A paid Home improvement that changes the Home's color to another of its available colors. Its price depends only on the Home's Tier, never on the color chosen, and a Home cannot be repainted to the color it already has.
+A paid improvement that changes the color of a Home, a shop, the Hotel or a production, storage or utility building to another of its available colors. The colors come from the Kenney kit of its model: a Home or an industrial building offers three besides the default, a shop or the Hotel two. Solar installations, batteries, Backup Power plants and Facilities are not repainted. Its price depends only on the building's Tier, never on the color chosen, and a building cannot be repainted to the color it already has.
 _Avoid_: Recolor (that is a Model definition field), Color change
 
 **Solar installation**:

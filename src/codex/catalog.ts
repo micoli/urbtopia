@@ -5,9 +5,9 @@ import { FR } from '../i18n/fr';
 import { BUILDING_SECTIONS, type BuildSection } from './buildingSections';
 import { ROAD_CONSTRUCTIONS, type RoadConstructionId } from './construction';
 import { WATER_CONSTRUCTIONS, type WaterConstructionId } from './waterConstructions';
-import type { HomeColorVariant } from '../core';
+import type { ColorVariant } from '../core';
 
-export const HOME_COLOR_VARIANTS: readonly HomeColorVariant[] = ['default', 'a', 'b', 'c'];
+export const HOME_COLOR_VARIANTS: readonly ColorVariant[] = ['default', 'a', 'b', 'c'];
 
 export type SolarHomeCodexId = `solar-${BuildingType}`;
 export type CodexId = BuildingType | 'solarHome' | SolarHomeCodexId | RoadConstructionId | WaterConstructionId | CropId;
@@ -96,7 +96,7 @@ export function solarBaseOf(id: string): BuildingType | null {
 
 export const isHomeCodexId = (id: string): boolean => solarBaseOf(id) !== null || isHomeType(id);
 
-export function codexImageKey(id: CodexId, level: number, colorVariant?: HomeColorVariant): string {
+export function codexImageKey(id: CodexId, level: number, colorVariant?: ColorVariant): string {
   const key = `${id}:${level}`;
   if (!isHomeCodexId(id)) return key;
   return `${key}:${colorVariant ?? 'default'}`;

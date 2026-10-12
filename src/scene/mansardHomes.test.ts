@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, footprintOf, maxTierOf, newGame, type BuildingType, type HomeColorVariant } from '../core';
+import { createBuilding, footprintOf, maxTierOf, newGame, type BuildingType, type ColorVariant } from '../core';
 import { MODEL_KEYS, renderItemsOf } from './renderItems';
 
 const MANSARD_TYPES = ['home-mansard-1x1', 'home-mansard-1x2', 'home-mansard-2x2'] as BuildingType[];
-const LETTERS: Record<HomeColorVariant, string> = { default: 'a', a: 'b', b: 'c', c: 'd' };
-const COLORS = Object.keys(LETTERS) as HomeColorVariant[];
+const LETTERS: Record<ColorVariant, string> = { default: 'a', a: 'b', b: 'c', c: 'd' };
+const COLORS = Object.keys(LETTERS) as ColorVariant[];
 
 describe('mansard Homes', () => {
   it.each(MANSARD_TYPES)('%s has five Tiers on a fixed footprint', type => {

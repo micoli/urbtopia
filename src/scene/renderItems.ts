@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_ROAD_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type HomeColorVariant, type ServiceCategory, isHomeType } from '../core';
+import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, isHomeType, paintKitOf } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -11,7 +11,7 @@ import { BUS_MODEL } from './busModel';
 import { SERVICE_VEHICLE_MODELS } from './serviceTrip';
 import { VENUE_CUSTOMER_MODELS, VENUE_STAFF_MODELS } from './venueCrowdModels';
 
-export type TextureVariant = 'a' | 'b' | 'c' | 'roads-a';
+export type TextureVariant = 'a' | 'b' | 'c' | 'roads-a' | 'commercial-a' | 'commercial-b' | 'industrial-a' | 'industrial-b' | 'industrial-c';
 
 export interface RenderItem {
   model: string;
@@ -75,15 +75,25 @@ const TIER_MODELS = new Map(BUILDING_ENTRIES.filter(({ tiers }) => tiers).map(({
 const SOLAR_HOME_MODELS = new Map(BUILDING_ENTRIES.filter(({ kind, variants }) => kind === 'home' && variants?.solar).map(({ id }) => [id, variantTiersOf(id, 'solar').map(({ model }) => modelFileOf(model!))]));
 
 // Mansard Homes are modelled once per color, a to d (green, pale blue, red, grey green): the Home color picks the model, where other Homes recolor their texture.
-const MANSARD_MODEL_LETTER: Record<HomeColorVariant, string> = { default: 'a', a: 'b', b: 'c', c: 'd' };
+const MANSARD_MODEL_LETTER: Record<ColorVariant, string> = { default: 'a', a: 'b', b: 'c', c: 'd' };
 
 const isMansardModel = (model: string): boolean => model.includes('-mansard-');
 
-const mansardModelOf = (model: string, colorVariant: HomeColorVariant): string => model.replace('-mansard-a', `-mansard-${MANSARD_MODEL_LETTER[colorVariant]}`);
+const mansardModelOf = (model: string, colorVariant: ColorVariant): string => model.replace('-mansard-a', `-mansard-${MANSARD_MODEL_LETTER[colorVariant]}`);
 
-const mansardColorsOf = (model: string): string[] => (isMansardModel(model) ? Object.keys(MANSARD_MODEL_LETTER).map(color => mansardModelOf(model, color as HomeColorVariant)) : [model]);
+const mansardColorsOf = (model: string): string[] => (isMansardModel(model) ? Object.keys(MANSARD_MODEL_LETTER).map(color => mansardModelOf(model, color as ColorVariant)) : [model]);
 
-const colorizedModel = (model: string, colorVariant: HomeColorVariant = 'default'): string => (isMansardModel(model) ? mansardModelOf(model, colorVariant) : model);
+// Kenney models repaint by swapping their palette texture; the commercial kit has no third variation.
+const textureVariantOf = (model: string, colorVariant: ColorVariant = 'default'): TextureVariant | undefined => {
+  if (colorVariant === 'default') return undefined;
+  const kit = paintKitOf(model);
+  if (kit === 'suburban') return colorVariant;
+  if (kit === 'commercial' && colorVariant !== 'c') return `commercial-${colorVariant}`;
+  if (kit === 'industrial') return `industrial-${colorVariant}`;
+  return undefined;
+};
+
+const colorizedModel = (model: string, colorVariant: ColorVariant = 'default'): string => (isMansardModel(model) ? mansardModelOf(model, colorVariant) : model);
 
 export const TRAIN_MODELS: readonly string[] = [...new Set(FLEET_VEHICLES.flatMap(({ models }) => models.map(modelFileOf)))];
 
@@ -267,7 +277,8 @@ function buildingItems(state: GameState): RenderItem[] {
     const rotation = building.rotation;
     const model = modelOfBuilding(building);
     const scale = tiersOf(building.type)[building.tier - 1]?.scale;
-    const items: RenderItem[] = [{ model, x, z, rotation, ...(scale ? { scale } : {}), ...(isHomeType(building.type) && !isMansardModel(model) && building.colorVariant && building.colorVariant !== 'default' ? { textureVariant: building.colorVariant } : {}) }];
+    const textureVariant = textureVariantOf(model, building.colorVariant);
+    const items: RenderItem[] = [{ model, x, z, rotation, ...(scale ? { scale } : {}), ...(textureVariant ? { textureVariant } : {}) }];
     if (isFacilityType(building.type)) {
       const footprint = facilityFootprint(building)!;
       const recolor = FACILITY_RECOLORS[building.type];

@@ -292,6 +292,13 @@ button {
 .home-color-swatch-a { background: #4d8dbd; }
 .home-color-swatch-b { background: #c75a50; }
 .home-color-swatch-c { background: #858f78; }
+.home-color-swatch-commercial-default { background: #e9e9ee; }
+.home-color-swatch-commercial-a { background: #eb9a62; }
+.home-color-swatch-commercial-b { background: #d4583a; }
+.home-color-swatch-industrial-default { background: #dcdce8; }
+.home-color-swatch-industrial-a { background: #7f7bd0; }
+.home-color-swatch-industrial-b { background: #c06a4c; }
+.home-color-swatch-industrial-c { background: #b9b8e0; }
 
 .side-panel {
   position: fixed;
