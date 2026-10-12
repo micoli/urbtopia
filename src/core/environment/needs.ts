@@ -1,4 +1,5 @@
 import { ECOLOGY, greenBenefits } from './ecology';
+import type { NeedFactorId } from './needFactors';
 import { climateStats } from './climate';
 import { energyStats } from './energy';
 import { homeBenefits } from './wellbeing';
@@ -15,12 +16,7 @@ import type { GameState } from '../engine/state';
 export const NEED_LEVELS = ['vital', 'safety', 'belonging', 'esteem', 'fulfilment'] as const;
 export type NeedLevelId = (typeof NEED_LEVELS)[number];
 
-export type NeedFactorId =
-  | 'electricity' | 'water' | 'food'
-  | 'safety' | 'health' | 'pollution' | 'congestion' | 'climate'
-  | 'culture' | 'leisure' | 'walking'
-  | 'education' | 'administration' | 'shops'
-  | 'worship' | 'greenSpaces' | 'biodiversity';
+export type { NeedFactorId };
 
 export type NeedEffect = 'supply' | 'wellbeing' | 'tierUpgrade' | 'none';
 

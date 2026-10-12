@@ -1,6 +1,6 @@
 # Sanction balance table
 
-Status: ready-for-agent
+Status: resolved
 
 Singleton Balance file (ADR 0023) holding, per Difficulty: the sanctionable factors, the Tax floor (0.5) and a reserved severity entry for the future Citizen loss (inert for now). Validated by a generated JSON schema like the other Balance files. Exposed from `src/core`.
 

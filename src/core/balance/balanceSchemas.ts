@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { SANCTIONABLE_FACTOR_IDS } from '../environment/needFactors.ts';
 import { STAFF_ROLES_ALL } from '../venues/venueVocabulary.ts';
 
 const count = z.int().min(0);
@@ -47,3 +48,24 @@ export const venuesBalanceSchema = z
 export const trafficBalanceSchema = z
   .strictObject({ ...schemaField, roadTierCosts: z.array(count).min(1) })
   .meta({ title: 'Traffic balance', description: 'assets/defs/balance/traffic.json: the cost of a road tile by Tier.' });
+
+const DIFFICULTY_IDS = ['cozy', 'easy', 'medium', 'hard'] as const;
+
+const difficultyRule = z.strictObject({
+  // The Need factors that lower the Tax of a Home under this Difficulty.
+  factors: z.array(z.enum(SANCTIONABLE_FACTOR_IDS)).refine(factors => new Set(factors).size === factors.length, 'lists a factor twice'),
+  // The share of its Tax a sanctioned Home keeps at worst.
+  taxFloor: z.number().gt(0).max(1),
+  // Reserved for the day a Sanction takes Citizens away; 0 means none leave.
+  citizenLossSeverity: z.number().min(0).max(1),
+});
+
+// What each Difficulty sanctions. Each Difficulty sanctions everything the one before it does, and Cozy nothing.
+export const sanctionsBalanceSchema = z
+  .strictObject({ ...schemaField, difficulties: z.strictObject(Object.fromEntries(DIFFICULTY_IDS.map(id => [id, difficultyRule])) as Record<(typeof DIFFICULTY_IDS)[number], typeof difficultyRule>) })
+  .refine(({ difficulties }) => difficulties.cozy.factors.length === 0, { path: ['difficulties', 'cozy', 'factors'], message: 'Cozy sanctions nothing' })
+  .refine(({ difficulties }) => DIFFICULTY_IDS.every((id, index) => {
+    const previous = DIFFICULTY_IDS[index - 1];
+    return previous === undefined || difficulties[previous].factors.every(factor => difficulties[id].factors.includes(factor));
+  }), { path: ['difficulties'], message: 'each Difficulty must sanction at least what the one before it does' })
+  .meta({ title: 'Sanctions balance', description: 'assets/defs/balance/sanctions.json: what each Difficulty sanctions, and how hard.' });

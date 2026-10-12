@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 import type { Reference } from './collections.ts';
-import { economyBalanceSchema, trafficBalanceSchema, venuesBalanceSchema } from '../src/core/balance/balanceSchemas.ts';
+import { economyBalanceSchema, sanctionsBalanceSchema, trafficBalanceSchema, venuesBalanceSchema } from '../src/core/balance/balanceSchemas.ts';
 import { bridgeInfrastructureSchema, railsInfrastructureSchema, roadsInfrastructureSchema, sceneryInfrastructureSchema } from '../src/core/infrastructure/infrastructureSchemas.ts';
 import { natureDescriptionsSchema, NATURE_DESCRIPTION_VALUES } from '../src/core/descriptions/descriptionSchemas.ts';
 import { templateProblems } from '../src/core/descriptions/descriptionProblems.ts';
@@ -25,6 +25,7 @@ export const SINGLETONS = {
   economy: { file: 'assets/defs/balance/economy.json', title: 'Economy balance', schemaName: 'balance-economy', schema: economyBalanceSchema },
   venues: { file: 'assets/defs/balance/venues.json', title: 'Venues balance', schemaName: 'balance-venues', schema: venuesBalanceSchema },
   traffic: { file: 'assets/defs/balance/traffic.json', title: 'Traffic balance', schemaName: 'balance-traffic', schema: trafficBalanceSchema },
+  sanctions: { file: 'assets/defs/balance/sanctions.json', title: 'Sanctions balance', schemaName: 'balance-sanctions', schema: sanctionsBalanceSchema },
   roads: {
     file: 'assets/defs/infrastructure/roads.json',
     title: 'Roads',

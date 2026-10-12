@@ -208,6 +208,15 @@ const DOCS: Record<string, FieldDoc> = {
   cooldownMinutes: d('Time before another event can be planned, in minutes.', 'Venue events.'),
   maxDelayHours: d('How many hours ahead an event can be planned.', 'Venue events.'),
   'venues.minRank': d('The Rank a Venue must have reached to plan events.', 'Venue events.'),
+  // Sanctions balance
+  difficulties: d('What each Difficulty sanctions.', 'The Tax of a Home, the Needs pyramid and the Sanctions page of the codex.'),
+  cozy: d('The Difficulty with no Sanction.', 'The Tax of a Home.'),
+  easy: d('The first Difficulty with Sanctions.', 'The Tax of a Home.'),
+  medium: d('Easy, plus more factors.', 'The Tax of a Home.'),
+  hard: d('Medium, plus more factors.', 'The Tax of a Home.'),
+  factors: d('The Need factors that lower the Tax of a Home. Each Difficulty keeps those of the one before it.', 'The Tax of a Home and the Sanctions page.'),
+  taxFloor: d('The share of its Tax a sanctioned Home keeps at worst.', 'The Tax of a Home.'),
+  citizenLossSeverity: d('How strongly a Sanction takes Citizens away; 0 means none leave.', 'Not used yet.'),
   roadTierCosts: d('Urbs per tile to build or upgrade a road to each Tier.', 'Road building.'),
 
   // Infrastructure
