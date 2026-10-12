@@ -101,7 +101,7 @@ export class ChunkedWorld {
         const instanced = new THREE.InstancedMesh(mesh.geometry, material, modelItems.length);
         modelItems.forEach((item, index) => {
           if (item.decal) return instanced.setMatrixAt(index, this.decalMatrix(item, combined).multiply(mesh.matrixWorld));
-          const elevation = item.roofBase ? new THREE.Box3().setFromObject(this.library.get(item.roofBase)).applyMatrix4(fitMatrixOf(item.roofBase)).max.y : item.elevation ?? 0;
+          const elevation = item.roofBase ? new THREE.Box3().setFromObject(this.library.get(item.roofBase)).applyMatrix4(fitMatrixOf(item.roofBase)).max.y + (item.elevation ?? 0) : item.elevation ?? 0;
           placement.makeRotationY((item.rotation * Math.PI) / 2).setPosition(item.x, elevation, item.z);
           combined.copy(placement).multiply(lengthScale.makeScale(item.scale ?? 1, item.scale ?? 1, (item.scale ?? 1) * (item.lengthScale ?? 1))).multiply(this.facilityScaleMatrix(item, facilityMatrix)).multiply(fit).multiply(mesh.matrixWorld);
           instanced.setMatrixAt(index, combined);

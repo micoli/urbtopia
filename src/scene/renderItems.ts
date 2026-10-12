@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_ROAD_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, isHomeType, paintKitOf, colorVariantsOfKit } from '../core';
+import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, solarPanelsOf, solarPanelLayout, paintKitOf, colorVariantsOfKit } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -268,6 +268,21 @@ function garageDoorItems(x: number, z: number, rotation: number, footprint: numb
   }));
 }
 
+const SOLAR_PANEL_MODELS = { flat: ROOF_PANEL_MODEL, landscape: GROUND_PANEL_MODEL } as const;
+
+// A Home whose solar models cover its Tier already shows its panels; any other equipped building gets its panels on the roof, one per tile unless its definition sets a count.
+function solarPanelItems(building: Building, roofModel: string, rotation: number, x: number, z: number): RenderItem[] {
+  const panels = solarPanelsOf(building.type);
+  if (!building.solar || !panels) return [];
+  if (building.tier <= (SOLAR_HOME_MODELS.get(building.type)?.length ?? 0)) return [];
+  const model = SOLAR_PANEL_MODELS[panels.style ?? 'flat'];
+  const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
+  return solarPanelLayout(width, depth, panels.panels).map(slot => ({
+    model, x: x + slot.x, z: z + slot.z, rotation, roofBase: roofModel,
+    ...(slot.scale < 1 ? { scale: slot.scale } : {}), ...(panels.lift ? { elevation: panels.lift } : {}),
+  }));
+}
+
 function buildingItems(state: GameState): RenderItem[] {
   return state.buildings.flatMap((building) => {
     const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
@@ -292,9 +307,7 @@ function buildingItems(state: GameState): RenderItem[] {
       items.push({ model: PARK_TREE_MODEL, x: x - width / 4, z: z - depth / 4, rotation, ...(scale ? { scale } : {}) });
       items.push({ model: PARK_TREE_MODEL, x: x + width / 4, z: z + depth / 4, rotation, ...(scale ? { scale } : {}) });
     }
-    if (isHomeType(building.type) && !isMansardModel(model) && building.solar && building.tier > 4) {
-      items.push({ model: ROOF_PANEL_MODEL, x, z, rotation, elevation: 1.3, roofBase: model });
-    }
+    items.push(...solarPanelItems(building, model, rotation, x, z));
     return items;
   });
 }
