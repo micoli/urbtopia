@@ -5,7 +5,7 @@ import { footprintOf } from '../fitted'
 import { useLibrary } from '../hooks/useLibrary'
 import type { ModelInfo } from '../modelLoader'
 import * as THREE from 'three'
-import { solarPanelLayout } from '../../../../src/core/environment/solarPanelLayout'
+import { solarPanelPlacements } from '../../../../src/core/environment/solarPanelLayout'
 import type { SolarPanelsDefinition } from '../../../../src/core/buildings/solarPanelsSchema'
 import { buildModel, buildPlacement, SceneStage } from '../sceneStage'
 import { useDocument, type Doc, type Selection } from '../store/documentStore'
@@ -49,10 +49,8 @@ export function Preview() {
   const solarAvailable = useDocument(state => state.selection?.kind === 'buildings' && state.doc.collections.buildings[state.selection.id]?.solarPanels !== undefined)
   const solarOn = useDocument(state => state.preview.solar === true)
   const showSolar = useDocument(state => state.showSolar)
-  const panelId = useDocument(state => (solar ? (state.doc.singletons.scenery as { roofPanel: string; groundPanel: string } | undefined)?.[solar.style === 'landscape' ? 'groundPanel' : 'roofPanel'] : undefined))
-  const panelSettings = useDocument(state => (panelId ? state.doc.models[panelId] : undefined))
-  const panelLocation = library.byFile.get(panelSettings?.file ?? '')
-
+  const defaultPanelId = useDocument(state => (state.doc.singletons.scenery as { roofPanel: string } | undefined)?.roofPanel)
+  const models = useDocument(state => state.doc.models)
   useEffect(() => {
     const stage = new SceneStage(canvasRef.current!, containerRef.current!)
     stageRef.current = stage
@@ -78,23 +76,27 @@ export function Preview() {
       stage.stage.add(placed.object)
       stage.frameStage()
       setInfo(placed.info)
-      if (!solar || !panelLocation) return
+      if (!solar) return
       const { width, depth } = footprintOf(placed.info, settings)
-      void buildModel(panelLocation.pack, panelLocation.name, panelSettings).then(panel => {
-        if (!live) return
-        for (const slot of solarPanelLayout(width, depth, solar.panels)) {
+      for (const panel of solarPanelPlacements(width, depth, solar.panels)) {
+        const id = panel.model ?? defaultPanelId
+        const panelSettings = id ? models[id] : undefined
+        const panelLocation = library.byFile.get(panelSettings?.file ?? '')
+        if (!panelLocation) continue
+        void buildModel(panelLocation.pack, panelLocation.name, panelSettings).then(({ object }) => {
+          if (!live) return
           const holder = new THREE.Group()
-          holder.add(panel.object.clone(true))
-          holder.scale.setScalar(slot.scale)
-          holder.position.set(slot.x, placed.top + (solar.lift ?? 0), slot.z)
+          holder.add(object)
+          holder.rotation.set(THREE.MathUtils.degToRad(panel.rotationX), THREE.MathUtils.degToRad(panel.rotationY), 0, 'YXZ')
+          holder.position.set(panel.x, placed.top + panel.y, panel.z)
           placed.object.add(holder)
-        }
-      })
+        })
+      }
     })
     return () => {
       live = false
     }
-  }, [location, settings, rotation, solar, panelLocation, panelSettings])
+  }, [location, settings, rotation, solar, defaultPanelId, models, library])
 
   const footprint = info ? footprintOf(info, settings) : null
 

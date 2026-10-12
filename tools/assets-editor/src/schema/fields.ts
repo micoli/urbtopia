@@ -72,9 +72,11 @@ const LABELS: Record<string, string> = {
   sells: 'Goods sold',
   saleIntervalFactor: 'Sale interval factor',
   model: 'Model',
-  style: 'Panel style',
-  panels: 'Panels shown',
-  lift: 'Roof lift (tiles)',
+  rotationX: 'Angle X (deg)',
+  rotationY: 'Angle Y (deg)',
+  x: 'X (tiles)',
+  y: 'Y (tiles)',
+  z: 'Z (tiles)',
 }
 
 const PAIR_PARTS: Record<string, [string, string]> = { footprint: ['W', 'D'], center: ['X', 'Z'] }
