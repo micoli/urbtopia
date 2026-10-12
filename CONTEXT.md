@@ -392,6 +392,10 @@ _Avoid_: Random key, map code
 A Home equipped with panels that first cover its own power Demand and can share surplus with nearby Homes.
 _Avoid_: Solar house, solar residence
 
+**Solar panels**:
+A paid improvement, independent of Tier, that equips an eligible building with panels so it produces power from daylight. A Home can be built with them (a Solar Home) or retrofitted; any other eligible building can only be retrofitted. A building is eligible when its definition declares Solar panels. Its price, unlock threshold, output and the placement of the panels on its roof are set per building definition. On a Home the panels are part of its solar models; on any other building they are a generic roof overlay, so its color and Repaint are unaffected.
+_Avoid_: Solar Home (that is a Home built with them), Solar installation, Solar upgrade
+
 **Mansard Home**:
 A Home sold in three fixed footprints (1×1, 1×2, 2×2) whose five Tiers each add a floor, available in three colors and with solar panels. It shares the population and utility Demand of the first five Tiers of a Home.
 _Avoid_: Mansard house, attic home
