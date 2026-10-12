@@ -9,6 +9,7 @@ import { useSave } from '../hooks/useSave'
 import { useShortcuts } from '../hooks/useShortcuts'
 import { isFreelyDefinable, licenseOf } from '../library/modelFiles'
 import { useDocument } from '../store/documentStore'
+import { useLayout } from '../store/layoutStore'
 import { groupOf, reorderGroup, setModel } from '../store/edits'
 import { ComparisonView } from './comparison/ComparisonView'
 import { CollectionList } from './CollectionList'
@@ -20,6 +21,7 @@ import { ModelList } from './ModelList'
 import { ObjectPanel } from './ObjectPanel'
 import { Preview } from './Preview'
 import { SingletonList } from './SingletonList'
+import { Splitter } from './Splitter'
 import { TopBar } from './TopBar'
 
 export function Shell() {
@@ -28,6 +30,8 @@ export function Shell() {
   const save = useSave()
   const library = useLibrary()
   const [dragging, setDragging] = useState<DragData | null>(null)
+  const sizes = useLayout(state => state.sizes)
+  const { resize, reset } = useLayout.getState()
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }))
   useShortcuts(() => void save())
 
@@ -64,16 +68,22 @@ export function Shell() {
     <div className="grid h-full grid-rows-[auto_1fr]">
       <TopBar onSave={() => void save()} />
       <DndContext sensors={sensors} onDragStart={({ active }: DragStartEvent) => setDragging((active.data.current as DragData) ?? null)} onDragCancel={() => setDragging(null)} onDragEnd={onDragEnd}>
-        <div className="grid min-h-0 grid-cols-1 gap-3 overflow-auto p-3 lg:grid-cols-[19rem_minmax(0,1fr)_24rem] lg:overflow-hidden">
+        <div
+          className="grid min-h-0 grid-cols-1 gap-3 overflow-auto p-3 lg:grid-cols-[var(--col-left)_0.75rem_minmax(0,1fr)_0.75rem_var(--col-right)] lg:gap-0 lg:overflow-hidden"
+          style={{ '--col-left': `${sizes.left}px`, '--col-right': `${sizes.right}px`, '--row-preview': `${sizes.preview}px` } as React.CSSProperties}
+        >
           <aside className="flex min-h-[24rem] flex-col gap-2 lg:min-h-0">
             <KindNav />
             {kind === 'models' ? <ModelList /> : kind === 'singletons' ? <SingletonList /> : <CollectionList key={kind} collection={kind} />}
           </aside>
+          <Splitter orientation="vertical" label="Resize the list" onResize={delta => resize('left', useLayout.getState().sizes.left + delta)} onReset={() => reset('left')} />
           <main className="min-h-0 lg:overflow-auto">
             {comparing ? <ComparisonView /> : <ObjectPanel />}
           </main>
-          <aside className="grid min-h-[36rem] grid-rows-[15rem_minmax(0,1fr)] gap-3 lg:min-h-0">
+          <Splitter orientation="vertical" label="Resize the preview column" onResize={delta => resize('right', useLayout.getState().sizes.right - delta)} onReset={() => reset('right')} />
+          <aside className="grid min-h-[36rem] grid-rows-[15rem_minmax(0,1fr)] gap-3 lg:min-h-0 lg:grid-rows-[var(--row-preview)_0.75rem_minmax(0,1fr)] lg:gap-0">
             <Preview />
+            <Splitter orientation="horizontal" label="Resize the preview" onResize={delta => resize('preview', useLayout.getState().sizes.preview + delta)} onReset={() => reset('preview')} />
             <LibraryDrawer />
           </aside>
         </div>
