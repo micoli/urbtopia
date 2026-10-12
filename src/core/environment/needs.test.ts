@@ -76,3 +76,34 @@ describe('needs pyramid', () => {
     expect(levels.slice(firstWeak + 1).every(level => level.fragile)).toBe(true);
   });
 });
+
+describe('needs pyramid effects by Difficulty', () => {
+  const effectsOf = (difficulty: 'cozy' | 'easy' | 'medium' | 'hard', id: string) => factor({ ...empty, difficulty }, id).effects;
+
+  it('marks no factor as a Sanction under Cozy', () => {
+    for (const level of needsPyramid({ ...empty, difficulty: 'cozy' }).levels) {
+      for (const entry of level.factors) expect(entry.effects).not.toContain('sanction');
+    }
+  });
+
+  it('marks the factors a Difficulty sanctions, and only those', () => {
+    const marked = (difficulty: 'easy' | 'medium' | 'hard') => needsPyramid({ ...empty, difficulty }).levels.flatMap(level => level.factors).filter(entry => entry.effects.includes('sanction')).map(entry => entry.id).sort();
+    expect(marked('easy')).toEqual(['electricity', 'health', 'safety', 'water']);
+    expect(marked('medium')).toEqual(['congestion', 'electricity', 'health', 'pollution', 'safety', 'water']);
+    expect(marked('hard')).toEqual(['climate', 'congestion', 'electricity', 'health', 'pollution', 'safety', 'water']);
+  });
+
+  it('keeps the other effects of a sanctioned factor and drops "none"', () => {
+    expect(effectsOf('easy', 'safety')).toEqual(['wellbeing', 'tierUpgrade', 'sanction']);
+    expect(effectsOf('hard', 'climate')).toEqual(['sanction']);
+    expect(effectsOf('cozy', 'climate')).toEqual(['none']);
+  });
+
+  it('never marks food, nor a factor of a higher Need level', () => {
+    const hard = needsPyramid({ ...empty, difficulty: 'hard' }).levels;
+    expect(hard.flatMap(level => level.factors).find(entry => entry.id === 'food')!.effects).toEqual(['none']);
+    for (const level of hard.filter(entry => !['vital', 'safety'].includes(entry.id))) {
+      for (const entry of level.factors) expect(entry.effects).not.toContain('sanction');
+    }
+  });
+});

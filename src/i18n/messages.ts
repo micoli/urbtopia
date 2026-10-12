@@ -1,5 +1,6 @@
 import { facilityMessages } from './facilities';
 import { casinoMessages } from './casino';
+import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
 import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
@@ -10,6 +11,7 @@ export const MESSAGES = {
   ...natureMessages('en'),
   ...casinoMessages('en'),
   ...needsMessages('en'),
+  ...difficultyMessages('en'),
   ...venueMessages('en'),
   ...buildingMessages('en'),
   ...itemMessages('en'),

@@ -1,4 +1,6 @@
 import { ECOLOGY, greenBenefits } from './ecology';
+import { sanctionedFactors } from '../balance/sanctions';
+import { difficultyOf } from '../engine/difficulty';
 import type { NeedFactorId } from './needFactors';
 import { climateStats } from './climate';
 import { energyStats } from './energy';
@@ -18,7 +20,7 @@ export type NeedLevelId = (typeof NEED_LEVELS)[number];
 
 export type { NeedFactorId };
 
-export type NeedEffect = 'supply' | 'wellbeing' | 'tierUpgrade' | 'none';
+export type NeedEffect = 'supply' | 'wellbeing' | 'tierUpgrade' | 'sanction' | 'none';
 
 export type NeedSection = 'eco-energy' | 'eco-water' | 'eco-services' | 'eco-nature' | 'eco-traffic' | 'eco-emissions';
 
@@ -130,7 +132,8 @@ function satisfactions(state: GameState): Map<NeedFactorId, number> {
 
 export function needsPyramid(state: GameState): NeedsPyramid {
   const values = satisfactions(state);
-  const factors = FACTORS.map((spec): NeedFactor => ({ ...spec, satisfaction: values.get(spec.id) ?? null }));
+  const sanctioned: readonly NeedFactorId[] = sanctionedFactors(difficultyOf(state));
+  const factors = FACTORS.map((spec): NeedFactor => ({ ...spec, effects: sanctioned.includes(spec.id) ? [...spec.effects.filter(effect => effect !== 'none'), 'sanction'] : spec.effects, satisfaction: values.get(spec.id) ?? null }));
   const levels: NeedLevel[] = [];
   for (const id of NEED_LEVELS) {
     const own = factors.filter(factor => factor.level === id);
