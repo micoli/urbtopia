@@ -222,6 +222,8 @@ export const MESSAGES = {
   "codex.profile.wind": "Varies with the weather",
   "codex.profile.solar": "Daylight only",
   "codex.profile.hydro": "Slow daily cycle, 80–100% of its flow",
+  "codex.fact.solarPanels": "Solar panels",
+  "codex.solarPanels.possible": "Can be fitted with Solar panels",
   "codex.fact.siting": "Placement",
   "codex.siting.water": "Must touch a Water tile",
   "codex.fact.flowTiles": "Water tiles for full flow",

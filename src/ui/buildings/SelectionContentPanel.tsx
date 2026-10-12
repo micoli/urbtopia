@@ -3,7 +3,7 @@ import { DecorationRotation } from './DecorationRotation';
 import { FrontRotation } from './FrontRotation';
 import { CoalPlantPanel } from './CoalPlantPanel';
 import { StopNameField } from './StopNameField';
-import { GAME_CONFIG, isShopType, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost, isHomeType, isRepaintableType, isUtilityType, isTransitStopType } from '../../core';
+import { GAME_CONFIG, isShopType, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost, isHomeType, canHaveSolarPanels, isRepaintableType, isUtilityType, isTransitStopType } from '../../core';
 import { t } from '../../i18n/t';
 import { FacilityPanel } from './FacilityPanel';
 import { CasinoPanel } from '../casino/CasinoPanel';
@@ -12,6 +12,7 @@ import { FarmPanel } from './FarmPanel';
 import { MarinaPanel } from './MarinaPanel';
 import { BuildingAccess } from './BuildingAccess';
 import { HomePanel } from './HomePanel';
+import { SolarPanelsRow } from './SolarPanelsRow';
 import { useUi } from '../common/hooks';
 import { ProductionPanel } from './ProductionPanel';
 import { ShopPanel } from './ShopPanel';
@@ -49,7 +50,8 @@ export function SelectionContentPanel() {
       {isStorageType(building.type) ? <StoragePanel building={building} /> : null}
       {isUtilityType(building.type) ? <UtilityPanel building={building} type={building.type} /> : null}
       {building.type === 'coalPlant' ? <CoalPlantPanel building={building} /> : null}
-      {greenProfileOf(building.type) || ['solar','battery','backup','busStop','brtStation','railStation'].includes(building.type) || (isHomeType(building.type) && building.solar) ? <EcologicalBuildingPanel building={building} /> : null}
+      {greenProfileOf(building.type) || ['solar','battery','backup','busStop','brtStation','railStation'].includes(building.type) || building.solar ? <EcologicalBuildingPanel building={building} /> : null}
+      {canHaveSolarPanels(building.type) ? <SolarPanelsRow building={building} /> : null}
       {natureModelOf(building.type)?.[2] === 'decoration' ? <DecorationRotation building={building} /> : null}
       <FrontRotation building={building} />
       <ButtonRow align="stretch" spaced className="side-panel-actions">

@@ -179,6 +179,33 @@ describe('green spaces and equipment', () => {
   });
 });
 
+describe('solar panels on other buildings', () => {
+  it('charges the retrofit once, per Tier, on an eligible building only', () => {
+    const s = city([b(1, 'storehouse', 55, 57, { tier: 2 }), b(2, 'townHall', 70), b(3, 'home', 60, 57, { tier: 3 }), b(4, 'home', 62, 57, { tier: 3 })]);
+    const result = dispatch(s, { type: 'EquipSolarPanels', buildingId: 1 }, s.lastSeen);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.state.urbs).toBe(s.urbs - ECOLOGY.solarCost * 2);
+    expect(result.state.buildings.find(x => x.id === 1)?.solar).toBe(true);
+    expect(dispatch(result.state, { type: 'EquipSolarPanels', buildingId: 1 }, s.lastSeen).ok).toBe(false);
+    expect(dispatch(s, { type: 'EquipSolarPanels', buildingId: 2 }, s.lastSeen).ok).toBe(false);
+  });
+  it('keeps solar direct placement for Homes', () => {
+    const s = city([]);
+    expect(dispatch(s, { type: 'PlaceBuilding', buildingType: 'storehouse', x: 55, y: 57, solar: true }, s.lastSeen).ok).toBe(false);
+  });
+  it('produces per footprint tile and feeds its own Demand first', () => {
+    const plain = energyStats(city([b(1, 'factory', 0)]));
+    const equipped = energyStats(city([b(1, 'factory', 0, 0, { solar: true })]));
+    expect(equipped.solar).toBeGreaterThan(0);
+    expect(equipped.supplied.get(1) ?? 0).toBeGreaterThan(plain.supplied.get(1) ?? 0);
+  });
+  it('does not share its surplus with nearby Homes', () => {
+    const e = energyStats(city([b(1, 'storehouse', 0, 0, { solar: true, tier: 3 }), b(2, 'home', 2)]));
+    expect(e.transfers.some(t => t.from === 1)).toBe(false);
+  });
+});
+
 describe('repaint', () => {
   it('charges a fixed cost per Tier and changes the color', () => {
     const s = city([{ ...b(1, 'home', 55, 57), tier: 3 }]);

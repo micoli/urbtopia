@@ -1,5 +1,4 @@
 import { COAL_CAPACITY } from '../economy/economy';
-import { isHomeType } from '../buildings/buildingDefinitions';
 import type { Building, GameState } from '../engine/state';
 import { ECOLOGY } from './ecology';
 import { energyStats, generatorCapacity, productionFactors } from './energy';
@@ -19,7 +18,7 @@ const PLANT_TYPES: Record<Exclude<EnergySourceId, 'solar'>, Building['type']> = 
   wind: 'powerPlant', hydro: 'hydroPlant', geothermal: 'geothermalPlant', coal: 'coalPlant',
 };
 
-const isSolarGenerator = (b: Building) => b.type === 'solar' || (isHomeType(b.type) && b.solar === true);
+const isSolarGenerator = (b: Building) => b.type === 'solar' || b.solar === true;
 
 function copiesAndCapacity(state: GameState, id: EnergySourceId): { copies: number; capacity: number } {
   if (id === 'solar') {

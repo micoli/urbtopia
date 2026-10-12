@@ -49,6 +49,7 @@
       }
     }
   ],
+  "solarPanels": {},
   "variants": {
     "solar": {
       "tiers": [

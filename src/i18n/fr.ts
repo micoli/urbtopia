@@ -224,6 +224,8 @@ export const FR: Record<MessageKey, string> = {
   "codex.profile.wind": "Variable selon la météo",
   "codex.profile.solar": "Uniquement le jour",
   "codex.profile.hydro": "Cycle journalier lent, 80 à 100 % du débit",
+  "codex.fact.solarPanels": "Panneaux solaires",
+  "codex.solarPanels.possible": "Peut recevoir des panneaux solaires",
   "codex.fact.siting": "Placement",
   "codex.siting.water": "Doit toucher une tuile d’eau",
   "codex.fact.flowTiles": "Tuiles d’eau pour le plein débit",

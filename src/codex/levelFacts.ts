@@ -2,7 +2,7 @@ import {
   CASINO_GAMES, COAL_CAPACITY, marinaCapacity, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
   FIXTURES, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
-  type StorageType, type UtilityType, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf,
+  type StorageType, type UtilityType, BUILDING_SPECS, canHaveSolarPanels, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf,
 } from '../core';
 import { t } from '../i18n/t';
 import type { MessageKey } from '../i18n/messages';
@@ -82,6 +82,12 @@ function venueFacts(type: VenueType, level: number): LevelFact[] {
 }
 
 export function levelFactsOf(id: CodexId, level: number): LevelFact[] {
+  const facts = tierFactsOf(id, level);
+  if (isHomeCodexId(id) || !(id in BUILDING_SPECS) || !canHaveSolarPanels(id as BuildingType)) return facts;
+  return [...facts, textFact('codex.fact.solarPanels', () => t('codex.solarPanels.possible'), level)];
+}
+
+function tierFactsOf(id: CodexId, level: number): LevelFact[] {
   if (isHomeCodexId(id)) return [
     numericFact('codex.fact.citizens', tier => homeTier(tier).citizens, level),
     numericFact('codex.fact.power', tier => homeTier(tier).power, level),

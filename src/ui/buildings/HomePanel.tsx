@@ -25,6 +25,7 @@ export function HomePanel({ building }: HomePanelProps) {
   const missing = missingServices(coverage, building);
   const spec = HOME_TIERS[building.tier - 1];
   const due = taxDue(building);
+  const insulationCost = ECOLOGY.insulationCost * building.tier;
   const sanction = difficultyOf(state) === 'cozy' ? null : homeSanction(state, building, needsContext(state));
   const sanctioned = sanction?.factor ? sanction : null;
   return <DrawerPanel>
@@ -45,16 +46,9 @@ export function HomePanel({ building }: HomePanelProps) {
       {missing.length > 0 && <DrawerPanel.LabelValue tone="warn" label={t('home.servicesMissing')} value={<>{missing.map(key => `${serviceName(key)} (${t(`home.reason.${uncoveredReason(state, building, key)}`)})`).join(', ')}{benefits.servicePenalty > 0 && ` · ${t('eco.servicePenalty')}: −${benefits.servicePenalty.toFixed(0)}`}</>}/>}
       {benefits.pollutionPenalty > 0 && <DrawerPanel.LabelValue label={t('eco.coalPenalty')} value={<>−{benefits.pollutionPenalty.toFixed(1)} · {t('eco.coalPollutionHelp')}</>}/> }
 
-      {(['insulation', 'solar'] as const).map(equipment => {
-        const installed = equipment === 'solar' ? building.solar : building.insulated;
-        const cost = (equipment === 'solar' ? ECOLOGY.solarCost : ECOLOGY.insulationCost) * building.tier;
-        return <ActionButton block key={equipment} disabled={installed || state.urbs < cost || totalCitizens(state) < (equipment === 'solar' ? ECOLOGY.solarUnlockCitizens : 6)} onClick={() => gameStore.getState().send({ type: 'EquipHome', buildingId: building.id, equipment })}>
-          {t(equipment === 'solar' ? 'eco.retrofit' : 'eco.insulate')} · {installed ? t('eco.installed') : <UrbsAmount value={cost} />}
-        </ActionButton>;
-      })}
-      {totalCitizens(state) < 15 && (<p>
-          {t('eco.retrofit')} · {t('eco.locked')}: 15
-      </p>)}
+      <ActionButton block disabled={building.insulated || state.urbs < insulationCost || totalCitizens(state) < 6} onClick={() => gameStore.getState().send({ type: 'EquipHome', buildingId: building.id, equipment: 'insulation' })}>
+        {t('eco.insulate')} · {building.insulated ? t('eco.installed') : <UrbsAmount value={insulationCost} />}
+      </ActionButton>
       <DrawerPanel.Upgrade building={building} />
       {due > 0 ? (
         <ActionButton variant="primary" block onClick={() => gameStore.getState().send({ type: 'Collect', buildingId: building.id })}>
