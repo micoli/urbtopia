@@ -14,12 +14,13 @@ export interface PlacedModel {
   name: string
   info: ModelInfo
   object: THREE.Group
+  // The height of the model once placed, where roof panels sit.
+  top: number
 }
 
-export async function buildPlacement(pack: string, name: string, definition: ModelDefinition | undefined, withGrid: boolean): Promise<PlacedModel> {
+// The model alone, recolored and fitted as the game fits it.
+export async function buildModel(pack: string, name: string, definition: ModelDefinition | undefined): Promise<{ object: THREE.Object3D; info: ModelInfo }> {
   const { root, info } = await loadModel(pack, name)
-  const group = new THREE.Group()
-  group.userData.name = name
   const model = root.clone(true)
   const recolor = definition?.recolor
   if (recolor && HEX.test(recolor.color)) {
@@ -29,7 +30,15 @@ export async function buildPlacement(pack: string, name: string, definition: Mod
       if (mesh.isMesh) mesh.material = library.withRecolor(mesh.material, color)
     })
   }
-  group.add(fitted(model, definition))
+  return { object: fitted(model, definition), info }
+}
+
+export async function buildPlacement(pack: string, name: string, definition: ModelDefinition | undefined, withGrid: boolean): Promise<PlacedModel> {
+  const { object, info } = await buildModel(pack, name, definition)
+  const group = new THREE.Group()
+  group.userData.name = name
+  group.add(object)
+  const top = new THREE.Box3().setFromObject(object).max.y
 
   const { width, depth } = footprintOf(info, definition)
   const footprint = new THREE.Mesh(new THREE.PlaneGeometry(width, depth), new THREE.MeshBasicMaterial({ color: 0xffee88, transparent: true, opacity: 0.55, side: THREE.DoubleSide }))
@@ -47,7 +56,7 @@ export async function buildPlacement(pack: string, name: string, definition: Mod
     group.add(street)
   }
   group.add(arrow(new THREE.Vector3(1, 0, 0), 0xff2222), arrow(new THREE.Vector3(0, 0, 1), 0x2244ff))
-  return { name, info, object: group }
+  return { name, info, object: group, top }
 }
 
 export class SceneStage {

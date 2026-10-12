@@ -19,6 +19,7 @@ import { Tabs, type Tab } from './Tabs'
 import { unlocksByTier } from './tiers/unlocks'
 import { TiersTab } from './tiers/TiersTab'
 import { VariantsTab } from './tiers/VariantsTab'
+import { SolarTab } from './SolarTab'
 
 
 interface Props {
@@ -48,15 +49,19 @@ export function DefinitionPanel({ collection, id }: Props) {
   const textProblems = countWhere('name') + countWhere('description')
   const tiersField = fields.find(field => field.key === 'tiers' && field.type === 'list')
   const variantsField = fields.find(field => field.key === 'variants' && field.type === 'map')
-  const general = fields.filter(field => !isTextField(field) && field !== tiersField && field !== variantsField)
+  const solarField = fields.find(field => field.key === 'solarPanels' && field.type === 'object')
+  const general = fields.filter(field => !isTextField(field) && field !== tiersField && field !== variantsField && field !== solarField)
   const variantTierFields = variantsField?.type === 'map' ? variantsField.fields.find(field => field.key === 'tiers') : undefined
   const tabs: Tab[] = [
-    { id: 'general', label: 'General', badge: problems.length - textProblems - countWhere('tiers') - countWhere('variants'), content: form(general) },
+    { id: 'general', label: 'General', badge: problems.length - textProblems - countWhere('tiers') - countWhere('variants') - countWhere('solarPanels'), content: form(general) },
     ...(tiersField?.type === 'list'
       ? [{ id: 'tiers', fill: true, label: `Tiers · ${(definition.tiers as unknown[]).length}`, badge: countWhere('tiers'), content: <TiersTab tiers={definition.tiers as Record<string, unknown>[]} fields={tiersField.fields} problems={problems} modelSlot={modelSlot} unlocks={unlocksByTier(collections, collection, id, (definition.tiers as unknown[]).length)} onChange={tiers => setField('tiers', tiers)} /> }]
       : []),
     ...(variantTierFields?.type === 'list'
       ? [{ id: 'variants', label: 'Variants', badge: countWhere('variants'), content: <VariantsTab variants={(definition.variants ?? {}) as Record<string, { tiers: Record<string, unknown>[] }>} baseTiers={definition.tiers as Record<string, unknown>[]} fields={variantTierFields.fields} problems={problems} modelSlot={modelSlot} onChange={variants => setField('variants', variants)} /> }]
+      : []),
+    ...(solarField?.type === 'object'
+      ? [{ id: 'solar', label: `Solar · ${definition.solarPanels ? 'on' : 'off'}`, badge: countWhere('solarPanels'), content: <SolarTab solar={definition.solarPanels as Record<string, unknown> | undefined} fields={solarField.fields} problems={problems.filter(({ path }) => path.startsWith('solarPanels.')).map(problem => ({ ...problem, path: problem.path.slice('solarPanels.'.length) }))} onChange={solar => setField('solarPanels', solar)} /> }]
       : []),
     {
       id: 'description',

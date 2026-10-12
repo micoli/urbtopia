@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 import { footprintOf } from '../fitted'
 import { useLibrary } from '../hooks/useLibrary'
 import type { ModelInfo } from '../modelLoader'
-import { buildPlacement, SceneStage } from '../sceneStage'
+import * as THREE from 'three'
+import { solarPanelLayout } from '../../../../src/core/environment/solarPanelLayout'
+import type { SolarPanelsDefinition } from '../../../../src/core/buildings/solarPanelsSchema'
+import { buildModel, buildPlacement, SceneStage } from '../sceneStage'
 import { useDocument, type Doc, type Selection } from '../store/documentStore'
 import { button, panel } from './styles'
 
@@ -25,6 +28,12 @@ function modelOfSelection(doc: Doc, selection: Selection | null, preview: { tier
   return (models.find(({ path }) => path === 'models.growth.3') ?? models[0])?.id
 }
 
+// The Solar panels the preview puts on the roof of the selected building, when the solar preview is on.
+function solarOfSelection(doc: Doc, selection: Selection | null, solar: boolean | undefined): SolarPanelsDefinition | undefined {
+  if (!solar || selection?.kind !== 'buildings') return undefined
+  return doc.collections.buildings[selection.id]?.solarPanels as SolarPanelsDefinition | undefined
+}
+
 // The model of the selected Game object, placed as the game places it, with its footprint and the street side (-Z).
 export function Preview() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -34,7 +43,15 @@ export function Preview() {
   const [info, setInfo] = useState<ModelInfo | null>(null)
   const modelId = useDocument(state => modelOfSelection(state.doc, state.selection, state.preview))
   const settings = useDocument(state => (modelId ? state.doc.models[modelId] : undefined))
-  const location = useLibrary().byFile.get(settings?.file ?? '')
+  const library = useLibrary()
+  const location = library.byFile.get(settings?.file ?? '')
+  const solar = useDocument(state => solarOfSelection(state.doc, state.selection, state.preview.solar))
+  const solarAvailable = useDocument(state => state.selection?.kind === 'buildings' && state.doc.collections.buildings[state.selection.id]?.solarPanels !== undefined)
+  const solarOn = useDocument(state => state.preview.solar === true)
+  const showSolar = useDocument(state => state.showSolar)
+  const panelId = useDocument(state => (solar ? (state.doc.singletons.scenery as { roofPanel: string; groundPanel: string } | undefined)?.[solar.style === 'landscape' ? 'groundPanel' : 'roofPanel'] : undefined))
+  const panelSettings = useDocument(state => (panelId ? state.doc.models[panelId] : undefined))
+  const panelLocation = library.byFile.get(panelSettings?.file ?? '')
 
   useEffect(() => {
     const stage = new SceneStage(canvasRef.current!, containerRef.current!)
@@ -61,11 +78,23 @@ export function Preview() {
       stage.stage.add(placed.object)
       stage.frameStage()
       setInfo(placed.info)
+      if (!solar || !panelLocation) return
+      const { width, depth } = footprintOf(placed.info, settings)
+      void buildModel(panelLocation.pack, panelLocation.name, panelSettings).then(panel => {
+        if (!live) return
+        for (const slot of solarPanelLayout(width, depth, solar.panels)) {
+          const holder = new THREE.Group()
+          holder.add(panel.object.clone(true))
+          holder.scale.setScalar(slot.scale)
+          holder.position.set(slot.x, placed.top + (solar.lift ?? 0), slot.z)
+          placed.object.add(holder)
+        }
+      })
     })
     return () => {
       live = false
     }
-  }, [location, settings, rotation])
+  }, [location, settings, rotation, solar, panelLocation, panelSettings])
 
   const footprint = info ? footprintOf(info, settings) : null
 
@@ -77,6 +106,7 @@ export function Preview() {
       <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2">
         <span className="rounded bg-white/85 px-2 py-1 font-mono text-[11px] text-zinc-600 shadow-sm">{settings?.file ?? 'No model'}</span>
         <div className="pointer-events-auto flex gap-1">
+          {solarAvailable && <button className={button(solarOn ? 'primary' : 'secondary')} aria-pressed={solarOn} onClick={() => showSolar(!solarOn)}>☀ Solar {solarOn ? 'on' : 'off'}</button>}
           <button className={button('secondary')} onClick={() => setRotation((rotation + 3) % 4)} aria-label="Rotate left">⟲</button>
           <button className={button('secondary')} onClick={() => setRotation((rotation + 1) % 4)} aria-label="Rotate right">⟳</button>
         </div>
