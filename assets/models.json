@@ -1451,12 +1451,28 @@
   "farm-barn": {
     "file": "farm/Barn",
     "source": "quaternius",
-    "license": "CC0"
+    "license": "CC0",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 2,
+      "height": 2
+    }
   },
   "farm-openbarn": {
     "file": "farm/OpenBarn",
     "source": "quaternius",
-    "license": "CC0"
+    "license": "CC0",
+    "footprint": [
+      2,
+      2
+    ],
+    "fit": {
+      "width": 2,
+      "height": 2
+    }
   },
   "farm-silo": {
     "file": "farm/Silo",
