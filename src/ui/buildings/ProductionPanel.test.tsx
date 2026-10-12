@@ -36,3 +36,16 @@ describe('ProductionPanel Rush', () => {
     expect(render([{ startedAt: NOW - 60_000, done: true }])).not.toContain(t('panel.rush'));
   });
 });
+
+describe('ProductionPanel power shortage', () => {
+  it('warns that production is halted when no power is supplied after the adaptation period', () => {
+    render([{ startedAt: NOW, done: false }]);
+    context.state = { ...context.state!, adaptationUntil: undefined };
+    const building = context.state.buildings[0]!;
+    expect(renderToStaticMarkup(<ProductionPanel building={building} />)).toContain(t('power.halted'));
+  });
+
+  it('stays silent during the adaptation period', () => {
+    expect(render([{ startedAt: NOW, done: false }])).not.toContain(t('power.halted'));
+  });
+});

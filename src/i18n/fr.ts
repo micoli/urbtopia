@@ -673,6 +673,8 @@ export const FR: Record<MessageKey, string> = {
   'panel.waiting': 'En attente',
   'panel.onlyCraftable': 'Seulement les recettes réalisables',
   'panel.freeSlot': 'Emplacement libre',
+  'power.halted': 'Pas d’énergie : la production et les ventes sont à l’arrêt. Construisez une centrale ou des panneaux solaires.',
+  'power.slowed': 'Manque d’énergie : la production et les ventes sont ralenties',
   'panel.stock': 'Stock',
   'panel.materials': 'Matériaux',
   'panel.crops': 'Récoltes',

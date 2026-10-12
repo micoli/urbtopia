@@ -11,6 +11,7 @@ import { ButtonRow } from '../common/ButtonRow';
 import { CheckboxField } from '../common/CheckboxField';
 import { SlotList } from '../common/SlotList';
 import { DrawerPanel } from '../common/DrawerPanel';
+import { PowerShortageNote } from './PowerShortageNote';
 
 interface ProductionPanelProps {
   building: Building;
@@ -41,6 +42,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
   const filtering = canFilter && onlyCraftable;
 
   return <DrawerPanel>
+      <PowerShortageNote />
       <SlotList>
         {Array.from({ length: building.slotCount }, (_, index) => {
           const entry = building.queue[index];
