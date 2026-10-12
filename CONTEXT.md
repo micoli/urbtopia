@@ -125,8 +125,16 @@ The satisfaction of a Home's Citizens, raised by nearby Green spaces and Public 
 _Avoid_: Happiness, bonheur, mood, attractiveness
 
 **Need level**:
-One of the five stages of the Needs pyramid, from the base up: Vital, Safety, Belonging, Esteem, Fulfilment. Each has a satisfaction from 0 to 100, computed from game data that already exists, weighted by Citizens. A Need level is read-only: it explains Well-being and changes none of its effects.
+One of the five stages of the Needs pyramid, from the base up: Vital, Safety, Belonging, Esteem, Fulfilment. Each has a satisfaction from 0 to 100, computed from game data that already exists, weighted by Citizens. The Vital and Safety Need levels also drive the Sanction of a Home; the higher levels only modulate Well-being.
 _Avoid_: Maslow level, layer, tier (already Tier)
+
+**Difficulty**:
+The setting of a city that decides which Need factors cause a Sanction: Cozy (none, the default, and the one of every city saved before Difficulty existed), Easy (Safety and Health services), Medium (Easy plus Pollution and Congestion), Hard (Medium plus Climate). It can be changed at any time.
+_Avoid_: Level (already Tier and Need level), mode
+
+**Sanction**:
+The reduction of a Home's Tax caused by its weakest unsatisfied Need factor among those its city's Difficulty makes sanctionable. It grows continuously with the lack of satisfaction, down to a floor of half the Tax, and never takes Citizens away. Computed per Home. Under Hard, Climate sanctions only the Homes without a Green space in reach. The higher Need levels never cause a Sanction: they only add or withdraw a Well-being bonus. Under Cozy there is no Sanction and no warning of one, but a power shortage still lowers the Tax of the Homes it leaves unpowered.
+_Avoid_: Penalty (already used for Well-being malus), fine, malus
 
 **Needs pyramid**:
 The city management view that shows the five Need levels stacked, each with its satisfaction and the factors that feed it, and a table that explains every factor. A lower Need level that is unsatisfied marks the levels above it as fragile.
