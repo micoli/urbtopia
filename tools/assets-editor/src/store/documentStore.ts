@@ -41,7 +41,7 @@ interface DocumentState {
   comparing: boolean
   // The tab open in the panel of the selected object; the first one when unset.
   tab: string | null
-  // The Tier, and the variant if any, the preview shows for a Game object with Tiers; solar puts its Solar panels on the roof.
+  // The Tier, and the variant if any, the preview shows for a Game object with Tiers; solar: false hides its Solar panels from the roof.
   preview: { tier: number; variant?: string; solar?: boolean }
   load: (catalog: Catalog) => void
   adoptCatalog: (catalog: Catalog) => void

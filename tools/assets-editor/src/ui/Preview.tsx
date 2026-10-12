@@ -28,9 +28,9 @@ function modelOfSelection(doc: Doc, selection: Selection | null, preview: { tier
   return (models.find(({ path }) => path === 'models.growth.3') ?? models[0])?.id
 }
 
-// The Solar panels the preview puts on the roof of the selected building, when the solar preview is on.
+// The Solar panels the preview puts on the roof of the selected building, unless the solar preview is turned off.
 function solarOfSelection(doc: Doc, selection: Selection | null, solar: boolean | undefined): SolarPanelsDefinition | undefined {
-  if (!solar || selection?.kind !== 'buildings') return undefined
+  if (solar === false || selection?.kind !== 'buildings') return undefined
   return doc.collections.buildings[selection.id]?.solarPanels as SolarPanelsDefinition | undefined
 }
 
@@ -47,7 +47,7 @@ export function Preview() {
   const location = library.byFile.get(settings?.file ?? '')
   const solar = useDocument(state => solarOfSelection(state.doc, state.selection, state.preview.solar))
   const solarAvailable = useDocument(state => state.selection?.kind === 'buildings' && state.doc.collections.buildings[state.selection.id]?.solarPanels !== undefined)
-  const solarOn = useDocument(state => state.preview.solar === true)
+  const solarOn = useDocument(state => state.preview.solar !== false)
   const showSolar = useDocument(state => state.showSolar)
   const defaultPanelId = useDocument(state => (state.doc.singletons.scenery as { roofPanel: string } | undefined)?.roofPanel)
   const models = useDocument(state => state.doc.models)
