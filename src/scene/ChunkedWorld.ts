@@ -34,7 +34,7 @@ export class ChunkedWorld {
 
   private syncChunk(key: string, items: RenderItem[]): void {
     const signature = items
-      .map((item) => `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}#${item.recolor ?? ''}#${item.decal?.x ?? ''}${item.decal?.z ?? ''}${item.decal?.lateral ?? ''}:${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.pitch ?? 0},${item.yaw ?? 0},${item.lengthScale ?? 1},${item.scale ?? 1},${item.footprint ?? 0}`)
+      .map((item) => `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}#${item.recolor ?? ''}#${item.decal?.x ?? ''}${item.decal?.z ?? ''}${item.decal?.lateral ?? ''}:${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.pitch ?? 0},${item.yaw ?? 0},${item.roll ?? 0},${item.lengthScale ?? 1},${item.scale ?? 1},${item.footprint ?? 0}`)
       .sort()
       .join('|');
     if (this.chunks.get(key)?.signature === signature) return;
@@ -104,7 +104,7 @@ export class ChunkedWorld {
           if (item.decal) return instanced.setMatrixAt(index, this.decalMatrix(item, combined).multiply(mesh.matrixWorld));
           const elevation = item.roofBase ? new THREE.Box3().setFromObject(this.library.get(item.roofBase)).applyMatrix4(fitMatrixOf(item.roofBase)).max.y + (item.elevation ?? 0) : item.elevation ?? 0;
           placement.makeRotationY((item.rotation * Math.PI) / 2).setPosition(item.x, elevation, item.z);
-          if (item.pitch || item.yaw) placement.multiply(tilt.makeRotationFromEuler(new THREE.Euler(THREE.MathUtils.degToRad(item.pitch ?? 0), THREE.MathUtils.degToRad(item.yaw ?? 0), 0, 'YXZ')));
+          if (item.pitch || item.yaw || item.roll) placement.multiply(tilt.makeRotationFromEuler(new THREE.Euler(THREE.MathUtils.degToRad(item.pitch ?? 0), THREE.MathUtils.degToRad(item.yaw ?? 0), THREE.MathUtils.degToRad(item.roll ?? 0), 'YXZ')));
           combined.copy(placement).multiply(lengthScale.makeScale(item.scale ?? 1, item.scale ?? 1, (item.scale ?? 1) * (item.lengthScale ?? 1))).multiply(this.facilityScaleMatrix(item, facilityMatrix)).multiply(fit).multiply(mesh.matrixWorld);
           instanced.setMatrixAt(index, combined);
         });

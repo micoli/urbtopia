@@ -102,7 +102,7 @@ export function Preview() {
         if (!live) return
         const holder = new THREE.Group()
         holder.add(object)
-        holder.rotation.set(THREE.MathUtils.degToRad(panel.rotationX), THREE.MathUtils.degToRad(panel.rotationY), 0, 'YXZ')
+        holder.rotation.set(THREE.MathUtils.degToRad(panel.rotationX), THREE.MathUtils.degToRad(panel.rotationY), THREE.MathUtils.degToRad(panel.rotationZ), 'YXZ')
         holder.position.set(panel.x, placed.top + panel.y, panel.z)
         group.add(holder)
       })

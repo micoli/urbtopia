@@ -35,6 +35,7 @@ const DOCS: Record<string, FieldDoc> = {
   'solarPanels.y': d('Height in tiles above the top of the building model.', 'The panel position in the scene.'),
   'solarPanels.z': d('Offset in tiles from the center of the footprint, along Z (negative towards the street).', 'The panel position in the scene.'),
   'solarPanels.rotationX': d('Tilt in degrees about the panel’s own X axis, applied after the Y rotation.', 'The panel angle in the scene.'),
+  'solarPanels.rotationZ': d('Roll in degrees about the panel’s own Z axis, applied after the Y and X rotations.', 'The panel angle in the scene.'),
   'solarPanels.rotationY': d('Turn in degrees about the vertical axis.', 'The panel angle in the scene.'),
   'solarPanels.cost': d('Urbs per Tier to equip the building. Defaults to the city-wide Solar panels price.', 'The panels button and the equip command.'),
   'solarPanels.unlockCitizens': d('How many Citizens the city needs before the panels can be installed. Defaults to the city-wide threshold.', 'The panels button and the equip command.'),

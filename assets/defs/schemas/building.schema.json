@@ -530,6 +530,9 @@
                   },
                   "rotationY": {
                     "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
                   }
                 },
                 "required": [
@@ -812,6 +815,9 @@
                   },
                   "rotationY": {
                     "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
                   }
                 },
                 "required": [
@@ -1058,6 +1064,9 @@
                   },
                   "rotationY": {
                     "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
                   }
                 },
                 "required": [
@@ -1299,6 +1308,9 @@
                     "type": "number"
                   },
                   "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
                     "type": "number"
                   }
                 },
@@ -1546,6 +1558,9 @@
                     "type": "number"
                   },
                   "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
                     "type": "number"
                   }
                 },
@@ -2394,6 +2409,9 @@
                   },
                   "rotationY": {
                     "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
                   }
                 },
                 "required": [
@@ -2654,6 +2672,9 @@
                     "type": "number"
                   },
                   "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
                     "type": "number"
                   }
                 },
@@ -2935,6 +2956,9 @@
                   },
                   "rotationY": {
                     "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
                   }
                 },
                 "required": [
@@ -3189,6 +3213,9 @@
                     "type": "number"
                   },
                   "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
                     "type": "number"
                   }
                 },
@@ -3559,6 +3586,9 @@
                     "type": "number"
                   },
                   "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
                     "type": "number"
                   }
                 },

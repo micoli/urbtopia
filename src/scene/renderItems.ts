@@ -24,9 +24,10 @@ export interface RenderItem {
   lengthScale?: number;
   scale?: number;
   roofBase?: string;
-  // Degrees about the item's own X axis, then Y, on top of its rotation.
+  // Degrees about the item's own Y, X then Z axes, on top of its rotation.
   pitch?: number;
   yaw?: number;
+  roll?: number;
   textureVariant?: TextureVariant;
   footprint?: number;
   recolor?: number;
@@ -161,7 +162,7 @@ let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; fields: RenderIte
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   return a.length === b.length && a.every((item, index) => {
     const other = b[index] as RenderItem;
-    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.pitch === other.pitch && item.yaw === other.yaw && item.scale === other.scale && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.recolor === other.recolor && item.decal?.x === other.decal?.x && item.decal?.z === other.decal?.z && item.decal?.lateral === other.decal?.lateral && item.tint === other.tint;
+    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.pitch === other.pitch && item.yaw === other.yaw && item.roll === other.roll && item.scale === other.scale && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.recolor === other.recolor && item.decal?.x === other.decal?.x && item.decal?.z === other.decal?.z && item.decal?.lateral === other.decal?.lateral && item.tint === other.tint;
   });
 }
 
@@ -283,7 +284,7 @@ function solarPanelItems(building: Building, roofModel: string, rotation: number
     const offset = turnedOffset(panel.x, panel.z, rotation);
     return {
       model: panel.model ? modelFileOf(panel.model) : ROOF_PANEL_MODEL, x: x + offset.x, z: z + offset.z, rotation, roofBase: roofModel,
-      ...(panel.y ? { elevation: panel.y } : {}), ...(panel.rotationX ? { pitch: panel.rotationX } : {}), ...(panel.rotationY ? { yaw: panel.rotationY } : {}),
+      ...(panel.y ? { elevation: panel.y } : {}), ...(panel.rotationX ? { pitch: panel.rotationX } : {}), ...(panel.rotationY ? { yaw: panel.rotationY } : {}), ...(panel.rotationZ ? { roll: panel.rotationZ } : {}),
     };
   });
 }

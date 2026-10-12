@@ -74,6 +74,7 @@ const LABELS: Record<string, string> = {
   model: 'Model',
   rotationX: 'Angle X (deg)',
   rotationY: 'Angle Y (deg)',
+  rotationZ: 'Angle Z (deg)',
   x: 'X (tiles)',
   y: 'Y (tiles)',
   z: 'Z (tiles)',
