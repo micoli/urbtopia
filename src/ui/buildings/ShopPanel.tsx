@@ -9,6 +9,7 @@ import { Note } from '../common/Note';
 import { SlotList } from '../common/SlotList';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { UrbsAmount } from '../common/UrbsAmount';
+import { PowerShortageNote } from './PowerShortageNote';
 
 interface ShopPanelProps {
   building: Building;
@@ -24,6 +25,7 @@ export function ShopPanel({ building }: ShopPanelProps) {
   const sellsPacks = sellableGoodsOf(building).length > shopTierOf(building).sells.length;
 
   return <DrawerPanel>
+      <PowerShortageNote />
       <DrawerPanel.LabelValue label={t('shop.category')} value={t(`goodCategory.${goodCategoryOf(building)}`)} />
       <Note tone="muted">{t('shop.sells')}: {[...shopTierOf(building).sells.map(itemName), ...(sellsPacks ? [t('shop.packs')] : [])].join(', ')}</Note>
       {nextGoods.length > 0 ? <Note tone="muted">{t('shop.nextTier')}: {nextGoods.map(itemName).join(', ')}</Note> : null}

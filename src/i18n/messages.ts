@@ -671,6 +671,8 @@ export const MESSAGES = {
   'panel.waiting': 'Waiting',
   'panel.onlyCraftable': 'Only craftable recipes',
   'panel.freeSlot': 'Free Slot',
+  'power.halted': 'No power: production and sales are halted. Build a power plant or solar panels.',
+  'power.slowed': 'Power shortage: production and sales are slowed',
   'panel.stock': 'Stock',
   'panel.materials': 'Materials',
   'panel.crops': 'Crops',
