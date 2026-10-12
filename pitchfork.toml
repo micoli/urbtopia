@@ -26,6 +26,13 @@ ready_http = "http://localhost:5182/"
 boot_start = false
 retry = false
 
+[daemons.storybook]
+run = "npm run storybook -- --host 0.0.0.0 --port 5183 --ci"
+dir = "."
+ready_http = "http://localhost:5183/"
+boot_start = false
+retry = false
+
 [daemons.issues]
 run = "bash -c 'npm ci --no-fund --no-audit && npm run build && npm start'"
 dir = "tools/issues-server"
