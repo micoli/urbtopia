@@ -7,7 +7,7 @@ import { extractPack } from './extractPack.ts';
 
 const force = process.argv.includes('--force');
 
-const expectedPaths = (pack: AssetPack) => [...pack.files.map((file) => `${file}.glb`), ...(pack.colormap === false ? [] : ['Textures/colormap.png']), ...(pack.colorVariants ? ['Textures/variation-a.png', 'Textures/variation-b.png', 'Textures/variation-c.png'] : [])].map((file) => join(MODELS_DIR, pack.name, file));
+const expectedPaths = (pack: AssetPack) => [...pack.files.map((file) => `${file}.glb`), ...(pack.colormap === false ? [] : ['Textures/colormap.png']), ...(pack.colorVariants ?? []).map((letter) => `Textures/variation-${letter}.png`)].map((file) => join(MODELS_DIR, pack.name, file));
 
 function installPack(pack: AssetPack): void {
   if (pack.files.length === 0) return;
