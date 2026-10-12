@@ -29,7 +29,11 @@ export function HomePanel({ building }: HomePanelProps) {
 
       <DrawerPanel.LabelValue label={t('home.demand')} value={<>⚡ {homePower(building).toFixed(1)} · 💧 {spec?.water ?? 0}</>}/>
       <DrawerPanel.LabelValue label={t('home.tax')} value={<>{due}</>}/>
-      <DrawerPanel.LabelValue label={t('eco.saved')} value={<>{((spec?.power ?? 0) - homePower(building)).toFixed(1)} · {t('eco.wellbeing')}: {benefits.wellbeing.toFixed(1)}</>}/>
+      <DrawerPanel.LabelValue label={t('eco.saved')} value={<>
+          {((spec?.power ?? 0) - homePower(building)).toFixed(1)}
+          <br/>
+          {t('eco.wellbeing')}: {benefits.wellbeing.toFixed(1)}
+      </>}/>
 
       <DrawerPanel.LabelValue label={t('home.services')} value={<>{covered.length ? covered.map(type => t(`building.${type}`)).join(', ') : t('home.servicesNone')}</>}/>
 

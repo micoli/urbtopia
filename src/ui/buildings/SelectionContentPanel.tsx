@@ -54,6 +54,7 @@ export function SelectionContentPanel() {
       <FrontRotation building={building} />
       {isHomeType(building.type) ? <RepaintRow building={building}/> : null}
       <ButtonRow align="stretch" spaced className="side-panel-actions">
+        {isHomeType(building.type) ? <RepaintRow building={building}/> : null}
         <ActionButton onClick={moveSelected}>
           ✥ {t('panel.move')}
         </ActionButton>
