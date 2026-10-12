@@ -11,7 +11,9 @@ import { BUS_MODEL } from './busModel';
 import { SERVICE_VEHICLE_MODELS } from './serviceTrip';
 import { VENUE_CUSTOMER_MODELS, VENUE_STAFF_MODELS } from './venueCrowdModels';
 
-export type TextureVariant = 'a' | 'b' | 'c' | 'roads-a' | 'commercial-a' | 'commercial-b' | 'industrial-a' | 'industrial-b' | 'industrial-c';
+export const TEXTURE_VARIANTS = ['a', 'b', 'c', 'roads-a', 'commercial-a', 'commercial-b', 'industrial-a', 'industrial-b', 'industrial-c'] as const;
+
+export type TextureVariant = (typeof TEXTURE_VARIANTS)[number];
 
 export interface RenderItem {
   model: string;
