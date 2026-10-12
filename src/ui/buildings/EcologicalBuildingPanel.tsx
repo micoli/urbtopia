@@ -5,6 +5,7 @@ import {
     energyStats,
     greenSpaceCoverage,
     homePower,
+    solarPanelsCapacity,
     transportStats,
     type Building, isHomeType } from '../../core';
 import {lineStatusKey} from '../stats/management/transit/lineStatusKey';
@@ -70,12 +71,12 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
             }
         </DrawerPanel.LabelValue>}
 
-        {isHomeType(building.type) && building.solar && <DrawerPanel.LabelValue
+        {building.solar && <DrawerPanel.LabelValue
             label={t('eco.solar')}
-            value={<>{(2 * building.tier * productionFactors(state.lastSeen + (state.timeOffset ?? 0)).solar).toFixed(1)} /
+            value={<>{(solarPanelsCapacity(building) * productionFactors(state.lastSeen + (state.timeOffset ?? 0)).solar).toFixed(1)} /
                 h</>}
         >
-            <p>{t('eco.demand')}: {homePower(building).toFixed(1)}</p>
+            {isHomeType(building.type) && <p>{t('eco.demand')}: {homePower(building).toFixed(1)}</p>}
             {energy.transfers
                 .filter(x => x.from === building.id || x.to === building.id)
                 .map(x => <p key={`${x.from}-${x.to}`}>#{x.from} → #{x.to}: {x.amount.toFixed(2)}</p>)

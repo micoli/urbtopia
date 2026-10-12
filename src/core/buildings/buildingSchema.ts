@@ -5,6 +5,7 @@ import { BUILD_SECTION_TITLES } from './buildSections.ts';
 import { CASINO_GAMES } from '../leisure/casinoGames.ts';
 import { SERVICE_CATEGORIES } from '../services/serviceCategories.ts';
 import { FIXTURE_CATEGORIES_ALL, STAFF_ROLES_ALL } from '../venues/venueVocabulary.ts';
+import { solarPanelsSchema } from './solarPanelsSchema.ts';
 import { pairSchema, tiersOf, variantsOf } from './tierSchema.ts';
 
 export const BUILDING_ID_PATTERN = /^[a-z][A-Za-z0-9-]*$/;
@@ -25,6 +26,8 @@ const text = { name: localizedText, description: localizedText.optional() };
 const identity = { ...meta, ...text };
 
 const common = { ...meta, model: filled, ...text };
+
+const panelled = { solarPanels: solarPanelsSchema.optional() };
 
 const sited = {
   section: z.enum(BUILD_SECTION_TITLES),
@@ -61,6 +64,7 @@ const homeBuilding = z.strictObject({
   kind: z.literal('home'),
   ...identity,
   ...sited,
+  ...panelled,
   tiers: tiersOf({ ...homeLook, citizens: count, power: count, water: count }, ['model', 'footprint', 'citizens', 'power', 'water']),
   variants: variantsOf(homeLook).optional(),
 });
@@ -70,6 +74,7 @@ const productionBuilding = z.strictObject({
   kind: z.literal('production'),
   ...identity,
   ...sited,
+  ...panelled,
   ...repeatable,
   tiers: tiersOf({ ...homeLook, durationFactor: z.number().positive(), maxSlots: z.int().min(1), yield: z.int().min(1) }, ['model', 'footprint', 'durationFactor', 'maxSlots', 'yield']),
 });
@@ -79,6 +84,7 @@ const farmBuilding = z.strictObject({
   kind: z.literal('farm'),
   ...identity,
   ...sited,
+  ...panelled,
   ...repeatable,
   tiers: tiersOf({ ...homeLook, seedCapacity: count, fieldCap: count }, ['model', 'footprint', 'seedCapacity', 'fieldCap']),
 });
@@ -88,6 +94,7 @@ const storageBuilding = z.strictObject({
   kind: z.literal('storage'),
   ...identity,
   ...sited,
+  ...panelled,
   ...repeatable,
   tiers: tiersOf({ ...homeLook, materials: count, goods: count, crops: count }, ['model', 'footprint', 'materials', 'goods', 'crops']),
 });
@@ -97,6 +104,7 @@ const utilityBuilding = z.strictObject({
   kind: z.literal('utility'),
   ...identity,
   ...sited,
+  ...panelled,
   ...repeatable,
   tiers: tiersOf({ ...homeLook, capacity: count }, ['model', 'footprint', 'capacity']),
 });
@@ -125,6 +133,7 @@ const facilityBuilding = z.strictObject({
   kind: z.literal('facility'),
   ...identity,
   ...sited,
+  ...panelled,
   category: z.enum(SERVICE_CATEGORIES),
   // The awning, overhang or parasol set over the entrance, for models that have none of their own.
   detailModel: filled.optional(),
@@ -141,6 +150,7 @@ const casinoBuilding = z.strictObject({
   kind: z.literal('casino'),
   ...identity,
   ...sited,
+  ...panelled,
   stakeSteps: z.array(z.int().min(1)).min(1),
   gameMinTier: z.strictObject(Object.fromEntries(CASINO_GAMES.map(game => [game, z.int().min(1)])) as Record<(typeof CASINO_GAMES)[number], z.ZodInt>),
   tiers: tiersOf(
@@ -154,6 +164,7 @@ const shopBuilding = z.strictObject({
   kind: z.literal('shop'),
   ...identity,
   ...sited,
+  ...panelled,
   goodCategory: z.enum([...GOOD_CATEGORIES, 'all']),
   // Multiplies the price of every extra Slot.
   slotPriceFactor: positive.optional(),
@@ -168,6 +179,7 @@ const marinaBuilding = z.strictObject({
   kind: z.literal('marina'),
   ...identity,
   ...sited,
+  ...panelled,
   tiers: tiersOf({ ...homeLook, boats: z.int().min(1) }, ['model', 'footprint', 'boats']),
 });
 
@@ -184,6 +196,7 @@ const venueBuilding = z.strictObject({
   kind: z.literal('venue'),
   ...identity,
   ...sited,
+  ...panelled,
   // Net Urbs earned since opening to reach Rank 2 and Rank 3.
   rankAt: z.tuple([count, count]),
   staffRoles: z.array(z.enum(STAFF_ROLES_ALL)).min(1),

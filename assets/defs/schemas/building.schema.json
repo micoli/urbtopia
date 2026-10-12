@@ -503,6 +503,67 @@
           "minimum": 0,
           "maximum": 9007199254740991
         },
+        "solarPanels": {
+          "type": "object",
+          "properties": {
+            "panels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "cost": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "unlockCitizens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "output": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "title": "Solar panels",
+          "description": "Makes the building eligible for Solar panels."
+        },
         "tiers": {
           "minItems": 1,
           "type": "array",
@@ -731,6 +792,67 @@
           "minimum": 0,
           "maximum": 9007199254740991
         },
+        "solarPanels": {
+          "type": "object",
+          "properties": {
+            "panels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "cost": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "unlockCitizens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "output": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "title": "Solar panels",
+          "description": "Makes the building eligible for Solar panels."
+        },
         "extraCopyCitizens": {
           "minItems": 1,
           "type": "array",
@@ -923,6 +1045,67 @@
           "minimum": 0,
           "maximum": 9007199254740991
         },
+        "solarPanels": {
+          "type": "object",
+          "properties": {
+            "panels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "cost": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "unlockCitizens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "output": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "title": "Solar panels",
+          "description": "Makes the building eligible for Solar panels."
+        },
         "extraCopyCitizens": {
           "minItems": 1,
           "type": "array",
@@ -1110,6 +1293,67 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "solarPanels": {
+          "type": "object",
+          "properties": {
+            "panels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "cost": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "unlockCitizens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "output": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "title": "Solar panels",
+          "description": "Makes the building eligible for Solar panels."
         },
         "extraCopyCitizens": {
           "minItems": 1,
@@ -1303,6 +1547,67 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "solarPanels": {
+          "type": "object",
+          "properties": {
+            "panels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "cost": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "unlockCitizens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "output": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "title": "Solar panels",
+          "description": "Makes the building eligible for Solar panels."
         },
         "extraCopyCitizens": {
           "minItems": 1,
@@ -2097,6 +2402,67 @@
           "minimum": 0,
           "maximum": 9007199254740991
         },
+        "solarPanels": {
+          "type": "object",
+          "properties": {
+            "panels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "cost": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "unlockCitizens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "output": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "title": "Solar panels",
+          "description": "Makes the building eligible for Solar panels."
+        },
         "category": {
           "type": "string",
           "enum": [
@@ -2303,6 +2669,67 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "solarPanels": {
+          "type": "object",
+          "properties": {
+            "panels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "cost": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "unlockCitizens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "output": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "title": "Solar panels",
+          "description": "Makes the building eligible for Solar panels."
         },
         "stakeSteps": {
           "minItems": 1,
@@ -2530,6 +2957,67 @@
           "minimum": 0,
           "maximum": 9007199254740991
         },
+        "solarPanels": {
+          "type": "object",
+          "properties": {
+            "panels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "cost": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "unlockCitizens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "output": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "title": "Solar panels",
+          "description": "Makes the building eligible for Solar panels."
+        },
         "goodCategory": {
           "type": "string",
           "enum": [
@@ -2730,6 +3218,67 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "solarPanels": {
+          "type": "object",
+          "properties": {
+            "panels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "cost": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "unlockCitizens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "output": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "title": "Solar panels",
+          "description": "Makes the building eligible for Solar panels."
         },
         "rankAt": {
           "type": "array",
@@ -3046,6 +3595,67 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "solarPanels": {
+          "type": "object",
+          "properties": {
+            "panels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "modelId": true
+                  },
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "z": {
+                    "type": "number"
+                  },
+                  "rotationX": {
+                    "type": "number"
+                  },
+                  "rotationY": {
+                    "type": "number"
+                  },
+                  "rotationZ": {
+                    "type": "number"
+                  },
+                  "scale": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "model"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "cost": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "unlockCitizens": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "output": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "title": "Solar panels",
+          "description": "Makes the building eligible for Solar panels."
         },
         "tiers": {
           "minItems": 1,

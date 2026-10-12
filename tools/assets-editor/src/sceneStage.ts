@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js'
 import { ModelLibrary } from '../../../src/scene/modelLibrary'
 import type { ModelDefinition } from '../../../src/scene/modelDefinitions'
 import { fitted, footprintOf } from './fitted'
@@ -14,12 +15,13 @@ export interface PlacedModel {
   name: string
   info: ModelInfo
   object: THREE.Group
+  // The height of the model once placed, where roof panels sit.
+  top: number
 }
 
-export async function buildPlacement(pack: string, name: string, definition: ModelDefinition | undefined, withGrid: boolean): Promise<PlacedModel> {
+// The model alone, recolored and fitted as the game fits it.
+export async function buildModel(pack: string, name: string, definition: ModelDefinition | undefined): Promise<{ object: THREE.Object3D; info: ModelInfo }> {
   const { root, info } = await loadModel(pack, name)
-  const group = new THREE.Group()
-  group.userData.name = name
   const model = root.clone(true)
   const recolor = definition?.recolor
   if (recolor && HEX.test(recolor.color)) {
@@ -29,7 +31,15 @@ export async function buildPlacement(pack: string, name: string, definition: Mod
       if (mesh.isMesh) mesh.material = library.withRecolor(mesh.material, color)
     })
   }
-  group.add(fitted(model, definition))
+  return { object: fitted(model, definition), info }
+}
+
+export async function buildPlacement(pack: string, name: string, definition: ModelDefinition | undefined, withGrid: boolean): Promise<PlacedModel> {
+  const { object, info } = await buildModel(pack, name, definition)
+  const group = new THREE.Group()
+  group.userData.name = name
+  group.add(object)
+  const top = new THREE.Box3().setFromObject(object).max.y
 
   const { width, depth } = footprintOf(info, definition)
   const footprint = new THREE.Mesh(new THREE.PlaneGeometry(width, depth), new THREE.MeshBasicMaterial({ color: 0xffee88, transparent: true, opacity: 0.55, side: THREE.DoubleSide }))
@@ -47,7 +57,7 @@ export async function buildPlacement(pack: string, name: string, definition: Mod
     group.add(street)
   }
   group.add(arrow(new THREE.Vector3(1, 0, 0), 0xff2222), arrow(new THREE.Vector3(0, 0, 1), 0x2244ff))
-  return { name, info, object: group }
+  return { name, info, object: group, top }
 }
 
 export class SceneStage {
@@ -55,6 +65,7 @@ export class SceneStage {
   readonly camera = new THREE.OrthographicCamera(-3, 3, 3, -3, 0.1, 200)
   private readonly renderer: THREE.WebGLRenderer
   private readonly controls: OrbitControls
+  private readonly transform: TransformControls
   private readonly scene = new THREE.Scene()
   private zoom = 1.2
   private fitZoom = 1.2
@@ -72,6 +83,10 @@ export class SceneStage {
     this.controls = new OrbitControls(this.camera, canvas)
     this.controls.enableDamping = false
     this.controls.enableZoom = false
+    this.transform = new TransformControls(this.camera, canvas)
+    this.transform.setSpace('local')
+    this.transform.addEventListener('dragging-changed', event => { this.controls.enabled = !event.value })
+    this.scene.add(this.transform.getHelper())
     canvas.addEventListener('wheel', this.onWheel, { passive: false })
     const loop = () => {
       this.controls.update()
@@ -84,6 +99,7 @@ export class SceneStage {
   dispose() {
     cancelAnimationFrame(this.frame)
     this.canvas.removeEventListener('wheel', this.onWheel)
+    this.transform.dispose()
     this.controls.dispose()
     this.renderer.dispose()
   }
@@ -101,7 +117,41 @@ export class SceneStage {
   }
 
   clear() {
+    this.transform.detach()
     this.stage.clear()
+  }
+
+  // Puts the move or rotate gizmo on an object; null removes it.
+  attachGizmo(object: THREE.Object3D | null, mode: 'translate' | 'rotate') {
+    this.transform.setMode(mode)
+    if (object) this.transform.attach(object)
+    else this.transform.detach()
+  }
+
+  // Calls back when a drag of the gizmo ends.
+  onGizmoRelease(listener: () => void): () => void {
+    this.transform.addEventListener('mouseUp', listener)
+    return () => this.transform.removeEventListener('mouseUp', listener)
+  }
+
+  // Whether the pointer is on a handle of the gizmo.
+  get overGizmo(): boolean {
+    return this.transform.axis !== null
+  }
+
+  // The first object under the pointer that satisfies the test, searching up through its parents.
+  pickAt<T>(clientX: number, clientY: number, find: (object: THREE.Object3D) => T | undefined): T | undefined {
+    const rect = this.canvas.getBoundingClientRect()
+    const point = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1)
+    const raycaster = new THREE.Raycaster()
+    raycaster.setFromCamera(point, this.camera)
+    for (const hit of raycaster.intersectObjects(this.stage.children, true)) {
+      for (let node: THREE.Object3D | null = hit.object; node; node = node.parent) {
+        const found = find(node)
+        if (found !== undefined) return found
+      }
+    }
+    return undefined
   }
 
   frameStage() {

@@ -5,6 +5,7 @@ import { COAL_CAPACITY, UTILITY_CAPACITY } from '../economy/economy';
 import type { Building, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { flowFactor } from '../water/flow';
+import { solarPanelsCapacity } from './solarPanels';
 
 export function productionFactors(now: number) {
   const hour = Math.floor(now / ECOLOGY.hourMs);
@@ -19,7 +20,7 @@ export function productionFactors(now: number) {
 
 export function generatorCapacity(b: Building): number {
   if (b.type === 'powerPlant' || b.type === 'hydroPlant' || b.type === 'geothermalPlant') return UTILITY_CAPACITY[b.type][b.tier - 1] ?? 0;
-  return b.type === 'solar' ? ECOLOGY.solarOutput : 2 * b.tier;
+  return b.type === 'solar' ? ECOLOGY.solarOutput : solarPanelsCapacity(b);
 }
 
 export function generatorFactor(state: GameState, b: Building, factors = productionFactors(state.lastSeen + (state.timeOffset ?? 0))): number {
@@ -41,7 +42,7 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   const factors = productionFactors(now + (state.timeOffset ?? 0));
   const need = new Map(buildings.map(b => [b.id, isHomeType(b.type) ? homePower(b) : economicPower(b)]));
   const supplied = new Map(buildings.map(b => [b.id, 0]));
-  const generation = buildings.filter(b => b.type === 'solar' || b.type === 'powerPlant' || b.type === 'hydroPlant' || b.type === 'geothermalPlant' || (isHomeType(b.type) && b.solar));
+  const generation = buildings.filter(b => b.type === 'solar' || b.type === 'powerPlant' || b.type === 'hydroPlant' || b.type === 'geothermalPlant' || b.solar === true);
   const output = (b: Building) => generatorOutput(state, b, factors);
   const outputOf = (...types: Building['type'][]) => generation.filter(b => types.includes(b.type)).reduce((n, b) => n + output(b), 0);
   const surplus = new Map(generation.map(b => [b.id, output(b)]));
@@ -50,7 +51,7 @@ export function energyStats(state: GameState, now = state.lastSeen) {
     const used = Math.max(0, Math.min(need.get(b.id) ?? 0, amount));
     need.set(b.id, (need.get(b.id) ?? 0) - used); supplied.set(b.id, (supplied.get(b.id) ?? 0) + used); return used;
   };
-  for (const source of homes.filter(b => b.solar)) {
+  for (const source of buildings.filter(b => b.solar)) {
     const available = surplus.get(source.id) ?? 0;
     surplus.set(source.id, available - allocate(source, available));
   }
@@ -116,7 +117,7 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   const economicDemand = economic.reduce((n, b) => n + economicPower(b), 0);
   const economicSupplied = economic.reduce((n, b) => n + (supplied.get(b.id) ?? 0), 0);
   const wind = outputOf('powerPlant'), hydro = outputOf('hydroPlant'), geothermal = outputOf('geothermalPlant');
-  const solar = generation.filter(b => b.type === 'solar' || isHomeType(b.type)).reduce((n, b) => n + output(b), 0);
+  const solar = generation.filter(b => b.type === 'solar' || b.solar === true).reduce((n, b) => n + output(b), 0);
   return {
     demand, transitDemand, transitSupplied, transitRatio: transitDemand > 0 ? transitSupplied / transitDemand : 1, solar, wind, hydro, geothermal, coal: coalSupplied, coalCapacity, coalRates, backup: backed, supplied, transfers, batteryRates, surplus: grid,
     unmet: [...need.values()].reduce((n, x) => n + x, 0) + transitDemand - transitSupplied, economicRatio: economicDemand > 0 ? economicSupplied / economicDemand : 1,

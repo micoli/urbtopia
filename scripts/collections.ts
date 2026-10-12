@@ -67,6 +67,7 @@ export const COLLECTIONS = {
       ...modelReference(building.detailModel, 'detailModel'),
       ...(building.tiers ?? []).flatMap((tier, index) => [...modelReference((tier as FlatTier).model, `tiers.${index}.model`), ...goodReferences(tier.upgradeCost?.goods, `tiers.${index}.upgradeCost.goods`), ...((tier as FlatTier).sells ?? []).map((id, position) => ({ target: ['goods'], id, path: `tiers.${index}.sells.${position}` }))]),
       ...Object.entries(building.variants ?? {}).flatMap(([name, { tiers }]) => tiers.flatMap((tier, index) => modelReference(tier.model, `variants.${name}.tiers.${index}.model`))),
+      ...(building.solarPanels?.panels ?? []).flatMap((panel, index) => modelReference(panel.model, `solarPanels.panels.${index}.model`)),
       ...(['floor', 'wall', 'corner'] as const).flatMap(part => modelReference(building.shell?.[part], `shell.${part}`)),
       ...(building.staffModels ?? []).flatMap((model, index) => modelReference(model, `staffModels.${index}`)),
     ],

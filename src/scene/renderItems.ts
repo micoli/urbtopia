@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_ROAD_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, isHomeType, paintKitOf, colorVariantsOfKit } from '../core';
+import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -24,6 +24,10 @@ export interface RenderItem {
   lengthScale?: number;
   scale?: number;
   roofBase?: string;
+  // Degrees about the item's own Y, X then Z axes, on top of its rotation.
+  pitch?: number;
+  yaw?: number;
+  roll?: number;
   textureVariant?: TextureVariant;
   footprint?: number;
   recolor?: number;
@@ -74,6 +78,7 @@ export function facilityFootprint(building: Pick<Building, 'type'>): number | nu
 // The model of each Tier of the buildings defined with Tiers.
 const TIER_MODELS = new Map(BUILDING_ENTRIES.filter(({ tiers }) => tiers).map(({ id, model: entryModel }) => [id, tiersOf(id).map(({ model }) => modelFileOf(model ?? entryModel))]));
 
+const SOLAR_PANEL_FILES = BUILDING_ENTRIES.flatMap(({ solarPanels }) => (solarPanels?.panels ?? []).map(({ model }) => modelFileOf(model)));
 const SOLAR_HOME_MODELS = new Map(BUILDING_ENTRIES.filter(({ kind, variants }) => kind === 'home' && variants?.solar).map(({ id }) => [id, variantTiersOf(id, 'solar').map(({ model }) => modelFileOf(model!))]));
 
 // Mansard Homes are modelled once per color, a to d (green, pale blue, red, grey green): the Home color picks the model, where other Homes recolor their texture.
@@ -119,6 +124,7 @@ export const MODEL_KEYS: readonly string[] = [
     ...Object.values(FACILITY_DETAILS),
     ROOF_PANEL_MODEL,
     GROUND_PANEL_MODEL,
+    ...SOLAR_PANEL_FILES,
     PARK_TREE_MODEL,
     BRIDGE_ROAD_MODEL,
     ...ROAD_MODELS,
@@ -156,7 +162,7 @@ let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; fields: RenderIte
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   return a.length === b.length && a.every((item, index) => {
     const other = b[index] as RenderItem;
-    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.recolor === other.recolor && item.decal?.x === other.decal?.x && item.decal?.z === other.decal?.z && item.decal?.lateral === other.decal?.lateral && item.tint === other.tint;
+    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.pitch === other.pitch && item.yaw === other.yaw && item.roll === other.roll && item.scale === other.scale && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.recolor === other.recolor && item.decal?.x === other.decal?.x && item.decal?.z === other.decal?.z && item.decal?.lateral === other.decal?.lateral && item.tint === other.tint;
   });
 }
 
@@ -268,6 +274,21 @@ function garageDoorItems(x: number, z: number, rotation: number, footprint: numb
   }));
 }
 
+// A Home whose solar models cover its Tier already shows its panels; any other equipped building gets the panels its definition lists on the roof, a flat panel per tile without any.
+function solarPanelItems(building: Building, roofModel: string, rotation: number, x: number, z: number): RenderItem[] {
+  const panels = solarPanelsOf(building.type);
+  if (!building.solar || !panels) return [];
+  if (building.tier <= (SOLAR_HOME_MODELS.get(building.type)?.length ?? 0)) return [];
+  const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
+  return solarPanelPlacements(width, depth, panels.panels).map(panel => {
+    const offset = turnedOffset(panel.x, panel.z, rotation);
+    return {
+      model: panel.model ? modelFileOf(panel.model) : ROOF_PANEL_MODEL, x: x + offset.x, z: z + offset.z, rotation, roofBase: roofModel,
+      ...(panel.y ? { elevation: panel.y } : {}), ...(panel.rotationX ? { pitch: panel.rotationX } : {}), ...(panel.rotationY ? { yaw: panel.rotationY } : {}), ...(panel.rotationZ ? { roll: panel.rotationZ } : {}), ...(panel.scale !== 1 ? { scale: panel.scale } : {}),
+    };
+  });
+}
+
 function buildingItems(state: GameState): RenderItem[] {
   return state.buildings.flatMap((building) => {
     const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
@@ -292,9 +313,7 @@ function buildingItems(state: GameState): RenderItem[] {
       items.push({ model: PARK_TREE_MODEL, x: x - width / 4, z: z - depth / 4, rotation, ...(scale ? { scale } : {}) });
       items.push({ model: PARK_TREE_MODEL, x: x + width / 4, z: z + depth / 4, rotation, ...(scale ? { scale } : {}) });
     }
-    if (isHomeType(building.type) && !isMansardModel(model) && building.solar && building.tier > 4) {
-      items.push({ model: ROOF_PANEL_MODEL, x, z, rotation, elevation: 1.3, roofBase: model });
-    }
+    items.push(...solarPanelItems(building, model, rotation, x, z));
     return items;
   });
 }

@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { advance, createBuilding, dispatch, ECOLOGY, energyStats, greenSpaceCoverage, greenBenefits, newGame, transportStats, type Building, type GameState } from '../index';
+import { advance, createBuilding, dispatch, ECOLOGY, energyStats, solarPanelsCost, greenSpaceCoverage, greenBenefits, newGame, transportStats, type Building, type GameState } from '../index';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 import currentSave from '../../persistence/fixtures/save-v4.json';
 import oldSave from '../../persistence/fixtures/save-v3.json';
@@ -176,6 +176,33 @@ describe('green spaces and equipment', () => {
     expect(result.state.urbs).toBe(s.urbs - 80);
     expect(energyStats(result.state).demand).toBeCloseTo(0.7);
     expect(dispatch(result.state, { type: 'EquipHome', buildingId: 1, equipment: 'insulation' }, s.lastSeen).ok).toBe(false);
+  });
+});
+
+describe('solar panels on other buildings', () => {
+  it('charges the retrofit once, per Tier, on an eligible building only', () => {
+    const s = city([b(1, 'storehouse', 55, 57, { tier: 2 }), b(2, 'townHall', 70), b(3, 'home', 60, 57, { tier: 3 }), b(4, 'home', 62, 57, { tier: 3 })]);
+    const result = dispatch(s, { type: 'EquipSolarPanels', buildingId: 1 }, s.lastSeen);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.state.urbs).toBe(s.urbs - solarPanelsCost(s.buildings[0]!));
+    expect(result.state.buildings.find(x => x.id === 1)?.solar).toBe(true);
+    expect(dispatch(result.state, { type: 'EquipSolarPanels', buildingId: 1 }, s.lastSeen).ok).toBe(false);
+    expect(dispatch(s, { type: 'EquipSolarPanels', buildingId: 2 }, s.lastSeen).ok).toBe(false);
+  });
+  it('keeps solar direct placement for Homes', () => {
+    const s = city([]);
+    expect(dispatch(s, { type: 'PlaceBuilding', buildingType: 'storehouse', x: 55, y: 57, solar: true }, s.lastSeen).ok).toBe(false);
+  });
+  it('produces per footprint tile and feeds its own Demand first', () => {
+    const plain = energyStats(city([b(1, 'factory', 0)]));
+    const equipped = energyStats(city([b(1, 'factory', 0, 0, { solar: true })]));
+    expect(equipped.solar).toBeGreaterThan(0);
+    expect(equipped.supplied.get(1) ?? 0).toBeGreaterThan(plain.supplied.get(1) ?? 0);
+  });
+  it('does not share its surplus with nearby Homes', () => {
+    const e = energyStats(city([b(1, 'storehouse', 0, 0, { solar: true, tier: 3 }), b(2, 'home', 2)]));
+    expect(e.transfers.some(t => t.from === 1)).toBe(false);
   });
 });
 

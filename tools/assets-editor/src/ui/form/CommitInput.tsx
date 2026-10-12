@@ -6,7 +6,7 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'o
   onCommit: (value: string) => void
 }
 
-// Typing stays local; the document changes on blur or Enter, so each field edit is one undo step.
+// Typing stays local; the document changes on blur or Enter, so each field edit is one undo step. The spinner and arrow keys of a number field apply at once.
 export function CommitInput({ value, onCommit, className, ...rest }: Props) {
   const [draft, setDraft] = useState(value)
   useEffect(() => setDraft(value), [value])
@@ -20,7 +20,11 @@ export function CommitInput({ value, onCommit, className, ...rest }: Props) {
       {...rest}
       className={`${input} ${className ?? ''}`}
       value={draft}
-      onChange={event => setDraft(event.target.value)}
+      onChange={event => {
+        setDraft(event.target.value)
+        const typed = (event.nativeEvent as InputEvent).inputType
+        if (rest.type === 'number' && !typed && event.target.value !== value) onCommit(event.target.value)
+      }}
       onBlur={commit}
       onKeyDown={event => {
         if (event.key === 'Enter') commit()

@@ -61,5 +61,21 @@
       }
     }
   ],
+  "solarPanels": {
+    "panels": [
+      {
+        "model": "industrial-solar-panel-flat",
+        "x": 0.478,
+        "y": -0.318,
+        "z": 0,
+        "rotationX": 0,
+        "rotationY": 0,
+        "rotationZ": -33.3
+      }
+    ],
+    "output": 5,
+    "cost": 1000,
+    "unlockCitizens": 200
+  },
   "extraCopyCitizens": [300, 800]
 }

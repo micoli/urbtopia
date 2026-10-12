@@ -73,6 +73,8 @@ export type { TutorialStep } from './progression/tutorial';
 
 export { ECOLOGY, ECOLOGY_UNLOCKS, distance as buildingDistance, homePower, economicPower, greenSpaceCoverage, greenBenefits, cityGreenBenefits } from './environment/ecology';
 export { energyStats, generatorCapacity, generatorFactor, generatorOutput, productionFactors } from './environment/energy';
+export { solarPanelPlacements, turnedOffset, type PanelPlacement } from './environment/solarPanelLayout';
+export { canHaveSolarPanels, solarPanelsCost, solarPanelsOf, solarPanelsUnlockCitizens, solarPanelsCapacity } from './environment/solarPanels';
 export { ENERGY_SOURCES, energySources, sourceFactors, type EnergySource, type EnergySourceId } from './environment/energySources';
 export { flowFactor } from './water/flow';
 export { homeBenefits, cityBenefits, congestionPenaltyOf, isAdapting, wellbeingTaxFactor } from './environment/wellbeing';

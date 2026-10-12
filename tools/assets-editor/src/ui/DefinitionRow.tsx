@@ -36,6 +36,7 @@ export function DefinitionRow({ collection, id }: Props) {
       </button>
       {dirty && <span className="h-2 w-2 rounded-full bg-amber-400" title="Modified" />}
       {problems.length > 0 && <span className={badge('red')}>{problems.length}</span>}
+      {collection === 'buildings' && definition.solarPanels !== undefined && <span className={badge('amber')} title="Can be fitted with Solar panels" aria-label="Solar panels">☀</span>}
       {collection === 'buildings' && kind !== 'standard' && <span className={badge('indigo')}>{kind}</span>}
     </div>
   )

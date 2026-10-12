@@ -12,7 +12,7 @@
   },
   "description": {
     "en": "Cares for nearby Citizens and needs water. Required for Home Tier 5. Sends ambulances to covered Homes. {reach, select, city {Covers the whole city} other {Square reach of {side} tiles}}, {limit, select, unlimited {unlimited capacity} other {capacity {tier1Capacity} Citizens, up to {maxTierCapacity} at Tier {tierCount}}}; demand {power} power{hasWater, select, yes { and {water} water} other {}}; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs, no operating cost.",
-    "fr": "Soigne les citoyens proches et consomme de l’eau. Requis pour les logements de niveau 5. Envoie des ambulances vers les logements couverts. {reach, select, city {Couvre toute la ville} other {Portée carrée de {side} cases}}, {limit, select, unlimited {capacité illimitée} other {capacité {tier1Capacity} citoyens, jusqu’à {maxTierCapacity} au niveau {tierCount}}}; consomme {power} d’électricité{hasWater, select, yes { et {water} d’eau} other {}}; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs, sans coût de fonctionnement."
+    "fr": "Soigne les citoyens proches et consomme de l’eau. Requis pour les logements de niveau 5. Envoie des ambulances vers les logements couverts. {reach, select, city {Couvre toute la ville} other {Portée carrée de {side} cases}}, {limit, select, unlimited {capacité illimitée} other {capacité {tier1Capacity} citoyens, jusqu’à {maxTierCapacity} au niveau {tierCount}}}; consomme {power} d’électricité{hasWater, select, yes { et {water} d’eau} other {}}; se débloque à {unlockCitizens} citoyens, coute {cost} Urbs, sans coût de fonctionnement."
   },
   "radius": 14,
   "tiers": [

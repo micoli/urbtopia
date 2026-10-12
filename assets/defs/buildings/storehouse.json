@@ -95,5 +95,21 @@
       }
     }
   ],
+  "solarPanels": {
+    "panels": [
+      {
+        "model": "industrial-solar-panel-landscape",
+        "x": 0.234,
+        "y": -0.22,
+        "z": 0,
+        "rotationX": 0,
+        "rotationY": 0,
+        "rotationZ": 0
+      }
+    ],
+    "cost": 600,
+    "output": 2,
+    "unlockCitizens": 0
+  },
   "extraCopyCitizens": [150, 500]
 }

@@ -41,8 +41,11 @@ interface DocumentState {
   comparing: boolean
   // The tab open in the panel of the selected object; the first one when unset.
   tab: string | null
-  // The Tier, and the variant if any, the preview shows for a Game object with Tiers.
-  preview: { tier: number; variant?: string }
+  // The Tier, and the variant if any, the preview shows for a Game object with Tiers; solar: false hides its Solar panels from the roof.
+  preview: { tier: number; variant?: string; solar?: boolean }
+  // The listed Solar panel the preview gizmo moves, and what the gizmo does.
+  selectedPanel: number | null
+  gizmoMode: 'translate' | 'rotate'
   load: (catalog: Catalog) => void
   adoptCatalog: (catalog: Catalog) => void
   change: (edit: (doc: Doc) => Doc) => void
@@ -51,6 +54,9 @@ interface DocumentState {
   select: (selection: Selection | null) => void
   showKind: (kind: Kind) => void
   showTier: (tier: number, variant?: string) => void
+  showSolar: (solar: boolean) => void
+  selectPanel: (index: number | null) => void
+  setGizmoMode: (mode: 'translate' | 'rotate') => void
   markSaved: () => void
   setStatus: (status: string) => void
   setComparing: (comparing: boolean) => void
@@ -75,6 +81,8 @@ export const useDocument = create<DocumentState>()(set => ({
   comparing: false,
   tab: null,
   preview: { tier: 0 },
+  selectedPanel: null,
+  gizmoMode: 'translate',
   load: catalog => {
     const doc: Doc = { models: catalog.models, collections: catalog.collections, singletons: catalog.singletons }
     set({ doc, saved: doc, past: [], future: [], status: '', assets: assetsOf(catalog) })
@@ -107,12 +115,15 @@ export const useDocument = create<DocumentState>()(set => ({
       if (!next) return state
       return { doc: next, past: [...state.past, state.doc], future: state.future.slice(1), status: '' }
     }),
-  select: selection => set(selection ? { selection, kind: selection.kind, comparing: false, tab: null, preview: { tier: 0 } } : { selection, tab: null }),
-  showTier: (tier, variant) => set({ preview: { tier, variant } }),
+  select: selection => set(selection ? { selection, kind: selection.kind, comparing: false, tab: null, preview: { tier: 0 }, selectedPanel: null } : { selection, tab: null, selectedPanel: null }),
+  showTier: (tier, variant) => set(state => ({ preview: { tier, variant, solar: state.preview.solar } })),
+  selectPanel: selectedPanel => set({ selectedPanel }),
+  setGizmoMode: gizmoMode => set({ gizmoMode }),
+  showSolar: solar => set(state => ({ preview: { ...state.preview, solar } })),
   showKind: kind => set({ kind, comparing: false }),
   setComparing: comparing => set({ comparing }),
   setTab: tab => set({ tab }),
-  showView: view => set({ ...view, preview: { tier: 0 } }),
+  showView: view => set({ ...view, preview: { tier: 0 }, selectedPanel: null }),
   markSaved: () => set(state => ({ saved: state.doc })),
   setStatus: status => set({ status }),
 }))

@@ -1,5 +1,6 @@
 import { TRANSIT, extendNetwork, networkTiles, repairNetwork, validNetworkCrossings } from '../transit/transitNetwork';
 import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
+import { canHaveSolarPanels, solarPanelsCost, solarPanelsOf, solarPanelsUnlockCitizens } from '../environment/solarPanels';
 import { routeFailure, routeForLine } from '../transit/transport';
 import { nextCopyCost } from '../buildings/buildLimit';
 import { BUILDING_SPECS, createBuilding, emptyStack, placementCost } from '../buildings/buildingSpecs';
@@ -66,7 +67,8 @@ export type Command =
   | { readonly type: 'DemolishRoadPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation; readonly solar?: boolean; readonly colorVariant?: ColorVariant }
   | { readonly type: 'RepaintBuilding'; readonly buildingId: number; readonly colorVariant: ColorVariant }
-  | { readonly type: 'EquipHome'; readonly buildingId: number; readonly equipment: 'solar' | 'insulation' }
+  | { readonly type: 'EquipHome'; readonly buildingId: number; readonly equipment: 'insulation' }
+  | { readonly type: 'EquipSolarPanels'; readonly buildingId: number }
   | { readonly type: 'SetCoalEnabled'; readonly buildingId: number; readonly enabled: boolean }
   | { readonly type: 'RenameStop'; readonly buildingId: number; readonly name: string }
   | { readonly type: 'SetBusLine'; readonly id?: number; readonly stops: number[] }
@@ -248,7 +250,9 @@ export function handleCommand(state: GameState, command: Command, now: number): 
     case 'RepaintBuilding':
       return repaintBuilding(state, command.buildingId, command.colorVariant);
     case 'EquipHome':
-      return equipHome(state, command.buildingId, command.equipment);
+      return equipHome(state, command.buildingId);
+    case 'EquipSolarPanels':
+      return equipSolarPanels(state, command.buildingId);
     case 'SetCoalEnabled':
       return setCoalEnabled(state, command.buildingId, command.enabled);
     case 'RenameStop':
@@ -470,9 +474,9 @@ function strandsBuilding(before: GameState, after: GameState): boolean {
 }
 
 function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, requestedRotation?: Rotation, solar = false, colorVariant?: ColorVariant): CommandOutcome {
-  if (isRetired(type) || citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < ECOLOGY.solarUnlockCitizens)) return fail('error.itemLocked');
+  if (isRetired(type) || citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < solarPanelsUnlockCitizens(type))) return fail('error.itemLocked');
   if (solar && !isHomeType(type)) return fail('error.cannotProduce');
-  const extraCost = solar ? ECOLOGY.solarCost : 0;
+  const extraCost = solar ? (solarPanelsOf(type)?.cost ?? ECOLOGY.solarCost) : 0;
   const rotation = requestedRotation ?? autoRotation(state, type, x, y);
   const issue = placementIssue(state, type, x, y, rotation);
   if (issue) return fail(issue);
@@ -805,15 +809,24 @@ function upgradedTo(building: Building, tier: number): Building {
   return { ...rest, ...keptColor, tier };
 }
 
-function equipHome(state: GameState, id: number, equipment: 'solar' | 'insulation'): CommandOutcome {
+function equipHome(state: GameState, id: number): CommandOutcome {
   const home = state.buildings.find(b => b.id === id);
   if (!home || !isHomeType(home.type)) return fail('error.unknownBuilding');
-  const field = equipment === 'solar' ? 'solar' : 'insulated';
-  if (home[field]) return fail('error.alreadyEquipped');
-  if (citizenCount(state) < (equipment === 'solar' ? ECOLOGY.solarUnlockCitizens : 6)) return fail('error.itemLocked');
-  const cost = (equipment === 'solar' ? ECOLOGY.solarCost : ECOLOGY.insulationCost) * home.tier;
+  if (home.insulated) return fail('error.alreadyEquipped');
+  if (citizenCount(state) < 6) return fail('error.itemLocked');
+  const cost = ECOLOGY.insulationCost * home.tier;
   if (state.urbs < cost) return fail('error.notEnoughUrbs');
-  return { state: { ...state, urbs: state.urbs - cost, buildings: state.buildings.map(b => b.id === id ? { ...b, [field]: true } : b) }, events: [] };
+  return { state: { ...state, urbs: state.urbs - cost, buildings: state.buildings.map(b => b.id === id ? { ...b, insulated: true } : b) }, events: [] };
+}
+
+function equipSolarPanels(state: GameState, id: number): CommandOutcome {
+  const building = state.buildings.find(b => b.id === id);
+  if (!building || !canHaveSolarPanels(building.type)) return fail('error.unknownBuilding');
+  if (building.solar) return fail('error.alreadyEquipped');
+  if (citizenCount(state) < solarPanelsUnlockCitizens(building.type)) return fail('error.itemLocked');
+  const cost = solarPanelsCost(building);
+  if (state.urbs < cost) return fail('error.notEnoughUrbs');
+  return { state: { ...state, urbs: state.urbs - cost, buildings: state.buildings.map(b => b.id === id ? { ...b, solar: true } : b) }, events: [] };
 }
 
 function repaintBuilding(state: GameState, id: number, colorVariant: ColorVariant): CommandOutcome {
