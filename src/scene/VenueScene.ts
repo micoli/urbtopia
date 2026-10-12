@@ -6,7 +6,7 @@ import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { venueCrowdModelsOf } from './venueCrowdModels';
 import { VenueCrowdLayer } from './VenueCrowdLayer';
 import type { Figure } from './venueCrowd';
-import { clampPan, nextZoom } from './venueZoom';
+import { clampPan, nextZoom, pinchZoom } from './venueZoom';
 import { renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } from './renderBudget';
 
 const TAP_DISTANCE = 6;
@@ -47,6 +47,8 @@ export class VenueScene {
   private dirty = true;
   private pointerDown: { x: number; y: number; ground: THREE.Vector3 | null } | null = null;
   private dragged = false;
+  private pointers = new Map<number, { x: number; y: number }>();
+  private lastPinchDistance = 0;
   private lastFixtures: readonly VenueFixture[] = [];
   private builtSize = 0;
   private disposed = false;
@@ -81,6 +83,7 @@ export class VenueScene {
     canvas.addEventListener('pointerdown', this.handlePointerDown);
     canvas.addEventListener('pointerup', this.handlePointerUp);
     canvas.addEventListener('pointermove', this.handlePointerMove);
+    canvas.addEventListener('pointercancel', this.handlePointerCancel);
     canvas.addEventListener('pointerleave', this.handlePointerLeave);
     canvas.addEventListener('wheel', this.handleWheel, { passive: false });
     this.resizeObserver = new ResizeObserver(() => this.resize());
@@ -157,6 +160,7 @@ export class VenueScene {
     this.canvas.removeEventListener('pointerdown', this.handlePointerDown);
     this.canvas.removeEventListener('pointerup', this.handlePointerUp);
     this.canvas.removeEventListener('pointermove', this.handlePointerMove);
+    this.canvas.removeEventListener('pointercancel', this.handlePointerCancel);
     this.canvas.removeEventListener('pointerleave', this.handlePointerLeave);
     this.canvas.removeEventListener('wheel', this.handleWheel);
     this.clear(this.ghostRoot, true);
@@ -238,6 +242,13 @@ export class VenueScene {
   }
 
   private handlePointerDown = (event: PointerEvent): void => {
+    this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (this.pointers.size >= 2) {
+      this.pointerDown = null;
+      this.dragged = true;
+      this.lastPinchDistance = this.pinchDistance();
+      return;
+    }
     this.pointerDown = { x: event.clientX, y: event.clientY, ground: this.groundAt(event.clientX, event.clientY) };
     this.dragged = false;
     try {
@@ -248,6 +259,8 @@ export class VenueScene {
   };
 
   private handlePointerUp = (event: PointerEvent): void => {
+    this.pointers.delete(event.pointerId);
+    this.lastPinchDistance = 0;
     const start = this.pointerDown;
     this.pointerDown = null;
     this.canvas.style.cursor = '';
@@ -259,6 +272,11 @@ export class VenueScene {
 
   // Dragging with the button down moves the room under the pointer, as in the city.
   private handlePointerMove = (event: PointerEvent): void => {
+    if (this.pointers.has(event.pointerId)) this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (this.pointers.size >= 2) {
+      this.handlePinch();
+      return;
+    }
     const start = this.pointerDown;
     if (start && (this.dragged || Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_DISTANCE)) {
       this.dragged = true;
@@ -274,6 +292,32 @@ export class VenueScene {
     this.onHoverCell(this.cellAt(event.clientX, event.clientY));
   };
 
+  private pinchPoints(): [{ x: number; y: number }, { x: number; y: number }] | null {
+    const [a, b] = [...this.pointers.values()];
+    return a && b ? [a, b] : null;
+  }
+
+  private pinchDistance(): number {
+    const points = this.pinchPoints();
+    return points ? Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y) : 0;
+  }
+
+  private handlePinch(): void {
+    const points = this.pinchPoints();
+    if (!points) return;
+    const distance = this.pinchDistance();
+    const previous = this.lastPinchDistance;
+    this.lastPinchDistance = distance;
+    if (previous === 0) return;
+    this.zoomAround(pinchZoom(this.zoom, distance / previous), (points[0].x + points[1].x) / 2, (points[0].y + points[1].y) / 2);
+  }
+
+  private handlePointerCancel = (event: PointerEvent): void => {
+    this.pointers.delete(event.pointerId);
+    this.lastPinchDistance = 0;
+    this.pointerDown = null;
+  };
+
   private handlePointerLeave = (): void => {
     this.onHoverCell(null);
   };
@@ -281,19 +325,22 @@ export class VenueScene {
   // The wheel zooms around the point under the pointer, which stays where it is on the screen.
   private handleWheel = (event: WheelEvent): void => {
     event.preventDefault();
-    const zoom = nextZoom(this.zoom, event.deltaY);
+    this.zoomAround(nextZoom(this.zoom, event.deltaY), event.clientX, event.clientY);
+    this.onHoverCell(this.cellAt(event.clientX, event.clientY));
+  };
+
+  private zoomAround(zoom: number, clientX: number, clientY: number): void {
     if (zoom === this.zoom) return;
-    const before = this.groundAt(event.clientX, event.clientY);
+    const before = this.groundAt(clientX, clientY);
     this.zoom = zoom;
     this.resize();
-    const after = this.groundAt(event.clientX, event.clientY);
+    const after = this.groundAt(clientX, clientY);
     if (before && after) {
       this.pan = clampPan({ x: this.pan.x + before.x - after.x, z: this.pan.z + before.z - after.z }, this.zoom, this.size);
       this.resize();
     }
     this.pan = clampPan(this.pan, this.zoom, this.size);
-    this.onHoverCell(this.cellAt(event.clientX, event.clientY));
-  };
+  }
 
   private resize(): void {
     const width = Math.max(1, this.canvas.clientWidth), height = Math.max(1, this.canvas.clientHeight);

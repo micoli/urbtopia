@@ -8,6 +8,12 @@ export function nextZoom(current: number, deltaY: number): number {
   return clamp(current * Math.exp(step), ZOOM.min, ZOOM.max);
 }
 
+// Spreading two fingers by a ratio multiplies the zoom by that same ratio.
+export function pinchZoom(current: number, ratio: number): number {
+  if (!Number.isFinite(ratio) || ratio <= 0) return current;
+  return clamp(current * ratio, ZOOM.min, ZOOM.max);
+}
+
 // How far the view can be dragged away from the centre of the room: a little at the default zoom, more as it is zoomed in.
 export function maxPan(zoom: number, size: number): number {
   return (0.35 + 0.5 * Math.max(0, zoom - 1)) * size;

@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { ZOOM, clampPan, maxPan, nextZoom } from './venueZoom';
+import { ZOOM, clampPan, maxPan, nextZoom, pinchZoom } from './venueZoom';
 
 describe('Venue zoom', () => {
+  it('follows the spread of two fingers within the limits', () => {
+    expect(pinchZoom(1, 1.5)).toBe(1.5);
+    expect(pinchZoom(1, 0.5)).toBe(ZOOM.min);
+    expect(pinchZoom(2, 10)).toBe(ZOOM.max);
+    expect(pinchZoom(2, 0)).toBe(2);
+  });
+
   it('zooms in when the wheel turns away, and out when it turns toward the user', () => {
     expect(nextZoom(1, -100)).toBeGreaterThan(1);
     expect(nextZoom(1, 100)).toBeLessThan(1);
