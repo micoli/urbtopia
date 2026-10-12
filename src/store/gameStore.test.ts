@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createBuilding, newGame, type GameState } from '../core';
+import { createBuilding, difficultyOf, newGame, type GameState } from '../core';
 import { readOnlyStore } from './readOnlyStore';
 
 vi.stubGlobal('window', { location: { search: '' } });
@@ -102,5 +102,21 @@ describe('deletion undo', () => {
     readOnlyStore.getState().set(false);
     store.getState().undo();
     expect(store.getState().state.buildings).toEqual(state.buildings);
+  });
+});
+
+describe('new game Difficulty', () => {
+  it('starts a new city on the chosen Difficulty, Cozy by default', () => {
+    const store = createGameStore(initial());
+    store.getState().newGame(NOW, 'hard');
+    expect(difficultyOf(store.getState().state)).toBe('hard');
+    store.getState().newGame(NOW);
+    expect(difficultyOf(store.getState().state)).toBe('cozy');
+  });
+
+  it('changes the Difficulty of the current city at any time', () => {
+    const store = createGameStore(initial());
+    store.getState().send({ type: 'SetDifficulty', difficulty: 'medium' });
+    expect(difficultyOf(store.getState().state)).toBe('medium');
   });
 });

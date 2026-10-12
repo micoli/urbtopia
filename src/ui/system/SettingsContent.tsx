@@ -14,6 +14,9 @@ import { reloadApp } from '../../pwa/reloadApp';
 import { useInstallPrompt } from '../../pwa/useInstallPrompt';
 import { CloudSaveSection } from './CloudSaveSection';
 import { PreferencesContent } from './PreferencesContent';
+import { DifficultyChoice } from './DifficultyChoice';
+import { DifficultySettings } from './DifficultySettings';
+import type { Difficulty } from '../../core';
 import { useConfirmKeys } from '../build/useConfirmKeys';
 import { PanelHeader } from '../common/PanelHeader';
 
@@ -21,6 +24,7 @@ export function SettingsContent() {
   const toggle = useUi((store) => store.toggleSettings);
   const seed = useGame((store) => store.state.seed);
   const [confirming, setConfirming] = useState(false);
+  const [newDifficulty, setNewDifficulty] = useState<Difficulty>('cozy');
   const skipTime = (hours: number) => {
     gameStore.getState().send({ type: 'SkipTime', hours });
     toggle();
@@ -29,7 +33,8 @@ export function SettingsContent() {
   const { canInstall, install } = useInstallPrompt();
   const startNewGame = () => {
     saveSession.unlock();
-    gameStore.getState().newGame(Date.now());
+    gameStore.getState().newGame(Date.now(), newDifficulty);
+    setNewDifficulty('cozy');
     setConfirming(false);
     toggle();
   };
@@ -74,6 +79,7 @@ export function SettingsContent() {
           {t('settings.reload')}
         </ActionButton>
         <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={onFileChosen} />
+        {confirming && <DifficultyChoice label={t('difficulty.newGame')} value={newDifficulty} onChange={setNewDifficulty} />}
         <InlineConfirm
           confirming={confirming}
           triggerLabel={t('settings.newGame')}
@@ -84,6 +90,7 @@ export function SettingsContent() {
           onConfirm={startNewGame}
         />
       </ButtonRow>
+      <DifficultySettings />
       <PreferencesContent />
       <hr/>
       <CloudSaveSection />

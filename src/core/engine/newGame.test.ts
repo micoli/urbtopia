@@ -49,3 +49,11 @@ describe('newGame', () => {
     expect(JSON.parse(JSON.stringify(state))).toEqual(state);
   });
 });
+
+describe('newGame Difficulty', () => {
+  it('stores a chosen Difficulty, and nothing for Cozy', () => {
+    expect(newGame({ seed: 'd', now: 0, difficulty: 'easy' }).difficulty).toBe('easy');
+    expect(newGame({ seed: 'd', now: 0, difficulty: 'cozy' }).difficulty).toBeUndefined();
+    expect(newGame({ seed: 'd', now: 0 }).difficulty).toBeUndefined();
+  });
+});
