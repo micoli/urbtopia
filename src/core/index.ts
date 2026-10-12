@@ -49,7 +49,7 @@ export type { StorageTier, StorageType, UtilityType } from './economy/economy';
 export { canRemoveStorage, compartmentOf, hasStorage, isStorageEmpty, isStorageType, storageCapacity, storageUsed } from './economy/storage';
 export { createBuilding } from './buildings/buildingSpecs';
 export { isHomeType } from './buildings/buildingDefinitions';
-export { colorVariantsOf, isRepaintableType, paintKitAt, paintKitOf, type PaintKit } from './buildings/paint';
+export { colorVariantsOf, colorVariantsOfKit, colorVariantsOfType, isRepaintableType, paintKitAt, paintKitOf, type PaintKit } from './buildings/paint';
 export { citizensOf, totalCitizens, utilityCapacity, utilityDemand } from './buildings/city';
 export type { UtilityTotals } from './buildings/city';
 export { FARM_TIERS, PRODUCTION_UPGRADE_COSTS, HOME_FOOTPRINTS, HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, TAX, UTILITY_CAPACITY, COAL_CAPACITY } from './economy/economy';
