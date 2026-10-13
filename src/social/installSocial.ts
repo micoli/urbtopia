@@ -9,6 +9,7 @@ import { uiStore } from '../store/uiStore';
 import { requestedLocalAuthEmail } from '../persistence/cloud/localAuth';
 import { claimLocalHandle } from './localHandle';
 import { loadSocialClient } from './loadSocialClient';
+import { createGroupActions } from './groupActions';
 import { createSocialActions } from './socialActions';
 import { SocialPoller } from './socialPoller';
 import { TradeCoordinator, type TradeGame } from './tradeCoordinator';
@@ -41,15 +42,26 @@ export function installSocial(): () => void {
       trades,
       () => socialStore.getState().profile?.offers ?? [],
     );
-    socialStore.getState().enable(actions);
+    const groupActions = createGroupActions(
+      client,
+      socialStore.getState(),
+      {
+        groups: () => socialStore.getState().groups,
+        revision: () => socialStore.getState().groupsRevision,
+        conversation: () => socialStore.getState().groupConversation,
+      },
+      () => actions.refresh(),
+    );
+    socialStore.getState().enable(actions, groupActions);
     const localAuthEmail = requestedLocalAuthEmail();
     let knownEmail: string | null = null;
     const follow = (email: string | null) => {
       if (email === knownEmail) return;
       knownEmail = email;
       if (!email) return;
-      if (email === localAuthEmail) return void claimLocalHandle(client, email).finally(() => void actions.refresh());
-      void actions.refresh();
+      const load = () => void actions.refresh().then(() => groupActions.refresh());
+      if (email === localAuthEmail) return void claimLocalHandle(client, email).finally(load);
+      load();
     };
     follow(cloudStore.getState().account?.email ?? null);
     const poller = new SocialPoller({
@@ -57,6 +69,8 @@ export function installSocial(): () => void {
         await actions.poll();
         await actions.pollConversation();
         await actions.reconcileTrades();
+        await groupActions.pollOpen();
+        await groupActions.poll();
       },
       view: () => ({
         active: socialStore.getState().profile !== null,

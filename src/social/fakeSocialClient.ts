@@ -1,9 +1,10 @@
 import type { TradeLine } from '../core';
 import { isAvatarId } from './avatar';
+import { FakeGroupBook } from './fakeGroupBook';
 import { FakeTradeBook } from './fakeTradeBook';
 import { isValidHandle } from './handle';
 import { HANDLE_CHANGE_DELAY_DAYS, MAX_FRIENDS, MAX_MESSAGE_LENGTH, MAX_MESSAGES_PER_MINUTE, MAX_OUTGOING_REQUESTS, SEARCHES_PER_DAY, SEARCHES_PER_HOUR } from './limits';
-import { SocialError, type Message, type SocialClient, type SocialSnapshot, type TradeClaim, type TradeSlot } from './types';
+import { SocialError, type GroupMessage, type GroupsSnapshot, type Message, type SocialClient, type SocialSnapshot, type TradeClaim, type TradeSlot } from './types';
 
 const MINUTE_MS = 60_000;
 const HOUR_MS = 3_600_000;
@@ -46,6 +47,7 @@ export class FakeSocialWorld {
   messages: StoredMessage[] = [];
   private nextMessageId = 1;
   readonly trades: FakeTradeBook;
+  readonly groups: FakeGroupBook;
 
   constructor(readonly clock: () => number = () => 0) {
     this.trades = new FakeTradeBook({
@@ -54,6 +56,18 @@ export class FakeSocialWorld {
       areFriends: (a, b) => this.link(a, b)?.state === 'accepted',
       handleOf: (userId) => this.member(userId).handle ?? '',
       avatarOf: (userId) => this.member(userId).avatar,
+    });
+    this.groups = new FakeGroupBook({
+      clock,
+      areFriends: (a, b) => this.link(a, b)?.state === 'accepted',
+      hasBlocked: (blocker, blocked) => {
+        const link = this.link(blocker, blocked);
+        return link?.state === 'blocked' && link.actorId === blocker;
+      },
+      handleOf: (userId) => this.member(userId).handle ?? '',
+      avatarOf: (userId) => this.member(userId).avatar,
+      isForbidden: (name) => FORBIDDEN_WORDS.some((word) => name.toLowerCase().includes(word)),
+      sentRecently: (userId) => this.sentRecently(userId),
     });
   }
 
@@ -109,7 +123,18 @@ export class FakeSocialWorld {
       this.deleteConversation(a, b);
       this.trades.closeBetween(a, b);
     }
+    if (state !== 'accepted') this.groups.prune(a, b);
     this.bump(a, b);
+  }
+
+  sentRecently(userId: string): number {
+    const now = this.clock();
+    const sent = [
+      ...this.messages.filter((message) => message.senderId === userId).map((message) => message.createdAt),
+      ...this.groups.messages.filter((message) => message.senderId === userId).map((message) => message.createdAt),
+    ].filter((at) => at > now - MINUTE_MS);
+    if (sent.length < MAX_MESSAGES_PER_MINUTE) return 0;
+    return Math.max(1, Math.ceil((Math.min(...sent) + MINUTE_MS - now) / 1000));
   }
 
   addMessage(senderId: string, recipientId: string, body: string): number {
@@ -131,6 +156,7 @@ export class FakeSocialWorld {
     if (state === 'accepted') {
       this.deleteConversation(a, b);
       this.trades.closeBetween(a, b);
+      this.groups.prune(a, b);
     }
     this.bump(a, b);
   }
@@ -274,11 +300,8 @@ export class FakeSocialClient implements SocialClient {
     const trimmed = body.trim();
     if (trimmed.length < 1 || trimmed.length > MAX_MESSAGE_LENGTH) throw new SocialError('message-invalid');
     if (this.world.link(this.userId, userId)?.state !== 'accepted') throw new SocialError('not-friends');
-    const now = this.world.clock();
-    const recent = this.world.messages.filter((message) => message.senderId === this.userId && message.createdAt > now - MINUTE_MS);
-    if (recent.length >= MAX_MESSAGES_PER_MINUTE) {
-      throw new SocialError('rate-limited', Math.max(1, Math.ceil((Math.min(...recent.map((message) => message.createdAt)) + MINUTE_MS - now) / 1000)));
-    }
+    const retry = this.world.sentRecently(this.userId);
+    if (retry > 0) throw new SocialError('rate-limited', retry);
     return this.world.addMessage(this.userId, userId, trimmed);
   }
 
@@ -312,6 +335,51 @@ export class FakeSocialClient implements SocialClient {
   async claimTrade(id: string, slot: TradeSlot): Promise<TradeClaim> {
     this.guard();
     return this.world.trades.claim(this.userId, id, slot);
+  }
+
+  async listGroups(cursor: number | null = null): Promise<GroupsSnapshot> {
+    this.guard();
+    return this.world.groups.list(this.userId, cursor);
+  }
+
+  async createGroup(name: string, memberIds: string[]): Promise<string> {
+    this.guard();
+    return this.world.groups.create(this.userId, name, memberIds);
+  }
+
+  async renameGroup(groupId: string, name: string): Promise<void> {
+    this.guard();
+    this.world.groups.rename(this.userId, groupId, name);
+  }
+
+  async addGroupMembers(groupId: string, memberIds: string[]): Promise<void> {
+    this.guard();
+    this.world.groups.add(this.userId, groupId, memberIds);
+  }
+
+  async removeGroupMember(groupId: string, userId: string): Promise<void> {
+    this.guard();
+    this.world.groups.removeMember(this.userId, groupId, userId);
+  }
+
+  async leaveGroup(groupId: string): Promise<void> {
+    this.guard();
+    this.world.groups.leave(this.userId, groupId);
+  }
+
+  async deleteGroup(groupId: string): Promise<void> {
+    this.guard();
+    this.world.groups.delete(this.userId, groupId);
+  }
+
+  async sendGroupMessage(groupId: string, body: string): Promise<number> {
+    this.guard();
+    return this.world.groups.send(this.userId, groupId, body);
+  }
+
+  async listGroupMessages(groupId: string, afterId = 0): Promise<GroupMessage[]> {
+    this.guard();
+    return this.world.groups.listMessages(this.userId, groupId, afterId);
   }
 
   private conversationSummary(friendId: string): { unread: number; lastMessageAt: number | null } {

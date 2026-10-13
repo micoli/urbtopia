@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { pendingExchangesCount, pendingFriendsCount, pendingGroupsCount, pendingSocialCount } from './pendingCount';
-import type { SocialState, TradeOffer } from './types';
+import type { Group, SocialState, TradeOffer } from './types';
 
 const profile: SocialState = {
   revision: 1,
@@ -55,7 +55,17 @@ describe('pendingExchangesCount', () => {
 });
 
 describe('pendingGroupsCount', () => {
+  const group = (id: string, unread: number): Group => ({ id, name: id, creatorId: 'a', members: [], unread, lastMessageAt: null, lastMessageFrom: null, lastMessagePreview: null });
+
+  it('counts the Groups with unread messages, not the messages', () => {
+    expect(pendingGroupsCount([group('1', 5), group('2', 0), group('3', 1)])).toBe(2);
+  });
+
   it('is zero until Groups are loaded', () => {
-    expect(pendingGroupsCount()).toBe(0);
+    expect(pendingGroupsCount(null)).toBe(0);
+  });
+
+  it('adds up in the Social badge', () => {
+    expect(pendingSocialCount(profile, [group('1', 2)])).toBe(5);
   });
 });

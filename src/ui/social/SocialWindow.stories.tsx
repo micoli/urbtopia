@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { SOCIAL_ACTIONS, SOCIAL_PROFILE } from '../../../.storybook/socialFixtures';
+import { GROUP_ACTIONS, SOCIAL_ACTIONS, SOCIAL_GROUPS, SOCIAL_PROFILE } from '../../../.storybook/socialFixtures';
 import type { CloudActions } from '../../store/cloudStore';
 import { SocialWindow } from './SocialWindow';
 
@@ -9,7 +9,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const SIGNED_IN = { enabled: true, status: { kind: 'idle' as const }, account: { userId: 'me', email: 'mayor@example.com' }, actions: {} as CloudActions };
-const READY = { enabled: true, status: 'ready' as const, profile: SOCIAL_PROFILE, actions: SOCIAL_ACTIONS };
+const READY = { enabled: true, status: 'ready' as const, profile: SOCIAL_PROFILE, actions: SOCIAL_ACTIONS, groups: SOCIAL_GROUPS, groupActions: GROUP_ACTIONS };
 
 export const Friends: Story = { parameters: { stores: { ui: { socialOpen: true, socialTab: 'friends' }, cloud: SIGNED_IN, social: READY } } };
 export const Groups: Story = { parameters: { stores: { ui: { socialOpen: true, socialTab: 'groups' }, cloud: SIGNED_IN, social: READY } } };

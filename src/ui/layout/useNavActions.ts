@@ -35,7 +35,7 @@ export function useNavActions(): NavAction[] {
   const toggleMarket = useUi((store) => store.toggleMarket);
   const toggleSettings = useUi((store) => store.toggleSettings);
   const marketUnlocked = useGame((store) => store.state.marketUnlocked);
-  const pendingRequests = useSocial(store => pendingSocialCount(store.profile));
+  const pendingRequests = useSocial(store => pendingSocialCount(store.profile, store.groups));
   const sanctionedCount = useSanctionedHomes().length;
   const guidedFlyout = guideOf(useGame((store) => store.state.tutorial)).flyout;
 

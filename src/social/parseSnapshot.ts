@@ -1,5 +1,5 @@
 import { TRADE_EFFECTS, TRADE_LIMITS, type TradeEffect, type TradeLine } from '../core';
-import { SocialError, type BlockedPlayer, type Friend, type FriendRequest, type Message, type SocialSnapshot, type TradeClaim, type TradeOffer, type TradeOfferState, type TradeSlot } from './types';
+import { SocialError, type BlockedPlayer, type Friend, type Group, type GroupMessage, type GroupsSnapshot, type FriendRequest, type Message, type SocialSnapshot, type TradeClaim, type TradeOffer, type TradeOfferState, type TradeSlot } from './types';
 
 type Row = Record<string, unknown>;
 
@@ -115,4 +115,39 @@ export function parseTradeClaim(json: unknown): TradeClaim {
   if (json.lot !== null && json.lot !== undefined) claim.lot = parseLot(json.lot);
   if (json.urbs !== null && json.urbs !== undefined) claim.urbs = number(json, 'urbs');
   return claim;
+}
+
+export function parseGroups(json: unknown): GroupsSnapshot {
+  if (!isRow(json)) throw new SocialError('unknown');
+  const revision = number(json, 'revision');
+  if (json.changed === false) return { changed: false, revision };
+  return {
+    changed: true,
+    revision,
+    groups: rows(json.groups).map((row): Group => ({
+      id: text(row, 'id'),
+      name: text(row, 'name'),
+      creatorId: text(row, 'creatorId'),
+      members: rows(row.members).map((member) => ({ userId: text(member, 'userId'), handle: text(member, 'handle'), avatar: optionalText(member, 'avatar') })),
+      unread: number(row, 'unread'),
+      lastMessageAt: row.lastMessageAt === null ? null : time(row, 'lastMessageAt'),
+      lastMessageFrom: optionalText(row, 'lastMessageFrom'),
+      lastMessagePreview: optionalText(row, 'lastMessagePreview'),
+    })),
+  };
+}
+
+export function parseGroupMessages(json: unknown): GroupMessage[] {
+  return rows(json).map((row): GroupMessage => {
+    if (typeof row.fromMe !== 'boolean') throw new SocialError('unknown');
+    return {
+      id: number(row, 'id'),
+      fromMe: row.fromMe,
+      senderId: text(row, 'senderId'),
+      senderHandle: text(row, 'senderHandle'),
+      senderAvatar: optionalText(row, 'senderAvatar'),
+      body: text(row, 'body'),
+      at: time(row, 'at'),
+    };
+  });
 }

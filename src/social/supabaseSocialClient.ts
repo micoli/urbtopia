@@ -3,8 +3,8 @@ import type { CloudConfig } from '../persistence/cloud/cloudConfig';
 import type { Database, Json } from '../persistence/cloud/database.types';
 import { loadSharedSupabase } from '../persistence/cloud/sharedSupabase';
 import type { TradeLine } from '../core';
-import { parseMessages, parseSnapshot, parseTradeClaim } from './parseSnapshot';
-import { SocialError, type Message, type SocialClient, type SocialErrorKind, type SocialSnapshot, type TradeClaim, type TradeSlot } from './types';
+import { parseGroupMessages, parseGroups, parseMessages, parseSnapshot, parseTradeClaim } from './parseSnapshot';
+import { SocialError, type GroupMessage, type GroupsSnapshot, type Message, type SocialClient, type SocialErrorKind, type SocialSnapshot, type TradeClaim, type TradeSlot } from './types';
 
 type Client = SupabaseClient<Database>;
 
@@ -33,6 +33,13 @@ const MESSAGE_KINDS: ReadonlyArray<readonly [string, SocialErrorKind]> = [
   ['urb_cap_friends', 'cap-friends'],
   ['urb_cap_outgoing', 'cap-outgoing'],
   ['urb_not_found', 'not-found'],
+  ['urb_not_creator', 'not-creator'],
+  ['urb_group_name_invalid', 'group-name-invalid'],
+  ['urb_group_name_forbidden', 'group-name-forbidden'],
+  ['urb_group_full', 'group-full'],
+  ['urb_group_creator_cannot_leave', 'group-creator-cannot-leave'],
+  ['urb_cap_groups_created', 'cap-groups-created'],
+  ['urb_cap_groups_joined', 'cap-groups-joined'],
 ];
 
 function retryAfter(failure: PostgrestFailure): number | null {
@@ -124,6 +131,48 @@ class SupabaseSocialClient implements SocialClient {
   async claimTrade(id: string, slot: TradeSlot): Promise<TradeClaim> {
     const data = await this.call(() => this.client.rpc('urb_claim_trade', { p_id: id, p_slot: slot }));
     return parseTradeClaim(data);
+  }
+
+  async listGroups(cursor: number | null = null): Promise<GroupsSnapshot> {
+    const data = await this.call(() => this.client.rpc('urb_list_groups', cursor === null ? {} : { p_cursor: cursor }));
+    return parseGroups(data);
+  }
+
+  async createGroup(name: string, memberIds: string[]): Promise<string> {
+    const id = await this.call(() => this.client.rpc('urb_create_group', { p_name: name, p_members: memberIds }));
+    if (id === null) throw new SocialError('unknown');
+    return id;
+  }
+
+  async renameGroup(groupId: string, name: string): Promise<void> {
+    await this.call(() => this.client.rpc('urb_rename_group', { p_group: groupId, p_name: name }));
+  }
+
+  async addGroupMembers(groupId: string, memberIds: string[]): Promise<void> {
+    await this.call(() => this.client.rpc('urb_add_group_members', { p_group: groupId, p_members: memberIds }));
+  }
+
+  async removeGroupMember(groupId: string, userId: string): Promise<void> {
+    await this.call(() => this.client.rpc('urb_remove_group_member', { p_group: groupId, p_user: userId }));
+  }
+
+  async leaveGroup(groupId: string): Promise<void> {
+    await this.call(() => this.client.rpc('urb_leave_group', { p_group: groupId }));
+  }
+
+  async deleteGroup(groupId: string): Promise<void> {
+    await this.call(() => this.client.rpc('urb_delete_group', { p_group: groupId }));
+  }
+
+  async sendGroupMessage(groupId: string, body: string): Promise<number> {
+    const id = await this.call(() => this.client.rpc('urb_send_group_message', { p_group: groupId, p_body: body }));
+    if (id === null) throw new SocialError('unknown');
+    return id;
+  }
+
+  async listGroupMessages(groupId: string, afterId = 0): Promise<GroupMessage[]> {
+    const data = await this.call(() => this.client.rpc('urb_list_group_messages', { p_group: groupId, p_after: afterId }));
+    return parseGroupMessages(data);
   }
 
   private async call<T>(request: () => PromiseLike<{ data: T; error: PostgrestFailure | null }>): Promise<T> {

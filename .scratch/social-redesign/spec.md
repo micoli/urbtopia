@@ -1,6 +1,6 @@
 # Social redesign: one sign-in, four tabs, Groups, local-auth
 
-Status: ready-for-agent
+Status: done (issues 01 to 05)
 
 ## Problem
 
