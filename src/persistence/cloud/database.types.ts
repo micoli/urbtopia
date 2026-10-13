@@ -1,4 +1,10 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
 
 export type Database = {
   public: {
@@ -59,6 +65,113 @@ export type Database = {
           },
         ];
       };
+      urb_group_members: {
+        Row: {
+          group_id: string;
+          joined_at: string;
+          last_read_message_id: number;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          group_id: string;
+          joined_at?: string;
+          last_read_message_id?: number;
+          user_id: string;
+        };
+        Update: {
+          group_id?: string;
+          joined_at?: string;
+          last_read_message_id?: number;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_group_members_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "urb_group_members_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
+      urb_group_messages: {
+        Row: {
+          body: string;
+          created_at: string;
+          group_id: string;
+          id: number;
+          sender_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          body: string;
+          created_at?: string;
+          group_id: string;
+          id?: never;
+          sender_id: string;
+        };
+        Update: {
+          body?: string;
+          created_at?: string;
+          group_id?: string;
+          id?: never;
+          sender_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_group_messages_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "urb_group_messages_sender_id_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
+      urb_groups: {
+        Row: {
+          created_at: string;
+          creator_id: string;
+          id: string;
+          name: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          creator_id: string;
+          id?: string;
+          name: string;
+        };
+        Update: {
+          created_at?: string;
+          creator_id?: string;
+          id?: string;
+          name?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_groups_creator_id_fkey";
+            columns: ["creator_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
       urb_messages: {
         Row: {
           body: string;
@@ -108,6 +221,7 @@ export type Database = {
           created_at: string;
           findable: boolean;
           handle: string;
+          groups_revision: number;
           handle_changed_at: string;
           social_revision: number;
           user_id: string;
@@ -117,6 +231,7 @@ export type Database = {
           avatar?: string | null;
           created_at?: string;
           findable?: boolean;
+          groups_revision?: number;
           handle: string;
           handle_changed_at?: string;
           social_revision?: number;
@@ -126,6 +241,7 @@ export type Database = {
           avatar?: string | null;
           created_at?: string;
           findable?: boolean;
+          groups_revision?: number;
           handle?: string;
           handle_changed_at?: string;
           social_revision?: number;
@@ -249,24 +365,80 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      urb_accept_friend_request: { Args: { p_user: string }; Returns: undefined };
+      urb_accept_friend_request: {
+        Args: { p_user: string };
+        Returns: undefined;
+      };
       urb_accept_trade_offer: { Args: { p_id: string }; Returns: undefined };
+      urb_add_group_members: {
+        Args: { p_group: string; p_members: string[] };
+        Returns: undefined;
+      };
       urb_are_friends: { Args: { p_a: string; p_b: string }; Returns: boolean };
       urb_block_user: { Args: { p_user: string }; Returns: undefined };
+      urb_bump_group_members: { Args: { p_group: string }; Returns: undefined };
+      urb_bump_groups: { Args: { p_user: string }; Returns: undefined };
       urb_bump_social: { Args: { p_user: string }; Returns: undefined };
-      urb_claim_trade: { Args: { p_id: string; p_slot: string }; Returns: Json };
+      urb_check_send_caps: { Args: { p_user: string }; Returns: undefined };
+      urb_claim_trade: {
+        Args: { p_id: string; p_slot: string };
+        Returns: Json;
+      };
       urb_close_offer: { Args: { p_id: string }; Returns: undefined };
-      urb_close_offers_between: { Args: { p_a: string; p_b: string }; Returns: undefined };
+      urb_close_offers_between: {
+        Args: { p_a: string; p_b: string };
+        Returns: undefined;
+      };
+      urb_create_group: {
+        Args: { p_members: string[]; p_name: string };
+        Returns: string;
+      };
       urb_create_trade_offer: {
         Args: { p_id: string; p_lot: Json; p_price: number; p_to: string };
         Returns: string;
       };
       urb_decline_trade_offer: { Args: { p_id: string }; Returns: undefined };
-      urb_delete_conversation: { Args: { p_a: string; p_b: string }; Returns: undefined };
-      urb_delete_my_saves: { Args: Record<PropertyKey, never>; Returns: undefined };
-      urb_expire_offers: { Args: Record<PropertyKey, never>; Returns: undefined };
+      urb_delete_conversation: {
+        Args: { p_a: string; p_b: string };
+        Returns: undefined;
+      };
+      urb_delete_group: { Args: { p_group: string }; Returns: undefined };
+      urb_delete_my_saves: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
+      urb_expire_offers: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
       urb_friend_count: { Args: { p_user: string }; Returns: number };
-      urb_list_messages: { Args: { p_after?: number; p_with: string }; Returns: Json };
+      urb_group_add: {
+        Args: { p_creator: string; p_group: string; p_members: string[] };
+        Returns: undefined;
+      };
+      urb_group_creator: {
+        Args: { p_group: string; p_user: string };
+        Returns: undefined;
+      };
+      urb_group_member: {
+        Args: { p_group: string; p_user: string };
+        Returns: undefined;
+      };
+      urb_group_name: { Args: { p_name: string }; Returns: string };
+      urb_has_blocked: {
+        Args: { p_blocked: string; p_blocker: string };
+        Returns: boolean;
+      };
+      urb_leave_group: { Args: { p_group: string }; Returns: undefined };
+      urb_list_group_messages: {
+        Args: { p_after?: number; p_group: string };
+        Returns: Json;
+      };
+      urb_list_groups: { Args: { p_cursor?: number }; Returns: Json };
+      urb_list_messages: {
+        Args: { p_after?: number; p_with: string };
+        Returns: Json;
+      };
       urb_list_saves: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -281,10 +453,23 @@ export type Database = {
       urb_lock_pair: { Args: { p_a: string; p_b: string }; Returns: undefined };
       urb_lot_is_valid: { Args: { p_lot: Json }; Returns: boolean };
       urb_offers_json: { Args: { p_user: string }; Returns: Json };
-      urb_open_request: { Args: { p_from: string; p_to: string }; Returns: undefined };
+      urb_open_request: {
+        Args: { p_from: string; p_to: string };
+        Returns: undefined;
+      };
       urb_outgoing_count: { Args: { p_user: string }; Returns: number };
-      urb_purge_inactive_anonymous_users: { Args: Record<PropertyKey, never>; Returns: undefined };
-      urb_purge_old_messages: { Args: Record<PropertyKey, never>; Returns: undefined };
+      urb_prune_groups_after_unfriend: {
+        Args: Record<PropertyKey, never>;
+        Returns: unknown;
+      };
+      urb_purge_inactive_anonymous_users: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
+      urb_purge_old_messages: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
       urb_push_save: {
         Args: {
           p_base_revision: number;
@@ -295,11 +480,32 @@ export type Database = {
         };
         Returns: number;
       };
-      urb_refuse_friend_request: { Args: { p_user: string }; Returns: undefined };
+      urb_refuse_friend_request: {
+        Args: { p_user: string };
+        Returns: undefined;
+      };
       urb_remove_friend: { Args: { p_user: string }; Returns: undefined };
+      urb_remove_group_member: {
+        Args: { p_group: string; p_user: string };
+        Returns: undefined;
+      };
+      urb_rename_group: {
+        Args: { p_group: string; p_name: string };
+        Returns: undefined;
+      };
       urb_restore_save: { Args: { p_revision: number }; Returns: number };
-      urb_send_friend_request_by_email: { Args: { p_email: string }; Returns: undefined };
-      urb_send_message: { Args: { p_body: string; p_to: string }; Returns: number };
+      urb_send_friend_request_by_email: {
+        Args: { p_email: string };
+        Returns: undefined;
+      };
+      urb_send_group_message: {
+        Args: { p_body: string; p_group: string };
+        Returns: number;
+      };
+      urb_send_message: {
+        Args: { p_body: string; p_to: string };
+        Returns: number;
+      };
       urb_set_avatar: { Args: { p_avatar: string }; Returns: undefined };
       urb_set_findable: { Args: { p_findable: boolean }; Returns: undefined };
       urb_set_handle: { Args: { p_handle: string }; Returns: undefined };
@@ -318,7 +524,10 @@ export type Database = {
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
+type DefaultSchema = DatabaseWithoutInternals[Extract<
+  keyof Database,
+  "public"
+>];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
@@ -330,15 +539,19 @@ export type Tables<
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R;
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R;
       }
       ? R
@@ -347,14 +560,15 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I;
     }
@@ -370,14 +584,15 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U;
     }
@@ -393,14 +608,15 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
   EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never) = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
@@ -415,7 +631,9 @@ export type CompositeTypes<
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never) = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
