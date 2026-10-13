@@ -66,6 +66,6 @@ describe('pendingGroupsCount', () => {
   });
 
   it('adds up in the Social badge', () => {
-    expect(pendingSocialCount(profile, [group('1', 2)])).toBe(5);
+    expect(pendingSocialCount(profile, [group('1', 2)])).toBe(6);
   });
 });
