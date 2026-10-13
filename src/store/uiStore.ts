@@ -13,6 +13,7 @@ import type { CodexId } from '../codex/catalog';
 import type { CodexPage } from '../codex/pages';
 
 export type Flyout = 'build' | 'roads' | null;
+export type MarketTab = 'market' | 'events';
 export type SocialTab = 'friends' | 'groups' | 'exchanges' | 'profile';
 
 export interface UiStore {
@@ -37,6 +38,8 @@ export interface UiStore {
   clearTradeWith: () => void;
   showTile: (tile: Coord) => void;
   marketOpen: boolean;
+  marketTab: MarketTab;
+  setMarketTab: (tab: MarketTab) => void;
   settingsOpen: boolean;
   codexOpen: boolean;
   codexFromSettings: boolean;
@@ -148,6 +151,8 @@ export const uiStore = createStore<UiStore>((set, get) => {
     startTrade: (userId) => set({ tradeWith: userId, socialTab: 'exchanges' }),
     clearTradeWith: () => set({ tradeWith: null }),
     marketOpen: false,
+    marketTab: 'market',
+    setMarketTab: (marketTab) => set({ marketTab }),
     settingsOpen: false,
     codexOpen: false,
     codexFromSettings: false,

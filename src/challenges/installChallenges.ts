@@ -45,7 +45,7 @@ export function installChallenges(): () => void {
       poll: actions.poll,
       view: () => ({
         active: signedIn(),
-        panelOpen: uiStore.getState().marketOpen,
+        panelOpen: uiStore.getState().marketOpen && uiStore.getState().marketTab === 'events',
         hidden: document.visibilityState === 'hidden',
       }),
     });

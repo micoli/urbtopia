@@ -466,7 +466,7 @@ export const MESSAGES = {
   'error.missingGoods': 'Not enough Goods in the Storehouse.',
   'error.marketLocked': 'The Market opens with your first Good.',
   'error.invalidQuantity': 'Invalid quantity.',
-  'dock.market': 'Market',
+  'dock.market': 'Market / Events',
   'dock.settings': 'Settings',
   'settings.title': 'Settings',
   'settings.seed': 'Seed',

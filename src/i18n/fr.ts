@@ -468,7 +468,7 @@ export const FR: Record<MessageKey, string> = {
   'error.missingGoods': "Pas assez de produits dans l'entrepôt.",
   'error.marketLocked': 'Le marché ouvre avec votre premier produit.',
   'error.invalidQuantity': 'Quantité invalide.',
-  'dock.market': 'Marché',
+  'dock.market': 'Marché / Événements',
   'dock.settings': 'Réglages',
   'settings.title': 'Réglages',
   'settings.seed': 'Seed',

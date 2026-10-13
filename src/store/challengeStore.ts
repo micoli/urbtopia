@@ -15,6 +15,7 @@ export interface ChallengeStore {
   enabled: boolean;
   status: ChallengeStatus;
   snapshot: ChallengeSnapshot | null;
+  clockOffset: number;
   busy: boolean;
   failure: ChallengeErrorKind | null;
   actions: ChallengeActions | null;
@@ -29,12 +30,13 @@ export const challengeStore = createStore<ChallengeStore>((set) => ({
   enabled: false,
   status: 'idle',
   snapshot: null,
+  clockOffset: 0,
   busy: false,
   failure: null,
   actions: null,
   enable: (actions) => set({ enabled: true, actions }),
   setStatus: (status) => set({ status }),
-  setSnapshot: (snapshot) => set({ snapshot }),
+  setSnapshot: (snapshot) => set({ snapshot, ...(snapshot ? { clockOffset: snapshot.serverNow - Date.now() } : {}) }),
   setBusy: (busy) => set({ busy }),
   setFailure: (failure) => set({ failure }),
 }));

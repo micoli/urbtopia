@@ -692,6 +692,33 @@ button {
   flex: none;
 }
 
+.market-tabs { display: flex; gap: 4px; margin: 12px 0; }
+.market-tabs button {
+  flex: 1;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.market-tabs button:hover { background: rgba(255, 255, 255, 0.12); }
+.market-tabs button[aria-selected='true'] { background: rgba(140, 226, 181, 0.25); box-shadow: inset 0 -3px 0 var(--eco-accent, #8ce2b5); }
+.market-tab-badge { margin-left: 6px; padding: 0 6px; border-radius: 8px; background: #e5484d; color: #fff; font-size: 11px; line-height: 16px; }
+
+.challenge-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.challenge-card { padding: 8px; border-radius: 10px; background: rgba(255, 255, 255, 0.08); display: flex; flex-direction: column; gap: 6px; }
+.challenge-card header { display: flex; flex-direction: column; }
+.challenge-card header small, .challenge-note, .challenge-time { font-size: 12px; opacity: 0.75; }
+.challenge-active { margin-top: 8px; box-shadow: inset 0 0 0 2px rgba(140, 226, 181, 0.45); }
+.challenge-lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.challenge-line { display: flex; align-items: center; gap: 8px; }
+.challenge-line .item-icon { width: 32px; height: 32px; }
+.challenge-line-text { display: flex; flex-direction: column; flex: 1; font-size: 13px; }
+.challenge-line-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+.challenge-reward { margin: 0; font-size: 13px; }
+
 .market-price {
   font-size: 12px;
   opacity: 0.75;
