@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(40);
+select plan(42);
 
 insert into auth.users (id, instance_id, aud, role, email, email_confirmed_at, is_anonymous, created_at, last_sign_in_at)
   select ('00000000-0000-0000-0006-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', n || '@example.com', now(), false, now(), now()
@@ -26,7 +26,9 @@ select is((select count(*)::int from public.urb_challenges where kind = 'daily')
 select lives_ok($$ select public.urb_generate_daily_challenges() $$, 'generating again is idempotent');
 select is((select count(*)::int from public.urb_challenges where kind = 'daily'), 12, 'no duplicate after a second generation');
 select is((select count(distinct difficulty)::int from public.urb_challenges where kind = 'daily'), 3, 'the three difficulties are published');
-select ok((select bool_and(public.urb_lot_is_valid(goal) and reward_kind = 'urbs' and ends_at - starts_at = interval '1 day') from public.urb_challenges where kind = 'daily'), 'Daily challenges are valid, paid in Urbs and last a day');
+select ok((select bool_and(public.urb_lot_is_valid(goal) and reward_kind = 'urbs') from public.urb_challenges where kind = 'daily'), 'Daily challenges are valid and paid in Urbs');
+select ok((select bool_and((starts_at at time zone 'Europe/Paris')::time = '07:00' and (ends_at at time zone 'Europe/Paris')::time = '07:00' and (ends_at at time zone 'Europe/Paris')::date = (starts_at at time zone 'Europe/Paris')::date + 1) from public.urb_challenges where kind = 'daily'), 'Daily challenges run from 07:00 Paris time to 07:00 the next day');
+select ok((select bool_and(starts_at <= now() and ends_at > now()) from public.urb_challenges where kind = 'daily'), 'the generated Daily challenges are open now');
 select ok((select bool_and(name_keys ? 'hook' and name_keys ? 'item') from public.urb_challenges where kind = 'daily'), 'Daily challenges carry name keys');
 
 -- An Event is published by hand

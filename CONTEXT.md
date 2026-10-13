@@ -561,7 +561,7 @@ The title of a Challenge, shown in the player's language. A Daily challenge's na
 _Avoid_: Title, label
 
 **Daily challenge**:
-A Challenge renewed every day by the server, paid in Urbs, published in three variants (easy, medium, hard), with a goal reachable in about 45 minutes of active play.
+A Challenge renewed every day at 07:00 Paris time by the server, paid in Urbs, published in three variants (easy, medium, hard), with a goal reachable in about 45 minutes of active play.
 _Avoid_: Daily quest
 
 **Event**:
