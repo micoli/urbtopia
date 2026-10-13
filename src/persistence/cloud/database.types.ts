@@ -3,6 +3,121 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      urb_challenge_acceptances: {
+        Row: {
+          accepted_at: string;
+          challenge_id: string;
+          completed_at: string | null;
+          deadline: string;
+          state: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          accepted_at?: string;
+          challenge_id: string;
+          completed_at?: string | null;
+          deadline: string;
+          state?: string;
+          user_id: string;
+        };
+        Update: {
+          accepted_at?: string;
+          challenge_id?: string;
+          completed_at?: string | null;
+          deadline?: string;
+          state?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_challenge_acceptances_challenge_id_fkey";
+            columns: ["challenge_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_challenges";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "urb_challenge_acceptances_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
+      urb_challenge_templates: {
+        Row: {
+          band: number;
+          difficulty: string;
+          goal: NonNullable<Json>;
+          id: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          band: number;
+          difficulty: string;
+          goal: NonNullable<Json>;
+          id?: never;
+        };
+        Update: {
+          band?: number;
+          difficulty?: string;
+          goal?: NonNullable<Json>;
+          id?: never;
+        };
+        Relationships: [];
+      };
+      urb_challenges: {
+        Row: {
+          created_at: string;
+          difficulty: string | null;
+          ends_at: string;
+          goal: NonNullable<Json>;
+          id: string;
+          kind: string;
+          medal_code: string | null;
+          min_citizens: number;
+          name_en: string | null;
+          name_fr: string | null;
+          name_keys: NonNullable<Json>;
+          reward_kind: string;
+          starts_at: string;
+          urb_challenge_json: Json | null;
+        };
+        ComputedFields: "urb_challenge_json";
+        Insert: {
+          created_at?: string;
+          difficulty?: string | null;
+          ends_at: string;
+          goal: NonNullable<Json>;
+          id?: string;
+          kind: string;
+          medal_code?: string | null;
+          min_citizens?: number;
+          name_en?: string | null;
+          name_fr?: string | null;
+          name_keys: NonNullable<Json>;
+          reward_kind: string;
+          starts_at: string;
+        };
+        Update: {
+          created_at?: string;
+          difficulty?: string | null;
+          ends_at?: string;
+          goal?: NonNullable<Json>;
+          id?: string;
+          kind?: string;
+          medal_code?: string | null;
+          min_citizens?: number;
+          name_en?: string | null;
+          name_fr?: string | null;
+          name_keys?: NonNullable<Json>;
+          reward_kind?: string;
+          starts_at?: string;
+        };
+        Relationships: [];
+      };
       urb_forbidden_handle_words: {
         Row: {
           word: string;
@@ -160,6 +275,36 @@ export type Database = {
           {
             foreignKeyName: "urb_groups_creator_id_fkey";
             columns: ["creator_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
+      urb_medals: {
+        Row: {
+          challenge_id: string;
+          earned_at: string;
+          medal_code: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          challenge_id: string;
+          earned_at?: string;
+          medal_code: string;
+          user_id: string;
+        };
+        Update: {
+          challenge_id?: string;
+          earned_at?: string;
+          medal_code?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_medals_user_id_fkey";
+            columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "urb_profiles";
             referencedColumns: ["user_id"];
@@ -359,6 +504,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      urb_accept_challenge: { Args: { p_challenge: string }; Returns: Json };
       urb_accept_friend_request: { Args: { p_user: string }; Returns: undefined };
       urb_accept_trade_offer: { Args: { p_id: string }; Returns: undefined };
       urb_add_group_members: { Args: { p_group: string; p_members: string[] }; Returns: undefined };
@@ -367,21 +513,46 @@ export type Database = {
       urb_bump_group_members: { Args: { p_group: string }; Returns: undefined };
       urb_bump_groups: { Args: { p_user: string }; Returns: undefined };
       urb_bump_social: { Args: { p_user: string }; Returns: undefined };
+      urb_challenge_json: {
+        Args: {
+          p_challenge: Omit<
+            Database["public"]["Tables"]["urb_challenges"]["Row"],
+            Database["public"]["Tables"]["urb_challenges"]["ComputedFields"]
+          >;
+        };
+        Returns: Json;
+      };
       urb_check_send_caps: { Args: { p_user: string }; Returns: undefined };
       urb_claim_trade: { Args: { p_id: string; p_slot: string }; Returns: Json };
       urb_close_offer: { Args: { p_id: string }; Returns: undefined };
       urb_close_offers_between: { Args: { p_a: string; p_b: string }; Returns: undefined };
+      urb_create_event: {
+        Args: {
+          p_ends_at: string;
+          p_goal: Json;
+          p_medal_code: string;
+          p_min_citizens?: number;
+          p_name_en: string;
+          p_name_fr: string;
+          p_name_keys: Json;
+          p_starts_at: string;
+        };
+        Returns: string;
+      };
       urb_create_group: { Args: { p_members: string[]; p_name: string }; Returns: string };
       urb_create_trade_offer: {
         Args: { p_id: string; p_lot: Json; p_price: number; p_to: string };
         Returns: string;
       };
+      urb_declare_challenge: { Args: { p_challenge: string }; Returns: Json };
       urb_decline_trade_offer: { Args: { p_id: string }; Returns: undefined };
       urb_delete_conversation: { Args: { p_a: string; p_b: string }; Returns: undefined };
       urb_delete_group: { Args: { p_group: string }; Returns: undefined };
       urb_delete_my_saves: { Args: Record<PropertyKey, never>; Returns: undefined };
+      urb_expire_challenges: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_expire_offers: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_friend_count: { Args: { p_user: string }; Returns: number };
+      urb_generate_daily_challenges: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_group_add: {
         Args: { p_creator: string; p_group: string; p_members: string[] };
         Returns: undefined;
@@ -391,6 +562,7 @@ export type Database = {
       urb_group_name: { Args: { p_name: string }; Returns: string };
       urb_has_blocked: { Args: { p_blocked: string; p_blocker: string }; Returns: boolean };
       urb_leave_group: { Args: { p_group: string }; Returns: undefined };
+      urb_list_challenges: { Args: Record<PropertyKey, never>; Returns: Json };
       urb_list_group_messages: { Args: { p_after?: number; p_group: string }; Returns: Json };
       urb_list_groups: { Args: { p_cursor?: number }; Returns: Json };
       urb_list_messages: { Args: { p_after?: number; p_with: string }; Returns: Json };
@@ -433,6 +605,7 @@ export type Database = {
       urb_set_avatar: { Args: { p_avatar: string }; Returns: undefined };
       urb_set_findable: { Args: { p_findable: boolean }; Returns: undefined };
       urb_set_handle: { Args: { p_handle: string }; Returns: undefined };
+      urb_settle_acceptance: { Args: { p_challenge: string; p_user: string }; Returns: undefined };
       urb_settle_offer: { Args: { p_id: string }; Returns: undefined };
       urb_social_member: { Args: Record<PropertyKey, never>; Returns: string };
       urb_unblock_user: { Args: { p_user: string }; Returns: undefined };
