@@ -50,11 +50,10 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts
+      - run: npx playwright install --with-deps chromium
       - run: npm run build-storybook
       - name: Fail if a story crashes
-        run: |
-          npx playwright install --with-deps chromium
-          npm run test:storybook
+        run: npm run test:storybook
 
   issues-server:
     runs-on: ubuntu-latest
