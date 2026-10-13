@@ -28,4 +28,4 @@ Components that take a building or the game state as a prop render inside `Build
 
 ## Checks
 
-`npm run build-storybook && npm run test:storybook` builds the site, opens every story in Chromium and fails on a page error or an empty render. CI runs both.
+`npm run build-storybook && npm run test:storybook` builds the site, opens every story in Chromium and fails on a page error or an empty render. The manual `Storybook` workflow (Actions tab, "Run workflow") runs both; it is not part of the required CI.
