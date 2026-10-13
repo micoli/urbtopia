@@ -1117,6 +1117,23 @@ textarea {
   border-radius: 8px;
 }
 
+.tutorial-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px 1px 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.tutorial-chip img {
+  height: 32px;
+  width: 38px;
+  object-fit: contain;
+}
+
 .tutorial-handle {
   cursor: grab;
   touch-action: none;

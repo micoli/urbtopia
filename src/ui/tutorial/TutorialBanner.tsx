@@ -7,6 +7,7 @@ import { useGame, useUi } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { InlineConfirm } from '../common/InlineConfirm';
+import { TutorialText } from './TutorialText';
 
 interface Position {
   x: number;
@@ -57,7 +58,9 @@ export function TutorialBanner() {
           {TUTORIAL_STEPS.indexOf(step) + 1}/{TUTORIAL_STEPS.length}
         </span>
       </header>
-      <p>{t(`tutorial.${step}`)}</p>
+      <p>
+        <TutorialText text={t(`tutorial.${step}`)} />
+      </p>
       <ButtonRow align="start">
         {canSkipTime ? (
           <ActionButton variant="primary" onClick={() => send({ type: 'SkipTutorialStep' })}>
