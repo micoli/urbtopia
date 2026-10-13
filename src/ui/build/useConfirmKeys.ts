@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { isTypingTarget } from '../../dom/isTypingTarget';
 import { confirmKeyAction } from './confirmKeys';
 
 interface ConfirmKeys {
@@ -10,16 +11,11 @@ interface ConfirmKeys {
   onCancel: () => void;
 }
 
-function isTyping(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false;
-  return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName);
-}
-
 export function useConfirmKeys({ active, canConfirm = true, canRotate = false, onConfirm, onRotate = () => {}, onCancel }: ConfirmKeys): void {
   useEffect(() => {
     if (!active) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      const action = confirmKeyAction({ key: event.key, repeat: event.repeat, typing: isTyping(event.target) }, canConfirm, canRotate);
+      const action = confirmKeyAction({ key: event.key, repeat: event.repeat, typing: isTypingTarget(event.target) }, canConfirm, canRotate);
       if (!action) return;
       event.preventDefault();
       event.stopPropagation();
