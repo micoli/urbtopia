@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(38);
+select plan(40);
 
 insert into auth.users (id, instance_id, aud, role, email, email_confirmed_at, is_anonymous, created_at, last_sign_in_at)
   select ('00000000-0000-0000-0006-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', n || '@example.com', now(), false, now(), now()
@@ -100,5 +100,18 @@ select is(pg_temp.accepted_state('00000000000b'), 'expired', 'an acceptance past
 
 reset role;
 select is((select count(*)::int from public.urb_medals), 1, 'only the Event completion produced a Medal');
+
+-- A running acceptance stays listed after the window of its Challenge closed
+create function pg_temp.close_event_window() returns void language sql as $$
+  update public.urb_challenges set starts_at = now() - interval '2 days', ends_at = now() - interval '1 hour' where kind = 'event';
+$$;
+update public.urb_challenge_acceptances set state = 'accepted', completed_at = null where user_id = '00000000-0000-0000-0006-00000000000a' and challenge_id = pg_temp.event_id();
+select pg_temp.close_event_window();
+set local role authenticated;
+select pg_temp.act_as('00000000000b');
+select ok(not exists (select 1 from jsonb_array_elements(public.urb_list_challenges() -> 'challenges') c where c ->> 'kind' = 'event'), 'a Challenge whose window closed is not listed to a player who did not accept it');
+select pg_temp.act_as('00000000000a');
+select ok(exists (select 1 from jsonb_array_elements(public.urb_list_challenges() -> 'challenges') c where c ->> 'id' = pg_temp.event_id()::text), 'the accepted Challenge stays listed after its window closed');
+reset role;
 select finish();
 rollback;

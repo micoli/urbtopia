@@ -117,6 +117,10 @@ function isChallengeProgress(value: unknown): boolean {
   });
 }
 
+function isChallengeClaim(value: unknown): boolean {
+  return isRecord(value) && typeof value.id === 'string' && value.id !== '' && isNumber(value.at) && isInt(value.urbs, 0);
+}
+
 function isMarket(value: unknown): boolean {
   return isRecord(value) && Object.entries(value).every(([good, price]) => Object.hasOwn(GOODS, good) && isRecord(price) && isNumber(price.points) && isNumber(price.updatedAt));
 }
@@ -154,6 +158,7 @@ export function validateGameState(value: unknown): GameState | null {
   if (value.casinoRng !== undefined && !isNumber(value.casinoRng)) return null;
   if (value.difficulty !== undefined && !isDifficulty(value.difficulty)) return null;
   if (value.challenge !== undefined && !isChallengeProgress(value.challenge)) return null;
+  if (value.challengeClaims !== undefined && !isArrayOf(value.challengeClaims, isChallengeClaim)) return null;
   if (value.ecologyDismissed !== undefined && typeof value.ecologyDismissed !== 'boolean') return null;
   if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&
     isArrayOf(line.stops, id => isInt(id, 0)) && (line.stops as number[]).length >= 2 &&

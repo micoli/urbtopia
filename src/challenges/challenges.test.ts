@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { newGame, type GameState } from '../core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { challengeReward, dispatch, newGame, type Command, type GameState } from '../core';
 import { challengeStore } from '../store/challengeStore';
-import { createChallengeActions } from './challengeActions';
+import { createChallengeActions, type ChallengeGame } from './challengeActions';
 import { FakeChallengeWorld } from './fakeChallengeClient';
 import { loadChallengeClient } from './loadChallengeClient';
 import { parseChallengeSnapshot, parseDeclaration } from './parseSnapshot';
@@ -139,11 +139,28 @@ describe('FakeChallengeWorld', () => {
 describe('challenge actions', () => {
   beforeEach(() => challengeStore.setState({ status: 'idle', snapshot: null, busy: false, failure: null }));
 
+  const GOAL = [{ item: 'wood', quantity: 4 }, { item: 'planks', quantity: 2 }];
+  const goalChallenge = (): Challenge => ({ ...daily('a', 'easy', 0), goal: GOAL });
+
   function setup(options: Parameters<FakeChallengeWorld['client']>[1] = {}, userId: string | null = 'p1') {
     const world = new FakeChallengeWorld(() => T0);
-    world.challenges = [daily('a', 'easy', 0), event('ev')];
-    const actions = createChallengeActions(world.client(userId, options), challengeStore.getState(), () => challengeStore.getState());
-    return { world, actions };
+    world.challenges = [goalChallenge(), event('ev')];
+    let state: GameState = { ...initial, storage: { materials: { wood: 50 }, goods: { planks: 50 } } };
+    const persist = vi.fn();
+    const game: ChallengeGame = {
+      state: () => state,
+      apply: (command: Command) => {
+        const result = dispatch(state, command, T0);
+        if (!result.ok) return result.error.key;
+        state = result.state;
+        return null;
+      },
+      persist,
+      canPlay: () => true,
+    };
+    const client = world.client(userId, options);
+    const actions = createChallengeActions(client, challengeStore.getState(), () => challengeStore.getState(), game);
+    return { world, client, actions, game, persist, current: () => state };
   }
 
   it('loads the snapshot', async () => {
@@ -158,10 +175,12 @@ describe('challenge actions', () => {
     expect(challengeStore.getState().snapshot).toBeNull();
   });
 
-  it('accepts a Challenge and reloads', async () => {
-    const { actions } = setup();
+  it('accepts a Challenge, reloads and starts it in the save', async () => {
+    const { actions, current, persist } = setup();
     expect(await actions.accept('a')).toBe(true);
     expect(challengeStore.getState().snapshot?.accepted?.challengeId).toBe('a');
+    expect(current().challenge).toMatchObject({ id: 'a', goal: GOAL, stock: {} });
+    expect(persist).toHaveBeenCalled();
     expect(challengeStore.getState().busy).toBe(false);
   });
 
@@ -173,11 +192,86 @@ describe('challenge actions', () => {
   });
 
   it('goes offline on a network failure and keeps the last snapshot', async () => {
-    const { actions } = setup();
+    const { actions, game } = setup();
     await actions.refresh();
-    const failing = createChallengeActions({ list: async () => Promise.reject(new ChallengeError('offline')), accept: async () => Promise.reject(new ChallengeError('offline')), declare: async () => Promise.reject(new ChallengeError('offline')) }, challengeStore.getState(), () => challengeStore.getState());
-    await failing.poll();
+    const reject = () => Promise.reject(new ChallengeError('offline'));
+    await createChallengeActions({ list: reject, accept: reject, declare: reject }, challengeStore.getState(), () => challengeStore.getState(), game).poll();
     expect(challengeStore.getState().status).toBe('offline');
     expect(challengeStore.getState().snapshot).not.toBeNull();
   });
+
+  it('pays twice the goal in Urbs when the last unit is set aside, and clears the Challenge', async () => {
+    const { actions, current } = setup();
+    await actions.accept('a');
+    const urbs = current().urbs;
+    expect(await actions.setAside('wood', 4)).toBeNull();
+    expect(current().challenge).toBeDefined();
+    expect(await actions.setAside('planks', 2)).toBeNull();
+    expect(current().challenge).toBeUndefined();
+    expect(current().urbs).toBe(urbs + challengeReward(GOAL));
+    expect(current().storage.materials.wood).toBe(46);
+    expect((await setupSnapshot(actions)).accepted).toBeNull();
+  });
+
+  it('pays nothing in Urbs for an Event and records the Medal', async () => {
+    const { actions, current } = setup();
+    await actions.accept('ev');
+    const urbs = current().urbs;
+    expect(await actions.setAside('wood', 5)).toBeNull();
+    expect(current().challenge).toBeUndefined();
+    expect(current().urbs).toBe(urbs);
+    expect(challengeStore.getState().snapshot?.medals).toHaveLength(1);
+  });
+
+  it('returns the error of the core when setting aside too much', async () => {
+    const { actions } = setup();
+    await actions.accept('a');
+    expect(await actions.setAside('wood', 5)).toBe('error.challengeSurplus');
+    expect(await actions.setAside('stone', 1)).toBe('error.notInChallenge');
+  });
+
+  it('repairs a crash after the server completion: the next poll declares again and credits once', async () => {
+    const { actions, client, current, game } = setup();
+    await actions.accept('a');
+    game.apply({ type: 'ChallengeSetAside', item: 'wood', quantity: 4 });
+    game.apply({ type: 'ChallengeSetAside', item: 'planks', quantity: 2 });
+    await client.declare('a');
+    const state = current();
+    expect(state.challenge).toBeDefined();
+    await actions.poll();
+    expect(current().challenge).toBeUndefined();
+    const credited = current().urbs;
+    expect(credited).toBe(state.urbs + challengeReward(GOAL));
+    await actions.poll();
+    expect(current().urbs).toBe(credited);
+  });
+
+  it('loses the stock of a Challenge the server expired', async () => {
+    const world = new FakeChallengeWorld(() => now);
+    let now = T0;
+    world.challenges = [{ ...goalChallenge(), endsAt: T0 + 3 * DAY }];
+    let state: GameState = { ...initial, storage: { materials: { wood: 50 }, goods: { planks: 50 } } };
+    const game: ChallengeGame = { state: () => state, apply: (command) => { const result = dispatch(state, command, T0); if (!result.ok) return result.error.key; state = result.state; return null; }, persist: vi.fn(), canPlay: () => true };
+    const actions = createChallengeActions(world.client('p1'), challengeStore.getState(), () => challengeStore.getState(), game);
+    await actions.accept('a');
+    await actions.setAside('wood', 2);
+    now = T0 + DAY + 1;
+    await actions.poll();
+    expect(state.challenge).toBeUndefined();
+    expect(state.storage.materials.wood).toBe(48);
+  });
+
+  it('does nothing in a read-only tab', async () => {
+    const { actions, game } = setup();
+    await actions.accept('a');
+    const readOnly = createChallengeActions(await Promise.resolve(setup().client), challengeStore.getState(), () => challengeStore.getState(), { ...game, canPlay: () => false });
+    expect(await readOnly.setAside('wood', 1)).toBe('error.noChallenge');
+  });
 });
+
+async function setupSnapshot(actions: { poll: () => Promise<void> }) {
+  await actions.poll();
+  const snapshot = challengeStore.getState().snapshot;
+  if (!snapshot) throw new Error('no snapshot');
+  return snapshot;
+}

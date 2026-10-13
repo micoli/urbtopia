@@ -38,9 +38,10 @@ import { roadPath } from '../map/roads';
 import { roadTierUpgradeCost } from '../traffic/roadTier';
 import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
-import { clearChallenge, setAsideForChallenge, startChallenge, type ChallengeResult } from '../challenges/challengeStock';
+import { clearChallenge, completeChallenge, setAsideForChallenge, startChallenge, type ChallengeResult } from '../challenges/challengeStock';
 import { applyTradeEffect, confirmTradeEffect, rollbackTradeEffect, type TradeResult } from '../trade/tradeLedger';
 import type { TradeEffect, TradeLine } from '../trade/types';
+import type { ChallengeRewardKind } from '../challenges/types';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import type { BlackjackAction } from '../leisure/blackjack';
 import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, ColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
@@ -120,6 +121,7 @@ export type Command =
   | { readonly type: 'TradeRollback'; readonly offerId: string; readonly effect: TradeEffect }
   | { readonly type: 'ChallengeStart'; readonly id: string; readonly goal: readonly TradeLine[]; readonly deadline: number }
   | { readonly type: 'ChallengeSetAside'; readonly item: string; readonly quantity: number }
+  | { readonly type: 'ChallengeComplete'; readonly id: string; readonly rewardKind: ChallengeRewardKind }
   | { readonly type: 'ChallengeClear' }
   | { readonly type: 'SkipTime'; readonly hours: number }
   | { readonly type: 'SkipTutorialStep' }
@@ -362,6 +364,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return challengeOutcome(startChallenge(state, command));
     case 'ChallengeSetAside':
       return challengeOutcome(setAsideForChallenge(state, command.item, command.quantity));
+    case 'ChallengeComplete':
+      return challengeOutcome(completeChallenge(state, command.id, command.rewardKind, now));
     case 'ChallengeClear':
       return { state: clearChallenge(state), events: [] };
     case 'SkipTime':

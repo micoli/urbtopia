@@ -1,4 +1,5 @@
 import { createStore } from 'zustand/vanilla';
+import type { ErrorKey } from '../core';
 import type { ChallengeErrorKind, ChallengeSnapshot } from '../challenges/types';
 
 export type ChallengeStatus = 'idle' | 'loading' | 'sign-in-required' | 'ready' | 'offline';
@@ -7,6 +8,7 @@ export interface ChallengeActions {
   refresh: () => Promise<void>;
   poll: () => Promise<void>;
   accept: (challengeId: string) => Promise<boolean>;
+  setAside: (item: string, quantity: number) => Promise<ErrorKey | null>;
 }
 
 export interface ChallengeStore {

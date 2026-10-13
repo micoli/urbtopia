@@ -99,3 +99,20 @@ describe('Challenge progress in the save', () => {
     }
   });
 });
+
+describe('Challenge claims in the save', () => {
+  const v14 = JSON.parse(fixtureText(14));
+  const load = (value: unknown) => parseEnvelope(JSON.stringify({ ...v14, state: { ...v14.state, challengeClaims: value } }));
+
+  it('keeps the claims', () => {
+    const loaded = load([{ id: 'c1', at: 1_700_000_000_000, urbs: 90 }]);
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.challengeClaims).toHaveLength(1);
+  });
+
+  it('refuses damaged claims', () => {
+    for (const damaged of ['nope', [{ id: '', at: 1, urbs: 1 }], [{ id: 'c1', at: 1, urbs: -1 }], [{ id: 'c1', at: 'x', urbs: 1 }]]) {
+      expect(load(damaged), JSON.stringify(damaged)).toEqual({ ok: false, reason: 'invalid-state' });
+    }
+  });
+});

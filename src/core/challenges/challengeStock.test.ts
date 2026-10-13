@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advance, dispatch, isChallengeStockComplete, newGame, type Command, type GameState } from '../index';
+import { advance, challengeReward, dispatch, isChallengeStockComplete, newGame, type Command, type GameState } from '../index';
 
 const T0 = 1_700_000_000_000;
 const HOUR = 3_600_000;
@@ -95,5 +95,48 @@ describe('replay', () => {
     const state = run(run(start(stocked()), { type: 'ChallengeSetAside', item: 'wood', quantity: 4 }), { type: 'ChallengeSetAside', item: 'planks', quantity: 1 });
     const later = advance(state, T0 + 10 * HOUR);
     expect(later.state.challenge).toEqual(state.challenge);
+  });
+});
+
+describe('ChallengeComplete', () => {
+  const full = (): GameState => {
+    let state = start(stocked({ wood: 20 }, { planks: 10 }));
+    state = run(state, { type: 'ChallengeSetAside', item: 'wood', quantity: 5 });
+    return run(state, { type: 'ChallengeSetAside', item: 'planks', quantity: 3 });
+  };
+
+  it('pays twice the value of the goal in Urbs and clears the Challenge', () => {
+    const before = full();
+    const state = run(before, { type: 'ChallengeComplete', id: 'c1', rewardKind: 'urbs' });
+    expect(challengeReward(GOAL)).toBe(2 * (5 * 3 + 3 * 14));
+    expect(state.urbs).toBe(before.urbs + challengeReward(GOAL));
+    expect(state.challenge).toBeUndefined();
+    expect(state.challengeClaims).toEqual([{ id: 'c1', at: T0, urbs: challengeReward(GOAL) }]);
+  });
+
+  it('pays nothing in Urbs for a Medal and still consumes the stock', () => {
+    const before = full();
+    const state = run(before, { type: 'ChallengeComplete', id: 'c1', rewardKind: 'medal' });
+    expect(state.urbs).toBe(before.urbs);
+    expect(state.challenge).toBeUndefined();
+    expect(state.storage.materials.wood).toBe(15);
+  });
+
+  it('credits once whatever the number of calls', () => {
+    const once = run(full(), { type: 'ChallengeComplete', id: 'c1', rewardKind: 'urbs' });
+    const twice = run(once, { type: 'ChallengeComplete', id: 'c1', rewardKind: 'urbs' });
+    expect(twice).toEqual(once);
+  });
+
+  it('refuses an incomplete stock or another Challenge', () => {
+    const partial = run(start(stocked()), { type: 'ChallengeSetAside', item: 'wood', quantity: 5 });
+    expect(failure(partial, { type: 'ChallengeComplete', id: 'c1', rewardKind: 'urbs' })).toBe('error.noChallenge');
+    expect(failure(full(), { type: 'ChallengeComplete', id: 'other', rewardKind: 'urbs' })).toBe('error.noChallenge');
+    expect(failure(stocked(), { type: 'ChallengeComplete', id: 'c1', rewardKind: 'urbs' })).toBe('error.noChallenge');
+  });
+
+  it('forgets claims older than the retention', () => {
+    const old = { ...full(), challengeClaims: [{ id: 'old', at: T0 - 31 * 24 * HOUR, urbs: 1 }] };
+    expect(run(old, { type: 'ChallengeComplete', id: 'c1', rewardKind: 'urbs' }).challengeClaims?.map((claim) => claim.id)).toEqual(['c1']);
   });
 });
