@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { pendingExchangesCount, pendingFriendsCount, pendingSocialCount } from './pendingCount';
+import { pendingExchangesCount, pendingFriendsCount, pendingGroupsCount, pendingSocialCount } from './pendingCount';
 import type { SocialState, TradeOffer } from './types';
 
 const profile: SocialState = {
@@ -51,5 +51,11 @@ describe('pendingExchangesCount', () => {
     expect(pendingFriendsCount(withOffers)).toBe(4);
     expect(pendingSocialCount(withOffers)).toBe(5);
     expect(pendingExchangesCount(null)).toBe(0);
+  });
+});
+
+describe('pendingGroupsCount', () => {
+  it('is zero until Groups are loaded', () => {
+    expect(pendingGroupsCount()).toBe(0);
   });
 });

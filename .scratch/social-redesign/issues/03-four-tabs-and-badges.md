@@ -1,6 +1,6 @@
 # Four Social tabs and cumulated badge
 
-Status: ready-for-agent
+Status: done - tsc, eslint and vitest pass; Groups badge is 0 until issue 05
 Blocked by: 02
 Spec: ../spec.md
 
@@ -10,7 +10,7 @@ Social window with Friends, Groups, Exchanges, Profile tabs, each with its badge
 
 ## Acceptance criteria
 
-- [ ] Tabs accessible (`tablist`, keyboard, short labels with icons on phone width).
+- [x] Tabs accessible (`tablist`, keyboard, short labels with icons on phone width).
 - [x] Friends tab no longer shows Handle, Avatar, findable or blocked list (done in 02, with the Profile tab).
-- [ ] `pendingCount` helpers cover the cumulated badge; unit tests.
-- [ ] Storybook stories and component tests updated.
+- [x] `pendingCount` helpers cover the cumulated badge; unit tests.
+- [x] Storybook stories and component tests updated.

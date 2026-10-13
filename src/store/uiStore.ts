@@ -13,7 +13,7 @@ import type { CodexId } from '../codex/catalog';
 import type { CodexPage } from '../codex/pages';
 
 export type Flyout = 'build' | 'roads' | null;
-export type SocialTab = 'friends' | 'exchanges' | 'profile';
+export type SocialTab = 'friends' | 'groups' | 'exchanges' | 'profile';
 
 export interface UiStore {
   tool: Tool | null;

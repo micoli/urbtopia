@@ -12,6 +12,11 @@ export function pendingExchangesCount(profile: SocialState | null): number {
   return profile.offers.reduce((sum, offer) => sum + (offer.state === 'open' && offer.role === 'recipient' ? 1 : 0) + offer.claimable.length, 0);
 }
 
+// What the Groups tab asks for: unread Group messages. Groups are not loaded into the snapshot yet.
+export function pendingGroupsCount(): number {
+  return 0;
+}
+
 export function pendingSocialCount(profile: SocialState | null): number {
-  return pendingFriendsCount(profile) + pendingExchangesCount(profile);
+  return pendingFriendsCount(profile) + pendingGroupsCount() + pendingExchangesCount(profile);
 }
