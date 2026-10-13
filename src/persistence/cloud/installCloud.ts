@@ -10,9 +10,23 @@ import { CloudSync } from './cloudSync';
 import { isPlausibleEmail } from './email';
 import { isKeepLocalRequested } from './keepLocalFlag';
 import { loadCloudClient } from './loadCloudClient';
-import { CloudError, type CloudAccount } from './types';
+import { localAuthPassword, requestedLocalAuthEmail } from './localAuth';
+import { CloudError, type CloudAccount, type CloudSaveClient } from './types';
 
 const TICK_MS = 30_000;
+
+async function startAfterLocalAuth(client: CloudSaveClient, engine: CloudSync): Promise<void> {
+  const email = requestedLocalAuthEmail();
+  if (email) {
+    try {
+      const account = await client.account();
+      if (account?.email !== email) await client.signInWithPassword(email, localAuthPassword(email));
+    } catch (error) {
+      console.warn('local-auth failed', error);
+    }
+  }
+  await engine.start();
+}
 
 export function installCloudSync(): () => void {
   if (!cloudEnabled) return () => {};
@@ -100,7 +114,7 @@ export function installCloudSync(): () => void {
         cloudStore.getState().setVersions(null);
       },
     });
-    void engine.start();
+    void startAfterLocalAuth(client, engine);
   });
 
   const unsubscribe = gameStore.subscribe((store, previous) => {

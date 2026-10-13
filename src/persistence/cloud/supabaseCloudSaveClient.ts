@@ -56,6 +56,14 @@ class SupabaseCloudSaveClient implements CloudSaveClient {
     if (signed.error) throw toCloudError(signed.error);
   }
 
+  async signInWithPassword(email: string, password: string): Promise<void> {
+    const signedIn = await this.attempt(() => this.client.auth.signInWithPassword({ email, password }));
+    if (!signedIn.error) return;
+    const created = await this.attempt(() => this.client.auth.signUp({ email, password }));
+    if (created.error) throw toCloudError(created.error);
+    if (!created.data.session) throw new CloudError('unknown');
+  }
+
   async signOut(): Promise<void> {
     await this.client.auth.signOut();
   }

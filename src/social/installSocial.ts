@@ -6,6 +6,8 @@ import { readOnlyStore } from '../store/readOnlyStore';
 import { cloudStore } from '../store/cloudStore';
 import { socialStore } from '../store/socialStore';
 import { uiStore } from '../store/uiStore';
+import { requestedLocalAuthEmail } from '../persistence/cloud/localAuth';
+import { claimLocalHandle } from './localHandle';
 import { loadSocialClient } from './loadSocialClient';
 import { createSocialActions } from './socialActions';
 import { SocialPoller } from './socialPoller';
@@ -40,11 +42,14 @@ export function installSocial(): () => void {
       () => socialStore.getState().profile?.offers ?? [],
     );
     socialStore.getState().enable(actions);
+    const localAuthEmail = requestedLocalAuthEmail();
     let knownEmail: string | null = null;
     const follow = (email: string | null) => {
       if (email === knownEmail) return;
       knownEmail = email;
-      if (email) void actions.refresh();
+      if (!email) return;
+      if (email === localAuthEmail) return void claimLocalHandle(client, email).finally(() => void actions.refresh());
+      void actions.refresh();
     };
     follow(cloudStore.getState().account?.email ?? null);
     const poller = new SocialPoller({
