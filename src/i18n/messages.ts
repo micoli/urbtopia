@@ -8,8 +8,10 @@ import { sportVenueMessages } from './sportVenues';
 import { buildingMessages } from './buildings';
 import { itemMessages } from './items';
 import { natureMessages } from './nature';
+import { challengeMessages } from './challenges';
 export const MESSAGES = {
   ...natureMessages('en'),
+  ...challengeMessages('en'),
   ...casinoMessages('en'),
   ...needsMessages('en'),
   ...difficultyMessages('en'),

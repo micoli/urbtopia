@@ -8,10 +8,12 @@ import { sportVenueMessages } from './sportVenues';
 import { buildingMessages } from './buildings';
 import { itemMessages } from './items';
 import { natureMessages } from './nature';
+import { challengeMessages } from './challenges';
 import type { MessageKey } from './messages';
 
 export const FR: Record<MessageKey, string> = {
   ...natureMessages('fr'),
+  ...challengeMessages('fr'),
   ...casinoMessages('fr'),
   ...needsMessages('fr'),
   ...difficultyMessages('fr'),
