@@ -19,40 +19,53 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: npm
-      - run: npm ci --ignore-scripts
-      - run: npm run typecheck
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Type-check the code
+        run: npm run typecheck
 
   lint:
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: npm
-      - run: npm ci --ignore-scripts
-      - run: npm run lint
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Lint the code
+        run: npm run lint
 
   test:
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: npm
-      - run: npm ci --ignore-scripts
-      - run: npm run assets
-      - run: npm test
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Generate the assets
+        run: npm run assets
+      - name: Run the tests
+        run: npm test
 
   build:
     runs-on: ubuntu-latest
@@ -61,33 +74,44 @@ jobs:
     outputs:
       release-name: ${{ steps.release-name.outputs.name }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check out the repository with its tags
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-tags: true
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: npm
-      - run: npm ci --ignore-scripts
-      - id: release-name
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Compute the release name
+        id: release-name
         run: echo "name=$(node scripts/release-name.ts)" >> "$GITHUB_OUTPUT"
-      - id: playwright-cache
+      - name: Restore the Playwright browser cache
+        id: playwright-cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-      - if: steps.playwright-cache.outputs.cache-hit != 'true'
+      - name: Install Chromium and its system dependencies (cache miss)
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
-      - if: steps.playwright-cache.outputs.cache-hit == 'true'
+      - name: Install the system dependencies of Chromium (cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
-      - run: npm run build
+      - name: Build the site
+        run: npm run build
         env:
           RELEASE_NAME: ${{ steps.release-name.outputs.name }}
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
-      - run: npm run test:codex:images
-      - run: npm run test:avatars
-      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+      - name: Check the Codex images
+        run: npm run test:codex:images
+      - name: Check the Avatar images
+        run: npm run test:avatars
+      - name: Upload the site as the Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: dist
 
@@ -102,7 +126,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - id: deployment
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
 
   release:
@@ -112,7 +137,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - env:
+      - name: Create the GitHub release
+        env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_NAME: ${{ needs.build.outputs.release-name }}
         run: gh release create "$RELEASE_NAME" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "$RELEASE_NAME" --generate-notes
