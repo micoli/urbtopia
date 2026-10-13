@@ -59,6 +59,113 @@ export type Database = {
           },
         ];
       };
+      urb_group_members: {
+        Row: {
+          group_id: string;
+          joined_at: string;
+          last_read_message_id: number;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          group_id: string;
+          joined_at?: string;
+          last_read_message_id?: number;
+          user_id: string;
+        };
+        Update: {
+          group_id?: string;
+          joined_at?: string;
+          last_read_message_id?: number;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_group_members_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "urb_group_members_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
+      urb_group_messages: {
+        Row: {
+          body: string;
+          created_at: string;
+          group_id: string;
+          id: number;
+          sender_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          body: string;
+          created_at?: string;
+          group_id: string;
+          id?: never;
+          sender_id: string;
+        };
+        Update: {
+          body?: string;
+          created_at?: string;
+          group_id?: string;
+          id?: never;
+          sender_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_group_messages_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "urb_group_messages_sender_id_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
+      urb_groups: {
+        Row: {
+          created_at: string;
+          creator_id: string;
+          id: string;
+          name: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          creator_id: string;
+          id?: string;
+          name: string;
+        };
+        Update: {
+          created_at?: string;
+          creator_id?: string;
+          id?: string;
+          name?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_groups_creator_id_fkey";
+            columns: ["creator_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
       urb_messages: {
         Row: {
           body: string;
@@ -107,6 +214,7 @@ export type Database = {
           avatar: string | null;
           created_at: string;
           findable: boolean;
+          groups_revision: number;
           handle: string;
           handle_changed_at: string;
           social_revision: number;
@@ -117,6 +225,7 @@ export type Database = {
           avatar?: string | null;
           created_at?: string;
           findable?: boolean;
+          groups_revision?: number;
           handle: string;
           handle_changed_at?: string;
           social_revision?: number;
@@ -126,6 +235,7 @@ export type Database = {
           avatar?: string | null;
           created_at?: string;
           findable?: boolean;
+          groups_revision?: number;
           handle?: string;
           handle_changed_at?: string;
           social_revision?: number;
@@ -251,21 +361,38 @@ export type Database = {
     Functions: {
       urb_accept_friend_request: { Args: { p_user: string }; Returns: undefined };
       urb_accept_trade_offer: { Args: { p_id: string }; Returns: undefined };
+      urb_add_group_members: { Args: { p_group: string; p_members: string[] }; Returns: undefined };
       urb_are_friends: { Args: { p_a: string; p_b: string }; Returns: boolean };
       urb_block_user: { Args: { p_user: string }; Returns: undefined };
+      urb_bump_group_members: { Args: { p_group: string }; Returns: undefined };
+      urb_bump_groups: { Args: { p_user: string }; Returns: undefined };
       urb_bump_social: { Args: { p_user: string }; Returns: undefined };
+      urb_check_send_caps: { Args: { p_user: string }; Returns: undefined };
       urb_claim_trade: { Args: { p_id: string; p_slot: string }; Returns: Json };
       urb_close_offer: { Args: { p_id: string }; Returns: undefined };
       urb_close_offers_between: { Args: { p_a: string; p_b: string }; Returns: undefined };
+      urb_create_group: { Args: { p_members: string[]; p_name: string }; Returns: string };
       urb_create_trade_offer: {
         Args: { p_id: string; p_lot: Json; p_price: number; p_to: string };
         Returns: string;
       };
       urb_decline_trade_offer: { Args: { p_id: string }; Returns: undefined };
       urb_delete_conversation: { Args: { p_a: string; p_b: string }; Returns: undefined };
+      urb_delete_group: { Args: { p_group: string }; Returns: undefined };
       urb_delete_my_saves: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_expire_offers: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_friend_count: { Args: { p_user: string }; Returns: number };
+      urb_group_add: {
+        Args: { p_creator: string; p_group: string; p_members: string[] };
+        Returns: undefined;
+      };
+      urb_group_creator: { Args: { p_group: string; p_user: string }; Returns: undefined };
+      urb_group_member: { Args: { p_group: string; p_user: string }; Returns: undefined };
+      urb_group_name: { Args: { p_name: string }; Returns: string };
+      urb_has_blocked: { Args: { p_blocked: string; p_blocker: string }; Returns: boolean };
+      urb_leave_group: { Args: { p_group: string }; Returns: undefined };
+      urb_list_group_messages: { Args: { p_after?: number; p_group: string }; Returns: Json };
+      urb_list_groups: { Args: { p_cursor?: number }; Returns: Json };
       urb_list_messages: { Args: { p_after?: number; p_with: string }; Returns: Json };
       urb_list_saves: {
         Args: Record<PropertyKey, never>;
@@ -297,8 +424,11 @@ export type Database = {
       };
       urb_refuse_friend_request: { Args: { p_user: string }; Returns: undefined };
       urb_remove_friend: { Args: { p_user: string }; Returns: undefined };
+      urb_remove_group_member: { Args: { p_group: string; p_user: string }; Returns: undefined };
+      urb_rename_group: { Args: { p_group: string; p_name: string }; Returns: undefined };
       urb_restore_save: { Args: { p_revision: number }; Returns: number };
       urb_send_friend_request_by_email: { Args: { p_email: string }; Returns: undefined };
+      urb_send_group_message: { Args: { p_body: string; p_group: string }; Returns: number };
       urb_send_message: { Args: { p_body: string; p_to: string }; Returns: number };
       urb_set_avatar: { Args: { p_avatar: string }; Returns: undefined };
       urb_set_findable: { Args: { p_findable: boolean }; Returns: undefined };

@@ -35,7 +35,7 @@ describe('cloud status', () => {
 
 describe('cloud save panel', () => {
   const panel = (props: Partial<Parameters<typeof CloudSavePanel>[0]> = {}) =>
-    renderToStaticMarkup(<CloudSavePanel status={{ kind: 'pending' }} versions={null} account={null} emailCode={{ kind: 'idle' }} codeActions={{ send: noop, verify: noop, cancel: noop }} onSignOut={noop} onSaveNow={noop} onShowVersions={noop} onRestore={noop} onDelete={noop} {...props} />);
+    renderToStaticMarkup(<CloudSavePanel status={{ kind: 'pending' }} versions={null} account={null} emailCode={{ kind: 'idle' }} codeActions={{ send: noop, verify: noop, cancel: noop }} onSignOut={noop} onSaveNow={noop} onShowVersions={noop} onRestore={noop} onDelete={noop} onOpenSocial={noop} focusAccount={false} {...props} />);
 
   it('offers saving now, previous versions and deleting the cloud data', () => {
     const html = panel();

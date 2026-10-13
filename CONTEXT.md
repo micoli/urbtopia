@@ -532,6 +532,14 @@ _Avoid_: Chat line, DM
 The exchange of Messages between two Friends. It ends, with all its Messages, when the Friendship ends or one side blocks the other.
 _Avoid_: Thread, channel
 
+**Group**:
+A named room of Friends of its creator, where its members exchange Group messages. The creator names it, can rename it, and is the only one who adds members, from their own Friends; an added Friend is a member at once and can leave at any time. The creator can remove a member or delete the Group with all its Messages, and cannot leave without deleting it. A member who stops being a Friend of the creator (Friendship ended or Block, in either direction) is removed. Members of a Group are not Friends of each other; a Block between two members hides the blocked one's Group messages from the blocker. There is no invitation link.
+_Avoid_: Channel, room, chat, guild
+
+**Group message**:
+A short plain-text note posted in a Group and visible to all its members, under the same limits as a Message (500 characters, 30 days, shared daily sending cap).
+_Avoid_: Post, broadcast
+
 **Trade offer**:
 A Lot of Materials and/or Goods that one Friend proposes to another, for a price in Urbs set by the sender (0 for a gift). The recipient accepts or refuses; an offer left open expires after 72 hours. Seed packs, buildings and bare Urbs cannot be offered.
 _Avoid_: Deal, auction, barter

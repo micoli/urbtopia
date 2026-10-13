@@ -3,6 +3,7 @@ import { itemName } from '../../i18n/itemName';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
+import { Dropdown } from '../common/Dropdown';
 import { useGame } from '../common/hooks';
 
 interface VenueShelfStockProps {
@@ -26,17 +27,17 @@ export function VenueShelfStock({ venueId, fixture }: VenueShelfStockProps) {
       {options.length === 0 ? <p className="note note--muted">{t('venue.stockNoGoods')}</p> : null}
       {options.length > 0 ? (
         <div className="venue-stock">
-          <label>
-            {t('venue.stockGood')}
-            <select
-              value={fixture.good ?? ''}
+          <div className="venue-stock-good">
+            <span>{t('venue.stockGood')}</span>
+            <Dropdown
+              label={t('venue.stockGood')}
+              value={fixture.good}
+              placeholder="—"
               disabled={locked}
-              onChange={event => send({ type: 'StockShelf', buildingId: venueId, fixtureId: fixture.id, good: event.target.value as GoodId })}
-            >
-              {fixture.good ? null : <option value="">—</option>}
-              {options.map(good => <option key={good} value={good}>{itemName(good)} ({Math.floor(goods[good] ?? 0)})</option>)}
-            </select>
-          </label>
+              options={options.map(good => ({ value: good, label: `${itemName(good)} (${Math.floor(goods[good] ?? 0)})` }))}
+              onChange={good => send({ type: 'StockShelf', buildingId: venueId, fixtureId: fixture.id, good })}
+            />
+          </div>
           <ActionButton variant="primary" disabled={!fixture.good} onClick={() => fixture.good && send({ type: 'StockShelf', buildingId: venueId, fixtureId: fixture.id, good: fixture.good })}>
             {t('venue.stockFill')}
           </ActionButton>

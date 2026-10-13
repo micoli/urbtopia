@@ -4,7 +4,7 @@ import { defaultSocialTab } from './defaultSocialTab';
 describe('defaultSocialTab', () => {
   it.each([
     [{ hasEmail: false, status: 'idle' }, 'friends'],
-    [{ hasEmail: true, status: 'no-handle' }, 'friends'],
+    [{ hasEmail: true, status: 'no-handle' }, 'profile'],
     [{ hasEmail: true, status: 'ready' }, 'exchanges'],
     [{ hasEmail: true, status: 'loading' }, 'exchanges'],
     [{ hasEmail: true, status: 'offline' }, 'exchanges'],

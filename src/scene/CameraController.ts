@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { isTypingTarget } from '../dom/isTypingTarget';
 import { keyDirectionForYaw } from './cameraKeys';
 
 const ISO_PITCH = Math.atan(1 / Math.SQRT2);
@@ -173,7 +174,7 @@ export class CameraController {
   }
 
   private onKey(event: KeyboardEvent, pressed: boolean): void {
-    if (pressed && event.target instanceof HTMLElement && event.target.closest('[role="dialog"]')) return;
+    if (pressed && (isTypingTarget(event.target) || (event.target instanceof HTMLElement && event.target.closest('[role="dialog"]')))) return;
     const key = event.key.toLowerCase();
     if (pressed && key === 'q') return this.rotate(-1);
     if (pressed && key === 'e') return this.rotate(1);

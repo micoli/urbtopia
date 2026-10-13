@@ -12,6 +12,7 @@ export class FakeCloudSaveClient implements CloudSaveClient {
   private userId = 'user-1';
   private nextUser = 2;
   emails = new Map<string, string>();
+  private passwords = new Map<string, string>();
   sentCodes: string[] = [];
   validCode = '123456';
   private listeners = new Set<(account: CloudAccount | null) => void>();
@@ -56,6 +57,18 @@ export class FakeCloudSaveClient implements CloudSaveClient {
   async signIn(): Promise<void> {
     this.guard();
     this.signedIn = true;
+  }
+
+  async signInWithPassword(email: string, password: string): Promise<void> {
+    this.guard();
+    const known = [...this.emails].find(([, known]) => known === email);
+    const stored = this.passwords.get(email);
+    if (stored !== undefined && stored !== password) throw new CloudError('unknown');
+    this.passwords.set(email, password);
+    this.userId = known ? known[0] : `user-${this.nextUser++}`;
+    this.emails.set(this.userId, email);
+    this.signedIn = true;
+    this.emitAccount();
   }
 
   async signOut(): Promise<void> {

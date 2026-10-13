@@ -1,7 +1,7 @@
 import { createStore } from 'zustand/vanilla';
 import type { TradeLine } from '../core';
 import type { TradeFailure, TradeOutcome } from '../social/tradeCoordinator';
-import type { Message, SocialErrorKind, SocialState, TradeOffer } from '../social/types';
+import type { Group, GroupMessage, Message, SocialErrorKind, SocialState, TradeOffer } from '../social/types';
 
 export type SocialStatus = 'idle' | 'loading' | 'no-handle' | 'ready' | 'offline';
 
@@ -21,6 +21,31 @@ export interface ConversationState {
   loading: boolean;
   sending: boolean;
   failure: ActionFailure | null;
+}
+
+export interface GroupConversationState {
+  groupId: string;
+  messages: GroupMessage[];
+  loading: boolean;
+  sending: boolean;
+  failure: ActionFailure | null;
+}
+
+export interface GroupActions {
+  refresh: () => Promise<void>;
+  poll: () => Promise<void>;
+  create: (name: string, memberIds: string[]) => Promise<boolean>;
+  rename: (groupId: string, name: string) => Promise<boolean>;
+  addMembers: (groupId: string, memberIds: string[]) => Promise<boolean>;
+  removeMember: (groupId: string, userId: string) => Promise<void>;
+  blockMember: (userId: string) => Promise<void>;
+  leave: (groupId: string) => Promise<void>;
+  remove: (groupId: string) => Promise<void>;
+  open: (groupId: string) => Promise<void>;
+  close: () => Promise<void>;
+  send: (body: string) => Promise<void>;
+  pollOpen: () => Promise<void>;
+  refreshOpen: () => Promise<void>;
 }
 
 export interface SocialActions {
@@ -56,8 +81,14 @@ export interface SocialStore {
   conversation: ConversationState | null;
   tradeBusy: boolean;
   tradeFailure: TradeFailure | null;
+  groups: Group[] | null;
+  groupsRevision: number | null;
+  groupConversation: GroupConversationState | null;
+  groupBusy: boolean;
+  groupFailure: ActionFailure | null;
   actions: SocialActions | null;
-  enable: (actions: SocialActions) => void;
+  groupActions: GroupActions | null;
+  enable: (actions: SocialActions, groupActions: GroupActions) => void;
   setStatus: (status: SocialStatus) => void;
   setProfile: (profile: SocialState | null) => void;
   setHandleForm: (handleForm: HandleFormState) => void;
@@ -65,6 +96,10 @@ export interface SocialStore {
   setActionFailure: (failure: ActionFailure | null) => void;
   setConversation: (conversation: ConversationState | null) => void;
   setTrade: (trade: { busy: boolean; failure: TradeFailure | null }) => void;
+  setGroups: (groups: Group[] | null, revision: number | null) => void;
+  setGroupConversation: (conversation: GroupConversationState | null) => void;
+  setGroupBusy: (busy: boolean) => void;
+  setGroupFailure: (failure: ActionFailure | null) => void;
 }
 
 export const socialStore = createStore<SocialStore>((set) => ({
@@ -77,8 +112,14 @@ export const socialStore = createStore<SocialStore>((set) => ({
   conversation: null,
   tradeBusy: false,
   tradeFailure: null,
+  groups: null,
+  groupsRevision: null,
+  groupConversation: null,
+  groupBusy: false,
+  groupFailure: null,
   actions: null,
-  enable: (actions) => set({ enabled: true, actions }),
+  groupActions: null,
+  enable: (actions, groupActions) => set({ enabled: true, actions, groupActions }),
   setStatus: (status) => set({ status }),
   setProfile: (profile) => set({ profile }),
   setHandleForm: (handleForm) => set({ handleForm }),
@@ -86,4 +127,8 @@ export const socialStore = createStore<SocialStore>((set) => ({
   setActionFailure: (actionFailure) => set({ actionFailure }),
   setConversation: (conversation) => set({ conversation }),
   setTrade: ({ busy, failure }) => set({ tradeBusy: busy, tradeFailure: failure }),
+  setGroups: (groups, groupsRevision) => set({ groups, groupsRevision }),
+  setGroupConversation: (groupConversation) => set({ groupConversation }),
+  setGroupBusy: (groupBusy) => set({ groupBusy }),
+  setGroupFailure: (groupFailure) => set({ groupFailure }),
 }));

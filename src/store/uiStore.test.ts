@@ -92,7 +92,7 @@ describe('social window', () => {
     cloudStore.setState({ account: { userId: 'u', email: 'me@example.com' } });
     socialStore.setState({ status: 'no-handle' });
     uiStore.getState().toggleSocial();
-    expect(uiStore.getState().socialTab).toBe('friends');
+    expect(uiStore.getState().socialTab).toBe('profile');
     uiStore.getState().toggleSocial();
 
     socialStore.setState({ status: 'ready' });
@@ -101,6 +101,28 @@ describe('social window', () => {
     expect(uiStore.getState().socialTab).toBe('exchanges');
     cloudStore.setState({ account: null });
     socialStore.setState({ status: 'idle' });
+  });
+
+  it('sends a signed-out player to Settings, and back to Social once signed in', async () => {
+    const { cloudStore } = await import('./cloudStore');
+    cloudStore.setState({ account: { userId: 'u', email: null } });
+    uiStore.getState().toggleSocial();
+    uiStore.getState().openSettingsFromSocial(true);
+    expect(uiStore.getState()).toMatchObject({ socialOpen: false, settingsOpen: true, signInFromSocial: true });
+    cloudStore.setState({ account: { userId: 'u', email: 'me@example.com' } });
+    expect(uiStore.getState()).toMatchObject({ socialOpen: true, settingsOpen: false, signInFromSocial: false });
+    uiStore.getState().toggleSocial();
+    cloudStore.setState({ account: null });
+  });
+
+  it('does not reopen Social when Settings was closed before signing in', async () => {
+    const { cloudStore } = await import('./cloudStore');
+    cloudStore.setState({ account: { userId: 'u', email: null } });
+    uiStore.getState().openSettingsFromSocial(true);
+    uiStore.getState().toggleSettings();
+    cloudStore.setState({ account: { userId: 'u', email: 'me@example.com' } });
+    expect(uiStore.getState()).toMatchObject({ socialOpen: false, settingsOpen: false });
+    cloudStore.setState({ account: null });
   });
 
   it('keeps the tab while the window stays open', () => {

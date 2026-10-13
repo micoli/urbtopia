@@ -1,4 +1,4 @@
-import type { SocialState } from './types';
+import type { Group, SocialState } from './types';
 
 // What the Friends tab asks the player to look at: requests received and unread messages.
 export function pendingFriendsCount(profile: SocialState | null): number {
@@ -12,6 +12,12 @@ export function pendingExchangesCount(profile: SocialState | null): number {
   return profile.offers.reduce((sum, offer) => sum + (offer.state === 'open' && offer.role === 'recipient' ? 1 : 0) + offer.claimable.length, 0);
 }
 
-export function pendingSocialCount(profile: SocialState | null): number {
-  return pendingFriendsCount(profile) + pendingExchangesCount(profile);
+// What the Groups tab asks for: the unread Group messages.
+export function pendingGroupsCount(groups: Group[] | null): number {
+  if (!groups) return 0;
+  return groups.reduce((sum, group) => sum + group.unread, 0);
+}
+
+export function pendingSocialCount(profile: SocialState | null, groups: Group[] | null = null): number {
+  return pendingFriendsCount(profile) + pendingGroupsCount(groups) + pendingExchangesCount(profile);
 }

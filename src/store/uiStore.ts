@@ -13,7 +13,7 @@ import type { CodexId } from '../codex/catalog';
 import type { CodexPage } from '../codex/pages';
 
 export type Flyout = 'build' | 'roads' | null;
-export type SocialTab = 'friends' | 'exchanges';
+export type SocialTab = 'friends' | 'groups' | 'exchanges' | 'profile';
 
 export interface UiStore {
   tool: Tool | null;
@@ -28,6 +28,8 @@ export interface UiStore {
   toggleStats: () => void;
   socialOpen: boolean;
   socialTab: SocialTab;
+  signInFromSocial: boolean;
+  openSettingsFromSocial: (forSignIn: boolean) => void;
   toggleSocial: () => void;
   setSocialTab: (tab: SocialTab) => void;
   tradeWith: string | null;
@@ -103,6 +105,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     if (get().tool?.kind === 'parcel') get().cancelTool();
   };
   let grabOffset: Coord = { x: 0, y: 0 };
+  let stopWaitingForSignIn = () => {};
 
   return {
     tool: null,
@@ -127,6 +130,20 @@ export const uiStore = createStore<UiStore>((set, get) => {
       set({ ...landing, socialOpen: opening, statsOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
     },
     setSocialTab: (socialTab) => set({ socialTab }),
+    signInFromSocial: false,
+    openSettingsFromSocial: (forSignIn) => {
+      leaveParcelMode();
+      stopWaitingForSignIn();
+      set({ socialOpen: false, settingsOpen: true, flyout: null, signInFromSocial: forSignIn });
+      if (!forSignIn) return;
+      stopWaitingForSignIn = cloudStore.subscribe((store) => {
+        if (!store.account?.email) return;
+        stopWaitingForSignIn();
+        if (!get().signInFromSocial || !get().settingsOpen) return;
+        set({ signInFromSocial: false });
+        get().toggleSocial();
+      });
+    },
     tradeWith: null,
     startTrade: (userId) => set({ tradeWith: userId, socialTab: 'exchanges' }),
     clearTradeWith: () => set({ tradeWith: null }),
@@ -151,7 +168,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     },
     toggleSettings: () => {
       leaveParcelMode();
-      set({ settingsOpen: !get().settingsOpen, flyout: null });
+      set({ settingsOpen: !get().settingsOpen, flyout: null, signInFromSocial: false });
     },
     toggleMarket: () => {
       if (!gameStore.getState().state.marketUnlocked) return toastStore.getState().show('error.marketLocked');

@@ -11,7 +11,6 @@ import { FriendsPanel } from './FriendsPanel';
 
 const noop = () => {};
 const asyncNoop = async () => {};
-const DAY_MS = 86_400_000;
 
 const withLists = { friends: [{ userId: 'b', handle: 'Bob', avatar: null, since: 0, unread: 0, lastMessageAt: null }], incoming: [{ userId: 'c', handle: 'Carol', avatar: null, at: 0 }], outgoing: [{ userId: 'd', handle: 'Dave', avatar: null, at: 0 }], blocked: [{ userId: 'e', handle: 'Erin', avatar: null }] };
 
@@ -31,19 +30,14 @@ const profile: SocialState = {
 const panel = (props: Partial<Parameters<typeof FriendsPanel>[0]> = {}) =>
   renderToStaticMarkup(
     <FriendsPanel
-      account={{ userId: 'a', email: 'a@example.com' }}
-      emailCode={{ kind: 'idle' }}
       status="ready"
       profile={profile}
-      handleForm={{ kind: 'idle' }}
-      now={0}
-      changeDelayMs={30 * DAY_MS}
       search={{ kind: 'idle' }}
       actionFailure={null}
       conversation={null}
-      codeActions={{ send: noop, verify: noop, cancel: noop }}
+      onOpenProfile={noop}
       onTrade={noop}
-      actions={{ setHandle: asyncNoop, setAvatar: asyncNoop, setFindable: asyncNoop, sendRequest: asyncNoop, accept: asyncNoop, refuse: asyncNoop, remove: asyncNoop, block: asyncNoop, unblock: asyncNoop, openConversation: asyncNoop, closeConversation: asyncNoop, sendMessage: asyncNoop, refreshConversation: asyncNoop }}
+      actions={{ sendRequest: asyncNoop, accept: asyncNoop, refuse: asyncNoop, remove: asyncNoop, block: asyncNoop, openConversation: asyncNoop, closeConversation: asyncNoop, sendMessage: asyncNoop, refreshConversation: asyncNoop }}
       {...props}
     />,
   );
@@ -54,41 +48,24 @@ function storeOf(): Pick<SocialStore, 'setStatus' | 'setProfile' | 'setHandleFor
 }
 
 describe('friends panel', () => {
-  it('explains and offers the email flow to an anonymous account', () => {
-    const html = panel({ account: { userId: 'a', email: null }, profile: null, status: 'idle' });
-    expect(html).toContain(t('friends.needEmail'));
-    expect(html).toContain(t('cloud.account.sendCode'));
-  });
-
-  it('asks for a Handle once the account has an email', () => {
+  it('sends a player without Handle to the Profile tab', () => {
     const html = panel({ profile: null, status: 'no-handle' });
-    expect(html).toContain(t('friends.chooseHandle'));
-    expect(html).toContain(t('friends.handle.choose'));
+    expect(html).toContain(t('friends.needHandle'));
+    expect(html).toContain(t('friends.goToProfile'));
+    expect(html).not.toContain('friends-handle');
   });
 
-  it('shows the Handle, the change delay and the findable toggle', () => {
-    const html = panel({ now: 10 * DAY_MS });
-    expect(html).toContain('<strong>Alice</strong>');
-    expect(html).toContain(t('friends.handle.changeLater').replace('{N}', '20'));
-    expect(html).toContain(t('friends.findable'));
-    expect(html).toMatch(/type="checkbox"[^>]*checked/);
+  it('keeps Handle, Avatar, findable toggle and sign-in out of the Friends tab', () => {
+    const html = panel();
+    expect(html).not.toContain(t('friends.findable'));
+    expect(html).not.toContain(t('friends.handle.current'));
+    expect(html).not.toContain(t('cloud.account.sendCode'));
   });
 
-  it('allows a change once the delay has passed', () => {
-    const html = panel({ now: 31 * DAY_MS });
-    expect(html).not.toContain(t('friends.handle.changeLater').replace('{N}', '1'));
-    expect(html).not.toMatch(/<button[^>]*disabled/);
-  });
-
-  it('shows the error of a refused Handle', () => {
-    const html = panel({ profile: null, status: 'no-handle', handleForm: { kind: 'error', error: 'handle-taken', retryAfterSeconds: null } });
-    expect(html).toContain(t('friends.error.handle-taken'));
-  });
-
-  it('lists requests, Friends and blocked players by Handle, with their actions', () => {
+  it('lists requests and Friends by Handle, with their actions', () => {
     const html = panel({ profile: { ...profile, ...withLists } });
-    for (const handle of ['Bob', 'Carol', 'Dave', 'Erin']) expect(html).toContain(`<strong>${handle}</strong>`);
-    for (const key of ['friends.accept', 'friends.refuse', 'friends.cancel', 'friends.remove', 'friends.unblock', 'friends.search.send'] as const) expect(html).toContain(t(key));
+    for (const handle of ['Bob', 'Carol', 'Dave']) expect(html).toContain(`<strong>${handle}</strong>`);
+    for (const key of ['friends.accept', 'friends.refuse', 'friends.cancel', 'friends.remove', 'friends.search.send'] as const) expect(html).toContain(t(key));
     expect(html).not.toContain('@example.com');
   });
 

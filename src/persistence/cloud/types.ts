@@ -37,6 +37,7 @@ export interface CloudAccount {
 
 export interface CloudSaveClient {
   signIn(): Promise<void>;
+  signInWithPassword(email: string, password: string): Promise<void>;
   account(): Promise<CloudAccount | null>;
   sendEmailCode(email: string): Promise<void>;
   verifyEmailCode(email: string, code: string): Promise<void>;

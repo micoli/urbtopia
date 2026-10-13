@@ -20,6 +20,13 @@ export type SocialErrorKind =
   | 'cap-friends'
   | 'cap-outgoing'
   | 'not-found'
+  | 'not-creator'
+  | 'group-name-invalid'
+  | 'group-name-forbidden'
+  | 'group-full'
+  | 'group-creator-cannot-leave'
+  | 'cap-groups-created'
+  | 'cap-groups-joined'
   | 'unknown';
 
 export class SocialError extends Error {
@@ -101,6 +108,35 @@ export interface SocialState {
   offers: TradeOffer[];
 }
 
+export interface GroupMember {
+  userId: string;
+  handle: string;
+  avatar: string | null;
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  creatorId: string;
+  members: GroupMember[];
+  unread: number;
+  lastMessageAt: number | null;
+  lastMessageFrom: string | null;
+  lastMessagePreview: string | null;
+}
+
+export interface GroupMessage {
+  id: number;
+  fromMe: boolean;
+  senderId: string;
+  senderHandle: string;
+  senderAvatar: string | null;
+  body: string;
+  at: number;
+}
+
+export type GroupsSnapshot = { changed: false; revision: number } | { changed: true; revision: number; groups: Group[] };
+
 export type SocialSnapshot = { changed: false; revision: number } | ({ changed: true } & SocialState);
 
 export interface SocialClient {
@@ -120,4 +156,13 @@ export interface SocialClient {
   acceptTradeOffer(id: string): Promise<void>;
   declineTradeOffer(id: string): Promise<void>;
   claimTrade(id: string, slot: TradeSlot): Promise<TradeClaim>;
+  listGroups(cursor?: number | null): Promise<GroupsSnapshot>;
+  createGroup(name: string, memberIds: string[]): Promise<string>;
+  renameGroup(groupId: string, name: string): Promise<void>;
+  addGroupMembers(groupId: string, memberIds: string[]): Promise<void>;
+  removeGroupMember(groupId: string, userId: string): Promise<void>;
+  leaveGroup(groupId: string): Promise<void>;
+  deleteGroup(groupId: string): Promise<void>;
+  sendGroupMessage(groupId: string, body: string): Promise<number>;
+  listGroupMessages(groupId: string, afterId?: number): Promise<GroupMessage[]>;
 }
