@@ -36,6 +36,13 @@ describe('EventsContent', () => {
     expect(render({ enabled: false })).toContain('Challenges need an online game.');
   });
 
+  it('links to the Codex page of Challenges in every state', () => {
+    expect(render({})).toContain('How Challenges work');
+    expect(render({ enabled: false })).toContain('How Challenges work');
+    expect(render({ status: 'loading', snapshot: null })).toContain('How Challenges work');
+    expect(render({ status: 'sign-in-required', snapshot: null })).toContain('How Challenges work');
+  });
+
   it('asks to sign in', () => {
     expect(render({ status: 'sign-in-required', snapshot: null })).toContain('social-sign-in');
   });

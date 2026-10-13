@@ -5,7 +5,9 @@ import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
 import { CodexEntryContent } from './CodexEntryContent';
 import { CropEconomyPage } from './CropEconomyPage';
+import { ChallengesPage } from './ChallengesPage';
 import { EnergyProductionPage } from './EnergyProductionPage';
+import { MarketRulesPage } from './MarketRulesPage';
 import { SanctionsPage } from './SanctionsPage';
 import { StorageRulesPage } from './StorageRulesPage';
 import { useCodexManifest } from './useCodexManifest';
@@ -25,7 +27,7 @@ export function CodexPanel() {
   const [showDetail, setShowDetail] = useState(initialDetail);
   const [page, setPage] = useState<CodexPage | null>(initialPage);
   const pageOpen = page !== null;
-  const [openSection, setOpenSection] = useState<CodexSection>(CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
+  const [openSection, setOpenSection] = useState<CodexSection>(initialPage === 'market' || initialPage === 'challenges' ? 'codex.trade' : CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
   const { manifest, failed, retry } = useCodexManifest();
   const entry = CODEX_ENTRIES.find(entry => entry.id === selected)!;
   const detail = useRef<HTMLElement>(null);
@@ -93,6 +95,12 @@ export function CodexPanel() {
                 {section === 'build.publicFacilities' && (
                   <button type="button" aria-current={page === 'sanctions' ? 'true' : undefined} onClick={() => { setPage('sanctions'); setShowDetail(true); }}>{t('codex.sanctions.title')}</button>
                 )}
+                {section === 'codex.trade' && (
+                  <>
+                    <button type="button" aria-current={page === 'market' ? 'true' : undefined} onClick={() => { setPage('market'); setShowDetail(true); }}>{t('codex.market.title')}</button>
+                    <button type="button" aria-current={page === 'challenges' ? 'true' : undefined} onClick={() => { setPage('challenges'); setShowDetail(true); }}>{t('codex.challenges.title')}</button>
+                  </>
+                )}
                 {CODEX_ENTRIES.filter(entry => entry.section === section).map(entry => (
                   <button type="button" key={entry.id} aria-current={!pageOpen && selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
                 ))}
@@ -100,11 +108,13 @@ export function CodexPanel() {
             );
           })}
         </nav>
-        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : page === 'energy' ? 'codex.energy.title' : page === 'sanctions' ? 'codex.sanctions.title' : entry.name)}>
+        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : page === 'energy' ? 'codex.energy.title' : page === 'sanctions' ? 'codex.sanctions.title' : page === 'market' ? 'codex.market.title' : page === 'challenges' ? 'codex.challenges.title' : entry.name)}>
           {page === 'economy' && <CropEconomyPage />}
           {page === 'storage' && <StorageRulesPage />}
           {page === 'energy' && <EnergyProductionPage />}
           {page === 'sanctions' && <SanctionsPage />}
+          {page === 'market' && <MarketRulesPage />}
+          {page === 'challenges' && <ChallengesPage />}
           {!pageOpen && <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />}
           {!pageOpen && !manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}
         </article>

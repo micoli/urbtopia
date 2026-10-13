@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { visibleChallenges } from '../../challenges/visibleChallenges';
 import { t } from '../../i18n/t';
 import { useChallenges, useGame, useUi } from '../common/hooks';
+import { ActionButton } from '../common/ActionButton';
 import { SignInPrompt } from '../social/SignInPrompt';
 import { ActiveChallenge } from './ActiveChallenge';
 import { ChallengeCard } from './ChallengeCard';
@@ -17,6 +18,8 @@ export function EventsContent() {
   const actions = useChallenges((store) => store.actions);
   const markSeen = useChallenges((store) => store.markSeen);
   const openSettings = useUi((store) => store.openSettingsFromSocial);
+  const openCodex = useUi((store) => store.openCodex);
+  const rules = <ActionButton onClick={() => openCodex(undefined, 'challenges')}>{t('codex.challenges.open')}</ActionButton>;
   const shown = snapshot ? visibleChallenges(state, snapshot.challenges) : [];
   const shownIds = shown.map(({ id }) => id).join(',');
 
@@ -24,9 +27,9 @@ export function EventsContent() {
     if (shownIds !== '') markSeen(shownIds.split(','));
   }, [shownIds, markSeen]);
 
-  if (!enabled) return <p>{t('challenge.unavailable')}</p>;
-  if (status === 'sign-in-required') return <SignInPrompt onSignIn={() => openSettings(true)} />;
-  if (!snapshot) return <p>{t('challenge.loading')}</p>;
+  if (!enabled) return <><p>{t('challenge.unavailable')}</p>{rules}</>;
+  if (status === 'sign-in-required') return <><SignInPrompt onSignIn={() => openSettings(true)} />{rules}</>;
+  if (!snapshot) return <><p>{t('challenge.loading')}</p>{rules}</>;
 
   const accepted = snapshot.accepted;
   const running = accepted ? snapshot.challenges.find(({ id }) => id === accepted.challengeId) : undefined;
@@ -43,6 +46,7 @@ export function EventsContent() {
           <ChallengeCard key={challenge.id} challenge={challenge} blocked={accepted !== null} busy={busy} onAccept={() => void actions?.accept(challenge.id)} />
         ))}
       </ul>
+      {rules}
     </>
   );
 }

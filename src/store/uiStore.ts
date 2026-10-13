@@ -43,6 +43,7 @@ export interface UiStore {
   settingsOpen: boolean;
   codexOpen: boolean;
   codexFromSettings: boolean;
+  codexFromMarket: boolean;
   codexFromFlyout: Flyout;
   codexEntryId: CodexId;
   codexShowDetail: boolean;
@@ -156,15 +157,16 @@ export const uiStore = createStore<UiStore>((set, get) => {
     settingsOpen: false,
     codexOpen: false,
     codexFromSettings: false,
+    codexFromMarket: false,
     codexFromFlyout: null,
     codexEntryId: 'home',
     codexShowDetail: false,
     codexPage: null,
     openCodex: (entry, page) => {
       get().cancelTool();
-      set({ codexOpen: true, codexFromSettings: get().settingsOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined || page !== undefined, codexPage: page ?? null, settingsOpen: false, marketOpen: false, statsOpen: false, socialOpen: false, flyout: null, selectedBuildingId: null });
+      set({ codexOpen: true, codexFromSettings: get().settingsOpen, codexFromMarket: get().marketOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined || page !== undefined, codexPage: page ?? null, settingsOpen: false, marketOpen: false, statsOpen: false, socialOpen: false, flyout: null, selectedBuildingId: null });
     },
-    closeCodex: () => set({ codexOpen: false, settingsOpen: get().codexFromSettings, flyout: get().codexFromFlyout, codexFromSettings: false, codexFromFlyout: null }),
+    closeCodex: () => set({ codexOpen: false, settingsOpen: get().codexFromSettings, marketOpen: get().codexFromMarket, flyout: get().codexFromFlyout, codexFromSettings: false, codexFromMarket: false, codexFromFlyout: null }),
     pendingSaleId: null,
     evaluation: null,
     openFlyout: (flyout) => {

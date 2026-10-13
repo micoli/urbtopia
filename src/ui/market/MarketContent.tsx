@@ -2,12 +2,13 @@ import { GOODS, marketQuote, type GoodId } from '../../core';
 import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
 import { gameStore } from '../../store/gameStore';
-import { useGame } from '../common/hooks';
+import { useGame, useUi } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 
 export function MarketContent() {
   const state = useGame((store) => store.state);
+  const openCodex = useUi((store) => store.openCodex);
   const goods = (Object.keys(GOODS) as GoodId[]).filter((good) => (state.storage.goods[good] ?? 0) > 0);
   const send = gameStore.getState().send;
 
@@ -41,6 +42,7 @@ export function MarketContent() {
           );
         })}
       </ul>
+      <ActionButton onClick={() => openCodex(undefined, 'market')}>{t('codex.market.open')}</ActionButton>
     </>
   );
 }
