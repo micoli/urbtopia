@@ -13,6 +13,7 @@ type VenueMessageKey =
   | 'error.nothingToRepair'
   | 'venue.repair'
   | 'venue.condition'
+  | 'venue.wear'
   | 'venue.broken'
   | 'venue.worn'
   | 'error.noStaffPost'
@@ -145,6 +146,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'error.nothingToRepair': ['This Fixture is in perfect condition.', 'Cet équipement est en parfait état.'],
   'venue.repair': ['Repair', 'Réparer'],
   'venue.condition': ['Condition', 'État'],
+  'venue.wear': ['Wear', 'Vétusté'],
   'venue.broken': ['Out of order: it earns nothing until repaired.', 'En panne : il ne rapporte rien tant qu’il n’est pas réparé.'],
   'venue.worn': ['Worn: it may break down soon.', 'Usé : il risque de tomber en panne.'],
   'error.managerRequired': ['Hire a manager first.', 'Embauchez d’abord un manager.'],

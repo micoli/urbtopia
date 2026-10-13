@@ -7,6 +7,7 @@ export const WEAR = {
   breakdownBelow: 40,
   maxBreakdownChance: 0.5,
   repairRatio: 0.6,
+  minRepairCost: 2,
   technicianRepairRatio: 0.6,
   technicianWear: 0.6,
 };
@@ -17,7 +18,10 @@ export const isBroken = (fixture: VenueFixture): boolean => fixture.broken === t
 
 export const isWorn = (fixture: VenueFixture): boolean => conditionOf(fixture) < 100;
 
-export const repairCost = (fixture: VenueFixture): number => Math.ceil(FIXTURES[fixture.type].price * WEAR.repairRatio * (100 - conditionOf(fixture)) / 100);
+export const repairCost = (fixture: VenueFixture): number => {
+  if (!isWorn(fixture)) return 0;
+  return Math.max(WEAR.minRepairCost, Math.ceil(FIXTURES[fixture.type].price * WEAR.repairRatio * (100 - conditionOf(fixture)) / 100));
+};
 
 export const technicianRepairCost = (fixture: VenueFixture): number => Math.ceil(repairCost(fixture) * WEAR.technicianRepairRatio);
 
