@@ -14,6 +14,7 @@ vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: { urbs: number; buildings: unknown[]; roads: unknown[]; seed: string; lastSeen: number } }) => unknown) => selector({ state: { urbs: 1234, buildings: [], roads: [], seed: 'menus', lastSeen: 0 } }),
   useUi: () => undefined,
   useSocial: (selector: (store: { profile: null }) => unknown) => selector({ profile: null }),
+  useChallenges: (selector: (store: { snapshot: null; seen: string[] }) => unknown) => selector({ snapshot: null, seen: [] }),
 }));
 
 vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: () => {}, state: { urbs: 0, buildings: [] } }) } }));

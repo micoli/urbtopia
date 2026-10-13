@@ -17,6 +17,7 @@ const texts = {
   'market.tab.events': ['Events', 'Événements'],
   'medal.title': ['Medals', 'Médailles'],
   'medal.none': ['No Medal yet.', 'Aucune médaille pour le moment.'],
+  'challenge.badge': ['New Challenges', 'Nouveaux défis'],
   'challenge.loading': ['Loading the Challenges…', 'Chargement des défis…'],
   'challenge.offline': ['Offline: the Challenges shown may be out of date.', 'Hors ligne : les défis affichés ne sont peut-être pas à jour.'],
   'challenge.unavailable': ['Challenges need an online game.', 'Les défis demandent une partie en ligne.'],

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { visibleChallenges } from '../../challenges/visibleChallenges';
 import { t } from '../../i18n/t';
 import { useChallenges, useGame, useUi } from '../common/hooks';
@@ -14,7 +15,14 @@ export function EventsContent() {
   const busy = useChallenges((store) => store.busy);
   const failure = useChallenges((store) => store.failure);
   const actions = useChallenges((store) => store.actions);
+  const markSeen = useChallenges((store) => store.markSeen);
   const openSettings = useUi((store) => store.openSettingsFromSocial);
+  const shown = snapshot ? visibleChallenges(state, snapshot.challenges) : [];
+  const shownIds = shown.map(({ id }) => id).join(',');
+
+  useEffect(() => {
+    if (shownIds !== '') markSeen(shownIds.split(','));
+  }, [shownIds, markSeen]);
 
   if (!enabled) return <p>{t('challenge.unavailable')}</p>;
   if (status === 'sign-in-required') return <SignInPrompt onSignIn={() => openSettings(true)} />;
@@ -22,7 +30,7 @@ export function EventsContent() {
 
   const accepted = snapshot.accepted;
   const running = accepted ? snapshot.challenges.find(({ id }) => id === accepted.challengeId) : undefined;
-  const open = visibleChallenges(state, snapshot.challenges).filter(({ id }) => id !== accepted?.challengeId);
+  const open = shown.filter(({ id }) => id !== accepted?.challengeId);
 
   return (
     <>

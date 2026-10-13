@@ -1,6 +1,6 @@
 # Challenges: Daily challenges and Events
 
-Status: ready-for-agent
+Status: done - delivered in nine commits, see issues/
 
 ## Problem
 
