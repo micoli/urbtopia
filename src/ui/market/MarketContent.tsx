@@ -5,17 +5,15 @@ import { gameStore } from '../../store/gameStore';
 import { useGame, useUi } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
-import { PanelHeader } from '../common/PanelHeader';
 
 export function MarketContent() {
-  const toggle = useUi((store) => store.toggleMarket);
   const state = useGame((store) => store.state);
+  const openCodex = useUi((store) => store.openCodex);
   const goods = (Object.keys(GOODS) as GoodId[]).filter((good) => (state.storage.goods[good] ?? 0) > 0);
   const send = gameStore.getState().send;
 
   return (
     <>
-      <PanelHeader title={t('market.title')} onClose={toggle} />
       {goods.length === 0 ? <p>{t('market.empty')}</p> : null}
       <ul className="market-list">
         {goods.map((good) => {
@@ -44,6 +42,7 @@ export function MarketContent() {
           );
         })}
       </ul>
+      <ActionButton onClick={() => openCodex(undefined, 'market')}>{t('codex.market.open')}</ActionButton>
     </>
   );
 }

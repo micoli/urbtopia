@@ -12,7 +12,7 @@ import { FriendsPanel } from './FriendsPanel';
 const noop = () => {};
 const asyncNoop = async () => {};
 
-const withLists = { friends: [{ userId: 'b', handle: 'Bob', avatar: null, since: 0, unread: 0, lastMessageAt: null }], incoming: [{ userId: 'c', handle: 'Carol', avatar: null, at: 0 }], outgoing: [{ userId: 'd', handle: 'Dave', avatar: null, at: 0 }], blocked: [{ userId: 'e', handle: 'Erin', avatar: null }] };
+const withLists = { friends: [{ userId: 'b', handle: 'Bob', avatar: null, since: 0, unread: 0, lastMessageAt: null, medals: [] }], incoming: [{ userId: 'c', handle: 'Carol', avatar: null, at: 0 }], outgoing: [{ userId: 'd', handle: 'Dave', avatar: null, at: 0 }], blocked: [{ userId: 'e', handle: 'Erin', avatar: null }] };
 
 const profile: SocialState = {
   revision: 1,
@@ -69,6 +69,15 @@ describe('friends panel', () => {
     expect(html).not.toContain('@example.com');
   });
 
+  it('shows the Medals of a Friend and nothing for a Friend without any', () => {
+    const medal = { medalCode: 'port-festival', nameFr: 'Fête du port', nameEn: 'Port festival', earnedAt: 1 };
+    const [bob] = withLists.friends;
+    if (!bob) throw new Error('no Friend');
+    const html = panel({ profile: { ...profile, ...withLists, friends: [{ ...bob, medals: [medal] }] } });
+    expect(html).toContain('Port festival');
+    expect(panel({ profile: { ...profile, ...withLists } })).not.toContain('medal-list');
+  });
+
   it('shows the neutral search confirmation and the rate limit delay', () => {
     expect(panel({ search: { kind: 'sent' } })).toContain(t('friends.search.sent'));
     expect(panel({ search: { kind: 'error', error: 'rate-limited', retryAfterSeconds: 125 } })).toContain(t('friends.error.rate-limited').replace('{N}', '3'));
@@ -91,6 +100,24 @@ describe('friends error messages', () => {
 
   it('falls back to a generic message', () => {
     expect(friendsErrorMessage('email-required', null)).toBe(MESSAGES['friends.error.unknown']);
+  });
+});
+
+describe('Medals in the social state', () => {
+  const medal = { medalCode: 'port-festival', nameFr: 'Fête du port', nameEn: 'Port festival', earnedAt: 1_700_000_000_000 };
+
+  it('reaches a Friend through the fake client', async () => {
+    const world = new FakeSocialWorld(() => 0);
+    const alice = world.addPlayer('a');
+    const bob = world.addPlayer('b');
+    await alice.setHandle('Alice');
+    await bob.setHandle('Bob');
+    await alice.sendRequestByEmail('b@example.com');
+    await bob.acceptRequest('a');
+    world.giveMedal('a', medal);
+    const snapshot = await bob.list();
+    if (!snapshot.changed) throw new Error('unchanged');
+    expect(snapshot.friends[0]?.medals).toEqual([medal]);
   });
 });
 

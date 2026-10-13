@@ -8,8 +8,10 @@ import { sportVenueMessages } from './sportVenues';
 import { buildingMessages } from './buildings';
 import { itemMessages } from './items';
 import { natureMessages } from './nature';
+import { challengeMessages } from './challenges';
 export const MESSAGES = {
   ...natureMessages('en'),
+  ...challengeMessages('en'),
   ...casinoMessages('en'),
   ...needsMessages('en'),
   ...difficultyMessages('en'),
@@ -69,6 +71,12 @@ export const MESSAGES = {
   'error.unavailableColor': 'This color is not available for this building.',
   'error.invalidTradeLot': 'This lot cannot be traded.',
   'error.unknownTrade': 'This trade is unknown.',
+  'error.invalidChallenge': 'This Challenge cannot be started.',
+  'error.challengeBusy': 'Another Challenge is already in progress.',
+  'error.noChallenge': 'No Challenge is in progress.',
+  'error.notInChallenge': 'The Challenge does not need this item any more.',
+  'error.challengeSurplus': 'The Challenge needs fewer units of this item.',
+  'error.challengeInProgress': 'A Challenge is in progress: time cannot be skipped.',
   'eco.title': 'City management',
   'eco.units': 'Game indicators, not scientific measurements. Power: units/hour; storage: energy units.',
   'eco.insulate': 'Insulate',
@@ -458,7 +466,7 @@ export const MESSAGES = {
   'error.missingGoods': 'Not enough Goods in the Storehouse.',
   'error.marketLocked': 'The Market opens with your first Good.',
   'error.invalidQuantity': 'Invalid quantity.',
-  'dock.market': 'Market',
+  'dock.market': 'Market / Events',
   'dock.settings': 'Settings',
   'settings.title': 'Settings',
   'settings.seed': 'Seed',

@@ -8,10 +8,12 @@ import { sportVenueMessages } from './sportVenues';
 import { buildingMessages } from './buildings';
 import { itemMessages } from './items';
 import { natureMessages } from './nature';
+import { challengeMessages } from './challenges';
 import type { MessageKey } from './messages';
 
 export const FR: Record<MessageKey, string> = {
   ...natureMessages('fr'),
+  ...challengeMessages('fr'),
   ...casinoMessages('fr'),
   ...needsMessages('fr'),
   ...difficultyMessages('fr'),
@@ -74,6 +76,12 @@ export const FR: Record<MessageKey, string> = {
   'error.unavailableColor': 'Cette couleur n\'existe pas pour ce bâtiment.',
   'error.invalidTradeLot': 'Ce lot ne peut pas être échangé.',
   'error.unknownTrade': 'Cet échange est inconnu.',
+  'error.invalidChallenge': 'Ce défi ne peut pas être lancé.',
+  'error.challengeBusy': 'Un autre défi est déjà en cours.',
+  'error.noChallenge': 'Aucun défi en cours.',
+  'error.notInChallenge': 'Le défi n’a plus besoin de cet objet.',
+  'error.challengeSurplus': 'Le défi demande moins d’unités de cet objet.',
+  'error.challengeInProgress': 'Un défi est en cours : impossible d’avancer le temps.',
   'eco.title': 'Gestion de la ville',
   'eco.units': 'Indicateurs du jeu, sans valeur scientifique. Puissance : unités/heure ; stockage : unités d’énergie.',
   'eco.insulate': 'Isoler',
@@ -460,7 +468,7 @@ export const FR: Record<MessageKey, string> = {
   'error.missingGoods': "Pas assez de produits dans l'entrepôt.",
   'error.marketLocked': 'Le marché ouvre avec votre premier produit.',
   'error.invalidQuantity': 'Quantité invalide.',
-  'dock.market': 'Marché',
+  'dock.market': 'Marché / Événements',
   'dock.settings': 'Réglages',
   'settings.title': 'Réglages',
   'settings.seed': 'Seed',

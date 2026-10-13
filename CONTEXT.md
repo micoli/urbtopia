@@ -552,11 +552,37 @@ _Avoid_: Bundle, parcel, cargo
 The hold the server keeps on a lot or a payment between the creation of a Trade offer and its claim, so that each side claims once and a refused or expired offer returns everything to its owner. The server does not check that the lot ever existed in the sender's city.
 _Avoid_: Deposit, lock
 
+**Challenge**:
+A goal published by the server to all Player accounts: deliver a list of Materials and Goods (several kinds, each with a quantity) to the Challenge stock before a deadline. A Challenge is either a Daily challenge or an Event. Accepting one is optional; a player has at most one accepted Challenge at a time.
+_Avoid_: Quest, mission, task
+
+**Challenge name**:
+The title of a Challenge, shown in the player's language. A Daily challenge's name is generated from a hook phrase and its main item, picked by keys the server stores, so the same Challenge reads the same for everyone in a given language. An Event can carry a hand-written name, translated FR/EN; the generated name is only its fallback.
+_Avoid_: Title, label
+
+**Daily challenge**:
+A Challenge renewed every day at 07:00 Paris time by the server, paid in Urbs, published in three variants (easy, medium, hard), with a goal reachable in about 45 minutes of active play.
+_Avoid_: Daily quest
+
+**Event**:
+A Challenge with a start and an end date set by the server, longer than a day, paid in Medals.
+_Avoid_: Season, festival
+
+**Challenge stock**:
+The units the player has set aside for an accepted Challenge, taken from the Storehouse at any time before the deadline, from any source (production, purchase, Trade offer). They are consumed: kept by the Challenge whether it succeeds or fails, and never returned.
+_Avoid_: Basket, deposit, contribution
+
+**Medal**:
+A permanent distinction earned by completing a Challenge whose reward is a Medal. It is shown in the Social window, on the Player account's own profile and on its Friends'.
+_Avoid_: Badge (reserved for the notification counter on a button), trophy, achievement
+
 ## Relationships
 
 - A Trade offer can only be accepted if the recipient's Storehouse compartment has room for the lot and their Urbs cover the price.
 - Blocking a Friend closes their conversation and returns any open Trade offer between them.
 - A Cloud save never replaces the local save without the player's consent when a Save conflict exists.
+- A Daily challenge pays twice the sum of the values of the items of its goal in Urbs, only if the Challenge stock is complete before the deadline (judged by the server clock, online); otherwise the stock is lost.
+- While a Challenge is accepted and unfinished, a Time skip is refused. Catch-up still applies.
 - A Casino is a Leisure building, never a Public facility.
 - A Venue is distinct from a Casino and a Shop: Minigames and Stakes belong to the Casino only.
 - A breakdown of a Fixture is drawn from the Venue's own stream of the game's Seed, so reloading never dodges it.

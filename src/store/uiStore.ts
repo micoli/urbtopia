@@ -13,6 +13,7 @@ import type { CodexId } from '../codex/catalog';
 import type { CodexPage } from '../codex/pages';
 
 export type Flyout = 'build' | 'roads' | null;
+export type MarketTab = 'market' | 'events';
 export type SocialTab = 'friends' | 'groups' | 'exchanges' | 'profile';
 
 export interface UiStore {
@@ -37,9 +38,12 @@ export interface UiStore {
   clearTradeWith: () => void;
   showTile: (tile: Coord) => void;
   marketOpen: boolean;
+  marketTab: MarketTab;
+  setMarketTab: (tab: MarketTab) => void;
   settingsOpen: boolean;
   codexOpen: boolean;
   codexFromSettings: boolean;
+  codexFromMarket: boolean;
   codexFromFlyout: Flyout;
   codexEntryId: CodexId;
   codexShowDetail: boolean;
@@ -148,18 +152,21 @@ export const uiStore = createStore<UiStore>((set, get) => {
     startTrade: (userId) => set({ tradeWith: userId, socialTab: 'exchanges' }),
     clearTradeWith: () => set({ tradeWith: null }),
     marketOpen: false,
+    marketTab: 'market',
+    setMarketTab: (marketTab) => set({ marketTab }),
     settingsOpen: false,
     codexOpen: false,
     codexFromSettings: false,
+    codexFromMarket: false,
     codexFromFlyout: null,
     codexEntryId: 'home',
     codexShowDetail: false,
     codexPage: null,
     openCodex: (entry, page) => {
       get().cancelTool();
-      set({ codexOpen: true, codexFromSettings: get().settingsOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined || page !== undefined, codexPage: page ?? null, settingsOpen: false, marketOpen: false, statsOpen: false, socialOpen: false, flyout: null, selectedBuildingId: null });
+      set({ codexOpen: true, codexFromSettings: get().settingsOpen, codexFromMarket: get().marketOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined || page !== undefined, codexPage: page ?? null, settingsOpen: false, marketOpen: false, statsOpen: false, socialOpen: false, flyout: null, selectedBuildingId: null });
     },
-    closeCodex: () => set({ codexOpen: false, settingsOpen: get().codexFromSettings, flyout: get().codexFromFlyout, codexFromSettings: false, codexFromFlyout: null }),
+    closeCodex: () => set({ codexOpen: false, settingsOpen: get().codexFromSettings, marketOpen: get().codexFromMarket, flyout: get().codexFromFlyout, codexFromSettings: false, codexFromMarket: false, codexFromFlyout: null }),
     pendingSaleId: null,
     evaluation: null,
     openFlyout: (flyout) => {

@@ -149,3 +149,22 @@ describe('social window', () => {
     uiStore.getState().closeCodex();
   });
 });
+
+describe('Codex opened from the Market', () => {
+  it('comes back to the Market when the Codex closes', () => {
+    uiStore.setState({ marketOpen: true });
+    uiStore.getState().openCodex(undefined, 'market');
+    expect(uiStore.getState().marketOpen).toBe(false);
+    expect(uiStore.getState().codexPage).toBe('market');
+    uiStore.getState().closeCodex();
+    expect(uiStore.getState().marketOpen).toBe(true);
+    uiStore.setState({ marketOpen: false });
+  });
+
+  it('leaves the Market closed when it was not open', () => {
+    uiStore.setState({ marketOpen: false });
+    uiStore.getState().openCodex(undefined, 'challenges');
+    uiStore.getState().closeCodex();
+    expect(uiStore.getState().marketOpen).toBe(false);
+  });
+});

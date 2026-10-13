@@ -40,7 +40,7 @@ export function pendingTradeEntries(state: GameState): TradeLedgerEntry[] {
   return state.tradeLedger.filter((entry) => !entry.confirmed);
 }
 
-function debit(storage: Storage, lot: readonly TradeLine[]): Storage | ErrorKey {
+export function debitStorage(storage: Storage, lot: readonly TradeLine[]): Storage | ErrorKey {
   const materials = { ...storage.materials } as Record<string, number | undefined>;
   const goods = { ...storage.goods } as Record<string, number | undefined>;
   for (const line of lot) {
@@ -80,7 +80,7 @@ function withEntry(state: GameState, entry: TradeLedgerEntry): GameState {
 
 function applyEffect(state: GameState, effect: TradeEffect, lot: readonly TradeLine[] | undefined, urbs: number | undefined): TradeResult {
   if (effect === 'reserve-lot') {
-    const storage = debit(state.storage, lot!);
+    const storage = debitStorage(state.storage, lot!);
     return typeof storage === 'string' ? { error: storage } : { state: { ...state, storage } };
   }
   if (effect === 'pay') {

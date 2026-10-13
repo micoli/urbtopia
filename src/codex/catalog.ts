@@ -11,7 +11,7 @@ export const HOME_COLOR_VARIANTS: readonly ColorVariant[] = ['default', 'a', 'b'
 
 export type SolarHomeCodexId = `solar-${BuildingType}`;
 export type CodexId = BuildingType | 'solarHome' | SolarHomeCodexId | RoadConstructionId | WaterConstructionId | CropId;
-export type CodexSection = BuildSection | 'codex.roads' | 'codex.water' | 'codex.crops';
+export type CodexSection = BuildSection | 'codex.roads' | 'codex.water' | 'codex.crops' | 'codex.trade';
 
 const DESCRIPTIONS = {
   ...Object.fromEntries(BUILDING_ENTRIES.map(({ id, family }) => [id, family ? `codex.description.nature.${family}` : `codex.description.${id}`])) as Record<BuildingType, MessageKey>,
@@ -55,6 +55,7 @@ export const CODEX_SECTIONS: readonly CodexSection[] = [
   'codex.crops',
   'codex.roads',
   'codex.water',
+  'codex.trade',
   DECORATION_SECTION,
   GREEN_SPACES_SECTION,
 ];

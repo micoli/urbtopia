@@ -106,6 +106,21 @@ function isTradeLedgerEntry(value: unknown): boolean {
   return value.peer === undefined || typeof value.peer === 'string';
 }
 
+function isChallengeProgress(value: unknown): boolean {
+  if (!isRecord(value) || typeof value.id !== 'string' || value.id === '' || !isNumber(value.deadline)) return false;
+  if (!isArrayOf(value.goal, isTradeLine) || (value.goal as unknown[]).length === 0 || (value.goal as unknown[]).length > TRADE_LIMITS.maxLines) return false;
+  if (!isRecord(value.stock)) return false;
+  const goal = value.goal as { item: string; quantity: number }[];
+  return Object.entries(value.stock).every(([item, amount]) => {
+    const line = goal.find((candidate) => candidate.item === item);
+    return line !== undefined && isInt(amount, 0, line.quantity);
+  });
+}
+
+function isChallengeClaim(value: unknown): boolean {
+  return isRecord(value) && typeof value.id === 'string' && value.id !== '' && isNumber(value.at) && isInt(value.urbs, 0);
+}
+
 function isMarket(value: unknown): boolean {
   return isRecord(value) && Object.entries(value).every(([good, price]) => Object.hasOwn(GOODS, good) && isRecord(price) && isNumber(price.points) && isNumber(price.updatedAt));
 }
@@ -142,6 +157,8 @@ export function validateGameState(value: unknown): GameState | null {
   if (value.bridges !== undefined && !isArrayOf(value.bridges, bridge => isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string))) return null;
   if (value.casinoRng !== undefined && !isNumber(value.casinoRng)) return null;
   if (value.difficulty !== undefined && !isDifficulty(value.difficulty)) return null;
+  if (value.challenge !== undefined && !isChallengeProgress(value.challenge)) return null;
+  if (value.challengeClaims !== undefined && !isArrayOf(value.challengeClaims, isChallengeClaim)) return null;
   if (value.ecologyDismissed !== undefined && typeof value.ecologyDismissed !== 'boolean') return null;
   if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&
     isArrayOf(line.stops, id => isInt(id, 0)) && (line.stops as number[]).length >= 2 &&

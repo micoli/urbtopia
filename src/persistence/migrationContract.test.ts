@@ -75,3 +75,44 @@ describe('save migration contract', () => {
     expect({ version: CURRENT_VERSION, keys: [...keys].sort() }).toEqual(SCHEMA_SNAPSHOT);
   });
 });
+
+describe('Challenge progress in the save', () => {
+  const v14 = JSON.parse(fixtureText(14));
+  const challenge = { id: 'c1', goal: [{ item: 'wood', quantity: 5 }], stock: { wood: 2 }, deadline: 1_700_086_400_000 };
+  const load = (value: unknown) => parseEnvelope(JSON.stringify({ ...v14, state: { ...v14.state, challenge: value } }));
+
+  it('loads a save without any Challenge', () => {
+    const loaded = parseEnvelope(JSON.stringify(v14));
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.challenge).toBeUndefined();
+  });
+
+  it('keeps an accepted Challenge and its stock', () => {
+    const loaded = load(challenge);
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.challenge).toEqual(challenge);
+  });
+
+  it('refuses a damaged Challenge', () => {
+    for (const damaged of [{ ...challenge, id: '' }, { ...challenge, goal: [] }, { ...challenge, stock: { wood: 6 } }, { ...challenge, stock: { stone: 1 } }, { ...challenge, deadline: 'soon' }, 'nope']) {
+      expect(load(damaged), JSON.stringify(damaged)).toEqual({ ok: false, reason: 'invalid-state' });
+    }
+  });
+});
+
+describe('Challenge claims in the save', () => {
+  const v14 = JSON.parse(fixtureText(14));
+  const load = (value: unknown) => parseEnvelope(JSON.stringify({ ...v14, state: { ...v14.state, challengeClaims: value } }));
+
+  it('keeps the claims', () => {
+    const loaded = load([{ id: 'c1', at: 1_700_000_000_000, urbs: 90 }]);
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.challengeClaims).toHaveLength(1);
+  });
+
+  it('refuses damaged claims', () => {
+    for (const damaged of ['nope', [{ id: '', at: 1, urbs: 1 }], [{ id: 'c1', at: 1, urbs: -1 }], [{ id: 'c1', at: 'x', urbs: 1 }]]) {
+      expect(load(damaged), JSON.stringify(damaged)).toEqual({ ok: false, reason: 'invalid-state' });
+    }
+  });
+});

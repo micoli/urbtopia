@@ -4,6 +4,7 @@ import { bootResult, gameStore } from '../store/gameStore';
 import { readOnlyStore } from '../store/readOnlyStore';
 import { createAutosave } from './autosave';
 import { saveNowHandle } from './saveNow';
+import { installChallenges } from '../challenges/installChallenges';
 import { installSocial } from '../social/installSocial';
 import { installCloudSync } from './cloud/installCloud';
 import { saveSession, saveStore } from './instance';
@@ -73,11 +74,13 @@ export function installPersistence(): () => void {
 
   const disposeCloud = installCloudSync();
   const disposeSocial = installSocial();
+  const disposeChallenges = installChallenges();
 
   return () => {
     saveNowHandle.current = () => {};
     disposeCloud();
     disposeSocial();
+    disposeChallenges();
     unsubscribe();
     document.removeEventListener('visibilitychange', onVisibility);
     window.removeEventListener('pagehide', autosave.flush);

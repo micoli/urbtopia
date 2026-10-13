@@ -38,8 +38,10 @@ import { roadPath } from '../map/roads';
 import { roadTierUpgradeCost } from '../traffic/roadTier';
 import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
+import { clearChallenge, completeChallenge, setAsideForChallenge, startChallenge, type ChallengeResult } from '../challenges/challengeStock';
 import { applyTradeEffect, confirmTradeEffect, rollbackTradeEffect, type TradeResult } from '../trade/tradeLedger';
 import type { TradeEffect, TradeLine } from '../trade/types';
+import type { ChallengeRewardKind } from '../challenges/types';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import type { BlackjackAction } from '../leisure/blackjack';
 import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, ColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
@@ -117,6 +119,10 @@ export type Command =
   | { readonly type: 'TradeApply'; readonly offerId: string; readonly effect: TradeEffect; readonly lot?: readonly TradeLine[]; readonly urbs?: number; readonly peer?: string }
   | { readonly type: 'TradeConfirm'; readonly offerId: string; readonly effect: TradeEffect }
   | { readonly type: 'TradeRollback'; readonly offerId: string; readonly effect: TradeEffect }
+  | { readonly type: 'ChallengeStart'; readonly id: string; readonly goal: readonly TradeLine[]; readonly deadline: number }
+  | { readonly type: 'ChallengeSetAside'; readonly item: string; readonly quantity: number }
+  | { readonly type: 'ChallengeComplete'; readonly id: string; readonly rewardKind: ChallengeRewardKind }
+  | { readonly type: 'ChallengeClear' }
   | { readonly type: 'SkipTime'; readonly hours: number }
   | { readonly type: 'SkipTutorialStep' }
   | { readonly type: 'SkipTutorial' };
@@ -207,7 +213,13 @@ export type ErrorKey =
   | 'error.alreadyThisColor'
   | 'error.unavailableColor'
   | 'error.invalidTradeLot'
-  | 'error.unknownTrade';
+  | 'error.unknownTrade'
+  | 'error.invalidChallenge'
+  | 'error.challengeBusy'
+  | 'error.noChallenge'
+  | 'error.notInChallenge'
+  | 'error.challengeSurplus'
+  | 'error.challengeInProgress';
 
 export interface CommandError {
   key: ErrorKey;
@@ -349,6 +361,14 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return tradeOutcome(confirmTradeEffect(state, command.offerId, command.effect));
     case 'TradeRollback':
       return tradeOutcome(rollbackTradeEffect(state, command.offerId, command.effect));
+    case 'ChallengeStart':
+      return challengeOutcome(startChallenge(state, command));
+    case 'ChallengeSetAside':
+      return challengeOutcome(setAsideForChallenge(state, command.item, command.quantity));
+    case 'ChallengeComplete':
+      return challengeOutcome(completeChallenge(state, command.id, command.rewardKind, now));
+    case 'ChallengeClear':
+      return { state: clearChallenge(state), events: [] };
     case 'SkipTime':
       return skipTime(state, command.hours, now);
     case 'SkipTutorialStep':
@@ -361,11 +381,13 @@ export function handleCommand(state: GameState, command: Command, now: number): 
 }
 
 function skipTime(state: GameState, hours: number, now: number): CommandOutcome {
+  if (state.challenge) return fail('error.challengeInProgress');
   if (!Number.isFinite(hours) || hours <= 0 || hours * HOUR_MS > Number.MAX_SAFE_INTEGER) return fail('error.invalidQuantity');
   return skipMs(state, hours * HOUR_MS, now);
 }
 
 function skipTutorialStep(state: GameState, now: number): CommandOutcome {
+  if (state.challenge) return fail('error.challengeInProgress');
   const skippedMs = tutorialSkipMs(state, now);
   if (skippedMs === null) return fail('error.nothingToSkip');
   return skipMs(state, skippedMs, now);
@@ -692,6 +714,10 @@ function stockShop(state: GameState, buildingId: number, good: GoodId, now: numb
     },
     events: [],
   };
+}
+
+function challengeOutcome(result: ChallengeResult): CommandOutcome {
+  return 'error' in result ? fail(result.error) : { state: result.state, events: [] };
 }
 
 function tradeOutcome(result: TradeResult): CommandOutcome {

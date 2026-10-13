@@ -1,4 +1,5 @@
 import { useStore } from 'zustand';
+import { challengeStore, type ChallengeStore } from '../../store/challengeStore';
 import { cloudStore, type CloudStore } from '../../store/cloudStore';
 import { gameStore, type GameStore } from '../../store/gameStore';
 import { dialogStore, type DialogStore } from '../../store/dialogStore';
@@ -28,4 +29,8 @@ export function useCloud<T>(selector: (store: CloudStore) => T): T {
 
 export function useSocial<T>(selector: (store: SocialStore) => T): T {
   return useStore(socialStore, selector);
+}
+
+export function useChallenges<T>(selector: (store: ChallengeStore) => T): T {
+  return useStore(challengeStore, selector);
 }
