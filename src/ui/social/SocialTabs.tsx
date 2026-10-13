@@ -18,5 +18,8 @@ export function SocialTabs({tab, friendsPending, exchangesPending, onSelect}: So
             {t('social.tab.friends')}
             {friendsPending > 0 ? <small className="social-tab-badge">{friendsPending > 9 ? '9+' : friendsPending}</small> : null}
         </button>
+        <button type="button" role="tab" id="social-tab-profile" aria-selected={tab === 'profile'} aria-controls="social-panel" onClick={() => onSelect('profile')}>
+            {t('social.tab.profile')}
+        </button>
     </div>;
 }

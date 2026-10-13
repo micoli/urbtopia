@@ -8,4 +8,5 @@ type Story = StoryObj<typeof meta>;
 
 export const Friends: Story = {};
 export const Exchanges: Story = { args: { tab: 'exchanges' } };
+export const Profile: Story = { args: { tab: 'profile' } };
 export const WithPending: Story = { args: { friendsPending: 2, exchangesPending: 12 } };

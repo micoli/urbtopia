@@ -17,6 +17,8 @@ const meta = {
     onDelete: noop,
     codeActions: { send: noop, verify: noop, cancel: noop },
     onSignOut: noop,
+    onOpenSocial: noop,
+    focusAccount: false,
   },
 } satisfies Meta<typeof CloudSavePanel>;
 

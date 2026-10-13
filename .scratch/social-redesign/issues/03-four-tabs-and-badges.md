@@ -11,6 +11,6 @@ Social window with Friends, Groups, Exchanges, Profile tabs, each with its badge
 ## Acceptance criteria
 
 - [ ] Tabs accessible (`tablist`, keyboard, short labels with icons on phone width).
-- [ ] Friends tab no longer shows Handle, Avatar, findable or blocked list.
+- [x] Friends tab no longer shows Handle, Avatar, findable or blocked list (done in 02, with the Profile tab).
 - [ ] `pendingCount` helpers cover the cumulated badge; unit tests.
 - [ ] Storybook stories and component tests updated.

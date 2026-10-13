@@ -1,6 +1,6 @@
 # Single sign-in in Settings and Profile tab
 
-Status: ready-for-agent
+Status: done - tsc, eslint, vitest and build pass
 Blocked by: none
 Spec: ../spec.md
 
@@ -10,8 +10,8 @@ Remove the email code form from the Friends tab. A signed-out player opening Soc
 
 ## Acceptance criteria
 
-- [ ] `FriendsPanel` no longer renders `EmailCodeForm`; `EmailCodeForm` is used in Settings only.
-- [ ] Signed-out CTA states the benefit in FR and EN; the button opens Settings scrolled and focused on Account; Social reopens automatically after sign-in.
-- [ ] Profile tab holds Handle form (30-day delay), Avatar picker, findable toggle, blocked list; the Handle step is shown here when the account has an email but no Handle.
-- [ ] Account block is read-only (email, Cloud save status) with a link to Settings.
-- [ ] `defaultSocialTab` updated; component tests with the fake clients; stories updated.
+- [x] `FriendsPanel` no longer renders `EmailCodeForm`; `EmailCodeForm` is used in Settings only.
+- [x] Signed-out CTA states the benefit in FR and EN; the button opens Settings scrolled and focused on Account; Social reopens automatically after sign-in.
+- [x] Profile tab holds Handle form (30-day delay), Avatar picker, findable toggle, blocked list; the Handle step is shown here when the account has an email but no Handle.
+- [x] Account block is read-only (email, Cloud save status) with a link to Settings.
+- [x] `defaultSocialTab` updated; component tests with the fake clients; stories updated.

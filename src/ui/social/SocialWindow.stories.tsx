@@ -13,5 +13,6 @@ const READY = { enabled: true, status: 'ready' as const, profile: SOCIAL_PROFILE
 
 export const Friends: Story = { parameters: { stores: { ui: { socialOpen: true, socialTab: 'friends' }, cloud: SIGNED_IN, social: READY } } };
 export const Exchanges: Story = { parameters: { stores: { ui: { socialOpen: true, socialTab: 'exchanges' }, cloud: SIGNED_IN, social: READY } } };
+export const Profile: Story = { parameters: { stores: { ui: { socialOpen: true, socialTab: 'profile' }, cloud: SIGNED_IN, social: READY } } };
 export const SignedOut: Story = { parameters: { stores: { ui: { socialOpen: true } } } };
 export const NoHandle: Story = { parameters: { stores: { ui: { socialOpen: true }, cloud: SIGNED_IN, social: { enabled: true, status: 'no-handle', actions: SOCIAL_ACTIONS } } } };
