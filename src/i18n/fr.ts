@@ -81,6 +81,7 @@ export const FR: Record<MessageKey, string> = {
   'error.noChallenge': 'Aucun défi en cours.',
   'error.notInChallenge': 'Le défi n’a plus besoin de cet objet.',
   'error.challengeSurplus': 'Le défi demande moins d’unités de cet objet.',
+  'error.challengeInProgress': 'Un défi est en cours : impossible d’avancer le temps.',
   'eco.title': 'Gestion de la ville',
   'eco.units': 'Indicateurs du jeu, sans valeur scientifique. Puissance : unités/heure ; stockage : unités d’énergie.',
   'eco.insulate': 'Isoler',

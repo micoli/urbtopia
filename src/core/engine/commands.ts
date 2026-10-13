@@ -218,7 +218,8 @@ export type ErrorKey =
   | 'error.challengeBusy'
   | 'error.noChallenge'
   | 'error.notInChallenge'
-  | 'error.challengeSurplus';
+  | 'error.challengeSurplus'
+  | 'error.challengeInProgress';
 
 export interface CommandError {
   key: ErrorKey;
@@ -380,11 +381,13 @@ export function handleCommand(state: GameState, command: Command, now: number): 
 }
 
 function skipTime(state: GameState, hours: number, now: number): CommandOutcome {
+  if (state.challenge) return fail('error.challengeInProgress');
   if (!Number.isFinite(hours) || hours <= 0 || hours * HOUR_MS > Number.MAX_SAFE_INTEGER) return fail('error.invalidQuantity');
   return skipMs(state, hours * HOUR_MS, now);
 }
 
 function skipTutorialStep(state: GameState, now: number): CommandOutcome {
+  if (state.challenge) return fail('error.challengeInProgress');
   const skippedMs = tutorialSkipMs(state, now);
   if (skippedMs === null) return fail('error.nothingToSkip');
   return skipMs(state, skippedMs, now);

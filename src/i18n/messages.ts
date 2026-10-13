@@ -76,6 +76,7 @@ export const MESSAGES = {
   'error.noChallenge': 'No Challenge is in progress.',
   'error.notInChallenge': 'The Challenge does not need this item any more.',
   'error.challengeSurplus': 'The Challenge needs fewer units of this item.',
+  'error.challengeInProgress': 'A Challenge is in progress: time cannot be skipped.',
   'eco.title': 'City management',
   'eco.units': 'Game indicators, not scientific measurements. Power: units/hour; storage: energy units.',
   'eco.insulate': 'Insulate',

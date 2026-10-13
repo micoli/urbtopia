@@ -140,3 +140,17 @@ describe('ChallengeComplete', () => {
     expect(run(old, { type: 'ChallengeComplete', id: 'c1', rewardKind: 'urbs' }).challengeClaims?.map((claim) => claim.id)).toEqual(['c1']);
   });
 });
+
+describe('Time skip lock', () => {
+  it('refuses a Time skip and a Tutorial step skip while a Challenge is accepted', () => {
+    const state = start(stocked());
+    expect(failure(state, { type: 'SkipTime', hours: 12 })).toBe('error.challengeInProgress');
+    expect(failure(state, { type: 'SkipTutorialStep' })).toBe('error.challengeInProgress');
+  });
+
+  it('allows a Time skip again once the Challenge is cleared, and keeps Catch-up', () => {
+    const cleared = run(start(stocked()), { type: 'ChallengeClear' });
+    expect(failure(cleared, { type: 'SkipTime', hours: 12 })).toBeNull();
+    expect(advance(start(stocked()), T0 + 30 * HOUR).state.challenge).toBeDefined();
+  });
+});

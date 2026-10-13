@@ -27,6 +27,7 @@ export function TutorialBanner() {
 
   const send = gameStore.getState().send;
   const canSkipTime = tutorialSkipMs(state, state.lastSeen) !== null;
+  const challengeRunning = state.challenge !== undefined;
   const skipTutorial = () => {
     setConfirming(false);
     send({ type: 'SkipTutorial' });
@@ -63,7 +64,7 @@ export function TutorialBanner() {
       </p>
       <ButtonRow align="start">
         {canSkipTime ? (
-          <ActionButton variant="primary" onClick={() => send({ type: 'SkipTutorialStep' })}>
+          <ActionButton variant="primary" onClick={() => send({ type: 'SkipTutorialStep' })} disabled={challengeRunning} title={challengeRunning ? t('error.challengeInProgress') : undefined}>
             {t('tutorial.timeSkip')}
           </ActionButton>
         ) : null}

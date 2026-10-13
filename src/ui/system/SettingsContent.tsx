@@ -23,6 +23,7 @@ import { PanelHeader } from '../common/PanelHeader';
 export function SettingsContent() {
   const toggle = useUi((store) => store.toggleSettings);
   const seed = useGame((store) => store.state.seed);
+  const challengeRunning = useGame((store) => store.state.challenge !== undefined);
   const [confirming, setConfirming] = useState(false);
   const [newDifficulty, setNewDifficulty] = useState<Difficulty>('cozy');
   const skipTime = (hours: number) => {
@@ -63,7 +64,7 @@ export function SettingsContent() {
             {t('settings.install')}
           </ActionButton>
         ) : null}
-          <ActionButton onClick={() => skipTime(12)}>
+          <ActionButton onClick={() => skipTime(12)} disabled={challengeRunning} title={challengeRunning ? t('error.challengeInProgress') : undefined}>
             {t('settings.skip12')}
           </ActionButton>
         <ActionButton onClick={exportCurrentCity}>
