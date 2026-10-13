@@ -1,3 +1,4 @@
+import type { MedalInfo } from '../challenges/types';
 import type { TradeLine } from '../core';
 import { isAvatarId } from './avatar';
 import { FakeGroupBook } from './fakeGroupBook';
@@ -46,6 +47,7 @@ export class FakeSocialWorld {
   private links: Link[] = [];
   messages: StoredMessage[] = [];
   private nextMessageId = 1;
+  private medals = new Map<string, MedalInfo[]>();
   readonly trades: FakeTradeBook;
   readonly groups: FakeGroupBook;
 
@@ -159,6 +161,15 @@ export class FakeSocialWorld {
       this.groups.prune(a, b);
     }
     this.bump(a, b);
+  }
+
+  medalsOf(userId: string): MedalInfo[] {
+    return this.medals.get(userId) ?? [];
+  }
+
+  giveMedal(userId: string, medal: MedalInfo): void {
+    this.medals.set(userId, [...this.medalsOf(userId), medal]);
+    this.bump(userId);
   }
 
   bump(...userIds: string[]): void {
@@ -280,7 +291,7 @@ export class FakeSocialClient implements SocialClient {
       handleChangedAt: me.handleChangedAt,
       friends: links
         .filter((link) => link.state === 'accepted')
-        .map((link) => ({ userId: userIdOf(link), handle: handleOf(link), avatar: avatarOf(link), since: link.updatedAt, ...this.conversationSummary(userIdOf(link)) }))
+        .map((link) => ({ userId: userIdOf(link), handle: handleOf(link), avatar: avatarOf(link), since: link.updatedAt, ...this.conversationSummary(userIdOf(link)), medals: this.world.medalsOf(userIdOf(link)) }))
         .sort((a, b) => a.handle.toLowerCase().localeCompare(b.handle.toLowerCase())),
       incoming: links
         .filter((link) => link.state === 'pending' && link.actorId !== this.userId)

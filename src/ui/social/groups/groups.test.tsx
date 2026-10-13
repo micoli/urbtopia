@@ -15,8 +15,8 @@ const actions: GroupActions = {
 };
 
 const friends: Friend[] = [
-  { userId: 'b', handle: 'Bob', avatar: null, since: 0, unread: 0, lastMessageAt: null },
-  { userId: 'c', handle: 'Carol', avatar: null, since: 0, unread: 0, lastMessageAt: null },
+  { userId: 'b', handle: 'Bob', avatar: null, since: 0, unread: 0, lastMessageAt: null, medals: [] },
+  { userId: 'c', handle: 'Carol', avatar: null, since: 0, unread: 0, lastMessageAt: null, medals: [] },
 ];
 
 const group: Group = {

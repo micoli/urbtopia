@@ -286,6 +286,8 @@ export type Database = {
           challenge_id: string;
           earned_at: string;
           medal_code: string;
+          name_en: string | null;
+          name_fr: string | null;
           user_id: string;
         };
         ComputedFields: never;
@@ -293,12 +295,16 @@ export type Database = {
           challenge_id: string;
           earned_at?: string;
           medal_code: string;
+          name_en?: string | null;
+          name_fr?: string | null;
           user_id: string;
         };
         Update: {
           challenge_id?: string;
           earned_at?: string;
           medal_code?: string;
+          name_en?: string | null;
+          name_fr?: string | null;
           user_id?: string;
         };
         Relationships: [
@@ -510,6 +516,7 @@ export type Database = {
       urb_add_group_members: { Args: { p_group: string; p_members: string[] }; Returns: undefined };
       urb_are_friends: { Args: { p_a: string; p_b: string }; Returns: boolean };
       urb_block_user: { Args: { p_user: string }; Returns: undefined };
+      urb_bump_friends: { Args: { p_user: string }; Returns: undefined };
       urb_bump_group_members: { Args: { p_group: string }; Returns: undefined };
       urb_bump_groups: { Args: { p_user: string }; Returns: undefined };
       urb_bump_social: { Args: { p_user: string }; Returns: undefined };

@@ -33,10 +33,15 @@ export interface AcceptedChallenge {
   deadline: number;
 }
 
-export interface Medal {
-  challengeId: string;
+export interface MedalInfo {
   medalCode: string;
+  nameFr: string | null;
+  nameEn: string | null;
   earnedAt: number;
+}
+
+export interface Medal extends MedalInfo {
+  challengeId: string;
 }
 
 export interface ChallengeSnapshot {

@@ -1,3 +1,4 @@
+import type { MedalInfo } from '../challenges/types';
 import { TRADE_EFFECTS, TRADE_LIMITS, type TradeEffect, type TradeLine } from '../core';
 import { SocialError, type BlockedPlayer, type Friend, type Group, type GroupMessage, type GroupsSnapshot, type FriendRequest, type Message, type SocialSnapshot, type TradeClaim, type TradeOffer, type TradeOfferState, type TradeSlot } from './types';
 
@@ -37,6 +38,12 @@ function number(row: Row, key: string): number {
   return value;
 }
 
+// The Medals of a Friend; an older server sends none.
+function parseMedals(value: unknown): MedalInfo[] {
+  if (value === undefined) return [];
+  return rows(value).map((row) => ({ medalCode: text(row, 'medalCode'), nameFr: optionalText(row, 'nameFr'), nameEn: optionalText(row, 'nameEn'), earnedAt: time(row, 'earnedAt') }));
+}
+
 export function parseSnapshot(json: unknown): SocialSnapshot {
   if (!isRow(json)) throw new SocialError('unknown');
   const revision = number(json, 'revision');
@@ -49,7 +56,7 @@ export function parseSnapshot(json: unknown): SocialSnapshot {
     avatar: optionalText(json, 'avatar'),
     findable: json.findable,
     handleChangedAt: time(json, 'handleChangedAt'),
-    friends: rows(json.friends).map((row): Friend => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), avatar: optionalText(row, 'avatar'), since: time(row, 'since'), unread: number(row, 'unread'), lastMessageAt: row.lastMessageAt === null ? null : time(row, 'lastMessageAt') })),
+    friends: rows(json.friends).map((row): Friend => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), avatar: optionalText(row, 'avatar'), since: time(row, 'since'), unread: number(row, 'unread'), lastMessageAt: row.lastMessageAt === null ? null : time(row, 'lastMessageAt'), medals: parseMedals(row.medals) })),
     incoming: rows(json.incoming).map((row): FriendRequest => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), avatar: optionalText(row, 'avatar'), at: time(row, 'at') })),
     outgoing: rows(json.outgoing).map((row): FriendRequest => ({ userId: text(row, 'userId'), handle: text(row, 'handle'), avatar: optionalText(row, 'avatar'), at: time(row, 'at') })),
     offers: json.offers === undefined ? [] : rows(json.offers).map(parseOffer),

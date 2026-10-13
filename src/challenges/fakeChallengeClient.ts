@@ -79,7 +79,7 @@ class FakeChallengeClient implements ChallengeClient {
     const alreadyClaimed = acceptance.state === 'completed';
     if (!alreadyClaimed) {
       acceptance.state = 'completed';
-      if (challenge.rewardKind === 'medal' && challenge.medalCode) this.world.addMedal(user, { challengeId, medalCode: challenge.medalCode, earnedAt: this.world.now() });
+      if (challenge.rewardKind === 'medal' && challenge.medalCode) this.world.addMedal(user, { challengeId, medalCode: challenge.medalCode, nameFr: challenge.nameFr, nameEn: challenge.nameEn, earnedAt: this.world.now() });
     }
     return { challengeId, rewardKind: challenge.rewardKind, goal: challenge.goal, medalCode: challenge.medalCode, alreadyClaimed };
   }

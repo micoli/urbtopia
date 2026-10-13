@@ -30,6 +30,7 @@ const panel = (props: Partial<Parameters<typeof ProfilePanel>[0]> = {}) =>
       status="ready"
       profile={profile}
       handleForm={{ kind: 'idle' }}
+      medals={[]}
       now={0}
       changeDelayMs={30 * DAY_MS}
       onManageAccount={noop}
@@ -39,6 +40,18 @@ const panel = (props: Partial<Parameters<typeof ProfilePanel>[0]> = {}) =>
   );
 
 describe('profile panel', () => {
+  it('says the player has no Medal yet', () => {
+    expect(panel()).toContain(t('medal.none'));
+  });
+
+  it('lists the Medals in the language of the player', () => {
+    const medals = [{ medalCode: 'port-festival', nameFr: 'Fête du port', nameEn: 'Port festival', earnedAt: 1 }, { medalCode: 'harvest-week', nameFr: null, nameEn: null, earnedAt: 2 }];
+    const html = panel({ medals });
+    expect(html).toContain('Port festival');
+    expect(html).toContain('Harvest week');
+    expect(html).not.toContain(t('medal.none'));
+  });
+
   it('asks for a Handle once the account has an email', () => {
     const html = panel({ profile: null, status: 'no-handle' });
     expect(html).toContain(t('friends.chooseHandle'));

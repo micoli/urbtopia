@@ -15,7 +15,7 @@ const offer = (change: Partial<TradeOffer> = {}): TradeOffer => ({
   createdAt: 0, expiresAt: 1, claimDeadline: null, claimable: [], claimed: [], ...change,
 });
 
-const profile = (offers: TradeOffer[], friends: SocialState['friends'] = [{ userId: 'a', handle: 'Alice', avatar: null, since: 0, unread: 0, lastMessageAt: null }]): SocialState => ({
+const profile = (offers: TradeOffer[], friends: SocialState['friends'] = [{ userId: 'a', handle: 'Alice', avatar: null, since: 0, unread: 0, lastMessageAt: null, medals: [] }]): SocialState => ({
   revision: 1, handle: 'Bob', avatar: null, findable: true, handleChangedAt: 0, friends, incoming: [], outgoing: [], blocked: [], offers,
 });
 

@@ -54,6 +54,13 @@ describe('parseSnapshot', () => {
     blocked: [{ userId: 'd', handle: 'Dave' }],
   };
 
+  it('parses the Medals of a Friend', () => {
+    const withMedals = { ...full, friends: [{ ...(full.friends[0] as object), medals: [{ medalCode: 'port-festival', nameFr: 'Fête du port', nameEn: null, earnedAt: '2026-10-12T10:00:00Z' }] }] };
+    const parsed = parseSnapshot(withMedals);
+    expect(parsed.changed && parsed.friends[0]?.medals).toEqual([{ medalCode: 'port-festival', nameFr: 'Fête du port', nameEn: null, earnedAt: Date.parse('2026-10-12T10:00:00Z') }]);
+    expect(() => parseSnapshot({ ...full, friends: [{ ...(full.friends[0] as object), medals: 'nope' }] })).toThrow();
+  });
+
   it('parses a full state', () => {
     expect(parseSnapshot(full)).toEqual({
       changed: true,
@@ -62,7 +69,7 @@ describe('parseSnapshot', () => {
       avatar: 'character-male-a',
       findable: true,
       handleChangedAt: Date.parse('2026-10-11T10:00:00Z'),
-      friends: [{ userId: 'b', handle: 'Bob', avatar: null, since: Date.parse('2026-10-11T11:00:00Z'), unread: 2, lastMessageAt: Date.parse('2026-10-11T11:30:00Z') }],
+      friends: [{ userId: 'b', handle: 'Bob', avatar: null, since: Date.parse('2026-10-11T11:00:00Z'), unread: 2, lastMessageAt: Date.parse('2026-10-11T11:30:00Z'), medals: [] }],
       incoming: [{ userId: 'c', handle: 'Carol', avatar: null, at: Date.parse('2026-10-11T12:00:00Z') }],
       outgoing: [],
       blocked: [{ userId: 'd', handle: 'Dave', avatar: null }],

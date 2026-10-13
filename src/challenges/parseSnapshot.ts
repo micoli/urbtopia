@@ -1,5 +1,5 @@
 import { isGood, isMaterial, type TradeLine } from '../core';
-import { ChallengeError, type AcceptedChallenge, type Challenge, type ChallengeDeclaration, type ChallengeDifficulty, type ChallengeKind, type ChallengeRewardKind, type ChallengeSnapshot, type Medal } from './types';
+import { ChallengeError, type AcceptedChallenge, type Challenge, type ChallengeDeclaration, type ChallengeDifficulty, type ChallengeKind, type ChallengeRewardKind, type ChallengeSnapshot, type Medal, type MedalInfo } from './types';
 
 type Row = Record<string, unknown>;
 
@@ -76,6 +76,10 @@ function parseChallenge(source: Row): Challenge {
   };
 }
 
+function parseMedalInfo(source: Row): MedalInfo {
+  return { medalCode: text(source, 'medalCode'), nameFr: optionalText(source, 'nameFr'), nameEn: optionalText(source, 'nameEn'), earnedAt: time(source, 'earnedAt') };
+}
+
 function parseAccepted(value: unknown): AcceptedChallenge | null {
   if (value === null || value === undefined) return null;
   const source = row(value);
@@ -95,7 +99,7 @@ export function parseChallengeSnapshot(json: unknown): ChallengeSnapshot {
     serverNow: time(source, 'now'),
     challenges: rows(source.challenges).map(parseChallenge).filter(({ goal }) => knowsEveryItem(goal)),
     accepted: parseAccepted(source.accepted),
-    medals: rows(source.medals).map((medal): Medal => ({ challengeId: text(medal, 'challengeId'), medalCode: text(medal, 'medalCode'), earnedAt: time(medal, 'earnedAt') })),
+    medals: rows(source.medals).map((medal): Medal => ({ challengeId: text(medal, 'challengeId'), ...parseMedalInfo(medal) })),
   };
 }
 

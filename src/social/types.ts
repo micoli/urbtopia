@@ -1,3 +1,4 @@
+import type { MedalInfo } from '../challenges/types';
 import type { TradeEffect, TradeLine } from '../core';
 
 export type SocialErrorKind =
@@ -45,6 +46,7 @@ export interface Friend {
   since: number;
   unread: number;
   lastMessageAt: number | null;
+  medals: MedalInfo[];
 }
 
 export interface Message {

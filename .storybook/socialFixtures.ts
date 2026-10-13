@@ -74,8 +74,8 @@ export const SOCIAL_PROFILE: SocialState = {
   findable: true,
   handleChangedAt: NOW - 48 * HOUR,
   friends: [
-    { userId: 'friend-1', handle: 'RiverCity', avatar: 'character-male-b', since: NOW - 72 * HOUR, unread: 2, lastMessageAt: NOW - HOUR },
-    { userId: 'friend-2', handle: 'HillTown', avatar: null, since: NOW - 24 * HOUR, unread: 0, lastMessageAt: null },
+    { userId: 'friend-1', handle: 'RiverCity', avatar: 'character-male-b', since: NOW - 72 * HOUR, unread: 2, lastMessageAt: NOW - HOUR, medals: [] },
+    { userId: 'friend-2', handle: 'HillTown', avatar: null, since: NOW - 24 * HOUR, unread: 0, lastMessageAt: null, medals: [] },
   ],
   incoming: [{ userId: 'user-3', handle: 'NewNeighbour', avatar: 'character-female-d', at: NOW - HOUR }],
   outgoing: [{ userId: 'user-4', handle: 'FarAway', avatar: null, at: NOW - 2 * HOUR }],

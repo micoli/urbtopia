@@ -9,8 +9,8 @@ const profile: SocialState = {
   findable: true,
   handleChangedAt: 0,
   friends: [
-    { userId: 'b', handle: 'Bob', avatar: null, since: 0, unread: 2, lastMessageAt: 0 },
-    { userId: 'c', handle: 'Carol', avatar: null, since: 0, unread: 1, lastMessageAt: 0 },
+    { userId: 'b', handle: 'Bob', avatar: null, since: 0, unread: 2, lastMessageAt: 0, medals: [] },
+    { userId: 'c', handle: 'Carol', avatar: null, since: 0, unread: 1, lastMessageAt: 0, medals: [] },
   ],
   incoming: [{ userId: 'd', handle: 'Dave', avatar: null, at: 0 }],
   outgoing: [{ userId: 'e', handle: 'Erin', avatar: null, at: 0 }],
