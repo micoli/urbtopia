@@ -1,3 +1,4 @@
+import type { ChallengeProgress } from '../challenges/types';
 import type { TradeLedgerEntry } from '../trade/types';
 import type { FleetVehicleId } from '../transit/transitVehicleTypes.generated';
 import type { BuildingId } from '../buildings/buildingTypes.generated';
@@ -170,6 +171,7 @@ export interface GameState {
   adaptationUntil?: number;
   ecologyDismissed?: boolean;
   difficulty?: Difficulty;
+  challenge?: ChallengeProgress;
   seed: string;
   rngState: number;
   casinoRng?: number;

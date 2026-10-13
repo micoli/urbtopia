@@ -38,6 +38,7 @@ import { roadPath } from '../map/roads';
 import { roadTierUpgradeCost } from '../traffic/roadTier';
 import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
 import { canRemoveStorage, compartmentOf, hasStorage, isStorageType, storageCapacity, storageUsed } from '../economy/storage';
+import { clearChallenge, setAsideForChallenge, startChallenge, type ChallengeResult } from '../challenges/challengeStock';
 import { applyTradeEffect, confirmTradeEffect, rollbackTradeEffect, type TradeResult } from '../trade/tradeLedger';
 import type { TradeEffect, TradeLine } from '../trade/types';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
@@ -117,6 +118,9 @@ export type Command =
   | { readonly type: 'TradeApply'; readonly offerId: string; readonly effect: TradeEffect; readonly lot?: readonly TradeLine[]; readonly urbs?: number; readonly peer?: string }
   | { readonly type: 'TradeConfirm'; readonly offerId: string; readonly effect: TradeEffect }
   | { readonly type: 'TradeRollback'; readonly offerId: string; readonly effect: TradeEffect }
+  | { readonly type: 'ChallengeStart'; readonly id: string; readonly goal: readonly TradeLine[]; readonly deadline: number }
+  | { readonly type: 'ChallengeSetAside'; readonly item: string; readonly quantity: number }
+  | { readonly type: 'ChallengeClear' }
   | { readonly type: 'SkipTime'; readonly hours: number }
   | { readonly type: 'SkipTutorialStep' }
   | { readonly type: 'SkipTutorial' };
@@ -207,7 +211,12 @@ export type ErrorKey =
   | 'error.alreadyThisColor'
   | 'error.unavailableColor'
   | 'error.invalidTradeLot'
-  | 'error.unknownTrade';
+  | 'error.unknownTrade'
+  | 'error.invalidChallenge'
+  | 'error.challengeBusy'
+  | 'error.noChallenge'
+  | 'error.notInChallenge'
+  | 'error.challengeSurplus';
 
 export interface CommandError {
   key: ErrorKey;
@@ -349,6 +358,12 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return tradeOutcome(confirmTradeEffect(state, command.offerId, command.effect));
     case 'TradeRollback':
       return tradeOutcome(rollbackTradeEffect(state, command.offerId, command.effect));
+    case 'ChallengeStart':
+      return challengeOutcome(startChallenge(state, command));
+    case 'ChallengeSetAside':
+      return challengeOutcome(setAsideForChallenge(state, command.item, command.quantity));
+    case 'ChallengeClear':
+      return { state: clearChallenge(state), events: [] };
     case 'SkipTime':
       return skipTime(state, command.hours, now);
     case 'SkipTutorialStep':
@@ -692,6 +707,10 @@ function stockShop(state: GameState, buildingId: number, good: GoodId, now: numb
     },
     events: [],
   };
+}
+
+function challengeOutcome(result: ChallengeResult): CommandOutcome {
+  return 'error' in result ? fail(result.error) : { state: result.state, events: [] };
 }
 
 function tradeOutcome(result: TradeResult): CommandOutcome {
