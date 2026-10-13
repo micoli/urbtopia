@@ -82,7 +82,9 @@ describe('exchanges panel', () => {
   it('shows the form with the friends and the stock, and no offer yet', () => {
     const html = panel();
     expect(html).toContain(t('exchanges.new'));
-    expect(html).toContain('>Alice</option>');
+    expect(html).toContain('<span>Alice</span>');
+    expect(html).toContain('role="combobox"');
+    expect(html).not.toContain('<select');
     expect(html).toContain(t('exchanges.available').replace('{N}', '10'));
     expect(html).toContain(t('exchanges.none'));
   });

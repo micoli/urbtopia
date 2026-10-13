@@ -4,6 +4,7 @@ import { TRADE_LIMITS, type TradeLine } from '../../../core';
 import type { TradeFailure } from '../../../social/tradeCoordinator';
 import type { Friend } from '../../../social/types';
 import { ActionButton } from '../../common/ActionButton';
+import { Dropdown } from '../../common/Dropdown';
 import { Note } from '../../common/Note';
 import { LotLineRow, type StockLine } from './LotLineRow';
 import { tradeFailureMessage } from './tradeFailureMessage';
@@ -40,12 +41,10 @@ export function TradeOfferForm({friends, stock, initialFriendId, busy, failure, 
         });
     }}>
         <h4>{t('exchanges.new')}</h4>
-        <label>
-            {t('exchanges.to')}
-            <select value={friendId} onChange={event => setFriendId(event.target.value)}>
-                {friends.map(friend => <option key={friend.userId} value={friend.userId}>{friend.handle}</option>)}
-            </select>
-        </label>
+        <div className="exchange-field">
+            <span>{t('exchanges.to')}</span>
+            <Dropdown label={t('exchanges.to')} value={friendId} options={friends.map(friend => ({value: friend.userId, label: friend.handle}))} onChange={setFriendId}/>
+        </div>
         {lines.map((line, index) => <LotLineRow key={line.item} item={line.item} quantity={line.quantity} choices={freeChoices(line.item)} available={availableOf(line.item)}
             onItem={item => update(index, {item, quantity: 1})} onQuantity={quantity => update(index, {quantity})} onRemove={() => setLines(lines.filter((_, i) => i !== index))}/>)}
         <ActionButton disabled={lines.length >= TRADE_LIMITS.maxLines || unused.length === 0} onClick={() => setLines([...lines, {item: unused[0]!.item, quantity: 1}])}>{t('exchanges.addItem')}</ActionButton>
