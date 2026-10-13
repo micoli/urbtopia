@@ -57,8 +57,8 @@ describe('pendingExchangesCount', () => {
 describe('pendingGroupsCount', () => {
   const group = (id: string, unread: number): Group => ({ id, name: id, creatorId: 'a', members: [], unread, lastMessageAt: null, lastMessageFrom: null, lastMessagePreview: null });
 
-  it('counts the Groups with unread messages, not the messages', () => {
-    expect(pendingGroupsCount([group('1', 5), group('2', 0), group('3', 1)])).toBe(2);
+  it('counts the unread Group messages of every Group', () => {
+    expect(pendingGroupsCount([group('1', 5), group('2', 0), group('3', 1)])).toBe(6);
   });
 
   it('is zero until Groups are loaded', () => {
