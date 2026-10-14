@@ -4,7 +4,9 @@ import { t } from '../../i18n/t';
 import type { Challenge } from '../../challenges/types';
 import { ActionButton } from '../common/ActionButton';
 import { CurrencyText } from '../common/CurrencyText';
+import { useGame } from '../common/hooks';
 import { ChallengeGoalLine } from './ChallengeGoalLine';
+import { storedOf } from './storedOf';
 
 interface ChallengeCardProps {
   challenge: Challenge;
@@ -14,6 +16,7 @@ interface ChallengeCardProps {
 }
 
 export function ChallengeCard({ challenge, blocked, busy, onAccept }: ChallengeCardProps) {
+  const storage = useGame((store) => store.state.storage);
   const reward = challenge.rewardKind === 'urbs' ? t('challenge.rewardUrbs').replace('{amount}', String(challengeReward(challenge.goal))) : t('challenge.rewardMedal');
   return (
     <li className="challenge-card">
@@ -23,7 +26,7 @@ export function ChallengeCard({ challenge, blocked, busy, onAccept }: ChallengeC
       </header>
       <ul className="challenge-lines">
         {challenge.goal.map((line) => (
-          <ChallengeGoalLine key={line.item} item={line.item} quantity={line.quantity} />
+          <ChallengeGoalLine key={line.item} item={line.item} quantity={line.quantity} available={storedOf(storage, line.item)} />
         ))}
       </ul>
       <p className="challenge-reward">

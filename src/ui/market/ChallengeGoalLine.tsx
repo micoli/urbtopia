@@ -26,8 +26,8 @@ export function ChallengeGoalLine({ item, quantity, setAside, available = 0, onS
                 : t('challenge.progress').replace('{done}', String(setAside)).replace('{total}', String(quantity))
             }
             <strong>{itemName(item as ItemId)}</strong>
+            {stock >= 1 ? <small> · {t('challenge.inStorage').replace('{count}', String(stock))}</small> : null}
         </span>
-        {stock >= 1 ? <small>{t('challenge.inStorage').replace('{count}', String(stock))}</small> : null}
       </div>
       {onSetAside && remaining > 0 ? (
         <div className="challenge-line-actions">
