@@ -53,6 +53,7 @@ const texts = {
   'challenge.current': ['In progress', 'En cours'],
   'challenge.timeLeft': ['Time left: {time}', 'Temps restant : {time}'],
   'challenge.progress': ['{done} / {total}', '{done} / {total}'],
+  'challenge.inStorage': ['{count} in storage', '{count} en entrepôt'],
   'challenge.setAsideOne': ['Set aside 1', 'Mettre 1 de côté'],
   'challenge.setAsideMax': ['Set aside {count}', 'Mettre {count} de côté'],
   'challenge.noTimeSkip': ['Time cannot be skipped while a Challenge is in progress.', 'Impossible d’avancer le temps pendant un défi.'],

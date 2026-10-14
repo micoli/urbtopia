@@ -45,6 +45,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       const { hints } = venuePerformance(gameStore.getState().state, venue).layout;
       scene.setWarnings(venue.venue.fixtures.filter(fixture => hints.has(fixture.id) && !isBroken(fixture)).flatMap(fixtureTiles));
       scene.setBroken(venue.venue.fixtures.filter(isBroken).flatMap(fixtureTiles));
+      scene.setWear(venue.venue.fixtures);
     };
     const showCrowd = () => {
       const venue = venueOf(venueId);

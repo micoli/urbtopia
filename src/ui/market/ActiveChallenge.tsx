@@ -6,6 +6,7 @@ import { CurrencyText } from '../common/CurrencyText';
 import { formatDuration } from '../common/formatDuration';
 import { useNow } from '../common/useNow';
 import { ChallengeGoalLine } from './ChallengeGoalLine';
+import { storedOf } from './storedOf';
 
 interface ActiveChallengeProps {
   challenge: Challenge;
@@ -19,7 +20,6 @@ export function ActiveChallenge({ challenge, accepted, state, clockOffset, onSet
   const now = useNow(1000);
   const progress = state.challenge?.id === challenge.id ? state.challenge : undefined;
   const reward = challenge.rewardKind === 'urbs' ? t('challenge.rewardUrbs').replace('{amount}', String(challengeReward(challenge.goal))) : t('challenge.rewardMedal');
-  const stored = (item: string) => (state.storage.materials as Record<string, number | undefined>)[item] ?? (state.storage.goods as Record<string, number | undefined>)[item] ?? 0;
   return (
     <section className="challenge-card challenge-active" aria-label={t('challenge.current')}>
       <header>
@@ -29,7 +29,7 @@ export function ActiveChallenge({ challenge, accepted, state, clockOffset, onSet
       <p className="challenge-time">{t('challenge.timeLeft').replace('{time}', formatDuration(accepted.deadline - (now + clockOffset)))}</p>
       <ul className="challenge-lines">
         {challenge.goal.map((line) => (
-          <ChallengeGoalLine key={line.item} item={line.item} quantity={line.quantity} setAside={progress ? setAsideOf(progress, line.item) : 0} available={stored(line.item)} onSetAside={(quantity) => onSetAside(line.item, quantity)} />
+          <ChallengeGoalLine key={line.item} item={line.item} quantity={line.quantity} setAside={progress ? setAsideOf(progress, line.item) : 0} available={storedOf(state.storage, line.item)} onSetAside={(quantity) => onSetAside(line.item, quantity)} />
         ))}
       </ul>
       <p className="challenge-reward">

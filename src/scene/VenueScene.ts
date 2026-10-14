@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, entranceCell, fixtureFootprint, fixtureIdsOf, type Coord, type VenueFixture, type VenueType } from '../core';
+import { FIXTURES, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, type Coord, type VenueFixture, type VenueType } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { venueCrowdModelsOf } from './venueCrowdModels';
@@ -16,6 +16,12 @@ const BROKEN_COLOR = 0xe5484d;
 const ENTRANCE_COLOR = 0xe8d9a8;
 const VALID_COLOR = 0x35d07f;
 const INVALID_COLOR = 0xe5484d;
+const WEAR_BAR_FROM_CONDITION = 50;
+const WEAR_BAR_ORANGE_HUE = 30 / 360;
+const WEAR_BAR_BACK = 0x1b1f2b;
+const WEAR_BAR_WIDTH = 0.8;
+const WEAR_BAR_THICKNESS = 0.1;
+const WEAR_BAR_HEIGHT = 1.4;
 
 export interface VenueGhost {
   tiles: readonly Coord[];
@@ -38,6 +44,7 @@ export class VenueScene {
   private zoom = 1;
   private pan = { x: 0, z: 0 };
   private brokenRoot = new THREE.Group();
+  private wearRoot = new THREE.Group();
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   private resizeObserver: ResizeObserver;
@@ -72,7 +79,7 @@ export class VenueScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 2.2);
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
-    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowd.root, this.warningRoot, this.brokenRoot, this.selectionRoot, this.ghostRoot);
+    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.selectionRoot, this.ghostRoot);
     this.ready = this.library.ensure([...Object.values(this.shellModels), ...new Set([...fixtureIdsOf(venueType).map(id => FIXTURES[id].model), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
@@ -137,6 +144,27 @@ export class VenueScene {
     this.markTiles(this.warningRoot, tiles, WARNING_COLOR);
   }
 
+  setWear(fixtures: readonly VenueFixture[]): void {
+    this.clear(this.wearRoot, true);
+    for (const fixture of fixtures) {
+      const condition = conditionOf(fixture);
+      if (condition > WEAR_BAR_FROM_CONDITION) continue;
+      const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
+      const bar = new THREE.Group();
+      bar.position.set(fixture.x + width / 2, WEAR_BAR_HEIGHT, fixture.y + depth / 2);
+      bar.quaternion.copy(this.camera.quaternion);
+      const back = new THREE.Mesh(new THREE.PlaneGeometry(WEAR_BAR_WIDTH, WEAR_BAR_THICKNESS), new THREE.MeshBasicMaterial({ color: WEAR_BAR_BACK, depthTest: false }));
+      const wear = (100 - condition) / 100;
+      const fill = new THREE.Mesh(new THREE.PlaneGeometry(WEAR_BAR_WIDTH * wear, WEAR_BAR_THICKNESS), new THREE.MeshBasicMaterial({ color: new THREE.Color().setHSL(WEAR_BAR_ORANGE_HUE * condition / WEAR_BAR_FROM_CONDITION, 0.9, 0.5), depthTest: false }));
+      fill.position.set(-WEAR_BAR_WIDTH * (1 - wear) / 2, 0, 0.001);
+      back.renderOrder = 11;
+      fill.renderOrder = 12;
+      bar.add(back, fill);
+      this.wearRoot.add(bar);
+    }
+    this.dirty = true;
+  }
+
   private markTiles(root: THREE.Group, tiles: readonly Coord[], color: number): void {
     this.clear(root, true);
     if (tiles.length > 0) {
@@ -167,6 +195,7 @@ export class VenueScene {
     this.clear(this.selectionRoot, true);
     this.clear(this.warningRoot, true);
     this.clear(this.brokenRoot, true);
+    this.clear(this.wearRoot, true);
     this.crowd.dispose();
     this.renderer.dispose();
   }

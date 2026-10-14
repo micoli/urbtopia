@@ -13,6 +13,7 @@ type VenueMessageKey =
   | 'error.nothingToRepair'
   | 'venue.repair'
   | 'venue.condition'
+  | 'venue.wear'
   | 'venue.broken'
   | 'venue.worn'
   | 'error.noStaffPost'
@@ -84,6 +85,7 @@ type VenueMessageKey =
   | 'venue.hint.noBath'
   | 'venue.stock'
   | 'venue.stockGood'
+  | 'venue.inStorage'
   | 'venue.stockFill'
   | 'venue.stockLevel'
   | 'venue.stockNoGoods'
@@ -113,6 +115,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.hint.noBath': ['No bathroom within reach: this room counts for nothing.', 'Pas de salle de bain à portée : cette chambre ne compte pas.'],
   'venue.stock': ['Shelf', 'Rayon'],
   'venue.stockGood': ['Good on sale', 'Marchandise en vente'],
+  'venue.inStorage': ['in storage', 'en entrepôt'],
   'venue.stockFill': ['Fill from the Storehouse', 'Remplir depuis l’entrepôt'],
   'venue.stockLevel': ['Stock', 'Stock'],
   'venue.stockNoGoods': ['The Storehouse holds no Goods.', 'L’entrepôt ne contient aucune marchandise.'],
@@ -145,6 +148,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'error.nothingToRepair': ['This Fixture is in perfect condition.', 'Cet équipement est en parfait état.'],
   'venue.repair': ['Repair', 'Réparer'],
   'venue.condition': ['Condition', 'État'],
+  'venue.wear': ['Wear', 'Vétusté'],
   'venue.broken': ['Out of order: it earns nothing until repaired.', 'En panne : il ne rapporte rien tant qu’il n’est pas réparé.'],
   'venue.worn': ['Worn: it may break down soon.', 'Usé : il risque de tomber en panne.'],
   'error.managerRequired': ['Hire a manager first.', 'Embauchez d’abord un manager.'],

@@ -1963,6 +1963,10 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   cursor: not-allowed;
 }
 
+.action-button[aria-disabled='true'] {
+  cursor: not-allowed;
+}
+
 .action-button--primary:disabled {
   background: rgba(255, 255, 255, 0.12);
   color: inherit;
@@ -2311,3 +2315,7 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .groups-picker label { display: flex; align-items: center; gap: 0.5rem; }
 .groups-menu { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0; }
 .groups-author { font-size: 11px; opacity: 0.8; }
+
+.recipe-missing {
+  color: #8b8f99;
+}

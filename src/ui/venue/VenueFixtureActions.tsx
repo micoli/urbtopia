@@ -43,7 +43,12 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
         </>
       ) : (
         <ButtonRow align="stretch" spaced>
-          {repairCost(fixture) > 0 ? <ActionButton variant="primary" onClick={() => send({ type: 'RepairFixture', buildingId: venueId, fixtureId: fixture.id })}>🔧 {t('venue.repair')} <UrbsAmount value={repairCost(fixture)} /></ActionButton> : null}
+          {Math.round(100-conditionOf(fixture)) > 2
+              ? <ActionButton variant="primary" onClick={() => send({ type: 'RepairFixture', buildingId: venueId, fixtureId: fixture.id })}>
+                🔧 {t('venue.repair')} <UrbsAmount value={repairCost(fixture)} />
+                </ActionButton>
+              : null
+          }
           <ActionButton onClick={() => startMove(fixture.id)}>✥ {t('venue.move')}</ActionButton>
           <ActionButton onClick={() => send({ type: 'MoveFixture', buildingId: venueId, fixtureId: fixture.id, x: fixture.x, y: fixture.y, rotation: ((fixture.rotation + 1) % 4) as 0 | 1 | 2 | 3 })}>⟳ {t('venue.rotate')}</ActionButton>
           <ActionButton
