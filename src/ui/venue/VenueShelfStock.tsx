@@ -34,7 +34,7 @@ export function VenueShelfStock({ venueId, fixture }: VenueShelfStockProps) {
               value={fixture.good}
               placeholder="—"
               disabled={locked}
-              options={options.map(good => ({ value: good, label: `${itemName(good)} (${Math.floor(goods[good] ?? 0)})` }))}
+              options={options.map(good => ({ value: good, label: `${itemName(good)} · ${Math.floor(goods[good] ?? 0)} ${t('venue.inStorage')}` }))}
               onChange={good => send({ type: 'StockShelf', buildingId: venueId, fixtureId: fixture.id, good })}
             />
           </div>
