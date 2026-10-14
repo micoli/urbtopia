@@ -48,6 +48,7 @@ export interface ChallengeSnapshot {
   serverNow: number;
   challenges: Challenge[];
   accepted: AcceptedChallenge | null;
+  abandoned: string[];
   medals: Medal[];
 }
 
@@ -63,4 +64,5 @@ export interface ChallengeClient {
   list(): Promise<ChallengeSnapshot>;
   accept(challengeId: string): Promise<AcceptedChallenge>;
   declare(challengeId: string): Promise<ChallengeDeclaration>;
+  abandon(challengeId: string): Promise<void>;
 }

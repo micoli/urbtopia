@@ -22,7 +22,7 @@ const base: Challenge = { id: 'c1', kind: 'daily', difficulty: 'easy', minCitize
 const medal: Challenge = { ...base, id: 'ev', kind: 'event', difficulty: null, rewardKind: 'medal', medalCode: 'port-festival', nameEn: 'Port festival', nameFr: 'Fête du port' };
 
 function snapshot(overrides: Partial<ChallengeSnapshot> = {}): ChallengeSnapshot {
-  return { serverNow: T0, challenges: [base, medal], accepted: null, medals: [], ...overrides };
+  return { serverNow: T0, challenges: [base, medal], accepted: null, abandoned: [], medals: [], ...overrides };
 }
 
 function render(challenges: Partial<ChallengeStore>, state: GameState = newGame({ seed: 'amber-fox-4821', now: T0 })): string {

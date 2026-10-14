@@ -3,7 +3,7 @@ import { ChallengeError, type AcceptedChallenge, type Challenge, type ChallengeC
 const DAY_MS = 86_400_000;
 
 interface Acceptance extends AcceptedChallenge {
-  state: 'accepted' | 'completed' | 'expired';
+  state: 'accepted' | 'completed' | 'expired' | 'abandoned';
 }
 
 // In-memory world mirroring the server rules, shared by the fake clients of several players.
@@ -49,6 +49,7 @@ class FakeChallengeClient implements ChallengeClient {
     return {
       serverNow: now,
       challenges: this.world.challenges.filter(({ startsAt, endsAt }) => startsAt <= now && endsAt > now),
+      abandoned: this.world.acceptancesOf(user).filter(({ state }) => state === 'abandoned').map(({ challengeId }) => challengeId),
       accepted: active ? { challengeId: active.challengeId, acceptedAt: active.acceptedAt, deadline: active.deadline } : null,
       medals: this.world.medalsOf(user),
     };
@@ -82,6 +83,12 @@ class FakeChallengeClient implements ChallengeClient {
       if (challenge.rewardKind === 'medal' && challenge.medalCode) this.world.addMedal(user, { challengeId, medalCode: challenge.medalCode, nameFr: challenge.nameFr, nameEn: challenge.nameEn, earnedAt: this.world.now() });
     }
     return { challengeId, rewardKind: challenge.rewardKind, goal: challenge.goal, medalCode: challenge.medalCode, alreadyClaimed };
+  }
+
+  async abandon(challengeId: string): Promise<void> {
+    const acceptance = this.world.acceptancesOf(this.member()).find((candidate) => candidate.challengeId === challengeId);
+    if (acceptance?.state !== 'accepted') throw new ChallengeError('challenge-unavailable');
+    acceptance.state = 'abandoned';
   }
 
   private member(): string {

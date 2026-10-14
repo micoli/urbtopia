@@ -14,6 +14,7 @@ export function ChallengesPage() {
       <h4>{t('codex.challenges.rules')}</h4>
       <ul>
         <li>{t('codex.challenges.one')}</li>
+        <li>{t('codex.challenges.abandon')}</li>
         <li>{t('codex.challenges.stock')}</li>
         <li>{t('codex.challenges.reward').replace('{multiplier}', String(CHALLENGE_REWARD_MULTIPLIER))}</li>
         <li>{t('codex.challenges.timeSkip')}</li>

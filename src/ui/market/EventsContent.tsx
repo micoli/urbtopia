@@ -33,13 +33,13 @@ export function EventsContent() {
 
   const accepted = snapshot.accepted;
   const running = accepted ? snapshot.challenges.find(({ id }) => id === accepted.challengeId) : undefined;
-  const open = shown.filter(({ id }) => id !== accepted?.challengeId);
+  const open = shown.filter(({ id }) => id !== accepted?.challengeId && !snapshot.abandoned.includes(id));
 
   return (
     <>
       {status === 'offline' ? <p className="challenge-note">{t('challenge.offline')}</p> : null}
       {failure ? <p className="challenge-note" role="alert">{t(`challenge.error.${failure}`)}</p> : null}
-      {accepted && running ? <ActiveChallenge challenge={running} accepted={accepted} state={state} clockOffset={clockOffset} onSetAside={(item, quantity) => void actions?.setAside(item, quantity)} /> : null}
+      {accepted && running ? <ActiveChallenge challenge={running} accepted={accepted} state={state} clockOffset={clockOffset} busy={busy} onSetAside={(item, quantity) => void actions?.setAside(item, quantity)} onAbandon={() => void actions?.abandon()} /> : null}
       {open.length === 0 && !running ? <p>{t('challenge.empty')}</p> : null}
       <ul className="challenge-list">
         {open.map((challenge) => (

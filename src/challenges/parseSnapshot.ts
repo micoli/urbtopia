@@ -99,6 +99,7 @@ export function parseChallengeSnapshot(json: unknown): ChallengeSnapshot {
     serverNow: time(source, 'now'),
     challenges: rows(source.challenges).map(parseChallenge).filter(({ goal }) => knowsEveryItem(goal)),
     accepted: parseAccepted(source.accepted),
+    abandoned: Array.isArray(source.abandoned) ? source.abandoned.filter((id): id is string => typeof id === 'string') : [],
     medals: rows(source.medals).map((medal): Medal => ({ challengeId: text(medal, 'challengeId'), ...parseMedalInfo(medal) })),
   };
 }

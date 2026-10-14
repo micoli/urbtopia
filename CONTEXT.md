@@ -553,7 +553,7 @@ The hold the server keeps on a lot or a payment between the creation of a Trade 
 _Avoid_: Deposit, lock
 
 **Challenge**:
-A goal published by the server to all Player accounts: deliver a list of Materials and Goods (several kinds, each with a quantity) to the Challenge stock before a deadline. A Challenge is either a Daily challenge or an Event. Accepting one is optional; a player has at most one accepted Challenge at a time.
+A goal published by the server to all Player accounts: deliver a list of Materials and Goods (several kinds, each with a quantity) to the Challenge stock before a deadline. A Challenge is either a Daily challenge or an Event. Accepting one is optional; a player has at most one accepted Challenge at a time. The player can abandon the accepted Challenge: it is closed for good, the Challenge stock is lost and it cannot be accepted again, so the player waits for the next one.
 _Avoid_: Quest, mission, task
 
 **Challenge name**:

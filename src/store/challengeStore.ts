@@ -9,6 +9,7 @@ export interface ChallengeActions {
   refresh: () => Promise<void>;
   poll: () => Promise<void>;
   accept: (challengeId: string) => Promise<boolean>;
+  abandon: () => Promise<boolean>;
   setAside: (item: string, quantity: number) => Promise<ErrorKey | null>;
 }
 

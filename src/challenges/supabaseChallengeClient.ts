@@ -49,6 +49,10 @@ class SupabaseChallengeClient implements ChallengeClient {
     return parseDeclaration(await this.call(() => this.client.rpc('urb_declare_challenge', { p_challenge: challengeId })));
   }
 
+  async abandon(challengeId: string): Promise<void> {
+    await this.call(() => this.client.rpc('urb_abandon_challenge', { p_challenge: challengeId }));
+  }
+
   private async call<T>(request: () => PromiseLike<{ data: T; error: PostgrestFailure | null }>): Promise<T> {
     try {
       const { data, error } = await request();

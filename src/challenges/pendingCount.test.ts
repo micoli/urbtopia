@@ -13,7 +13,7 @@ function challenge(id: string, difficulty: 'easy' | 'medium' | 'hard', minCitize
 }
 
 function snapshot(challenges: Challenge[], acceptedId: string | null = null): ChallengeSnapshot {
-  return { serverNow: T0, challenges, accepted: acceptedId ? { challengeId: acceptedId, acceptedAt: T0, deadline: T0 + 1000 } : null, medals: [] };
+  return { serverNow: T0, challenges, accepted: acceptedId ? { challengeId: acceptedId, acceptedAt: T0, deadline: T0 + 1000 } : null, abandoned: [], medals: [] };
 }
 
 describe('pendingChallengesCount', () => {

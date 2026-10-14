@@ -56,6 +56,7 @@ describe('parseChallengeSnapshot', () => {
       { id: 'b', kind: 'daily', difficulty: 'easy', minCitizens: 0, goal: [{ item: 'unobtainium', quantity: 5 }], rewardKind: 'urbs', medalCode: null, nameKeys: { hook: 3, item: 'unobtainium' }, nameFr: null, nameEn: null, startsAt: '2026-10-13T00:00:00Z', endsAt: '2026-10-14T00:00:00Z' },
     ],
     accepted: null,
+    abandoned: [],
     medals: [{ challengeId: 'c', medalCode: 'x', earnedAt: '2026-10-12T10:00:00Z' }],
   };
 
@@ -191,11 +192,37 @@ describe('challenge actions', () => {
     expect(challengeStore.getState().failure).toBe('challenge-busy');
   });
 
+  it('abandons the accepted Challenge, clears the stock and never offers it again', async () => {
+    const { actions, current } = setup();
+    await actions.accept('a');
+    await actions.setAside('wood', 1);
+    expect(await actions.abandon()).toBe(true);
+    const snapshot = challengeStore.getState().snapshot;
+    expect(snapshot?.accepted).toBeNull();
+    expect(snapshot?.abandoned).toEqual(['a']);
+    expect(current().challenge).toBeUndefined();
+    expect(await actions.accept('a')).toBe(false);
+    expect(challengeStore.getState().failure).toBe('challenge-unavailable');
+  });
+
+  it('frees the player to accept another Challenge after abandoning', async () => {
+    const { actions } = setup();
+    await actions.accept('a');
+    await actions.abandon();
+    expect(await actions.accept('ev')).toBe(true);
+  });
+
+  it('does nothing when no Challenge is accepted', async () => {
+    const { actions } = setup();
+    await actions.refresh();
+    expect(await actions.abandon()).toBe(false);
+  });
+
   it('goes offline on a network failure and keeps the last snapshot', async () => {
     const { actions, game } = setup();
     await actions.refresh();
     const reject = () => Promise.reject(new ChallengeError('offline'));
-    await createChallengeActions({ list: reject, accept: reject, declare: reject }, challengeStore.getState(), () => challengeStore.getState(), game).poll();
+    await createChallengeActions({ list: reject, accept: reject, declare: reject, abandon: reject }, challengeStore.getState(), () => challengeStore.getState(), game).poll();
     expect(challengeStore.getState().status).toBe('offline');
     expect(challengeStore.getState().snapshot).not.toBeNull();
   });

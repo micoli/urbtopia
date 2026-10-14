@@ -510,6 +510,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      urb_abandon_challenge: { Args: { p_challenge: string }; Returns: undefined };
       urb_accept_challenge: { Args: { p_challenge: string }; Returns: Json };
       urb_accept_friend_request: { Args: { p_user: string }; Returns: undefined };
       urb_accept_trade_offer: { Args: { p_id: string }; Returns: undefined };

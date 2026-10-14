@@ -96,6 +96,25 @@ export function createChallengeActions(client: ChallengeClient, store: Setters, 
     }
   };
 
+  const abandon = async (): Promise<boolean> => {
+    const accepted = current().snapshot?.accepted;
+    if (!accepted || !game.canPlay()) return false;
+    store.setBusy(true);
+    store.setFailure(null);
+    try {
+      await client.abandon(accepted.challengeId);
+      clearLocal();
+      await load();
+      return true;
+    } catch (error) {
+      store.setFailure(error instanceof ChallengeError ? error.kind : 'unknown');
+      if (error instanceof ChallengeError && error.kind === 'challenge-unavailable') await load();
+      return false;
+    } finally {
+      store.setBusy(false);
+    }
+  };
+
   const setAside = async (item: string, quantity: number): Promise<ErrorKey | null> => {
     if (!game.canPlay()) return 'error.noChallenge';
     const error = game.apply({ type: 'ChallengeSetAside', item, quantity });
@@ -105,5 +124,5 @@ export function createChallengeActions(client: ChallengeClient, store: Setters, 
     return null;
   };
 
-  return { refresh, poll: load, accept, setAside };
+  return { refresh, poll: load, accept, abandon, setAside };
 }
