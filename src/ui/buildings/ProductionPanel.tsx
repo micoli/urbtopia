@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { SLOT_PRICES, isItemUnlocked, minTierOf, producibleItems, productionDurationOf, productionTierOf, recipeOf, rushPrice, unlockCitizensOf, type Building, type ItemId, type MaterialId, type QueueEntry } from '../../core';
 import { t } from '../../i18n/t';
-import { isPack, itemName } from '../../i18n/itemName';
+import { itemName } from '../../i18n/itemName';
 import { formatDuration } from '../common/formatDuration';
 import { useGame } from '../common/hooks';
 import { gameStore } from '../../store/gameStore';
@@ -12,6 +12,7 @@ import { CheckboxField } from '../common/CheckboxField';
 import { SlotList } from '../common/SlotList';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { PowerShortageNote } from './PowerShortageNote';
+import { RecipeLabel } from './RecipeLabel';
 
 interface ProductionPanelProps {
   building: Building;
@@ -36,7 +37,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
   }
 
   const isAvailable = (item: ItemId) => isItemUnlocked(state, item) && building.tier >= minTierOf(item);
-  const lacksMaterials = (item: ItemId) => building.type === 'packhouse' && Object.entries(recipeOf(item)).some(([material, amount]) => (state.storage.materials[material as MaterialId] ?? 0) < amount);
+  const lacksMaterials = (item: ItemId) => Object.entries(recipeOf(item)).some(([material, amount]) => (state.storage.materials[material as MaterialId] ?? 0) < amount);
 
   const canFilter = building.type === 'packhouse' && items.some((item) => isAvailable(item) && !lacksMaterials(item));
   const filtering = canFilter && onlyCraftable;
@@ -72,9 +73,9 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
         <ButtonRow align="stretch" spaced>
           {items.filter((item) => !filtering || !lacksMaterials(item)).map((item) =>
             isAvailable(item) ? (
-              <ActionButton key={item} disabled={lacksMaterials(item)} onClick={() => send({ type: 'QueueProduction', buildingId: building.id, item })}>
+              <ActionButton key={item} aria-disabled={lacksMaterials(item) || undefined} onClick={() => !lacksMaterials(item) && send({ type: 'QueueProduction', buildingId: building.id, item })}>
                 {itemName(item)}
-                {recipeLabel(item)} · {formatDuration(productionDurationOf(building, item))}
+                <RecipeLabel item={item} materials={state.storage.materials} /> · {formatDuration(productionDurationOf(building, item))}
               </ActionButton>
             ) : (
               <ActionButton key={item} disabled>
@@ -104,10 +105,4 @@ function slotProgress(entry: QueueEntry, now: number): number {
   if (entry.done) return 1;
   if (entry.startedAt === null) return 0;
   return Math.min(1, Math.max(0, (now - entry.startedAt) / entry.duration));
-}
-
-function recipeLabel(item: ItemId): string {
-  if (isPack(item)) return '';
-  const parts = Object.entries(recipeOf(item)).map(([material, amount]) => `${amount} ${t(`item.${material as MaterialId}`)}`);
-  return parts.length > 0 ? ` (${parts.join(', ')})` : '';
 }
