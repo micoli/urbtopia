@@ -14,13 +14,20 @@ interface ChallengeGoalLineProps {
 
 export function ChallengeGoalLine({ item, quantity, setAside, available = 0, onSetAside }: ChallengeGoalLineProps) {
   const remaining = quantity - (setAside ?? 0);
+  const stock = Math.floor(available);
   const giveable = Math.min(remaining, available);
   return (
     <li className="challenge-line">
       <ItemIcon item={item as ItemId} />
       <div className="challenge-line-text">
-        <strong>{itemName(item as ItemId)}</strong>
-        <span>{setAside === undefined ? `× ${quantity}` : t('challenge.progress').replace('{done}', String(setAside)).replace('{total}', String(quantity))}</span>
+        <span>
+            {setAside === undefined
+                ? `${quantity} × `
+                : t('challenge.progress').replace('{done}', String(setAside)).replace('{total}', String(quantity))
+            }
+            <strong>{itemName(item as ItemId)}</strong>
+        </span>
+        {stock >= 1 ? <small>{t('challenge.inStorage').replace('{count}', String(stock))}</small> : null}
       </div>
       {onSetAside && remaining > 0 ? (
         <div className="challenge-line-actions">
