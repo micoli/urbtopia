@@ -83,6 +83,7 @@ The optional Cloud save lives in a Supabase project described by [`supabase/`](s
 | Command | Purpose |
 | --- | --- |
 | `npm run db:start` / `db:stop` | Start or stop the local stack |
+| `npm run db:migrate` | Apply the new migrations to the running local database, keeping its data, and reload the REST schema |
 | `npm run db:reset` | Wipe the local database and re-apply the migrations |
 | `npm run db:test` | Run the pgTAP tests in `supabase/tests/database/` |
 | `npm run db:lint` / `db:types` | Lint the schema / regenerate `database.types.ts` (need the Supabase CLI: `mise install`) |

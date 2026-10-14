@@ -33,6 +33,7 @@
     "check:bundle": "node scripts/checkBundle.ts dist",
     "db:start": "docker compose up -d --wait",
     "db:stop": "docker compose down",
+    "db:migrate": "docker compose run --rm migrate && docker compose restart rest",
     "db:reset": "docker compose down -v && docker compose up -d --wait",
     "db:test": "docker compose --profile test run --rm pgtap",
     "db:types": "supabase gen types typescript --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres --schema public > src/persistence/cloud/database.types.ts && npx --yes oxfmt src/persistence/cloud/database.types.ts",
