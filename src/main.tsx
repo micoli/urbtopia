@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { App } from './ui/layout/App';
 import { installFpsOverlay, isFpsOverlayRequested } from './ui/system/fpsOverlay';
+import { blockPageZoom } from './ui/system/blockPageZoom';
 import { hideSplashAfterFailsafe } from './ui/system/splash';
 import { installPersistence } from './persistence/install';
 import { registerServiceWorker } from './pwa/registerServiceWorker';
@@ -21,6 +22,7 @@ if (isFpsOverlayRequested(window.location.search)) installFpsOverlay();
 
 if (import.meta.env.DEV && isSimulation) void import('./sim/installSimulation').then((module) => module.installSimulation());
 
+blockPageZoom();
 hideSplashAfterFailsafe();
 
 registerServiceWorker();
