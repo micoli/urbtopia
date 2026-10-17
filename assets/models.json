@@ -8499,6 +8499,20 @@
     "source": "kenney",
     "license": "CC0"
   },
+  "venue-roller-coaster-4x6-7f": {
+    "file": "venue/roller-coaster-4x6-7f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      6,
+      4
+    ],
+    "fit": {
+      "width": 6,
+      "height": 4
+    },
+    "rotationOffset": 90
+  },
   "watercraft-boat-fishing-small": {
     "file": "watercraft/boat-fishing-small",
     "source": "kenney",

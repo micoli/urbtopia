@@ -1,0 +1,29 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "facility",
+  "section": "build.leisure",
+  "cost": 3000,
+  "unlockCitizens": 500,
+  "requiresRoad": false,
+  "name": {
+    "en": "Tubular roller coaster",
+    "fr": "Montagnes russes tubulaires"
+  },
+  "description": {
+    "en": "A tubular roller coaster that improves the well-being of nearby Citizens.",
+    "fr": "Des montagnes russes tubulaires qui améliorent le bien-être des citoyens proches."
+  },
+  "radius": 12,
+  "tiers": [
+    {
+      "model": "venue-roller-coaster-4x6-7f",
+      "footprint": [4, 6],
+      "capacity": 100
+    }
+  ],
+  "category": "culture",
+  "detailModel": "venue-roller-coaster-4x6-7f",
+  "drawnToScale": true,
+  "power": 4,
+  "water": 0
+}

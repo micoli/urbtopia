@@ -231,6 +231,7 @@ export type BuildingId =
   | 'theater'
   | 'townHall'
   | 'tree'
+  | 'tubularRollerCoaster'
   | 'university'
   | 'vault'
   | 'waterTower'
@@ -445,6 +446,7 @@ export type FacilityType =
   | 'synagogue'
   | 'theater'
   | 'townHall'
+  | 'tubularRollerCoaster'
   | 'university';
 
 export type VenueType =

@@ -224,7 +224,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -505,7 +506,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -794,7 +796,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -1047,7 +1050,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -1296,7 +1300,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -1550,7 +1555,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -1794,7 +1800,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -1984,7 +1991,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -2120,7 +2128,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -2267,7 +2276,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -2404,7 +2414,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -2676,7 +2687,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -2963,7 +2975,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -3225,7 +3238,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -3602,7 +3616,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -3837,7 +3852,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
