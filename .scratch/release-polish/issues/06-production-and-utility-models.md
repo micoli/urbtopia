@@ -23,4 +23,6 @@ Deliberately left as is (owner's decision): the Farm keeps the Quaternius barn. 
 
 Done in lot 05: the Hotel (three Tiers, four colors, mansard roof).
 
-Left: binding the Solar installation and the Backup Tiers once the game defines them, an in-game check of orientation, size and Repaint of every new family (nothing was captured in the game yet), then the baselines.
+Status check (2026-10-17): no Building definition references a poly.pizza model or a Kenney `industrial` (except the Solar panel overlays), `commercial`, `pirate` or `holiday` model any more, apart from the decoration definitions `pirate-*`, `holiday-*` and the `suburban-tree-*` of `park` and `tree`, which belong to issue 11. 68 external models (51 poly.pizza, the Kenney `industrial` and `commercial` ones and others) remain in `assets/models.json` and `assets/` used by no Building: they still have to be removed, with their license entries, and `docs/asset-catalog.md` updated.
+
+Left: removing those orphan models, binding the Solar installation and the Backup Tiers once the game defines them, an in-game check of orientation, size and Repaint of every new family (nothing was captured in the game yet), then the baselines.

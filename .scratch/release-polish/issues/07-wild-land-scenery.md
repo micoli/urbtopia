@@ -1,6 +1,6 @@
 # Wild land scenery
 
-Status: ready-for-agent
+Status: in progress
 Blocked by: 02, 11
 Spec: ../spec.md
 
@@ -19,4 +19,5 @@ Spec: ../spec.md
 - `wildTerrain` (core, pure): coarse relief on cells of a third of a Parcel (about 5 tiles), irregular vertices (jittered lines, random diagonals, a height jitter per vertex) so the triangles differ in size and each one is visible, flat on and around owned Parcels, up to about 3 tiles inside the map and 9 on the rim. The ground is a flat-shaded mesh with per-face tint, fading out at the edge so the map no longer ends as a plane.
 - Rendered by `WildScenery` through a second `ChunkedWorld` with 64-tile chunks; a light budget (`wantsAntialias()` false, hi-dpi phones) drops bushes and small stones.
 - Forests are dense (several trees per 4-tile cell inside woods, placed at random spots so nothing lines up); relief amplitude is low (about 1.5 tiles inside the map, 4.5 on the rim). Measured on the dense reference city under SwiftShader with 32-tile scenery chunks: 811 to 879 draw calls (+8 %) and +65 % triangles with the full scenery; the light budget keeps half of the trees and drops bushes and small stones. Real frame time on the reference phone is still to measure (open box).
+- Status check (2026-10-17): the code is delivered; only the frame time on the reference phone remains. The scenery still uses the Kenney nature models through the `scenery` roles until issue 11 redraws them.
 - Limit: the tile picking plane stays at y = 0, so a click on a hill of the Wild land lands slightly off; nothing is built there.

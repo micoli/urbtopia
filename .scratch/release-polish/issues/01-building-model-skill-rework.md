@@ -17,4 +17,6 @@ Spec: ../spec.md
 
 Done: the Blender toolkit extracted from the personal `blender-lpm-skill` into `tools/blender/` (no Unity export, glTF only; all recipes now load it from the repository, and the two marina scripts, which were not reproducible, are now byte-identical); `scripts/game_render.py` (game camera and lighting), `scripts/register_model.py`, SKILL.md steps, regeneration check. The existing `building_lib.py` already holds a palette of 28 cells, a triangle budget per footprint and floors, and the house, apartment and office kit.
 
+Status check (2026-10-17): lots 03, 05 and 06 were largely built with the shared kit, so the archetypes below are probably covered by now. To confirm in `building_lib.py` before ticking the two first boxes. The kit still has to be extended to nature for issue 11.
+
 Left: extend the kit to the archetypes of lots 04 to 06 (civic, industrial, shop, utility, venue exteriors), which `building_lib.py` does not cover yet, then tick the two first boxes.
