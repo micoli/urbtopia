@@ -61,6 +61,8 @@ def main() -> int:
             if code != 0:
                 failures.append((recipe, output))
 
+    for backup in BUILDINGS.glob("*.blend1"):
+        backup.unlink()
     print(f"\n{len(todo) - len(failures)}/{len(todo)} built in {time.time() - start:.0f}s")
     for recipe, output in failures:
         print(f"\n--- {recipe.stem} ---\n{output}")

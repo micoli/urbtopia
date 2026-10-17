@@ -49,7 +49,7 @@ async function generate(): Promise<void> {
     page.on('response', response => { if (response.status() >= 400) failures.push(`${response.status()} ${response.url()}`); });
     page.on('requestfailed', request => failures.push(`${request.failure()?.errorText ?? 'Request failed'} ${request.url()}`));
     await page.goto(`${server.resolvedUrls!.local[0]}scripts/codex-render.html`);
-    await page.waitForFunction(() => !!window.codexRenderer, null, { timeout: 180_000 }).catch(error => {
+    await page.waitForFunction(() => !!window.codexRenderer, null, { timeout: 60_000 }).catch(error => {
       throw new Error(failures.length ? failures.join('\n') : error instanceof Error ? error.message : String(error));
     });
     if (failures.length) throw new Error(failures.join('\n'));
