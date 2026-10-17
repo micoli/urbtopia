@@ -37,7 +37,7 @@ describe('form fields from the JSON Schemas', () => {
     expect(good.model).toMatchObject({ type: 'model', required: false })
     const models = collectionFieldsOf('crops', { kind: 'crop' }).find(field => field.key === 'models')
     expect(models).toMatchObject({ type: 'object' })
-    expect(models?.type === 'object' && models.fields.map(({ key, type }) => `${key}:${type}`)).toEqual(['growth:modelList', 'produce:model', 'harvested:model'])
+    expect(models?.type === 'object' && models.fields.map(({ key, type }) => `${key}:${type}`)).toEqual(['growth:modelList', 'produce:model', 'harvested:model', 'item:model'])
   })
 
   it('gives a Fixture the fields of its own Venue', () => {

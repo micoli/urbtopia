@@ -23,6 +23,9 @@ PALETTE_ENTRIES = [
     ("pcb", "#2fa36b"), ("pcb_dark", "#1f7a50"), ("chip", "#23242c"),
     ("tin", "#dde1e6"), ("tin_dark", "#9aa1ab"), ("label", "#e0533d"),
     ("red", "#d83a3a"), ("white", "#f6f8ff"), ("gem", "#5be0ff"),
+    ("apple_dark", "#a82424"), ("cherry", "#b0102a"), ("cherry_dark", "#7a0c20"),
+    ("leaf_green", "#5aa646"), ("leaf_silver", "#8fa36a"), ("stem_green", "#5b8a3a"),
+    ("olive_green", "#7d8a2e"), ("olive_black", "#2f2a35"),
 ]
 PALETTE_NAMES = [name for name, _ in PALETTE_ENTRIES]
 

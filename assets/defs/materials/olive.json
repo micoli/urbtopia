@@ -5,6 +5,7 @@
     "en": "Olives",
     "fr": "Olives"
   },
+  "model": "materials-olive",
   "producedBy": "orchard",
   "durationMinutes": 20,
   "unlockCitizens": 80,

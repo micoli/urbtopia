@@ -5,6 +5,7 @@
     "en": "Cherries",
     "fr": "Cerises"
   },
+  "model": "materials-cherry",
   "producedBy": "orchard",
   "durationMinutes": 20,
   "unlockCitizens": 80,

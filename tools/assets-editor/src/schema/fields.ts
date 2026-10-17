@@ -83,7 +83,7 @@ const LABELS: Record<string, string> = {
 const PAIR_PARTS: Record<string, [string, string]> = { footprint: ['W', 'D'], center: ['X', 'Z'] }
 
 // Fields that hold Model ids, wherever they sit.
-const MODEL_KEYS = new Set(['model', 'detailModel', 'produce', 'harvested', 'growth'])
+const MODEL_KEYS = new Set(['model', 'detailModel', 'produce', 'harvested', 'item', 'growth'])
 
 // Records keyed by ids of other collections.
 const RECORD_TARGETS: Record<string, readonly CollectionName[]> = { recipe: ['materials', 'crops'], goods: ['goods'] }

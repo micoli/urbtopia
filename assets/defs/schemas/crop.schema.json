@@ -99,6 +99,10 @@
         "harvested": {
           "type": "string",
           "pattern": "\\S"
+        },
+        "item": {
+          "type": "string",
+          "pattern": "\\S"
         }
       },
       "required": [

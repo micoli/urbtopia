@@ -110,6 +110,7 @@ export const COLLECTIONS = {
       ...(models?.growth ?? []).flatMap((id, stage) => modelReference(id, `models.growth.${stage}`)),
       ...modelReference(models?.produce, 'models.produce'),
       ...modelReference(models?.harvested, 'models.harvested'),
+      ...modelReference(models?.item, 'models.item'),
     ],
   },
   fixtures: {

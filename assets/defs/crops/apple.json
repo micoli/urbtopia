@@ -16,6 +16,7 @@
   "models": {
     "growth": ["crops-apple-1", "crops-apple-2", "crops-apple-3", "crops-apple-4"],
     "produce": "crops-apple-crop",
-    "harvested": "crops-apple-harvested"
+    "harvested": "crops-apple-harvested",
+    "item": "materials-apple"
   }
 }
