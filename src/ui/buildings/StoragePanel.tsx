@@ -3,6 +3,7 @@ import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
 import { useGame } from '../common/hooks';
 import { DrawerPanel } from '../common/DrawerPanel';
+import { BlockedReason } from '../common/BlockedReason';
 import { ItemIcon } from '../common/ItemIcon';
 
 interface StoragePanelProps {
@@ -23,8 +24,11 @@ export function StoragePanel({ building }: StoragePanelProps) {
   };
   const compartments = (['materials', 'crops', 'goods'] as const).filter((compartment) => isStorageType(building.type) && storageTierOf(building.type, building.tier)[compartment] > 0);
 
+  const isFull = compartments.some((compartment) => used[compartment] >= capacity[compartment]);
+  const isEmpty = compartments.every((compartment) => stock[compartment].length === 0);
   return (
     <DrawerPanel>
+      <BlockedReason reason={isFull ? t('storage.full') : isEmpty ? t('storage.empty') : null} />
       {compartments.map((compartment) => (
         <div key={compartment}>
           <p>

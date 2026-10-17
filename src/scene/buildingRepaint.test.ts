@@ -1,30 +1,52 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, newGame, type BuildingType, type ColorVariant } from '../core';
+import { BUILDING_SPECS, createBuilding, isRepaintableType, newGame, toneLabelOf, type BuildingType, type ColorVariant } from '../core';
+import { MODEL_ENTRIES } from '../core/models/modelFiles';
+import { MESSAGES } from '../i18n/messages';
 import { renderItemsOf } from './renderItems';
 
-const textureVariantOf = (type: BuildingType, colorVariant: ColorVariant, tier = 1) => {
+const COLORS = ['default', 'a', 'b', 'c'] as const;
+
+const itemOf = (type: BuildingType, colorVariant: ColorVariant, tier = 1) => {
   const building = { ...createBuilding(1, type, 0, 0, 0), tier, colorVariant };
-  return renderItemsOf({ ...newGame({ seed: 'repaint', now: 0 }), buildings: [building] }).find(item => item.model.includes('building-'))?.textureVariant;
+  return renderItemsOf({ ...newGame({ seed: 'repaint', now: 0 }), buildings: [building] })[0]!;
 };
 
+describe('repaint color names', () => {
+  it('names every tone of every model, with a translation and a swatch color', () => {
+    const tones = Object.values(MODEL_ENTRIES).flatMap(entry => Object.values(entry.tones ?? {}));
+    expect(tones.length).toBeGreaterThan(500);
+    for (const tone of tones) {
+      expect(MESSAGES, tone.name).toHaveProperty(`color.${tone.name}`);
+      expect(tone.color).toMatch(/^#[0-9a-f]{6}$/);
+    }
+  });
+
+  it('gives the Grain silo its own colors, not the Home ones', () => {
+    expect(['default', 'a', 'b', 'c'].map(color => toneLabelOf('grainSilo', 5, color as ColorVariant)?.name)).toEqual(['brick', 'tangerine', 'sky', 'mint']);
+  });
+});
+
 describe('repainted buildings', () => {
-  it('swaps the suburban palette of a Home', () => {
-    expect(textureVariantOf('home', 'c')).toBe('c');
-    expect(textureVariantOf('home', 'default')).toBeUndefined();
+  it.each(['home', 'shop', 'shopFood', 'shopLuxury', 'workshop', 'factory', 'packhouse', 'hotel', 'arcade', 'supermarket', 'casino', 'stadium', 'baseballField', 'powerPlant', 'geothermalPlant', 'coalPlant', 'hydroPlant', 'waterTower', 'materialDepot', 'vault', 'storehouse', 'grainSilo'] as const)('repaints the %s by swapping the palette of its single model', (type) => {
+    if (!isRepaintableType(type)) return;
+    const items = COLORS.map(color => itemOf(type, color, 2));
+    expect(new Set(items.map(item => item.model)).size).toBe(1);
+    expect(items[0]!.textureVariant).toBeUndefined();
+    expect(items.slice(1).map(item => item.textureVariant?.split(':').pop())).toEqual(['b', 'c', 'd']);
   });
 
-  it('swaps the commercial palette of a shop and of the hotel', () => {
-    expect(textureVariantOf('shop', 'a')).toBe('commercial-a');
-    expect(textureVariantOf('shop', 'b')).toBe('commercial-b');
-    expect(textureVariantOf('hotel', 'a')).toBe('commercial-a');
+  it('names the palette texture after the model and the tone', () => {
+    expect(itemOf('grainSilo', 'a', 5).textureVariant).toBe('tone:buildings/silo-2x2-t5-tone-a:b');
+    expect(itemOf('grainSilo', 'c', 5).textureVariant).toBe('tone:buildings/silo-2x2-t5-tone-a:d');
   });
 
-  it('swaps the industrial palette of a workshop', () => {
-    expect(textureVariantOf('workshop', 'c')).toBe('industrial-c');
-    expect(textureVariantOf('workshop', 'default')).toBeUndefined();
+  it('leaves the buildings that cannot be repainted alone', () => {
+    expect(isRepaintableType('battery')).toBe(false);
+    expect(itemOf('battery', 'a').textureVariant).toBeUndefined();
   });
 
-  it('keeps the default palette where the kit has no such variation', () => {
-    expect(textureVariantOf('shop', 'c')).toBeUndefined();
+  it('repaints every building drawn with color tones', () => {
+    const repaintable = Object.keys(BUILDING_SPECS).filter(id => isRepaintableType(id));
+    expect(repaintable.length).toBeGreaterThan(20);
   });
 });

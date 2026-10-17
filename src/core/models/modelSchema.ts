@@ -16,6 +16,7 @@ export const modelSchema = z.strictObject({
   center: z.tuple([z.number(), z.number()]).optional(),
   fit: z.strictObject({ width: z.number().positive(), height: z.number().positive() }).optional(),
   rotationOffset: z.number().optional(),
+  tones: z.partialRecord(z.enum(['a', 'b', 'c', 'd']), z.strictObject({ name: z.string(), color })).optional().meta({ description: 'The color tones of this model: the name and swatch of each; a palette PNG `<file>.tone-<x>.png` sits next to it for tones b to d and Repaint swaps the palette texture.' }),
   bakeNodeScale: z.boolean().optional(),
   recolor: z.strictObject({ color, variants: z.record(z.string(), color).optional() }).optional(),
   note: z.string().optional(),

@@ -1,8 +1,9 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, isRepaintableType, colorVariantsOfType, type BuildingType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
 const ROAD_KINDS = ['road', 'crossing'];
+const LEGACY_COLORS: readonly string[] = ['default', 'a', 'b', 'c'];
 
 const isRecord = (value: unknown): value is Json => typeof value === 'object' && value !== null && !Array.isArray(value);
 const isNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
@@ -64,6 +65,13 @@ function isColorAllowed(type: BuildingType, color: unknown): boolean {
   return allowed.includes(color as string);
 }
 
+// A building whose model has since been drawn with its own colors is no longer repaintable, but a save made before keeps the color it was given: the game ignores it.
+function isColorAccepted(type: unknown, color: unknown): boolean {
+  if (typeof type !== 'string' || !Object.hasOwn(BUILDING_SPECS, type)) return false;
+  if (isRepaintableType(type)) return isColorAllowed(type as BuildingType, color);
+  return mayCarryLegacyColor(type) && LEGACY_COLORS.includes(color as string);
+}
+
 function isBuilding(value: unknown): boolean {
   return (
     isRecord(value) &&
@@ -80,7 +88,7 @@ function isBuilding(value: unknown): boolean {
     isNonNegative(value.taxCitizenMs) &&
     (value.insulated === undefined || (isHomeType(value.type) && typeof value.insulated === 'boolean')) &&
     (value.solar === undefined || (typeof value.type === 'string' && canHaveSolarPanels(value.type as BuildingType) && typeof value.solar === 'boolean')) &&
-    (value.colorVariant === undefined || (isRepaintableType(value.type) && isColorAllowed(value.type as BuildingType, value.colorVariant))) &&
+    (value.colorVariant === undefined || isColorAccepted(value.type, value.colorVariant)) &&
     (value.venue === undefined || (typeof value.type === 'string' && isVenueType(value.type) && isVenueData(value.venue))) &&
     (value.name === undefined || (typeof value.type === 'string' && isTransitStopType(value.type) && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= STOP_NAME_MAX_LENGTH)) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&

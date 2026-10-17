@@ -6,6 +6,7 @@ import { useGame } from '../common/hooks';
 import { CropRow } from './CropRow';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
+import { BlockedReason } from '../common/BlockedReason';
 import { DrawerPanel } from '../common/DrawerPanel';
 
 interface FarmPanelProps {
@@ -41,6 +42,7 @@ export function FarmPanel({ building }: FarmPanelProps) {
           />
         ))}
       </div>
+        <BlockedReason reason={state.fields.length >= fieldCap(state) ? t('farm.fieldCap') : state.fields.length === 0 ? t('farm.noFields') : null} />
         <ButtonRow align="stretch" spaced>
             <ActionButton disabled={state.fields.length >= fieldCap(state)} onClick={() => chooseTool({ kind: 'brush', action: 'layField', tiles: [] })}>{t('farm.layFields')}</ActionButton>
             <ActionButton disabled={state.fields.length === 0} onClick={() => chooseTool({ kind: 'brush', action: 'removeField', tiles: [] })}>{t('farm.removeFields')}</ActionButton>

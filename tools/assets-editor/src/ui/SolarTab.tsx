@@ -10,6 +10,7 @@ type Solar = Record<string, unknown>
 
 interface Props {
   solar: Solar | undefined
+  hasSolarVariant: boolean
   fields: FieldSpec[]
   problems: Problem[]
   modelSlot: (path: FieldPath) => ModelSlot
@@ -18,10 +19,12 @@ interface Props {
 
 const lengthOf = (list: unknown) => (Array.isArray(list) ? list.length : 0)
 
+const PANELS_BLOCKED = { panels: 'A solar variant already draws the panels: none can be added.' }
+
 const HINTS = { panels: 'With no panel listed, a flat panel sits on each tile.' }
 
 // Turns Solar panels on or off for the building and sets how they look and what they cost; the preview shows them on its roof.
-export function SolarTab({ solar, fields, problems, modelSlot, onChange }: Props) {
+export function SolarTab({ solar, hasSolarVariant, fields, problems, modelSlot, onChange }: Props) {
   const previewing = useDocument(state => state.preview.solar !== false)
   const showSolar = useDocument(state => state.showSolar)
   const selectedPanel = useDocument(state => state.selectedPanel)
@@ -36,11 +39,11 @@ export function SolarTab({ solar, fields, problems, modelSlot, onChange }: Props
       {enabled && (
         <>
           <label className="flex items-center gap-3 text-sm text-zinc-600">
-            <SwitchControl checked={previewing} label="Show the panels in the preview" onChange={showSolar} />
+            <SwitchControl checked={previewing && !hasSolarVariant} label="Show the panels in the preview" onChange={showSolar} disabled={hasSolarVariant} />
             Show the panels in the preview
           </label>
           <FieldDocsScope value={['solarPanels']}>
-            <SchemaForm fields={fields} value={solar} problems={problems} hints={HINTS} path={['solarPanels']} modelSlot={modelSlot} listSelection={{ selected: selectedPanel, onSelect: selectPanel }} onChange={(key, value) => { onChange({ ...solar, [key]: value }); if (key === 'panels' && lengthOf(value) < lengthOf(solar.panels)) selectPanel(null) }} />
+            <SchemaForm fields={fields} value={solar} problems={problems} hints={HINTS} addBlocked={hasSolarVariant ? PANELS_BLOCKED : undefined} path={['solarPanels']} modelSlot={modelSlot} listSelection={{ selected: selectedPanel, onSelect: selectPanel }} onChange={(key, value) => { onChange({ ...solar, [key]: value }); if (key === 'panels' && lengthOf(value) < lengthOf(solar.panels)) selectPanel(null) }} />
           </FieldDocsScope>
         </>
       )}

@@ -55,7 +55,7 @@ const greenTierShape = { radius: z.int().min(1), cooling: amount, biodiversity: 
 const greenTierRequired = ['radius', 'cooling', 'biodiversity', 'wellbeing'] as const;
 
 // Section, footprint, cost, unlock and benefits come from the nature family; Tiers, when given, replace the benefits and set the size drawn.
-const natureBuilding = z.strictObject({ kind: z.literal('nature'), ...common, family: z.enum(Object.keys(NATURE_FAMILIES) as [NatureFamily, ...NatureFamily[]]), tiers: tiersOf(greenTierShape, greenTierRequired).optional() });
+const natureBuilding = z.strictObject({ kind: z.literal('nature'), ...common, family: z.enum(Object.keys(NATURE_FAMILIES) as [NatureFamily, ...NatureFamily[]]), scenery: z.enum(['broadleaf', 'conifer', 'bush', 'rock', 'hill']).optional(), tiers: tiersOf(greenTierShape, greenTierRequired).optional() });
 
 const homeLook = { model: filled, footprint: pairSchema };
 
@@ -137,6 +137,8 @@ const facilityBuilding = z.strictObject({
   category: z.enum(SERVICE_CATEGORIES),
   // The awning, overhang or parasol set over the entrance, for models that have none of their own.
   detailModel: filled.optional(),
+  // The model is drawn at the size of its footprint, with its own colors, entrance and signs: the game does not resize it, tint it, recolor it or add the red cross or the garage doors.
+  drawnToScale: z.literal(true).optional(),
   radius: z.int().min(1).optional(),
   power: count,
   water: count,

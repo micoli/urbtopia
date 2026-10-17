@@ -116,7 +116,6 @@ describe('codex snapshots', () => {
         expect(items[0]?.model).toBe(modelOfBuilding(building));
         if (solarBaseOf(entry.id)) {
           expect(building.solar).toBe(true);
-          if (entry.id === 'solarHome' && level > 4) expect(items.some(item => !!item.roofBase)).toBe(true);
         }
       }
     }

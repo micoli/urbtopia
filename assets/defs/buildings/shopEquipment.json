@@ -18,14 +18,14 @@
   "tiers": [
     {
       "footprint": [1, 1],
-      "model": "commercial-building-a",
+      "model": "buildings-shop-equipment-1x1-t1-tone-a",
       "maxSlots": 4,
       "sells": ["tools"],
       "saleIntervalFactor": 1,
       "jobs": 15
     },
     {
-      "model": "commercial-building-b",
+      "model": "buildings-shop-equipment-1x1-t2-tone-a",
       "maxSlots": 5,
       "sells": ["tools"],
       "saleIntervalFactor": 0.85,
@@ -38,7 +38,7 @@
       }
     },
     {
-      "model": "commercial-building-c",
+      "model": "buildings-shop-equipment-1x1-t3-tone-a",
       "maxSlots": 6,
       "sells": ["tools", "circuits"],
       "saleIntervalFactor": 0.7,
@@ -51,7 +51,7 @@
       }
     },
     {
-      "model": "commercial-building-d",
+      "model": "buildings-shop-equipment-1x1-t4-tone-a",
       "maxSlots": 8,
       "sells": ["tools", "circuits"],
       "saleIntervalFactor": 0.55,

@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, type Plugin } from 'vite'
 import { MANAGED_MODELS_DIR, POLY_PIZZA_DIR } from '../../scripts/assetPacks.ts'
 import { archiveFile, archiveManifest, contentTypeOf, kenneyPackNames } from './archiveSources.ts'
-import { managedModelKeys } from '../../scripts/managedModels.ts'
+import { managedModelFile, managedModelKeys } from '../../scripts/managedModels.ts'
 import { deleteDefinition, readCatalog, saveDefinitions } from '../../scripts/definitionsStore.ts'
 import { addGlb, addPack, addPolyPizzaModel, removeModel, renameModel } from '../../scripts/assetOperations.ts'
 import { fetchPolyPizzaModel } from '../../scripts/polyPizza.ts'
@@ -57,6 +57,12 @@ const sourcesByPack = () => ({
   'poly.pizza': 'poly.pizza',
 })
 
+// Maps a served path such as buildings/mosque.glb or buildings/mosque.tone-b.png to its file in the model's own folder.
+const managedFileOf = (path: string) => {
+  const [, key = '', suffix = ''] = path.match(/^(.+?)(\.(?:glb|tone-.\.png))$/) ?? []
+  return managedModelFile(key, suffix)
+}
+
 // Serves models without copying them: archive entries from memory, hand-made and Poly Pizza GLBs from assets/, miscellaneous files from their folder.
 const liveSources = (): Plugin => ({
   name: 'live-asset-sources',
@@ -71,7 +77,7 @@ const liveSources = (): Plugin => ({
       }
       const slug = path.match(/^poly\.pizza\/([^/]+)\.glb$/)?.[1]
       const root = slug ? POLY_PIZZA_DIR : pack === 'miscellaneous' ? miscellaneousDir : MANAGED_MODELS_DIR
-      const file = slug ? join(POLY_PIZZA_DIR, slug, `${slug}.glb`) : join(root, pack === 'miscellaneous' ? rest.join('/') : path)
+      const file = slug ? join(POLY_PIZZA_DIR, slug, `${slug}.glb`) : pack === 'miscellaneous' ? join(root, rest.join('/')) : managedFileOf(path)
       if (!resolve(file).startsWith(resolve(root)) || !existsSync(file)) return next()
       res.setHeader('Content-Type', contentTypeOf(file))
       res.end(readFileSync(file))

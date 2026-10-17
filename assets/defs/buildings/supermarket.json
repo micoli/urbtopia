@@ -16,7 +16,7 @@
   },
   "tiers": [
     {
-      "model": "venue-supermarket-small",
+      "model": "buildings-supermarket-2x2-t1-tone-a",
       "footprint": [2, 2],
       "gridSize": 6,
       "takingsCap": 400,
@@ -46,7 +46,7 @@
         "urbs": 8000,
         "goods": {}
       },
-      "model": "venue-supermarket-large",
+      "model": "buildings-supermarket-3x2-t2-tone-a",
       "footprint": [3, 2]
     },
     {
@@ -64,7 +64,9 @@
       "upgradeCost": {
         "urbs": 18000,
         "goods": {}
-      }
+      },
+      "model": "buildings-supermarket-3x2-t3-tone-a",
+      "footprint": [3, 2]
     }
   ],
   "rankAt": [1200, 5000],

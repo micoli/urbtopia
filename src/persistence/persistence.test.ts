@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { difficultyOf, newGame, storageCapacity, type GameState } from '../core';
+import { createBuilding, difficultyOf, newGame, storageCapacity, type GameState } from '../core';
 import fixtureV1 from './fixtures/save-v1.json';
 import fixtureV2 from './fixtures/save-v2.json';
 import fixtureV3 from './fixtures/save-v3.json';
@@ -54,6 +54,11 @@ describe('validateGameState', () => {
 });
 
 describe('envelope', () => {
+  it('loads a building saved with a color its drawn models no longer offer', () => {
+    const saved = { ...state, nextId: 901, buildings: [{ ...createBuilding(900, 'storehouse', 40, 40, 0), colorVariant: 'c' as const, tier: 6 }] };
+    expect(parseEnvelope(serializeEnvelope(saved, T0)).ok).toBe(true);
+  });
+
   it('wraps the state with format, version and save time', () => {
     const parsed = JSON.parse(serializeEnvelope(state, T0 + 5));
     expect(parsed).toMatchObject({ format: FORMAT, version: CURRENT_VERSION, savedAt: T0 + 5 });

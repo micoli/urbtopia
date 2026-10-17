@@ -7,7 +7,9 @@ import { useGame } from '../common/hooks';
 import { gameStore } from '../../store/gameStore';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { ActionButton } from '../common/ActionButton';
+import { BlockedReason } from '../common/BlockedReason';
 import { ButtonRow } from '../common/ButtonRow';
+import { FirstUseHint } from '../common/FirstUseHint';
 import { CheckboxField } from '../common/CheckboxField';
 import { SlotList } from '../common/SlotList';
 import { DrawerPanel } from '../common/DrawerPanel';
@@ -44,6 +46,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
 
   return <DrawerPanel>
       <PowerShortageNote />
+      <FirstUseHint id="production">{t('hint.production')}</FirstUseHint>
       <SlotList>
         {Array.from({ length: building.slotCount }, (_, index) => {
           const entry = building.queue[index];
@@ -66,6 +69,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
           );
         })}
       </SlotList>
+      {!hasFreeSlot && <BlockedReason reason={t('blocked.slotsFull')} />}
       {hasFreeSlot && canFilter ? (
         <CheckboxField label={t('panel.onlyCraftable')} checked={onlyCraftable} onChange={setOnlyCraftable} />
       ) : null}
@@ -90,12 +94,12 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
           {t('panel.buySlot')} (<UrbsAmount value={slotPrice} />)
         </ActionButton>
       ) : null}
-      <DrawerPanel.Upgrade building={building} />
       {hasReadyOutput ? (
         <ActionButton variant="primary" block onClick={() => send({ type: 'Collect', buildingId: building.id })}>
           {t('panel.collect')}
         </ActionButton>
       ) : null}
+      <DrawerPanel.Upgrade building={building} />
   </DrawerPanel>;
 }
 

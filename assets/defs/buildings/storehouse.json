@@ -15,7 +15,7 @@
   },
   "tiers": [
     {
-      "model": "industrial-building-a",
+      "model": "buildings-storehouse-2x2-t1-tone-a",
       "footprint": [2, 2],
       "materials": 20,
       "goods": 40,
@@ -27,7 +27,8 @@
       "upgradeCost": {
         "urbs": 300,
         "goods": {}
-      }
+      },
+      "model": "buildings-storehouse-2x2-t2-tone-a"
     },
     {
       "materials": 40,
@@ -35,10 +36,11 @@
       "upgradeCost": {
         "urbs": 800,
         "goods": {}
-      }
+      },
+      "model": "buildings-storehouse-2x2-t3-tone-a"
     },
     {
-      "model": "industrial-building-q",
+      "model": "buildings-storehouse-2x2-t4-tone-a",
       "materials": 50,
       "goods": 100,
       "upgradeCost": {
@@ -52,7 +54,8 @@
       "upgradeCost": {
         "urbs": 5000,
         "goods": {}
-      }
+      },
+      "model": "buildings-storehouse-2x2-t5-tone-a"
     },
     {
       "materials": 70,
@@ -60,7 +63,8 @@
       "upgradeCost": {
         "urbs": 12000,
         "goods": {}
-      }
+      },
+      "model": "buildings-storehouse-2x2-t6-tone-a"
     },
     {
       "materials": 80,
@@ -68,7 +72,8 @@
       "upgradeCost": {
         "urbs": 30000,
         "goods": {}
-      }
+      },
+      "model": "buildings-storehouse-2x2-t7-tone-a"
     },
     {
       "materials": 90,
@@ -76,7 +81,8 @@
       "upgradeCost": {
         "urbs": 70000,
         "goods": {}
-      }
+      },
+      "model": "buildings-storehouse-2x2-t8-tone-a"
     },
     {
       "materials": 100,
@@ -84,7 +90,8 @@
       "upgradeCost": {
         "urbs": 150000,
         "goods": {}
-      }
+      },
+      "model": "buildings-storehouse-2x2-t9-tone-a"
     },
     {
       "materials": 110,
@@ -92,19 +99,21 @@
       "upgradeCost": {
         "urbs": 300000,
         "goods": {}
-      }
+      },
+      "model": "buildings-storehouse-2x2-t10-tone-a"
     }
   ],
   "solarPanels": {
     "panels": [
       {
-        "model": "industrial-solar-panel-landscape",
-        "x": 0.234,
-        "y": -0.22,
-        "z": 0,
+        "model": "industrial-solar-panel-flat",
+        "x": -0.012,
+        "y": -0.056,
+        "z": 0.292,
         "rotationX": 0,
-        "rotationY": 0,
-        "rotationZ": 0
+        "rotationY": 90,
+        "rotationZ": -20,
+        "scale": 0.6
       }
     ],
     "cost": 600,

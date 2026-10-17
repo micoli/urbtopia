@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "battery",
   "section": "build.utilities",
-  "model": "industrial-shipping-container-a",
+  "model": "buildings-battery-1x1",
   "footprint": [1, 1],
   "cost": 350,
   "unlockCitizens": 32,

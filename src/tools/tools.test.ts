@@ -184,6 +184,16 @@ describe('move tool', () => {
 });
 
 describe('selectionGhost', () => {
+  it('hugs the drawn model when it is smaller than its footprint, never bigger than the footprint', () => {
+    const workshop = state.buildings.find((building) => building.type === 'workshop')!;
+    const small = selectionGhost(state, workshop.id, true, { width: 1.2, depth: 0.4, offsetX: 0, offsetY: 0 });
+    expect(small?.rects[0]).toMatchObject({ width: 1.2 + 0.6, depth: 0.9 + 0.6 });
+    expect(small?.rects[0]!.x).toBeCloseTo(workshop.x + 1 - 0.6 - 0.3, 6);
+    const huge = selectionGhost(state, workshop.id, true, { width: 9, depth: 9, offsetX: 0, offsetY: 0 });
+    expect(huge?.rects[0]).toMatchObject({ width: 2.6, depth: 2.6 });
+  });
+
+
   it('surrounds the whole footprint of the selected building with a margin', () => {
     const workshop = state.buildings.find((building) => building.type === 'workshop');
     const ghost = selectionGhost(state, workshop?.id ?? null);

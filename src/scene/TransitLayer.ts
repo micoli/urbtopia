@@ -28,20 +28,11 @@ export class TransitLayer {
   }
 
   sync(state: GameState, services: Service[]) {
-    const trackSignature = JSON.stringify([state.brtRoads, state.rails, state.buildings.filter(b => ['brtStation', 'railStation'].includes(b.type)).map(b => [b.id, b.type, b.x, b.y, b.rotation])]);
+    const trackSignature = JSON.stringify([state.brtRoads, state.rails]);
     this.crossings = new Set((state.brtRoads ?? []).filter(p => state.roads.some(r => tileKey(r) === tileKey(p))).map(tileKey));
     const tracksChanged = trackSignature !== this.trackSignature;
     if (tracksChanged) {
       this.trackSignature = trackSignature; this.clear(this.tracks);
-    }
-    if (trackSignature === this.trackSignature && !this.tracks.getObjectByName('stations')) {
-      const stations = new THREE.Group(); stations.name = 'stations'; this.tracks.add(stations);
-      for (const stop of state.buildings.filter(b => ['brtStation', 'railStation'].includes(b.type))) {
-        const rail = stop.type === 'railStation';
-        this.box(stations, stop.x + (rail ? 1 : .5), .1, stop.y + .5, rail ? 1.8 : .85, .15, .85, rail ? 0x24c6a4 : 0x198de0);
-        this.box(stations, stop.x + .5, .8, stop.y + .5, .06, 1.4, .06, 0xcbd5e1);
-        this.box(stations, stop.x + .5, 1.5, stop.y + .5, .55, .3, .08, rail ? 0x24c6a4 : 0x198de0);
-      }
     }
     if (tracksChanged) this.compactTracks();
     const fleetSignature = JSON.stringify([state.transitFleet, services.filter(l => l.mode !== 'bus').map(l => [l.id, l.active, l.route, l.operatingVehicleIds])]);

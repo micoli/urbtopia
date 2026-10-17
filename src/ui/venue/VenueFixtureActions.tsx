@@ -57,7 +57,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
               selectPlaced(null);
             }}
           >
-            ❌ +<UrbsAmount value={fixtureRefund(fixture.type)} />
+            ❌ {t('panel.sell')} · +<UrbsAmount value={fixtureRefund(fixture.type)} />
           </ActionButton>
         </ButtonRow>
       )}

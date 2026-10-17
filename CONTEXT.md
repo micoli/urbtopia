@@ -368,6 +368,10 @@ _Avoid_: Rent, income
 A 16x16 tile square of land; the player owns some and can buy adjacent ones with Urbs. Buildings must fit entirely inside owned Parcels.
 _Avoid_: Plot, lot, zone, sector
 
+**Wild land**:
+The land of the map outside the Parcels the player owns, and the scenery around the map. Nothing can be built on it; it becomes buildable only when the Parcel covering it is bought.
+_Avoid_: Unclaimed land (claim is a Trade offer word), unowned parcel, wasteland
+
 **Catch-up**:
 The single pass that applies everything that happened since the last time the game was open, up to 48 game hours.
 _Avoid_: Offline progress, sync
@@ -405,7 +409,7 @@ A paid Home improvement that reduces power Demand independently of solar equipme
 _Avoid_: Energy generation, Home Tier
 
 **Repaint**:
-A paid improvement that changes the color of a Home, a shop, the Hotel or a production, storage or utility building to another of its available colors. The colors come from the Kenney kit of its model: a Home or an industrial building offers three besides the default, a shop or the Hotel two. Solar installations, batteries, Backup Power plants and Facilities are not repainted. Its price depends only on the building's Tier, never on the color chosen, and a building cannot be repainted to the color it already has.
+A paid improvement that changes the color of a Home, a shop, a Venue (Arcade, Supermarket or Hotel), the Baseball field or a production, storage or utility building to another of its available colors. Every repaintable building is drawn in four colors, the default and three others, as four tones of one model: Repaint swaps its palette. A building whose models were later redrawn keeps loading with the color it was saved with, which the game then ignores if its models no longer offer it. Solar installations, batteries, Backup Power plants and Facilities are not repainted. Its price depends only on the building's Tier, never on the color chosen, and a building cannot be repainted to the color it already has.
 _Avoid_: Recolor (that is a Model definition field), Color change
 
 **Solar installation**:

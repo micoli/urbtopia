@@ -22,6 +22,23 @@ beforeEach(() => {
 
 afterEach(() => { prefsStore.getState().setLanguage('en'); context.flyout = 'build'; vi.unstubAllGlobals(); });
 
+describe('build menu discoverability', () => {
+  it('offers a search field, the first-use hint and the next building to unlock', () => {
+    context.state = newGame({ seed: 'build-menu', now: 0 });
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    expect(html).toContain(`aria-label="${t('build.search')}"`);
+    expect(html).toContain(t('hint.build'));
+    expect(html).toContain(t('build.nextUnlock'));
+    expect(html).toMatch(/<progress[^>]*max="\d+"/);
+  });
+
+  it('stops announcing the next building once everything is unlocked', () => {
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 5000 }, (_, id) => ({ ...home, id })) };
+    expect(renderToStaticMarkup(<BuildMenuContent />)).not.toContain(t('build.nextUnlock'));
+  });
+});
+
 describe('build menu sections', () => {
   it.each(['en', 'fr'] as const)('groups every building once and keeps solar Homes with housing in %s', language => {
     prefsStore.getState().setLanguage(language);

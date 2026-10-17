@@ -5,6 +5,7 @@ import { uiStore } from '../../store/uiStore';
 import { useGame } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
 import { CasinoBoatRow } from './CasinoBoatRow';
+import { BlockedReason } from '../common/BlockedReason';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { UrbsAmount } from '../common/UrbsAmount';
 
@@ -30,7 +31,9 @@ export function MarinaPanel({ building }: MarinaPanelProps) {
           {t('marina.collect')} · {fish}
         </ActionButton>
       ) : null}
+      {boats.some((boat) => boat.family === 'fishing') && fish === 0 ? <BlockedReason reason={t('marina.noCatch')} /> : null}
       {boats.length === 0 ? <p>{t('marina.empty')}</p> : null}
+      {boats.length >= capacity ? <BlockedReason reason={t('marina.full')} /> : null}
       {boats.map((boat) => (
         <div key={boat.id}>
           {boat.family === 'casino' ? <CasinoBoatRow boat={boat} /> : <p>{t(`boat.${boat.family}`)}</p>}

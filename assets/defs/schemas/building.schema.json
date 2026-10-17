@@ -342,6 +342,16 @@
             "palm"
           ]
         },
+        "scenery": {
+          "type": "string",
+          "enum": [
+            "broadleaf",
+            "conifer",
+            "bush",
+            "rock",
+            "hill"
+          ]
+        },
         "tiers": {
           "minItems": 1,
           "type": "array",
@@ -2477,6 +2487,10 @@
         "detailModel": {
           "type": "string",
           "pattern": "\\S"
+        },
+        "drawnToScale": {
+          "type": "boolean",
+          "const": true
         },
         "radius": {
           "type": "integer",

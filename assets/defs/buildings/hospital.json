@@ -17,11 +17,12 @@
   "radius": 14,
   "tiers": [
     {
-      "model": "commercial-building-i",
+      "model": "buildings-hospital-3x3",
       "footprint": [3, 3],
       "capacity": 800
     },
     {
+      "model": "buildings-hospital-3x3-5f",
       "capacity": 1200,
       "upgradeCost": {
         "urbs": 900,
@@ -36,6 +37,7 @@
       }
     },
     {
+      "model": "buildings-hospital-3x3-6f",
       "capacity": 2400,
       "upgradeCost": {
         "urbs": 3600,
@@ -50,6 +52,7 @@
       }
     },
     {
+      "model": "buildings-hospital-3x3-7f",
       "capacity": 4400,
       "upgradeCost": {
         "urbs": 9000,
@@ -64,6 +67,7 @@
       }
     },
     {
+      "model": "buildings-hospital-3x3-8f",
       "capacity": 7200,
       "upgradeCost": {
         "urbs": 19500,
@@ -72,7 +76,7 @@
     }
   ],
   "category": "health",
-  "detailModel": "commercial-detail-parasol-b",
+  "drawnToScale": true,
   "power": 2,
   "water": 2
 }

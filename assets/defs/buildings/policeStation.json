@@ -17,11 +17,12 @@
   "radius": 18,
   "tiers": [
     {
-      "model": "commercial-building-j",
+      "model": "buildings-police-station-2x2",
       "footprint": [2, 2],
       "capacity": 800
     },
     {
+      "model": "buildings-police-station-2x2-3f",
       "capacity": 1200,
       "upgradeCost": {
         "urbs": 600,
@@ -36,6 +37,7 @@
       }
     },
     {
+      "model": "buildings-police-station-2x2-4f",
       "capacity": 2400,
       "upgradeCost": {
         "urbs": 2400,
@@ -50,6 +52,7 @@
       }
     },
     {
+      "model": "buildings-police-station-2x2-5f",
       "capacity": 4400,
       "upgradeCost": {
         "urbs": 6000,
@@ -64,6 +67,7 @@
       }
     },
     {
+      "model": "buildings-police-station-2x2-6f",
       "capacity": 7200,
       "upgradeCost": {
         "urbs": 13000,
@@ -72,7 +76,7 @@
     }
   ],
   "category": "safety",
-  "detailModel": "commercial-detail-awning",
+  "drawnToScale": true,
   "power": 2,
   "water": 0
 }

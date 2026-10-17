@@ -17,11 +17,12 @@
   "radius": 6,
   "tiers": [
     {
-      "model": "commercial-building-a",
+      "model": "buildings-community-hall-1x1",
       "footprint": [1, 1],
       "capacity": 150
     },
     {
+      "model": "buildings-community-hall-1x1-2f",
       "capacity": 225,
       "upgradeCost": {
         "urbs": 90,
@@ -36,6 +37,7 @@
       }
     },
     {
+      "model": "buildings-community-hall-1x1-3f",
       "capacity": 450,
       "upgradeCost": {
         "urbs": 360,
@@ -50,6 +52,7 @@
       }
     },
     {
+      "model": "buildings-community-hall-1x1-4f",
       "capacity": 825,
       "upgradeCost": {
         "urbs": 900,
@@ -64,6 +67,7 @@
       }
     },
     {
+      "model": "buildings-community-hall-1x1-5f",
       "capacity": 1350,
       "upgradeCost": {
         "urbs": 1950,
@@ -72,7 +76,7 @@
     }
   ],
   "category": "culture",
-  "detailModel": "commercial-detail-parasol-a",
+  "drawnToScale": true,
   "power": 2,
   "water": 0
 }

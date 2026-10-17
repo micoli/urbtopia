@@ -6,6 +6,8 @@ import { useGame } from '../common/hooks';
 import { serviceName } from './serviceNames';
 import {UrbsAmount} from "../common/UrbsAmount.tsx";
 import { ActionButton } from '../common/ActionButton';
+import { BlockedReason } from '../common/BlockedReason';
+import { urbsReason } from '../common/urbsReason';
 import { DrawerPanel } from '../common/DrawerPanel';
 
 interface HomePanelProps {
@@ -49,11 +51,12 @@ export function HomePanel({ building }: HomePanelProps) {
       <ActionButton block disabled={building.insulated || state.urbs < insulationCost || totalCitizens(state) < 6} onClick={() => gameStore.getState().send({ type: 'EquipHome', buildingId: building.id, equipment: 'insulation' })}>
         {t('eco.insulate')} · {building.insulated ? t('eco.installed') : <UrbsAmount value={insulationCost} />}
       </ActionButton>
-      <DrawerPanel.Upgrade building={building} />
+      {!building.insulated && <BlockedReason reason={totalCitizens(state) < 6 ? t('blocked.insulate').replace('{citizens}', '6') : urbsReason(state.urbs, insulationCost)} />}
       {due > 0 ? (
         <ActionButton variant="primary" block onClick={() => gameStore.getState().send({ type: 'Collect', buildingId: building.id })}>
           {t('panel.collect')} (+{due})
         </ActionButton>
       ) : null}
+      <DrawerPanel.Upgrade building={building} />
     </DrawerPanel>
 }

@@ -16,7 +16,7 @@
   },
   "tiers": [
     {
-      "model": "farm-openbarn",
+      "model": "buildings-packhouse-2x2-t1-tone-a",
       "footprint": [2, 2],
       "durationFactor": 1,
       "maxSlots": 5,
@@ -29,7 +29,8 @@
         "goods": {
           "planks": 3
         }
-      }
+      },
+      "model": "buildings-packhouse-2x2-t2-tone-a"
     },
     {
       "maxSlots": 8,
@@ -38,7 +39,8 @@
         "goods": {
           "bricks": 4
         }
-      }
+      },
+      "model": "buildings-packhouse-2x2-t3-tone-a"
     },
     {
       "yield": 2,
@@ -47,7 +49,8 @@
         "goods": {
           "tiles": 4
         }
-      }
+      },
+      "model": "buildings-packhouse-2x2-t4-tone-a"
     },
     {
       "upgradeCost": {
@@ -55,18 +58,19 @@
         "goods": {
           "tools": 4
         }
-      }
+      },
+      "model": "buildings-packhouse-2x2-t5-tone-a"
     }
   ],
   "solarPanels": {
     "panels": [
       {
         "model": "industrial-solar-panel-flat",
-        "x": 0,
-        "y": -0.328,
-        "z": 0.483,
+        "x": 0.393,
+        "y": -0.268,
+        "z": -0.054,
         "rotationX": 0,
-        "rotationY": -90,
+        "rotationY": 0,
         "rotationZ": -35.8
       }
     ],

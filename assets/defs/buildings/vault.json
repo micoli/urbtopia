@@ -15,7 +15,7 @@
   },
   "tiers": [
     {
-      "model": "industrial-building-s",
+      "model": "buildings-vault-2x1-t1-tone-a",
       "footprint": [2, 1],
       "materials": 0,
       "goods": 80,
@@ -26,35 +26,40 @@
       "upgradeCost": {
         "urbs": 250,
         "goods": {}
-      }
+      },
+      "model": "buildings-vault-2x1-t2-tone-a"
     },
     {
       "goods": 160,
       "upgradeCost": {
         "urbs": 600,
         "goods": {}
-      }
+      },
+      "model": "buildings-vault-2x1-t3-tone-a"
     },
     {
       "goods": 200,
       "upgradeCost": {
         "urbs": 1500,
         "goods": {}
-      }
+      },
+      "model": "buildings-vault-2x1-t4-tone-a"
     },
     {
       "goods": 240,
       "upgradeCost": {
         "urbs": 4000,
         "goods": {}
-      }
+      },
+      "model": "buildings-vault-2x1-t5-tone-a"
     },
     {
       "goods": 280,
       "upgradeCost": {
         "urbs": 9000,
         "goods": {}
-      }
+      },
+      "model": "buildings-vault-2x1-t6-tone-a"
     }
   ],
   "extraCopyCitizens": [150, 500]

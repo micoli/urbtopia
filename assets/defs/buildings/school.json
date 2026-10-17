@@ -17,11 +17,12 @@
   "radius": 10,
   "tiers": [
     {
-      "model": "commercial-building-d",
+      "model": "buildings-school-2x2",
       "footprint": [2, 2],
       "capacity": 300
     },
     {
+      "model": "buildings-school-2x2-3f",
       "capacity": 450,
       "upgradeCost": {
         "urbs": 180,
@@ -36,6 +37,7 @@
       }
     },
     {
+      "model": "buildings-school-2x2-4f",
       "capacity": 900,
       "upgradeCost": {
         "urbs": 720,
@@ -50,6 +52,7 @@
       }
     },
     {
+      "model": "buildings-school-2x2-5f",
       "capacity": 1650,
       "upgradeCost": {
         "urbs": 1800,
@@ -64,6 +67,7 @@
       }
     },
     {
+      "model": "buildings-school-2x2-6f",
       "capacity": 2700,
       "upgradeCost": {
         "urbs": 3900,
@@ -72,7 +76,7 @@
     }
   ],
   "category": "education",
-  "detailModel": "commercial-detail-awning",
+  "drawnToScale": true,
   "power": 2,
   "water": 0
 }

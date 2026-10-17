@@ -6,7 +6,7 @@ import { EcologyLayer } from './EcologyLayer';
 
 afterEach(() => vi.unstubAllGlobals());
 
-it('draws bus stop signs but leaves the buses to the traffic layer', () => {
+it('leaves the bus stop signs to the stop models and the buses to the traffic layer', () => {
   vi.stubGlobal('document', { createElement: () => ({ width: 0, height: 0, getContext: () => ({ fillRect() { }, fillText() { } }) }) });
   const library = { ensure: vi.fn().mockResolvedValue(undefined), has: () => true, get: () => new THREE.Group() };
   const layer = new EcologyLayer(library as unknown as ModelLibrary);
@@ -19,7 +19,7 @@ it('draws bus stop signs but leaves the buses to the traffic layer', () => {
   expect(() => layer.update(-0.01)).not.toThrow();
   const sprites: THREE.Object3D[] = [];
   layer.root.traverse((node) => { if (node instanceof THREE.Sprite) sprites.push(node); });
-  expect(sprites).toHaveLength(2);
+  expect(sprites).toHaveLength(0);
   expect(library.ensure).not.toHaveBeenCalledWith(['trains/train-electric-subway-a']);
   layer.dispose();
 });

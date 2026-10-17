@@ -5,12 +5,10 @@ import { BridgeLayer } from '../src/scene/BridgeLayer';
 import { ChunkedWorld } from '../src/scene/ChunkedWorld';
 import { EcologyLayer } from '../src/scene/EcologyLayer';
 import { ModelLibrary } from '../src/scene/modelLibrary';
-import { MODEL_KEYS, PROCEDURAL_MODELS, TEXTURE_VARIANTS, renderItemsOf } from '../src/scene/renderItems';
+import { renderItemsOf } from '../src/scene/renderItems';
 
 validateCodex();
 const library = new ModelLibrary();
-await library.ensure([...MODEL_KEYS, ...PROCEDURAL_MODELS]);
-await library.ensureTextureVariants(TEXTURE_VARIANTS);
 const canvas = document.querySelector('canvas')!;
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
 renderer.setSize(512, 512, false);
@@ -45,6 +43,7 @@ async function render(key: string): Promise<string> {
   const state = codexSnapshot(variant.id, variant.level, variant.colorVariant);
   const items = renderItemsOf(state);
   await library.ensure([...new Set(items.map(item => item.model))]);
+  await library.ensureTextureVariants(items.flatMap(item => item.textureVariant ? [item.textureVariant] : []));
   world.sync(items);
   ecology.sync(state, null);
   bridges.sync(state);

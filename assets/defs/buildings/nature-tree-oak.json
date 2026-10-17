@@ -6,5 +6,6 @@
     "en": "Tree oak",
     "fr": "Chêne"
   },
-  "family": "tree"
+  "family": "tree",
+  "scenery": "broadleaf"
 }

@@ -1,0 +1,10 @@
+import os
+import sys
+
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+sys.path.insert(0, os.path.join(REPO, ".claude/skills/create-building-model/scripts"))
+import building_lib  # noqa: E402
+
+SPEC = {'id': 'factory-2x2-t1-tone-a', 'kind': 'office', 'style': 'urbtopia', 'footprint': (2, 2), 'floors': 2, 'roof': 'flat', 'window_sizes': 'same', 'colors': {'wall': 'uwall', 'roof': 'grey', 'trim': 'uframe', 'door': 'udark', 'accent': 'vtone1', 'glass': 'glass_blue'}, 'wing': None, 'features': [{'type': 'roller_door', 'along': 0.0, 'width': 0.7}, {'type': 'loading_dock', 'along': 0.0, 'width': 0.7}, {'type': 'roof_tank', 'x': -0.5, 'y': 0.3}, {'type': 'roof_pipes', 'y': -0.1}, {'type': 'hazard_band', 'face': 'front', 'level': 1}, {'type': 'wall_tools', 'along': -0.6, 'width': 0.22}, {'type': 'industrial_door', 'face': 'back', 'along': -0.45, 'width': 0.7}, {'type': 'industrial_door', 'face': 'back', 'along': 0.45, 'width': 0.7}, {'type': 'sign', 'text': 'factory', 'placement': 'roof'}], 'auto_windows': [], 'roof_overhang': 0.01, 'slab_matches_plinth': True, 'roof_deck': 'offwhite', 'floor_bands': False, 'extra_windows': [{'face': 'front', 'along': 0.0, 'width': 1.5, 'z_ratio': 0.3, 'height_ratio': 0.5, 'panes': [1, 1], 'level': 1}, {'face': 'back', 'along': 0.0, 'width': 1.5, 'z_ratio': 0.3, 'height_ratio': 0.5, 'panes': [1, 1], 'level': 1}, {'face': 'left', 'along': 0.0, 'width': 1.5, 'z_ratio': 0.3, 'height_ratio': 0.5, 'panes': [1, 1], 'level': 1}, {'face': 'right', 'along': 0.0, 'width': 1.5, 'z_ratio': 0.3, 'height_ratio': 0.5, 'panes': [1, 1], 'level': 1}, {'face': 'front', 'along': 0.6, 'width': 0.3, 'level': 0}], 'tones': {'a': {'vtone1': 'tangerine'}, 'b': {'vtone1': 'sky'}, 'c': {'vtone1': 'brick'}, 'd': {'vtone1': 'mint'}}}
+out_dir = os.path.dirname(os.path.abspath(__file__))
+building_lib.build(SPEC, out_dir)

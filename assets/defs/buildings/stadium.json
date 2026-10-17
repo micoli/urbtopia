@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "sport",
   "section": "build.sport",
-  "model": "sport-athletics-stadium",
+  "model": "buildings-stadium-9x5-tone-a",
   "footprint": [9, 5],
   "cost": 1000,
   "unlockCitizens": 400,

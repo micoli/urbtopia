@@ -54,14 +54,14 @@ export function SelectionContentPanel() {
       {canHaveSolarPanels(building.type) ? <SolarPanelsRow building={building} /> : null}
       {natureModelOf(building.type)?.[2] === 'decoration' ? <DecorationRotation building={building} /> : null}
       <FrontRotation building={building} />
+      {isRepaintableType(building.type) ? <RepaintRow building={building}/> : null}
       <ButtonRow align="stretch" spaced className="side-panel-actions">
-        {isRepaintableType(building.type) ? <RepaintRow building={building}/> : null}
         <ActionButton onClick={moveSelected}>
           ✥ {t('panel.move')}
         </ActionButton>
         <CodexLinks building={building} />
         <ActionButton onClick={sellSelected}>
-          ❌ +<UrbsAmount value={refund}/>
+          ❌ {t('panel.sell')} · +<UrbsAmount value={refund}/>
         </ActionButton>
       </ButtonRow>
     </>

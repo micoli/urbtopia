@@ -13,15 +13,15 @@ describe('mansard Homes', () => {
     for (let tier = 1; tier <= 5; tier++) expect(footprintOf(type, 0, tier)).toEqual({ width, depth });
   });
 
-  it.each(MANSARD_TYPES)('%s renders a preloaded model for every Tier, color and solar option', type => {
+  it.each(MANSARD_TYPES)('%s renders one preloaded model for every Tier and solar option, repainted by its palette', type => {
     for (let tier = 1; tier <= 5; tier++) for (const colorVariant of COLORS) for (const solar of [false, true]) {
       const building = { ...createBuilding(1, type, 0, 0, 0), tier, colorVariant, solar };
       const items = renderItemsOf({ ...newGame({ seed: 'mansard', now: 0 }), buildings: [building] }).filter(item => item.model.includes('mansard'));
       expect(items, `${type} tier ${tier} ${colorVariant} ${solar}`).toHaveLength(1);
       const [item] = items;
       expect(MODEL_KEYS).toContain(item!.model);
-      expect(item!.model).toContain(`${tier}f-mansard-${LETTERS[colorVariant]}${solar ? '-solar' : ''}`);
-      expect(item!.textureVariant).toBeUndefined();
+      expect(item!.model).toContain(`${tier}f-mansard-a${solar ? '-solar' : ''}`);
+      expect(item!.textureVariant?.split(':').pop()).toBe(colorVariant === 'default' ? undefined : LETTERS[colorVariant]);
     }
   });
 });

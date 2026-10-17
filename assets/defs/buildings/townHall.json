@@ -16,12 +16,12 @@
   },
   "tiers": [
     {
-      "model": "commercial-building-k",
+      "model": "buildings-town-hall-3x2",
       "footprint": [3, 2]
     }
   ],
   "category": "administration",
-  "detailModel": "commercial-detail-awning-wide",
+  "drawnToScale": true,
   "power": 2,
   "water": 0,
   "unique": true

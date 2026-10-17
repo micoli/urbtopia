@@ -17,11 +17,12 @@
   "radius": 14,
   "tiers": [
     {
-      "model": "commercial-building-n",
+      "model": "buildings-concert-hall-3x3",
       "footprint": [3, 3],
       "capacity": 1200
     },
     {
+      "model": "buildings-concert-hall-3x3-3f",
       "capacity": 1800,
       "upgradeCost": {
         "urbs": 1200,
@@ -36,6 +37,7 @@
       }
     },
     {
+      "model": "buildings-concert-hall-3x3-4f",
       "capacity": 3600,
       "upgradeCost": {
         "urbs": 4800,
@@ -50,6 +52,7 @@
       }
     },
     {
+      "model": "buildings-concert-hall-3x3-5f",
       "capacity": 6600,
       "upgradeCost": {
         "urbs": 12000,
@@ -64,6 +67,7 @@
       }
     },
     {
+      "model": "buildings-concert-hall-3x3-6f",
       "capacity": 10800,
       "upgradeCost": {
         "urbs": 26000,
@@ -72,7 +76,7 @@
     }
   ],
   "category": "culture",
-  "detailModel": "commercial-detail-awning",
+  "drawnToScale": true,
   "power": 2,
   "water": 0
 }

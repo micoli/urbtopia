@@ -16,14 +16,14 @@
   },
   "tiers": [
     {
-      "model": "commercial-building-i",
+      "model": "buildings-tower-1x1-4f-tone-a",
       "footprint": [1, 1],
       "citizens": 100,
       "power": 10,
       "water": 10
     },
     {
-      "model": "commercial-building-l",
+      "model": "buildings-tower-1x1-6f-tone-a",
       "footprint": [1, 1],
       "citizens": 180,
       "power": 18,
@@ -36,7 +36,7 @@
       }
     },
     {
-      "model": "commercial-building-m",
+      "model": "buildings-tower-1x1-8f-tone-a",
       "citizens": 300,
       "power": 30,
       "water": 30,
@@ -69,14 +69,13 @@
     "solar": {
       "tiers": [
         {
-          "model": "suburban-building-type-j"
+          "model": "buildings-tower-1x1-4f-tone-a-solar"
         },
         {
-          "model": "suburban-building-type-u"
+          "model": "buildings-tower-1x1-6f-tone-a-solar"
         },
-        {},
         {
-          "model": "suburban-building-type-b"
+          "model": "buildings-tower-1x1-8f-tone-a-solar"
         }
       ]
     }

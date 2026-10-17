@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "transitStop",
   "section": "build.transport",
-  "model": "industrial-building-q",
+  "model": "buildings-station-2x1",
   "footprint": [2, 1],
   "cost": 600,
   "unlockCitizens": 600,
