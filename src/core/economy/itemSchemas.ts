@@ -17,13 +17,14 @@ const common = {
 
 export const GOOD_CATEGORIES = ['construction', 'food', 'equipment', 'luxury'] as const;
 
-export const MATERIAL_PRODUCERS = ['workshop', 'fishingBoat'] as const;
+export const MATERIAL_PRODUCERS = ['workshop', 'fishingBoat', 'orchard', 'mill'] as const;
 
 export const materialSchema = z
   .strictObject({
     kind: z.literal('material'),
     ...common,
     producedBy: z.enum(MATERIAL_PRODUCERS),
+    recipe: z.record(z.string(), z.int().min(1)).optional(),
     durationMinutes: minutes,
     unlockCitizens: count,
     minTier: z.int().min(1),
@@ -36,6 +37,7 @@ export const goodSchema = z
     kind: z.literal('good'),
     ...common,
     category: z.enum(GOOD_CATEGORIES),
+    producedBy: z.enum(['factory', 'bakery']).optional(),
     recipe: z.record(z.string(), z.int().min(1)).refine(recipe => Object.keys(recipe).length > 0, 'needs at least one Material'),
     durationMinutes: minutes,
     value: count,

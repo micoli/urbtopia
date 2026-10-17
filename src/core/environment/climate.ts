@@ -8,8 +8,8 @@ export function climateStats(state: GameState) {
   const transport = cityTransportStats(state);
   const operatingRatio = (state.adaptationUntil ?? 0) > state.lastSeen ? 1 : energy.economicRatio;
   const activityEmissions = state.buildings.reduce((sum, building) => {
-    if (building.type === 'factory') return sum + 2 * building.tier;
-    if (building.type === 'workshop') return sum + 0.5 * building.tier;
+    if (building.type === 'factory' || building.type === 'bakery') return sum + 2 * building.tier;
+    if (building.type === 'workshop' || building.type === 'mill') return sum + 0.5 * building.tier;
     return sum;
   }, 0) * operatingRatio;
   const emissions = activityEmissions + energy.emissions + transport.emissions;

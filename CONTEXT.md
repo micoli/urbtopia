@@ -9,7 +9,7 @@ The soft currency of the game, earned by selling goods and spent on building and
 _Avoid_: Coins, cash, money
 
 **Game object**:
-Any kind of thing of the game described by data rather than code: a Building, a Fixture, a Vehicle, a Service vehicle, a Transit fleet vehicle, a Boat, a Material, a Good or a Crop. Its definition, including its values per Tier, is edited in `tools/assets-editor`; the rules that use those values stay in code.
+Any kind of thing of the game described by data rather than code: a Building, a Fixture, a Vehicle, a Service vehicle, a Transit fleet vehicle, a Boat, a Material, a Good, a Crop or an Orchard tree. Its definition, including its values per Tier, is edited in `tools/assets-editor`; the rules that use those values stay in code.
 _Avoid_: Item (a Good), asset, entity, prefab
 
 **Retired**:
@@ -39,6 +39,12 @@ _Avoid_: Raw factory, mine
 **Factory**:
 A building that turns Materials into Goods.
 _Avoid_: Plant, mill
+
+**Mill**:
+A Workshop that turns Wheat into Flour and Olives into Olive oil.
+
+**Bakery**:
+A Factory that turns Flour and other Materials into Food Goods.
 
 **Shop**:
 A building that sells Goods to citizens for Urbs. There is one Shop per Good category, each with four Tiers; it sells only the Goods of its Good category that its Tier makes available. The General shop is the exception: it sells the Goods of every Good category available at its Tier, and costs more to build, to upgrade and to extend with Slots.
@@ -71,6 +77,9 @@ _Avoid_: Plot, parcel, farmland, zone
 **Crop**:
 A species planted on a Field tile. Each species has its own growth time and water Demand, and goes through four growth stages before being ready to harvest.
 _Avoid_: Plant, vegetable
+
+**Orchard tree**:
+A perennial tree placed on owned land that produces one fruit for Harvest, then remains in place and starts another production cycle. Orchard trees need water but do not use Fields or Seed packs; they also provide cooling, biodiversity and wellbeing.
 
 **Seed pack**:
 The unit of seeds needed to plant one Field tile, bought with Urbs and kept in the Farm's seed stock. Part of each harvest is converted back into Seed packs.

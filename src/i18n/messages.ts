@@ -343,6 +343,7 @@ export const MESSAGES = {
   'build.storage': 'Storage',
   'build.utilities': 'Energy and water',
   'build.greenSpaces': 'Green spaces',
+  'build.agriculture': 'Agriculture',
   'build.transport': 'Transport',
   'build.water': 'Water and boating',
   'water.tile': 'Water tiles',

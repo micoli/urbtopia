@@ -1,0 +1,13 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "name": {
+    "en": "Cherries",
+    "fr": "Cerises"
+  },
+  "producedBy": "orchard",
+  "durationMinutes": 20,
+  "unlockCitizens": 80,
+  "minTier": 1,
+  "value": 2
+}

@@ -29,7 +29,7 @@ export class EcologyLayer {
     }
     const radius = ['busStop', 'brtStation', 'railStation'].includes(selected.type) ? 6 : selected.type === 'battery' ? 8 : greenProfileOf(selected.type, selected.tier)?.radius ?? (selected.solar ? 6 : 0);
     for (const line of stats.lines.filter(l => l.stops.includes(selected.id) && l.route)) this.path(line.route!);
-    if (radius) for (const b of state.buildings.filter(b => isHomeType(b.type) || b.type === 'workshop' || b.type === 'factory' || isShopType(b.type))) {
+    if (radius) for (const b of state.buildings.filter(b => isHomeType(b.type) || ['workshop', 'factory', 'mill', 'bakery'].includes(b.type) || isShopType(b.type))) {
       const p = centerOf(selected), q = centerOf(b); if (Math.abs(p.x - q.x) + Math.abs(p.y - q.y) > radius) continue;
       const f = footprintOf(b.type, b.rotation, b.tier);
       this.path([{ x: b.x, y: b.y }, { x: b.x + f.width, y: b.y }, { x: b.x + f.width, y: b.y + f.depth }, { x: b.x, y: b.y + f.depth }, { x: b.x, y: b.y }]);

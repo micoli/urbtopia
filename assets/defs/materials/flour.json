@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "name": {
+    "en": "Flour",
+    "fr": "Farine"
+  },
+  "producedBy": "mill",
+  "recipe": {
+    "wheat": 1
+  },
+  "durationMinutes": 10,
+  "unlockCitizens": 20,
+  "minTier": 1,
+  "value": 3
+}

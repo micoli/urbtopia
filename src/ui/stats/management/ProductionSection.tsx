@@ -5,7 +5,7 @@ import {t} from '../../../i18n/t';
 import {itemName} from '../../../i18n/itemName';
 import {SectionHeading} from '../../common/SectionHeading';
 
-const COUNT_TYPES: BuildingType[] = ['home', 'workshop', 'factory', 'shop', 'casino', 'powerPlant', 'hydroPlant', 'geothermalPlant', 'coalPlant', 'solar', 'battery', 'backup', 'tree', 'park', 'busStop', 'brtStation', 'railStation'];
+const COUNT_TYPES: BuildingType[] = ['home', 'workshop', 'factory', 'mill', 'bakery', 'oliveTree', 'appleTree', 'cherryTree', 'shop', 'casino', 'powerPlant', 'hydroPlant', 'geothermalPlant', 'coalPlant', 'solar', 'battery', 'backup', 'tree', 'park', 'busStop', 'brtStation', 'railStation'];
 
 interface ProductionSectionProps {
     state: GameState;
@@ -38,7 +38,7 @@ export function ProductionSection({state, energy}: ProductionSectionProps) {
             </tr>
             </thead>
             <tbody>
-            {(['workshop', 'factory'] as const).flatMap(type => producibleItems(type).map(item => {
+            {(['workshop', 'mill', 'factory', 'bakery'] as const).flatMap(type => producibleItems(type).map(item => {
                 if (!isItemUnlocked(state, item)) return null;
                 const buildings = state.buildings.filter(b => b.type === type && b.tier >= minTierOf(item));
                 const rate = (b: typeof buildings[number]) => ECOLOGY.hourMs / (durationOf(item) * productionTierOf(b).durationFactor) * productionTierOf(b).yield;

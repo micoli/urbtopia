@@ -35,5 +35,6 @@ export function utilityDemand(state: GameState): UtilityTotals {
     },
     { power: 0, water: 0 },
   );
-  return { power: buildings.power, water: buildings.water + cropWaterDemand(state) };
+  const orchardWater = state.buildings.reduce((total, building) => total + (['oliveTree', 'appleTree', 'cherryTree'].includes(building.type) ? 1 : 0), 0);
+  return { power: buildings.power, water: buildings.water + cropWaterDemand(state) + orchardWater };
 }

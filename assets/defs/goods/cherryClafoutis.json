@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "name": {
+    "en": "Cherry clafoutis",
+    "fr": "Clafoutis aux cerises"
+  },
+  "category": "food",
+  "producedBy": "bakery",
+  "recipe": {
+    "flour": 1,
+    "cherry": 1
+  },
+  "durationMinutes": 18,
+  "value": 15,
+  "unlockCitizens": 80,
+  "minTier": 1
+}

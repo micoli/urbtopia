@@ -1,0 +1,67 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "green",
+  "section": "build.agriculture",
+  "cost": 90,
+  "unlockCitizens": 80,
+  "requiresRoad": false,
+  "initialSlots": 1,
+  "name": {
+    "en": "Cherry tree",
+    "fr": "Cerisier"
+  },
+  "description": {
+    "en": "A freely placed orchard tree that produces cherries and improves nearby cooling, biodiversity and well-being.",
+    "fr": "Un arbre fruitier à placer librement qui produit des cerises et améliore la fraîcheur, la biodiversité et le bien-être à proximité."
+  },
+  "tiers": [
+    {
+      "model": "suburban-tree-small",
+      "footprint": [1, 1],
+      "radius": 4,
+      "cooling": 1,
+      "biodiversity": 1,
+      "wellbeing": 1
+    },
+    {
+      "radius": 4,
+      "cooling": 1.5,
+      "biodiversity": 1.5,
+      "wellbeing": 1.5,
+      "upgradeCost": {
+        "urbs": 60
+      },
+      "scale": 1.1
+    },
+    {
+      "radius": 5,
+      "cooling": 2,
+      "biodiversity": 2,
+      "wellbeing": 2,
+      "upgradeCost": {
+        "urbs": 90
+      },
+      "scale": 1.2
+    },
+    {
+      "radius": 5,
+      "cooling": 2.5,
+      "biodiversity": 2.5,
+      "wellbeing": 2.5,
+      "upgradeCost": {
+        "urbs": 135
+      },
+      "scale": 1.3
+    },
+    {
+      "radius": 6,
+      "cooling": 3,
+      "biodiversity": 3,
+      "wellbeing": 3,
+      "upgradeCost": {
+        "urbs": 200
+      },
+      "scale": 1.4
+    }
+  ]
+}

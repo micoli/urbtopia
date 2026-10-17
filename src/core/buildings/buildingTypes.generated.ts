@@ -1,7 +1,9 @@
 // Generated from assets/defs/buildings by scripts/collectionFiles.ts. Do not edit.
 export type BuildingId =
+  | 'appleTree'
   | 'arcade'
   | 'backup'
+  | 'bakery'
   | 'baseballField'
   | 'battery'
   | 'brtStation'
@@ -9,6 +11,7 @@ export type BuildingId =
   | 'busStop'
   | 'casino'
   | 'catholicChurch'
+  | 'cherryTree'
   | 'coalPlant'
   | 'communityHall'
   | 'concertHall'
@@ -32,6 +35,7 @@ export type BuildingId =
   | 'marina'
   | 'materialDepot'
   | 'middleSchool'
+  | 'mill'
   | 'mini-forest-building-platform'
   | 'mini-forest-building-roof'
   | 'mini-forest-patch-grass'
@@ -205,6 +209,7 @@ export type BuildingId =
   | 'nature-tree-thin'
   | 'nature-tree-thin-dark'
   | 'nature-tree-thin-fall'
+  | 'oliveTree'
   | 'packhouse'
   | 'park'
   | 'pirate-grass'

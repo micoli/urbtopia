@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "name": {
+    "en": "Fougasse",
+    "fr": "Fougasse"
+  },
+  "category": "food",
+  "producedBy": "bakery",
+  "recipe": {
+    "flour": 1,
+    "oliveOil": 1
+  },
+  "durationMinutes": 18,
+  "value": 15,
+  "unlockCitizens": 80,
+  "minTier": 1
+}

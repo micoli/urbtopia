@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "name": {
+    "en": "Bread",
+    "fr": "Pain"
+  },
+  "category": "food",
+  "producedBy": "bakery",
+  "recipe": {
+    "flour": 1
+  },
+  "durationMinutes": 12,
+  "value": 8,
+  "unlockCitizens": 20,
+  "minTier": 1
+}

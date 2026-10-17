@@ -345,6 +345,7 @@ export const FR: Record<MessageKey, string> = {
   'build.storage': 'Stockage',
   'build.utilities': 'Énergie et eau',
   'build.greenSpaces': 'Espaces verts',
+  'build.agriculture': 'Agriculture',
   'build.water': 'Eau et nautisme',
   'water.tile': "Cases d'eau",
   'water.lay': "Poser de l'eau",

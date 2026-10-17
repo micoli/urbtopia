@@ -94,7 +94,7 @@ function tierFactsOf(id: CodexId, level: number): LevelFact[] {
     numericFact('codex.fact.water', tier => homeTier(tier).water, level),
     buildingFootprintFact(solarBaseOf(id) ?? id as BuildingType, level),
   ];
-  if (id === 'workshop' || id === 'factory' || id === 'packhouse') return [
+  if (id === 'workshop' || id === 'factory' || id === 'packhouse' || id === 'mill' || id === 'bakery') return [
     numericFact('codex.fact.craftTime', tier => productionTierOf({ type: id, tier }).durationFactor, level, percent),
     numericFact('codex.fact.slots', tier => productionTierOf({ type: id, tier }).maxSlots, level),
     numericFact('codex.fact.yield', tier => productionTierOf({ type: id, tier }).yield, level),

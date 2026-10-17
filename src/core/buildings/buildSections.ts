@@ -9,6 +9,7 @@ export const BUILD_SECTION_TITLES = [
   'build.publicFacilities',
   'build.leisure',
   'build.sport',
+  'build.agriculture',
   'build.decoration',
   'build.greenSpaces',
 ] as const;
