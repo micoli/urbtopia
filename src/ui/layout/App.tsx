@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from 'react';
+import { Fragment, lazy, Suspense, useEffect } from 'react';
 import { useStore } from 'zustand';
 import { prefsStore } from '../../i18n/prefsStore';
 import { LayoutBottomMenu } from './LayoutBottomMenu.tsx';
@@ -7,6 +7,9 @@ import { LayoutLeftMenu } from './LayoutLeftMenu.tsx';
 import { Overlays } from './Overlays';
 import { useUndoKeys } from '../build/useUndoKeys';
 import { SceneCanvas } from './SceneCanvas';
+import { isDevelopmentHost } from '../../devtools/isDevelopmentHost';
+
+const DevTools = import.meta.env.DEV ? lazy(() => import('../../devtools/DevTools')) : null;
 
 export function App() {
   useUndoKeys();
@@ -21,6 +24,7 @@ export function App() {
   return (
     <>
       <SceneCanvas />
+      {DevTools && isDevelopmentHost(window.location.hostname) ? <Suspense fallback={null}><DevTools /></Suspense> : null}
       <Fragment key={language}>
         <Overlays />
         {layout === 'A' ? <LayoutBottomMenu /> : layout === 'B' ? <LayoutRadial /> : <LayoutLeftMenu />}

@@ -1,7 +1,7 @@
 import { EcologyLayer } from './EcologyLayer';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { GAME_CONFIG, WILD_RIM_TILES, wildNoiseAt, wildTerrain, type Building, type GameState } from '../core';
+import { GAME_CONFIG, WILD_RIM_TILES, wildNoiseAt, wildTerrain, type Building, type GameState, type FacilityType } from '../core';
 import { CameraController } from './CameraController';
 import type { Coord } from '../core';
 import type { DrawnExtent, GhostSpec } from '../tools/tools';
@@ -21,6 +21,7 @@ import { BoatLayer } from './BoatLayer';
 import { BridgeLayer } from './BridgeLayer';
 import { TrafficLayer } from './TrafficLayer';
 import { renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } from './renderBudget';
+import { ServiceCoverageLayer } from './ServiceCoverageLayer';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
 const GROUND_FADE_TILES = 24;
@@ -58,6 +59,8 @@ export class GameScene {
   private selectionLayer = new GhostLayer(SELECTION_COLOR, { underBuildings: true });
   private ecologyLayer = new EcologyLayer(this.library);
   private selectedId: number | null = null;
+  private serviceCoverageType: FacilityType | null = null;
+  private serviceCoverageLayer = new ServiceCoverageLayer();
   private afterHarvest: readonly HarvestedTile[] = [];
   private ecologicalState: GameState | null = null;
   private congestion = new CongestionLayer();
@@ -110,7 +113,7 @@ export class GameScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 1.7);
     sun.position.set(20, 40, 10);
     const sky = new THREE.HemisphereLight(0xbcd8f5, 0x8a7a64, 0.5);
-    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.ghostLayer.root);
+    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.controller.onTap = (clientX, clientY, shiftKey) =>
@@ -176,6 +179,14 @@ export class GameScene {
     void this.drain();
   }
 
+  setServiceCoverage(type: FacilityType | null): void {
+    if (this.serviceCoverageType === type) return;
+    this.serviceCoverageType = type;
+    if (!this.ecologicalState) return;
+    this.latest = this.ecologicalState;
+    void this.drain();
+  }
+
   setBrushMode(enabled: boolean): void {
     this.controller.brushMode = enabled;
   }
@@ -234,6 +245,7 @@ export class GameScene {
     this.boats.dispose();
     this.bridges.dispose();
     this.ecologyLayer.dispose();
+    this.serviceCoverageLayer.dispose();
     this.renderer.dispose();
   }
 
@@ -244,10 +256,12 @@ export class GameScene {
       while (this.latest) {
         const state = this.latest;
         this.latest = null;
+        const serviceType = this.serviceCoverageType;
         const items = renderItemsOf(state, this.afterHarvest);
         await this.library.ensure(items.map((item) => item.model));
         await this.library.ensureTextureVariants(items.flatMap(item => item.textureVariant ? [item.textureVariant] : []));
         this.world.sync(items);
+        this.serviceCoverageLayer.sync(state, serviceType);
         await this.scenery.sync(state);
         this.shapeGround(state);
         this.syncParcels(state);

@@ -22,7 +22,7 @@ import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
-import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, stockShelf } from '../venues/venues';
+import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
 import { bridgeAt, bridgeKeys, placeBridge, refundOf, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
@@ -102,6 +102,8 @@ export type Command =
   | { readonly type: 'ScheduleEvent'; readonly buildingId: number; readonly startsInHours: number }
   | { readonly type: 'CancelEvent'; readonly buildingId: number }
   | { readonly type: 'StockShelf'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId }
+  | { readonly type: 'UnstockShelf'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'SetShelfGood'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId }
   | { readonly type: 'RepairFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
@@ -328,6 +330,10 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return cancelEvent(state, command.buildingId);
     case 'StockShelf':
       return stockShelf(state, command.buildingId, command.fixtureId, command.good);
+    case 'UnstockShelf':
+      return unstockShelf(state, command.buildingId, command.fixtureId);
+    case 'SetShelfGood':
+      return setShelfGood(state, command.buildingId, command.fixtureId, command.good);
     case 'RepairFixture':
       return repairFixture(state, command.buildingId, command.fixtureId);
     case 'RemoveFixture':

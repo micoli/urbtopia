@@ -7,6 +7,38 @@ const { sceneHandle } = await import('./sceneHandle');
 const shop = { kind: 'building', buildingType: 'shop' } as const;
 const aimedTile = () => uiStore.getState().evaluation!.ghost.tiles.concat(uiStore.getState().evaluation!.ghost.rects.map((r) => ({ x: r.x, y: r.y })))[0]!;
 
+describe('service coverage', () => {
+  beforeEach(() => {
+    uiStore.getState().cancelTool();
+    uiStore.setState({ serviceCoverageOpen: false, statsOpen: false, selectedBuildingId: null });
+  });
+
+  it('starts disabled and opens from City management without leaving its modal open', () => {
+    expect(uiStore.getInitialState().serviceCoverageOpen).toBe(false);
+    uiStore.getState().toggleStats();
+    uiStore.getState().openServiceCoverage();
+    expect(uiStore.getState()).toMatchObject({ serviceCoverageOpen: true, statsOpen: false });
+  });
+
+  it('stays active during selection, construction, cancellation and reopening management', () => {
+    uiStore.getState().openServiceCoverage();
+    uiStore.getState().select(1);
+    uiStore.getState().chooseTool(shop);
+    expect(uiStore.getState().serviceCoverageOpen).toBe(true);
+    uiStore.getState().cancelTool();
+    uiStore.getState().toggleStats();
+    expect(uiStore.getState().serviceCoverageOpen).toBe(true);
+  });
+
+  it('closes explicitly without cancelling the construction tool', () => {
+    uiStore.getState().openServiceCoverage();
+    uiStore.getState().chooseTool(shop);
+    uiStore.getState().closeServiceCoverage();
+    expect(uiStore.getState()).toMatchObject({ serviceCoverageOpen: false, tool: shop });
+    uiStore.getState().cancelTool();
+  });
+});
+
 describe('touch placement', () => {
   beforeEach(() => {
     uiStore.getState().cancelTool();

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { visibleChallenges } from '../../challenges/visibleChallenges';
+import { isChallengePlayable, visibleChallenges } from '../../challenges/visibleChallenges';
 import { t } from '../../i18n/t';
 import { useChallenges, useGame, useUi } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
@@ -20,8 +20,8 @@ export function EventsContent() {
   const openSettings = useUi((store) => store.openSettingsFromSocial);
   const openCodex = useUi((store) => store.openCodex);
   const rules = <ActionButton onClick={() => openCodex(undefined, 'challenges')}>{t('codex.challenges.open')}</ActionButton>;
-  const shown = snapshot ? visibleChallenges(state, snapshot.challenges) : [];
-  const shownIds = shown.map(({ id }) => id).join(',');
+  const shown = snapshot ? visibleChallenges(state, snapshot.challenges, true) : [];
+  const shownIds = shown.filter((challenge) => isChallengePlayable(state, challenge)).map(({ id }) => id).join(',');
 
   useEffect(() => {
     if (shownIds !== '') markSeen(shownIds.split(','));
@@ -43,7 +43,7 @@ export function EventsContent() {
       {open.length === 0 && !running ? <p>{t('challenge.empty')}</p> : null}
       <ul className="challenge-list">
         {open.map((challenge) => (
-          <ChallengeCard key={challenge.id} challenge={challenge} blocked={accepted !== null} busy={busy} onAccept={() => void actions?.accept(challenge.id)} />
+          <ChallengeCard key={challenge.id} challenge={challenge} locked={!isChallengePlayable(state, challenge)} blocked={accepted !== null} busy={busy} onAccept={() => void actions?.accept(challenge.id)} />
         ))}
       </ul>
       {rules}

@@ -87,6 +87,7 @@ type VenueMessageKey =
   | 'venue.stockGood'
   | 'venue.inStorage'
   | 'venue.stockFill'
+  | 'venue.stockRemove'
   | 'venue.stockLevel'
   | 'venue.stockNoGoods'
   | 'venue.stockNone'
@@ -116,7 +117,8 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.stock': ['Shelf', 'Rayon'],
   'venue.stockGood': ['Good on sale', 'Marchandise en vente'],
   'venue.inStorage': ['in storage', 'en entrepôt'],
-  'venue.stockFill': ['Fill from the Storehouse', 'Remplir depuis l’entrepôt'],
+  'venue.stockFill': ['Fill the shelf', 'Remplir le rayonnage'],
+  'venue.stockRemove': ['Remove from shelf', 'Retirer du rayonnage'],
   'venue.stockLevel': ['Stock', 'Stock'],
   'venue.stockNoGoods': ['The Storehouse holds no Goods.', 'L’entrepôt ne contient aucune marchandise.'],
   'venue.stockNone': ['Nothing on sale', 'Rien en vente'],

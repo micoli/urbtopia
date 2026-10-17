@@ -11,15 +11,16 @@ import { storedOf } from './storedOf';
 interface ChallengeCardProps {
   challenge: Challenge;
   blocked: boolean;
+  locked?: boolean;
   busy: boolean;
   onAccept: () => void;
 }
 
-export function ChallengeCard({ challenge, blocked, busy, onAccept }: ChallengeCardProps) {
+export function ChallengeCard({ challenge, blocked, locked = false, busy, onAccept }: ChallengeCardProps) {
   const storage = useGame((store) => store.state.storage);
   const reward = challenge.rewardKind === 'urbs' ? t('challenge.rewardUrbs').replace('{amount}', String(challengeReward(challenge.goal))) : t('challenge.rewardMedal');
   return (
-    <li className="challenge-card">
+    <li className={`challenge-card${blocked || locked ? ' challenge-card-unavailable' : ''}`}>
       <header>
         <strong>{challengeName(challenge)}</strong>
         <small>{challenge.kind === 'daily' && challenge.difficulty ? `${t('challenge.kind.daily')} · ${t(`difficulty.${challenge.difficulty}`)}` : t('challenge.kind.event')}</small>
@@ -32,9 +33,9 @@ export function ChallengeCard({ challenge, blocked, busy, onAccept }: ChallengeC
       <p className="challenge-reward">
         <CurrencyText text={reward} />
       </p>
-      {blocked ? <p className="challenge-note">{t('challenge.busy')}</p> : null}
-      <ActionButton variant="primary" disabled={blocked || busy} onClick={onAccept}>
-        {t('challenge.accept')}
+      {locked ? <p className="challenge-note">{t('challenge.locked').replace('{count}', String(challenge.minCitizens))}</p> : blocked ? <p className="challenge-note">{t('challenge.busy')}</p> : null}
+      <ActionButton variant="primary" disabled={locked || blocked || busy} onClick={onAccept}>
+        {t(locked || blocked ? 'challenge.notAvailable' : 'challenge.accept')}
       </ActionButton>
     </li>
   );

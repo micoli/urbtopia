@@ -95,6 +95,12 @@ describe('visibleChallenges', () => {
     const locked = [daily('e0', 'easy', 0), { ...daily('e10', 'easy', 10), goal: [{ item: 'coal', quantity: 5 }] }];
     expect(visibleChallenges(withCitizens(12), locked).map(({ id }) => id)).toEqual(['e0']);
   });
+
+  it('can show the next locked difficulty and locked Events without changing the available list', () => {
+    const challenges = [daily('e', 'easy', 0), daily('m', 'medium', 600), event('ev', 600)];
+    expect(visibleChallenges(initial, challenges).map(({ id }) => id)).toEqual(['e']);
+    expect(visibleChallenges(initial, challenges, true).map(({ id }) => id)).toEqual(['e', 'm', 'ev']);
+  });
 });
 
 describe('FakeChallengeWorld', () => {
@@ -140,10 +146,21 @@ describe('FakeChallengeWorld', () => {
     expect((await client.declare('ev')).alreadyClaimed).toBe(true);
     expect((await client.list()).medals).toHaveLength(1);
   });
+
+  it('never lists a completed Challenge again for its player, including another device', async () => {
+    const world = new FakeChallengeWorld(() => T0);
+    world.challenges = [daily('a', 'easy', 0)];
+    const client = world.client('p1');
+    await client.accept('a');
+    await client.declare('a');
+    expect((await world.client('p1').list()).challenges).toEqual([]);
+    await expect(client.accept('a')).rejects.toMatchObject({ kind: 'challenge-unavailable' });
+    expect((await world.client('p2').list()).challenges).toHaveLength(1);
+  });
 });
 
 describe('challenge actions', () => {
-  beforeEach(() => challengeStore.setState({ status: 'idle', snapshot: null, busy: false, failure: null }));
+  beforeEach(() => challengeStore.setState({ status: 'idle', snapshot: null, busy: false, failure: null, success: null }));
 
   const GOAL = [{ item: 'wood', quantity: 4 }, { item: 'planks', quantity: 2 }];
   const goalChallenge = (): Challenge => ({ ...daily('a', 'easy', 0), goal: GOAL });
@@ -243,6 +260,10 @@ describe('challenge actions', () => {
     expect(current().urbs).toBe(urbs + challengeReward(GOAL));
     expect(current().storage.materials.wood).toBe(46);
     expect((await setupSnapshot(actions)).accepted).toBeNull();
+    expect(challengeStore.getState().success).toEqual({ id: 'a', urbs: challengeReward(GOAL), rewardKind: 'urbs' });
+    expect(challengeStore.getState().snapshot?.challenges.some(({ id }) => id === 'a')).toBe(false);
+    expect(await actions.accept('a')).toBe(false);
+    expect(current().challenge).toBeUndefined();
   });
 
   it('pays nothing in Urbs for an Event and records the Medal', async () => {
@@ -253,6 +274,7 @@ describe('challenge actions', () => {
     expect(current().challenge).toBeUndefined();
     expect(current().urbs).toBe(urbs);
     expect(challengeStore.getState().snapshot?.medals).toHaveLength(1);
+    expect(challengeStore.getState().success).toEqual({ id: 'ev', urbs: 0, rewardKind: 'medal' });
   });
 
   it('returns the error of the core when setting aside too much', async () => {
@@ -260,6 +282,21 @@ describe('challenge actions', () => {
     await actions.accept('a');
     expect(await actions.setAside('wood', 5)).toBe('error.challengeSurplus');
     expect(await actions.setAside('stone', 1)).toBe('error.notInChallenge');
+  });
+
+  it('celebrates only after the server confirms success, and does not repeat it on polling', async () => {
+    const { actions, client } = setup();
+    await actions.accept('a');
+    const declare = vi.spyOn(client, 'declare').mockRejectedValueOnce(new ChallengeError('offline'));
+    await actions.setAside('wood', 4);
+    await actions.setAside('planks', 2);
+    expect(challengeStore.getState().success).toBeNull();
+    declare.mockRestore();
+    await actions.poll();
+    expect(challengeStore.getState().success?.id).toBe('a');
+    challengeStore.getState().setSuccess(null);
+    await actions.poll();
+    expect(challengeStore.getState().success).toBeNull();
   });
 
   it('repairs a crash after the server completion: the next poll declares again and credits once', async () => {
