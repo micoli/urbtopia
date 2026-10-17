@@ -35,7 +35,9 @@ const COMPACT = 'px-2! py-1! text-xs! whitespace-nowrap'
 // The Solar panels the preview puts on the roof of the selected building, unless the solar preview is turned off.
 function solarOfSelection(doc: Doc, selection: Selection | null, solar: boolean | undefined): SolarPanelsDefinition | undefined {
   if (solar === false || selection?.kind !== 'buildings') return undefined
-  return doc.collections.buildings[selection.id]?.solarPanels as SolarPanelsDefinition | undefined
+  const building = doc.collections.buildings[selection.id]
+  if ((building?.variants as Record<string, unknown> | undefined)?.solar !== undefined) return undefined
+  return building?.solarPanels as SolarPanelsDefinition | undefined
 }
 
 // The model of the selected Game object, placed as the game places it, with its footprint and the street side (-Z).
@@ -52,7 +54,8 @@ export function Preview() {
   const location = library.byFile.get(settings?.file ?? '')
   const solar = useDocument(state => solarOfSelection(state.doc, state.selection, state.preview.solar))
   const solarAvailable = useDocument(state => state.selection?.kind === 'buildings' && state.doc.collections.buildings[state.selection.id]?.solarPanels !== undefined)
-  const solarOn = useDocument(state => state.preview.solar !== false)
+  const solarVariant = useDocument(state => state.selection?.kind === 'buildings' && (state.doc.collections.buildings[state.selection.id]?.variants as Record<string, unknown> | undefined)?.solar !== undefined)
+  const solarOn = useDocument(state => state.preview.solar !== false) && !solarVariant
   const showSolar = useDocument(state => state.showSolar)
   const defaultPanelId = useDocument(state => (state.doc.singletons.scenery as { roofPanel: string } | undefined)?.roofPanel)
   const models = useDocument(state => state.doc.models)
@@ -175,7 +178,7 @@ export function Preview() {
           {listed && selectedPanel !== null && (['translate', 'rotate'] as const).map(mode => (
             <button key={mode} className={`${button(gizmoMode === mode ? 'primary' : 'secondary')} ${COMPACT}`} aria-pressed={gizmoMode === mode} onClick={() => setGizmoMode(mode)}>{mode === 'translate' ? 'Move' : 'Rotate'}</button>
           ))}
-          {solarAvailable && <button className={`${button(solarOn ? 'primary' : 'secondary')} ${COMPACT}`} aria-pressed={solarOn} onClick={() => showSolar(!solarOn)}>☀ Solar {solarOn ? 'on' : 'off'}</button>}
+          {solarAvailable && <button className={`${button(solarOn ? 'primary' : 'secondary')} ${COMPACT}`} aria-pressed={solarOn} disabled={solarVariant} onClick={() => showSolar(!solarOn)}>☀ Solar {solarOn ? 'on' : 'off'}</button>}
           <button className={`${button('secondary')} ${COMPACT}`} onClick={() => setRotation((rotation + 3) % 4)} aria-label="Rotate left">⟲</button>
           <button className={`${button('secondary')} ${COMPACT}`} onClick={() => setRotation((rotation + 1) % 4)} aria-label="Rotate right">⟳</button>
         </div>

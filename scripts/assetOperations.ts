@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, rmSync, rmdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { managedModelFile } from './managedModels.ts';
 import { EXTRA_PACKS_FILE, MANAGED_MODELS_DIR, POLY_PIZZA_DIR, ARCHIVES_DIR, QUATERNIUS_ARCHIVES_DIR, readExtraPacks } from './assetPacks.ts';
 import { extractFbx, extractPack } from './extractPack.ts';
 import { writeCollection, writeSingleton } from './collectionFiles.ts';
@@ -44,7 +45,7 @@ export function addGlb(input: { category: string; name: string; data: Uint8Array
   requireName('category', input.category);
   requireName('name', input.name);
   const key = `${input.category}/${input.name}`;
-  const target = join(paths.managed, `${key}.glb`);
+  const target = managedModelFile(key, '.glb', paths.managed);
   if (existsSync(target)) throw new Error(`${key} already exists`);
   const models = readModels(paths.models);
   const id = modelIdOf(key);
@@ -104,11 +105,11 @@ export function removeModel(key: string, usedKeys: readonly string[], paths = AS
   const polySlug = key.match(/^poly\.pizza\/([^/]+)$/)?.[1];
   if (polySlug) rmSync(join(paths.polyPizza, polySlug), { recursive: true, force: true });
   else {
-    const file = join(paths.managed, `${key}.glb`);
-    if (!existsSync(file)) throw new Error(`${key} is not a hand-made or Poly Pizza model`);
-    rmSync(file);
-    const directory = dirname(file);
-    if (readdirSync(directory).length === 0) rmdirSync(directory);
+    const directory = dirname(managedModelFile(key, '.glb', paths.managed));
+    if (!existsSync(managedModelFile(key, '.glb', paths.managed))) throw new Error(`${key} is not a hand-made or Poly Pizza model`);
+    rmSync(directory, { recursive: true });
+    const theme = dirname(directory);
+    if (readdirSync(theme).length === 0) rmdirSync(theme);
   }
   if (!idByFile(models).has(key)) return;
   writeModels(Object.fromEntries(Object.entries(models).filter(([, { file }]) => file !== key)), paths.models);

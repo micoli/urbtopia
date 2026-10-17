@@ -1,11 +1,12 @@
 """
 building_lib.py - shared art direction and builders for Urbix low-poly buildings.
-Run INSIDE Blender through the LPM skill's bl.py (see SKILL.md). Units: 1 tile = 1 world unit, Z up, front = -Y.
+Run INSIDE Blender through tools/blender/bl.py (see SKILL.md). Units: 1 tile = 1 world unit, Z up, front = -Y.
 
 A recipe is: `import building_lib; building_lib.build(SPEC, out_dir)`.
 Two styles share the geometry code and differ by the STYLES table: "kenney" (default, matches the suburban Kenney
 models of the game: off-white walls, thick slate trims, soft green roofs) and "vivid" (saturated colors, fine trims).
 """
+import json
 import math
 import os
 import random
@@ -16,9 +17,10 @@ import bmesh
 import bpy
 from mathutils import Matrix, Vector
 
-LPM_DIR = os.path.expanduser("~/.claude/skills/blender-lpm-skill/scripts")
-sys.path.insert(0, LPM_DIR)
+TOOLS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "tools", "blender")
+sys.path.insert(0, TOOLS_DIR)
 import lpm  # noqa: E402
+import tone_labels  # noqa: E402
 
 PALETTE_ENTRIES = [
     ("coral", "#ff5a4e"), ("tangerine", "#ff9a1f"), ("sun", "#ffd21f"), ("lime", "#8bdc2a"),
@@ -31,14 +33,41 @@ PALETTE_ENTRIES = [
     ("paleblue", "#b6d0ea"), ("grey", "#a4a9ad"), ("greygreen", "#6f8f7c"),
 ]
 PALETTE_NAMES = [name for name, _ in PALETTE_ENTRIES]
+PALETTE_HEX = dict(PALETTE_ENTRIES)
+
+# Colors measured on the Kenney suburban and commercial kits (palette cells of the "urbtopia" style only, so the
+# palette image of every other style stays byte-identical).
+URBTOPIA_ENTRIES = [
+    ("uwall", "#f1f1f6"), ("uroof", "#96ddbc"), ("utrim", "#9ea2b4"), ("uframe", "#a3a7b8"), ("udark", "#7a7d8c"), ("uslab", "#b4b8c8"), ("uwood", "#c58b52"), ("usand", "#e3cc92"), ("vtone1", "#c2432e"), ("vtone2", "#a63a28"), ("vtone3", "#9ea2b4"),
+]
+
+# The "vtone" cells are role cells: a family sets them to the colors of its first tone, and the build writes one palette PNG per other tone, so the game repaints a model by swapping its palette texture.
 
 FLOOR_HEIGHT = {"house": 0.30, "apartment": 0.28, "office": 0.32}
 FLOOR_RANGE = {"house": (1, 3), "apartment": (3, 12), "office": (4, 20)}
-ROOF_STYLES = ("flat", "gable_half", "gable_third", "hip", "mansard", "shed", "gable_cross")
+ROOF_STYLES = ("flat", "gable_half", "gable_third", "hip", "mansard", "shed", "gable_cross", "sawtooth")
 FEATURES = ("sign", "chimney", "antenna", "awning", "balcony", "skylight", "monumental_door",
-            "vent", "solar_panels", "bushes")
-FRONT_FEATURES = ("sign", "awning", "balcony", "monumental_door", "bushes")
+            "vent", "solar_panels", "bushes", "clock_tower", "flagpole", "smokestack", "roller_door", "storefront", "penthouse", "portico", "red_cross", "door_hood", "penthouse_terrace", "stair_head", "round_dormer", "round_window", "roof_lantern", "striped_awning", "stall", "material_yard", "marquee", "wall_tools", "bush_at", "industrial_door", "hazard_band", "hardware_display", "roof_reel", "curved_marquee", "pilasters", "crystals", "red_carpet", "roof_tank", "roof_pipes", "loading_dock", "crate_stacks", "side_conveyor", "bulb_row", "stone_accents", "roof_vents", "roof_coin", "poster", "roof_die", "roof_card", "door_at")
+FRONT_FEATURES = ("sign", "awning", "monumental_door", "bushes", "door_hood", "round_window")
 FACES = ("front", "back", "left", "right")
+
+def use_palette(cfg):
+    """Select the palette of a style: the shared cells, plus the extra cells of the style if it has some."""
+    global PALETTE_NAMES, PALETTE_HEX
+    entries = PALETTE_ENTRIES + cfg.get("palette_extra", [])
+    PALETTE_NAMES = [name for name, _ in entries]
+    PALETTE_HEX = dict(entries)
+    return entries
+
+
+def ink_for(spec, board):
+    """Light ink on a dark board, the style's dark ink on a light one."""
+    value = PALETTE_HEX[PALETTE_NAMES[board]].lstrip("#")
+    red, green, blue = (int(value[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    if 0.2126 * red + 0.7152 * green + 0.0722 * blue < 0.5:
+        return PALETTE_NAMES.index("white")
+    return PALETTE_NAMES.index(spec["cfg"]["ink"])
+
 
 STYLES = {
     "vivid": {
@@ -65,6 +94,20 @@ STYLES = {
     },
 }
 
+STYLES["urbtopia"] = {
+    **STYLES["kenney"],
+    "palette_extra": URBTOPIA_ENTRIES, "text": "vector", "font": "SpaceGrotesk.ttf", "font_bold": 0.035,
+    "colors": {"wall": "uwall", "roof": "uroof", "trim": "utrim", "door": "udark", "accent": "uroof", "glass": "glass_blue"},
+    "ink": "udark", "overhang": 0.07, "verge": 0.03, "corner": 0.03, "roof_thickness": 0.03, "roof_fillet": 0.012,
+    "base_height": 0.045, "base_push": 0.01, "belt_height": 0.0, "belt_push": 0.0,
+    "window_pitch": 0.5, "window_width": 0.24, "window_height": 0.44, "window_z": 0.40, "margin": 0.08, "frame_radius": 0.018,
+    "floor_height": {"house": 0.26, "apartment": 0.26, "office": 0.28},
+    "parapet": 0.06, "parapet_width": 0.035,
+}
+
+PORTICO_PROJECTION = 0.18  # how far a portico stands out of the front wall: the body footprint is smaller by this much
+SAWTOOTH_HEIGHT = 0.16
+SAWTOOTH_TOOTH = 0.5
 ROOF_PITCH_DEG = 35.0
 SHED_PITCH_DEG = 18.0
 MAX_ROOF_HEIGHT = 0.6
@@ -159,6 +202,34 @@ def rounded_block(name, width, depth, height, color, ratio, at=(0, 0, 0)):
     return lpm._object(name, _bm(verts, faces), color)
 
 
+def slanted_blocks(name, width, depth, height, ratio, colors, at, slope):
+    """A rounded block cut in two colors along a plane that rises toward the back (+Y): returns (lower, upper)."""
+    radius = ratio * min(width, depth)
+    cx, cy, z = at
+    outline = []
+    for corner_x, corner_y, start in ((1, -1, -90), (1, 1, 0), (-1, 1, 90), (-1, -1, 180)):
+        for step in (0, 45, 90):
+            angle = math.radians(start + step)
+            outline.append((cx + corner_x * (width / 2 - radius) + radius * math.cos(angle),
+                            cy + corner_y * (depth / 2 - radius) + radius * math.sin(angle)))
+    count = len(outline)
+
+    def cut(y):
+        return z + height / 2 + slope * (y - cy)
+
+    def prism(bottom, top):
+        verts = [(px, py, bottom(py)) for px, py in outline] + [(px, py, top(py)) for px, py in outline]
+        faces = [(i, (i + 1) % count, count + (i + 1) % count, count + i) for i in range(count)]
+        faces.append(tuple(reversed(range(count))))
+        faces.append(tuple(range(count, 2 * count)))
+        return faces, verts
+
+    lower_faces, lower_verts = prism(lambda py: z, cut)
+    upper_faces, upper_verts = prism(cut, lambda py: z + height)
+    return (lpm._object(f"{name}_low", _bm(lower_verts, lower_faces), colors[0]),
+            lpm._object(f"{name}_high", _bm(upper_verts, upper_faces), colors[1]))
+
+
 # --------------------------------------------------------------------------- roofs
 
 def mansard_dimensions(spec):
@@ -176,6 +247,8 @@ def roof_dimensions(spec):
     long_side, short_side = max(width, depth), min(width, depth)
     if "roof_height" in spec:
         height = spec["roof_height"]
+    elif spec["roof"] == "sawtooth":
+        height = SAWTOOTH_HEIGHT
     elif spec["roof"] == "shed":
         height = min(MAX_SHED_HEIGHT, math.tan(math.radians(SHED_PITCH_DEG)) * short_side)
     else:
@@ -186,7 +259,7 @@ def roof_dimensions(spec):
 def roof_height(spec):
     thickness = spec["cfg"]["roof_thickness"]
     if spec["roof"] == "flat":
-        return max(thickness, 0.04)
+        return spec["cfg"]["base_height"] if spec.get("slab_matches_plinth") else max(thickness, 0.04)
     if spec["roof"] == "mansard":
         lower, _, _, upper = mansard_dimensions(spec)
         return lower + upper
@@ -240,8 +313,13 @@ def ridge_along_x(spec):
     return width >= depth
 
 
+def hip_ratio_of(spec):
+    """Share of the roof length each end slopes over (a hipped end instead of a gable), for a gable_half roof."""
+    return spec.get("hip_ratio") if spec["roof"] == "gable_half" else None
+
+
 def has_gable_ends(spec):
-    return spec["roof"] in ("gable_half", "gable_third", "shed")
+    return spec["roof"] in ("gable_half", "gable_third", "shed") and not hip_ratio_of(spec)
 
 
 def extrude_profile(spec, name, profile, a0, a1, color):
@@ -284,6 +362,30 @@ def gable_roof_parts(spec, z):
     return [roof, extrude_profile(spec, "gable_wall", attic, -body_long, body_long, attic_color)]
 
 
+def sawtooth_parts(spec, z):
+    """Factory roof: a row of slanted teeth along the short axis, each with a vertical glazed face."""
+    long_side, short_side, height = roof_dimensions(spec)
+    base = 0.03
+    teeth = max(2, round(short_side / SAWTOOTH_TOOTH))
+    half = short_side / 2
+    step = short_side / teeth
+    top = [(-half, z + base)]
+    glass = []
+    for tooth in range(teeth):
+        edge = -half + (tooth + 1) * step
+        top += [(edge, z + base + height), (edge, z + base)]
+        glass.append(edge)
+    top.pop()
+    top.append((half, z + base))
+    outline = [(-half, z), (half, z)] + list(reversed(top))
+    roof = [extrude_profile(spec, "roof", outline, -long_side / 2, long_side / 2, color_index(spec, "roof"))]
+    pane = color_index(spec, "glass")
+    for index, edge in enumerate(glass):
+        window = [(edge - 0.004, z + base + 0.025), (edge + 0.006, z + base + 0.025), (edge + 0.006, z + base + height - 0.02), (edge - 0.004, z + base + height - 0.02)]
+        roof.append(extrude_profile(spec, f"tooth_glass_{index}", window, -long_side / 2 + 0.05, long_side / 2 - 0.05, pane))
+    return roof
+
+
 def roof_parts(spec, z):
     cfg = spec["cfg"]
     thickness = cfg["roof_thickness"]
@@ -291,7 +393,24 @@ def roof_parts(spec, z):
     style = spec["roof"]
     width, depth = spec["footprint"]
     if style == "flat":
-        return [fillet(lpm.box("roof", (width, depth, max(thickness, 0.04)), at=(0, 0, z), color=roof_color), cfg["roof_fillet"])]
+        slab = cfg["base_height"] if spec.get("slab_matches_plinth") else max(thickness, 0.04)
+        roof = [fillet(lpm.box("roof", (width, depth, slab), at=(0, 0, z), color=roof_color), cfg["roof_fillet"])]
+        if spec.get("roof_stripe"):
+            roof.append(lpm.box("roof_stripe", (width + 0.004, depth + 0.004, slab * 0.3), at=(0, 0, z), color=PALETTE_NAMES.index(spec["roof_stripe"])))
+        parapet, wall = cfg.get("parapet"), cfg.get("parapet_width", 0)
+        if not parapet:
+            return roof
+        dark = color_index(spec, "door")
+        base = z + slab - 0.005
+        if spec.get("roof_deck"):
+            roof.append(lpm.box("roof_deck", (width - 2 * wall, depth - 2 * wall, 0.006), at=(0, 0, z + slab - 0.003), color=PALETTE_NAMES.index(spec["roof_deck"])))
+        roof.append(lpm.box("parapet_front", (width, wall, parapet), at=(0, -(depth - wall) / 2, base), color=dark))
+        roof.append(lpm.box("parapet_back", (width, wall, parapet), at=(0, (depth - wall) / 2, base), color=dark))
+        roof.append(lpm.box("parapet_left", (wall, depth - 2 * wall + 0.01, parapet), at=(-(width - wall) / 2, 0, base), color=dark))
+        roof.append(lpm.box("parapet_right", (wall, depth - 2 * wall + 0.01, parapet), at=((width - wall) / 2, 0, base), color=dark))
+        return roof
+    if style == "sawtooth":
+        return sawtooth_parts(spec, z)
     if style == "mansard":
         return [fillet(mansard_mesh(spec, z, roof_color), cfg["roof_fillet"])]
     if has_gable_ends(spec):
@@ -304,6 +423,8 @@ def roof_parts(spec, z):
     ring1 = [(*_to_xy(spec, a, b), top) for a, b in corners]
     fascia = [(0, 3, 2, 1), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
     run = (long_side - short_side) / 2
+    if hip_ratio_of(spec):
+        run = long_side / 2 - long_side * hip_ratio_of(spec)
     if run < 1e-3:
         ridge = [(*_to_xy(spec, 0, 0), top + height)]
         faces = fascia + [(4, 5, 8), (5, 6, 8), (6, 7, 8), (7, 4, 8)]
@@ -403,15 +524,16 @@ def add_door(spec, parts):
     width, height = door_layout(spec)
     trim, door = color_index(spec, "trim"), color_index(spec, "door")
     monumental = has_feature(spec, "monumental_door")
+    at = spec.get("door_along", 0.0)
     post = cfg["door_post_mon"] if monumental else cfg["door_post"]
-    parts.append(wall_rounded_plate(spec, "door_surround", "front", 0, 0, width + 2 * post, height + post, cfg["door_plate_depth"], trim, cfg["door_radius"]))
+    parts.append(wall_rounded_plate(spec, "door_surround", "front", at, 0, width + 2 * post, height + post, cfg["door_plate_depth"], trim, cfg["door_radius"]))
     if monumental:
-        parts.append(wall_box(spec, "door_pediment", "front", 0, height + post - 0.005, (width + 2 * post + 0.04, 0.03, 0.025), trim))
-    parts.append(wall_box(spec, "door_step", "front", 0, 0, (width + 2 * post + 0.02, 0.035, 0.014), trim))
-    parts.append(wall_box(spec, "door", "front", 0, 0, (width, cfg["door_depth"], height), door))
+        parts.append(wall_box(spec, "door_pediment", "front", at, height + post - 0.005, (width + 2 * post + 0.04, 0.03, 0.025), trim))
+    parts.append(wall_box(spec, "door_step", "front", at, 0, (width + 2 * post + 0.02, 0.035, 0.014), trim))
+    parts.append(wall_box(spec, "door", "front", at, 0, (width, cfg["door_depth"], height), door))
     if spec["kind"] == "office":
-        parts.append(wall_quad(spec, "decal_door_split", "front", 0, 0.014, 0.008, height - 0.014, trim, push=cfg["door_depth"] - 0.01 + DECAL_STEP))
-    parts.append(wall_box(spec, "door_handle", "front", width / 2 - 0.03, height * 0.45, (0.014, cfg["handle_depth"], 0.03), color_index(spec, "accent")))
+        parts.append(wall_quad(spec, "decal_door_split", "front", at, 0.014, 0.008, height - 0.014, trim, push=cfg["door_depth"] - 0.01 + DECAL_STEP))
+    parts.append(wall_box(spec, "door_handle", "front", at + width / 2 - 0.03, height * 0.45, (0.014, cfg["handle_depth"], 0.03), color_index(spec, "accent")))
 
 
 def add_garage_door(spec, parts):
@@ -430,10 +552,10 @@ def panes_for(spec):
     return panes[spec["kind"]] if isinstance(panes, dict) else panes
 
 
-def add_window(spec, parts, tag, face, along, z, width, height, half=None):
+def add_window(spec, parts, tag, face, along, z, width, height, half=None, panes=None):
     cfg = spec["cfg"]
     trim, glass = color_index(spec, "trim"), color_index(spec, "glass")
-    columns, rows = panes_for(spec)
+    columns, rows = panes or panes_for(spec)
     pad, depth, radius = cfg["window_pad"], cfg["window_depth"], cfg["frame_radius"]
     if cfg["sill"]:
         parts.append(wall_box(spec, f"sill_{tag}", face, along, z - 0.014, (width + 0.05, 0.022, 0.014), trim, half=half))
@@ -477,25 +599,178 @@ def window_columns(spec, face, rng):
     return columns, [min(widest, base_width * rng.choice(WIDTH_FACTORS)) for _ in columns]
 
 
+PIXEL_ART = {
+    "pacman": ("..yyyyy..", ".yyyyyyy.", "yyyyyyy..", "yyyyyy...", "yyyyy....", "yyyyyy...", "yyyyyyy..", ".yyyyyyy.", "..yyyyy.."),
+    "invader": ("..g.....g..", "...g...g...", "..ggggggg..", ".gg.ggg.gg.", "ggggggggggg", "g.ggggggg.g", "g.g.....g.g", "...gg.gg..."),
+}
+
+
+def opening_boxes(spec, face):
+    """(centre along, width, bottom z, top z) of the windows, posters and doors of a face, to keep decoration off them."""
+    floor, cfg = spec["floor_height"], spec["cfg"]
+    boxes = []
+    for extra in spec.get("extra_windows", []):
+        if extra.get("face", "front") != face:
+            continue
+        for level in ([extra["level"]] if "level" in extra else range(spec["floors"])):
+            bottom = level * floor + floor * extra.get("z_ratio", cfg["window_z"])
+            boxes.append((extra["along"], extra.get("width", 0.2), bottom, bottom + floor * extra.get("height_ratio", cfg["window_height"])))
+    for feature in spec.get("features", []):
+        if feature["type"] == "poster" and feature.get("face", "front") == face:
+            boxes.append((feature["along"], feature.get("width", 0.4), feature.get("z", 0.12), feature.get("z", 0.07) + feature.get("height", 0.3)))
+    if face == "front":
+        door_width, door_height = door_layout(spec)
+        boxes.append((spec.get("door_along", 0.0), door_width + 0.1, 0.0, door_height + 0.1))
+    if face == "back":
+        for feature in spec.get("features", []):
+            if feature["type"] == "industrial_door" and feature.get("face") == "back":
+                boxes.append((feature.get("along", 0.0), feature.get("width", 0.7) + 0.1, 0.0, floor * 0.9))
+    return boxes
+
+
+def add_poster(spec, parts, feature):
+    """A framed black poster with a pixel-art sprite, standing where a window would be."""
+    face, along = feature.get("face", "front"), feature["along"]
+    width, height, z = feature.get("width", 0.4), feature.get("height", 0.3), feature.get("z", 0.07)
+    index = PALETTE_NAMES.index
+    frame, black = color_index(spec, "trim"), index("graphite")
+    thick = 0.012
+    parts.append(wall_box(spec, f"poster_{face}_{along}", face, along, z, (width, 0.012, height), black))
+    for edge, side in enumerate((-1, 1)):
+        parts.append(wall_box(spec, f"poster_frame_{face}_{along}_{edge}", face, along + side * (width / 2 + thick / 2), z - thick, (thick, 0.02, height + 2 * thick), frame))
+    parts.append(wall_box(spec, f"poster_frame_top_{face}_{along}", face, along, z + height, (width + 2 * thick, 0.02, thick), frame))
+    parts.append(wall_box(spec, f"poster_frame_bottom_{face}_{along}", face, along, z - thick, (width + 2 * thick, 0.02, thick), frame))
+    sprite = PIXEL_ART[feature["art"]]
+    colors = {"y": index("sun"), "g": index("lime"), "w": index("white")}
+    pixel = min(width * 0.8 / len(sprite[0]), height * 0.86 / len(sprite))
+    left = along - len(sprite[0]) * pixel / 2 + (-width * 0.12 if feature["art"] == "pacman" else 0.0)
+    top = z + height / 2 + len(sprite) * pixel / 2
+    for row, line in enumerate(sprite):
+        for column, cell in enumerate(line):
+            if cell in colors:
+                parts.append(wall_box(spec, f"px_{feature['art']}_{row}_{column}", face, left + (column + 0.5) * pixel, top - (row + 1) * pixel, (pixel * 0.94, 0.016, pixel * 0.94), colors[cell]))
+    if feature["art"] == "pacman":
+        for dot in range(3):
+            parts.append(wall_box(spec, f"px_dot_{dot}", face, along + width * 0.16 + dot * pixel * 1.7, z + height / 2 - pixel * 0.4, (pixel * 0.6, 0.016, pixel * 0.6), colors["w"]))
+
+
+def add_roof_die(spec, parts, x, y, size=0.22):
+    """A white die standing on the roof, its three visible faces (front, right, top) set with dark pips."""
+    base = roof_surface(spec) - 0.005
+    white, dark = PALETTE_NAMES.index("white"), PALETTE_NAMES.index("graphite")
+    parts.append(rounded_block("die", size, size, size, white, 0.12, at=(x, y, base)))
+    pip = size * 0.13
+    grids = {
+        "front": ((-0.28, -0.28), (0.28, -0.28), (0.0, 0.0), (-0.28, 0.28), (0.28, 0.28)),
+        "right": ((-0.25, -0.25), (0.25, 0.25)),
+        "top": ((-0.25, -0.25), (0.25, -0.25), (-0.25, 0.25), (0.25, 0.25)),
+    }
+    for face, pips in grids.items():
+        for index, (u, v) in enumerate(pips):
+            if face == "front":
+                at, dims = (x + u * size, y - size / 2 - 0.002, base + size * (0.5 + v)), (pip, 0.012, pip)
+            elif face == "right":
+                at, dims = (x + size / 2 + 0.002, y + u * size, base + size * (0.5 + v)), (0.012, pip, pip)
+            else:
+                at, dims = (x + u * size, y + v * size, base + size + 0.002), (pip, pip, 0.012)
+            parts.append(lpm.box(f"die_pip_{face}_{index}", dims, at=(at[0], at[1], at[2] - (pip / 2 if face != "top" else 0.0)), color=dark))
+
+
+def add_roof_card(spec, parts, x, y, size=0.34):
+    """A playing card standing on the roof, facing the street, with a spade on it."""
+    base = roof_surface(spec) - 0.005
+    white, dark = PALETTE_NAMES.index("white"), PALETTE_NAMES.index("graphite")
+    parts.append(lpm.box("card", (size * 0.7, 0.03, size), at=(x, y, base + 0.03), color=white))
+    parts.append(lpm.box("card_stand_left", (0.03, 0.03, 0.04), at=(x - size * 0.25, y, base), color=dark))
+    parts.append(lpm.box("card_stand_right", (0.03, 0.03, 0.04), at=(x + size * 0.25, y, base), color=dark))
+    spade = ("..x..", ".xxx.", "xxxxx", "xxxxx", ".xxx.", "..x..", ".xxx.")
+    pixel = size * 0.075
+    for row, line in enumerate(spade):
+        for column, cell in enumerate(line):
+            if cell == "x":
+                parts.append(lpm.box(f"spade_{row}_{column}", (pixel * 0.95, 0.012, pixel * 0.95), at=(x + (column - 2) * pixel, y - 0.021, base + 0.03 + size * 0.55 - (row - 3) * pixel), color=dark))
+
+
+def add_door_at(spec, parts, along):
+    """A second entrance: a dark door with a thin surround, on the front wall."""
+    floor = spec["floor_height"]
+    frame, dark = color_index(spec, "trim"), PALETTE_NAMES.index(spec["cfg"]["ink"])
+    width, height, thick = 0.22, floor * 0.8, 0.012
+    parts.append(wall_box(spec, f"door_at_{along}", "front", along, 0, (width, 0.02, height), dark))
+    for edge, side in enumerate((-1, 1)):
+        parts.append(wall_box(spec, f"door_at_frame_{along}_{edge}", "front", along + side * (width / 2 + thick / 2), 0, (thick, 0.026, height + thick), frame))
+    parts.append(wall_box(spec, f"door_at_frame_top_{along}", "front", along, height, (width + 2 * thick, 0.026, thick), frame))
+
+
+def add_service_door(spec, parts, face, along):
+    """A plain dark door with a thin surround on a side wall, standing where a ground-floor window would be."""
+    floor = spec["floor_height"]
+    frame, dark = color_index(spec, "trim"), PALETTE_NAMES.index(spec["cfg"]["ink"])
+    width, height, thick = 0.2, floor * 0.8, 0.012
+    parts.append(wall_box(spec, f"service_door_{face}", face, along, 0, (width, 0.02, height), dark))
+    for edge, side in enumerate((-1, 1)):
+        parts.append(wall_box(spec, f"service_door_frame_{face}_{edge}", face, along + side * (width / 2 + thick / 2), 0, (thick, 0.026, height + thick), frame))
+    parts.append(wall_box(spec, f"service_door_frame_{face}_top", face, along, height, (width + 2 * thick, 0.026, thick), frame))
+
+
+def add_window_pilasters(spec, parts, tag, face, along, z, width, height):
+    """Two slim pilasters standing off the wall on each side of a window and a small canopy over it, in the accent color."""
+    cfg = spec["cfg"]
+    trim, accent = color_index(spec, "trim"), color_index(spec, "accent")
+    plane = wall_half(spec, face)
+    pad = cfg["window_pad"]
+    post, stand, reach = 0.028, 0.045, 0.085
+    top = z + height + pad + 0.03
+    for side, name in ((-1, "l"), (1, "r")):
+        a = along + side * (width / 2 + pad + 0.04)
+        parts.append(wall_box(spec, f"wp_{tag}_{name}", face, a, z - pad - 0.015, (post, reach - stand, top - z + pad + 0.015), trim, half=plane + stand))
+        parts.append(wall_box(spec, f"wp_arm_{tag}_{name}", face, a, z - pad - 0.015, (post * 0.7, stand + 0.01, 0.02), trim))
+    parts.append(wall_box(spec, f"wp_canopy_{tag}", face, along, top, (width + 2 * (pad + 0.06), reach + 0.02, 0.022), accent))
+
+
 def windows_on_face(spec, parts, face, rng, has_door, blocked):
     cfg, floor = spec["cfg"], spec["floor_height"]
     columns, widths = window_columns(spec, face, rng)
+    if "auto_windows" in spec and face not in spec["auto_windows"]:
+        spec.setdefault("window_columns", {})[face] = columns
+        columns, widths = [], []
     varied = spec.get("window_sizes", "same") == "varied"
     door_width, _ = door_layout(spec)
     spec.setdefault("window_columns", {})[face] = columns
-    for level in range(spec["floors"]):
+    front_length, _ = wall_extent(spec, "front")
+    loading = [(feature.get("along", -0.28) * front_length, min(feature.get("width", 0.34), front_length * 0.3) / 2 + 0.03)
+               for feature in spec.get("features", []) if feature["type"] == "roller_door"]
+    loading += [(feature["along"], 0.2) for feature in spec.get("features", []) if feature["type"] == "door_at"]
+    for level in range(spec.get("auto_windows_from", 0) if "auto_windows" in spec else 0, spec["floors"]):
         height = floor * cfg["window_height"] * (rng.choice(HEIGHT_FACTORS) if varied else 1.0)
         for index, (along, width) in enumerate(zip(columns, widths)):
             reach = width / 2 + cfg["window_pad"]
-            if has_door and face == "front" and level == 0 and abs(along) < door_width / 2 + reach + 0.03:
+            if has_door and face == "front" and level == 0 and abs(along - spec.get("door_along", 0.0)) < door_width / 2 + reach + 0.03:
                 continue
             if any(a0 - reach < along < a1 + reach and level < levels for a0, a1, levels in blocked.get(face, [])):
+                continue
+            if face == "front" and level == 0 and any(abs(along - centre) < half + reach for centre, half in loading):
+                continue
+            service = spec.get("service_door")
+            if service and service["face"] == face and level == 0 and index == service["index"]:
+                add_service_door(spec, parts, face, along)
                 continue
             zone = sign_zone(spec) if face == "front" else None
             window_bottom = level * floor + floor * cfg["window_z"] - cfg["window_pad"]
             if zone and abs(along) < zone[0] + reach and window_bottom < zone[2] and window_bottom + height + 2 * cfg["window_pad"] > zone[1]:
                 continue
             add_window(spec, parts, f"{face}_{level}_{index}", face, along, level * floor + floor * cfg["window_z"], width, height)
+            if spec.get("window_pilasters") and face == "front":
+                add_window_pilasters(spec, parts, f"{face}_{level}_{index}", face, along, level * floor + floor * cfg["window_z"], width, height)
+    for index, extra in enumerate(e for e in spec.get("extra_windows", []) if e.get("face", "front") == face):
+        for level in ([extra["level"]] if "level" in extra else range(spec["floors"])):
+            if level >= spec["floors"]:
+                continue
+            height = floor * extra.get("height_ratio", cfg["window_height"])
+            width = extra["width"] if "width" in extra else (widths[0] if widths else 0.2) * extra.get("width_factor", 1.0)
+            add_window(spec, parts, f"{face}_extra_{level}_{index}", face, extra["along"], level * floor + floor * extra.get("z_ratio", cfg["window_z"]), width, height, panes=tuple(extra["panes"]) if "panes" in extra else None)
+            if extra.get("vasistas"):
+                add_tilted_sash(spec, parts, f"{face}_{level}_{index}", face, extra["along"], level * floor + floor * extra.get("z_ratio", cfg["window_z"]), width, height)
 
 
 def add_dormers(spec, parts):
@@ -532,6 +807,68 @@ def add_dormers(spec, parts):
 
 # --------------------------------------------------------------------------- features
 
+SIGN_TEXT_HEIGHT = 0.07
+ROOF_SIGN_TEXT_HEIGHT = 0.09
+ROOF_SIGN_LIFT = 0.07
+_OUTLINES = {}
+
+
+def text_outline(text, font=None, bold=0.02):
+    """Flat glyph mesh of `text` in a font file of tools/blender/fonts (Blender's default typeface without one)."""
+    key = (text, font, bold)
+    if key in _OUTLINES:
+        return _OUTLINES[key]
+    curve = bpy.data.curves.new("sign_text", "FONT")
+    curve.body = text
+    curve.size = 1.0
+    curve.align_x = "CENTER"
+    curve.resolution_u = 3
+    curve.offset = bold
+    if font:
+        curve.font = bpy.data.fonts.load(os.path.join(TOOLS_DIR, "fonts", font))
+    holder = bpy.data.objects.new("sign_text", curve)
+    bpy.context.scene.collection.objects.link(holder)
+    mesh = bpy.data.meshes.new_from_object(holder.evaluated_get(bpy.context.evaluated_depsgraph_get()))
+    vertices = [(v.co.x, v.co.y) for v in mesh.vertices]
+    polygons = [tuple(p.vertices) for p in mesh.polygons]
+    bpy.data.objects.remove(holder)
+    bpy.data.curves.remove(curve)
+    bpy.data.meshes.remove(mesh)
+    xs, ys = [v[0] for v in vertices], [v[1] for v in vertices]
+    result = (vertices, polygons, max(xs) - min(xs), max(ys) - min(ys), min(xs), min(ys))
+    _OUTLINES[key] = result
+    return result
+
+
+def sign_size(spec, text, text_height):
+    """Width and height of the board that carries `text`."""
+    if spec["cfg"].get("text") != "vector":
+        pixel = text_height
+        return (4 * len(text) - 1) * pixel + 0.04, 5 * pixel + 0.02
+    _, _, width, height, _, _ = text_outline(text, spec.get("font", spec["cfg"].get("font")), spec.get("font_bold", spec["cfg"].get("font_bold", 0.02)))
+    scale = text_height / height
+    return width * scale + 0.07, text_height + 0.035
+
+
+def glyph_decal(spec, name, face, text, along, z, text_height, color, distance):
+    """The glyphs of `text` as flat polygons on a wall plane, text height `text_height`, left-aligned on `along`."""
+    vertices, polygons, width, height, min_x, min_y = text_outline(text, spec.get("font", spec["cfg"].get("font")), spec.get("font_bold", spec["cfg"].get("font_bold", 0.02)))
+    scale = text_height / height
+    mesh = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    verts = [bm.verts.new(Vector(plane_point(face, along + (x - min_x - width / 2) * scale, distance, z + (y - min_y) * scale))) for x, y in vertices]
+    for polygon in polygons:
+        bm.faces.new([verts[i] for i in polygon])
+    bm.to_mesh(mesh)
+    bm.free()
+    ob = bpy.data.objects.new(name, mesh)
+    lpm._col("COL_LowPoly").objects.link(ob)
+    attr = mesh.attributes.new("lpm_color", "INT", "FACE")
+    for item in attr.data:
+        item.value = int(color)
+    return ob
+
+
 def sign_board_z(spec):
     if has_feature(spec, "awning"):
         _, door_height = door_layout(spec)
@@ -548,10 +885,22 @@ def sign_zone(spec):
     if not text:
         return 0.3, spec["floor_height"] * 0.84, spec["floor_height"] * 0.84 + 0.07
     z = sign_board_z(spec)
-    return ((4 * len(text) - 1) * SIGN_PIXEL + 0.04) / 2, z, z + 5 * SIGN_PIXEL + 0.02
+    board_width, board_height = sign_size(spec, text, SIGN_TEXT_HEIGHT if spec["cfg"].get("text") == "vector" else SIGN_PIXEL)
+    return board_width / 2, z, z + board_height
+
+
+def add_vector_sign_text(spec, parts, face, text, board_color, board_z, text_height, half=None):
+    board_width, board_height = sign_size(spec, text, text_height)
+    parts.append(wall_box(spec, f"sign_{face}", face, 0, board_z, (board_width, SIGN_BOARD_DEPTH, board_height), board_color, half=half))
+    plane = wall_half(spec, face) if half is None else half
+    ink = ink_for(spec, board_color)
+    parts.append(glyph_decal(spec, "decal_text", face, text, 0, board_z + 0.0175, text_height, ink, plane + SIGN_BOARD_DEPTH - 0.01 + DECAL_OFFSET))
 
 
 def add_sign_text(spec, parts, face, text, board_color, board_z, pixel=SIGN_PIXEL, half=None):
+    if spec["cfg"].get("text") == "vector":
+        add_vector_sign_text(spec, parts, face, text, board_color, board_z, SIGN_TEXT_HEIGHT if pixel == SIGN_PIXEL else ROOF_SIGN_TEXT_HEIGHT, half)
+        return
     unsupported = [c for c in text if c not in FONT]
     if unsupported:
         raise ValueError(f"sign text supports {''.join(sorted(FONT))}, not {unsupported}")
@@ -570,12 +919,23 @@ def add_sign_text(spec, parts, face, text, board_color, board_z, pixel=SIGN_PIXE
                                        push=SIGN_BOARD_DEPTH - 0.01 + DECAL_OFFSET, half=half))
 
 
-def add_roof_sign(spec, parts, face, text, board_color):
+def add_roof_sign(spec, parts, face, text, board_color, extra_lift=0.0):
     """Board standing on a flat roof, set back from the edge, text facing outward."""
-    if spec["roof"] != "flat":
-        raise ValueError("a roof sign needs a flat roof")
+    if spec["roof"] not in ("flat", "sawtooth"):
+        raise ValueError("a roof sign needs a flat or sawtooth roof")
     top = spec["floors"] * spec["floor_height"]
-    add_sign_text(spec, parts, face, text, board_color, top + 0.035, pixel=ROOF_SIGN_PIXEL, half=wall_half(spec, face) - 0.06)
+    half = wall_half(spec, face) - 0.06
+    if spec["cfg"].get("text") != "vector":
+        add_sign_text(spec, parts, face, text, board_color, top + 0.035, pixel=ROOF_SIGN_PIXEL, half=half)
+        return
+    lift = ROOF_SIGN_LIFT + extra_lift
+    board_z = top + 0.035 + lift
+    board_width, board_height = sign_size(spec, text, ROOF_SIGN_TEXT_HEIGHT)
+    trim = color_index(spec, "trim")
+    for side in (-1, 1):
+        parts.append(wall_box(spec, f"sign_leg_{side}", face, side * (board_width / 2 - 0.05), top + 0.03, (0.03, 0.03, lift + 0.02), trim, half=half))
+    parts.append(wall_box(spec, "sign_frame", face, 0, board_z - 0.014, (board_width + 0.04, 0.02, board_height + 0.028), PALETTE_NAMES.index("white"), half=half - 0.012))
+    add_sign_text(spec, parts, face, text, board_color, board_z, pixel=ROOF_SIGN_PIXEL, half=half)
 
 
 def visible_side(spec):
@@ -617,12 +977,31 @@ def add_mansard_solar_panels(spec, parts):
             parts.append(_decal(f"decal_solar_{i}_{j}", points, solar))
 
 
+def add_flat_solar_panels(spec, parts):
+    """Two rows of dark panels lying on a flat roof, clear of the parapet."""
+    width, depth = spec["body"]
+    solar = PALETTE_NAMES.index("solar")
+    z = roof_surface(spec) + DECAL_OFFSET
+    span_x, span_y, gap = width * 0.7, depth * 0.55, 0.05
+    count = 3
+    panel_x = (span_x - gap * (count - 1)) / count
+    panel_y = (span_y - gap) / 2
+    for i in range(count):
+        for j in range(2):
+            x0 = -span_x / 2 + i * (panel_x + gap)
+            y0 = -span_y / 2 + j * (panel_y + gap)
+            parts.append(_decal(f"decal_solar_{i}_{j}", [(x0, y0, z), (x0 + panel_x, y0, z), (x0 + panel_x, y0 + panel_y, z), (x0, y0 + panel_y, z)], solar))
+
+
 def add_solar_panels(spec, parts):
     if spec["roof"] == "mansard":
         add_mansard_solar_panels(spec, parts)
         return
+    if spec["roof"] == "flat":
+        add_flat_solar_panels(spec, parts)
+        return
     if spec["roof"] not in ("gable_half", "gable_third", "shed"):
-        raise ValueError("solar_panels need a gable_half, gable_third, shed or mansard roof")
+        raise ValueError("solar_panels need a flat, gable_half, gable_third, shed or mansard roof")
     long_side, _, _ = roof_dimensions(spec)
     low_b, high_b, low_z, high_z = slope_frame(spec)
     count_a, count_s = 3, 2
@@ -642,6 +1021,18 @@ def add_solar_panels(spec, parts):
             parts.append(_decal(f"decal_solar_{i}_{j}", points, solar))
 
 
+def add_roof_plants(spec, parts, count, rng):
+    """A few small bushes on a flat roof, clear of the parapet."""
+    width, depth = spec["body"]
+    bush = PALETTE_NAMES.index("bush")
+    base = roof_surface(spec) - 0.01
+    profile = [(0.0, 0.0), (0.04, 0.0), (0.05, 0.026), (0.036, 0.052), (0.0, 0.062)]
+    for index in range(count):
+        x = rng.uniform(-width * 0.3, width * 0.3)
+        y = rng.uniform(-depth * 0.25, depth * 0.25)
+        parts.append(lpm.lathe(f"roof_plant_{index}", profile, segments=6, at=(x, y, base), color=bush))
+
+
 def add_bushes(spec, parts, sides):
     bush = PALETTE_NAMES.index("bush")
     body_width = spec["body"][0]
@@ -649,6 +1040,528 @@ def add_bushes(spec, parts, sides):
     for side in sides:
         x, y, _ = plane_point("front", side * (body_width / 2 - 0.09), wall_half(spec, "front") - 0.03, 0)
         parts.append(lpm.lathe(f"bush_{side}", profile, segments=7, at=(x, y, 0), color=bush))
+
+
+def roof_surface(spec):
+    """Height of the top of a flat roof, where a rooftop element stands."""
+    return spec["floors"] * spec["floor_height"] + roof_height(spec)
+
+
+def add_clock_tower(spec, parts, clock_face=True):
+    """A square tower with a clock on each face and a pyramid cap, standing on a flat roof over the entrance."""
+    if spec["roof"] != "flat":
+        raise ValueError("clock_tower needs a flat roof")
+    cfg = spec["cfg"]
+    wall, trim, accent = color_index(spec, "wall"), color_index(spec, "trim"), color_index(spec, "accent")
+    dark, white = PALETTE_NAMES.index(cfg["ink"]), PALETTE_NAMES.index("white")
+    half, shaft_height, clock = 0.14, 0.4, 0.11
+    y = -spec["body"][1] * 0.2
+    base = roof_surface(spec) - 0.01
+    parts.append(lpm.box("tower_shaft", (half * 2, half * 2, shaft_height), at=(0, y, base), color=wall))
+    parts.append(lpm.box("tower_band", (half * 2 + 0.04, half * 2 + 0.04, 0.03), at=(0, y, base + shaft_height - 0.02), color=trim))
+    parts.append(lpm.prism("tower_cap", 4, (half + 0.03) * 2 ** 0.5, 0.2, at=(0, y, base + shaft_height + 0.01), color=accent, radius_top=0.02, rotate=45))
+    centre = base + shaft_height * 0.55
+    for side, (dx, dy) in {"front": (0, -1), "back": (0, 1), "left": (-1, 0), "right": (1, 0)}.items():
+        if not clock_face:
+            continue
+        size = (clock, 0.012, clock) if dy else (0.012, clock, clock)
+        x_at, y_at = dx * (half + 0.002), y + dy * (half + 0.002)
+        parts.append(lpm.box(f"clock_{side}", size, at=(x_at, y_at, centre - clock / 2), color=white))
+        long_hand = (0.012, 0.016, 0.05) if dy else (0.016, 0.012, 0.05)
+        short_hand = (0.035, 0.016, 0.012) if dy else (0.016, 0.035, 0.012)
+        out_x, out_y = dx * (half + 0.004), y + dy * (half + 0.004)
+        parts.append(lpm.box(f"hand_long_{side}", long_hand, at=(out_x, out_y, centre), color=dark))
+        parts.append(lpm.box(f"hand_short_{side}", short_hand, at=(out_x + (0.0175 if dy else 0), out_y + (0.0175 if dx else 0), centre - 0.006), color=dark))
+
+
+def add_flagpole(spec, parts):
+    """A pole with a flag on a corner of the flat roof."""
+    accent = color_index(spec, "accent")
+    dark = PALETTE_NAMES.index(spec["cfg"]["ink"])
+    width, depth = spec["body"]
+    x, y = -width * 0.38, -depth * 0.3
+    base = roof_surface(spec) - 0.01
+    parts.append(lpm.prism("flag_pole", 6, 0.01, 0.5, at=(x, y, base), color=dark))
+    parts.append(lpm.box("flag_cloth", (0.14, 0.008, 0.08), at=(x + 0.075, y, base + 0.4), color=accent))
+
+
+def add_portico(spec, parts):
+    """A flat canopy on two columns over the front door, on a low step: a wide, readable entrance."""
+    floor = spec["floor_height"]
+    length, _ = wall_extent(spec, "front")
+    trim, accent = color_index(spec, "trim"), color_index(spec, "accent")
+    width, reach, canopy = min(0.8, length * 0.45), PORTICO_PROJECTION + 0.04, 0.035
+    top = floor * 0.98
+    front = wall_half(spec, "front")
+    parts.append(wall_box(spec, "portico_step", "front", 0, 0, (width + 0.08, reach + 0.04, 0.02), trim))
+    parts.append(wall_box(spec, "portico_roof", "front", 0, top, (width + 0.04, reach + 0.04, canopy), accent))
+    for side in (-1, 1):
+        parts.append(wall_box(spec, f"portico_column_{side}", "front", side * (width / 2 - 0.02), 0.02, (0.04, 0.04, top - 0.02), trim, half=front + PORTICO_PROJECTION - 0.04))
+
+
+def add_door_hood(spec, parts):
+    """A small two-slope hood over the front door: a gable pointing out of the wall, closed on all sides."""
+    width, height = door_layout(spec)
+    half, reach, rise, thick = width / 2 + 0.07, 0.07, 0.075, 0.012
+    plane, z = wall_half(spec, "front"), height + 0.03
+    roof = color_index(spec, "roof")
+    outline = [(-half, 0.0), (half, 0.0), (0.0, rise)]
+    at = spec.get("door_along", 0.0)
+    verts = [plane_point("front", a + at, plane - 0.01, z + h) for a, h in outline] + [plane_point("front", a + at, plane + reach, z + h) for a, h in outline]
+    faces = [(3, 4, 5), (0, 2, 1), (0, 1, 4, 3), (1, 2, 5, 4), (2, 0, 3, 5)]
+    parts.append(lpm._object("door_hood", _bm(verts, faces), roof))
+
+
+def add_red_cross(spec, parts, along):
+    """A white board with a red cross standing on a flat roof near the front edge."""
+    width, depth = spec["body"]
+    base = roof_surface(spec) - 0.01
+    x, y = along * width, -depth * 0.36
+    board, bar, thick = 0.34, 0.1, 0.012
+    parts.append(lpm.box("cross_board", (board, 0.03, board), at=(x, y, base), color=color_index(spec, "wall")))
+    red = PALETTE_NAMES.index("brick")
+    parts.append(lpm.box("cross_h", (board * 0.72, thick, bar), at=(x, y - 0.015 - thick / 2 + 0.004, base + board / 2 - bar / 2), color=red))
+    parts.append(lpm.box("cross_v", (bar, thick, board * 0.72), at=(x, y - 0.015 - thick / 2 + 0.004, base + board * 0.14), color=red))
+
+
+def add_penthouse(spec, parts, scale=0.58, offset=(0.0, 0.0)):
+    """A setback block on top of a flat roof, with its own roof slab and one window per face."""
+    cfg = spec["cfg"]
+    width, depth = spec["body"]
+    height = spec["floor_height"] * 0.95
+    block_width, block_depth = width * scale, depth * scale
+    ox, oy = offset
+    base = roof_surface(spec) - 0.01
+    parts.append(rounded_block("penthouse", block_width, block_depth, height, color_index(spec, "wall"), cfg["corner"], at=(ox, oy, base)))
+    parts.append(lpm.box("penthouse_roof", (block_width + 0.05, block_depth + 0.05, 0.03), at=(ox, oy, base + height - 0.005), color=color_index(spec, "roof")))
+    for face, half, length in (("front", block_depth / 2, block_width), ("back", block_depth / 2, block_width),
+                               ("left", block_width / 2, block_depth), ("right", block_width / 2, block_depth)):
+        (nx, ny), (tx, ty) = FACE_FRAME[face]
+        add_window(spec, parts, f"penthouse_{face}", face, ox * tx + oy * ty, base + height * 0.28, min(0.22, length * 0.4), height * 0.45, half=half + ox * nx + oy * ny)
+
+
+def add_penthouse_terrace(spec, parts):
+    """The back half of the roof top is a setback penthouse under a four-slope roof with a large glass wall, the front half an open terrace with a solid parapet."""
+    cfg = spec["cfg"]
+    width, depth = spec["body"]
+    if spec["roof"] == "mansard":
+        _, inset, run, _ = mansard_dimensions(spec)
+        plate_w, plate_d = width - 2 * (inset + run), depth - 2 * (inset + run)
+    else:
+        plate_w, plate_d = width * 0.8, depth * 0.8
+    height = spec["floor_height"] * 0.95
+    base = roof_surface(spec) - 0.01
+    block_d = plate_d / 2
+    centre_y = plate_d / 4
+    trim, wall, roof = color_index(spec, "trim"), color_index(spec, "wall"), color_index(spec, "roof")
+    parts.append(rounded_block("penthouse", plate_w, block_d, height, wall, cfg["corner"], at=(0, centre_y, base)))
+    half_w, half_d, ridge_height, overhang = plate_w / 2 + 0.03, block_d / 2 + 0.03, 0.13, 0.0
+    ridge_run = max(half_w - half_d, 0.01)
+    z0 = base + height - 0.005
+    verts = [(-half_w, centre_y - half_d, z0), (half_w, centre_y - half_d, z0), (half_w, centre_y + half_d, z0), (-half_w, centre_y + half_d, z0),
+             (-ridge_run, centre_y, z0 + ridge_height), (ridge_run, centre_y, z0 + ridge_height)]
+    faces = [(0, 3, 2, 1), (0, 1, 5, 4), (1, 2, 5), (2, 3, 4, 5), (3, 0, 4)]
+    parts.append(fillet(lpm._object("penthouse_roof", _bm(verts, faces), roof), cfg["roof_fillet"]))
+    add_window(spec, parts, "penthouse_glass_wall", "front", 0, base + height * 0.1, plate_w * 0.82, height * 0.78, half=0.0)
+    add_window(spec, parts, "penthouse_back", "back", 0, base + height * 0.28, min(0.22, plate_w * 0.3), height * 0.45, half=plate_d / 2)
+    parts.append(lpm.box("terrace_deck", (plate_w, block_d, 0.012), at=(0, -centre_y, base), color=trim))
+    thick, parapet = 0.014, 0.085
+    parts.append(lpm.box("terrace_parapet_front", (plate_w, thick, parapet), at=(0, -plate_d / 2 + thick / 2, base + 0.012), color=wall))
+    parts.append(lpm.box("terrace_parapet_left", (thick, block_d - thick, parapet), at=(-plate_w / 2 + thick / 2, -centre_y + thick / 2, base + 0.012), color=wall))
+    parts.append(lpm.box("terrace_parapet_right", (thick, block_d - thick, parapet), at=(plate_w / 2 - thick / 2, -centre_y + thick / 2, base + 0.012), color=wall))
+
+
+def add_stair_head(spec, parts):
+    """A small stairwell box with a door and a flat roof on the back-left corner of a flat roof."""
+    wall, roof, dark = color_index(spec, "wall"), color_index(spec, "roof"), PALETTE_NAMES.index(spec["cfg"]["ink"])
+    width, depth = spec["body"]
+    size, height = 0.3, 0.14
+    x, y = -width / 2 + size / 2 + 0.07, depth / 2 - size / 2 - 0.07
+    base = roof_surface(spec) - 0.005
+    parts.append(lpm.box("stair_head", (size, size, height), at=(x, y, base), color=wall))
+    parts.append(lpm.box("stair_head_roof", (size + 0.03, size + 0.03, 0.02), at=(x, y, base + height - 0.005), color=roof))
+    parts.append(lpm.box("stair_head_door", (0.09, 0.012, 0.1), at=(x + 0.04, y - size / 2 - 0.002, base), color=dark))
+
+
+def add_round_dormer(spec, parts, along=0.0, depth_ratio=0.32):
+    """A small round dormer with a round window on the front slope of a gable roof."""
+    roof, trim, glass = color_index(spec, "roof"), color_index(spec, "trim"), color_index(spec, "glass")
+    long_side, short_side, height = roof_dimensions(spec)
+    half_s = short_side / 2
+    top = spec["floors"] * spec["floor_height"] + spec["cfg"]["roof_thickness"]
+    y = -half_s * depth_ratio
+    z = top + height * (y + half_s) / half_s + 0.02
+    radius, length = 0.065, 0.14
+    cheeks = lpm.prism("round_dormer", 12, radius, length, at=(0, 0, 0), color=roof)
+    lpm.rotate(cheeks, 90, "X")
+    lpm.move(cheeks, along, y + length / 2, z)
+    parts.append(cheeks)
+    for name, rad, thick, color, shift in (("round_dormer_frame", radius * 0.8, 0.012, trim, 0.0), ("round_dormer_glass", radius * 0.62, 0.016, glass, 0.004)):
+        disc = lpm.prism(name, 12, rad, thick, at=(0, 0, 0), color=color)
+        lpm.rotate(disc, 90, "X")
+        lpm.move(disc, along, y - length / 2 + 0.002 - shift, z)
+        parts.append(disc)
+
+
+def add_round_window(spec, parts, rise=0.07, radius=0.05, on_hood=False, stretch=1.0, face="front"):
+    """A round window with a frame, in the front gable above the door; on_hood rests its bottom on the apex of the door hood."""
+    trim, glass = color_index(spec, "trim"), color_index(spec, "glass")
+    plane = wall_half(spec, "front")
+    z = spec["floors"] * spec["floor_height"] + rise
+    if on_hood:
+        z = door_layout(spec)[1] + 0.03 + 0.075 + radius
+    for name, rad, thick, color, lift in (("round_window_frame", radius, 0.014, trim, 0.0), ("round_window_glass", radius * 0.76, 0.02, glass, 0.003)):
+        disc = lpm.prism(name, 14, rad, thick, at=(0, 0, 0), color=color)
+        lpm.rotate(disc, 90, "X")
+        if stretch != 1.0:
+            lpm.scale(disc, stretch, 1.0, 1.0)
+        lpm.move(disc, 0.0, (-plane - lift + 0.004) if face == "front" else (plane - 0.004 + lift + thick), z)
+        parts.append(disc)
+
+
+def add_roof_lantern(spec, parts, size=0.26, height=0.12):
+    """A small glazed box with its own four-slope cap, standing on the ridge of a gable roof."""
+    wall, roof, trim = color_index(spec, "wall"), color_index(spec, "roof"), color_index(spec, "trim")
+    ridge_z = spec["floors"] * spec["floor_height"] + roof_height(spec)
+    base = ridge_z - 0.03
+    parts.append(lpm.box("lantern", (size, size, height), at=(0, 0, base), color=wall))
+    parts.append(lpm.prism("lantern_cap", 4, (size / 2 + 0.03) * 2 ** 0.5, 0.09, at=(0, 0, base + height - 0.005), color=roof, radius_top=0.01, rotate=45))
+    for face, (nx, ny) in (("front", (0, -1)), ("back", (0, 1)), ("left", (-1, 0)), ("right", (1, 0))):
+        add_window(spec, parts, f"lantern_{face}", face, 0, base + height * 0.18, size * 0.5, height * 0.62, half=size / 2)
+
+
+def add_striped_awning(spec, parts, along=0.17, width=0.5, rise=0.84, reach=0.1, stripes=6, level=0):
+    """A canopy of alternating accent and white stripes sloping out of the wall over a shop window."""
+    accent, white = color_index(spec, "accent"), PALETTE_NAMES.index("white")
+    plane, z = wall_half(spec, "front"), spec["floor_height"] * (rise + level)
+    step = width / stripes
+    for index in range(stripes):
+        a0 = along - width / 2 + index * step
+        verts = [plane_point("front", a0, plane - 0.005, z + 0.03), plane_point("front", a0 + step, plane - 0.005, z + 0.03),
+                 plane_point("front", a0 + step, plane + reach, z - 0.02), plane_point("front", a0, plane + reach, z - 0.02),
+                 plane_point("front", a0, plane - 0.005, z + 0.045), plane_point("front", a0 + step, plane - 0.005, z + 0.045),
+                 plane_point("front", a0 + step, plane + reach, z - 0.005), plane_point("front", a0, plane + reach, z - 0.005)]
+        faces = [(0, 3, 2, 1), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
+        parts.append(lpm._object(f"awning_stripe_{index}", _bm(verts, faces), accent if index % 2 == 0 else white))
+
+
+def add_stall(spec, parts, along=0.17, width=0.44):
+    """A low display table with fruit crates in front of a shop window."""
+    trim, wall = color_index(spec, "trim"), color_index(spec, "wall")
+    plane = wall_half(spec, "front")
+    names = ("coral", "sun", "lime", "tangerine")
+    depth, height = 0.1, 0.06
+    parts.append(wall_box(spec, "stall_table", "front", along, 0, (width, depth, height), trim, embed=-0.012))
+    count = 4
+    for index in range(count):
+        a = along - width / 2 + width * (index + 0.5) / count
+        parts.append(wall_box(spec, f"stall_crate_{index}", "front", a, height, (width / count - 0.02, depth - 0.03, 0.035), PALETTE_NAMES.index(names[index % len(names)]), embed=-0.025))
+
+
+def sack(parts, name, x, y, size, color, tilt=0.0):
+    """A squat sack: a rounded body pinched into a small tied neck."""
+    height = size * 0.9
+    profile = [(0.0, 0.0), (size * 0.42, 0.0), (size * 0.5, height * 0.25), (size * 0.46, height * 0.55), (size * 0.2, height * 0.82), (size * 0.1, height * 0.9), (size * 0.14, height * 1.0), (0.0, height * 1.0)]
+    ob = lpm.lathe(name, profile, segments=8, at=(0, 0, 0), color=color)
+    if tilt:
+        lpm.rotate(ob, tilt, "Y")
+    lpm.move(ob, x, y, 0.0)
+    parts.append(ob)
+
+
+def add_material_yard(spec, parts, along=0.17, width=0.5):
+    """In front of a building material shop: a sack of sand, a sack of gravel and a few scattered wooden planks."""
+    plane = wall_half(spec, "front")
+    sand, gravel, wood = PALETTE_NAMES.index("usand"), PALETTE_NAMES.index("grey"), PALETTE_NAMES.index("uwood")
+    left = along - width / 2
+    sack(parts, "yard_sack_sand", left + 0.08, -plane - 0.07, 0.12, sand)
+    sack(parts, "yard_sack_gravel", left + 0.2, -plane - 0.05, 0.12, gravel, tilt=6)
+    planks = ((0.0, -0.075, 0.28, 8), (0.02, -0.095, 0.24, -14), (-0.02, -0.058, 0.26, 3))
+    for index, (dx, dy, length, yaw) in enumerate(planks):
+        ob = lpm.box(f"yard_plank_{index}", (length, 0.034, 0.012), at=(0, 0, 0), color=wood)
+        lpm.rotate(ob, yaw, "Z")
+        lpm.move(ob, left + width * 0.68 + dx, -plane + dy, 0.012 * index)
+        parts.append(ob)
+
+
+def add_marquee(spec, parts, along=0.0, width=None, reach=0.14):
+    """A flat metal canopy over the door, held by two slanted ties."""
+    width = width or door_layout(spec)[0] + 0.16
+    accent = color_index(spec, "accent")
+    plane, z = wall_half(spec, "front"), door_layout(spec)[1] + 0.035
+    parts.append(wall_box(spec, "marquee_slab", "front", along, z, (width, reach, 0.014), accent))
+    parts.append(wall_box(spec, "marquee_edge", "front", along, z - 0.012, (width, 0.012, 0.03), accent, half=plane + reach - 0.01))
+    for side in (-1, 1):
+        tie = lpm.box(f"marquee_tie_{side}", (0.008, 0.01, 0.15), at=(0, 0, -0.075), color=accent)
+        lpm.rotate(tie, -60, "X")
+        lpm.move(tie, along + side * (width / 2 - 0.018), -plane - 0.065, z + 0.04)
+        parts.append(tie)
+
+
+def add_wall_tools(spec, parts, along=-0.1, width=0.22):
+    """A small board of hung tools on the front wall: a hammer, a saw and a wrench."""
+    trim, dark = color_index(spec, "trim"), PALETTE_NAMES.index(spec["cfg"]["ink"])
+    metal, wood = PALETTE_NAMES.index("grey"), PALETTE_NAMES.index("uwood")
+    z0, board_h = spec["floor_height"] * 0.18, 0.15
+    parts.append(wall_box(spec, "tools_board", "front", along, z0, (width, 0.012, board_h), trim))
+    parts.append(wall_box(spec, "tool_hammer_handle", "front", along - 0.07, z0 + 0.02, (0.012, 0.012, 0.1), wood, embed=-0.004))
+    parts.append(wall_box(spec, "tool_hammer_head", "front", along - 0.07, z0 + 0.105, (0.04, 0.014, 0.022), metal, embed=-0.004))
+    parts.append(wall_box(spec, "tool_saw_blade", "front", along, z0 + 0.04, (0.022, 0.01, 0.09), metal, embed=-0.004))
+    parts.append(wall_box(spec, "tool_saw_grip", "front", along, z0 + 0.12, (0.03, 0.013, 0.02), wood, embed=-0.004))
+    parts.append(wall_box(spec, "tool_wrench_shaft", "front", along + 0.07, z0 + 0.02, (0.012, 0.012, 0.09), metal, embed=-0.004))
+    parts.append(wall_box(spec, "tool_wrench_jaw", "front", along + 0.07, z0 + 0.105, (0.03, 0.014, 0.02), metal, embed=-0.004))
+    parts.append(wall_box(spec, "tool_wrench_gap", "front", along + 0.07, z0 + 0.112, (0.01, 0.016, 0.012), dark, embed=-0.004))
+
+
+def add_bush_at(spec, parts, along=0.0):
+    """One small round bush against the front wall at a chosen position."""
+    profile = [(0.0, 0.0), (0.062, 0.0), (0.07, 0.038), (0.05, 0.077), (0.0, 0.092)]
+    x, y, _ = plane_point("front", along, wall_half(spec, "front") - 0.03, 0)
+    parts.append(lpm.lathe(f"bush_at_{along}", profile, segments=7, at=(x, y, 0), color=PALETTE_NAMES.index("bush")))
+
+
+def add_tilted_sash(spec, parts, tag, face, along, z, width, height, tilt=0.04):
+    """The sash of a hopper window (vasistas) propped open: a thin pane hinged at the top and swung out at the bottom."""
+    trim, glass = color_index(spec, "trim"), color_index(spec, "glass")
+    plane = wall_half(spec, face)
+    top = z + height
+    thick = 0.008
+    corners = [(-width / 2, 0.0, top, 0.012), (width / 2, 0.0, top, 0.012), (width / 2, 1.0, z, 0.012 + tilt), (-width / 2, 1.0, z, 0.012 + tilt)]
+    front = [plane_point(face, along + a, plane + out, zz) for a, _, zz, out in corners]
+    back = [plane_point(face, along + a, plane + out + thick, zz) for a, _, zz, out in corners]
+    faces = [(0, 3, 2, 1), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
+    parts.append(lpm._object(f"sash_{tag}", _bm(front + back, faces), glass))
+
+
+def add_industrial_door(spec, parts, face="back", along=0.0, width=0.62):
+    """A very wide sectional garage door with a heavy steel frame, ribs, a hazard stripe above it and a lamp."""
+    floor = spec["floor_height"]
+    height = floor * 0.8
+    trim, door = color_index(spec, "trim"), color_index(spec, "door")
+    dark, sun = PALETTE_NAMES.index(spec["cfg"]["ink"]), PALETTE_NAMES.index("sun")
+    parts.append(wall_box(spec, f"ind_frame_{face}", face, along, 0, (width + 0.07, 0.02, height + 0.04), trim))
+    parts.append(wall_box(spec, f"ind_door_{face}", face, along, 0, (width, 0.032, height), door))
+    for index in range(1, 6):
+        parts.append(wall_box(spec, f"ind_rib_{face}_{index}", face, along, height * index / 6, (width - 0.02, 0.036, 0.008), dark))
+    stripes = 8
+    step = (width + 0.07) / stripes
+    for index in range(stripes):
+        parts.append(wall_box(spec, f"ind_hazard_{face}_{index}", face, along - (width + 0.07) / 2 + step * (index + 0.5), height + 0.045, (step - 0.002, 0.018, 0.02), sun if index % 2 == 0 else dark))
+    parts.append(wall_box(spec, f"ind_lamp_{face}", face, along + width / 2 + 0.07, height * 0.9, (0.03, 0.04, 0.025), dark))
+
+
+def add_hazard_band(spec, parts, face="front", level=1, stripes=12, height=0.02):
+    """A full-width yellow and dark stripe running at a floor line of a wall."""
+    sun, dark = PALETTE_NAMES.index("sun"), PALETTE_NAMES.index(spec["cfg"]["ink"])
+    length, _ = wall_extent(spec, face)
+    step = (length - 0.02) / stripes
+    z = spec["floor_height"] * level - 0.004
+    for index in range(stripes):
+        parts.append(wall_box(spec, f"hazard_{face}_{level}_{index}", face, -length / 2 + 0.01 + step * (index + 0.5), z, (step - 0.002, 0.016, height), sun if index % 2 == 0 else dark))
+
+
+def add_hardware_display(spec, parts, along=0.17, width=0.5):
+    """A low rack with a few dark toolboxes, spaced apart, each with a handle and tape crossing the top and running down the front and the sides, and two cable spools."""
+    trim = color_index(spec, "trim")
+    plane = wall_half(spec, "front")
+    depth, rack = 0.09, 0.05
+    parts.append(wall_box(spec, "hw_rack", "front", along, 0, (width, depth, rack), trim, embed=-0.012))
+    dark = ("graphite", "navy", "slate_dark")
+    tape, handle = PALETTE_NAMES.index("cream"), PALETTE_NAMES.index("grey")
+    size_a, size_d, size_h, out = 0.07, 0.05, 0.045, 0.025
+    count = 3
+    for index in range(count):
+        a = along + (index - (count - 1) / 2) * 0.115
+        top = rack + size_h
+        parts.append(wall_box(spec, f"hw_box_{index}", "front", a, rack, (size_a, size_d, size_h), PALETTE_NAMES.index(dark[index % 3]), embed=-out))
+        parts.append(wall_box(spec, f"hw_tape_top_a_{index}", "front", a, top - 0.002, (0.012, size_d + 0.004, 0.005), tape, embed=-out - 0.002))
+        parts.append(wall_box(spec, f"hw_tape_top_b_{index}", "front", a, top - 0.002, (size_a + 0.004, 0.012, 0.005), tape, embed=-out - 0.019))
+        parts.append(wall_box(spec, f"hw_tape_front_{index}", "front", a, rack, (0.012, 0.004, size_h), tape, half=plane + out + size_d - 0.002, embed=0.0))
+        for side in (-1, 1):
+            parts.append(wall_box(spec, f"hw_tape_side_{index}_{side}", "front", a + side * (size_a / 2), rack, (0.004, size_d - 0.01, size_h + 0.003), tape, embed=-out - 0.005))
+        for post in (-1, 1):
+            parts.append(wall_box(spec, f"hw_handle_post_{index}_{post}", "front", a + post * 0.016, top - 0.02, (0.005, 0.012, 0.022), handle, half=plane + out + size_d - 0.004, embed=0.0))
+        parts.append(wall_box(spec, f"hw_handle_bar_{index}", "front", a, top - 0.002, (0.04, 0.012, 0.006), handle, half=plane + out + size_d - 0.004, embed=0.0))
+    for index, side in enumerate((-1, 1)):
+        reel(parts, f"hw_spool_{index}", along + side * (width / 2 - 0.035), -plane - 0.07, 0.0, 0.04, (0.0, 0.0), "tangerine", "grey")
+
+
+def reel(parts, name, x, y, z, radius, _unused, cable_color, flange_color, flat=False):
+    """A cable spool: two flanges around a cable core, standing on its edge or lying flat."""
+    flange, cable = PALETTE_NAMES.index(flange_color), PALETTE_NAMES.index(cable_color)
+    for tag, offset, rad, thick, color in (("core", 0.0, radius * 0.75, 0.05, cable), ("a", -0.027, radius, 0.008, flange), ("b", 0.027, radius, 0.008, flange)):
+        disc = lpm.prism(f"{name}_{tag}", 10, rad, thick, at=(0, 0, 0), color=color)
+        if flat:
+            lpm.move(disc, x, y, z + 0.025 + offset - thick / 2)
+        else:
+            lpm.rotate(disc, 90, "X")
+            lpm.move(disc, x, y + offset - thick / 2, z + radius)
+        parts.append(disc)
+
+
+def add_roof_reel(spec, parts, x=0.3, y=0.2):
+    """A big cable spool lying on a flat roof as a shop mark."""
+    base = roof_surface(spec) - 0.005
+    reel(parts, "roof_reel", x, y, base, 0.09, (0.0, 0.0), "tangerine", "grey", flat=True)
+
+
+def crystal(parts, name, x, y, z, radius, height, color):
+    """A faceted crystal: a hexagonal body topped by a point."""
+    profile = [(0.0, 0.0), (radius * 0.7, 0.0), (radius, height * 0.3), (radius * 0.85, height * 0.62), (0.0, height)]
+    parts.append(lpm.lathe(name, profile, segments=6, at=(x, y, z), color=color))
+
+
+def add_crystals(spec, parts, along=0.28, on="display"):
+    """A few crystals: on a small pedestal in front of the window, or as a cluster on a flat roof."""
+    names = ("aqua", "violet", "pink", "sky")
+    if on == "roof":
+        base = roof_surface(spec) - 0.005
+        for index, (dx, dy, r, h) in enumerate(((0.0, 0.0, 0.05, 0.13), (0.07, 0.03, 0.035, 0.09), (-0.06, 0.04, 0.03, 0.08))):
+            crystal(parts, f"roof_crystal_{index}", along + dx, dy, base, r, h, PALETTE_NAMES.index(names[index % 4]))
+        return
+    plane = wall_half(spec, "front")
+    parts.append(wall_box(spec, "crystal_plinth", "front", along, 0, (0.26, 0.09, 0.03), color_index(spec, "trim"), embed=-0.012))
+    for index, (dx, r, h) in enumerate(((-0.08, 0.025, 0.06), (0.0, 0.03, 0.08), (0.08, 0.025, 0.055))):
+        x, y, _ = plane_point("front", along + dx, plane + 0.052, 0.03)
+        crystal(parts, f"display_crystal_{index}", x, y, 0.03, r, h, PALETTE_NAMES.index(names[index % 4]))
+
+
+def add_pilasters(spec, parts, along=0.28, width=0.3, height=None):
+    """Two slim fluted pilasters with caps on each side of a shop window."""
+    trim, gold = color_index(spec, "trim"), PALETTE_NAMES.index("sun")
+    height = height or spec["floor_height"] * 0.88
+    for index, side in enumerate((-1, 1)):
+        a = along + side * (width / 2 + 0.02)
+        parts.append(wall_box(spec, f"pilaster_{index}", "front", a, 0, (0.03, 0.02, height), trim))
+        parts.append(wall_box(spec, f"pilaster_cap_{index}", "front", a, height - 0.012, (0.04, 0.026, 0.014), gold))
+        parts.append(wall_box(spec, f"pilaster_base_{index}", "front", a, 0, (0.04, 0.026, 0.012), gold))
+
+
+def add_curved_marquee(spec, parts, along=-0.32, width=None, radius=0.087, drop=0.04):
+    """A gold canopy curving from the wall over the door like a quarter of a cylinder."""
+    width = width or door_layout(spec)[0] + 0.16
+    gold = PALETTE_NAMES.index("sun")
+    plane = wall_half(spec, "front")
+    zc = door_layout(spec)[1] - drop
+    steps, thick = 6, 0.012
+    outer = [(radius * math.sin(math.radians(90 * i / steps)), zc + radius * math.cos(math.radians(90 * i / steps))) for i in range(steps + 1)]
+    inner = [((radius - thick) * math.sin(math.radians(90 * i / steps)), zc + (radius - thick) * math.cos(math.radians(90 * i / steps))) for i in range(steps + 1)]
+    ring = outer + list(reversed(inner))
+    count = len(ring)
+    verts = [plane_point("front", along - width / 2, plane + d, z) for d, z in ring] + [plane_point("front", along + width / 2, plane + d, z) for d, z in ring]
+    faces = [(i, (i + 1) % count, count + (i + 1) % count, count + i) for i in range(count)]
+    faces.append(tuple(reversed(range(count))))
+    faces.append(tuple(range(count, 2 * count)))
+    parts.append(lpm._object("curved_marquee", _bm(verts, faces), gold))
+
+
+def add_red_carpet(spec, parts, along=-0.32, width=0.18, length=0.16):
+    """A flat red carpet laid in front of the door."""
+    plane = wall_half(spec, "front")
+    parts.append(wall_box(spec, "red_carpet", "front", along, 0, (width, length, 0.006), PALETTE_NAMES.index("brick"), embed=-0.0))
+
+
+def add_roof_tank(spec, parts, x=-0.4, y=0.3, radius=0.17, height=0.3):
+    """A vertical cylindrical tank with a domed top and two bands, standing on a flat roof."""
+    trim, accent = color_index(spec, "trim"), color_index(spec, "accent")
+    base = roof_surface(spec) - 0.005
+    profile = [(0.0, 0.0), (radius, 0.0), (radius, height), (radius * 0.9, height + 0.03), (radius * 0.45, height + 0.06), (0.0, height + 0.07)]
+    parts.append(lpm.lathe(f"roof_tank_{x}_{y}", profile, segments=12, at=(x, y, base), color=trim))
+    for index, level in enumerate((0.3, 0.7)):
+        parts.append(lpm.prism(f"roof_tank_band_{x}_{y}_{index}", 12, radius + 0.008, 0.02, at=(x, y, base + height * level), color=accent))
+    parts.append(lpm.prism(f"roof_tank_pipe_{x}_{y}", 6, 0.014, 0.1, at=(x + radius * 0.5, y, base + height + 0.04), color=PALETTE_NAMES.index(spec["cfg"]["ink"])))
+
+
+def add_roof_pipes(spec, parts, y=-0.1, z_lift=0.1):
+    """A run of horizontal ducts on short supports across a flat roof, with an elbow at each end."""
+    width, depth = spec["body"]
+    trim, dark = color_index(spec, "trim"), PALETTE_NAMES.index(spec["cfg"]["ink"])
+    base = roof_surface(spec) - 0.005
+    length = width * 0.7
+    parts.append(lpm.box("roof_duct", (length, 0.07, 0.06), at=(0, y, base + z_lift), color=trim))
+    for index, x in enumerate((-length * 0.4, 0.0, length * 0.4)):
+        parts.append(lpm.box(f"roof_duct_support_{index}", (0.03, 0.05, z_lift), at=(x, y, base), color=dark))
+    for index, x in enumerate((-length / 2, length / 2)):
+        parts.append(lpm.prism(f"roof_duct_elbow_{index}", 8, 0.04, 0.12, at=(x, y, base + z_lift + 0.03), color=trim))
+
+
+def add_loading_dock(spec, parts, along=0.0, width=0.7):
+    """A raised dock platform with a ramp and bumpers in front of a wide loading door."""
+    trim, dark, sun = color_index(spec, "trim"), PALETTE_NAMES.index(spec["cfg"]["ink"]), PALETTE_NAMES.index("sun")
+    parts.append(wall_box(spec, "dock_platform", "front", along, 0, (width, 0.12, 0.05), trim, embed=-0.1))
+    for index, side in enumerate((-1, 1)):
+        parts.append(wall_box(spec, f"dock_bumper_{index}", "front", along + side * (width / 2 - 0.04), 0.01, (0.04, 0.02, 0.05), dark, embed=-0.125))
+    stripes = 8
+    step = width / stripes
+    for index in range(stripes):
+        parts.append(wall_box(spec, f"dock_edge_{index}", "front", along - width / 2 + step * (index + 0.5), 0.045, (step - 0.002, 0.012, 0.006), sun if index % 2 == 0 else dark, embed=-0.11))
+
+
+def crate(spec, parts, name, x, y, z, size, color):
+    """A wooden crate with two darker slats."""
+    slat = PALETTE_NAMES.index("brick")
+    parts.append(lpm.box(name, (size, size, size * 0.8), at=(x, y, z), color=color))
+    for index, offset in enumerate((-size * 0.25, size * 0.25)):
+        parts.append(lpm.box(f"{name}_slat_{index}", (size + 0.004, size * 0.12, size * 0.8 + 0.004), at=(x, y + offset, z), color=slat))
+
+
+def add_crate_stacks(spec, parts, along=-0.6, count=1, face="front"):
+    """Pyramids of wooden crates standing against a wall, `count` stacks side by side."""
+    wood = PALETTE_NAMES.index("uwood")
+    plane = wall_half(spec, face)
+    size = 0.085
+    layout = ((0, 0, 0), (1, 0, 0), (2, 0, 0), (0.5, 0, 1), (1.5, 0, 1), (1, 0, 2))
+    for stack in range(count):
+        base = along + stack * (size * 3 + 0.05)
+        for index, (dx, _, level) in enumerate(layout):
+            x, y, z = plane_point(face, base + dx * size, plane + size / 2 + 0.02, level * size * 0.8)
+            crate(spec, parts, f"crates_{face}_{stack}_{index}", x, y, z, size, wood)
+
+
+def add_side_conveyor(spec, parts, face="right", along=0.0, length=0.9):
+    """A low roller conveyor along a side wall, on two pairs of legs, with a few boxes riding on it."""
+    trim, dark, box = color_index(spec, "trim"), PALETTE_NAMES.index(spec["cfg"]["ink"]), PALETTE_NAMES.index("uwood")
+    plane = wall_half(spec, face)
+    z = 0.11
+    x, y, _ = plane_point(face, along, plane + 0.09, z)
+    size = (0.12, length, 0.03) if face in ("left", "right") else (length, 0.12, 0.03)
+    parts.append(lpm.box(f"conveyor_{face}", size, at=(x, y, z), color=trim))
+    for index, a in enumerate((-length * 0.42, length * 0.42)):
+        for side in (-1, 1):
+            lx, ly, _ = plane_point(face, along + a, plane + 0.09 + side * 0.045, 0)
+            parts.append(lpm.box(f"conveyor_leg_{face}_{index}_{side}", (0.015, 0.015, z), at=(lx, ly, 0), color=dark))
+    for index, a in enumerate((-length * 0.25, length * 0.1)):
+        bx, by, _ = plane_point(face, along + a, plane + 0.09, z + 0.03)
+        parts.append(lpm.box(f"conveyor_box_{face}_{index}", (0.07, 0.07, 0.05), at=(bx, by, z + 0.03), color=box))
+
+
+def add_smokestack(spec, parts, count=1):
+    """A tall tapered chimney with two accent bands, standing at a back corner of the roof."""
+    accent, trim = color_index(spec, "accent"), color_index(spec, "trim")
+    dark = PALETTE_NAMES.index(spec["cfg"]["ink"])
+    width, depth = spec["body"]
+    base = roof_surface(spec) - 0.05
+    height = 0.6
+    for number in range(count):
+        x, y = width * (0.32 - (0.2 if count <= 3 else 0.14) * number), depth * 0.28
+        parts.append(lpm.prism(f"stack_{number}", 8, 0.06, height, at=(x, y, base), color=trim, radius_top=0.045))
+        for index, level in enumerate((0.7, 0.82)):
+            radius = 0.06 - 0.015 * level
+            parts.append(lpm.prism(f"stack_band_{number}_{index}", 8, radius + 0.006, 0.05, at=(x, y, base + height * level), color=accent, radius_top=radius))
+        parts.append(lpm.prism(f"stack_cap_{number}", 8, 0.05, 0.02, at=(x, y, base + height), color=dark))
+
+
+def add_roller_door(spec, parts, along, door_width=0.34):
+    """A wide loading door with horizontal slats, offset along the front wall."""
+    floor = spec["floor_height"]
+    length, _ = wall_extent(spec, "front")
+    trim = color_index(spec, "trim")
+    width, height = min(door_width, length * 0.3), floor * 0.72 * (1.0 if door_width <= 0.34 else 1.25)
+    centre = along * length
+    parts.append(wall_box(spec, "roller_frame", "front", centre, 0, (width + 0.05, 0.014, height + 0.03), trim))
+    parts.append(wall_box(spec, "roller_door", "front", centre, 0, (width, 0.02, height), color_index(spec, "door")))
+    for index in range(1, 5):
+        parts.append(wall_quad(spec, f"decal_slat_{index}", "front", centre, height * index / 5, width, 0.008, trim, push=0.02 - 0.01 + DECAL_STEP))
 
 
 def add_feature(spec, parts, feature):
@@ -664,15 +1577,15 @@ def add_feature(spec, parts, feature):
     if kind == "sign":
         text = feature.get("text", "").upper()
         if text and feature.get("placement") == "roof":
-            add_roof_sign(spec, parts, face, text, accent)
+            add_roof_sign(spec, parts, face, text, accent, feature.get("lift", 0.0))
             return
         if text:
-            add_sign_text(spec, parts, face, text, accent, sign_board_z(spec))
+            add_sign_text(spec, parts, face, text, accent, feature.get("z", sign_board_z(spec)))
             return
         parts.append(wall_box(spec, f"sign_{face}", face, 0, floor * 0.84, (min(0.6, length * 0.5), 0.03, 0.07), accent))
     elif kind == "awning":
         width, height = door_layout(spec)
-        parts.append(wall_box(spec, "awning", "front", 0, height + 0.03, (width + 0.14, 0.06, 0.025), accent))
+        parts.append(wall_box(spec, "awning", "front", spec.get("door_along", 0.0), height + 0.03, (width + 0.14, 0.06, 0.025), accent))
     elif kind == "chimney":
         height = roof_height(spec) + 0.14
         parts.append(lpm.box("chimney", (0.07, 0.07, height), at=(body_width * 0.22, body_depth * 0.18, top), color=color_index(spec, "wall")))
@@ -704,13 +1617,134 @@ def add_feature(spec, parts, feature):
         add_solar_panels(spec, parts)
     elif kind == "balcony":
         columns = spec["window_columns"][face]
-        for level in range(1, spec["floors"]):
-            for index in range(0, len(columns), 2):
-                along = columns[index]
+        for level in feature.get("levels", range(1, spec["floors"])):
+            if level >= spec["floors"]:
+                continue
+            picked = {"outer": [0, len(columns) - 1], "center": [i for i in range(1, len(columns) - 1)], "first": [0], "last": [len(columns) - 1]}.get(feature.get("pick"))
+            positions = feature["at"] if "at" in feature else [columns[i] for i in (picked if picked is not None else range(feature.get("offset", 0), len(columns), 1 if feature.get("every") else 2))]
+            for index, along in enumerate(positions):
                 if level == 1 and face == "front" and has_feature(spec, "sign") and abs(along) < SIGN_CLEARANCE:
                     continue
-                parts.append(wall_box(spec, f"balcony_{face}_{level}_{index}", face, along, level * floor + 0.005, (0.22, 0.06, 0.02), trim))
-                parts.append(wall_box(spec, f"rail_{face}_{level}_{index}", face, along, level * floor + 0.025, (0.22, 0.06, 0.045), accent))
+                if "at" not in feature and any(a0 - 0.1 < along < a1 + 0.1 and level < levels for a0, a1, levels in spec.get("volume_blocked", {}).get(face, [])):
+                    continue
+                lift = 0.005
+                span = 0.22
+                if feature.get("under_window"):
+                    lift = floor * cfg["window_z"] - cfg["window_pad"] / 2 - 0.065
+                    span = widths_of[index] + 0.04 if (widths_of := spec.get("window_widths", {}).get(face)) else 0.22
+                parts.append(wall_box(spec, f"balcony_{face}_{level}_{index}", face, along, level * floor + lift, (span, 0.06, 0.02), trim))
+                parts.append(wall_box(spec, f"rail_{face}_{level}_{index}", face, along, level * floor + lift + 0.02, (span, 0.06, 0.045), accent))
+                if feature.get("plants_every") and index % feature["plants_every"] == feature.get("plants_offset", 0):
+                    for plant, side in enumerate((-1, 1)):
+                        px, py, _ = plane_point(face, along + side * span * 0.25, wall_half(spec, face) + 0.035, 0)
+                        parts.append(lpm.prism(f"balcony_plant_{face}_{level}_{index}_{plant}", 6, 0.035, 0.06, at=(px, py, level * floor + lift + 0.065), color=PALETTE_NAMES.index("bush")))
+    elif kind == "clock_tower":
+        add_clock_tower(spec, parts, feature.get("clock", True))
+    elif kind == "red_cross":
+        add_red_cross(spec, parts, feature.get("along", 0.3))
+    elif kind == "flagpole":
+        add_flagpole(spec, parts)
+    elif kind == "penthouse":
+        add_penthouse(spec, parts, feature.get("scale", 0.58), tuple(feature.get("offset", (0.0, 0.0))))
+    elif kind == "portico":
+        add_portico(spec, parts)
+    elif kind == "striped_awning":
+        add_striped_awning(spec, parts, feature.get("along", 0.17), feature.get("width", 0.5), feature.get("rise", 0.84), feature.get("reach", 0.1), feature.get("stripes", 6), feature.get("level", 0))
+    elif kind == "crate_stacks":
+        add_crate_stacks(spec, parts, feature.get("along", -0.6), feature.get("count", 1), face)
+    elif kind == "side_conveyor":
+        add_side_conveyor(spec, parts, face, feature.get("along", 0.0), feature.get("length", 0.9))
+    elif kind == "roof_tank":
+        add_roof_tank(spec, parts, feature.get("x", -0.4), feature.get("y", 0.3), feature.get("radius", 0.17), feature.get("height", 0.3))
+    elif kind == "roof_pipes":
+        add_roof_pipes(spec, parts, feature.get("y", -0.1), feature.get("lift", 0.1))
+    elif kind == "loading_dock":
+        add_loading_dock(spec, parts, feature.get("along", 0.0), feature.get("width", 0.7))
+    elif kind == "curved_marquee":
+        add_curved_marquee(spec, parts, feature.get("along", -0.32), feature.get("width"), feature.get("radius", 0.087), feature.get("drop", 0.04))
+    elif kind == "pilasters":
+        add_pilasters(spec, parts, feature.get("along", 0.28), feature.get("width", 0.3))
+    elif kind == "crystals":
+        add_crystals(spec, parts, feature.get("along", 0.28), feature.get("on", "display"))
+    elif kind == "red_carpet":
+        add_red_carpet(spec, parts, feature.get("along", -0.32), feature.get("width", 0.18), feature.get("length", 0.16))
+    elif kind == "hardware_display":
+        add_hardware_display(spec, parts, feature.get("along", 0.17), feature.get("width", 0.5))
+    elif kind == "roof_reel":
+        add_roof_reel(spec, parts, feature.get("x", 0.3), feature.get("y", 0.2))
+    elif kind == "hazard_band":
+        add_hazard_band(spec, parts, face, feature.get("level", 1), feature.get("stripes", 12), feature.get("height", 0.02))
+    elif kind == "industrial_door":
+        add_industrial_door(spec, parts, face, feature.get("along", 0.0), feature.get("width", 0.62))
+    elif kind == "bush_at":
+        add_bush_at(spec, parts, feature.get("along", 0.0))
+    elif kind == "marquee":
+        add_marquee(spec, parts, feature.get("along", 0.0), feature.get("width"), feature.get("reach", 0.14))
+    elif kind == "wall_tools":
+        add_wall_tools(spec, parts, feature.get("along", -0.1), feature.get("width", 0.22))
+    elif kind == "material_yard":
+        add_material_yard(spec, parts, feature.get("along", 0.17), feature.get("width", 0.5))
+    elif kind == "bulb_row":
+        top = spec["floors"] * floor
+        count = feature.get("count", 14)
+        span = feature.get("width", 0.9)
+        for index in range(count):
+            a = feature.get("along", 0.0) - span / 2 + span * index / max(1, count - 1)
+            parts.append(wall_box(spec, f"bulb_{index}", "front", a, feature.get("z", top + 0.035), (0.022, 0.022, 0.022), PALETTE_NAMES.index("white"), embed=-0.012))
+    elif kind == "stone_accents":
+        stone = color_index(spec, "trim")
+        rng_stone = random.Random(spec["id"])
+        top = spec["floors"] * floor
+        for stone_face in feature.get("faces", FACES):
+            stone_length, _ = wall_extent(spec, stone_face)
+            for index in range(int(stone_length * feature.get("density", 9))):
+                along = rng_stone.uniform(-stone_length / 2 + 0.06, stone_length / 2 - 0.06)
+                z = rng_stone.uniform(0.05, top - 0.09)
+                if stone_face == "front" and abs(along - spec.get("door_along", 0.0)) < 0.2 and z < floor * 0.8:
+                    continue
+                if any(abs(along - box[0]) < box[1] / 2 + 0.1 and box[2] - 0.06 < z < box[3] + 0.06 for box in opening_boxes(spec, stone_face)):
+                    continue
+                parts.append(wall_box(spec, f"stone_{stone_face}_{index}", stone_face, along, z, (0.07, 0.016, 0.03), stone, embed=-0.002))
+    elif kind == "roof_vents":
+        base = roof_surface(spec)
+        width, depth = spec["body"]
+        for index in range(3):
+            parts.append(lpm.box(f"roof_vent_{index}", (0.34, 0.025, 0.02), at=(-width * 0.2, -depth * 0.12 + index * 0.07, base), color=color_index(spec, "trim")))
+        parts.append(lpm.box("roof_unit", (0.3, 0.22, 0.14), at=(width * 0.2, depth * 0.1, base), color=color_index(spec, "trim")))
+    elif kind == "roof_coin":
+        top = spec["floors"] * floor
+        width, depth = spec["body"]
+        cx = feature.get("x", -width * 0.42)
+        pole_y = -depth / 2 + 0.1
+        parts.append(lpm.box("coin_pole", (0.025, 0.025, 0.16), at=(cx, pole_y, top + 0.03), color=color_index(spec, "trim")))
+        parts.append(disc("coin", cx, pole_y - 0.02, top + 0.2, 0.1, 0.025, PALETTE_NAMES.index("sun")))
+        parts.append(disc("coin_rim", cx, pole_y - 0.012, top + 0.2, 0.075, 0.03, PALETTE_NAMES.index("tangerine"), steps=16))
+    elif kind == "poster":
+        add_poster(spec, parts, feature)
+    elif kind == "roof_die":
+        add_roof_die(spec, parts, feature.get("x", 0.55), feature.get("y", 0.4), feature.get("size", 0.22))
+    elif kind == "roof_card":
+        add_roof_card(spec, parts, feature.get("x", -0.55), feature.get("y", -0.5), feature.get("size", 0.34))
+    elif kind == "door_at":
+        add_door_at(spec, parts, feature["along"])
+    elif kind == "stall":
+        add_stall(spec, parts, feature.get("along", 0.17), feature.get("width", 0.44))
+    elif kind == "roof_lantern":
+        add_roof_lantern(spec, parts, feature.get("size", 0.26), feature.get("height", 0.12))
+    elif kind == "round_window":
+        add_round_window(spec, parts, feature.get("rise", 0.07), feature.get("radius", 0.05), feature.get("on_hood", False), feature.get("stretch", 1.0), face)
+    elif kind == "round_dormer":
+        add_round_dormer(spec, parts, feature.get("along", 0.0), feature.get("depth_ratio", 0.32))
+    elif kind == "stair_head":
+        add_stair_head(spec, parts)
+    elif kind == "penthouse_terrace":
+        add_penthouse_terrace(spec, parts)
+    elif kind == "door_hood":
+        add_door_hood(spec, parts)
+    elif kind == "smokestack":
+        add_smokestack(spec, parts, feature.get("count", 1))
+    elif kind == "roller_door":
+        add_roller_door(spec, parts, feature.get("along", -0.28), feature.get("width", 0.34))
     # monumental_door and bushes are handled by the door and the volume builders
 
 
@@ -744,8 +1778,12 @@ def add_trim_bands(spec, parts):
     trim = color_index(spec, "trim")
     if cfg["cornice"]:
         parts.append(rounded_block("cornice", body_width + 0.03, body_depth + 0.03, 0.025, trim, cfg["corner"], at=(0, 0, top - 0.025)))
+    if spec.get("floor_bands"):
+        band = color_index(spec, "roof")
+        for level in range(1, spec["floors"]):
+            parts.append(rounded_block(f"floor_band_{level}", body_width + 0.016, body_depth + 0.016, 0.012, band, cfg["corner"], at=(0, 0, level * floor - 0.006)))
     push = 2 * cfg["belt_push"]
-    for level in range(1, spec["floors"]):
+    for level in range(1, spec["floors"] if cfg["belt_height"] else 1):
         parts.append(rounded_block(f"belt_{level}", body_width + push, body_depth + push, cfg["belt_height"], trim, cfg["corner"], at=(0, 0, level * floor - cfg["belt_height"] / 2)))
 
 
@@ -765,11 +1803,12 @@ def plan_volumes(spec):
             x0 += wing_width
         else:
             x1 -= wing_width
-        wing_cx = -width / 2 + wing_width / 2 if wing_side == "left" else width / 2 - wing_width / 2
-        volumes.append({"role": "wing", "cx": wing_cx, "cy": -depth / 2 + wing_depth / 2, "width": wing_width, "depth": wing_depth,
+        joint = wing.get("overlap", 0.0)
+        wing_cx = -width / 2 + (wing_width + joint) / 2 if wing_side == "left" else width / 2 - (wing_width + joint) / 2
+        volumes.append({"role": "wing", "cx": wing_cx, "cy": -depth / 2 + wing_depth / 2, "width": wing_width + joint, "depth": wing_depth,
                         "floors": wing_floors, "roof": wing.get("roof", "gable_half"), "door": False,
                         "garage": wing.get("garage", False), "faces": [f for f in FACES if f != ("right" if wing_side == "left" else "left")],
-                        "bushes": (-1,) if wing_side == "left" else (1,), "blocked": {}})
+                        "bushes": (-1,) if wing_side == "left" else (1,), "blocked": {}, "plants": wing.get("roof_plants", 0)})
     bay = spec["roof"] == "gable_cross"
     if bay:
         y0 += spec.get("bay_depth", 0.3)
@@ -782,14 +1821,14 @@ def plan_volumes(spec):
         main["blocked"]["right"] = [(-depth / 2 - main["cy"], -depth / 2 + wing_depth - main["cy"], wing_floors)]
     volumes.insert(0, main)
     if bay:
-        if main["width"] < main["depth"]:
-            raise ValueError("gable_cross needs a main volume at least as wide as deep")
         bay_width = spec.get("bay_width", min(1.0, main["width"] * 0.5))
         bay_depth = main["cy"] + depth / 2
-        volumes.append({"role": "bay", "cx": main["cx"], "cy": -depth / 2 + bay_depth / 2, "width": bay_width, "depth": bay_depth,
-                        "floors": spec["floors"], "roof": "gable_half", "door": True, "garage": False,
-                        "faces": ["front", "left", "right"], "bushes": (-1, 1), "blocked": {}})
-        main["blocked"]["front"] = [(-bay_width / 2 - 0.02, bay_width / 2 + 0.02, spec["floors"])]
+        bay_x = main["cx"] + spec.get("bay_offset", 0.0)
+        bay_floors = spec.get("bay_floors", spec["floors"])
+        volumes.append({"role": "bay", "cx": bay_x, "cy": -depth / 2 + bay_depth / 2, "width": bay_width, "depth": bay_depth,
+                        "floors": bay_floors, "roof": "gable_half", "door": True, "garage": False,
+                        "faces": ["front", "left", "right"] if bay_width >= 0.8 else [], "bushes": (-1, 1), "blocked": {}})
+        main["blocked"]["front"] = [(bay_x - main["cx"] - bay_width / 2 - 0.02, bay_x - main["cx"] + bay_width / 2 + 0.02, spec["floors"] if spec.get("bay_clear_above") else bay_floors)]
     return volumes
 
 
@@ -797,7 +1836,8 @@ def volume_spec(spec, volume, features):
     cfg = spec["cfg"]
     vs = dict(spec)
     vs.update(footprint=(volume["width"], volume["depth"]), floors=volume["floors"], roof=volume["roof"], features=features, window_columns={})
-    over_x = over_y = cfg["overhang"]
+    vs["hip_ratio"] = spec.get("hip_ratio") if volume["role"] == "main" else None
+    over_x = over_y = spec.get("roof_overhang", cfg["overhang"])
     if has_gable_ends(vs):
         if ridge_along_x(vs):
             over_x = cfg["verge"]
@@ -812,6 +1852,8 @@ def build_volume(vs, volume, rng, bushes):
     body_width, body_depth = vs["body"]
     top = vs["floors"] * vs["floor_height"]
     parts = [rounded_block("walls", body_width, body_depth, top, color_index(vs, "wall"), cfg["corner"])]
+    if has_feature(vs, "storefront"):
+        parts.append(rounded_block("storefront", body_width + 0.012, body_depth + 0.012, vs["floor_height"], PALETTE_NAMES.index(cfg["ink"]), cfg["corner"]))
     parts.append(rounded_block("base_band", body_width + 2 * cfg["base_push"], body_depth + 2 * cfg["base_push"], cfg["base_height"], color_index(vs, "trim"), cfg["corner"]))
     add_trim_bands(vs, parts)
     parts += roof_parts(vs, top)
@@ -823,8 +1865,11 @@ def build_volume(vs, volume, rng, bushes):
         windows_on_face(vs, parts, face, rng, volume["door"], volume["blocked"])
     if vs["roof"] == "mansard":
         add_dormers(vs, parts)
+    vs["volume_blocked"] = volume["blocked"]
     for feature in vs["features"]:
         add_feature(vs, parts, feature)
+    if volume.get("plants"):
+        add_roof_plants(vs, parts, volume["plants"], rng)
     if bushes:
         add_bushes(vs, parts, volume["bushes"])
     shift(parts, volume["cx"], volume["cy"])
@@ -841,16 +1886,1014 @@ def features_of(volume, front, main, features):
     return []
 
 
+TURBINE_LAYOUTS = {
+    1: ((0.0, 0.0, 0.9),),
+    2: ((-0.2, -0.16, 0.95), (0.2, 0.16, 0.7)),
+    3: ((-0.2, -0.28, 0.7), (0.2, 0.0, 0.95), (-0.12, 0.28, 0.8)),
+}
+
+
+def bevel_edges(ob, selector, offset, segments):
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    edges = [e for e in bm.edges if selector(e)]
+    bmesh.ops.bevel(bm, geom=edges, offset=offset, segments=segments, affect="EDGES")
+    bm.to_mesh(ob.data)
+    bm.free()
+    ob.data.update()
+    return ob
+
+
+def bevel_top(ob, offset):
+    """Round the edges of the top face of a block."""
+    top = max(v.co.z for v in ob.data.vertices)
+    return bevel_edges(ob, lambda e: all(abs(v.co.z - top) < 1e-6 for v in e.verts), offset, 2)
+
+
+def bevel_all(ob, offset):
+    return bevel_edges(ob, lambda e: True, offset, 1)
+
+
+def blade_outline(radius):
+    """A broad rounded blade, (distance along the blade, sideways offset) around the hub."""
+    wide = 0.05
+    left = [(0.03, -0.03), (radius * 0.35, -wide), (radius * 0.8, -wide * 0.85), (radius * 0.95, -wide * 0.5), (radius, 0.0)]
+    right = [(radius * 0.95, wide * 0.5), (radius * 0.8, wide * 0.85), (radius * 0.35, wide), (0.03, 0.03)]
+    return left + right
+
+
+def blade_halves(radius, inner_color, outer_color, split=0.62):
+    """The blade cut in two outlines: a root in `inner_color` and a tip in `outer_color`."""
+    outline = blade_outline(radius)
+    cut = radius * split
+    wide = 0.05
+    width_at_cut = wide + (wide * 0.85 - wide) * (split - 0.35) / 0.45
+    near = [(r, w) for r, w in outline if r <= cut]
+    far = [(r, w) for r, w in outline if r > cut]
+    side = [(cut, -width_at_cut), (cut, width_at_cut)]
+    root_outline = [p for p in near if p[1] <= 0] + [side[0]] + [side[1]] + [p for p in near if p[1] > 0]
+    tip_outline = [side[0]] + [p for p in far if p[1] <= 0] + [p for p in far if p[1] > 0] + [side[1]]
+    return [(root_outline, inner_color), (tip_outline, outer_color)]
+
+
+def turbine(index, x, y, height, radius, tower, nacelle, accent, dark, angle, rings=1):
+    """A tapered tower, a nacelle and a three-blade rotor facing the front (-Y), turned by `angle` degrees."""
+    parts = [
+        lpm.prism(f"turbine_{index}_collar", 10, 0.075, 0.05, at=(x, y, 0.03), color=dark),
+        lpm.prism(f"turbine_{index}_tower", 10, 0.055, height, at=(x, y, 0.04), color=tower, radius_top=0.03),
+    ]
+    for ring in range(1, rings + 1):
+        level = ring / 5
+        parts.append(lpm.prism(f"turbine_{index}_ring_{ring}", 10, 0.055 - 0.025 * level + 0.015, 0.03, at=(x, y, 0.04 + height * level), color=accent))
+    top = 0.04 + height
+    body_z = top - 0.03
+    low, high = slanted_blocks(f"turbine_{index}_nacelle", 0.105, 0.2, 0.1, 0.03 / 0.105, (nacelle, accent), at=(x, y + 0.02, top - 0.03), slope=0.35)
+    parts += [low, bevel_top(high, 0.018)]
+    parts.append(rounded_block(f"turbine_{index}_nacelle_cap", 0.075, 0.05, 0.04, nacelle, 0.03 / 0.05, at=(x, y - 0.1, top - 0.015)))
+    parts.append(bevel_top(rounded_block(f"turbine_{index}_nacelle_cap_top", 0.075, 0.05, 0.035, accent, 0.03 / 0.05, at=(x, y - 0.1, top + 0.025)), 0.012))
+    hub_y = y - 0.13
+    hub_z = top + 0.02
+    for blade in range(3):
+        turn = math.radians(angle + 120 * blade)
+        for part, (outline, color) in enumerate(blade_halves(radius, tower, accent)):
+            turned = [(r * math.sin(turn) - w * math.cos(turn), r * math.cos(turn) + w * math.sin(turn)) for r, w in outline]
+            parts.append(bevel_all(lpm.sweep(f"turbine_{index}_blade_{blade}_{part}", turned, 0.03, at=(x, hub_y - 0.015, hub_z), color=color), 0.004))
+    parts.append(lpm.box(f"turbine_{index}_hub", (0.09, 0.07, 0.09), at=(x, hub_y - 0.035, hub_z - 0.045), color=accent, taper=(0.65, 1.0)))
+    return parts
+
+
+def build_turbine(spec, out_dir):
+    """A wind farm on a thin pad: `count` white turbines with mint rotor hubs, staggered in height so the rotors never touch."""
+    style = spec.get("style", "urbtopia")
+    palette_for(spec, style)
+    count = spec["count"]
+    names = PALETTE_NAMES
+    tower, nacelle, accent, dark, pad = (names.index(n) for n in ("uwall", "uwall", "uroof", "udark", "uslab"))
+    accent = PALETTE_NAMES.index("vtone1")
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in palette_for(spec, style)])
+    size = spec["footprint"][0]
+    parts = [lpm.prism("turbine_pad", 12, 0.2, 0.03, at=(0, 0, 0), color=accent)]
+    for index, (x, y, height) in enumerate(TURBINE_LAYOUTS[1]):
+        parts += turbine(index, x, y, height, spec.get("rotor", 0.42), tower, nacelle, accent, dark, 20 + 40 * index, rings=count)
+    ob = lpm.finish(spec["id"], parts, palette, budget=2500, center=False)
+    return export_model(ob, spec, out_dir)
+
+GEOTHERMAL_TOWERS = ((0.3, 0.28), (0.3, 0.0), (0.3, -0.28))
+
+
+def build_geothermal(spec, out_dir):
+    """A small geothermal plant on a thin pad: a turbine hall with a mint-banded slab roof, a steam manifold and `count` cooling towers, each one with a steam puff."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    wall, mint, dark, slab, glass, white, trim = (index(n) for n in ("uwall", "uroof", "udark", "uslab", "glass_blue", "white", "utrim"))
+    mint = PALETTE_NAMES.index("vtone1")
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = [lpm.box("plant_pad", (0.96, 0.96, 0.04), at=(0, 0, 0), color=slab)]
+    hx, hy = -0.17, 0.2
+    parts.append(rounded_block("hall", 0.5, 0.34, 0.28, wall, 0.03 / 0.34, at=(hx, hy, 0.04)))
+    parts.append(rounded_block("hall_band", 0.51, 0.35, 0.025, mint, 0.03 / 0.35, at=(hx, hy, 0.3)))
+    parts.append(rounded_block("hall_roof", 0.54, 0.38, 0.03, slab, 0.03 / 0.38, at=(hx, hy, 0.325)))
+    front = hy - 0.17
+    parts.append(lpm.box("hall_door", (0.12, 0.014, 0.17), at=(hx - 0.14, front - 0.004, 0.04), color=dark))
+    parts.append(lpm.box("hall_window", (0.22, 0.012, 0.09), at=(hx + 0.1, front - 0.003, 0.12), color=glass))
+    count = spec["count"]
+    x, y = GEOTHERMAL_TOWERS[0]
+    height = 0.55 + 0.15 * (count - 1)
+    scale = height / 0.55
+    profile = [(r, z * scale) for r, z in ((0.0, 0.0), (0.14, 0.0), (0.12, 0.2), (0.095, 0.38), (0.115, 0.52), (0.115, 0.55), (0.0, 0.55))]
+    parts.append(lpm.lathe("tower", profile, segments=12, at=(x, y, 0.04), color=wall))
+    for ring in range(count):
+        level = height - 0.08 - 0.08 * ring
+        radius = next(r0 + (r1 - r0) * (level - z0) / (z1 - z0) for (r0, z0), (r1, z1) in zip(profile, profile[1:]) if z0 <= level <= z1 and z1 > z0)
+        parts.append(lpm.prism(f"tower_ring_{ring}", 12, radius + 0.008, 0.04, at=(x, y, 0.04 + level), color=mint))
+    parts.append(lpm.prism("tower_rim", 12, 0.118, 0.012, at=(x, y, 0.04 + height), color=dark))
+    puff = [(0.0, 0.0), (0.06, 0.02), (0.085, 0.08), (0.06, 0.15), (0.0, 0.17)]
+    parts.append(lpm.lathe("steam", puff, segments=8, at=(x, y, 0.04 + height + 0.02), color=white))
+    parts.append(lpm.box("hall_link", (0.14, 0.035, 0.035), at=(0.08 + 0.07, y, 0.1), color=trim))
+    wx, wy = -0.3, -0.22
+    parts.append(lpm.prism("wellhead", 10, 0.05, 0.16, at=(wx, wy, 0.04), color=trim))
+    parts.append(lpm.prism("wellhead_flange", 10, 0.065, 0.025, at=(wx, wy, 0.04 + 0.1), color=mint))
+    parts.append(lpm.prism("wellhead_cap", 10, 0.045, 0.02, at=(wx, wy, 0.04 + 0.16), color=dark))
+    parts.append(lpm.box("wellhead_pipe", (0.035, abs(front - wy), 0.035), at=(wx, (front + wy) / 2, 0.11), color=trim))
+    ob = lpm.finish(spec["id"], parts, palette, budget=3000, center=False)
+    return export_model(ob, spec, out_dir)
+
+def build_coal(spec, out_dir):
+    """A coal plant on a thin pad: a boiler hall, a coal heap fed by a short conveyor, and one slim chimney with a dark smoke plume. The Tier is the chimney height (0.55 to 0.85) and its number of mint rings."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    wall, mint, dark, slab, glass, smoke, trim = (index(n) for n in ("uwall", "uroof", "udark", "uslab", "glass_blue", "slate", "utrim"))
+    mint = PALETTE_NAMES.index("vtone1")
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    count = spec["count"]
+    parts = [lpm.box("plant_pad", (0.96, 0.96, 0.04), at=(0, 0, 0), color=slab)]
+    hx, hy = -0.17, 0.2
+    parts.append(rounded_block("hall", 0.5, 0.34, 0.28, wall, 0.03 / 0.34, at=(hx, hy, 0.04)))
+    parts.append(rounded_block("hall_band", 0.51, 0.35, 0.025, mint, 0.03 / 0.35, at=(hx, hy, 0.3)))
+    parts.append(rounded_block("hall_roof", 0.54, 0.38, 0.03, slab, 0.03 / 0.38, at=(hx, hy, 0.325)))
+    front = hy - 0.17
+    parts.append(lpm.box("hall_door", (0.12, 0.014, 0.17), at=(hx - 0.14, front - 0.004, 0.04), color=dark))
+    parts.append(lpm.box("hall_window", (0.17, 0.012, 0.09), at=(-0.08, front - 0.003, 0.12), color=glass))
+    frame = PALETTE_NAMES.index("uframe")
+    for name, cx, bottom, width, height, sides in (("door", hx - 0.14, 0.04, 0.12, 0.17, ("left", "right", "top")), ("window", -0.08, 0.12, 0.17, 0.09, ("left", "right", "top", "bottom"))):
+        thick = 0.012
+        if "left" in sides:
+            parts.append(lpm.box(f"{name}_frame_left", (thick, 0.01, height + thick * (1 if "top" in sides else 0) + (thick if "bottom" in sides else 0)), at=(cx - width / 2 - thick / 2, front - 0.004, bottom - (thick if "bottom" in sides else 0)), color=frame))
+        if "right" in sides:
+            parts.append(lpm.box(f"{name}_frame_right", (thick, 0.01, height + thick * (1 if "top" in sides else 0) + (thick if "bottom" in sides else 0)), at=(cx + width / 2 + thick / 2, front - 0.004, bottom - (thick if "bottom" in sides else 0)), color=frame))
+        if "top" in sides:
+            parts.append(lpm.box(f"{name}_frame_top", (width + 2 * thick, 0.01, thick), at=(cx, front - 0.004, bottom + height), color=frame))
+        if "bottom" in sides:
+            parts.append(lpm.box(f"{name}_frame_bottom", (width + 2 * thick, 0.01, thick), at=(cx, front - 0.004, bottom - thick), color=frame))
+    heap = [(0.0, 0.0), (0.16, 0.0), (0.12, 0.05), (0.07, 0.1), (0.0, 0.13)]
+    parts.append(lpm.lathe("coal_heap", heap, segments=9, at=(0.05, -0.27, 0.04), color=dark))
+    parts.append(lpm.box("conveyor", (0.06, 0.3, 0.025), at=(0.05, -0.12, 0.13), color=trim))
+    for number, y in enumerate((-0.24, -0.04)):
+        for side in (-1, 1):
+            parts.append(lpm.box(f"conveyor_leg_{number}_{side}", (0.012, 0.012, 0.09), at=(0.05 + side * 0.024, y, 0.04), color=dark))
+    x, y = 0.3, 0.25
+    height = 0.55 + 0.1 * (count - 1)
+    radius_at = lambda z: 0.075 - 0.02 * z / height
+    parts.append(lpm.prism("chimney", 10, 0.075, height, at=(x, y, 0.04), color=wall, radius_top=0.055))
+    for ring in range(count):
+        level = height - 0.08 - 0.07 * ring
+        parts.append(lpm.prism(f"chimney_ring_{ring}", 10, radius_at(level) + 0.008, 0.035, at=(x, y, 0.04 + level), color=mint))
+    parts.append(lpm.prism("chimney_cap", 10, 0.062, 0.014, at=(x, y, 0.04 + height), color=dark))
+    for number, (radius, rise, drift) in enumerate(((0.06, 0.02, 0.0), (0.075, 0.12, 0.03), (0.06, 0.22, 0.07))):
+        puff = [(0.0, 0.0), (radius, 0.02), (radius * 1.1, 0.07), (radius * 0.8, 0.12), (0.0, 0.14)]
+        parts.append(lpm.lathe(f"smoke_{number}", puff, segments=8, at=(x + drift, y, 0.04 + height + 0.02 + rise), color=smoke))
+    parts.append(lpm.box("hall_link", (0.14, 0.035, 0.035), at=(0.08 + 0.07, y, 0.1), color=trim))
+    ob = lpm.finish(spec["id"], parts, palette, budget=3000, center=False)
+    return export_model(ob, spec, out_dir)
+
+def door_frame(parts, name, cx, y, bottom, width, height, color, thick=0.012):
+    """Thin surround on the left, right and top of a door; `y` is the wall plane (front, -Y)."""
+    parts.append(lpm.box(f"{name}_frame_left", (thick, 0.01, height + thick), at=(cx - width / 2 - thick / 2, y - 0.004, bottom), color=color))
+    parts.append(lpm.box(f"{name}_frame_right", (thick, 0.01, height + thick), at=(cx + width / 2 + thick / 2, y - 0.004, bottom), color=color))
+    parts.append(lpm.box(f"{name}_frame_top", (width + 2 * thick, 0.01, thick), at=(cx, y - 0.004, bottom + height), color=color))
+
+
+BACKUP_SLOTS = [(x, y) for y in (0.62, -0.35) for x in (0.65, 0.0, -0.65)]
+
+
+def build_backup(spec, out_dir):
+    """A backup power plant filling its 2x2 cell: a tall generator hall with two ribbed garage doors and, on the roof, `count` battery cabinets joined by a cable run to a junction box."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    wall, mint, dark, slab, trim, frame = (index(n) for n in ("uwall", "uroof", "udark", "uslab", "utrim", "uframe"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    width, depth, height = 1.92, 1.92, 0.63
+    parts = [rounded_block("hall", width, depth, height, wall, 0.03 / 1.92, at=(0, 0, 0))]
+    parts.append(rounded_block("hall_band", width + 0.01, depth + 0.01, 0.03, mint, 0.03 / 1.92, at=(0, 0, height - 0.04)))
+    parts.append(rounded_block("hall_roof", 1.96, 1.96, 0.03, slab, 0.03 / 1.96, at=(0, 0, height)))
+    front = -depth / 2
+    for number, side in enumerate((-1, 1)):
+        cx = side * 0.5
+        parts.append(lpm.box(f"garage_door_{number}", (0.5, 0.014, 0.45), at=(cx, front - 0.004, 0.0), color=dark))
+        for rib in range(1, 7):
+            parts.append(lpm.box(f"garage_rib_{number}_{rib}", (0.5, 0.006, 0.008), at=(cx, front - 0.01, 0.45 * rib / 7), color=trim))
+        door_frame(parts, f"garage_{number}", cx, front, 0.0, 0.5, 0.45, frame)
+    roof = height + 0.03
+    k = 1.5
+    used = BACKUP_SLOTS[:spec["count"]]
+    trunk_y = 0.13
+    for number, (x, y) in enumerate(used):
+        parts.append(rounded_block(f"battery_{number}", 0.34 * k, 0.28 * k, 0.26 * k, wall, 0.03 / (0.28 * k), at=(x, y, roof)))
+        parts.append(lpm.box(f"battery_{number}_stripe", (0.345 * k, 0.285 * k, 0.03 * k), at=(x, y, roof + 0.16 * k), color=mint))
+        parts.append(lpm.box(f"battery_{number}_vent", (0.2 * k, 0.012, 0.08 * k), at=(x - 0.02 * k, y - 0.145 * k, roof + 0.05 * k), color=dark))
+        parts.append(lpm.prism(f"battery_{number}_terminal", 8, 0.03 * k, 0.08 * k, at=(x + 0.09 * k, y, roof + 0.26 * k), color=dark))
+        edge = y - 0.14 * k if y > trunk_y else y + 0.14 * k
+        parts.append(lpm.box(f"cable_branch_{number}", (0.025, abs(trunk_y - edge) + 0.025, 0.014), at=(x, (edge + trunk_y) / 2, roof), color=dark))
+    left, right = -0.84, max(x for x, _ in used) + 0.05
+    parts.append(lpm.box("cable_trunk", (right - left, 0.025, 0.014), at=((left + right) / 2, trunk_y, roof), color=dark))
+    for number in range(int((right - left) / 0.3)):
+        parts.append(lpm.box(f"cable_clip_{number}", (0.03, 0.045, 0.02), at=(left + 0.15 + number * 0.3, trunk_y, roof), color=trim))
+    parts.append(rounded_block("junction_box", 0.14, 0.12, 0.12, wall, 0.03 / 0.12, at=(left - 0.05, trunk_y, roof)))
+    parts.append(lpm.box("junction_box_stripe", (0.145, 0.125, 0.02), at=(left - 0.05, trunk_y, roof + 0.08), color=mint))
+    ob = lpm.finish(spec["id"], parts, palette, budget=6000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+def build_battery(spec, out_dir):
+    """A neighborhood battery filling its 1x1 cell: a small rounded block with a framed door and a row of mint cell panels on the front, louvres on the sides, two cooling units and a cable run on the roof."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    wall, mint, dark, slab, trim, frame = (index(n) for n in ("uwall", "uroof", "udark", "uslab", "utrim", "uframe"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    size, height = 0.92, 0.56
+    parts = [rounded_block("block", size, size, height, wall, 0.03 / size, at=(0, 0, 0))]
+    parts.append(rounded_block("block_band", size + 0.01, size + 0.01, 0.03, mint, 0.03 / size, at=(0, 0, height - 0.04)))
+    parts.append(rounded_block("block_roof", 0.96, 0.96, 0.03, slab, 0.03 / 0.96, at=(0, 0, height)))
+    front = -size / 2
+    door_x, door_w, door_h = -0.3, 0.2, 0.32
+    parts.append(lpm.box("door", (door_w, 0.014, door_h), at=(door_x, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "door", door_x, front, 0.0, door_w, door_h, frame)
+    for number in range(3):
+        x = -0.03 + number * 0.18
+        parts.append(lpm.box(f"cell_{number}", (0.14, 0.012, 0.34), at=(x, front - 0.003, 0.08), color=mint))
+        for edge, side in enumerate((-1, 1)):
+            parts.append(lpm.box(f"cell_{number}_frame_{edge}", (0.01, 0.01, 0.36), at=(x + side * 0.0775, front - 0.004, 0.07), color=frame))
+        parts.append(lpm.box(f"cell_{number}_frame_top", (0.165, 0.01, 0.01), at=(x, front - 0.004, 0.42), color=frame))
+        parts.append(lpm.box(f"cell_{number}_frame_bottom", (0.165, 0.01, 0.01), at=(x, front - 0.004, 0.07), color=frame))
+    for side in (-1, 1):
+        for slot in range(4):
+            parts.append(lpm.box(f"louvre_{side}_{slot}", (0.012, 0.3, 0.012), at=(side * (size / 2 + 0.002), 0.0, 0.18 + slot * 0.05), color=trim))
+    roof = height + 0.03
+    for number, x in enumerate((-0.22, 0.22)):
+        parts.append(rounded_block(f"cooler_{number}", 0.3, 0.3, 0.12, wall, 0.03 / 0.3, at=(x, 0.18, roof)))
+        parts.append(lpm.prism(f"cooler_{number}_fan", 10, 0.1, 0.012, at=(x, 0.18, roof + 0.12), color=dark))
+    parts.append(lpm.box("cable_run", (0.44, 0.025, 0.014), at=(0, -0.15, roof), color=dark))
+    for number, x in enumerate((-0.22, 0.22)):
+        parts.append(lpm.box(f"cable_branch_{number}", (0.025, 0.18, 0.014), at=(x, -0.06, roof), color=dark))
+    parts.append(rounded_block("junction_box", 0.12, 0.1, 0.1, wall, 0.03 / 0.1, at=(-0.36, -0.15, roof)))
+    parts.append(lpm.box("junction_box_stripe", (0.125, 0.105, 0.02), at=(-0.36, -0.15, roof + 0.07), color=mint))
+    ob = lpm.finish(spec["id"], parts, palette, budget=3000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+def tilted_box(name, cx, cy, z0, width, length, thickness, tilt_deg, color):
+    """A flat slab of `width` (X) by `length` (Y, measured along the slope) tilted so that its back (+Y) edge is higher; z0 is the height of its front-bottom edge."""
+    tilt = math.radians(tilt_deg)
+    run, rise = length * math.cos(tilt), length * math.sin(tilt)
+    up = (0.0, -math.sin(tilt), math.cos(tilt))
+    verts = []
+    for layer in (0, 1):
+        for sx, along in ((-1, 0), (1, 0), (1, 1), (-1, 1)):
+            x = cx + sx * width / 2 + up[0] * thickness * layer
+            y = cy - run / 2 + along * run + up[1] * thickness * layer
+            z = z0 + along * rise + up[2] * thickness * layer
+            verts.append((x, y, z))
+    faces = [(0, 3, 2, 1), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
+    return lpm._object(name, _bm(verts, faces), color)
+
+
+def build_solar(spec, out_dir):
+    """A solar installation on bare ground: three rows of three tilted panels on short legs, an inverter cabin at the front right corner and cables running on the ground under every panel to it. `count` minus one battery cabinets line up to the left of the inverter."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    wall, mint, dark, slab, trim, frame, glass = (index(n) for n in ("uwall", "uroof", "udark", "uslab", "utrim", "uframe", "navy"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = []
+    row_ys = (-0.5, 0.1, 0.7)
+    for row, y in enumerate(row_ys):
+        for column, x in enumerate((-0.6, 0.0, 0.6)):
+            parts.append(tilted_box(f"panel_frame_{row}_{column}", x, y, 0.13, 0.52, 0.44, 0.03, 25, frame))
+            parts.append(tilted_box(f"panel_{row}_{column}", x, y - 0.03 * math.sin(math.radians(25)), 0.13 + 0.025 * math.sin(math.radians(25)) + 0.03 * math.cos(math.radians(25)), 0.47, 0.39, 0.012, 25, glass))
+            parts.append(lpm.box(f"panel_leg_{row}_{column}_a", (0.03, 0.03, 0.18), at=(x - 0.18, y - 0.18, 0.0), color=dark))
+            parts.append(lpm.box(f"panel_leg_{row}_{column}_b", (0.03, 0.03, 0.24), at=(x + 0.18, y + 0.19, 0.0), color=dark))
+    x, y = 0.72, -0.85
+    parts.append(rounded_block("inverter", 0.34, 0.22, 0.3, wall, 0.03 / 0.22, at=(x, y, 0.04)))
+    parts.append(lpm.box("inverter_stripe", (0.345, 0.225, 0.03), at=(x, y, 0.2), color=mint))
+    parts.append(rounded_block("inverter_roof", 0.38, 0.26, 0.025, slab, 0.025 / 0.26, at=(x, y, 0.3)))
+    parts.append(lpm.box("inverter_door", (0.12, 0.014, 0.19), at=(x - 0.07, y - 0.114, 0.0), color=dark))
+    door_frame(parts, "inverter_door", x - 0.07, y - 0.11, 0.0, 0.12, 0.19, frame)
+    parts.append(lpm.box("cable_trunk", (0.025, 1.7, 0.014), at=(0.92, 0.0, 0.0), color=dark))
+    for number, row_y in enumerate(row_ys):
+        parts.append(lpm.box(f"cable_row_{number}", (1.78, 0.025, 0.014), at=(0.03, row_y, 0.0), color=dark))
+        for column, panel_x in enumerate((-0.6, 0.0, 0.6)):
+            parts.append(lpm.box(f"cable_box_{number}_{column}", (0.06, 0.05, 0.03), at=(panel_x, row_y, 0.0), color=trim))
+    for number in range(spec.get("count", 1) - 1):
+        bx = x - 0.4 * (number + 1)
+        parts.append(rounded_block(f"battery_{number}", 0.34, 0.22, 0.26, wall, 0.03 / 0.22, at=(bx, y, 0.0)))
+        parts.append(lpm.box(f"battery_{number}_stripe", (0.345, 0.225, 0.03), at=(bx, y, 0.16), color=mint))
+        parts.append(lpm.box(f"battery_{number}_vent", (0.2, 0.012, 0.08), at=(bx - 0.02, y - 0.115, 0.05), color=dark))
+        parts.append(lpm.prism(f"battery_{number}_terminal", 8, 0.03, 0.08, at=(bx + 0.09, y, 0.26), color=dark))
+        parts.append(lpm.box(f"battery_{number}_cable", (0.06, 0.025, 0.014), at=(bx + 0.2, y - 0.0, 0.0), color=dark))
+    parts.append(lpm.box("cable_feed", (0.025, 0.16, 0.014), at=(0.92, -0.86, 0.0), color=dark))
+    ob = lpm.finish(spec["id"], parts, palette, budget=6000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+STOPS = {
+    "bus": {"width": 0.6, "x": -0.12, "benches": 1, "machine": False, "text": "BUS", "plate": "uroof", "ink": "white"},
+    "brt": {"width": 0.62, "x": -0.13, "benches": 2, "machine": True, "text": "BRT", "plate": "udark", "ink": "uroof", "roof_panels": True},
+}
+
+
+def build_stop(spec, out_dir):
+    """A transit stop on bare ground: a glass shelter with a bench, and a sign post facing the road (front, -Y). `kind` is `bus` or `brt`."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    wall, mint, dark, slab, trim, frame, glass, wood, white = (index(n) for n in ("uwall", "uroof", "udark", "uslab", "utrim", "uframe", "glass_blue", "uwood", "white"))
+    cfg = STYLES[style]
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    options = STOPS[spec["kind"]]
+    width, cx, cy, depth, post_height = options["width"], options["x"], 0.2, 0.3, 0.46
+    floor = 0.0
+    parts = []
+    roof_z = floor + post_height
+    parts.append(rounded_block("shelter_roof", width + 0.08, depth + 0.08, 0.03, slab, 0.03 / (depth + 0.08), at=(cx, cy, roof_z)))
+    parts.append(rounded_block("shelter_band", width + 0.09, depth + 0.09, 0.02, mint, 0.02 / (depth + 0.09), at=(cx, cy, roof_z - 0.02)))
+    for number, (px, py) in enumerate(((-1, -1), (1, -1), (-1, 1), (1, 1))):
+        parts.append(lpm.box(f"post_{number}", (0.03, 0.03, post_height), at=(cx + px * (width / 2 - 0.015), cy + py * (depth / 2 - 0.015), floor), color=dark))
+    parts.append(lpm.box("glass_back", (width - 0.06, 0.012, 0.3), at=(cx, cy + depth / 2 - 0.015, floor + 0.1), color=glass))
+    parts.append(lpm.box("glass_side", (0.012, depth - 0.06, 0.3), at=(cx - width / 2 + 0.015, cy, floor + 0.1), color=glass))
+    for number in range(options["benches"]):
+        double = options["benches"] > 1
+        bx = cx + (0.0 if not double else (-0.01 if number == 0 else 0.21))
+        length = 0.2 if double else 0.38
+        parts.append(lpm.box(f"bench_{number}", (length, 0.09, 0.03), at=(bx, cy + depth / 2 - 0.1, floor + 0.12), color=wood))
+        for side in (-1, 1):
+            parts.append(lpm.box(f"bench_{number}_leg_{side}", (0.025, 0.07, 0.12), at=(bx + side * (length / 2 - 0.03), cy + depth / 2 - 0.1, floor), color=dark))
+    if options["machine"]:
+        mx = cx - width / 2 + 0.12
+        parts.append(rounded_block("ticket_machine", 0.1, 0.08, 0.26, dark, 0.03 / 0.08, at=(mx, cy + depth / 2 - 0.1, floor)))
+        parts.append(lpm.box("ticket_screen", (0.07, 0.012, 0.07), at=(mx, cy + depth / 2 - 0.14, floor + 0.14), color=mint))
+    if options.get("roof_panels"):
+        top = roof_z + 0.03
+        for number, side in enumerate((-1, 1)):
+            px = cx + side * 0.16
+            parts.append(tilted_box(f"roof_panel_frame_{number}", px, cy, top + 0.03, 0.26, 0.24, 0.02, 20, frame))
+            parts.append(tilted_box(f"roof_panel_{number}", px, cy - 0.02 * math.sin(math.radians(20)), top + 0.03 + 0.02 * math.sin(math.radians(20)) + 0.02 * math.cos(math.radians(20)), 0.22, 0.2, 0.01, 20, PALETTE_NAMES.index("navy")))
+            for leg, along in enumerate((-0.07, 0.07)):
+                parts.append(lpm.box(f"roof_panel_leg_{number}_{leg}", (0.02, 0.02, 0.03 + (0.06 if along > 0 else 0.0)), at=(px, cy + along * 1.5, top), color=dark))
+    pole_x, pole_y = cx + width / 2 + 0.16, -0.2
+    parts.append(lpm.prism("sign_pole", 8, 0.014, 0.6, at=(pole_x, pole_y, floor), color=frame))
+    plate_z, plate_w, plate_h = floor + 0.42, 0.24, 0.16
+    plate_front = pole_y - 0.027
+    parts.append(lpm.box("sign_plate", (plate_w, 0.014, plate_h), at=(pole_x, pole_y - 0.02, plate_z), color=index(options["plate"])))
+    parts.append(lpm.box("sign_frame_top", (plate_w + 0.012, 0.016, 0.01), at=(pole_x, pole_y - 0.02, plate_z + plate_h), color=frame))
+    parts.append(lpm.box("sign_frame_bottom", (plate_w + 0.012, 0.016, 0.01), at=(pole_x, pole_y - 0.02, plate_z - 0.01), color=frame))
+    for side in (-1, 1):
+        parts.append(lpm.box(f"sign_frame_{side}", (0.01, 0.016, plate_h + 0.02), at=(pole_x + side * (plate_w / 2 + 0.001), pole_y - 0.02, plate_z - 0.01), color=frame))
+    glyphs = glyph_decal({"cfg": cfg}, "sign_text", "front", options["text"], pole_x, plate_z + (plate_h - 0.09) / 2, 0.09, index(options["ink"]), -plate_front + 0.002)
+    parts.append(glyphs)
+    ob = lpm.finish(spec["id"], parts, palette, budget=3000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+def window_frame(parts, name, cx, y, bottom, width, height, color, thick=0.012):
+    """Thin surround on the four sides of a window on the front wall plane `y`."""
+    parts.append(lpm.box(f"{name}_frame_left", (thick, 0.01, height + 2 * thick), at=(cx - width / 2 - thick / 2, y - 0.004, bottom - thick), color=color))
+    parts.append(lpm.box(f"{name}_frame_right", (thick, 0.01, height + 2 * thick), at=(cx + width / 2 + thick / 2, y - 0.004, bottom - thick), color=color))
+    parts.append(lpm.box(f"{name}_frame_top", (width + 2 * thick, 0.01, thick), at=(cx, y - 0.004, bottom + height), color=color))
+    parts.append(lpm.box(f"{name}_frame_bottom", (width + 2 * thick, 0.01, thick), at=(cx, y - 0.004, bottom - thick), color=color))
+
+
+def extrude_x(name, outline, x0, x1, color):
+    """Extrude a closed (y, z) outline along X from x0 to x1."""
+    count = len(outline)
+    verts = [(x0, y, z) for y, z in outline] + [(x1, y, z) for y, z in outline]
+    faces = [(i, count + i, count + (i + 1) % count, (i + 1) % count) for i in range(count)]
+    faces.append(tuple(range(count)))
+    faces.append(tuple(reversed(range(count, 2 * count))))
+    return lpm._object(name, _bm(verts, faces), color)
+
+
+def vault_outline(cy, half_depth, base, rise, steps=10, grow=0.0):
+    """Arc of a barrel vault as a closed segment (y, z), widened by `grow` all around."""
+    points = []
+    for step in range(steps + 1):
+        angle = math.pi * step / steps
+        points.append((cy - (half_depth + grow) * math.cos(angle), base + (rise + grow) * math.sin(angle) ** 0.9))
+    return points
+
+
+def build_station(spec, out_dir):
+    """A railway station filling its 2x1 cell: a long hall with a two-pitch roof on each outer third and a taller central pavilion with a two-pitch roof on the same ridge direction, under the clock, with a framed door and six glazed doors on the front, a window at each end, an off-centre back door, a canopy of seven tenths of the width on posts, centred on the front, a clock tower and a sign."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    wall, mint, dark, slab, trim, frame, glass, white = (index(n) for n in ("uwall", "uroof", "udark", "uslab", "utrim", "uframe", "glass_blue", "white"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    width, depth, height = 1.92, 0.76, 0.5
+    cy = 0.1
+    front = cy - depth / 2
+    parts = [rounded_block("hall", width, depth, height, wall, 0.03 / depth, at=(0, cy, 0))]
+    parts.append(rounded_block("hall_band", width + 0.01, depth + 0.01, 0.03, mint, 0.03 / depth, at=(0, cy, height - 0.04)))
+    overhang = 0.03
+    wing_rise = 0.2
+    gable = [(cy - depth / 2 - overhang, height), (cy, height + wing_rise), (cy + depth / 2 + overhang, height)]
+    parts.append(extrude_x("wing_roof_left", gable, -0.98, -0.32, trim))
+    parts.append(extrude_x("wing_roof_right", gable, 0.32, 0.98, trim))
+    story_height, story_rise = 0.26, wing_rise
+    story_top = height + story_height
+    parts.append(rounded_block("story", 0.64, depth, story_height + 0.02, wall, 0.03 / 0.64, at=(0, cy, height - 0.02)))
+    parts.append(rounded_block("story_band", 0.65, depth + 0.01, 0.03, mint, 0.03 / 0.65, at=(0, cy, story_top - 0.04)))
+    story_gable = [(cy - depth / 2 - overhang, story_top), (cy, story_top + wing_rise), (cy + depth / 2 + overhang, story_top)]
+    parts.append(extrude_x("story_roof", story_gable, -0.32 - overhang, 0.32 + overhang, trim))
+    for face_name, wy in (("front", front), ("back", cy + depth / 2)):
+        direction = -1 if face_name == "front" else 1
+        parts.append(lpm.box(f"story_window_{face_name}", (0.3, 0.012, 0.14), at=(0, wy + direction * 0.003, height + 0.05), color=glass))
+        parts.append(lpm.box(f"story_window_{face_name}_frame_left", (0.012, 0.01, 0.164), at=(-0.156, wy + direction * 0.004, height + 0.038), color=frame))
+        parts.append(lpm.box(f"story_window_{face_name}_frame_right", (0.012, 0.01, 0.164), at=(0.156, wy + direction * 0.004, height + 0.038), color=frame))
+        parts.append(lpm.box(f"story_window_{face_name}_frame_top", (0.324, 0.01, 0.012), at=(0, wy + direction * 0.004, height + 0.19), color=frame))
+        parts.append(lpm.box(f"story_window_{face_name}_frame_bottom", (0.324, 0.01, 0.012), at=(0, wy + direction * 0.004, height + 0.038), color=frame))
+    parts.append(lpm.box("door", (0.22, 0.014, 0.3), at=(0, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "door", 0.0, front, 0.0, 0.22, 0.3, frame)
+    for number, x in enumerate((-0.78, -0.55, -0.32, 0.32, 0.55, 0.78)):
+        parts.append(lpm.box(f"glazed_door_{number}", (0.17, 0.012, 0.3), at=(x, front - 0.003, 0.0), color=glass))
+        door_frame(parts, f"glazed_door_{number}", x, front, 0.0, 0.17, 0.3, frame)
+        parts.append(lpm.box(f"glazed_door_{number}_mullion", (0.01, 0.01, 0.3), at=(x, front - 0.006, 0.0), color=frame))
+        parts.append(lpm.box(f"glazed_door_{number}_transom", (0.17, 0.01, 0.01), at=(x, front - 0.006, 0.2), color=frame))
+    thick = 0.012
+    for number, side in enumerate((-1, 1)):
+        wx = side * (width / 2)
+        parts.append(lpm.box(f"end_window_{number}", (0.012, 0.26, 0.2), at=(wx + side * 0.003, cy, 0.12), color=glass))
+        for edge, offset in enumerate((-1, 1)):
+            parts.append(lpm.box(f"end_window_{number}_frame_{edge}", (0.01, thick, 0.2 + 2 * thick), at=(wx + side * 0.004, cy + offset * (0.13 + thick / 2), 0.12 - thick), color=frame))
+        parts.append(lpm.box(f"end_window_{number}_frame_top", (0.01, 0.26 + 2 * thick, thick), at=(wx + side * 0.004, cy, 0.32), color=frame))
+        parts.append(lpm.box(f"end_window_{number}_frame_bottom", (0.01, 0.26 + 2 * thick, thick), at=(wx + side * 0.004, cy, 0.12 - thick), color=frame))
+    back, back_x = cy + depth / 2, 0.5
+    parts.append(lpm.box("back_door", (0.22, 0.014, 0.3), at=(back_x, back + 0.004, 0.0), color=dark))
+    for edge, offset in enumerate((-1, 1)):
+        parts.append(lpm.box(f"back_door_frame_{edge}", (thick, 0.01, 0.3 + thick), at=(back_x + offset * (0.11 + thick / 2), back + 0.004, 0.0), color=frame))
+    parts.append(lpm.box("back_door_frame_top", (0.22 + 2 * thick, 0.01, thick), at=(back_x, back + 0.004, 0.3), color=frame))
+    canopy_z = 0.34
+    parts.append(rounded_block("canopy", 1.34, 0.16, 0.025, slab, 0.025 / 0.16, at=(0, front - 0.06, canopy_z)))
+    parts.append(rounded_block("canopy_band", 1.35, 0.17, 0.015, mint, 0.015 / 0.17, at=(0, front - 0.06, canopy_z - 0.015)))
+    for number, x in enumerate((-0.65, -0.18, 0.18, 0.65)):
+        parts.append(lpm.box(f"canopy_post_{number}", (0.025, 0.025, canopy_z), at=(x, front - 0.125, 0.0), color=dark))
+    plate_w, plate_h = 0.7, 0.1
+    parts.append(lpm.box("sign_plate", (plate_w, 0.014, plate_h), at=(0, front - 0.004, 0.37), color=mint))
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "STATION", 0.0, 0.37 + (plate_h - 0.06) / 2, 0.06, white, -front + 0.012))
+    roof = story_top + story_rise - 0.02
+    parts.append(rounded_block("clock_tower", 0.2, 0.18, 0.17, wall, 0.03 / 0.2, at=(0, cy, roof)))
+    parts.append(lpm.box("clock_face", (0.12, 0.012, 0.12), at=(0, cy - 0.094, roof + 0.025), color=white))
+    parts.append(lpm.box("clock_hand_hour", (0.012, 0.014, 0.04), at=(0, cy - 0.101, roof + 0.085), color=dark))
+    parts.append(lpm.box("clock_hand_minute", (0.05, 0.014, 0.012), at=(0.02, cy - 0.101, roof + 0.085), color=dark))
+    parts.append(rounded_block("clock_cap", 0.23, 0.21, 0.03, mint, 0.03 / 0.21, at=(0, cy, roof + 0.17)))
+    ob = lpm.finish(spec["id"], parts, palette, budget=5000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+def depot_pile(parts, number, x, y, kind):
+    """One pile of material standing in the yard: planks, bricks, a sand heap, sacks, a gravel heap or steel beams."""
+    index = PALETTE_NAMES.index
+    wood, brick, sand, grey, trim, dark = (index(n) for n in ("uwood", "brick", "usand", "grey", "utrim", "udark"))
+    if kind == "planks":
+        for layer in range(5):
+            parts.append(lpm.box(f"pile_{number}_plank_{layer}", (0.26, 0.11, 0.028), at=(x, y, layer * 0.03), color=wood))
+            for slat in (-0.09, 0.09):
+                parts.append(lpm.box(f"pile_{number}_slat_{layer}_{slat}", (0.02, 0.12, 0.006), at=(x + slat, y, layer * 0.03 + 0.028), color=dark))
+    elif kind == "bricks":
+        for layer in range(4):
+            offset = 0.03 if layer % 2 else 0.0
+            parts.append(lpm.box(f"pile_{number}_bricks_{layer}", (0.24, 0.14, 0.028), at=(x + offset, y, layer * 0.03), color=brick))
+    elif kind in ("sand", "gravel"):
+        profile = [(0.0, 0.0), (0.16, 0.0), (0.1, 0.07), (0.05, 0.13), (0.0, 0.16)]
+        parts.append(lpm.lathe(f"pile_{number}_heap", profile, segments=9, at=(x, y, 0.0), color=sand if kind == "sand" else grey))
+    elif kind == "sacks":
+        for sack_number, (dx, dy, dz) in enumerate(((-0.07, 0.0, 0.0), (0.07, 0.0, 0.0), (0.0, 0.0, 0.1))):
+            sack(parts, f"pile_{number}_sack_{sack_number}", x + dx, y + dy, 0.12, sand if sack_number != 1 else grey)
+            if dz:
+                lpm.move(parts[-1], 0, 0, dz)
+    else:
+        for layer, (dx, dz) in enumerate(((-0.05, 0.0), (0.05, 0.0), (0.0, 0.045))):
+            parts.append(lpm.box(f"pile_{number}_beam_{layer}", (0.26, 0.04, 0.04), at=(x + dx * 0.4, y + dx, dz), color=trim))
+
+
+DEPOT_PILES = ("planks", "bricks", "sand", "sacks", "gravel", "beams")
+
+
+def build_depot(spec, out_dir):
+    """A material depot filling its 2x1 cell: a low hall with a two-pitch roof at the back, a sliding gate, a door, a window and a sign, and an open yard in front where `count` piles of material stand."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    wall, mint, dark, slab, trim, frame, glass, white = (index(n) for n in ("uwall", "uroof", "udark", "uslab", "utrim", "uframe", "glass_blue", "white"))
+    mint = PALETTE_NAMES.index("vtone1")
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    width, depth, height = 1.92, 0.58, 0.46
+    cy = 0.19
+    front = cy - depth / 2
+    parts = [rounded_block("hall", width, depth, height, wall, 0.03 / depth, at=(0, cy, 0))]
+    parts.append(rounded_block("hall_band", width + 0.01, depth + 0.01, 0.03, mint, 0.03 / depth, at=(0, cy, height - 0.04)))
+    overhang = 0.03
+    parts.append(extrude_x("roof", [(cy - depth / 2 - overhang, height), (cy, height + 0.15), (cy + depth / 2 + overhang, height)], -0.98, 0.98, trim))
+    gate_x = -0.3
+    parts.append(lpm.box("gate", (0.5, 0.014, 0.3), at=(gate_x, front - 0.004, 0.0), color=dark))
+    for rib in range(1, 6):
+        parts.append(lpm.box(f"gate_rib_{rib}", (0.5, 0.006, 0.008), at=(gate_x, front - 0.01, 0.3 * rib / 6), color=trim))
+    door_frame(parts, "gate", gate_x, front, 0.0, 0.5, 0.3, frame)
+    parts.append(lpm.box("door", (0.18, 0.014, 0.28), at=(0.35, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "door", 0.35, front, 0.0, 0.18, 0.28, frame)
+    window_x = 0.72
+    parts.append(lpm.box("window", (0.26, 0.012, 0.18), at=(window_x, front - 0.003, 0.1), color=glass))
+    window_frame(parts, "window", window_x, front, 0.1, 0.26, 0.18, frame)
+    plate_w, plate_h, plate_z = 0.56, 0.1, 0.33
+    parts.append(lpm.box("sign_plate", (plate_w, 0.014, plate_h), at=(gate_x, front - 0.004, plate_z), color=mint))
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "DEPOT", gate_x, plate_z + (plate_h - 0.06) / 2, 0.06, white, -front + 0.012))
+    for number in range(spec["count"]):
+        depot_pile(parts, number, -0.75 + 0.3 * number, -0.3, DEPOT_PILES[number])
+    ob = lpm.finish(spec["id"], parts, palette, budget=6000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+def disc(name, cx, y, cz, radius, depth, color, steps=20):
+    """A round plate facing the front (-Y), centred on (cx, cz), thickness `depth` centred on `y`."""
+    outline = [(radius * math.cos(2 * math.pi * i / steps), radius * math.sin(2 * math.pi * i / steps)) for i in range(steps)]
+    return lpm.sweep(name, outline, depth, at=(cx, y, cz), color=color, axis="y")
+
+
+def build_vault(spec, out_dir):
+    """A vault filling its 2x1 cell: a squat rounded block with a parapet roof, a round armoured door with `count` bolts around it, a barred window on each side, a raised roof sign and an off-centre back door."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    wall, mint, dark, slab, trim, frame, glass, white = (index(n) for n in ("uwall", "uroof", "udark", "uslab", "utrim", "uframe", "glass_blue", "white"))
+    mint = PALETTE_NAMES.index("vtone1")
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    width, depth, height = 1.92, 0.92, 0.52
+    front, back = -depth / 2, depth / 2
+    parts = [rounded_block("block", width, depth, height, wall, 0.03 / depth, at=(0, 0, 0))]
+    parts.append(rounded_block("block_band", width + 0.01, depth + 0.01, 0.03, mint, 0.03 / depth, at=(0, 0, height - 0.04)))
+    parts.append(rounded_block("block_roof", 1.96, 0.96, 0.03, slab, 0.03 / 0.96, at=(0, 0, height)))
+    rim_z = height + 0.03
+    parts.append(lpm.box("parapet_front", (1.96, 0.03, 0.05), at=(0, -0.465, rim_z), color=slab))
+    parts.append(lpm.box("parapet_back", (1.96, 0.03, 0.05), at=(0, 0.465, rim_z), color=slab))
+    for side in (-1, 1):
+        parts.append(lpm.box(f"parapet_{side}", (0.03, 0.96, 0.05), at=(side * 0.965, 0, rim_z), color=slab))
+    door_z = 0.27
+    parts.append(disc("vault_ring", 0.0, front - 0.004, door_z, 0.2, 0.012, mint))
+    parts.append(disc("vault_door", 0.0, front - 0.008, door_z, 0.17, 0.012, dark))
+    parts.append(disc("vault_hub", 0.0, front - 0.014, door_z, 0.05, 0.012, mint, steps=14))
+    parts.append(lpm.box("vault_spoke_a", (0.16, 0.012, 0.016), at=(0.0, front - 0.02, door_z - 0.008), color=frame))
+    parts.append(lpm.box("vault_spoke_b", (0.016, 0.012, 0.16), at=(0.0, front - 0.02, door_z - 0.08), color=frame))
+    for number in range(spec["count"]):
+        angle = math.radians(90 - 60 * number)
+        bx, bz = 0.185 * math.cos(angle), door_z + 0.185 * math.sin(angle)
+        parts.append(lpm.box(f"vault_bolt_{number}", (0.036, 0.018, 0.036), at=(bx, front - 0.012, bz - 0.018), color=white))
+    for number, side in enumerate((-1, 1)):
+        wx = side * 0.7
+        parts.append(lpm.box(f"window_{number}", (0.22, 0.012, 0.14), at=(wx, front - 0.003, 0.22), color=glass))
+        window_frame(parts, f"window_{number}", wx, front, 0.22, 0.22, 0.14, frame)
+        for bar in (-0.05, 0.0, 0.05):
+            parts.append(lpm.box(f"window_{number}_bar_{bar}", (0.01, 0.014, 0.14), at=(wx + bar, front - 0.006, 0.22), color=dark))
+    thick = 0.012
+    back_x = 0.5
+    parts.append(lpm.box("back_door", (0.2, 0.014, 0.3), at=(back_x, back + 0.004, 0.0), color=dark))
+    for edge, offset in enumerate((-1, 1)):
+        parts.append(lpm.box(f"back_door_frame_{edge}", (thick, 0.01, 0.3 + thick), at=(back_x + offset * (0.1 + thick / 2), back + 0.004, 0.0), color=frame))
+    parts.append(lpm.box("back_door_frame_top", (0.2 + 2 * thick, 0.01, thick), at=(back_x, back + 0.004, 0.3), color=frame))
+    plate_w, plate_h = 0.56, 0.1
+    sign_z = rim_z + 0.05
+    for side in (-1, 1):
+        parts.append(lpm.box(f"sign_leg_{side}", (0.03, 0.03, 0.12), at=(side * 0.2, -0.3, rim_z - 0.02), color=trim))
+    parts.append(lpm.box("sign_plate", (plate_w, 0.014, plate_h), at=(0, -0.3, sign_z + 0.03), color=mint))
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "VAULT", 0.0, sign_z + 0.03 + (plate_h - 0.06) / 2, 0.06, white, 0.3 + 0.007 + 0.002))
+    ob = lpm.finish(spec["id"], parts, palette, budget=6000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+def build_storehouse(spec, out_dir):
+    """A storehouse filling its 2x2 cell: a tall hall at the back with a two-pitch roof, three roller dock doors, a staff door, a window and a sign, two garage doors at the back, and an open yard in front where `count` pallet stacks stand (two rows of five)."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    wall, mint, dark, slab, trim, frame, glass, white, wood = (index(n) for n in ("uwall", "uroof", "udark", "uslab", "utrim", "uframe", "glass_blue", "white", "uwood"))
+    mint = PALETTE_NAMES.index("vtone1")
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    width, depth, height = 1.92, 0.9, 0.6
+    cy = 0.5
+    front = cy - depth / 2
+    parts = [rounded_block("hall", width, depth, height, wall, 0.03 / depth, at=(0, cy, 0))]
+    parts.append(rounded_block("hall_band", width + 0.01, depth + 0.01, 0.03, mint, 0.03 / depth, at=(0, cy, height - 0.04)))
+    overhang = 0.03
+    parts.append(extrude_x("roof", [(cy - depth / 2 - overhang, height), (cy, height + 0.16), (cy + depth / 2 + overhang, height)], -0.98, 0.98, trim))
+    for number, x in enumerate((-0.5, 0.0, 0.5)):
+        parts.append(lpm.box(f"dock_door_{number}", (0.4, 0.014, 0.34), at=(x, front - 0.004, 0.0), color=dark))
+        for rib in range(1, 7):
+            parts.append(lpm.box(f"dock_rib_{number}_{rib}", (0.4, 0.006, 0.008), at=(x, front - 0.01, 0.34 * rib / 7), color=trim))
+        door_frame(parts, f"dock_{number}", x, front, 0.0, 0.4, 0.34, frame)
+    parts.append(lpm.box("staff_door", (0.14, 0.014, 0.28), at=(0.85, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "staff", 0.85, front, 0.0, 0.14, 0.28, frame)
+    parts.append(lpm.box("window", (0.14, 0.012, 0.14), at=(-0.86, front - 0.003, 0.14), color=glass))
+    window_frame(parts, "window", -0.86, front, 0.14, 0.14, 0.14, frame)
+    back = cy + depth / 2
+    for number, x in enumerate((-0.45, 0.45)):
+        parts.append(lpm.box(f"garage_door_{number}", (0.5, 0.014, 0.38), at=(x, back + 0.004, 0.0), color=dark))
+        for rib in range(1, 8):
+            parts.append(lpm.box(f"garage_rib_{number}_{rib}", (0.5, 0.006, 0.008), at=(x, back + 0.01, 0.38 * rib / 8), color=trim))
+        for side in (-1, 1):
+            parts.append(lpm.box(f"garage_{number}_frame_{side}", (0.012, 0.01, 0.392), at=(x + side * 0.256, back + 0.004, 0.0), color=frame))
+        parts.append(lpm.box(f"garage_{number}_frame_top", (0.524, 0.01, 0.012), at=(x, back + 0.004, 0.38), color=frame))
+    plate_w, plate_h, plate_z = 0.62, 0.1, 0.42
+    parts.append(lpm.box("sign_plate", (plate_w, 0.014, plate_h), at=(0, front - 0.004, plate_z), color=mint))
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "STORAGE", 0.0, plate_z + (plate_h - 0.06) / 2, 0.06, white, -front + 0.012))
+    for number in range(spec["count"]):
+        x = -0.76 + 0.38 * (number % 5)
+        y = -0.3 - 0.45 * (number // 5)
+        parts.append(lpm.box(f"pallet_{number}", (0.3, 0.3, 0.04), at=(x, y, 0.0), color=wood))
+        for layer in range(2):
+            for column, (dx, dy) in enumerate(((-0.065, -0.065), (0.065, -0.065), (-0.065, 0.065), (0.065, 0.065))):
+                if layer == 1 and column > 1:
+                    continue
+                crate(None, parts, f"stack_{number}_crate_{layer}_{column}", x + dx, y + dy, 0.04 + layer * 0.1, 0.12, wood)
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+SILO_ROWS = {1: (0.0,), 2: (-0.4, 0.4), 3: (-0.62, 0.0, 0.62), 4: (-0.62, 0.0, 0.62)}
+
+
+def tone_entries(entries, tones, tone):
+    """The palette entries with the role cells (`vtone1`, `vtone2`...) set to the colors of `tone`; a color is a palette name or a hex."""
+    colors = tones[tone]
+    by_name = dict(entries)
+    return [(name, (colors[name] if colors[name].startswith("#") else by_name[colors[name]]) if name in colors else hex_) for name, hex_ in entries]
+
+
+def palette_for(spec, style):
+    """The palette entries of a model: the style's cells, with the role cells set to the colors of its first tone, and the global color table kept in step."""
+    entries = use_palette(STYLES[style])
+    if "tones" in spec:
+        entries = tone_entries(entries, spec["tones"], "a")
+        PALETTE_HEX.update(dict(entries))
+    return entries
+
+
+def write_tone_textures(spec, out_dir):
+    """One palette PNG per tone other than the first, next to the model: `<id>.tone-b.png`..."""
+    tones = spec.get("tones")
+    if not tones:
+        return
+    base_entries = use_palette(STYLES[spec.get("style", "urbtopia")])
+    for tone in tones:
+        if tone == "a":
+            continue
+        palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in tone_entries(base_entries, tones, tone)])
+        base, mask = palette.images(f"{spec['id']}_tone_{tone}")
+        base.filepath_raw = os.path.join(out_dir, f"{spec['id']}.tone-{tone}.png")
+        base.file_format = "PNG"
+        base.save()
+        bpy.data.images.remove(base)
+        bpy.data.images.remove(mask)
+
+
+def export_model(ob, spec, out_dir):
+    """Exports the model and, for a model with color tones, its palette textures and the names of its tones."""
+    report = lpm.export_glb(ob, os.path.join(out_dir, spec["id"]))
+    write_tone_textures(spec, out_dir)
+    if spec.get("tones"):
+        with open(os.path.join(out_dir, f"{spec['id']}.tones.json"), "w") as handle:
+            json.dump(tone_labels.tone_labels(spec["tones"], use_palette(STYLES[spec.get("style", "urbtopia")])), handle, indent=1)
+            handle.write("\n")
+    return report
+
+
+def build_silo(spec, out_dir):
+    """A grain silo plant on a 2x2 cell: one to four tall red cylinder silos (one more every two Tiers) with a prominent hoop per Tier in a slightly darker red, spaced like the Tier 3 ones and a white dome, and a red barn with a two-pitch roof at the front left, no slab."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    dark_red = index("vtone2")
+    wall, mint, dark, slab, trim, frame, white, red = (index(n) for n in ("uwall", "uroof", "udark", "uslab", "utrim", "uframe", "white", "vtone1"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    tier = spec["count"]
+    count = min(4, 1 + (tier - 1) // 2)
+    spacing = 0.19
+    height = 0.1 + spacing * (tier - 1) + 0.12
+    positions = [(x, 0.5) for x in SILO_ROWS[count]]
+    if count == 4:
+        positions[-1] = (0.62, -0.3)
+    parts = []
+    for number, (x, y) in enumerate(positions):
+        parts.append(lpm.prism(f"silo_{number}", 12, 0.27, height, at=(x, y, 0.0), color=red))
+        parts.append(lpm.prism(f"silo_{number}_foot", 12, 0.285, 0.05, at=(x, y, 0.0), color=slab))
+        for ring in range(tier):
+            parts.append(lpm.prism(f"silo_{number}_hoop_{ring}", 12, 0.3, 0.035, at=(x, y, 0.09 + ring * spacing), color=dark_red))
+        dome = [(0.29 * math.cos(math.radians(a)), 0.29 * math.sin(math.radians(a))) for a in (0, 15, 30, 45, 60, 75, 90)]
+        parts.append(lpm.lathe(f"silo_{number}_dome", dome, segments=12, at=(x, y, height), color=wall))
+        parts.append(lpm.prism(f"silo_{number}_vent", 8, 0.04, 0.04, at=(x, y, height + 0.285), color=dark))
+        parts.append(lpm.box(f"silo_{number}_ladder", (0.04, 0.012, height - 0.05), at=(x + 0.12, y - 0.27, 0.0), color=frame))
+    sx, sy, sw, sd, sh = -0.5, -0.45, 0.8, 0.5, 0.3
+    front = sy - sd / 2
+    parts.append(rounded_block("barn", sw, sd, sh, red, 0.03 / sd, at=(sx, sy, 0)))
+    parts.append(rounded_block("barn_band", sw + 0.01, sd + 0.01, 0.03, wall, 0.03 / sd, at=(sx, sy, sh - 0.04)))
+    parts.append(extrude_x("barn_roof", [(sy - sd / 2 - 0.03, sh), (sy, sh + 0.16), (sy + sd / 2 + 0.03, sh)], sx - sw / 2 - 0.02, sx + sw / 2 + 0.02, dark))
+    parts.append(lpm.box("shed_door", (0.22, 0.014, 0.2), at=(sx - 0.2, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "shed_door", sx - 0.2, front, 0.0, 0.22, 0.2, frame)
+    parts.append(lpm.box("shed_plate", (0.28, 0.014, 0.08), at=(sx + 0.17, front - 0.004, 0.1), color=wall))
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "GRAIN", sx + 0.17, 0.1 + 0.01, 0.05, dark, -front + 0.012))
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+def offset_path(points, distance):
+    """Offset an open polyline to its right-hand side (dy, -dx) by `distance`, with mitred joints."""
+    normals = []
+    for (x0, y0), (x1, y1) in zip(points, points[1:]):
+        length = math.hypot(x1 - x0, y1 - y0)
+        normals.append(((y1 - y0) / length, -(x1 - x0) / length))
+    result = []
+    for index, (x, y) in enumerate(points):
+        if index == 0:
+            nx, ny = normals[0]
+            scale = 1.0
+        elif index == len(points) - 1:
+            nx, ny = normals[-1]
+            scale = 1.0
+        else:
+            ax, ay = normals[index - 1]
+            bx, by = normals[index]
+            mx, my = ax + bx, ay + by
+            norm = math.hypot(mx, my)
+            nx, ny = mx / norm, my / norm
+            scale = 1.0 / max(0.3, nx * ax + ny * ay)
+        result.append((x + nx * distance * scale, y + ny * distance * scale))
+    return result
+
+
+def arc_points(cx, cy, radius, start, end, steps):
+    return [(cx + radius * math.sin(math.radians(start + (end - start) * i / steps)), cy + radius * math.cos(math.radians(start + (end - start) * i / steps))) for i in range(steps + 1)]
+
+
+def build_ballpark(spec, out_dir):
+    """A baseball ballpark filling 7x7: a fan-shaped field with a diamond and a warning track under a blue outfield wall, three red grandstand tiers wrapping behind home plate and along the foul lines, six floodlight masts, a scoreboard and two dugout benches."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    red, navy, blue = (index(n) for n in ("vtone1", "vtone2", "vtone3"))
+    grass, dirt, white, slab, grey, black = (index(n) for n in ("bush", "uwood", "white", "uslab", "utrim", "graphite"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    hx, hy = 0.0, -2.2
+    radius = 4.7
+    track_outer = radius - 0.35
+    parts = []
+
+    def solid(name, outline, z0, depth, color):
+        parts.append(lpm.sweep(name, outline, depth, at=(0, 0, z0), color=color, axis="z"))
+
+    def band(name, outer_line, inner_line, z0, depth, color):
+        """A closed solid under a strip of quads between two polylines of the same length."""
+        count = len(outer_line)
+        verts = [(x, y, z0) for x, y in outer_line] + [(x, y, z0) for x, y in inner_line] + [(x, y, z0 + depth) for x, y in outer_line] + [(x, y, z0 + depth) for x, y in inner_line]
+        o0, i0, o1, i1 = 0, count, 2 * count, 3 * count
+        faces = []
+        for k in range(count - 1):
+            faces += [(o1 + k, o1 + k + 1, i1 + k + 1, i1 + k), (o0 + k, i0 + k, i0 + k + 1, o0 + k + 1),
+                      (o0 + k, o0 + k + 1, o1 + k + 1, o1 + k), (i0 + k + 1, i0 + k, i1 + k, i1 + k + 1)]
+        faces += [(o0, o1, i1, i0), (o0 + count - 1, i0 + count - 1, i1 + count - 1, o1 + count - 1)]
+        parts.append(lpm._object(name, _bm(verts, faces), color))
+
+    stand_path = [(-2.58, 0.02), (-0.636, -1.988), (-0.6, -2.55), (0.6, -2.55), (0.636, -1.988), (2.58, 0.02)]
+    floor_outline = offset_path(stand_path, 0.84) + [(radius * 0.7071 + 0.07, hy + radius * 0.7071)] + list(reversed(arc_points(hx, hy, radius + 0.07, -45, 45, 18))) + [(-radius * 0.7071 - 0.07, hy + radius * 0.7071)]
+    fan_center = (hx, hy)
+    count = len(floor_outline)
+    verts = [(x, y, 0.0) for x, y in floor_outline] + [(x, y, 0.02) for x, y in floor_outline] + [(fan_center[0], fan_center[1], 0.0), (fan_center[0], fan_center[1], 0.02)]
+    bottom_center, top_center = 2 * count, 2 * count + 1
+    faces = []
+    for k in range(count):
+        n = (k + 1) % count
+        faces += [(top_center, k + count, n + count), (bottom_center, n, k), (k, n, n + count, k + count)]
+    parts.append(lpm._object("floor", _bm(verts, faces), slab))
+    wedge = [(hx, hy)] + arc_points(hx, hy, track_outer, -45, 45, 18)
+    solid("grass", wedge, 0.0, 0.03, grass)
+    band("warning_track", arc_points(hx, hy, track_outer, -45, 45, 18), arc_points(hx, hy, track_outer - 0.4, -45, 45, 18), 0.03, 0.006, dirt)
+    d = (0.7071, 0.7071)
+    infield_r = 1.6
+    diamond = [(hx, hy - 0.45), (hx + infield_r, hy + infield_r - 0.45), (hx, hy + 2 * infield_r - 0.45), (hx - infield_r, hy + infield_r - 0.45)]
+    solid("infield_dirt", [(x * 1.0, y * 1.0) for x, y in arc_points(hx, hy + infield_r, infield_r * 1.55, 100, 260, 14)] + [(hx, hy - 0.45)] if False else [(hx - 0.55, hy - 0.45), (hx + 0.55, hy - 0.45), (hx + infield_r + 0.45, hy + infield_r - 0.45), (hx, hy + 2 * infield_r + 0.2), (hx - infield_r - 0.45, hy + infield_r - 0.45)], 0.036, 0.006, dirt)
+    inner = [(hx, hy + 0.35), (hx + infield_r - 0.45, hy + infield_r - 0.45), (hx, hy + 2 * infield_r - 0.95), (hx - infield_r + 0.45, hy + infield_r - 0.45)]
+    solid("infield_grass", inner, 0.042, 0.006, grass)
+    for number, (bx, by) in enumerate(((hx + infield_r - 0.15, hy + infield_r - 0.45), (hx, hy + 2 * infield_r - 0.45), (hx - infield_r + 0.15, hy + infield_r - 0.45))):
+        parts.append(lpm.box(f"base_{number}", (0.12, 0.12, 0.014), at=(bx, by, 0.048), color=white))
+    parts.append(lpm.prism("home_plate", 5, 0.09, 0.014, at=(hx, hy - 0.2, 0.048), color=white))
+    parts.append(lpm.prism("mound", 12, 0.2, 0.05, at=(hx, hy + infield_r - 0.45, 0.048), color=dirt, radius_top=0.14))
+    for side in (-1, 1):
+        length = track_outer - 0.4
+        end = (hx + side * length * 0.7071, hy + length * 0.7071)
+        mx, my = (hx + end[0]) / 2, (hy + end[1]) / 2
+        parts.append(lpm.box(f"foul_line_{side}", (0.03, length, 0.008), at=(0, 0, 0.048), color=white))
+        lpm.rotate(parts[-1], -side * 45, "Z")
+        lpm.move(parts[-1], mx, my, 0.0)
+
+    wall_outer = arc_points(hx, hy, radius + 0.07, -45, 45, 18)
+    band("outfield_wall", wall_outer, arc_points(hx, hy, radius, -45, 45, 18), 0.03, 0.58, navy)
+    band("outfield_cap", arc_points(hx, hy, radius + 0.1, -45, 45, 18), arc_points(hx, hy, radius - 0.03, -45, 45, 18), 0.61, 0.03, slab)
+
+    path = [(-2.58, 0.02), (-0.636, -1.988), (-0.6, -2.55), (0.6, -2.55), (0.636, -1.988), (2.58, 0.02)]
+    offsets = [0.0, 0.28, 0.56, 0.84]
+    heights = [0.3, 0.6, 0.9, 1.2]
+    for tier in range(3):
+        outer = offset_path(path, offsets[tier + 1])
+        inner_edge = offset_path(path, offsets[tier])
+        band(f"stand_tier_{tier}", outer, inner_edge, 0.03, heights[tier], red)
+        rail = offset_path(path, offsets[tier] + 0.02)
+        rail_in = offset_path(path, offsets[tier])
+        band(f"stand_rail_{tier}", rail, rail_in, 0.03 + heights[tier], 0.03, slab)
+    back = offset_path(path, 0.84 + 0.05)
+    band("stand_back_wall", back, offset_path(path, 0.84 - 0.02), 0.03, 1.22, navy)
+    band("stand_back_cap", offset_path(path, 0.94), offset_path(path, 0.82), 1.25, 0.03, slab)
+    for side in (-1, 1):
+        tip = offset_path(path, 0.84)[0 if side < 0 else -1]
+        wall_end = (side * (radius * 0.7071 + 0.0), hy + radius * 0.7071)
+        line_a, line_b = [(tip[0], tip[1]), (wall_end[0] + side * 0.07, wall_end[1])], [(tip[0] - side * 0.07, tip[1]), (wall_end[0], wall_end[1])]
+        if side < 0:
+            line_a, line_b = line_b, line_a
+        band(f"side_wall_{side}", line_a, line_b, 0.03, 0.58, navy)
+    canopy_z = 0.03 + heights[2] + 0.5
+    band("stand_canopy", offset_path(path, 0.95), offset_path(path, 0.5), canopy_z, 0.04, slab)
+    band("stand_canopy_edge", offset_path(path, 0.96), offset_path(path, 0.92), canopy_z + 0.04, 0.03, red)
+    for number, (px, py) in enumerate(offset_path(path, 0.88)):
+        parts.append(lpm.box(f"canopy_post_{number}", (0.04, 0.04, canopy_z - 0.03 - heights[2] + 0.1), at=(px, py, 0.03 + heights[2] - 0.1 + 0.0), color=grey))
+    for tier, frac in ((1, 0.35), (1, 0.65), (2, 0.5), (2, 0.2), (2, 0.8)):
+        line = offset_path(path, offsets[tier] + 0.14)
+        segment = 2 if tier == 2 else 1
+        x = line[segment][0] + (line[segment + 1][0] - line[segment][0]) * frac
+        y = line[segment][1] + (line[segment + 1][1] - line[segment][1]) * frac
+        parts.append(lpm.box(f"speaker_{tier}_{frac}", (0.07, 0.07, 0.07), at=(x, y, 0.03 + heights[tier]), color=black))
+    for side in (-1, 1):
+        parts.append(lpm.box(f"dugout_{side}", (0.34, 0.08, 0.05), at=(side * 1.55, -1.55 - 0.0, 0.03), color=blue))
+        lpm.rotate(parts[-1], -side * 45, "Z")
+    masts = [(-3.2, 0.1, 0.03, 1.35), (3.2, 0.1, 0.03, 1.35), (-1.9, -2.35, 0.03, 1.35), (1.9, -2.35, 0.03, 1.35), (-0.9, -3.2, 0.03, 1.35), (0.9, -3.2, 0.03, 1.35)]
+    for angle in (-38, -17, 17, 38):
+        wx, wy = arc_points(hx, hy, radius - 0.02, angle, angle, 1)[0]
+        masts.append((wx, wy, 0.64, 1.0))
+    for number, (mx, my, base_z, height) in enumerate(masts):
+        parts.append(lpm.prism(f"mast_{number}", 6, 0.022, height, at=(mx, my, base_z), color=grey))
+        bank = lpm.box(f"lights_{number}", (0.3, 0.05, 0.14), at=(0, 0, -0.07), color=white)
+        lpm.rotate(bank, 28, "X")
+        lpm.rotate(bank, math.degrees(math.atan2(hx - mx, -(hy + 2.5 - my))), "Z")
+        lpm.move(bank, mx, my, base_z + height - 0.02)
+        parts.append(bank)
+    sx, sy = 0.0, hy + radius
+    cap_top = 0.64
+    for side in (-1, 1):
+        parts.append(lpm.box(f"board_post_{side}", (0.05, 0.05, 0.42), at=(sx + side * 0.42, sy, cap_top - 0.02), color=grey))
+    parts.append(lpm.box("scoreboard", (1.15, 0.08, 0.6), at=(sx, sy - 0.02, cap_top + 0.38), color=slab))
+    parts.append(lpm.box("scoreboard_screen", (1.05, 0.02, 0.5), at=(sx, sy - 0.07, cap_top + 0.43), color=black))
+    ob = lpm.finish(spec["id"], parts, palette, budget=12000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+def stadium_points(cx, cy, straight, radius, steps=14):
+    """A running-track outline: two straights of half length `straight` closed by half circles, counter-clockwise from the top left."""
+    points = [(cx - straight, cy + radius), (cx + straight, cy + radius)]
+    points += [(cx + straight + radius * math.cos(math.radians(90 - 180 * i / steps)), cy + radius * math.sin(math.radians(90 - 180 * i / steps))) for i in range(1, steps)]
+    points += [(cx + straight, cy - radius), (cx - straight, cy - radius)]
+    points += [(cx - straight - radius * math.cos(math.radians(90 - 180 * i / steps)), cy - radius * math.sin(math.radians(90 - 180 * i / steps))) for i in range(1, steps)]
+    return points
+
+
+def build_stadium(spec, out_dir):
+    """An athletics stadium filling 9x5: a grey floor, a six-lane running track with white lines and a white curb around a grass infield with jump runways, sand pits, throw sectors and a cage, a two-tier grandstand along one side with a scoreboard on its back wall, and floodlight masts."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    track = index("brick")
+    grass, white, slab, grey, black, sand, orange, magenta, blue, lime, seat = (index(n) for n in ("bush", "white", "uslab", "utrim", "graphite", "usand", "tangerine", "magenta", "sky", "lime", "vtone1"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = []
+    cx, cy, straight = 0.0, -0.2, 2.2
+
+    def loop(radius):
+        points = stadium_points(cx, cy, straight, radius)
+        return points + [points[0]]
+
+    def ring(name, outer_radius, inner_radius, z0, depth, color):
+        outer, inner = loop(outer_radius), loop(inner_radius)
+        count = len(outer)
+        verts = [(x, y, z0) for x, y in outer] + [(x, y, z0) for x, y in inner] + [(x, y, z0 + depth) for x, y in outer] + [(x, y, z0 + depth) for x, y in inner]
+        o0, i0, o1, i1 = 0, count, 2 * count, 3 * count
+        faces = []
+        for k in range(count - 1):
+            faces += [(o1 + k, o1 + k + 1, i1 + k + 1, i1 + k), (o0 + k, i0 + k, i0 + k + 1, o0 + k + 1),
+                      (o0 + k, o0 + k + 1, o1 + k + 1, o1 + k), (i0 + k + 1, i0 + k, i1 + k, i1 + k + 1)]
+        parts.append(lpm._object(name, _bm(verts, faces), color))
+
+    def flat(name, outline, z0, depth, color):
+        parts.append(lpm.sweep(name, outline, depth, at=(0, 0, z0), color=color, axis="z"))
+
+    flat("floor", stadium_points(0.0, 0.0, 2.0, 2.45), 0.0, 0.02, slab)
+    flat("infield", stadium_points(cx, cy, straight, 1.45), 0.02, 0.012, grass)
+    ring("track", 1.75, 1.45, 0.02, 0.012, track)
+    for lane in range(1, 6):
+        radius = 1.45 + 0.05 * lane
+        ring(f"lane_line_{lane}", radius + 0.004, radius - 0.004, 0.032, 0.004, white)
+    ring("curb_inner", 1.45, 1.41, 0.02, 0.03, white)
+    ring("curb_outer", 1.79, 1.75, 0.02, 0.03, white)
+    for number, y in enumerate((0.1, -0.25)):
+        flat(f"runway_{number}", [(-1.9, y - 0.05), (0.9, y - 0.05), (0.9, y + 0.05), (-1.9, y + 0.05)], 0.032, 0.004, orange)
+        flat(f"sand_pit_{number}", [(0.95, y - 0.12), (1.35, y - 0.12), (1.35, y + 0.12), (0.95, y + 0.12)], 0.032, 0.006, sand)
+    for number, (hx, hy) in enumerate(((-2.9, 0.35), (-2.9, -0.75))):
+        flat(f"semicircle_{number}", [(hx + 0.5 * math.cos(math.radians(a)), hy + 0.5 * math.sin(math.radians(a))) for a in range(-90, 91, 20)], 0.032, 0.004, orange)
+        parts.append(lpm.box(f"mat_{number}", (0.3, 0.2, 0.05), at=(hx + 0.05, hy, 0.032), color=magenta))
+    flat("pole_vault_runway", [(-1.6, 0.67), (0.4, 0.67), (0.4, 0.73), (-1.6, 0.73)], 0.032, 0.004, orange)
+    parts.append(lpm.box("pole_vault_box", (0.1, 0.1, 0.02), at=(0.45, 0.7, 0.032), color=black))
+    parts.append(lpm.box("pole_vault_pit", (0.42, 0.5, 0.07), at=(0.72, 0.7, 0.032), color=blue))
+    parts.append(lpm.box("pole_vault_pit_top", (0.38, 0.46, 0.012), at=(0.72, 0.7, 0.102), color=white))
+    for side in (-1, 1):
+        parts.append(lpm.box(f"pole_vault_upright_{side}", (0.02, 0.02, 0.34), at=(0.5, 0.7 + side * 0.3, 0.032), color=grey))
+    parts.append(lpm.box("pole_vault_bar", (0.012, 0.6, 0.012), at=(0.5, 0.7, 0.34), color=white))
+    hj_x, hj_y = 0.3, -1.15
+    flat("high_jump_fan", [(hj_x + 0.42 * math.cos(math.radians(a)), hj_y + 0.42 * math.sin(math.radians(a))) for a in range(0, 181, 15)], 0.032, 0.004, orange)
+    parts.append(lpm.box("high_jump_mat", (0.5, 0.26, 0.06), at=(hj_x, hj_y + 0.05, 0.032), color=blue))
+    parts.append(lpm.box("high_jump_mat_top", (0.46, 0.22, 0.012), at=(hj_x, hj_y + 0.05, 0.092), color=white))
+    for side in (-1, 1):
+        parts.append(lpm.box(f"high_jump_upright_{side}", (0.02, 0.02, 0.3), at=(hj_x + side * 0.27, hj_y - 0.12, 0.032), color=grey))
+    parts.append(lpm.box("high_jump_bar", (0.54, 0.012, 0.012), at=(hj_x, hj_y - 0.12, 0.3), color=white))
+    flat("throw_sector_a", [(1.9, 0.25), (3.0, 0.7), (3.0, -0.3)], 0.032, 0.004, lime)
+    flat("throw_sector_b", [(1.9, -0.55), (2.7, -0.3), (2.7, -0.85)], 0.032, 0.004, lime)
+    parts.append(lpm.box("cage", (0.22, 0.22, 0.16), at=(1.9, 0.25, 0.032), color=grey))
+    parts.append(lpm.box("blue_mat", (0.26, 0.18, 0.04), at=(-1.2, -0.7, 0.032), color=blue))
+    for number in range(4):
+        parts.append(lpm.box(f"hurdle_{number}", (0.04, 0.2, 0.05), at=(-0.5 + number * 0.25, -0.7, 0.032), color=white))
+    tiers = [(0.2, 0.12), (0.4, 0.24), (0.6, 0.36)]
+    y0 = cy + 1.75 + 0.15
+    for number, (depth, height) in enumerate(tiers):
+        parts.append(lpm.box(f"stand_{number}", (6.0, 0.18, height), at=(0.0, y0 + number * 0.18 + 0.09, 0.02), color=seat))
+        parts.append(lpm.box(f"stand_rail_{number}", (6.0, 0.02, 0.03), at=(0.0, y0 + number * 0.18 + 0.01, 0.02 + height), color=slab))
+    wall_y = y0 + 3 * 0.18 + 0.03
+    parts.append(lpm.box("stand_back_wall", (6.0, 0.05, 0.5), at=(0.0, wall_y, 0.02), color=track))
+    parts.append(lpm.box("stand_back_cap", (6.04, 0.09, 0.03), at=(0.0, wall_y, 0.52), color=slab))
+    parts.append(lpm.box("stand_canopy", (6.0, 0.4, 0.03), at=(0.0, wall_y - 0.25, 0.9), color=slab))
+    for side in (-1, 1):
+        parts.append(lpm.box(f"canopy_post_{side}", (0.04, 0.04, 0.88), at=(side * 2.9, wall_y - 0.42, 0.02), color=grey))
+    board_y = -2.3
+    for side in (-1, 1):
+        parts.append(lpm.box(f"board_post_{side}", (0.05, 0.05, 0.62), at=(side * 0.42, board_y, 0.02), color=grey))
+    parts.append(lpm.box("scoreboard", (1.2, 0.08, 0.55), at=(0.0, board_y, 0.6), color=slab))
+    parts.append(lpm.box("scoreboard_screen", (1.1, 0.02, 0.45), at=(0.0, board_y + 0.05, 0.65), color=black))
+    masts = [(-3.6, cy - 2.05), (3.6, cy - 2.05), (-3.6, cy + 2.05), (3.6, cy + 2.05), (-1.5, cy - 2.1), (1.5, cy - 2.1)]
+    for number, (mx, my) in enumerate(masts):
+        parts.append(lpm.prism(f"mast_{number}", 6, 0.022, 1.2, at=(mx, my, 0.02), color=grey))
+        bank = lpm.box(f"lights_{number}", (0.28, 0.05, 0.13), at=(0, 0, -0.065), color=white)
+        lpm.rotate(bank, 28, "X")
+        lpm.rotate(bank, math.degrees(math.atan2(cx - mx, -(cy - my))), "Z")
+        lpm.move(bank, mx, my, 1.2)
+        parts.append(bank)
+    ob = lpm.finish(spec["id"], parts, palette, budget=12000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
-    check_spec(spec)
     style = spec.get("style", "kenney")
+    palette_for(spec, style)
+    check_spec(spec)
     cfg = STYLES[style]
     spec["cfg"] = cfg
     spec["style"] = style
     width, depth = spec["footprint"]
     spec["colors"] = {**cfg["colors"], **spec.get("colors", {})}
-    spec["floor_height"] = FLOOR_HEIGHT[spec["kind"]]
+    spec["floor_height"] = cfg.get("floor_height", FLOOR_HEIGHT)[spec["kind"]] * spec.get("floor_height_scale", 1.0)
     rng = random.Random(spec.get("seed", spec["id"]))
 
     volumes = plan_volumes(spec)
@@ -858,29 +2901,27 @@ def build(spec, out_dir):
     main = volumes[0]
     front = next((v for v in volumes if v["role"] == "bay"), main)
     specs = {v["role"]: volume_spec(spec, v, features_of(v, front, main, features)) for v in volumes}
-    if "bay" in specs:
+    if "bay" in specs and specs["bay"]["floors"] == specs["main"]["floors"] and not spec.get("bay_natural_roof"):
         specs["bay"]["roof_height"] = roof_dimensions(specs["main"])[2]
     bushes = has_feature(spec, "bushes")
 
     lpm.reset()
-    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in PALETTE_ENTRIES])
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in palette_for(spec, style)])
     parts = []
     for volume in volumes:
         parts += build_volume(specs[volume["role"]], volume, rng, bushes)
     assert_closed(parts)
+    projection = PORTICO_PROJECTION if has_feature(spec, "portico") else 0.0
+    shift(parts, 0, projection / 2)
 
     extra_volumes = len(volumes) - 1
-    if style == "kenney":
+    if style != "vivid":
         budget = 600 + cfg["budget_per_floor_tile"] * width * depth * spec["floors"] + 450 * extra_volumes + 150 * len(features)
     else:
         budget = 700 + spec["floors"] * 2 * (width + depth) * cfg["budget_per_floor_tile"] + 150 * len(features) + 600 * extra_volumes
     if spec["roof"] == "mansard":
         budget += 1500
     ob = lpm.finish(spec["id"], parts, palette, budget=int(budget), center=False)
-    work = os.path.join(out_dir, "_work")
-    report = lpm.export_unity(ob, os.path.join(work, spec["id"]), glb=True)
-    for ext in ("blend", "glb"):
-        shutil.move(os.path.join(work, f"{spec['id']}.{ext}"), os.path.join(out_dir, f"{spec['id']}.{ext}"))
-    shutil.rmtree(work)
-    report["expected_footprint"] = [width, depth]
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [width, depth + projection]
     return report

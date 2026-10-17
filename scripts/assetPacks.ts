@@ -60,7 +60,6 @@ export const ASSET_PACKS: AssetPack[] = [
       'road-square',
       'road-crossing',
       'road-roundabout',
-      'road-sign-empty',
     ],
   },
   {
@@ -68,21 +67,21 @@ export const ASSET_PACKS: AssetPack[] = [
     colorVariants: ['a', 'b'],
     url: 'https://kenney.nl/media/pages/assets/city-kit-commercial/a742d900eb-1753115042/kenney_city-kit-commercial_2.1.zip',
     archive: 'kenney_city-kit-commercial_2.1.zip',
-    files: ['building-a', 'building-b', 'building-d', 'building-f', 'building-g', 'building-i', 'building-j', 'building-k', 'building-l', 'building-n', 'detail-awning', 'detail-awning-wide', 'detail-overhang', 'detail-overhang-wide', 'detail-parasol-a', 'detail-parasol-b'],
+    files: [],
   },
   {
     name: 'suburban',
     colorVariants: ['a', 'b', 'c'],
     url: 'https://kenney.nl/media/pages/assets/city-kit-suburban/2c871b7af2-1745479373/kenney_city-kit-suburban_20.zip',
     archive: 'kenney_city-kit-suburban_20.zip',
-    files: ['building-type-a', 'building-type-b', 'building-type-f', 'building-type-h', 'building-type-k', 'building-type-m', 'building-type-n', 'building-type-t', 'building-type-j', 'building-type-u', 'tree-small', 'tree-large'],
+    files: ['tree-small', 'tree-large'],
   },
   {
     name: 'industrial',
     colorVariants: ['a', 'b', 'c'],
     url: 'https://kenney.nl/media/pages/assets/city-kit-industrial/0ec35b139d-1788171848/kenney_city-kit-industrial_2.0.zip',
     archive: 'kenney_city-kit-industrial_2.0.zip',
-    files: ['building-a', 'building-b', 'building-c', 'building-e', 'building-f', 'building-h', 'building-l', 'building-p', 'building-q', 'building-s', 'water-tower', 'windmill', 'chimney-basic', 'chimney-small', 'chimney-medium', 'chimney-large', 'building-d', 'building-j', 'detail-tank-large', 'shipping-container-a', 'solar-panel-flat', 'solar-panel-landscape', 'solar-panel-landscape-group'],
+    files: ['solar-panel-flat', 'solar-panel-landscape', 'solar-panel-landscape-group'],
   },
   {
     name: 'cars',
@@ -164,8 +163,8 @@ export const ASSET_PACKS: AssetPack[] = [
 // Quaternius packs (CC0) ship FBX only: they are converted to GLB at install time so the runtime keeps one GLTF loader.
 export const QUATERNIUS_PACKS: QuaterniusPack[] = [
   { name: 'crops', archive: 'crops.zip', files: [] },
-  { name: 'farm', archive: 'farm-buildings.zip', files: ['Barn', 'OpenBarn', 'Silo_House', 'Silo'] },
-  { name: 'buildings', archive: 'buildings.zip', files: ['2Story_Stairs_Mat', '2Story_Wide_Mat', '2Story_Wide_2Doors_Mat'] },
+  { name: 'farm', archive: 'farm-buildings.zip', files: ['Barn'] },
+  { name: 'buildings', archive: 'buildings.zip', files: [] },
   ...extraPacks.quaternius.map(({ name, archive }) => ({ name, archive, files: [] })),
 ].map(withDefinitionModels);
 

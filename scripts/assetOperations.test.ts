@@ -23,7 +23,7 @@ describe('asset operations', () => {
   it('adds a hand-made GLB with its definition', () => {
     const paths = workspace();
     expect(addGlb({ category: 'sport', name: 'pool', data, license: 'CC0', author: 'me' }, paths)).toBe('sport/pool');
-    expect(existsSync(join(paths.managed, 'sport/pool.glb'))).toBe(true);
+    expect(existsSync(join(paths.managed, 'sport/pool/pool.glb'))).toBe(true);
     expect(readModels(paths.models)['sport-pool']).toEqual({ file: 'sport/pool', source: 'managed', license: 'CC0', author: 'me' });
   });
 

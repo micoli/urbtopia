@@ -28,7 +28,7 @@ describe('form fields from the JSON Schemas', () => {
   })
 
   it('gives a nature building only its own fields', () => {
-    expect(buildingFieldsOf('nature').map(({ key }) => key)).toEqual(['model', 'name', 'description', 'family', 'tiers'])
+    expect(buildingFieldsOf('nature').map(({ key }) => key)).toEqual(['model', 'name', 'description', 'family', 'scenery', 'tiers'])
   })
 
   it('describes a Good recipe as a record of Materials and Crops, and Crop stages as models', () => {

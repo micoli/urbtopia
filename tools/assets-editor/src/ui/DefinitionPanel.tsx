@@ -61,7 +61,7 @@ export function DefinitionPanel({ collection, id }: Props) {
       ? [{ id: 'variants', label: 'Variants', badge: countWhere('variants'), content: <VariantsTab variants={(definition.variants ?? {}) as Record<string, { tiers: Record<string, unknown>[] }>} baseTiers={definition.tiers as Record<string, unknown>[]} fields={variantTierFields.fields} problems={problems} modelSlot={modelSlot} onChange={variants => setField('variants', variants)} /> }]
       : []),
     ...(solarField?.type === 'object'
-      ? [{ id: 'solar', label: `Solar · ${definition.solarPanels ? 'on' : 'off'}`, badge: countWhere('solarPanels'), content: <SolarTab solar={definition.solarPanels as Record<string, unknown> | undefined} fields={solarField.fields} problems={problems.filter(({ path }) => path.startsWith('solarPanels.')).map(problem => ({ ...problem, path: problem.path.slice('solarPanels.'.length) }))} modelSlot={modelSlot} onChange={solar => setField('solarPanels', solar)} /> }]
+      ? [{ id: 'solar', label: `Solar · ${definition.solarPanels ? 'on' : 'off'}`, badge: countWhere('solarPanels'), content: <SolarTab solar={definition.solarPanels as Record<string, unknown> | undefined} hasSolarVariant={(definition.variants as Record<string, unknown> | undefined)?.solar !== undefined} fields={solarField.fields} problems={problems.filter(({ path }) => path.startsWith('solarPanels.')).map(problem => ({ ...problem, path: problem.path.slice('solarPanels.'.length) }))} modelSlot={modelSlot} onChange={solar => setField('solarPanels', solar)} /> }]
       : []),
     {
       id: 'description',

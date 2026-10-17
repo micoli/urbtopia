@@ -5,9 +5,11 @@ description: Create a low-poly 3D building model for Urbix (individual house, ap
 
 # Create a building model
 
-Talk to the user in French. Code, identifiers and comments in English, comments only when the code is ambiguous. Never use trademarked game names (SimCity terms). Built on `blender-lpm-skill` (`~/.claude/skills/blender-lpm-skill`); read its `SKILL.md` when a step below is unclear.
+Talk to the user in French. Code, identifiers and comments in English, comments only when the code is ambiguous. Never use trademarked game names (SimCity terms). Built on the low-poly toolkit of the repo, `tools/blender` (`lpm.py` primitives, `bl.py` headless runner, `inspect_scene.py`, `gate_report.py`, `render_views.py`).
 
-Output, committed by the user, never by you: `assets/managed-models/buildings/<id>.blend`, `<id>.glb`, `<id>.py` (the recipe). `assets/models.json` is not touched.
+Output, committed by the user, never by you: `assets/managed-models/buildings/<id>/<id>.blend`, `<id>.glb`, `<id>.py` (the recipe), and the Model definition in `assets/models.json` written by `scripts/register_model.py` (step 6). `add-building` then registers the game object.
+
+**Read `art-direction.md` (next to this file) before anything else**: it holds the art-direction decisions taken with the user while rebuilding the buildings (style, silhouettes, entrances, windows, balconies, process). They apply to every building.
 
 Units: **1 tile = 1 world unit**. Z up, front = −Y (becomes +Z in the glb).
 
@@ -16,6 +18,7 @@ Units: **1 tile = 1 world unit**. Z up, front = −Y (becomes +Z in the glb).
 Ask with `AskUserQuestion` (at most 4 questions per call, so two or three calls) and skip any answer the user already gave.
 
 - **Style** (`style`): `kenney` (default) matches the suburban Kenney models of the game, `vivid` is the saturated, fine-trim style. Ids of a `vivid` variant end in `-vivid`.
+- **Style** `urbtopia` (in progress, see `.scratch/release-polish`): measured on the real Kenney suburban and commercial kits (pale cool walls `uwall`, mint roofs `uroof`, thin dark plinth, no belt courses, wide windows with grey frames, flat roofs with a thin dark parapet). It has its own palette cells and floor heights, so the other styles stay byte-identical. Signs in `urbtopia` use real glyphs of Space Grotesk (`tools/blender/fonts`, OFL; any letter, any other font file of that folder through `font` and `font_bold` in the spec; light ink on a dark board, dark ink on a light one); the other styles keep the 3x5 pixel font. Extra features: `clock_tower`, `flagpole`, `smokestack`, `roller_door` (`along`), `storefront` (dark ground floor), `penthouse` (setback block), the roof `sawtooth`. See `examples/urbtopia_showcase.py` for a dozen buildings (houses, school, industry, downtown).
 - **Footprint** in tiles, width × depth (for example 2×3), the bounding box of the whole building, wing and bay included. The roof of each volume covers its footprint exactly (the walls are the overhang smaller: 0.06 tile per side in `kenney`, 0.04 in `vivid`). Kenney houses are about 1 tile wide.
 - **Floors**: house 1–3, apartment block 3–12, office block 4–20. Outside the range, ask for confirmation and continue if the user insists.
 - **Type** (`kind`): `house` (individual house), `apartment` (apartment block), `office` (office block). Floor heights: 0.30, 0.28 and 0.32 tile. A monumental door is one floor high.
@@ -30,7 +33,7 @@ Confirm with a one-line recap (style, kind, footprint, resulting size in tiles, 
 
 ## 2. Write the recipe
 
-Copy `recipe.template.py` to `assets/managed-models/buildings/<id>.py`, fill the `__PLACEHOLDERS__` (`__STYLE__` is `kenney` or `vivid`, `__WINDOW_SIZES__` is `same` or `varied`, `__COLORS__` is the `"wall": "..."` pairs to override or nothing, `__WING__` is `None` or the wing dict) and fill `features`, for example `{"type": "sign", "face": "front"}`. The recipe imports `scripts/building_lib.py` and writes next to itself. Do not duplicate the art direction in the recipe.
+Copy `recipe.template.py` to `assets/managed-models/buildings/<id>/<id>.py`, fill the `__PLACEHOLDERS__` (`__STYLE__` is `kenney` or `vivid`, `__WINDOW_SIZES__` is `same` or `varied`, `__COLORS__` is the `"wall": "..."` pairs to override or nothing, `__WING__` is `None` or the wing dict) and fill `features`, for example `{"type": "sign", "face": "front"}`. The recipe imports `scripts/building_lib.py` and writes next to itself. Do not duplicate the art direction in the recipe.
 
 Art direction, owned by `building_lib.py` (`STYLES` table), identical for every building of a style:
 - **kenney**: chunky and calm like the game's suburban models. Off-white walls with a single accent color, thick slate trims, a thick base band and thick belt course between floors, thick roof slab with a big overhang and a generous fillet, gables (the wall under a pitched roof) in wall color and flush with the facade plane, under a thin roof slab whose verge overhangs by 0.03 tile (0.02 in `vivid`) while the eaves overhang by 0.06, few big windows (one mullion, blue glass, rounded slate frame, no sill, no cornice), a door with a rounded surround and a round handle. Windows, doors and their frames sit almost flush with the wall (frames and door stand out 6 to 10 mm, glass and mullions a few mm more). About 1 000 triangles for one tile and two floors.
@@ -40,7 +43,7 @@ Art direction, owned by `building_lib.py` (`STYLES` table), identical for every 
 ## 3. Generate
 
 ```bash
-python ~/.claude/skills/blender-lpm-skill/scripts/bl.py --script assets/managed-models/buildings/<id>.py
+python tools/blender/bl.py --script assets/managed-models/buildings/<id>/<id>.py
 ```
 
 `build()` refuses an open mesh (every solid is checked, only window faces are exempt) and ends with `<id>.blend` and `<id>.glb`; the FBX and texture byproducts are discarded. A Python error names the fault; fix the recipe or the library and rerun.
@@ -72,22 +75,41 @@ Loop, at most 3 correction rounds: change the recipe (colors, elements, roof, wi
 If the Blender MCP is not connected, fall back to the headless contact sheet and tell the user to open `<id>.blend` and press Z then Material Preview:
 
 ```bash
-python ~/.claude/skills/blender-lpm-skill/scripts/bl.py --script ~/.claude/skills/blender-lpm-skill/scripts/render_views.py -- --input assets/managed-models/buildings/<id>.glb --out $CLAUDE_JOB_DIR/tmp/views --views quarter,front,back,top --size 512
+python tools/blender/bl.py --script tools/blender/render_views.py -- --input assets/managed-models/buildings/<id>/<id>.glb --out $CLAUDE_JOB_DIR/tmp/views --views quarter,front,back,top --size 512
 ```
 
 and show `sheet.png` with `Read`.
 
+### Game control render
+
+The Blender viewport is not what the player sees. Before accepting a building, render it as the game shows it: orthographic isometric camera, the game's warm sun and sky light, no cast shadows (the game has none yet), neutral tone mapping, on a grass tile:
+
+```bash
+python tools/blender/bl.py --script .claude/skills/create-building-model/scripts/game_render.py -- --input assets/managed-models/buildings/<id>/<id>.glb --out $CLAUDE_JOB_DIR/tmp/game --size 512
+```
+
+Show `<id>-game-sheet.png` (four yaws) with `Read`. The values mirror `src/scene/GameScene.ts` and `CameraController.ts`; when the game lighting changes (see issue 10 of `.scratch/release-polish`), update the constants at the top of `game_render.py`. It is an approximation of three.js lighting: judge palette and silhouette, not exact pixels.
+
 ## 5. Gates
 
 ```bash
-S=~/.claude/skills/blender-lpm-skill/scripts; K=.claude/skills/create-building-model/scripts
-python $S/bl.py --script $S/inspect_scene.py -- --input assets/managed-models/buildings/<id>.blend --out $CLAUDE_JOB_DIR/tmp/<id>.inspect.json
+S=tools/blender; K=.claude/skills/create-building-model/scripts
+python $S/bl.py --script $S/inspect_scene.py -- --input assets/managed-models/buildings/<id>/<id>.blend --out $CLAUDE_JOB_DIR/tmp/<id>.inspect.json
 python $S/gate_report.py $CLAUDE_JOB_DIR/tmp/<id>.inspect.json --class environment-module --budget <budget>
-python $S/bl.py --script $K/check_footprint.py -- --input assets/managed-models/buildings/<id>.glb --width <w> --depth <d> --floors <n> --kind <kind>
+python $S/bl.py --script $K/check_footprint.py -- --input assets/managed-models/buildings/<id>/<id>.glb --width <w> --depth <d> --floors <n> --kind <kind>
 ```
 
 `<budget>` is printed by the generation (`lpm_budget`). The loose-parts and non-manifold WARN are expected: the solids overlap on purpose and window or sign-text faces are open decals. Every other line must be PASS, and the footprint check must give `"pass": true` (footprint within 2 %). On a failure, fix the recipe and rerun, at most 3 times, then ask the user.
 
 ## 6. Report
 
-Say: files created, triangles against budget, final size in tiles (width × depth × height), and the values to enter in `assets/models.json` for the model (`footprint`: [w, d]; `fit` or `scale` only if the game shows it wrongly). Check the facing in the game once: if the door is not on the street side, set `rotationOffset`. Propose to continue with the `add-building` skill (category, unlock threshold, price). Do not commit unless the user asks.
+Say: files created, triangles against budget, final size in tiles (width × depth × height). `fit` or `scale` in `assets/models.json` only if the game shows the model wrongly. Register the Model definition, idempotent, never renaming an existing Model id:
+
+```bash
+python .claude/skills/create-building-model/scripts/register_model.py <id> --footprint <w> <d>
+npm run defs:generate
+```
+
+`defs:generate` refreshes the generated Model ids and JSON Schema; a test fails when they are out of sync.
+
+Check the facing in the game once: if the door is not on the street side, set `rotationOffset`. Propose to continue with the `add-building` skill (category, unlock threshold, price). Do not commit unless the user asks.

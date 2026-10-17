@@ -9,12 +9,14 @@ interface Props {
   onChange: (value: Record<string, unknown>[]) => void
   // Highlights one item and reports the one the user works in.
   selection?: { selected: number | null; onSelect: (index: number) => void }
+  // When set, no item can be added and this says why.
+  addBlockedReason?: string
 }
 
 const blankOf = (fields: FieldSpec[]): Record<string, unknown> =>
   Object.fromEntries(fields.filter(field => field.required).map(field => [field.key, field.type === 'number' ? Math.max(1, field.min ?? 1) : field.type === 'switch' ? false : '']))
 
-export function ListControl({ value, fields, renderItem, onChange, selection }: Props) {
+export function ListControl({ value, fields, renderItem, onChange, selection, addBlockedReason }: Props) {
   const items = value ?? []
   const setItem = (index: number) => (item: Record<string, unknown>) => onChange(items.map((current, position) => (position === index ? item : current)))
 
@@ -26,7 +28,8 @@ export function ListControl({ value, fields, renderItem, onChange, selection }: 
           <button className={`${button('ghost')} absolute top-2 right-2`} aria-label={`Remove item ${index + 1}`} onClick={() => onChange(items.filter((_, position) => position !== index))}>×</button>
         </div>
       ))}
-      <button className={`${button('ghost')} self-start`} onClick={() => { onChange([...items, blankOf(fields)]); selection?.onSelect(items.length) }}>＋ add</button>
+      <button className={`${button('ghost')} self-start`} disabled={addBlockedReason !== undefined} title={addBlockedReason} onClick={() => { onChange([...items, blankOf(fields)]); selection?.onSelect(items.length) }}>＋ add</button>
+      {addBlockedReason && <p className="text-xs text-zinc-500">{addBlockedReason}</p>}
     </div>
   )
 }

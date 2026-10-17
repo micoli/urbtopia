@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { ARCHIVES_DIR, ASSET_PACKS, DEFINITION_MODEL_FILES, MANAGED_MODELS_DIR, MODELS_DIR, POLY_PIZZA_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS, type AssetPack } from './assetPacks.ts';
-import { managedModelKeys, polyPizzaModelKeys } from './managedModels.ts';
+import { ARCHIVES_DIR, ASSET_PACKS, DEFINITION_MODEL_FILES, MODELS_DIR, POLY_PIZZA_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS, type AssetPack } from './assetPacks.ts';
+import { managedModelFile, managedModelKeys, polyPizzaModelKeys } from './managedModels.ts';
 import { convertQuaterniusPack, type QuaterniusPack } from './quaternius.ts';
 import { extractPack } from './extractPack.ts';
 
@@ -41,12 +41,22 @@ async function installQuaterniusPack(pack: QuaterniusPack): Promise<void> {
 function installManagedModels(): void {
   const keys = managedModelKeys();
   for (const key of keys) {
-    const source = join(MANAGED_MODELS_DIR, `${key}.glb`);
+    const source = managedModelFile(key);
     const target = join(MODELS_DIR, `${key}.glb`);
     const data = readFileSync(source);
     if (!force && existsSync(target) && readFileSync(target).equals(data)) continue;
     mkdirSync(dirname(target), { recursive: true });
     writeFileSync(target, data);
+  }
+  for (const key of keys) {
+    for (const tone of ['b', 'c', 'd']) {
+      const source = managedModelFile(key, `.tone-${tone}.png`);
+      if (!existsSync(source)) continue;
+      const target = join(MODELS_DIR, `${key}.tone-${tone}.png`);
+      const data = readFileSync(source);
+      if (!force && existsSync(target) && readFileSync(target).equals(data)) continue;
+      writeFileSync(target, data);
+    }
   }
   console.log(`✓ managed models: ${keys.length} files`);
 }

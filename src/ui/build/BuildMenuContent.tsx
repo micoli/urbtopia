@@ -1,7 +1,12 @@
 import { Fragment, useId, useState } from 'react';
-import { BUILDING_SPECS, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, isFacilityType, totalCitizens, placementCost, isHomeType, isRepeatable, maxCopies, nextCopyCost, ownedCopies, buildLimitReached } from '../../core';
+import { BUILDING_SPECS, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, isFacilityType, totalCitizens, placementCost, isHomeType } from '../../core';
 import { t } from '../../i18n/t';
 import { FlyoutItem } from '../layout/FlyoutItem';
+import { BuildSearch } from './BuildSearch';
+import { BuildTypeItem } from './BuildTypeItem';
+import { NextBuildingUnlock } from './NextBuildingUnlock';
+import { FirstUseHint } from '../common/FirstUseHint';
+import { Note } from '../common/Note';
 import { useGame, useUi } from '../common/hooks';
 import { guideOf } from '../tutorial/tutorialGuide';
 import { UrbsAmount } from '../common/UrbsAmount';
@@ -19,12 +24,12 @@ const categoryOf = (type: string | undefined) => (type !== undefined && isFacili
 
 export function BuildMenuContent() {
   const citizens = useGame(store => totalCitizens(store.state));
-  const state = useGame(store => store.state);
   const flyout = useUi((store) => store.flyout);
   const chooseTool = useUi((store) => store.chooseTool);
   const openCodex = useUi(store => store.openCodex);
   const guide = guideOf(useGame((store) => store.state.tutorial));
   const [openSection, setOpenSection] = useState<BuildSection>(readBuildSection);
+  const [query, setQuery] = useState('');
   const [homeColor, setHomeColor] = useState<ColorVariant>(readHomeColor);
   const menuId = useId();
   const { manifest } = useCodexManifest();
@@ -46,9 +51,20 @@ export function BuildMenuContent() {
       setOpenSection(section);
       writeBuildSection(section);
     };
+    const needle = query.trim().toLowerCase();
+    const results = needle ? visibleSections.flatMap(section => section.types).filter(type => t(`building.${type}`).toLowerCase().includes(needle)) : [];
+    const searching = needle !== '';
     return (
       <>
-        {visibleSections.map(section => {
+        <FirstUseHint id="build">{t('hint.build')}</FirstUseHint>
+        <BuildSearch query={query} onChange={setQuery} />
+        {searching && (
+          <div className="build-section-items">
+            {results.length === 0 && <Note tone="muted">{t('build.noResults').replace('{query}', query.trim())}</Note>}
+            {results.map(type => <BuildTypeItem key={type} type={type} homeColor={homeColor} preview={previewOf(type)} />)}
+          </div>
+        )}
+        {!searching && visibleSections.map(section => {
           const expanded = activeSection === section.title;
           const sectionId = `${menuId}-${section.title}`;
           return (
@@ -84,20 +100,7 @@ export function BuildMenuContent() {
                     <Fragment key={type}>
                       {isFacilityType(type) && FACILITIES[type].category !== categoryOf(section.types[index - 1]) &&
                           <h4 className="build-category">{t(`service.${FACILITIES[type].category}`)}</h4>}
-                      <FlyoutItem
-                          label={t(`building.${type}`)}
-                          badge={isRepeatable(type) ? `${ownedCopies(state, type)}/${maxCopies(type)}` : undefined}
-                          disabled={buildLimitReached(state, type)}
-                          cost={<UrbsAmount value={nextCopyCost(state, type)}/>}
-                          guided={guide.buildings.includes(type)}
-                          onChoose={() => chooseTool({
-                            kind: 'building',
-                            buildingType: type, ...(isHomeType(type) ? {colorVariant: homeColor} : {})
-                          })}
-                          codexId={type}
-                          preview={previewOf(type)}
-                          onInfo={() => openCodex(type)}
-                      />
+                      <BuildTypeItem type={type} homeColor={homeColor} preview={previewOf(type)} />
                     </Fragment>
                 ))}
                 {section.title === 'build.production' && <FieldTools/>}
@@ -135,6 +138,7 @@ export function BuildMenuContent() {
               </AccordionSection>
           );
         })}
+        {!searching && <NextBuildingUnlock candidates={BUILDING_SECTIONS.filter(section => !['build.decoration', 'build.greenSpaces'].includes(section.title)).flatMap(section => section.types)} />}
       </>
     );
   }

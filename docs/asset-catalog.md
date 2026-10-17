@@ -39,17 +39,21 @@ These pieces cover the 16 neighbour masks by rotation. Excluded: barrier, line, 
 | Home tier 4 | suburban b, d, s, u | 2x1 |
 | Home tier 5 | suburban f, m, t | 2x2 |
 | Home tier 6 | suburban n | 2x2 |
-| Factory | industrial b, e, f, g, l, m, n, r, t, c | 1x2 to 3x2 |
-| Storehouse | industrial a, p, s, q | 2x1 to 2x2 |
-| Workshop | industrial h, i, j, k, o, d | 2x2, 1x2 or 2x1 |
-| Water tower | industrial water-tower | 1x1 |
-| Power plant, small | industrial windmill | 1x1 |
-| Power plant, medium | industrial solar-panel groups | 2x1 / 1x2 |
+| Factory, Workshop, Packhouse | managed `factory-*`, `workshop-*`, `packhouse-*`, four colors each (`-tone-a` to `-tone-d`) | 2x2 |
+| Storehouse | managed `storehouse-2x2-t1` to `t10`, four colors each | 2x2 |
+| Material depot | managed `depot-2x1-t1` to `t6`, four colors each | 2x1 |
+| Vault | managed `vault-2x1-t1` to `t6`, four colors each | 2x1 |
+| Grain silo | managed `silo-2x2-t1` to `t10`, four colors each | 2x2 |
+| Water tower tiers 1–3 | managed `watertower-1x1-t1` to `t3`, four colors each | 1x1 |
+| Hydro power plant | managed `hydro-1x2-t1` to `t3`, four colors each | 1x2 |
+| Wind turbine, geothermal and coal power plants | managed `windturbine-1x1`, `geothermal-1x1`, `coal-1x1` (Tiers 1–3, 1–3, 1–4), four colors each | 1x1 |
+| Backup power plant, Neighborhood battery | managed `backup-2x2-t1` (to `t3`, reserved), `battery-1x1` | 2x2 / 1x1 |
+| Solar installation | managed `solar-2x2-t1` to `t4`, reserved (the game still binds the Kenney panel group) | 2x2 |
+| Bus stop, BRT station, Railway station | managed `stop-1x1-bus`, `stop-1x1-brt`, `station-2x1` | 1x1 / 2x1 |
 
 Not in the MVP: commercial `building-j` (5.2k tris) and `building-n` (3x2); all `detail-*`, fences, paths, driveways, planters, trees, chimneys, tanks, containers, single solar panels and `windmill-low` (decor, after MVP). `commercial/low-detail-*` are LOD only.
 
 ## Open
 
-- Large power plant: pick the chimney factory among the Factory models.
 - Roundabout exits are assumed at the middle of each side; verify before use.
 - Role names are placeholders for the economy and tiers decided in later tickets.

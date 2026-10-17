@@ -48,7 +48,9 @@ export function SceneCanvas() {
     scene.setTrafficEnabled(prefsStore.getState().traffic);
     scene.setBrushMode(uiStore.getState().tool?.kind === 'brush');
     const showSelection = () => {
-      scene.setSelection(selectionGhost(gameStore.getState().state, uiStore.getState().selectedBuildingId, prefsStore.getState().showReach));
+      const state = gameStore.getState().state;
+      const selected = state.buildings.find(building => building.id === uiStore.getState().selectedBuildingId);
+      scene.setSelection(selectionGhost(state, uiStore.getState().selectedBuildingId, prefsStore.getState().showReach, selected ? scene.drawnExtentOf(selected) : null));
       scene.setEcologicalSelection(uiStore.getState().selectedBuildingId);
     };
     showSelection();

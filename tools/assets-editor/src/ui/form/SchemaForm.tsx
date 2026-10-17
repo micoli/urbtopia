@@ -17,6 +17,8 @@ interface Props {
   compact?: boolean
   // For a list field of this form: the item the user works in.
   listSelection?: { selected: number | null; onSelect: (index: number) => void }
+  // For a list field of this form: why no item can be added to it, by field key.
+  addBlocked?: Record<string, string>
 }
 
 const errorsOf = (problems: Problem[], key: string) =>
@@ -25,7 +27,7 @@ const errorsOf = (problems: Problem[], key: string) =>
 const within = (problems: Problem[], prefix: string) => problems.filter(({ path }) => path.startsWith(`${prefix}.`)).map(problem => ({ ...problem, path: problem.path.slice(prefix.length + 1) }))
 
 // Required fields come from the schema; an optional field can be unset to fall back to its default.
-export function SchemaForm({ fields, value, problems, onChange, path = [], modelSlot, custom, hints, compact, listSelection }: Props) {
+export function SchemaForm({ fields, value, problems, onChange, path = [], modelSlot, custom, hints, compact, listSelection, addBlocked }: Props) {
   return (
     <div className={`flex flex-col ${compact ? 'gap-2' : 'gap-3'}`}>
       {fields.map(field => {
@@ -49,6 +51,7 @@ export function SchemaForm({ fields, value, problems, onChange, path = [], model
               fields={container.fields}
               onChange={next => onChange(field.key, next)}
               selection={listSelection}
+              addBlockedReason={addBlocked?.[field.key]}
               renderItem={(item, index, onItem) => (
                 <SchemaForm fields={container.fields} value={item} problems={within(problems, `${field.key}.${index}`)} path={[...at, index]} modelSlot={modelSlot} onChange={(key, next) => onItem({ ...item, [key]: next })} />
               )}

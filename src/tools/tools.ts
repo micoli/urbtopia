@@ -136,11 +136,24 @@ function frontMarker(state: GameState, type: BuildingType, tile: Coord, rotation
 
 const SELECTION_MARGIN = 0.3;
 
-export function selectionGhost(state: GameState, buildingId: number | null, showReach = true): GhostSpec | null {
+export interface DrawnExtent {
+  width: number;
+  depth: number;
+  offsetX: number;
+  offsetY: number;
+}
+
+const MIN_SELECTED_SIDE = 0.9;
+
+export function selectionGhost(state: GameState, buildingId: number | null, showReach = true, drawn: DrawnExtent | null = null): GhostSpec | null {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return null;
   const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
-  const rect: GhostRect = { x: building.x - SELECTION_MARGIN, y: building.y - SELECTION_MARGIN, width: width + 2 * SELECTION_MARGIN, depth: depth + 2 * SELECTION_MARGIN, tone: 'target' };
+  const sideW = drawn ? Math.min(width, Math.max(drawn.width, MIN_SELECTED_SIDE)) : width;
+  const sideD = drawn ? Math.min(depth, Math.max(drawn.depth, MIN_SELECTED_SIDE)) : depth;
+  const centerX = building.x + width / 2 + (drawn ? Math.max(-(width - sideW) / 2, Math.min((width - sideW) / 2, drawn.offsetX)) : 0);
+  const centerY = building.y + depth / 2 + (drawn ? Math.max(-(depth - sideD) / 2, Math.min((depth - sideD) / 2, drawn.offsetY)) : 0);
+  const rect: GhostRect = { x: centerX - sideW / 2 - SELECTION_MARGIN, y: centerY - sideD / 2 - SELECTION_MARGIN, width: sideW + 2 * SELECTION_MARGIN, depth: sideD + 2 * SELECTION_MARGIN, tone: 'target' };
   const range = showReach ? reachTilesOf(building) : [];
   return { tiles: [], rects: [rect], valid: true, front: null, ...(range.length ? { range } : {}) };
 }

@@ -1,6 +1,6 @@
 """
 check_footprint.py - run INSIDE Blender through bl.py:
-  python ~/.claude/skills/blender-lpm-skill/scripts/bl.py --script check_footprint.py -- --input <id>.glb --width 2 --depth 2 --floors 2 --kind house
+  python tools/blender/bl.py --script check_footprint.py -- --input <id>.glb --width 2 --depth 2 --floors 2 --kind house
 Prints ##JSON## {"pass": bool, ...}. Footprint must match within 2 percent, height at least floors x floor height.
 """
 import argparse

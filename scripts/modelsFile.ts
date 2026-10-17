@@ -11,7 +11,7 @@ export const MODELS_SCHEMA_FILE = 'assets/defs/schemas/models.schema.json';
 export const MODEL_IDS_FILE = 'src/core/models/modelIds.generated.ts';
 
 const SCHEMA_REFERENCE = 'defs/schemas/models.schema.json';
-const FIELD_ORDER: (keyof ModelEntry)[] = ['file', 'source', 'license', 'author', 'url', 'footprint', 'scale', 'center', 'fit', 'rotationOffset', 'bakeNodeScale', 'recolor', 'note'];
+const FIELD_ORDER: (keyof ModelEntry)[] = ['file', 'source', 'license', 'author', 'url', 'footprint', 'scale', 'center', 'fit', 'rotationOffset', 'tones', 'bakeNodeScale', 'recolor', 'note'];
 
 export const modelProblems = (definition: unknown): string[] => modelProblemsOf('', definition).map(({ path, message }) => (path ? `${path}: ${message}` : message));
 

@@ -45,6 +45,7 @@ async function render(key: string): Promise<string> {
   const state = codexSnapshot(variant.id, variant.level, variant.colorVariant);
   const items = renderItemsOf(state);
   await library.ensure([...new Set(items.map(item => item.model))]);
+  await library.ensureTextureVariants(items.flatMap(item => item.textureVariant ? [item.textureVariant] : []));
   world.sync(items);
   ecology.sync(state, null);
   bridges.sync(state);

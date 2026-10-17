@@ -10,12 +10,9 @@ const painted = (type: Building['type'], colorVariant: ColorVariant): Building =
 
 describe('repainted building save', () => {
   it('loads a color the kit offers', () => {
-    expect(loads(painted('shop', 'b'))).toBe(true);
+    expect(loads(painted('hotel', 'b'))).toBe(true);
+    expect(loads(painted('hotel', 'c'))).toBe(true);
     expect(loads(painted('workshop', 'c'))).toBe(true);
-  });
-
-  it('refuses a color the kit lacks', () => {
-    expect(loads(painted('shop', 'c'))).toBe(false);
   });
 
   it('refuses a color on a building that cannot be repainted', () => {
