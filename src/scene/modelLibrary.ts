@@ -2,8 +2,9 @@ import { fitNatureModel } from './natureModelFit';
 import { waterOutline } from './waterShape';
 import { RAIL_CORNER_MODEL } from '../core/infrastructure/infrastructure';
 import { fitRailCorner } from './railModelFit';
+import './albedoSaturation';
 import * as THREE from 'three';
-import { FIELD_SOIL_MODEL, GARAGE_DOOR_MODEL, RED_CROSS_MODEL, WATER_TILE_MODEL, BRIDGE_DECK_MODEL, type TextureVariant } from './renderItems';
+import { FIELD_SOIL_MODEL, WATER_TILE_MODEL, BRIDGE_DECK_MODEL, type TextureVariant } from './renderItems';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class ModelLibrary {
@@ -27,6 +28,11 @@ export class ModelLibrary {
       const loading = this.textureLoader.loadAsync(`${import.meta.env.BASE_URL}models/${variantTexturePath(variant)}`).then(texture => {
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.flipY = false;
+        if (variant.startsWith('tone:')) {
+          texture.magFilter = THREE.NearestFilter;
+          texture.minFilter = THREE.NearestFilter;
+          texture.generateMipmaps = false;
+        }
         texture.needsUpdate = true;
         this.variants.set(variant, texture);
         this.pendingVariants.delete(variant);
@@ -72,27 +78,9 @@ export class ModelLibrary {
     return Array.isArray(source) ? source.map(replace) : replace(source);
   }
 
-  withRecolor(source: THREE.Material | THREE.Material[], color: number): THREE.Material | THREE.Material[] {
-    const target = new THREE.Color(color);
-    const replace = (material: THREE.Material): THREE.Material => {
-      const clone = material.clone() as THREE.MeshStandardMaterial;
-      clone.onBeforeCompile = (shader) => {
-        shader.fragmentShader = shader.fragmentShader.replace(
-          '#include <map_fragment>',
-          `#include <map_fragment>
-          float recolorLight = clamp(dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114)) / 0.75, 0.0, 1.15);
-          diffuseColor.rgb = vec3(${target.r.toFixed(3)}, ${target.g.toFixed(3)}, ${target.b.toFixed(3)}) * recolorLight;`,
-        );
-      };
-      clone.customProgramCacheKey = () => `recolor-${color}`;
-      return clone;
-    };
-    return Array.isArray(source) ? source.map(replace) : replace(source);
-  }
-
   private load(key: string): Promise<void> {
     if (this.models.has(key)) return Promise.resolve();
-    const procedural = key === RED_CROSS_MODEL ? buildRedCross : key === GARAGE_DOOR_MODEL ? buildGarageDoor : key === FIELD_SOIL_MODEL ? buildFieldSoil : key.startsWith(`${WATER_TILE_MODEL}:`) ? () => buildWaterTile(...(key.slice(WATER_TILE_MODEL.length + 1).split(':') as [string, string, string])) : key === BRIDGE_DECK_MODEL ? buildBridgeDeck : null;
+    const procedural = key === FIELD_SOIL_MODEL ? buildFieldSoil : key.startsWith(`${WATER_TILE_MODEL}:`) ? () => buildWaterTile(...(key.slice(WATER_TILE_MODEL.length + 1).split(':') as [string, string, string])) : key === BRIDGE_DECK_MODEL ? buildBridgeDeck : null;
     if (procedural) {
       this.models.set(key, procedural());
       return Promise.resolve();
@@ -112,20 +100,14 @@ export class ModelLibrary {
 }
 
 function variantTexturePath(variant: TextureVariant): string {
+  if (variant.startsWith('tone:')) {
+    const [, model, tone] = variant.split(':');
+    return `${model}.tone-${tone}.png`;
+  }
   if (variant === 'roads-a') return 'roads/Textures/variation-a.png';
   const [kit, letter] = variant.split('-');
   if (kit === 'commercial' || kit === 'industrial') return `${kit}/Textures/variation-${letter}.png`;
   return `suburban/Textures/variation-${variant}.png`;
-}
-
-function buildRedCross(): THREE.Object3D {
-  const material = new THREE.MeshStandardMaterial({ color: 0xd62828 });
-  const group = new THREE.Group();
-  for (const [width, height] of [[0.5, 0.15], [0.15, 0.5]] as const) {
-    group.add(new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.03), material));
-  }
-  group.updateMatrixWorld(true);
-  return group;
 }
 
 function buildFieldSoil(): THREE.Object3D {
@@ -161,20 +143,6 @@ function buildBridgeDeck(): THREE.Object3D {
   const deck = new THREE.Mesh(new THREE.BoxGeometry(1, 0.1, 1), new THREE.MeshStandardMaterial({ color: 0x8a8f98, roughness: 0.8 }));
   deck.position.y = 0.05;
   group.add(deck);
-  group.updateMatrixWorld(true);
-  return group;
-}
-
-function buildGarageDoor(): THREE.Object3D {
-  const group = new THREE.Group();
-  const panel = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.36, 0.03), new THREE.MeshStandardMaterial({ color: 0xe6e6e6 }));
-  group.add(panel);
-  const slat = new THREE.MeshStandardMaterial({ color: 0x7d7d7d });
-  for (const y of [-0.12, -0.04, 0.04, 0.12]) {
-    const line = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.015, 0.035), slat);
-    line.position.y = y;
-    group.add(line);
-  }
   group.updateMatrixWorld(true);
   return group;
 }

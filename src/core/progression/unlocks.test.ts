@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dispatch, isItemUnlocked, newGame, nextUnlock, type Command, type GameState } from '../index';
+import { dispatch, isItemUnlocked, newGame, nextBuildingUnlock, nextUnlock, ECOLOGY_UNLOCKS, type Command, type GameState } from '../index';
 
 const T0 = 1_700_000_000_000;
 const initial = newGame({ seed: 'amber-fox-4821', now: T0 });
@@ -75,5 +75,21 @@ describe('nextUnlock', () => {
 
   it('returns null once everything is unlocked', () => {
     expect(nextUnlock(withCitizens(1008))).toBeNull();
+  });
+});
+
+describe('nextBuildingUnlock', () => {
+  const types = (Object.keys(ECOLOGY_UNLOCKS) as (keyof typeof ECOLOGY_UNLOCKS)[]);
+
+  it('names the buildings that open at the lowest threshold above the current Citizens', () => {
+    const next = nextBuildingUnlock(initial, types)!;
+    expect(next.citizens).toBeGreaterThan(0);
+    expect(next.types.length).toBeGreaterThan(0);
+    for (const type of next.types) expect(ECOLOGY_UNLOCKS[type]).toBe(next.citizens);
+    for (const type of types) expect(ECOLOGY_UNLOCKS[type]! > 0 ? ECOLOGY_UNLOCKS[type]! >= next.citizens : true).toBe(true);
+  });
+
+  it('returns nothing once every candidate is open', () => {
+    expect(nextBuildingUnlock(initial, types.filter(type => (ECOLOGY_UNLOCKS[type] ?? 0) === 0))).toBeNull();
   });
 });

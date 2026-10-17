@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_ROAD_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, DIRECTION_VECTORS, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, frontDirection, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
+import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -13,7 +13,7 @@ import { VENUE_CUSTOMER_MODELS, VENUE_STAFF_MODELS } from './venueCrowdModels';
 
 export const TEXTURE_VARIANTS = ['a', 'b', 'c', 'roads-a', 'commercial-a', 'commercial-b', 'industrial-a', 'industrial-b', 'industrial-c'] as const;
 
-export type TextureVariant = (typeof TEXTURE_VARIANTS)[number];
+export type TextureVariant = (typeof TEXTURE_VARIANTS)[number] | `tone:${string}`;
 
 export interface RenderItem {
   model: string;
@@ -30,8 +30,6 @@ export interface RenderItem {
   roll?: number;
   textureVariant?: TextureVariant;
   footprint?: number;
-  recolor?: number;
-  decal?: { x: number; z: number; lateral?: number; height?: number };
   fitModel?: string;
   tint?: number;
 }
@@ -43,6 +41,8 @@ const FACILITY_DETAILS = Object.fromEntries(FACILITY_TYPES.flatMap(type => {
   return detailModel ? [[type, modelFileOf(detailModel)]] : [];
 })) as Partial<Record<FacilityType, string>>;
 
+const DRAWN_TO_SCALE = new Set<FacilityType>(FACILITY_TYPES.filter(type => definitionOf(type).drawnToScale));
+
 const CATEGORY_TINTS: Partial<Record<ServiceCategory, number>> = {
   education: 0xb4d0ff,
   administration: 0xf2e2b4,
@@ -51,28 +51,15 @@ const CATEGORY_TINTS: Partial<Record<ServiceCategory, number>> = {
   safety: 0xc4f0cb,
 };
 
-export const RED_CROSS_MODEL = 'procedural/red-cross';
-export const GARAGE_DOOR_MODEL = 'procedural/garage-door';
 export const FIELD_SOIL_MODEL = 'procedural/field-soil';
 export const WATER_TILE_MODEL = 'procedural/water-tile';
 export const BRIDGE_DECK_MODEL = 'procedural/bridge-deck';
-export const PROCEDURAL_MODELS: readonly string[] = [RED_CROSS_MODEL, GARAGE_DOOR_MODEL, FIELD_SOIL_MODEL, BRIDGE_DECK_MODEL];
-
-const GARAGE_DOOR_SPACING = 0.6;
-const GARAGE_DOOR_HEIGHT = 0.27;
-
-const FACILITY_RECOLORS: Partial<Record<FacilityType, number>> = {
-  hospital: 0xffffff,
-  fireStation: 0xd9322b,
-  policeStation: 0x2f5fd0,
-};
-
-const FOOTPRINT_BOOST: Partial<Record<FacilityType, number>> = { townHall: 1.3 };
+export const PROCEDURAL_MODELS: readonly string[] = [FIELD_SOIL_MODEL, BRIDGE_DECK_MODEL];
 
 export function facilityFootprint(building: Pick<Building, 'type'>): number | null {
   if (!isFacilityType(building.type)) return null;
   const { width, depth } = FACILITIES[building.type].footprint;
-  return ((width + depth) / 2) * (FOOTPRINT_BOOST[building.type] ?? 1);
+  return (width + depth) / 2;
 }
 
 // The model of each Tier of the buildings defined with Tiers.
@@ -81,23 +68,16 @@ const TIER_MODELS = new Map(BUILDING_ENTRIES.filter(({ tiers }) => tiers).map(({
 const SOLAR_PANEL_FILES = BUILDING_ENTRIES.flatMap(({ solarPanels }) => (solarPanels?.panels ?? []).map(({ model }) => modelFileOf(model)));
 const SOLAR_HOME_MODELS = new Map(BUILDING_ENTRIES.filter(({ kind, variants }) => kind === 'home' && variants?.solar).map(({ id }) => [id, variantTiersOf(id, 'solar').map(({ model }) => modelFileOf(model!))]));
 
-// Mansard Homes are modelled once per color, a to d (green, pale blue, red, grey green): the Home color picks the model, where other Homes recolor their texture.
-const MANSARD_MODEL_LETTER: Record<ColorVariant, string> = { default: 'a', a: 'b', b: 'c', c: 'd' };
+// The letter of the palette texture of each Home color: the default color is the model's own palette, a to c are its tones b to d.
+const TONE_LETTER: Record<ColorVariant, string> = { default: 'a', a: 'b', b: 'c', c: 'd' };
 
-const isMansardModel = (model: string): boolean => model.includes('-mansard-');
-
-const mansardModelOf = (model: string, colorVariant: ColorVariant): string => model.replace('-mansard-a', `-mansard-${MANSARD_MODEL_LETTER[colorVariant]}`);
-
-const mansardColorsOf = (model: string): string[] => (isMansardModel(model) ? Object.keys(MANSARD_MODEL_LETTER).map(color => mansardModelOf(model, color as ColorVariant)) : [model]);
-
-// Kenney models repaint by swapping their palette texture; the mansard Homes have one model per color instead.
+// Kenney models, and the models with color tones, repaint by swapping their palette texture.
 const textureVariantOf = (model: string, colorVariant: ColorVariant = 'default'): TextureVariant | undefined => {
   const kit = paintKitOf(model);
-  if (!kit || kit === 'mansard' || colorVariant === 'default' || !colorVariantsOfKit(kit).includes(colorVariant)) return undefined;
+  if (!kit || colorVariant === 'default' || !colorVariantsOfKit(kit).includes(colorVariant)) return undefined;
+  if (kit === 'palette') return `tone:${model}:${TONE_LETTER[colorVariant]}`;
   return (kit === 'suburban' ? colorVariant : `${kit}-${colorVariant}`) as TextureVariant;
 };
-
-const colorizedModel = (model: string, colorVariant: ColorVariant = 'default'): string => (isMansardModel(model) ? mansardModelOf(model, colorVariant) : model);
 
 export const TRAIN_MODELS: readonly string[] = [...new Set(FLEET_VEHICLES.flatMap(({ models }) => models.map(modelFileOf)))];
 
@@ -119,8 +99,8 @@ const ROAD_MODELS = Object.values(ROAD_PIECE_MODELS);
 export const MODEL_KEYS: readonly string[] = [
   ...new Set([
     ...Object.values(MODEL_BY_BUILDING),
-    ...[...TIER_MODELS.values()].flat().flatMap(mansardColorsOf),
-    ...[...SOLAR_HOME_MODELS.values()].flat().flatMap(mansardColorsOf),
+    ...[...TIER_MODELS.values()].flat(),
+    ...[...SOLAR_HOME_MODELS.values()].flat(),
     ...Object.values(FACILITY_DETAILS),
     ROOF_PANEL_MODEL,
     GROUND_PANEL_MODEL,
@@ -152,7 +132,7 @@ export function modelOf(type: BuildingType, tier: number): string {
 export function modelOfBuilding(building: Building): string {
   const solarModels = building.solar ? SOLAR_HOME_MODELS.get(building.type) : undefined;
   const model = solarModels && building.tier <= solarModels.length ? solarModels[building.tier - 1]! : modelOf(building.type, building.tier);
-  return colorizedModel(model, building.colorVariant);
+  return model;
 }
 
 let lastBuildingItems: RenderItem[] = [];
@@ -162,7 +142,7 @@ let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; fields: RenderIte
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   return a.length === b.length && a.every((item, index) => {
     const other = b[index] as RenderItem;
-    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.pitch === other.pitch && item.yaw === other.yaw && item.roll === other.roll && item.scale === other.scale && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.recolor === other.recolor && item.decal?.x === other.decal?.x && item.decal?.z === other.decal?.z && item.decal?.lateral === other.decal?.lateral && item.tint === other.tint;
+    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.pitch === other.pitch && item.yaw === other.yaw && item.roll === other.roll && item.scale === other.scale && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.tint === other.tint;
   });
 }
 
@@ -260,20 +240,6 @@ function brtItems(state: GameState): RenderItem[] {
   });
 }
 
-function redCrossItems(x: number, z: number, rotation: number, footprint: number, fitModel: string): RenderItem[] {
-  const front = DIRECTION_VECTORS[frontDirection(rotation)];
-  const faces = [front, { x: front.y, y: -front.x }, { x: -front.y, y: front.x }];
-  return faces.map((face) => ({ model: RED_CROSS_MODEL, x, z, rotation, footprint, fitModel, decal: { x: face.x, z: face.y } }));
-}
-
-function garageDoorItems(x: number, z: number, rotation: number, footprint: number, fitModel: string): RenderItem[] {
-  const front = DIRECTION_VECTORS[frontDirection(rotation)];
-  return [-1, 0, 1].map((slot) => ({
-    model: GARAGE_DOOR_MODEL, x, z, rotation, footprint, fitModel,
-    decal: { x: front.x, z: front.y, lateral: slot * GARAGE_DOOR_SPACING, height: GARAGE_DOOR_HEIGHT },
-  }));
-}
-
 // A Home whose solar models cover its Tier already shows its panels; any other equipped building gets the panels its definition lists on the roof, a flat panel per tile without any.
 function solarPanelItems(building: Building, roofModel: string, rotation: number, x: number, z: number): RenderItem[] {
   const panels = solarPanelsOf(building.type);
@@ -299,15 +265,12 @@ function buildingItems(state: GameState): RenderItem[] {
     const scale = tiersOf(building.type)[building.tier - 1]?.scale;
     const textureVariant = textureVariantOf(model, building.colorVariant);
     const items: RenderItem[] = [{ model, x, z, rotation, ...(scale ? { scale } : {}), ...(textureVariant ? { textureVariant } : {}) }];
-    if (isFacilityType(building.type)) {
+    if (isFacilityType(building.type) && !DRAWN_TO_SCALE.has(building.type)) {
       const footprint = facilityFootprint(building)!;
-      const recolor = FACILITY_RECOLORS[building.type];
       const tint = CATEGORY_TINTS[FACILITIES[building.type].category];
-      items[0] = { ...items[0]!, footprint, fitModel: model, ...(recolor === undefined ? (tint === undefined ? {} : { tint }) : { recolor }) };
+      items[0] = { ...items[0]!, footprint, fitModel: model, ...(tint === undefined ? {} : { tint }) };
       const detail = FACILITY_DETAILS[building.type];
       if (detail) items.push({ model: detail, x, z, rotation, footprint, fitModel: model });
-      if (building.type === 'hospital') items.push(...redCrossItems(x, z, rotation, footprint, model));
-      if (building.type === 'fireStation') items.push(...garageDoorItems(x, z, rotation, footprint, model));
     }
     if (building.type === 'park') {
       items.push({ model: PARK_TREE_MODEL, x: x - width / 4, z: z - depth / 4, rotation, ...(scale ? { scale } : {}) });
@@ -318,8 +281,7 @@ function buildingItems(state: GameState): RenderItem[] {
   });
 }
 
-export function chunkKeyOf(x: number, z: number): string {
-  const size = GAME_CONFIG.parcelSizeInTiles;
+export function chunkKeyOf(x: number, z: number, size = GAME_CONFIG.parcelSizeInTiles): string {
   return `${Math.floor(x / size)},${Math.floor(z / size)}`;
 }
 

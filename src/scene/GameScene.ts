@@ -1,12 +1,14 @@
 import { EcologyLayer } from './EcologyLayer';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { GAME_CONFIG, type Building, type GameState } from '../core';
+import { GAME_CONFIG, WILD_RIM_TILES, wildNoiseAt, wildTerrain, type Building, type GameState } from '../core';
 import { CameraController } from './CameraController';
 import type { Coord } from '../core';
-import type { GhostSpec } from '../tools/tools';
+import type { DrawnExtent, GhostSpec } from '../tools/tools';
 import { buildingBoxes, pickBuilding } from './buildingPicking';
 import { ChunkedWorld } from './ChunkedWorld';
+import { WildScenery } from './WildScenery';
+import { groundGeometry } from './groundMesh';
 import { GhostLayer } from './GhostLayer';
 import { createTendedGroundTexture, createWildGroundTexture, TENDED_TEXTURE_TILES, WILD_TEXTURE_TILES } from './groundTextures';
 import { facilityScaleOf, fitMatrixOf } from './modelFit';
@@ -21,7 +23,8 @@ import { TrafficLayer } from './TrafficLayer';
 import { renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } from './renderBudget';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
-const GROUND_SIZE = MAP_TILES * 3;
+const GROUND_FADE_TILES = 24;
+const GROUND_SIZE = MAP_TILES + 2 * (WILD_RIM_TILES + GROUND_FADE_TILES);
 const SELECTION_COLOR = 0x4da3ff;
 const FALLBACK_HEIGHT = 1.5;
 
@@ -45,6 +48,10 @@ export class GameScene {
   private scene = new THREE.Scene();
   private library = new ModelLibrary();
   private world = new ChunkedWorld(this.library);
+  private scenery = new WildScenery(this.library, wantsAntialias() ? 'full' : 'light');
+  private groundSignature = '';
+  private ground!: THREE.Mesh<THREE.BufferGeometry>;
+  private groundGrid!: Int32Array;
   private parcels = new THREE.Group();
   private tendedMaterial = this.buildTendedMaterial();
   private ghostLayer = new GhostLayer();
@@ -96,14 +103,14 @@ export class GameScene {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: wantsAntialias(), powerPreference: 'low-power' });
     this.renderer.setPixelRatio(renderPixelRatio());
     this.renderer.toneMapping = THREE.NeutralToneMapping;
-    this.renderer.toneMappingExposure = 0.9;
+    this.renderer.toneMappingExposure = 0.8;
     this.scene.background = new THREE.Color(0x9ec5e8);
     this.scene.environment = this.buildEnvironment();
-    this.scene.environmentIntensity = 0.35;
-    const sun = new THREE.DirectionalLight(0xfff2d6, 2.0);
+    this.scene.environmentIntensity = 0.25;
+    const sun = new THREE.DirectionalLight(0xfff2d6, 1.7);
     sun.position.set(20, 40, 10);
     const sky = new THREE.HemisphereLight(0xbcd8f5, 0x8a7a64, 0.5);
-    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.ghostLayer.root);
+    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.ghostLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.controller.onTap = (clientX, clientY, shiftKey) =>
@@ -241,6 +248,8 @@ export class GameScene {
         await this.library.ensure(items.map((item) => item.model));
         await this.library.ensureTextureVariants(items.flatMap(item => item.textureVariant ? [item.textureVariant] : []));
         this.world.sync(items);
+        await this.scenery.sync(state);
+        this.shapeGround(state);
         this.syncParcels(state);
         this.congestion.sync(state);
         this.traffic.sync(state);
@@ -262,13 +271,44 @@ export class GameScene {
     return texture;
   }
 
-  private buildGround(): THREE.Mesh {
+  private buildGround(): THREE.Mesh<THREE.BufferGeometry> {
     const texture = createWildGroundTexture();
     texture.repeat.set(GROUND_SIZE / WILD_TEXTURE_TILES, GROUND_SIZE / WILD_TEXTURE_TILES);
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(GROUND_SIZE, GROUND_SIZE), new THREE.MeshStandardMaterial({ map: texture }));
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.set(MAP_TILES / 2, -0.02, MAP_TILES / 2);
-    return ground;
+    const { geometry, grid } = groundGeometry(MAP_TILES / 2, GROUND_SIZE);
+    this.groundGrid = grid;
+    this.ground = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ map: texture, vertexColors: true, transparent: true }));
+    this.ground.position.y = -0.02;
+    return this.ground;
+  }
+
+  private shapeGround(state: GameState): void {
+    const signature = `${state.seed}|${state.ownedParcels.map(parcel => `${parcel.x},${parcel.y}`).join(';')}`;
+    if (signature === this.groundSignature) return;
+    this.groundSignature = signature;
+    const terrain = wildTerrain(state.seed, state.ownedParcels);
+    const geometry = this.ground.geometry;
+    const position = geometry.attributes.position!;
+    const color = geometry.attributes.color as THREE.BufferAttribute;
+    const reach = GROUND_SIZE / 2 - GROUND_FADE_TILES;
+    for (let index = 0; index < position.count; index++) {
+      const x = position.getX(index);
+      const z = position.getZ(index);
+      position.setY(index, terrain.vertexHeight(this.groundGrid[index * 2]!, this.groundGrid[index * 2 + 1]!));
+      const noise = wildNoiseAt(state.seed, x, z);
+      const dry = Math.max(0, 0.45 - noise) * 1.6 + position.getY(index) * 0.08;
+      const lush = Math.max(0, noise - 0.55) * 1.2;
+      const distance = Math.max(Math.abs(x - MAP_TILES / 2), Math.abs(z - MAP_TILES / 2));
+      const alpha = 1 - THREE.MathUtils.smoothstep(distance, reach, reach + GROUND_FADE_TILES);
+      color.setXYZW(index, 1 + dry * 0.25 - lush * 0.12, 1 - dry * 0.1 - lush * 0.08, 1 - dry * 0.35 - lush * 0.15, alpha);
+    }
+    for (let face = 0; face < position.count; face += 3) {
+      const shade = 1 + (((Math.sin(face * 12.9898 + state.seed.length) * 43758.5453) % 1) - 0.5) * 0.2;
+      for (let corner = face; corner < face + 3; corner++) color.setXYZ(corner, color.getX(corner) * shade, color.getY(corner) * shade, color.getZ(corner) * shade);
+    }
+    position.needsUpdate = true;
+    color.needsUpdate = true;
+    geometry.computeVertexNormals();
+    geometry.computeBoundingSphere();
   }
 
   private buildTendedMaterial(): THREE.MeshStandardMaterial {
@@ -300,6 +340,22 @@ export class GameScene {
     const pointer = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
     this.raycaster.setFromCamera(pointer, this.controller.camera);
     return pickBuilding(this.raycaster.ray, buildingBoxes(this.currentBuildings, (building) => this.buildingHeight(building)));
+  }
+
+  drawnExtentOf(building: Building): DrawnExtent | null {
+    const model = modelOfBuilding(building);
+    if (facilityFootprint(building) !== null || !this.library.has(model)) return null;
+    const box = new THREE.Box3().setFromObject(this.library.get(model)).applyMatrix4(fitMatrixOf(model));
+    const angle = (building.rotation * Math.PI) / 2;
+    const centerX = (box.min.x + box.max.x) / 2;
+    const centerZ = (box.min.z + box.max.z) / 2;
+    const swapped = building.rotation % 2 === 1;
+    return {
+      width: swapped ? box.max.z - box.min.z : box.max.x - box.min.x,
+      depth: swapped ? box.max.x - box.min.x : box.max.z - box.min.z,
+      offsetX: centerX * Math.cos(angle) + centerZ * Math.sin(angle),
+      offsetY: -centerX * Math.sin(angle) + centerZ * Math.cos(angle),
+    };
   }
 
   buildingHeight(building: Building): number {

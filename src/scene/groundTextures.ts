@@ -64,6 +64,33 @@ const drawWild: Draw = (context, size, random) => {
       });
     });
   }
+  for (const [count, minRadius, maxRadius, alpha, tone] of [
+    [26, 40, 120, 0.2, '170, 160, 92'],
+    [34, 30, 90, 0.18, '84, 112, 66'],
+    [14, 20, 60, 0.22, '150, 124, 92'],
+  ] as const) {
+    scatter(size, random, count, (x, y) => {
+      const radius = minRadius + random() * (maxRadius - minRadius);
+      wrapped(size, x, y, radius, (px, py) => {
+        const gradient = context.createRadialGradient(px, py, 0, px, py, radius);
+        gradient.addColorStop(0, `rgba(${tone}, ${alpha})`);
+        gradient.addColorStop(1, `rgba(${tone}, 0)`);
+        context.fillStyle = gradient;
+        context.fillRect(px - radius, py - radius, radius * 2, radius * 2);
+      });
+    });
+  }
+  context.lineWidth = 1.5;
+  scatter(size, random, 1400, (x, y) => {
+    context.strokeStyle = random() > 0.5 ? 'rgba(78, 112, 60, 0.55)' : 'rgba(142, 176, 104, 0.5)';
+    const lean = (random() - 0.5) * 5;
+    wrapped(size, x, y, 8, (px, py) => {
+      context.beginPath();
+      context.moveTo(px, py);
+      context.lineTo(px + lean, py - 4 - random() * 4);
+      context.stroke();
+    });
+  });
   const flowers = ['#f2e6a0', '#f4f0ea', '#e0a3bd'];
   scatter(size, random, 70, (x, y) => {
     context.fillStyle = flowers[Math.floor(random() * flowers.length)] ?? flowers[0]!;

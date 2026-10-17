@@ -5,7 +5,13 @@ import { GOODS, MATERIALS, unlockCitizensOf, type ItemId } from '../economy/item
 import { CASINO } from '../leisure/casino';
 import { SPORT_VENUES, SPORT_VENUE_TYPES, type SportVenueType } from '../leisure/sportVenues';
 import type { CropId } from '../farming/crops';
-import type { GameState } from '../engine/state';
+import { ECOLOGY_UNLOCKS } from '../environment/ecology';
+import type { BuildingType, GameState } from '../engine/state';
+
+export interface BuildingUnlock {
+  citizens: number;
+  types: BuildingType[];
+}
 
 export interface Unlock {
   citizens: number;
@@ -28,6 +34,14 @@ export function nextUnlock(state: GameState): Unlock | null {
   const next = thresholds[0];
   if (next === undefined) return null;
   return { citizens: next, items: ALL_ITEMS.filter((item) => unlockCitizensOf(item) === next) };
+}
+
+export function nextBuildingUnlock(state: GameState, candidates: readonly BuildingType[]): BuildingUnlock | null {
+  const citizens = totalCitizens(state);
+  const locked = candidates.filter(type => (ECOLOGY_UNLOCKS[type] ?? 0) > citizens);
+  const next = Math.min(...locked.map(type => ECOLOGY_UNLOCKS[type] ?? 0));
+  if (locked.length === 0) return null;
+  return { citizens: next, types: locked.filter(type => ECOLOGY_UNLOCKS[type] === next) };
 }
 
 export function facilitiesUnlockedBetween(before: GameState, after: GameState): (FacilityType | 'casino' | SportVenueType)[] {

@@ -57,7 +57,7 @@ export type { StorageTier, StorageType, UtilityType } from './economy/economy';
 export { canRemoveStorage, compartmentOf, hasStorage, isStorageEmpty, isStorageType, storageCapacity, storageUsed } from './economy/storage';
 export { createBuilding } from './buildings/buildingSpecs';
 export { isHomeType } from './buildings/buildingDefinitions';
-export { colorVariantsOf, colorVariantsOfKit, colorVariantsOfType, isRepaintableType, paintKitAt, paintKitOf, type PaintKit } from './buildings/paint';
+export { colorVariantsOf, colorVariantsOfKit, colorVariantsOfType, isRepaintableType, mayCarryLegacyColor, paintKitAt, paintKitOf, toneLabelOf, type PaintKit, type ToneLabel } from './buildings/paint';
 export { citizensOf, totalCitizens, utilityCapacity, utilityDemand } from './buildings/city';
 export type { UtilityTotals } from './buildings/city';
 export { FARM_TIERS, PRODUCTION_UPGRADE_COSTS, HOME_FOOTPRINTS, HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, TAX, UTILITY_CAPACITY, COAL_CAPACITY } from './economy/economy';
@@ -66,7 +66,8 @@ export type { ShopTier } from './economy/shops';
 export { isWorking, productionDurationOf, rushPrice, taxDue, workProgress } from './economy/production';
 export { farmTier, maxTierOf, productionTierOf, upgradeCostOf } from './economy/tiers';
 export type { UpgradeCost } from './economy/tiers';
-export { isCropUnlocked, isItemUnlocked, nextUnlock } from './progression/unlocks';
+export { isCropUnlocked, isItemUnlocked, nextBuildingUnlock, nextUnlock } from './progression/unlocks';
+export type { BuildingUnlock } from './progression/unlocks';
 export type { Unlock } from './progression/unlocks';
 export { TUTORIAL_STEPS, tutorialAllows, tutorialSkipMs } from './progression/tutorial';
 export type { TutorialStep } from './progression/tutorial';
@@ -89,6 +90,10 @@ export { FLEET_VEHICLES, BUS_MODEL_FILE, TRAFFIC_VEHICLE_ENTRIES, SERVICE_VEHICL
 export { TRANSIT, networkTiles, networkNeighbours, validNetworkCrossings, extendNetwork, brokenLinkCount, buildNetworkGraph } from './transit/transitNetwork';
 export type { TransitLine, TransitMode, TransitTile, TransitVehicle, TransitVehicleKind } from './engine/state';
 
+export { wildScenery, wildNoiseAt, WILD_RIM_TILES, SCENERY_MODELS } from './environment/wildScenery';
+export { wildTerrain, cellTriangles, vertexPosition, TERRAIN_FIRST_LINE, TERRAIN_LAST_LINE } from './environment/wildTerrain';
+export type { WildTerrain } from './environment/wildTerrain';
+export type { SceneryPiece, SceneryDetail } from './environment/wildScenery';
 export { NATURE_FAMILIES, NATURE_MODELS, NATURE_TYPES, natureModelOf, greenProfileOf } from './environment/nature';
 export type { NatureType, NatureFamily } from './environment/nature';
 

@@ -13,19 +13,35 @@ describe('renderItemsOf', () => {
   });
 
   it('centres each building on its footprint', () => {
-    const workshop = renderItemsOf(state).find((item) => item.model === 'industrial/building-h');
+    const workshop = renderItemsOf(state).find((item) => item.model.startsWith('buildings/workshop-'));
     expect(workshop).toMatchObject({ x: 55, z: 57, rotation: 2 });
   });
 
   it('turns a building by quarter turns', () => {
     const rotated = { ...state, roads: [], buildings: [createBuilding(9, 'factory', 10, 20, 1)] };
-    expect(renderItemsOf(rotated)).toEqual([{ model: 'industrial/building-b', x: 11, z: 21, rotation: 1 }]);
+    expect(renderItemsOf(rotated)).toEqual([{ model: 'buildings/factory-2x2-t1-tone-a', x: 11, z: 21, rotation: 1 }]);
+  });
+});
+
+describe('renderItemsOf Public facilities', () => {
+  const only = (type: 'school' | 'mosque' | 'hospital' | 'theater') => renderItemsOf({ ...newGame({ seed: 'amber-fox-4821', now: 0 }), roads: [], buildings: [createBuilding(9, type, 10, 20, 0)] });
+
+  it('resizes a facility whose model is not drawn to scale', () => {
+    const [item] = only('mosque');
+    expect(item).toMatchObject({ fitModel: item!.model });
+    expect(item!.footprint).toBeGreaterThan(0);
+  });
+
+  it.each(['school', 'hospital', 'theater'] as const)('draws the %s as it is, with no resize, tint, detail or overlay', (type) => {
+    const items = only(type);
+    expect(items).toHaveLength(1);
+    expect(Object.keys(items[0]!).sort()).toEqual(['model', 'rotation', 'x', 'z']);
   });
 });
 
 describe('renderItemsOf Tier models', () => {
-  it('renders the four coal chimney evolutions and preloads every model', () => {
-    const models = ['chimney-basic', 'chimney-small', 'chimney-medium', 'chimney-large'].map(model => `industrial/${model}`);
+  it('renders the four coal plant evolutions and preloads every model', () => {
+    const models = [1, 2, 3, 4].map((tier) => `buildings/coal-1x1-t${tier}-tone-a`);
     for (const [i, model] of models.entries()) {
       const building = { ...createBuilding(9, 'coalPlant', 10, 20, 1), tier: i + 1 };
       expect(modelOf('coalPlant', i + 1)).toBe(model);
@@ -58,10 +74,10 @@ describe('Grain silo models', () => {
     return renderItemsOf({ ...newGame({ seed: 'amber-fox-4821', now: 0 }), roads: [], buildings: [building] })[0]?.model;
   };
 
-  it('uses the silo house, then the tall silo from Tier 4', () => {
-    expect(modelAt(1)).toBe('farm/Silo_House');
-    expect(modelAt(3)).toBe('farm/Silo_House');
-    expect(modelAt(4)).toBe('farm/Silo');
+  it('gives each Tier its own silo model', () => {
+    const models = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(modelAt);
+    expect(new Set(models).size).toBe(10);
+    expect(models[0]).toBe('buildings/silo-2x2-t1-tone-a');
   });
 });
 
@@ -155,7 +171,7 @@ describe('renderItemsOf farming', () => {
   });
 
   it('preloads every crop model', () => {
-    expect(MODEL_KEYS).toEqual(expect.arrayContaining(['crops/Wheat_1', 'crops/Palmtree_1'.replace('Palmtree', 'PalmTree'), 'crops/Flowers_Crop', 'farm/Barn', 'farm/OpenBarn']));
+    expect(MODEL_KEYS).toEqual(expect.arrayContaining(['crops/Wheat_1', 'crops/Palmtree_1'.replace('Palmtree', 'PalmTree'), 'crops/Flowers_Crop', 'farm/Barn']));
   });
 });
 

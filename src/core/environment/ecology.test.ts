@@ -217,16 +217,16 @@ describe('repaint', () => {
     expect(dispatch(result.state, { type: 'RepaintBuilding', buildingId: 1, colorVariant: 'b' }, s.lastSeen).ok).toBe(false);
     expect(dispatch(result.state, { type: 'RepaintBuilding', buildingId: 1, colorVariant: 'default' }, s.lastSeen).ok).toBe(true);
   });
-  it('repaints shops and the hotel, with the commercial kit offering two colors', () => {
-    const s = city([b(1, 'shop', 55, 57), b(2, 'hotel', 60, 57), b(3, 'townHall', 65, 57)]);
-    const shop = dispatch(s, { type: 'RepaintBuilding', buildingId: 1, colorVariant: 'b' }, s.lastSeen);
-    expect(shop.ok && shop.state.buildings[0]?.colorVariant).toBe('b');
-    expect(dispatch(s, { type: 'RepaintBuilding', buildingId: 1, colorVariant: 'c' }, s.lastSeen).ok).toBe(false);
-    expect(dispatch(s, { type: 'RepaintBuilding', buildingId: 2, colorVariant: 'a' }, s.lastSeen).ok).toBe(true);
+  it('repaints the hotel and the shops with the four colors', () => {
+    const s = city([b(1, 'hotel', 55, 57), b(2, 'shop', 60, 57), b(3, 'townHall', 65, 57)]);
+    const hotel = dispatch(s, { type: 'RepaintBuilding', buildingId: 1, colorVariant: 'b' }, s.lastSeen);
+    expect(hotel.ok && hotel.state.buildings[0]?.colorVariant).toBe('b');
+    expect(dispatch(s, { type: 'RepaintBuilding', buildingId: 1, colorVariant: 'c' }, s.lastSeen).ok).toBe(true);
+    expect(dispatch(s, { type: 'RepaintBuilding', buildingId: 2, colorVariant: 'c' }, s.lastSeen).ok).toBe(true);
     expect(dispatch(s, { type: 'RepaintBuilding', buildingId: 3, colorVariant: 'a' }, s.lastSeen).ok).toBe(false);
   });
-  it('repaints production, storage and utility buildings with the three industrial colors', () => {
-    const s = city([b(1, 'workshop', 55, 57), b(2, 'storehouse', 60, 57), b(3, 'waterTower', 65, 57)]);
+  it('repaints production and utility buildings with the three industrial colors', () => {
+    const s = city([b(1, 'workshop', 55, 57), b(2, 'factory', 60, 57), b(3, 'waterTower', 65, 57)]);
     for (const buildingId of [1, 2, 3]) expect(dispatch(s, { type: 'RepaintBuilding', buildingId, colorVariant: 'c' }, s.lastSeen).ok).toBe(true);
   });
   it('leaves energy equipment and fire stations alone', () => {
@@ -245,12 +245,6 @@ describe('repaint after an upgrade', () => {
     const s = stocked(b(1, 'shop', 55, 57, { colorVariant: 'b' }));
     const result = dispatch(s, { type: 'UpgradeBuilding', buildingId: 1 }, s.lastSeen);
     expect(result.ok && result.state.buildings[0]).toMatchObject({ tier: 2, colorVariant: 'b' });
-  });
-  it('goes back to the default color when the next Tier no longer offers it', () => {
-    const s = stocked(b(1, 'shop', 55, 57, { colorVariant: 'c' }));
-    const result = dispatch(s, { type: 'UpgradeBuilding', buildingId: 1 }, s.lastSeen);
-    expect(result.ok && result.state.buildings[0]?.tier).toBe(2);
-    expect(result.ok && result.state.buildings[0]?.colorVariant).toBeUndefined();
   });
 });
 
