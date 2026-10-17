@@ -34,9 +34,11 @@ export class ModelLibrary {
           texture.generateMipmaps = false;
         }
         texture.needsUpdate = true;
-        this.variants.set(variant, texture);
+        const variantTexture = variant === 'roads-pedestrian' ? pedestrianRoadTexture(texture) : texture;
+        if (variantTexture !== texture) texture.dispose();
+        this.variants.set(variant, variantTexture);
         this.pendingVariants.delete(variant);
-        return texture;
+        return variantTexture;
       });
       this.pendingVariants.set(variant, loading);
       return loading.then(() => undefined);
@@ -105,9 +107,43 @@ function variantTexturePath(variant: TextureVariant): string {
     return `${model}.tone-${tone}.png`;
   }
   if (variant === 'roads-a') return 'roads/Textures/variation-a.png';
+  if (variant === 'roads-pedestrian') return 'roads/Textures/colormap.png';
   const [kit, letter] = variant.split('-');
   if (kit === 'commercial' || kit === 'industrial') return `${kit}/Textures/variation-${letter}.png`;
   return `suburban/Textures/variation-${variant}.png`;
+}
+
+function pedestrianRoadTexture(source: THREE.Texture): THREE.CanvasTexture {
+  const image = source.image as HTMLImageElement;
+  const canvas = document.createElement('canvas');
+  canvas.width = image.width;
+  canvas.height = image.height;
+  const context = canvas.getContext('2d');
+  if (!context) throw new Error('Unable to recolor pedestrian way texture');
+  context.drawImage(image, 0, 0);
+  const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+  for (let index = 0; index < pixels.data.length; index += 4) {
+    const red = pixels.data[index];
+    const green = pixels.data[index + 1];
+    const blue = pixels.data[index + 2];
+    const isRoadSurface = (red === 0 && green === 0 && blue === 0)
+      || (red <= 125 && green <= 130 && blue <= 155 && green >= red && blue > green + 4);
+    if (!isRoadSurface) continue;
+    pixels.data[index] = 139;
+    pixels.data[index + 1] = 150;
+    pixels.data[index + 2] = 132;
+  }
+  context.putImageData(pixels, 0, 0);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = source.colorSpace;
+  texture.flipY = false;
+  texture.wrapS = source.wrapS;
+  texture.wrapT = source.wrapT;
+  texture.magFilter = source.magFilter;
+  texture.minFilter = source.minFilter;
+  texture.generateMipmaps = source.generateMipmaps;
+  texture.needsUpdate = true;
+  return texture;
 }
 
 function buildFieldSoil(): THREE.Object3D {

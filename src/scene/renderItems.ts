@@ -11,7 +11,7 @@ import { BUS_MODEL } from './busModel';
 import { SERVICE_VEHICLE_MODELS } from './serviceTrip';
 import { VENUE_CUSTOMER_MODELS, VENUE_STAFF_MODELS } from './venueCrowdModels';
 
-export const TEXTURE_VARIANTS = ['a', 'b', 'c', 'roads-a', 'commercial-a', 'commercial-b', 'industrial-a', 'industrial-b', 'industrial-c'] as const;
+export const TEXTURE_VARIANTS = ['a', 'b', 'c', 'roads-a', 'roads-pedestrian', 'commercial-a', 'commercial-b', 'industrial-a', 'industrial-b', 'industrial-c'] as const;
 
 export type TextureVariant = (typeof TEXTURE_VARIANTS)[number] | `tone:${string}`;
 
@@ -238,7 +238,7 @@ function pedestrianWayItems(state: GameState): RenderItem[] {
   return tiles.map((tile) => {
     const exits = DIRECTIONS.filter((direction: Direction) => keys.has(tileKey(neighbour(tile, direction))));
     const { piece, rotation } = roadPiece(exits);
-    return { model: ROAD_PIECE_MODELS[piece], x: tile.x + 0.5, z: tile.y + 0.5, rotation, textureVariant: 'roads-a', tint: 0xb7c9ae };
+    return { model: ROAD_PIECE_MODELS[piece], x: tile.x + 0.5, z: tile.y + 0.5, rotation, textureVariant: 'roads-pedestrian' };
   });
 }
 
