@@ -1562,6 +1562,8 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .codex-body { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 0; flex: 1; }
 .codex-list, .codex-detail { overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 16px; }
 .codex-list { border-right: 1px solid rgba(255, 255, 255, 0.15); }
+.codex-search { box-sizing: border-box; width: 100%; min-height: var(--tap); margin-bottom: 12px; padding: 8px 12px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.08); color: inherit; font: inherit; }
+.codex-search-empty { margin: 12px 0; opacity: 0.75; }
 .codex-list section + section { margin-top: 4px; }
 .codex-list h3 { margin: 0; font-size: 14px; font-weight: 700; }
 .codex-list .codex-section-toggle { display: flex; justify-content: space-between; align-items: center; font-weight: 700; background: rgba(255, 255, 255, 0.06); }

@@ -173,6 +173,8 @@ export const MESSAGES = {
   'stat.urbs': 'Urbs',
   'dock.build': 'Build',
   "codex.title": "Codex",
+  "codex.search": "Search the codex",
+  "codex.searchEmpty": "No matching entries.",
   'codex.about': 'About {name}',
   "codex.roads": "Roads and networks",
   "codex.water": "Water and bridges",

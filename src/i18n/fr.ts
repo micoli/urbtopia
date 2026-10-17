@@ -175,6 +175,8 @@ export const FR: Record<MessageKey, string> = {
   'stat.urbs': 'Urbs',
   'dock.build': 'Construire',
   "codex.title": "Codex",
+  "codex.search": "Rechercher dans le codex",
+  "codex.searchEmpty": "Aucune entrée correspondante.",
   'codex.about': 'À propos de {name}',
   "codex.roads": "Routes et réseaux",
   "codex.water": "Eau et ponts",

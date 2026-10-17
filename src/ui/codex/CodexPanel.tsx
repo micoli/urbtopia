@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexId, type CodexSection } from '../../codex/catalog';
 import type { CodexPage } from '../../codex/pages';
 import { t } from '../../i18n/t';
+import type { MessageKey } from '../../i18n/messages';
 import { useUi } from '../common/hooks';
 import { CodexEntryContent } from './CodexEntryContent';
 import { CropEconomyPage } from './CropEconomyPage';
@@ -16,6 +17,22 @@ import { CloseButton } from '../common/CloseButton';
 import { ActionButton } from '../common/ActionButton';
 import { AccordionSection } from '../common/AccordionSection';
 
+const CODEX_PAGES: readonly { id: CodexPage; section: CodexSection; title: MessageKey; description: MessageKey }[] = [
+  { id: 'economy', section: 'codex.crops', title: 'codex.economy.title', description: 'codex.economy.intro' },
+  { id: 'energy', section: 'build.utilities', title: 'codex.energy.title', description: 'codex.energy.intro' },
+  { id: 'storage', section: 'build.storage', title: 'codex.storage.title', description: 'codex.storage.intro' },
+  { id: 'sanctions', section: 'build.publicFacilities', title: 'codex.sanctions.title', description: 'codex.sanctions.intro' },
+  { id: 'market', section: 'codex.trade', title: 'codex.market.title', description: 'codex.market.intro' },
+  { id: 'challenges', section: 'codex.trade', title: 'codex.challenges.title', description: 'codex.challenges.intro' },
+  { id: 'solidarity', section: 'codex.trade', title: 'codex.solidarity.title', description: 'codex.solidarity.intro' },
+];
+
+function matchesSearch(value: string, query: string): boolean {
+  const normalizedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase();
+  const terms = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+  return terms.every(term => normalizedValue.includes(term));
+}
+
 export function CodexPanel() {
   const close = useUi(store => store.closeCodex);
   const initialEntry = useUi(store => store.codexEntryId);
@@ -27,11 +44,15 @@ export function CodexPanel() {
   const [selected, setSelected] = useState<CodexId>(initialEntry);
   const [showDetail, setShowDetail] = useState(initialDetail);
   const [page, setPage] = useState<CodexPage | null>(initialPage);
+  const [search, setSearch] = useState('');
   const pageOpen = page !== null;
   const [openSection, setOpenSection] = useState<CodexSection>(initialPage === 'market' || initialPage === 'challenges' || initialPage === 'solidarity' ? 'codex.trade' : CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
   const { manifest, failed, retry } = useCodexManifest();
   const entry = CODEX_ENTRIES.find(entry => entry.id === selected)!;
   const detail = useRef<HTMLElement>(null);
+  const filteredEntries = CODEX_ENTRIES.filter(item => matchesSearch(`${t(item.name)} ${t(item.description)} ${t(item.section)}`, search));
+  const filteredPages = CODEX_PAGES.filter(item => matchesSearch(`${t(item.title)} ${t(item.description)} ${t(item.section)}`, search));
+  const hasResults = search.trim() === '' || filteredEntries.length > 0 || filteredPages.length > 0;
 
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
@@ -79,31 +100,25 @@ export function CodexPanel() {
       </header>
       <div className="codex-body" data-detail={showDetail}>
         <nav className="codex-list" aria-label={t('codex.title')}>
+          <input
+            className="codex-search"
+            type="search"
+            aria-label={t('codex.search')}
+            placeholder={t('codex.search')}
+            value={search}
+            onChange={event => setSearch(event.target.value)}
+          />
+          {!hasResults && <p className="codex-search-empty" role="status">{t('codex.searchEmpty')}</p>}
           {CODEX_SECTIONS.map(section => {
-            const expanded = openSection === section;
+            const sectionEntries = filteredEntries.filter(item => item.section === section);
+            const sectionPages = filteredPages.filter(item => item.section === section);
+            if (search.trim() && sectionEntries.length === 0 && sectionPages.length === 0) return null;
+            const expanded = search.trim() !== '' || openSection === section;
             const panelId = `${heading}-${section}`;
             return (
               <AccordionSection key={section} id={panelId} title={t(section)} expanded={expanded} chevron toggleClassName="codex-section-toggle" onToggle={() => setOpenSection(expanded ? ('' as CodexSection) : section)}>
-                {section === 'codex.crops' && (
-                  <button type="button" aria-current={page === 'economy' ? 'true' : undefined} onClick={() => { setPage('economy'); setShowDetail(true); }}>{t('codex.economy.title')}</button>
-                )}
-                {section === 'build.utilities' && (
-                  <button type="button" aria-current={page === 'energy' ? 'true' : undefined} onClick={() => { setPage('energy'); setShowDetail(true); }}>{t('codex.energy.title')}</button>
-                )}
-                {section === 'build.storage' && (
-                  <button type="button" aria-current={page === 'storage' ? 'true' : undefined} onClick={() => { setPage('storage'); setShowDetail(true); }}>{t('codex.storage.title')}</button>
-                )}
-                {section === 'build.publicFacilities' && (
-                  <button type="button" aria-current={page === 'sanctions' ? 'true' : undefined} onClick={() => { setPage('sanctions'); setShowDetail(true); }}>{t('codex.sanctions.title')}</button>
-                )}
-                {section === 'codex.trade' && (
-                  <>
-                    <button type="button" aria-current={page === 'market' ? 'true' : undefined} onClick={() => { setPage('market'); setShowDetail(true); }}>{t('codex.market.title')}</button>
-                    <button type="button" aria-current={page === 'challenges' ? 'true' : undefined} onClick={() => { setPage('challenges'); setShowDetail(true); }}>{t('codex.challenges.title')}</button>
-                    <button type="button" aria-current={page === 'solidarity' ? 'true' : undefined} onClick={() => { setPage('solidarity'); setShowDetail(true); }}>{t('codex.solidarity.title')}</button>
-                  </>
-                )}
-                {CODEX_ENTRIES.filter(entry => entry.section === section).map(entry => (
+                {sectionPages.map(item => <button key={item.id} type="button" aria-current={page === item.id ? 'true' : undefined} onClick={() => { setPage(item.id); setShowDetail(true); }}>{t(item.title)}</button>)}
+                {sectionEntries.map(entry => (
                   <button type="button" key={entry.id} aria-current={!pageOpen && selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
                 ))}
               </AccordionSection>
