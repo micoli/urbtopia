@@ -5,6 +5,7 @@
     "en": "Flour",
     "fr": "Farine"
   },
+  "model": "materials-flour",
   "producedBy": "mill",
   "recipe": {
     "wheat": 1

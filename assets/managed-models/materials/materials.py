@@ -188,10 +188,49 @@ def olive():
     return parts
 
 
+def sack(name, at, yaw, scale):
+    x, y, z = at
+    body = lpm.box(f"{name}_body", (0.20, 0.13, 0.17), at=(0, 0, 0), color=color("flour"), taper=(0.78, 0.82))
+    lpm.paint(body, color("flour_shade"), where=lambda c, n, i: n.x > 0.5 or n.y > 0.5)
+    shoulder = lpm.box(f"{name}_shoulder", (0.15, 0.10, 0.04), at=(0, 0, 0.17), color=color("flour"), taper=(0.55, 0.6))
+    neck = lpm.box(f"{name}_neck", (0.07, 0.055, 0.04), at=(0, 0, 0.21), color=color("flour_shade"), taper=(1.2, 1.2))
+    tie = lpm.box(f"{name}_tie", (0.08, 0.065, 0.015), at=(0, 0, 0.215), color=color("sack_tie"))
+    stripe = lpm.box(f"{name}_stripe", (0.13, 0.006, 0.045), at=(0, -0.0675, 0.07), color=color("label"))
+    parts = [body, shoulder, neck, tie, stripe]
+    for part in parts:
+        lpm.scale(part, scale, scale, scale)
+        lpm.rotate(part, yaw, "Z")
+        lpm.move(part, x, y, z)
+    return parts
+
+
+def flour():
+    return sack("big", (-0.07, 0.03, 0), 12, 1.0) + sack("small", (0.13, -0.07, 0), -25, 0.62)
+
+
+def bottle(name, at, scale):
+    x, y, z = at
+    profile = [(0, 0), (0.052, 0), (0.060, 0.02), (0.060, 0.13), (0.045, 0.17), (0.022, 0.20), (0.020, 0.25), (0, 0.25)]
+    body = lpm.lathe(f"{name}_body", profile, segments=8, color=color("oil_glass"))
+    lpm.paint(body, color("oil_gold"), where=lambda c, n, i: c.z < 0.15 and abs(n.z) < 0.5 and i % 2 == 0)
+    label = lpm.prism(f"{name}_label", 8, 0.0615, 0.055, at=(0, 0, 0.045), color=color("paper"))
+    cap = lpm.prism(f"{name}_cap", 6, 0.026, 0.032, at=(0, 0, 0.248), color=color("olive_black"))
+    parts = [body, label, cap]
+    for part in parts:
+        lpm.scale(part, scale, scale, scale)
+        lpm.move(part, x, y, z)
+    return parts
+
+
+def olive_oil():
+    return bottle("big", (-0.05, 0.02, 0), 1.0) + bottle("small", (0.11, -0.05, 0), 0.7)
+
+
 MODELS = {
     "clay": clay, "coal": coal, "fish": fish, "gold": gold, "metal": metal,
     "sand": sand, "silicon": silicon, "stone": stone, "wood": wood,
     "apple": apple, "cherry": cherry, "olive": olive,
+    "flour": flour, "olive-oil": olive_oil,
 }
 
 out_dir = os.path.dirname(os.path.abspath(__file__))

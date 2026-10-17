@@ -26,6 +26,8 @@ PALETTE_ENTRIES = [
     ("apple_dark", "#a82424"), ("cherry", "#b0102a"), ("cherry_dark", "#7a0c20"),
     ("leaf_green", "#5aa646"), ("leaf_silver", "#8fa36a"), ("stem_green", "#5b8a3a"),
     ("olive_green", "#7d8a2e"), ("olive_black", "#2f2a35"),
+    ("flour", "#efe7d3"), ("flour_shade", "#d8ccb0"), ("sack_tie", "#b9a57a"),
+    ("oil_glass", "#8fa83c"), ("oil_gold", "#d9b52c"),
 ]
 PALETTE_NAMES = [name for name, _ in PALETTE_ENTRIES]
 

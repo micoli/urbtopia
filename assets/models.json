@@ -6110,6 +6110,12 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "materials-flour": {
+    "file": "materials/flour",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-gold": {
     "file": "materials/gold",
     "source": "managed",
@@ -6124,6 +6130,12 @@
   },
   "materials-olive": {
     "file": "materials/olive",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-olive-oil": {
+    "file": "materials/olive-oil",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180

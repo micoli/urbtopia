@@ -5,6 +5,7 @@
     "en": "Olive oil",
     "fr": "Huile d'olive"
   },
+  "model": "materials-olive-oil",
   "producedBy": "mill",
   "recipe": {
     "olive": 1
