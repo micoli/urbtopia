@@ -16,11 +16,12 @@
   },
   "tiers": [
     {
-      "model": "commercial-building-l",
+      "model": "buildings-university-3x3",
       "footprint": [3, 3],
       "capacity": 2000
     },
     {
+      "model": "buildings-university-3x3-4f",
       "capacity": 3000,
       "upgradeCost": {
         "urbs": 1800,
@@ -35,6 +36,7 @@
       }
     },
     {
+      "model": "buildings-university-3x3-5f",
       "capacity": 6000,
       "upgradeCost": {
         "urbs": 7200,
@@ -49,6 +51,7 @@
       }
     },
     {
+      "model": "buildings-university-3x3-6f",
       "capacity": 11000,
       "upgradeCost": {
         "urbs": 18000,
@@ -63,6 +66,7 @@
       }
     },
     {
+      "model": "buildings-university-3x3-7f",
       "capacity": 18000,
       "upgradeCost": {
         "urbs": 39000,
@@ -71,7 +75,7 @@
     }
   ],
   "category": "education",
-  "detailModel": "commercial-detail-overhang-wide",
+  "drawnToScale": true,
   "power": 2,
   "water": 0
 }

@@ -89,6 +89,36 @@
       "rotationOffset": {
         "type": "number"
       },
+      "tones": {
+        "description": "The color tones of this model: the name and swatch of each; a palette PNG `<file>.tone-<x>.png` sits next to it for tones b to d and Repaint swaps the palette texture.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string",
+          "enum": [
+            "a",
+            "b",
+            "c",
+            "d"
+          ]
+        },
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$"
+            }
+          },
+          "required": [
+            "name",
+            "color"
+          ],
+          "additionalProperties": false
+        }
+      },
       "bakeNodeScale": {
         "type": "boolean"
       },

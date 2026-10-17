@@ -16,7 +16,7 @@
   },
   "tiers": [
     {
-      "model": "venue-arcade-center-small",
+      "model": "buildings-arcade-2x2-t1-tone-a",
       "footprint": [2, 2],
       "gridSize": 6,
       "takingsCap": 400,
@@ -46,7 +46,7 @@
         "urbs": 5000,
         "goods": {}
       },
-      "model": "venue-arcade-center-dinner",
+      "model": "buildings-arcade-3x2-t2-tone-a",
       "footprint": [3, 2]
     },
     {
@@ -64,7 +64,9 @@
       "upgradeCost": {
         "urbs": 12000,
         "goods": {}
-      }
+      },
+      "model": "buildings-arcade-3x2-t3-tone-a",
+      "footprint": [3, 2]
     }
   ],
   "rankAt": [600, 2500],

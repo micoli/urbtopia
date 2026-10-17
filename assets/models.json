@@ -1,619 +1,2376 @@
 {
   "$schema": "defs/schemas/models.schema.json",
-  "buildings-2story-stairs-mat": {
-    "file": "buildings/2Story_Stairs_Mat",
-    "source": "quaternius",
-    "license": "CC0"
+  "buildings-arcade-2x2-t1-tone-a": {
+    "file": "buildings/arcade-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-2story-wide-2doors-mat": {
-    "file": "buildings/2Story_Wide_2Doors_Mat",
-    "source": "quaternius",
-    "license": "CC0"
+  "buildings-arcade-3x2-t2-tone-a": {
+    "file": "buildings/arcade-3x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-2story-wide-mat": {
-    "file": "buildings/2Story_Wide_Mat",
-    "source": "quaternius",
-    "license": "CC0"
+  "buildings-arcade-3x2-t3-tone-a": {
+    "file": "buildings/arcade-3x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-backup-2x2-t1": {
+    "file": "buildings/backup-2x2-t1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-backup-2x2-t2": {
+    "file": "buildings/backup-2x2-t2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-backup-2x2-t3": {
+    "file": "buildings/backup-2x2-t3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-ballpark-7x7-tone-a": {
+    "file": "buildings/ballpark-7x7-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      7,
+      7
+    ],
+    "rotationOffset": 45,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "cobalt",
+        "color": "#3b4bff"
+      },
+      "c": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      },
+      "d": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      }
+    }
+  },
+  "buildings-battery-1x1": {
+    "file": "buildings/battery-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-casino-2x2-t1-tone-a": {
+    "file": "buildings/casino-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "sun",
+        "color": "#ffd21f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-casino-3x2-t2-tone-a": {
+    "file": "buildings/casino-3x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "sun",
+        "color": "#ffd21f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-casino-6x2-t3-tone-a": {
+    "file": "buildings/casino-6x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      6,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "sun",
+        "color": "#ffd21f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-coal-1x1-t1-tone-a": {
+    "file": "buildings/coal-1x1-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-coal-1x1-t2-tone-a": {
+    "file": "buildings/coal-1x1-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-coal-1x1-t3-tone-a": {
+    "file": "buildings/coal-1x1-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-coal-1x1-t4-tone-a": {
+    "file": "buildings/coal-1x1-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-community-hall-1x1": {
+    "file": "buildings/community-hall-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-community-hall-1x1-2f": {
+    "file": "buildings/community-hall-1x1-2f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-community-hall-1x1-3f": {
+    "file": "buildings/community-hall-1x1-3f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-community-hall-1x1-4f": {
+    "file": "buildings/community-hall-1x1-4f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-community-hall-1x1-5f": {
+    "file": "buildings/community-hall-1x1-5f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-concert-hall-3x3": {
+    "file": "buildings/concert-hall-3x3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-concert-hall-3x3-3f": {
+    "file": "buildings/concert-hall-3x3-3f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-concert-hall-3x3-4f": {
+    "file": "buildings/concert-hall-3x3-4f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-concert-hall-3x3-5f": {
+    "file": "buildings/concert-hall-3x3-5f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-concert-hall-3x3-6f": {
+    "file": "buildings/concert-hall-3x3-6f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-depot-2x1-t1-tone-a": {
+    "file": "buildings/depot-2x1-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-depot-2x1-t2-tone-a": {
+    "file": "buildings/depot-2x1-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-depot-2x1-t3-tone-a": {
+    "file": "buildings/depot-2x1-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-depot-2x1-t4-tone-a": {
+    "file": "buildings/depot-2x1-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-depot-2x1-t5-tone-a": {
+    "file": "buildings/depot-2x1-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-depot-2x1-t6-tone-a": {
+    "file": "buildings/depot-2x1-t6-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-factory-2x2-t1-tone-a": {
+    "file": "buildings/factory-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      }
+    }
+  },
+  "buildings-factory-2x2-t2-tone-a": {
+    "file": "buildings/factory-2x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      }
+    }
+  },
+  "buildings-factory-2x2-t3-tone-a": {
+    "file": "buildings/factory-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      }
+    }
+  },
+  "buildings-factory-2x2-t4-tone-a": {
+    "file": "buildings/factory-2x2-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      }
+    }
+  },
+  "buildings-factory-2x2-t5-tone-a": {
+    "file": "buildings/factory-2x2-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      }
+    }
+  },
+  "buildings-fire-station-3x2": {
+    "file": "buildings/fire-station-3x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-fire-station-3x2-3f": {
+    "file": "buildings/fire-station-3x2-3f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-fire-station-3x2-4f": {
+    "file": "buildings/fire-station-3x2-4f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-fire-station-3x2-5f": {
+    "file": "buildings/fire-station-3x2-5f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-fire-station-3x2-6f": {
+    "file": "buildings/fire-station-3x2-6f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-geothermal-1x1-t1-tone-a": {
+    "file": "buildings/geothermal-1x1-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-geothermal-1x1-t2-tone-a": {
+    "file": "buildings/geothermal-1x1-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-geothermal-1x1-t3-tone-a": {
+    "file": "buildings/geothermal-1x1-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-high-school-3x2": {
+    "file": "buildings/high-school-3x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-high-school-3x2-3f": {
+    "file": "buildings/high-school-3x2-3f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-high-school-3x2-4f": {
+    "file": "buildings/high-school-3x2-4f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-high-school-3x2-5f": {
+    "file": "buildings/high-school-3x2-5f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-high-school-3x2-6f": {
+    "file": "buildings/high-school-3x2-6f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-hospital-3x3": {
+    "file": "buildings/hospital-3x3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-hospital-3x3-5f": {
+    "file": "buildings/hospital-3x3-5f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-hospital-3x3-6f": {
+    "file": "buildings/hospital-3x3-6f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-hospital-3x3-7f": {
+    "file": "buildings/hospital-3x3-7f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-hospital-3x3-8f": {
+    "file": "buildings/hospital-3x3-8f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-hotel-3x3-t1-tone-a": {
+    "file": "buildings/hotel-3x3-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-hotel-3x3-t2-tone-a": {
+    "file": "buildings/hotel-3x3-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-hotel-3x3-t3-tone-a": {
+    "file": "buildings/hotel-3x3-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x1-1f-mansard-a": {
     "file": "buildings/house-1x1-1f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x1-1f-mansard-a-solar": {
     "file": "buildings/house-1x1-1f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-1x1-1f-mansard-b": {
-    "file": "buildings/house-1x1-1f-mansard-b",
+  "buildings-house-1x1-1f-tone-a": {
+    "file": "buildings/house-1x1-1f-tone-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-1x1-1f-mansard-b-solar": {
-    "file": "buildings/house-1x1-1f-mansard-b-solar",
+  "buildings-house-1x1-1f-tone-a-solar": {
+    "file": "buildings/house-1x1-1f-tone-a-solar",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-1f-mansard-c": {
-    "file": "buildings/house-1x1-1f-mansard-c",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-1f-mansard-c-solar": {
-    "file": "buildings/house-1x1-1f-mansard-c-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-1f-mansard-d": {
-    "file": "buildings/house-1x1-1f-mansard-d",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-1f-mansard-d-solar": {
-    "file": "buildings/house-1x1-1f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x1-2f-mansard-a": {
     "file": "buildings/house-1x1-2f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x1-2f-mansard-a-solar": {
     "file": "buildings/house-1x1-2f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-2f-mansard-b": {
-    "file": "buildings/house-1x1-2f-mansard-b",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-2f-mansard-b-solar": {
-    "file": "buildings/house-1x1-2f-mansard-b-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-2f-mansard-c": {
-    "file": "buildings/house-1x1-2f-mansard-c",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-2f-mansard-c-solar": {
-    "file": "buildings/house-1x1-2f-mansard-c-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-2f-mansard-d": {
-    "file": "buildings/house-1x1-2f-mansard-d",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-2f-mansard-d-solar": {
-    "file": "buildings/house-1x1-2f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x1-3f-mansard-a": {
     "file": "buildings/house-1x1-3f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x1-3f-mansard-a-solar": {
     "file": "buildings/house-1x1-3f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-3f-mansard-b": {
-    "file": "buildings/house-1x1-3f-mansard-b",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-3f-mansard-b-solar": {
-    "file": "buildings/house-1x1-3f-mansard-b-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-3f-mansard-c": {
-    "file": "buildings/house-1x1-3f-mansard-c",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-3f-mansard-c-solar": {
-    "file": "buildings/house-1x1-3f-mansard-c-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-3f-mansard-d": {
-    "file": "buildings/house-1x1-3f-mansard-d",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-3f-mansard-d-solar": {
-    "file": "buildings/house-1x1-3f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x1-4f-mansard-a": {
     "file": "buildings/house-1x1-4f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x1-4f-mansard-a-solar": {
     "file": "buildings/house-1x1-4f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-4f-mansard-b": {
-    "file": "buildings/house-1x1-4f-mansard-b",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-4f-mansard-b-solar": {
-    "file": "buildings/house-1x1-4f-mansard-b-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-4f-mansard-c": {
-    "file": "buildings/house-1x1-4f-mansard-c",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-4f-mansard-c-solar": {
-    "file": "buildings/house-1x1-4f-mansard-c-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-4f-mansard-d": {
-    "file": "buildings/house-1x1-4f-mansard-d",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-4f-mansard-d-solar": {
-    "file": "buildings/house-1x1-4f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x1-5f-mansard-a": {
     "file": "buildings/house-1x1-5f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x1-5f-mansard-a-solar": {
     "file": "buildings/house-1x1-5f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-5f-mansard-b": {
-    "file": "buildings/house-1x1-5f-mansard-b",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-5f-mansard-b-solar": {
-    "file": "buildings/house-1x1-5f-mansard-b-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-5f-mansard-c": {
-    "file": "buildings/house-1x1-5f-mansard-c",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-5f-mansard-c-solar": {
-    "file": "buildings/house-1x1-5f-mansard-c-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-5f-mansard-d": {
-    "file": "buildings/house-1x1-5f-mansard-d",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x1-5f-mansard-d-solar": {
-    "file": "buildings/house-1x1-5f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x2-1f-mansard-a": {
     "file": "buildings/house-1x2-1f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x2-1f-mansard-a-solar": {
     "file": "buildings/house-1x2-1f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-1f-mansard-b": {
-    "file": "buildings/house-1x2-1f-mansard-b",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-1f-mansard-b-solar": {
-    "file": "buildings/house-1x2-1f-mansard-b-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-1f-mansard-c": {
-    "file": "buildings/house-1x2-1f-mansard-c",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-1f-mansard-c-solar": {
-    "file": "buildings/house-1x2-1f-mansard-c-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-1f-mansard-d": {
-    "file": "buildings/house-1x2-1f-mansard-d",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-1f-mansard-d-solar": {
-    "file": "buildings/house-1x2-1f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x2-2f-mansard-a": {
     "file": "buildings/house-1x2-2f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x2-2f-mansard-a-solar": {
     "file": "buildings/house-1x2-2f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-2f-mansard-b": {
-    "file": "buildings/house-1x2-2f-mansard-b",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-2f-mansard-b-solar": {
-    "file": "buildings/house-1x2-2f-mansard-b-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-2f-mansard-c": {
-    "file": "buildings/house-1x2-2f-mansard-c",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-2f-mansard-c-solar": {
-    "file": "buildings/house-1x2-2f-mansard-c-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-2f-mansard-d": {
-    "file": "buildings/house-1x2-2f-mansard-d",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-2f-mansard-d-solar": {
-    "file": "buildings/house-1x2-2f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x2-3f-mansard-a": {
     "file": "buildings/house-1x2-3f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x2-3f-mansard-a-solar": {
     "file": "buildings/house-1x2-3f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-3f-mansard-b": {
-    "file": "buildings/house-1x2-3f-mansard-b",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-3f-mansard-b-solar": {
-    "file": "buildings/house-1x2-3f-mansard-b-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-3f-mansard-c": {
-    "file": "buildings/house-1x2-3f-mansard-c",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-3f-mansard-c-solar": {
-    "file": "buildings/house-1x2-3f-mansard-c-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-3f-mansard-d": {
-    "file": "buildings/house-1x2-3f-mansard-d",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-3f-mansard-d-solar": {
-    "file": "buildings/house-1x2-3f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x2-4f-mansard-a": {
     "file": "buildings/house-1x2-4f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x2-4f-mansard-a-solar": {
     "file": "buildings/house-1x2-4f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-4f-mansard-b": {
-    "file": "buildings/house-1x2-4f-mansard-b",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-4f-mansard-b-solar": {
-    "file": "buildings/house-1x2-4f-mansard-b-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-4f-mansard-c": {
-    "file": "buildings/house-1x2-4f-mansard-c",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-4f-mansard-c-solar": {
-    "file": "buildings/house-1x2-4f-mansard-c-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-4f-mansard-d": {
-    "file": "buildings/house-1x2-4f-mansard-d",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-1x2-4f-mansard-d-solar": {
-    "file": "buildings/house-1x2-4f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x2-5f-mansard-a": {
     "file": "buildings/house-1x2-5f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-1x2-5f-mansard-a-solar": {
     "file": "buildings/house-1x2-5f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-1x2-5f-mansard-b": {
-    "file": "buildings/house-1x2-5f-mansard-b",
+  "buildings-house-2x1-1f-tone-a": {
+    "file": "buildings/house-2x1-1f-tone-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-1x2-5f-mansard-b-solar": {
-    "file": "buildings/house-1x2-5f-mansard-b-solar",
+  "buildings-house-2x1-1f-tone-a-solar": {
+    "file": "buildings/house-2x1-1f-tone-a-solar",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-1x2-5f-mansard-c": {
-    "file": "buildings/house-1x2-5f-mansard-c",
+  "buildings-house-2x1-2f-third-tone-a": {
+    "file": "buildings/house-2x1-2f-third-tone-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-1x2-5f-mansard-c-solar": {
-    "file": "buildings/house-1x2-5f-mansard-c-solar",
+  "buildings-house-2x1-2f-third-tone-a-solar": {
+    "file": "buildings/house-2x1-2f-third-tone-a-solar",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-1x2-5f-mansard-d": {
-    "file": "buildings/house-1x2-5f-mansard-d",
+  "buildings-house-2x1-2f-tone-a": {
+    "file": "buildings/house-2x1-2f-tone-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-1x2-5f-mansard-d-solar": {
-    "file": "buildings/house-1x2-5f-mansard-d-solar",
+  "buildings-house-2x1-2f-tone-a-solar": {
+    "file": "buildings/house-2x1-2f-tone-a-solar",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-2x2-1f-mansard-a": {
     "file": "buildings/house-2x2-1f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-2x2-1f-mansard-a-solar": {
     "file": "buildings/house-2x2-1f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-1f-mansard-b": {
-    "file": "buildings/house-2x2-1f-mansard-b",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-1f-mansard-b-solar": {
-    "file": "buildings/house-2x2-1f-mansard-b-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-1f-mansard-c": {
-    "file": "buildings/house-2x2-1f-mansard-c",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-1f-mansard-c-solar": {
-    "file": "buildings/house-2x2-1f-mansard-c-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-1f-mansard-d": {
-    "file": "buildings/house-2x2-1f-mansard-d",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-1f-mansard-d-solar": {
-    "file": "buildings/house-2x2-1f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-2x2-2f-mansard-a": {
     "file": "buildings/house-2x2-2f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-2x2-2f-mansard-a-solar": {
     "file": "buildings/house-2x2-2f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-2x2-2f-mansard-b": {
-    "file": "buildings/house-2x2-2f-mansard-b",
+  "buildings-house-2x2-2f-tone-a": {
+    "file": "buildings/house-2x2-2f-tone-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-2x2-2f-mansard-b-solar": {
-    "file": "buildings/house-2x2-2f-mansard-b-solar",
+  "buildings-house-2x2-2f-tone-a-solar": {
+    "file": "buildings/house-2x2-2f-tone-a-solar",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-2f-mansard-c": {
-    "file": "buildings/house-2x2-2f-mansard-c",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-2f-mansard-c-solar": {
-    "file": "buildings/house-2x2-2f-mansard-c-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-2f-mansard-d": {
-    "file": "buildings/house-2x2-2f-mansard-d",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-2f-mansard-d-solar": {
-    "file": "buildings/house-2x2-2f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-2x2-3f-mansard-a": {
     "file": "buildings/house-2x2-3f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-2x2-3f-mansard-a-solar": {
     "file": "buildings/house-2x2-3f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-2x2-3f-mansard-b": {
-    "file": "buildings/house-2x2-3f-mansard-b",
+  "buildings-house-2x2-3f-tone-a": {
+    "file": "buildings/house-2x2-3f-tone-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-2x2-3f-mansard-b-solar": {
-    "file": "buildings/house-2x2-3f-mansard-b-solar",
+  "buildings-house-2x2-3f-tone-a-solar": {
+    "file": "buildings/house-2x2-3f-tone-a-solar",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-3f-mansard-c": {
-    "file": "buildings/house-2x2-3f-mansard-c",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-3f-mansard-c-solar": {
-    "file": "buildings/house-2x2-3f-mansard-c-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-3f-mansard-d": {
-    "file": "buildings/house-2x2-3f-mansard-d",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-3f-mansard-d-solar": {
-    "file": "buildings/house-2x2-3f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-2x2-4f-mansard-a": {
     "file": "buildings/house-2x2-4f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-2x2-4f-mansard-a-solar": {
     "file": "buildings/house-2x2-4f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-2x2-4f-mansard-b": {
-    "file": "buildings/house-2x2-4f-mansard-b",
+  "buildings-house-2x2-4f-tone-a": {
+    "file": "buildings/house-2x2-4f-tone-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-2x2-4f-mansard-b-solar": {
-    "file": "buildings/house-2x2-4f-mansard-b-solar",
+  "buildings-house-2x2-4f-tone-a-solar": {
+    "file": "buildings/house-2x2-4f-tone-a-solar",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-4f-mansard-c": {
-    "file": "buildings/house-2x2-4f-mansard-c",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-4f-mansard-c-solar": {
-    "file": "buildings/house-2x2-4f-mansard-c-solar",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-4f-mansard-d": {
-    "file": "buildings/house-2x2-4f-mansard-d",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-4f-mansard-d-solar": {
-    "file": "buildings/house-2x2-4f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-2x2-5f-mansard-a": {
     "file": "buildings/house-2x2-5f-mansard-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-house-2x2-5f-mansard-a-solar": {
     "file": "buildings/house-2x2-5f-mansard-a-solar",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-2x2-5f-mansard-b": {
-    "file": "buildings/house-2x2-5f-mansard-b",
+  "buildings-house-2x2-5f-tone-a": {
+    "file": "buildings/house-2x2-5f-tone-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-2x2-5f-mansard-b-solar": {
-    "file": "buildings/house-2x2-5f-mansard-b-solar",
+  "buildings-house-2x2-5f-tone-a-solar": {
+    "file": "buildings/house-2x2-5f-tone-a-solar",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
-  "buildings-house-2x2-5f-mansard-c": {
-    "file": "buildings/house-2x2-5f-mansard-c",
+  "buildings-hydro-1x2-t1-tone-a": {
+    "file": "buildings/hydro-1x2-t1-tone-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "coral",
+        "color": "#ff5a4e"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      }
+    }
   },
-  "buildings-house-2x2-5f-mansard-c-solar": {
-    "file": "buildings/house-2x2-5f-mansard-c-solar",
+  "buildings-hydro-1x2-t2-tone-a": {
+    "file": "buildings/hydro-1x2-t2-tone-a",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "coral",
+        "color": "#ff5a4e"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      }
+    }
   },
-  "buildings-house-2x2-5f-mansard-d": {
-    "file": "buildings/house-2x2-5f-mansard-d",
+  "buildings-hydro-1x2-t3-tone-a": {
+    "file": "buildings/hydro-1x2-t3-tone-a",
     "source": "managed",
-    "license": "Own work"
-  },
-  "buildings-house-2x2-5f-mansard-d-solar": {
-    "file": "buildings/house-2x2-5f-mansard-d-solar",
-    "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "coral",
+        "color": "#ff5a4e"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      }
+    }
   },
   "buildings-marina-captaincy": {
     "file": "buildings/marina-captaincy",
@@ -626,7 +2383,8 @@
     "fit": {
       "width": 1.5,
       "height": 1
-    }
+    },
+    "rotationOffset": 180
   },
   "buildings-marina-captaincy-narrow": {
     "file": "buildings/marina-captaincy-narrow",
@@ -639,6 +2397,2459 @@
     "fit": {
       "width": 1,
       "height": 2
+    },
+    "rotationOffset": 180
+  },
+  "buildings-middle-school-2x2": {
+    "file": "buildings/middle-school-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-middle-school-2x2-3f": {
+    "file": "buildings/middle-school-2x2-3f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-middle-school-2x2-4f": {
+    "file": "buildings/middle-school-2x2-4f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-middle-school-2x2-5f": {
+    "file": "buildings/middle-school-2x2-5f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-middle-school-2x2-6f": {
+    "file": "buildings/middle-school-2x2-6f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-packhouse-2x2-t1-tone-a": {
+    "file": "buildings/packhouse-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-packhouse-2x2-t2-tone-a": {
+    "file": "buildings/packhouse-2x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-packhouse-2x2-t3-tone-a": {
+    "file": "buildings/packhouse-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-packhouse-2x2-t4-tone-a": {
+    "file": "buildings/packhouse-2x2-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-packhouse-2x2-t5-tone-a": {
+    "file": "buildings/packhouse-2x2-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-police-station-2x2": {
+    "file": "buildings/police-station-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-police-station-2x2-3f": {
+    "file": "buildings/police-station-2x2-3f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-police-station-2x2-4f": {
+    "file": "buildings/police-station-2x2-4f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-police-station-2x2-5f": {
+    "file": "buildings/police-station-2x2-5f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-police-station-2x2-6f": {
+    "file": "buildings/police-station-2x2-6f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-school-2x2": {
+    "file": "buildings/school-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-school-2x2-3f": {
+    "file": "buildings/school-2x2-3f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-school-2x2-4f": {
+    "file": "buildings/school-2x2-4f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-school-2x2-5f": {
+    "file": "buildings/school-2x2-5f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-school-2x2-6f": {
+    "file": "buildings/school-2x2-6f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-shop-construction-1x1-t1-tone-a": {
+    "file": "buildings/shop-construction-1x1-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "b": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "white",
+        "color": "#f1f1f6"
+      }
+    }
+  },
+  "buildings-shop-construction-1x1-t2-tone-a": {
+    "file": "buildings/shop-construction-1x1-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "b": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "white",
+        "color": "#f1f1f6"
+      }
+    }
+  },
+  "buildings-shop-construction-1x1-t3-tone-a": {
+    "file": "buildings/shop-construction-1x1-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "b": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "white",
+        "color": "#f1f1f6"
+      }
+    }
+  },
+  "buildings-shop-construction-1x1-t4-tone-a": {
+    "file": "buildings/shop-construction-1x1-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "b": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "white",
+        "color": "#f1f1f6"
+      }
+    }
+  },
+  "buildings-shop-equipment-1x1-t1-tone-a": {
+    "file": "buildings/shop-equipment-1x1-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-shop-equipment-1x1-t2-tone-a": {
+    "file": "buildings/shop-equipment-1x1-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-shop-equipment-1x1-t3-tone-a": {
+    "file": "buildings/shop-equipment-1x1-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-shop-equipment-1x1-t4-tone-a": {
+    "file": "buildings/shop-equipment-1x1-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-shop-food-1x1-t1-tone-a": {
+    "file": "buildings/shop-food-1x1-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-shop-food-1x1-t2-tone-a": {
+    "file": "buildings/shop-food-1x1-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-shop-food-1x1-t3-tone-a": {
+    "file": "buildings/shop-food-1x1-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-shop-food-1x1-t4-tone-a": {
+    "file": "buildings/shop-food-1x1-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-shop-general-1x1-t1-tone-a": {
+    "file": "buildings/shop-general-1x1-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-shop-general-1x1-t2-tone-a": {
+    "file": "buildings/shop-general-1x1-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-shop-general-1x1-t3-tone-a": {
+    "file": "buildings/shop-general-1x1-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-shop-general-1x1-t4-tone-a": {
+    "file": "buildings/shop-general-1x1-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-shop-luxury-1x1-t1-tone-a": {
+    "file": "buildings/shop-luxury-1x1-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "b": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "white",
+        "color": "#f1f1f6"
+      }
+    }
+  },
+  "buildings-shop-luxury-1x1-t2-tone-a": {
+    "file": "buildings/shop-luxury-1x1-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "b": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "white",
+        "color": "#f1f1f6"
+      }
+    }
+  },
+  "buildings-shop-luxury-1x1-t3-tone-a": {
+    "file": "buildings/shop-luxury-1x1-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "b": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "white",
+        "color": "#f1f1f6"
+      }
+    }
+  },
+  "buildings-shop-luxury-1x1-t4-tone-a": {
+    "file": "buildings/shop-luxury-1x1-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "b": {
+        "name": "white",
+        "color": "#f1f1f6"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "white",
+        "color": "#f1f1f6"
+      }
+    }
+  },
+  "buildings-silo-2x2-t1-tone-a": {
+    "file": "buildings/silo-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-silo-2x2-t10-tone-a": {
+    "file": "buildings/silo-2x2-t10-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-silo-2x2-t2-tone-a": {
+    "file": "buildings/silo-2x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-silo-2x2-t3-tone-a": {
+    "file": "buildings/silo-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-silo-2x2-t4-tone-a": {
+    "file": "buildings/silo-2x2-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-silo-2x2-t5-tone-a": {
+    "file": "buildings/silo-2x2-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-silo-2x2-t6-tone-a": {
+    "file": "buildings/silo-2x2-t6-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-silo-2x2-t7-tone-a": {
+    "file": "buildings/silo-2x2-t7-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-silo-2x2-t8-tone-a": {
+    "file": "buildings/silo-2x2-t8-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-silo-2x2-t9-tone-a": {
+    "file": "buildings/silo-2x2-t9-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-solar-2x2-t1": {
+    "file": "buildings/solar-2x2-t1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-solar-2x2-t2": {
+    "file": "buildings/solar-2x2-t2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-solar-2x2-t3": {
+    "file": "buildings/solar-2x2-t3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-solar-2x2-t4": {
+    "file": "buildings/solar-2x2-t4",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-stadium-9x5-tone-a": {
+    "file": "buildings/stadium-9x5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      9,
+      5
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "cobalt",
+        "color": "#3b4bff"
+      },
+      "c": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      },
+      "d": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      }
+    }
+  },
+  "buildings-station-2x1": {
+    "file": "buildings/station-2x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-stop-1x1-brt": {
+    "file": "buildings/stop-1x1-brt",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-stop-1x1-bus": {
+    "file": "buildings/stop-1x1-bus",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-storehouse-2x2-t1-tone-a": {
+    "file": "buildings/storehouse-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-storehouse-2x2-t10-tone-a": {
+    "file": "buildings/storehouse-2x2-t10-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-storehouse-2x2-t2-tone-a": {
+    "file": "buildings/storehouse-2x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-storehouse-2x2-t3-tone-a": {
+    "file": "buildings/storehouse-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-storehouse-2x2-t4-tone-a": {
+    "file": "buildings/storehouse-2x2-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-storehouse-2x2-t5-tone-a": {
+    "file": "buildings/storehouse-2x2-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-storehouse-2x2-t6-tone-a": {
+    "file": "buildings/storehouse-2x2-t6-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-storehouse-2x2-t7-tone-a": {
+    "file": "buildings/storehouse-2x2-t7-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-storehouse-2x2-t8-tone-a": {
+    "file": "buildings/storehouse-2x2-t8-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-storehouse-2x2-t9-tone-a": {
+    "file": "buildings/storehouse-2x2-t9-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-supermarket-2x2-t1-tone-a": {
+    "file": "buildings/supermarket-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-supermarket-3x2-t2-tone-a": {
+    "file": "buildings/supermarket-3x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-supermarket-3x2-t3-tone-a": {
+    "file": "buildings/supermarket-3x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-theater-2x2": {
+    "file": "buildings/theater-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-theater-2x2-3f": {
+    "file": "buildings/theater-2x2-3f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-theater-2x2-4f": {
+    "file": "buildings/theater-2x2-4f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-theater-2x2-5f": {
+    "file": "buildings/theater-2x2-5f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-theater-2x2-6f": {
+    "file": "buildings/theater-2x2-6f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-tower-1x1-4f-tone-a": {
+    "file": "buildings/tower-1x1-4f-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-tower-1x1-4f-tone-a-solar": {
+    "file": "buildings/tower-1x1-4f-tone-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-tower-1x1-6f-tone-a": {
+    "file": "buildings/tower-1x1-6f-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-tower-1x1-6f-tone-a-solar": {
+    "file": "buildings/tower-1x1-6f-tone-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-tower-1x1-8f-tone-a": {
+    "file": "buildings/tower-1x1-8f-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-tower-1x1-8f-tone-a-solar": {
+    "file": "buildings/tower-1x1-8f-tone-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-town-hall-3x2": {
+    "file": "buildings/town-hall-3x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-town-hall-3x2-3f": {
+    "file": "buildings/town-hall-3x2-3f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-town-hall-3x2-4f": {
+    "file": "buildings/town-hall-3x2-4f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-town-hall-3x2-5f": {
+    "file": "buildings/town-hall-3x2-5f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-town-hall-3x2-6f": {
+    "file": "buildings/town-hall-3x2-6f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-university-3x3": {
+    "file": "buildings/university-3x3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-university-3x3-4f": {
+    "file": "buildings/university-3x3-4f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-university-3x3-5f": {
+    "file": "buildings/university-3x3-5f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-university-3x3-6f": {
+    "file": "buildings/university-3x3-6f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-university-3x3-7f": {
+    "file": "buildings/university-3x3-7f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-vault-2x1-t1-tone-a": {
+    "file": "buildings/vault-2x1-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-vault-2x1-t2-tone-a": {
+    "file": "buildings/vault-2x1-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-vault-2x1-t3-tone-a": {
+    "file": "buildings/vault-2x1-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-vault-2x1-t4-tone-a": {
+    "file": "buildings/vault-2x1-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-vault-2x1-t5-tone-a": {
+    "file": "buildings/vault-2x1-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-vault-2x1-t6-tone-a": {
+    "file": "buildings/vault-2x1-t6-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-watertower-1x1-t1-tone-a": {
+    "file": "buildings/watertower-1x1-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-watertower-1x1-t2-tone-a": {
+    "file": "buildings/watertower-1x1-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-watertower-1x1-t3-tone-a": {
+    "file": "buildings/watertower-1x1-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-windturbine-1x1-t1-tone-a": {
+    "file": "buildings/windturbine-1x1-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-windturbine-1x1-t2-tone-a": {
+    "file": "buildings/windturbine-1x1-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-windturbine-1x1-t3-tone-a": {
+    "file": "buildings/windturbine-1x1-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-workshop-2x2-t1-tone-a": {
+    "file": "buildings/workshop-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      }
+    }
+  },
+  "buildings-workshop-2x2-t2-tone-a": {
+    "file": "buildings/workshop-2x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      }
+    }
+  },
+  "buildings-workshop-2x2-t3-tone-a": {
+    "file": "buildings/workshop-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      }
+    }
+  },
+  "buildings-workshop-2x2-t4-tone-a": {
+    "file": "buildings/workshop-2x2-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      }
+    }
+  },
+  "buildings-workshop-2x2-t5-tone-a": {
+    "file": "buildings/workshop-2x2-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#2fd6a2"
+      }
     }
   },
   "cars-ambulance": {
@@ -691,66 +4902,12 @@
     "source": "kenney",
     "license": "CC0"
   },
-  "commercial-building-a": {
-    "file": "commercial/building-a",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      1
-    ]
-  },
-  "commercial-building-b": {
-    "file": "commercial/building-b",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      1
-    ]
-  },
-  "commercial-building-c": {
-    "file": "commercial/building-c",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      1
-    ]
-  },
-  "commercial-building-d": {
-    "file": "commercial/building-d",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      1
-    ]
-  },
   "commercial-building-e": {
     "file": "commercial/building-e",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
       2,
-      1
-    ]
-  },
-  "commercial-building-f": {
-    "file": "commercial/building-f",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      1
-    ]
-  },
-  "commercial-building-g": {
-    "file": "commercial/building-g",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
       1
     ]
   },
@@ -763,40 +4920,6 @@
       1
     ]
   },
-  "commercial-building-i": {
-    "file": "commercial/building-i",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ],
-    "note": "catalog suggested x1.5 to fill 2x2; the game scales facilities from their footprint instead"
-  },
-  "commercial-building-j": {
-    "file": "commercial/building-j",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "commercial-building-k": {
-    "file": "commercial/building-k",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "commercial-building-l": {
-    "file": "commercial/building-l",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ],
-    "note": "catalog suggested x1.5 to fill 2x2; the game scales facilities from their footprint instead"
-  },
   "commercial-building-m": {
     "file": "commercial/building-m",
     "source": "kenney",
@@ -806,11 +4929,6 @@
       2
     ],
     "note": "catalog suggested x1.5 to fill 2x2; the game scales facilities from their footprint instead"
-  },
-  "commercial-building-n": {
-    "file": "commercial/building-n",
-    "source": "kenney",
-    "license": "CC0"
   },
   "commercial-building-skyscraper-a": {
     "file": "commercial/building-skyscraper-a",
@@ -856,36 +4974,6 @@
       2,
       2
     ]
-  },
-  "commercial-detail-awning": {
-    "file": "commercial/detail-awning",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "commercial-detail-awning-wide": {
-    "file": "commercial/detail-awning-wide",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "commercial-detail-overhang": {
-    "file": "commercial/detail-overhang",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "commercial-detail-overhang-wide": {
-    "file": "commercial/detail-overhang-wide",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "commercial-detail-parasol-a": {
-    "file": "commercial/detail-parasol-a",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "commercial-detail-parasol-b": {
-    "file": "commercial/detail-parasol-b",
-    "source": "kenney",
-    "license": "CC0"
   },
   "crops-apple-1": {
     "file": "crops/Apple_1",
@@ -1461,29 +5549,6 @@
       "height": 2
     }
   },
-  "farm-openbarn": {
-    "file": "farm/OpenBarn",
-    "source": "quaternius",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ],
-    "fit": {
-      "width": 2,
-      "height": 2
-    }
-  },
-  "farm-silo": {
-    "file": "farm/Silo",
-    "source": "quaternius",
-    "license": "CC0"
-  },
-  "farm-silo-house": {
-    "file": "farm/Silo_House",
-    "source": "quaternius",
-    "license": "CC0"
-  },
   "furniture-bathtub": {
     "file": "furniture/bathtub",
     "source": "kenney",
@@ -1760,57 +5825,68 @@
   "goods-bricks": {
     "file": "goods/bricks",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "goods-cannedfish": {
     "file": "goods/cannedFish",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "goods-cement": {
     "file": "goods/cement",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "goods-circuits": {
     "file": "goods/circuits",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "goods-crystal": {
     "file": "goods/crystal",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "goods-glass": {
     "file": "goods/glass",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "goods-jewelry": {
     "file": "goods/jewelry",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "goods-planks": {
     "file": "goods/planks",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "goods-steel": {
     "file": "goods/steel",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "goods-tiles": {
     "file": "goods/tiles",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "goods-tools": {
     "file": "goods/tools",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "holiday-bench": {
     "file": "holiday/bench",
@@ -1822,60 +5898,6 @@
     "source": "kenney",
     "license": "CC0"
   },
-  "industrial-building-a": {
-    "file": "industrial/building-a",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "industrial-building-b": {
-    "file": "industrial/building-b",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "industrial-building-c": {
-    "file": "industrial/building-c",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "industrial-building-d": {
-    "file": "industrial/building-d",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      2
-    ]
-  },
-  "industrial-building-e": {
-    "file": "industrial/building-e",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "industrial-building-f": {
-    "file": "industrial/building-f",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
   "industrial-building-g": {
     "file": "industrial/building-g",
     "source": "kenney",
@@ -1885,31 +5907,8 @@
       2
     ]
   },
-  "industrial-building-h": {
-    "file": "industrial/building-h",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ],
-    "scale": 1.45,
-    "center": [
-      -0.58,
-      0.28
-    ]
-  },
   "industrial-building-i": {
     "file": "industrial/building-i",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      2
-    ]
-  },
-  "industrial-building-j": {
-    "file": "industrial/building-j",
     "source": "kenney",
     "license": "CC0",
     "footprint": [
@@ -1924,15 +5923,6 @@
     "footprint": [
       2,
       1
-    ]
-  },
-  "industrial-building-l": {
-    "file": "industrial/building-l",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
     ]
   },
   "industrial-building-m": {
@@ -1962,24 +5952,6 @@
       2
     ]
   },
-  "industrial-building-p": {
-    "file": "industrial/building-p",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "industrial-building-q": {
-    "file": "industrial/building-q",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
   "industrial-building-r": {
     "file": "industrial/building-r",
     "source": "kenney",
@@ -1987,15 +5959,6 @@
     "footprint": [
       3,
       2
-    ]
-  },
-  "industrial-building-s": {
-    "file": "industrial/building-s",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
     ]
   },
   "industrial-building-t": {
@@ -2006,36 +5969,6 @@
       2,
       2
     ]
-  },
-  "industrial-chimney-basic": {
-    "file": "industrial/chimney-basic",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "industrial-chimney-large": {
-    "file": "industrial/chimney-large",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "industrial-chimney-medium": {
-    "file": "industrial/chimney-medium",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "industrial-chimney-small": {
-    "file": "industrial/chimney-small",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "industrial-detail-tank-large": {
-    "file": "industrial/detail-tank-large",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "industrial-shipping-container-a": {
-    "file": "industrial/shipping-container-a",
-    "source": "kenney",
-    "license": "CC0"
   },
   "industrial-solar-panel-flat": {
     "file": "industrial/solar-panel-flat",
@@ -2065,74 +5998,59 @@
       2
     ]
   },
-  "industrial-water-tower": {
-    "file": "industrial/water-tower",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      1
-    ],
-    "bakeNodeScale": true
-  },
-  "industrial-windmill": {
-    "file": "industrial/windmill",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      1
-    ]
-  },
-  "industrial-windmill-low": {
-    "file": "industrial/windmill-low",
-    "source": "kenney",
-    "license": "CC0"
-  },
   "materials-clay": {
     "file": "materials/clay",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "materials-coal": {
     "file": "materials/coal",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "materials-fish": {
     "file": "materials/fish",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "materials-gold": {
     "file": "materials/gold",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "materials-metal": {
     "file": "materials/metal",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "materials-sand": {
     "file": "materials/sand",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "materials-silicon": {
     "file": "materials/silicon",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "materials-stone": {
     "file": "materials/stone",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "materials-wood": {
     "file": "materials/wood",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "rotationOffset": 180
   },
   "mini-arcade-air-hockey": {
     "file": "mini-arcade/air-hockey",
@@ -4059,23 +7977,6 @@
     "url": "https://poly.pizza/m/6BGhNQlUzRR",
     "note": "Bakery"
   },
-  "poly-pizza-ballpark-45ez39jsdz6": {
-    "file": "poly.pizza/ballpark-45ez39jsdz6",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/45Ez39JSdz6",
-    "footprint": [
-      7,
-      7
-    ],
-    "fit": {
-      "width": 7,
-      "height": 7
-    },
-    "rotationOffset": 45,
-    "note": "Ballpark"
-  },
   "poly-pizza-ballpark-8p3rzdaoytp": {
     "file": "poly.pizza/ballpark-8p3rzdaoytp",
     "source": "poly.pizza",
@@ -4523,11 +8424,6 @@
     ],
     "note": "exits assumed at the middle of each side; to verify"
   },
-  "roads-road-sign-empty": {
-    "file": "roads/road-sign-empty",
-    "source": "kenney",
-    "license": "CC0"
-  },
   "roads-road-square": {
     "file": "roads/road-square",
     "source": "kenney",
@@ -4543,201 +8439,6 @@
     "license": "CC0",
     "footprint": [
       1,
-      1
-    ]
-  },
-  "sport-athletics-stadium": {
-    "file": "sport/athletics-stadium",
-    "source": "managed",
-    "license": "Own work"
-  },
-  "suburban-building-type-a": {
-    "file": "suburban/building-type-a",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "suburban-building-type-b": {
-    "file": "suburban/building-type-b",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "suburban-building-type-c": {
-    "file": "suburban/building-type-c",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "suburban-building-type-d": {
-    "file": "suburban/building-type-d",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "suburban-building-type-e": {
-    "file": "suburban/building-type-e",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "suburban-building-type-f": {
-    "file": "suburban/building-type-f",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "suburban-building-type-g": {
-    "file": "suburban/building-type-g",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ],
-    "note": "bbox 1.45x1.18: overridden to 2x1 (rule gives 2x2)"
-  },
-  "suburban-building-type-h": {
-    "file": "suburban/building-type-h",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "suburban-building-type-i": {
-    "file": "suburban/building-type-i",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "suburban-building-type-j": {
-    "file": "suburban/building-type-j",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "suburban-building-type-k": {
-    "file": "suburban/building-type-k",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      1
-    ]
-  },
-  "suburban-building-type-l": {
-    "file": "suburban/building-type-l",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      1
-    ]
-  },
-  "suburban-building-type-m": {
-    "file": "suburban/building-type-m",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "suburban-building-type-n": {
-    "file": "suburban/building-type-n",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "suburban-building-type-o": {
-    "file": "suburban/building-type-o",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "suburban-building-type-p": {
-    "file": "suburban/building-type-p",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "suburban-building-type-q": {
-    "file": "suburban/building-type-q",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "suburban-building-type-r": {
-    "file": "suburban/building-type-r",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      1
-    ]
-  },
-  "suburban-building-type-s": {
-    "file": "suburban/building-type-s",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "suburban-building-type-t": {
-    "file": "suburban/building-type-t",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "suburban-building-type-u": {
-    "file": "suburban/building-type-u",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
       1
     ]
   },
@@ -4792,62 +8493,6 @@
     "file": "trains/train-locomotive-passenger-a",
     "source": "kenney",
     "license": "CC0"
-  },
-  "venue-arcade-center-dinner": {
-    "file": "venue/arcade-center-dinner",
-    "source": "managed",
-    "license": "Own work",
-    "footprint": [
-      3,
-      2
-    ],
-    "fit": {
-      "width": 2,
-      "height": 1.5
-    },
-    "rotationOffset": 180
-  },
-  "venue-arcade-center-small": {
-    "file": "venue/arcade-center-small",
-    "source": "managed",
-    "license": "Own work",
-    "footprint": [
-      2,
-      2
-    ],
-    "fit": {
-      "width": 1.5,
-      "height": 1.5
-    },
-    "rotationOffset": 180
-  },
-  "venue-supermarket-large": {
-    "file": "venue/supermarket-large",
-    "source": "managed",
-    "license": "Own work",
-    "footprint": [
-      1,
-      1
-    ],
-    "fit": {
-      "width": 2.5,
-      "height": 1.8
-    },
-    "rotationOffset": 180
-  },
-  "venue-supermarket-small": {
-    "file": "venue/supermarket-small",
-    "source": "managed",
-    "license": "Own work",
-    "footprint": [
-      2,
-      2
-    ],
-    "fit": {
-      "width": 2,
-      "height": 2
-    },
-    "rotationOffset": 180
   },
   "watercraft-boat-fishing-small": {
     "file": "watercraft/boat-fishing-small",

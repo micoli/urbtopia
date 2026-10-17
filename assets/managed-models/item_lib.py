@@ -3,8 +3,7 @@ import os
 import shutil
 import sys
 
-LPM_DIR = os.path.expanduser("~/.claude/skills/blender-lpm-skill/scripts")
-sys.path.insert(0, LPM_DIR)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "tools", "blender"))
 import lpm  # noqa: E402
 
 PALETTE_ENTRIES = [
@@ -33,15 +32,13 @@ def color(name):
 
 
 def build(model_id, make_parts, out_dir, budget=1500):
-    """Build the parts returned by make_parts(), export <out_dir>/<model_id>.blend and .glb."""
+    """Build the parts returned by make_parts(), export <out_dir>/<model_id>/<model_id>.blend and .glb."""
     lpm.reset()
     palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in PALETTE_ENTRIES])
     ob = lpm.finish(model_id, make_parts(), palette, budget=budget, center=False)
-    work = os.path.join(out_dir, "_work")
-    report = lpm.export_unity(ob, os.path.join(work, model_id), glb=True)
-    for ext in ("blend", "glb"):
-        shutil.move(os.path.join(work, f"{model_id}.{ext}"), os.path.join(out_dir, f"{model_id}.{ext}"))
-    shutil.rmtree(work)
+    asset_dir = os.path.join(out_dir, model_id)
+    os.makedirs(asset_dir, exist_ok=True)
+    report = lpm.export_glb(ob, os.path.join(asset_dir, model_id))
     return report
 
 

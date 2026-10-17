@@ -15,7 +15,7 @@
   },
   "tiers": [
     {
-      "model": "industrial-detail-tank-large",
+      "model": "buildings-geothermal-1x1-t1-tone-a",
       "footprint": [1, 1],
       "capacity": 10
     },
@@ -26,7 +26,8 @@
         "goods": {
           "bricks": 4
         }
-      }
+      },
+      "model": "buildings-geothermal-1x1-t2-tone-a"
     },
     {
       "capacity": 32,
@@ -35,7 +36,8 @@
         "goods": {
           "tools": 4
         }
-      }
+      },
+      "model": "buildings-geothermal-1x1-t3-tone-a"
     }
   ],
   "extraCopyCitizens": [300, 600]

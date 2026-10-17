@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "mint",
+  "color": "#2fd6a2"
+ },
+ "b": {
+  "name": "tangerine",
+  "color": "#ff9a1f"
+ },
+ "c": {
+  "name": "sky",
+  "color": "#3d9bff"
+ },
+ "d": {
+  "name": "brick",
+  "color": "#c2432e"
+ }
+}

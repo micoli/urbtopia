@@ -17,11 +17,12 @@
   "radius": 10,
   "tiers": [
     {
-      "model": "commercial-building-b",
+      "model": "buildings-theater-2x2",
       "footprint": [2, 2],
       "capacity": 500
     },
     {
+      "model": "buildings-theater-2x2-3f",
       "capacity": 750,
       "upgradeCost": {
         "urbs": 480,
@@ -36,6 +37,7 @@
       }
     },
     {
+      "model": "buildings-theater-2x2-4f",
       "capacity": 1500,
       "upgradeCost": {
         "urbs": 1920,
@@ -50,6 +52,7 @@
       }
     },
     {
+      "model": "buildings-theater-2x2-5f",
       "capacity": 2750,
       "upgradeCost": {
         "urbs": 4800,
@@ -64,6 +67,7 @@
       }
     },
     {
+      "model": "buildings-theater-2x2-6f",
       "capacity": 4500,
       "upgradeCost": {
         "urbs": 10400,
@@ -72,7 +76,7 @@
     }
   ],
   "category": "culture",
-  "detailModel": "commercial-detail-overhang-wide",
+  "drawnToScale": true,
   "power": 2,
   "water": 0
 }

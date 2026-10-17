@@ -15,11 +15,12 @@
   },
   "tiers": [
     {
-      "model": "industrial-water-tower",
+      "model": "buildings-watertower-1x1-t1-tone-a",
       "footprint": [1, 1],
       "capacity": 12
     },
     {
+      "model": "buildings-watertower-1x1-t2-tone-a",
       "capacity": 24,
       "upgradeCost": {
         "urbs": 400,
@@ -29,6 +30,7 @@
       }
     },
     {
+      "model": "buildings-watertower-1x1-t3-tone-a",
       "capacity": 40,
       "upgradeCost": {
         "urbs": 1200,

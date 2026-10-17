@@ -16,7 +16,7 @@
   },
   "tiers": [
     {
-      "model": "buildings-2story-stairs-mat",
+      "model": "buildings-casino-2x2-t1-tone-a",
       "footprint": [2, 2],
       "radius": 8,
       "wellbeingBonus": 6,
@@ -25,7 +25,7 @@
       "blockmatchLevel": 4
     },
     {
-      "model": "buildings-2story-wide-mat",
+      "model": "buildings-casino-3x2-t2-tone-a",
       "footprint": [3, 2],
       "radius": 10,
       "wellbeingBonus": 7,
@@ -38,7 +38,7 @@
       }
     },
     {
-      "model": "buildings-2story-wide-2doors-mat",
+      "model": "buildings-casino-6x2-t3-tone-a",
       "footprint": [6, 2],
       "radius": 12,
       "wellbeingBonus": 8,

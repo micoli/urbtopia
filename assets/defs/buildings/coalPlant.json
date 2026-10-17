@@ -15,12 +15,12 @@
   },
   "tiers": [
     {
-      "model": "industrial-chimney-basic",
+      "model": "buildings-coal-1x1-t1-tone-a",
       "footprint": [1, 1],
       "capacity": 12
     },
     {
-      "model": "industrial-chimney-small",
+      "model": "buildings-coal-1x1-t2-tone-a",
       "capacity": 24,
       "upgradeCost": {
         "urbs": 300,
@@ -28,7 +28,7 @@
       }
     },
     {
-      "model": "industrial-chimney-medium",
+      "model": "buildings-coal-1x1-t3-tone-a",
       "capacity": 40,
       "upgradeCost": {
         "urbs": 900,
@@ -36,7 +36,7 @@
       }
     },
     {
-      "model": "industrial-chimney-large",
+      "model": "buildings-coal-1x1-t4-tone-a",
       "capacity": 64,
       "upgradeCost": {
         "urbs": 1800,

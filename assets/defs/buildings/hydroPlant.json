@@ -15,7 +15,7 @@
   },
   "tiers": [
     {
-      "model": "industrial-building-j",
+      "model": "buildings-hydro-1x2-t1-tone-a",
       "footprint": [1, 2],
       "capacity": 14
     },
@@ -26,7 +26,9 @@
         "goods": {
           "bricks": 4
         }
-      }
+      },
+      "model": "buildings-hydro-1x2-t2-tone-a",
+      "footprint": [1, 2]
     },
     {
       "capacity": 45,
@@ -35,7 +37,9 @@
         "goods": {
           "tools": 4
         }
-      }
+      },
+      "model": "buildings-hydro-1x2-t3-tone-a",
+      "footprint": [1, 2]
     }
   ],
   "extraCopyCitizens": [120, 240]

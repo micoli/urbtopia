@@ -15,7 +15,7 @@
   },
   "tiers": [
     {
-      "model": "farm-silo-house",
+      "model": "buildings-silo-2x2-t1-tone-a",
       "footprint": [2, 2],
       "materials": 0,
       "goods": 0,
@@ -26,17 +26,19 @@
       "upgradeCost": {
         "urbs": 250,
         "goods": {}
-      }
+      },
+      "model": "buildings-silo-2x2-t2-tone-a"
     },
     {
       "crops": 80,
       "upgradeCost": {
         "urbs": 600,
         "goods": {}
-      }
+      },
+      "model": "buildings-silo-2x2-t3-tone-a"
     },
     {
-      "model": "farm-silo",
+      "model": "buildings-silo-2x2-t4-tone-a",
       "crops": 100,
       "upgradeCost": {
         "urbs": 1500,
@@ -48,42 +50,48 @@
       "upgradeCost": {
         "urbs": 4000,
         "goods": {}
-      }
+      },
+      "model": "buildings-silo-2x2-t5-tone-a"
     },
     {
       "crops": 140,
       "upgradeCost": {
         "urbs": 9000,
         "goods": {}
-      }
+      },
+      "model": "buildings-silo-2x2-t6-tone-a"
     },
     {
       "crops": 160,
       "upgradeCost": {
         "urbs": 20000,
         "goods": {}
-      }
+      },
+      "model": "buildings-silo-2x2-t7-tone-a"
     },
     {
       "crops": 180,
       "upgradeCost": {
         "urbs": 45000,
         "goods": {}
-      }
+      },
+      "model": "buildings-silo-2x2-t8-tone-a"
     },
     {
       "crops": 200,
       "upgradeCost": {
         "urbs": 100000,
         "goods": {}
-      }
+      },
+      "model": "buildings-silo-2x2-t9-tone-a"
     },
     {
       "crops": 220,
       "upgradeCost": {
         "urbs": 200000,
         "goods": {}
-      }
+      },
+      "model": "buildings-silo-2x2-t10-tone-a"
     }
   ],
   "extraCopyCitizens": [200, 600]

@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "backup",
   "section": "build.utilities",
-  "model": "industrial-building-d",
+  "model": "buildings-backup-2x2-t1",
   "footprint": [2, 2],
   "cost": 500,
   "unlockCitizens": 32,

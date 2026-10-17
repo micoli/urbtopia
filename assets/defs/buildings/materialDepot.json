@@ -15,7 +15,7 @@
   },
   "tiers": [
     {
-      "model": "industrial-building-p",
+      "model": "buildings-depot-2x1-t1-tone-a",
       "footprint": [2, 1],
       "materials": 40,
       "goods": 0,
@@ -26,47 +26,53 @@
       "upgradeCost": {
         "urbs": 250,
         "goods": {}
-      }
+      },
+      "model": "buildings-depot-2x1-t2-tone-a"
     },
     {
       "materials": 80,
       "upgradeCost": {
         "urbs": 600,
         "goods": {}
-      }
+      },
+      "model": "buildings-depot-2x1-t3-tone-a"
     },
     {
       "materials": 100,
       "upgradeCost": {
         "urbs": 1500,
         "goods": {}
-      }
+      },
+      "model": "buildings-depot-2x1-t4-tone-a"
     },
     {
       "materials": 120,
       "upgradeCost": {
         "urbs": 4000,
         "goods": {}
-      }
+      },
+      "model": "buildings-depot-2x1-t5-tone-a"
     },
     {
       "materials": 140,
       "upgradeCost": {
         "urbs": 9000,
         "goods": {}
-      }
+      },
+      "model": "buildings-depot-2x1-t6-tone-a"
     }
   ],
   "solarPanels": {
     "panels": [
       {
         "model": "industrial-solar-panel-flat",
-        "x": -0.227,
-        "y": -0.088,
-        "z": 0.063,
-        "rotationX": 15.8,
+        "x": 0,
+        "y": -0.069,
+        "z": 0.033,
+        "rotationX": 0,
         "rotationY": -90,
-        "rotationZ": 0
+        "rotationZ": 25.6,
+        "scale": 0.6
       }
     ],
     "cost": 700,

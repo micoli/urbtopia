@@ -16,7 +16,7 @@
   },
   "tiers": [
     {
-      "model": "commercial-building-l",
+      "model": "buildings-hotel-3x3-t1-tone-a",
       "footprint": [3, 3],
       "gridSize": 6,
       "takingsCap": 400,
@@ -45,7 +45,8 @@
       "upgradeCost": {
         "urbs": 12000,
         "goods": {}
-      }
+      },
+      "model": "buildings-hotel-3x3-t2-tone-a"
     },
     {
       "gridSize": 10,
@@ -62,7 +63,8 @@
       "upgradeCost": {
         "urbs": 28000,
         "goods": {}
-      }
+      },
+      "model": "buildings-hotel-3x3-t3-tone-a"
     }
   ],
   "rankAt": [2000, 9000],

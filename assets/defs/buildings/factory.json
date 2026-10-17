@@ -16,14 +16,14 @@
   },
   "tiers": [
     {
-      "model": "industrial-building-b",
+      "model": "buildings-factory-2x2-t1-tone-a",
       "footprint": [2, 2],
       "durationFactor": 1,
       "maxSlots": 5,
       "yield": 1
     },
     {
-      "model": "industrial-building-e",
+      "model": "buildings-factory-2x2-t2-tone-a",
       "durationFactor": 0.75,
       "upgradeCost": {
         "urbs": 300,
@@ -33,7 +33,7 @@
       }
     },
     {
-      "model": "industrial-building-f",
+      "model": "buildings-factory-2x2-t3-tone-a",
       "maxSlots": 8,
       "upgradeCost": {
         "urbs": 800,
@@ -43,7 +43,7 @@
       }
     },
     {
-      "model": "industrial-building-l",
+      "model": "buildings-factory-2x2-t4-tone-a",
       "yield": 2,
       "upgradeCost": {
         "urbs": 2000,
@@ -53,7 +53,7 @@
       }
     },
     {
-      "model": "industrial-building-c",
+      "model": "buildings-factory-2x2-t5-tone-a",
       "upgradeCost": {
         "urbs": 5000,
         "goods": {
@@ -66,9 +66,9 @@
     "panels": [
       {
         "model": "industrial-solar-panel-landscape",
-        "x": 0.402,
-        "y": -0.244,
-        "z": 0.121,
+        "x": 0.165,
+        "y": -0.387,
+        "z": -0.454,
         "rotationX": 0,
         "rotationY": 0,
         "rotationZ": 0

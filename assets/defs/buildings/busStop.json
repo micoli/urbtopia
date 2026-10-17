@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "transitStop",
   "section": "build.transport",
-  "model": "roads-road-sign-empty",
+  "model": "buildings-stop-1x1-bus",
   "footprint": [1, 1],
   "cost": 60,
   "unlockCitizens": 32,
