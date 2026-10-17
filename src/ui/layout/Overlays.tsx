@@ -5,6 +5,7 @@ import { CodexDialog } from '../codex/CodexDialog';
 import { CasinoDialog } from '../casino/CasinoDialog';
 import { VenueDialog } from '../venue/VenueDialog';
 import { MarketModal } from '../market/MarketModal';
+import { ChallengeSuccessOverlay } from '../market/ChallengeSuccessOverlay';
 import { StaticButtons } from './StaticButtons.tsx';
 import { CollectBadges } from '../collect/CollectBadges';
 import { SanctionBadges } from '../sanction/SanctionBadges';
@@ -31,6 +32,7 @@ export function Overlays() {
       <CasinoDialog />
       <VenueDialog />
       <MarketModal />
+      <ChallengeSuccessOverlay />
       <WorkingIndicators />
       <CollectBadges />
       <SanctionBadges />

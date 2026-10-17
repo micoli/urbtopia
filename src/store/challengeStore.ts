@@ -3,6 +3,12 @@ import type { ErrorKey } from '../core';
 import { readSeenChallenges, writeSeenChallenges } from '../challenges/seenChallenges';
 import type { ChallengeErrorKind, ChallengeSnapshot } from '../challenges/types';
 
+export interface ChallengeSuccess {
+  id: string;
+  urbs: number;
+  rewardKind: 'urbs' | 'medal';
+}
+
 export type ChallengeStatus = 'idle' | 'loading' | 'sign-in-required' | 'ready' | 'offline';
 
 export interface ChallengeActions {
@@ -21,6 +27,8 @@ export interface ChallengeStore {
   seen: string[];
   busy: boolean;
   failure: ChallengeErrorKind | null;
+  success: ChallengeSuccess | null;
+  setSuccess: (success: ChallengeSuccess | null) => void;
   actions: ChallengeActions | null;
   enable: (actions: ChallengeActions) => void;
   setStatus: (status: ChallengeStatus) => void;
@@ -38,6 +46,8 @@ export const challengeStore = createStore<ChallengeStore>((set, get) => ({
   seen: readSeenChallenges(),
   busy: false,
   failure: null,
+  success: null,
+  setSuccess: (success) => set({ success }),
   actions: null,
   enable: (actions) => set({ enabled: true, actions }),
   setStatus: (status) => set({ status }),

@@ -11,7 +11,7 @@ export interface ChallengeGame {
   canPlay: () => boolean;
 }
 
-type Setters = Pick<ChallengeStore, 'setStatus' | 'setSnapshot' | 'setBusy' | 'setFailure'>;
+type Setters = Pick<ChallengeStore, 'setStatus' | 'setSnapshot' | 'setBusy' | 'setFailure' | 'setSuccess'>;
 
 export function createChallengeActions(client: ChallengeClient, store: Setters, current: () => Pick<ChallengeStore, 'status' | 'snapshot'>, game: ChallengeGame): ChallengeActions {
   let claiming = false;
@@ -29,8 +29,11 @@ export function createChallengeActions(client: ChallengeClient, store: Setters, 
     claiming = true;
     try {
       const declaration = await client.declare(progress.id);
-      game.apply({ type: 'ChallengeComplete', id: progress.id, rewardKind: declaration.rewardKind });
+      const error = game.apply({ type: 'ChallengeComplete', id: progress.id, rewardKind: declaration.rewardKind });
+      if (error) return;
       game.persist();
+      const credited = game.state().challengeClaims?.find(({ id }) => id === progress.id);
+      if (credited) store.setSuccess({ id: progress.id, urbs: credited.urbs, rewardKind: declaration.rewardKind });
       store.setSnapshot(await client.list());
     } catch (error) {
       if (error instanceof ChallengeError && error.kind === 'challenge-unavailable') clearLocal();

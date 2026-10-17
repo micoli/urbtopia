@@ -733,6 +733,59 @@ button {
 .challenge-line-actions { display: flex; gap: 4px; flex-wrap: wrap; }
 .challenge-reward { margin: 0; font-size: 13px; }
 
+.challenge-success {
+  position: fixed;
+  z-index: 60;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(320px, calc(100vw - 48px));
+  box-sizing: border-box;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  border: 2px solid var(--accent);
+  border-radius: 20px;
+  background: var(--panel-bg);
+  color: var(--panel-fg);
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.45);
+  text-align: center;
+  animation: challenge-success-enter 450ms ease-out both;
+}
+.challenge-success strong { font-size: 22px; }
+.challenge-success p { margin: 0; color: var(--accent); font-size: 20px; font-weight: 700; }
+.challenge-success-trophy { font-size: 56px; animation: challenge-trophy 800ms ease-out both; }
+.challenge-success-confetti { position: absolute; top: 24px; left: 50%; pointer-events: none; }
+.challenge-success-confetti i {
+  position: absolute;
+  width: 8px;
+  height: 14px;
+  background: #ffd23f;
+  animation: challenge-confetti 1800ms var(--delay) ease-out both;
+}
+.challenge-success-confetti i:nth-child(3n) { background: #8ce2b5; }
+.challenge-success-confetti i:nth-child(3n + 1) { background: #bba4ff; }
+@keyframes challenge-success-enter {
+  from { opacity: 0; transform: translate(-50%, 24px) scale(0.9); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+@keyframes challenge-trophy {
+  0% { transform: scale(0.4) rotate(-20deg); }
+  60% { transform: scale(1.2) rotate(8deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes challenge-confetti {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--x), 260px) rotate(var(--spin)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .challenge-success, .challenge-success-trophy { animation: none; }
+  .challenge-success-confetti { display: none; }
+}
+
 .market-price {
   font-size: 12px;
   opacity: 0.75;
