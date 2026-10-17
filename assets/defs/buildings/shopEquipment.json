@@ -5,7 +5,7 @@
   "cost": 400,
   "unlockCitizens": 150,
   "requiresRoad": true,
-  "accessModes": ["road", "brt"],
+  "accessModes": ["road", "brt", "pedestrianWay"],
   "initialSlots": 3,
   "name": {
     "en": "Hardware store",

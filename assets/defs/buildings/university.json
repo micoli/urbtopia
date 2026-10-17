@@ -5,7 +5,7 @@
   "cost": 3000,
   "unlockCitizens": 400,
   "requiresRoad": true,
-  "accessModes": ["road", "brt"],
+  "accessModes": ["road", "brt", "pedestrianWay"],
   "name": {
     "en": "University",
     "fr": "Université"

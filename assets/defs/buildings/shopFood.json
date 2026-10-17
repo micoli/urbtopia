@@ -5,7 +5,7 @@
   "cost": 300,
   "unlockCitizens": 50,
   "requiresRoad": true,
-  "accessModes": ["road", "brt"],
+  "accessModes": ["road", "brt", "pedestrianWay"],
   "initialSlots": 3,
   "name": {
     "en": "Grocery",

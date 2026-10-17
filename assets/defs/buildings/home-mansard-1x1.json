@@ -5,7 +5,7 @@
   "cost": 200,
   "unlockCitizens": 50,
   "requiresRoad": true,
-  "accessModes": ["road", "brt"],
+  "accessModes": ["road", "brt", "pedestrianWay"],
   "name": {
     "en": "Mansard House",
     "fr": "Maison mansardée"

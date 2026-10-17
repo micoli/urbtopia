@@ -5,7 +5,7 @@
   "cost": 300,
   "unlockCitizens": 15,
   "requiresRoad": true,
-  "accessModes": ["road", "brt"],
+  "accessModes": ["road", "brt", "pedestrianWay"],
   "name": {
     "en": "School",
     "fr": "École"
