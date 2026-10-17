@@ -123,6 +123,146 @@
     ],
     "rotationOffset": 180
   },
+  "buildings-bakery-2x2-t1-tone-a": {
+    "file": "buildings/bakery-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-bakery-2x2-t2-tone-a": {
+    "file": "buildings/bakery-2x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-bakery-2x2-t3-tone-a": {
+    "file": "buildings/bakery-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-bakery-2x2-t4-tone-a": {
+    "file": "buildings/bakery-2x2-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-bakery-2x2-t5-tone-a": {
+    "file": "buildings/bakery-2x2-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
   "buildings-ballpark-7x7-tone-a": {
     "file": "buildings/ballpark-7x7-tone-a",
     "source": "managed",
