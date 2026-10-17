@@ -34,6 +34,7 @@ export class PedestrianLayer {
   private rngState = 0;
   private seed = '';
   private roads: GameState['roads'] | null = null;
+  private pedestrianWays: GameState['pedestrianWays'] | undefined;
   private enabled = true;
   private placement = new THREE.Object3D();
   private touch = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
@@ -52,7 +53,7 @@ export class PedestrianLayer {
 
   sync(state: GameState): void {
     if (state.seed !== this.seed) this.reset(state.seed);
-    if (state.roads !== this.roads) this.rebuildGraph(state);
+    if (state.roads !== this.roads || state.pedestrianWays !== this.pedestrianWays) this.rebuildGraph(state);
     const stats = congestionStats(state);
     const trips = Object.values(stats.walkingTrips).reduce((sum, count) => sum + count, 0);
     this.target = targetPedestrianCount({ people: stats.walkers + trips, nodes: this.nodes.length, touch: this.touch });
@@ -81,6 +82,7 @@ export class PedestrianLayer {
 
   private rebuildGraph(state: GameState): void {
     this.roads = state.roads;
+    this.pedestrianWays = state.pedestrianWays;
     this.graph = pedestrianGraph(state);
     this.nodes = [...this.graph.keys()].sort();
     this.walkers = this.walkers.filter((walker) => isOnGraph(this.graph, walker));
