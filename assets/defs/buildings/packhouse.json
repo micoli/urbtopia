@@ -1,7 +1,7 @@
 {
   "$schema": "../schemas/building.schema.json",
   "kind": "production",
-  "section": "build.production",
+  "section": "build.agriculture",
   "cost": 250,
   "unlockCitizens": 20,
   "requiresRoad": true,
