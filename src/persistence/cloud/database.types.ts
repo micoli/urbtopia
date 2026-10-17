@@ -118,6 +118,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      urb_donations: {
+        Row: {
+          created_at: string;
+          id: string;
+          user_id: string;
+          value: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id: string;
+          user_id: string;
+          value: number;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          user_id?: string;
+          value?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_donations_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
       urb_forbidden_handle_words: {
         Row: {
           word: string;
@@ -283,8 +313,9 @@ export type Database = {
       };
       urb_medals: {
         Row: {
-          challenge_id: string;
+          challenge_id: string | null;
           earned_at: string;
+          id: string;
           medal_code: string;
           name_en: string | null;
           name_fr: string | null;
@@ -292,16 +323,18 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
-          challenge_id: string;
+          challenge_id?: string | null;
           earned_at?: string;
+          id?: string;
           medal_code: string;
           name_en?: string | null;
           name_fr?: string | null;
           user_id: string;
         };
         Update: {
-          challenge_id?: string;
+          challenge_id?: string | null;
           earned_at?: string;
+          id?: string;
           medal_code?: string;
           name_en?: string | null;
           name_fr?: string | null;
@@ -602,6 +635,7 @@ export type Database = {
         };
         Returns: number;
       };
+      urb_record_donations: { Args: { p_donations?: Json }; Returns: Json };
       urb_refuse_friend_request: { Args: { p_user: string }; Returns: undefined };
       urb_remove_friend: { Args: { p_user: string }; Returns: undefined };
       urb_remove_group_member: { Args: { p_group: string; p_user: string }; Returns: undefined };

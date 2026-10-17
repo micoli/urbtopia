@@ -13,6 +13,7 @@ const MEASURES: Partial<Record<NeedFactorId, MessageKey>> = {
     climate: 'needs.measure.climate',
     leisure: 'needs.measure.leisure',
     walking: 'needs.measure.walking',
+    solidarity: 'needs.measure.solidarity',
     greenSpaces: 'needs.measure.green',
     biodiversity: 'needs.measure.green',
 };

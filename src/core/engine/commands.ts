@@ -15,6 +15,7 @@ import { HOME_TIERS, SHOP, TAX, SLOT_PRICES } from '../economy/economy';
 import { canSell, isShopType, saleIntervalOf, shopTierOf, slotPriceOf } from '../economy/shops';
 import { GOODS, isGood, isMaterial, minTierOf, producibleItems, recipeOf, type GoodId } from '../economy/items';
 import { marketQuote } from '../economy/market';
+import { donationQuote } from '../economy/solidarity';
 import { harvestFields, layFields, plantFields, removeFields } from '../farming/fields';
 import { buySeeds, sellSeeds } from '../farming/seeds';
 import { layWater } from '../water/waterTiles';
@@ -106,6 +107,8 @@ export type Command =
   | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
   | { readonly type: 'SellToMarket'; readonly good: GoodId; readonly quantity: number }
+  | { readonly type: 'DonateGoods'; readonly id: string; readonly good: GoodId; readonly quantity: number; readonly accountId?: string }
+  | { readonly type: 'ConfirmDonations'; readonly ids: readonly string[] }
   | { readonly type: 'UpgradeBuilding'; readonly buildingId: number }
   | { readonly type: 'PlaySlotMachine'; readonly buildingId: number; readonly stake: number }
   | { readonly type: 'StartCasinoRound'; readonly buildingId: number; readonly game: 'blackjack' | 'blockmatch'; readonly stake: number }
@@ -335,6 +338,10 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return stockShop(state, command.buildingId, command.good, now);
     case 'SellToMarket':
       return sellToMarket(state, command.good, command.quantity, now);
+    case 'DonateGoods':
+      return donateGoods(state, command);
+    case 'ConfirmDonations':
+      return { state: { ...state, donations: (state.donations ?? []).filter(donation => !command.ids.includes(donation.id)) }, events: [] };
     case 'UpgradeBuilding':
       return upgradeBuilding(state, command.buildingId);
     case 'PlaySlotMachine':
@@ -722,6 +729,26 @@ function challengeOutcome(result: ChallengeResult): CommandOutcome {
 
 function tradeOutcome(result: TradeResult): CommandOutcome {
   return 'error' in result ? fail(result.error) : { state: result.state, events: [] };
+}
+
+function donateGoods(state: GameState, command: Extract<Command, { type: 'DonateGoods' }>): CommandOutcome {
+  if (!state.marketUnlocked) return fail('error.marketLocked');
+  const { id, good, quantity, accountId } = command;
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) || !isGood(good) || !Number.isSafeInteger(quantity) || quantity <= 0) return fail('error.invalidQuantity');
+  if ((state.donations ?? []).some(donation => donation.id === id)) return { state, events: [] };
+  const available = state.storage.goods[good] ?? 0;
+  if (available < quantity) return fail('error.missingGoods');
+  const quote = donationQuote(state, good, quantity);
+  if (!Number.isSafeInteger(quote.value) || quote.value <= 0) return fail('error.invalidQuantity');
+  return {
+    state: {
+      ...state,
+      storage: { ...state.storage, goods: { ...state.storage.goods, [good]: available - quantity } },
+      solidarityMs: quote.remainingMs,
+      donations: [...(state.donations ?? []), { id, value: quote.value, ...(accountId ? { accountId } : {}) }],
+    },
+    events: [],
+  };
 }
 
 function sellToMarket(state: GameState, good: GoodId, quantity: number, now: number): CommandOutcome {

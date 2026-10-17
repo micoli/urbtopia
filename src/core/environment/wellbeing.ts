@@ -12,6 +12,7 @@ import { leisureRetention } from '../leisure/leisure';
 import { poweredCasinoIds } from '../leisure/poweredCasinos';
 import type { Building, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { solidarityBonus } from '../economy/solidarity';
 
 const WELLBEING_LIMIT = 100;
 
@@ -41,7 +42,9 @@ export function homeBenefits(state: GameState, home: Building, coalRates: Readon
   const servicePenalty = Math.min(SERVICES.penaltyCap, missing * SERVICES.missingPenalty);
   const congestionPenalty = isAdapting(state) ? 0 : congestionPenaltyOf(congestion.homes.get(home.id)?.ratio ?? 0);
   const walkingBonus = Math.max(0, Math.min(WELLBEING_LIMIT - withServices, Math.round(WALKING.wellbeingBonus * (congestion.homes.get(home.id)?.walkAccess ?? 0))));
-  return { ...green, wellbeing: withServices + walkingBonus - pollutionPenalty - servicePenalty - congestionPenalty, serviceBonus: withServices - green.wellbeing, pollutionPenalty, servicePenalty, congestionPenalty, walkingBonus };
+  const withoutSolidarity = withServices + walkingBonus - pollutionPenalty - servicePenalty - congestionPenalty;
+  const solidarity = Math.min(solidarityBonus(state), WELLBEING_LIMIT - withoutSolidarity);
+  return { ...green, wellbeing: withoutSolidarity + solidarity, serviceBonus: withServices - green.wellbeing, pollutionPenalty, servicePenalty, congestionPenalty, walkingBonus, solidarityBonus: solidarity };
 }
 
 export function cityBenefits(state: GameState, coalRates: ReadonlyMap<number, number> = energyStats(state).coalRates) {

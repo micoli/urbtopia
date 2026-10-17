@@ -651,6 +651,18 @@ button {
   background: rgba(255, 255, 255, 0.08);
 }
 
+.solidarity-status {
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(140, 226, 181, 0.1);
+}
+
+.solidarity-status h3, .solidarity-progress p { margin: 4px 0; }
+.solidarity-status progress, .solidarity-progress progress { width: 100%; accent-color: #8ce2b5; }
+.solidarity-progress { margin: 10px 0; font-size: 13px; }
+.donation-form { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.15); }
+.donation-preview p { margin: 4px 0; font-size: 13px; }
+
 .storage-tiles {
   list-style: none;
   margin: 6px 0 12px;

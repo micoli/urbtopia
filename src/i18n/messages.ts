@@ -9,7 +9,9 @@ import { buildingMessages } from './buildings';
 import { itemMessages } from './items';
 import { natureMessages } from './nature';
 import { challengeMessages } from './challenges';
+import { solidarityMessages } from './solidarity';
 export const MESSAGES = {
+  ...solidarityMessages('en'),
   ...natureMessages('en'),
   ...challengeMessages('en'),
   ...casinoMessages('en'),

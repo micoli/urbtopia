@@ -9,9 +9,11 @@ import { buildingMessages } from './buildings';
 import { itemMessages } from './items';
 import { natureMessages } from './nature';
 import { challengeMessages } from './challenges';
+import { solidarityMessages } from './solidarity';
 import type { MessageKey } from './messages';
 
 export const FR: Record<MessageKey, string> = {
+  ...solidarityMessages('fr'),
   ...natureMessages('fr'),
   ...challengeMessages('fr'),
   ...casinoMessages('fr'),

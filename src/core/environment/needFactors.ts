@@ -1,7 +1,7 @@
 export const NEED_FACTOR_IDS = [
   'electricity', 'water', 'food',
   'safety', 'health', 'pollution', 'congestion', 'climate',
-  'culture', 'leisure', 'walking',
+  'culture', 'leisure', 'walking', 'solidarity',
   'education', 'administration', 'shops',
   'worship', 'greenSpaces', 'biodiversity',
 ] as const;
