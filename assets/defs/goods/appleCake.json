@@ -5,6 +5,7 @@
     "en": "Apple cake",
     "fr": "Gâteau aux pommes"
   },
+  "model": "goods-applecake",
   "category": "food",
   "producedBy": "bakery",
   "recipe": {

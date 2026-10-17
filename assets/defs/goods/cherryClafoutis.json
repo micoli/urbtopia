@@ -5,6 +5,7 @@
     "en": "Cherry clafoutis",
     "fr": "Clafoutis aux cerises"
   },
+  "model": "goods-cherryclafoutis",
   "category": "food",
   "producedBy": "bakery",
   "recipe": {

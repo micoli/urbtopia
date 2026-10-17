@@ -6044,6 +6044,18 @@
       "height": 1.4
     }
   },
+  "goods-applecake": {
+    "file": "goods/appleCake",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "goods-bread": {
+    "file": "goods/bread",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "goods-bricks": {
     "file": "goods/bricks",
     "source": "managed",
@@ -6062,6 +6074,12 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "goods-cherryclafoutis": {
+    "file": "goods/cherryClafoutis",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "goods-circuits": {
     "file": "goods/circuits",
     "source": "managed",
@@ -6070,6 +6088,12 @@
   },
   "goods-crystal": {
     "file": "goods/crystal",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "goods-fougasse": {
+    "file": "goods/fougasse",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180
@@ -8220,14 +8244,6 @@
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/erbvRcGd7YA",
     "note": "Archway"
-  },
-  "poly-pizza-bakery": {
-    "file": "poly.pizza/bakery",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/6BGhNQlUzRR",
-    "note": "Bakery"
   },
   "poly-pizza-ballpark-8p3rzdaoytp": {
     "file": "poly.pizza/ballpark-8p3rzdaoytp",

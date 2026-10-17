@@ -5,6 +5,7 @@
     "en": "Bread",
     "fr": "Pain"
   },
+  "model": "goods-bread",
   "category": "food",
   "producedBy": "bakery",
   "recipe": {

@@ -5,6 +5,7 @@
     "en": "Fougasse",
     "fr": "Fougasse"
   },
+  "model": "goods-fougasse",
   "category": "food",
   "producedBy": "bakery",
   "recipe": {
