@@ -329,6 +329,32 @@ export function stockShelf(state: GameState, buildingId: number, fixtureId: numb
   };
 }
 
+export function setShelfGood(state: GameState, buildingId: number, fixtureId: number, good: GoodId): CommandOutcome {
+  const building = venueOf(state, buildingId);
+  if (!building || venueTypeOf(building) !== 'supermarket') return { key: 'error.unknownBuilding' };
+  const shelf = building.venue.fixtures.find(candidate => candidate.id === fixtureId);
+  if (!shelf || FIXTURES[shelf.type].shelf === undefined) return { key: 'error.unknownFixture' };
+  if (!isGood(good)) return { key: 'error.unknownCommand' };
+  if (shelf.good === good) return { state, events: [] };
+  if ((shelf.stock ?? 0) > 0) return { key: 'error.shelfBusy' };
+  const fixtures = building.venue.fixtures.map(candidate => candidate === shelf ? { ...shelf, good } : candidate);
+  return { state: withVenue(state, building, { ...building.venue, fixtures }), events: [] };
+}
+
+export function unstockShelf(state: GameState, buildingId: number, fixtureId: number): CommandOutcome {
+  const building = venueOf(state, buildingId);
+  if (!building || venueTypeOf(building) !== 'supermarket') return { key: 'error.unknownBuilding' };
+  const shelf = building.venue.fixtures.find(candidate => candidate.id === fixtureId);
+  if (!shelf || FIXTURES[shelf.type].shelf === undefined) return { key: 'error.unknownFixture' };
+  if (shelf.good === undefined) return { state, events: [] };
+  const goods = { ...state.storage.goods, [shelf.good]: (state.storage.goods[shelf.good] ?? 0) + Math.floor(shelf.stock ?? 0) };
+  const fixtures = building.venue.fixtures.map(candidate => candidate === shelf ? { ...shelf, good: undefined, stock: 0 } : candidate);
+  return {
+    state: { ...withVenue(state, building, { ...building.venue, fixtures }), storage: { ...state.storage, goods } },
+    events: [],
+  };
+}
+
 export function scheduleEvent(state: GameState, buildingId: number, startsInHours: number): CommandOutcome {
   const building = venueOf(state, buildingId);
   if (!building) return { key: 'error.unknownBuilding' };

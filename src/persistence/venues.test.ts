@@ -76,4 +76,24 @@ describe('Venue save', () => {
     const negative = { ...base, buildings: [{ ...base.buildings[0]!, venue: { ...base.buildings[0]!.venue!, earned: -1 } }] };
     expect(parseEnvelope(serializeEnvelope(negative, 0)).ok).toBe(false);
   });
+
+  it('reloads after removing partially sold stock from a shelf', () => {
+    const building = createBuilding(1, 'supermarket', 55, 50, 0);
+    const state = { ...base, storage: { materials: {}, goods: { planks: 88 } }, buildings: [{ ...building, venue: { ...building.venue!, fixtures: [{ id: 1, type: 'shelfBags' as const, x: 1, y: 1, rotation: 0 as const, good: 'planks' as const, stock: 7.5 }], nextFixtureId: 2 } }] };
+    const removed = dispatch(state, { type: 'UnstockShelf', buildingId: 1, fixtureId: 1 }, 0);
+    if (!removed.ok) throw new Error(removed.error.key);
+    const loaded = parseEnvelope(serializeEnvelope(removed.state, 0));
+    expect(loaded.ok).toBe(true);
+    expect(removed.state.storage.goods.planks).toBe(95);
+    expect(removed.state.buildings[0]!.venue!.fixtures[0]).toMatchObject({ stock: 0 });
+  });
+
+  it('recovers fractional goods returned by the previous shelf removal', () => {
+    const state = { ...base, storage: { materials: {}, goods: { planks: 95.5 } } };
+    const loaded = parseEnvelope(serializeEnvelope(state, 0));
+    expect(loaded.ok).toBe(true);
+    if (!loaded.ok) return;
+    expect(loaded.state.storage.goods.planks).toBe(95);
+    expect(state.storage.goods.planks).toBe(95.5);
+  });
 });

@@ -5,6 +5,7 @@ import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { venueCrowdModelsOf } from './venueCrowdModels';
 import { VenueCrowdLayer } from './VenueCrowdLayer';
+import { ShelfStockLayer } from './ShelfStockLayer';
 import type { Figure } from './venueCrowd';
 import { clampPan, nextZoom, pinchZoom } from './venueZoom';
 import { renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } from './renderBudget';
@@ -45,6 +46,7 @@ export class VenueScene {
   private pan = { x: 0, z: 0 };
   private brokenRoot = new THREE.Group();
   private wearRoot = new THREE.Group();
+  private shelfStock = new ShelfStockLayer(() => { this.dirty = true; });
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   private resizeObserver: ResizeObserver;
@@ -79,7 +81,7 @@ export class VenueScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 2.2);
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
-    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.selectionRoot, this.ghostRoot);
+    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
     this.ready = this.library.ensure([...Object.values(this.shellModels), ...new Set([...fixtureIdsOf(venueType).map(id => FIXTURES[id].model), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
@@ -108,6 +110,7 @@ export class VenueScene {
   }
 
   setFixtures(fixtures: readonly VenueFixture[]): void {
+    if (this.shelfStock.sync(fixtures)) this.dirty = true;
     const signature = JSON.stringify(fixtures.map(fixture => [fixture.id, fixture.type, fixture.x, fixture.y, fixture.rotation]));
     if (signature === this.fixturesSignature) return;
     this.fixturesSignature = signature;
@@ -197,6 +200,7 @@ export class VenueScene {
     this.clear(this.brokenRoot, true);
     this.clear(this.wearRoot, true);
     this.crowd.dispose();
+    this.shelfStock.dispose();
     this.renderer.dispose();
   }
 

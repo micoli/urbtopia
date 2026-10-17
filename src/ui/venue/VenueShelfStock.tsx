@@ -15,7 +15,7 @@ export function VenueShelfStock({ venueId, fixture }: VenueShelfStockProps) {
   const goods = useGame(store => store.state.storage.goods);
   if (!isShelf(fixture)) return null;
   const capacity = FIXTURES[fixture.type].shelf!;
-  const locked = fixture.good !== undefined && stockOf(fixture) >= 1;
+  const locked = fixture.good !== undefined && stockOf(fixture) > 0;
   const options = (Object.keys(GOODS) as GoodId[]).filter(good => Math.floor(goods[good] ?? 0) > 0 || good === fixture.good);
   const send = gameStore.getState().send;
   return (
@@ -35,11 +35,14 @@ export function VenueShelfStock({ venueId, fixture }: VenueShelfStockProps) {
               placeholder="—"
               disabled={locked}
               options={options.map(good => ({ value: good, label: `${itemName(good)} · ${Math.floor(goods[good] ?? 0)} ${t('venue.inStorage')}` }))}
-              onChange={good => send({ type: 'StockShelf', buildingId: venueId, fixtureId: fixture.id, good })}
+              onChange={good => send({ type: 'SetShelfGood', buildingId: venueId, fixtureId: fixture.id, good })}
             />
           </div>
           <ActionButton variant="primary" disabled={!fixture.good} onClick={() => fixture.good && send({ type: 'StockShelf', buildingId: venueId, fixtureId: fixture.id, good: fixture.good })}>
-            {t('venue.stockFill')}
+            ↑ {t('venue.stockFill')}
+          </ActionButton>
+          <ActionButton disabled={!fixture.good} onClick={() => send({ type: 'UnstockShelf', buildingId: venueId, fixtureId: fixture.id })}>
+            ↓ {t('venue.stockRemove')}
           </ActionButton>
         </div>
       ) : null}

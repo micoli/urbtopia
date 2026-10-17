@@ -12,6 +12,19 @@ export interface ParseOptions {
   steps?: Record<number, MigrationStep>;
 }
 
+function recoverFractionalShelfReturns(state: unknown): unknown {
+  if (typeof state !== 'object' || state === null) return state;
+  const value = state as Record<string, unknown>;
+  if (typeof value.storage !== 'object' || value.storage === null) return state;
+  const storage = value.storage as Record<string, unknown>;
+  if (typeof storage.goods !== 'object' || storage.goods === null || Array.isArray(storage.goods)) return state;
+  const goods = Object.fromEntries(Object.entries(storage.goods).map(([good, amount]) => [
+    good,
+    typeof amount === 'number' && Number.isFinite(amount) && amount >= 0 && amount <= Number.MAX_SAFE_INTEGER ? Math.floor(amount) : amount,
+  ]));
+  return { ...value, storage: { ...storage, goods } };
+}
+
 export type ParseResult = { ok: true; state: GameState; savedAt: number } | { ok: false; reason: ParseFailure };
 
 export function serializeEnvelope(state: GameState, savedAt: number): string {
@@ -48,6 +61,7 @@ export function parseEnvelope(text: string, { currentVersion = CURRENT_VERSION, 
   } catch {
     return { ok: false, reason: 'invalid-state' };
   }
-  const state = validateGameState(migrated);
+  // Version 14 briefly returned fractional shelf stock to integer-only storage.
+  const state = validateGameState(migrated) ?? (version === 14 ? validateGameState(recoverFractionalShelfReturns(migrated)) : null);
   return state ? { ok: true, state, savedAt: envelope.savedAt } : { ok: false, reason: 'invalid-state' };
 }
