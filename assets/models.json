@@ -4655,6 +4655,56 @@
       }
     }
   },
+  "buildings-windmill-2x2-t1": {
+    "file": "buildings/windmill-2x2-t1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-windmill-2x2-t2": {
+    "file": "buildings/windmill-2x2-t2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-windmill-2x2-t3": {
+    "file": "buildings/windmill-2x2-t3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-windmill-2x2-t4": {
+    "file": "buildings/windmill-2x2-t4",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-windmill-2x2-t5": {
+    "file": "buildings/windmill-2x2-t5",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
   "buildings-windturbine-1x1-t1-tone-a": {
     "file": "buildings/windturbine-1x1-t1-tone-a",
     "source": "managed",

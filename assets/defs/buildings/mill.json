@@ -16,7 +16,7 @@
   },
   "tiers": [
     {
-      "model": "buildings-workshop-2x2-t1-tone-a",
+      "model": "buildings-windmill-2x2-t1",
       "footprint": [2, 2],
       "durationFactor": 1,
       "maxSlots": 5,
@@ -30,7 +30,7 @@
           "planks": 3
         }
       },
-      "model": "buildings-workshop-2x2-t2-tone-a"
+      "model": "buildings-windmill-2x2-t2"
     },
     {
       "maxSlots": 8,
@@ -40,7 +40,7 @@
           "bricks": 4
         }
       },
-      "model": "buildings-workshop-2x2-t3-tone-a"
+      "model": "buildings-windmill-2x2-t3"
     },
     {
       "yield": 2,
@@ -50,7 +50,7 @@
           "tiles": 4
         }
       },
-      "model": "buildings-workshop-2x2-t4-tone-a"
+      "model": "buildings-windmill-2x2-t4"
     },
     {
       "upgradeCost": {
@@ -59,7 +59,7 @@
           "tools": 4
         }
       },
-      "model": "buildings-workshop-2x2-t5-tone-a"
+      "model": "buildings-windmill-2x2-t5"
     }
   ]
 }
