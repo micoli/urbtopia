@@ -36,6 +36,7 @@ export type ModelId =
   | 'buildings-factory-2x2-t3-tone-a'
   | 'buildings-factory-2x2-t4-tone-a'
   | 'buildings-factory-2x2-t5-tone-a'
+  | 'buildings-ferris-wheel-3x5-8f'
   | 'buildings-fire-station-3x2'
   | 'buildings-fire-station-3x2-3f'
   | 'buildings-fire-station-3x2-4f'

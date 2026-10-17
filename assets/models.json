@@ -771,6 +771,11 @@
       }
     }
   },
+  "buildings-ferris-wheel-3x5-8f": {
+    "file": "buildings/ferris-wheel-3x5-8f",
+    "source": "managed",
+    "license": "Own work"
+  },
   "buildings-fire-station-3x2": {
     "file": "buildings/fire-station-3x2",
     "source": "managed",

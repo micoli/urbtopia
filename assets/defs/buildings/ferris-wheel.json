@@ -1,0 +1,28 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "facility",
+  "section": "build.publicFacilities",
+  "cost": 2500,
+  "unlockCitizens": 300,
+  "requiresRoad": false,
+  "name": {
+    "en": "Ferris wheel",
+    "fr": "Grande roue"
+  },
+  "description": {
+    "en": "A ferris wheel",
+    "fr": "Une grande roue"
+  },
+  "radius": 12,
+  "tiers": [
+    {
+      "model": "buildings-ferris-wheel-3x5-8f",
+      "footprint": [1, 1],
+      "capacity": 100
+    }
+  ],
+  "category": "culture",
+  "detailModel": "buildings-ferris-wheel-3x5-8f",
+  "power": 4,
+  "water": 0
+}
