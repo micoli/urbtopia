@@ -11,6 +11,13 @@ import { natureMessages } from './nature';
 import { challengeMessages } from './challenges';
 import { solidarityMessages } from './solidarity';
 export const MESSAGES = {
+  'coverage.open': 'Show service coverage',
+  'coverage.title': 'Service coverage',
+  'coverage.type': 'Public service type',
+  'coverage.covered': 'Covered',
+  'coverage.uncovered': 'Not covered',
+  'coverage.facilities': 'Facilities',
+  'coverage.close': 'Close service coverage',
   ...solidarityMessages('en'),
   ...natureMessages('en'),
   ...challengeMessages('en'),

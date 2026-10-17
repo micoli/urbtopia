@@ -7,13 +7,11 @@ import { VenueDialog } from '../venue/VenueDialog';
 import { MarketModal } from '../market/MarketModal';
 import { ChallengeSuccessOverlay } from '../market/ChallengeSuccessOverlay';
 import { StaticButtons } from './StaticButtons.tsx';
-import { CollectBadges } from '../collect/CollectBadges';
-import { SanctionBadges } from '../sanction/SanctionBadges';
+import { FloatingBadges } from './FloatingBadges';
 import { ConfirmPad } from '../build/ConfirmPad';
 import { ConfirmSaleDialog } from '../build/ConfirmSaleDialog';
 import { ExportReminder } from '../system/ExportReminder';
 import { ImportConfirmDialog } from '../system/ImportConfirmDialog';
-import { ParcelTags } from '../parcels/ParcelTags';
 import { ReadOnlyBanner } from '../system/ReadOnlyBanner';
 import { RecoveryScreen } from '../system/RecoveryScreen';
 import { SaveConflictOverlay } from '../system/SaveConflictOverlay';
@@ -21,22 +19,20 @@ import { SaveFailedDialog } from '../system/SaveFailedDialog';
 import { Toast } from '../system/Toast';
 import { TutorialBanner } from '../tutorial/TutorialBanner';
 import { UpdatePrompt } from '../system/UpdatePrompt';
-import { WorkingIndicators } from '../common/WorkingIndicators.tsx';
+import { ServiceCoveragePanel } from '../buildings/ServiceCoveragePanel';
 
 export function Overlays() {
   return (
     <>
       <CityManagement />
+      <ServiceCoveragePanel />
       <SocialWindow />
       <CodexDialog />
       <CasinoDialog />
       <VenueDialog />
       <MarketModal />
       <ChallengeSuccessOverlay />
-      <WorkingIndicators />
-      <CollectBadges />
-      <SanctionBadges />
-      <ParcelTags />
+      <FloatingBadges />
       <ConfirmPad />
       <ReadOnlyBanner />
       <ExportReminder />

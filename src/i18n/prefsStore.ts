@@ -1,4 +1,5 @@
 import { createStore } from 'zustand/vanilla';
+import { isFacilityType, type FacilityType } from '../core/services/facilities';
 
 export type Language = 'en' | 'fr';
 export type Layout = 'C' | 'A' | 'B';
@@ -10,6 +11,7 @@ export interface Prefs {
   confirmSale: boolean;
   showReach: boolean;
   showProductionPreview: boolean;
+  serviceCoverageType: FacilityType;
 }
 
 export const PREFS_KEY = 'urbtopia-prefs';
@@ -22,7 +24,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, serviceCoverageType: 'school' };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -33,6 +35,7 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       confirmSale: typeof parsed.confirmSale === 'boolean' ? parsed.confirmSale : fallback.confirmSale,
       showReach: typeof parsed.showReach === 'boolean' ? parsed.showReach : fallback.showReach,
       showProductionPreview: typeof parsed.showProductionPreview === 'boolean' ? parsed.showProductionPreview : fallback.showProductionPreview,
+      serviceCoverageType: typeof parsed.serviceCoverageType === 'string' && isFacilityType(parsed.serviceCoverageType) ? parsed.serviceCoverageType : fallback.serviceCoverageType,
     };
   } catch {
     return fallback;
@@ -47,9 +50,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, confirmSale, showReach, showProductionPreview }: Prefs): void {
+function writeStored({ language, layout, traffic, confirmSale, showReach, showProductionPreview, serviceCoverageType }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale, showReach, showProductionPreview }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale, showReach, showProductionPreview, serviceCoverageType }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -62,6 +65,7 @@ export interface PrefsStore extends Prefs {
   setConfirmSale: (confirmSale: boolean) => void;
   setShowReach: (showReach: boolean) => void;
   setShowProductionPreview: (showProductionPreview: boolean) => void;
+  setServiceCoverageType: (type: FacilityType) => void;
 }
 
 const browserLanguage = typeof navigator === 'undefined' ? undefined : navigator.language;
@@ -90,6 +94,10 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   },
   setShowProductionPreview: (showProductionPreview) => {
     set({ showProductionPreview });
+    writeStored(get());
+  },
+  setServiceCoverageType: (serviceCoverageType) => {
+    set({ serviceCoverageType });
     writeStored(get());
   },
 }));

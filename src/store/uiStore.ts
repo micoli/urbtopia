@@ -27,6 +27,9 @@ export interface UiStore {
   flyout: Flyout;
   statsOpen: boolean;
   toggleStats: () => void;
+  serviceCoverageOpen: boolean;
+  openServiceCoverage: () => void;
+  closeServiceCoverage: () => void;
   socialOpen: boolean;
   socialTab: SocialTab;
   signInFromSocial: boolean;
@@ -121,6 +124,9 @@ export const uiStore = createStore<UiStore>((set, get) => {
     selectedBuildingId: null,
     flyout: null,
     statsOpen: false,
+    serviceCoverageOpen: false,
+    openServiceCoverage: () => set({ serviceCoverageOpen: true, statsOpen: false }),
+    closeServiceCoverage: () => set({ serviceCoverageOpen: false }),
     toggleStats: () => {
       if (!get().statsOpen) get().cancelTool();
       set({ statsOpen: !get().statsOpen, socialOpen: false, flyout: null, settingsOpen: false, marketOpen: false });

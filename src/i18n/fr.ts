@@ -13,6 +13,13 @@ import { solidarityMessages } from './solidarity';
 import type { MessageKey } from './messages';
 
 export const FR: Record<MessageKey, string> = {
+  'coverage.open': 'Voir la couverture des services',
+  'coverage.title': 'Couverture des services',
+  'coverage.type': 'Type de service public',
+  'coverage.covered': 'Couvert',
+  'coverage.uncovered': 'Non couvert',
+  'coverage.facilities': 'Équipements',
+  'coverage.close': 'Fermer la couverture des services',
   ...solidarityMessages('fr'),
   ...natureMessages('fr'),
   ...challengeMessages('fr'),

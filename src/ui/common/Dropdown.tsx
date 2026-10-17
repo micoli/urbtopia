@@ -4,6 +4,7 @@ export interface DropdownOption<T extends string | number> {
     value: T;
     label: ReactNode;
     disabled?: boolean;
+    group?: string;
 }
 
 interface DropdownProps<T extends string | number> {
@@ -22,6 +23,13 @@ export function Dropdown<T extends string | number>({ label, options, value, pla
     const [open, setOpen] = useState(false);
     const [active, setActive] = useState(-1);
     const selected = options.find(option => option.value === value);
+    const groups = new Map<string, { option: DropdownOption<T>; index: number }[]>();
+    options.forEach((option, index) => {
+        const group = option.group ?? '';
+        const entries = groups.get(group) ?? [];
+        entries.push({ option, index });
+        groups.set(group, entries);
+    });
 
     useEffect(() => {
         if (!open) return;
@@ -31,6 +39,11 @@ export function Dropdown<T extends string | number>({ label, options, value, pla
         document.addEventListener('pointerdown', closeOnOutside);
         return () => document.removeEventListener('pointerdown', closeOnOutside);
     }, [open]);
+
+    useEffect(() => {
+        if (!open || active < 0) return;
+        document.getElementById(`${id}-${active}`)?.scrollIntoView({ block: 'nearest' });
+    }, [open, active, id]);
 
     const nextEnabled = (start: number, step: 1 | -1) => {
         for (let i = start; i >= 0 && i < options.length; i += step) if (!options[i]!.disabled) return i;
@@ -94,18 +107,28 @@ export function Dropdown<T extends string | number>({ label, options, value, pla
             </button>
             {open && (
                 <ul className="dropdown-list" id={`${id}-list`} role="listbox" aria-label={label}>
-                    {options.map((option, index) => (
+                    {[...groups].map(([group, entries]) => (
                         <li
-                            key={option.value}
-                            id={`${id}-${index}`}
-                            role="option"
-                            aria-selected={option.value === value}
-                            aria-disabled={option.disabled || undefined}
-                            data-active={index === active}
-                            onMouseDown={event => event.preventDefault()}
-                            onClick={() => choose(index)}
+                            key={group}
+                            role="presentation"
                         >
-                            {option.label}
+                            {group && <span className="dropdown-group-label">{group}</span>}
+                            <ul role={group ? 'group' : 'presentation'} aria-label={group || undefined} className="dropdown-group">
+                                {entries.map(({ option, index }) => (
+                                    <li
+                                        key={option.value}
+                                        id={`${id}-${index}`}
+                                        role="option"
+                                        aria-selected={option.value === value}
+                                        aria-disabled={option.disabled || undefined}
+                                        data-active={index === active}
+                                        onMouseDown={event => event.preventDefault()}
+                                        onClick={() => choose(index)}
+                                    >
+                                        {option.label}
+                                    </li>
+                                ))}
+                            </ul>
                         </li>
                     ))}
                 </ul>

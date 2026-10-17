@@ -1440,6 +1440,39 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .dropdown-list [data-active='true'] { background: rgba(255, 255, 255, 0.15); }
 .dropdown-list [aria-selected='true'] { font-weight: 700; }
 .dropdown-list [aria-disabled='true'] { opacity: 0.45; cursor: not-allowed; }
+.dropdown-group { list-style: none; margin: 0; padding: 0; }
+.dropdown-group-label { display: block; padding: 12px 12px 4px; font-size: 11px; font-weight: 700; opacity: 0.65; }
+
+.service-coverage-panel {
+  position: fixed;
+  box-sizing: border-box;
+  top: max(64px, env(safe-area-inset-top));
+  left: max(88px, env(safe-area-inset-left));
+  width: min(320px, calc(100vw - 100px));
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--panel-bg);
+  color: var(--panel-fg);
+  z-index: 8;
+}
+.service-coverage-panel header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.service-coverage-panel h2 { flex: 1; margin: 0; font-size: 14px; }
+.service-coverage-panel:has([aria-expanded='true']) { z-index: 12; }
+.service-coverage-panel .dropdown-list { max-height: min(240px, calc(100dvh - 190px)); }
+.service-coverage-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; list-style: none; padding: 0; margin: 10px 0 0; font-size: 11px; }
+.service-coverage-legend li { display: flex; align-items: center; gap: 5px; }
+.service-coverage-swatch { width: 10px; height: 10px; border-radius: 2px; }
+.service-coverage-swatch--covered { background: #35d07f; }
+.service-coverage-swatch--uncovered { background: #e5484d; }
+.service-coverage-swatch--facility { box-sizing: border-box; border: 2px solid #4da3ff; }
+[data-layout='A'] .service-coverage-panel,
+[data-layout='B'] .service-coverage-panel { left: max(12px, env(safe-area-inset-left)); width: min(320px, calc(100vw - 24px)); }
+@media (max-width: 600px) {
+  body:has(.service-coverage-panel) .side-panel { top: 228px; }
+  [data-layout='A'] .service-coverage-panel { top: 116px; }
+  [data-layout='A'] .service-coverage-panel .dropdown-list { max-height: min(240px, calc(100dvh - 242px)); }
+  [data-layout='A'] body:has(.service-coverage-panel) .side-panel { top: 280px; }
+}
 
 .eco-tabs, .transit-mode-group { display: flex; gap: 4px; flex-wrap: wrap; margin: 12px 0; }
 .eco-dashboard .eco-tab {
