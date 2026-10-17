@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(42);
+select plan(45);
 
 insert into auth.users (id, instance_id, aud, role, email, email_confirmed_at, is_anonymous, created_at, last_sign_in_at)
   select ('00000000-0000-0000-0006-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', n || '@example.com', now(), false, now(), now()
@@ -21,6 +21,7 @@ select ok((select relrowsecurity from pg_class where oid = 'public.urb_medals'::
 select cmp_ok((select count(*)::int from cron.job where jobname in ('urb_generate_daily_challenges', 'urb_expire_challenges')), '=', 2, 'both cron jobs are scheduled');
 
 -- Daily generation
+delete from public.urb_challenges;
 select lives_ok($$ select public.urb_generate_daily_challenges() $$, 'daily challenges are generated');
 select is((select count(*)::int from public.urb_challenges where kind = 'daily'), 12, 'one Daily challenge per difficulty and band');
 select lives_ok($$ select public.urb_generate_daily_challenges() $$, 'generating again is idempotent');
@@ -81,15 +82,18 @@ select is((public.urb_declare_challenge(pg_temp.daily_id()) ->> 'alreadyClaimed'
 select is(jsonb_array_length(public.urb_declare_challenge(pg_temp.daily_id()) -> 'goal'), 2, 'declaring answers with the goal');
 select is(jsonb_typeof(public.urb_list_challenges() -> 'accepted'), 'null', 'a completed Challenge is no longer accepted');
 select throws_ok($$ select public.urb_accept_challenge(pg_temp.daily_id()) $$, 'urb_challenge_unavailable', 'a completed Challenge cannot be accepted again');
+select ok(not exists (select 1 from jsonb_array_elements(public.urb_list_challenges() -> 'challenges') c where c ->> 'id' = pg_temp.daily_id()::text), 'a completed Daily challenge is not listed again');
 
 -- Event and Medal
 select lives_ok($$ select public.urb_accept_challenge(pg_temp.event_id()) $$, 'an Event is accepted once the Daily is done');
 select is((public.urb_list_challenges() -> 'accepted' ->> 'deadline')::timestamptz, pg_temp.event_ends_at(), 'an Event deadline is its end date');
 select is(public.urb_declare_challenge(pg_temp.event_id()) ->> 'medalCode', 'port-festival', 'declaring an Event answers with its Medal');
 select is(jsonb_array_length(public.urb_list_challenges() -> 'medals'), 1, 'the Medal is listed');
+select ok(not exists (select 1 from jsonb_array_elements(public.urb_list_challenges() -> 'challenges') c where c ->> 'id' = pg_temp.event_id()::text), 'a completed Event is not listed again');
 
 -- Isolation and deadline
 select pg_temp.act_as('00000000000b');
+select ok(exists (select 1 from jsonb_array_elements(public.urb_list_challenges() -> 'challenges') c where c ->> 'id' = pg_temp.daily_id()::text), 'another player still sees the completed Daily challenge');
 select is(jsonb_array_length(public.urb_list_challenges() -> 'medals'), 0, 'another player sees none of those Medals');
 select lives_ok($$ select public.urb_accept_challenge(pg_temp.daily_id()) $$, 'another player accepts the same Daily challenge');
 reset role;
@@ -101,7 +105,7 @@ select is(jsonb_typeof(public.urb_list_challenges() -> 'accepted'), 'null', 'an 
 select is(pg_temp.accepted_state('00000000000b'), 'expired', 'an acceptance past its deadline is expired once listed');
 
 reset role;
-select is((select count(*)::int from public.urb_medals), 1, 'only the Event completion produced a Medal');
+select is((select count(*)::int from public.urb_medals where user_id in ('00000000-0000-0000-0006-00000000000a', '00000000-0000-0000-0006-00000000000b')), 1, 'only the Event completion produced a Medal');
 
 -- A running acceptance stays listed after the window of its Challenge closed
 create function pg_temp.close_event_window() returns void language sql as $$

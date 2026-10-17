@@ -96,6 +96,11 @@ describe('visibleChallenges', () => {
     expect(visibleChallenges(withCitizens(12), locked).map(({ id }) => id)).toEqual(['e0']);
   });
 
+  it('can show the next locked difficulty and locked Events without changing the available list', () => {
+    const challenges = [daily('e', 'easy', 0), daily('m', 'medium', 600), event('ev', 600)];
+    expect(visibleChallenges(initial, challenges).map(({ id }) => id)).toEqual(['e']);
+    expect(visibleChallenges(initial, challenges, true).map(({ id }) => id)).toEqual(['e', 'm', 'ev']);
+  });
 });
 
 describe('FakeChallengeWorld', () => {
@@ -142,6 +147,16 @@ describe('FakeChallengeWorld', () => {
     expect((await client.list()).medals).toHaveLength(1);
   });
 
+  it('never lists a completed Challenge again for its player, including another device', async () => {
+    const world = new FakeChallengeWorld(() => T0);
+    world.challenges = [daily('a', 'easy', 0)];
+    const client = world.client('p1');
+    await client.accept('a');
+    await client.declare('a');
+    expect((await world.client('p1').list()).challenges).toEqual([]);
+    await expect(client.accept('a')).rejects.toMatchObject({ kind: 'challenge-unavailable' });
+    expect((await world.client('p2').list()).challenges).toHaveLength(1);
+  });
 });
 
 describe('challenge actions', () => {
@@ -246,6 +261,9 @@ describe('challenge actions', () => {
     expect(current().storage.materials.wood).toBe(46);
     expect((await setupSnapshot(actions)).accepted).toBeNull();
     expect(challengeStore.getState().success).toEqual({ id: 'a', urbs: challengeReward(GOAL), rewardKind: 'urbs' });
+    expect(challengeStore.getState().snapshot?.challenges.some(({ id }) => id === 'a')).toBe(false);
+    expect(await actions.accept('a')).toBe(false);
+    expect(current().challenge).toBeUndefined();
   });
 
   it('pays nothing in Urbs for an Event and records the Medal', async () => {

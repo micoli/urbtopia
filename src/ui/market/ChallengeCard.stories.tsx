@@ -24,4 +24,5 @@ type Story = StoryObj<typeof meta>;
 
 export const Daily: Story = {};
 export const Blocked: Story = { args: { blocked: true } };
+export const Locked: Story = { args: { locked: true, challenge: { ...daily, minCitizens: 600 } } };
 export const Event: Story = { args: { challenge: { ...daily, kind: 'event', difficulty: null, rewardKind: 'medal', medalCode: 'port-festival', nameFr: 'Fête du port', nameEn: 'Port festival' } } };

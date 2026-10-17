@@ -68,8 +68,19 @@ describe('EventsContent', () => {
     expect(html).toContain('Accepter');
   });
 
-  it('says nothing is available when the city unlocks no Challenge', () => {
-    expect(render({ snapshot: snapshot({ challenges: [{ ...base, minCitizens: 600 }] }) })).toContain('No Challenge for your city right now.');
+  it('shows a locked Challenge with its requirements and a disabled button', () => {
+    const html = render({ snapshot: snapshot({ challenges: [{ ...base, minCitizens: 600 }] }) });
+    expect(html).toContain('challenge-card-unavailable');
+    expect(html).toContain('Requires 600 Citizens');
+    expect(html).toContain('disabled');
+    expect(html).not.toContain('>Accept<');
+  });
+
+  it('hides a completed Challenge even with a stale server snapshot', () => {
+    const state = newGame({ seed: 'amber-fox-4821', now: T0 });
+    const html = render({}, { ...state, challengeClaims: [{ id: 'c1', at: T0, urbs: 200 }] });
+    expect(html).not.toContain('Daily challenge · Easy');
+    expect(html).toContain('Port festival');
   });
 
   it('shows the accepted Challenge with its progress and blocks the others', () => {
@@ -80,6 +91,7 @@ describe('EventsContent', () => {
     expect(html).toContain('0 / 20');
     expect(html).toContain('Time cannot be skipped while a Challenge is in progress.');
     expect(html).toContain('Finish your current Challenge first.');
+    expect(html).toContain('challenge-card-unavailable');
   });
 
   it('offers to set aside what the Storehouse holds', () => {

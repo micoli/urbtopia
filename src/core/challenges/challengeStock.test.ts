@@ -42,6 +42,11 @@ describe('ChallengeStart', () => {
     expect(failure(stocked(), { type: 'ChallengeStart', id: '', goal: GOAL, deadline: T0 })).toBe('error.invalidChallenge');
     expect(failure(stocked(), { type: 'ChallengeStart', id: 'c1', goal: [{ item: 'unobtainium', quantity: 1 }], deadline: T0 })).toBe('error.invalidChallenge');
   });
+
+  it('refuses to restart a completed Challenge', () => {
+    const state = { ...stocked(), challengeClaims: [{ id: 'c1', at: T0, urbs: 114 }] };
+    expect(failure(state, { type: 'ChallengeStart', id: 'c1', goal: GOAL, deadline: T0 + HOUR })).toBe('error.invalidChallenge');
+  });
 });
 
 describe('ChallengeSetAside', () => {

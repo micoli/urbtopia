@@ -732,6 +732,8 @@ button {
 .challenge-line-text { display: flex; flex-direction: column; flex: 1; font-size: 13px; }
 .challenge-line-actions { display: flex; gap: 4px; flex-wrap: wrap; }
 .challenge-reward { margin: 0; font-size: 13px; }
+.challenge-card-unavailable { opacity: 0.55; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16); }
+.challenge-card-unavailable header small { color: var(--panel-fg); }
 
 .challenge-success {
   position: fixed;

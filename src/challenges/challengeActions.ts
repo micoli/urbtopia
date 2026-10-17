@@ -84,6 +84,11 @@ export function createChallengeActions(client: ChallengeClient, store: Setters, 
   };
 
   const accept = async (challengeId: string): Promise<boolean> => {
+    if (!game.canPlay()) return false;
+    if (game.state().challengeClaims?.some(({ id }) => id === challengeId)) {
+      store.setFailure('challenge-unavailable');
+      return false;
+    }
     store.setBusy(true);
     store.setFailure(null);
     try {

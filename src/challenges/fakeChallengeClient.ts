@@ -48,7 +48,7 @@ class FakeChallengeClient implements ChallengeClient {
     const active = this.world.acceptancesOf(user).find(({ state }) => state === 'accepted');
     return {
       serverNow: now,
-      challenges: this.world.challenges.filter(({ startsAt, endsAt }) => startsAt <= now && endsAt > now),
+      challenges: this.world.challenges.filter(({ id, startsAt, endsAt }) => ((startsAt <= now && endsAt > now) || active?.challengeId === id) && !this.world.acceptancesOf(user).some((acceptance) => acceptance.challengeId === id && acceptance.state === 'completed')),
       abandoned: this.world.acceptancesOf(user).filter(({ state }) => state === 'abandoned').map(({ challengeId }) => challengeId),
       accepted: active ? { challengeId: active.challengeId, acceptedAt: active.acceptedAt, deadline: active.deadline } : null,
       medals: this.world.medalsOf(user),

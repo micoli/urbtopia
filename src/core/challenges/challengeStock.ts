@@ -29,6 +29,7 @@ export function isChallengeStockComplete(progress: ChallengeProgress | undefined
 
 export function startChallenge(state: GameState, input: ChallengeStartInput): ChallengeResult {
   if (typeof input.id !== 'string' || input.id === '' || !Number.isFinite(input.deadline) || !isValidLot(input.goal)) return { error: 'error.invalidChallenge' };
+  if (findChallengeClaim(state, input.id)) return { error: 'error.invalidChallenge' };
   if (state.challenge?.id === input.id) return { state };
   if (state.challenge) return { error: 'error.challengeBusy' };
   const goal = input.goal.map((line) => ({ item: line.item, quantity: line.quantity }));
