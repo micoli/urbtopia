@@ -153,6 +153,7 @@ export function validateGameState(value: unknown): GameState | null {
     typeof value.marketUnlocked === 'boolean' &&
     isMarket(value.market) &&
     isArrayOf(value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string) && ((road as Json).tier === undefined || isInt((road as Json).tier, 1, MAX_ROAD_TIER))) &&
+    (value.pedestrianWays === undefined || isArrayOf(value.pedestrianWays, tile => isRecord(tile) && isCoord(tile) && (tile.tier === undefined || isInt(tile.tier, 1, MAX_ROAD_TIER)))) &&
     isArrayOf(value.roundabouts, (center) => isCoord(center)) &&
     (value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep)) &&
     isArrayOf(value.tradeLedger, isTradeLedgerEntry);
@@ -189,6 +190,8 @@ export function validateGameState(value: unknown): GameState | null {
   const ids = [...state.buildings.map(b => b.id), ...(state.boats ?? []).map(b => b.id), ...(state.busLines ?? []).map(l => l.id), ...(state.transitLines ?? []).map(l => l.id), ...(state.transitFleet ?? []).map(v => v.id)];
   if (new Set(ids).size !== ids.length || ids.some(id => id >= state.nextId)) return null;
   const roadKeys = new Set(state.roads.map(road => `${road.x}:${road.y}`));
+  const pedestrianWayKeys = new Set((state.pedestrianWays ?? []).map(tile => `${tile.x}:${tile.y}`));
+  if (pedestrianWayKeys.size !== (state.pedestrianWays ?? []).length || [...pedestrianWayKeys].some(key => roadKeys.has(key))) return null;
   const bridged = new Set<string>();
   for (const bridge of state.bridges ?? []) {
     for (let step = 0; step < bridge.length; step++) {
