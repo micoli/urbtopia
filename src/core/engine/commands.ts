@@ -163,6 +163,7 @@ export type ErrorKey =
   | 'error.invalidRound'
   | 'error.needsRoad'
   | 'error.needsRoadOrBrt'
+  | 'error.needsAccess'
   | 'error.buildingLimitReached'
   | 'error.noFarm'
   | 'error.fieldCapReached'
@@ -577,7 +578,7 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
   if (issue) return fail(issue);
   if (state.urbs < nextCopyCost(state, type) + extraCost) return fail('error.notEnoughUrbs');
   const created = createBuilding(state.nextId, type, x, y, rotation);
-  const orchardFruit = type === 'oliveTree' ? 'olive' : type === 'appleTree' ? 'apple' : type === 'cherryTree' ? 'cherry' : undefined;
+  const orchardFruit: QueueEntry['item'] | undefined = type === 'oliveTree' ? 'olive' : type === 'appleTree' ? 'apple' : type === 'cherryTree' ? 'cherry' : undefined;
   const building = { ...created, ...(orchardFruit ? { queue: [{ item: orchardFruit, duration: 20 * 60_000, startedAt: state.lastSeen, done: false, quantity: 1 }] } : {}), ...(solar ? { solar: true } : {}), ...(isHomeType(type) && colorVariant ? { colorVariant } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
   const utilityIssue = isHomeType(type) ? utilityIssueFor(state, tierDemand(1)) : isFacilityType(type) ? utilityIssueFor(state, { power: 0, water: FACILITIES[type].water }) : null;
   if (utilityIssue) return fail(utilityIssue);

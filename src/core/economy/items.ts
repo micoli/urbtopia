@@ -45,7 +45,7 @@ export const FISH_MATERIAL: MaterialSpec = MATERIALS.fish;
 
 export interface GoodSpec {
   category: GoodCategory;
-  producedBy: 'factory' | 'bakery';
+  producedBy?: 'factory' | 'bakery';
   recipe: Partial<Record<MaterialId, number>>;
   durationMs: number;
   value: number;
@@ -65,7 +65,6 @@ const CROP_GOODS = Object.fromEntries(
       `${id}${suffix}`,
       {
         category: 'food',
-        producedBy: 'factory',
         recipe: { [id]: size },
         durationMs: (CROPS[id].packingMs * size) / 2,
         value: Math.round((CROPS[id].packedValue * size * valueBonus) / 2),

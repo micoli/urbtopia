@@ -123,9 +123,9 @@ function pedestrianRoadTexture(source: THREE.Texture): THREE.CanvasTexture {
   context.drawImage(image, 0, 0);
   const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
   for (let index = 0; index < pixels.data.length; index += 4) {
-    const red = pixels.data[index];
-    const green = pixels.data[index + 1];
-    const blue = pixels.data[index + 2];
+    const red = pixels.data[index] ?? 0;
+    const green = pixels.data[index + 1] ?? 0;
+    const blue = pixels.data[index + 2] ?? 0;
     const isRoadSurface = (red === 0 && green === 0 && blue === 0)
       || (red <= 125 && green <= 130 && blue <= 155 && green >= red && blue > green + 4);
     if (!isRoadSurface) continue;

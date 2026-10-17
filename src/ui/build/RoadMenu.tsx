@@ -55,9 +55,9 @@ export function RoadMenu() {
 
   const roadItems: RoadItem[] = [
     ...ROAD_CONSTRUCTIONS.filter(item => item.unlockCitizens === 0).map(item => ({ label: t(item.name), cost: item.perTile ? `${item.cost} ${t('tool.perTile')}` : <UrbsAmount value={item.cost} />, tool: item.tool, codexId: item.id })),
-    { label: t('tool.upgradeRoad'), cost: `${ROAD_TIER_COSTS[1]}–${ROAD_TIER_COSTS[2]} ${t('tool.perTile')}`, tool: { kind: 'upgradeRoad', start: null, horizontalFirst: true } },
+    { label: t('tool.upgradeRoad'), cost: `${ROAD_TIER_COSTS[1]!}–${ROAD_TIER_COSTS[2]!} ${t('tool.perTile')}`, tool: { kind: 'upgradeRoad', start: null, horizontalFirst: true } },
     { label: t('tool.pedestrianWay'), cost: `${Math.round(GAME_CONFIG.roadCostPerTile * 0.9)} ${t('tool.perTile')}`, tool: { kind: 'pedestrianWay', start: null, horizontalFirst: true } },
-    { label: t('tool.upgradePedestrianWay'), cost: `${Math.round(ROAD_TIER_COSTS[1] * 0.9)}–${Math.round(ROAD_TIER_COSTS[2] * 0.9)} ${t('tool.perTile')}`, tool: { kind: 'upgradePedestrianWay', start: null, horizontalFirst: true } },
+    { label: t('tool.upgradePedestrianWay'), cost: `${Math.round(ROAD_TIER_COSTS[1]! * 0.9)}–${Math.round(ROAD_TIER_COSTS[2]! * 0.9)} ${t('tool.perTile')}`, tool: { kind: 'upgradePedestrianWay', start: null, horizontalFirst: true } },
     { label: t('tool.demolishPedestrianWay'), tool: { kind: 'demolishPedestrianWay', start: null, horizontalFirst: true } },
   ];
   const sections: { id: RoadSection; items?: RoadItem[]; content?: ReactNode; demolish?: { label: string; tool: Tool } }[] = [

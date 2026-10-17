@@ -1,5 +1,6 @@
 import { BUILDING_SPECS, frontAccessModes, type Building } from '../../core';
 import { t } from '../../i18n/t';
+import type { MessageKey } from '../../i18n/messages';
 import { useGame } from '../common/hooks';
 import { DrawerPanel } from '../common/DrawerPanel';
 
@@ -12,5 +13,5 @@ export function BuildingAccess({ building }: BuildingAccessProps) {
   if (!BUILDING_SPECS[building.type].accessModes.includes('brt')) return null;
   const modes = frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier);
   const access = modes.length === 2 ? 'both' : modes[0] ?? 'none';
-  return <DrawerPanel><DrawerPanel.LabelValue label={t('panel.access')} value={t(`panel.access.${access}`)} /></DrawerPanel>;
+  return <DrawerPanel><DrawerPanel.LabelValue label={t('panel.access')} value={t(`panel.access.${access}` as MessageKey)} /></DrawerPanel>;
 }
