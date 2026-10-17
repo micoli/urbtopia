@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "name": {
+    "en": "Apple cake",
+    "fr": "Gâteau aux pommes"
+  },
+  "model": "goods-applecake",
+  "category": "food",
+  "producedBy": "bakery",
+  "recipe": {
+    "flour": 1,
+    "apple": 1
+  },
+  "durationMinutes": 18,
+  "value": 15,
+  "unlockCitizens": 80,
+  "minTier": 1
+}

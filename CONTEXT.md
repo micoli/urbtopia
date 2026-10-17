@@ -9,7 +9,7 @@ The soft currency of the game, earned by selling goods and spent on building and
 _Avoid_: Coins, cash, money
 
 **Game object**:
-Any kind of thing of the game described by data rather than code: a Building, a Fixture, a Vehicle, a Service vehicle, a Transit fleet vehicle, a Boat, a Material, a Good or a Crop. Its definition, including its values per Tier, is edited in `tools/assets-editor`; the rules that use those values stay in code.
+Any kind of thing of the game described by data rather than code: a Building, a Fixture, a Vehicle, a Service vehicle, a Transit fleet vehicle, a Boat, a Material, a Good, a Crop or an Orchard tree. Its definition, including its values per Tier, is edited in `tools/assets-editor`; the rules that use those values stay in code.
 _Avoid_: Item (a Good), asset, entity, prefab
 
 **Retired**:
@@ -39,6 +39,12 @@ _Avoid_: Raw factory, mine
 **Factory**:
 A building that turns Materials into Goods.
 _Avoid_: Plant, mill
+
+**Mill**:
+A Workshop that turns Wheat into Flour and Olives into Olive oil.
+
+**Bakery**:
+A Factory that turns Flour and other Materials into Food Goods.
 
 **Shop**:
 A building that sells Goods to citizens for Urbs. There is one Shop per Good category, each with four Tiers; it sells only the Goods of its Good category that its Tier makes available. The General shop is the exception: it sells the Goods of every Good category available at its Tier, and costs more to build, to upgrade and to extend with Slots.
@@ -71,6 +77,9 @@ _Avoid_: Plot, parcel, farmland, zone
 **Crop**:
 A species planted on a Field tile. Each species has its own growth time and water Demand, and goes through four growth stages before being ready to harvest.
 _Avoid_: Plant, vegetable
+
+**Orchard tree**:
+A perennial tree placed on owned land that produces one fruit for Harvest, then remains in place and starts another production cycle. Orchard trees need water but do not use Fields or Seed packs; they also provide cooling, biodiversity and wellbeing.
 
 **Seed pack**:
 The unit of seeds needed to plant one Field tile, bought with Urbs and kept in the Farm's seed stock. Part of each harvest is converted back into Seed packs.
@@ -257,15 +266,19 @@ A Citizen who drives on a Commute.
 _Avoid_: Driver, rider (a rider uses public transport)
 
 **Pedestrian path**:
-The route on foot between a Building and a destination, over the sidewalks of the roads. Sidewalks are implicit on every Road tile and have two sides; a road is crossed only at a Crossing or around a dead end. Its length counts tiles walked plus a cost per Crossing crossed.
-_Avoid_: Footpath, pavement, pedestrian way
+The route on foot between a Building and a destination, over the sidewalks of roads and built Pedestrian ways. Sidewalks are implicit on every Road tile and have two sides; a road is crossed only at a Crossing or around a dead end. Its length counts tiles walked plus a cost per Crossing crossed.
+_Avoid_: Footpath, pavement
+
+**Pedestrian way**:
+A player-built tile reserved for pedestrian traffic, connected to other Pedestrian ways and to a Road sidewalk at its endpoint. It cannot be used by Vehicles and has no pedestrian capacity limit.
+_Avoid_: Footpath, pedestrian-only street
 
 **Sidewalk side**:
 One of the two edges of a Road tile along which Citizens walk. The two sides of a straight tile are joined only by a Crossing.
 _Avoid_: Pavement, kerb
 
 **Walking trip**:
-A trip on foot from a Home to a shop, school, health, culture, casino or park within walking distance. It adds no car demand, gives Well-being, and loads the Crossings it uses. Modelled per Home in aggregate.
+A trip on foot from a Home to a shop, school, health, culture, casino, park or Town hall within walking distance. It adds no car demand, gives Well-being, and loads the Crossings it uses. Modelled per Home in aggregate.
 _Avoid_: Stroll, individual journey
 
 **Crossing**:
@@ -602,6 +615,8 @@ _Avoid_: Badge (reserved for the notification counter on a button), trophy, achi
 - A Pleasure boat is a Leisure building and a Casino boat is a Casino, both hosted by a Boat on a Water tile.
 - Removing a Water tile that carries a Boat or a Bridge, a Marina that holds Boats, or a Water tile that would cut a Boat off its Marina is refused.
 - A Bridge is part of the Road graph: Commute, Congestion and Pedestrian paths use it like any Road. Bridge openings lower its capacity in proportion to the Boats that can reach it.
+- A Pedestrian way joins the Pedestrian path network but not the Road or BRT networks. Homes, Schools, Shops and the Town hall can use it as their only access; other buildings still require their existing access modes.
+- A Pedestrian path uses the shortest route through the combined Sidewalk and Pedestrian way network. It crosses Roads only at a Crossing or around a dead end, and only the Crossings it uses reduce Road capacity.
 - A building touching both a Road and a BRT corridor keeps the Road as its primary access, and its front faces the Road.
 - Removing the last access of a building, Road or BRT corridor, is refused.
 - Service vehicles stay on the network of their facility and never switch between Road and BRT corridor.

@@ -173,7 +173,88 @@ def tools():
     return spin(wrench, 28, (0, 0, 0)) + spin(hammer, -28, (0, 0, 0))
 
 
+def radial(part, radius, yaw, tilt=0.0):
+    at = (radius, 0, 0)
+    if tilt:
+        lpm.rotate(part, tilt, "Y", about=at)
+    lpm.rotate(part, yaw, "Z")
+    return part
+
+
+def apple_cake():
+    base = lpm.prism("crust", 12, 0.165, 0.055, color=color("crust"), radius_top=0.155)
+    lpm.paint(base, color("crust_dark"), where=lambda c, n, i: i % 3 == 0 and abs(n.z) < 0.5)
+    filling = lpm.prism("filling", 12, 0.135, 0.012, at=(0, 0, 0.05), color=color("batter"))
+    parts = [base, filling]
+    for index in range(8):
+        yaw = 45 * index
+        slice_ = lpm.box(f"slice{index}", (0.075, 0.034, 0.014), at=(0.085, 0, 0.056), color=color("apple_slice"), taper=(0.9, 0.7))
+        skin = lpm.box(f"skin{index}", (0.012, 0.034, 0.016), at=(0.118, 0, 0.056), color=color("apple_dark"))
+        parts += [radial(slice_, 0.085, yaw, 12), radial(skin, 0.118, yaw, 12)]
+    parts.append(lpm.prism("core", 8, 0.03, 0.02, at=(0, 0, 0.056), color=color("apple_slice")))
+    parts.append(lpm.box("dust", (0.04, 0.02, 0.004), at=(0.0, 0.0, 0.076), color=color("sugar")))
+    return parts
+
+
+def cherry_clafoutis():
+    dish = lpm.prism("dish", 12, 0.16, 0.06, color=color("clay"), radius_top=0.15)
+    lpm.paint(dish, color("clay_dark"), where=lambda c, n, i: i % 4 == 1 and abs(n.z) < 0.5)
+    custard = lpm.prism("custard", 12, 0.138, 0.014, at=(0, 0, 0.048), color=color("batter"))
+    lpm.paint(custard, color("crust"), where=lambda c, n, i: i % 3 == 0 and n.z > 0.5)
+    parts = [dish, custard]
+    spots = ((0.0, 0.0), (0.075, 0.03), (-0.07, 0.05), (0.03, -0.08), (-0.05, -0.06), (0.1, -0.05), (-0.11, -0.01))
+    for index, (x, y) in enumerate(spots):
+        body = "cherry" if index % 2 == 0 else "cherry_dark"
+        profile = [(0, -0.026), (0.022, -0.016), (0.03, 0.0), (0.022, 0.018), (0, 0.028)]
+        parts.append(lpm.lathe(f"cherry{index}", profile, segments=6, at=(x, y, 0.078), color=color(body)))
+    parts.append(lpm.box("dust_a", (0.05, 0.012, 0.004), at=(-0.02, 0.09, 0.062), color=color("sugar")))
+    parts.append(lpm.box("dust_b", (0.04, 0.012, 0.004), at=(0.06, -0.1, 0.062), color=color("sugar")))
+    return parts
+
+
+def fougasse():
+    outline = [(-0.19, 0.0), (-0.11, 0.075), (0.0, 0.105), (0.11, 0.075), (0.19, 0.0), (0.11, -0.075), (0.0, -0.105), (-0.11, -0.075)]
+    loaf = lpm.sweep("loaf", outline, 0.032, color=color("crust"), axis="z")
+    top = lpm.sweep("top", [(x * 0.88, y * 0.86) for x, y in outline], 0.012, at=(0, 0, 0.03), color=color("crust_light"), axis="z")
+    parts = [loaf, top]
+    for index, (x, side) in enumerate(((-0.09, 1), (-0.09, -1), (0.0, 1), (0.0, -1), (0.09, 1), (0.09, -1))):
+        slit = lpm.box(f"slit{index}", (0.075, 0.016, 0.006), at=(x, side * 0.04, 0.0415), color=color("crust_dark"))
+        lpm.rotate(slit, -side * 42, "Z", about=(x, side * 0.04, 0))
+        parts.append(slit)
+    olives = ((-0.13, 0.0, "olive_black"), (-0.045, 0.0, "olive_green"), (0.05, 0.0, "olive_black"), (0.125, 0.0, "olive_green"),
+              (-0.03, 0.07, "olive_green"), (0.03, -0.07, "olive_black"), (-0.07, -0.065, "olive_black"), (0.085, 0.06, "olive_black"))
+    for index, (x, y, body) in enumerate(olives):
+        parts.append(lpm.lathe(f"olive{index}", [(0, -0.014), (0.018, -0.008), (0.02, 0.0), (0.016, 0.01), (0, 0.016)], segments=6, at=(x, y, 0.046), color=color(body)))
+    return parts
+
+
+def bread():
+    profile = [(0.0, 0.0), (0.15, 0.0), (0.17, 0.03), (0.15, 0.08), (0.10, 0.12), (0.0, 0.135)]
+    boule = lpm.lathe("boule", profile, segments=10, color=color("crust"))
+    lpm.paint(boule, color("crust_dark"), where=lambda c, n, i: n.z < 0.3 and i % 3 == 0)
+    lpm.scale(boule, 1.0, 0.85, 1.0)
+    lpm.rotate(boule, 12, "Z")
+    parts = [boule]
+    for index, offset in enumerate((-0.05, 0.0, 0.05)):
+        cut = lpm.box(f"cut{index}", (0.10, 0.016, 0.01), at=(0.0, offset, 0.131 - abs(offset) * 0.1), color=color("crust_light"))
+        lpm.rotate(cut, 12 + 35, "Z", about=(0.0, offset, 0))
+        parts.append(cut)
+    baguette = lpm.prism("baguette", 6, 0.04, 0.34, color=color("crust_light"), radius_top=0.036)
+    lpm.paint(baguette, color("crust"), where=lambda c, n, i: i % 2 == 0 and abs(n.z) < 0.5)
+    lpm.rotate(baguette, 90, "Y")
+    lpm.move(baguette, -0.17, 0.0, 0.04)
+    lpm.rotate(baguette, -10, "Z", about=(0, 0, 0))
+    lpm.move(baguette, 0.0, 0.2, 0.0)
+    for index in range(4):
+        slash = lpm.box(f"slash{index}", (0.05, 0.012, 0.008), at=(-0.11 + index * 0.07, 0.2 + 0.02 - index * 0.012, 0.073), color=color("crust_dark"))
+        lpm.rotate(slash, -10 + 40, "Z", about=(-0.11 + index * 0.07, 0.22 - index * 0.012, 0))
+        parts.append(slash)
+    parts.append(baguette)
+    return parts
+
+
 MODELS = {
+    "appleCake": apple_cake, "bread": bread, "cherryClafoutis": cherry_clafoutis, "fougasse": fougasse,
     "bricks": bricks, "cannedFish": canned_fish, "cement": cement, "circuits": circuits, "crystal": crystal,
     "glass": glass, "jewelry": jewelry, "planks": planks, "steel": steel, "tiles": tiles, "tools": tools,
 }

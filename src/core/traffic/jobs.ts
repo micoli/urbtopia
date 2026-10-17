@@ -4,7 +4,7 @@ import { VENUE_TYPES, isVenueType } from '../venues/profiles';
 import { SHOP_TYPES, isShopType, shopTierOf } from '../economy/shops';
 import { FACILITIES, FACILITY_TYPES, facilityCapacity, isFacilityType } from '../services/facilities';
 
-export const workplaceTypes: readonly BuildingType[] = ['workshop', 'factory', ...SHOP_TYPES, 'casino', ...VENUE_TYPES, ...FACILITY_TYPES];
+export const workplaceTypes: readonly BuildingType[] = ['workshop', 'factory', 'mill', 'bakery', ...SHOP_TYPES, 'casino', ...VENUE_TYPES, ...FACILITY_TYPES];
 
 export const JOBS = {
   workshopPerTier: 25,
@@ -17,8 +17,10 @@ export const JOBS = {
 export function jobsOf(building: Building): number {
   switch (building.type) {
     case 'workshop':
+    case 'mill':
       return JOBS.workshopPerTier * building.tier;
     case 'factory':
+    case 'bakery':
       return JOBS.factoryPerTier * building.tier;
     case 'casino':
       return JOBS.casinoPerTier * building.tier;

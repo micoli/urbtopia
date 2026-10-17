@@ -109,6 +109,10 @@ export interface RoadTile extends Coord {
   tier?: number;
 }
 
+export interface PedestrianWayTile extends Coord {
+  tier?: number;
+}
+
 export interface BusLine {
   id: number;
   stops: number[];
@@ -189,6 +193,7 @@ export interface GameState {
   marketUnlocked: boolean;
   market: Partial<Record<GoodId, MarketPrice>>;
   roads: RoadTile[];
+  pedestrianWays?: PedestrianWayTile[];
   roundabouts: Coord[];
   tutorial: TutorialStep | null;
   tradeLedger: TradeLedgerEntry[];

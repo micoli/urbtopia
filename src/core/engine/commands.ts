@@ -34,7 +34,7 @@ import { missingServices, serviceCoverage } from '../services/services';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from '../map/occupancy';
 import { autoRotation, frontHasAccess, placementIssue } from '../map/placement';
 import { newQueueEntry, restartRunningProduction, runningEntry, rushPrice, rushRunningProduction, shiftRunningTimers, taxDue } from '../economy/production';
-import { roadBuildCost, missingRoadTiles } from '../map/roadCost';
+import { roadBuildCost, pedestrianWayBuildCost, missingRoadTiles, PEDESTRIAN_WAY_COST_FACTOR } from '../map/roadCost';
 import { roadPath } from '../map/roads';
 import { roadTierUpgradeCost } from '../traffic/roadTier';
 import { maxTierOf, productionTierOf, upgradeCostOf } from '../economy/tiers';
@@ -64,6 +64,10 @@ export type Command =
   | { readonly type: 'AssignTransitVehicle'; readonly id: number; readonly lineId?: number }
   | { readonly type: 'BuildRoad'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'UpgradeRoads'; readonly tiles: readonly Coord[] }
+  | { readonly type: 'BuildPedestrianWay'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
+  | { readonly type: 'UpgradePedestrianWays'; readonly tiles: readonly Coord[] }
+  | { readonly type: 'DemolishPedestrianWay'; readonly x: number; readonly y: number }
+  | { readonly type: 'DemolishPedestrianWayPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'PlaceCrossing'; readonly x: number; readonly y: number }
   | { readonly type: 'PlaceRoundabout'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoad'; readonly x: number; readonly y: number }
@@ -159,6 +163,7 @@ export type ErrorKey =
   | 'error.invalidRound'
   | 'error.needsRoad'
   | 'error.needsRoadOrBrt'
+  | 'error.needsAccess'
   | 'error.buildingLimitReached'
   | 'error.noFarm'
   | 'error.fieldCapReached'
@@ -254,6 +259,14 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return buildRoad(state, command.from, command.to, command.horizontalFirst ?? true);
     case 'UpgradeRoads':
       return upgradeRoads(state, command.tiles);
+    case 'BuildPedestrianWay':
+      return buildPedestrianWay(state, command.from, command.to, command.horizontalFirst ?? true);
+    case 'UpgradePedestrianWays':
+      return upgradePedestrianWays(state, command.tiles);
+    case 'DemolishPedestrianWay':
+      return demolishPedestrianWays(state, [{ x: command.x, y: command.y }]);
+    case 'DemolishPedestrianWayPath':
+      return demolishPedestrianWays(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
     case 'PlaceCrossing':
       return placeCrossing(state, { x: command.x, y: command.y });
     case 'PlaceRoundabout':
@@ -448,6 +461,54 @@ function upgradeRoads(state: GameState, tiles: readonly Coord[]): CommandOutcome
   };
 }
 
+function buildPedestrianWay(state: GameState, from: Coord, to: Coord, horizontalFirst: boolean): CommandOutcome {
+  const path = roadPath(from, to, horizontalFirst);
+  if (!path.every((tile) => isInsideOwnedParcels(state, tile))) return fail('error.outsideOwnedParcels');
+  const blocked = occupiedTiles(state);
+  const existing = new Set((state.pedestrianWays ?? []).map(tileKey));
+  const missing = path.filter((tile) => !existing.has(tileKey(tile)));
+  if (missing.some((tile) => blocked.has(tileKey(tile)))) return fail('error.tilesOccupied');
+  const cost = pedestrianWayBuildCost(state, path);
+  if (state.urbs < cost) return fail('error.notEnoughUrbs');
+  return {
+    state: {
+      ...state,
+      urbs: state.urbs - cost,
+      pedestrianWays: [...(state.pedestrianWays ?? []), ...missing],
+    },
+    events: [],
+  };
+}
+
+function upgradePedestrianWays(state: GameState, tiles: readonly Coord[]): CommandOutcome {
+  const targets = new Set(tiles.map(tileKey));
+  const ways = (state.pedestrianWays ?? []).filter((tile) => targets.has(tileKey(tile)));
+  if (ways.length === 0) return fail('error.noRoadHere');
+  const upgradable = ways.filter((tile) => roadTierUpgradeCost(tile.tier ?? 1) !== null);
+  if (upgradable.length === 0) return fail('error.maxRoadTier');
+  const total = upgradable.reduce((sum, tile) => sum + Math.round((roadTierUpgradeCost(tile.tier ?? 1) ?? 0) * PEDESTRIAN_WAY_COST_FACTOR), 0);
+  if (state.urbs < total) return fail('error.notEnoughUrbs');
+  const upgraded = new Set(upgradable.map(tileKey));
+  return {
+    state: {
+      ...state,
+      urbs: state.urbs - total,
+      pedestrianWays: (state.pedestrianWays ?? []).map((tile) => upgraded.has(tileKey(tile)) ? { ...tile, tier: (tile.tier ?? 1) + 1 } : tile),
+    },
+    events: [],
+  };
+}
+
+function demolishPedestrianWays(state: GameState, tiles: Coord[]): CommandOutcome {
+  const targets = new Set(tiles.map(tileKey));
+  const removed = (state.pedestrianWays ?? []).filter((tile) => targets.has(tileKey(tile)));
+  if (removed.length === 0) return fail('error.noRoadHere');
+  return {
+    state: { ...state, pedestrianWays: (state.pedestrianWays ?? []).filter((tile) => !targets.has(tileKey(tile))) },
+    events: [],
+  };
+}
+
 function placeCrossing(state: GameState, tile: Coord): CommandOutcome {
   const road = state.roads.find((candidate) => candidate.x === tile.x && candidate.y === tile.y);
   if (!road) return fail('error.noRoadHere');
@@ -516,7 +577,9 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
   const issue = placementIssue(state, type, x, y, rotation);
   if (issue) return fail(issue);
   if (state.urbs < nextCopyCost(state, type) + extraCost) return fail('error.notEnoughUrbs');
-  const building = { ...createBuilding(state.nextId, type, x, y, rotation), ...(solar ? { solar: true } : {}), ...(isHomeType(type) && colorVariant ? { colorVariant } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
+  const created = createBuilding(state.nextId, type, x, y, rotation);
+  const orchardFruit: QueueEntry['item'] | undefined = type === 'oliveTree' ? 'olive' : type === 'appleTree' ? 'apple' : type === 'cherryTree' ? 'cherry' : undefined;
+  const building = { ...created, ...(orchardFruit ? { queue: [{ item: orchardFruit, duration: 20 * 60_000, startedAt: state.lastSeen, done: false, quantity: 1 }] } : {}), ...(solar ? { solar: true } : {}), ...(isHomeType(type) && colorVariant ? { colorVariant } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
   const utilityIssue = isHomeType(type) ? utilityIssueFor(state, tierDemand(1)) : isFacilityType(type) ? utilityIssueFor(state, { power: 0, water: FACILITIES[type].water }) : null;
   if (utilityIssue) return fail(utilityIssue);
   return {
@@ -546,7 +609,7 @@ function renameStop(state: GameState, id: number, rawName: string): CommandOutco
 function sellBuilding(state: GameState, id: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === id);
   if (!building) return fail('error.unknownBuilding');
-  if ((isStorageType(building.type) || building.type === 'workshop' || building.type === 'factory' || building.type === 'packhouse') && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
+  if ((isStorageType(building.type) || ['workshop', 'factory', 'packhouse', 'mill', 'bakery'].includes(building.type)) && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
   if ((building.type === 'powerPlant' || building.type === 'waterTower') && !canLoseUtility(state, building)) return fail('error.utilityInUse');
   if (building.type === 'marina' && boatsOfMarina(state, building.id).length > 0) return fail('error.marinaInUse');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
@@ -598,10 +661,12 @@ function queueProduction(state: GameState, buildingId: number, item: string, now
   if (building.tier < minTierOf(item)) return fail('error.tierTooLow');
   if (building.queue.length >= building.slotCount) return fail('error.queueFull');
   const materials = { ...state.storage.materials };
+  const recipeMultiplier = building.type === 'mill' || building.type === 'bakery' ? productionTierOf(building).yield : 1;
   for (const [material, needed] of Object.entries(recipeOf(item))) {
+    const required = needed * recipeMultiplier;
     const available = materials[material as keyof typeof materials] ?? 0;
-    if (available < needed) return fail('error.missingMaterials');
-    materials[material as keyof typeof materials] = available - needed;
+    if (available < required) return fail('error.missingMaterials');
+    materials[material as keyof typeof materials] = available - required;
   }
   const entry = newQueueEntry(building, item, now);
   return {
@@ -665,7 +730,11 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
       ...state,
       storage: { materials, goods },
       marketUnlocked: state.marketUnlocked || Object.values(goods).some((amount) => (amount ?? 0) > 0),
-      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, queue: remaining } : candidate)),
+      buildings: state.buildings.map((candidate) => {
+        if (candidate !== building) return candidate;
+        const orchardFruit = building.type === 'oliveTree' ? 'olive' : building.type === 'appleTree' ? 'apple' : building.type === 'cherryTree' ? 'cherry' : undefined;
+        return { ...building, queue: orchardFruit && collected > 0 ? [{ item: orchardFruit, duration: 20 * 60_000, startedAt: state.lastSeen, done: false, quantity: 1 }] : remaining };
+      }),
     },
     events,
   };

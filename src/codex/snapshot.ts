@@ -1,12 +1,27 @@
-import { BUILDING_SPECS, CROPS, createBuilding, isCrop, isFacilityType, newGame, type BuildingType, type GameState, type ColorVariant } from '../core';
+import { BUILDING_SPECS, CROPS, createBuilding, isCrop, isFacilityType, newGame, type Building, type BuildingType, type GameState, type ColorVariant, type Rotation } from '../core';
+import { definitionOf } from '../scene/modelDefinitions';
+import { modelOfBuilding } from '../scene/renderItems';
 import { isHomeCodexId, solarBaseOf, type CodexId } from './catalog';
+
+const FACING_CAMERA = 2;
+
+function facingCameraRotation(building: Building): Rotation {
+  return definitionOf(modelOfBuilding(building))?.source === 'managed' ? FACING_CAMERA : 0;
+}
 
 export function codexSnapshot(id: CodexId, tier: number, colorVariant: ColorVariant = 'default'): GameState {
   const state: GameState = { ...newGame({ seed: 'codex', now: 0 }), buildings: [], roads: [], roundabouts: [], brtRoads: [], rails: [], busLines: [], transitLines: [], transitFleet: [] };
   const solarBase = solarBaseOf(id);
   if (solarBase || id in BUILDING_SPECS) {
-    const building = createBuilding(1, solarBase ?? id as BuildingType, 0, 0, !solarBase && isFacilityType(id) ? 2 : 0);
-    state.buildings = [{ ...building, tier, ...(solarBase ? { solar: true } : {}), ...(isHomeCodexId(id) ? { colorVariant } : {}) }];
+    const type = solarBase ?? id as BuildingType;
+    const facility = !solarBase && isFacilityType(id);
+    const building: Building = {
+      ...createBuilding(1, type, 0, 0, facility ? 2 : 0),
+      tier,
+      ...(solarBase ? { solar: true } : {}),
+      ...(isHomeCodexId(id) ? { colorVariant } : {}),
+    };
+    state.buildings = [facility ? building : { ...building, rotation: facingCameraRotation(building) }];
     return state;
   }
   if (isCrop(id)) {

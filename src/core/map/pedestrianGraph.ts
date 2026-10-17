@@ -27,13 +27,13 @@ export interface WalkTarget {
 
 const OPPOSITE: Record<Direction, Direction> = { N: 'S', S: 'N', E: 'W', W: 'E' };
 
-const graphCache = new WeakMap<GameState['roads'], { roundabouts: GameState['roundabouts']; graph: PedestrianGraph }>();
+const graphCache = new WeakMap<GameState['roads'], { roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; graph: PedestrianGraph }>();
 
 export function pedestrianGraph(state: GameState): PedestrianGraph {
   const cached = graphCache.get(state.roads);
-  if (cached?.roundabouts === state.roundabouts) return cached.graph;
+  if (cached?.roundabouts === state.roundabouts && cached.pedestrianWays === state.pedestrianWays) return cached.graph;
   const graph = buildPedestrianGraph(state);
-  graphCache.set(state.roads, { roundabouts: state.roundabouts, graph });
+  graphCache.set(state.roads, { roundabouts: state.roundabouts, pedestrianWays: state.pedestrianWays, graph });
   return graph;
 }
 
@@ -41,9 +41,14 @@ export function sidewalkNode(tile: Coord, side: Direction | 'R'): string {
   return `${tileKey(tile)}:${side}`;
 }
 
+export function pedestrianWayNode(tile: Coord): string {
+  return `${tileKey(tile)}:P`;
+}
+
 export function buildPedestrianGraph(state: GameState): PedestrianGraph {
   const edges = new Map<string, PedestrianEdge[]>();
   const roads = new Map(state.roads.map((road) => [tileKey(road), road]));
+  const ways = new Map((state.pedestrianWays ?? []).map((tile) => [tileKey(tile), tile]));
   const exitsOf = new Map(state.roads.map((road) => [tileKey(road), roadExits(state, road)]));
   const link = (a: string, b: string, cost: number, crossing: string | null = null) => {
     if (a === b) return;
@@ -93,6 +98,21 @@ export function buildPedestrianGraph(state: GameState): PedestrianGraph {
   }
 
   for (const center of state.roundabouts) addRing(edges, roads, exitsOf, center, link);
+
+  for (const way of ways.values()) {
+    const node = pedestrianWayNode(way);
+    addNode(edges, node);
+    const neighbours = DIRECTIONS.map((direction) => neighbour(way, direction));
+    const wayNeighbours = neighbours.filter((tile) => ways.has(tileKey(tile)));
+    for (const next of wayNeighbours) link(node, pedestrianWayNode(next), 1);
+    if (wayNeighbours.length > 1) continue;
+    for (const roadSide of DIRECTIONS) {
+      const road = roads.get(tileKey(neighbour(way, OPPOSITE[roadSide])));
+      if (!road || exitsOf.get(tileKey(road))?.includes(roadSide)) continue;
+      link(node, sidewalkNode(road, roadSide), 1);
+    }
+  }
+
   return edges;
 }
 
@@ -100,7 +120,7 @@ export function accessNodes(state: GameState, graph: PedestrianGraph, building: 
   const back = OPPOSITE[frontDirection(building.rotation)];
   const nodes: string[] = [];
   for (const tile of frontTiles(building.type, building.x, building.y, building.rotation, building.tier)) {
-    for (const node of [sidewalkNode(tile, back), sidewalkNode(tile, 'R')]) {
+    for (const node of [sidewalkNode(tile, back), sidewalkNode(tile, 'R'), pedestrianWayNode(tile)]) {
       if (graph.has(node)) nodes.push(node);
     }
   }
@@ -114,7 +134,7 @@ export function adjacentNodes(graph: PedestrianGraph, building: Building): strin
     for (const direction of DIRECTIONS) {
       const outside = neighbour(tile, direction);
       if (inside.has(tileKey(outside))) continue;
-      for (const node of [sidewalkNode(outside, OPPOSITE[direction]), sidewalkNode(outside, 'R')]) {
+      for (const node of [sidewalkNode(outside, OPPOSITE[direction]), sidewalkNode(outside, 'R'), pedestrianWayNode(outside)]) {
         if (graph.has(node)) nodes.add(node);
       }
     }

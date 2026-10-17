@@ -202,6 +202,23 @@ def rounded_block(name, width, depth, height, color, ratio, at=(0, 0, 0)):
     return lpm._object(name, _bm(verts, faces), color)
 
 
+def rounded_wedge(name, width, depth, ratio, color, base, top_z, across):
+    """A rounded block (same corners as the walls) from z=base up to a top that follows top_z(b), b being the x or y coordinate."""
+    radius = ratio * min(width, depth)
+    outline = []
+    for corner_x, corner_y, start in ((1, -1, -90), (1, 1, 0), (-1, 1, 90), (-1, -1, 180)):
+        for step in (0, 45, 90):
+            angle = math.radians(start + step)
+            outline.append((corner_x * (width / 2 - radius) + radius * math.cos(angle),
+                            corner_y * (depth / 2 - radius) + radius * math.sin(angle)))
+    count = len(outline)
+    verts = [(x, y, base) for x, y in outline] + [(x, y, top_z(y if across == "y" else x)) for x, y in outline]
+    faces = [(i, (i + 1) % count, count + (i + 1) % count, count + i) for i in range(count)]
+    faces.append(tuple(reversed(range(count))))
+    faces.append(tuple(range(count, 2 * count)))
+    return lpm._object(name, _bm(verts, faces), color)
+
+
 def slanted_blocks(name, width, depth, height, ratio, colors, at, slope):
     """A rounded block cut in two colors along a plane that rises toward the back (+Y): returns (lower, upper)."""
     radius = ratio * min(width, depth)
@@ -359,6 +376,9 @@ def gable_roof_parts(spec, z):
         attic = [(-body_short, z), (body_short, z), (body_short, under(body_short)), (ridge, z + height), (-body_short, under(-body_short))]
     attic_color = color_index(spec, "wall") if cfg["gable_wall"] else color_index(spec, "roof")
     roof = fillet(extrude_profile(spec, "roof", slab, -long_side / 2, long_side / 2, color_index(spec, "roof")), cfg["roof_fillet"])
+    if spec["roof"] == "shed":
+        wall = rounded_wedge("gable_wall", spec["body"][0], spec["body"][1], cfg["corner"], attic_color, z, under, "y" if ridge_along_x(spec) else "x")
+        return [roof, wall]
     return [roof, extrude_profile(spec, "gable_wall", attic, -body_long, body_long, attic_color)]
 
 
@@ -1245,13 +1265,46 @@ def add_striped_awning(spec, parts, along=0.17, width=0.5, rise=0.84, reach=0.1,
         parts.append(lpm._object(f"awning_stripe_{index}", _bm(verts, faces), accent if index % 2 == 0 else white))
 
 
-def add_stall(spec, parts, along=0.17, width=0.44):
-    """A low display table with fruit crates in front of a shop window."""
+def add_chimney_row(spec, parts, count, top, cap_color, spacing=0.3, depth_ratio=0.3):
+    """Square chimneys in a row across the back half of a shed roof, each rising 0.14 above the slope."""
+    if spec["roof"] != "shed" or not ridge_along_x(spec):
+        raise ValueError("a chimney row needs a shed roof along x")
+    body_width, body_depth = spec["body"]
+    _, short_side, slope = roof_dimensions(spec)
+    y = body_depth * depth_ratio
+    height = spec["cfg"]["roof_thickness"] + slope * (y + short_side / 2) / short_side + 0.14
+    for index in range(count):
+        x = (index - (count - 1) / 2) * spacing
+        parts.append(lpm.box(f"chimney_{index}", (0.07, 0.07, height), at=(x, y, top), color=color_index(spec, "wall")))
+        parts.append(lpm.box(f"chimney_cap_{index}", (0.095, 0.095, 0.02), at=(x, y, top + height), color=cap_color))
+
+
+def add_bread_display(spec, parts, along, width, height, depth):
+    """Round loaves alternating with a trio of baguettes on a stall table."""
+    loaf, baguette = PALETTE_NAMES.index("uwood"), PALETTE_NAMES.index("sun")
+    count = 4
+    slot = width / count
+    for index in range(count):
+        a = along - width / 2 + slot * (index + 0.5)
+        if index % 2 == 0:
+            x, y, z = plane_point("front", a, wall_half(spec, "front") + depth / 2 - 0.025, height)
+            parts.append(lpm.box(f"loaf_{index}", (slot - 0.03, depth - 0.045, 0.05), at=(x, y, z), color=loaf, taper=(0.7, 0.7)))
+            continue
+        for row in range(3):
+            x, y, z = plane_point("front", a, wall_half(spec, "front") + 0.03 + row * 0.024, height + row * 0.016)
+            parts.append(lpm.box(f"baguette_{index}_{row}", (slot - 0.02, 0.02, 0.022), at=(x, y, z), color=baguette))
+
+
+def add_stall(spec, parts, along=0.17, width=0.44, produce="fruit"):
+    """A low display table with fruit crates (or bread) in front of a shop window."""
     trim, wall = color_index(spec, "trim"), color_index(spec, "wall")
     plane = wall_half(spec, "front")
     names = ("coral", "sun", "lime", "tangerine")
     depth, height = 0.1, 0.06
     parts.append(wall_box(spec, "stall_table", "front", along, 0, (width, depth, height), trim, embed=-0.012))
+    if produce == "bread":
+        add_bread_display(spec, parts, along, width, height, depth)
+        return
     count = 4
     for index in range(count):
         a = along - width / 2 + width * (index + 0.5) / count
@@ -1586,6 +1639,8 @@ def add_feature(spec, parts, feature):
     elif kind == "awning":
         width, height = door_layout(spec)
         parts.append(wall_box(spec, "awning", "front", spec.get("door_along", 0.0), height + 0.03, (width + 0.14, 0.06, 0.025), accent))
+    elif kind == "chimney" and "count" in feature:
+        add_chimney_row(spec, parts, feature["count"], top, dark)
     elif kind == "chimney":
         height = roof_height(spec) + 0.14
         parts.append(lpm.box("chimney", (0.07, 0.07, height), at=(body_width * 0.22, body_depth * 0.18, top), color=color_index(spec, "wall")))
@@ -1728,7 +1783,7 @@ def add_feature(spec, parts, feature):
     elif kind == "door_at":
         add_door_at(spec, parts, feature["along"])
     elif kind == "stall":
-        add_stall(spec, parts, feature.get("along", 0.17), feature.get("width", 0.44))
+        add_stall(spec, parts, feature.get("along", 0.17), feature.get("width", 0.44), feature.get("produce", "fruit"))
     elif kind == "roof_lantern":
         add_roof_lantern(spec, parts, feature.get("size", 0.26), feature.get("height", 0.12))
     elif kind == "round_window":

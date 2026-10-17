@@ -152,6 +152,7 @@ const DOCS: Record<string, FieldDoc> = {
   growth: d('The model of each growth stage.', 'The Fields in the scene.'),
   produce: d('The model of the harvested produce.', 'The scene.'),
   harvested: d('The model of the field once harvested.', 'The scene.'),
+  item: d('The model of a single fruit, shown as the Material icon instead of the produce.', 'Item icons and thumbnails.'),
 
   // Boats and vehicles
   operatingCostPerHour: d('Urbs per hour while the Boat operates.', 'The city’s hourly costs.'),

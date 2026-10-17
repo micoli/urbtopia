@@ -2,7 +2,7 @@ import type { BuildingDefinition } from './buildingSchema.ts';
 
 export type { BuildingDefinition } from './buildingSchema.ts';
 
-export type AccessMode = 'road' | 'brt';
+export type AccessMode = 'road' | 'brt' | 'pedestrianWay';
 
 export interface LocalizedText {
   en: string;

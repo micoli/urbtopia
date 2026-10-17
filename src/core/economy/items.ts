@@ -6,10 +6,10 @@ import { CROPS, CROP_IDS, type CropId } from '../farming/crops';
 import type { BuildingType } from '../engine/state';
 import type { BaseGoodId } from './goodTypes.generated';
 import type { GoodCategory, GoodDefinition, MaterialDefinition } from './itemSchemas';
-import type { DefinedMaterialId, WorkshopMaterialId } from './materialTypes.generated';
+import type { DefinedMaterialId } from './materialTypes.generated';
 
 export type { BaseGoodId };
-export type BaseMaterialId = WorkshopMaterialId;
+export type BaseMaterialId = DefinedMaterialId;
 export type MaterialId = DefinedMaterialId | CropId;
 export type PackSuffix = 'Crate' | 'Box' | 'Pallet';
 export type CropCrateId = `${CropId}Crate`;
@@ -21,7 +21,7 @@ export type ItemId = MaterialId | GoodId;
 
 const MINUTE_MS = 60_000;
 
-type MaterialSpec = { durationMs: number; unlockCitizens: number; minTier: number; value: number };
+type MaterialSpec = { durationMs: number; unlockCitizens: number; minTier: number; value: number; recipe?: Partial<Record<MaterialId, number>> };
 
 // Checked against their schema by the definitions plugin at dev start and build, and by the tests.
 const materialFiles = import.meta.glob<MaterialDefinition>('../../../assets/defs/materials/*.json', { eager: true, import: 'default' });
@@ -30,7 +30,7 @@ const goodFiles = import.meta.glob<GoodDefinition>('../../../assets/defs/goods/*
 export const MATERIAL_ENTRIES = entriesOf<MaterialDefinition, DefinedMaterialId>(materialFiles, materialOrder);
 export const GOOD_ENTRIES = entriesOf<GoodDefinition, BaseGoodId>(goodFiles, goodOrder);
 
-const materialSpecOf = ({ durationMinutes, unlockCitizens, minTier, value }: MaterialDefinition): MaterialSpec => ({ durationMs: durationMinutes * MINUTE_MS, unlockCitizens, minTier, value });
+const materialSpecOf = ({ durationMinutes, unlockCitizens, minTier, value, recipe }: MaterialDefinition): MaterialSpec => ({ durationMs: durationMinutes * MINUTE_MS, unlockCitizens, minTier, value, recipe: recipe as MaterialSpec['recipe'] });
 
 const materialsWhere = (keep: (material: MaterialDefinition) => boolean) =>
   Object.fromEntries(MATERIAL_ENTRIES.filter(keep).map(material => [material.id, materialSpecOf(material)]));
@@ -45,6 +45,7 @@ export const FISH_MATERIAL: MaterialSpec = MATERIALS.fish;
 
 export interface GoodSpec {
   category: GoodCategory;
+  producedBy?: 'factory' | 'bakery';
   recipe: Partial<Record<MaterialId, number>>;
   durationMs: number;
   value: number;
@@ -53,7 +54,7 @@ export interface GoodSpec {
 }
 
 const BASE_GOODS = Object.fromEntries(
-  GOOD_ENTRIES.map(({ id, category, recipe, durationMinutes, value, unlockCitizens, minTier }): [BaseGoodId, GoodSpec] => [id, { category, recipe: recipe as GoodSpec['recipe'], durationMs: durationMinutes * MINUTE_MS, value, unlockCitizens, minTier }]),
+  GOOD_ENTRIES.map(({ id, category, producedBy, recipe, durationMinutes, value, unlockCitizens, minTier }): [BaseGoodId, GoodSpec] => [id, { category, producedBy: producedBy ?? 'factory', recipe: recipe as GoodSpec['recipe'], durationMs: durationMinutes * MINUTE_MS, value, unlockCitizens, minTier }]),
 ) as Record<BaseGoodId, GoodSpec>;
 
 export const PACK_FORMATS = packFormats.formats as readonly { suffix: PackSuffix; size: number; valueBonus: number }[];
@@ -103,12 +104,15 @@ export function minTierOf(item: ItemId): number {
 }
 
 export function recipeOf(item: ItemId): Partial<Record<MaterialId, number>> {
-  return isGood(item) ? GOODS[item].recipe : {};
+  if (isGood(item)) return GOODS[item].recipe;
+  return MATERIALS[item].recipe ?? {};
 }
 
 const PRODUCIBLE_BY_BUILDING: Partial<Record<BuildingType, readonly ItemId[]>> = {
   workshop: MATERIAL_ENTRIES.filter(({ producedBy }) => producedBy === 'workshop').map(({ id }) => id),
-  factory: Object.keys(BASE_GOODS) as BaseGoodId[],
+  mill: MATERIAL_ENTRIES.filter(({ producedBy }) => producedBy === 'mill').map(({ id }) => id),
+  factory: Object.entries(BASE_GOODS).filter(([, good]) => good.producedBy === 'factory').map(([id]) => id as BaseGoodId),
+  bakery: Object.entries(BASE_GOODS).filter(([, good]) => good.producedBy === 'bakery').map(([id]) => id as BaseGoodId),
   packhouse: Object.keys(CROP_GOODS) as CropPackId[],
 };
 

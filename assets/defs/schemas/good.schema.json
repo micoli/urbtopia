@@ -40,6 +40,13 @@
         "luxury"
       ]
     },
+    "producedBy": {
+      "type": "string",
+      "enum": [
+        "factory",
+        "bakery"
+      ]
+    },
     "recipe": {
       "type": "object",
       "propertyNames": {

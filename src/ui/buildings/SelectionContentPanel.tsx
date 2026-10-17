@@ -39,7 +39,7 @@ export function SelectionContentPanel() {
       <PanelHeader title={t(`building.${building.type}`)} subtitle={building.tier} onClose={() => select(null)} />
       <BuildingAccess building={building} />
       {isTransitStopType(building.type) ? <StopNameField building={building} /> : null}
-      {building.type === 'workshop' || building.type === 'factory' || building.type === 'packhouse' ? <ProductionPanel building={building} /> : null}
+      {['workshop', 'factory', 'packhouse', 'mill', 'bakery'].includes(building.type) ? <ProductionPanel building={building} /> : null}
       {building.type === 'farm' ? <FarmPanel building={building} /> : null}
       {isHomeType(building.type) ? <HomePanel building={building} /> : null}
       {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}

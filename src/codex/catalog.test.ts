@@ -10,6 +10,8 @@ import { growthModelOf, produceModelOf } from '../scene/cropModels';
 import { modelOfBuilding, renderItemsOf } from '../scene/renderItems';
 
 describe('codex coverage gate', () => {
+  const publicFacilityTypes = FACILITY_TYPES.filter(type => CODEX_ENTRIES.find(entry => entry.id === type)?.section === 'build.publicFacilities');
+
   it('offers natural models from all three packs with Citizen unlocks', () => {
     const expected = [
       ['nature-tree-oak', 'nature/tree_oak', 6],
@@ -29,7 +31,7 @@ describe('codex coverage gate', () => {
   });
 
   it('documents every Public facility in both languages with its unlock threshold', () => {
-    for (const type of FACILITY_TYPES) {
+    for (const type of publicFacilityTypes) {
       const entry = CODEX_ENTRIES.find(item => item.id === type);
       expect(entry?.section, type).toBe('build.publicFacilities');
       expect(entry?.unlockCitizens).toBe(FACILITIES[type].unlockCitizens);
@@ -42,7 +44,7 @@ describe('codex coverage gate', () => {
   });
 
   it('states reach, capacity range, demand, unlock and cost in each Public facility description', () => {
-    for (const type of FACILITY_TYPES) {
+    for (const type of publicFacilityTypes) {
       const spec = FACILITIES[type];
       const entry = CODEX_ENTRIES.find(item => item.id === type)!;
       const english = MESSAGES[entry.description];

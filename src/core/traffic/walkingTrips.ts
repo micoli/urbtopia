@@ -11,7 +11,7 @@ export interface WalkDestinationSite {
 export type WalkingTrips = Record<WalkDestination, number>;
 
 export function emptyTrips(): WalkingTrips {
-  return { shop: 0, school: 0, health: 0, culture: 0, casino: 0, park: 0 };
+  return { shop: 0, school: 0, health: 0, culture: 0, casino: 0, park: 0, townHall: 0 };
 }
 
 export function walkDestinations(state: GameState, graph: PedestrianGraph): WalkDestinationSite[] {

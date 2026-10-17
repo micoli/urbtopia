@@ -5,7 +5,7 @@
   "cost": 2000,
   "unlockCitizens": 160,
   "requiresRoad": true,
-  "accessModes": ["road", "brt"],
+  "accessModes": ["road", "brt", "pedestrianWay"],
   "name": {
     "en": "Town hall",
     "fr": "Hôtel de ville"

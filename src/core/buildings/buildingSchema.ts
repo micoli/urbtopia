@@ -34,7 +34,7 @@ const sited = {
   cost: count,
   unlockCitizens: count,
   requiresRoad: z.boolean(),
-  accessModes: z.array(z.enum(['road', 'brt'])).min(1).optional(),
+  accessModes: z.array(z.enum(['road', 'brt', 'pedestrianWay'])).min(1).optional(),
   initialSlots: count.optional(),
 };
 

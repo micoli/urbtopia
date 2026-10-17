@@ -1,5 +1,14 @@
 {
   "$schema": "defs/schemas/models.schema.json",
+  "buildings-apple-tree-1x1": {
+    "file": "buildings/apple-tree-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ]
+  },
   "buildings-arcade-2x2-t1-tone-a": {
     "file": "buildings/arcade-2x2-t1-tone-a",
     "source": "managed",
@@ -113,6 +122,146 @@
       2
     ],
     "rotationOffset": 180
+  },
+  "buildings-bakery-2x2-t1-tone-a": {
+    "file": "buildings/bakery-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-bakery-2x2-t2-tone-a": {
+    "file": "buildings/bakery-2x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-bakery-2x2-t3-tone-a": {
+    "file": "buildings/bakery-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-bakery-2x2-t4-tone-a": {
+    "file": "buildings/bakery-2x2-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-bakery-2x2-t5-tone-a": {
+    "file": "buildings/bakery-2x2-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
   },
   "buildings-ballpark-7x7-tone-a": {
     "file": "buildings/ballpark-7x7-tone-a",
@@ -235,6 +384,15 @@
         "color": "#6f8f7c"
       }
     }
+  },
+  "buildings-cherry-tree-1x1": {
+    "file": "buildings/cherry-tree-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ]
   },
   "buildings-coal-1x1-t1-tone-a": {
     "file": "buildings/coal-1x1-t1-tone-a",
@@ -770,6 +928,11 @@
         "color": "#2fd6a2"
       }
     }
+  },
+  "buildings-ferris-wheel-3x5-8f": {
+    "file": "buildings/ferris-wheel-3x5-8f",
+    "source": "managed",
+    "license": "Own work"
   },
   "buildings-fire-station-3x2": {
     "file": "buildings/fire-station-3x2",
@@ -2454,6 +2617,15 @@
     ],
     "scale": 1,
     "rotationOffset": 180
+  },
+  "buildings-olive-tree-1x1": {
+    "file": "buildings/olive-tree-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ]
   },
   "buildings-packhouse-2x2-t1-tone-a": {
     "file": "buildings/packhouse-2x2-t1-tone-a",
@@ -4623,6 +4795,56 @@
       }
     }
   },
+  "buildings-windmill-2x2-t1": {
+    "file": "buildings/windmill-2x2-t1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-windmill-2x2-t2": {
+    "file": "buildings/windmill-2x2-t2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-windmill-2x2-t3": {
+    "file": "buildings/windmill-2x2-t3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-windmill-2x2-t4": {
+    "file": "buildings/windmill-2x2-t4",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-windmill-2x2-t5": {
+    "file": "buildings/windmill-2x2-t5",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
   "buildings-windturbine-1x1-t1-tone-a": {
     "file": "buildings/windturbine-1x1-t1-tone-a",
     "source": "managed",
@@ -5822,6 +6044,18 @@
       "height": 1.4
     }
   },
+  "goods-applecake": {
+    "file": "goods/appleCake",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "goods-bread": {
+    "file": "goods/bread",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "goods-bricks": {
     "file": "goods/bricks",
     "source": "managed",
@@ -5840,6 +6074,12 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "goods-cherryclafoutis": {
+    "file": "goods/cherryClafoutis",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "goods-circuits": {
     "file": "goods/circuits",
     "source": "managed",
@@ -5848,6 +6088,12 @@
   },
   "goods-crystal": {
     "file": "goods/crystal",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "goods-fougasse": {
+    "file": "goods/fougasse",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180
@@ -5998,6 +6244,18 @@
       2
     ]
   },
+  "materials-apple": {
+    "file": "materials/apple",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-cherry": {
+    "file": "materials/cherry",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-clay": {
     "file": "materials/clay",
     "source": "managed",
@@ -6016,6 +6274,12 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "materials-flour": {
+    "file": "materials/flour",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-gold": {
     "file": "materials/gold",
     "source": "managed",
@@ -6024,6 +6288,18 @@
   },
   "materials-metal": {
     "file": "materials/metal",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-olive": {
+    "file": "materials/olive",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-olive-oil": {
+    "file": "materials/olive-oil",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180
@@ -7969,14 +8245,6 @@
     "url": "https://poly.pizza/m/erbvRcGd7YA",
     "note": "Archway"
   },
-  "poly-pizza-bakery": {
-    "file": "poly.pizza/bakery",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/6BGhNQlUzRR",
-    "note": "Bakery"
-  },
   "poly-pizza-ballpark-8p3rzdaoytp": {
     "file": "poly.pizza/ballpark-8p3rzdaoytp",
     "source": "poly.pizza",
@@ -8493,6 +8761,20 @@
     "file": "trains/train-locomotive-passenger-a",
     "source": "kenney",
     "license": "CC0"
+  },
+  "venue-roller-coaster-4x6-7f": {
+    "file": "venue/roller-coaster-4x6-7f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      6,
+      4
+    ],
+    "fit": {
+      "width": 6,
+      "height": 4
+    },
+    "rotationOffset": 90
   },
   "watercraft-boat-fishing-small": {
     "file": "watercraft/boat-fishing-small",

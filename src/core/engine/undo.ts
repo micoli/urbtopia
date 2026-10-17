@@ -2,12 +2,13 @@ import type { Command } from './commands';
 import { tileKey } from '../map/geometry';
 import type { Coord } from '../map/coord';
 import { shiftRunningTimers } from '../economy/production';
-import type { Building, GameState, RoadTile, TransitTile } from './state';
+import type { Building, GameState, RoadTile, PedestrianWayTile, TransitTile } from './state';
 
 export interface DeletionUndo {
   brtRoads?: TransitTile[];
   rails?: TransitTile[];
   buildings: Building[];
+  pedestrianWays?: PedestrianWayTile[];
   roads: RoadTile[];
   roundabouts: Coord[];
   urbs: number;
@@ -15,10 +16,11 @@ export interface DeletionUndo {
 }
 
 export function captureDeletion(before: GameState, after: GameState, command: Command): DeletionUndo | null {
-  if (!['SellBuilding', 'DemolishRoad', 'DemolishRoadPath', 'DemolishTransit'].includes(command.type)) return null;
+  if (!['SellBuilding', 'DemolishRoad', 'DemolishRoadPath', 'DemolishTransit', 'DemolishPedestrianWay', 'DemolishPedestrianWayPath'].includes(command.type)) return null;
   return {
     ...(command.type === 'DemolishTransit' ? { brtRoads: (before.brtRoads ?? []).filter(p => !(after.brtRoads ?? []).includes(p)), rails: (before.rails ?? []).filter(p => !(after.rails ?? []).includes(p)) } : {}),
     buildings: before.buildings.filter((building) => !after.buildings.some((candidate) => candidate.id === building.id)),
+    ...(['DemolishPedestrianWay', 'DemolishPedestrianWayPath'].includes(command.type) ? { pedestrianWays: (before.pedestrianWays ?? []).filter((tile) => !(after.pedestrianWays ?? []).includes(tile)) } : {}),
     roads: before.roads.filter((road) => !after.roads.includes(road)),
     roundabouts: before.roundabouts.filter((center) => !after.roundabouts.includes(center)),
     urbs: before.urbs - after.urbs,
@@ -39,6 +41,7 @@ export function restoreDeletion(state: GameState, undo: DeletionUndo): GameState
     ...(undo.rails ? { rails: mergeTiles(state.rails ?? [], undo.rails) } : {}),
     buildings: [...state.buildings, ...restored.buildings],
     roads: [...state.roads, ...undo.roads],
+    ...(undo.pedestrianWays ? { pedestrianWays: [...(state.pedestrianWays ?? []), ...undo.pedestrianWays] } : {}),
     roundabouts: [...state.roundabouts, ...undo.roundabouts],
     urbs: state.urbs + undo.urbs,
   };

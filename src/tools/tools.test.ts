@@ -18,7 +18,7 @@ describe('building tool', () => {
   it('explains why a ghost is invalid', () => {
     const evaluation = evaluateTool(shopTool, { state, tile: { x: 70, y: 70 }, rotation: null });
     expect(evaluation.valid).toBe(false);
-    expect(evaluation.issue).toBe('error.needsRoadOrBrt');
+    expect(evaluation.issue).toBe('error.needsAccess');
   });
 
   it('respects a rotation chosen by the player when that side has access', () => {
@@ -36,7 +36,7 @@ describe('building tool', () => {
   it('keeps the chosen rotation where no side has access', () => {
     const evaluation = evaluateTool(shopTool, { state, tile: { x: 70, y: 70 }, rotation: 1 });
     expect(evaluation.rotation).toBe(1);
-    expect(evaluation.issue).toBe('error.needsRoadOrBrt');
+    expect(evaluation.issue).toBe('error.needsAccess');
   });
 
   it('covers the whole footprint of a large building', () => {
@@ -351,7 +351,7 @@ describe('front marker of a BRT compatible building', () => {
     const none: GameState = { ...brtState, brtRoads: [] };
     const evaluation = evaluateTool(homeTool, { state: none, tile, rotation: 0 });
     expect(evaluation.valid).toBe(false);
-    expect(evaluation.issue).toBe('error.needsRoadOrBrt');
+    expect(evaluation.issue).toBe('error.needsAccess');
     expect(evaluation.ghost.front?.access).toBeUndefined();
   });
 });

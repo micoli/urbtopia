@@ -14,8 +14,8 @@ export const cropSchema = z
     unlockCitizens: count,
     packingMinutes: z.number().positive(),
     packedValue: count,
-    // Four growth stages, then the produce left on a ready tile and the harvested heap, when the pack has them.
-    models: z.strictObject({ growth: z.tuple([filled, filled, filled, filled]), produce: filled.optional(), harvested: filled.optional() }),
+    // Four growth stages, then the produce left on a ready tile and the harvested heap, when the pack has them; `item` is the single fruit shown as the Material icon, instead of the produce.
+    models: z.strictObject({ growth: z.tuple([filled, filled, filled, filled]), produce: filled.optional(), harvested: filled.optional(), item: filled.optional() }),
   })
   .meta({ title: 'Crop', description: 'A Crop species, one file per Crop id in assets/defs/crops. It is also a Material.' });
 

@@ -3,15 +3,15 @@ import type { Building, BuildingType } from '../engine/state';
 import { greenProfileOf, natureModelOf } from '../environment/nature';
 import type { CongestionStats } from './congestion';
 
-export type WalkDestination = 'shop' | 'school' | 'health' | 'culture' | 'casino' | 'park';
+export type WalkDestination = 'shop' | 'school' | 'health' | 'culture' | 'casino' | 'park' | 'townHall';
 
-export const WALK_DESTINATIONS: readonly WalkDestination[] = ['shop', 'school', 'health', 'culture', 'casino', 'park'];
+export const WALK_DESTINATIONS: readonly WalkDestination[] = ['shop', 'school', 'health', 'culture', 'casino', 'park', 'townHall'];
 
 export const WALKING = {
   enabled: true,
   workThreshold: 10,
-  thresholds: { shop: 12, school: 15, health: 15, culture: 15, casino: 15, park: 20 } as Record<WalkDestination, number>,
-  tripsPerCitizen: { shop: 1, school: 0.6, health: 0.2, culture: 0.3, casino: 0.2, park: 0.5 } as Record<WalkDestination, number>,
+  thresholds: { shop: 12, school: 15, health: 15, culture: 15, casino: 15, park: 20, townHall: 15 } as Record<WalkDestination, number>,
+  tripsPerCitizen: { shop: 1, school: 0.6, health: 0.2, culture: 0.3, casino: 0.2, park: 0.5, townHall: 0.2 } as Record<WalkDestination, number>,
   wellbeingBonus: 8,
   crossingCutPerPedestrian: 0.015,
   maxCrossingCut: 0.6,
@@ -44,6 +44,7 @@ export function walkDestinationOf(building: Building): WalkDestination | null {
   if (isShopType(building.type)) return 'shop';
   if (building.type === 'casino') return 'casino';
   if (building.type === 'hospital') return 'health';
+  if (building.type === 'townHall') return 'townHall';
   if (SCHOOLS.includes(building.type)) return 'school';
   if (CULTURE.includes(building.type)) return 'culture';
   if (isPark(building.type)) return 'park';

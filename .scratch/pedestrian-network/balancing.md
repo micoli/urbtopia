@@ -8,9 +8,9 @@ Status: Provisional values, tunable without changing the rules. Source of truth 
 | --- | --- |
 | Walking cost | 1 per sidewalk step, +2 per Crossing crossed |
 | Threshold to a workplace | 10 |
-| Threshold to a destination | shop 12, school / health / culture / casino 15, park 20 |
-| Walking trips per Citizen | shop 1, school 0.6, culture 0.3, health 0.2, casino 0.2, park 0.5 |
-| Destinations | shop; school, middle school, high school, university; hospital; theatre, concert hall, community hall; casino; any non-habitat vegetation |
+| Threshold to a destination | shop 12, school / health / culture / casino / Town hall 15, park 20 |
+| Walking trips per Citizen | shop 1, school 0.6, culture 0.3, health 0.2, casino 0.2, park 0.5, Town hall 0.2 |
+| Destinations | shop; school, middle school, high school, university; hospital; theatre, concert hall, community hall; casino; Town hall; any non-habitat vegetation |
 | Well-being bonus | up to 8 points, rounded to whole points, proportional to the share of the weighted destination kinds reachable on foot; never above the 100 limit |
 | Crossing capacity cut | 1.5% of the road capacity per pedestrian, capped at 60% (reached at 40 pedestrians) |
 | Saturated Crossing | cut at its cap |

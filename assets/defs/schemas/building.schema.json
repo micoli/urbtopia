@@ -68,6 +68,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -92,7 +93,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -199,6 +201,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -223,7 +226,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -480,6 +484,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -504,7 +509,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -769,6 +775,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -793,7 +800,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -1022,6 +1030,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -1046,7 +1055,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -1271,6 +1281,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -1295,7 +1306,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -1525,6 +1537,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -1549,7 +1562,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -1769,6 +1783,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -1793,7 +1808,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -1959,6 +1975,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -1983,7 +2000,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -2095,6 +2113,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -2119,7 +2138,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -2242,6 +2262,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -2266,7 +2287,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -2379,6 +2401,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -2403,7 +2426,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -2651,6 +2675,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -2675,7 +2700,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -2938,6 +2964,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -2962,7 +2989,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -3200,6 +3228,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -3224,7 +3253,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -3577,6 +3607,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -3601,7 +3632,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
@@ -3812,6 +3844,7 @@
             "build.publicFacilities",
             "build.leisure",
             "build.sport",
+            "build.agriculture",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -3836,7 +3869,8 @@
             "type": "string",
             "enum": [
               "road",
-              "brt"
+              "brt",
+              "pedestrianWay"
             ]
           }
         },
