@@ -69,11 +69,11 @@ describe('PlaceBuilding', () => {
   });
 
   it('lets the player override the rotation, which can then fail the road rule', () => {
-    expect(failureKey(initial, place('shopConstruction', 56, 57, 0))).toBe('error.needsRoadOrBrt');
+    expect(failureKey(initial, place('shopConstruction', 56, 57, 0))).toBe('error.needsAccess');
   });
 
   it('refuses a building whose front does not touch a road', () => {
-    expect(failureKey(initial, place('shopConstruction', 70, 70))).toBe('error.needsRoadOrBrt');
+    expect(failureKey(initial, place('shopConstruction', 70, 70))).toBe('error.needsAccess');
   });
 
   it('does not need a road for a Power plant or a Water tower', () => {
@@ -212,7 +212,7 @@ describe('access modes', () => {
   });
 
   it('refuses a Home with neither a road nor a BRT corridor, naming both', () => {
-    expect(placementIssue({ ...initial, brtRoads: [] }, 'home', at.x, at.y, 0)).toBe('error.needsRoadOrBrt');
+    expect(placementIssue({ ...initial, brtRoads: [] }, 'home', at.x, at.y, 0)).toBe('error.needsAccess');
   });
 
   it('keeps asking for a road from buildings that do not accept the BRT', () => {
@@ -221,7 +221,7 @@ describe('access modes', () => {
 
   it('does not accept a rail tile as access', () => {
     const rails = frontTiles('home', at.x, at.y, 0).map((tile) => ({ ...tile, exits: ['E', 'W'] as const }));
-    expect(placementIssue({ ...initial, brtRoads: [], rails: rails as never }, 'home', at.x, at.y, 0)).toBe('error.needsRoadOrBrt');
+    expect(placementIssue({ ...initial, brtRoads: [], rails: rails as never }, 'home', at.x, at.y, 0)).toBe('error.needsAccess');
   });
 
   it('lists the modes that touch the front', () => {

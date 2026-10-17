@@ -1,6 +1,6 @@
 import { createBuilding } from '../buildings/buildingSpecs';
 import type { Coord } from '../map/coord';
-import { FACILITY_TYPES } from '../services/facilities';
+import { FACILITIES, FACILITY_TYPES } from '../services/facilities';
 import type { GameState } from './state';
 
 export function withAllServices(state: GameState, near: Coord): GameState {
@@ -8,4 +8,4 @@ export function withAllServices(state: GameState, near: Coord): GameState {
   return { ...state, nextId: state.nextId + facilities.length, buildings: [...state.buildings, ...facilities] };
 }
 
-export const ALL_FACILITIES_DEMAND = { power: 26, water: 2 };
+export const ALL_FACILITIES_DEMAND = FACILITY_TYPES.reduce((total, type) => ({ power: total.power + FACILITIES[type].power, water: total.water + FACILITIES[type].water }), { power: 0, water: 0 });

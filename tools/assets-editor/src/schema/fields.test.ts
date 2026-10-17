@@ -9,7 +9,7 @@ describe('form fields from the JSON Schemas', () => {
     expect(fields.model?.type).toBe('model')
     expect(fields.section).toMatchObject({ type: 'select', required: true })
     expect(fields.footprint).toMatchObject({ type: 'pair', integer: true, min: 1, parts: ['W', 'D'] })
-    expect(fields.accessModes).toMatchObject({ type: 'choices', options: ['road', 'brt'], required: false })
+    expect(fields.accessModes).toMatchObject({ type: 'choices', options: ['road', 'brt', 'pedestrianWay'], required: false })
     expect(fields.name?.type).toBe('localized')
     expect(fields.radius).toMatchObject({ type: 'number', integer: true, min: 1 })
     expect(fields.requiresRoad?.type).toBe('switch')
