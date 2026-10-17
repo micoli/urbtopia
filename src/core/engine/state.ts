@@ -9,6 +9,7 @@ import type { CropId } from '../farming/crops';
 import type { RoadKind } from '../map/roads';
 import type { TutorialStep } from '../progression/tutorial';
 import type { Difficulty } from './difficulty';
+import type { DonationRecord } from '../economy/solidarity';
 
 export type BuildingType = BuildingId;
 
@@ -157,6 +158,8 @@ export interface FieldTile extends Coord {
 export type SeedStock = Partial<Record<string, number>>;
 
 export interface GameState {
+  solidarityMs?: number;
+  donations?: DonationRecord[];
   seedStock: SeedStock;
   fields: FieldTile[];
   waterTiles?: Coord[];

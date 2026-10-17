@@ -6,6 +6,11 @@ import { dialogStore, type DialogStore } from '../../store/dialogStore';
 import { socialStore, type SocialStore } from '../../store/socialStore';
 import { readOnlyStore } from '../../store/readOnlyStore';
 import { uiStore, type UiStore } from '../../store/uiStore';
+import { solidarityStore, type SolidarityStore } from '../../store/solidarityStore';
+
+export function useSolidarity<T>(selector: (store: SolidarityStore) => T): T {
+  return useStore(solidarityStore, selector);
+}
 
 export function useGame<T>(selector: (store: GameStore) => T): T {
   return useStore(gameStore, selector);

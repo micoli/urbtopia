@@ -157,6 +157,9 @@ export function validateGameState(value: unknown): GameState | null {
     (value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep)) &&
     isArrayOf(value.tradeLedger, isTradeLedgerEntry);
   if (!valid) return null;
+  if (value.solidarityMs !== undefined && (!isNonNegative(value.solidarityMs) || value.solidarityMs > 24 * 3_600_000)) return null;
+  if (value.donations !== undefined && !isArrayOf(value.donations, donation => isRecord(donation) && typeof donation.id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(donation.id) && isInt(donation.value, 1) && (donation.accountId === undefined || typeof donation.accountId === 'string'))) return null;
+  if (Array.isArray(value.donations) && new Set((value.donations as { id: string }[]).map(donation => donation.id)).size !== value.donations.length) return null;
   if (value.timeOffset !== undefined && (!isNonNegative(value.timeOffset) || value.timeOffset > Number.MAX_SAFE_INTEGER)) return null;
   if (value.adaptationUntil !== undefined && !isNumber(value.adaptationUntil)) return null;
   if (value.waterTiles !== undefined && !isArrayOf(value.waterTiles, tile => isRecord(tile) && isCoord(tile))) return null;

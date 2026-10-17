@@ -29,7 +29,7 @@ A raw resource produced by a Workshop with a fixed production time, or harvested
 _Avoid_: Raw good, ore, resource (too generic)
 
 **Good**:
-A manufactured item produced by a Factory from Materials, sold in Shops or to the Market.
+A manufactured item produced by a Factory from Materials, sold in Shops or to the Market, or given to an association as a Donation.
 _Avoid_: Product, item
 
 **Workshop**:
@@ -121,7 +121,7 @@ A resident of a Home. The number of Citizens depends on the Home's tier and driv
 _Avoid_: Inhabitant, resident, sim
 
 **Well-being**:
-The satisfaction of a Home's Citizens, raised by nearby Green spaces and Public facility coverage, lowered by coal pollution, missing services and Congestion on its Commute. It modulates the Home's Tax.
+The satisfaction of a Home's Citizens, raised by nearby Green spaces, Public facility coverage and an active Solidarity reserve, lowered by coal pollution, missing services and Congestion on its Commute. It modulates the Home's Tax.
 _Avoid_: Happiness, bonheur, mood, attractiveness
 
 **Need level**:
@@ -352,6 +352,14 @@ _Avoid_: Lift, swing, drawbridge cycle
 The simulated (non-player) buyer that purchases Goods from the player.
 _Avoid_: Trade hub, exchange, auction
 
+**Donation**:
+A voluntary gift of Goods to a simulated association, with no Urbs received in exchange, that fills the city's Solidarity reserve and counts towards a permanent Medal.
+_Avoid_: Trade offer (a gift to a Friend), sale
+
+**Solidarity reserve**:
+A capped reserve filled by Donations that gradually depletes and temporarily raises Well-being across the city. Further Donations refill the same reserve rather than stacking bonuses.
+_Avoid_: Donation stock (the Goods have been given away), permanent bonus
+
 **Slot**:
 A position in a building's production queue (or a Shop's sales stack). A building has 2 to 5 Slots; extra Slots are bought with Urbs.
 _Avoid_: Lane, tray
@@ -577,7 +585,7 @@ The units the player has set aside for an accepted Challenge, taken from the Sto
 _Avoid_: Basket, deposit, contribution
 
 **Medal**:
-A permanent distinction earned by completing a Challenge whose reward is a Medal. It is shown in the Social window, on the Player account's own profile and on its Friends'.
+A permanent distinction earned by completing a Challenge whose reward is a Medal, or by reaching cumulative Donation value milestones. It is shown in the Social window, on the Player account's own profile and on its Friends'.
 _Avoid_: Badge (reserved for the notification counter on a button), trophy, achievement
 
 ## Relationships

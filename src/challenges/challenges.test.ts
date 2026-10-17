@@ -76,6 +76,11 @@ describe('parseChallengeSnapshot', () => {
     expect(() => parseChallengeSnapshot({ ...json, challenges: 'nope' })).toThrow(ChallengeError);
     expect(() => parseDeclaration({ challengeId: 'a' })).toThrow(ChallengeError);
   });
+
+  it('reads a Donation Medal without a Challenge', () => {
+    const snapshot = parseChallengeSnapshot({ ...json, medals: [{ challengeId: null, medalCode: 'solidarity', nameFr: 'Ville solidaire — bronze', nameEn: 'Solidary city — bronze', earnedAt: '2026-10-13T10:00:00Z' }] });
+    expect(snapshot.medals[0]).toMatchObject({ challengeId: null, medalCode: 'solidarity', nameFr: 'Ville solidaire — bronze' });
+  });
 });
 
 describe('visibleChallenges', () => {

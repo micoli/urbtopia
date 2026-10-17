@@ -41,7 +41,7 @@ export interface MedalInfo {
 }
 
 export interface Medal extends MedalInfo {
-  challengeId: string;
+  challengeId: string | null;
 }
 
 export interface ChallengeSnapshot {

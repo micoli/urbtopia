@@ -1,4 +1,6 @@
 export { advance } from './engine/advance';
+export { SOLIDARITY, donationQuote, solidarityBonus, solidarityCost, solidarityTier } from './economy/solidarity';
+export type { DonationRecord } from './economy/solidarity';
 export type { AdvanceResult } from './engine/advance';
 export { dispatch } from './engine/dispatch';
 export type { DispatchResult } from './engine/dispatch';

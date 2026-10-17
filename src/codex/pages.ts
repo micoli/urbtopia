@@ -1,1 +1,1 @@
-export type CodexPage = 'economy' | 'storage' | 'energy' | 'sanctions' | 'market' | 'challenges';
+export type CodexPage = 'economy' | 'storage' | 'energy' | 'sanctions' | 'market' | 'challenges' | 'solidarity';

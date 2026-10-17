@@ -14,6 +14,7 @@ import { CONGESTION } from '../traffic/roadTier';
 import { leisureRetention } from '../leisure/leisure';
 import { poweredCasinoIds } from '../leisure/poweredCasinos';
 import type { Building, GameState } from '../engine/state';
+import { solidarityBonus } from '../economy/solidarity';
 
 export const NEED_LEVELS = ['vital', 'safety', 'belonging', 'esteem', 'fulfilment'] as const;
 export type NeedLevelId = (typeof NEED_LEVELS)[number];
@@ -25,6 +26,7 @@ export type NeedEffect = 'supply' | 'wellbeing' | 'tierUpgrade' | 'sanction' | '
 export type NeedSection = 'eco-energy' | 'eco-water' | 'eco-services' | 'eco-nature' | 'eco-traffic' | 'eco-emissions';
 
 export interface NeedFactor {
+  optional?: boolean;
   id: NeedFactorId;
   level: NeedLevelId;
   satisfaction: number | null;
@@ -46,7 +48,7 @@ export interface NeedsPyramid {
 
 export const NEEDS = { fragileBelow: 50, unbearableTemperature: 34 };
 
-type FactorSpec = Pick<NeedFactor, 'id' | 'level' | 'effects' | 'section'>;
+type FactorSpec = Pick<NeedFactor, 'id' | 'level' | 'effects' | 'section' | 'optional'>;
 
 const FACTORS: readonly FactorSpec[] = [
   { id: 'electricity', level: 'vital', effects: ['supply'], section: 'eco-energy' },
@@ -60,6 +62,7 @@ const FACTORS: readonly FactorSpec[] = [
   { id: 'culture', level: 'belonging', effects: ['wellbeing'], section: 'eco-services' },
   { id: 'leisure', level: 'belonging', effects: ['wellbeing'], section: null },
   { id: 'walking', level: 'belonging', effects: ['wellbeing'], section: 'eco-traffic' },
+  { id: 'solidarity', level: 'belonging', effects: ['wellbeing'], section: null, optional: true },
   { id: 'education', level: 'esteem', effects: ['wellbeing', 'tierUpgrade'], section: 'eco-services' },
   { id: 'administration', level: 'esteem', effects: ['wellbeing', 'tierUpgrade'], section: 'eco-services' },
   { id: 'shops', level: 'esteem', effects: ['none'], section: null },
@@ -97,6 +100,7 @@ export function homeNeedSatisfactions(state: GameState, home: Building, { energy
   result.set('congestion', 100 - share(benefits.congestionPenalty, CONGESTION.penaltyCap));
   result.set('leisure', leisureRetention(state, home, poweredCasinos, 100) < 1 ? 100 : 0);
   result.set('walking', 100 * (congestion.homes.get(home.id)?.walkAccess ?? 0));
+  result.set('solidarity', solidarityBonus(state) > 0 ? 100 : 0);
   const green = greenBenefits(state, home);
   result.set('greenSpaces', green.wellbeing);
   result.set('biodiversity', green.biodiversity);
@@ -137,11 +141,12 @@ export function needsPyramid(state: GameState): NeedsPyramid {
   const levels: NeedLevel[] = [];
   for (const id of NEED_LEVELS) {
     const own = factors.filter(factor => factor.level === id);
-    const modelled = own.filter(factor => factor.satisfaction !== null);
-    const satisfaction = modelled.length ? modelled.reduce((sum, factor) => sum + factor.satisfaction!, 0) / modelled.length : null;
+    const modelled = own.filter(factor => !factor.optional && factor.satisfaction !== null);
+    const base = modelled.length ? modelled.reduce((sum, factor) => sum + factor.satisfaction!, 0) / modelled.length : null;
+    const satisfaction = base === null ? null : Math.min(100, base + (id === 'belonging' ? solidarityBonus(state) : 0));
     const fragile = levels.some(level => level.satisfaction !== null && level.satisfaction < NEEDS.fragileBelow);
     levels.push({ id, satisfaction, fragile, factors: own });
   }
-  const weakest = factors.filter(factor => factor.satisfaction !== null).sort((a, b) => a.satisfaction! - b.satisfaction!)[0];
+  const weakest = factors.filter(factor => !factor.optional && factor.satisfaction !== null).sort((a, b) => a.satisfaction! - b.satisfaction!)[0];
   return { levels, bottleneck: weakest && weakest.satisfaction! < 100 ? weakest : null };
 }
