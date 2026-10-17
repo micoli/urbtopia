@@ -16,7 +16,7 @@
   },
   "tiers": [
     {
-      "model": "suburban-tree-small",
+      "model": "buildings-apple-tree-1x1",
       "footprint": [1, 1],
       "radius": 4,
       "cooling": 1,

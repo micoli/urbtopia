@@ -1,5 +1,6 @@
 // Generated from assets/models.json by scripts/modelsFile.ts. Do not edit.
 export type ModelId =
+  | 'buildings-apple-tree-1x1'
   | 'buildings-arcade-2x2-t1-tone-a'
   | 'buildings-arcade-3x2-t2-tone-a'
   | 'buildings-arcade-3x2-t3-tone-a'
@@ -11,6 +12,7 @@ export type ModelId =
   | 'buildings-casino-2x2-t1-tone-a'
   | 'buildings-casino-3x2-t2-tone-a'
   | 'buildings-casino-6x2-t3-tone-a'
+  | 'buildings-cherry-tree-1x1'
   | 'buildings-coal-1x1-t1-tone-a'
   | 'buildings-coal-1x1-t2-tone-a'
   | 'buildings-coal-1x1-t3-tone-a'
@@ -114,6 +116,7 @@ export type ModelId =
   | 'buildings-middle-school-2x2-4f'
   | 'buildings-middle-school-2x2-5f'
   | 'buildings-middle-school-2x2-6f'
+  | 'buildings-olive-tree-1x1'
   | 'buildings-packhouse-2x2-t1-tone-a'
   | 'buildings-packhouse-2x2-t2-tone-a'
   | 'buildings-packhouse-2x2-t3-tone-a'
