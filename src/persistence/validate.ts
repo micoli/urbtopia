@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -13,6 +13,11 @@ const isNonNegative = (value: unknown): value is number => isNumber(value) && va
 const isArrayOf = (value: unknown, check: (item: unknown) => boolean): boolean => Array.isArray(value) && value.every(check);
 
 const isCoord = (value: unknown, max = Number.MAX_SAFE_INTEGER): boolean => isRecord(value) && isInt(value.x, 0, max) && isInt(value.y, 0, max);
+
+function isValidLoop(line: Record<string, unknown>): boolean {
+  if (line.loop === undefined) return true;
+  return line.loop === true && (line.stops as number[]).length >= 3;
+}
 
 function isAmountRecord(value: unknown, validKeys: string[]): boolean {
   return isRecord(value) && Object.entries(value).every(([key, amount]) => validKeys.includes(key) && (key === 'coal' ? isNonNegative(amount) : isInt(amount, 0)));
@@ -49,6 +54,7 @@ function isVenueData(value: unknown): boolean {
     isInt(value.nextFixtureId, 1) &&
     isNonNegative(value.takings) &&
     (value.earned === undefined || isNonNegative(value.earned)) &&
+    (value.collected === undefined || isNonNegative(value.collected)) &&
     (value.price === undefined || isInt(value.price, 1, 20)) &&
     (value.rng === undefined || isNumber(value.rng)) &&
     (value.reputation === undefined || (isNumber(value.reputation) && value.reputation >= 0 && value.reputation <= 100)) &&
@@ -158,6 +164,7 @@ export function validateGameState(value: unknown): GameState | null {
     (value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep)) &&
     isArrayOf(value.tradeLedger, isTradeLedgerEntry);
   if (!valid) return null;
+  if (value.venueTutorials !== undefined && !(isRecord(value.venueTutorials) && Object.entries(value.venueTutorials).every(([type, step]) => (VENUE_TUTORIAL_TYPES as string[]).includes(type) && (step === null || isVenueTutorialStep(type, step))))) return null;
   if (value.solidarityMs !== undefined && (!isNonNegative(value.solidarityMs) || value.solidarityMs > 24 * 3_600_000)) return null;
   if (value.donations !== undefined && !isArrayOf(value.donations, donation => isRecord(donation) && typeof donation.id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(donation.id) && isInt(donation.value, 1) && (donation.accountId === undefined || typeof donation.accountId === 'string'))) return null;
   if (Array.isArray(value.donations) && new Set((value.donations as { id: string }[]).map(donation => donation.id)).size !== value.donations.length) return null;
@@ -174,7 +181,7 @@ export function validateGameState(value: unknown): GameState | null {
   if (value.ecologyDismissed !== undefined && typeof value.ecologyDismissed !== 'boolean') return null;
   if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&
     isArrayOf(line.stops, id => isInt(id, 0)) && (line.stops as number[]).length >= 2 &&
-    new Set(line.stops as number[]).size === (line.stops as number[]).length)) return null;
+    new Set(line.stops as number[]).size === (line.stops as number[]).length && isValidLoop(line))) return null;
   for (const key of ['brtRoads', 'rails']) {
     if (value[key] === undefined) continue;
     if (!isArrayOf(value[key], p => isRecord(p) && isCoord(p) && isArrayOf(p.exits, d => ['N', 'E', 'S', 'W'].includes(d as string)) && new Set(p.exits as string[]).size === (p.exits as string[]).length && (p.kind === undefined || (key === 'brtRoads' && p.kind === 'crossing')))) return null;
@@ -182,7 +189,7 @@ export function validateGameState(value: unknown): GameState | null {
     if (new Set(tiles.map(p => `${p.x}:${p.y}`)).size !== tiles.length) return null;
   }
   if (value.transitLines !== undefined && !isArrayOf(value.transitLines, l => isRecord(l) && isInt(l.id, 1) && ['brt', 'rail'].includes(l.mode as string) &&
-    isArrayOf(l.stops, id => isInt(id, 0)) && (l.stops as number[]).length >= 2 && new Set(l.stops as number[]).size === (l.stops as number[]).length &&
+    isArrayOf(l.stops, id => isInt(id, 0)) && (l.stops as number[]).length >= 2 && new Set(l.stops as number[]).size === (l.stops as number[]).length && isValidLoop(l) &&
     isNumber(l.peakHeadway) && isNumber(l.offPeakHeadway) && l.peakHeadway > 0 && l.offPeakHeadway > 0 && l.peakHeadway <= 60 && l.offPeakHeadway <= 60 &&
     (l.mode !== 'brt' || (l.peakHeadway >= 5 && l.peakHeadway <= 10 && l.offPeakHeadway >= 10 && l.offPeakHeadway <= 15)))) return null;
   if (value.transitFleet !== undefined && !isArrayOf(value.transitFleet, v => isRecord(v) && isInt(v.id, 1) && FLEET_VEHICLES.some(({ id }) => id === v.kind) && isNonNegative(v.purchasePrice) && (v.lineId === undefined || isInt(v.lineId, 1)))) return null;
@@ -206,11 +213,11 @@ export function validateGameState(value: unknown): GameState | null {
   }
   if (new Set((state.boats ?? []).map(boat => `${boat.x}:${boat.y}`)).size !== (state.boats ?? []).length) return null;
   for (const line of state.busLines ?? []) {
-    if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && b.type === 'busStop')))) return null;
+    if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && (b.type === 'busStop' || b.type === 'transitHub'))))) return null;
   }
   for (const line of state.transitLines ?? []) {
     const type = line.mode === 'brt' ? 'brtStation' : 'railStation';
-    if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && b.type === type)))) return null;
+    if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && (b.type === type || b.type === 'transitHub'))))) return null;
   }
   for (const vehicle of state.transitFleet ?? []) {
     if (vehicle.lineId === undefined) continue;

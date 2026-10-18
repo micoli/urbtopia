@@ -1,7 +1,7 @@
 import { isShopType } from '../core/economy/shops';
 import { TransitLayer } from './TransitLayer';
 import * as THREE from 'three';
-import { energyStats, greenProfileOf, transportStats, footprintOf, type GameState, isHomeType } from '../core';
+import { energyStats, greenProfileOf, transportStats, footprintOf, type GameState, isHomeType, isTransitStopType } from '../core';
 import { centerOf } from '../core/environment/ecology';
 import type { ModelLibrary } from './modelLibrary';
 
@@ -27,7 +27,7 @@ export class EcologyLayer {
       const source = state.buildings.find(b => b.id === transfer.from), target = state.buildings.find(b => b.id === transfer.to);
       if (source && target) this.path([centerOf(source), centerOf(target)]);
     }
-    const radius = ['busStop', 'brtStation', 'railStation'].includes(selected.type) ? 6 : selected.type === 'battery' ? 8 : greenProfileOf(selected.type, selected.tier)?.radius ?? (selected.solar ? 6 : 0);
+    const radius = isTransitStopType(selected.type) ? 6 : selected.type === 'battery' ? 8 : greenProfileOf(selected.type, selected.tier)?.radius ?? (selected.solar ? 6 : 0);
     for (const line of stats.lines.filter(l => l.stops.includes(selected.id) && l.route)) this.path(line.route!);
     if (radius) for (const b of state.buildings.filter(b => isHomeType(b.type) || ['workshop', 'factory', 'mill', 'bakery'].includes(b.type) || isShopType(b.type))) {
       const p = centerOf(selected), q = centerOf(b); if (Math.abs(p.x - q.x) + Math.abs(p.y - q.y) > radius) continue;

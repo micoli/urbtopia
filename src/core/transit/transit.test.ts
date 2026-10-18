@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { WALKING } from '../traffic/walking';
 import { advance, createBuilding, brokenLinkCount, dispatch, energyStats, extendNetwork, newGame, routeForLine, transportStats, type Command, type GameState, type TransitTile } from '../index';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 import { validateGameState } from '../../persistence/validate';
@@ -179,6 +180,9 @@ function transferCity(): GameState {
 }
 
 describe('multimodal itineraries', () => {
+  const cyclingFactor = WALKING.cyclingFactor;
+  beforeEach(() => { WALKING.cyclingFactor = 1; });
+  afterEach(() => { WALKING.cyclingFactor = cyclingFactor; });
   it('connects Homes and activities on different modes and counts shared riders once', () => {
     const stats = transportStats(transferCity());
     expect(stats.riders).toBeCloseTo(32 * .7);

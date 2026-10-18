@@ -1,7 +1,7 @@
 # Venue tutorial core, banner and Arcade steps
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 
 ## What to build
 

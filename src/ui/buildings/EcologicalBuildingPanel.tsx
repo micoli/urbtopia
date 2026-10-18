@@ -7,6 +7,7 @@ import {
     homePower,
     solarPanelsCapacity,
     transportStats,
+    isTransitStopType,
     type Building, isHomeType } from '../../core';
 import {lineStatusKey} from '../stats/management/transit/lineStatusKey';
 import {t} from '../../i18n/t';
@@ -52,7 +53,7 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
 
         {greenProfile && maxTierOf(building.type) > 1 && <DrawerPanel.Upgrade building={building} />}
 
-        {['busStop', 'brtStation', 'railStation'].includes(building.type) && <DrawerPanel.LabelValue
+        {isTransitStopType(building.type) && <DrawerPanel.LabelValue
             label={`${t('eco.stop')} #${building.id} · (${building.x}, ${building.y})`}
             value={t('transit.lines')}
         >

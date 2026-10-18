@@ -15,6 +15,7 @@ export const WALKING = {
   wellbeingBonus: 8,
   crossingCutPerPedestrian: 0.015,
   maxCrossingCut: 0.6,
+  cyclingFactor: 3,
 };
 
 export function crossingCut(pedestrians: number): number {
@@ -25,16 +26,17 @@ export interface ModeShares {
   car: number;
   transit: number;
   walking: number;
+  cycling: number;
 }
 
 export function modeShares(stats: CongestionStats): ModeShares {
-  const total = stats.modes.car + stats.modes.transit + stats.modes.walking;
-  if (total <= 0) return { car: 0, transit: 0, walking: 0 };
-  return { car: stats.modes.car / total, transit: stats.modes.transit / total, walking: stats.modes.walking / total };
+  const total = stats.modes.car + stats.modes.transit + stats.modes.walking + stats.modes.cycling;
+  if (total <= 0) return { car: 0, transit: 0, walking: 0, cycling: 0 };
+  return { car: stats.modes.car / total, transit: stats.modes.transit / total, walking: stats.modes.walking / total, cycling: stats.modes.cycling / total };
 }
 
 export function maxWalkCost(): number {
-  return Math.max(WALKING.workThreshold, ...Object.values(WALKING.thresholds));
+  return WALKING.cyclingFactor * Math.max(WALKING.workThreshold, ...Object.values(WALKING.thresholds));
 }
 
 const CULTURE: readonly BuildingType[] = ['theater', 'concertHall', 'communityHall'];

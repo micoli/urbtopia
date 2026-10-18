@@ -50,7 +50,7 @@ export function SelectionContentPanel() {
       {isStorageType(building.type) ? <StoragePanel building={building} /> : null}
       {isUtilityType(building.type) ? <UtilityPanel building={building} type={building.type} /> : null}
       {building.type === 'coalPlant' ? <CoalPlantPanel building={building} /> : null}
-      {greenProfileOf(building.type) || ['solar','battery','backup','busStop','brtStation','railStation'].includes(building.type) || building.solar ? <EcologicalBuildingPanel building={building} /> : null}
+      {greenProfileOf(building.type) || ['solar','battery','backup'].includes(building.type) || isTransitStopType(building.type) || building.solar ? <EcologicalBuildingPanel building={building} /> : null}
       {canHaveSolarPanels(building.type) ? <SolarPanelsRow building={building} /> : null}
       {natureModelOf(building.type)?.[2] === 'decoration' ? <DecorationRotation building={building} /> : null}
       <FrontRotation building={building} />

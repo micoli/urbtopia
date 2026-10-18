@@ -25,20 +25,20 @@ export function walkDestinations(state: GameState, graph: PedestrianGraph): Walk
   return sites.sort((a, b) => a.id - b.id);
 }
 
-export function walkServices(walk: WalkMap, sites: readonly WalkDestinationSite[], citizens: number, pedestrians: Map<string, number>, totals: WalkingTrips): number {
+export function walkServices(walk: WalkMap, sites: readonly WalkDestinationSite[], citizens: number, pedestrians: Map<string, number>, walkingTotals: WalkingTrips, cyclingTotals: WalkingTrips): number {
   const trips = new Map<WalkDestination, number>();
   for (const kind of WALK_DESTINATIONS) {
     let best: { node: string; cost: number } | null = null;
     for (const site of sites) {
       if (site.kind !== kind) continue;
       const target = nearestTarget(walk, site.sidewalks);
-      if (target === null || target.cost > WALKING.thresholds[kind]) continue;
+      if (target === null || target.cost > WALKING.thresholds[kind] * WALKING.cyclingFactor) continue;
       if (best === null || target.cost < best.cost) best = target;
     }
     if (best === null) continue;
     const count = citizens * WALKING.tripsPerCitizen[kind];
     trips.set(kind, count);
-    totals[kind] += count;
+    (best.cost <= WALKING.thresholds[kind] ? walkingTotals : cyclingTotals)[kind] += count;
     for (const crossing of crossingsOnPath(walk, best.node)) pedestrians.set(crossing, (pedestrians.get(crossing) ?? 0) + count);
   }
   return walkAccessOf(trips, citizens);

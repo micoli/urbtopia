@@ -2427,6 +2427,119 @@ def build_station(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+def parked_bike(parts, name, x, y, frame_color, tire, metal, scale=1.0):
+    """A bicycle seen from the front, standing on the ground with its axis along x: two wheels, a frame, a saddle and handlebars, all scaled by `scale`."""
+    k = scale
+    for side, wx in (("rear", -0.1), ("front", 0.1)):
+        parts.append(disc(f"{name}_{side}_tire", x + wx * k, y, 0.055 * k, 0.055 * k, 0.012 * k, tire, steps=12))
+        parts.append(disc(f"{name}_{side}_hub", x + wx * k, y, 0.055 * k, 0.045 * k, 0.014 * k, metal, steps=12))
+    parts.append(lpm.box(f"{name}_top_tube", (0.2 * k, 0.01 * k, 0.01 * k), at=(x, y - 0.005 * k, 0.095 * k), color=frame_color))
+    parts.append(lpm.box(f"{name}_seat_tube", (0.01 * k, 0.01 * k, 0.06 * k), at=(x - 0.045 * k, y - 0.005 * k, 0.045 * k), color=frame_color))
+    parts.append(lpm.box(f"{name}_fork", (0.01 * k, 0.01 * k, 0.07 * k), at=(x + 0.1 * k, y - 0.005 * k, 0.05 * k), color=frame_color))
+    parts.append(lpm.box(f"{name}_saddle", (0.05 * k, 0.02 * k, 0.012 * k), at=(x - 0.06 * k, y - 0.01 * k, 0.11 * k), color=tire))
+    parts.append(lpm.box(f"{name}_handlebar", (0.012 * k, 0.045 * k, 0.012 * k), at=(x + 0.1 * k, y - 0.0225 * k, 0.115 * k), color=metal))
+
+
+def build_hub(spec, out_dir):
+    """A transit hub filling its 3x2 cell: a long low hall with flat grey wing roofs and a taller central pavilion with a two-pitch roof under a clock, a framed door, glazed doors and a "HUB" plate under a front canopy, a narrow canopy over a door on each end, and a shelter with parked bicycles behind the hall, in the back right corner, facing a back door, and a tall double door in the middle of the back for the travelers. The accent follows the tone."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    wall, dark, slab, trim, frame, glass, white = (index(n) for n in ("uwall", "udark", "uslab", "utrim", "uframe", "glass_blue", "white"))
+    mint = index("vtone1")
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    width, depth, height = 2.6, 0.9, 0.5
+    cy = 0.15
+    front, back = cy - depth / 2, cy + depth / 2
+    thick = 0.012
+    parts = [rounded_block("hall", width, depth, height, wall, 0.03 / depth, at=(0, cy, 0))]
+    parts.append(rounded_block("hall_band", width + 0.01, depth + 0.01, 0.03, mint, 0.03 / depth, at=(0, cy, height - 0.04)))
+    for side, name in ((-1, "left"), (1, "right")):
+        x0, x1 = (side * 0.5, side * (width / 2 + 0.03))
+        low, high = min(x0, x1), max(x0, x1)
+        parts.append(lpm.box(f"{name}_roof", (high - low, depth + 0.06, 0.03), at=((low + high) / 2, cy, height), color=slab))
+        parts.append(lpm.box(f"{name}_parapet_front", (high - low, 0.015, 0.03), at=((low + high) / 2, front - 0.0225, height + 0.03), color=mint))
+        parts.append(lpm.box(f"{name}_parapet_back", (high - low, 0.015, 0.03), at=((low + high) / 2, back + 0.0225, height + 0.03), color=mint))
+        parts.append(lpm.box(f"{name}_parapet_end", (0.015, depth + 0.06, 0.03), at=(side * (width / 2 + 0.0225), cy, height + 0.03), color=mint))
+    story_width, story_height, rise, overhang = 1.0, 0.26, 0.2, 0.03
+    story_top = height + story_height
+    parts.append(rounded_block("story", story_width, depth, story_height + 0.02, wall, 0.03 / story_width, at=(0, cy, height - 0.02)))
+    parts.append(rounded_block("story_band", story_width + 0.01, depth + 0.01, 0.03, mint, 0.03 / story_width, at=(0, cy, story_top - 0.04)))
+    gable = [(front - overhang, story_top), (cy, story_top + rise), (back + overhang, story_top)]
+    parts.append(extrude_x("story_roof", gable, -story_width / 2 - overhang, story_width / 2 + overhang, trim))
+    for face_name, wy in (("front", front), ("back", back)):
+        direction = -1 if face_name == "front" else 1
+        parts.append(lpm.box(f"story_window_{face_name}", (0.7, 0.012, 0.14), at=(0, wy + direction * 0.003, height + 0.05), color=glass))
+        for edge, ex in enumerate((-0.362, 0.362)):
+            parts.append(lpm.box(f"story_window_{face_name}_frame_{edge}", (thick, 0.01, 0.164), at=(ex, wy + direction * 0.004, height + 0.038), color=frame))
+        parts.append(lpm.box(f"story_window_{face_name}_frame_top", (0.736, 0.01, thick), at=(0, wy + direction * 0.004, height + 0.19), color=frame))
+        parts.append(lpm.box(f"story_window_{face_name}_frame_bottom", (0.736, 0.01, thick), at=(0, wy + direction * 0.004, height + 0.038), color=frame))
+        parts.append(lpm.box(f"story_window_{face_name}_mullion", (0.01, 0.01, 0.14), at=(0, wy + direction * 0.006, height + 0.05), color=frame))
+    parts.append(lpm.box("door", (0.24, 0.014, 0.3), at=(0, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "door", 0.0, front, 0.0, 0.24, 0.3, frame)
+    for number, x in enumerate((-0.3, 0.3, -0.72, -1.0, 0.72, 1.0)):
+        parts.append(lpm.box(f"glazed_door_{number}", (0.17, 0.012, 0.3), at=(x, front - 0.003, 0.0), color=glass))
+        door_frame(parts, f"glazed_door_{number}", x, front, 0.0, 0.17, 0.3, frame)
+        parts.append(lpm.box(f"glazed_door_{number}_mullion", (0.01, 0.01, 0.3), at=(x, front - 0.006, 0.0), color=frame))
+        parts.append(lpm.box(f"glazed_door_{number}_transom", (0.17, 0.01, thick), at=(x, front - 0.006, 0.2), color=frame))
+    canopy_z = 0.34
+    for side, name in ((-1, "left"), (1, "right")):
+        end_x = side * width / 2
+        parts.append(lpm.box(f"{name}_end_door", (0.014, 0.26, 0.3), at=(end_x + side * 0.004, cy, 0.0), color=dark))
+        for edge, offset in enumerate((-1, 1)):
+            parts.append(lpm.box(f"{name}_end_door_frame_{edge}", (0.01, thick, 0.3 + thick), at=(end_x + side * 0.004, cy + offset * (0.13 + thick / 2), 0.0), color=frame))
+        parts.append(lpm.box(f"{name}_end_door_frame_top", (0.01, 0.26 + 2 * thick, thick), at=(end_x + side * 0.004, cy, 0.3), color=frame))
+        parts.append(rounded_block(f"{name}_end_canopy", 0.2, 0.8, 0.025, slab, 0.025 / 0.2, at=(end_x + side * 0.08, cy, canopy_z)))
+        parts.append(rounded_block(f"{name}_end_canopy_band", 0.21, 0.81, 0.015, mint, 0.015 / 0.21, at=(end_x + side * 0.08, cy, canopy_z - 0.015)))
+        for number, py in enumerate((cy - 0.37, cy + 0.37)):
+            parts.append(lpm.box(f"{name}_end_post_{number}", (0.025, 0.025, canopy_z), at=(end_x + side * 0.17, py, 0.0), color=dark))
+    back_x = width / 2 - 0.72 / 2
+    for door_number, door_x in enumerate((back_x, -back_x)):
+        parts.append(lpm.box(f"back_door_{door_number}", (0.22, 0.014, 0.3), at=(door_x, back + 0.004, 0.0), color=dark))
+        for edge, offset in enumerate((-1, 1)):
+            parts.append(lpm.box(f"back_door_{door_number}_frame_{edge}", (thick, 0.01, 0.3 + thick), at=(door_x + offset * (0.11 + thick / 2), back + 0.004, 0.0), color=frame))
+        parts.append(lpm.box(f"back_door_{door_number}_frame_top", (0.22 + 2 * thick, 0.01, thick), at=(door_x, back + 0.004, 0.3), color=frame))
+    gate_w, gate_h = 0.56, 0.44
+    for number, leaf_x in enumerate((-gate_w / 4, gate_w / 4)):
+        parts.append(lpm.box(f"travelers_door_leaf_{number}", (gate_w / 2 - 0.004, 0.012, gate_h), at=(leaf_x, back + 0.003, 0.0), color=glass))
+        parts.append(lpm.box(f"travelers_door_leaf_{number}_transom", (gate_w / 2 - 0.004, 0.01, thick), at=(leaf_x, back + 0.006, gate_h - 0.1), color=frame))
+        parts.append(lpm.box(f"travelers_door_leaf_{number}_handle", (0.008, 0.014, 0.08), at=(leaf_x + (-1 if number else 1) * 0.02, back + 0.012, 0.18), color=dark))
+    parts.append(lpm.box("travelers_door_mullion", (thick, 0.012, gate_h), at=(0, back + 0.006, 0.0), color=frame))
+    for edge, offset in enumerate((-1, 1)):
+        parts.append(lpm.box(f"travelers_door_frame_{edge}", (thick, 0.012, gate_h + thick), at=(offset * (gate_w / 2 + thick / 2), back + 0.005, 0.0), color=frame))
+    parts.append(lpm.box("travelers_door_frame_top", (gate_w + 2 * thick, 0.012, thick), at=(0, back + 0.005, gate_h), color=frame))
+    back_plate_w, back_plate_h, back_plate_z = 0.62, 0.085, gate_h + thick
+    parts.append(lpm.box("back_sign_plate", (back_plate_w, 0.014, back_plate_h), at=(0, back + 0.004, back_plate_z), color=mint))
+    parts.append(glyph_decal({"cfg": cfg}, "back_sign_text", "back", "HUB", 0.0, back_plate_z + (back_plate_h - 0.05) / 2, 0.05, white, back + 0.012))
+    parts.append(rounded_block("canopy", 1.3, 0.28, 0.025, slab, 0.025 / 0.28, at=(0, front - 0.12, canopy_z)))
+    parts.append(rounded_block("canopy_band", 1.31, 0.29, 0.015, mint, 0.015 / 0.29, at=(0, front - 0.12, canopy_z - 0.015)))
+    for number, x in enumerate((-0.6, -0.2, 0.2, 0.6)):
+        parts.append(lpm.box(f"canopy_post_{number}", (0.025, 0.025, canopy_z), at=(x, front - 0.245, 0.0), color=dark))
+    plate_w, plate_h, plate_z = 0.5, 0.1, 0.37
+    parts.append(lpm.box("sign_plate", (plate_w, 0.014, plate_h), at=(0, front - 0.004, plate_z), color=mint))
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "HUB", 0.0, plate_z + (plate_h - 0.06) / 2, 0.06, white, -front + 0.012))
+    shelter_w, shelter_z = 0.72, 0.28
+    shelter_x = width / 2 - shelter_w / 2
+    roof_y, roof_d = 0.8, 0.36
+    parts.append(rounded_block("shelter_roof", shelter_w, roof_d, 0.02, mint, 0.02 / roof_d, at=(shelter_x, roof_y, shelter_z)))
+    parts.append(rounded_block("shelter_band", shelter_w + 0.01, roof_d + 0.01, 0.012, slab, 0.012 / roof_d, at=(shelter_x, roof_y, shelter_z - 0.012)))
+    for number, (px, py) in enumerate(((-1, -1), (1, -1), (-1, 1), (1, 1))):
+        parts.append(lpm.box(f"shelter_post_{number}", (0.02, 0.02, shelter_z), at=(shelter_x + px * (shelter_w / 2 - 0.03), roof_y + py * (roof_d / 2 - 0.03), 0.0), color=dark))
+    parts.append(lpm.box("shelter_rail", (shelter_w - 0.1, 0.012, 0.012), at=(shelter_x, roof_y - 0.13, 0.075), color=slab))
+    for number, by in enumerate((0.69, 0.81, 0.93)):
+        parked_bike(parts, f"bike_{number}", shelter_x, by, mint if number != 1 else dark, dark, slab, scale=1.4)
+    roof = story_top + rise - 0.02
+    parts.append(rounded_block("clock_tower", 0.2, 0.18, 0.17, wall, 0.03 / 0.2, at=(0, cy, roof)))
+    parts.append(lpm.box("clock_face", (0.12, 0.012, 0.12), at=(0, cy - 0.094, roof + 0.025), color=white))
+    parts.append(lpm.box("clock_hand_hour", (thick, 0.014, 0.04), at=(0, cy - 0.101, roof + 0.085), color=dark))
+    parts.append(lpm.box("clock_hand_minute", (0.05, 0.014, thick), at=(0.02, cy - 0.101, roof + 0.085), color=dark))
+    parts.append(rounded_block("clock_cap", 0.23, 0.21, 0.03, mint, 0.03 / 0.21, at=(0, cy, roof + 0.17)))
+    ob = lpm.finish(spec["id"], parts, palette, budget=8000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def depot_pile(parts, number, x, y, kind):
     """One pile of material standing in the yard: planks, bricks, a sand heap, sacks, a gravel heap or steel beams."""
     index = PALETTE_NAMES.index

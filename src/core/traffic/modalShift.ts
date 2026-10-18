@@ -16,7 +16,7 @@ export interface ModalShift {
 export const NO_SHIFT: ModalShift = { total: 0, byHome: new Map(), byLine: new Map() };
 
 export function modalShift(state: GameState, transport: ReturnType<typeof transportStats>, congestion: CongestionStats): ModalShift {
-  const spare = new Map(transport.lines.map((line) => [line.id, Math.max(0, line.capacity - line.riders)]));
+  const spare = new Map(transport.lines.map((line) => [line.id, Math.max(0, line.capacity - line.riders - line.cyclists)]));
   const byHome = new Map<number, number>();
   const byLine = new Map<number, number>();
   let total = 0;

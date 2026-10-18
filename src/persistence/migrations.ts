@@ -32,7 +32,14 @@ function renameSiloToMaterialDepot(state: unknown): unknown {
   return { ...rest, buildings: buildings.map((building) => (building.type === 'silo' ? { ...building, type: 'materialDepot' } : building)) };
 }
 
-export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state, 7: startServiceAdaptation, 8: state => ({ ...(state as object), seedStock: {}, fields: [] }), 9: state => state, 10: startServiceAdaptation, 11: state => state, 12: renameSiloToMaterialDepot, 13: state => ({ ...(state as object), tradeLedger: [] }) };
+// A Venue already placed was never guided: its Venue tutorial counts as finished.
+function finishTutorialsOfPlacedVenues(state: unknown): unknown {
+  const value = state as { buildings: { type: string }[] };
+  const placed = ['arcade', 'supermarket'].filter(type => value.buildings.some(building => building.type === type));
+  return placed.length === 0 ? state : { ...value, venueTutorials: Object.fromEntries(placed.map(type => [type, null])) };
+}
+
+export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state, 7: startServiceAdaptation, 8: state => ({ ...(state as object), seedStock: {}, fields: [] }), 9: state => state, 10: startServiceAdaptation, 11: state => state, 12: renameSiloToMaterialDepot, 13: state => ({ ...(state as object), tradeLedger: [] }), 14: finishTutorialsOfPlacedVenues };
 
 export function migrate(state: unknown, fromVersion: number, toVersion: number, steps: Record<number, MigrationStep> = MIGRATIONS): unknown {
   let current = state;

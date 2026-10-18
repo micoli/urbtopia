@@ -1179,7 +1179,7 @@ textarea {
   border-radius: 12px;
   background: var(--panel-bg);
   color: var(--panel-fg);
-  z-index: 15;
+  z-index: 26;
 }
 
 .tutorial-banner header {
@@ -1523,6 +1523,8 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   cursor: pointer;
 }
 .eco-dashboard .transit-line-speed { font-size: 0.8em; opacity: 0.85; white-space: nowrap; }
+.eco-dashboard .transit-line-loop { opacity: 0.85; }
+.eco-dashboard .transit-hint { margin: 4px 0; font-size: 0.85em; opacity: 0.8; }
 .eco-dashboard .transit-line-item:hover { background: rgba(255, 255, 255, 0.08); }
 .eco-dashboard .transit-line-item[aria-current='true'] { background: rgba(255, 255, 255, 0.15); font-weight: 700; }
 .transit-line-name { flex: 1; }
@@ -2452,3 +2454,15 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .eco-heat-item th { padding-left: 28px; color: var(--eco-muted); font-size: 12px; }
 .eco-heat-item th > button { margin-left: 8px; }
 .eco-heat-item th i.home-color-swatch { display: inline-block; width: 10px; height: 10px; margin-right: 4px; vertical-align: middle; }
+
+.eco-dashboard .transport-map-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.eco-dashboard .transport-map-canvas { position: relative; margin: 8px 0; }
+.eco-dashboard .transport-map-canvas svg { display: block; width: 100%; height: 360px; border-radius: 8px; background: rgba(255, 255, 255, 0.04); cursor: grab; touch-action: none; }
+.eco-dashboard .transport-map-controls { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
+.eco-dashboard .transport-map-line, .eco-dashboard .transport-map-node { cursor: pointer; }
+.eco-dashboard .transport-map-card { margin: 8px 0; padding: 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.06); }
+.eco-dashboard .transport-map-hint { opacity: 0.75; }
+/* The browser focus ring is drawn in map units inside the SVG and would be huge: focus is shown with a pixel stroke instead. */
+.eco-dashboard .transport-map-line:focus, .eco-dashboard .transport-map-node:focus { outline: none; }
+.eco-dashboard .transport-map-node:focus-visible circle:first-of-type { stroke: #ffd43b; stroke-width: 3px; }
+.eco-dashboard .transport-map-line:focus-visible path:nth-of-type(2) { stroke: #ffd43b; }

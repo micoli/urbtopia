@@ -8,6 +8,6 @@ interface ModeMixProps {
 export function ModeMix({congestion}: ModeMixProps) {
     const shares = modeShares(congestion);
     return <p>
-        {t('eco.carShare')}: {(shares.car * 100).toFixed(0)}% · {t('eco.transitShare')}: {(shares.transit * 100).toFixed(0)}% · {t('eco.walkShare')}: {(shares.walking * 100).toFixed(0)}%
+        {t('eco.carShare')}: {(shares.car * 100).toFixed(0)}% · {t('eco.transitShare')}: {(shares.transit * 100).toFixed(0)}% · {t('eco.walkShare')}: {(shares.walking * 100).toFixed(0)}% · {t('eco.cycleShare')}: {(shares.cycling * 100).toFixed(0)}%
     </p>;
 }

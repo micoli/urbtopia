@@ -45,6 +45,16 @@ describe('repainted buildings', () => {
     expect(itemOf('battery', 'a').textureVariant).toBeUndefined();
   });
 
+  it('repaints the Transit hub with the palette of its model, and no other stop', () => {
+    expect(isRepaintableType('transitHub')).toBe(true);
+    expect(COLORS.map(color => itemOf('transitHub', color).textureVariant?.split(':').pop())).toEqual([undefined, 'b', 'c', 'd']);
+    expect(['busStop', 'brtStation', 'railStation'].some(isRepaintableType)).toBe(false);
+  });
+
+  it('names the four colors of the Transit hub', () => {
+    expect(COLORS.map(color => toneLabelOf('transitHub', 1, color)?.name)).toEqual(['mint', 'tangerine', 'sky', 'brick']);
+  });
+
   it('repaints every building drawn with color tones', () => {
     const repaintable = Object.keys(BUILDING_SPECS).filter(id => isRepaintableType(id));
     expect(repaintable.length).toBeGreaterThan(20);

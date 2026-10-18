@@ -281,6 +281,14 @@ _Avoid_: Pavement, kerb
 A trip on foot from a Home to a shop, school, health, culture, casino, park or Town hall within walking distance. It adds no car demand, gives Well-being, and loads the Crossings it uses. Modelled per Home in aggregate.
 _Avoid_: Stroll, individual journey
 
+**Cyclist Rider**:
+A Rider who reaches a BRT station, Railway station or Transit hub by bicycle from beyond walking range, up to three times the stop coverage distance, and takes the bicycle aboard. Bicycles are carried by BRT vehicles and Trains but not by ordinary buses, so a Cyclist Rider's Transit itinerary has no bus leg. A Cyclist Rider takes two places on each line used instead of one.
+_Avoid_: Bike sharing, bike parking
+
+**Cycling trip**:
+A trip by bicycle from a Home to the same destinations as a Walking trip, within a cycling distance of three times the walking distance. It replaces the Walking trip when the destination is out of walking range, never adds to it. It travels over the Pedestrian path network, so Sidewalks and Pedestrian ways are also cycleways. It needs no purchase and no dedicated infrastructure, adds no car demand, gives Well-being, and loads the Crossings it uses. Modelled per Home in aggregate.
+_Avoid_: Bike lane, bike sharing, individual journey
+
 **Crossing**:
 A straight Road tile where pedestrians can cross the road. The more pedestrians use it, the less capacity the road keeps for cars.
 _Avoid_: Zebra, pedestrian crossing, crosswalk
@@ -458,12 +466,16 @@ A visible roadside sign marking a public-transport stop that covers nearby Homes
 _Avoid_: Road STOP sign, station
 
 **Stop name**:
-A name the player gives to a Bus stop, BRT station or Railway station. It replaces the default designation of the stop wherever the stop is shown, and goes away with the stop. Without one, the stop keeps its default designation.
+A name the player gives to a Bus stop, BRT station, Railway station or Transit hub. It replaces the default designation of the stop wherever the stop is shown, and goes away with the stop. Without one, the stop keeps its default designation.
 _Avoid_: Label, Title
 
 **Bus line**:
 An ordered set of road-connected Bus stops, with operating costs and usage driven by useful residential and activity coverage. An active Bus line drives on the ordinary roads like any other Vehicle: it loads them and is slowed by their Congestion, which lowers its Effective speed and capacity.
 _Avoid_: Individual Citizen journey, decorative Traffic
+
+**Loop line**:
+A transport line of any mode (Bus line, BRT line or Railway line) whose last stop is followed by its first, so its vehicles circulate in one direction only. It needs at least three stops, and the closing section back to the first stop must be connected like any other.
+_Avoid_: Circular route, return trip
 
 **Effective speed**:
 The speed of a Bus line once the Congestion of its route is counted: each tile of the route takes longer in proportion to how far its section is above capacity, down to half of the nominal speed. Capacity and itinerary times follow it. BRT and rail are never slowed.
@@ -505,8 +517,16 @@ _Avoid_: Bus stop, Railway station
 A passenger stop on a Railway, served by Trains assigned to Railway lines.
 _Avoid_: BRT station, Freight terminal
 
+**Transport map**:
+A read-only schematic of the public transport network in City management: stops and Transit hubs as nodes, Bus, BRT and Railway lines as coloured strokes, and the possible Transfers between stops. The thickness and colour of a line follow its load, and the map can be filtered by mode. It shows the network and its volumes per line, not the car, walking and cycling flows, which stay in Traffic.
+_Avoid_: Network editor, road map, minimap
+
+**Transit hub**:
+A multimodal station that serves as a stop for every public transport network it touches among the Road, the BRT corridor and the Railway, and is reached on foot from the Pedestrian ways and Sidewalks it touches. It is valid as soon as it touches one of these four networks, and is inactive while it touches no vehicle network. Lines of different modes can use it as a stop, and a Transfer between lines that share it needs no walking distance.
+_Avoid_: Interchange, terminal, Bus stop
+
 **Access mode**:
-A network a building can be reached from: the Road or the BRT corridor. Each building declares the modes it accepts. Homes, Leisure buildings, Shops and Public facilities accept both; every other building accepts the Road only. A position is valid when any accepted mode has a tile in front of the building.
+A network a building can be reached from: the Road, the BRT corridor or the Railway. Each building declares the modes it accepts. Homes, Leisure buildings, Shops and Public facilities accept both; every other building accepts the Road only. A position is valid when any accepted mode has a tile in front of the building.
 _Avoid_: Entrance, connection type, requiresRoad
 
 **Front**:

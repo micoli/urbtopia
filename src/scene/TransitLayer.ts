@@ -16,7 +16,7 @@ export class TransitLayer {
   private vehicles = new THREE.Group();
   private trackSignature = '';
   private fleetSignature = '';
-  private moving: { mesh: THREE.Group; route: { x: number; y: number }[]; phase: number; speed: number; brt: boolean; kind: TransitVehicleKind }[] = [];
+  private moving: { mesh: THREE.Group; route: { x: number; y: number }[]; loop: boolean; phase: number; speed: number; brt: boolean; kind: TransitVehicleKind }[] = [];
   private disposed = false;
   private modelsReady = false;
   private crossings = new Set<string>();
@@ -35,7 +35,7 @@ export class TransitLayer {
       this.trackSignature = trackSignature; this.clear(this.tracks);
     }
     if (tracksChanged) this.compactTracks();
-    const fleetSignature = JSON.stringify([state.transitFleet, services.filter(l => l.mode !== 'bus').map(l => [l.id, l.active, l.route, l.operatingVehicleIds])]);
+    const fleetSignature = JSON.stringify([state.transitFleet, services.filter(l => l.mode !== 'bus').map(l => [l.id, l.active, l.loop, l.route, l.operatingVehicleIds])]);
     if (fleetSignature === this.fleetSignature) return;
     this.fleetSignature = fleetSignature; this.clear(this.vehicles); this.moving = []; this.priorityTiles.clear();
     for (const vehicle of state.transitFleet ?? []) {
@@ -43,7 +43,7 @@ export class TransitLayer {
       if (!service?.active || !service.route || !service.operatingVehicleIds.includes(vehicle.id)) continue;
       const mesh = this.makeVehicle(vehicle.kind);
       this.vehicles.add(mesh);
-      this.moving.push({ mesh, route: service.route, phase: vehicle.id % Math.max(1, 2 * (service.route.length - 1)), speed: service.mode === 'rail' ? 2 : 1.5, brt: service.mode === 'brt', kind: vehicle.kind });
+      this.moving.push({ mesh, route: service.route, loop: !!service.loop, phase: vehicle.id % Math.max(1, (service.loop ? 1 : 2) * (service.route.length - 1)), speed: service.mode === 'rail' ? 2 : 1.5, brt: service.mode === 'brt', kind: vehicle.kind });
     }
     this.update(0);
   }
@@ -53,8 +53,8 @@ export class TransitLayer {
     for (const vehicle of this.moving) {
       const length = vehicle.route.length - 1;
       if (length < 1) continue;
-      vehicle.phase = (vehicle.phase + Math.max(0, delta) * vehicle.speed) % (2 * length);
-      const returning = vehicle.phase > length;
+      vehicle.phase = (vehicle.phase + Math.max(0, delta) * vehicle.speed) % ((vehicle.loop ? 1 : 2) * length);
+      const returning = !vehicle.loop && vehicle.phase > length;
       const offset = returning ? 2 * length - vehicle.phase : vehicle.phase;
       const i = Math.min(length - 1, Math.floor(offset)), f = offset - i;
       const a = vehicle.route[i]!, b = vehicle.route[i + 1]!;

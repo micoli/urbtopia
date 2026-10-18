@@ -235,6 +235,7 @@ export type BuildingId =
   | 'synagogue'
   | 'theater'
   | 'townHall'
+  | 'transitHub'
   | 'tree'
   | 'tubularRollerCoaster'
   | 'university'

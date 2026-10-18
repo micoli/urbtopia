@@ -3,6 +3,7 @@ import { t } from '../../i18n/t';
 import { venueStore } from '../../store/venueStore';
 import { ActionButton } from '../common/ActionButton';
 import { DrawerPanel } from '../common/DrawerPanel';
+import { VenueTutorialReplay } from '../tutorial/VenueTutorialReplay';
 import { VenueTakings } from './VenueTakings';
 
 interface VenuePanelProps {
@@ -16,6 +17,7 @@ export function VenuePanel({ building }: VenuePanelProps) {
         {t('venue.manage')}
       </ActionButton>
       <VenueTakings building={building} />
+      <VenueTutorialReplay building={building} />
       <DrawerPanel.Upgrade building={building} />
     </DrawerPanel>
   );

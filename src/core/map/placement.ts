@@ -2,7 +2,7 @@ import { BUILDING_SPECS, footprintOf, footprintTiles } from '../buildings/buildi
 import { buildLimitReached, nextCopyCost } from '../buildings/buildLimit';
 import type { AccessMode } from '../buildings/buildingDefinition';
 import type { Coord } from './coord';
-import { frontDirection, neighbour, tileKey } from './geometry';
+import { DIRECTIONS, frontDirection, neighbour, tileKey } from './geometry';
 import { isInsideOwnedParcels, isRoadLike, occupiedTiles } from './occupancy';
 import { touchesWater } from '../water/marina';
 import type { BuildingType, GameState, Rotation } from '../engine/state';
@@ -23,13 +23,35 @@ export function frontTiles(type: BuildingType, x: number, y: number, rotation: R
 }
 
 const isBrtTile = (state: GameState, tile: Coord) => (state.brtRoads ?? []).some((candidate) => tileKey(candidate) === tileKey(tile));
+const isRailTile = (state: GameState, tile: Coord) => (state.rails ?? []).some((candidate) => tileKey(candidate) === tileKey(tile));
+
+// Every tile next to the footprint, on all four sides: a Transit hub is reached from any of them.
+export function perimeterTiles(type: BuildingType, x: number, y: number, rotation: Rotation, tier = 1): Coord[] {
+  const tiles = footprintTiles({ type, x, y, rotation, tier });
+  const inside = new Set(tiles.map(tileKey));
+  const around = new Map<string, Coord>();
+  for (const tile of tiles) for (const direction of DIRECTIONS) {
+    const next = neighbour(tile, direction);
+    if (!inside.has(tileKey(next))) around.set(tileKey(next), next);
+  }
+  return [...around.values()];
+}
+
+const accessTiles = (type: BuildingType, x: number, y: number, rotation: Rotation, tier: number): Coord[] => (
+  type === 'transitHub' ? perimeterTiles(type, x, y, rotation, tier) : frontTiles(type, x, y, rotation, tier)
+);
 
 export function frontAccessModes(state: GameState, type: BuildingType, x: number, y: number, rotation: Rotation, tier = 1): AccessMode[] {
-  const front = frontTiles(type, x, y, rotation, tier);
+  const front = accessTiles(type, x, y, rotation, tier);
   const pedestrianWays = new Set((state.pedestrianWays ?? []).map(tileKey));
   return BUILDING_SPECS[type].accessModes.filter((mode) => front.some((tile) => (
-    mode === 'road' ? isRoadLike(state, tile) : mode === 'brt' ? isBrtTile(state, tile) : pedestrianWays.has(tileKey(tile))
+    mode === 'road' ? isRoadLike(state, tile) : mode === 'brt' ? isBrtTile(state, tile) : mode === 'rail' ? isRailTile(state, tile) : pedestrianWays.has(tileKey(tile))
   )));
+}
+
+// A Transit hub serves no line, and covers no Home, until a Road, a BRT corridor or a Railway touches it.
+export function isHubActive(state: GameState, hub: { type: BuildingType; x: number; y: number; rotation: Rotation; tier?: number }): boolean {
+  return frontAccessModes(state, hub.type, hub.x, hub.y, hub.rotation, hub.tier).some((mode) => mode !== 'pedestrianWay');
 }
 
 export function hasBrtOnlyAccess(state: GameState, building: { type: BuildingType; x: number; y: number; rotation: Rotation; tier?: number }): boolean {

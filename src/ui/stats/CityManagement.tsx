@@ -14,6 +14,7 @@ import {ProductionSection} from './management/ProductionSection';
 import {SectionNavigation} from './management/SectionNavigation';
 import {TemperatureSection} from './management/TemperatureSection';
 import {TrafficSection} from './management/TrafficSection';
+import {TransportMapSection} from './management/transportMap/TransportMapSection';
 import {TransportSection} from './management/TransportSection';
 import {WaterSection} from './management/WaterSection';
 import {WellbeingSection} from './management/WellbeingSection';
@@ -56,6 +57,7 @@ export function CityManagement() {
                 <EmissionsSection climate={climate} energy={energy} transport={transport}/>
                 <TemperatureSection breakdown={temperature} elements={coolingElements(state)} items={heatSourceItems(state, {climate, energy, transport, cooling: green.cooling})}/>
                 <TransportSection transport={transport}/>
+                <TransportMapSection state={state} transport={transport} congestion={congestion}/>
                 <TrafficSection congestion={congestion} transport={transport} onShowTransport={() => showSection('eco-transport')}/>
                 <ObjectivesSection state={state} energy={energy} green={green} transport={transport}/>
                 <NextUnlockSection/>

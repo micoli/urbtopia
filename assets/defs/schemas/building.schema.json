@@ -94,6 +94,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -227,6 +228,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -510,6 +512,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -801,6 +804,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -1056,6 +1060,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -1307,6 +1312,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -1563,6 +1569,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -1809,6 +1816,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -2001,6 +2009,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -2139,6 +2148,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -2288,6 +2298,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -2427,6 +2438,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -2701,6 +2713,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -2990,6 +3003,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -3254,6 +3268,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -3633,6 +3648,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -3870,6 +3886,7 @@
             "enum": [
               "road",
               "brt",
+              "rail",
               "pedestrianWay"
             ]
           }
@@ -3902,7 +3919,8 @@
           "enum": [
             "bus",
             "brt",
-            "rail"
+            "rail",
+            "hub"
           ]
         },
         "network": {

@@ -5,6 +5,7 @@ export interface EditableLine {
   id: number;
   mode: TransitMode;
   stops: number[];
+  loop?: boolean;
   peakHeadway: number;
   offPeakHeadway: number;
 }
@@ -26,6 +27,6 @@ export const unlockOf = (mode: TransitMode): number => (mode === 'bus' ? 0 : TRA
 export function findLine(state: GameState, id: number | undefined): EditableLine | undefined {
   if (id === undefined) return undefined;
   const bus = state.busLines?.find(line => line.id === id);
-  if (bus) return { id, mode: 'bus', stops: bus.stops, peakHeadway: DEFAULT_PEAK_HEADWAY, offPeakHeadway: DEFAULT_OFF_PEAK_HEADWAY };
+  if (bus) return { id, mode: 'bus', stops: bus.stops, loop: bus.loop, peakHeadway: DEFAULT_PEAK_HEADWAY, offPeakHeadway: DEFAULT_OFF_PEAK_HEADWAY };
   return state.transitLines?.find(line => line.id === id);
 }

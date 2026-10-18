@@ -10,7 +10,7 @@ export { BUILDING_SPECS, footprintOf, footprintTiles, placementCost } from './bu
 export { allowedCopies, buildLimitReached, copyThresholds, isRepeatable, maxCopies, nextCopyCitizens, nextCopyCost, ownedCopies } from './buildings/buildLimit';
 export type { BuildingSpec, Footprint } from './buildings/buildingSpecs';
 export { isInsideOwnedParcels, isRoadLike, occupiedTiles, roadExits, roundaboutTiles } from './map/occupancy';
-export { autoRotation, fittingPlacement, frontTiles, frontAccessModes, frontHasAccess, hasBrtOnlyAccess, nextFront, placementIssue, validFronts } from './map/placement';
+export { autoRotation, fittingPlacement, frontTiles, perimeterTiles, frontAccessModes, frontHasAccess, hasBrtOnlyAccess, nextFront, placementIssue, validFronts } from './map/placement';
 export type { PlacementIssue } from './map/placement';
 export { GAME_CONFIG } from './engine/config';
 export { newGame } from './engine/newGame';
@@ -73,6 +73,8 @@ export type { BuildingUnlock } from './progression/unlocks';
 export type { Unlock } from './progression/unlocks';
 export { TUTORIAL_STEPS, tutorialAllows, tutorialSkipMs } from './progression/tutorial';
 export type { TutorialStep } from './progression/tutorial';
+export { VENUE_TUTORIAL_TYPES, canReplayVenueTutorial, hasVenueTutorial, isVenueStepDone, isVenueTutorialStep, progressVenueTutorials, stepsOfVenueTutorial } from './progression/venueTutorial';
+export type { VenueTutorialStep, VenueTutorialType } from './progression/venueTutorial';
 
 export { ECOLOGY, ECOLOGY_UNLOCKS, distance as buildingDistance, homePower, economicPower, greenSpaceCoverage, greenBenefits, cityGreenBenefits } from './environment/ecology';
 export { energyStats, generatorCapacity, generatorFactor, generatorOutput, productionFactors } from './environment/energy';

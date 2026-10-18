@@ -73,7 +73,7 @@ export function progressTutorial(state: GameState): GameState {
   return step === state.tutorial ? state : { ...state, tutorial: step };
 }
 
-const ALWAYS_ALLOWED: Command['type'][] = ['BuildRoad', 'MoveBuilding', 'SkipTime', 'SkipTutorialStep', 'SkipTutorial', 'TradeApply', 'TradeConfirm', 'TradeRollback', 'ConfirmDonations'];
+const ALWAYS_ALLOWED: Command['type'][] = ['BuildRoad', 'MoveBuilding', 'SkipTime', 'SkipTutorialStep', 'SkipTutorial', 'SkipVenueTutorial', 'ReplayVenueTutorial', 'TradeApply', 'TradeConfirm', 'TradeRollback', 'ConfirmDonations'];
 
 export function tutorialAllows(state: GameState, command: Command): boolean {
   const step = state.tutorial;

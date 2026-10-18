@@ -10,6 +10,7 @@ export interface NewGameOptions {
   seed?: string;
   now: number;
   tutorial?: boolean;
+  venueTutorials?: boolean;
   difficulty?: Difficulty;
 }
 
@@ -34,6 +35,7 @@ export function newGame(options: NewGameOptions): GameState {
     roads: [],
     roundabouts: [],
     tutorial: null,
+    ...(options.venueTutorials === false ? { venueTutorials: { arcade: null, supermarket: null } } : {}),
     tradeLedger: [],
     ...(options.difficulty && options.difficulty !== DEFAULT_DIFFICULTY ? { difficulty: options.difficulty } : {}),
   };

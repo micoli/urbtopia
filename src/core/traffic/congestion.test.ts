@@ -145,7 +145,7 @@ describe('city without a Commute', () => {
     const noWorkplace = withHome({ ...base, buildings: [] }, 56, 59, 1);
     for (const state of [noRoad, noWorkplace]) {
       const home = congestionStats(state).homes.get(homeIdOf(state))!;
-      expect(home).toEqual({ commuters: 0, walkers: 0, walkAccess: 0, unemployed: 0, ratio: 0, disconnected: false });
+      expect(home).toEqual({ commuters: 0, walkers: 0, cyclists: 0, walkAccess: 0, unemployed: 0, ratio: 0, disconnected: false });
     }
   });
 });
