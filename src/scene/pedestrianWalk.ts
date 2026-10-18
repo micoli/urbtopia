@@ -65,12 +65,13 @@ export function isOnGraph(graph: PedestrianGraph, pedestrian: Pedestrian): boole
   return graph.get(pedestrian.from)?.some((edge) => edge.to === pedestrian.to) ?? false;
 }
 
-export function targetPedestrianCount({ people, nodes, touch }: { people: number; nodes: number; touch: boolean }): number {
-  const ceiling = touch ? MAX_PEDESTRIANS / 2 : MAX_PEDESTRIANS;
+export function targetPedestrianCount({ people, nodes, touch, max = MAX_PEDESTRIANS }: { people: number; nodes: number; touch: boolean; max?: number }): number {
+  const ceiling = touch ? max / 2 : max;
   return Math.min(Math.floor(people / PEOPLE_PER_FIGURE), Math.floor(nodes / NODES_PER_FIGURE), ceiling);
 }
 
 export const MAX_PEDESTRIANS = 100;
+export const MAX_CYCLISTS = 50;
 const PEOPLE_PER_FIGURE = 8;
 const NODES_PER_FIGURE = 3;
 
