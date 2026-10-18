@@ -84,12 +84,6 @@ export const ASSET_PACKS: AssetPack[] = [
     files: ['solar-panel-flat', 'solar-panel-landscape', 'solar-panel-landscape-group'],
   },
   {
-    name: 'cars',
-    url: 'https://kenney.nl/media/pages/assets/car-kit/1a312ec241-1775131960/kenney_car-kit.zip',
-    archive: 'kenney_car-kit.zip',
-    files: ['sedan', 'sedan-sports', 'hatchback-sports', 'suv', 'suv-luxury', 'taxi', 'van', 'ambulance', 'firetruck', 'police'],
-  },
-  {
     name: 'nature',
     colormap: false,
     url: 'https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip',

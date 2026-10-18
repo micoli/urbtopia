@@ -88,9 +88,9 @@ describe('needs pyramid effects by Difficulty', () => {
 
   it('marks the factors a Difficulty sanctions, and only those', () => {
     const marked = (difficulty: 'easy' | 'medium' | 'hard') => needsPyramid({ ...empty, difficulty }).levels.flatMap(level => level.factors).filter(entry => entry.effects.includes('sanction')).map(entry => entry.id).sort();
-    expect(marked('easy')).toEqual(['electricity', 'health', 'safety', 'water']);
-    expect(marked('medium')).toEqual(['congestion', 'electricity', 'health', 'pollution', 'safety', 'water']);
-    expect(marked('hard')).toEqual(['climate', 'congestion', 'electricity', 'health', 'pollution', 'safety', 'water']);
+    expect(marked('easy')).toEqual(['electricity', 'health', 'safety', 'waste', 'water']);
+    expect(marked('medium')).toEqual(['congestion', 'electricity', 'health', 'pollution', 'safety', 'waste', 'water']);
+    expect(marked('hard')).toEqual(['climate', 'congestion', 'electricity', 'health', 'pollution', 'safety', 'waste', 'water']);
   });
 
   it('keeps the other effects of a sanctioned factor and drops "none"', () => {

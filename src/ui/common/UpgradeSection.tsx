@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { maxTierOf, missingServices, serviceCoverage, upgradeCostOf, type Building, type GoodId, isHomeType } from '../../core';
+import { maxTierOf, missingServicesOf, upgradeCostOf, type Building, type GoodId, isHomeType } from '../../core';
 import { t } from '../../i18n/t.ts';
 import { itemName } from '../../i18n/itemName.ts';
 import { gameStore } from '../../store/gameStore.ts';
@@ -20,7 +20,7 @@ export function UpgradeSection({ building }: UpgradeSectionProps) {
   const cost = building.tier < maxTierOf(building.type) ? upgradeCostOf(building.type, building.tier + 1) : undefined;
   if (!cost) return null;
 
-  const blocking = isHomeType(building.type) ? missingServices(serviceCoverage(state), building, building.tier + 1) : [];
+  const blocking = isHomeType(building.type) ? missingServicesOf(state, building, building.tier + 1) : [];
   const missing = [
     ...(urbs < cost.urbs ? [<UrbsAmount key="urbs" value={cost.urbs - urbs} />] : []),
     ...Object.entries(cost.goods).flatMap(([good, amount]) => {

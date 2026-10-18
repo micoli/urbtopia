@@ -30,6 +30,7 @@ import {
   type BuildingType,
   casinoRadius,
   SPORT_VENUES,
+  WASTE_FACILITIES,
   isSportVenueType,
   type Command,
   type Coord,
@@ -43,7 +44,7 @@ import {
 } from '../core';
 
 export type Tool =
-  | { kind: 'building'; buildingType: BuildingType; solar?: boolean; colorVariant?: ColorVariant }
+  | { kind: 'building'; buildingType: BuildingType; solar?: boolean; colorVariant?: ColorVariant; repeat?: boolean }
   | { kind: 'move'; buildingId: number }
   | { kind: 'road'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'pedestrianWay'; start: Coord | null; horizontalFirst: boolean }
@@ -87,6 +88,7 @@ export interface GhostSpec {
   valid: boolean;
   front: { x: number; z: number; direction: Direction; access?: 'road' | 'brt' } | null;
   range?: Coord[];
+  odorRange?: Coord[];
 }
 
 export interface Evaluation {
@@ -236,6 +238,8 @@ function addCoveragePreview(result: Evaluation, state: GameState, type: Facility
     const { width, depth } = footprintOf(home.type, home.rotation, home.tier);
     return { x: home.x, y: home.y, width, depth, tone: 'hint' as const };
   });
+  const odorRadius = WASTE_FACILITIES.mound.odor?.radius;
+  if (type === 'mound' && odorRadius) result.ghost.odorRange = rangeTiles(type, odorRadius, tile, rotation);
   if (radius === null) return;
   result.ghost.range = rangeTiles(type, radius, tile, rotation);
 }
@@ -379,7 +383,8 @@ export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTo
   if (pathTool && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
   if (!current.valid) return { command: null, nextTool: tool };
   if (pathTool) return { command: current.command, nextTool: { ...tool, start: null } };
-  if (tool.kind === 'building' || tool.kind === 'boat') return { command: current.command, nextTool: keepTool ? tool : null };
+  if (tool.kind === 'building') return { command: current.command, nextTool: keepTool || tool.repeat ? tool : null };
+  if (tool.kind === 'boat') return { command: current.command, nextTool: keepTool ? tool : null };
   if (tool.kind === 'move') return { command: current.command, nextTool: null };
   return { command: current.command, nextTool: tool };
 }

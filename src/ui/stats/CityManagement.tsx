@@ -16,6 +16,7 @@ import {TemperatureSection} from './management/TemperatureSection';
 import {TrafficSection} from './management/TrafficSection';
 import {TransportMapSection} from './management/transportMap/TransportMapSection';
 import {TransportSection} from './management/TransportSection';
+import {WasteSection} from './management/WasteSection';
 import {WaterSection} from './management/WaterSection';
 import {WellbeingSection} from './management/WellbeingSection';
 import {scrollToSection} from './management/scrollToSection';
@@ -43,7 +44,7 @@ export function CityManagement() {
                 <h2 id="eco-heading">{t('eco.title')}</h2>
                 <CloseButton onClick={toggle}/>
             </header>
-            <CityOverview state={state} energy={energy} green={green} climate={climate} transport={transport} congestion={congestion} onShowTransport={() => showSection('eco-transport')} onShowTraffic={() => showSection('eco-traffic')} onShowNeeds={() => showSection('eco-needs')} onShowTemperature={() => showSection('eco-temperature')}/>
+            <CityOverview state={state} energy={energy} green={green} climate={climate} transport={transport} congestion={congestion} onShowTransport={() => showSection('eco-transport')} onShowTraffic={() => showSection('eco-traffic')} onShowNeeds={() => showSection('eco-needs')} onShowTemperature={() => showSection('eco-temperature')} onShowWaste={() => showSection('eco-waste')}/>
             <SectionNavigation onSelect={showSection}/>
             <p className="eco-units">{t('eco.units')}</p>
             <div className="eco-sections">
@@ -52,6 +53,7 @@ export function CityManagement() {
                 <WaterSection state={state}/>
                 <ServicesSection state={state}/>
                 <NatureSection state={state} green={green}/>
+                <WasteSection state={state} onShowEmissions={() => showSection('eco-emissions')}/>
                 <NeedsSection state={state} onShowSection={showSection}/>
                 <WellbeingSection green={green}/>
                 <EmissionsSection climate={climate} energy={energy} transport={transport}/>

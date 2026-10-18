@@ -2,9 +2,9 @@
   "$schema": "../schemas/traffic-vehicle.schema.json",
   "kind": "trafficVehicle",
   "name": {
-    "en": "Van",
-    "fr": "Fourgonnette"
+    "en": "Pickup",
+    "fr": "Pick-up"
   },
-  "model": "cars-van",
+  "model": "vehicles-pickup",
   "weight": 1
 }

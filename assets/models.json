@@ -2575,6 +2575,46 @@
       }
     }
   },
+  "buildings-incinerator-2x2-t1": {
+    "file": "buildings/incinerator-2x2-t1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-incinerator-2x2-t2": {
+    "file": "buildings/incinerator-2x2-t2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-incinerator-2x2-t3": {
+    "file": "buildings/incinerator-2x2-t3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-incinerator-2x2-t4": {
+    "file": "buildings/incinerator-2x2-t4",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
   "buildings-marina-captaincy": {
     "file": "buildings/marina-captaincy",
     "source": "managed",
@@ -2656,6 +2696,36 @@
       2
     ],
     "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-mound-1x1-t1": {
+    "file": "buildings/mound-1x1-t1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-mound-1x1-t2": {
+    "file": "buildings/mound-1x1-t2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-mound-1x1-t3": {
+    "file": "buildings/mound-1x1-t3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
     "rotationOffset": 180
   },
   "buildings-olive-tree-1x1": {
@@ -2865,6 +2935,46 @@
       2
     ],
     "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-recycling-3x2-t1": {
+    "file": "buildings/recycling-3x2-t1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-recycling-3x2-t2": {
+    "file": "buildings/recycling-3x2-t2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-recycling-3x2-t3": {
+    "file": "buildings/recycling-3x2-t3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-recycling-3x2-t4": {
+    "file": "buildings/recycling-3x2-t4",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
     "rotationOffset": 180
   },
   "buildings-school-2x2": {
@@ -5113,56 +5223,6 @@
         "color": "#2fd6a2"
       }
     }
-  },
-  "cars-ambulance": {
-    "file": "cars/ambulance",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-firetruck": {
-    "file": "cars/firetruck",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-hatchback-sports": {
-    "file": "cars/hatchback-sports",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-police": {
-    "file": "cars/police",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-sedan": {
-    "file": "cars/sedan",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-sedan-sports": {
-    "file": "cars/sedan-sports",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-suv": {
-    "file": "cars/suv",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-suv-luxury": {
-    "file": "cars/suv-luxury",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-taxi": {
-    "file": "cars/taxi",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-van": {
-    "file": "cars/van",
-    "source": "kenney",
-    "license": "CC0"
   },
   "commercial-building-e": {
     "file": "commercial/building-e",
@@ -8801,6 +8861,66 @@
     "file": "trains/train-locomotive-passenger-a",
     "source": "kenney",
     "license": "CC0"
+  },
+  "vehicles-ambulance": {
+    "file": "vehicles/ambulance",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-city-car": {
+    "file": "vehicles/city-car",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-firetruck": {
+    "file": "vehicles/firetruck",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-garbage-truck": {
+    "file": "vehicles/garbage-truck",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-hatchback": {
+    "file": "vehicles/hatchback",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-pickup": {
+    "file": "vehicles/pickup",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-police": {
+    "file": "vehicles/police",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-recycling-truck": {
+    "file": "vehicles/recycling-truck",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-sedan": {
+    "file": "vehicles/sedan",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-sedan-sports": {
+    "file": "vehicles/sedan-sports",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-suv": {
+    "file": "vehicles/suv",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-wagon": {
+    "file": "vehicles/wagon",
+    "source": "managed",
+    "license": "Own work"
   },
   "venue-roller-coaster-4x6-7f": {
     "file": "venue/roller-coaster-4x6-7f",

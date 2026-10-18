@@ -2,7 +2,7 @@
   "$schema": "../schemas/service-vehicle.schema.json",
   "kind": "serviceVehicle",
   "facility": "policeStation",
-  "model": "cars-police",
+  "model": "vehicles-police",
   "name": {
     "en": "Police car",
     "fr": "Voiture de police"

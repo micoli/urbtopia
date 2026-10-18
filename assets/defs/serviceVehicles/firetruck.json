@@ -2,7 +2,7 @@
   "$schema": "../schemas/service-vehicle.schema.json",
   "kind": "serviceVehicle",
   "facility": "fireStation",
-  "model": "cars-firetruck",
+  "model": "vehicles-firetruck",
   "name": {
     "en": "Fire truck",
     "fr": "Camion de pompiers"

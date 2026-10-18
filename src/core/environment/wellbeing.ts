@@ -13,6 +13,8 @@ import { poweredCasinoIds } from '../leisure/poweredCasinos';
 import type { Building, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { solidarityBonus } from '../economy/solidarity';
+import { isWasteMissing } from '../waste/waste';
+import { incineratorPenaltyOf, odorPenaltyOf } from '../waste/wasteNuisance';
 
 const WELLBEING_LIMIT = 100;
 
@@ -35,16 +37,17 @@ export function homeBenefits(state: GameState, home: Building, coalRates: Readon
     if (capacity <= 0) return sum;
     return sum + ECOLOGY.coalWellbeingPenalty * (coalRates.get(b.id) ?? 0) / capacity;
   }, 0);
-  const pollutionPenalty = Math.min(ECOLOGY.coalWellbeingCap, penalty);
+  const pollutionPenalty = Math.min(ECOLOGY.coalWellbeingCap, penalty + incineratorPenaltyOf(state, home));
+  const odorPenalty = odorPenaltyOf(state, home);
   const retained = (1 - SERVICES.wellbeingBonus / WELLBEING_LIMIT) ** coveredServiceUnits(coverage, home.id) * leisureRetention(state, home, poweredCasinos, WELLBEING_LIMIT);
   const withServices = WELLBEING_LIMIT - (WELLBEING_LIMIT - green.wellbeing) * retained;
-  const missing = isAdapting(state) ? 0 : missingServices(coverage, home).length;
+  const missing = isAdapting(state) ? 0 : missingServices(coverage, home).length + (isWasteMissing(state, home.id) ? 1 : 0);
   const servicePenalty = Math.min(SERVICES.penaltyCap, missing * SERVICES.missingPenalty);
   const congestionPenalty = isAdapting(state) ? 0 : congestionPenaltyOf(congestion.homes.get(home.id)?.ratio ?? 0);
   const walkingBonus = Math.max(0, Math.min(WELLBEING_LIMIT - withServices, Math.round(WALKING.wellbeingBonus * (congestion.homes.get(home.id)?.walkAccess ?? 0))));
-  const withoutSolidarity = withServices + walkingBonus - pollutionPenalty - servicePenalty - congestionPenalty;
+  const withoutSolidarity = withServices + walkingBonus - pollutionPenalty - odorPenalty - servicePenalty - congestionPenalty;
   const solidarity = Math.min(solidarityBonus(state), WELLBEING_LIMIT - withoutSolidarity);
-  return { ...green, wellbeing: withoutSolidarity + solidarity, serviceBonus: withServices - green.wellbeing, pollutionPenalty, servicePenalty, congestionPenalty, walkingBonus, solidarityBonus: solidarity };
+  return { ...green, wellbeing: withoutSolidarity + solidarity, serviceBonus: withServices - green.wellbeing, pollutionPenalty, odorPenalty, servicePenalty, congestionPenalty, walkingBonus, solidarityBonus: solidarity };
 }
 
 export function cityBenefits(state: GameState, coalRates: ReadonlyMap<number, number> = energyStats(state).coalRates) {

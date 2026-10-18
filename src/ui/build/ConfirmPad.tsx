@@ -26,6 +26,7 @@ export function ConfirmPad() {
     <div className="confirm-pad">
       <div className="confirm-info">
         {needsStart ? <span>{t(PATH_START_HINT[tool.kind])}</span> : null}
+        {tool.kind === 'building' && tool.repeat ? <span>{t('pad.repeat')}</span> : null}
         {tool.kind === 'parcel' && !evaluation.valid && !evaluation.issue ? <span>{t('pad.parcelHint')}</span> : null}
         {evaluation.coverage ? <span>{evaluation.coverage.cityWide ? `${t('placement.cityWide')} · ` : ''}{t('placement.covers')}: {evaluation.coverage.homes}</span> : null}
         {evaluation.cost ? (

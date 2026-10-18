@@ -6,6 +6,7 @@ const INVALID_COLOR = 0xe5484d;
 const HINT_COLOR = 0xffd23f;
 const BRT_COLOR = 0x3ea6ff;
 const RANGE_COLOR = 0xff9500;
+const ODOR_COLOR = 0x8a5a2b;
 const FRONT_ROTATION: Record<string, number> = { N: 0, W: Math.PI / 2, S: Math.PI, E: -Math.PI / 2 };
 
 export class GhostLayer {
@@ -15,6 +16,7 @@ export class GhostLayer {
   private validMaterial = new THREE.MeshBasicMaterial({ color: VALID_COLOR, transparent: true, opacity: 0.6, depthTest: false });
   private hintMaterial = new THREE.MeshBasicMaterial({ color: HINT_COLOR, transparent: true, opacity: 0.25, depthTest: false });
   private rangeMaterial = new THREE.MeshBasicMaterial({ color: RANGE_COLOR, transparent: true, opacity: 0.25, depthTest: false });
+  private odorMaterial = new THREE.MeshBasicMaterial({ color: ODOR_COLOR, transparent: true, opacity: 0.3, depthTest: false });
   private brtMaterial = new THREE.MeshBasicMaterial({ color: BRT_COLOR, transparent: true, opacity: 0.8, depthTest: false });
   private invalidMaterial = new THREE.MeshBasicMaterial({ color: INVALID_COLOR, transparent: true, opacity: 0.6, depthTest: false });
 
@@ -42,7 +44,8 @@ export class GhostLayer {
       mesh.renderOrder = 10;
       this.root.add(mesh);
     }
-    if (ghost.range?.length) this.addRange(ghost.range);
+    if (ghost.odorRange?.length) this.addRange(ghost.odorRange, this.odorMaterial, 6);
+    if (ghost.range?.length) this.addRange(ghost.range, this.rangeMaterial, 7);
     if (!ghost.front) return;
     const arrow = new THREE.Mesh(this.arrowGeometry, ghost.valid && ghost.front.access === 'brt' ? this.brtMaterial : material);
     arrow.rotation.x = -Math.PI / 2;
@@ -52,11 +55,11 @@ export class GhostLayer {
     this.root.add(arrow);
   }
 
-  private addRange(range: readonly { x: number; y: number }[]): void {
-    const mesh = new THREE.InstancedMesh(this.tileGeometry, this.rangeMaterial, range.length);
+  private addRange(range: readonly { x: number; y: number }[], material: THREE.MeshBasicMaterial, renderOrder: number): void {
+    const mesh = new THREE.InstancedMesh(this.tileGeometry, material, range.length);
     const matrix = new THREE.Matrix4();
     range.forEach((tile, index) => mesh.setMatrixAt(index, matrix.makeRotationX(-Math.PI / 2).setPosition(tile.x + 0.5, 0.03, tile.y + 0.5)));
-    mesh.renderOrder = 7;
+    mesh.renderOrder = renderOrder;
     this.root.add(mesh);
   }
 
@@ -73,6 +76,7 @@ export class GhostLayer {
     this.disposeChildren();
     this.hintMaterial.dispose();
     this.rangeMaterial.dispose();
+    this.odorMaterial.dispose();
     this.tileGeometry.dispose();
     this.arrowGeometry.dispose();
     this.validMaterial.dispose();

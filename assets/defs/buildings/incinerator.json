@@ -1,0 +1,58 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "facility",
+  "section": "build.publicFacilities",
+  "cost": 6000,
+  "unlockCitizens": 1000,
+  "requiresRoad": true,
+  "name": {
+    "en": "Incinerator",
+    "fr": "Incinérateur"
+  },
+  "description": {
+    "en": "Burns the Waste of nearby Homes: square reach of {side} tiles, {tier1Capacity} Waste units a day, up to {maxTierCapacity} at Tier {tierCount}. Costs {tariff} Urbs per unit. Homes within {pollutionRadius} tiles lose some well-being, less than next to a coal plant, and burning creates emissions in proportion to the Waste burnt. Needs its own road; demand {power} power; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs to build.",
+    "fr": "Brûle les déchets des logements proches : portée carrée de {side} cases, {tier1Capacity} unités de déchets par jour, jusqu’à {maxTierCapacity} au niveau {tierCount}. Coûte {tariff} Urbs par unité. Les logements à moins de {pollutionRadius} cases perdent un peu de bien-être, moins qu’à côté d’une centrale à charbon, et la combustion génère des émissions proportionnelles aux déchets brûlés. Nécessite sa propre route; consomme {power} d’électricité ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs à construire."
+  },
+  "radius": 14,
+  "tiers": [
+    {
+      "model": "buildings-incinerator-2x2-t1",
+      "footprint": [2, 2],
+      "capacity": 800
+    },
+    {
+      "model": "buildings-incinerator-2x2-t2",
+      "capacity": 1500,
+      "upgradeCost": {
+        "urbs": 3000,
+        "goods": {}
+      }
+    },
+    {
+      "model": "buildings-incinerator-2x2-t3",
+      "capacity": 2500,
+      "upgradeCost": {
+        "urbs": 7000,
+        "goods": {}
+      }
+    },
+    {
+      "model": "buildings-incinerator-2x2-t4",
+      "capacity": 4000,
+      "upgradeCost": {
+        "urbs": 15000,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "waste",
+  "drawnToScale": true,
+  "power": 0,
+  "water": 0,
+  "waste": {
+    "tariff": 3,
+    "pollutionRadius": 4,
+    "pollutionMalus": 5,
+    "emissionsPerUnit": 0.05
+  }
+}

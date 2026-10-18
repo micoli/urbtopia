@@ -36,7 +36,8 @@ export function facilitiesOfCategory(category: ServiceCategory): FacilityType[] 
   return FACILITY_TYPES.filter(type => FACILITIES[type].category === category);
 }
 
-export type ServiceKey = FacilityType;
+// What a Home can lack: a Public facility, or Waste coverage, which any of the three Waste facilities gives.
+export type ServiceKey = FacilityType | 'waste';
 
 export const REQUIRED_SERVICES: Readonly<Record<number, readonly FacilityType[]>> = {
   3: ['school'],

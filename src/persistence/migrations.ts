@@ -1,3 +1,7 @@
+import { isHomeType } from '../core/buildings/buildingDefinitions';
+import { citizensOf } from '../core/buildings/city';
+import { WASTE } from '../core/waste/wasteBalance';
+
 export type MigrationStep = (state: unknown) => unknown;
 
 function toPerBuildingTier(state: unknown): unknown {
@@ -39,7 +43,15 @@ function finishTutorialsOfPlacedVenues(state: unknown): unknown {
   return placed.length === 0 ? state : { ...value, venueTutorials: Object.fromEntries(placed.map(type => [type, null])) };
 }
 
-export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state, 7: startServiceAdaptation, 8: state => ({ ...(state as object), seedStock: {}, fields: [] }), 9: state => state, 10: startServiceAdaptation, 11: state => state, 12: renameSiloToMaterialDepot, 13: state => ({ ...(state as object), tradeLedger: [] }), 14: finishTutorialsOfPlacedVenues };
+// A city already past the Citizen threshold gets an Adaptation period when Waste arrives.
+function startWasteAdaptation(state: unknown): unknown {
+  const value = state as { lastSeen: number; adaptationUntil?: number; buildings: { type: string; tier: number }[] };
+  const citizens = value.buildings.reduce((total, building) => total + (isHomeType(building.type) ? citizensOf(building.tier) : 0), 0);
+  if (citizens <= WASTE.adaptationCitizens) return state;
+  return { ...value, adaptationUntil: Math.max(value.adaptationUntil ?? 0, value.lastSeen + 24 * 3_600_000) };
+}
+
+export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state, 7: startServiceAdaptation, 8: state => ({ ...(state as object), seedStock: {}, fields: [] }), 9: state => state, 10: startServiceAdaptation, 11: state => state, 12: renameSiloToMaterialDepot, 13: state => ({ ...(state as object), tradeLedger: [] }), 14: finishTutorialsOfPlacedVenues, 15: startWasteAdaptation };
 
 export function migrate(state: unknown, fromVersion: number, toVersion: number, steps: Record<number, MigrationStep> = MIGRATIONS): unknown {
   let current = state;

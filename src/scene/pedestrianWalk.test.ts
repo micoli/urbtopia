@@ -57,5 +57,6 @@ describe('pedestrian walk', () => {
     expect(targetPedestrianCount({ people: 80, nodes: 9, touch: false })).toBe(3);
     expect(targetPedestrianCount({ people: 100000, nodes: 100000, touch: false })).toBe(100);
     expect(targetPedestrianCount({ people: 100000, nodes: 100000, touch: true })).toBe(50);
+    expect(targetPedestrianCount({ people: 100000, nodes: 100000, touch: false, max: 40 })).toBe(40);
   });
 });

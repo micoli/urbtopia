@@ -1,0 +1,8 @@
+{
+  "$schema": "../schemas/balance-waste.schema.json",
+  "unitsPerCitizenPerDay": 1,
+  "dayHours": 24,
+  "carryingDistance": 8,
+  "carriedSurcharge": 2,
+  "adaptationCitizens": 1000
+}

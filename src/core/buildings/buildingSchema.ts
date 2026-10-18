@@ -128,6 +128,16 @@ const batteryBuilding = z.strictObject({ kind: z.literal('battery'), ...placed, 
 // A Backup Power plant supplies deficits, up to its capacity per hour, at a cost in Urbs per unit.
 const backupBuilding = z.strictObject({ kind: z.literal('backup'), ...placed, capacity: positive, costPerUnit: positive });
 
+// What sets a Waste facility apart: the Urbs it charges per unit processed, the nuisance it gives nearby Homes (Odor of a Mound, smoke of an Incinerator) and the emissions per unit burnt per hour.
+const wasteTraits = z.strictObject({
+  tariff: positive,
+  odorRadius: z.int().min(1).optional(),
+  odorMalus: positive.optional(),
+  pollutionRadius: z.int().min(1).optional(),
+  pollutionMalus: positive.optional(),
+  emissionsPerUnit: positive.optional(),
+});
+
 // A Public facility serves the Homes within its radius (the whole city without one), up to the Citizen capacity of its Tier (unlimited without one).
 const facilityBuilding = z.strictObject({
   kind: z.literal('facility'),
@@ -144,7 +154,9 @@ const facilityBuilding = z.strictObject({
   water: count,
   // Only one can be built.
   unique: z.literal(true).optional(),
-  tiers: tiersOf({ ...homeLook, capacity: z.int().min(1) }, ['model', 'footprint']),
+  // Waste facilities only: the Waste units processed per day replace the Citizen capacity.
+  waste: wasteTraits.optional(),
+  tiers: tiersOf({ ...homeLook, capacity: z.int().min(1), power: count }, ['model', 'footprint']),
 });
 
 // The Casino: Stake steps, the Tier each Minigame opens at, and per Tier its reach, Well-being bonus, highest Stake, power and blockmatch level.

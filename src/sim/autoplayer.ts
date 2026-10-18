@@ -16,9 +16,8 @@ import {
   createBuilding,
   footprintTiles,
   isHomeInReach,
-  missingServices,
+  missingServicesOf,
   occupiedTiles,
-  serviceCoverage,
   tileKey,
   type FacilityType,
   isItemUnlocked,
@@ -163,9 +162,9 @@ const exhaustedSpots = new WeakMap<Player, Set<string>>();
 
 function provideService(player: Player, home: Building): boolean {
   const state = player.state();
-  const [missing] = missingServices(serviceCoverage(state), home, home.tier + 1);
+  const [missing] = missingServicesOf(state, home, home.tier + 1);
   if (!missing) return false;
-  const type: FacilityType = missing;
+  const type: FacilityType = missing === 'waste' ? 'mound' : missing;
   if (state.urbs < FACILITIES[type].cost) return false;
   const exhausted = exhaustedSpots.get(player) ?? new Set<string>();
   exhaustedSpots.set(player, exhausted);
@@ -300,7 +299,7 @@ function upgradeNext(player: Player, blocked: Set<number>): boolean {
 }
 
 function lacksServices(state: GameState, home: Building): boolean {
-  return missingServices(serviceCoverage(state), home, home.tier + 1).length > 0;
+  return missingServicesOf(state, home, home.tier + 1).length > 0;
 }
 
 function buySlots(player: Player): boolean {

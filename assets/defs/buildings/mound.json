@@ -1,0 +1,50 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "facility",
+  "section": "build.publicFacilities",
+  "cost": 2000,
+  "unlockCitizens": 800,
+  "requiresRoad": true,
+  "accessModes": ["road", "pedestrianWay"],
+  "name": {
+    "en": "Mound",
+    "fr": "Décharge"
+  },
+  "description": {
+    "en": "Takes the Waste of nearby Homes and never fills up: square reach of {side} tiles, {tier1Capacity} Waste units a day, up to {maxTierCapacity} at Tier {tierCount}. The cheapest way to process Waste ({tariff} Urbs per unit), but it smells: Homes within {odorRadius} tiles lose well-being, the worst Mound around a Home counting alone. A Home needs a road link to be collected; demand {power} power; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs to build.",
+    "fr": "Reçoit les déchets des logements proches et ne se remplit jamais : portée carrée de {side} cases, {tier1Capacity} unités de déchets par jour, jusqu’à {maxTierCapacity} au niveau {tierCount}. La façon la moins chère de traiter les déchets ({tariff} Urbs par unité), mais elle sent : les logements à moins de {odorRadius} cases perdent du bien-être, seule la pire décharge autour d’un logement compte. Un logement doit être relié par la route pour être collecté ; consomme {power} d’électricité ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs à construire."
+  },
+  "radius": 8,
+  "tiers": [
+    {
+      "model": "buildings-mound-1x1-t1",
+      "footprint": [1, 1],
+      "capacity": 60
+    },
+    {
+      "model": "buildings-mound-1x1-t2",
+      "capacity": 120,
+      "upgradeCost": {
+        "urbs": 1000,
+        "goods": {}
+      }
+    },
+    {
+      "model": "buildings-mound-1x1-t3",
+      "capacity": 200,
+      "upgradeCost": {
+        "urbs": 2500,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "waste",
+  "drawnToScale": true,
+  "power": 0,
+  "water": 0,
+  "waste": {
+    "tariff": 1,
+    "odorRadius": 12,
+    "odorMalus": 8
+  }
+}

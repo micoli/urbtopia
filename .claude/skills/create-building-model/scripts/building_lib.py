@@ -2126,6 +2126,205 @@ def build_coal(spec, out_dir):
     ob = lpm.finish(spec["id"], parts, palette, budget=3000, center=False)
     return export_model(ob, spec, out_dir)
 
+MOUND_HEAPS = {
+    1: ((0.0, 0.02, 0.38, 0.15),),
+    2: ((-0.17, 0.06, 0.31, 0.22), (0.19, -0.03, 0.28, 0.3)),
+    3: ((-0.19, 0.12, 0.29, 0.26), (0.2, 0.05, 0.28, 0.34), (-0.02, -0.12, 0.33, 0.42)),
+}
+MOUND_STRATA = (("udark", 0.45, 0.9), ("utrim", 0.35, 0.72), ("uwood", 0.2, 0.0))
+
+
+def mound_heap(parts, number, x, y, radius, height, shift):
+    """A faceted heap of three stacked layers; `shift` rotates the layer colors so neighbouring heaps differ."""
+    z = 0.0
+    layer_radius = radius
+    for layer, (name, share, top) in enumerate(MOUND_STRATA):
+        color = PALETTE_NAMES.index(MOUND_STRATA[(layer + shift) % 3][0])
+        layer_height = height * share
+        top_radius = radius * top if top else layer_radius * 0.55
+        parts.append(lpm.prism(f"heap_{number}_{layer}", 8, layer_radius, layer_height, at=(x, y, z), color=color, radius_top=top_radius))
+        z += layer_height
+        layer_radius = top_radius
+
+
+def mound_surface(radius, height, distance):
+    """Height of a heap of `mound_heap` at `distance` from its axis, or None outside it."""
+    z, layer_radius = 0.0, radius
+    for _, share, top in MOUND_STRATA:
+        layer_height = height * share
+        top_radius = radius * top if top else layer_radius * 0.55
+        if distance <= layer_radius and distance > top_radius:
+            return z + layer_height * (layer_radius - distance) / (layer_radius - top_radius)
+        z += layer_height
+        layer_radius = top_radius
+    return z if distance <= layer_radius else None
+
+
+MOUND_BAG = [(0.0, 0.0), (0.045, 0.0), (0.06, 0.035), (0.05, 0.075), (0.018, 0.1), (0.0, 0.108)]
+MOUND_LITTER = (
+    ("bag", 0.15, 0.5, "graphite"), ("tin", 0.9, 0.62, "coral"), ("can", 1.6, 0.4, "aqua"), ("bag", 2.3, 0.72, "bush"),
+    ("tin", 3.0, 0.35, "sun"), ("can", 3.7, 0.66, "utrim"), ("bag", 4.4, 0.45, "graphite"), ("tin", 5.1, 0.7, "tangerine"),
+    ("can", 5.8, 0.55, "coral"), ("tin", 0.5, 0.8, "utrim"), ("bag", 1.2, 0.85, "bush"), ("can", 2.8, 0.8, "sun"),
+)[:6]
+
+
+def mound_litter(parts, heap_number, x, y, radius, height):
+    """Garbage bags, tins and crushed cans lying on the surface of one heap."""
+    index = PALETTE_NAMES.index
+    for number, (kind, angle, share, color) in enumerate(MOUND_LITTER):
+        angle += heap_number * 0.9
+        distance = radius * share
+        z = mound_surface(radius, height, distance)
+        if z is None:
+            continue
+        px, py = x + distance * math.cos(angle), y + distance * math.sin(angle)
+        name = f"litter_{heap_number}_{number}"
+        if kind == "bag":
+            parts.append(lpm.lathe(name, MOUND_BAG, segments=7, at=(px, py, z - 0.012), color=index(color)))
+        elif kind == "tin":
+            parts.append(lpm.prism(name, 8, 0.024, 0.04, at=(px, py, z - 0.008), color=index(color)))
+        else:
+            parts.append(tilted_box(name, px, py, z - 0.004, 0.05, 0.034, 0.012, 20 + 8 * (number % 3), index(color)))
+            parts.append(lpm.prism(f"{name}_top", 6, 0.014, 0.012, at=(px + 0.03, py, z + 0.004), color=index(color)))
+
+
+def build_mound(spec, out_dir):
+    """A landfill mound straight on the ground: one to three faceted heaps of rubble in layers (the Tier is the count and height of the heaps), covered with garbage bags, tins and crushed cans, with planks and sacks lying around them."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    wood, white = index("uwood"), index("white")
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    tier = spec["count"]
+    parts = []
+    for number, (x, y, radius, height) in enumerate(MOUND_HEAPS[tier]):
+        mound_heap(parts, number, x, y, radius, height, number)
+        mound_litter(parts, number, x, y, radius, height)
+    for number, (x, y, angle) in enumerate(((-0.1, -0.34, 12), (0.05, -0.3, 22))[:tier]):
+        parts.append(tilted_box(f"plank_{number}", x, y, 0.0, 0.22, 0.045, 0.015, angle, wood))
+    for number, (x, y) in enumerate(((0.28, -0.22), (-0.34, -0.12), (0.34, 0.3))[:tier]):
+        parts.append(rounded_block(f"sack_{number}", 0.1, 0.07, 0.05, white, 0.3, at=(x, y, 0.0)))
+    ob = lpm.finish(spec["id"], parts, palette, budget=2500, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+INCINERATOR_STACK_HEIGHTS = (0.7, 1.0, 1.3, 1.6)
+
+
+def build_incinerator(spec, out_dir):
+    """A waste incinerator filling its 2x2 cell: a low rounded hall with a tipping door on a loading dock under a hazard band, a service door and framed windows, and one wide central chimney whose height is the Tier (0.7 to 1.6) and whose brick rings count the Tier. Orange and brick accents, a thin smoke plume."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    wall, dark, slab, trim, frame, glass, brick, orange, sun, smoke = (index(n) for n in ("uwall", "udark", "uslab", "utrim", "uframe", "glass_blue", "brick", "tangerine", "sun", "slate"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    tier = spec["count"]
+    cy, width, depth, height = 0.1, 1.9, 1.4, 0.42
+    front, back = cy - depth / 2, cy + depth / 2
+    parts = [rounded_block("hall", width, depth, height, wall, 0.03 / depth, at=(0, cy, 0))]
+    parts.append(rounded_block("hall_plinth", width + 0.01, depth + 0.01, 0.09, brick, 0.03 / depth, at=(0, cy, 0)))
+    parts.append(rounded_block("hall_band", width + 0.01, depth + 0.01, 0.07, brick, 0.03 / depth, at=(0, cy, height - 0.11)))
+    parts.append(lpm.box("hall_roof", (width + 0.04, depth + 0.04, 0.03), at=(0, cy, height), color=slab))
+    for name, size, at in (("front", (width + 0.04, 0.015, 0.03), (0, front - 0.02, height + 0.03)), ("back", (width + 0.04, 0.015, 0.03), (0, back + 0.02, height + 0.03)),
+                           ("left", (0.015, depth + 0.04, 0.03), (-width / 2 - 0.02, cy, height + 0.03)), ("right", (0.015, depth + 0.04, 0.03), (width / 2 + 0.02, cy, height + 0.03))):
+        parts.append(lpm.box(f"parapet_{name}", size, at=at, color=dark))
+    dock_x, dock_w = -0.4, 0.8
+    parts.append(lpm.box("dock", (dock_w + 0.1, 0.22, 0.04), at=(dock_x, front - 0.11, 0.0), color=trim))
+    parts.append(lpm.box("tipping_door", (dock_w, 0.014, 0.28), at=(dock_x, front - 0.004, 0.04), color=dark))
+    door_frame(parts, "tipping_door", dock_x, front, 0.04, dock_w, 0.28, frame)
+    for number in range(8):
+        parts.append(lpm.box(f"hazard_{number}", (dock_w / 8, 0.016, 0.04), at=(dock_x - dock_w / 2 + dock_w / 8 * (number + 0.5), front - 0.006, 0.34), color=sun if number % 2 == 0 else dark))
+    parts.append(lpm.box("service_door", (0.16, 0.014, 0.22), at=(0.45, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "service_door", 0.45, front, 0.0, 0.16, 0.22, frame)
+    parts.append(lpm.box("front_window", (0.22, 0.012, 0.1), at=(0.75, front - 0.003, 0.16), color=glass))
+    window_frame(parts, "front_window", 0.75, front, 0.16, 0.22, 0.1, frame)
+    for side, name in ((-1, "left"), (1, "right")):
+        x = side * (width / 2)
+        parts.append(lpm.box(f"{name}_window", (0.012, 0.3, 0.1), at=(x + side * 0.003 - 0.006, cy, 0.16), color=glass))
+        for edge, (dy, dz, sy, sz) in enumerate(((0.16, 0.0, 0.012, 0.124), (-0.16, 0.0, 0.012, 0.124), (0.0, 0.112, 0.34, 0.012), (0.0, -0.012, 0.34, 0.012))):
+            parts.append(lpm.box(f"{name}_window_frame_{edge}", (0.01, sy, sz), at=(x + side * 0.001 - 0.005, cy + dy, 0.16 + dz), color=frame))
+    for number, vx in enumerate((-0.7, 0.7)):
+        parts.append(lpm.prism(f"roof_vent_{number}", 6, 0.07, 0.07, at=(vx, back - 0.25, height + 0.03), color=trim))
+        parts.append(lpm.prism(f"roof_vent_cap_{number}", 6, 0.085, 0.015, at=(vx, back - 0.25, height + 0.1), color=dark))
+    base_top = height + 0.03 + 0.1
+    parts.append(rounded_block("flue_box", 0.92, 0.92, 0.1, slab, 0.2, at=(0, cy, height + 0.03)))
+    parts.append(rounded_block("flue_band", 0.93, 0.93, 0.03, orange, 0.2, at=(0, cy, height + 0.03 + 0.06)))
+    stack = INCINERATOR_STACK_HEIGHTS[tier - 1]
+    base_radius, top_radius = 0.37, 0.27
+    radius_at = lambda z: base_radius - (base_radius - top_radius) * z / stack
+    parts.append(lpm.prism("chimney", 12, base_radius, stack, at=(0, cy, base_top), color=wall, radius_top=top_radius))
+    for ring in range(tier):
+        level = stack - 0.1 - 0.13 * ring
+        parts.append(lpm.prism(f"chimney_ring_{ring}", 12, radius_at(level) + 0.012, 0.06, at=(0, cy, base_top + level), color=brick))
+    parts.append(lpm.prism("chimney_cap", 12, top_radius + 0.02, 0.025, at=(0, cy, base_top + stack), color=dark))
+    for number, (radius, rise, drift) in enumerate(((0.12, 0.03, 0.0), (0.15, 0.2, 0.06))):
+        puff = [(0.0, 0.0), (radius, 0.02), (radius * 1.1, 0.07), (radius * 0.8, 0.12), (0.0, 0.14)]
+        parts.append(lpm.lathe(f"smoke_{number}", puff, segments=8, at=(drift, cy, base_top + stack + 0.02 + rise), color=smoke))
+    ob = lpm.finish(spec["id"], parts, palette, budget=3500, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+RECYCLING_BINS = (("sky", -0.5), ("sun", -0.1), ("lime", 0.3), ("utrim", 0.7))
+
+
+def build_recycling(spec, out_dir):
+    """A recycling plant filling its 3x2 cell: a long low hall with a mint band and a sawtooth roof of blue skylights, a ribbed sliding door, a service door and a "RECYCLING" lettering on the front, a rack-and-pinion style distribution ramp (two rails and regular cleats) climbing to an intake opening, and a row of sorting bins in the yard, one more per Tier (one to four)."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    wall, dark, slab, trim, frame, glass, mint, graphite = (index(n) for n in ("uwall", "udark", "uslab", "utrim", "uframe", "glass_blue", "uroof", "graphite"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    tier = spec["count"]
+    width, depth, height = 2.9, 1.05, 0.5
+    cy = 0.425
+    front, back = cy - depth / 2, cy + depth / 2
+    parts = [rounded_block("hall", width, depth, height, wall, 0.03 / depth, at=(0, cy, 0))]
+    parts.append(rounded_block("hall_band", width + 0.01, depth + 0.01, 0.06, mint, 0.03 / depth, at=(0, cy, height - 0.07)))
+    parts.append(lpm.box("hall_roof", (width + 0.04, depth + 0.04, 0.03), at=(0, cy, height), color=slab))
+    teeth, tooth_depth, tooth_rise = 3, (depth - 0.04) / 3, 0.18
+    for number in range(teeth):
+        ya = front + 0.02 + number * tooth_depth
+        parts.append(extrude_x(f"sawtooth_{number}", [(ya, height + 0.03), (ya + tooth_depth, height + 0.03), (ya, height + 0.03 + tooth_rise)], -width / 2 + 0.1, width / 2 - 0.1, slab))
+        parts.append(lpm.box(f"skylight_{number}", (width - 0.3, 0.008, tooth_rise - 0.03), at=(0, ya - 0.006, height + 0.045), color=glass))
+    door_x, door_w = -0.95, 0.6
+    parts.append(lpm.box("sliding_door", (door_w, 0.014, 0.3), at=(door_x, front - 0.004, 0.0), color=dark))
+    for number in range(5):
+        parts.append(lpm.box(f"door_rib_{number}", (door_w - 0.04, 0.018, 0.012), at=(door_x, front - 0.007, 0.04 + 0.055 * number), color=trim))
+    door_frame(parts, "sliding_door", door_x, front, 0.0, door_w, 0.3, frame)
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "RECYCLING", 0.0, 0.34, 0.07, graphite, -(front - 0.002)))
+    side_x = width / 2
+    parts.append(lpm.box("service_door", (0.014, 0.16, 0.24), at=(side_x + 0.004, cy, 0.0), color=dark))
+    for edge, (dy, sy, sz, dz) in enumerate(((0.092, 0.012, 0.252, 0.0), (-0.092, 0.012, 0.252, 0.0), (0.0, 0.176, 0.012, 0.24))):
+        parts.append(lpm.box(f"service_door_frame_{edge}", (0.01, sy, sz), at=(side_x + 0.005, cy + dy, dz), color=frame))
+    ramp_x, ramp_w = 1.2, 0.26
+    y0, z0 = front - 0.8, 0.02
+    run, rise = 0.8, 0.32
+    tilt = math.degrees(math.atan2(rise, run))
+    length = math.hypot(run, rise)
+    parts.append(lpm.box("intake", (0.3, 0.014, 0.12), at=(ramp_x, front - 0.004, 0.3), color=dark))
+    door_frame(parts, "intake", ramp_x, front, 0.3, 0.3, 0.12, frame)
+    parts.append(tilted_box("ramp_bed", ramp_x, y0 + run / 2, z0, ramp_w, length, 0.02, tilt, trim))
+    for side in (-1, 1):
+        parts.append(tilted_box(f"ramp_rail_{side}", ramp_x + side * (ramp_w / 2 + 0.01), y0 + run / 2, z0, 0.02, length, 0.05, tilt, frame))
+    step = 0.06
+    for number in range(int(length / step) - 1):
+        along = step * (number + 1)
+        parts.append(tilted_box(f"ramp_cleat_{number}", ramp_x, y0 + along * math.cos(math.radians(tilt)), z0 + 0.02 + along * math.sin(math.radians(tilt)), ramp_w - 0.02, 0.022, 0.014, tilt, dark))
+    for number, fraction in enumerate((0.2, 0.55, 0.9)):
+        top = z0 + rise * fraction
+        parts.append(lpm.box(f"ramp_leg_{number}", (0.03, 0.03, top), at=(ramp_x + ramp_w / 2 + 0.01, y0 + run * fraction, 0.0), color=dark))
+        parts.append(lpm.box(f"ramp_leg_b_{number}", (0.03, 0.03, top), at=(ramp_x - ramp_w / 2 - 0.01, y0 + run * fraction, 0.0), color=dark))
+    for number, (color, x) in enumerate(RECYCLING_BINS[:tier]):
+        parts.append(rounded_block(f"bin_{number}", 0.3, 0.34, 0.26, index(color), 0.2, at=(x, front - 0.45, 0.0)))
+        parts.append(rounded_block(f"bin_lid_{number}", 0.32, 0.36, 0.035, dark, 0.2, at=(x, front - 0.45, 0.26)))
+    ob = lpm.finish(spec["id"], parts, palette, budget=4000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def door_frame(parts, name, cx, y, bottom, width, height, color, thick=0.012):
     """Thin surround on the left, right and top of a door; `y` is the wall plane (front, -Y)."""
     parts.append(lpm.box(f"{name}_frame_left", (thick, 0.01, height + thick), at=(cx - width / 2 - thick / 2, y - 0.004, bottom), color=color))

@@ -69,3 +69,18 @@ export const sanctionsBalanceSchema = z
     return previous === undefined || difficulties[previous].factors.every(factor => difficulties[id].factors.includes(factor));
   }), { path: ['difficulties'], message: 'each Difficulty must sanction at least what the one before it does' })
   .meta({ title: 'Sanctions balance', description: 'assets/defs/balance/sanctions.json: what each Difficulty sanctions, and how hard.' });
+
+// How much Waste Citizens produce and how far a Pedestrian way carries it; the facilities themselves are building definitions.
+export const wasteBalanceSchema = z
+  .strictObject({
+    ...schemaField,
+    unitsPerCitizenPerDay: positive,
+    dayHours: positive,
+    // Longest walk along the Pedestrian path network from a Home to a Road a facility is linked to.
+    carryingDistance: z.int().min(1),
+    // Multiplier on the tariff for a Home served through the Carrying distance.
+    carriedSurcharge: z.number().min(1),
+    // A saved city with more Citizens than this gets an Adaptation period when Waste arrives.
+    adaptationCitizens: count,
+  })
+  .meta({ title: 'Waste balance', description: 'assets/defs/balance/waste.json: Waste production, Carrying distance.' });

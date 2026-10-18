@@ -1,0 +1,57 @@
+const texts = {
+  'codex.waste.title': ['Waste', 'Déchets'],
+  'codex.waste.intro': ['Every Home produces Waste in proportion to its Citizens. Facilities process it each day against a cost in Urbs, from the cleanest to the dirtiest: Recycling plant, Incinerator, then Mound. A Home is covered when a facility reaches it, has capacity left and is joined to it by Road.', 'Chaque Home produit des déchets en proportion de ses habitants. Les installations les traitent chaque jour contre un coût en Urbs, de la plus propre à la plus sale : Usine de recyclage, Incinérateur, puis Décharge. Un Home est couvert quand une installation le couvre, a encore de la capacité et lui est reliée par la route.'],
+  'codex.waste.production': ['Production', 'Production'],
+  'codex.waste.citizens': ['Citizens', 'Habitants'],
+  'codex.waste.rate': ['Waste per Citizen per day', 'Déchets par habitant et par jour'],
+  'codex.waste.produced': ['Waste produced per day', 'Déchets produits par jour'],
+  'codex.waste.processed': ['Waste processed per day', 'Déchets traités par jour'],
+  'codex.waste.notCovered': ['Homes not covered', 'Homes non couverts'],
+  'codex.waste.notRequired': ['The city is below {citizens} Citizens: Waste is not required yet.', 'La ville a moins de {citizens} habitants : les déchets ne sont pas encore requis.'],
+  'codex.waste.allocation': ['Allocation, clean to dirty', 'Répartition, du propre au sale'],
+  'codex.waste.facility': ['Facility', 'Installation'],
+  'codex.waste.buildings': ['Buildings', 'Bâtiments'],
+  'codex.waste.capacity': ['Capacity per day', 'Capacité par jour'],
+  'codex.waste.usage': ['Processed per day', 'Traité par jour'],
+  'codex.waste.cost': ['Cost per day', 'Coût par jour'],
+  'codex.waste.state': ['State', 'État'],
+  'codex.waste.running': ['Running', 'En service'],
+  'codex.waste.none': ['None built', 'Aucun construit'],
+  'codex.waste.stopped.noUrbs': ['Stopped: no Urbs', 'À l’arrêt : plus d’Urbs'],
+  'codex.waste.stopped.powerShortage': ['Stopped: power shortage', 'À l’arrêt : pénurie d’électricité'],
+  'codex.waste.coverage': ['Coverage', 'Couverture'],
+  'codex.waste.covered': ['Covered Homes: {covered} of {homes}', 'Homes couverts : {covered} sur {homes}'],
+  'codex.waste.noUncovered': ['Every Home is covered.', 'Tous les Homes sont couverts.'],
+  'codex.waste.cause': ['Cause', 'Cause'],
+  'codex.waste.homes': ['Homes', 'Homes'],
+  'codex.waste.pedestrian': ['Pedestrian zones', 'Zones piétonnes'],
+  'codex.waste.pedestrianHelp': ['A Home reached only by Pedestrian ways is covered when its Pedestrian path network touches a linked Road within the Carrying distance. Its Waste costs more.', 'Un Home desservi uniquement par des voies piétonnes est couvert quand son réseau piéton touche une route reliée dans la distance de portage. Ses déchets coûtent plus cher.'],
+  'codex.waste.carryingDistance': ['Carrying distance (tiles)', 'Distance de portage (cases)'],
+  'codex.waste.surcharge': ['Tariff multiplier', 'Multiplicateur du tarif'],
+  'codex.waste.carriedHomes': ['Homes concerned', 'Homes concernés'],
+  'codex.waste.nuisances': ['Nuisances', 'Nuisances'],
+  'codex.waste.malus': ['Well-being malus', 'Malus de bien-être'],
+  'codex.waste.pollutionRadius': ['Pollution radius (tiles)', 'Rayon de pollution (cases)'],
+  'codex.waste.emissions': ['Climate emissions per hour', 'Émissions climatiques par heure'],
+  'codex.waste.odorRadius': ['Odor radius (tiles)', 'Rayon d’odeur (cases)'],
+  'codex.waste.homesAffected': ['Homes affected', 'Homes touchés'],
+  'codex.waste.odorNote': ['Odor never adds up: a Home bears the worst Mound around it.', 'Les odeurs ne s’additionnent pas : un Home subit la pire Décharge autour de lui.'],
+  'codex.waste.sanction': ['Sanction', 'Sanction'],
+  'codex.waste.sanctionHelp': ['From Easy, a Home that must be covered and is not pays less Tax. Cozy has no Sanction.', 'Dès Facile, un Home qui doit être couvert et ne l’est pas paie moins d’impôts. Cozy n’a aucune Sanction.'],
+  'codex.waste.difficulty': ['Difficulty', 'Difficulté'],
+  'codex.waste.sanctioned': ['Waste sanctioned', 'Déchets sanctionnés'],
+  'codex.waste.taxFloor': ['Tax kept at worst', 'Impôts conservés au pire'],
+  'codex.waste.adapting': ['Adaptation period: no Sanction for {hours} more hours.', 'Période d’adaptation : aucune Sanction pendant encore {hours} heures.'],
+  'codex.waste.total': ['Total cost', 'Coût total'],
+  'codex.waste.totalPerDay': ['Total cost per day', 'Coût total par jour'],
+  'codex.waste.surchargeCost': ['Of which due to the surcharge', 'Dont dû à la majoration'],
+  'codex.waste.surchargeShare': ['Share due to the surcharge', 'Part due à la majoration'],
+} as const;
+
+export type WasteCodexMessageKey = keyof typeof texts;
+
+export function wasteCodexMessages(language: 'en' | 'fr'): Record<WasteCodexMessageKey, string> {
+  const index = language === 'en' ? 0 : 1;
+  const entries = Object.entries(texts).map(([key, pair]) => [key, pair[index]]);
+  return Object.fromEntries(entries) as Record<WasteCodexMessageKey, string>;
+}

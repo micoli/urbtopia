@@ -1,10 +1,10 @@
-import { SERVICE_VEHICLE_ENTRIES, frontTiles, hashSeed, isFacilityType, nextRandom, serviceCoverage, tileKey, type Building, type Coord, type FacilityType, type GameState, isHomeType } from '../core';
+import { SERVICE_VEHICLE_ENTRIES, frontTiles, hashSeed, isFacilityType, nextRandom, serviceCoverage, tileKey, wasteKindOf, wasteReport, type Building, type Coord, type FacilityType, type GameState, isHomeType } from '../core';
 import { modelFileOf } from '../core/models/modelFiles';
 import { neighboursOf, type RoadGraph } from './roadGraph';
 
 export const SERVICE_VEHICLE_MODELS: Readonly<Record<string, string>> = Object.fromEntries(SERVICE_VEHICLE_ENTRIES.map(({ facility, model }) => [facility, modelFileOf(model)]));
 
-export type ServiceVehicleFacility = FacilityType;
+export type ServiceVehicleFacility = FacilityType | 'incinerator' | 'recyclingPlant';
 
 export function sendsServiceVehicles(type: string): type is ServiceVehicleFacility {
   return Object.hasOwn(SERVICE_VEHICLE_MODELS, type);
@@ -44,15 +44,29 @@ function pathTo(previous: ReadonlyMap<string, Coord | null>, end: Coord): Coord[
   return path;
 }
 
-export function planServiceTrip(state: GameState, graphs: readonly RoadGraph[], facility: Building, tripIndex: number): Coord[] | null {
-  if (!isFacilityType(facility.type)) return null;
+function coveredHomes(state: GameState, facility: Building): Building[] {
+  if (wasteKindOf(facility.type)) {
+    const { homes } = wasteReport(state);
+    return state.buildings.filter((building) => isHomeType(building.type) && homes.get(building.id)?.facilityId === facility.id);
+  }
+  if (!isFacilityType(facility.type)) return [];
   const coverage = serviceCoverage(state);
-  const homes = state.buildings.filter((building) => isHomeType(building.type) && coverage.get(building.id)?.has(facility.type as never));
+  return state.buildings.filter((building) => isHomeType(building.type) && coverage.get(building.id)?.has(facility.type as never));
+}
+
+// Garbage trucks drive on the Road network only, the first graph.
+function networksOf(facility: Building, graphs: readonly RoadGraph[]): readonly RoadGraph[] {
+  return wasteKindOf(facility.type) ? graphs.slice(0, 1) : graphs;
+}
+
+export function planServiceTrip(state: GameState, graphs: readonly RoadGraph[], facility: Building, tripIndex: number): Coord[] | null {
+  if (!sendsServiceVehicles(facility.type)) return null;
+  const homes = coveredHomes(state, facility);
   if (!homes.length) return null;
   const first = Math.floor(nextRandom(hashSeed(`${state.seed}:trip:${facility.id}:${tripIndex}`)).value * homes.length);
   for (let offset = 0; offset < homes.length; offset++) {
     const home = homes[(first + offset) % homes.length]!;
-    for (const graph of graphs) {
+    for (const graph of networksOf(facility, graphs)) {
       const starts = roadTilesInFront(graph, facility);
       if (!starts.length) continue;
       const path = shortestPath(graph, starts, roadTilesInFront(graph, home));
