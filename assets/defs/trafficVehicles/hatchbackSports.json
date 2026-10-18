@@ -2,9 +2,9 @@
   "$schema": "../schemas/traffic-vehicle.schema.json",
   "kind": "trafficVehicle",
   "name": {
-    "en": "Sports hatchback",
-    "fr": "Compacte sportive"
+    "en": "Hatchback",
+    "fr": "Compacte"
   },
-  "model": "cars-hatchback-sports",
+  "model": "vehicles-hatchback",
   "weight": 1
 }

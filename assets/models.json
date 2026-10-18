@@ -5224,61 +5224,6 @@
       }
     }
   },
-  "cars-ambulance": {
-    "file": "cars/ambulance",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-firetruck": {
-    "file": "cars/firetruck",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-garbage-truck": {
-    "file": "cars/garbage-truck",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-hatchback-sports": {
-    "file": "cars/hatchback-sports",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-police": {
-    "file": "cars/police",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-sedan": {
-    "file": "cars/sedan",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-sedan-sports": {
-    "file": "cars/sedan-sports",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-suv": {
-    "file": "cars/suv",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-suv-luxury": {
-    "file": "cars/suv-luxury",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-taxi": {
-    "file": "cars/taxi",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "cars-van": {
-    "file": "cars/van",
-    "source": "kenney",
-    "license": "CC0"
-  },
   "commercial-building-e": {
     "file": "commercial/building-e",
     "source": "kenney",
@@ -8916,6 +8861,66 @@
     "file": "trains/train-locomotive-passenger-a",
     "source": "kenney",
     "license": "CC0"
+  },
+  "vehicles-ambulance": {
+    "file": "vehicles/ambulance",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-city-car": {
+    "file": "vehicles/city-car",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-firetruck": {
+    "file": "vehicles/firetruck",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-garbage-truck": {
+    "file": "vehicles/garbage-truck",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-hatchback": {
+    "file": "vehicles/hatchback",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-pickup": {
+    "file": "vehicles/pickup",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-police": {
+    "file": "vehicles/police",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-recycling-truck": {
+    "file": "vehicles/recycling-truck",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-sedan": {
+    "file": "vehicles/sedan",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-sedan-sports": {
+    "file": "vehicles/sedan-sports",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-suv": {
+    "file": "vehicles/suv",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-wagon": {
+    "file": "vehicles/wagon",
+    "source": "managed",
+    "license": "Own work"
   },
   "venue-roller-coaster-4x6-7f": {
     "file": "venue/roller-coaster-4x6-7f",

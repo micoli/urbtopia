@@ -5,6 +5,6 @@
     "en": "Taxi",
     "fr": "Taxi"
   },
-  "model": "cars-taxi",
+  "model": "vehicles-city-car",
   "weight": 1
 }

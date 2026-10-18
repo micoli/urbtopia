@@ -119,8 +119,8 @@ describe('Service vehicle trips', () => {
       expect(planServiceTrip(state, graphs(state), incinerator, 0)).toBeNull();
     });
 
-    it('shares the Service vehicle models with the other facilities', () => {
-      expect(SERVICE_VEHICLE_MODELS.incinerator).toBe(SERVICE_VEHICLE_MODELS.recyclingPlant);
+    it('gives each facility its own Service vehicle model', () => {
+      expect(SERVICE_VEHICLE_MODELS.incinerator).not.toBe(SERVICE_VEHICLE_MODELS.recyclingPlant);
       expect(SERVICE_VEHICLE_MODELS.incinerator).not.toBe(SERVICE_VEHICLE_MODELS.hospital);
     });
   });

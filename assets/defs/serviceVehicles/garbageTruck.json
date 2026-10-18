@@ -2,7 +2,7 @@
   "$schema": "../schemas/service-vehicle.schema.json",
   "kind": "serviceVehicle",
   "facility": "incinerator",
-  "model": "cars-garbage-truck",
+  "model": "vehicles-garbage-truck",
   "name": {
     "en": "Garbage truck",
     "fr": "Camion-poubelle"

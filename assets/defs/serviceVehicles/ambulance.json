@@ -2,7 +2,7 @@
   "$schema": "../schemas/service-vehicle.schema.json",
   "kind": "serviceVehicle",
   "facility": "hospital",
-  "model": "cars-ambulance",
+  "model": "vehicles-ambulance",
   "name": {
     "en": "Ambulance",
     "fr": "Ambulance"
