@@ -28,6 +28,7 @@ import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
 import { withStartingCity } from './newGame';
 import { tutorialAllows, tutorialSkipMs } from '../progression/tutorial';
+import { replayVenueTutorial, skipVenueTutorial, type VenueTutorialType } from '../progression/venueTutorial';
 import { isAdjacentToOwned, isInsideMap, isOwned, parcelPrice } from '../map/parcels';
 import { FACILITIES, isFacilityType } from '../services/facilities';
 import { missingServices, serviceCoverage } from '../services/services';
@@ -134,7 +135,9 @@ export type Command =
   | { readonly type: 'ChallengeClear' }
   | { readonly type: 'SkipTime'; readonly hours: number }
   | { readonly type: 'SkipTutorialStep' }
-  | { readonly type: 'SkipTutorial' };
+  | { readonly type: 'SkipTutorial' }
+  | { readonly type: 'SkipVenueTutorial'; readonly venueType: VenueTutorialType }
+  | { readonly type: 'ReplayVenueTutorial'; readonly venueType: VenueTutorialType };
 
 export type ErrorKey =
   | 'error.unknownCommand'
@@ -401,6 +404,10 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return skipTutorialStep(state, now);
     case 'SkipTutorial':
       return skipTutorial(state);
+    case 'SkipVenueTutorial':
+      return { state: skipVenueTutorial(state, command.venueType), events: [] };
+    case 'ReplayVenueTutorial':
+      return { state: replayVenueTutorial(state, command.venueType), events: [] };
     default:
       return fail('error.unknownCommand');
   }

@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -49,6 +49,7 @@ function isVenueData(value: unknown): boolean {
     isInt(value.nextFixtureId, 1) &&
     isNonNegative(value.takings) &&
     (value.earned === undefined || isNonNegative(value.earned)) &&
+    (value.collected === undefined || isNonNegative(value.collected)) &&
     (value.price === undefined || isInt(value.price, 1, 20)) &&
     (value.rng === undefined || isNumber(value.rng)) &&
     (value.reputation === undefined || (isNumber(value.reputation) && value.reputation >= 0 && value.reputation <= 100)) &&
@@ -158,6 +159,7 @@ export function validateGameState(value: unknown): GameState | null {
     (value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep)) &&
     isArrayOf(value.tradeLedger, isTradeLedgerEntry);
   if (!valid) return null;
+  if (value.venueTutorials !== undefined && !(isRecord(value.venueTutorials) && Object.entries(value.venueTutorials).every(([type, step]) => (VENUE_TUTORIAL_TYPES as string[]).includes(type) && (step === null || isVenueTutorialStep(type, step))))) return null;
   if (value.solidarityMs !== undefined && (!isNonNegative(value.solidarityMs) || value.solidarityMs > 24 * 3_600_000)) return null;
   if (value.donations !== undefined && !isArrayOf(value.donations, donation => isRecord(donation) && typeof donation.id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(donation.id) && isInt(donation.value, 1) && (donation.accountId === undefined || typeof donation.accountId === 'string'))) return null;
   if (Array.isArray(value.donations) && new Set((value.donations as { id: string }[]).map(donation => donation.id)).size !== value.donations.length) return null;

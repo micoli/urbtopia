@@ -90,7 +90,8 @@ describe('Venue save', () => {
 
   it('recovers fractional goods returned by the previous shelf removal', () => {
     const state = { ...base, storage: { materials: {}, goods: { planks: 95.5 } } };
-    const loaded = parseEnvelope(serializeEnvelope(state, 0));
+    const version14 = serializeEnvelope(state, 0).replace(/"version":\d+/, '"version":14');
+    const loaded = parseEnvelope(version14);
     expect(loaded.ok).toBe(true);
     if (!loaded.ok) return;
     expect(loaded.state.storage.goods.planks).toBe(95);

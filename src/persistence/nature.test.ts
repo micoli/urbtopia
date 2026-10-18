@@ -2,14 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { createBuilding, greenBenefits, NATURE_TYPES, newGame } from '../core';
 import saveV6 from './fixtures/save-v6.json';
 import saveV7 from './fixtures/save-v7.json';
-import { parseEnvelope, serializeEnvelope } from './envelope';
+import { CURRENT_VERSION, parseEnvelope, serializeEnvelope } from './envelope';
 
 describe('nature save compatibility', () => {
   it('migrates a frozen version-6 city without changing its buildings or economy', () => {
     const loaded = parseEnvelope(JSON.stringify(saveV6));
     expect(loaded).toEqual({ ok: true, state: { ...saveV6.state, seedStock: {}, fields: [], tradeLedger: [], adaptationUntil: saveV6.state.lastSeen + 24 * 3_600_000 }, savedAt: saveV6.savedAt });
     if (!loaded.ok) return;
-    expect(JSON.parse(serializeEnvelope(loaded.state, loaded.savedAt)).version).toBe(14);
+    expect(JSON.parse(serializeEnvelope(loaded.state, loaded.savedAt)).version).toBe(CURRENT_VERSION);
     expect(parseEnvelope(serializeEnvelope(loaded.state, loaded.savedAt), { currentVersion: 7 })).toEqual({ ok: false, reason: 'newer-version' });
   });
 

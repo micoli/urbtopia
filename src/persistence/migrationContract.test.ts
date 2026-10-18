@@ -9,7 +9,7 @@ const versions = Array.from({ length: CURRENT_VERSION }, (_, index) => index + 1
 
 // Update this snapshot together with CURRENT_VERSION: a schema change needs a migration and a new frozen fixture.
 const SCHEMA_SNAPSHOT = {
-  version: 14,
+  version: 15,
   keys: [
     'adaptationUntil', 'brtRoads', 'buildings', 'busLines', 'casinoRng', 'fields', 'lastSeen', 'market', 'marketUnlocked', 'nextId',
     'ownedParcels', 'rails', 'rngState', 'roads', 'roundabouts', 'seed', 'seedStock', 'storage', 'tradeLedger', 'transitFleet', 'transitLines', 'tutorial', 'urbs',
@@ -44,6 +44,18 @@ describe('save migration contract', () => {
     const loaded = parseEnvelope(JSON.stringify(v13));
     if (!loaded.ok) throw new Error(loaded.reason);
     expect(loaded.state).toEqual({ ...v13.state, tradeLedger: [] });
+  });
+
+  it('marks the Venue tutorial of a Venue already placed in a version-14 city as finished, and adds none otherwise', () => {
+    const v14 = JSON.parse(fixtureText(14));
+    const withoutVenue = parseEnvelope(JSON.stringify(v14));
+    if (!withoutVenue.ok) throw new Error(withoutVenue.reason);
+    expect(withoutVenue.state.venueTutorials).toBeUndefined();
+
+    const arcade = { ...v14.state.buildings[0], id: 9, type: 'arcade', x: 60, y: 50, venue: { fixtures: [], nextFixtureId: 1, takings: 0 } };
+    const withArcade = parseEnvelope(JSON.stringify({ ...v14, state: { ...v14.state, buildings: [...v14.state.buildings, arcade] } }));
+    if (!withArcade.ok) throw new Error(withArcade.reason);
+    expect(withArcade.state.venueTutorials).toEqual({ arcade: null });
   });
 
   it('keeps a trade ledger across a round trip and refuses a damaged one', () => {

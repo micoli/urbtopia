@@ -73,6 +73,8 @@ export type { BuildingUnlock } from './progression/unlocks';
 export type { Unlock } from './progression/unlocks';
 export { TUTORIAL_STEPS, tutorialAllows, tutorialSkipMs } from './progression/tutorial';
 export type { TutorialStep } from './progression/tutorial';
+export { VENUE_TUTORIAL_TYPES, canReplayVenueTutorial, hasVenueTutorial, isVenueStepDone, isVenueTutorialStep, progressVenueTutorials, stepsOfVenueTutorial } from './progression/venueTutorial';
+export type { VenueTutorialStep, VenueTutorialType } from './progression/venueTutorial';
 
 export { ECOLOGY, ECOLOGY_UNLOCKS, distance as buildingDistance, homePower, economicPower, greenSpaceCoverage, greenBenefits, cityGreenBenefits } from './environment/ecology';
 export { energyStats, generatorCapacity, generatorFactor, generatorOutput, productionFactors } from './environment/energy';

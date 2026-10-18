@@ -14,6 +14,7 @@ import { advanceProduction, shiftRunningTimers } from '../economy/production';
 import type { Building, GameState } from './state';
 import { advanceVenues, venueBoundaries } from '../venues/venues';
 import { progressTutorial } from '../progression/tutorial';
+import { progressVenueTutorials } from '../progression/venueTutorial';
 import { isHomeType } from '../buildings/buildingDefinitions';
 
 export interface AdvanceResult {
@@ -102,7 +103,7 @@ function replay(state: GameState, until: number): AdvanceResult {
       buildings: withVenues.buildings.map(b => updateBattery(b, energy.batteryRates.get(b.id) ?? 0, batteryEnds.get(b.id), end, elapsed))
     };
   }
-  return { state: progressTutorial(current), events };
+  return { state: progressVenueTutorials(progressTutorial(current)), events };
 }
 
 function updateBattery(building: Building, rate: number, boundary: number | undefined, now: number, elapsedMs: number): Building {

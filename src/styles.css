@@ -1179,7 +1179,7 @@ textarea {
   border-radius: 12px;
   background: var(--panel-bg);
   color: var(--panel-fg);
-  z-index: 15;
+  z-index: 26;
 }
 
 .tutorial-banner header {

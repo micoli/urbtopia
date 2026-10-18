@@ -83,7 +83,7 @@ export function createGameStore(initial: GameState) {
       set({ state: result.state, lastChange: 'tick' });
     },
     replaceState: (state, change = 'reset') => set({ state, deletionUndo: null, lastError: null, lastChange: change }),
-    newGame: (now, difficulty) => set({ state: newGame({ now, tutorial: !bypassTutorial, difficulty }), deletionUndo: null, lastError: null, lastChange: 'reset' }),
+    newGame: (now, difficulty) => set({ state: newGame({ now, tutorial: !bypassTutorial, venueTutorials: !bypassTutorial, difficulty }), deletionUndo: null, lastError: null, lastChange: 'reset' }),
   }));
 }
 
@@ -93,7 +93,7 @@ const bypassTutorial = isBypassTutorialRequested(window.location.search);
 export const bootResult: LoadResult = isSimulation ? { kind: 'none' } : saveSession.load();
 
 const startedAt = Date.now();
-const freshGame = () => newGame({ now: startedAt, tutorial: !isSimulation && !bypassTutorial });
+const freshGame = () => newGame({ now: startedAt, tutorial: !isSimulation && !bypassTutorial, venueTutorials: !bypassTutorial });
 const initialState = bootResult.kind === 'loaded' ? bootResult.state : freshGame();
 
 export const gameStore = createGameStore(initialState);

@@ -240,7 +240,7 @@ export function collectTakings(state: GameState, building: Building & { venue: V
     state: {
       ...state,
       urbs: state.urbs + due,
-      buildings: state.buildings.map(candidate => candidate === building ? { ...building, venue: { ...building.venue, takings: building.venue.takings - due } } : candidate),
+      buildings: state.buildings.map(candidate => candidate === building ? { ...building, venue: { ...building.venue, takings: building.venue.takings - due, collected: (building.venue.collected ?? 0) + due } } : candidate),
     },
     events: [{ type: 'ItemsCollected', buildingId: building.id }],
   };

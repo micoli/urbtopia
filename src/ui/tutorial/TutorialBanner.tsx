@@ -1,82 +1,38 @@
-import { useRef, useState, type PointerEvent } from 'react';
 import { TUTORIAL_STEPS, tutorialSkipMs } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
-import { clampToViewport } from '../layout/clampToViewport';
 import { useGame, useUi } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
-import { ButtonRow } from '../common/ButtonRow';
-import { InlineConfirm } from '../common/InlineConfirm';
-import { TutorialText } from './TutorialText';
-
-interface Position {
-  x: number;
-  y: number;
-}
+import { TutorialBannerFrame } from './TutorialBannerFrame';
+import { VenueTutorialBanner } from './VenueTutorialBanner';
 
 export function TutorialBanner() {
   const state = useGame((store) => store.state);
   const settingsOpen = useUi(store => store.settingsOpen);
   const codexOpen = useUi(store => store.codexOpen);
-  const [confirming, setConfirming] = useState(false);
-  const [position, setPosition] = useState<Position | null>(null);
-  const banner = useRef<HTMLElement>(null);
-  const grab = useRef<Position | null>(null);
   const step = state.tutorial;
-  if (step === null || settingsOpen || codexOpen) return null;
+  if (settingsOpen || codexOpen) return null;
+  if (step === null) return <VenueTutorialBanner />;
 
   const send = gameStore.getState().send;
   const canSkipTime = tutorialSkipMs(state, state.lastSeen) !== null;
   const challengeRunning = state.challenge !== undefined;
-  const skipTutorial = () => {
-    setConfirming(false);
-    send({ type: 'SkipTutorial' });
-  };
-
-  const startDrag = (event: PointerEvent<HTMLElement>) => {
-    const rect = banner.current?.getBoundingClientRect();
-    if (!rect) return;
-    grab.current = { x: event.clientX - rect.left, y: event.clientY - rect.top };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
-
-  const drag = (event: PointerEvent<HTMLElement>) => {
-    const rect = banner.current?.getBoundingClientRect();
-    if (!grab.current || !rect) return;
-    const target = { x: event.clientX - grab.current.x, y: event.clientY - grab.current.y };
-    setPosition(clampToViewport(target, rect, { width: window.innerWidth, height: window.innerHeight }));
-  };
-
-  const endDrag = () => {
-    grab.current = null;
-  };
 
   return (
-    <aside ref={banner} className="tutorial-banner" style={position ? { left: position.x, top: position.y, transform: 'none' } : undefined}>
-      <header className="tutorial-handle" onPointerDown={startDrag} onPointerMove={drag} onPointerUp={endDrag} onPointerCancel={endDrag}>
-        <strong>{t('tutorial.title')}</strong>
-        <span>
-          {TUTORIAL_STEPS.indexOf(step) + 1}/{TUTORIAL_STEPS.length}
-        </span>
-      </header>
-      <p>
-        <TutorialText text={t(`tutorial.${step}`)} />
-      </p>
-      <ButtonRow align="start">
-        {canSkipTime ? (
+    <TutorialBannerFrame
+      title={t('tutorial.title')}
+      counter={`${TUTORIAL_STEPS.indexOf(step) + 1}/${TUTORIAL_STEPS.length}`}
+      text={t(`tutorial.${step}`)}
+      skipLabel={t('tutorial.skip')}
+      skipConfirmLabel={t('tutorial.skipConfirm')}
+      onSkip={() => send({ type: 'SkipTutorial' })}
+      actions={
+        canSkipTime ? (
           <ActionButton variant="primary" onClick={() => send({ type: 'SkipTutorialStep' })} disabled={challengeRunning} title={challengeRunning ? t('error.challengeInProgress') : undefined}>
             {t('tutorial.timeSkip')}
           </ActionButton>
-        ) : null}
-        <InlineConfirm
-          confirming={confirming}
-          triggerLabel={t('tutorial.skip')}
-          confirmLabel={t('tutorial.skipConfirm')}
-          onRequest={() => setConfirming(true)}
-          onCancel={() => setConfirming(false)}
-          onConfirm={skipTutorial}
-        />
-      </ButtonRow>
-    </aside>
+        ) : undefined
+      }
+    />
   );
 }

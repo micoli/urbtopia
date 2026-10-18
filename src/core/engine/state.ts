@@ -8,6 +8,7 @@ import type { GoodId, ItemId, MaterialId } from '../economy/items';
 import type { CropId } from '../farming/crops';
 import type { RoadKind } from '../map/roads';
 import type { TutorialStep } from '../progression/tutorial';
+import type { VenueTutorialStep, VenueTutorialType } from '../progression/venueTutorial';
 import type { Difficulty } from './difficulty';
 import type { DonationRecord } from '../economy/solidarity';
 
@@ -73,6 +74,8 @@ export interface VenueData {
   takings: number;
   // Net earnings made since the Venue opened; it sets the Rank.
   earned?: number;
+  // Urbs collected from the Takings since the Venue opened; `earned` counts at accrual, so it cannot tell a collection.
+  collected?: number;
   price?: number;
   staff?: Partial<Record<StaffRole, number>>;
   rng?: number;
@@ -197,5 +200,7 @@ export interface GameState {
   pedestrianWays?: PedestrianWayTile[];
   roundabouts: Coord[];
   tutorial: TutorialStep | null;
+  // Absent: not started. null: finished or skipped.
+  venueTutorials?: Partial<Record<VenueTutorialType, VenueTutorialStep | null>>;
   tradeLedger: TradeLedgerEntry[];
 }
