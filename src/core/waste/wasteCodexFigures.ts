@@ -1,8 +1,6 @@
-import { economicPower } from '../environment/ecology';
-import { energyStats } from '../environment/energy';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import type { GameState } from '../engine/state';
-import { wasteReport, type WasteCause } from './waste';
+import { wasteReport, type FacilityWaste, type WasteCause } from './waste';
 import { WASTE, WASTE_FACILITIES, WASTE_KINDS, wasteKindOf, type WasteKind } from './wasteBalance';
 import { incineratorPenaltyOf, odorPenaltyOf, wasteEmissions } from './wasteNuisance';
 
@@ -12,6 +10,7 @@ export interface WasteKindFigures {
   kind: WasteKind;
   buildings: number;
   capacity: number;
+  nominalCapacity: number;
   processed: number;
   cost: number;
   stopped: WasteStop | null;
@@ -37,13 +36,10 @@ export interface WasteCodexFigures {
 
 const NO_CAUSES: Record<WasteCause, number> = { outOfReach: 0, capacityFull: 0, noRoadLink: 0, beyondCarryingDistance: 0, facilityStopped: 0 };
 
-function stoppedOf(state: GameState, kind: WasteKind, ids: readonly number[]): WasteStop | null {
-  if (ids.length === 0) return null;
+function stoppedOf(state: GameState, served: readonly FacilityWaste[]): WasteStop | null {
+  if (served.length === 0) return null;
   if (state.urbs <= 1e-9) return 'noUrbs';
-  if (kind !== 'recyclingPlant') return null;
-  const { supplied } = energyStats(state);
-  const unpowered = state.buildings.filter(building => ids.includes(building.id) && (supplied.get(building.id) ?? 0) < economicPower(building));
-  return unpowered.length === ids.length ? 'powerShortage' : null;
+  return served.every(facility => facility.powerRatio === 0) ? 'powerShortage' : null;
 }
 
 // Every figure of the Waste Codex page, from the same report as the simulation.
@@ -61,9 +57,10 @@ export function wasteCodexFigures(state: GameState): WasteCodexFigures {
       kind,
       buildings: ids.length,
       capacity: served.reduce((sum, facility) => sum + facility.capacity, 0),
+      nominalCapacity: served.reduce((sum, facility) => sum + facility.nominalCapacity, 0),
       processed: served.reduce((sum, facility) => sum + facility.processed, 0),
       cost: served.reduce((sum, facility) => sum + facility.cost, 0),
-      stopped: stoppedOf(state, kind, ids),
+      stopped: stoppedOf(state, served),
     };
   });
   const { incinerator, mound } = WASTE_FACILITIES;

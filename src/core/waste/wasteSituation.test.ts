@@ -40,6 +40,13 @@ describe('wasteSituation', () => {
     expect(situation.bottleneck).toEqual({ x: 60, y: 30 });
   });
 
+  it('counts an unpowered Recycling plant as stopped and as the bottleneck', () => {
+    const state = city([place(1, 'recyclingPlant', 60, 47)]);
+    const [recycling] = wasteSituation(state).families;
+    expect([recycling!.stoppedPowerShortage, recycling!.capacity, recycling!.nominalCapacity]).toEqual([1, 0, 400]);
+    expect(wasteSituation(state).bottleneck).toEqual({ x: 60, y: 47 });
+  });
+
   it('groups the uncovered Homes by cause with their Citizens', () => {
     const state = city([place(1, 'mound', 60, 50), home(10, 62, 50, 4), home(11, 20, 50, 4), home(12, 21, 50, 2)]);
     const situation = wasteSituation(state);

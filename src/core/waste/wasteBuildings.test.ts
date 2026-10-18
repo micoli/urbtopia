@@ -10,6 +10,7 @@ const city = (buildings: Building[], extra: Partial<GameState> = {}): GameState 
 });
 const bigHomes = (): Building[] => [home(20, 34, 50, 8), home(21, 38, 50, 8)];
 const target = home(10, 64, 48, 2);
+const grid = (count = 1): Building[] => Array.from({ length: count }, (_, index) => createBuilding(900 + index, 'backup', 1, 1 + 3 * index, 0));
 
 describe('Waste building definitions', () => {
   it('declares the three facilities with their Tiers, unlocks, footprints and Waste category', () => {
@@ -183,8 +184,57 @@ describe('Waste usage-cost calibration', () => {
   });
 
   it('charges the real Urbs through the report, 1:3:6 across the facilities', () => {
-    const cost = (type: 'mound' | 'incinerator' | 'recyclingPlant') => wasteReport(city([place(1, type, 66, type === 'mound' ? 50 : 47), target])).costPerDay;
+    const cost = (type: 'mound' | 'incinerator' | 'recyclingPlant') => wasteReport(city([place(1, type, 66, type === 'mound' ? 50 : 47), target, ...grid()])).costPerDay;
     const unit = cost('mound');
     expect([cost('incinerator') / unit, cost('recyclingPlant') / unit]).toEqual([3, 6]);
+  });
+});
+
+describe('Recycling plant under a power shortage', () => {
+  const plant = (tier = 4) => place(1, 'recyclingPlant', 66, 47, tier);
+  const crowd = (count: number) => Array.from({ length: count }, (_, index) => home(100 + index, 34 + 3 * index, 52, 2));
+  const facilityOf = (state: GameState) => wasteReport(state).facilities.get(1)!;
+
+  it('processes at full capacity when it is fully powered', () => {
+    const facility = facilityOf(city([plant(), target, ...grid()]));
+    expect([facility.powerRatio, facility.capacity, facility.nominalCapacity]).toEqual([1, 2200, 2200]);
+  });
+
+  it('scales its capacity with the power ratio it receives', () => {
+    const state = city([plant(), target, ...crowd(9), ...grid()]);
+    const ratio = energyStats(state).supplied.get(1)! / economicPower(plant());
+    expect(ratio).toBeGreaterThan(0);
+    expect(ratio).toBeLessThan(1);
+    const facility = facilityOf(state);
+    expect(facility.powerRatio).toBeCloseTo(ratio, 12);
+    expect(facility.capacity).toBeCloseTo(2200 * ratio, 6);
+    expect(facility.nominalCapacity).toBe(2200);
+  });
+
+  it('processes nothing with no power and leaves the Home uncovered as stopped', () => {
+    const state = city([plant(), target]);
+    const report = wasteReport(state);
+    expect([facilityOf(state).powerRatio, facilityOf(state).capacity, report.processed]).toEqual([0, 0, 0]);
+    expect(report.homes.get(10)?.cause).toBe('facilityStopped');
+  });
+
+  it('is not shed during the Adaptation period', () => {
+    const state = city([plant(), target], { adaptationUntil: 10 * ECOLOGY.hourMs });
+    expect([facilityOf(state).powerRatio, wasteReport(state).homes.get(10)?.cause]).toEqual([1, null]);
+  });
+
+  it('hands its Homes over to the Incinerator when it has no power', () => {
+    const state = city([plant(), place(2, 'incinerator', 62, 47), place(3, 'mound', 70, 50), target]);
+    expect(wasteReport(state).homes.get(10)?.facilityId).toBe(2);
+  });
+
+  it('hands its Homes over to the Mound when no Incinerator can take them', () => {
+    const state = city([plant(), place(3, 'mound', 70, 50), target]);
+    expect(wasteReport(state).homes.get(10)?.facilityId).toBe(3);
+  });
+
+  it('keeps the capacityFull cause when a running facility is full', () => {
+    const state = city([place(3, 'mound', 66, 50), plant(), ...Array.from({ length: 4 }, (_, index) => home(10 + index, 60 + 2 * index, 48, 3))]);
+    expect(wasteReport(state).homes.get(10)?.cause).toBe('capacityFull');
   });
 });

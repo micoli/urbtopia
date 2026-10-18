@@ -12,10 +12,13 @@ export interface WasteFamilySituation {
   kind: WasteKind;
   buildings: number;
   capacity: number;
+  nominalCapacity: number;
   processed: number;
   costPerDay: number;
   stoppedNoUrbs: number;
   stoppedNoRoad: number;
+  stoppedPowerShortage: number;
+  reducedByPower: number;
 }
 
 export interface WasteCauseSituation {
@@ -49,7 +52,7 @@ function stoppedFacilities(state: GameState): { id: number; tile: Coord; noRoad:
   const paying = state.urbs > 1e-9;
   return state.buildings.flatMap(building => {
     const served = report.facilities.get(building.id);
-    if (!served || (paying && served.linked)) return [];
+    if (!served || (paying && served.linked && served.powerRatio > 0)) return [];
     return [{ id: building.id, tile: { x: building.x, y: building.y }, noRoad: !served.linked }];
   });
 }
@@ -77,10 +80,13 @@ export function wasteSituation(state: GameState): WasteSituation {
       kind,
       buildings: state.buildings.filter(building => wasteKindOf(building.type) === kind).length,
       capacity: own.reduce((sum, [, served]) => sum + served.capacity, 0),
+      nominalCapacity: own.reduce((sum, [, served]) => sum + served.nominalCapacity, 0),
       processed: own.reduce((sum, [, served]) => sum + served.processed, 0),
       costPerDay: own.reduce((sum, [, served]) => sum + served.cost, 0),
       stoppedNoUrbs: paying ? 0 : own.length,
       stoppedNoRoad: paying ? own.filter(([, served]) => !served.linked).length : 0,
+      stoppedPowerShortage: paying ? own.filter(([, served]) => served.linked && served.powerRatio === 0).length : 0,
+      reducedByPower: paying ? own.filter(([, served]) => served.powerRatio > 0 && served.powerRatio < 1).length : 0,
     };
   });
   const causes = WASTE_CAUSES.map((cause): WasteCauseSituation => {

@@ -17,6 +17,8 @@ const texts = {
   'waste.families.processed': ['Processed', 'Traités'],
   'waste.families.cost': ['Cost per day', 'Coût par jour'],
   'waste.families.stoppedNoUrbs': ['stopped, no Urbs: {count}', 'à l’arrêt, plus d’Urbs : {count}'],
+  'waste.families.stoppedPowerShortage': ['stopped, power shortage: {count}', 'à l’arrêt, pénurie d’électricité : {count}'],
+  'waste.families.reducedByPower': ['reduced by a power shortage: {count}', 'réduit par une pénurie d’électricité : {count}'],
   'waste.families.stoppedNoRoad': ['stopped, no road link: {count}', 'à l’arrêt, sans lien routier : {count}'],
   'waste.coverage.title': ['Coverage', 'Couverture'],
   'waste.coverage.covered': ['Homes covered', 'Homes couverts'],

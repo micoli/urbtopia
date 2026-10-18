@@ -75,6 +75,14 @@ describe('WastePage', () => {
     expect(render(served, { urbs: 0 })).toContain(t('codex.waste.stopped.noUrbs'));
   });
 
+  it('says a Recycling plant without power is stopped, from the core result', () => {
+    expect(render([place(1, 'recyclingPlant', 60, 47), home(10, 62, 50, 4)])).toContain(t('codex.waste.stopped.powerShortage'));
+  });
+
+  it('does not say it is stopped during the Adaptation period', () => {
+    expect(render([place(1, 'recyclingPlant', 60, 47), home(10, 62, 50, 4)], { adaptationUntil: 10 * HOUR })).not.toContain(t('codex.waste.stopped.powerShortage'));
+  });
+
   it.each(DIFFICULTIES)('highlights %s and marks the Difficulties that sanction Waste', (difficulty: Difficulty) => {
     const html = render(served, { difficulty });
     expect(html).toMatch(new RegExp(`aria-current="true">${t(`difficulty.${difficulty}`)}<`));

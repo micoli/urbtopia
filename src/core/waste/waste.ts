@@ -6,6 +6,7 @@ import type { Coord } from '../map/coord';
 import { tileKey } from '../map/geometry';
 import { isWithinReach } from '../services/facilities';
 import { totalCitizens } from '../buildings/city';
+import { hourOf, recyclingPlantPowerRatios } from './wastePower';
 import { footprintOfBuilding, pedestrianDistances, roadComponents, tilesOfBuilding, touchedRoadComponents, outsideNeighbours } from './wasteLinks';
 import { WASTE, WASTE_FACILITIES, WASTE_KINDS, WASTE_REQUIRED_FROM_CITIZENS, homeWasteProduction, wasteCapacity, wasteKindOf, type WasteKind } from './wasteBalance';
 
@@ -22,6 +23,8 @@ export interface HomeWaste {
 export interface FacilityWaste {
   kind: WasteKind;
   capacity: number;
+  nominalCapacity: number;
+  powerRatio: number;
   processed: number;
   cost: number;
   linked: boolean;
@@ -47,7 +50,12 @@ interface FacilityGeometry {
 
 type Link = { carried: boolean } | 'beyond' | null;
 
-const cache = new WeakMap<readonly Building[], { roads: GameState['roads']; roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; paying: boolean; report: WasteReport }>();
+interface ReachingFacility {
+  link: Link;
+  running: boolean;
+}
+
+const cache = new WeakMap<readonly Building[], { roads: GameState['roads']; roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; paying: boolean; adapting: boolean; hour: number; report: WasteReport }>();
 
 function centerOf(building: Building): Coord {
   const { width, depth } = footprintOfBuilding(building);
@@ -105,9 +113,10 @@ function linkOf(facility: FacilityGeometry, homeRoads: ReadonlySet<number>, home
   return Math.min(...walks) <= WASTE.carryingDistance ? { carried: true } : 'beyond';
 }
 
-function causeOf(links: readonly Link[], paying: boolean): WasteCause {
-  if (links.some(link => link !== null && link !== 'beyond')) return paying ? 'capacityFull' : 'facilityStopped';
-  if (links.includes('beyond')) return 'beyondCarryingDistance';
+function causeOf(reaching: readonly ReachingFacility[]): WasteCause {
+  const linked = reaching.filter(({ link }) => link !== null && link !== 'beyond');
+  if (linked.length > 0) return linked.some(({ running }) => running) ? 'capacityFull' : 'facilityStopped';
+  if (reaching.some(({ link }) => link === 'beyond')) return 'beyondCarryingDistance';
   return 'noRoadLink';
 }
 
@@ -128,13 +137,20 @@ function computeReport(state: GameState, paying: boolean): WasteReport {
     return { home, center: centerOf(home), produced: homeWasteProduction(home.tier), roads, walk: roads.size === 0 ? pedestrianDistances(state, components, tiles, Infinity) : null };
   });
   const results = new Map<number, HomeWaste>();
-  const facilityResults = new Map<number, FacilityWaste>(facilities.map(({ building, kind, roadComponents: reachable }) => [building.id, { kind, capacity: wasteCapacity(kind, building.tier), processed: 0, cost: 0, linked: reachable.size > 0 }]));
+  const powerRatios = recyclingPlantPowerRatios(state);
+  const facilityResults = new Map<number, FacilityWaste>(facilities.map(({ building, kind, roadComponents: reachable }) => {
+    const nominalCapacity = wasteCapacity(kind, building.tier);
+    const powerRatio = powerRatios.get(building.id) ?? 1;
+    return [building.id, { kind, capacity: nominalCapacity * powerRatio, nominalCapacity, powerRatio, processed: 0, cost: 0, linked: reachable.size > 0 }];
+  }));
+  const isRunning = (facility: FacilityGeometry) => paying && facilityResults.get(facility.building.id)!.powerRatio > 0;
   const reaches = (facility: FacilityGeometry, center: Coord) => isWithinReach(center.x - facility.center.x, center.y - facility.center.y, WASTE_FACILITIES[facility.kind].reach);
 
   if (paying) {
     for (const kind of WASTE_KINDS) {
       for (const facility of facilities.filter(candidate => candidate.kind === kind).sort((a, b) => a.building.id - b.building.id)) {
         const served = facilityResults.get(facility.building.id)!;
+        if (!isRunning(facility)) continue;
         const candidates = homeData
           .filter(data => !results.has(data.home.id) && reaches(facility, data.center))
           .flatMap(data => {
@@ -156,7 +172,7 @@ function computeReport(state: GameState, paying: boolean): WasteReport {
   for (const data of homeData) {
     if (results.has(data.home.id)) continue;
     const reaching = facilities.filter(facility => reaches(facility, data.center));
-    const cause = reaching.length === 0 ? 'outOfReach' : causeOf(reaching.map(facility => linkOf(facility, data.roads, data.walk)), paying);
+    const cause = reaching.length === 0 ? 'outOfReach' : causeOf(reaching.map(facility => ({ link: linkOf(facility, data.roads, data.walk), running: isRunning(facility) })));
     results.set(data.home.id, { produced: data.produced, facilityId: null, cost: 0, carried: false, cause });
   }
 
@@ -173,13 +189,15 @@ function computeReport(state: GameState, paying: boolean): WasteReport {
   };
 }
 
-// Facilities that cannot pay stop at once: with no Urbs left nothing is processed.
+// Facilities that cannot pay stop at once: with no Urbs left nothing is processed. A Recycling plant processes in proportion to the power it receives.
 export function wasteReport(state: GameState): WasteReport {
   const paying = state.urbs > 1e-9;
+  const adapting = isAdapting(state);
+  const hour = hourOf(state);
   const cached = cache.get(state.buildings);
-  if (cached && cached.roads === state.roads && cached.roundabouts === state.roundabouts && cached.pedestrianWays === state.pedestrianWays && cached.paying === paying) return cached.report;
+  if (cached && cached.adapting === adapting && cached.hour === hour && cached.roads === state.roads && cached.roundabouts === state.roundabouts && cached.pedestrianWays === state.pedestrianWays && cached.paying === paying) return cached.report;
   const report = computeReport(state, paying);
-  cache.set(state.buildings, { roads: state.roads, roundabouts: state.roundabouts, pedestrianWays: state.pedestrianWays, paying, report });
+  cache.set(state.buildings, { roads: state.roads, roundabouts: state.roundabouts, pedestrianWays: state.pedestrianWays, paying, adapting, hour, report });
   return report;
 }
 

@@ -7,7 +7,7 @@ export function WasteAllocationRow({ figures }: { figures: WasteKindFigures }) {
     <tr data-stopped={figures.stopped !== null}>
       <th scope="row">{t(`building.${figures.kind}`)}</th>
       <td>{figures.buildings}</td>
-      <td>{figures.capacity}</td>
+      <td>{figures.capacity < figures.nominalCapacity ? `${figures.capacity.toFixed(0)} / ${figures.nominalCapacity}` : figures.capacity}</td>
       <td>{figures.processed.toFixed(1)}</td>
       <td>{figures.cost.toFixed(1)}</td>
       <td>{state}</td>

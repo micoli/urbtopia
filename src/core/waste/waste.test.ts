@@ -10,6 +10,7 @@ const wayColumn = (x: number, from: number, to: number) => Array.from({ length: 
 const city = (buildings: Building[], extra: Partial<GameState> = {}): GameState => ({
   ...newGame({ seed: 'waste', now: 0 }), buildings, nextId: 1000, urbs: 1_000_000, tutorial: null, roads: roadRow(40, 80, 49), roundabouts: [], pedestrianWays: [], adaptationUntil: 0, ...extra,
 });
+const grid = (): Building[] => [createBuilding(900, 'backup', 1, 1, 0)];
 const served = (state: GameState, facilityId: number) => [...wasteReport(state).homes].filter(([, waste]) => waste.facilityId === facilityId).map(([id]) => id).sort((a, b) => a - b);
 
 describe('Waste production', () => {
@@ -25,7 +26,7 @@ describe('Waste production', () => {
 describe('Waste allocation', () => {
   it('uses the Recycling plant before the Incinerator, and the Incinerator before the Mound, nearest Homes first', () => {
     const homes = Array.from({ length: 10 }, (_, index) => home(10 + index, 50 + 2 * index, 50, 4));
-    const state = city([facility(1, 'recyclingPlant', 60, 47), facility(2, 'incinerator', 58, 47), facility(3, 'mound', 62, 50), ...homes]);
+    const state = city([facility(1, 'recyclingPlant', 60, 47), facility(2, 'incinerator', 58, 47), facility(3, 'mound', 62, 50), ...homes], { adaptationUntil: 10 * H });
     expect(served(state, 1)).toEqual([12, 13, 14, 15, 16, 17, 18]);
     expect(served(state, 2)).toEqual([10, 11, 19]);
     expect(wasteReport(state).facilities.get(1)?.processed).toBe(7 * homeWasteProduction(4));
@@ -42,7 +43,7 @@ describe('Waste allocation', () => {
   });
 
   it('charges the relative tariffs 1:3:6 per unit processed', () => {
-    const cost = (kind: 'mound' | 'incinerator' | 'recyclingPlant') => wasteReport(city([facility(1, kind, 66, kind === 'mound' ? 50 : 47), home(10, 60, 48, 2)])).costPerDay;
+    const cost = (kind: 'mound' | 'incinerator' | 'recyclingPlant') => wasteReport(city([facility(1, kind, 66, kind === 'mound' ? 50 : 47), home(10, 60, 48, 2), ...grid()])).costPerDay;
     const unit = homeWasteProduction(2);
     expect([cost('mound'), cost('incinerator'), cost('recyclingPlant')]).toEqual([unit, 3 * unit, 6 * unit]);
     expect(wasteReport(city([facility(1, 'mound', 66, 50), home(10, 60, 48, 2)])).costPerHour).toBe(unit / WASTE.dayHours);

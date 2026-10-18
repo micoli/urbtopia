@@ -50,6 +50,7 @@ describe('wasteCodexFigures', () => {
   it('says a Recycling plant without power is stopped', () => {
     const summary = wasteCodexFigures(city([place(1, 'recyclingPlant', 50, 47), home(10, 52, 50, 4)]));
     expect(summary.kinds[0]!.stopped).toBe('powerShortage');
+    expect([summary.kinds[0]!.capacity, summary.kinds[0]!.nominalCapacity]).toEqual([0, 400]);
   });
 
   it('isolates the surcharge of the Homes served on foot', () => {

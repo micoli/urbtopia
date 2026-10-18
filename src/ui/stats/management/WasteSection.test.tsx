@@ -39,6 +39,17 @@ describe('Waste section', () => {
     expect(html).toContain('Facility stopped, no Urbs');
   });
 
+  it('says when a Recycling plant is stopped by a power shortage', () => {
+    const html = render(city([createBuilding(1, 'recyclingPlant', 60, 47, 0), home(10, 62, 50, 3)]));
+    expect(html).toContain('stopped, power shortage: 1');
+    expect(html).toContain('Show the worst bottleneck');
+  });
+
+  it('does not report a power shortage during the Adaptation period', () => {
+    const html = render(city([createBuilding(1, 'recyclingPlant', 60, 47, 0), home(10, 62, 50, 3)], { adaptationUntil: 10 * 3_600_000 }));
+    expect(html).not.toContain('power shortage');
+  });
+
   it('stays calm in an empty city', () => {
     const html = render(city([]));
     expect(html).toContain('No Home produces Waste yet.');
