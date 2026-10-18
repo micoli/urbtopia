@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ROAD_TIER_COSTS, createBuilding, frontTiles, newGame, type GameState } from '../core';
+import { ROAD_TIER_COSTS, createBuilding, dispatch, frontTiles, newGame, type GameState } from '../core';
 import { confirmTool, evaluateTool, extendBrush, selectionGhost, type Tool } from './tools';
 
 const state: GameState = newGame({ seed: 'amber-fox-4821', now: 0 });
@@ -378,5 +378,40 @@ describe('Waste facility tool', () => {
 
   it('counts the Homes the facility would collect', () => {
     expect(evaluate('mound').coverage).toEqual({ cityWide: false, homes: 1 });
+  });
+});
+
+describe('Annual event items', () => {
+  const HALLOWEEN = new Date(2026, 9, 31, 12).getTime();
+  const open: GameState = { ...state, tutorial: null, lastSeen: HALLOWEEN, urbs: 100_000 };
+  const graveyard: Tool = { kind: 'building', buildingType: 'halloweenGraveyard' };
+  const tile = { x: 56, y: 59 };
+
+  it('turn on the spot: a quarter turn swaps the footprint and the placement command carries the rotation', () => {
+    const flat = evaluateTool(graveyard, { state: open, tile, rotation: null });
+    expect(flat.valid).toBe(true);
+    expect(flat.rotation).toBe(0);
+    expect(flat.ghost.tiles).toEqual([{ x: 56, y: 59 }, { x: 57, y: 59 }]);
+
+    const turned = evaluateTool(graveyard, { state: open, tile, rotation: 1 });
+    expect(turned.valid).toBe(true);
+    expect(turned.rotation).toBe(1);
+    expect(turned.ghost.tiles).toEqual([{ x: 56, y: 59 }, { x: 56, y: 60 }]);
+    expect(turned.command).toMatchObject({ type: 'PlaceBuilding', buildingType: 'halloweenGraveyard', rotation: 1 });
+  });
+
+  it('keep every rotation once placed, and can be turned again by moving them', () => {
+    for (const rotation of [0, 1, 2, 3] as const) {
+      const placed = confirmTool(graveyard, tile, evaluateTool(graveyard, { state: open, tile, rotation }));
+      const built = dispatch(open, placed.command!, HALLOWEEN);
+      expect(built.ok).toBe(true);
+      if (built.ok) expect(built.state.buildings.at(-1)!.rotation).toBe(rotation);
+    }
+    const built = dispatch(open, { type: 'PlaceBuilding', buildingType: 'halloweenGraveyard', ...tile, rotation: 0 }, HALLOWEEN);
+    if (!built.ok) throw new Error('expected success');
+    const id = built.state.buildings.at(-1)!.id;
+    const moved = dispatch(built.state, { type: 'MoveBuilding', id, x: 60, y: 60, rotation: 3 }, HALLOWEEN);
+    expect(moved.ok).toBe(true);
+    if (moved.ok) expect(moved.state.buildings.find(building => building.id === id)).toMatchObject({ x: 60, y: 60, rotation: 3 });
   });
 });
