@@ -7,4 +7,6 @@ const meta = { title: 'Stats/TransitLines', parameters: { game: 'evolved' } } sa
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+export const LoopLine: Story = { parameters: { game: 'loopLine' }, render: () => <WithCityStats>{(s) => <TransitLines transport={s.transport} />}</WithCityStats> };
+
 export const Evolved: Story = { render: () => <WithCityStats>{(s) => <TransitLines transport={s.transport} />}</WithCityStats> };

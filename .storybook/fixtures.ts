@@ -29,6 +29,18 @@ function brokeEvolvedCity(): GameState {
   return { ...city, urbs: 0, storage: { ...city.storage, goods: {} } };
 }
 
+function loopLineCity(): GameState {
+  const city = buildEvolvedCity();
+  const [min, max] = [200, 210];
+  const roads = Array.from({ length: max - min + 1 }, (_, i) => [
+    { x: min + i, y: min, kind: 'road' as const }, { x: min + i, y: max, kind: 'road' as const },
+    ...(i > 0 && i < max - min ? [{ x: min, y: min + i, kind: 'road' as const }, { x: max, y: min + i, kind: 'road' as const }] : []),
+  ]).flat();
+  const stopIds = [city.nextId, city.nextId + 1, city.nextId + 2];
+  const stops = [createBuilding(stopIds[0]!, 'busStop', 203, min - 1, 2), createBuilding(stopIds[1]!, 'busStop', max + 1, 205, 1), createBuilding(stopIds[2]!, 'busStop', 203, max + 1, 0)];
+  return { ...city, roads: [...city.roads, ...roads], buildings: [...city.buildings, ...stops], busLines: [{ id: city.nextId + 3, stops: stopIds, loop: true }], nextId: city.nextId + 4 };
+}
+
 const SHOWCASE_COLUMNS = 10;
 
 const SHOWCASE_FIXTURES_PER_VENUE = 3;
@@ -57,6 +69,7 @@ export const GAME_FIXTURES = {
   powerShortage: powerShortageCity,
   evolved: buildEvolvedCity,
   showcase: showcaseCity,
+  loopLine: loopLineCity,
   brokeEvolved: brokeEvolvedCity,
 } as const;
 

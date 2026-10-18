@@ -3,6 +3,7 @@ import { routeFailure, totalCitizens, TRANSIT, type TransitMode } from '../../..
 import { t } from '../../../../i18n/t.ts';
 import { gameStore } from '../../../../store/gameStore.ts';
 import { ActionButton } from '../../../common/ActionButton.tsx';
+import { CheckboxField } from '../../../common/CheckboxField.tsx';
 import { Dropdown } from '../../../common/Dropdown.tsx';
 import { NumberStepper } from '../../../common/NumberStepper.tsx';
 import { RadioChipGroup } from '../../../common/RadioChipGroup.tsx';
@@ -28,21 +29,25 @@ export function LineEditor({ lineId, summary, onSaved, onDeleted, onCancel }: Li
   const existing = findLine(state, lineId);
   const [mode, setMode] = useState<TransitMode>(existing?.mode ?? 'bus');
   const [stops, setStops] = useState<number[]>(existing?.stops ?? []);
+  const [loop, setLoop] = useState(existing?.loop ?? false);
   const [peak, setPeak] = useState(existing?.peakHeadway ?? DEFAULT_PEAK_HEADWAY);
   const [offPeak, setOffPeak] = useState(existing?.offPeakHeadway ?? DEFAULT_OFF_PEAK_HEADWAY);
   const citizens = totalCitizens(state);
   const failure = useMemo(() => {
     if (stops.length < 2) return null;
-    return routeFailure(state, mode === 'bus' ? { id: 0, stops } : { id: 0, mode, stops, peakHeadway: peak, offPeakHeadway: offPeak });
-  }, [state, mode, stops, peak, offPeak]);
+    const closing = loop && stops.length >= 3 ? { loop } : {};
+    return routeFailure(state, mode === 'bus' ? { id: 0, stops, ...closing } : { id: 0, mode, stops, ...closing, peakHeadway: peak, offPeakHeadway: offPeak });
+  }, [state, mode, stops, loop, peak, offPeak]);
   const stopsById = new Map(state.buildings.map(b => [b.id, b]));
   const labelOf = (id: number) => stopLabel(stopsById.get(id), id);
   const candidates = state.buildings.filter(b => b.type === STOP_TYPE[mode] && !stops.includes(b.id));
+  const loopAllowed = stops.length >= 3;
   const canSave = stops.length >= 2 && !failure && citizens >= unlockOf(mode);
 
   const changeMode = (next: TransitMode) => {
     setMode(next);
     setStops([]);
+    setLoop(false);
     setPeak(DEFAULT_PEAK_HEADWAY);
     setOffPeak(DEFAULT_OFF_PEAK_HEADWAY);
   };
@@ -50,8 +55,8 @@ export function LineEditor({ lineId, summary, onSaved, onDeleted, onCancel }: Li
     const store = gameStore.getState();
     const id = lineId ?? store.state.nextId;
     store.send(mode === 'bus'
-      ? { type: 'SetBusLine', id: lineId, stops }
-      : { type: 'SetTransitLine', id: lineId, mode, stops, peakHeadway: peak, offPeakHeadway: offPeak });
+      ? { type: 'SetBusLine', id: lineId, stops, loop: loopAllowed && loop }
+      : { type: 'SetTransitLine', id: lineId, mode, stops, loop: loopAllowed && loop, peakHeadway: peak, offPeakHeadway: offPeak });
     if (!gameStore.getState().lastError) onSaved(id);
   };
   const remove = () => {
@@ -86,6 +91,8 @@ export function LineEditor({ lineId, summary, onSaved, onDeleted, onCancel }: Li
       options={candidates.map(b => ({ value: b.id, label: labelOf(b.id) }))}
       onChange={id => setStops(current => [...current, id])}
     />
+    <CheckboxField label={t('transit.loop')} checked={loop && loopAllowed} disabled={!loopAllowed} onChange={setLoop} />
+    {!loopAllowed && <p className="transit-hint">{t('transit.loopNeedsThreeStops')}</p>}
     {mode !== 'bus' && <>
       <NumberStepper label={t('transit.peak')} min={HEADWAY_LIMITS[mode].peak[0]} max={HEADWAY_LIMITS[mode].peak[1]} value={peak} onChange={setPeak} />
       <NumberStepper label={t('transit.offPeak')} min={HEADWAY_LIMITS[mode].offPeak[0]} max={HEADWAY_LIMITS[mode].offPeak[1]} value={offPeak} onChange={setOffPeak} />

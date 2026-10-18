@@ -1,7 +1,7 @@
 # Loop lines in the core
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 
 ## What to build
 

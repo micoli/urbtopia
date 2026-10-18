@@ -1,7 +1,7 @@
 # Loop checkbox in the line editor
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01
 
 ## What to build
