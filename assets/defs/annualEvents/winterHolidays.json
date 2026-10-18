@@ -1,0 +1,12 @@
+{
+  "$schema": "../schemas/annual-event.schema.json",
+  "name": {
+    "en": "Winter holidays",
+    "fr": "Fêtes d'hiver"
+  },
+  "anchor": {
+    "kind": "fixed",
+    "month": 12,
+    "day": 25
+  }
+}

@@ -12,4 +12,4 @@ An Annual event is open for building from 21 days before its anchor date to 14 d
 
 **Placed items outlive their window.** An Annual event item is never Retired when its window closes: its id lives in saves (ADR-0021), it keeps working in the cities that have it, and it can be moved and demolished. Only new placements are refused. Removing the item or granting it a lifetime was rejected: a player would lose what they paid 700 to 1500 Urbs for.
 
-The definitions of the events are data, one file each in `assets/defs/annual-events/`, validated by a generated schema like the other Game objects (ADR-0021). The dismissal of the notice is kept in the browser per event and per year, outside the save and the Cloud save.
+The definitions of the events are data, one file each in `assets/defs/annualEvents/`, validated by a generated schema like the other Game objects (ADR-0021). The dismissal of the notice is kept in the browser per event and per year, outside the save and the Cloud save.

@@ -10,6 +10,7 @@ import { StaticButtons } from './StaticButtons.tsx';
 import { FloatingBadges } from './FloatingBadges';
 import { ConfirmPad } from '../build/ConfirmPad';
 import { ConfirmSaleDialog } from '../build/ConfirmSaleDialog';
+import { AnnualEventNotice } from '../system/AnnualEventNotice';
 import { ExportReminder } from '../system/ExportReminder';
 import { ImportConfirmDialog } from '../system/ImportConfirmDialog';
 import { BackOfficeBanner } from '../system/BackOfficeBanner';
@@ -37,6 +38,7 @@ export function Overlays() {
       <ConfirmPad />
       <ReadOnlyBanner />
       <BackOfficeBanner />
+      <AnnualEventNotice />
       <ExportReminder />
       <UpdatePrompt />
       <ConfirmSaleDialog />

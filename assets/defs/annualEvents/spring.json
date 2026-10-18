@@ -1,0 +1,12 @@
+{
+  "$schema": "../schemas/annual-event.schema.json",
+  "name": {
+    "en": "Spring",
+    "fr": "Printemps"
+  },
+  "anchor": {
+    "kind": "fixed",
+    "month": 3,
+    "day": 20
+  }
+}

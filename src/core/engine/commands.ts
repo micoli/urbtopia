@@ -1,3 +1,4 @@
+import { isBuildableAt } from '../annualEvents/annualEventItems';
 import { TRANSIT, extendNetwork, networkTiles, repairNetwork, validNetworkCrossings } from '../transit/transitNetwork';
 import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
 import { canHaveSolarPanels, solarPanelsCost, solarPanelsOf, solarPanelsUnlockCitizens } from '../environment/solarPanels';
@@ -215,6 +216,7 @@ export type ErrorKey =
   | 'error.notEnoughWater'
   | 'error.utilityInUse'
   | 'error.itemLocked'
+  | 'error.annualEventClosed'
   | 'error.tierTooLow'
   | 'error.maxTier'
   | 'error.tutorialLocked'
@@ -279,7 +281,7 @@ export function handleCommand(state: GameState, command: Command, now: number): 
     case 'DemolishRoadPath':
       return demolishRoad(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
     case 'PlaceBuilding':
-      return placeBuilding(state, command.buildingType, command.x, command.y, command.rotation, command.solar, command.colorVariant);
+      return placeBuilding(state, command.buildingType, command.x, command.y, now, command.rotation, command.solar, command.colorVariant);
     case 'RepaintBuilding':
       return repaintBuilding(state, command.buildingId, command.colorVariant);
     case 'EquipHome':
@@ -593,8 +595,9 @@ function strandsBuilding(before: GameState, after: GameState): boolean {
   );
 }
 
-function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, requestedRotation?: Rotation, solar = false, colorVariant?: ColorVariant): CommandOutcome {
+function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, now: number, requestedRotation?: Rotation, solar = false, colorVariant?: ColorVariant): CommandOutcome {
   if (isRetired(type) || citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < solarPanelsUnlockCitizens(type))) return fail('error.itemLocked');
+  if (!isBuildableAt(type, now)) return fail('error.annualEventClosed');
   if (solar && !isHomeType(type)) return fail('error.cannotProduce');
   const extraCost = solar ? (solarPanelsOf(type)?.cost ?? ECOLOGY.solarCost) : 0;
   const rotation = requestedRotation ?? autoRotation(state, type, x, y);

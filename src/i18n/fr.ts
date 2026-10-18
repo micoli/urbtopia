@@ -7,6 +7,7 @@ import { sanctionsMessages } from './sanctions';
 import { wasteCodexMessages } from './wasteCodex';
 import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
+import { annualEventMessages } from './annualEvents';
 import { buildingMessages } from './buildings';
 import { itemMessages } from './items';
 import { natureMessages } from './nature';
@@ -33,6 +34,7 @@ export const FR: Record<MessageKey, string> = {
   ...wasteCodexMessages('fr'),
   ...venueMessages('fr'),
   ...buildingMessages('fr'),
+  ...annualEventMessages('fr'),
   ...itemMessages('fr'),
   ...sportVenueMessages('fr'),
   ...facilityMessages('fr'),
@@ -376,6 +378,9 @@ export const FR: Record<MessageKey, string> = {
   'farm.fieldCap': "Limite de champs atteinte : plus d'habitants permettent plus de champs.",
   'farm.noFields': 'Aucun champ à retirer pour le moment.',
   'hint.dismiss': 'Compris',
+  'annualEvent.notice': "{event} : des objets de saison sont en vente dans Construire jusqu'au {date}.",
+  'annualEvent.notice.see': 'Voir',
+  'annualEvent.availability': 'Constructible du {from} au {to}.',
   'hint.build': "Choisis un bâtiment puis touche la carte pour le poser. L'image ouvre sa description.",
   'hint.repaint': 'Repeindre ne change que la couleur, garde le niveau et coûte des Urbs.',
   'hint.production': 'Mets un objet en file ici : il se fabrique seul et attend dans le bâtiment que tu le récupères.',
@@ -414,6 +419,7 @@ export const FR: Record<MessageKey, string> = {
   'water.lay': "Poser de l'eau",
   'water.remove': "Retirer de l'eau",
   'build.transport': 'Transports',
+  'build.annualEvents': 'Évènements annuels',
   'build.decoration': 'Décoration',
   'roads.section.road': 'Routes',
   'roads.section.brt': 'BHNS',
@@ -589,6 +595,7 @@ export const FR: Record<MessageKey, string> = {
   'error.nothingToSkip': "Il n'y a rien à attendre pour cette étape.",
   'home.upgrade': 'Améliorer',
   'error.itemLocked': "Pas encore débloqué : faites grandir la population.",
+  'error.annualEventClosed': "Disponible seulement autour de son évènement annuel.",
   'error.missingMaterials': "Pas assez de matériaux dans l'entrepôt.",
   'error.maxSlots': 'Ce bâtiment a déjà tous ses emplacements.',
   'error.notAShop': "Ce n'est pas une boutique.",

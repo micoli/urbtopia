@@ -69,6 +69,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -121,6 +122,10 @@
           "items": false,
           "minItems": 2,
           "maxItems": 2
+        },
+        "annualEvent": {
+          "type": "string",
+          "pattern": "\\S"
         }
       },
       "required": [
@@ -203,6 +208,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -487,6 +493,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -779,6 +786,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -1035,6 +1043,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -1287,6 +1296,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -1544,6 +1554,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -1791,6 +1802,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -1984,6 +1996,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -2123,6 +2136,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -2273,6 +2287,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -2413,6 +2428,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -2729,6 +2745,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -3019,6 +3036,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -3284,6 +3302,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -3664,6 +3683,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]
@@ -3902,6 +3922,7 @@
             "build.leisure",
             "build.sport",
             "build.agriculture",
+            "build.annualEvents",
             "build.decoration",
             "build.greenSpaces"
           ]

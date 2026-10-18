@@ -1,0 +1,12 @@
+{
+  "$schema": "../schemas/annual-event.schema.json",
+  "name": {
+    "en": "Summer",
+    "fr": "Été"
+  },
+  "anchor": {
+    "kind": "fixed",
+    "month": 6,
+    "day": 21
+  }
+}
