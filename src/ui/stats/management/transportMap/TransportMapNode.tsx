@@ -11,7 +11,7 @@ interface TransportMapNodeProps {
 // Sizes are in pixels and `unit` converts a pixel to map units, so they stay the same at any zoom.
 const NODE_RADIUS = 5;
 const HUB_RADIUS = 8;
-const TEXT_SIZE = 11;
+const TEXT_SIZE = 14;
 const BIKE_BADGE = 7;
 
 export function TransportMapNode({ node, unit, dimmed, selected, onSelect }: TransportMapNodeProps) {
