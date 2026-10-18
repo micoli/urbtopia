@@ -2,13 +2,21 @@ import type { MapNode } from './transportMapModel.ts';
 
 interface TransportMapNodeProps {
   node: MapNode;
+  unit: number;
   dimmed: boolean;
   selected: boolean;
   onSelect: () => void;
 }
 
-export function TransportMapNode({ node, dimmed, selected, onSelect }: TransportMapNodeProps) {
-  const radius = node.hub ? 1.1 : 0.55;
+// Sizes are in pixels and `unit` converts a pixel to map units, so they stay the same at any zoom.
+const NODE_RADIUS = 5;
+const HUB_RADIUS = 8;
+const TEXT_SIZE = 11;
+const BIKE_BADGE = 7;
+
+export function TransportMapNode({ node, unit, dimmed, selected, onSelect }: TransportMapNodeProps) {
+  const radius = (node.hub ? HUB_RADIUS : NODE_RADIUS) * unit;
+  const text = TEXT_SIZE * unit;
   return <g
     className="transport-map-node"
     data-stop={node.id}
@@ -23,7 +31,10 @@ export function TransportMapNode({ node, dimmed, selected, onSelect }: Transport
   >
     <circle cx={node.x} cy={node.y} r={radius} fill="#fff" stroke={selected ? '#ffd43b' : '#212529'} strokeWidth={selected ? 3 : 2} vectorEffect="non-scaling-stroke" />
     {node.hub && <circle cx={node.x} cy={node.y} r={radius * 0.5} fill="#212529" />}
-    {node.carriesBikes && <text className="transport-map-bike" x={node.x + radius} y={node.y - radius} fontSize={1.1} aria-hidden="true">🚲</text>}
-    <text className="transport-map-label" x={node.x} y={node.y + radius + 1.2} fontSize={1.1} textAnchor="middle" fill="currentColor" aria-hidden="true">{node.label}</text>
+    {node.carriesBikes && <g className="transport-map-bike" aria-hidden="true">
+      <circle cx={node.x + radius + BIKE_BADGE * unit} cy={node.y - radius - BIKE_BADGE * unit} r={BIKE_BADGE * unit} fill="#fff" />
+      <text x={node.x + radius + BIKE_BADGE * unit} y={node.y - radius - BIKE_BADGE * unit} fontSize={BIKE_BADGE * 1.3 * unit} textAnchor="middle" dominantBaseline="central">🚲</text>
+    </g>}
+    <text className="transport-map-label" x={node.x} y={node.y + radius + text * 1.1} fontSize={text} textAnchor="middle" fill="currentColor" aria-hidden="true">{node.label}</text>
   </g>;
 }

@@ -6,6 +6,7 @@ import { TransportMapNode } from './TransportMapNode.tsx';
 import type { MapLine, TransportMapModel } from './transportMapModel.ts';
 import type { MapSelection } from './selection.ts';
 import { isLineDimmed, isNodeDimmed } from './selection.ts';
+import { useElementWidth } from './useElementWidth.ts';
 import { useMapViewport } from './useMapViewport.ts';
 
 interface TransportMapCanvasProps {
@@ -18,6 +19,7 @@ interface TransportMapCanvasProps {
 export function TransportMapCanvas({ model, lines, selection, onSelect }: TransportMapCanvasProps) {
   const svg = useRef<SVGSVGElement>(null);
   const { view, fit, handlers } = useMapViewport(model.bounds, svg);
+  const unit = view.width / useElementWidth(svg);
   const nodes = useMemo(() => new Map(model.nodes.map(node => [node.id, node])), [model.nodes]);
   const shown = new Set(lines.flatMap(line => line.stops));
   return <div className="transport-map-canvas">
@@ -37,6 +39,7 @@ export function TransportMapCanvas({ model, lines, selection, onSelect }: Transp
         key={line.id}
         line={line}
         nodes={nodes}
+        unit={unit}
         dimmed={isLineDimmed(selection, line)}
         selected={selection?.kind === 'line' && selection.id === line.id}
         onSelect={() => onSelect({ kind: 'line', id: line.id })}
@@ -44,6 +47,7 @@ export function TransportMapCanvas({ model, lines, selection, onSelect }: Transp
       {model.nodes.filter(node => shown.has(node.id)).map(node => <TransportMapNode
         key={node.id}
         node={node}
+        unit={unit}
         dimmed={isNodeDimmed(selection, node, lines)}
         selected={selection?.kind === 'stop' && selection.id === node.id}
         onSelect={() => onSelect({ kind: 'stop', id: node.id })}

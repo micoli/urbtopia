@@ -4,14 +4,17 @@ import { BASE_WIDTH, INACTIVE_COLOR, LEVEL_COLORS, LOAD_WIDTH, lineColor } from 
 interface TransportMapLineProps {
   line: MapLine;
   nodes: ReadonlyMap<number, MapNode>;
+  unit: number;
   dimmed: boolean;
   selected: boolean;
   onSelect: () => void;
 }
 
-const ARROW = 0.55;
+// Sizes are in pixels and `unit` converts a pixel to map units, so they stay the same at any zoom.
+const ARROW_PIXELS = 5;
 
-function arrowPoints(from: MapNode, to: MapNode): string {
+function arrowPoints(from: MapNode, to: MapNode, unit: number): string {
+  const ARROW = ARROW_PIXELS * unit;
   const angle = Math.atan2(to.y - from.y, to.x - from.x);
   const cx = (from.x + to.x) / 2, cy = (from.y + to.y) / 2;
   const tip = { x: cx + Math.cos(angle) * ARROW, y: cy + Math.sin(angle) * ARROW };
@@ -20,7 +23,7 @@ function arrowPoints(from: MapNode, to: MapNode): string {
   return [tip, left, right].map(p => `${p.x},${p.y}`).join(' ');
 }
 
-export function TransportMapLine({ line, nodes, dimmed, selected, onSelect }: TransportMapLineProps) {
+export function TransportMapLine({ line, nodes, unit, dimmed, selected, onSelect }: TransportMapLineProps) {
   const stops = line.stops.map(id => nodes.get(id)).filter((node): node is MapNode => node !== undefined);
   if (stops.length < 2) return null;
   const path = `M${stops.map(node => `${node.x},${node.y}`).join(' L')}${line.loop ? ' Z' : ''}`;
@@ -44,6 +47,6 @@ export function TransportMapLine({ line, nodes, dimmed, selected, onSelect }: Tr
     <path d={path} fill="none" stroke={color} strokeWidth={width} strokeLinejoin="round" strokeDasharray={line.active ? undefined : '6 5'} vectorEffect="non-scaling-stroke" />
     {line.active && line.mode === 'rail' && <path d={path} fill="none" stroke="#fff" strokeWidth={width} strokeDasharray="2 8" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />}
     {line.active && line.mode === 'brt' && <path d={path} fill="none" stroke="#fff" strokeWidth={1.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" opacity={0.8} />}
-    {line.loop && segments.map(([from, to], index) => <polygon key={index} className="transport-map-arrow" points={arrowPoints(from, to)} fill="#fff" stroke={color} strokeWidth={1} vectorEffect="non-scaling-stroke" />)}
+    {line.loop && segments.map(([from, to], index) => <polygon key={index} className="transport-map-arrow" points={arrowPoints(from, to, unit)} fill="#fff" stroke={color} strokeWidth={1} vectorEffect="non-scaling-stroke" />)}
   </g>;
 }

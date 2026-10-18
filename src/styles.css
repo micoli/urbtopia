@@ -2462,3 +2462,7 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .eco-dashboard .transport-map-line, .eco-dashboard .transport-map-node { cursor: pointer; }
 .eco-dashboard .transport-map-card { margin: 8px 0; padding: 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.06); }
 .eco-dashboard .transport-map-hint { opacity: 0.75; }
+/* The browser focus ring is drawn in map units inside the SVG and would be huge: focus is shown with a pixel stroke instead. */
+.eco-dashboard .transport-map-line:focus, .eco-dashboard .transport-map-node:focus { outline: none; }
+.eco-dashboard .transport-map-node:focus-visible circle:first-of-type { stroke: #ffd43b; stroke-width: 3px; }
+.eco-dashboard .transport-map-line:focus-visible path:nth-of-type(2) { stroke: #ffd43b; }
