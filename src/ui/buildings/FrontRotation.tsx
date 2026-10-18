@@ -1,4 +1,4 @@
-import { boatsOfMarina, nextFront, placementIssue, validFronts, type Building, type Rotation } from '../../core';
+import { annualEventOf, boatsOfMarina, nextFront, placementIssue, validFronts, type Building, type Rotation } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
@@ -9,7 +9,8 @@ export function FrontRotation({ building }: { building: Building }) {
   const state = useGame((store) => store.state);
   if (building.type === 'marina' && boatsOfMarina(state, building.id).length > 0) return null;
   const withoutBuilding = { ...state, buildings: state.buildings.filter((candidate) => candidate.id !== building.id) };
-  const rotations = building.type === 'ferris-wheel' || building.type === 'tubularRollerCoaster'
+  const turnsFreely = building.type === 'ferris-wheel' || building.type === 'tubularRollerCoaster' || annualEventOf(building.type) !== undefined;
+  const rotations = turnsFreely
     ? [0, 1, 2, 3] as Rotation[]
     : validFronts(withoutBuilding, building.type, building.x, building.y, building.tier);
   const fronts = rotations
