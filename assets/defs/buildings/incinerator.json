@@ -16,12 +16,12 @@
   "radius": 14,
   "tiers": [
     {
-      "model": "buildings-factory-2x2-t1-tone-a",
+      "model": "buildings-incinerator-2x2-t1",
       "footprint": [2, 2],
       "capacity": 800
     },
     {
-      "model": "buildings-factory-2x2-t2-tone-a",
+      "model": "buildings-incinerator-2x2-t2",
       "capacity": 1500,
       "upgradeCost": {
         "urbs": 3000,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "model": "buildings-factory-2x2-t3-tone-a",
+      "model": "buildings-incinerator-2x2-t3",
       "capacity": 2500,
       "upgradeCost": {
         "urbs": 7000,
@@ -37,7 +37,7 @@
       }
     },
     {
-      "model": "buildings-factory-2x2-t4-tone-a",
+      "model": "buildings-incinerator-2x2-t4",
       "capacity": 4000,
       "upgradeCost": {
         "urbs": 15000,
@@ -46,6 +46,7 @@
     }
   ],
   "category": "waste",
+  "drawnToScale": true,
   "power": 0,
   "water": 0,
   "waste": {

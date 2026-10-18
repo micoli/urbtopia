@@ -2575,6 +2575,46 @@
       }
     }
   },
+  "buildings-incinerator-2x2-t1": {
+    "file": "buildings/incinerator-2x2-t1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-incinerator-2x2-t2": {
+    "file": "buildings/incinerator-2x2-t2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-incinerator-2x2-t3": {
+    "file": "buildings/incinerator-2x2-t3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-incinerator-2x2-t4": {
+    "file": "buildings/incinerator-2x2-t4",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
   "buildings-marina-captaincy": {
     "file": "buildings/marina-captaincy",
     "source": "managed",

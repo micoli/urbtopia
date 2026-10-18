@@ -2209,6 +2209,63 @@ def build_mound(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+INCINERATOR_STACK_HEIGHTS = (0.7, 1.0, 1.3, 1.6)
+
+
+def build_incinerator(spec, out_dir):
+    """A waste incinerator filling its 2x2 cell: a low rounded hall with a tipping door on a loading dock under a hazard band, a service door and framed windows, and one wide central chimney whose height is the Tier (0.7 to 1.6) and whose brick rings count the Tier. Orange and brick accents, a thin smoke plume."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    wall, dark, slab, trim, frame, glass, brick, orange, sun, smoke = (index(n) for n in ("uwall", "udark", "uslab", "utrim", "uframe", "glass_blue", "brick", "tangerine", "sun", "slate"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    tier = spec["count"]
+    cy, width, depth, height = 0.1, 1.9, 1.4, 0.42
+    front, back = cy - depth / 2, cy + depth / 2
+    parts = [rounded_block("hall", width, depth, height, wall, 0.03 / depth, at=(0, cy, 0))]
+    parts.append(rounded_block("hall_plinth", width + 0.01, depth + 0.01, 0.09, brick, 0.03 / depth, at=(0, cy, 0)))
+    parts.append(rounded_block("hall_band", width + 0.01, depth + 0.01, 0.07, brick, 0.03 / depth, at=(0, cy, height - 0.11)))
+    parts.append(lpm.box("hall_roof", (width + 0.04, depth + 0.04, 0.03), at=(0, cy, height), color=slab))
+    for name, size, at in (("front", (width + 0.04, 0.015, 0.03), (0, front - 0.02, height + 0.03)), ("back", (width + 0.04, 0.015, 0.03), (0, back + 0.02, height + 0.03)),
+                           ("left", (0.015, depth + 0.04, 0.03), (-width / 2 - 0.02, cy, height + 0.03)), ("right", (0.015, depth + 0.04, 0.03), (width / 2 + 0.02, cy, height + 0.03))):
+        parts.append(lpm.box(f"parapet_{name}", size, at=at, color=dark))
+    dock_x, dock_w = -0.4, 0.8
+    parts.append(lpm.box("dock", (dock_w + 0.1, 0.22, 0.04), at=(dock_x, front - 0.11, 0.0), color=trim))
+    parts.append(lpm.box("tipping_door", (dock_w, 0.014, 0.28), at=(dock_x, front - 0.004, 0.04), color=dark))
+    door_frame(parts, "tipping_door", dock_x, front, 0.04, dock_w, 0.28, frame)
+    for number in range(8):
+        parts.append(lpm.box(f"hazard_{number}", (dock_w / 8, 0.016, 0.04), at=(dock_x - dock_w / 2 + dock_w / 8 * (number + 0.5), front - 0.006, 0.34), color=sun if number % 2 == 0 else dark))
+    parts.append(lpm.box("service_door", (0.16, 0.014, 0.22), at=(0.45, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "service_door", 0.45, front, 0.0, 0.16, 0.22, frame)
+    parts.append(lpm.box("front_window", (0.22, 0.012, 0.1), at=(0.75, front - 0.003, 0.16), color=glass))
+    window_frame(parts, "front_window", 0.75, front, 0.16, 0.22, 0.1, frame)
+    for side, name in ((-1, "left"), (1, "right")):
+        x = side * (width / 2)
+        parts.append(lpm.box(f"{name}_window", (0.012, 0.3, 0.1), at=(x + side * 0.003 - 0.006, cy, 0.16), color=glass))
+        for edge, (dy, dz, sy, sz) in enumerate(((0.16, 0.0, 0.012, 0.124), (-0.16, 0.0, 0.012, 0.124), (0.0, 0.112, 0.34, 0.012), (0.0, -0.012, 0.34, 0.012))):
+            parts.append(lpm.box(f"{name}_window_frame_{edge}", (0.01, sy, sz), at=(x + side * 0.001 - 0.005, cy + dy, 0.16 + dz), color=frame))
+    for number, vx in enumerate((-0.7, 0.7)):
+        parts.append(lpm.prism(f"roof_vent_{number}", 6, 0.07, 0.07, at=(vx, back - 0.25, height + 0.03), color=trim))
+        parts.append(lpm.prism(f"roof_vent_cap_{number}", 6, 0.085, 0.015, at=(vx, back - 0.25, height + 0.1), color=dark))
+    base_top = height + 0.03 + 0.1
+    parts.append(rounded_block("flue_box", 0.92, 0.92, 0.1, slab, 0.2, at=(0, cy, height + 0.03)))
+    parts.append(rounded_block("flue_band", 0.93, 0.93, 0.03, orange, 0.2, at=(0, cy, height + 0.03 + 0.06)))
+    stack = INCINERATOR_STACK_HEIGHTS[tier - 1]
+    base_radius, top_radius = 0.37, 0.27
+    radius_at = lambda z: base_radius - (base_radius - top_radius) * z / stack
+    parts.append(lpm.prism("chimney", 12, base_radius, stack, at=(0, cy, base_top), color=wall, radius_top=top_radius))
+    for ring in range(tier):
+        level = stack - 0.1 - 0.13 * ring
+        parts.append(lpm.prism(f"chimney_ring_{ring}", 12, radius_at(level) + 0.012, 0.06, at=(0, cy, base_top + level), color=brick))
+    parts.append(lpm.prism("chimney_cap", 12, top_radius + 0.02, 0.025, at=(0, cy, base_top + stack), color=dark))
+    for number, (radius, rise, drift) in enumerate(((0.12, 0.03, 0.0), (0.15, 0.2, 0.06))):
+        puff = [(0.0, 0.0), (radius, 0.02), (radius * 1.1, 0.07), (radius * 0.8, 0.12), (0.0, 0.14)]
+        parts.append(lpm.lathe(f"smoke_{number}", puff, segments=8, at=(drift, cy, base_top + stack + 0.02 + rise), color=smoke))
+    ob = lpm.finish(spec["id"], parts, palette, budget=3500, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def door_frame(parts, name, cx, y, bottom, width, height, color, thick=0.012):
     """Thin surround on the left, right and top of a door; `y` is the wall plane (front, -Y)."""
     parts.append(lpm.box(f"{name}_frame_left", (thick, 0.01, height + thick), at=(cx - width / 2 - thick / 2, y - 0.004, bottom), color=color))
