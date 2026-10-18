@@ -8,7 +8,7 @@ import { BACK_OFFICE_ORIGINS, isBackOfficeSessionRequested, READY_MESSAGE, readS
 
 export function installBackOffice(): () => void {
   if (!isBackOfficeSessionRequested(window.location.search, import.meta.env.DEV)) return () => {};
-  const opener = window.opener as Window | null;
+  const opener = (window.opener as Window | null) ?? (window.parent === window ? null : window.parent);
   if (!opener) return () => {};
 
   const onMessage = (event: MessageEvent) => {
