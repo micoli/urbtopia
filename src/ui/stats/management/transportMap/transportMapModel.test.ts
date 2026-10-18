@@ -3,7 +3,7 @@ import { transportStats, type TransitMode } from '../../../../core';
 import { transportMapCity } from './transportMapFixture.ts';
 import { isLineDimmed, isNodeDimmed } from './selection.ts';
 import { buildTransportMap, loadLevel, visibleLines } from './transportMapModel.ts';
-import { fitViewBox, zoomViewBox } from './useMapViewport.ts';
+import { BUTTON_ZOOM_STEP, fitViewBox, zoomViewBox } from './useMapViewport.ts';
 
 const model = () => { const state = transportMapCity(); return buildTransportMap(state, transportStats(state)); };
 
@@ -111,6 +111,16 @@ describe('transport map viewport', () => {
     expect(zoomed.width).toBe(50);
     expect((40 - zoomed.x) / zoomed.width).toBeCloseTo(0.4);
     expect((10 - zoomed.y) / zoomed.height).toBeCloseTo(0.2);
+  });
+
+  it('zooms in and out by buttons around the centre of the view', () => {
+    const view = { x: 0, y: 0, width: 100, height: 50 };
+    const zoomedIn = zoomViewBox(view, 1 / BUTTON_ZOOM_STEP, { x: 50, y: 25 });
+    expect(zoomedIn.width).toBeCloseTo(100 / BUTTON_ZOOM_STEP);
+    expect(zoomedIn.x + zoomedIn.width / 2).toBeCloseTo(50);
+    expect(zoomedIn.y + zoomedIn.height / 2).toBeCloseTo(25);
+    const back = zoomViewBox(zoomedIn, BUTTON_ZOOM_STEP, { x: 50, y: 25 });
+    expect(back.width).toBeCloseTo(100);
   });
 
   it('limits the zoom', () => {

@@ -13,6 +13,7 @@ const PADDING = 3;
 const SIDE_PADDING_RATIO = 0.12;
 const MIN_SIZE = 12;
 const ZOOM_STEP = 1.15;
+export const BUTTON_ZOOM_STEP = 1.5;
 const MIN_WIDTH = 6;
 const MAX_WIDTH = 400;
 
@@ -68,6 +69,10 @@ export function useMapViewport(bounds: MapBounds, svg: RefObject<SVGSVGElement |
   }, [fitted.x, fitted.y, fitted.width, fitted.height]);
   const onPointerUp = useCallback(() => { drag.current = null; }, []);
   const fit = useCallback(() => setView(null), []);
+  const zoom = useCallback((factor: number) => setView(previous => {
+    const base = previous ?? fitted;
+    return zoomViewBox(base, factor, { x: base.x + base.width / 2, y: base.y + base.height / 2 });
+  }), [fitted.x, fitted.y, fitted.width, fitted.height]);
 
-  return { view: current, fit, handlers: { onPointerDown, onPointerMove, onPointerUp, onPointerCancel: onPointerUp } };
+  return { view: current, fit, zoom, handlers: { onPointerDown, onPointerMove, onPointerUp, onPointerCancel: onPointerUp } };
 }

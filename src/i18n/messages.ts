@@ -71,6 +71,8 @@ export const MESSAGES = {
   'transportMap.roads': "Roads",
   'transportMap.pedestrianWays': "Pedestrian ways",
   'transportMap.layersHelp': "With roads or pedestrian ways, the stops stand where they really are. A short link marks where a stop touches a road or a pedestrian way, and a green square where a pedestrian way ends on a road.",
+  'transportMap.zoomIn': 'Zoom in',
+  'transportMap.zoomOut': 'Zoom out',
   'transportMap.fit': "Fit to content",
   'transportMap.pedestrians': "Pedestrian riders",
   'transportMap.cyclists': "Cyclist riders",
