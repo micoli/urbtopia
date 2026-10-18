@@ -1,6 +1,7 @@
 import { buildingDistance, footprintOf, type Building, type GameState, type TransitMode, type transportStats } from '../../../../core';
 import { t } from '../../../../i18n/t.ts';
 import { compactComponents } from './compactComponents.ts';
+import { layerBounds, pedestrianJunctions, pedestrianSegments, roadSegments, stopConnections, type MapConnection, type MapJunction, type MapSegment } from './networkLayers.ts';
 
 type Line = ReturnType<typeof transportStats>['lines'][number];
 
@@ -13,6 +14,8 @@ export interface MapNode {
   id: number;
   x: number;
   y: number;
+  realX: number;
+  realY: number;
   label: string;
   name: string;
   coordinates: string;
@@ -53,6 +56,14 @@ export interface TransportMapModel {
   lines: MapLine[];
   transfers: MapTransfer[];
   bounds: MapBounds;
+  // The same stops at their real place, with the road and pedestrian layers that only make sense there.
+  realBounds: MapBounds;
+  roads: MapSegment[];
+  pedestrianWays: MapSegment[];
+  connections: MapConnection[];
+  junctions: MapJunction[];
+  roadBounds: MapBounds | null;
+  pedestrianBounds: MapBounds | null;
 }
 
 export function loadLevel(load: number): LoadLevel {
@@ -83,7 +94,7 @@ export function buildTransportMap(state: GameState, transport: Pick<ReturnType<t
     const name = building.name ?? `${t(`building.${building.type}`)} #${building.id}`;
     const coordinates = `(${building.x}, ${building.y})`;
     return {
-      id: building.id, ...centerOf(building), label: `${name} ${coordinates}`, name, coordinates, hub: building.type === 'transitHub',
+      id: building.id, ...centerOf(building), realX: centerOf(building).x, realY: centerOf(building).y, label: `${name} ${coordinates}`, name, coordinates, hub: building.type === 'transitHub',
       carriesBikes: building.type !== 'busStop', modes: modesOf(building.id),
     };
   });
@@ -93,7 +104,13 @@ export function buildTransportMap(state: GameState, transport: Pick<ReturnType<t
     if (buildingDistance(a, b) <= TRANSFER_DISTANCE) transfers.push({ from: a.id, to: b.id });
   }
   const placed = compactComponents(nodes, lines, transfers);
-  return { nodes: placed, lines, transfers, bounds: boundsOf(placed) };
+  const roads = roadSegments(state), pedestrianWays = pedestrianSegments(state);
+  return {
+    nodes: placed, lines, transfers, bounds: boundsOf(placed),
+    realBounds: boundsOf(nodes.map(node => ({ ...node, x: node.realX, y: node.realY }))),
+    roads, pedestrianWays, connections: stopConnections(state, [...buildings.values()]), junctions: pedestrianJunctions(state),
+    roadBounds: layerBounds(roads), pedestrianBounds: layerBounds(pedestrianWays),
+  };
 }
 
 function boundsOf(nodes: readonly MapNode[]): MapBounds {
@@ -104,4 +121,10 @@ function boundsOf(nodes: readonly MapNode[]): MapBounds {
 
 export function visibleLines(model: TransportMapModel, modes: ReadonlySet<TransitMode>): MapLine[] {
   return model.lines.filter(line => modes.has(line.mode));
+}
+
+export function mergeBounds(base: MapBounds, ...others: (MapBounds | null)[]): MapBounds {
+  return others.reduce<MapBounds>((merged, other) => (other === null ? merged : {
+    minX: Math.min(merged.minX, other.minX), minY: Math.min(merged.minY, other.minY), maxX: Math.max(merged.maxX, other.maxX), maxY: Math.max(merged.maxY, other.maxY),
+  }), base);
 }

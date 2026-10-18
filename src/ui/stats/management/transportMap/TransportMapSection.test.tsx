@@ -1,5 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
+import { buildTransportMap } from './transportMapModel.ts';
+import { TransportMapCanvas } from './TransportMapCanvas.tsx';
 import { congestionStats, createBuilding, newGame, transportStats } from '../../../../core';
 import { prefsStore } from '../../../../i18n/prefsStore';
 import { TransportMapSection } from './TransportMapSection.tsx';
@@ -30,5 +32,22 @@ describe('Transport map section', () => {
     expect(html).toContain('transport-map-transfer');
     expect(html).not.toContain('NaN');
     expect(html).not.toContain('undefined');
+  });
+
+  it('draws the roads, the Pedestrian ways and where they join the stops when asked', () => {
+    const state = { ...transportMapCity(), pedestrianWays: [{ x: 14, y: 3 }, { x: 15, y: 3 }] };
+    const model = buildTransportMap(state, transportStats(state));
+    const render = (roads: boolean, pedestrianWays: boolean) => renderToStaticMarkup(
+      <TransportMapCanvas model={model} lines={model.lines} selection={null} roads={roads} pedestrianWays={pedestrianWays} onSelect={() => undefined} />,
+    );
+    expect(render(false, false)).not.toContain('transport-map-layers');
+    const roadsOnly = render(true, false);
+    expect(roadsOnly).toContain('transport-map-roads');
+    expect(roadsOnly).toContain('data-network="road"');
+    expect(roadsOnly).not.toContain('transport-map-pedestrian-ways');
+    const both = render(true, true);
+    expect(both).toContain('transport-map-pedestrian-ways');
+    expect(both).toContain('data-network="pedestrianWay"');
+    expect(both).not.toContain('NaN');
   });
 });

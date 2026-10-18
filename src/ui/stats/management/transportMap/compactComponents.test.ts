@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { COMPONENT_GAP, compactComponents } from './compactComponents.ts';
 import type { MapLine, MapNode } from './transportMapModel.ts';
 
-const node = (id: number, x: number, y: number): MapNode => ({ id, x, y, label: `#${id}`, name: `#${id}`, coordinates: '(0, 0)', hub: false, carriesBikes: false, modes: ['bus'] });
+const node = (id: number, x: number, y: number): MapNode => ({ id, x, y, realX: x, realY: y, label: `#${id}`, name: `#${id}`, coordinates: '(0, 0)', hub: false, carriesBikes: false, modes: ['bus'] });
 const line = (id: number, stops: number[]): MapLine => ({ id, mode: 'bus', stops, loop: false, active: true, status: 'active', load: 0, level: 'free', riders: 0, cyclists: 0, capacity: 0, headway: 0 });
 const byId = (nodes: readonly MapNode[]) => new Map(nodes.map(n => [n.id, n]));
 const width = (nodes: readonly MapNode[]) => Math.max(...nodes.map(n => n.x)) - Math.min(...nodes.map(n => n.x));

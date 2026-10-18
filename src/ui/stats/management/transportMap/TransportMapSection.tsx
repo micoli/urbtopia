@@ -19,6 +19,8 @@ interface TransportMapSectionProps {
 export function TransportMapSection({ state, transport, congestion }: TransportMapSectionProps) {
   const [modes, setModes] = useState<ReadonlySet<TransitMode>>(() => new Set(TRANSIT_MODES));
   const [selection, setSelection] = useState<MapSelection>(null);
+  const [roads, setRoads] = useState(false);
+  const [pedestrianWays, setPedestrianWays] = useState(false);
   const model = useMemo(() => buildTransportMap(state, transport), [state, transport]);
   const lines = visibleLines(model, modes);
   const toggle = (mode: TransitMode, on: boolean) => setModes(current => {
@@ -35,8 +37,11 @@ export function TransportMapSection({ state, transport, congestion }: TransportM
       : <>
         <div className="transport-map-filters" role="group" aria-label={t('transportMap.filters')}>
           {TRANSIT_MODES.map(mode => <CheckboxField key={mode} label={t(MODE_LABEL[mode])} checked={modes.has(mode)} onChange={on => toggle(mode, on)} />)}
+          <CheckboxField label={t('transportMap.roads')} checked={roads} onChange={setRoads} />
+          <CheckboxField label={t('transportMap.pedestrianWays')} checked={pedestrianWays} onChange={setPedestrianWays} />
         </div>
-        <TransportMapCanvas model={model} lines={lines} selection={selection} onSelect={setSelection} />
+        {(roads || pedestrianWays) && <p className="transport-map-hint">{t('transportMap.layersHelp')}</p>}
+        <TransportMapCanvas key={String(roads || pedestrianWays)} model={model} lines={lines} selection={selection} roads={roads} pedestrianWays={pedestrianWays} onSelect={setSelection} />
         <TransportMapCard model={model} selection={selection} />
       </>}
   </section>;
