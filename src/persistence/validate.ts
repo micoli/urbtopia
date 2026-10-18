@@ -213,11 +213,11 @@ export function validateGameState(value: unknown): GameState | null {
   }
   if (new Set((state.boats ?? []).map(boat => `${boat.x}:${boat.y}`)).size !== (state.boats ?? []).length) return null;
   for (const line of state.busLines ?? []) {
-    if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && b.type === 'busStop')))) return null;
+    if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && (b.type === 'busStop' || b.type === 'transitHub'))))) return null;
   }
   for (const line of state.transitLines ?? []) {
     const type = line.mode === 'brt' ? 'brtStation' : 'railStation';
-    if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && b.type === type)))) return null;
+    if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && (b.type === type || b.type === 'transitHub'))))) return null;
   }
   for (const vehicle of state.transitFleet ?? []) {
     if (vehicle.lineId === undefined) continue;

@@ -40,7 +40,7 @@ export function LineEditor({ lineId, summary, onSaved, onDeleted, onCancel }: Li
   }, [state, mode, stops, loop, peak, offPeak]);
   const stopsById = new Map(state.buildings.map(b => [b.id, b]));
   const labelOf = (id: number) => stopLabel(stopsById.get(id), id);
-  const candidates = state.buildings.filter(b => b.type === STOP_TYPE[mode] && !stops.includes(b.id));
+  const candidates = state.buildings.filter(b => (b.type === STOP_TYPE[mode] || b.type === 'transitHub') && !stops.includes(b.id));
   const loopAllowed = stops.length >= 3;
   const canSave = stops.length >= 2 && !failure && citizens >= unlockOf(mode);
 

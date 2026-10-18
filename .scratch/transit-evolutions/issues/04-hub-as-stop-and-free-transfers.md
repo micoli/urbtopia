@@ -1,7 +1,7 @@
 # Hub as a stop of each mode and free Transfers
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 03
 
 ## What to build

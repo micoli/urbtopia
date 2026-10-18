@@ -1,7 +1,7 @@
 import { ECOLOGY } from '../environment/ecology';
 import { DIRECTIONS, neighbour, tileKey } from '../map/geometry';
 import { roundaboutTiles } from '../map/occupancy';
-import { frontTiles } from '../map/placement';
+import { frontTiles, perimeterTiles } from '../map/placement';
 import { networkNeighbours, networkTiles, TRANSIT } from './transitNetwork';
 import type { Coord } from '../map/coord';
 import type { BusLine, GameState, TransitLine, TransitMode } from '../engine/state';
@@ -41,9 +41,11 @@ function resolveRoute(state: GameState, line: BusLine | TransitLine): Resolution
   const keys = mode === 'bus' ? roads : new Set(tiles.map(tileKey));
   const endpoints: Coord[] = [];
   for (const id of line.stops) {
-    const stop = state.buildings.find(b => b.id === id && b.type === (mode === 'bus' ? 'busStop' : mode === 'brt' ? 'brtStation' : 'railStation'));
+    const stopType = mode === 'bus' ? 'busStop' : mode === 'brt' ? 'brtStation' : 'railStation';
+    const stop = state.buildings.find(b => b.id === id && (b.type === stopType || b.type === 'transitHub'));
     if (!stop) return { failure: 'invalid' };
-    const endpoint = frontTiles(stop.type, stop.x, stop.y, stop.rotation).find(p => keys.has(tileKey(p)));
+    const reach = stop.type === 'transitHub' ? perimeterTiles(stop.type, stop.x, stop.y, stop.rotation, stop.tier) : frontTiles(stop.type, stop.x, stop.y, stop.rotation);
+    const endpoint = reach.find(p => keys.has(tileKey(p)));
     if (!endpoint) return { failure: 'stopNotOnNetwork' };
     endpoints.push(endpoint);
   }

@@ -466,7 +466,7 @@ A visible roadside sign marking a public-transport stop that covers nearby Homes
 _Avoid_: Road STOP sign, station
 
 **Stop name**:
-A name the player gives to a Bus stop, BRT station or Railway station. It replaces the default designation of the stop wherever the stop is shown, and goes away with the stop. Without one, the stop keeps its default designation.
+A name the player gives to a Bus stop, BRT station, Railway station or Transit hub. It replaces the default designation of the stop wherever the stop is shown, and goes away with the stop. Without one, the stop keeps its default designation.
 _Avoid_: Label, Title
 
 **Bus line**:

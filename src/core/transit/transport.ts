@@ -7,6 +7,7 @@ import { hasBrtOnlyAccess } from '../map/placement';
 import { transitServices, type SpeedFactors } from './transitService';
 import type { Building, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { isTransitStopType } from './stopNames';
 export { routeForLine, routeFailure } from './transitService';
 
 type Service = ReturnType<typeof transitServices>[number];
@@ -39,8 +40,10 @@ function itineraries(first: Service, firstStop: number, lines: Service[], stops:
         if (used.includes(next.id) || !next.active) continue;
         for (let i = 0; i < next.stops.length; i++) {
           const transfer = stops.get(next.stops[i]!);
-          if (!transfer || distance(stop, transfer) > 2) continue;
-          walk(next, i, [...used, next.id], arrival + 1 + distance(stop, transfer));
+          if (!transfer) continue;
+          const sameStation = transfer.id === stop.id;
+          if (!sameStation && distance(stop, transfer) > 2) continue;
+          walk(next, i, [...used, next.id], sameStation ? arrival : arrival + 1 + distance(stop, transfer));
         }
       }
     }
@@ -79,7 +82,7 @@ function calculateTransport(state: GameState, now: number, speedFactors?: SpeedF
   const byId = new Map(lines.map(l => [l.id, l]));
   const homes = state.buildings.filter(b => isHomeType(b.type)).sort((a, b) => a.id - b.id);
   const activities = state.buildings.filter(b => ['workshop', 'factory', 'mill', 'bakery'].includes(b.type) || isShopType(b.type) || (workplaceTypes.includes(b.type) && hasBrtOnlyAccess(state, b)));
-  const stops = new Map(state.buildings.filter(b => ['busStop', 'brtStation', 'railStation'].includes(b.type)).map(b => [b.id, b]));
+  const stops = new Map(state.buildings.filter(b => isTransitStopType(b.type)).map(b => [b.id, b]));
   const optionsByStop = new Map<string, Itinerary[]>();
   const homeRiders = new Map<number, number>();
   const homeLines = new Map<number, number[][]>();
