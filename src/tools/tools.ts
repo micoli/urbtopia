@@ -44,7 +44,7 @@ import {
 } from '../core';
 
 export type Tool =
-  | { kind: 'building'; buildingType: BuildingType; solar?: boolean; colorVariant?: ColorVariant }
+  | { kind: 'building'; buildingType: BuildingType; solar?: boolean; colorVariant?: ColorVariant; repeat?: boolean }
   | { kind: 'move'; buildingId: number }
   | { kind: 'road'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'pedestrianWay'; start: Coord | null; horizontalFirst: boolean }
@@ -383,7 +383,8 @@ export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTo
   if (pathTool && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
   if (!current.valid) return { command: null, nextTool: tool };
   if (pathTool) return { command: current.command, nextTool: { ...tool, start: null } };
-  if (tool.kind === 'building' || tool.kind === 'boat') return { command: current.command, nextTool: keepTool ? tool : null };
+  if (tool.kind === 'building') return { command: current.command, nextTool: keepTool || tool.repeat ? tool : null };
+  if (tool.kind === 'boat') return { command: current.command, nextTool: keepTool ? tool : null };
   if (tool.kind === 'move') return { command: current.command, nextTool: null };
   return { command: current.command, nextTool: tool };
 }

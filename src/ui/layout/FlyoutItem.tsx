@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { t } from '../../i18n/t';
+import { useSingleOrDoubleClick } from './useSingleOrDoubleClick';
 import type { CodexId } from '../../codex/catalog';
 
 interface FlyoutItemProps {
@@ -8,6 +9,7 @@ interface FlyoutItemProps {
   cost?: ReactNode;
   guided?: boolean;
   onChoose: () => void;
+  onChooseRepeat?: () => void;
   codexId?: CodexId;
   onInfo?: () => void;
   preview?: string;
@@ -16,11 +18,12 @@ interface FlyoutItemProps {
   disabled?: boolean;
 }
 
-export function FlyoutItem({ label, badge, cost, guided = false, onChoose, codexId, onInfo, preview, icon, selected, disabled }: FlyoutItemProps) {
+export function FlyoutItem({ label, badge, cost, guided = false, onChoose, onChooseRepeat, codexId, onInfo, preview, icon, selected, disabled }: FlyoutItemProps) {
+  const choose = useSingleOrDoubleClick(onChoose, onChooseRepeat);
   const picture = icon ? `${import.meta.env.BASE_URL}assets/icons/${icon}` : preview;
   const hasRow = onInfo || picture;
   const item = (
-      <button type="button" className="flyout-item" data-guided={guided && !hasRow} data-selected={selected} data-codex-label={onInfo ? codexId : undefined} disabled={disabled} onClick={onInfo ?? onChoose}>
+      <button type="button" className="flyout-item" data-guided={guided && !hasRow} data-selected={selected} data-codex-label={onInfo ? codexId : undefined} disabled={disabled} onClick={onInfo ?? choose}>
       <span>{label}</span>
       {badge ? <small className="flyout-badge">{badge}</small> : null}
       {cost && !(onInfo || icon || preview) ? <small className="flyout-cost">{cost}</small> : null}
@@ -30,7 +33,7 @@ export function FlyoutItem({ label, badge, cost, guided = false, onChoose, codex
   return (
     <div className="flyout-row">
       {item}
-      <button type="button" className="flyout-info" data-codex-id={codexId} data-guided={guided} aria-label={onInfo ? t('codex.about').replace('{name}', label) : label} disabled={disabled} onClick={onChoose}>
+      <button type="button" className="flyout-info" data-codex-id={codexId} data-guided={guided} aria-label={onInfo ? t('codex.about').replace('{name}', label) : label} disabled={disabled} onClick={choose}>
         {cost ? <small className="flyout-cost">{cost}</small> : null}
         {picture ? <img src={picture} width={44} height={38} alt="" loading="lazy" /> : <span aria-hidden="true">📖</span>}
       </button>

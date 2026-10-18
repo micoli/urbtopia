@@ -473,6 +473,7 @@ export const FR: Record<MessageKey, string> = {
   'pad.confirm': 'Confirmer',
   'pad.cancel': 'Annuler',
   'pad.rotate': 'Pivoter',
+  'pad.repeat': 'Pose multiple : Échap ou ✗ pour arrêter',
   'pad.roadStart': 'Choisissez le début de la route, puis confirmez',
   'pad.demolishStart': 'Choisissez le début du tronçon à démolir, puis confirmez',
   'panel.close': 'Fermer',

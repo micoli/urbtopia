@@ -24,6 +24,7 @@ export function BuildTypeItem({ type, homeColor, preview }: BuildTypeItemProps) 
       cost={<UrbsAmount value={nextCopyCost(state, type)} />}
       guided={guide.buildings.includes(type)}
       onChoose={() => chooseTool({ kind: 'building', buildingType: type, ...(isHomeType(type) ? { colorVariant: homeColor } : {}) })}
+      onChooseRepeat={() => chooseTool({ kind: 'building', buildingType: type, repeat: true, ...(isHomeType(type) ? { colorVariant: homeColor } : {}) })}
       codexId={type}
       preview={preview}
       onInfo={() => openCodex(type)}

@@ -471,6 +471,7 @@ export const MESSAGES = {
   'pad.confirm': 'Confirm',
   'pad.cancel': 'Cancel',
   'pad.rotate': 'Rotate',
+  'pad.repeat': 'Placing several: Esc or ✗ to stop',
   'pad.roadStart': 'Pick the start of the road, then confirm',
   'pad.demolishStart': 'Pick the start of the section to demolish, then confirm',
   'panel.close': 'Close',
