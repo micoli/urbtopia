@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { visibleLabelIds } from './labelLayout.ts';
 import type { MapNode } from './transportMapModel.ts';
 
-const node = (id: number, x: number, y: number, hub = false): MapNode => ({ id, x, y, label: `Stop number ${id}`, hub, carriesBikes: false, modes: ['bus'] });
+const node = (id: number, x: number, y: number, hub = false): MapNode => ({ id, x, y, label: `Stop number ${id} (1, 1)`, name: `Stop number ${id}`, coordinates: '(1, 1)', hub, carriesBikes: false, modes: ['bus'] });
 const view = { x: 0, y: 0, width: 100, height: 40 };
 const size = { width: 1000, height: 400 };
 

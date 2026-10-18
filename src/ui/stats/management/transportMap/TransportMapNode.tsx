@@ -1,4 +1,4 @@
-import { LABEL_TEXT_SIZE } from './labelLayout.ts';
+import { COORDINATES_SCALE, LABEL_TEXT_SIZE, LINE_HEIGHT } from './labelLayout.ts';
 import type { MapNode } from './transportMapModel.ts';
 
 interface TransportMapNodeProps {
@@ -14,6 +14,7 @@ interface TransportMapNodeProps {
 const NODE_RADIUS = 5;
 const HUB_RADIUS = 8;
 const TEXT_SIZE = LABEL_TEXT_SIZE;
+const COORDINATES_COLOR = '#9ca3af';
 const BIKE_BADGE = 7;
 
 export function TransportMapNode({ node, unit, labelled, dimmed, selected, onSelect }: TransportMapNodeProps) {
@@ -37,6 +38,9 @@ export function TransportMapNode({ node, unit, labelled, dimmed, selected, onSel
       <circle cx={node.x + radius + BIKE_BADGE * unit} cy={node.y - radius - BIKE_BADGE * unit} r={BIKE_BADGE * unit} fill="#fff" />
       <text x={node.x + radius + BIKE_BADGE * unit} y={node.y - radius - BIKE_BADGE * unit} fontSize={BIKE_BADGE * 1.3 * unit} textAnchor="middle" dominantBaseline="central">🚲</text>
     </g>}
-    {labelled && <text className="transport-map-label" x={node.x} y={node.y + radius + text * 1.1} fontSize={text} textAnchor="middle" fill="currentColor" fontWeight={node.hub ? 700 : 400} aria-hidden="true">{node.label}</text>}
+    {labelled && <text className="transport-map-label" x={node.x} y={node.y + radius + text * 1.1} fontSize={text} textAnchor="middle" fill="currentColor" aria-hidden="true">
+      <tspan fontWeight={node.hub ? 700 : 400}>{node.name}</tspan>
+      <tspan className="transport-map-coordinates" x={node.x} dy={text * LINE_HEIGHT} fontSize={text * COORDINATES_SCALE} fill={COORDINATES_COLOR}>{node.coordinates}</tspan>
+    </text>}
   </g>;
 }

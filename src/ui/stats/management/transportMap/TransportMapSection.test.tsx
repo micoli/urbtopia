@@ -26,6 +26,7 @@ describe('Transport map section', () => {
     expect(html).toContain('data-hub="true"');
     expect(html).toContain('transport-map-arrow');
     expect(html).toContain('🚲');
+    expect(html).toMatch(/<tspan[^>]*class="transport-map-coordinates"[^>]*fill="#9ca3af"[^>]*>\(14, 1\)<\/tspan>/);
     expect(html).toContain('transport-map-transfer');
     expect(html).not.toContain('NaN');
     expect(html).not.toContain('undefined');

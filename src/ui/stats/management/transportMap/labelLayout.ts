@@ -5,6 +5,8 @@ import type { ViewBox } from './useMapViewport.ts';
 export const LABEL_TEXT_SIZE = 14;
 const CHARACTER_WIDTH = 0.56;
 const MARGIN = 3;
+export const COORDINATES_SCALE = 0.85;
+export const LINE_HEIGHT = 1.15;
 
 interface Box {
   left: number;
@@ -25,8 +27,8 @@ export function visibleLabelIds(nodes: readonly MapNode[], selection: MapSelecti
   for (const node of ordered) {
     const x = (node.x - view.x) * scale;
     const y = (node.y - view.y) * scale;
-    const halfWidth = (node.label.length * LABEL_TEXT_SIZE * CHARACTER_WIDTH) / 2;
-    const box = { left: x - halfWidth, right: x + halfWidth, top: y + 8, bottom: y + 8 + LABEL_TEXT_SIZE };
+    const halfWidth = (Math.max(node.name.length, node.coordinates.length * COORDINATES_SCALE) * LABEL_TEXT_SIZE * CHARACTER_WIDTH) / 2;
+    const box = { left: x - halfWidth, right: x + halfWidth, top: y + 8, bottom: y + 8 + LABEL_TEXT_SIZE * LINE_HEIGHT * (1 + COORDINATES_SCALE) };
     if (priority(node) > 0 && placed.some(other => overlaps(box, other))) continue;
     placed.push(box);
     shown.add(node.id);

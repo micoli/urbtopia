@@ -16,6 +16,13 @@ describe('transport map model', () => {
     expect(hub.x).toBeGreaterThan(14);
   });
 
+  it('splits the label into the name and the coordinates', () => {
+    const hub = model().nodes.find(node => node.id === 4)!;
+    expect(hub.coordinates).toBe('(14, 1)');
+    expect(hub.name).not.toContain('(');
+    expect(hub.label).toBe(`${hub.name} ${hub.coordinates}`);
+  });
+
   it('marks the stops that carry bicycles', () => {
     const byId = new Map(model().nodes.map(node => [node.id, node]));
     expect(byId.get(3)!.carriesBikes).toBe(false);

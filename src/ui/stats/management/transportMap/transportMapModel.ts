@@ -1,5 +1,5 @@
 import { buildingDistance, footprintOf, type Building, type GameState, type TransitMode, type transportStats } from '../../../../core';
-import { stopLabel } from '../transit/stopLabel.ts';
+import { t } from '../../../../i18n/t.ts';
 
 type Line = ReturnType<typeof transportStats>['lines'][number];
 
@@ -13,6 +13,8 @@ export interface MapNode {
   x: number;
   y: number;
   label: string;
+  name: string;
+  coordinates: string;
   hub: boolean;
   carriesBikes: boolean;
   modes: TransitMode[];
@@ -76,10 +78,14 @@ export function buildTransportMap(state: GameState, transport: Pick<ReturnType<t
   const buildings = new Map(state.buildings.filter(building => used.has(building.id)).map(building => [building.id, building]));
   const lines = transport.lines.map(mapLine);
   const modesOf = (id: number) => [...new Set(lines.filter(line => line.stops.includes(id)).map(line => line.mode))];
-  const nodes = [...buildings.values()].map((building): MapNode => ({
-    id: building.id, ...centerOf(building), label: stopLabel(building, building.id), hub: building.type === 'transitHub',
-    carriesBikes: building.type !== 'busStop', modes: modesOf(building.id),
-  }));
+  const nodes = [...buildings.values()].map((building): MapNode => {
+    const name = building.name ?? `${t(`building.${building.type}`)} #${building.id}`;
+    const coordinates = `(${building.x}, ${building.y})`;
+    return {
+      id: building.id, ...centerOf(building), label: `${name} ${coordinates}`, name, coordinates, hub: building.type === 'transitHub',
+      carriesBikes: building.type !== 'busStop', modes: modesOf(building.id),
+    };
+  });
   const transfers: MapTransfer[] = [];
   for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
     const a = buildings.get(nodes[i]!.id)!, b = buildings.get(nodes[j]!.id)!;
