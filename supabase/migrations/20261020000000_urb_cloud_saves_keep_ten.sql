@@ -47,7 +47,7 @@ begin
 
   delete from public.urb_saves
     where user_id = v_user
-      and revision <= (select revision from public.urb_saves where user_id = v_user order by revision desc offset 9 limit 1);
+      and revision < (select revision from public.urb_saves where user_id = v_user order by revision desc offset 9 limit 1);
 
   return v_next;
 end;
@@ -82,7 +82,7 @@ begin
 
   delete from public.urb_saves
     where user_id = v_user
-      and revision <= (select revision from public.urb_saves where user_id = v_user order by revision desc offset 9 limit 1);
+      and revision < (select revision from public.urb_saves where user_id = v_user order by revision desc offset 9 limit 1);
 
   return v_next;
 end;
