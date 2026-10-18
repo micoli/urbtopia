@@ -63,33 +63,23 @@ select throws_ok(
 select throws_ok($$ update public.urb_saves set envelope = '{}' $$, '42501', null, 'direct update is refused');
 select throws_ok($$ delete from public.urb_saves $$, '42501', null, 'direct delete is refused');
 
--- Never more than 4 rows: age the rows so each push rotates
-reset role;
-update public.urb_saves set created_at = now() - interval '2 hours';
-set local role authenticated;
-select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
-select public.urb_push_save(3, '{"city":"a3"}'::jsonb, 11, now());
-reset role;
-update public.urb_saves set created_at = created_at - interval '2 hours';
-set local role authenticated;
-select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
-select public.urb_push_save(4, '{"city":"a4"}'::jsonb, 11, now());
-reset role;
-update public.urb_saves set created_at = created_at - interval '2 hours';
-set local role authenticated;
-select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
-select public.urb_push_save(5, '{"city":"a5"}'::jsonb, 11, now());
-reset role;
-update public.urb_saves set created_at = created_at - interval '2 hours';
-set local role authenticated;
-select pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
-select public.urb_push_save(6, '{"city":"a6"}'::jsonb, 11, now());
-select is((select count(*) from public.urb_saves), 4::bigint, 'the 5th push never creates a 5th row');
+-- Never more than 10 rows: age the rows so each push rotates
+do $$
+begin
+  for i in 3..12 loop
+    reset role;
+    update public.urb_saves set created_at = created_at - interval '2 hours';
+    set local role authenticated;
+    perform pg_temp.act_as('00000000-0000-0000-0000-00000000000a');
+    perform public.urb_push_save(i, jsonb_build_object('city', 'a' || i), 11, now());
+  end loop;
+end $$;
+select is((select count(*) from public.urb_saves), 10::bigint, 'the 11th row is never kept');
 
 -- Restore makes an old version current again
-select is((select count(*) from public.urb_list_saves()), 4::bigint, 'urb_list_saves lists the caller rows');
+select is((select count(*) from public.urb_list_saves()), 10::bigint, 'urb_list_saves lists the caller rows');
 select is(
-  public.urb_restore_save((select min(revision) from public.urb_saves)) > 6,
+  public.urb_restore_save((select min(revision) from public.urb_saves)) > 12,
   true,
   'urb_restore_save creates a new current revision'
 );
