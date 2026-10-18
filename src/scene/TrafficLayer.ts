@@ -121,12 +121,12 @@ export class TrafficLayer {
 
   private syncBuses(state: GameState): void {
     const lines = transportStats(state).lines.filter((line) => line.mode === 'bus' && line.active && line.route !== null && line.route.length > 1);
-    const signature = lines.map((line) => `${line.id}:${line.route!.map(tileKey).join(';')}`).join('|');
+    const signature = lines.map((line) => `${line.id}:${line.loop ? 'loop:' : ''}${line.route!.map(tileKey).join(';')}`).join('|');
     if (signature === this.busSignature) return;
     this.busSignature = signature;
     this.vehicles = this.vehicles.filter((vehicle) => !vehicle.run);
     for (const line of lines) {
-      const bus = startBusVehicle(line.route!, this.nextVehicleId, BUS_MODEL_INDEX, BUS_SPEED, this.lanesAt, line.id);
+      const bus = startBusVehicle(line.route!, this.nextVehicleId, BUS_MODEL_INDEX, BUS_SPEED, this.lanesAt, line.id, line.loop);
       if (!bus || !isSpotFree(bus, this.vehicles)) continue;
       this.nextVehicleId++;
       this.vehicles.push(bus);

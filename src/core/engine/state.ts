@@ -119,6 +119,7 @@ export interface PedestrianWayTile extends Coord {
 export interface BusLine {
   id: number;
   stops: number[];
+  loop?: boolean;
 }
 
 export type TransitMode = 'bus' | 'brt' | 'rail';

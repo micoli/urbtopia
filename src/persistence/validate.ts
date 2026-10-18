@@ -14,6 +14,11 @@ const isArrayOf = (value: unknown, check: (item: unknown) => boolean): boolean =
 
 const isCoord = (value: unknown, max = Number.MAX_SAFE_INTEGER): boolean => isRecord(value) && isInt(value.x, 0, max) && isInt(value.y, 0, max);
 
+function isValidLoop(line: Record<string, unknown>): boolean {
+  if (line.loop === undefined) return true;
+  return line.loop === true && (line.stops as number[]).length >= 3;
+}
+
 function isAmountRecord(value: unknown, validKeys: string[]): boolean {
   return isRecord(value) && Object.entries(value).every(([key, amount]) => validKeys.includes(key) && (key === 'coal' ? isNonNegative(amount) : isInt(amount, 0)));
 }
@@ -176,7 +181,7 @@ export function validateGameState(value: unknown): GameState | null {
   if (value.ecologyDismissed !== undefined && typeof value.ecologyDismissed !== 'boolean') return null;
   if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&
     isArrayOf(line.stops, id => isInt(id, 0)) && (line.stops as number[]).length >= 2 &&
-    new Set(line.stops as number[]).size === (line.stops as number[]).length)) return null;
+    new Set(line.stops as number[]).size === (line.stops as number[]).length && isValidLoop(line))) return null;
   for (const key of ['brtRoads', 'rails']) {
     if (value[key] === undefined) continue;
     if (!isArrayOf(value[key], p => isRecord(p) && isCoord(p) && isArrayOf(p.exits, d => ['N', 'E', 'S', 'W'].includes(d as string)) && new Set(p.exits as string[]).size === (p.exits as string[]).length && (p.kind === undefined || (key === 'brtRoads' && p.kind === 'crossing')))) return null;
@@ -184,7 +189,7 @@ export function validateGameState(value: unknown): GameState | null {
     if (new Set(tiles.map(p => `${p.x}:${p.y}`)).size !== tiles.length) return null;
   }
   if (value.transitLines !== undefined && !isArrayOf(value.transitLines, l => isRecord(l) && isInt(l.id, 1) && ['brt', 'rail'].includes(l.mode as string) &&
-    isArrayOf(l.stops, id => isInt(id, 0)) && (l.stops as number[]).length >= 2 && new Set(l.stops as number[]).size === (l.stops as number[]).length &&
+    isArrayOf(l.stops, id => isInt(id, 0)) && (l.stops as number[]).length >= 2 && new Set(l.stops as number[]).size === (l.stops as number[]).length && isValidLoop(l) &&
     isNumber(l.peakHeadway) && isNumber(l.offPeakHeadway) && l.peakHeadway > 0 && l.offPeakHeadway > 0 && l.peakHeadway <= 60 && l.offPeakHeadway <= 60 &&
     (l.mode !== 'brt' || (l.peakHeadway >= 5 && l.peakHeadway <= 10 && l.offPeakHeadway >= 10 && l.offPeakHeadway <= 15)))) return null;
   if (value.transitFleet !== undefined && !isArrayOf(value.transitFleet, v => isRecord(v) && isInt(v.id, 1) && FLEET_VEHICLES.some(({ id }) => id === v.kind) && isNonNegative(v.purchasePrice) && (v.lineId === undefined || isInt(v.lineId, 1)))) return null;

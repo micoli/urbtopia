@@ -33,7 +33,7 @@ function resolveCached(state: GameState, line: BusLine | TransitLine): Resolutio
 }
 
 function resolveRoute(state: GameState, line: BusLine | TransitLine): Resolution {
-  if (line.stops.length < 2 || new Set(line.stops).size !== line.stops.length) return { failure: 'invalid' };
+  if (line.stops.length < (line.loop ? 3 : 2) || new Set(line.stops).size !== line.stops.length) return { failure: 'invalid' };
   const mode = 'mode' in line ? line.mode : 'bus';
   const roads = new Set(state.roads.map(tileKey));
   for (const center of state.roundabouts) for (const p of roundaboutTiles(center)) if (p.x !== center.x || p.y !== center.y) roads.add(tileKey(p));
@@ -47,6 +47,7 @@ function resolveRoute(state: GameState, line: BusLine | TransitLine): Resolution
     if (!endpoint) return { failure: 'stopNotOnNetwork' };
     endpoints.push(endpoint);
   }
+  if (line.loop) endpoints.push(endpoints[0]!);
   const route = [endpoints[0]!], offsets = [0];
   for (let i = 1; i < endpoints.length; i++) {
     const queue = [endpoints[i - 1]!], parents = new Map<string, Coord | null>([[tileKey(queue[0]!), null]]);
@@ -91,7 +92,8 @@ export function transitServices(state: GameState, now = state.lastSeen, powerRat
     const nominalSpeed = mode === 'bus' ? 2 : TRANSIT[mode].speed;
     const speedFactor = mode === 'bus' ? speedFactors.get(line.id) ?? 1 : 1;
     const speed = nominalSpeed * speedFactor;
-    const cycle = details ? Math.max(2, 2 * ((details.route.length - 1) / speed + line.stops.length * .5)) : Infinity;
+    const laps = line.loop ? 1 : 2;
+    const cycle = details ? Math.max(2, laps * ((details.route.length - 1) / speed + line.stops.length * .5)) : Infinity;
     const targetHeadway = 'mode' in line ? peak ? line.peakHeadway : line.offPeakHeadway : 15;
     const fleet = (state.transitFleet ?? []).filter(v => v.lineId === line.id);
     const duty = fleet.length > 0 ? Math.min(1, cycle / (targetHeadway * fleet.length)) : 0;

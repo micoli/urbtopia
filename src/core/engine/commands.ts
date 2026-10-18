@@ -58,7 +58,7 @@ export type Command =
   | { readonly type: 'BuildTransit'; readonly mode: 'brt' | 'rail'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'DemolishTransit'; readonly mode: 'brt' | 'rail'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'RepairTransitNetwork'; readonly mode: 'brt' | 'rail' }
-  | { readonly type: 'SetTransitLine'; readonly id?: number; readonly mode: 'brt' | 'rail'; readonly stops: number[]; readonly peakHeadway: number; readonly offPeakHeadway: number }
+  | { readonly type: 'SetTransitLine'; readonly id?: number; readonly mode: 'brt' | 'rail'; readonly stops: number[]; readonly loop?: boolean; readonly peakHeadway: number; readonly offPeakHeadway: number }
   | { readonly type: 'DeleteTransitLine'; readonly id: number }
   | { readonly type: 'BuyTransitVehicle'; readonly kind: TransitVehicleKind }
   | { readonly type: 'SellTransitVehicle'; readonly id: number }
@@ -79,7 +79,7 @@ export type Command =
   | { readonly type: 'EquipSolarPanels'; readonly buildingId: number }
   | { readonly type: 'SetCoalEnabled'; readonly buildingId: number; readonly enabled: boolean }
   | { readonly type: 'RenameStop'; readonly buildingId: number; readonly name: string }
-  | { readonly type: 'SetBusLine'; readonly id?: number; readonly stops: number[] }
+  | { readonly type: 'SetBusLine'; readonly id?: number; readonly stops: number[]; readonly loop?: boolean }
   | { readonly type: 'DeleteBusLine'; readonly id: number }
   | { readonly type: 'DismissEcology' }
   | { readonly type: 'SetDifficulty'; readonly difficulty: Difficulty }
@@ -291,7 +291,7 @@ export function handleCommand(state: GameState, command: Command, now: number): 
     case 'RenameStop':
       return renameStop(state, command.buildingId, command.name);
     case 'SetBusLine':
-      return setBusLine(state, command.id, command.stops);
+      return setBusLine(state, command.id, command.stops, command.loop);
     case 'DeleteBusLine':
       return { state: { ...state, busLines: (state.busLines ?? []).filter(line => line.id !== command.id) }, events: [] };
     case 'SetDifficulty':
@@ -1002,10 +1002,10 @@ function repaintBuilding(state: GameState, id: number, colorVariant: ColorVarian
 
 const ROUTE_ERRORS = { invalid: 'error.invalidBusLine', stopNotOnNetwork: 'error.stopNotOnNetwork', notConnected: 'error.networkNotConnected' } as const;
 
-function setBusLine(state: GameState, id: number | undefined, stops: number[]): CommandOutcome {
+function setBusLine(state: GameState, id: number | undefined, stops: number[], loop?: boolean): CommandOutcome {
   if (citizenCount(state) < 32) return fail('error.itemLocked');
   if (id !== undefined && !(state.busLines ?? []).some(line => line.id === id)) return fail('error.invalidBusLine');
-  const line = { id: id ?? state.nextId, stops };
+  const line: BusLine = { id: id ?? state.nextId, stops, ...(loop ? { loop } : {}) };
   const failure = routeFailure(state, line);
   if (failure) return fail(ROUTE_ERRORS[failure]);
   return { state: { ...state, nextId: id === undefined ? state.nextId + 1 : state.nextId, busLines: [...(state.busLines ?? []).filter(l => l.id !== line.id), line] }, events: [] };
@@ -1041,7 +1041,7 @@ function transitCommand(state: GameState, command: Extract<Command, { type: 'Bui
     if (![command.peakHeadway, command.offPeakHeadway].every(n => Number.isFinite(n) && n > 0 && n <= 60)) return fail('error.invalidQuantity');
     if (command.mode === 'brt' && (command.peakHeadway < 5 || command.peakHeadway > 10 || command.offPeakHeadway < 10 || command.offPeakHeadway > 15)) return fail('error.invalidQuantity');
     if (command.id !== undefined && !lines.some(l => l.id === command.id && l.mode === command.mode)) return fail('error.invalidBusLine');
-    const line: TransitLine = { id: command.id ?? state.nextId, mode: command.mode, stops: command.stops, peakHeadway: command.peakHeadway, offPeakHeadway: command.offPeakHeadway };
+    const line: TransitLine = { id: command.id ?? state.nextId, mode: command.mode, stops: command.stops, ...(command.loop ? { loop: true } : {}), peakHeadway: command.peakHeadway, offPeakHeadway: command.offPeakHeadway };
     const failure = routeFailure(state, line);
   if (failure) return fail(ROUTE_ERRORS[failure]);
     return { state: { ...state, nextId: command.id === undefined ? state.nextId + 1 : state.nextId, transitLines: [...lines.filter(l => l.id !== line.id), line] }, events: [] };

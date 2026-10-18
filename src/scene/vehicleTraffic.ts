@@ -14,6 +14,7 @@ export interface BusRun {
   tiles: readonly Coord[];
   index: number;
   step: 1 | -1;
+  loop?: boolean;
 }
 
 export interface TrafficVehicle extends Vehicle {
@@ -80,15 +81,20 @@ export function startTrafficVehicle(graph: RoadGraph, tile: Coord, id: number, m
 
 const NO_STOPS: ReadonlySet<string> = new Set();
 
-export function startBusVehicle(tiles: readonly Coord[], id: number, model: number, speed: number, lanesAt: LanesAt, start: number): TrafficVehicle | null {
+export function startBusVehicle(tiles: readonly Coord[], id: number, model: number, speed: number, lanesAt: LanesAt, start: number, loop = false): TrafficVehicle | null {
   if (tiles.length < 2) return null;
   const index = start % (tiles.length - 1);
   const from = tiles[index]!;
   const to = tiles[index + 1]!;
-  return { id, model, speed, from, to, heading: directionOf(from, to), progress: 0, lane: 0, lanes: lanesAt(from), run: { tiles, index: index + 1, step: 1 } };
+  return { id, model, speed, from, to, heading: directionOf(from, to), progress: 0, lane: 0, lanes: lanesAt(from), run: { tiles, index: index + 1, step: 1, ...(loop ? { loop } : {}) } };
 }
 
 export function nextRunTile(run: BusRun): Coord {
+  if (run.loop) {
+    if (run.tiles[run.index + 1] === undefined) run.index = 0;
+    run.index += 1;
+    return run.tiles[run.index]!;
+  }
   if (run.tiles[run.index + run.step] === undefined) run.step = run.step === 1 ? -1 : 1;
   run.index += run.step;
   return run.tiles[run.index]!;

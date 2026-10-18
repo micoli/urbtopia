@@ -14,6 +14,12 @@ interface Itinerary { lines: number[]; minutes: number; }
 
 export const TRANSIT_ELIGIBLE_SHARE = 0.7;
 
+function legBetween(line: Service, start: number, end: number): { distance: number; stops: number } {
+  if (!line.loop) return { distance: Math.abs(line.offsets[end]! - line.offsets[start]!), stops: Math.abs(end - start) };
+  if (end > start) return { distance: line.offsets[end]! - line.offsets[start]!, stops: end - start };
+  return { distance: line.offsets[line.stops.length]! - line.offsets[start]! + line.offsets[end]!, stops: line.stops.length - start + end };
+}
+
 function itineraries(first: Service, firstStop: number, lines: Service[], stops: Map<number, Building>, activities: Building[]): Itinerary[] {
   const results: Itinerary[] = [];
   const visited = new Map<string, number>();
@@ -25,7 +31,8 @@ function itineraries(first: Service, firstStop: number, lines: Service[], stops:
       if (end === start) continue;
       const stop = stops.get(line.stops[end]!);
       if (!stop) continue;
-      const arrival = minutes + line.headway / 2 + Math.abs(line.offsets[end]! - line.offsets[start]!) / line.speed + Math.abs(end - start) * .5;
+      const leg = legBetween(line, start, end);
+      const arrival = minutes + line.headway / 2 + leg.distance / line.speed + leg.stops * .5;
       if (activities.some(a => distance(a, stop) <= ECOLOGY.stopRadius)) results.push({ lines: used, minutes: arrival });
       if (used.length >= 3) continue;
       for (const next of lines) {
