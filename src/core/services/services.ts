@@ -4,6 +4,7 @@ import { centerOf, distance } from '../environment/ecology';
 import { FACILITIES, FACILITY_TYPES, facilityCapacity, SERVICE_CATEGORIES, facilitiesOfCategory, isWithinReach, requiredServices, type FacilityType, type ServiceCategory, type ServiceKey } from './facilities';
 import type { Building, GameState, Rotation } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { isWasteCovered, wasteReport } from '../waste/waste';
 
 export type ServiceCoverage = ReadonlyMap<number, ReadonlySet<FacilityType>>;
 
@@ -98,13 +99,14 @@ export function coveredServiceUnits(coverage: ServiceCoverage, homeId: number): 
 
 export function categoryCoverageRatio(state: GameState, category: ServiceCategory): number {
   const coverage = serviceCoverage(state);
+  const waste = category === 'waste' ? wasteReport(state) : null;
   let total = 0;
   let served = 0;
   for (const home of state.buildings) {
     if (!isHomeType(home.type)) continue;
     const citizens = citizensOf(home.tier);
     total += citizens;
-    if (coveredCategories(coverage, home.id).includes(category)) served += citizens;
+    if (waste ? isWasteCovered(waste, home.id) : coveredCategories(coverage, home.id).includes(category)) served += citizens;
   }
   return total > 0 ? served / total : 0;
 }

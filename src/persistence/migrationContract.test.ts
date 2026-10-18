@@ -9,7 +9,7 @@ const versions = Array.from({ length: CURRENT_VERSION }, (_, index) => index + 1
 
 // Update this snapshot together with CURRENT_VERSION: a schema change needs a migration and a new frozen fixture.
 const SCHEMA_SNAPSHOT = {
-  version: 15,
+  version: 16,
   keys: [
     'adaptationUntil', 'brtRoads', 'buildings', 'busLines', 'casinoRng', 'fields', 'lastSeen', 'market', 'marketUnlocked', 'nextId',
     'ownedParcels', 'rails', 'rngState', 'roads', 'roundabouts', 'seed', 'seedStock', 'storage', 'tradeLedger', 'transitFleet', 'transitLines', 'tutorial', 'urbs',
@@ -126,5 +126,25 @@ describe('Challenge claims in the save', () => {
     for (const damaged of ['nope', [{ id: '', at: 1, urbs: 1 }], [{ id: 'c1', at: 1, urbs: -1 }], [{ id: 'c1', at: 'x', urbs: 1 }]]) {
       expect(load(damaged), JSON.stringify(damaged)).toEqual({ ok: false, reason: 'invalid-state' });
     }
+  });
+});
+
+describe('Waste Adaptation period for a saved city', () => {
+  const v15 = JSON.parse(fixtureText(15));
+  const withCitizens = (tiers: number[]) => {
+    const homes = tiers.map((tier, index) => ({ ...v15.state.buildings[0], id: 20 + index, x: 70 + index * 3, y: 70, tier }));
+    return parseEnvelope(JSON.stringify({ ...v15, state: { ...v15.state, nextId: 100, buildings: [...v15.state.buildings, ...homes] } }));
+  };
+
+  it('starts one for a version-15 city above 1000 Citizens', () => {
+    const loaded = withCitizens([8, 8, 8]);
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.adaptationUntil).toBe(v15.state.lastSeen + 24 * 3_600_000);
+  });
+
+  it('leaves a smaller version-15 city unchanged', () => {
+    const loaded = withCitizens([8]);
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.adaptationUntil).toBe(v15.state.adaptationUntil);
   });
 });

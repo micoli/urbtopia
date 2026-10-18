@@ -3,7 +3,7 @@ import { MIGRATIONS, migrate, type MigrationStep } from './migrations';
 import { validateGameState } from './validate';
 
 export const FORMAT = 'urbtopia-save';
-export const CURRENT_VERSION = 15;
+export const CURRENT_VERSION = 16;
 
 export type ParseFailure = 'invalid-json' | 'wrong-format' | 'newer-version' | 'invalid-state';
 

@@ -10,6 +10,7 @@ const categoryNames: Record<ServiceCategory, readonly [string, string]> = {
   worship: ['Worship', 'Culte'],
   health: ['Health', 'Santé'],
   safety: ['Safety', 'Sécurité'],
+  waste: ['Waste', 'Déchets'],
 };
 
 export function facilityMessages(language: 'en' | 'fr'): Record<FacilityMessageKey, string> {

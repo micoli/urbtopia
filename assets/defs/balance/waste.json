@@ -1,0 +1,37 @@
+{
+  "$schema": "../schemas/balance-waste.schema.json",
+  "unitsPerCitizenPerDay": 1,
+  "dayHours": 24,
+  "carryingDistance": 8,
+  "carriedSurcharge": 2,
+  "adaptationCitizens": 1000,
+  "facilities": {
+    "recyclingPlant": {
+      "capacities": [400, 800, 1400, 2200],
+      "tariff": 6,
+      "reach": 14,
+      "footprint": {
+        "width": 4,
+        "depth": 4
+      }
+    },
+    "incinerator": {
+      "capacities": [800, 1500, 2500, 4000],
+      "tariff": 3,
+      "reach": 14,
+      "footprint": {
+        "width": 3,
+        "depth": 3
+      }
+    },
+    "mound": {
+      "capacities": [60, 120, 200],
+      "tariff": 1,
+      "reach": 8,
+      "footprint": {
+        "width": 1,
+        "depth": 1
+      }
+    }
+  }
+}
