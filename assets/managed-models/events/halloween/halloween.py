@@ -149,8 +149,8 @@ def ghost(arms_forward=False):
     R = lambda z: interp(prof, z) * math.cos(math.pi / 10)
     hexa = lambda cx, w, h: [(cx, -h), (cx + w, -h / 2), (cx + w, h / 2), (cx, h), (cx - w, h / 2), (cx - w, -h / 2)]
     for sx in (-1, 1):
-        parts.append(inlay(lpm.sweep("eye", hexa(0, 0.035, 0.065), 0.04, at=(sx * 0.07, 0, 0.84), color=C["eye"]), R, 0.012, 0.04))
-    parts.append(inlay(lpm.sweep("mouth", hexa(0, 0.045, 0.06), 0.04, at=(0, 0, 0.66), color=C["eye"]), R, 0.012, 0.04))
+        parts.append(inlay(lpm.sweep("eye", hexa(0, 0.03, 0.06), 0.04, at=(sx * 0.058, 0, 0.77), color=C["eye"]), R, 0.012, 0.04))
+    parts.append(inlay(lpm.sweep("mouth", hexa(0, 0.045, 0.06), 0.04, at=(0, 0, 0.58), color=C["eye"]), R, 0.012, 0.04))
     return lpm.finish("SM_HW_Ghost", parts, P, budget=800)
 
 
