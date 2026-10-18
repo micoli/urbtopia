@@ -92,6 +92,12 @@ describe('transport map viewport', () => {
     expect(fitViewBox({ minX: 0, minY: 0, maxX: 1, maxY: 1 }).width).toBeGreaterThanOrEqual(12);
   });
 
+  it('leaves room on the sides for the labels of the outer stops', () => {
+    const view = fitViewBox({ minX: 0, minY: 0, maxX: 100, maxY: 20 });
+    expect(view.x).toBeLessThanOrEqual(-12);
+    expect(view.x + view.width).toBeGreaterThanOrEqual(112);
+  });
+
   it('zooms around a focus point, which stays where it was', () => {
     const view = { x: 0, y: 0, width: 100, height: 50 };
     const zoomed = zoomViewBox(view, 0.5, { x: 40, y: 10 });

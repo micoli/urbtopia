@@ -9,13 +9,17 @@ export interface ViewBox {
 }
 
 const PADDING = 3;
+// Labels are centred under their stop and may be wider than the stop is far from the edge.
+const SIDE_PADDING_RATIO = 0.12;
 const MIN_SIZE = 12;
 const ZOOM_STEP = 1.15;
 const MIN_WIDTH = 6;
 const MAX_WIDTH = 400;
 
 export function fitViewBox(bounds: MapBounds): ViewBox {
-  const width = Math.max(MIN_SIZE, bounds.maxX - bounds.minX + 2 * PADDING);
+  const span = bounds.maxX - bounds.minX;
+  const sidePadding = Math.max(PADDING, span * SIDE_PADDING_RATIO);
+  const width = Math.max(MIN_SIZE, span + 2 * sidePadding);
   const height = Math.max(MIN_SIZE, bounds.maxY - bounds.minY + 2 * PADDING);
   return { x: (bounds.minX + bounds.maxX) / 2 - width / 2, y: (bounds.minY + bounds.maxY) / 2 - height / 2, width, height };
 }
