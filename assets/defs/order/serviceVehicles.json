@@ -1,5 +1,7 @@
 [
   "ambulance",
   "firetruck",
-  "police"
+  "police",
+  "garbageTruck",
+  "recyclingTruck"
 ]

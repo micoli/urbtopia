@@ -2,7 +2,9 @@ import { facilityMessages } from './facilities';
 import { casinoMessages } from './casino';
 import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
+import { wasteSectionMessages } from './wasteSection';
 import { sanctionsMessages } from './sanctions';
+import { wasteCodexMessages } from './wasteCodex';
 import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
 import { buildingMessages } from './buildings';
@@ -25,8 +27,10 @@ export const FR: Record<MessageKey, string> = {
   ...challengeMessages('fr'),
   ...casinoMessages('fr'),
   ...needsMessages('fr'),
+  ...wasteSectionMessages('fr'),
   ...difficultyMessages('fr'),
   ...sanctionsMessages('fr'),
+  ...wasteCodexMessages('fr'),
   ...venueMessages('fr'),
   ...buildingMessages('fr'),
   ...itemMessages('fr'),
@@ -903,6 +907,10 @@ export const FR: Record<MessageKey, string> = {
   "home.reason.noRoadLink": "pas de liaison routière",
   "home.reason.beyondCarryingDistance": "au-delà de la distance de portage",
   "home.reason.facilityStopped": "installation à l’arrêt, plus d’Urbs",
+  "stats.waste": "Déchets par jour",
+  "stats.waste.produced": "produits",
+  "stats.waste.processed": "traités",
+  "stats.waste.cost": "coût",
   "facility.reach": "Portée (cases)",
   "facility.capacity": "Capacité (citoyens)",
   "facility.served": "Servis",

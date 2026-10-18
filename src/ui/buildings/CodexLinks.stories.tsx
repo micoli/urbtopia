@@ -19,3 +19,9 @@ export const Workshop: Story = {
     <BuildingOfType type="workshop">{(building: Building) => <CodexLinks building={building} />}</BuildingOfType>
   ),
 };
+
+export const Mound: Story = {
+  render: () => (
+    <BuildingOfType type="mound">{(building: Building) => <CodexLinks building={building} />}</BuildingOfType>
+  ),
+};

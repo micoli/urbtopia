@@ -2,7 +2,9 @@ import { facilityMessages } from './facilities';
 import { casinoMessages } from './casino';
 import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
+import { wasteSectionMessages } from './wasteSection';
 import { sanctionsMessages } from './sanctions';
+import { wasteCodexMessages } from './wasteCodex';
 import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
 import { buildingMessages } from './buildings';
@@ -23,8 +25,10 @@ export const MESSAGES = {
   ...challengeMessages('en'),
   ...casinoMessages('en'),
   ...needsMessages('en'),
+  ...wasteSectionMessages('en'),
   ...difficultyMessages('en'),
   ...sanctionsMessages('en'),
+  ...wasteCodexMessages('en'),
   ...venueMessages('en'),
   ...buildingMessages('en'),
   ...itemMessages('en'),
@@ -901,6 +905,10 @@ export const MESSAGES = {
   "home.reason.noRoadLink": "no road link",
   "home.reason.beyondCarryingDistance": "beyond the carrying distance",
   "home.reason.facilityStopped": "facility stopped, no Urbs",
+  "stats.waste": "Waste per day",
+  "stats.waste.produced": "produced",
+  "stats.waste.processed": "processed",
+  "stats.waste.cost": "cost",
   "facility.reach": "Reach (tiles)",
   "facility.capacity": "Capacity (Citizens)",
   "facility.served": "Served",

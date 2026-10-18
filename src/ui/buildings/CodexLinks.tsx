@@ -1,4 +1,4 @@
-import { isHomeType, type Building } from '../../core';
+import { isHomeType, wasteKindOf, type Building } from '../../core';
 import { solarCodexIdOf, type CodexId } from '../../codex/catalog';
 import { t } from '../../i18n/t';
 import { ActionButton } from '../common/ActionButton';
@@ -15,6 +15,11 @@ export function CodexLinks({ building }: { building: Building }) {
           {t(id === building.type ? `building.${building.type}` : 'eco.solarHome')}&nbsp;?
         </ActionButton>
       ))}
+      {wasteKindOf(building.type) && (
+        <ActionButton aria-label={t('codex.about').replace('{name}', t('codex.waste.title'))} onClick={() => openCodex(undefined, 'waste')}>
+          {t('codex.waste.title')}&nbsp;?
+        </ActionButton>
+      )}
     </>
   );
 }

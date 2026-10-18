@@ -355,3 +355,22 @@ describe('front marker of a BRT compatible building', () => {
     expect(evaluation.ghost.front?.access).toBeUndefined();
   });
 });
+
+describe('Waste facility tool', () => {
+  const homes = [createBuilding(10, 'home', 56, 59, 0)];
+  const served: GameState = { ...state, nextId: 20, buildings: [...state.buildings, ...homes] };
+  const evaluate = (buildingType: 'mound' | 'incinerator') => evaluateTool({ kind: 'building', buildingType }, { state: served, tile: { x: 56, y: 57 }, rotation: null });
+
+  it('shows the Odor circle of a Mound next to a smaller collection reach', () => {
+    const evaluation = evaluate('mound');
+    expect(evaluation.ghost.odorRange!.length).toBeGreaterThan(evaluation.ghost.range!.length);
+  });
+
+  it('shows no Odor circle for a facility that does not smell', () => {
+    expect(evaluate('incinerator').ghost.odorRange).toBeUndefined();
+  });
+
+  it('counts the Homes the facility would collect', () => {
+    expect(evaluate('mound').coverage).toEqual({ cityWide: false, homes: 1 });
+  });
+});

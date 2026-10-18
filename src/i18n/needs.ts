@@ -47,6 +47,7 @@ const texts = {
   'needs.factor.biodiversity': ['Biodiversity', 'Biodiversité'],
   'needs.by.electricity': ['Power plants, solar, storage', 'Centrales, solaire, stockage'],
   'needs.by.water': ['Water towers', 'Châteaux d’eau'],
+  'needs.by.waste': ['Mound, Incinerator, Recycling plant, linked by Road', 'Décharge, incinérateur, usine de recyclage, reliés par une route'],
   'needs.by.food': ['No rule yet', 'Aucune règle pour l’instant'],
   'needs.by.safety': ['Fire station, police station', 'Caserne de pompiers, commissariat'],
   'needs.by.health': ['Hospital', 'Hôpital'],

@@ -30,6 +30,7 @@ import {
   type BuildingType,
   casinoRadius,
   SPORT_VENUES,
+  WASTE_FACILITIES,
   isSportVenueType,
   type Command,
   type Coord,
@@ -87,6 +88,7 @@ export interface GhostSpec {
   valid: boolean;
   front: { x: number; z: number; direction: Direction; access?: 'road' | 'brt' } | null;
   range?: Coord[];
+  odorRange?: Coord[];
 }
 
 export interface Evaluation {
@@ -236,6 +238,8 @@ function addCoveragePreview(result: Evaluation, state: GameState, type: Facility
     const { width, depth } = footprintOf(home.type, home.rotation, home.tier);
     return { x: home.x, y: home.y, width, depth, tone: 'hint' as const };
   });
+  const odorRadius = WASTE_FACILITIES.mound.odor?.radius;
+  if (type === 'mound' && odorRadius) result.ghost.odorRange = rangeTiles(type, odorRadius, tile, rotation);
   if (radius === null) return;
   result.ghost.range = rangeTiles(type, radius, tile, rotation);
 }

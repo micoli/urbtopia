@@ -87,7 +87,7 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'cars',
     url: 'https://kenney.nl/media/pages/assets/car-kit/1a312ec241-1775131960/kenney_car-kit.zip',
     archive: 'kenney_car-kit.zip',
-    files: ['sedan', 'sedan-sports', 'hatchback-sports', 'suv', 'suv-luxury', 'taxi', 'van', 'ambulance', 'firetruck', 'police'],
+    files: ['sedan', 'sedan-sports', 'hatchback-sports', 'suv', 'suv-luxury', 'taxi', 'van', 'ambulance', 'firetruck', 'police', 'garbage-truck'],
   },
   {
     name: 'nature',

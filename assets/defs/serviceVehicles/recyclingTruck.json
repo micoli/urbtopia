@@ -1,0 +1,10 @@
+{
+  "$schema": "../schemas/service-vehicle.schema.json",
+  "kind": "serviceVehicle",
+  "facility": "recyclingPlant",
+  "model": "cars-garbage-truck",
+  "name": {
+    "en": "Recycling truck",
+    "fr": "Camion de recyclage"
+  }
+}

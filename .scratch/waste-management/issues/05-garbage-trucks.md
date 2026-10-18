@@ -4,9 +4,9 @@
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] New Service vehicle type with no gameplay effect, not saved, sharing the existing Service vehicle cap.
-- [ ] Stays on the facility's network, never switches between Road and BRT corridor.
-- [ ] No trucks for Mounds.
-- [ ] A stopped facility sends no truck.
+- [x] New Service vehicle type with no gameplay effect, not saved, sharing the existing Service vehicle cap.
+- [x] Stays on the facility's network, never switches between Road and BRT corridor.
+- [x] No trucks for Mounds.
+- [x] A stopped facility sends no truck.

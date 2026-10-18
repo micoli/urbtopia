@@ -5124,6 +5124,11 @@
     "source": "kenney",
     "license": "CC0"
   },
+  "cars-garbage-truck": {
+    "file": "cars/garbage-truck",
+    "source": "kenney",
+    "license": "CC0"
+  },
   "cars-hatchback-sports": {
     "file": "cars/hatchback-sports",
     "source": "kenney",

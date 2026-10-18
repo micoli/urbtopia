@@ -5,6 +5,7 @@ import { SectionHeading } from '../common/SectionHeading';
 import { LabeledList } from '../common/LabeledList';
 import { ActionButton } from '../common/ActionButton';
 import { useUi } from '../common/hooks';
+import { WasteStatsLine } from './WasteStatsLine';
 
 interface ServicesSectionProps {
   state: GameState;
@@ -22,6 +23,7 @@ export function ServicesSection({ state }: ServicesSectionProps) {
           <LabeledList.Row key={category} label={t(`service.${category}`)}>{(100 * categoryCoverageRatio(state, category)).toFixed(0)} %</LabeledList.Row>
         ))}
       </LabeledList>
+      <WasteStatsLine state={state} />
       <p>{t('stats.servicesHelp')}</p>
       <ActionButton onClick={openCoverage}>{t('coverage.open')}</ActionButton>
       {lacking.length > 0 && <p>{t('stats.servicesSuggest')} {lacking.map(serviceName).join(', ')}</p>}

@@ -2,4 +2,6 @@
 export type ServiceVehicleId =
   | 'ambulance'
   | 'firetruck'
-  | 'police';
+  | 'garbageTruck'
+  | 'police'
+  | 'recyclingTruck';

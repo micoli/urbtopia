@@ -51,3 +51,14 @@ describe('HomePanel actions order', () => {
     expect(html.indexOf(t('panel.collect'))).toBeLessThan(html.indexOf('upgrade'));
   });
 });
+
+describe('HomePanel Waste cause', () => {
+  it.each(['en', 'fr'] as const)('names why a Home of Tier 7 has no Waste coverage in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    const building = { ...createBuilding(900, 'home', 56, 59, 0), tier: 7 };
+    context.state = { ...newGame({ seed: 'home-panel', now: 0 }), adaptationUntil: 0, buildings: [building, ...[1, 2, 3].map(index => ({ ...createBuilding(900 + index, 'home', 56 + 4 * index, 59, 0), tier: 7 }))] };
+    const html = renderToStaticMarkup(<HomePanel building={building} />).replaceAll('&#x27;', "'");
+    expect(html).toContain(t('service.waste'));
+    expect(html).toContain(t('home.reason.outOfReach'));
+  });
+});

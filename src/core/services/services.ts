@@ -125,9 +125,19 @@ export function homesLackingRequiredServices(state: GameState): Building[] {
   return state.buildings.filter(building => isHomeType(building.type) && missingServicesOf(state, building, building.tier, coverage).length > 0);
 }
 
+// Homes a facility type covers: Waste coverage is shared by the three Waste facilities and needs a road link.
+export function coveredHomeIds(state: GameState, type: FacilityType): ReadonlySet<number> {
+  if (FACILITIES[type].category === 'waste') {
+    const report = wasteReport(state);
+    return new Set([...report.homes.keys()].filter(id => isWasteCovered(report, id)));
+  }
+  const coverage = serviceCoverage(state);
+  return new Set([...coverage].filter(([, types]) => types.has(type)).map(([id]) => id));
+}
+
 export function previewFacilityCoverage(state: GameState, type: FacilityType, x: number, y: number, rotation: Rotation): Building[] {
-  const before = serviceCoverage(state);
+  const before = coveredHomeIds(state, type);
   const probe = createBuilding(state.nextId, type, x, y, rotation);
-  const after = serviceCoverage({ ...state, buildings: [...state.buildings, probe] });
-  return state.buildings.filter(building => isHomeType(building.type) && after.get(building.id)?.has(type) && !before.get(building.id)?.has(type));
+  const after = coveredHomeIds({ ...state, buildings: [...state.buildings, probe] }, type);
+  return state.buildings.filter(building => isHomeType(building.type) && after.has(building.id) && !before.has(building.id));
 }

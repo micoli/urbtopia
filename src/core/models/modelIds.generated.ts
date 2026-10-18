@@ -234,6 +234,7 @@ export type ModelId =
   | 'buildings-workshop-2x2-t5-tone-a'
   | 'cars-ambulance'
   | 'cars-firetruck'
+  | 'cars-garbage-truck'
   | 'cars-hatchback-sports'
   | 'cars-police'
   | 'cars-sedan'

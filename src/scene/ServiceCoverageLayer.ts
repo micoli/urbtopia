@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { footprintOf, isHomeType, serviceCoverage, type Building, type GameState, type FacilityType } from '../core';
+import { coveredHomeIds, footprintOf, isHomeType, wasteReport, type Building, type GameState, type FacilityType } from '../core';
 
 const COLORS = { covered: 0x35d07f, uncovered: 0xe5484d, facility: 0x4da3ff } as const;
 
@@ -13,6 +13,7 @@ export class ServiceCoverageLayer {
     new THREE.LineBasicMaterial({ color: COLORS.facility, depthTest: false, depthWrite: false, toneMapped: false }),
   );
   private buildings: GameState['buildings'] | null = null;
+  private wasteStamp: unknown = null;
   private type: FacilityType | null = null;
 
   constructor() {
@@ -30,16 +31,18 @@ export class ServiceCoverageLayer {
       this.root.visible = false;
       return;
     }
-    if (this.buildings === state.buildings && this.type === type) return;
+    const wasteStamp = wasteReport(state);
+    if (this.buildings === state.buildings && this.type === type && this.wasteStamp === wasteStamp) return;
     this.buildings = state.buildings;
+    this.wasteStamp = wasteStamp;
     this.type = type;
     this.root.visible = true;
     this.clearOverlays();
-    const coverage = serviceCoverage(state);
+    const coveredIds = coveredHomeIds(state, type);
     const covered: Building[] = [], uncovered: Building[] = [];
     for (const home of state.buildings) {
       if (!isHomeType(home.type)) continue;
-      (coverage.get(home.id)?.has(type) ? covered : uncovered).push(home);
+      (coveredIds.has(home.id) ? covered : uncovered).push(home);
     }
     this.addOverlay(covered, this.coveredMaterial, 'covered-homes');
     this.addOverlay(uncovered, this.uncoveredMaterial, 'uncovered-homes');
