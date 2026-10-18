@@ -2266,6 +2266,65 @@ def build_incinerator(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+RECYCLING_BINS = (("sky", -0.5), ("sun", -0.1), ("lime", 0.3), ("utrim", 0.7))
+
+
+def build_recycling(spec, out_dir):
+    """A recycling plant filling its 3x2 cell: a long low hall with a mint band and a sawtooth roof of blue skylights, a ribbed sliding door, a service door and a "RECYCLING" lettering on the front, a rack-and-pinion style distribution ramp (two rails and regular cleats) climbing to an intake opening, and a row of sorting bins in the yard, one more per Tier (one to four)."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    wall, dark, slab, trim, frame, glass, mint, graphite = (index(n) for n in ("uwall", "udark", "uslab", "utrim", "uframe", "glass_blue", "uroof", "graphite"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    tier = spec["count"]
+    width, depth, height = 2.9, 1.05, 0.5
+    cy = 0.425
+    front, back = cy - depth / 2, cy + depth / 2
+    parts = [rounded_block("hall", width, depth, height, wall, 0.03 / depth, at=(0, cy, 0))]
+    parts.append(rounded_block("hall_band", width + 0.01, depth + 0.01, 0.06, mint, 0.03 / depth, at=(0, cy, height - 0.07)))
+    parts.append(lpm.box("hall_roof", (width + 0.04, depth + 0.04, 0.03), at=(0, cy, height), color=slab))
+    teeth, tooth_depth, tooth_rise = 3, (depth - 0.04) / 3, 0.18
+    for number in range(teeth):
+        ya = front + 0.02 + number * tooth_depth
+        parts.append(extrude_x(f"sawtooth_{number}", [(ya, height + 0.03), (ya + tooth_depth, height + 0.03), (ya, height + 0.03 + tooth_rise)], -width / 2 + 0.1, width / 2 - 0.1, slab))
+        parts.append(lpm.box(f"skylight_{number}", (width - 0.3, 0.008, tooth_rise - 0.03), at=(0, ya - 0.006, height + 0.045), color=glass))
+    door_x, door_w = -0.95, 0.6
+    parts.append(lpm.box("sliding_door", (door_w, 0.014, 0.3), at=(door_x, front - 0.004, 0.0), color=dark))
+    for number in range(5):
+        parts.append(lpm.box(f"door_rib_{number}", (door_w - 0.04, 0.018, 0.012), at=(door_x, front - 0.007, 0.04 + 0.055 * number), color=trim))
+    door_frame(parts, "sliding_door", door_x, front, 0.0, door_w, 0.3, frame)
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "RECYCLING", 0.0, 0.34, 0.07, graphite, -(front - 0.002)))
+    side_x = width / 2
+    parts.append(lpm.box("service_door", (0.014, 0.16, 0.24), at=(side_x + 0.004, cy, 0.0), color=dark))
+    for edge, (dy, sy, sz, dz) in enumerate(((0.092, 0.012, 0.252, 0.0), (-0.092, 0.012, 0.252, 0.0), (0.0, 0.176, 0.012, 0.24))):
+        parts.append(lpm.box(f"service_door_frame_{edge}", (0.01, sy, sz), at=(side_x + 0.005, cy + dy, dz), color=frame))
+    ramp_x, ramp_w = 1.2, 0.26
+    y0, z0 = front - 0.8, 0.02
+    run, rise = 0.8, 0.32
+    tilt = math.degrees(math.atan2(rise, run))
+    length = math.hypot(run, rise)
+    parts.append(lpm.box("intake", (0.3, 0.014, 0.12), at=(ramp_x, front - 0.004, 0.3), color=dark))
+    door_frame(parts, "intake", ramp_x, front, 0.3, 0.3, 0.12, frame)
+    parts.append(tilted_box("ramp_bed", ramp_x, y0 + run / 2, z0, ramp_w, length, 0.02, tilt, trim))
+    for side in (-1, 1):
+        parts.append(tilted_box(f"ramp_rail_{side}", ramp_x + side * (ramp_w / 2 + 0.01), y0 + run / 2, z0, 0.02, length, 0.05, tilt, frame))
+    step = 0.06
+    for number in range(int(length / step) - 1):
+        along = step * (number + 1)
+        parts.append(tilted_box(f"ramp_cleat_{number}", ramp_x, y0 + along * math.cos(math.radians(tilt)), z0 + 0.02 + along * math.sin(math.radians(tilt)), ramp_w - 0.02, 0.022, 0.014, tilt, dark))
+    for number, fraction in enumerate((0.2, 0.55, 0.9)):
+        top = z0 + rise * fraction
+        parts.append(lpm.box(f"ramp_leg_{number}", (0.03, 0.03, top), at=(ramp_x + ramp_w / 2 + 0.01, y0 + run * fraction, 0.0), color=dark))
+        parts.append(lpm.box(f"ramp_leg_b_{number}", (0.03, 0.03, top), at=(ramp_x - ramp_w / 2 - 0.01, y0 + run * fraction, 0.0), color=dark))
+    for number, (color, x) in enumerate(RECYCLING_BINS[:tier]):
+        parts.append(rounded_block(f"bin_{number}", 0.3, 0.34, 0.26, index(color), 0.2, at=(x, front - 0.45, 0.0)))
+        parts.append(rounded_block(f"bin_lid_{number}", 0.32, 0.36, 0.035, dark, 0.2, at=(x, front - 0.45, 0.26)))
+    ob = lpm.finish(spec["id"], parts, palette, budget=4000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def door_frame(parts, name, cx, y, bottom, width, height, color, thick=0.012):
     """Thin surround on the left, right and top of a door; `y` is the wall plane (front, -Y)."""
     parts.append(lpm.box(f"{name}_frame_left", (thick, 0.01, height + thick), at=(cx - width / 2 - thick / 2, y - 0.004, bottom), color=color))

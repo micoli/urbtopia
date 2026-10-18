@@ -16,12 +16,12 @@
   "radius": 14,
   "tiers": [
     {
-      "model": "buildings-storehouse-2x2-t1-tone-a",
+      "model": "buildings-recycling-3x2-t1",
       "footprint": [3, 2],
       "capacity": 400
     },
     {
-      "model": "buildings-storehouse-2x2-t2-tone-a",
+      "model": "buildings-recycling-3x2-t2",
       "capacity": 800,
       "power": 4,
       "upgradeCost": {
@@ -30,7 +30,7 @@
       }
     },
     {
-      "model": "buildings-storehouse-2x2-t3-tone-a",
+      "model": "buildings-recycling-3x2-t3",
       "capacity": 1400,
       "power": 7,
       "upgradeCost": {
@@ -39,7 +39,7 @@
       }
     },
     {
-      "model": "buildings-storehouse-2x2-t4-tone-a",
+      "model": "buildings-recycling-3x2-t4",
       "capacity": 2200,
       "power": 10,
       "upgradeCost": {
@@ -49,6 +49,7 @@
     }
   ],
   "category": "waste",
+  "drawnToScale": true,
   "power": 2,
   "water": 0,
   "waste": {
