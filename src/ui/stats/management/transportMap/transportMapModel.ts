@@ -1,5 +1,6 @@
 import { buildingDistance, footprintOf, type Building, type GameState, type TransitMode, type transportStats } from '../../../../core';
 import { t } from '../../../../i18n/t.ts';
+import { compactComponents } from './compactComponents.ts';
 
 type Line = ReturnType<typeof transportStats>['lines'][number];
 
@@ -91,7 +92,8 @@ export function buildTransportMap(state: GameState, transport: Pick<ReturnType<t
     const a = buildings.get(nodes[i]!.id)!, b = buildings.get(nodes[j]!.id)!;
     if (buildingDistance(a, b) <= TRANSFER_DISTANCE) transfers.push({ from: a.id, to: b.id });
   }
-  return { nodes, lines, transfers, bounds: boundsOf(nodes) };
+  const placed = compactComponents(nodes, lines, transfers);
+  return { nodes: placed, lines, transfers, bounds: boundsOf(placed) };
 }
 
 function boundsOf(nodes: readonly MapNode[]): MapBounds {

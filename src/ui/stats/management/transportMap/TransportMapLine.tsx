@@ -11,7 +11,7 @@ interface TransportMapLineProps {
 }
 
 // Sizes are in pixels and `unit` converts a pixel to map units, so they stay the same at any zoom.
-const ARROW_PIXELS = 5;
+const ARROW_PIXELS = 15;
 
 function arrowPoints(from: MapNode, to: MapNode, unit: number): string {
   const ARROW = ARROW_PIXELS * unit;
