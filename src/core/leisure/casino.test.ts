@@ -46,7 +46,7 @@ describe('Casino rules', () => {
     const state = city([townsfolk(), building(2, 'casino', 55, 50)]);
     const second = dispatch(state, { type: 'UpgradeBuilding', buildingId: 2 }, 0);
     expect(second.ok && [second.state.urbs, second.state.buildings[1]!.tier]).toEqual([state.urbs - 4000, 2]);
-    const blocked = city([townsfolk(), building(2, 'casino', 55, 50), building(3, 'home', 57, 50)]);
+    const blocked = city([townsfolk(), building(2, 'casino', 55, 50), building(3, 'home', 57, 50), building(4, 'home', 54, 50)]);
     expect(dispatch(blocked, { type: 'UpgradeBuilding', buildingId: 2 }, 0)).toMatchObject({ ok: false, error: { key: 'error.casinoExpansionBlocked' } });
     const third = second.ok ? dispatch(second.state, { type: 'UpgradeBuilding', buildingId: 2 }, 0) : second;
     expect(third.ok && [second.ok && second.state.urbs - third.state.urbs, third.state.buildings[1]!.tier]).toEqual([8000, 3]);
