@@ -10,7 +10,7 @@ export { BUILDING_SPECS, footprintOf, footprintTiles, placementCost } from './bu
 export { allowedCopies, buildLimitReached, copyThresholds, isRepeatable, maxCopies, nextCopyCitizens, nextCopyCost, ownedCopies } from './buildings/buildLimit';
 export type { BuildingSpec, Footprint } from './buildings/buildingSpecs';
 export { isInsideOwnedParcels, isRoadLike, occupiedTiles, roadExits, roundaboutTiles } from './map/occupancy';
-export { autoRotation, frontTiles, frontAccessModes, frontHasAccess, hasBrtOnlyAccess, nextFront, placementIssue, validFronts } from './map/placement';
+export { autoRotation, fittingPlacement, frontTiles, frontAccessModes, frontHasAccess, hasBrtOnlyAccess, nextFront, placementIssue, validFronts } from './map/placement';
 export type { PlacementIssue } from './map/placement';
 export { GAME_CONFIG } from './engine/config';
 export { newGame } from './engine/newGame';

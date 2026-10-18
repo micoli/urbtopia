@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { autoRotation, createBuilding, dispatch, frontAccessModes, frontTiles, newGame, nextFront, placementIssue, validFronts, type Command, type GameState } from '../index';
+import { autoRotation, createBuilding, dispatch, fittingPlacement, frontAccessModes, frontTiles, newGame, nextFront, placementIssue, validFronts, type Command, type GameState } from '../index';
 
 const NOW = 1_700_000_000_000;
 const initial = newGame({ seed: 'amber-fox-4821', now: NOW });
@@ -325,5 +325,26 @@ describe('fronts of a corner building', () => {
     const result = dispatch(state, { type: 'MoveBuilding', id: 1, x: at.x, y: at.y, rotation: 3 }, 0);
     if (!result.ok) throw new Error(result.error.key);
     expect(result.state.buildings[0]?.rotation).toBe(3);
+  });
+});
+
+describe('fittingPlacement', () => {
+  const withPlant: GameState = { ...initial, nextId: 99, buildings: [...initial.buildings, createBuilding(98, 'powerPlant', 58, 60, 0)] };
+
+  it('finds a rotation that fits when the first side with road access overlaps a building', () => {
+    const tile = { x: 56, y: 57 };
+    const automatic = autoRotation(withPlant, 'home', tile.x, tile.y, 4);
+    expect(placementIssue(withPlant, 'home', tile.x, tile.y, automatic, { isMove: true, tier: 4 })).toBe('error.tilesOccupied');
+    const fitting = fittingPlacement(withPlant, 'home', tile, 4);
+    expect(fitting).not.toBeNull();
+    expect(placementIssue(withPlant, 'home', fitting!.x, fitting!.y, fitting!.rotation, { isMove: true, tier: 4 })).toBeNull();
+  });
+
+  it('prefers the requested rotation when it fits', () => {
+    expect(fittingPlacement(initial, 'shopConstruction', { x: 56, y: 57 }, 1, 2)).toEqual({ x: 56, y: 57, rotation: 2 });
+  });
+
+  it('gives up where no origin has road access', () => {
+    expect(fittingPlacement(initial, 'shopConstruction', { x: 70, y: 70 })).toBeNull();
   });
 });
