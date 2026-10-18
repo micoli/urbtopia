@@ -59,16 +59,16 @@ describe('toCloudError', () => {
 });
 
 describe('FakeCloudSaveClient', () => {
-  it('behaves like the database: compare-and-swap, 4 rows, size cap', async () => {
+  it('behaves like the database: compare-and-swap, 10 rows, size cap', async () => {
     let now = 0;
     const client = new FakeCloudSaveClient(() => now);
-    for (let i = 0; i < 6; i += 1) {
+    for (let i = 0; i < 12; i += 1) {
       now += 2 * 3_600_000;
       await client.push({ baseRevision: i, envelope: `e${i}`, savedAt: now, formatVersion: 11 });
     }
-    expect(client.rows).toHaveLength(4);
-    await expect(client.push({ baseRevision: 1, envelope: 'x', savedAt: 0, formatVersion: 11 })).rejects.toMatchObject({ kind: 'conflict', serverRevision: 6 });
-    await expect(client.push({ baseRevision: 6, envelope: 'x'.repeat(1_048_577), savedAt: 0, formatVersion: 11 })).rejects.toBeInstanceOf(CloudError);
+    expect(client.rows).toHaveLength(10);
+    await expect(client.push({ baseRevision: 1, envelope: 'x', savedAt: 0, formatVersion: 11 })).rejects.toMatchObject({ kind: 'conflict', serverRevision: 12 });
+    await expect(client.push({ baseRevision: 12, envelope: 'x'.repeat(1_048_577), savedAt: 0, formatVersion: 11 })).rejects.toBeInstanceOf(CloudError);
   });
 });
 

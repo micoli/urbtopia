@@ -526,7 +526,7 @@ The anonymous identity a Cloud save belongs to, created silently on first play a
 _Avoid_: User, profile, login
 
 **Cloud save**:
-The copy of the city kept online for a Player account: the current one plus the 3 previous versions. The local save stays the source of truth; the Cloud save mirrors it.
+The copy of the city kept online for a Player account: the current one plus the 9 previous versions. The local save stays the source of truth; the Cloud save mirrors it.
 _Avoid_: Remote save, sync, server save
 
 **Save conflict**:
