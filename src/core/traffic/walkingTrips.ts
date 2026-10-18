@@ -19,7 +19,7 @@ export function walkDestinations(state: GameState, graph: PedestrianGraph): Walk
   for (const building of state.buildings as Building[]) {
     const kind = walkDestinationOf(building);
     if (kind === null) continue;
-    const sidewalks = adjacentNodes(graph, building);
+    const sidewalks = adjacentNodes(state, graph, building);
     if (sidewalks.length > 0) sites.push({ id: building.id, kind, sidewalks });
   }
   return sites.sort((a, b) => a.id - b.id);

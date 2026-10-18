@@ -164,6 +164,29 @@ describe('PlaceCrossing', () => {
   });
 });
 
+describe('PlaceCrossing on a BRT corridor', () => {
+  const corridor = {
+    ...initial,
+    brtRoads: [
+      { x: 70, y: 70, exits: ['E' as const] },
+      { x: 71, y: 70, exits: ['W' as const, 'E' as const] },
+      { x: 72, y: 70, exits: ['W' as const] },
+    ],
+  };
+
+  it('marks a straight BRT tile as a crossing and charges its cost', () => {
+    const state = succeed(corridor, { type: 'PlaceCrossing', x: 71, y: 70 });
+    expect(state.brtRoads?.find((tile) => tile.x === 71)?.kind).toBe('crossing');
+    expect(state.urbs).toBeLessThan(corridor.urbs);
+  });
+
+  it('refuses a BRT end and an existing crossing', () => {
+    expect(failureKey(corridor, { type: 'PlaceCrossing', x: 70, y: 70 })).toBe('error.invalidCrossing');
+    const crossed = succeed(corridor, { type: 'PlaceCrossing', x: 71, y: 70 });
+    expect(failureKey(crossed, { type: 'PlaceCrossing', x: 71, y: 70 })).toBe('error.invalidCrossing');
+  });
+});
+
 describe('PlaceRoundabout', () => {
   it('occupies a 3x3 square centred on the given tile', () => {
     const state = succeed(initial, { type: 'PlaceRoundabout', x: 70, y: 70 });

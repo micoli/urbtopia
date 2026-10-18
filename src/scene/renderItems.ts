@@ -245,7 +245,7 @@ function pedestrianWayItems(state: GameState): RenderItem[] {
 function brtItems(state: GameState): RenderItem[] {
   const roadKeys = new Set(state.roads.map(tileKey));
   return (state.brtRoads ?? []).filter(tile => !roadKeys.has(tileKey(tile))).map(tile => {
-    const { piece, rotation } = roadPiece(tile.exits);
+    const { piece, rotation } = roadPiece(tile.exits, tile.kind === 'crossing' ? 'crossing' : 'road');
     return { model: ROAD_PIECE_MODELS[piece], x: tile.x + 0.5, z: tile.y + 0.5, rotation, textureVariant: 'roads-a' as const };
   });
 }

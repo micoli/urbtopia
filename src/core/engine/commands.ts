@@ -509,9 +509,26 @@ function demolishPedestrianWays(state: GameState, tiles: Coord[]): CommandOutcom
   };
 }
 
+function placeBrtCrossing(state: GameState, brtTile: TransitTile): CommandOutcome {
+  const isStraight = brtTile.exits.length === 2 && ((brtTile.exits.includes('E') && brtTile.exits.includes('W')) || (brtTile.exits.includes('N') && brtTile.exits.includes('S')));
+  if (brtTile.kind === 'crossing' || !isStraight) return fail('error.invalidCrossing');
+  if (state.urbs < GAME_CONFIG.crossingCost) return fail('error.notEnoughUrbs');
+  return {
+    state: {
+      ...state,
+      urbs: state.urbs - GAME_CONFIG.crossingCost,
+      brtRoads: (state.brtRoads ?? []).map((candidate) => (candidate === brtTile ? { ...candidate, kind: 'crossing' as const } : candidate)),
+    },
+    events: [],
+  };
+}
+
 function placeCrossing(state: GameState, tile: Coord): CommandOutcome {
   const road = state.roads.find((candidate) => candidate.x === tile.x && candidate.y === tile.y);
-  if (!road) return fail('error.noRoadHere');
+  if (!road) {
+    const brtTile = (state.brtRoads ?? []).find((candidate) => candidate.x === tile.x && candidate.y === tile.y);
+    return brtTile ? placeBrtCrossing(state, brtTile) : fail('error.noRoadHere');
+  }
   const exits = roadExits(state, tile);
   const isStraight = exits.length === 2 && ((exits.includes('E') && exits.includes('W')) || (exits.includes('N') && exits.includes('S')));
   if (road.kind === 'crossing' || !isStraight) return fail('error.invalidCrossing');
