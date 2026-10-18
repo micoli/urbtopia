@@ -11,6 +11,7 @@ export function LineMetrics({ line }: { line: LineSummary }) {
   return <LabeledList>
     <LabeledList.Row label={t('transit.status')}>{t(lineStatusKey(line.status))}</LabeledList.Row>
     <LabeledList.Row label={t('eco.riders')}>{line.riders.toFixed(1)} / {line.capacity.toFixed(1)}</LabeledList.Row>
+    {line.cyclists > 0 && <LabeledList.Row label={t('transit.cyclists')}>{line.cyclists.toFixed(1)}</LabeledList.Row>}
     {line.mode === 'bus' && line.active && <LabeledList.Row label={t('transit.effectiveSpeed')}><LineSpeed line={line} /></LabeledList.Row>}
     {line.mode !== 'bus' && <>
       <LabeledList.Row label={t('transit.vehicles')}>{line.vehicleCount}</LabeledList.Row>

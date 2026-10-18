@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { WALKING } from '../traffic/walking';
 import { createBuilding, newGame, routeFailure, transportStats, type GameState, type TransitTile } from '../index';
 import { validateGameState } from '../../persistence/validate';
 
@@ -16,6 +17,10 @@ function hubCity(): GameState {
 }
 
 describe('Transit hub as a stop', () => {
+  const cyclingFactor = WALKING.cyclingFactor;
+  beforeEach(() => { WALKING.cyclingFactor = 1; });
+  afterEach(() => { WALKING.cyclingFactor = cyclingFactor; });
+
   it('serves a bus line and a rail line at once', () => {
     const state = hubCity();
     expect(routeFailure(state, state.busLines![0]!)).toBeNull();

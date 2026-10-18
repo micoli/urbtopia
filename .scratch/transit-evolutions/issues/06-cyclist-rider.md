@@ -1,7 +1,7 @@
 # Cyclist Rider on BRT, Railway and hubs
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 04, 05
 
 ## What to build

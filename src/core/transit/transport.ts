@@ -8,10 +8,14 @@ import { transitServices, type SpeedFactors } from './transitService';
 import type { Building, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { isTransitStopType } from './stopNames';
+import { WALKING } from '../traffic/walking';
 export { routeForLine, routeFailure } from './transitService';
 
 type Service = ReturnType<typeof transitServices>[number];
-interface Itinerary { lines: number[]; minutes: number; }
+interface Itinerary { lines: number[]; minutes: number; bike: boolean; }
+
+const carriesBikes = (line: Service) => line.mode !== 'bus';
+const bikeRadius = () => ECOLOGY.stopRadius * WALKING.cyclingFactor;
 
 export const TRANSIT_ELIGIBLE_SHARE = 0.7;
 
@@ -21,7 +25,9 @@ function legBetween(line: Service, start: number, end: number): { distance: numb
   return { distance: line.offsets[line.stops.length]! - line.offsets[start]! + line.offsets[end]!, stops: line.stops.length - start + end };
 }
 
-function itineraries(first: Service, firstStop: number, lines: Service[], stops: Map<number, Building>, activities: Building[]): Itinerary[] {
+// A cyclist takes the bicycle aboard, so every line of its itinerary must carry bikes; the walking itineraries are those of bikeMode off.
+function itineraries(first: Service, firstStop: number, lines: Service[], stops: Map<number, Building>, activities: Building[], bikeMode = false, homeBike = false): Itinerary[] {
+  const radius = bikeMode ? bikeRadius() : ECOLOGY.stopRadius;
   const results: Itinerary[] = [];
   const visited = new Map<string, number>();
   const walk = (line: Service, start: number, used: number[], minutes: number) => {
@@ -34,10 +40,13 @@ function itineraries(first: Service, firstStop: number, lines: Service[], stops:
       if (!stop) continue;
       const leg = legBetween(line, start, end);
       const arrival = minutes + line.headway / 2 + leg.distance / line.speed + leg.stops * .5;
-      if (activities.some(a => distance(a, stop) <= ECOLOGY.stopRadius)) results.push({ lines: used, minutes: arrival });
+      if (activities.some(a => distance(a, stop) <= radius)) {
+        const bike = bikeMode && (homeBike || !activities.some(a => distance(a, stop) <= ECOLOGY.stopRadius));
+        if (!bikeMode || bike) results.push({ lines: used, minutes: arrival, bike });
+      }
       if (used.length >= 3) continue;
       for (const next of lines) {
-        if (used.includes(next.id) || !next.active) continue;
+        if (used.includes(next.id) || !next.active || (bikeMode && !carriesBikes(next))) continue;
         for (let i = 0; i < next.stops.length; i++) {
           const transfer = stops.get(next.stops[i]!);
           if (!transfer) continue;
@@ -51,10 +60,10 @@ function itineraries(first: Service, firstStop: number, lines: Service[], stops:
   walk(first, firstStop, [first.id], 0);
   const best = new Map<string, Itinerary>();
   for (const result of results) {
-    const key = result.lines.join(':');
+    const key = `${result.lines.join(':')}${result.bike ? ':bike' : ''}`;
     if ((best.get(key)?.minutes ?? Infinity) > result.minutes) best.set(key, result);
   }
-  return [...best.values()].sort((a, b) => a.minutes - b.minutes || a.lines.join(':').localeCompare(b.lines.join(':')));
+  return [...best.values()].sort((a, b) => a.minutes - b.minutes || a.lines.join(':').localeCompare(b.lines.join(':')) || Number(a.bike) - Number(b.bike));
 }
 
 type TransportStats = ReturnType<typeof calculateTransport>;
@@ -78,7 +87,7 @@ export function transportStats(state: GameState, now = state.lastSeen, speedFact
 function calculateTransport(state: GameState, now: number, speedFactors?: SpeedFactors) {
   const energy = energyStats(state, now);
   const services = transitServices(state, now, energy.transitRatio, speedFactors);
-  const lines = services.map(line => ({ ...line, riders: 0, homeIds: [] as number[], covered: 0 }));
+  const lines = services.map(line => ({ ...line, riders: 0, cyclists: 0, homeIds: [] as number[], covered: 0 }));
   const byId = new Map(lines.map(l => [l.id, l]));
   const homes = state.buildings.filter(b => isHomeType(b.type)).sort((a, b) => a.id - b.id);
   const activities = state.buildings.filter(b => ['workshop', 'factory', 'mill', 'bakery'].includes(b.type) || isShopType(b.type) || (workplaceTypes.includes(b.type) && hasBrtOnlyAccess(state, b)));
@@ -98,11 +107,20 @@ function calculateTransport(state: GameState, now: number, speedFactors?: SpeedF
       if (!line.active) continue;
       for (let i = 0; i < line.stops.length; i++) {
         const stop = stops.get(line.stops[i]!);
-        if (!stop || distance(home, stop) > ECOLOGY.stopRadius) continue;
-        const key = `${line.id}:${i}`;
-        let paths = optionsByStop.get(key);
-        if (!paths) { paths = itineraries(line, i, lines, stops, activities); optionsByStop.set(key, paths); }
-        options.push(...paths.map(path => ({ ...path, minutes: path.minutes + distance(home, stop) })));
+        if (!stop) continue;
+        const gap = distance(home, stop);
+        if (gap <= ECOLOGY.stopRadius) {
+          const key = `${line.id}:${i}`;
+          let paths = optionsByStop.get(key);
+          if (!paths) { paths = itineraries(line, i, lines, stops, activities); optionsByStop.set(key, paths); }
+          options.push(...paths.map(path => ({ ...path, minutes: path.minutes + gap })));
+        }
+        if (!carriesBikes(line) || gap > bikeRadius()) continue;
+        const homeBike = gap > ECOLOGY.stopRadius;
+        const bikeKey = `${line.id}:${i}:${homeBike ? 'far' : 'near'}`;
+        let rides = optionsByStop.get(bikeKey);
+        if (!rides) { rides = itineraries(line, i, lines, stops, activities, true, homeBike); optionsByStop.set(bikeKey, rides); }
+        options.push(...rides.map(path => ({ ...path, minutes: path.minutes + gap / WALKING.cyclingFactor })));
       }
     }
     options.sort((a, b) => a.minutes - b.minutes || a.lines.join(':').localeCompare(b.lines.join(':')));
@@ -112,9 +130,10 @@ function calculateTransport(state: GameState, now: number, speedFactors?: SpeedF
     if (options.length) homeLines.set(home.id, options.map(option => option.lines));
     for (const option of options) {
       const used = option.lines.map(id => byId.get(id)!);
-      const allocated = Math.max(0, Math.min(remaining, ...used.map(l => l.capacity - l.riders)));
+      const places = option.bike ? 2 : 1;
+      const allocated = Math.max(0, Math.min(remaining, ...used.map(l => (l.capacity - l.riders - l.cyclists) / places)));
       if (allocated <= 0) continue;
-      for (const line of used) { line.riders += allocated; if (!line.homeIds.includes(home.id)) { line.homeIds.push(home.id); line.covered += citizens; } }
+      for (const line of used) { line.riders += allocated; if (option.bike) line.cyclists += allocated; if (!line.homeIds.includes(home.id)) { line.homeIds.push(home.id); line.covered += citizens; } }
       riders += allocated; remaining -= allocated;
       homeRiders.set(home.id, (homeRiders.get(home.id) ?? 0) + allocated);
       if (used.length > 1) transferRiders += allocated;
