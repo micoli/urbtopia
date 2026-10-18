@@ -2658,6 +2658,36 @@
     "scale": 1,
     "rotationOffset": 180
   },
+  "buildings-mound-1x1-t1": {
+    "file": "buildings/mound-1x1-t1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-mound-1x1-t2": {
+    "file": "buildings/mound-1x1-t2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-mound-1x1-t3": {
+    "file": "buildings/mound-1x1-t3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
   "buildings-olive-tree-1x1": {
     "file": "buildings/olive-tree-1x1",
     "source": "managed",

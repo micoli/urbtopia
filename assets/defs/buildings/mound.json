@@ -17,12 +17,12 @@
   "radius": 8,
   "tiers": [
     {
-      "model": "buildings-coal-1x1-t1-tone-a",
+      "model": "buildings-mound-1x1-t1",
       "footprint": [1, 1],
       "capacity": 60
     },
     {
-      "model": "buildings-coal-1x1-t2-tone-a",
+      "model": "buildings-mound-1x1-t2",
       "capacity": 120,
       "upgradeCost": {
         "urbs": 1000,
@@ -30,7 +30,7 @@
       }
     },
     {
-      "model": "buildings-coal-1x1-t3-tone-a",
+      "model": "buildings-mound-1x1-t3",
       "capacity": 200,
       "upgradeCost": {
         "urbs": 2500,
@@ -39,6 +39,7 @@
     }
   ],
   "category": "waste",
+  "drawnToScale": true,
   "power": 0,
   "water": 0,
   "waste": {

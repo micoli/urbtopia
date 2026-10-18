@@ -2126,6 +2126,89 @@ def build_coal(spec, out_dir):
     ob = lpm.finish(spec["id"], parts, palette, budget=3000, center=False)
     return export_model(ob, spec, out_dir)
 
+MOUND_HEAPS = {
+    1: ((0.0, 0.02, 0.38, 0.15),),
+    2: ((-0.17, 0.06, 0.31, 0.22), (0.19, -0.03, 0.28, 0.3)),
+    3: ((-0.19, 0.12, 0.29, 0.26), (0.2, 0.05, 0.28, 0.34), (-0.02, -0.12, 0.33, 0.42)),
+}
+MOUND_STRATA = (("udark", 0.45, 0.9), ("utrim", 0.35, 0.72), ("uwood", 0.2, 0.0))
+
+
+def mound_heap(parts, number, x, y, radius, height, shift):
+    """A faceted heap of three stacked layers; `shift` rotates the layer colors so neighbouring heaps differ."""
+    z = 0.0
+    layer_radius = radius
+    for layer, (name, share, top) in enumerate(MOUND_STRATA):
+        color = PALETTE_NAMES.index(MOUND_STRATA[(layer + shift) % 3][0])
+        layer_height = height * share
+        top_radius = radius * top if top else layer_radius * 0.55
+        parts.append(lpm.prism(f"heap_{number}_{layer}", 8, layer_radius, layer_height, at=(x, y, z), color=color, radius_top=top_radius))
+        z += layer_height
+        layer_radius = top_radius
+
+
+def mound_surface(radius, height, distance):
+    """Height of a heap of `mound_heap` at `distance` from its axis, or None outside it."""
+    z, layer_radius = 0.0, radius
+    for _, share, top in MOUND_STRATA:
+        layer_height = height * share
+        top_radius = radius * top if top else layer_radius * 0.55
+        if distance <= layer_radius and distance > top_radius:
+            return z + layer_height * (layer_radius - distance) / (layer_radius - top_radius)
+        z += layer_height
+        layer_radius = top_radius
+    return z if distance <= layer_radius else None
+
+
+MOUND_BAG = [(0.0, 0.0), (0.045, 0.0), (0.06, 0.035), (0.05, 0.075), (0.018, 0.1), (0.0, 0.108)]
+MOUND_LITTER = (
+    ("bag", 0.15, 0.5, "graphite"), ("tin", 0.9, 0.62, "coral"), ("can", 1.6, 0.4, "aqua"), ("bag", 2.3, 0.72, "bush"),
+    ("tin", 3.0, 0.35, "sun"), ("can", 3.7, 0.66, "utrim"), ("bag", 4.4, 0.45, "graphite"), ("tin", 5.1, 0.7, "tangerine"),
+    ("can", 5.8, 0.55, "coral"), ("tin", 0.5, 0.8, "utrim"), ("bag", 1.2, 0.85, "bush"), ("can", 2.8, 0.8, "sun"),
+)[:6]
+
+
+def mound_litter(parts, heap_number, x, y, radius, height):
+    """Garbage bags, tins and crushed cans lying on the surface of one heap."""
+    index = PALETTE_NAMES.index
+    for number, (kind, angle, share, color) in enumerate(MOUND_LITTER):
+        angle += heap_number * 0.9
+        distance = radius * share
+        z = mound_surface(radius, height, distance)
+        if z is None:
+            continue
+        px, py = x + distance * math.cos(angle), y + distance * math.sin(angle)
+        name = f"litter_{heap_number}_{number}"
+        if kind == "bag":
+            parts.append(lpm.lathe(name, MOUND_BAG, segments=7, at=(px, py, z - 0.012), color=index(color)))
+        elif kind == "tin":
+            parts.append(lpm.prism(name, 8, 0.024, 0.04, at=(px, py, z - 0.008), color=index(color)))
+        else:
+            parts.append(tilted_box(name, px, py, z - 0.004, 0.05, 0.034, 0.012, 20 + 8 * (number % 3), index(color)))
+            parts.append(lpm.prism(f"{name}_top", 6, 0.014, 0.012, at=(px + 0.03, py, z + 0.004), color=index(color)))
+
+
+def build_mound(spec, out_dir):
+    """A landfill mound straight on the ground: one to three faceted heaps of rubble in layers (the Tier is the count and height of the heaps), covered with garbage bags, tins and crushed cans, with planks and sacks lying around them."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    wood, white = index("uwood"), index("white")
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    tier = spec["count"]
+    parts = []
+    for number, (x, y, radius, height) in enumerate(MOUND_HEAPS[tier]):
+        mound_heap(parts, number, x, y, radius, height, number)
+        mound_litter(parts, number, x, y, radius, height)
+    for number, (x, y, angle) in enumerate(((-0.1, -0.34, 12), (0.05, -0.3, 22))[:tier]):
+        parts.append(tilted_box(f"plank_{number}", x, y, 0.0, 0.22, 0.045, 0.015, angle, wood))
+    for number, (x, y) in enumerate(((0.28, -0.22), (-0.34, -0.12), (0.34, 0.3))[:tier]):
+        parts.append(rounded_block(f"sack_{number}", 0.1, 0.07, 0.05, white, 0.3, at=(x, y, 0.0)))
+    ob = lpm.finish(spec["id"], parts, palette, budget=2500, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def door_frame(parts, name, cx, y, bottom, width, height, color, thick=0.012):
     """Thin surround on the left, right and top of a door; `y` is the wall plane (front, -Y)."""
     parts.append(lpm.box(f"{name}_frame_left", (thick, 0.01, height + thick), at=(cx - width / 2 - thick / 2, y - 0.004, bottom), color=color))
