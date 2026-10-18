@@ -1,7 +1,7 @@
 # Transport map section
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01, 04, 06
 
 ## What to build

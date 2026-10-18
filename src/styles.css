@@ -2454,3 +2454,11 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .eco-heat-item th { padding-left: 28px; color: var(--eco-muted); font-size: 12px; }
 .eco-heat-item th > button { margin-left: 8px; }
 .eco-heat-item th i.home-color-swatch { display: inline-block; width: 10px; height: 10px; margin-right: 4px; vertical-align: middle; }
+
+.eco-dashboard .transport-map-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.eco-dashboard .transport-map-canvas { position: relative; margin: 8px 0; }
+.eco-dashboard .transport-map-canvas svg { display: block; width: 100%; height: 360px; border-radius: 8px; background: rgba(255, 255, 255, 0.04); cursor: grab; touch-action: none; }
+.eco-dashboard .transport-map-canvas > button { position: absolute; top: 8px; right: 8px; }
+.eco-dashboard .transport-map-line, .eco-dashboard .transport-map-node { cursor: pointer; }
+.eco-dashboard .transport-map-card { margin: 8px 0; padding: 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.06); }
+.eco-dashboard .transport-map-hint { opacity: 0.75; }
