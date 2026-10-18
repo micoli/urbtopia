@@ -932,7 +932,15 @@
   "buildings-ferris-wheel-3x5-8f": {
     "file": "buildings/ferris-wheel-3x5-8f",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "footprint": [
+      5,
+      3
+    ],
+    "fit": {
+      "width": 7,
+      "height": 5
+    }
   },
   "buildings-fire-station-3x2": {
     "file": "buildings/fire-station-3x2",
