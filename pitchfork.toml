@@ -19,6 +19,13 @@ ready_http = "http://localhost:5181/"
 boot_start = false
 retry = false
 
+[daemons.back-office]
+run = "npm run back-office"
+dir = "."
+ready_http = "http://localhost:5180/"
+boot_start = false
+retry = false
+
 [daemons.casino-sim]
 run = "npm run casino:sim -- --port 5182 --strictPort"
 dir = "."
