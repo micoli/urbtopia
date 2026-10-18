@@ -78,6 +78,7 @@ export const FR: Record<MessageKey, string> = {
   'transportMap.layersHelp': "Avec les routes ou les voies piétonnes, les arrêts sont à leur place réelle. Un court lien marque où un arrêt touche une route ou une voie piétonne, et un carré vert où une voie piétonne finit sur une route.",
   'transportMap.zoomIn': 'Zoom avant',
   'transportMap.zoomOut': 'Zoom arrière',
+  'transportMap.coordinates': "Coordonnées",
   'transportMap.fit': "Ajuster",
   'transportMap.pedestrians': "Voyageurs à pied",
   'transportMap.cyclists': "Voyageurs à vélo",

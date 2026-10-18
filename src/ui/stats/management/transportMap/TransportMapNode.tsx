@@ -5,6 +5,7 @@ interface TransportMapNodeProps {
   node: MapNode;
   unit: number;
   labelAnchor: LabelAnchor | null;
+  showCoordinates: boolean;
   dimmed: boolean;
   selected: boolean;
   onSelect: () => void;
@@ -17,7 +18,7 @@ const TEXT_SIZE = LABEL_TEXT_SIZE;
 const COORDINATES_COLOR = '#9ca3af';
 const BIKE_BADGE = 7;
 
-export function TransportMapNode({ node, unit, labelAnchor, dimmed, selected, onSelect }: TransportMapNodeProps) {
+export function TransportMapNode({ node, unit, labelAnchor, showCoordinates, dimmed, selected, onSelect }: TransportMapNodeProps) {
   const radius = (node.hub ? HUB_RADIUS : NODE_RADIUS) * unit;
   const text = TEXT_SIZE * unit;
   const labelX = labelAnchor === 'end' ? node.x + 6 * unit : labelAnchor === 'start' ? node.x - 6 * unit : node.x;
@@ -41,7 +42,7 @@ export function TransportMapNode({ node, unit, labelAnchor, dimmed, selected, on
     </g>}
     {labelAnchor && <text className="transport-map-label" x={labelX} y={node.y + radius + text * 1.1} fontSize={text} textAnchor={labelAnchor} fill="currentColor" aria-hidden="true">
       <tspan fontWeight={node.hub ? 700 : 400}>{node.name}</tspan>
-      <tspan className="transport-map-coordinates" x={labelX} dy={text * LINE_HEIGHT} fontSize={text * COORDINATES_SCALE} fill={COORDINATES_COLOR}>{node.coordinates}</tspan>
+      {showCoordinates && <tspan className="transport-map-coordinates" x={labelX} dy={text * LINE_HEIGHT} fontSize={text * COORDINATES_SCALE} fill={COORDINATES_COLOR}>{node.coordinates}</tspan>}
     </text>}
   </g>;
 }

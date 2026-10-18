@@ -38,4 +38,10 @@ describe('map label layout', () => {
     expect(anchors.get(2)).toBe('start');
     expect(anchors.get(3)).toBe('middle');
   });
+
+  it('keeps more labels when the coordinates are hidden, as each one is shorter', () => {
+    const nodes = [node(1, 10, 10), node(2, 10, 12.5)];
+    expect(visibleLabels(nodes, null, view, size, true).size).toBe(1);
+    expect(visibleLabels(nodes, null, view, size, false).size).toBe(2);
+  });
 });

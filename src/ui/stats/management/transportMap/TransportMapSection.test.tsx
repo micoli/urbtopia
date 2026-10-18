@@ -30,7 +30,8 @@ describe('Transport map section', () => {
     expect(html).toContain('🚲');
     expect(html).toContain('aria-label="Zoom in"');
     expect(html).toContain('aria-label="Zoom out"');
-    expect(html).toMatch(/<tspan[^>]*class="transport-map-coordinates"[^>]*fill="#9ca3af"[^>]*>\(14, 1\)<\/tspan>/);
+    expect(html).not.toContain('transport-map-coordinates');
+    expect(html).toContain('Coordinates');
     expect(html).toContain('transport-map-transfer');
     expect(html).not.toContain('NaN');
     expect(html).not.toContain('undefined');
@@ -40,7 +41,7 @@ describe('Transport map section', () => {
     const state = { ...transportMapCity(), pedestrianWays: [{ x: 14, y: 3 }, { x: 15, y: 3 }] };
     const model = buildTransportMap(state, transportStats(state));
     const render = (roads: boolean, pedestrianWays: boolean) => renderToStaticMarkup(
-      <TransportMapCanvas model={model} lines={model.lines} selection={null} roads={roads} pedestrianWays={pedestrianWays} onSelect={() => undefined} />,
+      <TransportMapCanvas model={model} lines={model.lines} selection={null} roads={roads} pedestrianWays={pedestrianWays} showCoordinates={false} onSelect={() => undefined} />,
     );
     expect(render(false, false)).not.toContain('transport-map-layers');
     expect(render(false, false)).toMatch(/^<div class="transport-map-canvas">.*<div class="transport-map-controls">.*<\/div><\/div>$/s);
@@ -52,5 +53,15 @@ describe('Transport map section', () => {
     expect(both).toContain('transport-map-pedestrian-ways');
     expect(both).toContain('data-network="pedestrianWay"');
     expect(both).not.toContain('NaN');
+  });
+
+  it('shows the coordinates under the names, in grey, only when asked', () => {
+    const state = transportMapCity();
+    const model = buildTransportMap(state, transportStats(state));
+    const render = (showCoordinates: boolean) => renderToStaticMarkup(
+      <TransportMapCanvas model={model} lines={model.lines} selection={null} roads={false} pedestrianWays={false} showCoordinates={showCoordinates} onSelect={() => undefined} />,
+    );
+    expect(render(false)).not.toContain('transport-map-coordinates');
+    expect(render(true)).toMatch(/<tspan[^>]*class="transport-map-coordinates"[^>]*fill="#9ca3af"[^>]*>\(14, 1\)<\/tspan>/);
   });
 });

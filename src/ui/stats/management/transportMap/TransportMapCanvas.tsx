@@ -17,11 +17,12 @@ interface TransportMapCanvasProps {
   selection: MapSelection;
   roads: boolean;
   pedestrianWays: boolean;
+  showCoordinates: boolean;
   onSelect: (selection: MapSelection) => void;
 }
 
 // The roads and the Pedestrian ways have a real shape: with one of them, the stops stand where they really are; without, the sub-networks are brought together.
-export function TransportMapCanvas({ model, lines, selection, roads, pedestrianWays, onSelect }: TransportMapCanvasProps) {
+export function TransportMapCanvas({ model, lines, selection, roads, pedestrianWays, showCoordinates, onSelect }: TransportMapCanvasProps) {
   const svg = useRef<SVGSVGElement>(null);
   const real = roads || pedestrianWays;
   const placedNodes = useMemo(() => (real ? model.nodes.map(node => ({ ...node, x: node.realX, y: node.realY })) : model.nodes), [model.nodes, real]);
@@ -32,7 +33,7 @@ export function TransportMapCanvas({ model, lines, selection, roads, pedestrianW
   const nodes = useMemo(() => new Map(placedNodes.map(node => [node.id, node])), [placedNodes]);
   const shown = new Set(lines.flatMap(line => line.stops));
   const shownNodes = placedNodes.filter(node => shown.has(node.id));
-  const labelled = visibleLabels(shownNodes, selection, view, size);
+  const labelled = visibleLabels(shownNodes, selection, view, size, showCoordinates);
   return (
     <div className="transport-map-canvas">
       <svg
@@ -62,6 +63,7 @@ export function TransportMapCanvas({ model, lines, selection, roads, pedestrianW
           node={node}
           unit={unit}
           labelAnchor={labelled.get(node.id) ?? null}
+          showCoordinates={showCoordinates}
           dimmed={isNodeDimmed(selection, node, lines)}
           selected={selection?.kind === 'stop' && selection.id === node.id}
           onSelect={() => onSelect({ kind: 'stop', id: node.id })}
