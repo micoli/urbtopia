@@ -5,8 +5,9 @@ import type { Building, GameState } from '../engine/state';
 import type { Coord } from '../map/coord';
 import { tileKey } from '../map/geometry';
 import { isWithinReach } from '../services/facilities';
+import { totalCitizens } from '../buildings/city';
 import { footprintOfBuilding, pedestrianDistances, roadComponents, tilesOfBuilding, touchedRoadComponents, outsideNeighbours } from './wasteLinks';
-import { WASTE, WASTE_KINDS, homeWasteProduction, wasteCapacity, wasteKindOf, type WasteKind } from './wasteBalance';
+import { WASTE, WASTE_FACILITIES, WASTE_KINDS, WASTE_REQUIRED_FROM_CITIZENS, homeWasteProduction, wasteCapacity, wasteKindOf, type WasteKind } from './wasteBalance';
 
 export type WasteCause = 'outOfReach' | 'capacityFull' | 'noRoadLink' | 'beyondCarryingDistance' | 'facilityStopped';
 
@@ -27,6 +28,8 @@ export interface FacilityWaste {
 }
 
 export interface WasteReport {
+  // The city is big enough to be expected to handle its Waste.
+  required: boolean;
   homes: ReadonlyMap<number, HomeWaste>;
   facilities: ReadonlyMap<number, FacilityWaste>;
   produced: number;
@@ -108,14 +111,15 @@ function causeOf(links: readonly Link[], paying: boolean): WasteCause {
   return 'noRoadLink';
 }
 
-function withoutFacilities(homes: readonly Building[]): WasteReport {
+function withoutFacilities(homes: readonly Building[], required: boolean): WasteReport {
   const results = new Map<number, HomeWaste>(homes.map(home => [home.id, { produced: homeWasteProduction(home.tier), facilityId: null, cost: 0, carried: false, cause: 'outOfReach' }]));
-  return { homes: results, facilities: new Map(), produced: [...results.values()].reduce((sum, home) => sum + home.produced, 0), processed: 0, costPerDay: 0, costPerHour: 0 };
+  return { required, homes: results, facilities: new Map(), produced: [...results.values()].reduce((sum, home) => sum + home.produced, 0), processed: 0, costPerDay: 0, costPerHour: 0 };
 }
 
 function computeReport(state: GameState, paying: boolean): WasteReport {
   const homes = state.buildings.filter(building => isHomeType(building.type)).sort((a, b) => a.id - b.id);
-  if (!state.buildings.some(building => wasteKindOf(building.type))) return withoutFacilities(homes);
+  const required = totalCitizens(state) >= WASTE_REQUIRED_FROM_CITIZENS;
+  if (!state.buildings.some(building => wasteKindOf(building.type))) return withoutFacilities(homes, required);
   const components = roadComponents(state);
   const facilities = facilityGeometries(state, components);
   const homeData = homes.map(home => {
@@ -125,7 +129,7 @@ function computeReport(state: GameState, paying: boolean): WasteReport {
   });
   const results = new Map<number, HomeWaste>();
   const facilityResults = new Map<number, FacilityWaste>(facilities.map(({ building, kind, roadComponents: reachable }) => [building.id, { kind, capacity: wasteCapacity(kind, building.tier), processed: 0, cost: 0, linked: reachable.size > 0 }]));
-  const reaches = (facility: FacilityGeometry, center: Coord) => isWithinReach(center.x - facility.center.x, center.y - facility.center.y, WASTE.facilities[facility.kind].reach);
+  const reaches = (facility: FacilityGeometry, center: Coord) => isWithinReach(center.x - facility.center.x, center.y - facility.center.y, WASTE_FACILITIES[facility.kind].reach);
 
   if (paying) {
     for (const kind of WASTE_KINDS) {
@@ -140,7 +144,7 @@ function computeReport(state: GameState, paying: boolean): WasteReport {
           .sort((a, b) => a.distance - b.distance || a.data.home.id - b.data.home.id);
         for (const { data, link } of candidates) {
           if (served.processed >= served.capacity) break;
-          const cost = data.produced * WASTE.facilities[kind].tariff * (link.carried ? WASTE.carriedSurcharge : 1);
+          const cost = data.produced * WASTE_FACILITIES[kind].tariff * (link.carried ? WASTE.carriedSurcharge : 1);
           results.set(data.home.id, { produced: data.produced, facilityId: facility.building.id, cost, carried: link.carried, cause: null });
           served.processed += data.produced;
           served.cost += cost;
@@ -159,6 +163,7 @@ function computeReport(state: GameState, paying: boolean): WasteReport {
   const totals = [...results.values()];
   const costPerDay = [...facilityResults.values()].reduce((sum, facility) => sum + facility.cost, 0);
   return {
+    required,
     homes: results,
     facilities: facilityResults,
     produced: totals.reduce((sum, home) => sum + home.produced, 0),
@@ -192,5 +197,13 @@ export function wasteCostPerHour(state: GameState): number {
 
 export function isWasteSanctioned(state: GameState, homeId: number): boolean {
   if (difficultyOf(state) === 'cozy' || isAdapting(state)) return false;
+  if (!wasteReport(state).required) return false;
   return wasteCauseOf(wasteReport(state), homeId) !== null;
+}
+
+// A Home that must be covered and is not: it loses Well-being, and a high Tier cannot be reached.
+export function isWasteMissing(state: GameState, homeId: number): boolean {
+  if (isAdapting(state)) return false;
+  const report = wasteReport(state);
+  return report.required && !isWasteCovered(report, homeId);
 }

@@ -70,18 +70,7 @@ export const sanctionsBalanceSchema = z
   }), { path: ['difficulties'], message: 'each Difficulty must sanction at least what the one before it does' })
   .meta({ title: 'Sanctions balance', description: 'assets/defs/balance/sanctions.json: what each Difficulty sanctions, and how hard.' });
 
-const wasteFacility = z.strictObject({
-  // Waste units processed per day at each Tier; the last value holds for any higher Tier.
-  capacities: z.array(positive).min(1),
-  // Urbs per unit processed.
-  tariff: positive,
-  // The collection reach, as the radius of a Service reach square.
-  reach: z.int().min(1),
-  // Footprint in tiles until the building definitions carry it.
-  footprint: z.strictObject({ width: z.int().min(1), depth: z.int().min(1) }),
-});
-
-// How much Waste Citizens produce, what the three Waste facilities process and charge, and how far a Pedestrian way carries it.
+// How much Waste Citizens produce and how far a Pedestrian way carries it; the facilities themselves are building definitions.
 export const wasteBalanceSchema = z
   .strictObject({
     ...schemaField,
@@ -93,6 +82,5 @@ export const wasteBalanceSchema = z
     carriedSurcharge: z.number().min(1),
     // A saved city with more Citizens than this gets an Adaptation period when Waste arrives.
     adaptationCitizens: count,
-    facilities: z.strictObject({ recyclingPlant: wasteFacility, incinerator: wasteFacility, mound: wasteFacility }),
   })
-  .meta({ title: 'Waste balance', description: 'assets/defs/balance/waste.json: Waste production, facility capacities and tariffs, Carrying distance.' });
+  .meta({ title: 'Waste balance', description: 'assets/defs/balance/waste.json: Waste production, Carrying distance.' });

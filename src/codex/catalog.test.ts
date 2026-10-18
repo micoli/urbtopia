@@ -4,6 +4,7 @@ import { CODEX_ENTRIES, codexImageKey, isHomeCodexId, solarBaseOf, solarCodexIdO
 import { ROAD_CONSTRUCTIONS } from './construction';
 import { WATER_CONSTRUCTIONS } from './waterConstructions';
 import { codexSnapshot } from './snapshot';
+import { tiersOf } from '../core/buildings/buildingDefinitions';
 import { MESSAGES } from '../i18n/messages';
 import { FR } from '../i18n/fr';
 import { growthModelOf, produceModelOf } from '../scene/cropModels';
@@ -51,7 +52,7 @@ describe('codex coverage gate', () => {
       expect(english).toContain(spec.radius === null ? 'whole city' : `${2 * spec.radius} tiles`);
       expect(english).toContain(`${spec.unlockCitizens} Citizens`);
       expect(english).toContain(`${spec.cost} Urbs`);
-      expect(english).toContain(spec.capacity === null ? 'unlimited' : `Tier 8`);
+      expect(english).toContain(spec.capacity === null ? 'unlimited' : `Tier ${tiersOf(type).length}`);
       expect(english).toContain(`demand ${spec.power} power`);
       expect(FR[entry.description]).toContain(`${spec.cost} Urbs`);
     }

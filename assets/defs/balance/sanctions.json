@@ -7,17 +7,17 @@
       "citizenLossSeverity": 0
     },
     "easy": {
-      "factors": ["electricity", "water", "safety", "health"],
+      "factors": ["electricity", "water", "waste", "safety", "health"],
       "taxFloor": 0.5,
       "citizenLossSeverity": 0
     },
     "medium": {
-      "factors": ["electricity", "water", "safety", "health", "pollution", "congestion"],
+      "factors": ["electricity", "water", "waste", "safety", "health", "pollution", "congestion"],
       "taxFloor": 0.5,
       "citizenLossSeverity": 0
     },
     "hard": {
-      "factors": ["electricity", "water", "safety", "health", "pollution", "congestion", "climate"],
+      "factors": ["electricity", "water", "waste", "safety", "health", "pollution", "congestion", "climate"],
       "taxFloor": 0.5,
       "citizenLossSeverity": 0
     }

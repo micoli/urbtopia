@@ -30,6 +30,7 @@ const texts = {
   'needs.factor.electricity': ['Electricity', 'Électricité'],
   'needs.factor.water': ['Water', 'Eau'],
   'needs.factor.food': ['Food', 'Nourriture'],
+  'needs.factor.waste': ['Waste collection', 'Collecte des déchets'],
   'needs.factor.safety': ['Safety services', 'Services de sécurité'],
   'needs.factor.health': ['Health care', 'Santé'],
   'needs.factor.pollution': ['Clean air', 'Air sain'],

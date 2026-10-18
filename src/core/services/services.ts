@@ -4,7 +4,8 @@ import { centerOf, distance } from '../environment/ecology';
 import { FACILITIES, FACILITY_TYPES, facilityCapacity, SERVICE_CATEGORIES, facilitiesOfCategory, isWithinReach, requiredServices, type FacilityType, type ServiceCategory, type ServiceKey } from './facilities';
 import type { Building, GameState, Rotation } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { isWasteCovered, wasteReport } from '../waste/waste';
+import { isWasteCovered, isWasteMissing, wasteCauseOf, wasteReport, type WasteCause } from '../waste/waste';
+import { WASTE_REQUIRED_TIER } from '../waste/wasteBalance';
 
 export type ServiceCoverage = ReadonlyMap<number, ReadonlySet<FacilityType>>;
 
@@ -53,6 +54,7 @@ export function serviceCoverage(state: GameState): ServiceCoverage {
   const homes = state.buildings.filter(building => isHomeType(building.type)).sort((a, b) => a.id - b.id);
   const result = new Map<number, Set<FacilityType>>(homes.map(home => [home.id, new Set()]));
   for (const type of FACILITY_TYPES) {
+    if (FACILITIES[type].category === 'waste') continue;
     const facilities = state.buildings.filter(building => building.type === type).sort((a, b) => a.id - b.id);
     if (!facilities.length) continue;
     for (const id of coveredHomes(type, facilities, homes)) result.get(id)?.add(type);
@@ -61,9 +63,10 @@ export function serviceCoverage(state: GameState): ServiceCoverage {
   return result;
 }
 
-export type UncoveredReason = 'none' | 'outOfReach' | 'capacityFull';
+export type UncoveredReason = 'none' | 'outOfReach' | 'capacityFull' | WasteCause;
 
-export function uncoveredReason(state: GameState, home: Building, type: FacilityType): UncoveredReason {
+export function uncoveredReason(state: GameState, home: Building, type: ServiceKey): UncoveredReason {
+  if (type === 'waste') return wasteCauseOf(wasteReport(state), home.id) ?? 'none';
   const facilities = state.buildings.filter(building => building.type === type);
   if (!facilities.length) return 'none';
   const { radius } = FACILITIES[type];
@@ -71,14 +74,20 @@ export function uncoveredReason(state: GameState, home: Building, type: Facility
   return 'capacityFull';
 }
 
-export function isServiceCovered(coverage: ServiceCoverage, homeId: number, key: ServiceKey): boolean {
+export function isServiceCovered(coverage: ServiceCoverage, homeId: number, key: FacilityType): boolean {
   const covered = coverage.get(homeId);
   if (!covered) return false;
   return covered.has(key);
 }
 
-export function missingServices(coverage: ServiceCoverage, home: Building, tier = home.tier): ServiceKey[] {
+export function missingServices(coverage: ServiceCoverage, home: Building, tier = home.tier): FacilityType[] {
   return requiredServices(tier).filter(key => !isServiceCovered(coverage, home.id, key));
+}
+
+// Everything that keeps a Home from reaching the Tier: missing Public facilities and, from a high Tier, Waste coverage.
+export function missingServicesOf(state: GameState, home: Building, tier = home.tier, coverage: ServiceCoverage = serviceCoverage(state)): ServiceKey[] {
+  const wasteBlocks = tier >= WASTE_REQUIRED_TIER && isWasteMissing(state, home.id);
+  return [...missingServices(coverage, home, tier), ...(wasteBlocks ? ['waste' as const] : [])];
 }
 
 export function coveredCategories(coverage: ServiceCoverage, homeId: number): ServiceCategory[] {
@@ -113,7 +122,7 @@ export function categoryCoverageRatio(state: GameState, category: ServiceCategor
 
 export function homesLackingRequiredServices(state: GameState): Building[] {
   const coverage = serviceCoverage(state);
-  return state.buildings.filter(building => isHomeType(building.type) && missingServices(coverage, building).length > 0);
+  return state.buildings.filter(building => isHomeType(building.type) && missingServicesOf(state, building, building.tier, coverage).length > 0);
 }
 
 export function previewFacilityCoverage(state: GameState, type: FacilityType, x: number, y: number, rotation: Rotation): Building[] {

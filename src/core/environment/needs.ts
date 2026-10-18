@@ -15,6 +15,7 @@ import { leisureRetention } from '../leisure/leisure';
 import { poweredCasinoIds } from '../leisure/poweredCasinos';
 import type { Building, GameState } from '../engine/state';
 import { solidarityBonus } from '../economy/solidarity';
+import { isWasteCovered, wasteReport } from '../waste/waste';
 
 export const NEED_LEVELS = ['vital', 'safety', 'belonging', 'esteem', 'fulfilment'] as const;
 export type NeedLevelId = (typeof NEED_LEVELS)[number];
@@ -54,6 +55,7 @@ const FACTORS: readonly FactorSpec[] = [
   { id: 'electricity', level: 'vital', effects: ['supply'], section: 'eco-energy' },
   { id: 'water', level: 'vital', effects: ['supply'], section: 'eco-water' },
   { id: 'food', level: 'vital', effects: ['none'], section: null },
+  { id: 'waste', level: 'vital', effects: ['wellbeing', 'tierUpgrade'], section: 'eco-services' },
   { id: 'safety', level: 'safety', effects: ['wellbeing', 'tierUpgrade'], section: 'eco-services' },
   { id: 'health', level: 'safety', effects: ['wellbeing', 'tierUpgrade'], section: 'eco-services' },
   { id: 'pollution', level: 'safety', effects: ['wellbeing'], section: 'eco-energy' },
@@ -96,7 +98,9 @@ export function homeNeedSatisfactions(state: GameState, home: Building, { energy
   const benefits = homeBenefits(state, home, energy.coalRates, coverage, poweredCasinos, congestion);
   const covered = coveredCategories(coverage, home.id);
   for (const [factor, category] of SERVICE_FACTORS) result.set(factor, covered.includes(category) ? 100 : 0);
-  result.set('pollution', 100 - share(benefits.pollutionPenalty, ECOLOGY.coalWellbeingCap));
+  const waste = wasteReport(state);
+  if (waste.required) result.set('waste', isWasteCovered(waste, home.id) ? 100 : 0);
+  result.set('pollution', 100 - share(benefits.pollutionPenalty + benefits.odorPenalty, ECOLOGY.coalWellbeingCap));
   result.set('congestion', 100 - share(benefits.congestionPenalty, CONGESTION.penaltyCap));
   result.set('leisure', leisureRetention(state, home, poweredCasinos, 100) < 1 ? 100 : 0);
   result.set('walking', 100 * (congestion.homes.get(home.id)?.walkAccess ?? 0));

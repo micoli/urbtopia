@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { WASTE, advance, createBuilding, homeWasteProduction, isWasteCovered, isWasteSanctioned, newGame, wasteCapacity, wasteCauseOf, wasteReport, type Building, type GameState } from '../index';
+import { WASTE, WASTE_FACILITIES, advance, createBuilding, homeWasteProduction, isWasteCovered, isWasteMissing, isWasteSanctioned, newGame, wasteCapacity, wasteCauseOf, wasteReport, type Building, type GameState } from '../index';
 import { ECOLOGY } from '../environment/ecology';
 
 const H = ECOLOGY.hourMs;
@@ -25,7 +25,7 @@ describe('Waste production', () => {
 describe('Waste allocation', () => {
   it('uses the Recycling plant before the Incinerator, and the Incinerator before the Mound, nearest Homes first', () => {
     const homes = Array.from({ length: 10 }, (_, index) => home(10 + index, 50 + 2 * index, 50, 4));
-    const state = city([facility(1, 'recyclingPlant', 60, 45), facility(2, 'incinerator', 58, 46), facility(3, 'mound', 62, 50), ...homes]);
+    const state = city([facility(1, 'recyclingPlant', 60, 47), facility(2, 'incinerator', 58, 47), facility(3, 'mound', 62, 50), ...homes]);
     expect(served(state, 1)).toEqual([12, 13, 14, 15, 16, 17, 18]);
     expect(served(state, 2)).toEqual([10, 11, 19]);
     expect(wasteReport(state).facilities.get(1)?.processed).toBe(7 * homeWasteProduction(4));
@@ -42,7 +42,7 @@ describe('Waste allocation', () => {
   });
 
   it('charges the relative tariffs 1:3:6 per unit processed', () => {
-    const cost = (kind: 'mound' | 'incinerator' | 'recyclingPlant') => wasteReport(city([facility(1, kind, 66, kind === 'mound' ? 50 : 46), home(10, 60, 48, 2)])).costPerDay;
+    const cost = (kind: 'mound' | 'incinerator' | 'recyclingPlant') => wasteReport(city([facility(1, kind, 66, kind === 'mound' ? 50 : 47), home(10, 60, 48, 2)])).costPerDay;
     const unit = homeWasteProduction(2);
     expect([cost('mound'), cost('incinerator'), cost('recyclingPlant')]).toEqual([unit, 3 * unit, 6 * unit]);
     expect(wasteReport(city([facility(1, 'mound', 66, 50), home(10, 60, 48, 2)])).costPerHour).toBe(unit / WASTE.dayHours);
@@ -72,7 +72,7 @@ describe('Waste coverage and its causes', () => {
   });
 
   it('says no road link for a Home on a Road the facility does not join, and for a Home without any Road', () => {
-    const apart = city([facility(1, 'incinerator', 66, 46), home(10, 65, 57), home(11, 66, 58)], { roads: [...roadRow(40, 80, 49), ...roadRow(60, 70, 56)] });
+    const apart = city([facility(1, 'incinerator', 66, 47), home(10, 65, 57), home(11, 66, 58)], { roads: [...roadRow(40, 80, 49), ...roadRow(60, 70, 56)] });
     expect(wasteCauseOf(wasteReport(apart), 10)).toBe('noRoadLink');
     expect(wasteCauseOf(wasteReport(apart), 11)).toBe('noRoadLink');
   });
@@ -85,21 +85,21 @@ describe('Waste coverage and its causes', () => {
 });
 
 describe('Waste through a Pedestrian path network', () => {
-  const carrying = (wayLength: number, homeY: number) => city([facility(1, 'incinerator', 66, 46), home(10, 71, homeY)], { pedestrianWays: wayColumn(70, 50, 50 + wayLength) });
+  const carrying = (wayLength: number, homeY: number) => city([facility(1, 'incinerator', 66, 47), home(10, 71, homeY)], { pedestrianWays: wayColumn(70, 50, 50 + wayLength) });
 
   it('joins a pedestrian-only Home within the Carrying distance, at the surcharge', () => {
     const state = carrying(WASTE.carryingDistance - 1, 50 + WASTE.carryingDistance - 1);
     const waste = wasteReport(state).homes.get(10);
     expect(waste?.cause).toBeNull();
     expect(waste?.carried).toBe(true);
-    expect(waste?.cost).toBe(homeWasteProduction(1) * WASTE.facilities.incinerator.tariff * WASTE.carriedSurcharge);
+    expect(waste?.cost).toBe(homeWasteProduction(1) * WASTE_FACILITIES.incinerator.tariff * WASTE.carriedSurcharge);
   });
 
   it('charges a Home on a Road the plain tariff', () => {
-    const state = city([facility(1, 'incinerator', 66, 46), home(10, 70, 48)]);
+    const state = city([facility(1, 'incinerator', 66, 47), home(10, 70, 48)]);
     const waste = wasteReport(state).homes.get(10);
     expect(waste?.carried).toBe(false);
-    expect(waste?.cost).toBe(homeWasteProduction(1) * WASTE.facilities.incinerator.tariff);
+    expect(waste?.cost).toBe(homeWasteProduction(1) * WASTE_FACILITIES.incinerator.tariff);
   });
 
   it('leaves a Home beyond the Carrying distance uncovered', () => {
@@ -108,7 +108,7 @@ describe('Waste through a Pedestrian path network', () => {
   });
 
   it('says no road link when the Pedestrian ways reach no Road', () => {
-    const state = city([facility(1, 'incinerator', 66, 46), home(10, 71, 54)], { pedestrianWays: wayColumn(70, 52, 54) });
+    const state = city([facility(1, 'incinerator', 66, 47), home(10, 71, 54)], { pedestrianWays: wayColumn(70, 52, 54) });
     expect(wasteCauseOf(wasteReport(state), 10)).toBe('noRoadLink');
   });
 });
@@ -134,10 +134,18 @@ describe('Mound access', () => {
 });
 
 describe('Waste Sanction and Adaptation period', () => {
-  const uncovered = (extra: Partial<GameState>) => city([home(10, 70, 48)], extra);
+  const bigCity = [home(20, 44, 50, 8), home(21, 48, 50, 8)];
+  const uncovered = (extra: Partial<GameState>) => city([home(10, 70, 48), ...bigCity], extra);
 
   it('sanctions an uncovered Home from Easy', () => {
     expect(isWasteSanctioned(uncovered({ difficulty: 'easy' }), 10)).toBe(true);
+  });
+
+  it('expects no Waste handling from a city below the first facility unlock', () => {
+    const small = city([home(10, 70, 48)], { difficulty: 'hard' });
+    expect(wasteReport(small).required).toBe(false);
+    expect(isWasteSanctioned(small, 10)).toBe(false);
+    expect(isWasteMissing(small, 10)).toBe(false);
   });
 
   it('never sanctions under Cozy', () => {
@@ -149,7 +157,7 @@ describe('Waste Sanction and Adaptation period', () => {
   });
 
   it('does not sanction a covered Home', () => {
-    expect(isWasteSanctioned(city([facility(1, 'mound', 66, 50), home(10, 64, 48)], { difficulty: 'hard' }), 10)).toBe(false);
+    expect(isWasteSanctioned(city([facility(1, 'mound', 66, 50), home(10, 64, 48), ...bigCity], { difficulty: 'hard' }), 10)).toBe(false);
   });
 });
 

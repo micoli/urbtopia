@@ -31,7 +31,7 @@ import { tutorialAllows, tutorialSkipMs } from '../progression/tutorial';
 import { replayVenueTutorial, skipVenueTutorial, type VenueTutorialType } from '../progression/venueTutorial';
 import { isAdjacentToOwned, isInsideMap, isOwned, parcelPrice } from '../map/parcels';
 import { FACILITIES, isFacilityType } from '../services/facilities';
-import { missingServices, serviceCoverage } from '../services/services';
+import { missingServicesOf } from '../services/services';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from '../map/occupancy';
 import { autoRotation, frontHasAccess, placementIssue, type PlacementIssue } from '../map/placement';
 import { newQueueEntry, restartRunningProduction, runningEntry, rushPrice, rushRunningProduction, shiftRunningTimers, taxDue } from '../economy/production';
@@ -918,7 +918,7 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
   const cost = upgradeCostOf(building.type, nextTier);
   if (!cost) return fail('error.maxTier');
   const isHome = isHomeType(building.type);
-  if (isHome && missingServices(serviceCoverage(state), building, nextTier).length > 0) return fail('error.serviceRequired');
+  if (isHome && missingServicesOf(state, building, nextTier).length > 0) return fail('error.serviceRequired');
   let grown = building;
   if (isHome || building.type === 'casino') {
     const expansion = expandedPlacement(state, building, nextTier);

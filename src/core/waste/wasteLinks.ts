@@ -4,15 +4,11 @@ import type { Coord } from '../map/coord';
 import { DIRECTIONS, neighbour, tileKey } from '../map/geometry';
 import { buildRoadGraph } from '../map/roadGraph';
 import { pedestrianGraph, pedestrianWayNode } from '../map/pedestrianGraph';
-import { WASTE, wasteKindOf } from './wasteBalance';
 
 export type RoadComponents = ReadonlyMap<string, number>;
 
 export function footprintOfBuilding(building: Pick<Building, 'type' | 'rotation' | 'tier'>): { width: number; depth: number } {
-  const kind = wasteKindOf(building.type);
-  if (!kind) return footprintOf(building.type, building.rotation, building.tier);
-  const { width, depth } = WASTE.facilities[kind].footprint;
-  return building.rotation % 2 === 0 ? { width, depth } : { width: depth, depth: width };
+  return footprintOf(building.type, building.rotation, building.tier);
 }
 
 export function tilesOfBuilding(building: Pick<Building, 'type' | 'rotation' | 'tier' | 'x' | 'y'>): Coord[] {

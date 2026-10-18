@@ -18,6 +18,7 @@
                 "enum": [
                   "electricity",
                   "water",
+                  "waste",
                   "safety",
                   "health",
                   "pollution",
@@ -54,6 +55,7 @@
                 "enum": [
                   "electricity",
                   "water",
+                  "waste",
                   "safety",
                   "health",
                   "pollution",
@@ -90,6 +92,7 @@
                 "enum": [
                   "electricity",
                   "water",
+                  "waste",
                   "safety",
                   "health",
                   "pollution",
@@ -126,6 +129,7 @@
                 "enum": [
                   "electricity",
                   "water",
+                  "waste",
                   "safety",
                   "health",
                   "pollution",

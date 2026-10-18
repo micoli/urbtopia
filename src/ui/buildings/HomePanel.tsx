@@ -1,4 +1,4 @@
-import { ECOLOGY, FACILITY_TYPES, casinosReaching, sportVenuesReaching, isSportVenueType, poweredCasinoIds, homePower, homeBenefits, missingServices, serviceCoverage, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, difficultyOf, homeSanction, needsContext, type Building } from '../../core';
+import { ECOLOGY, FACILITY_TYPES, casinosReaching, sportVenuesReaching, isSportVenueType, poweredCasinoIds, homePower, homeBenefits, missingServicesOf, serviceCoverage, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, difficultyOf, homeSanction, needsContext, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import type { MessageKey } from '../../i18n/messages';
 import { gameStore } from '../../store/gameStore';
@@ -24,7 +24,7 @@ export function HomePanel({ building }: HomePanelProps) {
     ...sportVenuesReaching(state, building).map(venue => t(`building.${venue.type}`)),
   ] : null;
   const covered = FACILITY_TYPES.filter(type => coverage.get(building.id)?.has(type));
-  const missing = missingServices(coverage, building);
+  const missing = missingServicesOf(state, building, building.tier, coverage);
   const spec = HOME_TIERS[building.tier - 1];
   const due = taxDue(building);
   const insulationCost = ECOLOGY.insulationCost * building.tier;

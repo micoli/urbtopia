@@ -1,4 +1,4 @@
-import { SERVICE_CATEGORIES, categoryCoverageRatio, homesLackingRequiredServices, missingServices, serviceCoverage, type GameState, type ServiceKey } from '../../core';
+import { SERVICE_CATEGORIES, categoryCoverageRatio, homesLackingRequiredServices, missingServicesOf, serviceCoverage, type GameState, type ServiceKey } from '../../core';
 import { t } from '../../i18n/t';
 import { serviceName } from './serviceNames';
 import { SectionHeading } from '../common/SectionHeading';
@@ -13,7 +13,7 @@ interface ServicesSectionProps {
 export function ServicesSection({ state }: ServicesSectionProps) {
   const openCoverage = useUi(store => store.openServiceCoverage);
   const coverage = serviceCoverage(state);
-  const lacking = [...new Set<ServiceKey>(homesLackingRequiredServices(state).flatMap(home => missingServices(coverage, home)))];
+  const lacking = [...new Set<ServiceKey>(homesLackingRequiredServices(state).flatMap(home => missingServicesOf(state, home, home.tier, coverage)))];
   return (
     <section id="eco-services">
       <SectionHeading icon="✚">{t('stats.services')}</SectionHeading>

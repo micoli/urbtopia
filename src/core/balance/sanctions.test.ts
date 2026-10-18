@@ -20,9 +20,9 @@ describe('Sanctions balance', () => {
   });
 
   it.each([
-    ['easy', ['safety', 'health']],
-    ['medium', ['safety', 'health', 'pollution', 'congestion']],
-    ['hard', ['safety', 'health', 'pollution', 'congestion', 'climate']],
+    ['easy', ['safety', 'health', 'waste']],
+    ['medium', ['safety', 'health', 'waste', 'pollution', 'congestion']],
+    ['hard', ['safety', 'health', 'waste', 'pollution', 'congestion', 'climate']],
   ] as const)('sanctions the expected factors under %s', (difficulty, factors) => {
     expect(sanctionedFactors(difficulty)).toEqual(expect.arrayContaining([...factors, 'electricity', 'water']));
     expect(sanctionedFactors(difficulty)).toHaveLength(factors.length + 2);

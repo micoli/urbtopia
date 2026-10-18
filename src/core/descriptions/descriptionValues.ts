@@ -31,6 +31,9 @@ export const COMPUTED_VALUES: Partial<Record<BuildingKind, Record<string, Comput
     limit: { label: 'Capacity: “limited”, or “unlimited” without one', value: definition => (tiersOf(definition)[0]?.capacity === undefined ? 'unlimited' : 'limited') },
     tier1Capacity: { label: 'Citizen capacity at Tier 1 (none when unlimited)', value: definition => tiersOf(definition)[0]?.capacity as number | undefined },
     maxTierCapacity: { label: 'Citizen capacity at the highest Tier (none when unlimited)', value: definition => tiersOf(definition).at(-1)?.capacity as number | undefined },
+    tariff: { label: 'Urbs charged per Waste unit processed (Waste facilities)', value: definition => definition.waste?.tariff },
+    odorRadius: { label: 'Odor radius (tiles, Mound)', value: definition => definition.waste?.odorRadius },
+    pollutionRadius: { label: 'Pollution radius (tiles, Incinerator)', value: definition => definition.waste?.pollutionRadius },
     hasWater: { label: 'Water demand: “yes” or “no”', value: definition => ((definition.water ?? 0) > 0 ? 'yes' : 'no') },
   },
   sport: {

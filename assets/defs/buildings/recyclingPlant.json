@@ -1,0 +1,57 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "facility",
+  "section": "build.publicFacilities",
+  "cost": 12000,
+  "unlockCitizens": 1500,
+  "requiresRoad": true,
+  "name": {
+    "en": "Recycling plant",
+    "fr": "Usine de recyclage"
+  },
+  "description": {
+    "en": "Sorts and reuses the Waste of nearby Homes, the cleanest and most expensive way ({tariff} Urbs per unit), used first: square reach of {side} tiles, {tier1Capacity} Waste units a day, up to {maxTierCapacity} at Tier {tierCount}. No nuisance and no emissions, but it consumes electricity and is shed on a shortage like any economic building. Needs its own road; demand {power} power at Tier 1; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs to build.",
+    "fr": "Trie et réutilise les déchets des logements proches, la façon la plus propre et la plus chère ({tariff} Urbs par unité), utilisée en premier : portée carrée de {side} cases, {tier1Capacity} unités de déchets par jour, jusqu’à {maxTierCapacity} au niveau {tierCount}. Ni nuisance ni émissions, mais elle consomme de l’électricité et est délestée en cas de pénurie comme tout bâtiment économique. Nécessite sa propre route; consomme {power} d’électricité au niveau 1 ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs à construire."
+  },
+  "radius": 14,
+  "tiers": [
+    {
+      "model": "buildings-storehouse-2x2-t1-tone-a",
+      "footprint": [3, 2],
+      "capacity": 400
+    },
+    {
+      "model": "buildings-storehouse-2x2-t2-tone-a",
+      "capacity": 800,
+      "power": 4,
+      "upgradeCost": {
+        "urbs": 6000,
+        "goods": {}
+      }
+    },
+    {
+      "model": "buildings-storehouse-2x2-t3-tone-a",
+      "capacity": 1400,
+      "power": 7,
+      "upgradeCost": {
+        "urbs": 14000,
+        "goods": {}
+      }
+    },
+    {
+      "model": "buildings-storehouse-2x2-t4-tone-a",
+      "capacity": 2200,
+      "power": 10,
+      "upgradeCost": {
+        "urbs": 30000,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "waste",
+  "power": 2,
+  "water": 0,
+  "waste": {
+    "tariff": 6
+  }
+}
