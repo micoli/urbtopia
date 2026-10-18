@@ -32,4 +32,12 @@ describe('advance', () => {
     advance(initial, START + HOUR);
     expect(initial).toEqual(snapshot);
   });
+
+  it('terminates when the remaining solidarity time is below the clock precision', () => {
+    const lastSeen = 1_792_258_002_720.7646;
+    const state = { ...initial, lastSeen, solidarityMs: 0.000057443976402282715 };
+    const { state: advanced } = advance(state, lastSeen + HOUR);
+    expect(advanced.lastSeen).toBe(lastSeen + HOUR);
+    expect(advanced.solidarityMs).toBe(0);
+  });
 });
