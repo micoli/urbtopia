@@ -405,6 +405,10 @@ _Avoid_: Level up, tech tree, research
 The guided sequence of steps played at the start of a new game, where the player places the first buildings to lay a solid base. It can be skipped at any time.
 _Avoid_: Onboarding, intro, walkthrough
 
+**Venue tutorial**:
+The short guided sequence started when the first Venue of a type is placed, teaching the player to make it earn. It never locks commands and can be skipped or replayed. Distinct from the Tutorial.
+_Avoid_: Onboarding, intro, walkthrough
+
 **Time skip**:
 The player action that advances game time by a set number of hours or up to the end of a Tutorial step.
 _Avoid_: Time warp, fast-forward
