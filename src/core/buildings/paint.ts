@@ -28,9 +28,10 @@ export function paintKitOf(model: string): PaintKit | undefined {
   return undefined;
 }
 
-const REPAINTABLE_KINDS: readonly string[] = ['home', 'shop', 'production', 'storage', 'utility', 'venue', 'sport'];
+const LEGACY_COLOR_KINDS: readonly string[] = ['home', 'shop', 'production', 'storage', 'utility', 'venue', 'sport'];
+const REPAINTABLE_KINDS: readonly string[] = [...LEGACY_COLOR_KINDS, 'transitStop'];
 
-// Homes, shops, Venues, production, storage and utility buildings, as long as their model comes from a kit with palette variations.
+// Homes, shops, Venues, production, storage, utility buildings and the Transit hub, as long as their model comes from a kit with palette variations.
 const REPAINTABLE_TYPES: ReadonlySet<string> = new Set(
   BUILDING_ENTRIES
     .filter(({ kind, model }) => REPAINTABLE_KINDS.includes(kind ?? '') && paintKitOf(model) !== undefined)
@@ -41,13 +42,20 @@ export const isRepaintableType = (type: string): boolean => REPAINTABLE_TYPES.ha
 
 // A save made while these buildings still wore a kit palette may carry a color their drawn models no longer have.
 const KIND_BY_TYPE: ReadonlyMap<string, string | undefined> = new Map(BUILDING_ENTRIES.map(({ id, kind }) => [id, kind]));
-export const mayCarryLegacyColor = (type: string): boolean => REPAINTABLE_KINDS.includes(KIND_BY_TYPE.get(type) ?? '');
+export const mayCarryLegacyColor = (type: string): boolean => LEGACY_COLOR_KINDS.includes(KIND_BY_TYPE.get(type) ?? '');
 
 export const colorVariantsOfKit = (kit: PaintKit): readonly ColorVariant[] => PALETTES[kit];
 
-export function paintKitAt(type: BuildingId, tier: number): PaintKit | undefined {
+const MODEL_OF_TYPE: ReadonlyMap<string, string | undefined> = new Map(BUILDING_ENTRIES.map(({ id, model }) => [id, model]));
+
+// The model a building wears at a Tier, or its own model when it has no Tiers (the Transit hub).
+function modelAt(type: BuildingId, tier: number): string | undefined {
   const tiers = tiersOf(type);
-  return paintKitOf(tiers[tier - 1]?.model ?? tiers[0]?.model ?? '');
+  return tiers[tier - 1]?.model ?? tiers[0]?.model ?? MODEL_OF_TYPE.get(type);
+}
+
+export function paintKitAt(type: BuildingId, tier: number): PaintKit | undefined {
+  return paintKitOf(modelAt(type, tier) ?? '');
 }
 
 export function colorVariantsOf(type: BuildingId, tier: number): readonly ColorVariant[] {
@@ -57,7 +65,8 @@ export function colorVariantsOf(type: BuildingId, tier: number): readonly ColorV
 
 // Every color the building can wear at some Tier, since its model may change kit as it grows.
 export function colorVariantsOfType(type: BuildingId): readonly ColorVariant[] {
-  const kits = tiersOf(type).map(({ model }) => paintKitOf(model ?? ''));
+  const tiers = tiersOf(type);
+  const kits = (tiers.length > 0 ? tiers.map(({ model }) => model) : [MODEL_OF_TYPE.get(type)]).map(model => paintKitOf(model ?? ''));
   return ALL_COLORS.filter(color => kits.some(kit => kit && PALETTES[kit].includes(color)));
 }
 
@@ -70,7 +79,6 @@ export interface ToneLabel {
 const TONE_OF_COLOR: Record<ColorVariant, 'a' | 'b' | 'c' | 'd'> = { default: 'a', a: 'b', b: 'c', c: 'd' };
 
 export function toneLabelOf(type: BuildingId, tier: number, colorVariant: ColorVariant): ToneLabel | undefined {
-  const tiers = tiersOf(type);
-  const model = tiers[tier - 1]?.model ?? tiers[0]?.model;
+  const model = modelAt(type, tier);
   return MODEL_ENTRIES[model ?? '']?.tones?.[TONE_OF_COLOR[colorVariant]];
 }
