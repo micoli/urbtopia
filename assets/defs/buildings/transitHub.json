@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "transitStop",
   "section": "build.transport",
-  "model": "buildings-station-2x1",
+  "model": "buildings-hub-3x2-tone-a",
   "footprint": [3, 2],
   "cost": 1500,
   "unlockCitizens": 1000,

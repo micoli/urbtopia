@@ -23,4 +23,4 @@ Status: resolved
 
 ## Comments
 
-Resolved without the dedicated 3D model: the hub reuses `buildings-station-2x1` as a placeholder. The model is left to a final art pass (`add-building` and `create-building-model`, one building at a time). A hub is reached from all four sides (`perimeterTiles`), and `isHubActive` tells whether a Road, BRT corridor or Railway touches it.
+Resolved. The hub has its own model, `buildings-hub-3x2-tone-a` (recipe `assets/managed-models/buildings/hub-3x2-tone-a/`, kit function `build_hub`), repaintable in four tones. A hub is reached from all four sides (`perimeterTiles`), and `isHubActive` tells whether a Road, BRT corridor or Railway touches it.

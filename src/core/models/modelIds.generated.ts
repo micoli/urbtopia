@@ -111,6 +111,7 @@ export type ModelId =
   | 'buildings-house-2x2-5f-mansard-a-solar'
   | 'buildings-house-2x2-5f-tone-a'
   | 'buildings-house-2x2-5f-tone-a-solar'
+  | 'buildings-hub-3x2-tone-a'
   | 'buildings-hydro-1x2-t1-tone-a'
   | 'buildings-hydro-1x2-t2-tone-a'
   | 'buildings-hydro-1x2-t3-tone-a'
