@@ -24,6 +24,8 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
     if (!canvas || !initial) return;
     const scene = new VenueScene(canvas, gridSizeOf(venueType, initial.tier), initial.tier, venueType, venueId);
     let hovered: Coord | null = null;
+    // The piece of furniture under a press, and where inside it the press landed.
+    let grab: { id: number; offset: Coord; carrying: boolean } | null = null;
 
     const showGhost = () => {
       const venue = venueOf(venueId);
@@ -77,6 +79,32 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
     scene.onHoverCell = cell => {
       hovered = cell;
       showGhost();
+    };
+    scene.onGrab = cell => {
+      grab = null;
+      const { selectedFixture, movingId } = venueStore.getState();
+      if (selectedFixture || movingId !== null) return false;
+      const fixture = venueOf(venueId)?.venue.fixtures.find(candidate => fixtureTiles(candidate).some(tile => tile.x === cell.x && tile.y === cell.y));
+      if (!fixture) return false;
+      grab = { id: fixture.id, offset: { x: cell.x - fixture.x, y: cell.y - fixture.y }, carrying: false };
+      return true;
+    };
+    scene.onGrabMove = cell => {
+      if (!grab) return;
+      if (!grab.carrying) {
+        grab.carrying = true;
+        venueStore.getState().startMove(grab.id);
+      }
+      hovered = { x: cell.x - grab.offset.x, y: cell.y - grab.offset.y };
+      showGhost();
+    };
+    scene.onDrop = cell => {
+      const carried = grab;
+      grab = null;
+      if (!carried?.carrying) return;
+      venueStore.getState().stopMove();
+      if (!cell) return;
+      gameStore.getState().send({ type: 'MoveFixture', buildingId: venueId, fixtureId: carried.id, x: cell.x - carried.offset.x, y: cell.y - carried.offset.y });
     };
     scene.onTapCell = (cell, repeat) => {
       const venue = venueOf(venueId);

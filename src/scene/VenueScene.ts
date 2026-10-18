@@ -56,6 +56,7 @@ export class VenueScene {
   private dirty = true;
   private pointerDown: { x: number; y: number; ground: THREE.Vector3 | null } | null = null;
   private dragged = false;
+  private grabbed = false;
   private pointers = new Map<number, { x: number; y: number }>();
   private lastPinchDistance = 0;
   private lastFixtures: readonly VenueFixture[] = [];
@@ -65,6 +66,10 @@ export class VenueScene {
   // `repeat` is true when Shift is held: the player keeps placing the same item.
   onTapCell: (cell: Coord, repeat: boolean) => void = () => {};
   onHoverCell: (cell: Coord | null) => void = () => {};
+  // A press on a piece of furniture grabs it: dragging then carries the piece instead of the room.
+  onGrab: (cell: Coord) => boolean = () => false;
+  onGrabMove: (cell: Coord) => void = () => {};
+  onDrop: (cell: Coord | null) => void = () => {};
 
   private shellModels: { floor: string; wall: string; corner: string };
   private cornerPlacement: { x: number; z: number; rotation: number };
@@ -279,11 +284,15 @@ export class VenueScene {
     if (this.pointers.size >= 2) {
       this.pointerDown = null;
       this.dragged = true;
+      if (this.grabbed) this.onDrop(null);
+      this.grabbed = false;
       this.lastPinchDistance = this.pinchDistance();
       return;
     }
     this.pointerDown = { x: event.clientX, y: event.clientY, ground: this.groundAt(event.clientX, event.clientY) };
     this.dragged = false;
+    const cell = this.cellAt(event.clientX, event.clientY);
+    this.grabbed = cell !== null && this.onGrab(cell);
     try {
       this.canvas.setPointerCapture(event.pointerId);
     } catch {
@@ -295,9 +304,12 @@ export class VenueScene {
     this.pointers.delete(event.pointerId);
     this.lastPinchDistance = 0;
     const start = this.pointerDown;
+    const carried = this.grabbed && this.dragged;
     this.pointerDown = null;
+    this.grabbed = false;
     this.canvas.style.cursor = '';
     if (this.canvas.hasPointerCapture(event.pointerId)) this.canvas.releasePointerCapture(event.pointerId);
+    if (carried) return this.onDrop(this.cellAt(event.clientX, event.clientY));
     if (!start || this.dragged) return;
     const cell = this.cellAt(event.clientX, event.clientY);
     if (cell) this.onTapCell(cell, event.shiftKey);
@@ -314,6 +326,11 @@ export class VenueScene {
     if (start && (this.dragged || Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_DISTANCE)) {
       this.dragged = true;
       this.canvas.style.cursor = 'grabbing';
+      if (this.grabbed) {
+        const cell = this.cellAt(event.clientX, event.clientY);
+        if (cell) this.onGrabMove(cell);
+        return;
+      }
       const now = this.groundAt(event.clientX, event.clientY);
       if (start.ground && now) {
         this.pan = clampPan({ x: this.pan.x + start.ground.x - now.x, z: this.pan.z + start.ground.z - now.z }, this.zoom, this.size);
@@ -349,6 +366,8 @@ export class VenueScene {
     this.pointers.delete(event.pointerId);
     this.lastPinchDistance = 0;
     this.pointerDown = null;
+    if (this.grabbed) this.onDrop(null);
+    this.grabbed = false;
   };
 
   private handlePointerLeave = (): void => {
