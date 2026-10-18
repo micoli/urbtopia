@@ -43,6 +43,7 @@ describe('Transport map section', () => {
       <TransportMapCanvas model={model} lines={model.lines} selection={null} roads={roads} pedestrianWays={pedestrianWays} onSelect={() => undefined} />,
     );
     expect(render(false, false)).not.toContain('transport-map-layers');
+    expect(render(false, false)).toMatch(/^<div class="transport-map-canvas">.*<div class="transport-map-controls">.*<\/div><\/div>$/s);
     const roadsOnly = render(true, false);
     expect(roadsOnly).toContain('transport-map-roads');
     expect(roadsOnly).toContain('data-network="road"');

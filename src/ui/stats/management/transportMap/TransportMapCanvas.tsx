@@ -7,7 +7,7 @@ import { TransportMapNode } from './TransportMapNode.tsx';
 import { mergeBounds, type MapLine, type TransportMapModel } from './transportMapModel.ts';
 import type { MapSelection } from './selection.ts';
 import { isLineDimmed, isNodeDimmed } from './selection.ts';
-import { visibleLabelIds } from './labelLayout.ts';
+import { visibleLabels } from './labelLayout.ts';
 import { useElementSize } from './useElementSize.ts';
 import { BUTTON_ZOOM_STEP, useMapViewport } from './useMapViewport.ts';
 
@@ -32,8 +32,8 @@ export function TransportMapCanvas({ model, lines, selection, roads, pedestrianW
   const nodes = useMemo(() => new Map(placedNodes.map(node => [node.id, node])), [placedNodes]);
   const shown = new Set(lines.flatMap(line => line.stops));
   const shownNodes = placedNodes.filter(node => shown.has(node.id));
-  const labelled = visibleLabelIds(shownNodes, selection, view, size);
-  return <>
+  const labelled = visibleLabels(shownNodes, selection, view, size);
+  return (
     <div className="transport-map-canvas">
       <svg
         ref={svg}
@@ -61,17 +61,17 @@ export function TransportMapCanvas({ model, lines, selection, roads, pedestrianW
           key={node.id}
           node={node}
           unit={unit}
-          labelled={labelled.has(node.id)}
+          labelAnchor={labelled.get(node.id) ?? null}
           dimmed={isNodeDimmed(selection, node, lines)}
           selected={selection?.kind === 'stop' && selection.id === node.id}
           onSelect={() => onSelect({ kind: 'stop', id: node.id })}
         />)}
       </svg>
+      <div className="transport-map-controls">
+        <ActionButton onClick={() => zoom(1 / BUTTON_ZOOM_STEP)} aria-label={t('transportMap.zoomIn')} title={t('transportMap.zoomIn')}>+</ActionButton>
+        <ActionButton onClick={() => zoom(BUTTON_ZOOM_STEP)} aria-label={t('transportMap.zoomOut')} title={t('transportMap.zoomOut')}>−</ActionButton>
+        <ActionButton onClick={fit}>{t('transportMap.fit')}</ActionButton>
+      </div>
     </div>
-    <div className="transport-map-controls">
-      <ActionButton onClick={() => zoom(1 / BUTTON_ZOOM_STEP)} aria-label={t('transportMap.zoomIn')} title={t('transportMap.zoomIn')}>+</ActionButton>
-      <ActionButton onClick={() => zoom(BUTTON_ZOOM_STEP)} aria-label={t('transportMap.zoomOut')} title={t('transportMap.zoomOut')}>−</ActionButton>
-      <ActionButton onClick={fit}>{t('transportMap.fit')}</ActionButton>
-    </div>
-  </>;
+  );
 }
