@@ -112,6 +112,18 @@ describe('city management panel', () => {
     expect(maximal).toContain(label);
     expect(maximal).toContain(language === 'fr' ? 'Optimum : 26 °C' : 'Optimum: 26 °C');
   });
+  it.each(['en', 'fr'] as const)('details what raises and lowers the temperature in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    context.state = { ...newGame({ seed: 'temperature', now: 0 }), buildings: [createBuilding(1, 'factory', 0, 0, 0), createBuilding(2, 'park', 8, 0, 0)] };
+    const html = renderToStaticMarkup(<CityManagement />);
+    expect(html).toContain('id="eco-temperature" class="eco-wide"');
+    expect(html).toContain('eco-heat-bar');
+    expect(html).toContain(language === 'fr' ? 'Parc' : 'Park');
+    expect(html).toContain('aria-controls="eco-temperature"');
+    expect(html).toContain(language === 'fr' ? 'Ce qui fait monter la température' : 'What raises the temperature');
+    expect(html).toContain(language === 'fr' ? 'Ce qui fait baisser la température' : 'What lowers the temperature');
+    expect(html).toContain(language === 'fr' ? 'Usines et boulangeries pèsent le plus' : 'Factories and bakeries weigh the most');
+  });
   it('does not mount the dialog when closed', () => {
     context.state = newGame({ seed: 'dashboard', now: 0 });
     context.statsOpen = false;

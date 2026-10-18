@@ -84,6 +84,10 @@ export { homeBenefits, cityBenefits, congestionPenaltyOf, isAdapting, wellbeingT
 export { NEEDS, NEED_LEVELS, needsContext, needsPyramid } from './environment/needs';
 export type { NeedEffect, NeedFactor, NeedFactorId, NeedLevel, NeedLevelId, NeedsContext, NeedSection, NeedsPyramid } from './environment/needs';
 export { climateStats } from './environment/climate';
+export { heatSourceItems } from './environment/heatSourceItems';
+export type { HeatItem } from './environment/heatSourceItems';
+export { temperatureBreakdown, coolingElements } from './environment/temperatureBreakdown';
+export type { HeatSource, HeatContribution, CoolingElement } from './environment/temperatureBreakdown';
 export { STOP_NAME_MAX_LENGTH, isTransitStopType } from './transit/stopNames';
 export { transportStats, routeForLine, routeFailure } from './transit/transport';
 export type { BusLine } from './engine/state';

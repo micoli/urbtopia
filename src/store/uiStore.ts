@@ -2,7 +2,7 @@ import { createStore } from 'zustand/vanilla';
 import { footprintTiles, nextFront, type Coord, type CropId, type Rotation } from '../core';
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
-import { confirmTool, evaluateTool, extendBrush, isPathTool, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
+import { confirmTool, evaluateTool, extendBrush, isPathTool, selectionGhost, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
 import { defaultSocialTab } from '../social/defaultSocialTab';
 import { cloudStore } from './cloudStore';
 import { gameStore } from './gameStore';
@@ -40,6 +40,7 @@ export interface UiStore {
   startTrade: (userId: string) => void;
   clearTradeWith: () => void;
   showTile: (tile: Coord) => void;
+  showBuilding: (id: number) => void;
   marketOpen: boolean;
   marketTab: MarketTab;
   setMarketTab: (tab: MarketTab) => void;
@@ -284,6 +285,16 @@ export const uiStore = createStore<UiStore>((set, get) => {
     showTile: (tile) => {
       set({ statsOpen: false });
       sceneHandle.current?.focusOnTile(tile);
+    },
+    showBuilding: (id) => {
+      const state = gameStore.getState().state;
+      const building = state.buildings.find((candidate) => candidate.id === id);
+      if (!building) return;
+      set({ statsOpen: false });
+      const scene = sceneHandle.current;
+      if (!scene) return;
+      scene.focusOnTile(building);
+      scene.flash(selectionGhost(state, id, false, scene.drawnExtentOf(building)));
     },
     moveSelected: () => {
       const id = get().selectedBuildingId;

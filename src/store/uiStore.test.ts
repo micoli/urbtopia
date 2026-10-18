@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 vi.stubGlobal('window', { location: { search: '' } });
 const { uiStore } = await import('./uiStore');
 const { sceneHandle } = await import('./sceneHandle');
+const { gameStore } = await import('./gameStore');
+const { createBuilding } = await import('../core');
 
 const shop = { kind: 'building', buildingType: 'shop' } as const;
 const aimedTile = () => uiStore.getState().evaluation!.ghost.tiles.concat(uiStore.getState().evaluation!.ghost.rects.map((r) => ({ x: r.x, y: r.y })))[0]!;
@@ -198,5 +200,33 @@ describe('Codex opened from the Market', () => {
     uiStore.getState().openCodex(undefined, 'challenges');
     uiStore.getState().closeCodex();
     expect(uiStore.getState().marketOpen).toBe(false);
+  });
+});
+
+describe('showBuilding', () => {
+  beforeEach(() => {
+    uiStore.setState({ statsOpen: true });
+  });
+
+  it('closes City Management, focuses the building and makes it flash', () => {
+    const building = createBuilding(7, 'factory', 4, 5, 0);
+    gameStore.getState().replaceState({ ...gameStore.getState().state, buildings: [building] });
+    const focusOnTile = vi.fn();
+    const flash = vi.fn();
+    sceneHandle.current = { focusOnTile, flash, drawnExtentOf: () => null } as never;
+    uiStore.getState().showBuilding(building.id);
+    expect(uiStore.getState().statsOpen).toBe(false);
+    expect(focusOnTile).toHaveBeenCalledWith(building);
+    expect(flash).toHaveBeenCalledOnce();
+    sceneHandle.current = null;
+  });
+
+  it('does nothing for an unknown building', () => {
+    const flash = vi.fn();
+    sceneHandle.current = { focusOnTile: vi.fn(), flash } as never;
+    uiStore.getState().showBuilding(-1);
+    expect(uiStore.getState().statsOpen).toBe(true);
+    expect(flash).not.toHaveBeenCalled();
+    sceneHandle.current = null;
   });
 });

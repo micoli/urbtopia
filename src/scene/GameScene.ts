@@ -27,6 +27,9 @@ const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
 const GROUND_FADE_TILES = 24;
 const GROUND_SIZE = MAP_TILES + 2 * (WILD_RIM_TILES + GROUND_FADE_TILES);
 const SELECTION_COLOR = 0x4da3ff;
+const FLASH_COLOR = 0xffd23f;
+const FLASH_DURATION_MS = 2000;
+const FLASH_INTERVAL_MS = 250;
 const FALLBACK_HEIGHT = 1.5;
 
 export interface SceneHandlers {
@@ -57,6 +60,8 @@ export class GameScene {
   private tendedMaterial = this.buildTendedMaterial();
   private ghostLayer = new GhostLayer();
   private selectionLayer = new GhostLayer(SELECTION_COLOR, { underBuildings: true });
+  private flashLayer = new GhostLayer(FLASH_COLOR);
+  private flashTimers: number[] = [];
   private ecologyLayer = new EcologyLayer(this.library);
   private selectedId: number | null = null;
   private serviceCoverageType: FacilityType | null = null;
@@ -113,7 +118,7 @@ export class GameScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 1.7);
     sun.position.set(20, 40, 10);
     const sky = new THREE.HemisphereLight(0xbcd8f5, 0x8a7a64, 0.5);
-    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root);
+    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.controller.onTap = (clientX, clientY, shiftKey) =>
@@ -218,6 +223,27 @@ export class GameScene {
     this.controller.focusOn(tile.x + 0.5, tile.y + 0.5);
   }
 
+  flash(ghost: GhostSpec | null, durationMs = FLASH_DURATION_MS): void {
+    this.stopFlash();
+    if (!ghost) return;
+    this.flashLayer.set(ghost);
+    let visible = true;
+    this.flashTimers = [
+      window.setInterval(() => {
+        visible = !visible;
+        this.flashLayer.root.visible = visible;
+      }, FLASH_INTERVAL_MS),
+      window.setTimeout(() => this.stopFlash(), durationMs),
+    ];
+  }
+
+  private stopFlash(): void {
+    for (const timer of this.flashTimers) { window.clearInterval(timer); window.clearTimeout(timer); }
+    this.flashTimers = [];
+    this.flashLayer.set(null);
+    this.flashLayer.root.visible = true;
+  }
+
   get centerTile(): Coord {
     const { x, z } = this.controller.center;
     return { x: Math.floor(x), y: Math.floor(z) };
@@ -237,7 +263,9 @@ export class GameScene {
     this.resizeObserver.disconnect();
     this.controller.dispose();
     this.ghostLayer.dispose();
+    this.stopFlash();
     this.selectionLayer.dispose();
+    this.flashLayer.dispose();
     this.congestion.dispose();
     this.traffic.dispose();
     this.pedestrians.dispose();

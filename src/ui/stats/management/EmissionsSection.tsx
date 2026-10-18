@@ -14,6 +14,5 @@ export function EmissionsSection({climate, energy, transport}: EmissionsSectionP
         <p>
             {t('eco.activity')}: {climate.activityEmissions.toFixed(1)} · {t('eco.coal')}: {energy.coalEmissions.toFixed(1)} · {t('eco.backup')}: {energy.backupEmissions.toFixed(1)} · {t('eco.mobility')}: {transport.emissions.toFixed(1)}
         </p>
-        <p>{t('eco.temperatureHelp')}</p>
     </section>;
 }

@@ -12,9 +12,10 @@ interface CityOverviewProps {
     onShowTransport: () => void;
     onShowTraffic: () => void;
     onShowNeeds: () => void;
+    onShowTemperature: () => void;
 }
 
-export function CityOverview({state, energy, green, climate, transport, congestion, onShowTransport, onShowTraffic, onShowNeeds}: CityOverviewProps) {
+export function CityOverview({state, energy, green, climate, transport, congestion, onShowTransport, onShowTraffic, onShowNeeds, onShowTemperature}: CityOverviewProps) {
     return <div className="eco-overview">
         <OverviewTile icon="👥">
             <span>{t('stat.citizens')}</span><strong>{totalCitizens(state)}</strong>
@@ -27,11 +28,14 @@ export function CityOverview({state, energy, green, climate, transport, congesti
             <span aria-hidden="true">♧</span>
             <span className="eco-overview-value"><span>{t('eco.wellbeing')}</span><strong>{green.wellbeing.toFixed(0)} <small>/ 100</small></strong></span>
         </button>
-        <OverviewTile icon="🌡️" title={t('eco.temperatureHelp')}>
-            <span>{t('eco.temperature')}</span>
-            <strong>{climate.temperature.toFixed(1)}{' '}<small>°C</small></strong>
-            <small>{t('eco.temperatureOptimum')}</small>
-        </OverviewTile>
+        <button type="button" aria-controls="eco-temperature" title={t('eco.temperatureHelp')} onClick={onShowTemperature}>
+            <span aria-hidden="true">🌡️</span>
+            <span className="eco-overview-value">
+                <span>{t('eco.temperature')}</span>
+                <strong>{climate.temperature.toFixed(1)}{' '}<small>°C</small></strong>
+                <small>{t('eco.temperatureOptimum')}</small>
+            </span>
+        </button>
         <button type="button" aria-controls="eco-traffic" data-warning={congestion.index > 1} title={t('eco.congestionHelp')} onClick={onShowTraffic}>
             <span aria-hidden="true">🚗</span>
             <span className="eco-overview-value"><span>{t('eco.congestion')}</span><strong>{(congestion.index * 100).toFixed(0)}<small>%</small></strong></span>

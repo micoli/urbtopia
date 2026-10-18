@@ -1,4 +1,4 @@
-import {cityBenefits, climateStats, cityTransportStats, congestionStats, energyStats} from '../../core';
+import {cityBenefits, climateStats, cityTransportStats, congestionStats, energyStats, coolingElements, heatSourceItems, isAdapting, temperatureBreakdown} from '../../core';
 import {t} from '../../i18n/t';
 import {useGame, useUi} from '../common/hooks';
 import {CloseButton} from '../common/CloseButton';
@@ -12,6 +12,7 @@ import {NextUnlockSection} from './management/NextUnlockSection';
 import {ObjectivesSection} from './management/ObjectivesSection';
 import {ProductionSection} from './management/ProductionSection';
 import {SectionNavigation} from './management/SectionNavigation';
+import {TemperatureSection} from './management/TemperatureSection';
 import {TrafficSection} from './management/TrafficSection';
 import {TransportSection} from './management/TransportSection';
 import {WaterSection} from './management/WaterSection';
@@ -30,6 +31,7 @@ export function CityManagement() {
     const transport = cityTransportStats(state);
     const climate = climateStats(state);
     const congestion = congestionStats(state);
+    const temperature = temperatureBreakdown({climate, energy, transport, cooling: green.cooling, adapting: isAdapting(state)});
     const showSection = (id: string) => scrollToSection(panel.current, id);
     return <div className="dialog-backdrop city-management-backdrop" onClick={event => {
         if (event.target === event.currentTarget) toggle();
@@ -40,7 +42,7 @@ export function CityManagement() {
                 <h2 id="eco-heading">{t('eco.title')}</h2>
                 <CloseButton onClick={toggle}/>
             </header>
-            <CityOverview state={state} energy={energy} green={green} climate={climate} transport={transport} congestion={congestion} onShowTransport={() => showSection('eco-transport')} onShowTraffic={() => showSection('eco-traffic')} onShowNeeds={() => showSection('eco-needs')}/>
+            <CityOverview state={state} energy={energy} green={green} climate={climate} transport={transport} congestion={congestion} onShowTransport={() => showSection('eco-transport')} onShowTraffic={() => showSection('eco-traffic')} onShowNeeds={() => showSection('eco-needs')} onShowTemperature={() => showSection('eco-temperature')}/>
             <SectionNavigation onSelect={showSection}/>
             <p className="eco-units">{t('eco.units')}</p>
             <div className="eco-sections">
@@ -52,6 +54,7 @@ export function CityManagement() {
                 <NeedsSection state={state} onShowSection={showSection}/>
                 <WellbeingSection green={green}/>
                 <EmissionsSection climate={climate} energy={energy} transport={transport}/>
+                <TemperatureSection breakdown={temperature} elements={coolingElements(state)} items={heatSourceItems(state, {climate, energy, transport, cooling: green.cooling})}/>
                 <TransportSection transport={transport}/>
                 <TrafficSection congestion={congestion} transport={transport} onShowTransport={() => showSection('eco-transport')}/>
                 <ObjectivesSection state={state} energy={energy} green={green} transport={transport}/>

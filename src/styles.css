@@ -1357,6 +1357,22 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
   scroll-margin-top: 72px;
 }
 .eco-wide { grid-column: 1 / -1; }
+.eco-heat-chart { margin: 8px 0 12px; }
+.eco-heat-bar { display: flex; height: 14px; border-radius: 7px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
+.eco-heat-bar > span { display: block; height: 100%; }
+.eco-heat-scale { display: flex; justify-content: space-between; margin-top: 4px; color: var(--eco-muted); font-size: 11px; }
+.eco-heat-bar > span[data-source='activity'], .eco-heat-swatch[data-source='activity'] { background: #e8a44a; }
+.eco-heat-bar > span[data-source='coal'], .eco-heat-swatch[data-source='coal'] { background: #8a8f98; }
+.eco-heat-bar > span[data-source='backup'], .eco-heat-swatch[data-source='backup'] { background: #d9644f; }
+.eco-heat-bar > span[data-source='transport'], .eco-heat-swatch[data-source='transport'] { background: #5aa9e6; }
+.eco-heat-swatch { display: inline-block; width: 10px; height: 10px; margin-right: 8px; border-radius: 2px; }
+.eco-temperature-table { width: 100%; margin: 8px 0 12px; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.eco-temperature-table th, .eco-temperature-table td { padding: 6px 8px; text-align: right; border-bottom: 1px solid var(--eco-border); }
+.eco-temperature-table th:first-child { text-align: left; font-weight: 500; }
+.eco-temperature-table thead th { color: var(--eco-muted); font-size: 11px; font-weight: 500; }
+.eco-temperature-table tfoot th, .eco-temperature-table tfoot td { font-weight: 700; }
+.eco-share-bar { display: inline-block; width: 60px; height: 8px; margin-right: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.12); overflow: hidden; vertical-align: middle; }
+.eco-share-bar > span { display: block; height: 100%; background: #6bcf8e; }
 .eco-dashboard section > button { margin: 4px 6px 4px 0; }
 
 .eco-dashboard table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
@@ -2429,3 +2445,10 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .next-building-unlock { margin-top: 8px; padding: 8px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.05); font-size: 12px; }
 .next-building-unlock h4 { margin: 0 0 4px; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.7; }
 .next-building-unlock progress { width: 100%; height: 6px; }
+.eco-heat-toggle { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+.eco-heat-toggle:disabled { cursor: default; }
+.eco-heat-toggle > span { width: 12px; }
+.eco-temperature-table tbody + tbody { border-top: 2px solid var(--eco-border); }
+.eco-heat-item th { padding-left: 28px; color: var(--eco-muted); font-size: 12px; }
+.eco-heat-item th > button { margin-left: 8px; }
+.eco-heat-item th i.home-color-swatch { display: inline-block; width: 10px; height: 10px; margin-right: 4px; vertical-align: middle; }
