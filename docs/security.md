@@ -9,7 +9,7 @@ The repository is open source: anything committed or printed in a CI log is publ
 | Supabase project URL | Public | GitHub repository Variable `VITE_SUPABASE_URL`, `.env.local` |
 | Supabase publishable key (`sb_publishable_...`, legacy `anon`) | Public by design: data is protected by row-level security and the `urb_*` functions, never by this key | GitHub repository Variable `VITE_SUPABASE_PUBLISHABLE_KEY`, `.env.local` |
 | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, project ref | Secret | Secrets of the `production` GitHub Environment only |
-| `service_role` / `sb_secret_...` key | Secret, never needed by this project | Nowhere. CI fails if it appears in `dist/` |
+| `service_role` / `sb_secret_...` key | Secret. Used only by the Back office (`tools/back-office`), which keeps it in its own browser `localStorage` on the Admin's machine (ADR 0037). Never committed, never in the game. CI fails if it appears in `dist/` | The Admin's browser only |
 
 ## Rules for contributors
 

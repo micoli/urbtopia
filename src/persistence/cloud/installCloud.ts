@@ -1,4 +1,5 @@
 import { advance } from '../../core';
+import { isBackOfficeSessionRequested } from '../../backOffice/handoff';
 import { cloudStore } from '../../store/cloudStore';
 import { gameStore } from '../../store/gameStore';
 import { readOnlyStore } from '../../store/readOnlyStore';
@@ -29,7 +30,7 @@ async function startAfterLocalAuth(client: CloudSaveClient, engine: CloudSync): 
 }
 
 export function installCloudSync(): () => void {
-  if (!cloudEnabled) return () => {};
+  if (!cloudEnabled || isBackOfficeSessionRequested(window.location.search, import.meta.env.DEV)) return () => {};
 
   let sync: CloudSync | null = null;
   let editedBeforeReady = false;

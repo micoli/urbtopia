@@ -605,6 +605,14 @@ _Avoid_: Basket, deposit, contribution
 A permanent distinction earned by completing a Challenge whose reward is a Medal, or by reaching cumulative Donation value milestones. It is shown in the Social window, on the Player account's own profile and on its Friends'.
 _Avoid_: Badge (reserved for the notification counter on a button), trophy, achievement
 
+**Back office**:
+The local tool, never deployed, with which an Admin lists Player accounts, moderates them and inspects their Cloud saves. It runs only on the Admin's machine and acts with the service key of the Supabase project it is pointed at.
+_Avoid_: Admin panel, dashboard, console
+
+**Admin**:
+The person who runs the Back office. Not a Player account and never visible to players.
+_Avoid_: Moderator, operator
+
 ## Relationships
 
 - A Trade offer can only be accepted if the recipient's Storehouse compartment has room for the lot and their Urbs cover the price.
