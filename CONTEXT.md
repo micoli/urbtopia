@@ -154,16 +154,48 @@ A Public facility of the Worship Service category (church, synagogue, mosque, Bu
 _Avoid_: Religious building, temple (one of the four)
 
 **Public facility**:
-A building that serves Citizens with a public service in a Service category, at no operating cost. Its Tier raises its Citizen capacity; the Town hall has no Tier.
+A building that serves Citizens with a public service in a Service category, at no operating cost except the Waste facilities (Mound, Incinerator, Recycling plant), which charge for the Waste they process. Its Tier raises its Citizen capacity; the Town hall has no Tier.
 _Avoid_: Civic building, public service, amenity
 
 **Service category**:
-The family of service a Public facility provides: Education, Administration, Culture, Health or Safety.
+The family of service a Public facility provides: Education, Administration, Culture, Health, Safety or Waste.
 _Avoid_: Department, sector
 
 **Service coverage**:
 The state of a Home being served by a Public facility of a Service category: within the facility's reach (a square of twice its radius with corners rounded by 3 tiles) and inside its Citizen capacity, nearest Homes first. The Home that crosses the capacity is still served, so a single large Home can always be covered. Some facilities cover the whole city. Missing coverage lowers Well-being and can block Home Tier upgrades.
 _Avoid_: Service range, zone
+
+**Waste**:
+What the Citizens of a Home throw away each day, in proportion to their number. It only matters once the city has about 1000 Citizens; collection is modelled per Home in aggregate, never as rubbish lying in the streets. A Home whose Waste is not processed lacks Waste Service coverage.
+_Avoid_: Garbage, trash, rubbish
+
+**Waste coverage**:
+The Service coverage of the Waste category. Unlike other categories it also needs a road link: a Home is covered only if a Waste facility reaches it, has capacity left, and is joined to it by the Road network. A Home reached only by Pedestrian ways is joined when its Pedestrian path network touches a Road linked to the facility within the Carrying distance. When it is not covered, the Home says which cause applies: out of reach, capacity full, or no road link.
+_Avoid_: Collection range
+
+**Carrying distance**:
+The longest walk, along the Pedestrian path network, between a Home and the nearest Road a Waste facility is linked to. Shorter than a Walking trip to a service. Beyond it the Home is not covered, and within it a Home served this way costs more to collect.
+_Avoid_: Walking distance (that is for Walking trips)
+
+**Waste processing**:
+The daily handling of Waste by a Waste facility, within its capacity and against a cost in Urbs per unit processed. A facility whose cost cannot be paid stops processing, and its Homes lose their Waste coverage. Facilities are used from the cleanest to the dirtiest: Recycling plant, Incinerator, then Mound.
+_Avoid_: Disposal, collection
+
+**Mound**:
+A 1×1 Waste facility with three Tiers, the building block of a landfill. One Mound has a small capacity, so absorbing the Waste of a large population takes many Mounds side by side. It emits no Climate emissions, but its odor lowers the Well-being of Homes in its Odor radius.
+_Avoid_: Landfill (a landfill is only the player's cluster of Mounds, not an object), dump, heap
+
+**Odor radius**:
+The distance around a Mound within which the Well-being of Homes is lowered. Larger than the Mound's collection reach, and never added up: a Home bears the worst of the Mounds around it.
+_Avoid_: Smell zone, malus zone
+
+**Incinerator**:
+A Waste facility with a large capacity in a small footprint. It burns Waste, which lowers the Well-being of nearby Homes and adds Climate emissions in proportion to the Waste burnt.
+_Avoid_: Furnace, burner
+
+**Recycling plant**:
+A clean Waste facility that consumes power. It has no Well-being malus and no Climate emissions, and costs the most per unit of Waste.
+_Avoid_: Sorting centre
 
 **Leisure building**:
 A building that entertains Citizens and raises the Well-being of nearby Homes. Unlike a Public facility it belongs to no Service category: its absence never lowers Well-being or blocks a Tier upgrade. It is not free to use.
@@ -652,6 +684,9 @@ _Avoid_: Moderator, operator
 - A building touching both a Road and a BRT corridor keeps the Road as its primary access, and its front faces the Road.
 - Removing the last access of a building, Road or BRT corridor, is refused.
 - Service vehicles stay on the network of their facility and never switch between Road and BRT corridor.
+- Waste is a Service category: missing Waste coverage lowers Well-being, can block Home Tier upgrades, feeds the Vital Need level and is sanctioned from Easy Difficulty. A city already past 1000 Citizens gets an Adaptation period before Waste counts.
+- A Mound works if it or a Mound adjacent to it touches a Road, or if their group touches a Pedestrian path network that reaches a Road. Incinerator and Recycling plant need their own Road.
+- A Mound has two distances: the collection reach, like any Public facility, and the larger Odor radius.
 - A Casino is shed first when electricity falls short, before Homes, except during an Adaptation period. A Casino boat is never shed: it uses no power.
 - A Minigame round of chance draws from the game's Seed; its outcome is fixed when the Stake is debited.
 - A blockmatch round pays by stars on top of the returned Stake: none loses the Stake, 1 star wins 25% of it, 2 stars 50%, 3 stars 100%.
