@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-halloween-haunted-manor-2x2",
+  "footprint": [2, 2],
+  "cost": 1500,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "halloween",
+  "name": {
+    "en": "Haunted manor",
+    "fr": "Manoir hanté"
+  },
+  "description": {
+    "en": "A black manor whose windows glow in the dark.",
+    "fr": "Un manoir noir dont les fenêtres brillent dans la nuit."
+  }
+}

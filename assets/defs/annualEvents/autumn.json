@@ -1,0 +1,12 @@
+{
+  "$schema": "../schemas/annual-event.schema.json",
+  "name": {
+    "en": "Autumn",
+    "fr": "Automne"
+  },
+  "anchor": {
+    "kind": "fixed",
+    "month": 9,
+    "day": 22
+  }
+}

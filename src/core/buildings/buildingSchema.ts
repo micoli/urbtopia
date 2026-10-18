@@ -46,7 +46,8 @@ const repeatable = {
 
 const placed = { ...common, ...sited, footprint: pairSchema };
 
-const standardBuilding = z.strictObject({ kind: z.literal('standard'), ...placed });
+// An Annual event item names its event and is sold in the "Annual events" section; it can only be newly built while a window of that event is open.
+const standardBuilding = z.strictObject({ kind: z.literal('standard'), ...placed, annualEvent: filled.optional() });
 
 // A sport venue's only effect is a Well-being radius.
 const sportBuilding = z.strictObject({ kind: z.literal('sport'), ...placed, radius: z.int().min(1), wellbeingBonus: count });

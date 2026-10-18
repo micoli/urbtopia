@@ -7,6 +7,7 @@ import { sanctionsMessages } from './sanctions';
 import { wasteCodexMessages } from './wasteCodex';
 import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
+import { annualEventMessages } from './annualEvents';
 import { buildingMessages } from './buildings';
 import { itemMessages } from './items';
 import { natureMessages } from './nature';
@@ -31,6 +32,7 @@ export const MESSAGES = {
   ...wasteCodexMessages('en'),
   ...venueMessages('en'),
   ...buildingMessages('en'),
+  ...annualEventMessages('en'),
   ...itemMessages('en'),
   ...sportVenueMessages('en'),
   ...facilityMessages('en'),
@@ -374,6 +376,9 @@ export const MESSAGES = {
   'farm.fieldCap': 'Field limit reached: more Citizens allow more fields.',
   'farm.noFields': 'No field to remove yet.',
   'hint.dismiss': 'Got it',
+  'annualEvent.notice': '{event}: themed items are on sale in Build until {date}.',
+  'annualEvent.notice.see': 'See',
+  'annualEvent.availability': 'Can be built from {from} to {to}.',
   'hint.build': 'Pick a building, then tap the map to place it. The picture opens its description.',
   'hint.repaint': 'Repainting changes only the color, keeps the Tier and costs Urbs.',
   'hint.production': 'Queue an item here: it runs on its own and waits in the building until you collect it.',
@@ -412,6 +417,7 @@ export const MESSAGES = {
   'water.tile': 'Water tiles',
   'water.lay': 'Lay Water tiles',
   'water.remove': 'Remove Water tiles',
+  'build.annualEvents': 'Annual events',
   'build.decoration': 'Decoration',
   'roads.section.road': 'Roads',
   'roads.section.brt': 'BRT',
@@ -587,6 +593,7 @@ export const MESSAGES = {
   'error.nothingToSkip': 'There is nothing to wait for on this step.',
   'home.upgrade': 'Upgrade',
   'error.itemLocked': 'Not unlocked yet: grow your population.',
+  'error.annualEventClosed': 'Only available around its annual event.',
   'error.missingMaterials': 'Not enough Materials in the Storehouse.',
   'error.maxSlots': 'This building already has all its Slots.',
   'error.notAShop': 'This is not a Shop.',

@@ -1,0 +1,10 @@
+{
+  "$schema": "../schemas/annual-event.schema.json",
+  "name": {
+    "en": "Easter",
+    "fr": "Pâques"
+  },
+  "anchor": {
+    "kind": "easter"
+  }
+}

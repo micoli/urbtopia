@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-halloween-witch-hat-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "halloween",
+  "name": {
+    "en": "Witch hat",
+    "fr": "Chapeau de sorcière"
+  },
+  "description": {
+    "en": "A pointed purple hat left on the ground.",
+    "fr": "Un chapeau violet pointu oublié par terre."
+  }
+}

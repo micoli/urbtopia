@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { BUILDING_SPECS, createBuilding, newGame, type GameState } from '../../core';
+import { BUILDING_SPECS, annualEventOf, createBuilding, newGame, type GameState } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { BuildMenuContent } from './BuildMenuContent';
@@ -12,7 +12,12 @@ vi.mock('../common/hooks', () => ({
   useUi: (selector: (store: { flyout: string; chooseTool: () => void }) => unknown) => selector({ flyout: context.flyout, chooseTool: () => {} }),
 }));
 
+const AUGUST_FIRST = new Date(2026, 7, 1, 12).getTime();
+const HALLOWEEN = new Date(2026, 9, 31, 12).getTime();
+
 beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(AUGUST_FIRST);
   const storage = new Map<string, string>();
   vi.stubGlobal('localStorage', {
     getItem: (key: string) => storage.get(key) ?? null,
@@ -20,7 +25,7 @@ beforeEach(() => {
   });
 });
 
-afterEach(() => { prefsStore.getState().setLanguage('en'); context.flyout = 'build'; vi.unstubAllGlobals(); });
+afterEach(() => { prefsStore.getState().setLanguage('en'); context.flyout = 'build'; vi.unstubAllGlobals(); vi.useRealTimers(); });
 
 describe('build menu discoverability', () => {
   it('offers a search field, the first-use hint and the next building to unlock', () => {
@@ -65,11 +70,33 @@ describe('build menu sections', () => {
     expect(sections[11]).toContain(t('building.nature-cliff-steps-rock'));
     expect(sections[12]).toContain(t('building.park'));
     for (const category of ['education', 'administration', 'culture', 'health', 'safety'] as const) expect(sections[7]).toContain(`<h4 class="build-category">${t(`service.${category}`)}</h4>`);
-    for (const type of Object.keys(BUILDING_SPECS) as (keyof typeof BUILDING_SPECS)[]) {
+    for (const type of (Object.keys(BUILDING_SPECS) as (keyof typeof BUILDING_SPECS)[]).filter(type => !annualEventOf(type))) {
       expect(html.split(`<span>${t(`building.${type}`)}</span>`)).toHaveLength(2);
       expect(html).toContain(`data-codex-id="${type}"`);
     }
     expect(html).toContain('data-codex-id="solarHome"');
+  });
+
+  it.each(['en', 'fr'] as const)('adds the Annual events section between Agriculture and Decoration while a window is open in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    vi.setSystemTime(HALLOWEEN);
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 600 }, (_, id) => ({ ...home, id })) };
+    const html = renderToStaticMarkup(<BuildMenuContent />).replaceAll('&#x27;', "'");
+    const sections = html.match(/<section\b[^>]*>[\s\S]*?<\/section>/g) ?? [];
+    expect(sections).toHaveLength(14);
+    expect(sections[10]).toContain(t('build.agriculture'));
+    expect(sections[11]).toContain(t('build.annualEvents'));
+    expect(sections[11]).toContain(`<h4 class="build-category">${t('annualEvent.halloween')}</h4>`);
+    for (const type of ['halloweenPumpkin', 'halloweenManor'] as const) expect(sections[11]).toContain(`<span>${t(`building.${type}`)}</span>`);
+    expect(sections[12]).toContain(t('building.nature-cliff-steps-rock'));
+  });
+
+  it('hides the Annual events section once the window is closed', () => {
+    vi.setSystemTime(new Date(2026, 10, 15, 12).getTime());
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 600 }, (_, id) => ({ ...home, id })) };
+    expect(renderToStaticMarkup(<BuildMenuContent />)).not.toContain(t('build.annualEvents'));
   });
 
   // it.each(['en', 'fr'] as const)('badges exactly the BRT compatible buildings in %s', language => {

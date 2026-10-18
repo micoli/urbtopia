@@ -13,3 +13,9 @@ export const Home: Story = {
     <BuildingOfType type="home">{(building: Building) => <FrontRotation building={building} />}</BuildingOfType>
   ),
 };
+
+export const AnnualEventItem: Story = {
+  render: () => (
+    <BuildingOfType type="halloweenPumpkin">{(building: Building) => <FrontRotation building={building} />}</BuildingOfType>
+  ),
+};

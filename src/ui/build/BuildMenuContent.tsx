@@ -1,5 +1,5 @@
 import { Fragment, useId, useState } from 'react';
-import { BUILDING_SPECS, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, isFacilityType, totalCitizens, placementCost, isHomeType } from '../../core';
+import { BUILDING_SPECS, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, annualEventOf, isBuildableAt, isFacilityType, totalCitizens, placementCost, isHomeType } from '../../core';
 import { t } from '../../i18n/t';
 import { FlyoutItem } from '../layout/FlyoutItem';
 import { BuildSearch } from './BuildSearch';
@@ -8,6 +8,7 @@ import { NextBuildingUnlock } from './NextBuildingUnlock';
 import { FirstUseHint } from '../common/FirstUseHint';
 import { Note } from '../common/Note';
 import { useGame, useUi } from '../common/hooks';
+import { useNow } from '../common/useNow';
 import { guideOf } from '../tutorial/tutorialGuide';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { FieldTools } from './FieldTools';
@@ -32,6 +33,7 @@ export function BuildMenuContent() {
   const [query, setQuery] = useState('');
   const [homeColor, setHomeColor] = useState<ColorVariant>(readHomeColor);
   const menuId = useId();
+  const now = useNow(60_000);
   const { manifest } = useCodexManifest();
   const previewOf = (id: CodexId) => {
     const variant = isHomeCodexId(id) ? homeColor : undefined;
@@ -43,7 +45,7 @@ export function BuildMenuContent() {
   if (flyout === 'build') {
     const visibleSections = BUILDING_SECTIONS.map(section => ({
       ...section,
-      types: section.types.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0)),
+      types: section.types.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0) && isBuildableAt(type, now)),
     })).filter(section => section.types.length);
     const activeSection = visibleSections.some(section => section.title === openSection) ? openSection : visibleSections[0]?.title;
     const selectSection = (section: BuildSection) => {
@@ -100,6 +102,8 @@ export function BuildMenuContent() {
                     <Fragment key={type}>
                       {isFacilityType(type) && FACILITIES[type].category !== categoryOf(section.types[index - 1]) &&
                           <h4 className="build-category">{t(`service.${FACILITIES[type].category}`)}</h4>}
+                      {section.title === 'build.annualEvents' && (index === 0 || annualEventOf(type) !== annualEventOf(section.types[index - 1]!)) &&
+                          <h4 className="build-category">{t(`annualEvent.${annualEventOf(type)!}`)}</h4>}
                       <BuildTypeItem type={type} homeColor={homeColor} preview={previewOf(type)} />
                     </Fragment>
                 ))}
@@ -138,7 +142,7 @@ export function BuildMenuContent() {
               </AccordionSection>
           );
         })}
-        {!searching && <NextBuildingUnlock candidates={BUILDING_SECTIONS.filter(section => !['build.decoration', 'build.greenSpaces'].includes(section.title)).flatMap(section => section.types)} />}
+        {!searching && <NextBuildingUnlock candidates={BUILDING_SECTIONS.filter(section => !['build.annualEvents', 'build.decoration', 'build.greenSpaces'].includes(section.title)).flatMap(section => section.types)} />}
       </>
     );
   }

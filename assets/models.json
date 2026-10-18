@@ -5858,6 +5858,76 @@
     },
     "rotationOffset": 180
   },
+  "events-halloween-cauldron-1x1": {
+    "file": "events/halloween/cauldron-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-halloween-ghost-1x1": {
+    "file": "events/halloween/ghost-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-halloween-ghost-2x2": {
+    "file": "events/halloween/ghost-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-halloween-graveyard-2x1": {
+    "file": "events/halloween/graveyard-2x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-halloween-haunted-manor-2x2": {
+    "file": "events/halloween/haunted-manor-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-halloween-pumpkin-1x1": {
+    "file": "events/halloween/pumpkin-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-halloween-witch-hat-1x1": {
+    "file": "events/halloween/witch-hat-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
   "farm-barn": {
     "file": "farm/Barn",
     "source": "quaternius",

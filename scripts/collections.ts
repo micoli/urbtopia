@@ -3,6 +3,7 @@ import type { FlatBuilding, FlatTier } from '../src/core/buildings/buildingDefin
 import { BUILDING_ID_PATTERN, buildingSchema } from '../src/core/buildings/buildingSchema.ts';
 import { ITEM_ID_PATTERN, goodSchema, materialSchema, type GoodDefinition, type MaterialDefinition } from '../src/core/economy/itemSchemas.ts';
 import { cropSchema, type CropDefinition } from '../src/core/farming/cropSchema.ts';
+import { annualEventSchema, type AnnualEventDefinition } from '../src/core/annualEvents/annualEventSchema.ts';
 import { boatSchema, type BoatDefinition } from '../src/core/water/boatSchema.ts';
 import { serviceVehicleSchema, trafficVehicleSchema, transitVehicleSchema, type ServiceVehicleDefinition, type TrafficVehicleDefinition, type TransitVehicleDefinition } from '../src/core/transit/vehicleSchemas.ts';
 import { fixtureSchema, type FixtureDefinition } from '../src/core/venues/fixtureSchema.ts';
@@ -61,10 +62,11 @@ export const COLLECTIONS = {
     schema: buildingSchema,
     idPattern: BUILDING_ID_PATTERN,
     idRule: 'start with a letter and use letters, digits or hyphens',
-    fieldOrder: ['kind', 'retired', 'section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'initialSlots', 'name', 'description', 'radius', 'wellbeingBonus', 'family'],
+    fieldOrder: ['kind', 'retired', 'section', 'model', 'footprint', 'cost', 'unlockCitizens', 'requiresRoad', 'accessModes', 'initialSlots', 'annualEvent', 'name', 'description', 'radius', 'wellbeingBonus', 'family'],
     references: (building: FlatBuilding) => [
       ...modelReference(building.model, 'model'),
       ...modelReference(building.detailModel, 'detailModel'),
+      ...(building.annualEvent ? [{ target: ['annualEvents'], id: building.annualEvent, path: 'annualEvent' } as Reference] : []),
       ...(building.tiers ?? []).flatMap((tier, index) => [...modelReference((tier as FlatTier).model, `tiers.${index}.model`), ...goodReferences(tier.upgradeCost?.goods, `tiers.${index}.upgradeCost.goods`), ...((tier as FlatTier).sells ?? []).map((id, position) => ({ target: ['goods'], id, path: `tiers.${index}.sells.${position}` }))]),
       ...Object.entries(building.variants ?? {}).flatMap(([name, { tiers }]) => tiers.flatMap((tier, index) => modelReference(tier.model, `variants.${name}.tiers.${index}.model`))),
       ...(building.solarPanels?.panels ?? []).flatMap((panel, index) => modelReference(panel.model, `solarPanels.panels.${index}.model`)),
@@ -142,6 +144,17 @@ export const COLLECTIONS = {
     idRule: 'be camelCase letters and digits',
     fieldOrder: ['kind', 'retired', 'family', 'model', 'cost', 'unlockCitizens'],
     references: (boat: BoatDefinition) => modelReference(boat.model, 'model'),
+  },
+  annualEvents: {
+    dir: 'annualEvents',
+    title: 'Annual events',
+    schemaName: 'annual-event',
+    idTypes: { file: 'src/core/annualEvents/annualEventTypes.generated.ts', unions: (events: Record<string, AnnualEventDefinition>) => ({ AnnualEventId: idsWhere(events) }) },
+    schema: annualEventSchema,
+    idPattern: ITEM_ID_PATTERN,
+    idRule: 'be camelCase letters and digits',
+    fieldOrder: ['name', 'anchor'],
+    references: () => [],
   },
   transitVehicles: {
     dir: 'transitVehicles',

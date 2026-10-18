@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-halloween-cauldron-1x1",
+  "footprint": [1, 1],
+  "cost": 800,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "halloween",
+  "name": {
+    "en": "Cauldron",
+    "fr": "Chaudron"
+  },
+  "description": {
+    "en": "A cauldron bubbling with green potion.",
+    "fr": "Un chaudron où bouillonne une potion verte."
+  }
+}

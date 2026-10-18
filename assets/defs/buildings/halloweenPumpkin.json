@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-halloween-pumpkin-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "halloween",
+  "name": {
+    "en": "Pumpkin",
+    "fr": "Citrouille"
+  },
+  "description": {
+    "en": "A glowing jack-o-lantern grinning at the street.",
+    "fr": "Une citrouille sculptée qui grimace à la rue."
+  }
+}

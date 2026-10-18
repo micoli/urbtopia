@@ -1,0 +1,12 @@
+{
+  "$schema": "../schemas/annual-event.schema.json",
+  "name": {
+    "en": "Halloween",
+    "fr": "Halloween"
+  },
+  "anchor": {
+    "kind": "fixed",
+    "month": 10,
+    "day": 31
+  }
+}

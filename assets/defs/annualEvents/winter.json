@@ -1,0 +1,12 @@
+{
+  "$schema": "../schemas/annual-event.schema.json",
+  "name": {
+    "en": "Winter",
+    "fr": "Hiver"
+  },
+  "anchor": {
+    "kind": "fixed",
+    "month": 12,
+    "day": 21
+  }
+}

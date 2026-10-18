@@ -1,0 +1,14 @@
+{
+  "$schema": "../schemas/annual-event.schema.json",
+  "name": {
+    "en": "Midsummer",
+    "fr": "Midsommar"
+  },
+  "anchor": {
+    "kind": "weekdayInRange",
+    "weekday": 5,
+    "month": 6,
+    "from": 19,
+    "to": 25
+  }
+}
