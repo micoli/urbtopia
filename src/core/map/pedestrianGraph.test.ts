@@ -13,6 +13,29 @@ function row(from: number, to: number, y: number, crossingAt: number[] = []) {
   return Array.from({ length: to - from + 1 }, (_, index) => ({ x: from + index, y, kind: crossingAt.includes(from + index) ? ('crossing' as const) : ('road' as const) }));
 }
 
+function brtRow(from: number, to: number, y: number, crossingAt: number[] = []) {
+  return Array.from({ length: to - from + 1 }, (_, index) => {
+    const x = from + index;
+    const exits = [...(x > from ? ['W' as const] : []), ...(x < to ? ['E' as const] : [])];
+    return { x, y, exits, ...(crossingAt.includes(x) ? { kind: 'crossing' as const } : {}) };
+  });
+}
+
+describe('pedestrianGraph on a BRT corridor', () => {
+  it('joins both sides at a BRT Crossing', () => {
+    const graph = pedestrianGraph({ ...withRoads(base, []), brtRoads: brtRow(0, 20, 10, [10]) });
+    const reach = walkFrom(graph, [sidewalkNode({ x: 10, y: 10 }, 'N')], 8);
+    expect(reach.costs.get(sidewalkNode({ x: 10, y: 10 }, 'S'))).toBe(3);
+    expect(crossingsOnPath(reach, sidewalkNode({ x: 10, y: 10 }, 'S'))).toEqual([tileKey({ x: 10, y: 10 })]);
+  });
+
+  it('keeps the two sides of a BRT corridor apart without a Crossing', () => {
+    const graph = pedestrianGraph({ ...withRoads(base, []), brtRoads: brtRow(0, 20, 10) });
+    const reach = walkFrom(graph, [sidewalkNode({ x: 10, y: 10 }, 'N')], 8);
+    expect(reach.costs.has(sidewalkNode({ x: 10, y: 10 }, 'S'))).toBe(false);
+  });
+});
+
 describe('pedestrianGraph', () => {
   it('keeps the two sides of a straight road apart', () => {
     const graph = pedestrianGraph(withRoads(base, row(0, 20, 10)));

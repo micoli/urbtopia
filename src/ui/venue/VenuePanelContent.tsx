@@ -5,6 +5,7 @@ import { VenueBuildMenu } from './VenueBuildMenu';
 import { VenueEvents } from './VenueEvents';
 import { VenueStaff } from './VenueStaff';
 import { VenueTakings } from './VenueTakings';
+import {UpgradeSection} from "../common/UpgradeSection.tsx";
 
 interface VenuePanelContentProps {
   venue: Building;
@@ -16,6 +17,9 @@ export function VenuePanelContent({ venue }: VenuePanelContentProps) {
   if (panel === 'build') return <VenueBuildMenu tier={venue.tier} rank={isVenue(venue) ? venueRankOf(venue) : 1} venueType={venueTypeOf(venue)} />;
   if (panel === 'staff') return <VenueStaff venueId={venue.id} />;
   if (panel === 'events') return <VenueEvents venueId={venue.id} />;
-  if (panel === 'takings') return <VenueTakings building={venue} editable />;
+  if (panel === 'takings') return <>
+    <VenueTakings building={venue} editable />
+    <UpgradeSection building={venue}/>
+  </>;
   return null;
 }

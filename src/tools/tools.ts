@@ -8,6 +8,8 @@ import {
   buyableParcels,
   parcelPrice,
   autoRotation,
+  fittingPlacement,
+  placementIssue,
   validFronts,
   dispatch,
   FACILITIES,
@@ -211,14 +213,18 @@ function evaluateBuilding(
 ): Evaluation {
   const reference =
     base.type === 'MoveBuilding' ? { ...state, buildings: state.buildings.filter((building) => building.id !== base.id) } : state;
-  const fronts = validFronts(reference, type, tile.x, tile.y, tier);
+  const fitted = BUILDING_SPECS[type].requiresRoad ? fittingPlacement(reference, type, tile, tier, requestedRotation) : null;
+  const origin = fitted ?? tile;
+  const roadFronts = validFronts(reference, type, origin.x, origin.y, tier);
+  const fittingFronts = roadFronts.filter((front) => placementIssue(reference, type, origin.x, origin.y, front, { isMove: true, tier }) === null);
+  const fronts = fittingFronts.length ? fittingFronts : roadFronts;
   const keepsRequested = requestedRotation !== null && (fronts.length === 0 || fronts.includes(requestedRotation));
-  const rotation = keepsRequested ? requestedRotation : autoRotation(reference, type, tile.x, tile.y, tier);
-  const command: Command = { ...base, x: tile.x, y: tile.y, rotation };
-  const tiles = footprintTiles({ type, x: tile.x, y: tile.y, rotation, tier });
+  const rotation = fitted?.rotation ?? (keepsRequested ? requestedRotation : autoRotation(reference, type, origin.x, origin.y, tier));
+  const command: Command = { ...base, x: origin.x, y: origin.y, rotation };
+  const tiles = footprintTiles({ type, x: origin.x, y: origin.y, rotation, tier });
   const result = evaluation(tiles, command, state, { cost, rotation, ...(fronts.length ? { fronts } : {}) });
-  if (BUILDING_SPECS[type].requiresRoad) result.ghost.front = frontMarker(reference, type, tile, rotation, tier);
-  if (isFacilityType(type)) addCoveragePreview(result, reference, type, tile, rotation);
+  if (BUILDING_SPECS[type].requiresRoad) result.ghost.front = frontMarker(reference, type, origin, rotation, tier);
+  if (isFacilityType(type)) addCoveragePreview(result, reference, type, origin, rotation);
   return result;
 }
 

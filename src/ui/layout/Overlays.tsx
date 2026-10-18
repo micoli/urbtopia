@@ -12,6 +12,7 @@ import { ConfirmPad } from '../build/ConfirmPad';
 import { ConfirmSaleDialog } from '../build/ConfirmSaleDialog';
 import { ExportReminder } from '../system/ExportReminder';
 import { ImportConfirmDialog } from '../system/ImportConfirmDialog';
+import { BackOfficeBanner } from '../system/BackOfficeBanner';
 import { ReadOnlyBanner } from '../system/ReadOnlyBanner';
 import { RecoveryScreen } from '../system/RecoveryScreen';
 import { SaveConflictOverlay } from '../system/SaveConflictOverlay';
@@ -35,6 +36,7 @@ export function Overlays() {
       <FloatingBadges />
       <ConfirmPad />
       <ReadOnlyBanner />
+      <BackOfficeBanner />
       <ExportReminder />
       <UpdatePrompt />
       <ConfirmSaleDialog />

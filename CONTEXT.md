@@ -405,6 +405,10 @@ _Avoid_: Level up, tech tree, research
 The guided sequence of steps played at the start of a new game, where the player places the first buildings to lay a solid base. It can be skipped at any time.
 _Avoid_: Onboarding, intro, walkthrough
 
+**Venue tutorial**:
+The short guided sequence started when the first Venue of a type is placed, teaching the player to make it earn. It never locks commands and can be skipped or replayed. Distinct from the Tutorial.
+_Avoid_: Onboarding, intro, walkthrough
+
 **Time skip**:
 The player action that advances game time by a set number of hours or up to the end of a Tutorial step.
 _Avoid_: Time warp, fast-forward
@@ -522,7 +526,7 @@ The anonymous identity a Cloud save belongs to, created silently on first play a
 _Avoid_: User, profile, login
 
 **Cloud save**:
-The copy of the city kept online for a Player account: the current one plus the 3 previous versions. The local save stays the source of truth; the Cloud save mirrors it.
+The copy of the city kept online for a Player account: the current one plus the 9 previous versions. The local save stays the source of truth; the Cloud save mirrors it.
 _Avoid_: Remote save, sync, server save
 
 **Save conflict**:
@@ -600,6 +604,14 @@ _Avoid_: Basket, deposit, contribution
 **Medal**:
 A permanent distinction earned by completing a Challenge whose reward is a Medal, or by reaching cumulative Donation value milestones. It is shown in the Social window, on the Player account's own profile and on its Friends'.
 _Avoid_: Badge (reserved for the notification counter on a button), trophy, achievement
+
+**Back office**:
+The local tool, never deployed, with which an Admin lists Player accounts, moderates them and inspects their Cloud saves. It runs only on the Admin's machine and acts with the service key of the Supabase project it is pointed at.
+_Avoid_: Admin panel, dashboard, console
+
+**Admin**:
+The person who runs the Back office. Not a Player account and never visible to players.
+_Avoid_: Moderator, operator
 
 ## Relationships
 

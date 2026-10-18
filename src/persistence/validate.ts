@@ -177,7 +177,7 @@ export function validateGameState(value: unknown): GameState | null {
     new Set(line.stops as number[]).size === (line.stops as number[]).length)) return null;
   for (const key of ['brtRoads', 'rails']) {
     if (value[key] === undefined) continue;
-    if (!isArrayOf(value[key], p => isRecord(p) && isCoord(p) && isArrayOf(p.exits, d => ['N', 'E', 'S', 'W'].includes(d as string)) && new Set(p.exits as string[]).size === (p.exits as string[]).length)) return null;
+    if (!isArrayOf(value[key], p => isRecord(p) && isCoord(p) && isArrayOf(p.exits, d => ['N', 'E', 'S', 'W'].includes(d as string)) && new Set(p.exits as string[]).size === (p.exits as string[]).length && (p.kind === undefined || (key === 'brtRoads' && p.kind === 'crossing')))) return null;
     const tiles = value[key] as { x: number; y: number }[];
     if (new Set(tiles.map(p => `${p.x}:${p.y}`)).size !== tiles.length) return null;
   }

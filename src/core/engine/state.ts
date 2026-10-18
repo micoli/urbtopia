@@ -133,6 +133,7 @@ export interface TransitLine extends BusLine {
 }
 export interface TransitTile extends Coord {
   exits: Direction[];
+  kind?: 'crossing';
 }
 
 export interface PlantedCrop {

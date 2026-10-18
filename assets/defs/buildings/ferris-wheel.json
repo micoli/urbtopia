@@ -17,12 +17,13 @@
   "tiers": [
     {
       "model": "buildings-ferris-wheel-3x5-8f",
-      "footprint": [1, 1],
+      "footprint": [5, 3],
       "capacity": 100
     }
   ],
   "category": "culture",
   "detailModel": "buildings-ferris-wheel-3x5-8f",
+  "drawnToScale": true,
   "power": 1,
   "water": 0
 }

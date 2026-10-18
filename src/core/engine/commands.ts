@@ -3,7 +3,7 @@ import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
 import { canHaveSolarPanels, solarPanelsCost, solarPanelsOf, solarPanelsUnlockCitizens } from '../environment/solarPanels';
 import { routeFailure, routeForLine } from '../transit/transport';
 import { nextCopyCost } from '../buildings/buildLimit';
-import { BUILDING_SPECS, createBuilding, emptyStack, placementCost } from '../buildings/buildingSpecs';
+import { BUILDING_SPECS, createBuilding, emptyStack, footprintOf, placementCost } from '../buildings/buildingSpecs';
 import { isRetired } from '../buildings/buildingDefinitions';
 import { advance } from './advance';
 import { GAME_CONFIG } from './config';
@@ -32,7 +32,7 @@ import { isAdjacentToOwned, isInsideMap, isOwned, parcelPrice } from '../map/par
 import { FACILITIES, isFacilityType } from '../services/facilities';
 import { missingServices, serviceCoverage } from '../services/services';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from '../map/occupancy';
-import { autoRotation, frontHasAccess, placementIssue } from '../map/placement';
+import { autoRotation, frontHasAccess, placementIssue, type PlacementIssue } from '../map/placement';
 import { newQueueEntry, restartRunningProduction, runningEntry, rushPrice, rushRunningProduction, shiftRunningTimers, taxDue } from '../economy/production';
 import { roadBuildCost, pedestrianWayBuildCost, missingRoadTiles, PEDESTRIAN_WAY_COST_FACTOR } from '../map/roadCost';
 import { roadPath } from '../map/roads';
@@ -509,9 +509,26 @@ function demolishPedestrianWays(state: GameState, tiles: Coord[]): CommandOutcom
   };
 }
 
+function placeBrtCrossing(state: GameState, brtTile: TransitTile): CommandOutcome {
+  const isStraight = brtTile.exits.length === 2 && ((brtTile.exits.includes('E') && brtTile.exits.includes('W')) || (brtTile.exits.includes('N') && brtTile.exits.includes('S')));
+  if (brtTile.kind === 'crossing' || !isStraight) return fail('error.invalidCrossing');
+  if (state.urbs < GAME_CONFIG.crossingCost) return fail('error.notEnoughUrbs');
+  return {
+    state: {
+      ...state,
+      urbs: state.urbs - GAME_CONFIG.crossingCost,
+      brtRoads: (state.brtRoads ?? []).map((candidate) => (candidate === brtTile ? { ...candidate, kind: 'crossing' as const } : candidate)),
+    },
+    events: [],
+  };
+}
+
 function placeCrossing(state: GameState, tile: Coord): CommandOutcome {
   const road = state.roads.find((candidate) => candidate.x === tile.x && candidate.y === tile.y);
-  if (!road) return fail('error.noRoadHere');
+  if (!road) {
+    const brtTile = (state.brtRoads ?? []).find((candidate) => candidate.x === tile.x && candidate.y === tile.y);
+    return brtTile ? placeBrtCrossing(state, brtTile) : fail('error.noRoadHere');
+  }
   const exits = roadExits(state, tile);
   const isStraight = exits.length === 2 && ((exits.includes('E') && exits.includes('W')) || (exits.includes('N') && exits.includes('S')));
   if (road.kind === 'crossing' || !isStraight) return fail('error.invalidCrossing');
@@ -895,14 +912,12 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
   if (!cost) return fail('error.maxTier');
   const isHome = isHomeType(building.type);
   if (isHome && missingServices(serviceCoverage(state), building, nextTier).length > 0) return fail('error.serviceRequired');
+  let grown = building;
   if (isHome || building.type === 'casino') {
-    const footprintIssue = placementIssue(state, building.type, building.x, building.y, building.rotation, {
-      ignoreBuildingId: building.id,
-      isMove: true,
-      tier: nextTier,
-    });
-    if (footprintIssue === 'error.tilesOccupied') return fail(isHome ? 'error.homeExpansionBlocked' : 'error.casinoExpansionBlocked');
-    if (footprintIssue) return fail(footprintIssue);
+    const expansion = expandedPlacement(state, building, nextTier);
+    if (expansion.issue === 'error.tilesOccupied') return fail(isHome ? 'error.homeExpansionBlocked' : 'error.casinoExpansionBlocked');
+    if (expansion.issue) return fail(expansion.issue);
+    grown = { ...building, x: expansion.x, y: expansion.y };
   }
 
   if (state.urbs < cost.urbs) return fail('error.notEnoughUrbs');
@@ -924,10 +939,21 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
       ...state,
       urbs: state.urbs - cost.urbs,
       storage: { ...state.storage, goods },
-      buildings: state.buildings.map((candidate) => (candidate === building ? upgradedTo(building, nextTier) : candidate)),
+      buildings: state.buildings.map((candidate) => (candidate === building ? upgradedTo(grown, nextTier) : candidate)),
     },
     events: [{ type: 'BuildingUpgraded', buildingId, tier: nextTier }],
   };
+}
+
+// A bigger footprint may reach into the room behind the building: any origin whose footprint still covers the current tiles is tried, the current one first.
+function expandedPlacement(state: GameState, building: Building, tier: number): { x: number; y: number; issue: PlacementIssue | null } {
+  const before = footprintOf(building.type, building.rotation, building.tier);
+  const after = footprintOf(building.type, building.rotation, tier);
+  const shifts = (grow: number) => Array.from({ length: Math.max(grow, 0) + 1 }, (_, shift) => shift);
+  const candidates = shifts(after.width - before.width).flatMap((dx) => shifts(after.depth - before.depth).map((dy) => ({ x: building.x - dx, y: building.y - dy })));
+  const options = { ignoreBuildingId: building.id, isMove: true, tier };
+  const issues = candidates.map((origin) => ({ ...origin, issue: placementIssue(state, building.type, origin.x, origin.y, building.rotation, options) }));
+  return issues.find((candidate) => candidate.issue === null) ?? issues[0]!;
 }
 
 // A new Tier can change the model's kit, and with it the colors on offer: a color the kit lacks goes back to the default.

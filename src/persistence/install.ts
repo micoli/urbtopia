@@ -4,6 +4,7 @@ import { bootResult, gameStore } from '../store/gameStore';
 import { readOnlyStore } from '../store/readOnlyStore';
 import { createAutosave } from './autosave';
 import { saveNowHandle } from './saveNow';
+import { installBackOffice } from '../backOffice/installBackOffice';
 import { installChallenges } from '../challenges/installChallenges';
 import { installSolidarity } from '../solidarity/installSolidarity';
 import { installSocial } from '../social/installSocial';
@@ -74,6 +75,7 @@ export function installPersistence(): () => void {
   if (shouldRemindExport({ ...meta, now, lastSavedAt: gameStore.getState().state.lastSeen })) dialogStore.getState().setExportReminder(true);
 
   const disposeCloud = installCloudSync();
+  const disposeBackOffice = installBackOffice();
   const disposeSocial = installSocial();
   const disposeChallenges = installChallenges();
   const disposeSolidarity = installSolidarity();
@@ -81,6 +83,7 @@ export function installPersistence(): () => void {
   return () => {
     saveNowHandle.current = () => {};
     disposeCloud();
+    disposeBackOffice();
     disposeSocial();
     disposeChallenges();
     disposeSolidarity();

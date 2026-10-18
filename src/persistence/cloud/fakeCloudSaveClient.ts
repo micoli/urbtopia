@@ -1,6 +1,6 @@
 import { CloudError, type CloudAccount, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
 
-const MAX_ROWS = 4;
+const MAX_ROWS = 10;
 const MAX_ENVELOPE_LENGTH = 1_048_576;
 
 interface Row extends CloudSave {

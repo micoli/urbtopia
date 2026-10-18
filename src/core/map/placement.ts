@@ -1,4 +1,4 @@
-import { BUILDING_SPECS, footprintTiles } from '../buildings/buildingSpecs';
+import { BUILDING_SPECS, footprintOf, footprintTiles } from '../buildings/buildingSpecs';
 import { buildLimitReached, nextCopyCost } from '../buildings/buildLimit';
 import type { AccessMode } from '../buildings/buildingDefinition';
 import type { Coord } from './coord';
@@ -48,6 +48,30 @@ export function frontHasAccess(state: GameState, type: BuildingType, x: number, 
 export function validFronts(state: GameState, type: BuildingType, x: number, y: number, tier = 1): Rotation[] {
   if (!BUILDING_SPECS[type].requiresRoad) return [];
   return ROTATIONS.filter((rotation) => frontHasAccess(state, type, x, y, rotation, tier));
+}
+
+export interface Placement {
+  x: number;
+  y: number;
+  rotation: Rotation;
+}
+
+// Looks for a spot that fits around the aimed tile: every rotation on the tile itself, then every origin that keeps the tile under the footprint.
+export function fittingPlacement(state: GameState, type: BuildingType, tile: Coord, tier = 1, preferred: Rotation | null = null): Placement | null {
+  const rotations = preferred === null ? ROTATIONS : [preferred, ...ROTATIONS.filter((rotation) => rotation !== preferred)];
+  const fits = ({ x, y, rotation }: Placement) => placementIssue(state, type, x, y, rotation, { isMove: true, tier }) === null;
+  const shiftedOrigins = (rotation: Rotation): Placement[] => {
+    const { width, depth } = footprintOf(type, rotation, tier);
+    const origins: Placement[] = [];
+    for (let dy = 0; dy < depth; dy++) {
+      for (let dx = 0; dx < width; dx++) {
+        if (dx !== 0 || dy !== 0) origins.push({ x: tile.x - dx, y: tile.y - dy, rotation });
+      }
+    }
+    return origins.sort((a, b) => Math.abs(tile.x - a.x) + Math.abs(tile.y - a.y) - Math.abs(tile.x - b.x) - Math.abs(tile.y - b.y));
+  };
+  const onTile = rotations.map((rotation) => ({ x: tile.x, y: tile.y, rotation }));
+  return onTile.find(fits) ?? rotations.flatMap(shiftedOrigins).find(fits) ?? null;
 }
 
 export function nextFront(fronts: readonly Rotation[], current: Rotation, step: 1 | -1 = 1): Rotation {

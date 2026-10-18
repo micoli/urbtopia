@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tools/back-office",
     "lint": "eslint src build scripts tools",
     "test": "vitest run",
     "saves:update": "UPDATE_SAVES=1 vitest run src/saves",
@@ -31,6 +31,7 @@
     "assets:fetch": "node scripts/fetch-assets.ts",
     "assets:prototypes": "node scripts/prototype-assets.ts",
     "assets:editor": "vite --config tools/assets-editor/vite.config.ts --host",
+    "back-office": "vite --config tools/back-office/vite.config.ts",
     "casino:sim": "vite --config prototypes/casino-sim/vite.config.ts --host",
     "preview": "vite preview",
     "check:bundle": "node scripts/checkBundle.ts dist",

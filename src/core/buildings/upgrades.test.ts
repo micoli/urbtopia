@@ -109,12 +109,20 @@ describe('UpgradeBuilding on a Home', () => {
   it('grows the footprint of the Home and needs free room for it', () => {
     const upgraded = succeed(withHome, upgrade);
     expect(footprintTiles(homeOf(upgraded)!)).toHaveLength(2);
-    const blocked = succeed(withHome, { type: 'PlaceBuilding', buildingType: 'powerPlant', x: 57, y: 59 });
+    const blockedEast = succeed(withHome, { type: 'PlaceBuilding', buildingType: 'powerPlant', x: 57, y: 59 });
+    const blocked = succeed(blockedEast, { type: 'PlaceBuilding', buildingType: 'powerPlant', x: 55, y: 59 });
     expect(failureKey(blocked, upgrade)).toBe('error.homeExpansionBlocked');
   });
 
+  it('grows the Home into the room behind it when the tiles ahead are taken', () => {
+    const roadEast: GameState = { ...withHome, roads: [...withHome.roads, { x: 57, y: 59, kind: 'road' }] };
+    const grown = homeOf(succeed(roadEast, upgrade))!;
+    expect(grown.tier).toBe(2);
+    expect(footprintTiles(grown).map(({ x, y }) => [x, y])).toEqual([[55, 59], [56, 59]]);
+  });
+
   it('explains when a road blocks expansion without charging for the upgrade', () => {
-    const blocked: GameState = { ...withHome, roads: [...withHome.roads, { x: 57, y: 59, kind: 'road' }] };
+    const blocked: GameState = { ...withHome, roads: [...withHome.roads, { x: 57, y: 59, kind: 'road' }, { x: 55, y: 59, kind: 'road' }] };
     const result = dispatch(blocked, upgrade, T0);
     expect(result.ok).toBe(false);
     if (result.ok) return;
