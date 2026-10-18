@@ -646,8 +646,20 @@ A Challenge renewed every day at 07:00 Paris time by the server, paid in Urbs, p
 _Avoid_: Daily quest
 
 **Event**:
-A Challenge with a start and an end date set by the server, longer than a day, paid in Medals.
-_Avoid_: Season, festival
+A Challenge with a start and an end date set by the server, longer than a day, paid in Medals. Distinct from an Annual event, which is calendar-based and involves no server.
+_Avoid_: Festival
+
+**Annual event**:
+A yearly occasion (Halloween, Winter holidays, Easter, Midsummer, or one of the four seasons) tied to a date of the calendar, during which its Annual event items can be built. The date it is anchored on, in the northern hemisphere, is the same every year, except Easter and Midsummer, which move.
+_Avoid_: Season (for the occasion in general), festival, seasonal event
+
+**Annual event window**:
+The period during which an Annual event is active: from 21 days before its anchor date to 14 days after it, both days included, judged on the date of the player's device. Windows of different Annual events may overlap.
+_Avoid_: Period, duration
+
+**Annual event item**:
+A Building that belongs to an Annual event, sold at a high price in Urbs and purely cosmetic. It can only be newly built during its Annual event window; those already placed stay in the city for good, with no end date.
+_Avoid_: Seasonal item, limited item
 
 **Challenge stock**:
 The units the player has set aside for an accepted Challenge, taken from the Storehouse at any time before the deadline, from any source (production, purchase, Trade offer). They are consumed: kept by the Challenge whether it succeeds or fails, and never returned.
@@ -690,6 +702,9 @@ _Avoid_: Moderator, operator
 - A Casino is shed first when electricity falls short, before Homes, except during an Adaptation period. A Casino boat is never shed: it uses no power.
 - A Minigame round of chance draws from the game's Seed; its outcome is fixed when the Stake is debited.
 - A blockmatch round pays by stars on top of the returned Stake: none loses the Stake, 1 star wins 25% of it, 2 stars 50%, 3 stars 100%.
+
+- The "Annual events" build section is shown only while at least one Annual event window is open, and groups its Annual event items by Annual event. The player can dismiss the notice of an Annual event once per year.
+- An Annual event item has no Citizens threshold, no Build limit and no Escalating price, and it is never Retired when its window closes.
 
 ## Naming rules
 
