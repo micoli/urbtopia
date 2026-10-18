@@ -3,7 +3,7 @@ import type { Database } from '../../../../src/persistence/cloud/database.types'
 import type { AccountSummary } from '../domain/accounts'
 import { neutralHandle } from '../domain/handle'
 import { statsOfEnvelope, type SaveStats } from '../domain/saveStats'
-import type { Connection } from '../store/connectionStore'
+import type { Profile } from '../domain/profiles'
 
 export type AdminClient = SupabaseClient<Database>
 
@@ -12,7 +12,7 @@ const MAX_USER_PAGES = 20
 const ROWS_PER_PAGE = 1000
 const PERMANENT_BAN = '876000h'
 
-export function createAdminClient({ url, serviceKey }: Connection): AdminClient {
+export function createAdminClient({ url, serviceKey }: Pick<Profile, 'url' | 'serviceKey'>): AdminClient {
   return createClient<Database>(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } })
 }
 

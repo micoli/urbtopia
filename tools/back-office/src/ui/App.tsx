@@ -1,8 +1,9 @@
-import { useConnection } from '../store/connectionStore'
+import { activeProfile } from '../domain/profiles'
+import { useProfiles } from '../store/connectionStore'
 import { ConnectionScreen } from './ConnectionScreen'
 import { Shell } from './Shell'
 
 export function App() {
-  const connection = useConnection(state => state.connection)
-  return connection ? <Shell connection={connection} /> : <ConnectionScreen />
+  const profile = useProfiles(state => activeProfile(state))
+  return profile ? <Shell key={profile.id} profile={profile} /> : <ConnectionScreen />
 }

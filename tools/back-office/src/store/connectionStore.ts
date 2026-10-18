@@ -1,61 +1,45 @@
 import { create } from 'zustand'
+import { migrateLegacyConnection, parseProfiles, removeProfile, selectProfile, upsertProfile, type Profile, type ProfilesState } from '../domain/profiles'
 
-export interface Connection {
-  url: string
-  serviceKey: string
-  gameUrl: string
-}
+const STORAGE_KEY = 'back-office:profiles'
+const LEGACY_KEY = 'back-office:connection'
 
-const STORAGE_KEY = 'back-office:connection'
-export const DEFAULT_URL = 'http://127.0.0.1:54321'
-export const DEFAULT_GAME_URL = 'http://localhost:5173'
-
-export function normalizeUrl(url: string): string {
-  return url.trim().replace(/\/+$/, '').replace(/\/(rest|auth|storage|realtime|functions)\/v1$/, '')
-}
-
-export function isLocalUrl(url: string): boolean {
+const read = (): ProfilesState => {
   try {
-    return ['127.0.0.1', 'localhost'].includes(new URL(url).hostname)
+    const stored = parseProfiles(localStorage.getItem(STORAGE_KEY))
+    if (stored.profiles.length > 0) return stored
+    const migrated = migrateLegacyConnection(localStorage.getItem(LEGACY_KEY), crypto.randomUUID())
+    if (migrated.profiles.length > 0) write(migrated)
+    return migrated
   } catch {
-    return false
+    return { profiles: [], activeId: null }
   }
 }
 
-const read = (): Connection | null => {
+const write = (state: ProfilesState) => {
   try {
-    const value = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null') as Partial<Connection> | null
-    if (typeof value?.url !== 'string' || typeof value.serviceKey !== 'string') return null
-    return { url: value.url, serviceKey: value.serviceKey, gameUrl: typeof value.gameUrl === 'string' ? value.gameUrl : DEFAULT_GAME_URL }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    localStorage.removeItem(LEGACY_KEY)
   } catch {
-    return null
+    // The profiles then last for this page only.
   }
 }
 
-const write = (connection: Connection | null) => {
-  try {
-    if (connection) localStorage.setItem(STORAGE_KEY, JSON.stringify(connection))
-    else localStorage.removeItem(STORAGE_KEY)
-  } catch {
-    // The connection then lasts for this page only.
+interface ProfilesStore extends ProfilesState {
+  save: (profile: Profile) => void
+  remove: (id: string) => void
+  select: (id: string) => void
+}
+
+export const useProfiles = create<ProfilesStore>()((set, get) => {
+  const apply = (next: ProfilesState) => {
+    write(next)
+    set(next)
   }
-}
-
-interface ConnectionState {
-  connection: Connection | null
-  connect: (connection: Connection) => void
-  forget: () => void
-}
-
-export const useConnection = create<ConnectionState>()(set => ({
-  connection: read(),
-  connect: connection => {
-    const normalized = { ...connection, url: normalizeUrl(connection.url), serviceKey: connection.serviceKey.trim(), gameUrl: connection.gameUrl.trim().replace(/\/+$/, '') }
-    write(normalized)
-    set({ connection: normalized })
-  },
-  forget: () => {
-    write(null)
-    set({ connection: null })
-  },
-}))
+  return {
+    ...read(),
+    save: profile => apply(upsertProfile(get(), profile)),
+    remove: id => apply(removeProfile(get(), id)),
+    select: id => apply(selectProfile(get(), id)),
+  }
+})
