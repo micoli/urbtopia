@@ -1,9 +1,10 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { congestionStats, createBuilding, laneCapacity, newGame, type Building, type GameState } from '../index';
 import { WALKING, crossingCut } from './walking';
 
 const base = newGame({ seed: 'crossing-capacity', now: 0 });
 const defaultWork = WALKING.workThreshold;
+const defaultCyclingFactor = WALKING.cyclingFactor;
 const defaultShop = WALKING.thresholds.shop;
 const CROSSING = '57,58';
 
@@ -17,7 +18,12 @@ function city(crossing: boolean, homes: { x: number; tier: number }[] = [{ x: 56
   return { ...base, roads, nextId, buildings: [...base.buildings, ...added] };
 }
 
+beforeEach(() => {
+  WALKING.cyclingFactor = 1;
+});
+
 afterEach(() => {
+  WALKING.cyclingFactor = defaultCyclingFactor;
   WALKING.workThreshold = defaultWork;
   WALKING.thresholds.shop = defaultShop;
   WALKING.enabled = true;

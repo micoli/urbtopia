@@ -1,7 +1,7 @@
 # Cycling trip and four-way mode split
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 
 ## What to build
 

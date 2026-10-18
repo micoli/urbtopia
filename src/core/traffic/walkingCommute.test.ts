@@ -1,9 +1,10 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { citizensOf, congestionStats, createBuilding, newGame, tileKey, type Building, type GameState } from '../index';
 import { WALKING, modeShares } from './walking';
 
 const base = newGame({ seed: 'walking', now: 0 });
 const defaultThreshold = WALKING.workThreshold;
+const defaultCyclingFactor = WALKING.cyclingFactor;
 
 function withHome(state: GameState, x: number, y: number, tier: number): GameState {
   const home: Building = { ...createBuilding(state.nextId, 'home', x, y, 0), tier };
@@ -14,8 +15,13 @@ function homeIdOf(state: GameState): number {
   return state.buildings.filter((building) => building.type === 'home').at(-1)!.id;
 }
 
+beforeEach(() => {
+  WALKING.cyclingFactor = 1;
+});
+
 afterEach(() => {
   WALKING.workThreshold = defaultThreshold;
+  WALKING.cyclingFactor = defaultCyclingFactor;
 });
 
 describe('walking commute', () => {
@@ -68,7 +74,7 @@ describe('walking commute', () => {
     const state = withHome({ ...base, buildings: [] }, 56, 59, 1);
     const stats = congestionStats(state);
     expect(stats.walkers).toBe(0);
-    expect(modeShares(stats)).toEqual({ car: 0, transit: 0, walking: 0 });
+    expect(modeShares(stats)).toEqual({ car: 0, transit: 0, walking: 0, cycling: 0 });
   });
 
   it('is deterministic', () => {
