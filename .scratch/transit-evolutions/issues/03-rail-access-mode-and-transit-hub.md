@@ -1,7 +1,7 @@
 # Rail Access mode and Transit hub building
 
 Type: task
-Status: ready-for-agent
+Status: resolved
 
 ## What to build
 
@@ -20,3 +20,7 @@ Status: ready-for-agent
 - [ ] Building art through the `add-building` and `create-building-model` skills, one building at a time.
 - [ ] `en` and `fr` names and descriptions.
 - [ ] Typecheck, lint and the full test suite pass.
+
+## Comments
+
+Resolved without the dedicated 3D model: the hub reuses `buildings-station-2x1` as a placeholder. The model is left to a final art pass (`add-building` and `create-building-model`, one building at a time). A hub is reached from all four sides (`perimeterTiles`), and `isHubActive` tells whether a Road, BRT corridor or Railway touches it.

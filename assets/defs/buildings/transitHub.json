@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "transitStop",
+  "section": "build.transport",
+  "model": "buildings-station-2x1",
+  "footprint": [3, 2],
+  "cost": 1500,
+  "unlockCitizens": 1000,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt", "rail", "pedestrianWay"],
+  "name": {
+    "en": "Transit hub",
+    "fr": "Pôle d’échanges"
+  },
+  "description": {
+    "en": "A multimodal station that serves as a stop for every network it touches among the Road, the BRT corridor and the Railway, and is reached on foot. Lines of different modes can share it, and changing between them is free.",
+    "fr": "Une gare multimodale qui sert d’arrêt pour chaque réseau qu’elle touche parmi la route, le corridor BHNS et la voie ferrée, et où l’on accède à pied. Des lignes de modes différents peuvent la partager, et la correspondance y est gratuite."
+  },
+  "mode": "hub"
+}

@@ -32,7 +32,7 @@ describe('building files', () => {
     expect(problemsOf({ ...standard, footprint: undefined })).toContain('footprint');
     expect(problemsOf({ ...standard, footprint: [0, 1] })).toContain('footprint.0');
     expect(problemsOf({ ...standard, accessModes: [] })).toContain('accessModes');
-    expect(problemsOf({ ...standard, accessModes: ['rail'] })).toContain('accessModes.0');
+    expect(problemsOf({ ...standard, accessModes: ['boat'] })).toContain('accessModes.0');
     expect(problemsOf({ ...standard, requiresRoad: false, accessModes: ['road'] })).toContain('accessModes needs requiresRoad');
     expect(problemsOf({ ...standard, cost: -1 })).toContain('cost');
     expect(problemsOf({ ...standard, cost: 1.5 })).toContain('cost');

@@ -34,7 +34,7 @@ const sited = {
   cost: count,
   unlockCitizens: count,
   requiresRoad: z.boolean(),
-  accessModes: z.array(z.enum(['road', 'brt', 'pedestrianWay'])).min(1).optional(),
+  accessModes: z.array(z.enum(['road', 'brt', 'rail', 'pedestrianWay'])).min(1).optional(),
   initialSlots: count.optional(),
 };
 
@@ -189,7 +189,7 @@ const marinaBuilding = z.strictObject({
 const transitStopBuilding = z.strictObject({
   kind: z.literal('transitStop'),
   ...placed,
-  mode: z.enum(['bus', 'brt', 'rail']),
+  mode: z.enum(['bus', 'brt', 'rail', 'hub']),
   network: z.strictObject({ tileCost: count, speed: positive, capacity: z.int().min(1) }).optional(),
 });
 
