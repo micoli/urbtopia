@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-winter-holidays-nutcracker-1x1",
+  "footprint": [1, 1],
+  "cost": 900,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "winterHolidays",
+  "name": {
+    "en": "Nutcracker",
+    "fr": "Casse-noisette"
+  },
+  "description": {
+    "en": "A toy soldier nutcracker standing guard on his golden base.",
+    "fr": "Un soldat casse-noisette qui monte la garde sur son socle doré."
+  }
+}

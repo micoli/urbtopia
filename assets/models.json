@@ -6028,6 +6028,56 @@
     ],
     "rotationOffset": 180
   },
+  "events-winter-holidays-christmas-ball-1x1": {
+    "file": "events/winter-holidays/christmas-ball-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-holidays-decorated-tree-1x1": {
+    "file": "events/winter-holidays/decorated-tree-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-holidays-gifts-2x1": {
+    "file": "events/winter-holidays/gifts-2x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-holidays-gingerbread-house-2x2": {
+    "file": "events/winter-holidays/gingerbread-house-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-holidays-nutcracker-1x1": {
+    "file": "events/winter-holidays/nutcracker-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
   "events-winter-igloo-1x1": {
     "file": "events/winter/igloo-1x1",
     "source": "managed",
