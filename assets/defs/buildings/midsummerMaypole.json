@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-midsummer-maypole-1x2",
+  "footprint": [1, 2],
+  "cost": 1100,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "midsummer",
+  "name": {
+    "en": "Midsummer pole",
+    "fr": "Mât de la Saint-Jean"
+  },
+  "description": {
+    "en": "A tall pole covered in flowers, with wreaths and long coloured ribbons.",
+    "fr": "Un grand mât couvert de fleurs, avec des couronnes et de longs rubans colorés."
+  }
+}

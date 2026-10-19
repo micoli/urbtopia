@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-midsummer-bonfire-2x2",
+  "footprint": [2, 2],
+  "cost": 1500,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "midsummer",
+  "name": {
+    "en": "Midsummer bonfire",
+    "fr": "Bûcher de la Saint-Jean"
+  },
+  "description": {
+    "en": "A great bonfire of logs ringed with stones and flowers.",
+    "fr": "Un grand bûcher de bûches entouré de pierres et de fleurs."
+  }
+}

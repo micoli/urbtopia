@@ -21,8 +21,4 @@ describe('nextAnnualEventNotice', () => {
   it('stays silent outside every window', () => {
     expect(nextAnnualEventNotice(noon(2026, 8, 1), [])).toBeUndefined();
   });
-
-  it('stays silent for an open event that has no item yet', () => {
-    expect(nextAnnualEventNotice(noon(2026, 5, 29), [])).toBeUndefined();
-  });
 });

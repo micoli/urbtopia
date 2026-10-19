@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-midsummer-dala-horses-1x2",
+  "footprint": [1, 2],
+  "cost": 900,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "midsummer",
+  "name": {
+    "en": "Dala horses",
+    "fr": "Chevaux de Dalécarlie"
+  },
+  "description": {
+    "en": "Three painted wooden horses in red, blue and yellow.",
+    "fr": "Trois chevaux de bois peints en rouge, bleu et jaune."
+  }
+}
