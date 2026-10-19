@@ -153,7 +153,7 @@ export { FIXTURES, FIXTURE_IDS, FIXTURE_MODELS, FIXTURE_CATEGORIES, fixtureIdsOf
 export { challengeReward, clearChallenge, completeChallenge, findChallengeClaim, isChallengeStockComplete, remainingOf, setAsideForChallenge, setAsideOf, startChallenge } from './challenges/challengeStock';
 export { CHALLENGE_REWARD_MULTIPLIER } from './challenges/types';
 export type { ChallengeClaim, ChallengeProgress, ChallengeRewardKind } from './challenges/types';
-export { applyTradeEffect, findLedgerEntry, isValidLot, lotReceiveIssue, pendingTradeEntries } from './trade/tradeLedger';
+export { applyTradeEffect, findLedgerEntry, isTradeLine, isValidLot, lotReceiveIssue, pendingTradeEntries } from './trade/tradeLedger';
 export type { TradeApplyInput } from './trade/tradeLedger';
 export { TRADE_EFFECTS, TRADE_LIMITS } from './trade/types';
 export type { TradeEffect, TradeLedgerEntry, TradeLine } from './trade/types';

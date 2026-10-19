@@ -100,7 +100,7 @@ describe('envelope', () => {
     ['an invalid state', JSON.stringify({ format: FORMAT, version: CURRENT_VERSION, savedAt: 0, state: { urbs: 1 } }), 'invalid-state'],
     ['a missing envelope field', JSON.stringify({ format: FORMAT, state }), 'wrong-format'],
   ])('refuses %s', (_label, text, reason) => {
-    expect(parseEnvelope(text)).toEqual({ ok: false, reason });
+    expect(parseEnvelope(text)).toMatchObject({ ok: false, reason });
   });
 });
 

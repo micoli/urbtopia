@@ -5,7 +5,7 @@ import { BACKUP_KEY, SAVE_KEY, SaveQuotaError, versionedBackupKey, type SaveStor
 export type LoadResult =
   | { kind: 'none' }
   | { kind: 'loaded'; state: GameState; savedAt: number }
-  | { kind: 'failed'; reason: ParseFailure; raw: string };
+  | { kind: 'failed'; reason: ParseFailure; detail?: string; raw: string };
 
 export type SaveOutcome = { ok: true } | { ok: false; reason: 'locked' | 'quota' };
 
@@ -27,7 +27,7 @@ export class SaveSession {
       return { kind: 'loaded', state: result.state, savedAt: result.savedAt };
     }
     this.locked = true;
-    return { kind: 'failed', reason: result.reason, raw };
+    return { kind: 'failed', reason: result.reason, detail: result.detail, raw };
   }
 
   save(state: GameState, now: number): SaveOutcome {

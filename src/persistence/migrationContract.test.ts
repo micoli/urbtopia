@@ -68,12 +68,12 @@ describe('save migration contract', () => {
     expect(parseEnvelope(serializeEnvelope(loaded.state, loaded.savedAt))).toEqual(loaded);
 
     const damaged = (change: object) => parseEnvelope(JSON.stringify({ ...v14, state: { ...v14.state, tradeLedger: [{ ...entry, ...change }] } }));
-    expect(damaged({ effect: 'teleport' })).toEqual({ ok: false, reason: 'invalid-state' });
-    expect(damaged({ lot: [{ item: 'unobtainium', quantity: 1 }] })).toEqual({ ok: false, reason: 'invalid-state' });
-    expect(damaged({ lot: [{ item: 'wood', quantity: 0 }] })).toEqual({ ok: false, reason: 'invalid-state' });
-    expect(damaged({ confirmed: 'yes' })).toEqual({ ok: false, reason: 'invalid-state' });
-    expect(damaged({ urbs: -1 })).toEqual({ ok: false, reason: 'invalid-state' });
-    expect(parseEnvelope(JSON.stringify({ ...v14, state: { ...v14.state, tradeLedger: 'nope' } }))).toEqual({ ok: false, reason: 'invalid-state' });
+    expect(damaged({ effect: 'teleport' })).toMatchObject({ ok: false, reason: 'invalid-state' });
+    expect(damaged({ lot: [{ item: 'unobtainium', quantity: 1 }] })).toMatchObject({ ok: false, reason: 'invalid-state' });
+    expect(damaged({ lot: [{ item: 'wood', quantity: 0 }] })).toMatchObject({ ok: false, reason: 'invalid-state' });
+    expect(damaged({ confirmed: 'yes' })).toMatchObject({ ok: false, reason: 'invalid-state' });
+    expect(damaged({ urbs: -1 })).toMatchObject({ ok: false, reason: 'invalid-state' });
+    expect(parseEnvelope(JSON.stringify({ ...v14, state: { ...v14.state, tradeLedger: 'nope' } }))).toMatchObject({ ok: false, reason: 'invalid-state' });
   });
 
   it('has one migration step per released version', () => {
@@ -107,7 +107,7 @@ describe('Challenge progress in the save', () => {
 
   it('refuses a damaged Challenge', () => {
     for (const damaged of [{ ...challenge, id: '' }, { ...challenge, goal: [] }, { ...challenge, stock: { wood: 6 } }, { ...challenge, stock: { stone: 1 } }, { ...challenge, deadline: 'soon' }, 'nope']) {
-      expect(load(damaged), JSON.stringify(damaged)).toEqual({ ok: false, reason: 'invalid-state' });
+      expect(load(damaged), JSON.stringify(damaged)).toMatchObject({ ok: false, reason: 'invalid-state' });
     }
   });
 });
@@ -124,7 +124,7 @@ describe('Challenge claims in the save', () => {
 
   it('refuses damaged claims', () => {
     for (const damaged of ['nope', [{ id: '', at: 1, urbs: 1 }], [{ id: 'c1', at: 1, urbs: -1 }], [{ id: 'c1', at: 'x', urbs: 1 }]]) {
-      expect(load(damaged), JSON.stringify(damaged)).toEqual({ ok: false, reason: 'invalid-state' });
+      expect(load(damaged), JSON.stringify(damaged)).toMatchObject({ ok: false, reason: 'invalid-state' });
     }
   });
 });

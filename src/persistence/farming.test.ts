@@ -32,11 +32,11 @@ describe('farming save compatibility', () => {
     [{ x: -1, y: 50 }],
   ])('rejects invalid Field tile %j', field => {
     const state = { ...newGame({ seed: 'fields-invalid', now: 0 }), fields: [field] };
-    expect(parseEnvelope(serializeEnvelope(state as never, 100))).toEqual({ ok: false, reason: 'invalid-state' });
+    expect(parseEnvelope(serializeEnvelope(state as never, 100))).toMatchObject({ ok: false, reason: 'invalid-state' });
   });
 
   it.each([{ wheat: -1 }, { wheat: 1.5 }, { wheat: 'many' }])('rejects an invalid seed stock %j', seedStock => {
     const state = { ...newGame({ seed: 'seed-stock-invalid', now: 0 }), seedStock };
-    expect(parseEnvelope(serializeEnvelope(state as never, 100))).toEqual({ ok: false, reason: 'invalid-state' });
+    expect(parseEnvelope(serializeEnvelope(state as never, 100))).toMatchObject({ ok: false, reason: 'invalid-state' });
   });
 });
