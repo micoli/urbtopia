@@ -1,6 +1,6 @@
 import { entriesOf } from '../defs/entries.ts';
 import buildingOrder from '../../../assets/defs/order/buildings.json' with { type: 'json' };
-import type { FlatBuilding, FlatTier } from './buildingDefinition.ts';
+import type { BuildingKind, FlatBuilding, FlatTier } from './buildingDefinition.ts';
 import type { BuildingId, NatureType, SportVenueType } from './buildingTypes.generated.ts';
 import { resolveTiers, resolveVariant } from './tiers.ts';
 
@@ -25,7 +25,9 @@ const entriesById = new Map<string, BuildingEntry>(BUILDING_ENTRIES.map(entry =>
 
 export const definitionOf = (id: BuildingId): BuildingEntry => entriesById.get(id)!;
 
-export const isHomeType = (type: string): boolean => entriesById.get(type)?.kind === 'home';
+export const kindOf = (type: string): BuildingKind | undefined => entriesById.get(type)?.kind;
+
+export const isHomeType = (type: string): boolean => kindOf(type) === 'home';
 
 export const isRetired = (id: BuildingId): boolean => entriesById.get(id)?.retired === true;
 
