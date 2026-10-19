@@ -3,6 +3,8 @@ export { SOLIDARITY, donationQuote, solidarityBonus, solidarityCost, solidarityT
 export type { DonationRecord } from './economy/solidarity';
 export type { AdvanceResult } from './engine/advance';
 export { dispatch } from './engine/dispatch';
+export { previewCommand } from './engine/preview';
+export type { CommandPreview } from './engine/preview';
 export type { DispatchResult } from './engine/dispatch';
 export type { Command, CommandError, ErrorKey } from './engine/commands';
 export type { GameEvent } from './engine/events';
@@ -94,7 +96,7 @@ export type { VenueTutorialStep, VenueTutorialType } from './progression/venueTu
 export { ECOLOGY, ECOLOGY_UNLOCKS, distance as buildingDistance, homePower, economicPower, greenSpaceCoverage, greenBenefits, cityGreenBenefits } from './environment/ecology';
 export { energyStats, generatorCapacity, generatorFactor, generatorOutput, productionFactors } from './environment/energy';
 export { solarPanelPlacements, turnedOffset, type PanelPlacement } from './environment/solarPanelLayout';
-export { canHaveSolarPanels, solarPanelsCost, solarPanelsOf, solarPanelsUnlockCitizens, solarPanelsCapacity } from './environment/solarPanels';
+export { canHaveSolarPanels, solarInstallCostOf, solarPanelsCost, solarPanelsOf, solarPanelsUnlockCitizens, solarPanelsCapacity } from './environment/solarPanels';
 export { ENERGY_SOURCES, energySources, sourceFactors, type EnergySource, type EnergySourceId } from './environment/energySources';
 export { flowFactor } from './water/flow';
 export { homeBenefits, cityBenefits, congestionPenaltyOf, isAdapting, wellbeingTaxFactor } from './environment/wellbeing';

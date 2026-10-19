@@ -8,7 +8,10 @@ export const solarPanelsOf = (type: BuildingType): SolarPanelsDefinition | undef
 
 export const canHaveSolarPanels = (type: BuildingType): boolean => solarPanelsOf(type) !== undefined;
 
-export const solarPanelsCost = (building: Building): number => (solarPanelsOf(building.type)?.cost ?? ECOLOGY.solarCost) * building.tier;
+// What installing solar panels adds to the price of a Home, per Tier.
+export const solarInstallCostOf = (type: BuildingType): number => solarPanelsOf(type)?.cost ?? ECOLOGY.solarCost;
+
+export const solarPanelsCost = (building: Building): number => solarInstallCostOf(building.type) * building.tier;
 
 export const solarPanelsUnlockCitizens = (type: BuildingType): number => solarPanelsOf(type)?.unlockCitizens ?? ECOLOGY.solarUnlockCitizens;
 

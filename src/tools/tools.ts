@@ -11,7 +11,7 @@ import {
   fittingPlacement,
   placementIssue,
   validFronts,
-  dispatch,
+  previewCommand,
   FACILITIES,
   footprintOf,
   footprintTiles,
@@ -24,6 +24,7 @@ import {
   roadBuildCost,
   pedestrianWayBuildCost,
   roadPath,
+  solarInstallCostOf,
   roundaboutTiles,
   type BoatFamily,
   type Building,
@@ -107,20 +108,16 @@ export interface Confirmation {
   nextTool: Tool | null;
 }
 
-function dryRun(state: GameState, command: Command): ErrorKey | null {
-  const result = dispatch(state, command, state.lastSeen);
-  return result.ok ? null : result.error.key;
-}
-
 function evaluation(tiles: Coord[], command: Command | null, state: GameState, extra: Partial<Evaluation> = {}): Evaluation {
-  const issue = command ? dryRun(state, command) : null;
+  const preview = command ? previewCommand(state, command) : null;
+  const issue = preview?.error ?? null;
   const valid = command !== null && issue === null;
   return {
     ghost: { tiles, rects: [], valid, front: null },
     valid,
     issue,
     command,
-    cost: null,
+    cost: preview?.cost ?? null,
     rotation: null,
     ...extra,
   };
@@ -169,7 +166,7 @@ export function selectionGhost(state: GameState, buildingId: number | null, show
 export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext): Evaluation {
   switch (tool.kind) {
     case 'building':
-      return evaluateBuilding(state, tool.buildingType, tile, rotation, { type: 'PlaceBuilding', buildingType: tool.buildingType, solar: tool.solar, colorVariant: tool.colorVariant }, nextCopyCost(state, tool.buildingType) + (tool.solar ? 180 : 0));
+      return evaluateBuilding(state, tool.buildingType, tile, rotation, { type: 'PlaceBuilding', buildingType: tool.buildingType, solar: tool.solar, colorVariant: tool.colorVariant }, nextCopyCost(state, tool.buildingType) + (tool.solar ? solarInstallCostOf(tool.buildingType) : 0));
     case 'move': {
       const building = state.buildings.find((candidate) => candidate.id === tool.buildingId);
       if (!building) return evaluation([tile], null, state);
@@ -284,10 +281,7 @@ function brushCommand(tool: Extract<Tool, { kind: 'brush' }>, tiles: Coord[]): C
 function evaluateBrush(state: GameState, tool: Extract<Tool, { kind: 'brush' }>, hovered: Coord): Evaluation {
   const tiles = tool.tiles.length > 0 ? tool.tiles : [hovered];
   const command = brushCommand(tool, tiles);
-  const result = evaluation(tiles, command, state);
-  if (!command || !result.valid) return result;
-  const outcome = dispatch(state, command, state.lastSeen);
-  return { ...result, cost: outcome.ok ? Math.max(0, state.urbs - outcome.state.urbs) : null };
+  return evaluation(tiles, command, state);
 }
 
 export function extendBrush(tool: Tool, tile: Coord): Tool {
@@ -353,11 +347,7 @@ function evaluateDemolishPedestrianWay(state: GameState, tool: Extract<Tool, { k
 function evaluateUpgradePedestrianWay(state: GameState, tool: Extract<Tool, { kind: 'upgradePedestrianWay' }>, tile: Coord): Evaluation {
   if (!tool.start) return evaluation([tile], null, state);
   const path = roadPath(tool.start, tile, tool.horizontalFirst);
-  const command: Command = { type: 'UpgradePedestrianWays', tiles: path };
-  const result = evaluation(path, command, state);
-  if (!result.valid) return result;
-  const outcome = dispatch(state, command, state.lastSeen);
-  return { ...result, cost: outcome.ok ? Math.max(0, state.urbs - outcome.state.urbs) : null };
+  return evaluation(path, { type: 'UpgradePedestrianWays', tiles: path }, state);
 }
 
 function evaluateDemolishRoad(state: GameState, tool: Extract<Tool, { kind: 'demolishRoad' }>, tile: Coord): Evaluation {
@@ -370,11 +360,7 @@ function evaluateDemolishRoad(state: GameState, tool: Extract<Tool, { kind: 'dem
 function evaluateUpgradeRoad(state: GameState, tool: Extract<Tool, { kind: 'upgradeRoad' }>, tile: Coord): Evaluation {
   if (!tool.start) return evaluation([tile], null, state);
   const path = roadPath(tool.start, tile, tool.horizontalFirst);
-  const command: Command = { type: 'UpgradeRoads', tiles: path };
-  const result = evaluation(path, command, state);
-  if (!result.valid) return result;
-  const outcome = dispatch(state, command, state.lastSeen);
-  return { ...result, cost: outcome.ok ? Math.max(0, state.urbs - outcome.state.urbs) : null };
+  return evaluation(path, { type: 'UpgradeRoads', tiles: path }, state);
 }
 
 export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTool = false): Confirmation {

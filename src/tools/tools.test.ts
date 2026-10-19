@@ -415,3 +415,17 @@ describe('Annual event items', () => {
     if (moved.ok) expect(moved.state.buildings.find(building => building.id === id)).toMatchObject({ x: 60, y: 60, rotation: 3 });
   });
 });
+
+describe('solar Home tool', () => {
+  const homes = Array.from({ length: 18 }, (_, i) => createBuilding(20 + i, 'home', 20 + (i % 6) * 4, 30 + Math.floor(i / 6) * 4, 0));
+  const utilities = [0, 1, 2].flatMap((i) => [createBuilding(40 + i, 'powerPlant', 20 + i * 5, 46, 0), createBuilding(50 + i, 'waterTower', 20 + i * 5, 50, 0)]);
+  const city: GameState = { ...state, urbs: 1_000_000, nextId: 80, buildings: [...state.buildings, ...homes, ...utilities] };
+
+  it('shows the price the placement then charges', () => {
+    const evaluation = evaluateTool({ kind: 'building', buildingType: 'home', solar: true }, { state: city, tile: { x: 56, y: 57 }, rotation: 2 });
+    const result = dispatch(city, evaluation.command!, city.lastSeen);
+    expect(evaluation.valid).toBe(true);
+    if (!result.ok) throw new Error('expected the placement to be accepted');
+    expect(evaluation.cost).toBe(city.urbs - result.state.urbs);
+  });
+});

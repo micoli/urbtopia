@@ -1,7 +1,7 @@
 import { isBuildableAt } from '../annualEvents/annualEventItems';
 import { TRANSIT, extendNetwork, networkTiles, repairNetwork, validNetworkCrossings } from '../transit/transitNetwork';
 import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
-import { canHaveSolarPanels, solarPanelsCost, solarPanelsOf, solarPanelsUnlockCitizens } from '../environment/solarPanels';
+import { canHaveSolarPanels, solarInstallCostOf, solarPanelsCost, solarPanelsUnlockCitizens } from '../environment/solarPanels';
 import { routeFailure, routeForLine } from '../transit/transport';
 import { nextCopyCost } from '../buildings/buildLimit';
 import { BUILDING_SPECS, createBuilding, emptyStack, footprintOf, placementCost } from '../buildings/buildingSpecs';
@@ -600,7 +600,7 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
   if (isRetired(type) || citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < solarPanelsUnlockCitizens(type))) return fail('error.itemLocked');
   if (!isBuildableAt(type, now)) return fail('error.annualEventClosed');
   if (solar && !isHomeType(type)) return fail('error.cannotProduce');
-  const extraCost = solar ? (solarPanelsOf(type)?.cost ?? ECOLOGY.solarCost) : 0;
+  const extraCost = solar ? solarInstallCostOf(type) : 0;
   const rotation = requestedRotation ?? autoRotation(state, type, x, y);
   const issue = placementIssue(state, type, x, y, rotation);
   if (issue) return fail(issue);
