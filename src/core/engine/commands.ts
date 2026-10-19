@@ -6,6 +6,7 @@ import { routeFailure, routeForLine } from '../transit/transport';
 import { nextCopyCost } from '../buildings/buildLimit';
 import { BUILDING_SPECS, createBuilding, emptyStack, footprintOf, placementCost } from '../buildings/buildingSpecs';
 import { isRetired } from '../buildings/buildingDefinitions';
+import { isProductionType } from '../economy/productionTypes';
 import { advance } from './advance';
 import { GAME_CONFIG } from './config';
 import type { Coord } from '../map/coord';
@@ -636,7 +637,7 @@ function renameStop(state: GameState, id: number, rawName: string): CommandOutco
 function sellBuilding(state: GameState, id: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === id);
   if (!building) return fail('error.unknownBuilding');
-  if ((isStorageType(building.type) || ['workshop', 'factory', 'packhouse', 'mill', 'bakery'].includes(building.type)) && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
+  if ((isStorageType(building.type) || isProductionType(building.type)) && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
   if ((building.type === 'powerPlant' || building.type === 'waterTower') && !canLoseUtility(state, building)) return fail('error.utilityInUse');
   if (building.type === 'marina' && boatsOfMarina(state, building.id).length > 0) return fail('error.marinaInUse');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);

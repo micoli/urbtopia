@@ -2,7 +2,7 @@ import {
   CASINO_GAMES, COAL_CAPACITY, marinaCapacity, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
   FIXTURES, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
-  type StorageType, type UtilityType, BUILDING_SPECS, canHaveSolarPanels, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf,
+  type StorageType, type UtilityType, BUILDING_SPECS, canHaveSolarPanels, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf, isProductionType,
 } from '../core';
 import { t } from '../i18n/t';
 import type { MessageKey } from '../i18n/messages';
@@ -94,7 +94,7 @@ function tierFactsOf(id: CodexId, level: number): LevelFact[] {
     numericFact('codex.fact.water', tier => homeTier(tier).water, level),
     buildingFootprintFact(solarBaseOf(id) ?? id as BuildingType, level),
   ];
-  if (id === 'workshop' || id === 'factory' || id === 'packhouse' || id === 'mill' || id === 'bakery') return [
+  if (isProductionType(id)) return [
     numericFact('codex.fact.craftTime', tier => productionTierOf({ type: id, tier }).durationFactor, level, percent),
     numericFact('codex.fact.slots', tier => productionTierOf({ type: id, tier }).maxSlots, level),
     numericFact('codex.fact.yield', tier => productionTierOf({ type: id, tier }).yield, level),

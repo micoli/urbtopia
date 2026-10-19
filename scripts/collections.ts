@@ -54,6 +54,7 @@ export const COLLECTIONS = {
         SportVenueType: idsWhere(buildings, ({ kind }) => kind === 'sport'),
         NatureType: idsWhere(buildings, ({ kind }) => kind === 'nature'),
         StorageType: idsWhere(buildings, ({ kind }) => kind === 'storage'),
+        ProductionType: idsWhere(buildings, ({ kind }) => kind === 'production'),
         FacilityType: idsWhere(buildings, ({ kind }) => kind === 'facility'),
         VenueType: idsWhere(buildings, ({ kind }) => kind === 'venue'),
         ShopType: idsWhere(buildings, ({ kind }) => kind === 'shop'),

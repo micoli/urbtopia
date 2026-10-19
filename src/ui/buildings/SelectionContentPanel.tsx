@@ -3,7 +3,7 @@ import { DecorationRotation } from './DecorationRotation';
 import { FrontRotation } from './FrontRotation';
 import { CoalPlantPanel } from './CoalPlantPanel';
 import { StopNameField } from './StopNameField';
-import { GAME_CONFIG, isShopType, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost, isHomeType, canHaveSolarPanels, isRepaintableType, isUtilityType, isTransitStopType } from '../../core';
+import { GAME_CONFIG, isShopType, isVenueType, greenProfileOf, natureModelOf, isFacilityType, isStorageType, placementCost, isHomeType, canHaveSolarPanels, isRepaintableType, isUtilityType, isTransitStopType, isProductionType } from '../../core';
 import { t } from '../../i18n/t';
 import { FacilityPanel } from './FacilityPanel';
 import { CasinoPanel } from '../casino/CasinoPanel';
@@ -39,7 +39,7 @@ export function SelectionContentPanel() {
       <PanelHeader title={t(`building.${building.type}`)} subtitle={building.tier} onClose={() => select(null)} />
       <BuildingAccess building={building} />
       {isTransitStopType(building.type) ? <StopNameField building={building} /> : null}
-      {['workshop', 'factory', 'packhouse', 'mill', 'bakery'].includes(building.type) ? <ProductionPanel building={building} /> : null}
+      {isProductionType(building.type) ? <ProductionPanel building={building} /> : null}
       {building.type === 'farm' ? <FarmPanel building={building} /> : null}
       {isHomeType(building.type) ? <HomePanel building={building} /> : null}
       {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}

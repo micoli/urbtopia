@@ -1,10 +1,11 @@
 import type { Building, BuildingType } from '../engine/state';
 import { totalStaff } from '../venues/staff';
 import { VENUE_TYPES, isVenueType } from '../venues/profiles';
+import { INDUSTRY_TYPES } from '../economy/productionTypes';
 import { SHOP_TYPES, isShopType, shopTierOf } from '../economy/shops';
 import { FACILITIES, FACILITY_TYPES, facilityCapacity, isFacilityType } from '../services/facilities';
 
-export const workplaceTypes: readonly BuildingType[] = ['workshop', 'factory', 'mill', 'bakery', ...SHOP_TYPES, 'casino', ...VENUE_TYPES, ...FACILITY_TYPES];
+export const workplaceTypes: readonly BuildingType[] = [...INDUSTRY_TYPES, ...SHOP_TYPES, 'casino', ...VENUE_TYPES, ...FACILITY_TYPES];
 
 export const JOBS = {
   workshopPerTier: 25,
