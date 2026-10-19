@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-summer-surfboard-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "summer",
+  "name": {
+    "en": "Surfboard",
+    "fr": "Planche de surf"
+  },
+  "description": {
+    "en": "A colourful surfboard stuck in the sand.",
+    "fr": "Une planche de surf colorée plantée dans le sable."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-easter-eggs-2x1",
+  "footprint": [2, 1],
+  "cost": 900,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "easter",
+  "name": {
+    "en": "Row of Easter eggs",
+    "fr": "Rangée d'œufs de Pâques"
+  },
+  "description": {
+    "en": "A row of pastel painted eggs.",
+    "fr": "Une rangée d'œufs peints aux couleurs pastel."
+  }
+}

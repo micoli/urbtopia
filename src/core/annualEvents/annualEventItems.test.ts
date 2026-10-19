@@ -22,8 +22,8 @@ describe('Annual event items', () => {
     expect(entry.retired).toBeUndefined();
   });
 
-  it('only Halloween, Autumn, Winter, Winter holidays and Spring have items for now', () => {
-    expect([...annualEventsWithItems()]).toEqual(['halloween', 'autumn', 'winter', 'winterHolidays', 'spring']);
+  it('only Halloween, Autumn, Winter, Winter holidays, Spring, Summer and Easter have items for now', () => {
+    expect([...annualEventsWithItems()]).toEqual(['halloween', 'autumn', 'winter', 'winterHolidays', 'spring', 'summer', 'easter']);
   });
 
   it('can always be built when they belong to no event', () => {

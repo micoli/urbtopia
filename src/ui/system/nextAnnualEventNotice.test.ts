@@ -23,6 +23,6 @@ describe('nextAnnualEventNotice', () => {
   });
 
   it('stays silent for an open event that has no item yet', () => {
-    expect(nextAnnualEventNotice(noon(2026, 6, 21), [])).toBeUndefined();
+    expect(nextAnnualEventNotice(noon(2026, 5, 29), [])).toBeUndefined();
   });
 });

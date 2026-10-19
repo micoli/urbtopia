@@ -5928,6 +5928,56 @@
     ],
     "rotationOffset": 180
   },
+  "events-easter-candy-pile-1x1": {
+    "file": "events/easter/candy-pile-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-easter-eggs-1x1": {
+    "file": "events/easter/eggs-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-easter-eggs-2x1": {
+    "file": "events/easter/eggs-2x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-easter-giant-chocolate-egg-2x2": {
+    "file": "events/easter/giant-chocolate-egg-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-easter-rabbit-1x1": {
+    "file": "events/easter/rabbit-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
   "events-halloween-cauldron-1x1": {
     "file": "events/halloween/cauldron-1x1",
     "source": "managed",
@@ -6020,6 +6070,56 @@
   },
   "events-spring-flower-box-1x1": {
     "file": "events/spring/flower-box-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-summer-beach-ball-1x1": {
+    "file": "events/summer/beach-ball-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-summer-parasol-1x1": {
+    "file": "events/summer/parasol-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-summer-potted-palm-1x1": {
+    "file": "events/summer/potted-palm-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-summer-sand-castle-2x2": {
+    "file": "events/summer/sand-castle-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-summer-surfboard-1x1": {
+    "file": "events/summer/surfboard-1x1",
     "source": "managed",
     "license": "Own work",
     "footprint": [

@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-summer-potted-palm-1x1",
+  "footprint": [1, 1],
+  "cost": 800,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "summer",
+  "name": {
+    "en": "Potted palm",
+    "fr": "Palmier en pot"
+  },
+  "description": {
+    "en": "A small palm tree in a wooden tub.",
+    "fr": "Un petit palmier dans son tonneau en bois."
+  }
+}
