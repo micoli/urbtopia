@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-winter-holidays-christmas-ball-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "winterHolidays",
+  "name": {
+    "en": "Giant Christmas bauble",
+    "fr": "Boule de Noël géante"
+  },
+  "description": {
+    "en": "A giant red and gold Christmas bauble.",
+    "fr": "Une boule de Noël géante, rouge et or."
+  }
+}

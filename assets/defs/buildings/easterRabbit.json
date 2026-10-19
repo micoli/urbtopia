@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-easter-rabbit-1x1",
+  "footprint": [1, 1],
+  "cost": 800,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "easter",
+  "name": {
+    "en": "Easter bunny",
+    "fr": "Lapin de Pâques"
+  },
+  "description": {
+    "en": "A smiling white bunny with pink ears.",
+    "fr": "Un lapin blanc souriant aux oreilles roses."
+  }
+}

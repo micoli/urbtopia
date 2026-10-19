@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-winter-holidays-decorated-tree-1x1",
+  "footprint": [1, 1],
+  "cost": 800,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "winterHolidays",
+  "name": {
+    "en": "Decorated Christmas tree",
+    "fr": "Sapin de Noël décoré"
+  },
+  "description": {
+    "en": "A Christmas tree with lights, garlands and baubles.",
+    "fr": "Un sapin de Noël avec guirlandes lumineuses et boules."
+  }
+}

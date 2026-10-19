@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-autumn-autumn-tree-2x2",
+  "footprint": [2, 2],
+  "cost": 1500,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "autumn",
+  "name": {
+    "en": "Autumn tree",
+    "fr": "Arbre d'automne"
+  },
+  "description": {
+    "en": "A bare tree still clinging to its last golden leaves.",
+    "fr": "Un arbre dénudé qui s'accroche à ses dernières feuilles dorées."
+  }
+}

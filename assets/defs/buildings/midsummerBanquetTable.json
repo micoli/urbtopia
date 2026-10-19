@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-midsummer-banquet-table-2x2",
+  "footprint": [2, 2],
+  "cost": 1500,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "midsummer",
+  "name": {
+    "en": "Banquet table",
+    "fr": "Table de banquet"
+  },
+  "description": {
+    "en": "A long table with benches, laid with strawberries and a cake.",
+    "fr": "Une longue table avec bancs, dressée de fraises et d'un gâteau."
+  }
+}

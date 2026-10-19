@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-easter-giant-chocolate-egg-2x2",
+  "footprint": [2, 2],
+  "cost": 1500,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "easter",
+  "name": {
+    "en": "Giant chocolate egg",
+    "fr": "Œuf géant en chocolat"
+  },
+  "description": {
+    "en": "A giant chocolate egg tied with a pink bow.",
+    "fr": "Un œuf géant en chocolat noué d'un ruban rose."
+  }
+}

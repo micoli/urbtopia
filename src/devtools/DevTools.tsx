@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { GOODS, MATERIALS, type ItemId } from '../core';
+import { GOODS, MATERIALS, forceAnnualEventDay, type ItemId } from '../core';
 import { itemName } from '../i18n/itemName';
 import { gameStore } from '../store/gameStore';
 import { readOnlyStore } from '../store/readOnlyStore';
 import { ActionButton } from '../ui/common/ActionButton';
 import { useReadOnly } from '../ui/common/hooks';
+import { useForcedAnnualEventDay } from '../ui/common/useForcedAnnualEventDay';
+import { AnnualEventDateButtons } from './AnnualEventDateButtons';
+import { dayOfIsoDate, isoDateOfDay } from './annualEventDate';
 import { clearGoods, clearMaterials, clearWarehouse } from './clearItems';
 import { ItemButtons } from './ItemButtons';
 import { giveItem } from './giveItem';
@@ -19,6 +22,7 @@ export default function DevTools() {
   const [grantedItem, setGrantedItem] = useState<string | null>(null);
   const [cleared, setCleared] = useState<string | null>(null);
   const readOnly = useReadOnly();
+  const forcedDay = useForcedAnnualEventDay();
   const amount = Number(quantity);
   const valid = Number.isSafeInteger(amount) && amount > 0 && amount <= MAX_DEV_ITEM_QUANTITY;
 
@@ -65,6 +69,11 @@ export default function DevTools() {
           <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearWarehouse, 'L’entrepôt a été vidé.')}>Vider l’entrepôt</ActionButton>
           <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearMaterials, 'Tous les matériaux ont été vidés.')}>Vider tous les matériaux</ActionButton>
           <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearGoods, 'Tous les biens ont été vidés.')}>Vider tous les biens</ActionButton>
+          <label htmlFor="devtools-annual-event-date">Date des événements annuels</label>
+          <input id="devtools-annual-event-date" type="date" value={forcedDay === undefined ? '' : isoDateOfDay(forcedDay)} onChange={(event) => forceAnnualEventDay(dayOfIsoDate(event.target.value))} />
+          <AnnualEventDateButtons year={new Date().getFullYear()} forcedDay={forcedDay} />
+          <small>{forcedDay === undefined ? 'Date réelle de l’appareil.' : 'Date forcée pour les fenêtres des événements annuels.'}</small>
+          <ActionButton variant="danger" disabled={forcedDay === undefined} onClick={() => forceAnnualEventDay(undefined)}>Revenir à la date réelle</ActionButton>
           <label htmlFor="devtools-filter">Filtrer les matériaux et biens</label>
           <input id="devtools-filter" type="search" placeholder="Nom…" value={filter} onChange={(event) => setFilter(event.target.value)} />
           <ItemButtons title="Matériaux" items={Object.keys(MATERIALS) as ItemId[]} filter={filter} disabled={!valid || readOnly} onGive={grantOne} />

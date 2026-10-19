@@ -3,6 +3,7 @@ import type { CodexId } from '../../codex/catalog';
 import { formatDay } from '../../i18n/formatDay';
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
+import { useForcedAnnualEventDay } from '../common/useForcedAnnualEventDay';
 import { useNow } from '../common/useNow';
 
 // The window of the event this year, or next year's once this year's is over.
@@ -14,6 +15,7 @@ const upcomingWindow = (eventId: Parameters<typeof annualEventById>[0], now: num
 
 export function AnnualEventFacts({ id }: { id: CodexId }) {
   const now = useNow(60_000);
+  useForcedAnnualEventDay();
   const eventId = id in BUILDING_SPECS ? annualEventOf(id as BuildingType) : undefined;
   if (!eventId) return null;
   const window = upcomingWindow(eventId, now);

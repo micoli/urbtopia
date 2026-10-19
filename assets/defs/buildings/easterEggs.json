@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-easter-eggs-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "easter",
+  "name": {
+    "en": "Easter eggs",
+    "fr": "Œufs de Pâques"
+  },
+  "description": {
+    "en": "Three painted Easter eggs.",
+    "fr": "Trois œufs de Pâques peints."
+  }
+}

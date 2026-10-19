@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-winter-holidays-gingerbread-house-2x2",
+  "footprint": [2, 2],
+  "cost": 1500,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "winterHolidays",
+  "name": {
+    "en": "Gingerbread house",
+    "fr": "Maison en pain d'épices"
+  },
+  "description": {
+    "en": "A gingerbread house with icing and candies.",
+    "fr": "Une maison en pain d'épices couverte de glaçage et de bonbons."
+  }
+}

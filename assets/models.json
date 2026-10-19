@@ -5858,6 +5858,126 @@
     },
     "rotationOffset": 180
   },
+  "events-autumn-autumn-tree-2x2": {
+    "file": "events/autumn/autumn-tree-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-autumn-hay-bales-1x1": {
+    "file": "events/autumn/hay-bales-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-autumn-leaf-pile-1x1": {
+    "file": "events/autumn/leaf-pile-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-autumn-pumpkin-trio-1x1": {
+    "file": "events/autumn/pumpkin-trio-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-autumn-scarecrow-blue-1x1": {
+    "file": "events/autumn/scarecrow-blue-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-autumn-scarecrow-brown-1x1": {
+    "file": "events/autumn/scarecrow-brown-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-autumn-scarecrow-red-1x1": {
+    "file": "events/autumn/scarecrow-red-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-easter-candy-pile-1x1": {
+    "file": "events/easter/candy-pile-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-easter-eggs-1x1": {
+    "file": "events/easter/eggs-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-easter-eggs-2x1": {
+    "file": "events/easter/eggs-2x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-easter-giant-chocolate-egg-2x2": {
+    "file": "events/easter/giant-chocolate-egg-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-easter-rabbit-1x1": {
+    "file": "events/easter/rabbit-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
   "events-halloween-cauldron-1x1": {
     "file": "events/halloween/cauldron-1x1",
     "source": "managed",
@@ -5920,6 +6040,256 @@
   },
   "events-halloween-witch-hat-1x1": {
     "file": "events/halloween/witch-hat-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-midsummer-arch-1x2": {
+    "file": "events/midsummer/arch-1x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-midsummer-banquet-table-2x2": {
+    "file": "events/midsummer/banquet-table-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-midsummer-bonfire-2x2": {
+    "file": "events/midsummer/bonfire-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-midsummer-dala-horses-1x2": {
+    "file": "events/midsummer/dala-horses-1x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-midsummer-maypole-1x2": {
+    "file": "events/midsummer/maypole-1x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-midsummer-totem-1x1": {
+    "file": "events/midsummer/totem-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-spring-birdhouse-1x1": {
+    "file": "events/spring/birdhouse-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-spring-fence-1x1": {
+    "file": "events/spring/fence-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-spring-flower-box-1x1": {
+    "file": "events/spring/flower-box-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-summer-beach-ball-1x1": {
+    "file": "events/summer/beach-ball-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-summer-parasol-1x1": {
+    "file": "events/summer/parasol-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-summer-potted-palm-1x1": {
+    "file": "events/summer/potted-palm-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-summer-sand-castle-2x2": {
+    "file": "events/summer/sand-castle-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-summer-surfboard-1x1": {
+    "file": "events/summer/surfboard-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-holidays-christmas-ball-1x1": {
+    "file": "events/winter-holidays/christmas-ball-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-holidays-decorated-tree-1x1": {
+    "file": "events/winter-holidays/decorated-tree-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-holidays-gifts-2x1": {
+    "file": "events/winter-holidays/gifts-2x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-holidays-gingerbread-house-2x2": {
+    "file": "events/winter-holidays/gingerbread-house-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-holidays-nutcracker-1x1": {
+    "file": "events/winter-holidays/nutcracker-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-igloo-1x1": {
+    "file": "events/winter/igloo-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-sled-1x1": {
+    "file": "events/winter/sled-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-sleigh-2x1": {
+    "file": "events/winter/sleigh-2x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-snow-castle-2x2": {
+    "file": "events/winter/snow-castle-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-snowman-1x1": {
+    "file": "events/winter/snowman-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-snowy-fir-1x1": {
+    "file": "events/winter/snowy-fir-1x1",
     "source": "managed",
     "license": "Own work",
     "footprint": [

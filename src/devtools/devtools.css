@@ -48,3 +48,4 @@
 .devtools-items legend { padding: 0 6px; font-weight: 700; }
 .devtools-items button { min-height: 32px; padding: 0 10px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px; color: inherit; background: rgba(255, 255, 255, 0.08); font: inherit; }
 .devtools-items button:disabled { opacity: 0.5; }
+.devtools-items button[aria-pressed='true'] { border-color: var(--accent); color: var(--accent); }

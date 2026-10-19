@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-winter-snow-castle-2x2",
+  "footprint": [2, 2],
+  "cost": 1500,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "winter",
+  "name": {
+    "en": "Snow castle",
+    "fr": "Château de neige"
+  },
+  "description": {
+    "en": "A castle of snow and ice with fluttering flags.",
+    "fr": "Un château de neige et de glace aux drapeaux flottants."
+  }
+}

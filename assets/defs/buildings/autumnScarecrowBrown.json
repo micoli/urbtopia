@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-autumn-scarecrow-brown-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "autumn",
+  "name": {
+    "en": "Scarecrow in brown overalls",
+    "fr": "Épouvantail en salopette marron"
+  },
+  "description": {
+    "en": "A straw scarecrow in brown overalls guarding the fields.",
+    "fr": "Un épouvantail de paille en salopette marron qui veille sur les champs."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-midsummer-arch-1x2",
+  "footprint": [1, 2],
+  "cost": 1000,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "midsummer",
+  "name": {
+    "en": "Flower arch",
+    "fr": "Arche fleurie"
+  },
+  "description": {
+    "en": "A wooden arch wrapped in flowers and white drapes.",
+    "fr": "Une arche de bois enlacée de fleurs et de draps blancs."
+  }
+}

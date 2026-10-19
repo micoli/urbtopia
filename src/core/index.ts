@@ -48,7 +48,7 @@ export type { RoadGraph } from './map/roadGraph';
 export { GROWTH_STAGES, cropStage, cropWaterDemand, isCropReady } from './farming/growth';
 export type { CropStage } from './farming/growth';
 export { FIELD_COST, fieldCap } from './farming/fields';
-export { ANNUAL_EVENT_ENTRIES, annualEventById, annualEventWindow, isAnnualEventOpen, localDayOf, openAnnualEvents, openWindowOf, type AnnualEventId, type AnnualEventWindow } from './annualEvents/annualEvents';
+export { ANNUAL_EVENT_ENTRIES, annualEventById, annualEventWindow, forceAnnualEventDay, forcedAnnualEventDay, isAnnualEventOpen, localDayOf, subscribeForcedAnnualEventDay, openAnnualEvents, openWindowOf, type AnnualEventId, type AnnualEventWindow } from './annualEvents/annualEvents';
 export { annualEventOf, annualEventsWithItems, isBuildableAt } from './annualEvents/annualEventItems';
 export { civilDateOf, dayNumberOf } from './annualEvents/calendar';
 export { WATER, isWaterTile, waterKeys, waterTilesOf } from './water/waterTiles';

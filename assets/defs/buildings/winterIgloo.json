@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-winter-igloo-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "winter",
+  "name": {
+    "en": "Igloo",
+    "fr": "Igloo"
+  },
+  "description": {
+    "en": "A dome of snow blocks with a cosy entrance.",
+    "fr": "Un dôme de blocs de neige à l'entrée douillette."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-winter-sled-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "winter",
+  "name": {
+    "en": "Sled",
+    "fr": "Luge"
+  },
+  "description": {
+    "en": "A wooden sled ready for the slope.",
+    "fr": "Une luge en bois prête pour la pente."
+  }
+}

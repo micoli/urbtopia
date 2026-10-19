@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-summer-parasol-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "summer",
+  "name": {
+    "en": "Beach umbrella",
+    "fr": "Parasol"
+  },
+  "description": {
+    "en": "A red and white beach umbrella.",
+    "fr": "Un parasol de plage rouge et blanc."
+  }
+}

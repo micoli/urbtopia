@@ -8,6 +8,7 @@ import { NextBuildingUnlock } from './NextBuildingUnlock';
 import { FirstUseHint } from '../common/FirstUseHint';
 import { Note } from '../common/Note';
 import { useGame, useUi } from '../common/hooks';
+import { useForcedAnnualEventDay } from '../common/useForcedAnnualEventDay';
 import { useNow } from '../common/useNow';
 import { guideOf } from '../tutorial/tutorialGuide';
 import { UrbsAmount } from '../common/UrbsAmount';
@@ -34,6 +35,7 @@ export function BuildMenuContent() {
   const [homeColor, setHomeColor] = useState<ColorVariant>(readHomeColor);
   const menuId = useId();
   const now = useNow(60_000);
+  useForcedAnnualEventDay();
   const { manifest } = useCodexManifest();
   const previewOf = (id: CodexId) => {
     const variant = isHomeCodexId(id) ? homeColor : undefined;
