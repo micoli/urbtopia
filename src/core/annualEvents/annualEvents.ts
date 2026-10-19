@@ -34,8 +34,25 @@ export function annualEventWindow(event: Pick<AnnualEventDefinition, 'anchor'>, 
   return { year, anchorDay, startDay: anchorDay - DAYS_BEFORE_ANNUAL_EVENT, endDay: anchorDay + DAYS_AFTER_ANNUAL_EVENT };
 }
 
+let forcedDay: number | undefined;
+const forcedDayListeners = new Set<() => void>();
+
+// Development tools only: pins the calendar day every window is judged on, until set back to undefined.
+export function forceAnnualEventDay(day: number | undefined): void {
+  forcedDay = day;
+  forcedDayListeners.forEach(listener => listener());
+}
+
+export const forcedAnnualEventDay = (): number | undefined => forcedDay;
+
+export function subscribeForcedAnnualEventDay(listener: () => void): () => void {
+  forcedDayListeners.add(listener);
+  return () => void forcedDayListeners.delete(listener);
+}
+
 // The calendar day of the device that holds `now`, as a day number.
 export function localDayOf(now: number): number {
+  if (forcedDay !== undefined) return forcedDay;
   const date = new Date(now);
   return dayNumberOf({ year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() });
 }

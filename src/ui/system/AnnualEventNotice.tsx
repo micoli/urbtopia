@@ -5,6 +5,7 @@ import { formatDay } from '../../i18n/formatDay';
 import { annualEventNoticeStore } from '../../store/annualEventNoticeStore';
 import { uiStore } from '../../store/uiStore';
 import { useGame, useReadOnly } from '../common/hooks';
+import { useForcedAnnualEventDay } from '../common/useForcedAnnualEventDay';
 import { useNow } from '../common/useNow';
 import { writeBuildSection } from '../build/buildMenuSections';
 import { AnnualEventNoticeBanner } from './AnnualEventNoticeBanner';
@@ -12,6 +13,7 @@ import { nextAnnualEventNotice } from './nextAnnualEventNotice';
 
 export function AnnualEventNotice() {
   const now = useNow(60_000);
+  useForcedAnnualEventDay();
   const tutorialDone = useGame(store => store.state.tutorial === null);
   const readOnly = useReadOnly();
   const dismissed = useStore(annualEventNoticeStore, store => store.dismissed);
