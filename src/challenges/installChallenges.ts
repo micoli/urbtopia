@@ -1,10 +1,11 @@
-import { dispatch } from '../core';
 import { cloudEnabled } from '../persistence/cloud/cloudConfig';
 import { saveNowHandle } from '../persistence/saveNow';
 import { SocialPoller } from '../social/socialPoller';
 import { challengeStore } from '../store/challengeStore';
 import { cloudStore } from '../store/cloudStore';
 import { gameStore } from '../store/gameStore';
+import { createLiveGamePort } from '../store/liveGamePort';
+import { liveCommandGateway } from '../store/liveCommandGateway';
 import { readOnlyStore } from '../store/readOnlyStore';
 import { socialStore } from '../store/socialStore';
 import { uiStore } from '../store/uiStore';
@@ -20,14 +21,7 @@ export function installChallenges(): () => void {
   void loadChallengeClient().then((client) => {
     if (!client || disposed) return;
     const game: ChallengeGame = {
-      state: () => gameStore.getState().state,
-      apply: (command) => {
-        const result = dispatch(gameStore.getState().state, command, Date.now());
-        if (!result.ok) return result.error.key;
-        gameStore.getState().replaceState(result.state, 'command');
-        return null;
-      },
-      persist: () => saveNowHandle.current(),
+      ...createLiveGamePort({ store: gameStore, gateway: liveCommandGateway, persist: () => saveNowHandle.current() }),
       canPlay: () => !readOnlyStore.getState().readOnly,
     };
     const actions = createChallengeActions(client, challengeStore.getState(), () => challengeStore.getState(), game);
