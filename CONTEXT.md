@@ -93,6 +93,14 @@ _Avoid_: Picking, gathering
 A building that packs Crop Materials into packed Goods, the only way to sell a Harvest. Several can be built, up to its Build limit; each has its own Tiers.
 _Avoid_: Factory, cannery, packing plant
 
+**Production building**:
+A Workshop, Factory, Mill, Bakery or Packhouse: a building that works a queue of items in Slots, faster, wider and richer with each Tier. Selling one is refused when the city's storage could no longer hold what it stores.
+_Avoid_: Producer, plant
+
+**Industry building**:
+A Production building that employs people and draws on the city's economic activity: every Production building except the Packhouse. A Factory or a Bakery weighs twice a Workshop or a Mill per Tier.
+_Avoid_: Industrial building, craft building
+
 **Storehouse**:
 The general storage that holds Materials and Goods, with a limited capacity. Several can be built, up to its Build limit; each has its own Tiers that raise its capacity, and capacities add up.
 _Avoid_: Warehouse, inventory
