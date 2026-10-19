@@ -2,10 +2,9 @@ import { COAL_CAPACITY } from '../economy/economy';
 import type { Building, GameState } from '../engine/state';
 import { ECOLOGY } from './ecology';
 import { energyStats, generatorCapacity, productionFactors } from './energy';
+import { ENERGY_SOURCES, PLANT_TYPES, generatedSourceOf, type EnergySourceId } from './generators';
 
-export const ENERGY_SOURCES = ['wind', 'solar', 'hydro', 'geothermal', 'coal'] as const;
-
-export type EnergySourceId = (typeof ENERGY_SOURCES)[number];
+export { ENERGY_SOURCES, type EnergySourceId };
 
 export interface EnergySource {
   id: EnergySourceId;
@@ -14,11 +13,7 @@ export interface EnergySource {
   output: number;
 }
 
-const PLANT_TYPES: Record<Exclude<EnergySourceId, 'solar'>, Building['type']> = {
-  wind: 'powerPlant', hydro: 'hydroPlant', geothermal: 'geothermalPlant', coal: 'coalPlant',
-};
-
-const isSolarGenerator = (b: Building) => b.type === 'solar' || b.solar === true;
+const isSolarGenerator = (b: Building) => generatedSourceOf(b) === 'solar';
 
 function copiesAndCapacity(state: GameState, id: EnergySourceId): { copies: number; capacity: number } {
   if (id === 'solar') {

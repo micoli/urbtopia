@@ -3,6 +3,8 @@ export { SOLIDARITY, donationQuote, solidarityBonus, solidarityCost, solidarityT
 export type { DonationRecord } from './economy/solidarity';
 export type { AdvanceResult } from './engine/advance';
 export { dispatch } from './engine/dispatch';
+export { previewCommand } from './engine/preview';
+export type { CommandPreview } from './engine/preview';
 export type { DispatchResult } from './engine/dispatch';
 export type { Command, CommandError, ErrorKey } from './engine/commands';
 export type { GameEvent } from './engine/events';
@@ -70,13 +72,16 @@ export { FARM_CROP_CAPACITY, isUtilityType, MARKET, MAX_SLOTS, SHOP, SLOT_PRICES
 export type { StorageTier, StorageType, UtilityType } from './economy/economy';
 export { canRemoveStorage, compartmentOf, hasStorage, isStorageEmpty, isStorageType, storageCapacity, storageUsed } from './economy/storage';
 export { createBuilding } from './buildings/buildingSpecs';
-export { isHomeType } from './buildings/buildingDefinitions';
+export { isHomeType, kindOf } from './buildings/buildingDefinitions';
+export type { BuildingKind } from './buildings/buildingDefinition';
+export type { ProductionType, ShopType } from './buildings/buildingTypes.generated';
 export { colorVariantsOf, colorVariantsOfKit, colorVariantsOfType, isRepaintableType, mayCarryLegacyColor, paintKitAt, paintKitOf, toneLabelOf, type PaintKit, type ToneLabel } from './buildings/paint';
 export { citizensOf, totalCitizens, utilityCapacity, utilityDemand } from './buildings/city';
 export type { UtilityTotals } from './buildings/city';
 export { FARM_TIERS, PRODUCTION_UPGRADE_COSTS, HOME_FOOTPRINTS, HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, TAX, UTILITY_CAPACITY, COAL_CAPACITY } from './economy/economy';
 export { SHOP_TYPES, canSell, goodCategoryOf, newGoodsAtNextTier, isShopType, saleIntervalOf, sellableGoodsOf, shopTierOf, slotPriceOf } from './economy/shops';
 export type { ShopTier } from './economy/shops';
+export { INDUSTRY_TYPES, PRODUCTION_TYPES, compartmentProducedBy, industryEmissionsOf, industryWeightOf, scalesRecipeWithYield, isIndustryType, isProductionType } from './economy/productionTypes';
 export { isWorking, productionDurationOf, rushPrice, taxDue, workProgress } from './economy/production';
 export { farmTier, maxTierOf, productionTierOf, upgradeCostOf } from './economy/tiers';
 export type { UpgradeCost } from './economy/tiers';
@@ -91,7 +96,7 @@ export type { VenueTutorialStep, VenueTutorialType } from './progression/venueTu
 export { ECOLOGY, ECOLOGY_UNLOCKS, distance as buildingDistance, homePower, economicPower, greenSpaceCoverage, greenBenefits, cityGreenBenefits } from './environment/ecology';
 export { energyStats, generatorCapacity, generatorFactor, generatorOutput, productionFactors } from './environment/energy';
 export { solarPanelPlacements, turnedOffset, type PanelPlacement } from './environment/solarPanelLayout';
-export { canHaveSolarPanels, solarPanelsCost, solarPanelsOf, solarPanelsUnlockCitizens, solarPanelsCapacity } from './environment/solarPanels';
+export { canHaveSolarPanels, solarInstallCostOf, solarPanelsCost, solarPanelsOf, solarPanelsUnlockCitizens, solarPanelsCapacity } from './environment/solarPanels';
 export { ENERGY_SOURCES, energySources, sourceFactors, type EnergySource, type EnergySourceId } from './environment/energySources';
 export { flowFactor } from './water/flow';
 export { homeBenefits, cityBenefits, congestionPenaltyOf, isAdapting, wellbeingTaxFactor } from './environment/wellbeing';
@@ -153,7 +158,7 @@ export { FIXTURES, FIXTURE_IDS, FIXTURE_MODELS, FIXTURE_CATEGORIES, fixtureIdsOf
 export { challengeReward, clearChallenge, completeChallenge, findChallengeClaim, isChallengeStockComplete, remainingOf, setAsideForChallenge, setAsideOf, startChallenge } from './challenges/challengeStock';
 export { CHALLENGE_REWARD_MULTIPLIER } from './challenges/types';
 export type { ChallengeClaim, ChallengeProgress, ChallengeRewardKind } from './challenges/types';
-export { applyTradeEffect, findLedgerEntry, isValidLot, lotReceiveIssue, pendingTradeEntries } from './trade/tradeLedger';
+export { applyTradeEffect, findLedgerEntry, isTradeLine, isValidLot, lotReceiveIssue, pendingTradeEntries } from './trade/tradeLedger';
 export type { TradeApplyInput } from './trade/tradeLedger';
 export { TRADE_EFFECTS, TRADE_LIMITS } from './trade/types';
 export type { TradeEffect, TradeLedgerEntry, TradeLine } from './trade/types';

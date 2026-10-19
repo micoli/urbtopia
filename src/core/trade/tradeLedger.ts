@@ -26,10 +26,16 @@ function isTradeItem(item: string): boolean {
   return Object.hasOwn(MATERIALS, item) || Object.hasOwn(GOODS, item);
 }
 
+export function isTradeLine(value: unknown): value is TradeLine {
+  if (typeof value !== 'object' || value === null) return false;
+  const { item, quantity } = value as Partial<TradeLine>;
+  return typeof item === 'string' && isTradeItem(item) && isWholeNumber(quantity, 1, TRADE_LIMITS.maxQuantity);
+}
+
 export function isValidLot(lot: readonly TradeLine[] | undefined): lot is readonly TradeLine[] {
   if (!lot || lot.length < 1 || lot.length > TRADE_LIMITS.maxLines) return false;
   if (new Set(lot.map((line) => line.item)).size !== lot.length) return false;
-  return lot.every((line) => isTradeItem(line.item) && isWholeNumber(line.quantity, 1, TRADE_LIMITS.maxQuantity));
+  return lot.every(isTradeLine);
 }
 
 export function findLedgerEntry(state: GameState, offerId: string, effect: TradeEffect): TradeLedgerEntry | undefined {

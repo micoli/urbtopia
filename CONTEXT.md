@@ -93,6 +93,14 @@ _Avoid_: Picking, gathering
 A building that packs Crop Materials into packed Goods, the only way to sell a Harvest. Several can be built, up to its Build limit; each has its own Tiers.
 _Avoid_: Factory, cannery, packing plant
 
+**Production building**:
+A Workshop, Factory, Mill, Bakery or Packhouse: a building that works a queue of items in Slots, faster, wider and richer with each Tier. Selling one is refused when the city's storage could no longer hold what it stores.
+_Avoid_: Producer, plant
+
+**Industry building**:
+A Production building that employs people and draws on the city's economic activity: every Production building except the Packhouse. A Factory or a Bakery weighs twice a Workshop or a Mill per Tier.
+_Avoid_: Industrial building, craft building
+
 **Storehouse**:
 The general storage that holds Materials and Goods, with a limited capacity. Several can be built, up to its Build limit; each has its own Tiers that raise its capacity, and capacities add up.
 _Avoid_: Warehouse, inventory
@@ -677,8 +685,13 @@ _Avoid_: Admin panel, dashboard, console
 The person who runs the Back office. Not a Player account and never visible to players.
 _Avoid_: Moderator, operator
 
+**Command gateway**:
+The single module that applies a Command to the live game and owns all its consequences: the read-only guard, the toast of an error or an event, the effects bound to an event type (harvest, Casino rounds), the end-of-Tutorial notice, the undo of a deletion and the replacement of the game state. The player, a Trade and a Challenge all reach the game through it.
+_Avoid_: Dispatcher, command bus, game service
+
 ## Relationships
 
+- A Command from the player, a Trade or a Challenge reaches the game through the Command gateway: the same read-only guard, toasts and event effects. Only the player's Commands keep a deletion undo.
 - A Trade offer can only be accepted if the recipient's Storehouse compartment has room for the lot and their Urbs cover the price.
 - Blocking a Friend closes their conversation and returns any open Trade offer between them.
 - A Cloud save never replaces the local save without the player's consent when a Save conflict exists.

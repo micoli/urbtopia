@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, isTransitStopType, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -108,10 +108,6 @@ function isFieldTile(value: unknown): boolean {
   return isRecord(value.crop) && cropIds.includes(value.crop.species as string) && isNumber(value.crop.plantedAt);
 }
 
-function isTradeLine(value: unknown): boolean {
-  return isRecord(value) && typeof value.item === 'string' && (Object.hasOwn(MATERIALS, value.item) || Object.hasOwn(GOODS, value.item)) && isInt(value.quantity, 1, TRADE_LIMITS.maxQuantity);
-}
-
 function isTradeLedgerEntry(value: unknown): boolean {
   if (!isRecord(value) || typeof value.offerId !== 'string' || value.offerId === '') return false;
   if (!TRADE_EFFECTS.includes(value.effect as TradeEffect) || !isNumber(value.at) || typeof value.confirmed !== 'boolean') return false;
@@ -139,90 +135,176 @@ function isMarket(value: unknown): boolean {
   return isRecord(value) && Object.entries(value).every(([good, price]) => Object.hasOwn(GOODS, good) && isRecord(price) && isNumber(price.points) && isNumber(price.updatedAt));
 }
 
-export function validateGameState(value: unknown): GameState | null {
-  if (!isRecord(value)) return null;
+export type StateCheck = { ok: true; state: GameState } | { ok: false; reason: string };
+
+type Rule = () => string | null;
+
+const field = (label: string, holds: () => boolean): Rule => () => (holds() ? null : label);
+
+const entries = (label: string, items: () => unknown, check: (item: unknown) => boolean, optional = false): Rule => () => {
+  const list = items();
+  if (list === undefined && optional) return null;
+  if (!Array.isArray(list)) return `${label}: expected a list`;
+  const index = list.findIndex((item) => !check(item));
+  return index === -1 ? null : `${label}[${index}]`;
+};
+
+const firstFailure = (rules: Rule[]): string | null => {
+  for (const rule of rules) {
+    const reason = rule();
+    if (reason) return reason;
+  }
+  return null;
+};
+
+const tileKey = (tile: { x: number; y: number }): string => `${tile.x}:${tile.y}`;
+const hasDuplicates = (keys: string[]): boolean => new Set(keys).size !== keys.length;
+const SOLIDARITY_MAX_MS = 24 * 3_600_000;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const isUnique = (list: number[]): boolean => new Set(list).size === list.length;
+
+function isBusLine(line: unknown): boolean {
+  return isRecord(line) && isInt(line.id, 1) && isArrayOf(line.stops, (id) => isInt(id, 0)) && (line.stops as number[]).length >= 2 && isUnique(line.stops as number[]) && isValidLoop(line);
+}
+
+function isTransitLine(line: unknown): boolean {
+  return (
+    isRecord(line) && isInt(line.id, 1) && ['brt', 'rail'].includes(line.mode as string) &&
+    isArrayOf(line.stops, (id) => isInt(id, 0)) && (line.stops as number[]).length >= 2 && isUnique(line.stops as number[]) && isValidLoop(line) &&
+    isNumber(line.peakHeadway) && isNumber(line.offPeakHeadway) && line.peakHeadway > 0 && line.offPeakHeadway > 0 && line.peakHeadway <= 60 && line.offPeakHeadway <= 60 &&
+    (line.mode !== 'brt' || (line.peakHeadway >= 5 && line.peakHeadway <= 10 && line.offPeakHeadway >= 10 && line.offPeakHeadway <= 15))
+  );
+}
+
+function isTransitVehicle(vehicle: unknown): boolean {
+  return isRecord(vehicle) && isInt(vehicle.id, 1) && FLEET_VEHICLES.some(({ id }) => id === vehicle.kind) && isNonNegative(vehicle.purchasePrice) && (vehicle.lineId === undefined || isInt(vehicle.lineId, 1));
+}
+
+function isTransitTile(key: 'brtRoads' | 'rails'): (tile: unknown) => boolean {
+  return (tile) =>
+    isRecord(tile) && isCoord(tile) && isArrayOf(tile.exits, (direction) => ['N', 'E', 'S', 'W'].includes(direction as string)) && new Set(tile.exits as string[]).size === (tile.exits as string[]).length && (tile.kind === undefined || (key === 'brtRoads' && tile.kind === 'crossing'));
+}
+
+function isBoat(boat: unknown): boolean {
+  return (
+    isRecord(boat) && isCoord(boat) && isInt(boat.id, 1) && BOAT_FAMILIES.includes(boat.family as never) && isInt(boat.marinaId, 1) &&
+    (boat.catchSince === undefined || (boat.family === 'fishing' && isNumber(boat.catchSince))) &&
+    (boat.tier === undefined || (boat.family === 'casino' && isInt(boat.tier, 1, MAX_CASINO_TIER)))
+  );
+}
+
+function isBridge(bridge: unknown): boolean {
+  return isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string);
+}
+
+function isDonation(donation: unknown): boolean {
+  return isRecord(donation) && typeof donation.id === 'string' && UUID.test(donation.id) && isInt(donation.value, 1) && (donation.accountId === undefined || typeof donation.accountId === 'string');
+}
+
+function isVenueTutorials(value: unknown): boolean {
+  return isRecord(value) && Object.entries(value).every(([type, step]) => (VENUE_TUTORIAL_TYPES as string[]).includes(type) && (step === null || isVenueTutorialStep(type, step)));
+}
+
+function structureFailure(value: Json): string | null {
   const parcelMax = GAME_CONFIG.mapSizeInParcels - 1;
-  const valid =
-    typeof value.seed === 'string' &&
-    isNumber(value.rngState) &&
-    isNonNegative(value.urbs) &&
-    isNumber(value.lastSeen) &&
-    isInt(value.nextId, 1) &&
-    isArrayOf(value.ownedParcels, (parcel) => isCoord(parcel, parcelMax)) &&
-    isArrayOf(value.buildings, isBuilding) &&
-    isRecord(value.storage) &&
-    isAmountRecord(value.storage.materials, Object.keys(MATERIALS)) &&
-    isAmountRecord(value.storage.goods, Object.keys(GOODS)) &&
-    isRecord(value.seedStock) &&
-    Object.values(value.seedStock).every(amount => isInt(amount, 0)) &&
-    isArrayOf(value.fields, isFieldTile) &&
-    typeof value.marketUnlocked === 'boolean' &&
-    isMarket(value.market) &&
-    isArrayOf(value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string) && ((road as Json).tier === undefined || isInt((road as Json).tier, 1, MAX_ROAD_TIER))) &&
-    (value.pedestrianWays === undefined || isArrayOf(value.pedestrianWays, tile => isRecord(tile) && isCoord(tile) && (tile.tier === undefined || isInt(tile.tier, 1, MAX_ROAD_TIER)))) &&
-    isArrayOf(value.roundabouts, (center) => isCoord(center)) &&
-    (value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep)) &&
-    isArrayOf(value.tradeLedger, isTradeLedgerEntry);
-  if (!valid) return null;
-  if (value.venueTutorials !== undefined && !(isRecord(value.venueTutorials) && Object.entries(value.venueTutorials).every(([type, step]) => (VENUE_TUTORIAL_TYPES as string[]).includes(type) && (step === null || isVenueTutorialStep(type, step))))) return null;
-  if (value.solidarityMs !== undefined && (!isNonNegative(value.solidarityMs) || value.solidarityMs > 24 * 3_600_000)) return null;
-  if (value.donations !== undefined && !isArrayOf(value.donations, donation => isRecord(donation) && typeof donation.id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(donation.id) && isInt(donation.value, 1) && (donation.accountId === undefined || typeof donation.accountId === 'string'))) return null;
-  if (Array.isArray(value.donations) && new Set((value.donations as { id: string }[]).map(donation => donation.id)).size !== value.donations.length) return null;
-  if (value.timeOffset !== undefined && (!isNonNegative(value.timeOffset) || value.timeOffset > Number.MAX_SAFE_INTEGER)) return null;
-  if (value.adaptationUntil !== undefined && !isNumber(value.adaptationUntil)) return null;
-  if (value.waterTiles !== undefined && !isArrayOf(value.waterTiles, tile => isRecord(tile) && isCoord(tile))) return null;
-  if (value.waterTiles !== undefined && new Set((value.waterTiles as { x: number; y: number }[]).map(tile => `${tile.x}:${tile.y}`)).size !== (value.waterTiles as unknown[]).length) return null;
-  if (value.boats !== undefined && !isArrayOf(value.boats, boat => isRecord(boat) && isCoord(boat) && isInt(boat.id, 1) && BOAT_FAMILIES.includes(boat.family as never) && isInt(boat.marinaId, 1) && (boat.catchSince === undefined || (boat.family === 'fishing' && isNumber(boat.catchSince))) && (boat.tier === undefined || (boat.family === 'casino' && isInt(boat.tier, 1, MAX_CASINO_TIER))))) return null;
-  if (value.bridges !== undefined && !isArrayOf(value.bridges, bridge => isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string))) return null;
-  if (value.casinoRng !== undefined && !isNumber(value.casinoRng)) return null;
-  if (value.difficulty !== undefined && !isDifficulty(value.difficulty)) return null;
-  if (value.challenge !== undefined && !isChallengeProgress(value.challenge)) return null;
-  if (value.challengeClaims !== undefined && !isArrayOf(value.challengeClaims, isChallengeClaim)) return null;
-  if (value.ecologyDismissed !== undefined && typeof value.ecologyDismissed !== 'boolean') return null;
-  if (value.busLines !== undefined && !isArrayOf(value.busLines, line => isRecord(line) && isInt(line.id, 1) &&
-    isArrayOf(line.stops, id => isInt(id, 0)) && (line.stops as number[]).length >= 2 &&
-    new Set(line.stops as number[]).size === (line.stops as number[]).length && isValidLoop(line))) return null;
-  for (const key of ['brtRoads', 'rails']) {
-    if (value[key] === undefined) continue;
-    if (!isArrayOf(value[key], p => isRecord(p) && isCoord(p) && isArrayOf(p.exits, d => ['N', 'E', 'S', 'W'].includes(d as string)) && new Set(p.exits as string[]).size === (p.exits as string[]).length && (p.kind === undefined || (key === 'brtRoads' && p.kind === 'crossing')))) return null;
-    const tiles = value[key] as { x: number; y: number }[];
-    if (new Set(tiles.map(p => `${p.x}:${p.y}`)).size !== tiles.length) return null;
-  }
-  if (value.transitLines !== undefined && !isArrayOf(value.transitLines, l => isRecord(l) && isInt(l.id, 1) && ['brt', 'rail'].includes(l.mode as string) &&
-    isArrayOf(l.stops, id => isInt(id, 0)) && (l.stops as number[]).length >= 2 && new Set(l.stops as number[]).size === (l.stops as number[]).length && isValidLoop(l) &&
-    isNumber(l.peakHeadway) && isNumber(l.offPeakHeadway) && l.peakHeadway > 0 && l.offPeakHeadway > 0 && l.peakHeadway <= 60 && l.offPeakHeadway <= 60 &&
-    (l.mode !== 'brt' || (l.peakHeadway >= 5 && l.peakHeadway <= 10 && l.offPeakHeadway >= 10 && l.offPeakHeadway <= 15)))) return null;
-  if (value.transitFleet !== undefined && !isArrayOf(value.transitFleet, v => isRecord(v) && isInt(v.id, 1) && FLEET_VEHICLES.some(({ id }) => id === v.kind) && isNonNegative(v.purchasePrice) && (v.lineId === undefined || isInt(v.lineId, 1)))) return null;
-  const state = value as unknown as GameState;
-  const ids = [...state.buildings.map(b => b.id), ...(state.boats ?? []).map(b => b.id), ...(state.busLines ?? []).map(l => l.id), ...(state.transitLines ?? []).map(l => l.id), ...(state.transitFleet ?? []).map(v => v.id)];
-  if (new Set(ids).size !== ids.length || ids.some(id => id >= state.nextId)) return null;
-  const roadKeys = new Set(state.roads.map(road => `${road.x}:${road.y}`));
-  const pedestrianWayKeys = new Set((state.pedestrianWays ?? []).map(tile => `${tile.x}:${tile.y}`));
-  if (pedestrianWayKeys.size !== (state.pedestrianWays ?? []).length || [...pedestrianWayKeys].some(key => roadKeys.has(key))) return null;
+  return firstFailure([
+    field('seed', () => typeof value.seed === 'string'),
+    field('rngState', () => isNumber(value.rngState)),
+    field('urbs', () => isNonNegative(value.urbs)),
+    field('lastSeen', () => isNumber(value.lastSeen)),
+    field('nextId', () => isInt(value.nextId, 1)),
+    entries('ownedParcels', () => value.ownedParcels, (parcel) => isCoord(parcel, parcelMax)),
+    entries('buildings', () => value.buildings, isBuilding),
+    field('storage', () => isRecord(value.storage)),
+    field('storage.materials', () => isAmountRecord((value.storage as Json).materials, Object.keys(MATERIALS))),
+    field('storage.goods', () => isAmountRecord((value.storage as Json).goods, Object.keys(GOODS))),
+    field('seedStock', () => isRecord(value.seedStock) && Object.values(value.seedStock).every((amount) => isInt(amount, 0))),
+    entries('fields', () => value.fields, isFieldTile),
+    field('marketUnlocked', () => typeof value.marketUnlocked === 'boolean'),
+    field('market', () => isMarket(value.market)),
+    entries('roads', () => value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string) && ((road as Json).tier === undefined || isInt((road as Json).tier, 1, MAX_ROAD_TIER))),
+    entries('pedestrianWays', () => value.pedestrianWays, (tile) => isRecord(tile) && isCoord(tile) && (tile.tier === undefined || isInt(tile.tier, 1, MAX_ROAD_TIER)), true),
+    entries('roundabouts', () => value.roundabouts, (center) => isCoord(center)),
+    field('tutorial', () => value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep)),
+    entries('tradeLedger', () => value.tradeLedger, isTradeLedgerEntry),
+    field('venueTutorials', () => value.venueTutorials === undefined || isVenueTutorials(value.venueTutorials)),
+    field('solidarityMs', () => value.solidarityMs === undefined || (isNonNegative(value.solidarityMs) && value.solidarityMs <= SOLIDARITY_MAX_MS)),
+    entries('donations', () => value.donations, isDonation, true),
+    field('donations: duplicate id', () => !Array.isArray(value.donations) || !hasDuplicates((value.donations as { id: string }[]).map((donation) => donation.id))),
+    field('timeOffset', () => value.timeOffset === undefined || (isNonNegative(value.timeOffset) && value.timeOffset <= Number.MAX_SAFE_INTEGER)),
+    field('adaptationUntil', () => value.adaptationUntil === undefined || isNumber(value.adaptationUntil)),
+    entries('waterTiles', () => value.waterTiles, (tile) => isRecord(tile) && isCoord(tile), true),
+    field('waterTiles: duplicate tile', () => value.waterTiles === undefined || !hasDuplicates((value.waterTiles as { x: number; y: number }[]).map(tileKey))),
+    entries('boats', () => value.boats, isBoat, true),
+    entries('bridges', () => value.bridges, isBridge, true),
+    field('casinoRng', () => value.casinoRng === undefined || isNumber(value.casinoRng)),
+    field('difficulty', () => value.difficulty === undefined || isDifficulty(value.difficulty)),
+    field('challenge', () => value.challenge === undefined || isChallengeProgress(value.challenge)),
+    entries('challengeClaims', () => value.challengeClaims, isChallengeClaim, true),
+    field('ecologyDismissed', () => value.ecologyDismissed === undefined || typeof value.ecologyDismissed === 'boolean'),
+    entries('busLines', () => value.busLines, isBusLine, true),
+    ...(['brtRoads', 'rails'] as const).flatMap((key) => [
+      entries(key, () => value[key], isTransitTile(key), true),
+      field(`${key}: duplicate tile`, () => value[key] === undefined || !hasDuplicates((value[key] as { x: number; y: number }[]).map(tileKey))),
+    ]),
+    entries('transitLines', () => value.transitLines, isTransitLine, true),
+    entries('transitFleet', () => value.transitFleet, isTransitVehicle, true),
+  ]);
+}
+
+function isStopOfKind(state: GameState, id: number, allowed: BuildingType[]): boolean {
+  const building = state.buildings.find((candidate) => candidate.id === id);
+  return id < state.nextId && (building === undefined || allowed.includes(building.type));
+}
+
+function invariantFailure(state: GameState): string | null {
+  const ids = [...state.buildings.map((b) => b.id), ...(state.boats ?? []).map((b) => b.id), ...(state.busLines ?? []).map((l) => l.id), ...(state.transitLines ?? []).map((l) => l.id), ...(state.transitFleet ?? []).map((v) => v.id)];
+  const roadKeys = new Set(state.roads.map(tileKey));
+  const pedestrianWays = (state.pedestrianWays ?? []).map(tileKey);
+  const waterKeys = new Set((state.waterTiles ?? []).map(tileKey));
   const bridged = new Set<string>();
-  for (const bridge of state.bridges ?? []) {
-    for (let step = 0; step < bridge.length; step++) {
-      const key = bridge.axis === 'x' ? `${bridge.x + step}:${bridge.y}` : `${bridge.x}:${bridge.y + step}`;
-      if (bridged.has(key) || !roadKeys.has(key) || !(state.waterTiles ?? []).some(tile => `${tile.x}:${tile.y}` === key)) return null;
-      bridged.add(key);
-    }
-  }
-  const waterKeys = new Set((state.waterTiles ?? []).map(tile => `${tile.x}:${tile.y}`));
-  for (const boat of state.boats ?? []) {
-    if (!waterKeys.has(`${boat.x}:${boat.y}`) || !state.buildings.some(b => b.id === boat.marinaId && b.type === 'marina')) return null;
-  }
-  if (new Set((state.boats ?? []).map(boat => `${boat.x}:${boat.y}`)).size !== (state.boats ?? []).length) return null;
-  for (const line of state.busLines ?? []) {
-    if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && (b.type === 'busStop' || b.type === 'transitHub'))))) return null;
-  }
-  for (const line of state.transitLines ?? []) {
-    const type = line.mode === 'brt' ? 'brtStation' : 'railStation';
-    if (line.stops.some(id => id >= state.nextId || (state.buildings.some(b => b.id === id) && !state.buildings.some(b => b.id === id && (b.type === type || b.type === 'transitHub'))))) return null;
-  }
-  for (const vehicle of state.transitFleet ?? []) {
-    if (vehicle.lineId === undefined) continue;
-    const line = state.transitLines?.find(l => l.id === vehicle.lineId);
-    if (!line || line.mode !== TRANSIT[vehicle.kind].mode) return null;
-  }
-  return state;
+  return firstFailure([
+    field('ids: duplicate', () => !hasDuplicates(ids.map(String))),
+    field('ids: at or above nextId', () => ids.every((id) => id < state.nextId)),
+    field('pedestrianWays: duplicate tile', () => !hasDuplicates(pedestrianWays)),
+    field('pedestrianWays: overlaps a road', () => pedestrianWays.every((key) => !roadKeys.has(key))),
+    ...(state.bridges ?? []).flatMap((bridge, index) => {
+      const keys = Array.from({ length: bridge.length }, (_, step) => (bridge.axis === 'x' ? `${bridge.x + step}:${bridge.y}` : `${bridge.x}:${bridge.y + step}`));
+      const overlapping = keys.some((key) => bridged.has(key));
+      keys.forEach((key) => bridged.add(key));
+      return [
+        field(`bridges[${index}]: overlaps another bridge`, () => !overlapping),
+        field(`bridges[${index}]: crosses a tile without a road`, () => keys.every((key) => roadKeys.has(key))),
+        field(`bridges[${index}]: crosses a tile that is not water`, () => keys.every((key) => waterKeys.has(key))),
+      ];
+    }),
+    ...(state.boats ?? []).flatMap((boat, index) => [
+      field(`boats[${index}]: not on a water tile`, () => waterKeys.has(tileKey(boat))),
+      field(`boats[${index}]: its marina does not exist`, () => state.buildings.some((b) => b.id === boat.marinaId && b.type === 'marina')),
+    ]),
+    field('boats: two on one tile', () => !hasDuplicates((state.boats ?? []).map(tileKey))),
+    ...(state.busLines ?? []).map((line, index) => field(`busLines[${index}]: a stop is unknown or not a bus stop or hub`, () => line.stops.every((id) => isStopOfKind(state, id, ['busStop', 'transitHub'])))),
+    ...(state.transitLines ?? []).map((line, index) => {
+      const station = line.mode === 'brt' ? 'brtStation' : 'railStation';
+      return field(`transitLines[${index}]: a stop is unknown or not a ${station} or hub`, () => line.stops.every((id) => isStopOfKind(state, id, [station, 'transitHub'])));
+    }),
+    ...(state.transitFleet ?? []).map((vehicle, index) =>
+      field(`transitFleet[${index}]: its line is missing or of another mode`, () => {
+        if (vehicle.lineId === undefined) return true;
+        const line = state.transitLines?.find((candidate) => candidate.id === vehicle.lineId);
+        return line !== undefined && line.mode === TRANSIT[vehicle.kind].mode;
+      }),
+    ),
+  ]);
+}
+
+export function checkGameState(value: unknown): StateCheck {
+  if (!isRecord(value)) return { ok: false, reason: 'state: expected an object' };
+  const reason = structureFailure(value) ?? invariantFailure(value as unknown as GameState);
+  return reason ? { ok: false, reason } : { ok: true, state: value as unknown as GameState };
+}
+
+export function validateGameState(value: unknown): GameState | null {
+  const check = checkGameState(value);
+  return check.ok ? check.state : null;
 }

@@ -1,6 +1,7 @@
 import { shiftCropTimers } from '../farming/growth';
 import { citizensOf } from '../buildings/city';
 import { RUSH, SHOP, TAX } from './economy';
+import { isIndustryType } from './productionTypes';
 import { isShopType, saleIntervalOf } from './shops';
 import type { GameEvent } from '../engine/events';
 import { GOODS } from './items';
@@ -115,7 +116,7 @@ export function advanceProduction(state: GameState, now: number, elapsedMs: numb
   const results = state.buildings.map((building) => {
     const idle = idleShops.has(building.id);
     const delay = idle ? elapsedMs : elapsedMs * (1 - economicRatio);
-    const slowed = ['workshop', 'factory', 'mill', 'bakery'].includes(building.type) || isShopType(building.type) ? {
+    const slowed = isIndustryType(building.type) || isShopType(building.type) ? {
       ...building,
       queue: building.queue.map(entry => entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + delay }),
       stacks: building.stacks.map(stack => stack.nextSaleAt === null ? stack : { ...stack, nextSaleAt: stack.nextSaleAt + delay }),

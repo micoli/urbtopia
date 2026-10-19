@@ -485,6 +485,13 @@ export type StorageType =
   | 'storehouse'
   | 'vault';
 
+export type ProductionType =
+  | 'bakery'
+  | 'factory'
+  | 'mill'
+  | 'packhouse'
+  | 'workshop';
+
 export type FacilityType =
   | 'buddhistTemple'
   | 'catholicChurch'

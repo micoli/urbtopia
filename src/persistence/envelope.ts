@@ -1,6 +1,6 @@
 import { withoutOpenRound, type GameState } from '../core';
 import { MIGRATIONS, migrate, type MigrationStep } from './migrations';
-import { validateGameState } from './validate';
+import { checkGameState } from './validate';
 
 export const FORMAT = 'urbtopia-save';
 export const CURRENT_VERSION = 16;
@@ -25,7 +25,7 @@ function recoverFractionalShelfReturns(state: unknown): unknown {
   return { ...value, storage: { ...storage, goods } };
 }
 
-export type ParseResult = { ok: true; state: GameState; savedAt: number } | { ok: false; reason: ParseFailure };
+export type ParseResult = { ok: true; state: GameState; savedAt: number } | { ok: false; reason: ParseFailure; detail?: string };
 
 export function serializeEnvelope(state: GameState, savedAt: number): string {
   return JSON.stringify({ format: FORMAT, version: CURRENT_VERSION, savedAt, state: withoutOpenRound(state) });
@@ -62,6 +62,7 @@ export function parseEnvelope(text: string, { currentVersion = CURRENT_VERSION, 
     return { ok: false, reason: 'invalid-state' };
   }
   // Version 14 briefly returned fractional shelf stock to integer-only storage.
-  const state = validateGameState(migrated) ?? (version === 14 ? validateGameState(recoverFractionalShelfReturns(migrated)) : null);
-  return state ? { ok: true, state, savedAt: envelope.savedAt } : { ok: false, reason: 'invalid-state' };
+  const first = checkGameState(migrated);
+  const check = !first.ok && version === 14 ? checkGameState(recoverFractionalShelfReturns(migrated)) : first;
+  return check.ok ? { ok: true, state: check.state, savedAt: envelope.savedAt } : { ok: false, reason: 'invalid-state', detail: check.reason };
 }

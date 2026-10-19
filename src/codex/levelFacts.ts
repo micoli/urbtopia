@@ -2,7 +2,7 @@ import {
   CASINO_GAMES, COAL_CAPACITY, marinaCapacity, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
   FIXTURES, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
-  type StorageType, type UtilityType, BUILDING_SPECS, canHaveSolarPanels, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf,
+  type StorageType, type UtilityType, type ProductionType, type ShopType, type BuildingKind, isStorageType, kindOf, BUILDING_SPECS, canHaveSolarPanels, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf, isProductionType,
 } from '../core';
 import { t } from '../i18n/t';
 import type { MessageKey } from '../i18n/messages';
@@ -87,51 +87,91 @@ export function levelFactsOf(id: CodexId, level: number): LevelFact[] {
   return [...facts, textFact('codex.fact.solarPanels', () => t('codex.solarPanels.possible'), level)];
 }
 
-function tierFactsOf(id: CodexId, level: number): LevelFact[] {
-  if (isHomeCodexId(id)) return [
+function homeFacts(id: CodexId, level: number): LevelFact[] {
+  return [
     numericFact('codex.fact.citizens', tier => homeTier(tier).citizens, level),
     numericFact('codex.fact.power', tier => homeTier(tier).power, level),
     numericFact('codex.fact.water', tier => homeTier(tier).water, level),
     buildingFootprintFact(solarBaseOf(id) ?? id as BuildingType, level),
   ];
-  if (id === 'workshop' || id === 'factory' || id === 'packhouse' || id === 'mill' || id === 'bakery') return [
+}
+
+function productionFacts(id: ProductionType, level: number): LevelFact[] {
+  return [
     numericFact('codex.fact.craftTime', tier => productionTierOf({ type: id, tier }).durationFactor, level, percent),
     numericFact('codex.fact.slots', tier => productionTierOf({ type: id, tier }).maxSlots, level),
     numericFact('codex.fact.yield', tier => productionTierOf({ type: id, tier }).yield, level),
   ];
-  if (id === 'farm') return [
+}
+
+function farmFacts(id: 'farm', level: number): LevelFact[] {
+  return [
     numericFact('codex.fact.seedCapacity', tier => farmTier({ type: id, tier }).seedCapacity, level),
     numericFact('codex.fact.fieldCap', tier => farmTier({ type: id, tier }).fieldCap, level),
   ];
-  if (id === 'storehouse' || id === 'materialDepot' || id === 'vault' || id === 'grainSilo') return storageFacts(id, level);
-  if (id === 'waterTower') return [utilityOutputFact(id, level)];
-  if (id === 'powerPlant') return [utilityOutputFact(id, level), profileFact('codex.profile.wind', level)];
-  if (id === 'geothermalPlant') return [utilityOutputFact(id, level), profileFact('codex.profile.constant', level)];
-  if (id === 'hydroPlant') return [
-    utilityOutputFact(id, level),
+}
+
+const UTILITY_FACTS: Partial<Record<BuildingType, (level: number) => LevelFact[]>> = {
+  waterTower: level => [utilityOutputFact('waterTower', level)],
+  powerPlant: level => [utilityOutputFact('powerPlant', level), profileFact('codex.profile.wind', level)],
+  geothermalPlant: level => [utilityOutputFact('geothermalPlant', level), profileFact('codex.profile.constant', level)],
+  hydroPlant: level => [
+    utilityOutputFact('hydroPlant', level),
     profileFact('codex.profile.hydro', level),
     textFact('codex.fact.siting', () => t('codex.siting.water'), level),
     numericFact('codex.fact.flowTiles', () => ECOLOGY.hydroFullFlowTiles, level),
-  ];
-  if (id === 'solar') return [profileFact('codex.profile.solar', level)];
-  if (id === 'coalPlant') return [numericFact('codex.fact.output', tier => COAL_CAPACITY[tier - 1] ?? 0, level)];
-  if (greenProfileOf(id)) return [
+  ],
+  coalPlant: level => [numericFact('codex.fact.output', tier => COAL_CAPACITY[tier - 1] ?? 0, level)],
+};
+
+function greenFacts(id: string, level: number): LevelFact[] {
+  if (!greenProfileOf(id)) return [];
+  return [
     numericFact('codex.fact.radius', tier => greenProfileOf(id, tier)!.radius, level),
     numericFact('eco.cooling', tier => greenProfileOf(id, tier)!.cooling, level),
     numericFact('eco.biodiversity', tier => greenProfileOf(id, tier)!.biodiversity, level),
     numericFact('codex.fact.wellbeing', tier => greenProfileOf(id, tier)!.wellbeing, level),
   ];
-  if (id === 'marina') return [numericFact('codex.fact.boats', tier => marinaCapacity({ tier }), level)];
-  if (isShopType(id)) return [
+}
+
+function shopFacts(id: ShopType, level: number): LevelFact[] {
+  return [
     numericFact('codex.fact.saleSlots', tier => shopTierOf({ type: id, tier }).maxSlots, level),
     numericFact('codex.fact.saleTime', tier => shopTierOf({ type: id, tier }).saleIntervalFactor, level, percent),
     numericFact('codex.fact.goodsSold', tier => sellableGoodsOf({ type: id, tier }).length, level),
     numericFact('codex.fact.jobs', tier => shopTierOf({ type: id, tier }).jobs, level),
   ];
-  if (id === 'casino') return casinoFacts(level);
-  if (isVenueType(id)) return venueFacts(id, level);
-  if (isFacilityType(id) && FACILITIES[id].capacity !== null) {
-    return [numericFact('codex.fact.capacity', tier => facilityCapacity(id, tier) ?? 0, level)];
-  }
-  return [];
+}
+
+function facilityFacts(id: BuildingType, level: number): LevelFact[] {
+  if (!isFacilityType(id) || FACILITIES[id].capacity === null) return [];
+  return [numericFact('codex.fact.capacity', tier => facilityCapacity(id, tier) ?? 0, level)];
+}
+
+// Every building kind says which facts its upgrade table shows; a kind with nothing to compare across Tiers answers none.
+const FACT_RULES: Record<BuildingKind, (id: BuildingType, level: number) => LevelFact[]> = {
+  home: homeFacts,
+  production: (id, level) => (isProductionType(id) ? productionFacts(id, level) : []),
+  farm: (id, level) => (id === 'farm' ? farmFacts(id, level) : []),
+  storage: (id, level) => (isStorageType(id) ? storageFacts(id, level) : []),
+  utility: (id, level) => UTILITY_FACTS[id]?.(level) ?? [],
+  solar: (_id, level) => [profileFact('codex.profile.solar', level)],
+  green: greenFacts,
+  nature: greenFacts,
+  marina: (_id, level) => [numericFact('codex.fact.boats', tier => marinaCapacity({ tier }), level)],
+  shop: (id, level) => (isShopType(id) ? shopFacts(id, level) : []),
+  casino: (_id, level) => casinoFacts(level),
+  venue: (id, level) => (isVenueType(id) ? venueFacts(id, level) : []),
+  facility: facilityFacts,
+  battery: () => [],
+  backup: () => [],
+  transitStop: () => [],
+  sport: () => [],
+  standard: () => [],
+};
+
+function tierFactsOf(id: CodexId, level: number): LevelFact[] {
+  if (isHomeCodexId(id)) return homeFacts(id, level);
+  const kind = kindOf(id);
+  return kind ? FACT_RULES[kind](id as BuildingType, level) : [];
 }

@@ -19,7 +19,7 @@ describe('water save compatibility', () => {
     [[{ x: 50 }]],
   ])('rejects invalid Water tiles %j', waterTiles => {
     const state = { ...newGame({ seed: 'water-invalid', now: 0 }), waterTiles };
-    expect(parseEnvelope(serializeEnvelope(state as never, 100))).toEqual({ ok: false, reason: 'invalid-state' });
+    expect(parseEnvelope(serializeEnvelope(state as never, 100))).toMatchObject({ ok: false, reason: 'invalid-state' });
   });
 });
 
@@ -55,7 +55,7 @@ describe('boat save compatibility', () => {
     [{ id: 10, family: 'pleasure', marinaId: 10, x: 50, y: 50 }],
   ])('rejects invalid Boat %j', boat => {
     const state = { ...base(), boats: [boat] };
-    expect(parseEnvelope(serializeEnvelope(state as never, 100))).toEqual({ ok: false, reason: 'invalid-state' });
+    expect(parseEnvelope(serializeEnvelope(state as never, 100))).toMatchObject({ ok: false, reason: 'invalid-state' });
   });
 });
 
@@ -77,6 +77,6 @@ describe('bridge save compatibility', () => {
     [[{ x: 52, y: 50, length: 3, axis: 'x' }]],
     [[{ x: 52, y: 50, length: 2, axis: 'x' }, { x: 53, y: 50, length: 1, axis: 'x' }]],
   ])('rejects invalid Bridges %j', bridges => {
-    expect(parseEnvelope(serializeEnvelope({ ...base(), bridges } as never, 100))).toEqual({ ok: false, reason: 'invalid-state' });
+    expect(parseEnvelope(serializeEnvelope({ ...base(), bridges } as never, 100))).toMatchObject({ ok: false, reason: 'invalid-state' });
   });
 });

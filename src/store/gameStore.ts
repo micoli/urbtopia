@@ -1,17 +1,18 @@
 import { createStore } from 'zustand/vanilla';
-import { advance, dispatch, newGame, type Command, type CommandError, type Difficulty, type GameState } from '../core';
+import { advance, newGame, type Command, type CommandError, type Difficulty, type GameState } from '../core';
 import { restoreDeletion, type DeletionUndo } from '../core/engine/undo';
 import { saveSession } from '../persistence/instance';
 import type { LoadResult } from '../persistence/saveSession';
 import { isSimulationRequested } from '../sim/simulationFlag';
-import { casinoStore } from './casinoStore';
 import { isBypassTutorialRequested } from './bypassTutorialFlag';
-import { harvestEffects } from './harvestEffects';
+import { tutorialEndToast, type CommandGateway } from './commandGateway';
+import { liveCommandGateway } from './liveCommandGateway';
 import { readOnlyStore } from './readOnlyStore';
 import { toastKeyForEvents, toastStore } from './toastStore';
 
 function announceTutorialEnd(before: GameState, after: GameState) {
-  if (before.tutorial === 'tax' && after.tutorial === null) toastStore.getState().show('tutorial.done');
+  const toast = tutorialEndToast(before, after);
+  if (toast) toastStore.getState().show(toast);
 }
 
 export type Change = 'command' | 'tick' | 'reset';
@@ -28,7 +29,7 @@ export interface GameStore {
   newGame: (now: number, difficulty?: Difficulty) => void;
 }
 
-export function createGameStore(initial: GameState) {
+export function createGameStore(initial: GameState, gateway: CommandGateway = liveCommandGateway) {
   return createStore<GameStore>((set, get) => ({
     state: initial,
     deletionUndo: null,
@@ -44,35 +45,13 @@ export function createGameStore(initial: GameState) {
     lastError: null,
     lastChange: 'reset',
     send: (command) => {
-      if (readOnlyStore.getState().readOnly) return;
-      const result = dispatch(get().state, command, Date.now());
-      if (!result.ok) {
-        toastStore.getState().show(result.error.key);
-        return set({ lastError: result.error });
+      const outcome = gateway.apply(get().state, command);
+      if (outcome.kind === 'blocked') return;
+      if (outcome.kind === 'rejected') {
+        toastStore.getState().show(outcome.error.key);
+        return set({ lastError: outcome.error });
       }
-      const toast = toastKeyForEvents(result.events);
-      if (toast) toastStore.getState().show(toast);
-      for (const event of result.events) {
-        if (event.type === 'CropsHarvested') harvestEffects.getState().show(event.tiles);
-        if (event.type === 'SlotSpun') {
-          casinoStore.getState().record(event.stake, event.payout);
-          casinoStore.getState().showSpin(event);
-        }
-        if (event.type === 'CasinoRoundStarted') {
-          casinoStore.getState().record(event.stake, 0);
-          casinoStore.getState().startRound(event);
-        }
-        if (event.type === 'BlackjackSettled') {
-          casinoStore.getState().record(event.doubled ? event.stake : 0, event.payout);
-          casinoStore.getState().settleRound(event);
-        }
-        if (event.type === 'BlockmatchSettled') {
-          casinoStore.getState().record(0, event.payout);
-          casinoStore.getState().settleRound(event);
-        }
-      }
-      announceTutorialEnd(get().state, result.state);
-      set({ state: result.state, deletionUndo: result.undo, lastError: null, lastChange: 'command' });
+      set({ state: outcome.state, deletionUndo: outcome.undo, lastError: null, lastChange: 'command' });
     },
     tick: (tickNow) => {
       if (readOnlyStore.getState().readOnly) return;

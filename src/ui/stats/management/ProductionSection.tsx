@@ -1,9 +1,12 @@
 import {
     ECOLOGY, ECOLOGY_UNLOCKS, durationOf, energyStats, isItemUnlocked, minTierOf, producibleItems, productionTierOf,
-    totalCitizens, type BuildingType, type GameState, isHomeType } from '../../../core';
+    totalCitizens, type BuildingType, type GameState, isHomeType, INDUSTRY_TYPES, industryWeightOf } from '../../../core';
 import {t} from '../../../i18n/t';
 import {itemName} from '../../../i18n/itemName';
 import {SectionHeading} from '../../common/SectionHeading';
+
+// Lighter industry first: Workshop and Mill, then Factory and Bakery.
+const PRODUCER_ROWS = [...INDUSTRY_TYPES].sort((a, b) => industryWeightOf(a) - industryWeightOf(b));
 
 const COUNT_TYPES: BuildingType[] = ['home', 'workshop', 'factory', 'mill', 'bakery', 'oliveTree', 'appleTree', 'cherryTree', 'shop', 'casino', 'powerPlant', 'hydroPlant', 'geothermalPlant', 'coalPlant', 'solar', 'battery', 'backup', 'tree', 'park', 'busStop', 'brtStation', 'railStation'];
 
@@ -38,7 +41,7 @@ export function ProductionSection({state, energy}: ProductionSectionProps) {
             </tr>
             </thead>
             <tbody>
-            {(['workshop', 'mill', 'factory', 'bakery'] as const).flatMap(type => producibleItems(type).map(item => {
+            {PRODUCER_ROWS.flatMap(type => producibleItems(type).map(item => {
                 if (!isItemUnlocked(state, item)) return null;
                 const buildings = state.buildings.filter(b => b.type === type && b.tier >= minTierOf(item));
                 const rate = (b: typeof buildings[number]) => ECOLOGY.hourMs / (durationOf(item) * productionTierOf(b).durationFactor) * productionTierOf(b).yield;

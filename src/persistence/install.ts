@@ -30,7 +30,10 @@ function newToken(): string {
 }
 
 export function installPersistence(): () => void {
-  if (bootResult.kind === 'failed') dialogStore.getState().setRecovery({ reason: bootResult.reason, raw: bootResult.raw });
+  if (bootResult.kind === 'failed') {
+    if (bootResult.detail) console.warn(`Save rejected: ${bootResult.detail}`);
+    dialogStore.getState().setRecovery({ reason: bootResult.reason, raw: bootResult.raw });
+  }
 
   const autosave = createAutosave({
     save: () => {

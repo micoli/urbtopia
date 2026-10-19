@@ -1,11 +1,12 @@
 import { isBuildableAt } from '../annualEvents/annualEventItems';
 import { TRANSIT, extendNetwork, networkTiles, repairNetwork, validNetworkCrossings } from '../transit/transitNetwork';
 import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
-import { canHaveSolarPanels, solarPanelsCost, solarPanelsOf, solarPanelsUnlockCitizens } from '../environment/solarPanels';
+import { canHaveSolarPanels, solarInstallCostOf, solarPanelsCost, solarPanelsUnlockCitizens } from '../environment/solarPanels';
 import { routeFailure, routeForLine } from '../transit/transport';
 import { nextCopyCost } from '../buildings/buildLimit';
 import { BUILDING_SPECS, createBuilding, emptyStack, footprintOf, placementCost } from '../buildings/buildingSpecs';
 import { isRetired } from '../buildings/buildingDefinitions';
+import { isProductionType, scalesRecipeWithYield } from '../economy/productionTypes';
 import { advance } from './advance';
 import { GAME_CONFIG } from './config';
 import type { Coord } from '../map/coord';
@@ -599,7 +600,7 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
   if (isRetired(type) || citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < solarPanelsUnlockCitizens(type))) return fail('error.itemLocked');
   if (!isBuildableAt(type, now)) return fail('error.annualEventClosed');
   if (solar && !isHomeType(type)) return fail('error.cannotProduce');
-  const extraCost = solar ? (solarPanelsOf(type)?.cost ?? ECOLOGY.solarCost) : 0;
+  const extraCost = solar ? solarInstallCostOf(type) : 0;
   const rotation = requestedRotation ?? autoRotation(state, type, x, y);
   const issue = placementIssue(state, type, x, y, rotation);
   if (issue) return fail(issue);
@@ -636,7 +637,7 @@ function renameStop(state: GameState, id: number, rawName: string): CommandOutco
 function sellBuilding(state: GameState, id: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === id);
   if (!building) return fail('error.unknownBuilding');
-  if ((isStorageType(building.type) || ['workshop', 'factory', 'packhouse', 'mill', 'bakery'].includes(building.type)) && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
+  if ((isStorageType(building.type) || isProductionType(building.type)) && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
   if ((building.type === 'powerPlant' || building.type === 'waterTower') && !canLoseUtility(state, building)) return fail('error.utilityInUse');
   if (building.type === 'marina' && boatsOfMarina(state, building.id).length > 0) return fail('error.marinaInUse');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
@@ -688,7 +689,7 @@ function queueProduction(state: GameState, buildingId: number, item: string, now
   if (building.tier < minTierOf(item)) return fail('error.tierTooLow');
   if (building.queue.length >= building.slotCount) return fail('error.queueFull');
   const materials = { ...state.storage.materials };
-  const recipeMultiplier = building.type === 'mill' || building.type === 'bakery' ? productionTierOf(building).yield : 1;
+  const recipeMultiplier = scalesRecipeWithYield(building.type) ? productionTierOf(building).yield : 1;
   for (const [material, needed] of Object.entries(recipeOf(item))) {
     const required = needed * recipeMultiplier;
     const available = materials[material as keyof typeof materials] ?? 0;

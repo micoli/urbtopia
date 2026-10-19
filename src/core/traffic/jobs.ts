@@ -1,10 +1,11 @@
 import type { Building, BuildingType } from '../engine/state';
 import { totalStaff } from '../venues/staff';
 import { VENUE_TYPES, isVenueType } from '../venues/profiles';
+import { INDUSTRY_TYPES, industryWeightOf } from '../economy/productionTypes';
 import { SHOP_TYPES, isShopType, shopTierOf } from '../economy/shops';
 import { FACILITIES, FACILITY_TYPES, facilityCapacity, isFacilityType } from '../services/facilities';
 
-export const workplaceTypes: readonly BuildingType[] = ['workshop', 'factory', 'mill', 'bakery', ...SHOP_TYPES, 'casino', ...VENUE_TYPES, ...FACILITY_TYPES];
+export const workplaceTypes: readonly BuildingType[] = [...INDUSTRY_TYPES, ...SHOP_TYPES, 'casino', ...VENUE_TYPES, ...FACILITY_TYPES];
 
 export const JOBS = {
   workshopPerTier: 25,
@@ -15,16 +16,9 @@ export const JOBS = {
 };
 
 export function jobsOf(building: Building): number {
-  switch (building.type) {
-    case 'workshop':
-    case 'mill':
-      return JOBS.workshopPerTier * building.tier;
-    case 'factory':
-    case 'bakery':
-      return JOBS.factoryPerTier * building.tier;
-    case 'casino':
-      return JOBS.casinoPerTier * building.tier;
-  }
+  if (building.type === 'casino') return JOBS.casinoPerTier * building.tier;
+  const weight = industryWeightOf(building.type);
+  if (weight > 0) return (weight === 1 ? JOBS.workshopPerTier : JOBS.factoryPerTier) * building.tier;
   if (isShopType(building.type)) return shopTierOf(building).jobs;
   if (isVenueType(building.type)) return building.venue ? totalStaff(building.venue) : 0;
   if (!isFacilityType(building.type)) return 0;

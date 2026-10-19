@@ -1,3 +1,4 @@
+import { industryWeightOf, isIndustryType } from '../economy/productionTypes';
 import { isShopType } from '../economy/shops';
 import { NATURE_FAMILIES, greenProfileOf, natureModelOf } from './nature';
 import { BUILDING_ENTRIES, definitionOf, tiersOf } from '../buildings/buildingDefinitions';
@@ -43,8 +44,7 @@ export function homePower(b: Building): number {
 }
 
 export function economicPower(b: Building): number {
-  if (b.type === 'workshop' || b.type === 'mill') return b.tier;
-  if (b.type === 'factory' || b.type === 'bakery') return 2 * b.tier;
+  if (isIndustryType(b.type)) return industryWeightOf(b.type) * b.tier;
   if (isShopType(b.type)) return 0.5;
   if (isFacilityType(b.type)) return tiersOf(b.type)[b.tier - 1]?.power ?? FACILITIES[b.type].power;
   if (b.type === 'casino') return casinoPower(b.tier);

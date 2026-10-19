@@ -1,3 +1,4 @@
+import { industryEmissionsOf } from '../economy/productionTypes';
 import { cityGreenBenefits, ECOLOGY } from './ecology';
 import { energyStats } from './energy';
 import { cityTransportStats } from '../traffic/cityTransport';
@@ -5,9 +6,7 @@ import type { Building, GameState } from '../engine/state';
 import { wasteEmissions } from '../waste/wasteNuisance';
 
 export function activityEmissionsOf(building: Building): number {
-  if (building.type === 'factory' || building.type === 'bakery') return 2 * building.tier;
-  if (building.type === 'workshop' || building.type === 'mill') return 0.5 * building.tier;
-  return 0;
+  return industryEmissionsOf(building.type) * building.tier;
 }
 
 export function climateStats(state: GameState) {

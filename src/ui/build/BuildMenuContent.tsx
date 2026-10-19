@@ -1,5 +1,5 @@
 import { Fragment, useId, useState } from 'react';
-import { BUILDING_SPECS, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, annualEventOf, isBuildableAt, isFacilityType, totalCitizens, placementCost, isHomeType } from '../../core';
+import { BUILDING_SPECS, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, annualEventOf, isBuildableAt, isFacilityType, totalCitizens, placementCost, isHomeType, solarInstallCostOf } from '../../core';
 import { t } from '../../i18n/t';
 import { FlyoutItem } from '../layout/FlyoutItem';
 import { BuildSearch } from './BuildSearch';
@@ -113,7 +113,7 @@ export function BuildMenuContent() {
                 {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem
                     label={t('eco.solarHome')}
                     badge={BUILDING_SPECS.home.accessModes.includes('brt') ? t('build.brtCompatible') : undefined}
-                    cost={<UrbsAmount value={placementCost('home') + ECOLOGY.solarCost}/>}
+                    cost={<UrbsAmount value={placementCost('home') + solarInstallCostOf('home')}/>}
                     onChoose={() => chooseTool({
                       kind: 'building',
                       buildingType: 'home',
@@ -129,7 +129,7 @@ export function BuildMenuContent() {
                         key={`${type}-solar`}
                         label={t(`building.solar-${type}`)}
                         badge={undefined/*BUILDING_SPECS[type].accessModes.includes('brt') ? t('build.brtCompatible') : undefined*/}
-                        cost={<UrbsAmount value={placementCost(type) + ECOLOGY.solarCost}/>}
+                        cost={<UrbsAmount value={placementCost(type) + solarInstallCostOf(type)}/>}
                         onChoose={() => chooseTool({
                           kind: 'building',
                           buildingType: type,
