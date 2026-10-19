@@ -677,8 +677,13 @@ _Avoid_: Admin panel, dashboard, console
 The person who runs the Back office. Not a Player account and never visible to players.
 _Avoid_: Moderator, operator
 
+**Command gateway**:
+The single module that applies a Command to the live game and owns all its consequences: the read-only guard, the toast of an error or an event, the effects bound to an event type (harvest, Casino rounds), the end-of-Tutorial notice, the undo of a deletion and the replacement of the game state. The player, a Trade and a Challenge all reach the game through it.
+_Avoid_: Dispatcher, command bus, game service
+
 ## Relationships
 
+- A Command from the player, a Trade or a Challenge reaches the game through the Command gateway: the same read-only guard, toasts and event effects. Only the player's Commands keep a deletion undo.
 - A Trade offer can only be accepted if the recipient's Storehouse compartment has room for the lot and their Urbs cover the price.
 - Blocking a Friend closes their conversation and returns any open Trade offer between them.
 - A Cloud save never replaces the local save without the player's consent when a Save conflict exists.
