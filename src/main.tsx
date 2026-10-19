@@ -6,9 +6,12 @@ import { hideSplashAfterFailsafe } from './ui/system/splash';
 import { installPersistence } from './persistence/install';
 import { registerServiceWorker } from './pwa/registerServiceWorker';
 import { gameStore, isSimulation } from './store/gameStore';
+import { installEventEffects } from './store/installEventEffects';
+import { liveCommandGateway } from './store/liveCommandGateway';
 import './styles.css';
 
 const TICK_INTERVAL_MS = 1000;
+installEventEffects(liveCommandGateway);
 if (!isSimulation) {
   setInterval(() => gameStore.getState().tick(Date.now()), TICK_INTERVAL_MS);
   gameStore.getState().tick(Date.now());
