@@ -31,6 +31,7 @@ export type BuildingId =
   | 'farm'
   | 'ferris-wheel'
   | 'fireStation'
+  | 'footballStadium'
   | 'geothermalPlant'
   | 'grainSilo'
   | 'halloweenCauldron'
@@ -292,6 +293,7 @@ export type BuildingId =
 
 export type SportVenueType =
   | 'baseballField'
+  | 'footballStadium'
   | 'stadium';
 
 export type NatureType =

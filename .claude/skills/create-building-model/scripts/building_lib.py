@@ -3250,6 +3250,161 @@ def build_stadium(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+def oval_points(a, b, count=40, exponent=2.6):
+    """A rounded-rectangle outline (a superellipse) of half sizes a and b, `count` points counter-clockwise from +x; the same index is the same angle on every outline, so two outlines can be joined."""
+    points = []
+    for i in range(count):
+        c, s = math.cos(2 * math.pi * i / count), math.sin(2 * math.pi * i / count)
+        points.append((a * math.copysign(abs(c) ** (2 / exponent), c), b * math.copysign(abs(s) ** (2 / exponent), s)))
+    return points
+
+
+def loop_solid(name, outer, inner, outer_z, inner_z, color, facets=False):
+    """A closed solid ring between two outlines with as many points. `outer_z` and `inner_z` are (bottom, top) pairs, each a height or a list of one height per point. `facets` splits the top and bottom in triangles."""
+    count = len(outer)
+
+    def heights(pair):
+        return [[h] * count if isinstance(h, (int, float)) else h for h in pair]
+
+    (ob, ot), (ib, it) = heights(outer_z), heights(inner_z)
+    verts = [(x, y, ob[k]) for k, (x, y) in enumerate(outer)] + [(x, y, ot[k]) for k, (x, y) in enumerate(outer)]
+    verts += [(x, y, ib[k]) for k, (x, y) in enumerate(inner)] + [(x, y, it[k]) for k, (x, y) in enumerate(inner)]
+    a, b, c, d = 0, count, 2 * count, 3 * count
+    faces = []
+    for k in range(count):
+        n = (k + 1) % count
+        if facets:
+            faces += [(b + k, b + n, d + n), (b + k, d + n, d + k), (a + k, c + k, c + n), (a + k, c + n, a + n)]
+        else:
+            faces += [(b + k, b + n, d + n, d + k), (a + k, c + k, c + n, a + n)]
+        faces += [(a + k, a + n, b + n, b + k), (c + n, c + k, d + k, d + n)]
+    return lpm._object(name, _bm(verts, faces), color)
+
+
+def faceted_ring(name, rings, tops, thickness, color):
+    """A closed roof ring made of `rings` (outlines of equal size, outermost first), each with a list of top heights, the top surface split in triangles with alternating diagonals and a flat underside `thickness` below."""
+    count = len(rings[0])
+    verts = [(x, y, tops[r][k]) for r, ring in enumerate(rings) for k, (x, y) in enumerate(ring)]
+    verts += [(x, y, tops[r][k] - thickness) for r, ring in enumerate(rings) for k, (x, y) in enumerate(ring)]
+    under = len(rings) * count
+    faces = []
+    for r in range(len(rings) - 1):
+        for k in range(count):
+            n = (k + 1) % count
+            a, b, c, d = r * count + k, r * count + n, (r + 1) * count + n, (r + 1) * count + k
+            faces += [(a, b, c), (a, c, d)] if (k + r) % 2 else [(a, b, d), (b, c, d)]
+            faces += [(under + a, under + d, under + c), (under + a, under + c, under + b)]
+    last = (len(rings) - 1) * count
+    for k in range(count):
+        n = (k + 1) % count
+        faces += [(k, under + k, under + n, n), (last + n, under + last + n, under + last + k, last + k)]
+    return lpm._object(name, _bm(verts, faces), color)
+
+
+def build_football_stadium(spec, out_dir):
+    """A football stadium filling 12x9: a striped pitch with lines, goals and corner flags inside an oval bowl of three seat tiers (tone color) under a wavy white faceted roof ring carried by columns, a concrete facade with a glass band, and trees at the corners."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    grass, grass_light, white, slab, grey, black, wall, glass, red, seat = (index(n) for n in ("bush", "softgreen", "white", "uslab", "utrim", "graphite", "uwall", "glass_blue", "coral", "vtone1"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = []
+    count = 40
+    angles = [2 * math.pi * i / count for i in range(count)]
+
+    roof_count = 24
+    roof_angles = [2 * math.pi * i / roof_count for i in range(roof_count)]
+
+    def oval(a, b, points=count):
+        return oval_points(a, b, points)
+
+    def roof_height(t):
+        return 1.5 + 0.32 * math.cos(2 * t) + 0.12 * math.sin(4 * t) + 0.06 * math.cos(t - 0.6)
+
+    parts.append(lpm.sweep("bowl_floor", oval(3.55, 2.55), 0.006, at=(0, 0, 0.02), color=grass, axis="z"))
+
+    pitch_x, pitch_y, stripes, top = 4.6, 3.0, 10, 0.032
+    for number in range(stripes):
+        width = pitch_x / stripes
+        parts.append(lpm.box(f"stripe_{number}", (width, pitch_y, 0.012), at=(-pitch_x / 2 + width * (number + 0.5), 0, 0.02), color=grass_light if number % 2 else grass))
+
+    def line(name, size, at):
+        parts.append(lpm.box(name, (size[0], size[1], 0.004), at=(at[0], at[1], top), color=white))
+
+    half_x, half_y, mark = pitch_x / 2, pitch_y / 2, 0.012
+    for side in (-1, 1):
+        line(f"touch_line_{side}", (pitch_x, mark), (0, side * half_y))
+        line(f"goal_line_{side}", (mark, pitch_y), (side * half_x, 0))
+        for number, (area_depth, area_width) in enumerate(((0.72, 1.77), (0.24, 0.8))):
+            edge_x = side * (half_x - area_depth)
+            line(f"area_{number}_front_{side}", (mark, area_width), (edge_x, 0))
+            for end in (-1, 1):
+                line(f"area_{number}_side_{side}_{end}", (area_depth, mark), (side * (half_x - area_depth / 2), end * area_width / 2))
+        line(f"penalty_spot_{side}", (0.03, 0.03), (side * (half_x - 0.48), 0))
+    line("halfway_line", (mark, pitch_y), (0, 0))
+    circle = [(0.3 * math.cos(a), 0.3 * math.sin(a)) for a in angles]
+    parts.append(loop_solid("centre_circle", circle, [(0.288 * math.cos(a), 0.288 * math.sin(a)) for a in angles], (top, top + 0.004), (top, top + 0.004), white))
+    line("centre_spot", (0.04, 0.04), (0, 0))
+
+    for side in (-1, 1):
+        goal_x = side * (half_x + 0.04)
+        for post in (-1, 1):
+            parts.append(lpm.box(f"goal_post_{side}_{post}", (0.016, 0.016, 0.1), at=(side * (half_x + 0.01), post * 0.18, 0.02), color=white))
+            parts.append(lpm.box(f"goal_back_post_{side}_{post}", (0.012, 0.012, 0.06), at=(side * (half_x + 0.1), post * 0.18, 0.02), color=white))
+        parts.append(lpm.box(f"goal_bar_{side}", (0.016, 0.376, 0.016), at=(side * (half_x + 0.01), 0, 0.104), color=white))
+        parts.append(lpm.box(f"goal_net_{side}", (0.1, 0.376, 0.008), at=(goal_x + side * 0.04, 0, 0.098), color=white))
+        for end in (-1, 1):
+            parts.append(lpm.prism(f"flag_{side}_{end}", 4, 0.005, 0.07, at=(side * half_x, end * half_y, 0.02), color=white))
+            parts.append(lpm.box(f"flag_cloth_{side}_{end}", (0.025, 0.004, 0.02), at=(side * half_x - side * 0.014, end * half_y, 0.07), color=red))
+
+    bench_y = half_y + 0.3
+    for number, x in enumerate((-0.75, 0.75)):
+        line(f"technical_area_{number}", (0.7, mark), (x, half_y + 0.14))
+        parts.append(lpm.box(f"dugout_floor_{number}", (0.6, 0.2, 0.01), at=(x, bench_y, 0.02), color=slab))
+        parts.append(lpm.box(f"dugout_back_{number}", (0.6, 0.02, 0.12), at=(x, bench_y + 0.09, 0.03), color=glass))
+        parts.append(lpm.box(f"dugout_bench_{number}", (0.5, 0.06, 0.035), at=(x, bench_y + 0.04, 0.03), color=seat))
+        parts.append(lpm.box(f"dugout_backrest_{number}", (0.5, 0.012, 0.04), at=(x, bench_y + 0.075, 0.065), color=grey))
+        parts.append(lpm.box(f"dugout_roof_{number}", (0.64, 0.24, 0.015), at=(x, bench_y, 0.15), color=white))
+        for end in (-1, 1):
+            parts.append(lpm.box(f"dugout_side_{number}_{end}", (0.015, 0.2, 0.12), at=(x + end * 0.3, bench_y, 0.03), color=grey))
+
+    tiers = [((3.55, 2.55), (4.05, 3.05), 0.28), ((4.05, 3.05), (4.25, 3.25), 0.3), ((4.25, 3.25), (4.75, 3.7), 0.52), ((4.75, 3.7), (5.2, 4.05), 0.74)]
+    for number, (inner, outer, height) in enumerate(tiers):
+        colour = slab if number == 1 else seat
+        parts.append(loop_solid(f"tier_{number}", oval(*outer), oval(*inner), (0.02, height), (0.02, height), colour))
+        parts.append(loop_solid(f"tier_rail_{number}", oval(*inner), oval(inner[0] + 0.03, inner[1] + 0.03), (height - 0.02, height + 0.025), (height - 0.02, height + 0.025), grey))
+    for number in range(16):
+        angle = 2 * math.pi * (number + 0.5) / 16
+        x, y = oval_points(4.55, 3.5, 16)[number]
+        aisle = lpm.box(f"aisle_{number}", (0.04, 0.9, 0.02), at=(0, 0, 0), color=wall)
+        lpm.rotate(aisle, math.degrees(math.atan2(y * 0.67, x * 0.67)) + 90)
+        lpm.move(aisle, x, y, 0.52)
+        parts.append(aisle)
+    parts.append(loop_solid("facade", oval(5.4, 4.15), oval(5.2, 3.95), (0.02, 0.8), (0.02, 0.8), wall))
+    parts.append(loop_solid("facade_glass", oval(5.42, 4.17), oval(5.4, 4.15), (0.22, 0.6), (0.22, 0.6), glass))
+    parts.append(loop_solid("facade_plinth", oval(5.44, 4.19), oval(5.4, 4.15), (0.02, 0.1), (0.02, 0.1), grey))
+
+    outer_roof, inner_roof = oval(6.0, 4.5, roof_count), oval(4.9, 3.5, roof_count)
+    middle_roof = [((ox + ix) / 2, (oy + iy) / 2) for (ox, oy), (ix, iy) in zip(outer_roof, inner_roof)]
+    wave = [roof_height(t) for t in roof_angles]
+    outer_top = [h - 0.1 for h in wave]
+    middle_top = [h + 0.1 + (0.06 if k % 2 else -0.06) for k, h in enumerate(wave)]
+    inner_top = [h + 0.2 for h in wave]
+    parts.append(faceted_ring("roof", [outer_roof, middle_roof, inner_roof], [outer_top, middle_top, inner_top], 0.09, white))
+    parts.append(loop_solid("roof_rim", oval(5.05, 3.65, roof_count), inner_roof, ([h - 0.18 for h in inner_top], [h - 0.09 for h in inner_top]), ([h - 0.18 for h in inner_top], [h - 0.09 for h in inner_top]), wall))
+    for number, (x, y) in enumerate(oval_points(5.85, 4.4, 20)):
+        parts.append(lpm.prism(f"column_{number}", 6, 0.04, roof_height(2 * math.pi * number / 20) - 0.17 - 0.02, at=(x, y, 0.02), color=wall))
+
+    trees = [(sx * x, sy * y) for sx in (-1, 1) for sy in (-1, 1) for x, y in ((5.6, 4.1), (4.4, 4.2), (5.7, 3.0))]
+    for number, (x, y) in enumerate(trees):
+        parts.append(lpm.box(f"planter_{number}", (0.3, 0.3, 0.04), at=(x, y, 0.02), color=grey))
+        parts.append(lpm.prism(f"trunk_{number}", 5, 0.02, 0.1, at=(x, y, 0.06), color=slab))
+        parts.append(lpm.lathe(f"crown_{number}", [(0.0, 0.14), (0.12, 0.18), (0.14, 0.28), (0.08, 0.38), (0.0, 0.42)], segments=6, at=(x, y, 0.06), color=grass))
+    ob = lpm.finish(spec["id"], parts, palette, budget=12000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")

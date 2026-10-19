@@ -997,6 +997,34 @@
     "scale": 1,
     "rotationOffset": 180
   },
+  "buildings-football-stadium-12x9-tone-a": {
+    "file": "buildings/football-stadium-12x9-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      12,
+      9
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "b": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "c": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      },
+      "d": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      }
+    }
+  },
   "buildings-geothermal-1x1-t1-tone-a": {
     "file": "buildings/geothermal-1x1-t1-tone-a",
     "source": "managed",

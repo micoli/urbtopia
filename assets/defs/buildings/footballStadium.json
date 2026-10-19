@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "sport",
+  "section": "build.sport",
+  "model": "buildings-football-stadium-12x9-tone-a",
+  "footprint": [12, 9],
+  "cost": 25000,
+  "unlockCitizens": 1500,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Football stadium",
+    "fr": "Stade de football"
+  },
+  "description": {
+    "en": "A Sport building with a striped pitch, a covered bowl and dugouts. It raises the Well-being of Homes in a {side}-tile square around it (+{wellbeingBonus}, like a service) and needs no power. It covers {width}×{depth} tiles; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs.",
+    "fr": "Un bâtiment de sport avec une pelouse rayée, des gradins couverts et des bancs d’entraîneurs. Il augmente le bien-être des logements à moins de {side} cases (+{wellbeingBonus}) et ne consomme pas d’électricité. Il occupe {width}×{depth} cases ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs."
+  },
+  "radius": 16,
+  "wellbeingBonus": 15
+}
