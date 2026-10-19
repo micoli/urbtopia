@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createBuilding } from '../buildings/buildingSpecs';
 import { economicPower } from '../environment/ecology';
 import { jobsOf, workplaceTypes } from '../traffic/jobs';
-import { INDUSTRY_TYPES, PRODUCTION_TYPES, industryWeightOf, isIndustryType, isProductionType } from './productionTypes';
+import { INDUSTRY_TYPES, PRODUCTION_TYPES, compartmentProducedBy, industryEmissionsOf, industryWeightOf, isIndustryType, isProductionType, scalesRecipeWithYield } from './productionTypes';
 
 describe('production family', () => {
   it('is every building defined with the production kind', () => {
@@ -29,5 +29,12 @@ describe('production family', () => {
     for (const type of INDUSTRY_TYPES) expect(workplaceTypes).toContain(type);
     expect(workplaceTypes).not.toContain('packhouse');
     expect(jobsOf(at('packhouse', 3))).toBe(0);
+  });
+
+  it('gives each production building its emissions, its compartment and its recipe rule', () => {
+    expect(['workshop', 'mill', 'factory', 'bakery', 'packhouse', 'home'].map(industryEmissionsOf)).toEqual([0.5, 0.5, 2, 2, 0, 0]);
+    expect(PRODUCTION_TYPES.filter((type) => compartmentProducedBy(type) === 'materials').sort()).toEqual(['mill', 'workshop']);
+    expect(PRODUCTION_TYPES.filter(scalesRecipeWithYield).sort()).toEqual(['bakery', 'mill']);
+    expect(scalesRecipeWithYield('home')).toBe(false);
   });
 });

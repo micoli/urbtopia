@@ -2,7 +2,7 @@ import { FARM_CROP_CAPACITY, STORAGE_TYPES, storageTierOf, type StorageType } fr
 import { CROPS } from '../farming/crops';
 import type { GameState, Storage } from '../engine/state';
 import { isMaterial } from './items';
-import { isProductionType } from './productionTypes';
+import { compartmentProducedBy, isProductionType } from './productionTypes';
 import { productionTierOf } from './tiers';
 
 
@@ -30,7 +30,7 @@ export function storageCapacity(state: GameState): Compartments {
   const production: Compartments = { materials: 0, crops: 0, goods: 0 };
   for (const building of state.buildings) {
     if (!isProductionType(building.type)) continue;
-    const compartment = building.type === 'workshop' || building.type === 'mill' ? 'materials' : 'goods';
+    const compartment = compartmentProducedBy(building.type);
     production[compartment] += building.slotCount * productionTierOf(building).yield;
   }
   for (const building of state.buildings) {

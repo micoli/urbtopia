@@ -6,7 +6,7 @@ import { routeFailure, routeForLine } from '../transit/transport';
 import { nextCopyCost } from '../buildings/buildLimit';
 import { BUILDING_SPECS, createBuilding, emptyStack, footprintOf, placementCost } from '../buildings/buildingSpecs';
 import { isRetired } from '../buildings/buildingDefinitions';
-import { isProductionType } from '../economy/productionTypes';
+import { isProductionType, scalesRecipeWithYield } from '../economy/productionTypes';
 import { advance } from './advance';
 import { GAME_CONFIG } from './config';
 import type { Coord } from '../map/coord';
@@ -689,7 +689,7 @@ function queueProduction(state: GameState, buildingId: number, item: string, now
   if (building.tier < minTierOf(item)) return fail('error.tierTooLow');
   if (building.queue.length >= building.slotCount) return fail('error.queueFull');
   const materials = { ...state.storage.materials };
-  const recipeMultiplier = building.type === 'mill' || building.type === 'bakery' ? productionTierOf(building).yield : 1;
+  const recipeMultiplier = scalesRecipeWithYield(building.type) ? productionTierOf(building).yield : 1;
   for (const [material, needed] of Object.entries(recipeOf(item))) {
     const required = needed * recipeMultiplier;
     const available = materials[material as keyof typeof materials] ?? 0;
