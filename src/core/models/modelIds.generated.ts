@@ -49,6 +49,7 @@ export type ModelId =
   | 'buildings-fire-station-3x2-4f'
   | 'buildings-fire-station-3x2-5f'
   | 'buildings-fire-station-3x2-6f'
+  | 'buildings-football-stadium-12x9-tone-a'
   | 'buildings-geothermal-1x1-t1-tone-a'
   | 'buildings-geothermal-1x1-t2-tone-a'
   | 'buildings-geothermal-1x1-t3-tone-a'
