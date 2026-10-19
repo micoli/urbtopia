@@ -5858,6 +5858,76 @@
     },
     "rotationOffset": 180
   },
+  "events-autumn-autumn-tree-2x2": {
+    "file": "events/autumn/autumn-tree-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-autumn-hay-bales-1x1": {
+    "file": "events/autumn/hay-bales-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-autumn-leaf-pile-1x1": {
+    "file": "events/autumn/leaf-pile-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-autumn-pumpkin-trio-1x1": {
+    "file": "events/autumn/pumpkin-trio-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-autumn-scarecrow-blue-1x1": {
+    "file": "events/autumn/scarecrow-blue-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-autumn-scarecrow-brown-1x1": {
+    "file": "events/autumn/scarecrow-brown-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-autumn-scarecrow-red-1x1": {
+    "file": "events/autumn/scarecrow-red-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
   "events-halloween-cauldron-1x1": {
     "file": "events/halloween/cauldron-1x1",
     "source": "managed",
@@ -5920,6 +5990,66 @@
   },
   "events-halloween-witch-hat-1x1": {
     "file": "events/halloween/witch-hat-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-igloo-1x1": {
+    "file": "events/winter/igloo-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-sled-1x1": {
+    "file": "events/winter/sled-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-sleigh-2x1": {
+    "file": "events/winter/sleigh-2x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-snow-castle-2x2": {
+    "file": "events/winter/snow-castle-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-snowman-1x1": {
+    "file": "events/winter/snowman-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-winter-snowy-fir-1x1": {
+    "file": "events/winter/snowy-fir-1x1",
     "source": "managed",
     "license": "Own work",
     "footprint": [

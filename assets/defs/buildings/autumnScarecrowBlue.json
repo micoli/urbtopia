@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-autumn-scarecrow-blue-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "autumn",
+  "name": {
+    "en": "Scarecrow in blue overalls",
+    "fr": "Épouvantail en salopette bleue"
+  },
+  "description": {
+    "en": "A straw scarecrow in blue overalls guarding the fields.",
+    "fr": "Un épouvantail de paille en salopette bleue qui veille sur les champs."
+  }
+}

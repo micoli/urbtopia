@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-winter-sleigh-2x1",
+  "footprint": [2, 1],
+  "cost": 1100,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "winterHolidays",
+  "name": {
+    "en": "Santa's sleigh",
+    "fr": "Traîneau du Père Noël"
+  },
+  "description": {
+    "en": "A red sleigh loaded with gifts and a teddy bear.",
+    "fr": "Un traîneau rouge chargé de cadeaux et d'un ourson."
+  }
+}

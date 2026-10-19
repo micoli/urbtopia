@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-autumn-leaf-pile-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "autumn",
+  "name": {
+    "en": "Leaf pile",
+    "fr": "Tas de feuilles mortes"
+  },
+  "description": {
+    "en": "A heap of crunchy red and golden leaves.",
+    "fr": "Un tas de feuilles mortes rouges et dorées."
+  }
+}

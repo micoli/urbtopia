@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-winter-snowman-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "winterHolidays",
+  "name": {
+    "en": "Snowman",
+    "fr": "Bonhomme de neige"
+  },
+  "description": {
+    "en": "A snowman with a top hat and a red scarf.",
+    "fr": "Un bonhomme de neige coiffé d'un haut-de-forme et d'une écharpe rouge."
+  }
+}

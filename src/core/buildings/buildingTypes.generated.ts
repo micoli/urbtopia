@@ -2,6 +2,13 @@
 export type BuildingId =
   | 'appleTree'
   | 'arcade'
+  | 'autumnHayBales'
+  | 'autumnLeafPile'
+  | 'autumnPumpkinTrio'
+  | 'autumnScarecrowBlue'
+  | 'autumnScarecrowBrown'
+  | 'autumnScarecrowRed'
+  | 'autumnTree'
   | 'backup'
   | 'bakery'
   | 'baseballField'
@@ -251,6 +258,12 @@ export type BuildingId =
   | 'university'
   | 'vault'
   | 'waterTower'
+  | 'winterFir'
+  | 'winterIgloo'
+  | 'winterSled'
+  | 'winterSleigh'
+  | 'winterSnowCastle'
+  | 'winterSnowman'
   | 'workshop';
 
 export type SportVenueType =
