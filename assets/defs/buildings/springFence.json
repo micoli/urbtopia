@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-spring-fence-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "spring",
+  "name": {
+    "en": "Flower fence",
+    "fr": "Barrière fleurie"
+  },
+  "description": {
+    "en": "A white picket fence with tulips and daisies at its foot.",
+    "fr": "Une barrière blanche avec des tulipes et des marguerites à son pied."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.annualEvents",
+  "model": "events-spring-flower-box-1x1",
+  "footprint": [1, 1],
+  "cost": 700,
+  "unlockCitizens": 0,
+  "requiresRoad": false,
+  "annualEvent": "spring",
+  "name": {
+    "en": "Flower box",
+    "fr": "Bac à fleurs"
+  },
+  "description": {
+    "en": "A stone planter full of pansies and daisies.",
+    "fr": "Un bac en pierre plein de pensées et de marguerites."
+  }
+}

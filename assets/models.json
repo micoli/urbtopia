@@ -5998,6 +5998,36 @@
     ],
     "rotationOffset": 180
   },
+  "events-spring-birdhouse-1x1": {
+    "file": "events/spring/birdhouse-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-spring-fence-1x1": {
+    "file": "events/spring/fence-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "events-spring-flower-box-1x1": {
+    "file": "events/spring/flower-box-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
   "events-winter-igloo-1x1": {
     "file": "events/winter/igloo-1x1",
     "source": "managed",
