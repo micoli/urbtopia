@@ -7,7 +7,7 @@
   "cost": 700,
   "unlockCitizens": 0,
   "requiresRoad": false,
-  "annualEvent": "winterHolidays",
+  "annualEvent": "winter",
   "name": {
     "en": "Sled",
     "fr": "Luge"
