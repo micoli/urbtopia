@@ -57,9 +57,9 @@ def bow(tag, at, color, size=1.0, facing="up"):
     lpm.rotate(parts[1], 180, "Z")
     parts.append(lpm.box(f"knot{tag}", (0.045, 0.045, 0.05), at=(0, 0, -0.004), color=color))
     for p in parts:
-        lpm.scale(p, size, size, size)
         if facing == "front":
-            lpm.rotate(p, 90, "X")
+            lpm.move(p, 0, 0, -0.03)
+        lpm.scale(p, size, size, size)
         lpm.move(p, *at)
     return parts
 
@@ -136,7 +136,7 @@ def gingerbread_house():
     parts.append(lpm.box("window", (0.15, 0.022, 0.15), at=(0.3, front - 0.012, base + 0.145), color=C["window"]))
     parts.append(lpm.box("mullion_h", (0.16, 0.026, 0.02), at=(0.3, front - 0.014, base + 0.21), color=C["icing"]))
     parts.append(lpm.box("mullion_v", (0.02, 0.026, 0.16), at=(0.3, front - 0.014, base + 0.14), color=C["icing"]))
-    wreath = (-0.4, 0.3)
+    wreath = (-0.4, 0.2)
     for k in range(8):
         a = math.radians(45 * k)
         parts.append(lpm.box(f"wreath{k}", (0.05, 0.025, 0.05), at=(wreath[0] + 0.07 * math.cos(a), front - 0.012, wreath[1] + 0.07 * math.sin(a)), color=C["green_dark"] if k % 2 else C["green"]))
