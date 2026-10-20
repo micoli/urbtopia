@@ -1,0 +1,49 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "office",
+  "section": "build.offices",
+  "cost": 1500,
+  "unlockCitizens": 500,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt", "pedestrianWay"],
+  "name": {
+    "en": "Office",
+    "fr": "Bureau"
+  },
+  "description": {
+    "en": "Employs Citizens and earns Urbs for every Job they fill, collected by hand. Needs electricity and a road connection.",
+    "fr": "Emploie des habitants et rapporte des Urbs pour chaque emploi occupé, à collecter à la main. Nécessite de l’électricité et une connexion à une route."
+  },
+  "tiers": [
+    {
+      "model": "buildings-factory-2x2-t1-tone-a",
+      "footprint": [2, 2],
+      "jobs": 40,
+      "power": 1
+    },
+    {
+      "model": "buildings-factory-2x2-t2-tone-a",
+      "jobs": 80,
+      "power": 2,
+      "upgradeCost": {
+        "urbs": 3000,
+        "goods": {
+          "planks": 6
+        }
+      }
+    },
+    {
+      "model": "buildings-factory-2x2-t3-tone-a",
+      "jobs": 120,
+      "power": 3,
+      "upgradeCost": {
+        "urbs": 8000,
+        "goods": {
+          "tiles": 8
+        }
+      }
+    }
+  ],
+  "extraCopyCitizens": [1000, 2000, 4000, 4000],
+  "priceFactor": 1.25
+}

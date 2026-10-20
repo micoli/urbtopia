@@ -58,6 +58,7 @@ export const COLLECTIONS = {
         FacilityType: idsWhere(buildings, ({ kind }) => kind === 'facility'),
         VenueType: idsWhere(buildings, ({ kind }) => kind === 'venue'),
         ShopType: idsWhere(buildings, ({ kind }) => kind === 'shop'),
+        OfficeType: idsWhere(buildings, ({ kind }) => kind === 'office'),
       }),
     },
     schema: buildingSchema,

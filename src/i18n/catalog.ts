@@ -382,6 +382,7 @@ export const CATALOG = {
   'build.industrialColor.c': ['Light grey', 'Gris clair'],
   'build.production': ['Production', 'Production'],
   'build.shops': ['Shops', 'Commerces'],
+  'build.offices': ['Offices', 'Bureaux'],
   'build.storage': ['Storage', 'Stockage'],
   'build.utilities': ['Energy and water', 'Énergie et eau'],
   'build.greenSpaces': ['Green spaces', 'Espaces verts'],

@@ -101,6 +101,10 @@ _Avoid_: Producer, plant
 A Production building that employs people and draws on the city's economic activity: every Production building except the Packhouse. A Factory or a Bakery weighs twice a Workshop or a Mill per Tier.
 _Avoid_: Industrial building, craft building
 
+**Office building**:
+A workplace with Tiers that offers many Jobs and produces only Urbs, in proportion to the Jobs its Commuters fill. The Urbs build up in the building up to a cap set by its Tier and are collected by hand. It uses no Materials or Goods, has no Slots, and is neither a Production building nor an Industry building. Several can be built, up to its Build limit.
+_Avoid_: Tertiary building, company, Venue
+
 **Storehouse**:
 The general storage that holds Materials and Goods, with a limited capacity. Several can be built, up to its Build limit; each has its own Tiers that raise its capacity, and capacities add up.
 _Avoid_: Warehouse, inventory
@@ -290,7 +294,7 @@ The set of Vehicles on the roads, whose size follows Commuters who drive instead
 _Avoid_: Flow, cars
 
 **Commute**:
-The daily journey of a Home's Citizens who do not use public transport, from the Home to the workplaces (Workshop, Factory, Shop, Public facility, Leisure building) by the shortest road path. Commuters fill the nearest workplaces first, up to their Jobs; those who find none do not drive, and those whose workplace is within walking distance walk instead of driving. Modelled per Home in aggregate, never per individual Citizen.
+The daily journey of a Home's Citizens who do not use public transport, from the Home to the workplaces (Workshop, Factory, Office building, Shop, Public facility, Leisure building) by the shortest road path. Commuters fill the nearest workplaces first, up to their Jobs; those who find none do not drive, and those whose workplace is within walking distance walk instead of driving. Modelled per Home in aggregate, never per individual Citizen.
 _Avoid_: Individual Citizen journey, Transit itinerary
 
 **Job**:

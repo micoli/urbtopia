@@ -13,6 +13,7 @@ export const economyBalanceSchema = z
   .strictObject({
     ...schemaField,
     tax: z.strictObject({ urbsPerCitizenPerHour: positive, capHours: positive }),
+    office: z.strictObject({ urbsPerJobPerHour: positive, capHours: positive }),
     market: z.strictObject({ fullPoints: positive, floorPoints: positive, pointsLostPerUnit: positive, recoveryMinutes: positive }),
     // Price of the Slot of each rank, by the number of Slots it brings the Workshop to.
     slotPrices: z.record(z.string().regex(/^\d+$/, 'must be a Slot count'), count),
