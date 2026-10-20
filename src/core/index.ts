@@ -36,7 +36,7 @@ export { NEED_FACTOR_IDS, SANCTIONABLE_FACTOR_IDS } from './environment/needFact
 export type { SanctionableFactorId } from './environment/needFactors';
 export { DEFAULT_DIFFICULTY, DIFFICULTIES, difficultyOf, isDifficulty } from './engine/difficulty';
 export type { Difficulty } from './engine/difficulty';
-export { advancePolitics, approvalOf, isPoliticsActive, politicsDayOf, withApprovalShock, withPolitics } from './politics/politics';
+export { advancePolitics, approvalOf, isPoliticsActive, isPoliticsAdaptingOn, politicsDayOf, withApprovalShock, withPolitics } from './politics/politics';
 export type { PoliticsState } from './politics/politics';
 export { adoptedOrdinances, councilForecast, councilGoodwill, proposalIssue } from './politics/council';
 export type { CouncilForecast, FactionVote, ProposalIssue, Vote } from './politics/council';

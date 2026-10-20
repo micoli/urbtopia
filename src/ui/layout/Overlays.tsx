@@ -22,12 +22,14 @@ import { Toast } from '../system/Toast';
 import { TutorialBanner } from '../tutorial/TutorialBanner';
 import { UpdatePrompt } from '../system/UpdatePrompt';
 import { ServiceCoveragePanel } from '../buildings/ServiceCoveragePanel';
+import { PoliticsWindow } from '../politics/PoliticsWindow';
 
 export function Overlays() {
   return (
     <>
       <CityManagement />
       <ServiceCoveragePanel />
+      <PoliticsWindow />
       <SocialWindow />
       <CodexDialog />
       <CasinoDialog />

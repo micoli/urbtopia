@@ -2466,3 +2466,25 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--panel-fg
 .eco-dashboard .transport-map-line:focus, .eco-dashboard .transport-map-node:focus { outline: none; }
 .eco-dashboard .transport-map-node:focus-visible circle:first-of-type { stroke: #ffd43b; stroke-width: 3px; }
 .eco-dashboard .transport-map-line:focus-visible path:nth-of-type(2) { stroke: #ffd43b; }
+
+.council-display { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; }
+.council-circle { flex-shrink: 0; }
+.council-ring { fill: none; stroke: rgba(255, 255, 255, 0.12); stroke-width: 0.6; }
+.council-seat { stroke-width: 1.2; }
+.council-seat[data-faction='economy'] { fill: #e8a44a; stroke: #e8a44a; }
+.council-seat[data-faction='environment'] { fill: #6bcf8e; stroke: #6bcf8e; }
+.council-seat[data-faction='services'] { fill: #5aa9e6; stroke: #5aa9e6; }
+.council-seat[data-vote='against'] { fill: transparent; }
+.council-legend { margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.council-legend li { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+.politics-window progress { width: 100%; height: 8px; margin: 8px 0; accent-color: var(--eco-accent); }
+.politics-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.politics-row { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; background: var(--eco-surface); }
+.politics-row[data-adopted='true'] { border-left: 3px solid var(--eco-accent); }
+.politics-row[data-locked='true'] { opacity: 0.6; }
+.politics-row[data-escalated='true'] { border-left: 3px solid #d9644f; }
+.politics-row-text { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.politics-row-text p { margin: 0; }
+.politics-row-text small { color: var(--eco-muted); }
+.politics-row-text .politics-row-status { color: #ffd887; }
+.politics-journal { margin: 0; padding-left: 18px; font-size: 13px; color: var(--eco-muted); }

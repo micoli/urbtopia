@@ -1,6 +1,6 @@
 # Town hall panel and Politics window
 
-Status: needs-triage
+Status: resolved
 Blocked by: 04, 05, 06
 Town hall selection panel: one status line and two buttons (Politics window, Codex page). Politics window: first section is the summary of the current state, then Council as a circle of seats (no left/right, no ordering), Ordinances with forecast, Objectives, Petitions. Mobile and desktop, French and English, Storybook stories.
 

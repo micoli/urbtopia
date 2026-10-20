@@ -13,12 +13,14 @@ import { itemMessages } from './items';
 import { natureMessages } from './nature';
 import { challengeMessages } from './challenges';
 import { solidarityMessages } from './solidarity';
+import { politicsMessages } from './politics';
 import { CATALOG, localize } from './catalog';
 import type { MessageKey } from './messages';
 
 export const FR: Record<MessageKey, string> = {
   ...localize(CATALOG, 'fr'),
   ...solidarityMessages('fr'),
+  ...politicsMessages('fr'),
   ...natureMessages('fr'),
   ...challengeMessages('fr'),
   ...casinoMessages('fr'),

@@ -1,4 +1,4 @@
-import { BUILDING_SPECS, createBuilding, fixtureIdsOf, isVenue, newGame, type Building, type BuildingType, type GameState } from '../src/core';
+import { BUILDING_SPECS, createBuilding, fixtureIdsOf, isVenue, newGame, politicsDayOf, withPolitics, type Building, type BuildingType, type GameState } from '../src/core';
 import { buildEvolvedCity } from '../src/saves/evolvedCity';
 
 const FIXTURE_NOW = 1_790_000_000_000;
@@ -41,6 +41,26 @@ function loopLineCity(): GameState {
   return { ...city, roads: [...city.roads, ...roads], buildings: [...city.buildings, ...stops], busLines: [{ id: city.nextId + 3, stops: stopIds, loop: true }], nextId: city.nextId + 4 };
 }
 
+function politicalCity(): GameState {
+  const city = buildEvolvedCity();
+  const day = politicsDayOf({ ...city, adaptationUntil: 0 });
+  const started = withPolitics({ ...city, difficulty: 'medium', adaptationUntil: 0 });
+  const politics = started.politics!;
+  return {
+    ...started,
+    politics: {
+      ...politics,
+      adaptationUntilDay: 0,
+      adopted: ['transitSubsidy'],
+      grantsDue: 450,
+      petitions: [{ id: 1, cause: 'policeStation', parcel: { x: 3, y: 3 }, since: day - 4, escalated: true }, { id: 2, cause: 'pollution', parcel: { x: 4, y: 3 }, since: day - 1, escalated: false }],
+      supports: [{ id: 3, cause: 'greenSpaces', parcel: { x: 3, y: 4 }, since: day }],
+      nextPetitionId: 4,
+      journal: [{ day: day - 2, type: 'objectiveCompleted', subject: 'growth100' }, { day: day - 1, type: 'petitionFiled', subject: 'pollution' }],
+    },
+  };
+}
+
 const SHOWCASE_COLUMNS = 10;
 
 const SHOWCASE_FIXTURES_PER_VENUE = 3;
@@ -68,6 +88,7 @@ export const GAME_FIXTURES = {
   poor: poorCity,
   powerShortage: powerShortageCity,
   evolved: buildEvolvedCity,
+  political: politicalCity,
   showcase: showcaseCity,
   loopLine: loopLineCity,
   brokeEvolved: brokeEvolvedCity,

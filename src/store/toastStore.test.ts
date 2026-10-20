@@ -28,6 +28,13 @@ describe('toastKeyForEvents', () => {
     expect(toastKeyForEvents([{ type: 'BuildingUpgraded', buildingId: 1, tier: 2 }])).toBe('event.buildingUpgraded');
   });
 
+  it('tells the player what the Council decided and when Grants were collected', () => {
+    expect(toastKeyForEvents([{ type: 'OrdinanceAdopted', id: 'greenBelt' }])).toBe('event.ordinanceAdopted');
+    expect(toastKeyForEvents([{ type: 'OrdinanceRejected', id: 'greenBelt' }])).toBe('event.ordinanceRejected');
+    expect(toastKeyForEvents([{ type: 'OrdinanceRepealed', id: 'greenBelt' }])).toBe('event.ordinanceRepealed');
+    expect(toastKeyForEvents([{ type: 'GrantsClaimed', amount: 300 }])).toBe('event.grantsClaimed');
+  });
+
   it('stays silent for events that need no toast', () => {
     expect(toastKeyForEvents([{ type: 'BuildingPlaced', id: 1 }])).toBeNull();
     expect(toastKeyForEvents([])).toBeNull();
