@@ -7,7 +7,19 @@ import type { transitServices } from '../core/transit/transitService';
 
 type Service = ReturnType<typeof transitServices>[number];
 
+// A vehicle is two cars of 0.65 tile, so the vehicles of one line are spread at least this far apart along the route.
+export const VEHICLE_SPACING = 1.65;
+const LANE_OFFSET = 0.1;
+
 const VEHICLE_MODELS = Object.fromEntries(FLEET_VEHICLES.map(({ id, models }) => [id, models.map(modelFileOf)])) as Record<TransitVehicleKind, string[]>;
+
+// Vehicles of one line are evenly spread along it; the ones that do not fit at the minimum spacing stay out of the picture.
+export function slotOf(service: Pick<Service, 'route' | 'loop' | 'operatingVehicleIds'>, vehicleId: number): { phase: number; hidden: boolean } {
+  const cycle = (service.loop ? 1 : 2) * Math.max(0, (service.route?.length ?? 0) - 1);
+  const slots = Math.max(1, Math.min(service.operatingVehicleIds.length, Math.floor(cycle / VEHICLE_SPACING)));
+  const order = Math.max(0, service.operatingVehicleIds.indexOf(vehicleId));
+  return { phase: (order % slots) * cycle / slots, hidden: order >= slots };
+}
 
 export class TransitLayer {
   readonly root = new THREE.Group();
@@ -16,7 +28,7 @@ export class TransitLayer {
   private vehicles = new THREE.Group();
   private trackSignature = '';
   private fleetSignature = '';
-  private moving: { mesh: THREE.Group; route: { x: number; y: number }[]; loop: boolean; phase: number; speed: number; brt: boolean; kind: TransitVehicleKind }[] = [];
+  private moving: { mesh: THREE.Group; route: { x: number; y: number }[]; loop: boolean; phase: number; speed: number; brt: boolean; kind: TransitVehicleKind; hidden: boolean }[] = [];
   private disposed = false;
   private modelsReady = false;
   private crossings = new Set<string>();
@@ -42,8 +54,10 @@ export class TransitLayer {
       const service = services.find(l => l.id === vehicle.lineId);
       if (!service?.active || !service.route || !service.operatingVehicleIds.includes(vehicle.id)) continue;
       const mesh = this.makeVehicle(vehicle.kind);
+      const { phase, hidden } = slotOf(service, vehicle.id);
+      mesh.visible = !hidden;
       this.vehicles.add(mesh);
-      this.moving.push({ mesh, route: service.route, loop: !!service.loop, phase: vehicle.id % Math.max(1, (service.loop ? 1 : 2) * (service.route.length - 1)), speed: service.mode === 'rail' ? 2 : 1.5, brt: service.mode === 'brt', kind: vehicle.kind });
+      this.moving.push({ mesh, route: service.route, loop: !!service.loop, phase, hidden, speed: service.mode === 'rail' ? 2 : 1.5, brt: service.mode === 'brt', kind: vehicle.kind });
     }
     this.update(0);
   }
@@ -52,14 +66,16 @@ export class TransitLayer {
     this.priorityTiles.clear();
     for (const vehicle of this.moving) {
       const length = vehicle.route.length - 1;
-      if (length < 1) continue;
+      if (length < 1 || vehicle.hidden) continue;
       vehicle.phase = (vehicle.phase + Math.max(0, delta) * vehicle.speed) % ((vehicle.loop ? 1 : 2) * length);
       const returning = !vehicle.loop && vehicle.phase > length;
       const offset = returning ? 2 * length - vehicle.phase : vehicle.phase;
       const i = Math.min(length - 1, Math.floor(offset)), f = offset - i;
       const a = vehicle.route[i]!, b = vehicle.route[i + 1]!;
-      vehicle.mesh.position.set(a.x + .5 + (b.x - a.x) * f, .12, a.y + .5 + (b.y - a.y) * f);
-      vehicle.mesh.rotation.y = Math.atan2((b.x - a.x) * (returning ? -1 : 1), (b.y - a.y) * (returning ? -1 : 1));
+      const yaw = Math.atan2((b.x - a.x) * (returning ? -1 : 1), (b.y - a.y) * (returning ? -1 : 1));
+      const side = vehicle.loop ? 0 : LANE_OFFSET;
+      vehicle.mesh.position.set(a.x + .5 + (b.x - a.x) * f + Math.cos(yaw) * side, .12, a.y + .5 + (b.y - a.y) * f - Math.sin(yaw) * side);
+      vehicle.mesh.rotation.y = yaw;
       if (vehicle.brt) for (const tile of [a, b]) if (this.crossings.has(tileKey(tile))) this.priorityTiles.add(tileKey(tile));
     }
   }

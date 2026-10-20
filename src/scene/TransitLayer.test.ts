@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createBuilding, newGame, transportStats, type GameState, type TransitTile } from '../core';
-import { TransitLayer } from './TransitLayer';
+import { TransitLayer, VEHICLE_SPACING, slotOf } from './TransitLayer';
 
 it('renders dedicated infrastructure in bounded instance groups and animates a priority BRT crossing', () => {
   const layer = new TransitLayer();
@@ -15,7 +15,10 @@ it('renders dedicated infrastructure in bounded instance groups and animates a p
   expect(vehicle).toBeDefined();
   layer.update(-1);
   expect(vehicle.position.toArray().every(Number.isFinite)).toBe(true);
-  layer.update((198 - 5 + 1) / 1.5);
+  expect(vehicle.position.z).toBeCloseTo(0.5 - 0.1);
+  layer.update(99.5 / 1.5);
+  expect(vehicle.position.z).toBeCloseTo(0.5 + 0.1);
+  layer.update((198 + 1 - 99.5) / 1.5);
   expect(layer.priorityTiles.has('1,0')).toBe(true);
   const stopped = { ...state, urbs: 0 };
   layer.sync(stopped, transportStats(stopped).lines);
@@ -47,4 +50,22 @@ it('loads Kenney electric and coal Trains without disposing the library models',
   const dispose = vi.spyOn(geometry, 'dispose');
   layer.dispose();
   expect(dispose).not.toHaveBeenCalled();
+});
+
+describe('spacing of the vehicles of one line', () => {
+  const route = Array.from({ length: 21 }, (_, x) => ({ x, y: 0 }));
+
+  it('spreads them evenly so that none is closer than a vehicle length plus the safety distance', () => {
+    const service = { route, loop: false, operatingVehicleIds: [3, 4, 5, 6] };
+    const phases = service.operatingVehicleIds.map((id) => slotOf(service, id).phase).sort((a, b) => a - b);
+    for (let index = 1; index < phases.length; index++) expect(phases[index]! - phases[index - 1]!).toBeGreaterThanOrEqual(VEHICLE_SPACING);
+    expect(phases[0]! + 40 - phases.at(-1)!).toBeGreaterThanOrEqual(VEHICLE_SPACING);
+  });
+
+  it('keeps the vehicles that do not fit out of the picture instead of stacking them', () => {
+    const shortLoop = { route: route.slice(0, 5), loop: true, operatingVehicleIds: [1, 2, 3, 4, 5, 6] };
+    const slots = shortLoop.operatingVehicleIds.map((id) => slotOf(shortLoop, id));
+    expect(slots.filter((slot) => !slot.hidden)).toHaveLength(Math.floor(4 / VEHICLE_SPACING));
+    expect(slots.filter((slot) => slot.hidden).length).toBeGreaterThan(0);
+  });
 });
