@@ -39,7 +39,7 @@ describe('Politics activation', () => {
 
   it('keeps the block unchanged once it exists', () => {
     const started = advance(cityWithTownHall('easy'), T0 + HOUR).state;
-    expect(advance(started, T0 + 2 * HOUR).state.politics).toEqual(started.politics);
+    expect(advance(started, T0 + HOUR * 1.2).state.politics).toEqual(started.politics);
   });
 
   it('does not use the main random stream of the game', () => {

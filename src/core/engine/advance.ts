@@ -17,7 +17,7 @@ import { advanceVenues, venueBoundaries } from '../venues/venues';
 import { progressTutorial } from '../progression/tutorial';
 import { progressVenueTutorials } from '../progression/venueTutorial';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { withPolitics } from '../politics/politics';
+import { advancePolitics, withPolitics } from '../politics/politics';
 
 export interface AdvanceResult {
   state: GameState;
@@ -48,6 +48,7 @@ function replay(state: GameState, until: number): AdvanceResult {
   let current = state;
   const events: GameEvent[] = [];
   while (current.lastSeen < until) {
+    current = advancePolitics(current);
     const now = current.lastSeen;
     const idleShops = idleShopIds(current, now);
     const overdue = current.buildings.some(b => b.queue.some(q => !q.done && q.startedAt !== null && q.startedAt + q.duration <= now) || (!idleShops.has(b.id) && b.stacks.some(stack => stack.stock > 0 && stack.nextSaleAt !== null && stack.nextSaleAt <= now)));
@@ -105,7 +106,7 @@ function replay(state: GameState, until: number): AdvanceResult {
       buildings: withVenues.buildings.map(b => updateBattery(b, energy.batteryRates.get(b.id) ?? 0, batteryEnds.get(b.id), end, elapsed))
     };
   }
-  return { state: withPolitics(progressVenueTutorials(progressTutorial(current))), events };
+  return { state: advancePolitics(withPolitics(progressVenueTutorials(progressTutorial(current)))), events };
 }
 
 function updateBattery(building: Building, rate: number, boundary: number | undefined, now: number, elapsedMs: number): Building {

@@ -32,6 +32,30 @@ describe('validateGameState', () => {
     expect(loaded.state.difficulty).toBeUndefined();
   });
 
+  it('keeps the politics block across a round trip', () => {
+    const politics = { rngState: 123, approval: 40, shock: 2, day: 5 };
+    const city = { ...state, difficulty: 'easy' as const, politics };
+    expect(validateGameState(city)).not.toBeNull();
+    const loaded = parseEnvelope(serializeEnvelope(city, T0));
+    expect(loaded.ok && loaded.state.politics).toEqual(politics);
+  });
+
+  it.each([
+    ['a number', 1],
+    ['null', null],
+    ['a block without a stream', {}],
+    ['an Approval above 100', { rngState: 1, approval: 120, shock: 0, day: 0 }],
+    ['a fractional day', { rngState: 1, approval: 50, shock: 0, day: 1.5 }],
+  ])('rejects a politics block that is %s', (_label, politics) => {
+    expect(validateGameState({ ...state, politics })).toBeNull();
+  });
+
+  it('loads a city saved before politics existed without a politics block', () => {
+    const loaded = parseEnvelope(JSON.stringify(fixtureV3));
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.politics).toBeUndefined();
+  });
+
   it('accepts a fresh game and a played game', () => {
     expect(validateGameState(state)).not.toBeNull();
     expect(parseEnvelope(JSON.stringify(fixtureV3)).ok).toBe(true);

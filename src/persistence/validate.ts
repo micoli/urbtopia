@@ -239,7 +239,7 @@ function structureFailure(value: Json): string | null {
     entries('bridges', () => value.bridges, isBridge, true),
     field('casinoRng', () => value.casinoRng === undefined || isNumber(value.casinoRng)),
     field('difficulty', () => value.difficulty === undefined || isDifficulty(value.difficulty)),
-    field('politics', () => value.politics === undefined || (isRecord(value.politics) && isNumber(value.politics.rngState))),
+    field('politics', () => value.politics === undefined || (isRecord(value.politics) && isNumber(value.politics.rngState) && isNumber(value.politics.approval) && value.politics.approval >= 0 && value.politics.approval <= 100 && isNumber(value.politics.shock) && isInt(value.politics.day, 0))),
     field('challenge', () => value.challenge === undefined || isChallengeProgress(value.challenge)),
     entries('challengeClaims', () => value.challengeClaims, isChallengeClaim, true),
     field('ecologyDismissed', () => value.ecologyDismissed === undefined || typeof value.ecologyDismissed === 'boolean'),
