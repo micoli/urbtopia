@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { createBuilding, newGame, transportStats, type GameState, type TransitTile } from '../core';
-import { MODE_LOOK, TransitLayer, VEHICLE_SPACING, slotOf } from './TransitLayer';
+import { MODE_LOOK, TransitLayer, VEHICLE_SPACING, poseAlong, slotOf } from './TransitLayer';
 
 it('renders dedicated infrastructure in bounded instance groups and animates a priority BRT crossing', () => {
   const layer = new TransitLayer();
@@ -15,10 +15,7 @@ it('renders dedicated infrastructure in bounded instance groups and animates a p
   expect(vehicle).toBeDefined();
   layer.update(-1);
   expect(vehicle.position.toArray().every(Number.isFinite)).toBe(true);
-  expect(vehicle.position.z).toBeCloseTo(0.5 - MODE_LOOK.brt.lane);
-  layer.update(99.5 / 1.5);
-  expect(vehicle.position.z).toBeCloseTo(0.5 + MODE_LOOK.brt.lane);
-  layer.update((198 + 1 - 99.5) / 1.5);
+  layer.update(199 / 1.5);
   expect(layer.priorityTiles.has('1,0')).toBe(true);
   const stopped = { ...state, urbs: 0 };
   layer.sync(stopped, transportStats(stopped).lines);
@@ -43,9 +40,13 @@ it('loads Kenney electric and coal Trains without disposing the library models',
   layer.sync(state, transportStats(state).lines);
   expect(library.ensure).toHaveBeenCalledWith(TRAIN_MODELS);
   expect(layer.root.children[1]!.children).toHaveLength(2);
+  layer.update(1);
   for (const train of layer.root.children[1]!.children) {
-    expect(train.children).toHaveLength(2);
+    const cars = train.children[0]!.children;
+    expect(cars).toHaveLength(2);
     expect(new THREE.Box3().setFromObject(train).getSize(new THREE.Vector3()).length()).toBeGreaterThan(1);
+    expect(Math.abs(cars[0]!.position.x - cars[1]!.position.x)).toBeCloseTo(0.7 * MODE_LOOK.rail.size);
+    expect(Math.abs(cars[0]!.position.z - 0.5)).toBeCloseTo(MODE_LOOK.rail.lane);
   }
   const dispose = vi.spyOn(geometry, 'dispose');
   layer.dispose();
@@ -76,5 +77,30 @@ describe('spacing of the vehicles of one line', () => {
     const rail = line.operatingVehicleIds.filter((id) => !slotOf({ ...line, mode: 'rail' }, id).hidden).length;
     expect(rail).toBeLessThan(brt);
     expect(10 / rail).toBeGreaterThanOrEqual(VEHICLE_SPACING * MODE_LOOK.rail.size);
+  });
+});
+
+describe('articulated vehicles', () => {
+  const bend = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 2, y: 1 }, { x: 2, y: 2 }];
+
+  it('lets each car turn on its own at a corner of the route', () => {
+    const head = poseAlong(bend, false, 2.4);
+    const tail = poseAlong(bend, false, 1.7);
+    expect(head.yaw).toBeCloseTo(0);
+    expect(tail.yaw).toBeCloseTo(Math.PI / 2);
+    expect(head.x).toBeCloseTo(2.5);
+    expect(head.z).toBeCloseTo(0.9);
+  });
+
+  it('keeps following the route round the end of a line that is not a loop', () => {
+    const head = poseAlong(bend, false, 4 + 0.3);
+    const tail = poseAlong(bend, false, 4 - 0.1);
+    expect(tail.yaw).toBeCloseTo(0);
+    expect(Math.abs(head.yaw)).toBeCloseTo(Math.PI);
+    expect(tail.z).toBeGreaterThan(head.z);
+  });
+
+  it('wraps round a loop', () => {
+    expect(poseAlong(bend, true, -0.5).z).toBeCloseTo(poseAlong(bend, true, 3.5).z);
   });
 });

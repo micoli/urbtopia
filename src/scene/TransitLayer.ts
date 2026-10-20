@@ -12,6 +12,9 @@ export const VEHICLE_SPACING = 1.65;
 // How much bigger than a bus a vehicle of each mode is drawn, and how far to the side it runs on a shared track.
 export const MODE_LOOK = { rail: { size: 1.8, lane: 0.22 }, brt: { size: 1, lane: 0.16 } } as const;
 
+// Distance between the centres of two cars of a vehicle, for a bus-sized one: a car is 0.65 tile long.
+const CAR_PITCH = 0.7;
+
 const VEHICLE_MODELS = Object.fromEntries(FLEET_VEHICLES.map(({ id, models }) => [id, models.map(modelFileOf)])) as Record<TransitVehicleKind, string[]>;
 
 // Vehicles of one line are evenly spread along it; the ones that do not fit at the minimum spacing stay out of the picture.
@@ -22,6 +25,27 @@ export function slotOf(service: Pick<Service, 'route' | 'loop' | 'operatingVehic
   return { phase: (order % slots) * cycle / slots, hidden: order >= slots };
 }
 
+interface RoutePose {
+  x: number;
+  z: number;
+  yaw: number;
+  from: { x: number; y: number };
+  to: { x: number; y: number };
+}
+
+// Where a car is on its route: `phase` runs along the route and, on a line that is not a loop, back along it.
+export function poseAlong(route: readonly { x: number; y: number }[], loop: boolean, phase: number): RoutePose {
+  const length = route.length - 1;
+  const cycle = (loop ? 1 : 2) * length;
+  const wrapped = ((phase % cycle) + cycle) % cycle;
+  const returning = !loop && wrapped > length;
+  const offset = returning ? 2 * length - wrapped : wrapped;
+  const index = Math.min(length - 1, Math.floor(offset)), fraction = offset - index;
+  const from = route[index]!, to = route[index + 1]!;
+  const direction = returning ? -1 : 1;
+  return { x: from.x + .5 + (to.x - from.x) * fraction, z: from.y + .5 + (to.y - from.y) * fraction, yaw: Math.atan2((to.x - from.x) * direction, (to.y - from.y) * direction), from, to };
+}
+
 export class TransitLayer {
   readonly root = new THREE.Group();
   readonly priorityTiles = new Set<string>();
@@ -29,7 +53,7 @@ export class TransitLayer {
   private vehicles = new THREE.Group();
   private trackSignature = '';
   private fleetSignature = '';
-  private moving: { mesh: THREE.Group; route: { x: number; y: number }[]; loop: boolean; phase: number; speed: number; brt: boolean; kind: TransitVehicleKind; hidden: boolean; lane: number }[] = [];
+  private moving: { mesh: THREE.Group; route: { x: number; y: number }[]; loop: boolean; phase: number; speed: number; brt: boolean; kind: TransitVehicleKind; hidden: boolean; lane: number; pitch: number }[] = [];
   private disposed = false;
   private modelsReady = false;
   private crossings = new Set<string>();
@@ -37,7 +61,7 @@ export class TransitLayer {
   constructor(private library?: ModelLibrary) {
     this.root.add(this.tracks, this.vehicles);
     if (!library) return;
-    void library.ensure(TRAIN_MODELS).then(() => { if (this.disposed) return; this.modelsReady = true; this.fleetSignature = ''; for (const vehicle of this.moving) { vehicle.mesh.add(this.makeVehicle(vehicle.kind)); } });
+    void library.ensure(TRAIN_MODELS).then(() => { if (this.disposed) return; this.modelsReady = true; this.fleetSignature = ''; for (const vehicle of this.moving) { vehicle.mesh.add(this.makeVehicle(vehicle.kind)); } this.update(0); });
   }
 
   sync(state: GameState, services: Service[]) {
@@ -54,31 +78,36 @@ export class TransitLayer {
     for (const vehicle of state.transitFleet ?? []) {
       const service = services.find(l => l.id === vehicle.lineId);
       if (!service?.active || !service.route || !service.operatingVehicleIds.includes(vehicle.id)) continue;
-      const mesh = this.makeVehicle(vehicle.kind);
+      const mesh = new THREE.Group();
+      mesh.add(this.makeVehicle(vehicle.kind));
       const look = MODE_LOOK[service.mode as 'rail' | 'brt'];
       const { phase, hidden } = slotOf({ ...service, mode: service.mode as 'rail' | 'brt' }, vehicle.id);
       mesh.visible = !hidden;
       this.vehicles.add(mesh);
-      this.moving.push({ mesh, route: service.route, loop: !!service.loop, phase, hidden, speed: service.mode === 'rail' ? 2 : 1.5, brt: service.mode === 'brt', kind: vehicle.kind, lane: look.lane });
+      this.moving.push({ mesh, route: service.route, loop: !!service.loop, phase, hidden, speed: service.mode === 'rail' ? 2 : 1.5, brt: service.mode === 'brt', kind: vehicle.kind, lane: look.lane, pitch: CAR_PITCH * look.size });
     }
     this.update(0);
   }
 
+  // Each car follows the route on its own, a pitch behind the one in front, so a long vehicle bends round the corners like an articulated bus.
   update(delta: number) {
     this.priorityTiles.clear();
     for (const vehicle of this.moving) {
       const length = vehicle.route.length - 1;
       if (length < 1 || vehicle.hidden) continue;
       vehicle.phase = (vehicle.phase + Math.max(0, delta) * vehicle.speed) % ((vehicle.loop ? 1 : 2) * length);
-      const returning = !vehicle.loop && vehicle.phase > length;
-      const offset = returning ? 2 * length - vehicle.phase : vehicle.phase;
-      const i = Math.min(length - 1, Math.floor(offset)), f = offset - i;
-      const a = vehicle.route[i]!, b = vehicle.route[i + 1]!;
-      const yaw = Math.atan2((b.x - a.x) * (returning ? -1 : 1), (b.y - a.y) * (returning ? -1 : 1));
+      const cars = vehicle.mesh.children[0]?.children ?? [];
+      const carCount = Math.max(cars.length, VEHICLE_MODELS[vehicle.kind].length);
       const side = vehicle.loop ? 0 : vehicle.lane;
-      vehicle.mesh.position.set(a.x + .5 + (b.x - a.x) * f + Math.cos(yaw) * side, .12, a.y + .5 + (b.y - a.y) * f - Math.sin(yaw) * side);
-      vehicle.mesh.rotation.y = yaw;
-      if (vehicle.brt) for (const tile of [a, b]) if (this.crossings.has(tileKey(tile))) this.priorityTiles.add(tileKey(tile));
+      for (let index = 0; index < carCount; index++) {
+        const pose = poseAlong(vehicle.route, vehicle.loop, vehicle.phase + vehicle.pitch * (0.5 - index));
+        const car = cars[index];
+        if (car) {
+          car.position.set(pose.x + Math.cos(pose.yaw) * side, .12, pose.z - Math.sin(pose.yaw) * side);
+          car.rotation.y = pose.yaw;
+        }
+        if (vehicle.brt) for (const tile of [pose.from, pose.to]) if (this.crossings.has(tileKey(tile))) this.priorityTiles.add(tileKey(tile));
+      }
     }
   }
 
@@ -109,14 +138,14 @@ export class TransitLayer {
     const size = MODE_LOOK[FLEET_VEHICLES.find(({ id }) => id === kind)?.mode ?? 'brt'].size;
     const group = new THREE.Group();
     if (!this.modelsReady || !this.library) return group;
-    for (const [index, key] of VEHICLE_MODELS[kind].entries()) {
+    for (const key of VEHICLE_MODELS[kind]) {
       const model = this.library.get(key).clone(true);
       const bounds = new THREE.Box3().setFromObject(model);
       const center = bounds.getCenter(new THREE.Vector3());
       const fitted = new THREE.Group();
       fitted.scale.setScalar(.65 * size / bounds.getSize(new THREE.Vector3()).z);
       model.position.sub(new THREE.Vector3(center.x, bounds.min.y, center.z));
-      fitted.position.z = (index === 0 ? .35 : -.35) * size; fitted.add(model); group.add(fitted);
+      fitted.add(model); group.add(fitted);
     }
     group.userData.sharedModel = true;
     return group;
