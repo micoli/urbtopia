@@ -5,6 +5,7 @@ import { VenuePanel } from '../venue/VenuePanel';
 import { FarmPanel } from './FarmPanel';
 import { HomePanel } from './HomePanel';
 import { MarinaPanel } from './MarinaPanel';
+import { OfficePanel } from './OfficePanel';
 import { ProductionPanel } from './ProductionPanel';
 import { ShopPanel } from './ShopPanel';
 import { StoragePanel } from './StoragePanel';
@@ -18,5 +19,6 @@ export const PANEL_BY_KIND: Partial<Record<BuildingKind, ComponentType<{ buildin
   casino: CasinoPanel,
   venue: VenuePanel,
   shop: ShopPanel,
+  office: OfficePanel,
   storage: StoragePanel,
 };

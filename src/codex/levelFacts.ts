@@ -2,7 +2,7 @@ import {
   CASINO_GAMES, COAL_CAPACITY, marinaCapacity, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
   FIXTURES, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
-  type StorageType, type UtilityType, type ProductionType, type ShopType, type BuildingKind, isStorageType, kindOf, BUILDING_SPECS, canHaveSolarPanels, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf, isProductionType,
+  type StorageType, type UtilityType, type ProductionType, type ShopType, type BuildingKind, isStorageType, kindOf, BUILDING_SPECS, canHaveSolarPanels, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf, isProductionType, isOfficeType, officeTierOf,
 } from '../core';
 import { t } from '../i18n/t';
 import type { MessageKey } from '../i18n/messages';
@@ -143,6 +143,10 @@ function shopFacts(id: ShopType, level: number): LevelFact[] {
   ];
 }
 
+function officeFacts(id: BuildingType, level: number): LevelFact[] {
+  return [numericFact('codex.fact.jobs', tier => officeTierOf({ type: id, tier }).jobs, level)];
+}
+
 function facilityFacts(id: BuildingType, level: number): LevelFact[] {
   if (!isFacilityType(id) || FACILITIES[id].capacity === null) return [];
   return [numericFact('codex.fact.capacity', tier => facilityCapacity(id, tier) ?? 0, level)];
@@ -160,6 +164,7 @@ const FACT_RULES: Record<BuildingKind, (id: BuildingType, level: number) => Leve
   nature: greenFacts,
   marina: (_id, level) => [numericFact('codex.fact.boats', tier => marinaCapacity({ tier }), level)],
   shop: (id, level) => (isShopType(id) ? shopFacts(id, level) : []),
+  office: (id, level) => (isOfficeType(id) ? officeFacts(id, level) : []),
   casino: (_id, level) => casinoFacts(level),
   venue: (id, level) => (isVenueType(id) ? venueFacts(id, level) : []),
   facility: facilityFacts,

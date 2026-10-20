@@ -14,6 +14,7 @@ import type { GameEvent } from './events';
 import { neighbour, tileKey } from '../map/geometry';
 import { utilityCapacity, utilityDemand, type UtilityTotals } from '../buildings/city';
 import { HOME_TIERS, SHOP, TAX, SLOT_PRICES } from '../economy/economy';
+import { OFFICE, isOfficeType, officeUrbsDue } from '../economy/offices';
 import { canSell, isShopType, saleIntervalOf, shopTierOf, slotPriceOf } from '../economy/shops';
 import { GOODS, isGood, isMaterial, minTierOf, producibleItems, recipeOf, type GoodId } from '../economy/items';
 import { marketQuote } from '../economy/market';
@@ -729,6 +730,7 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
   if (!building) return fail('error.unknownBuilding');
   if (isShopType(building.type)) return collectShopEarnings(state, building);
   if (isHomeType(building.type)) return collectTax(state, building);
+  if (isOfficeType(building.type)) return collectOfficeEarnings(state, building);
   if (isVenue(building)) return collectTakings(state, building);
   if (!building.queue.some((entry) => entry.done)) return fail('error.nothingToCollect');
   if (!hasStorage(state)) return fail('error.noStorehouse');
@@ -898,6 +900,20 @@ function canLoseUtility(state: GameState, sold: Building): boolean {
   const capacity = utilityCapacity(remaining);
   const demand = utilityDemand(remaining);
   return sold.type === 'powerPlant' || capacity.water >= demand.water;
+}
+
+function collectOfficeEarnings(state: GameState, building: Building): CommandOutcome {
+  const due = officeUrbsDue(building);
+  if (due === 0) return fail('error.nothingToCollect');
+  const remainder = building.taxCitizenMs - due * OFFICE.hourMs / OFFICE.urbsPerJobPerHour;
+  return {
+    state: {
+      ...state,
+      urbs: state.urbs + due,
+      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, taxCitizenMs: remainder } : candidate)),
+    },
+    events: [{ type: 'ItemsCollected', buildingId: building.id }],
+  };
 }
 
 function collectTax(state: GameState, building: Building): CommandOutcome {

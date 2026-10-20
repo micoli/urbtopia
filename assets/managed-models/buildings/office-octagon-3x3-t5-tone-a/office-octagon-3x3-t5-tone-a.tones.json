@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "custom",
+  "color": "#464b63"
+ },
+ "b": {
+  "name": "greygreen",
+  "color": "#6f8f7c"
+ },
+ "c": {
+  "name": "custom",
+  "color": "#8a6a4a"
+ },
+ "d": {
+  "name": "custom",
+  "color": "#2a2d38"
+ }
+}

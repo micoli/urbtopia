@@ -7,6 +7,7 @@ import { GAME_CONFIG, greenProfileOf, natureModelOf, isFacilityType, placementCo
 import { t } from '../../i18n/t';
 import { FacilityPanel } from './FacilityPanel';
 import { BuildingAccess } from './BuildingAccess';
+import { BuildingJobs } from './BuildingJobs';
 import { SolarPanelsRow } from './SolarPanelsRow';
 import { useUi } from '../common/hooks';
 import { PANEL_BY_KIND } from './panelsByKind';
@@ -33,6 +34,7 @@ export function SelectionContentPanel() {
     <>
       <PanelHeader title={t(`building.${building.type}`)} subtitle={building.tier} onClose={() => select(null)} />
       <BuildingAccess building={building} />
+      <BuildingJobs building={building} />
       {isTransitStopType(building.type) ? <StopNameField building={building} /> : null}
       {KindPanel ? <KindPanel building={building} /> : null}
       {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}

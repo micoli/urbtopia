@@ -29,9 +29,9 @@ export function paintKitOf(model: string): PaintKit | undefined {
 }
 
 const LEGACY_COLOR_KINDS: readonly string[] = ['home', 'shop', 'production', 'storage', 'utility', 'venue', 'sport'];
-const REPAINTABLE_KINDS: readonly string[] = [...LEGACY_COLOR_KINDS, 'transitStop'];
+const REPAINTABLE_KINDS: readonly string[] = [...LEGACY_COLOR_KINDS, 'transitStop', 'office'];
 
-// Homes, shops, Venues, production, storage, utility buildings and the Transit hub, as long as their model comes from a kit with palette variations.
+// Homes, shops, Venues, production, storage, utility buildings, Offices and the Transit hub, as long as their model comes from a kit with palette variations.
 const REPAINTABLE_TYPES: ReadonlySet<string> = new Set(
   BUILDING_ENTRIES
     .filter(({ kind, model }) => REPAINTABLE_KINDS.includes(kind ?? '') && paintKitOf(model) !== undefined)

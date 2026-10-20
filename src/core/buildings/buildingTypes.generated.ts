@@ -242,6 +242,7 @@ export type BuildingId =
   | 'nature-tree-thin'
   | 'nature-tree-thin-dark'
   | 'nature-tree-thin-fall'
+  | 'office'
   | 'oliveTree'
   | 'packhouse'
   | 'park'
@@ -525,3 +526,6 @@ export type ShopType =
   | 'shopEquipment'
   | 'shopFood'
   | 'shopLuxury';
+
+export type OfficeType =
+  | 'office';

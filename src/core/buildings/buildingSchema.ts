@@ -189,6 +189,16 @@ const shopBuilding = z.strictObject({
   ),
 });
 
+// An Office only earns Urbs, from the Jobs its Tier offers that Commuters fill; it draws power like any workplace.
+const officeBuilding = z.strictObject({
+  kind: z.literal('office'),
+  ...identity,
+  ...sited,
+  ...repeatable,
+  ...panelled,
+  tiers: tiersOf({ ...homeLook, jobs: z.int().min(1), power: positive }, ['model', 'footprint', 'jobs', 'power']),
+});
+
 // The Marina: the number of Boats each Tier moors.
 const marinaBuilding = z.strictObject({
   kind: z.literal('marina'),
@@ -227,7 +237,7 @@ const venueBuilding = z.strictObject({
 });
 
 export const buildingSchema = z
-  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, greenBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, shopBuilding, venueBuilding, marinaBuilding, transitStopBuilding])
+  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, greenBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, shopBuilding, officeBuilding, venueBuilding, marinaBuilding, transitStopBuilding])
   .refine(building => building.kind === 'nature' || !building.accessModes || building.requiresRoad, { message: 'accessModes needs requiresRoad', path: ['accessModes'] })
   .meta({ title: 'Building', description: 'A building of Urbtopia, one file per building id in assets/defs/buildings.' });
 

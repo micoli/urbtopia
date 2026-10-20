@@ -59,6 +59,7 @@ export interface CongestionStats {
   slowedLines: number;
   modes: { car: number; transit: number; walking: number; cycling: number };
   jobs: number;
+  filledJobs: ReadonlyMap<number, number>;
   unemployed: number;
   shift: ModalShift;
   worstBottleneck: SectionLoad | null;
@@ -252,6 +253,7 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     slowedLines: [...busSpeeds.values()].filter((speed) => speed.slowed).length,
     modes: { car: commutersTotal, transit: transitTotal, walking: walkersTotal, cycling: cyclistsTotal },
     jobs,
+    filledJobs: new Map([...workplaces.map((workplace): [number, number] => [workplace.building.id, jobsOf(workplace.building) - (jobsLeft.get(workplace.building.id) ?? 0)]), ...brtOnlyFilledJobs(state, covered)]),
     unemployed: unemployedTotal,
     shift: NO_SHIFT,
     worstBottleneck: worstSection(sections),
@@ -264,6 +266,13 @@ function brtOnlyJobs(state: GameState, covered: TransitCoverage): number {
   return state.buildings
     .filter((building) => workplaceTypes.includes(building.type) && hasBrtOnlyAccess(state, building) && covered.activities.has(building.id))
     .reduce((sum, building) => sum + jobsOf(building), 0);
+}
+
+// A workplace reached by BRT only has its Jobs filled by Riders, so a covered one counts as fully staffed.
+function brtOnlyFilledJobs(state: GameState, covered: TransitCoverage): [number, number][] {
+  return state.buildings
+    .filter((building) => workplaceTypes.includes(building.type) && hasBrtOnlyAccess(state, building) && covered.activities.has(building.id))
+    .map((building) => [building.id, jobsOf(building)]);
 }
 
 function isBrtOnly(state: GameState, home: Endpoint): boolean {
@@ -312,6 +321,7 @@ function noCommute(state: GameState, homes: Endpoint[], jobs: number, covered: T
     slowedLines: 0,
     modes: { car: 0, transit, walking: 0, cycling: 0 },
     jobs: jobs,
+    filledJobs: new Map(brtOnlyFilledJobs(state, covered)),
     unemployed: 0,
     shift: NO_SHIFT,
     worstBottleneck: null,

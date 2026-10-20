@@ -2756,6 +2756,202 @@
     ],
     "rotationOffset": 180
   },
+  "buildings-office-octagon-2x2-t1-tone-a": {
+    "file": "buildings/office-octagon-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "custom",
+        "color": "#464b63"
+      },
+      "b": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      },
+      "c": {
+        "name": "custom",
+        "color": "#8a6a4a"
+      },
+      "d": {
+        "name": "custom",
+        "color": "#2a2d38"
+      }
+    }
+  },
+  "buildings-office-octagon-2x2-t2-tone-a": {
+    "file": "buildings/office-octagon-2x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "custom",
+        "color": "#464b63"
+      },
+      "b": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      },
+      "c": {
+        "name": "custom",
+        "color": "#8a6a4a"
+      },
+      "d": {
+        "name": "custom",
+        "color": "#2a2d38"
+      }
+    }
+  },
+  "buildings-office-octagon-2x2-t3-tone-a": {
+    "file": "buildings/office-octagon-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "custom",
+        "color": "#464b63"
+      },
+      "b": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      },
+      "c": {
+        "name": "custom",
+        "color": "#8a6a4a"
+      },
+      "d": {
+        "name": "custom",
+        "color": "#2a2d38"
+      }
+    }
+  },
+  "buildings-office-octagon-3x3-t4-tone-a": {
+    "file": "buildings/office-octagon-3x3-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "custom",
+        "color": "#464b63"
+      },
+      "b": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      },
+      "c": {
+        "name": "custom",
+        "color": "#8a6a4a"
+      },
+      "d": {
+        "name": "custom",
+        "color": "#2a2d38"
+      }
+    }
+  },
+  "buildings-office-octagon-3x3-t5-tone-a": {
+    "file": "buildings/office-octagon-3x3-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "custom",
+        "color": "#464b63"
+      },
+      "b": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      },
+      "c": {
+        "name": "custom",
+        "color": "#8a6a4a"
+      },
+      "d": {
+        "name": "custom",
+        "color": "#2a2d38"
+      }
+    }
+  },
+  "buildings-office-octagon-3x3-t6-tone-a": {
+    "file": "buildings/office-octagon-3x3-t6-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "custom",
+        "color": "#464b63"
+      },
+      "b": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      },
+      "c": {
+        "name": "custom",
+        "color": "#8a6a4a"
+      },
+      "d": {
+        "name": "custom",
+        "color": "#2a2d38"
+      }
+    }
+  },
+  "buildings-office-octagon-3x3-t7-tone-a": {
+    "file": "buildings/office-octagon-3x3-t7-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "custom",
+        "color": "#464b63"
+      },
+      "b": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      },
+      "c": {
+        "name": "custom",
+        "color": "#8a6a4a"
+      },
+      "d": {
+        "name": "custom",
+        "color": "#2a2d38"
+      }
+    }
+  },
   "buildings-olive-tree-1x1": {
     "file": "buildings/olive-tree-1x1",
     "source": "managed",

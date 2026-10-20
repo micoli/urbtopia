@@ -3,6 +3,8 @@ import { isRetired } from '../buildings/buildingDefinitions';
 import { FACILITIES, FACILITY_TYPES, type FacilityType } from '../services/facilities';
 import { GOODS, MATERIALS, unlockCitizensOf, type ItemId } from '../economy/items';
 import { CASINO } from '../leisure/casino';
+import { OFFICE_TYPES } from '../economy/offices';
+import type { OfficeType } from '../buildings/buildingTypes.generated';
 import { SPORT_VENUES, SPORT_VENUE_TYPES, type SportVenueType } from '../leisure/sportVenues';
 import type { CropId } from '../farming/crops';
 import { ECOLOGY_UNLOCKS } from '../environment/ecology';
@@ -44,7 +46,7 @@ export function nextBuildingUnlock(state: GameState, candidates: readonly Buildi
   return { citizens: next, types: locked.filter(type => ECOLOGY_UNLOCKS[type] === next) };
 }
 
-export function facilitiesUnlockedBetween(before: GameState, after: GameState): (FacilityType | 'casino' | SportVenueType)[] {
+export function facilitiesUnlockedBetween(before: GameState, after: GameState): (FacilityType | 'casino' | SportVenueType | OfficeType)[] {
   const from = totalCitizens(before);
   const to = totalCitizens(after);
   const unlocked = (threshold: number) => threshold > from && threshold <= to;
@@ -52,5 +54,6 @@ export function facilitiesUnlockedBetween(before: GameState, after: GameState): 
     ...FACILITY_TYPES.filter(type => unlocked(FACILITIES[type].unlockCitizens)),
     ...(unlocked(CASINO.unlockCitizens) ? ['casino' as const] : []),
     ...SPORT_VENUE_TYPES.filter(type => unlocked(SPORT_VENUES[type].unlockCitizens)),
+    ...OFFICE_TYPES.filter(type => unlocked(ECOLOGY_UNLOCKS[type] ?? 0)),
   ].filter(type => !isRetired(type));
 }

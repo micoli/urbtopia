@@ -23,6 +23,24 @@
       ],
       "additionalProperties": false
     },
+    "office": {
+      "type": "object",
+      "properties": {
+        "urbsPerJobPerHour": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "capHours": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "urbsPerJobPerHour",
+        "capHours"
+      ],
+      "additionalProperties": false
+    },
     "market": {
       "type": "object",
       "properties": {
@@ -128,6 +146,7 @@
   },
   "required": [
     "tax",
+    "office",
     "market",
     "slotPrices",
     "rush",

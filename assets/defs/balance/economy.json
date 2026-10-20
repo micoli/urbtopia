@@ -4,6 +4,10 @@
     "urbsPerCitizenPerHour": 1,
     "capHours": 8
   },
+  "office": {
+    "urbsPerJobPerHour": 1,
+    "capHours": 8
+  },
   "market": {
     "fullPoints": 60,
     "floorPoints": 30,
