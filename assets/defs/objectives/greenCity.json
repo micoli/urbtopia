@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/objective.schema.json",
+  "name": {
+    "en": "Green city",
+    "fr": "Ville verte"
+  },
+  "description": {
+    "en": "Give Green spaces a share of the city.",
+    "fr": "Consacrer une part de la ville aux espaces verts."
+  },
+  "metric": "greenShare",
+  "target": 0.15,
+  "holdDays": 4,
+  "grant": 600,
+  "unlockCitizens": 40
+}

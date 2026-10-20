@@ -38,6 +38,17 @@ export { DEFAULT_DIFFICULTY, DIFFICULTIES, difficultyOf, isDifficulty } from './
 export type { Difficulty } from './engine/difficulty';
 export { isPoliticsActive, withPolitics } from './politics/politics';
 export type { PoliticsState } from './politics/politics';
+export { FACTION_IDS } from './politics/factions';
+export type { FactionId } from './politics/factions';
+export { POLITICS, politicsRuleOf } from './politics/politicsBalance';
+export type { PoliticsDifficultyRule } from './politics/politicsBalance';
+export { ORDINANCE_ENTRIES, ordinanceById } from './politics/ordinances';
+export type { OrdinanceId } from './politics/ordinances';
+export type { OrdinanceDefinition, OrdinanceEffect } from './politics/ordinanceSchema';
+export { OBJECTIVE_ENTRIES, objectiveById } from './politics/objectives';
+export type { ObjectiveId } from './politics/objectives';
+export { OBJECTIVE_METRICS, OBJECTIVE_METRICS_AT_MOST } from './politics/objectiveSchema';
+export type { ObjectiveDefinition, ObjectiveMetric } from './politics/objectiveSchema';
 export type { Coord } from './map/coord';
 export type { Layout, LayoutHint, RoomReport, VenuePerformance, FixtureSpec, FixtureCategory } from './venues/venues';
 export type { VenueEvent } from './engine/state';

@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/objective.schema.json",
+  "name": {
+    "en": "Clean city",
+    "fr": "Ville propre"
+  },
+  "description": {
+    "en": "Cover every Home with Waste collection.",
+    "fr": "Couvrir tous les logements par la collecte des déchets."
+  },
+  "metric": "wasteCoverage",
+  "target": 1,
+  "holdDays": 3,
+  "grant": 500,
+  "unlockCitizens": 40
+}

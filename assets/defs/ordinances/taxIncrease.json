@@ -1,0 +1,24 @@
+{
+  "$schema": "../schemas/ordinance.schema.json",
+  "name": {
+    "en": "Tax increase",
+    "fr": "Hausse fiscale"
+  },
+  "description": {
+    "en": "Homes pay more Tax.",
+    "fr": "Les logements paient plus de taxe."
+  },
+  "unlockCitizens": 20,
+  "upkeepPerDay": 0,
+  "popular": false,
+  "exclusiveGroup": "tax",
+  "stances": {
+    "economy": -2,
+    "environment": 0,
+    "services": 1
+  },
+  "effect": {
+    "kind": "taxMultiplier",
+    "multiplier": 1.15
+  }
+}

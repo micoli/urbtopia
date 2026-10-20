@@ -1,0 +1,24 @@
+{
+  "$schema": "../schemas/ordinance.schema.json",
+  "name": {
+    "en": "Tax relief",
+    "fr": "Allègement fiscal"
+  },
+  "description": {
+    "en": "Homes pay less Tax.",
+    "fr": "Les logements paient moins de taxe."
+  },
+  "unlockCitizens": 20,
+  "upkeepPerDay": 0,
+  "popular": true,
+  "exclusiveGroup": "tax",
+  "stances": {
+    "economy": 2,
+    "environment": 0,
+    "services": -1
+  },
+  "effect": {
+    "kind": "taxMultiplier",
+    "multiplier": 0.9
+  }
+}

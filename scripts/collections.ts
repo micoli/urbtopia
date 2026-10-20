@@ -3,6 +3,8 @@ import type { FlatBuilding, FlatTier } from '../src/core/buildings/buildingDefin
 import { BUILDING_ID_PATTERN, buildingSchema } from '../src/core/buildings/buildingSchema.ts';
 import { ITEM_ID_PATTERN, goodSchema, materialSchema, type GoodDefinition, type MaterialDefinition } from '../src/core/economy/itemSchemas.ts';
 import { cropSchema, type CropDefinition } from '../src/core/farming/cropSchema.ts';
+import { ordinanceSchema, type OrdinanceDefinition } from '../src/core/politics/ordinanceSchema.ts';
+import { objectiveSchema, type ObjectiveDefinition } from '../src/core/politics/objectiveSchema.ts';
 import { annualEventSchema, type AnnualEventDefinition } from '../src/core/annualEvents/annualEventSchema.ts';
 import { boatSchema, type BoatDefinition } from '../src/core/water/boatSchema.ts';
 import { serviceVehicleSchema, trafficVehicleSchema, transitVehicleSchema, type ServiceVehicleDefinition, type TrafficVehicleDefinition, type TransitVehicleDefinition } from '../src/core/transit/vehicleSchemas.ts';
@@ -156,6 +158,28 @@ export const COLLECTIONS = {
     idPattern: ITEM_ID_PATTERN,
     idRule: 'be camelCase letters and digits',
     fieldOrder: ['name', 'anchor'],
+    references: () => [],
+  },
+  ordinances: {
+    dir: 'ordinances',
+    title: 'Ordinances',
+    schemaName: 'ordinance',
+    idTypes: { file: 'src/core/politics/ordinanceTypes.generated.ts', unions: (ordinances: Record<string, OrdinanceDefinition>) => ({ OrdinanceId: idsWhere(ordinances) }) },
+    schema: ordinanceSchema,
+    idPattern: ITEM_ID_PATTERN,
+    idRule: 'be camelCase letters and digits',
+    fieldOrder: ['name', 'description', 'unlockCitizens', 'upkeepPerDay', 'popular', 'exclusiveGroup', 'stances', 'effect'],
+    references: () => [],
+  },
+  objectives: {
+    dir: 'objectives',
+    title: 'Objectives',
+    schemaName: 'objective',
+    idTypes: { file: 'src/core/politics/objectiveTypes.generated.ts', unions: (objectives: Record<string, ObjectiveDefinition>) => ({ ObjectiveId: idsWhere(objectives) }) },
+    schema: objectiveSchema,
+    idPattern: ITEM_ID_PATTERN,
+    idRule: 'be camelCase letters and digits',
+    fieldOrder: ['name', 'description', 'metric', 'target', 'holdDays', 'grant', 'unlockCitizens'],
     references: () => [],
   },
   transitVehicles: {

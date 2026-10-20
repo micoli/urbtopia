@@ -85,3 +85,49 @@ export const wasteBalanceSchema = z
     adaptationCitizens: count,
   })
   .meta({ title: 'Waste balance', description: 'assets/defs/balance/waste.json: Waste production, Carrying distance.' });
+
+const politicsDifficultyRule = z.strictObject({
+  // Whether the Council, the Approval, the Objectives and the Petitions exist.
+  active: z.boolean(),
+  // Whether an ignored Petition escalates into a Demonstration.
+  demonstrations: z.boolean(),
+  // Whether a Term ends with an Election.
+  election: z.boolean(),
+  // Whether the Approval modulates the amount of a Grant.
+  approvalWeighsOnGrants: z.boolean(),
+  // Whether the Approval sets the goodwill of the Council.
+  approvalWeighsOnCouncil: z.boolean(),
+});
+
+// Mayor, Council, Approval, Objectives and Grants: the Ordinances and the Objectives themselves are Game objects.
+export const politicsBalanceSchema = z
+  .strictObject({
+    ...schemaField,
+    dayHours: positive,
+    term: z.strictObject({ days: z.int().min(1) }),
+    // Days after the first activation during which no Demonstration and no Approval penalty applies.
+    adaptationDays: count,
+    council: z.strictObject({
+      seats: z.strictObject({ economy: z.int().min(1), environment: z.int().min(1), services: z.int().min(1) }),
+      // Days before a rejected Ordinance can be proposed again.
+      reproposeDelayDays: z.int().min(1),
+    }),
+    approval: z.strictObject({
+      initial: z.number().min(0).max(100),
+      // Share of the gap to the target the Approval closes each day.
+      dailyConvergence: share,
+      // Share of a shock that fades each day.
+      shockFadePerDay: share,
+      // Points of Approval, positive or negative, added by one-off events.
+      shocks: z.strictObject({ ordinanceAdopted: z.number(), popularOrdinanceRepealed: z.number(), petitionHandled: z.number(), demonstration: z.number() }),
+    }),
+    objectives: z.strictObject({ activeCount: z.int().min(1) }),
+    difficulties: z.strictObject(Object.fromEntries(DIFFICULTY_IDS.map(id => [id, politicsDifficultyRule])) as Record<(typeof DIFFICULTY_IDS)[number], typeof politicsDifficultyRule>),
+  })
+  .refine(({ difficulties }) => !difficulties.cozy.active, { path: ['difficulties', 'cozy', 'active'], message: 'Cozy has no politics' })
+  .refine(({ difficulties }) => DIFFICULTY_IDS.every((id, index) => {
+    const previous = DIFFICULTY_IDS[index - 1];
+    if (previous === undefined) return true;
+    return (Object.keys(difficulties[id]) as (keyof typeof difficulties.cozy)[]).every(key => difficulties[id][key] || !difficulties[previous][key]);
+  }), { path: ['difficulties'], message: 'each Difficulty must keep everything the one before it has' })
+  .meta({ title: 'Politics balance', description: 'assets/defs/balance/politics.json: Term, Council seats, Approval, Objectives, and what each Difficulty enables.' });

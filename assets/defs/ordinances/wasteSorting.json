@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/ordinance.schema.json",
+  "name": {
+    "en": "Waste sorting",
+    "fr": "Tri des déchets"
+  },
+  "description": {
+    "en": "Homes produce less Waste.",
+    "fr": "Les logements produisent moins de déchets."
+  },
+  "unlockCitizens": 40,
+  "upkeepPerDay": 20,
+  "popular": false,
+  "stances": {
+    "economy": -1,
+    "environment": 2,
+    "services": 1
+  },
+  "effect": {
+    "kind": "wasteSorting",
+    "reduction": 0.25
+  }
+}
