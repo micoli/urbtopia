@@ -9,7 +9,7 @@ import { TownHallPanel } from './TownHallPanel';
 const context = vi.hoisted(() => ({ state: null as GameState | null, politicsOpen: true }));
 vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
-  useUi: (selector: (store: { politicsOpen: boolean; closePolitics: () => void; openPolitics: () => void }) => unknown) => selector({ politicsOpen: context.politicsOpen, closePolitics: () => {}, openPolitics: () => {} }),
+  useUi: (selector: (store: { politicsOpen: boolean; closePolitics: () => void; openPolitics: () => void; openCodex: () => void }) => unknown) => selector({ politicsOpen: context.politicsOpen, closePolitics: () => {}, openPolitics: () => {}, openCodex: () => {} }),
 }));
 vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: vi.fn() }) } }));
 

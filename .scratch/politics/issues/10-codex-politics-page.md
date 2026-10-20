@@ -1,6 +1,6 @@
 # Codex page: Politics
 
-Status: needs-triage
+Status: resolved
 Blocked by: 02
 A Politics page in the Codex, section build.publicFacilities, in the style of SanctionsPage, opened from the Town hall panel like WastePage from Waste facilities. Details every rule of the spec, derived from the Balance table and the live state, per Difficulty, in French and English. Add 'politics' to CodexPage.
 

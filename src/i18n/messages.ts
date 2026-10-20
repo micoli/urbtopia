@@ -14,12 +14,14 @@ import { natureMessages } from './nature';
 import { challengeMessages } from './challenges';
 import { solidarityMessages } from './solidarity';
 import { politicsMessages } from './politics';
+import { politicsCodexMessages } from './politicsCodex';
 import { CATALOG, localize } from './catalog';
 
 export const MESSAGES = {
   ...localize(CATALOG, 'en'),
   ...solidarityMessages('en'),
   ...politicsMessages('en'),
+  ...politicsCodexMessages('en'),
   ...natureMessages('en'),
   ...challengeMessages('en'),
   ...casinoMessages('en'),

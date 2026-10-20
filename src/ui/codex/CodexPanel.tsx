@@ -13,6 +13,7 @@ import { SanctionsPage } from './SanctionsPage';
 import { StorageRulesPage } from './StorageRulesPage';
 import { SolidarityPage } from './SolidarityPage';
 import { WastePage } from './WastePage';
+import { PoliticsPage } from './PoliticsPage';
 import { useCodexManifest } from './useCodexManifest';
 import { CloseButton } from '../common/CloseButton';
 import { ActionButton } from '../common/ActionButton';
@@ -27,6 +28,7 @@ const CODEX_PAGES: readonly { id: CodexPage; section: CodexSection; title: Messa
   { id: 'challenges', section: 'codex.trade', title: 'codex.challenges.title', description: 'codex.challenges.intro' },
   { id: 'solidarity', section: 'codex.trade', title: 'codex.solidarity.title', description: 'codex.solidarity.intro' },
   { id: 'waste', section: 'build.publicFacilities', title: 'codex.waste.title', description: 'codex.waste.intro' },
+  { id: 'politics', section: 'build.publicFacilities', title: 'codex.politics.title', description: 'codex.politics.intro' },
 ];
 
 function matchesSearch(value: string, query: string): boolean {
@@ -48,7 +50,7 @@ export function CodexPanel() {
   const [page, setPage] = useState<CodexPage | null>(initialPage);
   const [search, setSearch] = useState('');
   const pageOpen = page !== null;
-  const [openSection, setOpenSection] = useState<CodexSection>(initialPage === 'market' || initialPage === 'challenges' || initialPage === 'solidarity' ? 'codex.trade' : CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
+  const [openSection, setOpenSection] = useState<CodexSection>(CODEX_PAGES.find(item => item.id === initialPage)?.section ?? CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
   const { manifest, failed, retry } = useCodexManifest();
   const entry = CODEX_ENTRIES.find(entry => entry.id === selected)!;
   const detail = useRef<HTMLElement>(null);
@@ -127,7 +129,7 @@ export function CodexPanel() {
             );
           })}
         </nav>
-        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : page === 'energy' ? 'codex.energy.title' : page === 'sanctions' ? 'codex.sanctions.title' : page === 'market' ? 'codex.market.title' : page === 'challenges' ? 'codex.challenges.title' : page === 'solidarity' ? 'codex.solidarity.title' : page === 'waste' ? 'codex.waste.title' : entry.name)}>
+        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : page === 'energy' ? 'codex.energy.title' : page === 'sanctions' ? 'codex.sanctions.title' : page === 'market' ? 'codex.market.title' : page === 'challenges' ? 'codex.challenges.title' : page === 'solidarity' ? 'codex.solidarity.title' : page === 'waste' ? 'codex.waste.title' : page === 'politics' ? 'codex.politics.title' : entry.name)}>
           {page === 'economy' && <CropEconomyPage />}
           {page === 'storage' && <StorageRulesPage />}
           {page === 'energy' && <EnergyProductionPage />}
@@ -136,6 +138,7 @@ export function CodexPanel() {
           {page === 'challenges' && <ChallengesPage />}
           {page === 'solidarity' && <SolidarityPage />}
           {page === 'waste' && <WastePage />}
+          {page === 'politics' && <PoliticsPage />}
           {!pageOpen && <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />}
           {!pageOpen && !manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}
         </article>
