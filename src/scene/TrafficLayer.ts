@@ -35,6 +35,7 @@ export class TrafficLayer {
     return this.vehicles;
   }
   private models: ModelMeshes[] = [];
+  private lengths: number[] = [];
   private vehicles: TrafficVehicle[] = [];
   private nextVehicleId = 1;
   private laneTiles = 0;
@@ -93,6 +94,7 @@ export class TrafficLayer {
   private async load(): Promise<void> {
     await this.library.ensure(MODEL_KEYS);
     this.models = MODEL_KEYS.map((key) => this.buildModel(key));
+    this.lengths = MODEL_KEYS.map((key) => this.lengthOf(key));
     this.ready = true;
     this.root.visible = this.enabled;
   }
@@ -112,6 +114,12 @@ export class TrafficLayer {
     return { meshes, instances, fit: key === BUS_MODEL ? this.busFit(key) : this.carFit };
   }
 
+  // How far a vehicle of this model extends along the road, in tiles: what the following distance is measured from.
+  private lengthOf(key: string): number {
+    if (key === BUS_MODEL) return BUS_LENGTH;
+    return new THREE.Box3().setFromObject(this.library.get(key)).getSize(new THREE.Vector3()).z * VEHICLE_SCALE;
+  }
+
   private busFit(key: string): THREE.Matrix4 {
     const bounds = new THREE.Box3().setFromObject(this.library.get(key));
     const center = bounds.getCenter(new THREE.Vector3());
@@ -127,7 +135,9 @@ export class TrafficLayer {
     this.vehicles = this.vehicles.filter((vehicle) => !vehicle.run);
     for (const line of lines) {
       const bus = startBusVehicle(line.route!, this.nextVehicleId, BUS_MODEL_INDEX, BUS_SPEED, this.lanesAt, line.id, line.loop);
-      if (!bus || !isSpotFree(bus, this.vehicles)) continue;
+      if (!bus) continue;
+      bus.length = BUS_LENGTH;
+      if (!isSpotFree(bus, this.vehicles)) continue;
       this.nextVehicleId++;
       this.vehicles.push(bus);
     }
@@ -199,7 +209,9 @@ export class TrafficLayer {
     const speed = BASE_SPEED * (1 - SPEED_VARIATION + 2 * SPEED_VARIATION * this.random());
     const model = pickByWeight(VEHICLE_CUMULATIVE_WEIGHTS, this.random());
     const vehicle = startTrafficVehicle(this.graph, tile, this.nextVehicleId, model, speed, this.lanesAt, this.random);
-    if (!vehicle || !isSpotFree(vehicle, this.vehicles)) return;
+    if (!vehicle) return;
+    vehicle.length = this.lengths[model];
+    if (!isSpotFree(vehicle, this.vehicles)) return;
     this.nextVehicleId++;
     this.vehicles.push(vehicle);
   }

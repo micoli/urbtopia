@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { newGame, type Coord, type GameState } from '../core';
 import { buildRoadGraph } from './roadGraph';
-import { MIN_GAP, edgeKey, advanceTrafficVehicle, distanceToLeader, isSpotFree, nodeIsFree, pickLane, startBusVehicle, type TrafficVehicle } from './vehicleTraffic';
+import { MIN_GAP, SAFETY_GAP, edgeKey, gapBetween, advanceTrafficVehicle, distanceAcrossNode, distanceToLeader, isSpotFree, nodeIsFree, pickLane, startBusVehicle, type TrafficVehicle } from './vehicleTraffic';
 import { poseOf } from './vehicleMotion';
 
 function graphOf(roads: [number, number][]) {
@@ -20,6 +20,25 @@ describe('car following', () => {
     const follower = vehicle(1, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.1);
     const leader = vehicle(2, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.8);
     expect(distanceToLeader(follower, [follower, leader])).toBeCloseTo(0.8 - 0.1 - MIN_GAP);
+  });
+
+  it('keeps half of each body and a safety distance between two vehicles of different lengths', () => {
+    const follower = { ...vehicle(1, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.0), length: 0.64 };
+    const bus = { ...vehicle(2, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.9), length: 0.72 };
+    expect(gapBetween(follower, bus)).toBeCloseTo((0.64 + 0.72) / 2 + SAFETY_GAP);
+    expect(distanceToLeader(follower, [follower, bus])).toBeCloseTo(0.9 - gapBetween(follower, bus));
+  });
+
+  it('keeps its distance to a vehicle that has already crossed the next node', () => {
+    const follower = vehicle(1, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.3);
+    const crossed = vehicle(2, { x: 2, y: 5 }, { x: 3, y: 5 }, 0.2);
+    expect(distanceAcrossNode(follower, [follower, crossed])).toBeCloseTo(1 + 0.2 - 0.3 - MIN_GAP);
+    const oncoming = vehicle(3, { x: 2, y: 5 }, { x: 1, y: 5 }, 0.2);
+    expect(distanceAcrossNode(follower, [follower, oncoming])).toBe(Infinity);
+    expect(distanceAcrossNode(follower, [follower, oncoming], true)).toBeCloseTo(1 + 0.2 - 0.3 - MIN_GAP);
+    for (let step = 0; step < 20; step++) advanceTrafficVehicle(row, follower, 0.1, one, [follower, crossed], () => 1);
+    expect(follower.from).toEqual({ x: 1, y: 5 });
+    expect(follower.progress).toBeLessThanOrEqual(1 + 0.2 - MIN_GAP + 1e-9);
   });
 
   it('ignores vehicles of another Lane, another edge or behind', () => {
@@ -76,11 +95,12 @@ describe('lanes and spawning', () => {
     const existing = vehicle(1, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.5);
     expect(isSpotFree(vehicle(2, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.6), [existing])).toBe(false);
     expect(isSpotFree(vehicle(3, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.6, 1), [existing])).toBe(true);
-    expect(isSpotFree(vehicle(4, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.95), [existing])).toBe(true);
+    expect(isSpotFree(vehicle(4, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.95), [existing])).toBe(false);
+    expect(isSpotFree(vehicle(5, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.95), [vehicle(6, { x: 1, y: 5 }, { x: 2, y: 5 }, 0.1)])).toBe(true);
   });
 
   it('keeps vehicles from ever overlapping on a busy loop of road', () => {
-    const vehicles = [0, 1, 2, 3, 4, 5].map((index) => vehicle(index + 1, { x: index % 4, y: 5 }, { x: (index % 4) + 1, y: 5 }, (index * 0.37) % 1, index % 2, 1 + index * 0.4));
+    const vehicles = [0, 1, 2, 3, 4, 5].map((index) => vehicle(index + 1, { x: index % 4, y: 5 }, { x: (index % 4) + 1, y: 5 }, (index * 0.37) % 1, Math.floor(index / 4), 1 + index * 0.4));
     let seed = 7;
     const random = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     for (let step = 0; step < 600; step++) {
@@ -174,12 +194,12 @@ describe('buses in traffic', () => {
 
   it('queues behind a slower car instead of driving through it', () => {
     const driving = bus();
-    const car = vehicle(1, { x: 0, y: 5 }, { x: 1, y: 5 }, 0.6, 0, 0);
+    const car = vehicle(1, { x: 0, y: 5 }, { x: 1, y: 5 }, 0.9, 0, 0);
     car.lanes = 1;
     driving.lanes = 1;
     for (let step = 0; step < 10; step++) advanceTrafficVehicle(row, driving, 1, one, [driving, car], single);
     expect(driving.from).toEqual({ x: 0, y: 5 });
-    expect(driving.progress).toBeLessThanOrEqual(0.6 - MIN_GAP + 1e-9);
+    expect(driving.progress).toBeLessThanOrEqual(0.9 - gapBetween(driving, car) + 1e-9);
   });
 
   it('waits for pedestrians crossing the next tile', () => {
