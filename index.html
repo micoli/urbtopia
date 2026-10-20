@@ -27,6 +27,50 @@
         background: url(/splash-paysage.jpeg) center / cover no-repeat;
         box-shadow: inset 0 0 12px 6px #000;
       }
+      #splash-loader {
+        position: absolute;
+        left: 50%;
+        top: 66.667%;
+        width: min(60vw, 320px);
+        height: 12px;
+        box-sizing: border-box;
+        transform: translateX(-50%);
+        border: 2px solid rgba(255, 255, 255, 0.9);
+        border-radius: 8px;
+        background: rgba(10, 20, 40, 0.75);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+        overflow: hidden;
+      }
+      #splash-loader-fill {
+        position: relative;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #2f80ed, #7fc4ff);
+        overflow: hidden;
+        transform: scaleX(0.04);
+        transform-origin: left;
+        transition: transform 0.25s ease;
+      }
+      #splash-loader-fill::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+        animation: splash-shimmer 1.2s linear infinite;
+      }
+      @keyframes splash-shimmer {
+        from {
+          transform: translateX(-100%);
+        }
+        to {
+          transform: translateX(100%);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #splash-loader-fill::after {
+          animation: none;
+        }
+      }
       #splash.splash-hidden {
         opacity: 0;
         pointer-events: none;
@@ -39,7 +83,7 @@
     </style>
   </head>
   <body>
-    <div id="splash" aria-hidden="true"></div>
+    <div id="splash" aria-hidden="true"><div id="splash-loader"><div id="splash-loader-fill"></div></div></div>
     <div id="app"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

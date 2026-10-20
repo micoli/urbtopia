@@ -7,7 +7,7 @@ import { sceneHandle } from '../../store/sceneHandle';
 import { uiStore } from '../../store/uiStore';
 import { pointerKindOf } from '../../tools/aim';
 import { selectionGhost } from '../../tools/tools';
-import { hideSplash } from '../system/splash';
+import { hideSplash, setSplashProgress } from '../system/splash';
 
 export function SceneCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -42,6 +42,7 @@ export function SceneCanvas() {
       onBrushEnd: () => uiStore.getState().brushEnd(),
       onBrushCancel: () => uiStore.getState().brushCancel(),
     });
+    const unsubscribeLoading = scene.onLoadProgress(setSplashProgress);
     void scene.ready.then(hideSplash);
     scene.setState(gameStore.getState().state);
     const showServiceCoverage = () => scene.setServiceCoverage(uiStore.getState().serviceCoverageOpen ? prefsStore.getState().serviceCoverageType : null);
@@ -73,6 +74,7 @@ export function SceneCanvas() {
       if (prefs.showReach !== previous.showReach) showSelection();
     });
     return () => {
+      unsubscribeLoading();
       unsubscribeGame();
       unsubscribePrefs();
       unsubscribeUi();

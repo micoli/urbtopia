@@ -102,6 +102,10 @@ export class GameScene {
   private hidden = document.hidden;
   private stopWatchingHidden: () => void;
   private markReady: () => void = () => {};
+  onLoadProgress(listener: (finished: number, requested: number) => void): () => void {
+    return this.library.onProgress(listener);
+  }
+
   readonly ready = new Promise<void>((resolve) => (this.markReady = resolve));
   private lastFrame = performance.now();
   private resizeObserver: ResizeObserver;

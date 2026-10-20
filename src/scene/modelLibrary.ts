@@ -15,6 +15,28 @@ export class ModelLibrary {
   private models = new Map<string, THREE.Object3D>();
   private clips = new Map<string, THREE.AnimationClip[]>();
   private pending = new Map<string, Promise<void>>();
+  private requested = 0;
+  private finished = 0;
+  private progressListeners = new Set<(finished: number, requested: number) => void>();
+
+  // Tells how many files (models and texture variants) were asked for and how many have arrived, as they do.
+  onProgress(listener: (finished: number, requested: number) => void): () => void {
+    this.progressListeners.add(listener);
+    listener(this.finished, this.requested);
+    return () => this.progressListeners.delete(listener);
+  }
+
+  private track<T>(loading: Promise<T>): Promise<T> {
+    this.requested++;
+    this.notifyProgress();
+    const settle = () => { this.finished++; this.notifyProgress(); };
+    loading.then(settle, settle);
+    return loading;
+  }
+
+  private notifyProgress(): void {
+    for (const listener of this.progressListeners) listener(this.finished, this.requested);
+  }
 
   async ensure(keys: Iterable<string>): Promise<void> {
     await Promise.all([...new Set(keys)].map((key) => this.load(key)));
@@ -25,7 +47,7 @@ export class ModelLibrary {
       if (this.variants.has(variant)) return Promise.resolve();
       const pending = this.pendingVariants.get(variant);
       if (pending) return pending.then(() => undefined);
-      const loading = this.textureLoader.loadAsync(`${import.meta.env.BASE_URL}models/${variantTexturePath(variant)}`).then(texture => {
+      const loading = this.track(this.textureLoader.loadAsync(`${import.meta.env.BASE_URL}models/${variantTexturePath(variant)}`).then(texture => {
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.flipY = false;
         if (variant.startsWith('tone:')) {
@@ -39,7 +61,7 @@ export class ModelLibrary {
         this.variants.set(variant, variantTexture);
         this.pendingVariants.delete(variant);
         return variantTexture;
-      });
+      }));
       this.pendingVariants.set(variant, loading);
       return loading.then(() => undefined);
     }));
@@ -89,13 +111,13 @@ export class ModelLibrary {
     }
     const inFlight = this.pending.get(key);
     if (inFlight) return inFlight;
-    const promise = this.loader.loadAsync(`${import.meta.env.BASE_URL}models/${key}.glb`).then((gltf) => {
+    const promise = this.track(this.loader.loadAsync(`${import.meta.env.BASE_URL}models/${key}.glb`).then((gltf) => {
       fitNatureModel(gltf.scene, key);
       if (key === RAIL_CORNER_MODEL) fitRailCorner(gltf.scene);
       gltf.scene.updateMatrixWorld(true);
       this.models.set(key, gltf.scene);
       if (gltf.animations.length > 0) this.clips.set(key, gltf.animations);
-    });
+    }));
     this.pending.set(key, promise);
     return promise;
   }
