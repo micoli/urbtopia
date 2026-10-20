@@ -1,0 +1,75 @@
+{
+  "$schema": "../schemas/balance-politics.schema.json",
+  "dayHours": 24,
+  "term": {
+    "days": 10
+  },
+  "adaptationDays": 2,
+  "journalSize": 20,
+  "council": {
+    "seats": {
+      "economy": 3,
+      "environment": 3,
+      "services": 3
+    },
+    "reproposeDelayDays": 2
+  },
+  "approval": {
+    "initial": 50,
+    "dailyConvergence": 0.1,
+    "shockFadePerDay": 0.25,
+    "shocks": {
+      "ordinanceAdopted": 3,
+      "popularOrdinanceRepealed": -4,
+      "petitionHandled": 5,
+      "demonstration": -8
+    }
+  },
+  "petitions": {
+    "belowSatisfaction": 40,
+    "chancePerDay": 0.5,
+    "maxOpen": 6,
+    "escalationDays": 3,
+    "supportAbove": 80,
+    "supportChancePerDay": 0.3,
+    "maxSupport": 3,
+    "supportDays": 2
+  },
+  "objectives": {
+    "activeCount": 3,
+    "grantScale": {
+      "atZeroApproval": 0.5,
+      "atFullApproval": 1.5
+    }
+  },
+  "difficulties": {
+    "cozy": {
+      "active": false,
+      "demonstrations": false,
+      "election": false,
+      "approvalWeighsOnGrants": false,
+      "approvalWeighsOnCouncil": false
+    },
+    "easy": {
+      "active": true,
+      "demonstrations": false,
+      "election": false,
+      "approvalWeighsOnGrants": false,
+      "approvalWeighsOnCouncil": false
+    },
+    "medium": {
+      "active": true,
+      "demonstrations": true,
+      "election": true,
+      "approvalWeighsOnGrants": false,
+      "approvalWeighsOnCouncil": false
+    },
+    "hard": {
+      "active": true,
+      "demonstrations": true,
+      "election": true,
+      "approvalWeighsOnGrants": true,
+      "approvalWeighsOnCouncil": true
+    }
+  }
+}

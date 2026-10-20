@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createBuilding, difficultyOf, newGame, storageCapacity, type GameState } from '../core';
+import { createBuilding, difficultyOf, newGame, storageCapacity, type GameState, type PoliticsState } from '../core';
 import fixtureV1 from './fixtures/save-v1.json';
 import fixtureV2 from './fixtures/save-v2.json';
 import fixtureV3 from './fixtures/save-v3.json';
@@ -12,6 +12,8 @@ import { migrate } from './migrations';
 
 const T0 = 1_700_000_000_000;
 const state = newGame({ seed: 'amber-fox-4821', now: T0 });
+
+const block = { rngState: 1, approval: 50, shock: 0, day: 0, seats: { economy: 3, environment: 3, services: 3 }, adopted: [], retryDay: {}, objectives: [], completed: [], grantsDue: 0, petitions: [], supports: [], nextPetitionId: 1, adaptationUntilDay: 0, term: { startDay: 0, number: 1 }, mandate: 0, journal: [] };
 
 describe('validateGameState', () => {
   it.each(['cozy', 'easy', 'medium', 'hard'] as const)('accepts the %s Difficulty and keeps it across a round trip', (difficulty) => {
@@ -30,6 +32,48 @@ describe('validateGameState', () => {
     if (!loaded.ok) throw new Error(loaded.reason);
     expect(difficultyOf(loaded.state)).toBe('cozy');
     expect(loaded.state.difficulty).toBeUndefined();
+  });
+
+  it('keeps the politics block across a round trip', () => {
+    const politics: PoliticsState = { rngState: 123, approval: 40, shock: 2, day: 5, seats: { economy: 3, environment: 3, services: 3 }, adopted: ['greenBelt'], retryDay: { taxIncrease: 7 }, objectives: [{ id: 'growth100', heldDays: 1 }], completed: ['vitalComfort'], grantsDue: 120, petitions: [{ id: 1, cause: 'policeStation', parcel: { x: 3, y: 3 }, since: 4, escalated: false }], supports: [{ id: 2, cause: 'greenSpaces', parcel: { x: 4, y: 3 }, since: 5 }], nextPetitionId: 3, adaptationUntilDay: 2, term: { startDay: 1, number: 2 }, mandate: -0.4, lastElection: { day: 1, approval: 30, mandate: -0.4, seats: { economy: 4, environment: 3, services: 2 } }, journal: [{ day: 4, type: 'petitionFiled', subject: 'policeStation' }, { day: 5, type: 'election' }] };
+    const city = { ...state, difficulty: 'easy' as const, politics };
+    expect(validateGameState(city)).not.toBeNull();
+    const loaded = parseEnvelope(serializeEnvelope(city, T0));
+    expect(loaded.ok && loaded.state.politics).toEqual(politics);
+  });
+
+  it.each([
+    ['a number', 1],
+    ['null', null],
+    ['a block without a stream', {}],
+    ['an Approval above 100', { ...block, approval: 120 }],
+    ['a fractional day', { ...block, day: 1.5 }],
+    ['an unknown Ordinance', { ...block, adopted: ['martialLaw'] }],
+    ['an Ordinance adopted twice', { ...block, adopted: ['greenBelt', 'greenBelt'] }],
+    ['two Ordinances of the same exclusive group', { ...block, adopted: ['taxRelief', 'taxIncrease'] }],
+    ['missing a Faction seat', { ...block, seats: { economy: 3, environment: 3 } }],
+    ['an unknown Objective', { ...block, objectives: [{ id: 'worldPeace', heldDays: 0 }] }],
+    ['an Objective active twice', { ...block, objectives: [{ id: 'growth100', heldDays: 0 }, { id: 'growth100', heldDays: 0 }] }],
+    ['more active Objectives than the city holds', { ...block, objectives: ['growth100', 'growth300', 'growth1000', 'cleanCity'].map((id) => ({ id, heldDays: 0 })) }],
+    ['an unknown Petition cause', { ...block, petitions: [{ id: 1, cause: 'sorcery', parcel: { x: 3, y: 3 }, since: 0, escalated: false }], nextPetitionId: 2 }],
+    ['a Petition id not below the next one', { ...block, petitions: [{ id: 5, cause: 'policeStation', parcel: { x: 3, y: 3 }, since: 0, escalated: false }], nextPetitionId: 5 }],
+    ['a Support of an unknown cause', { ...block, supports: [{ id: 1, cause: 'policeStation', parcel: { x: 3, y: 3 }, since: 0 }], nextPetitionId: 2 }],
+    ['a mandate above 1', { ...block, mandate: 1.5 }],
+    ['a Term that starts before day 0', { ...block, term: { startDay: -1, number: 1 } }],
+    ['an Election with the wrong number of seats', { ...block, lastElection: { day: 1, approval: 30, mandate: -0.4, seats: { economy: 5, environment: 3, services: 2 } } }],
+    ['a Council with an empty Faction', { ...block, seats: { economy: 6, environment: 3, services: 0 } }],
+    ['a Journal entry of an unknown type', { ...block, journal: [{ day: 1, type: 'coup' }] }],
+    ['a Journal longer than the city keeps', { ...block, journal: Array.from({ length: 21 }, (_, day) => ({ day, type: 'election' })) }],
+    ['a negative Grant', { ...block, grantsDue: -1 }],
+    ['a negative retry day', { ...block, retryDay: { greenBelt: -1 } }],
+  ])('rejects a politics block that is %s', (_label, politics) => {
+    expect(validateGameState({ ...state, politics })).toBeNull();
+  });
+
+  it('loads a city saved before politics existed without a politics block', () => {
+    const loaded = parseEnvelope(JSON.stringify(fixtureV3));
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.politics).toBeUndefined();
   });
 
   it('accepts a fresh game and a played game', () => {

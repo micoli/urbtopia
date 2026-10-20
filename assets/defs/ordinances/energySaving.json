@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/ordinance.schema.json",
+  "name": {
+    "en": "Energy saving",
+    "fr": "Économies d'énergie"
+  },
+  "description": {
+    "en": "Buildings need less power.",
+    "fr": "Les bâtiments consomment moins d'électricité."
+  },
+  "unlockCitizens": 100,
+  "upkeepPerDay": 25,
+  "popular": false,
+  "stances": {
+    "economy": -1,
+    "environment": 2,
+    "services": 0
+  },
+  "effect": {
+    "kind": "energySaving",
+    "demandReduction": 0.1
+  }
+}

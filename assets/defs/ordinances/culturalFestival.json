@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/ordinance.schema.json",
+  "name": {
+    "en": "Cultural festival",
+    "fr": "Festival culturel"
+  },
+  "description": {
+    "en": "The Esteem of the city rises.",
+    "fr": "L'estime de la ville augmente."
+  },
+  "unlockCitizens": 150,
+  "upkeepPerDay": 50,
+  "popular": true,
+  "stances": {
+    "economy": 1,
+    "environment": 0,
+    "services": 2
+  },
+  "effect": {
+    "kind": "culturalFestival",
+    "esteemBonus": 8
+  }
+}

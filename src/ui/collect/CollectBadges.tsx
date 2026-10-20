@@ -1,14 +1,15 @@
-import { footprintOf } from '../../core';
+import { footprintOf, officeYieldMultiplierOf } from '../../core';
 import { useGame } from '../common/hooks';
 import { CollectBadge, collectBadgeLabel, readyItemModels } from './CollectBadge';
 import { ReadyFieldBadges } from './ReadyFieldBadges';
 
 export function CollectBadges() {
   const buildings = useGame((store) => store.state.buildings);
+  const officeYield = useGame((store) => officeYieldMultiplierOf(store.state));
   return (
     <>
       {buildings.map((building) => {
-        const label = collectBadgeLabel(building);
+        const label = collectBadgeLabel(building, officeYield);
         if (!label) return null;
         const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
         return (

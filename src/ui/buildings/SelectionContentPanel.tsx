@@ -6,6 +6,7 @@ import { StopNameField } from './StopNameField';
 import { GAME_CONFIG, greenProfileOf, natureModelOf, isFacilityType, placementCost, canHaveSolarPanels, isRepaintableType, isUtilityType, isTransitStopType, kindOf } from '../../core';
 import { t } from '../../i18n/t';
 import { FacilityPanel } from './FacilityPanel';
+import { TownHallPanel } from '../politics/TownHallPanel';
 import { BuildingAccess } from './BuildingAccess';
 import { BuildingJobs } from './BuildingJobs';
 import { SolarPanelsRow } from './SolarPanelsRow';
@@ -38,6 +39,7 @@ export function SelectionContentPanel() {
       {isTransitStopType(building.type) ? <StopNameField building={building} /> : null}
       {KindPanel ? <KindPanel building={building} /> : null}
       {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}
+      {building.type === 'townHall' ? <TownHallPanel building={building} /> : null}
       {isUtilityType(building.type) ? <UtilityPanel building={building} type={building.type} /> : null}
       {building.type === 'coalPlant' ? <CoalPlantPanel building={building} /> : null}
       {greenProfileOf(building.type) || ['solar','battery','backup'].includes(building.type) || isTransitStopType(building.type) || building.solar ? <EcologicalBuildingPanel building={building} /> : null}

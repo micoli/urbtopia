@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/objective.schema.json",
+  "name": {
+    "en": "Secure basics",
+    "fr": "Besoins vitaux garantis"
+  },
+  "description": {
+    "en": "Keep the Vital Need level almost fully satisfied.",
+    "fr": "Maintenir le niveau de besoin vital presque entièrement satisfait."
+  },
+  "metric": "vitalSatisfaction",
+  "target": 90,
+  "holdDays": 5,
+  "grant": 800,
+  "unlockCitizens": 80
+}

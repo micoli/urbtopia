@@ -17,6 +17,8 @@ import { advanceVenues, venueBoundaries } from '../venues/venues';
 import { progressTutorial } from '../progression/tutorial';
 import { progressVenueTutorials } from '../progression/venueTutorial';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { newJournalEntries } from '../politics/journal';
+import { advancePolitics, forfeitPoliticsDays, withPolitics } from '../politics/politics';
 
 export interface AdvanceResult {
   state: GameState;
@@ -24,6 +26,12 @@ export interface AdvanceResult {
 }
 
 export function advance(state: GameState, now: number): AdvanceResult {
+  const result = advanceCity(state, now);
+  const entries = newJournalEntries(state, result.state).length;
+  return entries === 0 ? result : { ...result, events: [...result.events, { type: 'PoliticsDigest', entries }] };
+}
+
+function advanceCity(state: GameState, now: number): AdvanceResult {
   const effectiveNow = Math.max(now, state.lastSeen);
   const gap = effectiveNow - state.lastSeen;
   if (gap <= GAME_CONFIG.offlineCapMs) return replay(state, effectiveNow);
@@ -31,7 +39,7 @@ export function advance(state: GameState, now: number): AdvanceResult {
   const forfeitedMs = gap - GAME_CONFIG.offlineCapMs;
   const replayed = replay(state, state.lastSeen + GAME_CONFIG.offlineCapMs);
   return {
-    state: { ...shiftRunningTimers(replayed.state, forfeitedMs), lastSeen: effectiveNow },
+    state: forfeitPoliticsDays({ ...shiftRunningTimers(replayed.state, forfeitedMs), lastSeen: effectiveNow }),
     events: [...replayed.events, { type: 'OfflineTimeCapped', forfeitedMs }],
   };
 }
@@ -47,6 +55,7 @@ function replay(state: GameState, until: number): AdvanceResult {
   let current = state;
   const events: GameEvent[] = [];
   while (current.lastSeen < until) {
+    current = advancePolitics(current);
     const now = current.lastSeen;
     const idleShops = idleShopIds(current, now);
     const overdue = current.buildings.some(b => b.queue.some(q => !q.done && q.startedAt !== null && q.startedAt + q.duration <= now) || (!idleShops.has(b.id) && b.stacks.some(stack => stack.stock > 0 && stack.nextSaleAt !== null && stack.nextSaleAt <= now)));
@@ -104,7 +113,7 @@ function replay(state: GameState, until: number): AdvanceResult {
       buildings: withVenues.buildings.map(b => updateBattery(b, energy.batteryRates.get(b.id) ?? 0, batteryEnds.get(b.id), end, elapsed))
     };
   }
-  return { state: progressVenueTutorials(progressTutorial(current)), events };
+  return { state: advancePolitics(withPolitics(progressVenueTutorials(progressTutorial(current)))), events };
 }
 
 function updateBattery(building: Building, rate: number, boundary: number | undefined, now: number, elapsedMs: number): Building {

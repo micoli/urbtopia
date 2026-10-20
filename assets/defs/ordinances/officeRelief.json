@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/ordinance.schema.json",
+  "name": {
+    "en": "Office relief",
+    "fr": "Allègement pour les bureaux"
+  },
+  "description": {
+    "en": "Offices produce more Urbs.",
+    "fr": "Les bureaux produisent plus d'Urbs."
+  },
+  "unlockCitizens": 120,
+  "upkeepPerDay": 35,
+  "popular": false,
+  "stances": {
+    "economy": 2,
+    "environment": -1,
+    "services": -1
+  },
+  "effect": {
+    "kind": "officeRelief",
+    "yieldMultiplier": 1.15
+  }
+}

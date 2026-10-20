@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/ordinance.schema.json",
+  "name": {
+    "en": "Transit subsidy",
+    "fr": "Transport public subventionné"
+  },
+  "description": {
+    "en": "Congestion eases on the Commute.",
+    "fr": "La congestion diminue sur les trajets domicile-travail."
+  },
+  "unlockCitizens": 80,
+  "upkeepPerDay": 40,
+  "popular": true,
+  "stances": {
+    "economy": 1,
+    "environment": 1,
+    "services": 2
+  },
+  "effect": {
+    "kind": "transitSubsidy",
+    "congestionRelief": 0.2
+  }
+}

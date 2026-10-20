@@ -7,6 +7,7 @@ import { isHomeType } from '../buildings/buildingDefinitions';
 import { flowFactor } from '../water/flow';
 import { PLANT_TYPES, generatedSourceOf, isGeneratingPlant, type EnergySourceId } from './generators';
 import { solarPanelsCapacity } from './solarPanels';
+import { energySavingOf } from '../politics/ordinanceEffects';
 
 export function productionFactors(now: number) {
   const hour = Math.floor(now / ECOLOGY.hourMs);
@@ -43,7 +44,8 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   const buildings = [...state.buildings].sort((a, b) => a.id - b.id);
   const homes = buildings.filter(b => isHomeType(b.type)), casinos = buildings.filter(b => b.type === 'casino'), arcades = buildings.filter(b => isVenueType(b.type)), economic = buildings.filter(b => b.type !== 'casino' && !isVenueType(b.type) && economicPower(b) > 0);
   const factors = productionFactors(now + (state.timeOffset ?? 0));
-  const need = new Map(buildings.map(b => [b.id, isHomeType(b.type) ? homePower(b) : economicPower(b)]));
+  const saving = energySavingOf(state);
+  const need = new Map(buildings.map(b => [b.id, isHomeType(b.type) ? homePower(b, saving) : economicPower(b, saving)]));
   const supplied = new Map(buildings.map(b => [b.id, 0]));
   const generation = buildings.filter(b => generatedSourceOf(b) !== null);
   const output = (b: Building) => generatorOutput(state, b, factors);
@@ -116,8 +118,8 @@ export function energyStats(state: GameState, now = state.lastSeen) {
   const transitBackup = Math.min(backup - backed, transitDemand - transitSupplied);
   transitSupplied += transitBackup; backed += transitBackup;
   backed += distribute(arcades, backup - backed); backed += distribute(casinos, backup - backed);
-  const demand = homes.reduce((n, b) => n + homePower(b), 0) + economic.reduce((n, b) => n + economicPower(b), 0) + arcades.reduce((n, b) => n + economicPower(b), 0) + casinos.reduce((n, b) => n + economicPower(b), 0) + transitDemand;
-  const economicDemand = economic.reduce((n, b) => n + economicPower(b), 0);
+  const demand = homes.reduce((n, b) => n + homePower(b, saving), 0) + economic.reduce((n, b) => n + economicPower(b, saving), 0) + arcades.reduce((n, b) => n + economicPower(b, saving), 0) + casinos.reduce((n, b) => n + economicPower(b, saving), 0) + transitDemand;
+  const economicDemand = economic.reduce((n, b) => n + economicPower(b, saving), 0);
   const economicSupplied = economic.reduce((n, b) => n + (supplied.get(b.id) ?? 0), 0);
   const wind = outputOf('wind'), hydro = outputOf('hydro'), geothermal = outputOf('geothermal'), solar = outputOf('solar');
   return {

@@ -15,6 +15,7 @@ import { BUS_TRAFFIC, busRouteTiles, busSpeedFactor, type BusRoute, type BusSpee
 import { WALKING, crossingCut, maxWalkCost, walkDestinationOf } from './walking';
 import { emptyTrips, walkDestinations, walkServices, type WalkingTrips } from './walkingTrips';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { congestionReliefOf } from '../politics/ordinanceEffects';
 
 export { workplaceTypes };
 
@@ -100,7 +101,7 @@ function layoutSignature(state: GameState, now: number): string {
   const lines = transport.lines.map((line) => `${line.id}:${line.capacity.toFixed(2)}:${line.riders.toFixed(2)}:${line.mode === 'bus' && line.active && line.route ? line.route.map(tileKey).join(';') : ''}`);
   const openings = [...closedFractionsByTile(state)].map(([key, fraction]) => `${key}=${fraction.toFixed(3)}`);
   const pedestrianWays = (state.pedestrianWays ?? []).map(tileKey).sort().join(';');
-  return [pedestrianWays, ...buildings, ...lines, ...openings].join('|');
+  return [`relief=${congestionReliefOf(state)}`, pedestrianWays, ...buildings, ...lines, ...openings].join('|');
 }
 
 function activeBusRoutes(transport: ReturnType<typeof transportStats>): BusRoute[] {
@@ -224,13 +225,14 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     const cut = crossingCut(count);
     crossings.set(key, { tile: parseTile(key), pedestrians: count, cut, saturated: cut >= WALKING.maxCrossingCut });
   }
+  const relief = congestionReliefOf(state);
   let weighted = 0;
   let population = 0;
   for (const home of homes) {
     const entry = result.get(home.building.id)!;
     if (!entry.disconnected) {
       const worst = Math.max(0, ...[...(used.get(home.building.id) ?? [])].map((key) => sections.get(key)?.ratio ?? 0));
-      entry.ratio = Math.min(CONGESTION.maxRatio, worst);
+      entry.ratio = Math.min(CONGESTION.maxRatio, worst) * (1 - relief);
     }
     const citizens = citizensOf(home.building.tier);
     weighted += citizens * entry.ratio;

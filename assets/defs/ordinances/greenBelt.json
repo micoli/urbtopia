@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/ordinance.schema.json",
+  "name": {
+    "en": "Green belt",
+    "fr": "Ceinture verte"
+  },
+  "description": {
+    "en": "Homes next to a Green space gain Well-being.",
+    "fr": "Les logements près d'un espace vert gagnent en bien-être."
+  },
+  "unlockCitizens": 60,
+  "upkeepPerDay": 30,
+  "popular": true,
+  "stances": {
+    "economy": -1,
+    "environment": 2,
+    "services": 0
+  },
+  "effect": {
+    "kind": "greenBelt",
+    "wellbeingBonus": 5
+  }
+}

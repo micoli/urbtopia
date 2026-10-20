@@ -19,7 +19,7 @@ interface CollectBadgeProps {
   command: Command;
   models?: readonly string[];
 }
-export function collectBadgeLabel(building: Building): string | number | null {
+export function collectBadgeLabel(building: Building, officeYield = 1): string | number | null {
   if (isShopType(building.type)) {
     const earned = building.stacks.reduce((total, stack) => total + stack.earned, 0);
     return earned > 0 ? earned : null;
@@ -29,7 +29,7 @@ export function collectBadgeLabel(building: Building): string | number | null {
     return due > 0 ? due : null;
   }
   if (isOfficeType(building.type)) {
-    const due = officeUrbsDue(building);
+    const due = officeUrbsDue(building, officeYield);
     return due > 0 ? due : null;
   }
   if (isVenue(building)) {

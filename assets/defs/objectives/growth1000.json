@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/objective.schema.json",
+  "name": {
+    "en": "1000 Citizens",
+    "fr": "1000 habitants"
+  },
+  "description": {
+    "en": "Reach 1000 Citizens.",
+    "fr": "Atteindre 1000 habitants."
+  },
+  "metric": "citizens",
+  "target": 1000,
+  "holdDays": 1,
+  "grant": 4000,
+  "unlockCitizens": 250
+}

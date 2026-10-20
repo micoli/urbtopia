@@ -1,0 +1,356 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "dayHours": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "term": {
+      "type": "object",
+      "properties": {
+        "days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "days"
+      ],
+      "additionalProperties": false
+    },
+    "adaptationDays": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "journalSize": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "council": {
+      "type": "object",
+      "properties": {
+        "seats": {
+          "type": "object",
+          "properties": {
+            "economy": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "environment": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "services": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "economy",
+            "environment",
+            "services"
+          ],
+          "additionalProperties": false
+        },
+        "reproposeDelayDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "seats",
+        "reproposeDelayDays"
+      ],
+      "additionalProperties": false
+    },
+    "approval": {
+      "type": "object",
+      "properties": {
+        "initial": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "dailyConvergence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "shockFadePerDay": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "shocks": {
+          "type": "object",
+          "properties": {
+            "ordinanceAdopted": {
+              "type": "number"
+            },
+            "popularOrdinanceRepealed": {
+              "type": "number"
+            },
+            "petitionHandled": {
+              "type": "number"
+            },
+            "demonstration": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "ordinanceAdopted",
+            "popularOrdinanceRepealed",
+            "petitionHandled",
+            "demonstration"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "initial",
+        "dailyConvergence",
+        "shockFadePerDay",
+        "shocks"
+      ],
+      "additionalProperties": false
+    },
+    "petitions": {
+      "type": "object",
+      "properties": {
+        "belowSatisfaction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "chancePerDay": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maxOpen": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "escalationDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "supportAbove": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "supportChancePerDay": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maxSupport": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "supportDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "belowSatisfaction",
+        "chancePerDay",
+        "maxOpen",
+        "escalationDays",
+        "supportAbove",
+        "supportChancePerDay",
+        "maxSupport",
+        "supportDays"
+      ],
+      "additionalProperties": false
+    },
+    "objectives": {
+      "type": "object",
+      "properties": {
+        "activeCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "grantScale": {
+          "type": "object",
+          "properties": {
+            "atZeroApproval": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "atFullApproval": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "required": [
+            "atZeroApproval",
+            "atFullApproval"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "activeCount",
+        "grantScale"
+      ],
+      "additionalProperties": false
+    },
+    "difficulties": {
+      "type": "object",
+      "properties": {
+        "cozy": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean"
+            },
+            "demonstrations": {
+              "type": "boolean"
+            },
+            "election": {
+              "type": "boolean"
+            },
+            "approvalWeighsOnGrants": {
+              "type": "boolean"
+            },
+            "approvalWeighsOnCouncil": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "active",
+            "demonstrations",
+            "election",
+            "approvalWeighsOnGrants",
+            "approvalWeighsOnCouncil"
+          ],
+          "additionalProperties": false
+        },
+        "easy": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean"
+            },
+            "demonstrations": {
+              "type": "boolean"
+            },
+            "election": {
+              "type": "boolean"
+            },
+            "approvalWeighsOnGrants": {
+              "type": "boolean"
+            },
+            "approvalWeighsOnCouncil": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "active",
+            "demonstrations",
+            "election",
+            "approvalWeighsOnGrants",
+            "approvalWeighsOnCouncil"
+          ],
+          "additionalProperties": false
+        },
+        "medium": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean"
+            },
+            "demonstrations": {
+              "type": "boolean"
+            },
+            "election": {
+              "type": "boolean"
+            },
+            "approvalWeighsOnGrants": {
+              "type": "boolean"
+            },
+            "approvalWeighsOnCouncil": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "active",
+            "demonstrations",
+            "election",
+            "approvalWeighsOnGrants",
+            "approvalWeighsOnCouncil"
+          ],
+          "additionalProperties": false
+        },
+        "hard": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean"
+            },
+            "demonstrations": {
+              "type": "boolean"
+            },
+            "election": {
+              "type": "boolean"
+            },
+            "approvalWeighsOnGrants": {
+              "type": "boolean"
+            },
+            "approvalWeighsOnCouncil": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "active",
+            "demonstrations",
+            "election",
+            "approvalWeighsOnGrants",
+            "approvalWeighsOnCouncil"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "cozy",
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "dayHours",
+    "term",
+    "adaptationDays",
+    "journalSize",
+    "council",
+    "approval",
+    "petitions",
+    "objectives",
+    "difficulties"
+  ],
+  "additionalProperties": false,
+  "title": "Politics balance",
+  "description": "assets/defs/balance/politics.json: Term, Council seats, Approval, Objectives, and what each Difficulty enables."
+}

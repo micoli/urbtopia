@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -185,6 +185,53 @@ function isTransitTile(key: 'brtRoads' | 'rails'): (tile: unknown) => boolean {
     isRecord(tile) && isCoord(tile) && isArrayOf(tile.exits, (direction) => ['N', 'E', 'S', 'W'].includes(direction as string)) && new Set(tile.exits as string[]).size === (tile.exits as string[]).length && (tile.kind === undefined || (key === 'brtRoads' && tile.kind === 'crossing'));
 }
 
+function isPoliticsJournal(politics: Json): boolean {
+  const isEntry = (item: unknown) => isRecord(item) && isInt(item.day, 0) && JOURNAL_TYPES.includes(item.type as never) && (item.subject === undefined || typeof item.subject === 'string');
+  return isArrayOf(politics.journal, isEntry) && (politics.journal as unknown[]).length <= POLITICS.journalSize;
+}
+
+function isPoliticsTerm(politics: Json): boolean {
+  const { term, mandate, lastElection } = politics;
+  if (!isRecord(term) || !isInt(term.startDay, 0) || !isInt(term.number, 1) || !isNumber(mandate) || Math.abs(mandate) > 1) return false;
+  if (lastElection === undefined) return true;
+  return isRecord(lastElection) && isInt(lastElection.day, 0) && isNumber(lastElection.approval) && lastElection.approval >= 0 && lastElection.approval <= 100 && isNumber(lastElection.mandate) && Math.abs(lastElection.mandate) <= 1 && hasCouncilSeats(lastElection.seats);
+}
+
+function hasCouncilSeats(seats: unknown): boolean {
+  const total = FACTION_IDS.reduce((sum, faction) => sum + POLITICS.council.seats[faction], 0);
+  return isRecord(seats) && Object.keys(seats).length === FACTION_IDS.length && FACTION_IDS.every((faction) => isInt(seats[faction], 1)) && FACTION_IDS.reduce((sum, faction) => sum + (seats[faction] as number), 0) === total;
+}
+
+function isPoliticsPetitions(politics: Json): boolean {
+  const { petitions, supports, nextPetitionId, adaptationUntilDay } = politics;
+  const isParcel = (parcel: unknown) => isRecord(parcel) && isInt(parcel.x, 0) && isInt(parcel.y, 0);
+  const isPetition = (petition: unknown) => isRecord(petition) && isInt(petition.id, 1) && PETITION_CAUSES.includes(petition.cause as never) && isParcel(petition.parcel) && isInt(petition.since, 0) && typeof petition.escalated === 'boolean';
+  const isSupport = (support: unknown) => isRecord(support) && isInt(support.id, 1) && SUPPORT_CAUSES.includes(support.cause as never) && isParcel(support.parcel) && isInt(support.since, 0);
+  if (!isArrayOf(petitions, isPetition) || !isArrayOf(supports, isSupport)) return false;
+  const ids = [...(petitions as { id: number }[]), ...(supports as { id: number }[])].map((entry) => String(entry.id));
+  if (hasDuplicates(ids) || (petitions as unknown[]).length > POLITICS.petitions.maxOpen || (supports as unknown[]).length > POLITICS.petitions.maxSupport) return false;
+  return isInt(nextPetitionId, 1) && ids.every((id) => Number(id) < (nextPetitionId as number)) && isInt(adaptationUntilDay, 0);
+}
+
+function isPoliticsObjectives(politics: Json): boolean {
+  const objectiveIds = OBJECTIVE_ENTRIES.map((entry) => entry.id as string);
+  const { objectives, completed, grantsDue } = politics;
+  if (!isArrayOf(objectives, (objective) => isRecord(objective) && objectiveIds.includes(objective.id as string) && isInt(objective.heldDays, 0))) return false;
+  if ((objectives as { id: string }[]).length > POLITICS.objectives.activeCount || hasDuplicates((objectives as { id: string }[]).map((objective) => objective.id))) return false;
+  if (!isArrayOf(completed, (id) => typeof id === 'string' && objectiveIds.includes(id)) || hasDuplicates(completed as string[])) return false;
+  return isNonNegative(grantsDue);
+}
+
+function isPoliticsCouncil(politics: Json): boolean {
+  const ordinanceIds = ORDINANCE_ENTRIES.map((entry) => entry.id as string);
+  const { seats, adopted, retryDay } = politics;
+  if (!hasCouncilSeats(seats)) return false;
+  if (!isArrayOf(adopted, (id) => typeof id === 'string' && ordinanceIds.includes(id)) || hasDuplicates(adopted as string[])) return false;
+  const groups = (adopted as string[]).flatMap((id) => ORDINANCE_ENTRIES.find((entry) => entry.id === id)?.exclusiveGroup ?? []);
+  if (hasDuplicates(groups)) return false;
+  return isRecord(retryDay) && Object.entries(retryDay).every(([id, day]) => ordinanceIds.includes(id) && isInt(day, 0));
+}
+
 function isBoat(boat: unknown): boolean {
   return (
     isRecord(boat) && isCoord(boat) && isInt(boat.id, 1) && BOAT_FAMILIES.includes(boat.family as never) && isInt(boat.marinaId, 1) &&
@@ -239,6 +286,7 @@ function structureFailure(value: Json): string | null {
     entries('bridges', () => value.bridges, isBridge, true),
     field('casinoRng', () => value.casinoRng === undefined || isNumber(value.casinoRng)),
     field('difficulty', () => value.difficulty === undefined || isDifficulty(value.difficulty)),
+    field('politics', () => value.politics === undefined || (isRecord(value.politics) && isNumber(value.politics.rngState) && isNumber(value.politics.approval) && value.politics.approval >= 0 && value.politics.approval <= 100 && isNumber(value.politics.shock) && isInt(value.politics.day, 0) && isPoliticsCouncil(value.politics) && isPoliticsObjectives(value.politics) && isPoliticsPetitions(value.politics) && isPoliticsTerm(value.politics) && isPoliticsJournal(value.politics))),
     field('challenge', () => value.challenge === undefined || isChallengeProgress(value.challenge)),
     entries('challengeClaims', () => value.challengeClaims, isChallengeClaim, true),
     field('ecologyDismissed', () => value.ecologyDismissed === undefined || typeof value.ecologyDismissed === 'boolean'),

@@ -145,6 +145,58 @@ _Avoid_: Inhabitant, resident, sim
 The satisfaction of a Home's Citizens, raised by nearby Green spaces, Public facility coverage and an active Solidarity reserve, lowered by coal pollution, missing services and Congestion on its Commute. It modulates the Home's Tax.
 _Avoid_: Happiness, bonheur, mood, attractiveness
 
+**Mayor**:
+The role of the player in the city. The Mayor makes the decisions that the Council votes on.
+_Avoid_: Governor, boss
+
+**Council**:
+The simulated body of the city that votes on the Mayor's key decisions, such as a new tax, a major construction or a regulation. It does not vote on every building. It is inactive under Cozy Difficulty. It is shown as a circle of seats, with no left and no right, no hemicycle and no ordering of the Factions, so that nothing recalls traditional politics.
+_Avoid_: Parliament, senate, assembly, hemicycle
+
+**Approval**:
+The standing of the Mayor among the whole city's Citizens. It derives from the Well-being of the Homes and also reacts to the Mayor's decisions. A low Approval only toughens the game gently (smaller Grants, a less cooperative Council); it never touches Tax or Sanctions: it never takes Citizens away and never ends the game. Distinct from Well-being, which is measured per Home.
+_Avoid_: Popularity, mood, rating
+
+**Politics window**:
+The management view of the city's politics, opened from the selection panel of the Town hall. Its first section is a summary of the current politics (Approval, remaining days of the Term, the Council forecast, active Objectives, open Petitions); the others hold the Council, the Ordinances, the Objectives and the Petitions. It is the only way to act on the politics.
+_Avoid_: Politics page, dashboard
+
+**Term**:
+The fixed duration, in game days, of a Mayor's mandate. It ends with an Election.
+_Avoid_: Mandate, season
+
+**Election**:
+The vote at the end of a Term whose outcome is drawn from the game's Seed, so reloading never dodges it. The Approval decides how favourable the next Council is: a Mayor liked by the city faces a balanced Council, a disliked one sees seats move between Factions, and the Council votes with a mandate drawn from the Approval for the whole Term. Easy has no Election. Losing never takes the city from the player.
+_Avoid_: Ballot, poll (already used by social features)
+
+**Faction**:
+An abstract bloc of the Council with a fixed number of seats, moved by the Election, such as Economy, Environment or Services. It votes on an Ordinance according to its effect on the Faction's concern. It is never a named party or a real person, and it is never placed on a left-right axis.
+_Avoid_: Party, group (already Groups)
+
+**Ordinance**:
+A city-wide policy the Mayor proposes and the Council votes on, with a cost and an effect, such as the Tax level, a Waste sorting obligation or a Green space quota. A Game object defined by data and unlocked by Citizens thresholds.
+_Avoid_: Law, decree, policy
+
+**Objective**:
+A target set by the State on existing city measures, such as a Need level satisfaction, a Service coverage or a number of Citizens. A few are active at a time, taken from a catalogue defined by data. Judged on the game clock and replayed by Catch-up.
+_Avoid_: Goal (already used by Challenge), quest
+
+**Grant**:
+The Urbs paid by the State when an Objective has been held for a period, claimed by hand like Tax. Its amount is modulated by the Approval.
+_Avoid_: Subsidy, reward (already used by Challenge)
+
+**Petition**:
+A localised message from Citizens naming the cause and the district of a lack of satisfaction, drawn from the existing Need factors. Handling it, by fixing its cause, raises the Approval from Medium Difficulty; on Easy it only informs. Ignored for long enough, it escalates to a Demonstration from Medium.
+_Avoid_: Complaint, ticket
+
+**Support**:
+The mirror of a Petition: a localised message of Citizens welcoming a good result, drawn from the same factors.
+_Avoid_: Applause, like
+
+**Demonstration**:
+The escalation of an ignored Petition. It only lowers the Approval and has no other effect.
+_Avoid_: Riot, strike
+
 **Need level**:
 One of the five stages of the Needs pyramid, from the base up: Vital, Safety, Belonging, Esteem, Fulfilment. Each has a satisfaction from 0 to 100, computed from game data that already exists, weighted by Citizens. The Vital and Safety Need levels also drive the Sanction of a Home; the higher levels only modulate Well-being.
 _Avoid_: Maslow level, layer, tier (already Tier)
@@ -695,6 +747,16 @@ _Avoid_: Dispatcher, command bus, game service
 
 ## Relationships
 
+- Politics (Council, Approval, Objectives, Grants, Petitions) exists only once a Town hall is built and only from Easy Difficulty. Under Cozy there is none, and cities saved before it stay untouched.
+- The outcome of a Council vote is deterministic and forecast by Faction before the Ordinance is proposed: there is no luck and no buying of votes. A rejected Ordinance can be proposed again after a delay.
+- Only the adoption of an Ordinance goes through the Council. The Mayor repeals it freely, without a vote, at a small loss of Approval if it was popular. An adopted Ordinance costs a daily upkeep in Urbs.
+- A Codex page, linked from the Town hall panel like the Waste page is from Waste facilities, details every rule of the politics. The Politics window summarises the current state and links to that page; it does not repeat the rules.
+- A Grant is fixed on Easy and Medium and modulated by the Approval on Hard only.
+- The Approval stays between 0 and 100. Each game day it moves toward the Citizen-weighted mean Well-being; the Mayor's decisions (an Ordinance adopted or repealed, a Petition handled, a Demonstration) add one-off shocks that fade.
+- The politics of a city is saved as its own block, absent in cities saved before it. Its draws (the Election, the generation of Petitions) use their own stream of the game's Seed.
+- Time skip and Catch-up replay the politics in full: Petitions escalate, Elections take place, Objectives are judged, and a summary is shown on return. An Adaptation period follows its first activation, with no Demonstration and no Approval penalty.
+- The launch Ordinances rest on existing systems only: Tax level (3 levels), Waste sorting, Green belt, subsidised public transit, energy saving, Office relief, Cultural festival. The launch Objectives are a Vital Need level threshold, full Waste coverage, Congestion under a threshold, a Green space share and Citizens milestones.
+- From Easy Difficulty: Council, Ordinances, Objectives and Grants, with Petitions and Support informative only. From Medium: Demonstrations and the Election. On Hard the Approval also weighs on the Grants and on the Council's goodwill.
 - A Command from the player, a Trade or a Challenge reaches the game through the Command gateway: the same read-only guard, toasts and event effects. Only the player's Commands keep a deletion undo.
 - A Trade offer can only be accepted if the recipient's Storehouse compartment has room for the lot and their Urbs cover the price.
 - Blocking a Friend closes their conversation and returns any open Trade offer between them.

@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/objective.schema.json",
+  "name": {
+    "en": "Free-flowing roads",
+    "fr": "Routes fluides"
+  },
+  "description": {
+    "en": "Keep the Congestion low.",
+    "fr": "Maintenir une faible congestion."
+  },
+  "metric": "congestion",
+  "target": 0.2,
+  "holdDays": 3,
+  "grant": 600,
+  "unlockCitizens": 60
+}

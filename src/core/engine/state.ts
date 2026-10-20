@@ -10,6 +10,7 @@ import type { RoadKind } from '../map/roads';
 import type { TutorialStep } from '../progression/tutorial';
 import type { VenueTutorialStep, VenueTutorialType } from '../progression/venueTutorial';
 import type { Difficulty } from './difficulty';
+import type { PoliticsState } from '../politics/politics';
 import type { DonationRecord } from '../economy/solidarity';
 
 export type BuildingType = BuildingId;
@@ -183,6 +184,7 @@ export interface GameState {
   adaptationUntil?: number;
   ecologyDismissed?: boolean;
   difficulty?: Difficulty;
+  politics?: PoliticsState;
   challenge?: ChallengeProgress;
   challengeClaims?: ChallengeClaim[];
   seed: string;

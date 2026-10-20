@@ -31,6 +31,7 @@ export function advanceOffice(building: Building, filledJobs: number, elapsedMs:
   return { ...building, taxCitizenMs: Math.min(cap, building.taxCitizenMs + filledJobs * elapsedMs) };
 }
 
-export function officeUrbsDue(building: Building): number {
-  return Math.floor((building.taxCitizenMs * OFFICE.urbsPerJobPerHour) / OFFICE.hourMs);
+// `yieldMultiplier` is the one an Ordinance gives to the Urbs the Jobs earn.
+export function officeUrbsDue(building: Building, yieldMultiplier = 1): number {
+  return Math.floor((building.taxCitizenMs * OFFICE.urbsPerJobPerHour * yieldMultiplier) / OFFICE.hourMs);
 }
