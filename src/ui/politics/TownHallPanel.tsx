@@ -4,6 +4,7 @@ import { ActionButton } from '../common/ActionButton';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { Note } from '../common/Note';
 import { useGame, useUi } from '../common/hooks';
+import { formatDays } from './formatDays';
 
 export function TownHallPanel({ building }: { building: Building }) {
   const state = useGame(store => store.state);
@@ -16,7 +17,7 @@ export function TownHallPanel({ building }: { building: Building }) {
   return (
     <DrawerPanel>
       <DrawerPanel.LabelValue label={t('politics.approval')} value={Math.round(approval)} />
-      {election && <DrawerPanel.LabelValue label={t('politics.term').replace('{number}', String(politics.term.number))} value={t('politics.termLeft').replace('{days}', String(termDaysLeft(politics, politics.day)))} />}
+      {election && <DrawerPanel.LabelValue label={t('politics.term').replace('{number}', String(politics.term.number))} value={t('politics.termLeft').replace('{duration}', formatDays(termDaysLeft(politics, politics.day)))} />}
       <ActionButton variant="primary" block onClick={openPolitics}>{t('townHall.politics')}</ActionButton>
     </DrawerPanel>
   );

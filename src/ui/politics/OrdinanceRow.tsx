@@ -4,6 +4,7 @@ import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
 import { CouncilCircle } from './CouncilCircle';
+import { formatDays } from './formatDays';
 
 function statusOf(state: GameState, id: OrdinanceId): string | null {
   const politics = state.politics!;
@@ -11,7 +12,7 @@ function statusOf(state: GameState, id: OrdinanceId): string | null {
   const issue = proposalIssue(state, id);
   if (issue === 'adopted') return t('politics.ordinance.adopted');
   if (issue === 'locked') return t('politics.ordinance.locked').replace('{citizens}', String(ordinance.unlockCitizens));
-  if (issue === 'waiting') return t('politics.ordinance.waiting').replace('{days}', String((politics.retryDay[id] ?? 0) - politicsDayOf(state)));
+  if (issue === 'waiting') return t('politics.ordinance.waiting').replace('{duration}', formatDays((politics.retryDay[id] ?? 0) - politicsDayOf(state)));
   if (issue === 'excluded') {
     const blocking = ORDINANCE_ENTRIES.find(other => other.exclusiveGroup === ordinance.exclusiveGroup && politics.adopted.includes(other.id))!;
     return t('politics.ordinance.excluded').replace('{name}', t(`ordinance.${blocking.id}.name` as MessageKey));

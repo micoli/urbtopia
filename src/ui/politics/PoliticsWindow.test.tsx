@@ -39,7 +39,7 @@ describe('Politics window', () => {
     const html = renderToStaticMarkup(<PoliticsWindow />);
     expect(html.indexOf('id="politics-summary"')).toBeLessThan(html.indexOf('id="politics-council"'));
     expect(html).toContain('Approval');
-    expect(html).toContain('days left before the Election');
+    expect(html).toContain('before the Election');
   });
 
   it('draws the Council as a circle, with no left and no right', () => {
@@ -98,7 +98,7 @@ describe('Town hall panel', () => {
     context.state = politicalCity('medium');
     const html = renderToStaticMarkup(<TownHallPanel building={townHall(context.state)} />);
     expect(html).toContain('Approval');
-    expect(html).toContain('days left before the Election');
+    expect(html).toContain('before the Election');
     expect(html).toContain('>Politics</button>');
   });
 

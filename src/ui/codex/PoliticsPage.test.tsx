@@ -62,7 +62,7 @@ describe('PoliticsPage', () => {
 
   it('shows the numbers of the balance', () => {
     const html = render();
-    expect(html).toContain(`${POLITICS.term.days} game days`);
+    expect(html).toContain(`lasts ${POLITICS.term.days} days of game time`);
     expect(html).toContain(`up to ${POLITICS.petitions.maxOpen} open`);
     expect(html).toContain(`after ${POLITICS.council.reproposeDelayDays} days`);
   });
@@ -72,7 +72,7 @@ describe('PoliticsPage', () => {
     const before = term.days;
     try {
       term.days = 17;
-      expect(render()).toContain('17 game days');
+      expect(render()).toContain('lasts 17 days of game time');
     } finally {
       term.days = before;
     }
@@ -86,6 +86,6 @@ describe('PoliticsPage', () => {
 
   it('shows the state of the city when the politics runs', () => {
     expect(render('medium')).toContain('Approval');
-    expect(render('medium')).toContain('days left before the Election');
+    expect(render('medium')).toContain('before the Election');
   });
 });

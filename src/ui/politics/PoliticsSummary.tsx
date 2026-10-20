@@ -3,6 +3,7 @@ import { t } from '../../i18n/t';
 import { LabeledList } from '../common/LabeledList';
 import { Note } from '../common/Note';
 import { SectionHeading } from '../common/SectionHeading';
+import { formatDays } from './formatDays';
 import { JournalList } from './JournalList';
 
 const formatMandate = (mandate: number): string => `${mandate > 0 ? '+' : ''}${Math.round(mandate * 100)} %`;
@@ -19,12 +20,12 @@ export function PoliticsSummary({ state }: { state: GameState }) {
   return (
     <section id="politics-summary" className="eco-wide">
       <SectionHeading>{t('politics.summary')}</SectionHeading>
-      {isPoliticsAdaptingOn(politics, politics.day) && <Note tone="muted">{t('politics.adapting').replace('{days}', String(adaptingDays))}</Note>}
+      {isPoliticsAdaptingOn(politics, politics.day) && <Note tone="muted">{t('politics.adapting').replace('{duration}', formatDays(adaptingDays))}</Note>}
       <progress max={100} value={approval} aria-label={t('politics.approval')} />
       <LabeledList>
         <LabeledList.Row label={t('politics.approval')}>{Math.round(approval)}</LabeledList.Row>
         {rule.election
-          ? <LabeledList.Row label={t('politics.term').replace('{number}', String(politics.term.number))}>{t('politics.termLeft').replace('{days}', String(termDaysLeft(politics, politics.day)))}</LabeledList.Row>
+          ? <LabeledList.Row label={t('politics.term').replace('{number}', String(politics.term.number))}>{t('politics.termLeft').replace('{duration}', formatDays(termDaysLeft(politics, politics.day)))}</LabeledList.Row>
           : <LabeledList.Row label={t('politics.term').replace('{number}', String(politics.term.number))}>{t('politics.noElection')}</LabeledList.Row>}
         {rule.election && <LabeledList.Row label={t('politics.mandate')}>{formatMandate(politics.mandate)}</LabeledList.Row>}
         <LabeledList.Row label={t('politics.summary.ordinances')}>{politics.adopted.length}</LabeledList.Row>
