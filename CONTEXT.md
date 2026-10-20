@@ -206,7 +206,7 @@ A Waste facility with a large capacity in a small footprint. It burns Waste, whi
 _Avoid_: Furnace, burner
 
 **Recycling plant**:
-A clean Waste facility that consumes power. It has no Well-being malus and no Climate emissions, and costs the most per unit of Waste.
+A clean Waste facility that consumes power. It has no Well-being malus, no Odor radius and no Climate emissions, and costs the most per unit of Waste. Its collection reach is the largest of the Waste facilities, larger than the Incinerator's, itself larger than the Mound's.
 _Avoid_: Sorting centre
 
 **Leisure building**:

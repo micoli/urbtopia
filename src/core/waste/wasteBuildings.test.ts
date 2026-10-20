@@ -39,6 +39,11 @@ describe('Waste building definitions', () => {
     expect(WASTE_FACILITIES.recyclingPlant.pollution).toBeNull();
   });
 
+  it('collects farther with the Recycling plant than with the Incinerator, and farther with the Incinerator than with the Mound', () => {
+    expect(WASTE_FACILITIES.recyclingPlant.reach).toBeGreaterThan(WASTE_FACILITIES.incinerator.reach);
+    expect(WASTE_FACILITIES.incinerator.reach).toBeGreaterThan(WASTE_FACILITIES.mound.reach);
+  });
+
   it('only lets the Mound reach a Pedestrian way', () => {
     expect(BUILDING_SPECS.mound.accessModes).toContain('pedestrianWay');
     expect(BUILDING_SPECS.incinerator.accessModes).toEqual(['road']);
