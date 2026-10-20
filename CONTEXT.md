@@ -59,7 +59,7 @@ The original Shop, kept in the cities that have it and still buildable: it sells
 _Avoid_: Universal shop, Retired shop
 
 **Build limit**:
-The number of copies of a building the player may own at once. It rises with the Citizens count, by thresholds set for each building, and its list of thresholds gives the maximum. Applies to the Farm, Packhouse, Storehouse, Material depot, Vault, Grain silo, Hydro power plant and Geothermal power plant.
+The number of copies of a building the player may own at once. It rises with the Citizens count, by thresholds set for each building, and its list of thresholds gives the maximum. Applies to the Farm, Packhouse, Storehouse, Material depot, Vault, Grain silo, Office building, Hydro power plant and Geothermal power plant.
 _Avoid_: Quota, cap (already the Field cap)
 
 **Escalating price**:

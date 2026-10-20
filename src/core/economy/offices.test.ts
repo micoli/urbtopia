@@ -1,4 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { copyThresholds, maxCopies, nextCopyCost } from '../buildings/buildLimit';
+import { upgradeCostOf } from './tiers';
 import { advance, citizensOf, congestionStats, createBuilding, dispatch, jobsOf, newGame, type Building, type GameState } from '../index';
 import { WALKING } from '../traffic/walking';
 import { tiersOf } from '../buildings/buildingDefinitions';
@@ -94,5 +96,44 @@ describe('Collecting an Office', () => {
     const result = dispatch(state, { type: 'Collect', buildingId: officeIn(state).id }, T0);
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error.key).toBe('error.nothingToCollect');
+  });
+});
+
+describe('Office data', () => {
+  it('opens at 500 Citizens and allows five copies, the last two at 4000', () => {
+    expect(copyThresholds('office')).toEqual([500, 1000, 2000, 4000, 4000]);
+    expect(maxCopies('office')).toBe(5);
+  });
+
+  it('costs 25% more for each copy already built', () => {
+    expect(nextCopyCost(empty, 'office')).toBe(1500);
+    expect(nextCopyCost(city([]).state, 'office')).toBe(1875);
+  });
+
+  it('asks more Urbs for each upgrade and draws more power with each Tier', () => {
+    const upgrades = [2, 3].map((tier) => upgradeCostOf('office', tier)!.urbs);
+    expect(upgrades[0]).toBeGreaterThan(0);
+    expect(upgrades[1]).toBeGreaterThan(upgrades[0]!);
+    const powers = tiersOf('office').map((tier) => tier.power!);
+    expect(powers).toEqual([...powers].sort((a, b) => a - b));
+  });
+});
+
+describe('Placing an Office', () => {
+  const rich = { ...empty, urbs: 100_000 };
+  const place = { type: 'PlaceBuilding', buildingType: 'office', x: 57, y: 56 } as const;
+  const populated = (homes: number): GameState => ({ ...rich, buildings: Array.from({ length: homes }, (_, index) => ({ ...createBuilding(20 + index, 'home', 40 + (index % 10) * 2, 40 + Math.floor(index / 10) * 2, 0), tier: 8 })) });
+
+  it('is locked below 500 Citizens', () => {
+    const result = dispatch(populated(1), place, T0);
+    expect(result.ok).toBe(false);
+  });
+
+  it('is built from 500 Citizens, for its base price', () => {
+    const state = populated(Math.ceil(500 / citizensOf(8)));
+    const result = dispatch(state, place, T0);
+    if (!result.ok) throw new Error(result.error.key);
+    expect(result.state.urbs).toBe(state.urbs - 1500);
+    expect(officeIn(result.state).tier).toBe(1);
   });
 });
