@@ -166,7 +166,7 @@ The fixed duration, in game days, of a Mayor's mandate. It ends with an Election
 _Avoid_: Mandate, season
 
 **Election**:
-The vote at the end of a Term whose outcome is drawn from the game's Seed, so reloading never dodges it. The Approval decides how favourable the next Council is. Losing never takes the city from the player.
+The vote at the end of a Term whose outcome is drawn from the game's Seed, so reloading never dodges it. The Approval decides how favourable the next Council is: a Mayor liked by the city faces a balanced Council, a disliked one sees seats move between Factions, and the Council votes with a mandate drawn from the Approval for the whole Term. Easy has no Election. Losing never takes the city from the player.
 _Avoid_: Ballot, poll (already used by social features)
 
 **Faction**:

@@ -8,6 +8,7 @@ import { type FactionId } from './factions';
 import { ordinanceById, type OrdinanceId } from './ordinances';
 import type { ObjectiveId } from './objectives';
 import { judgeObjectives, refillObjectives, type ActiveObjective } from './objectiveTracking';
+import { holdElection, type ElectionResult } from './election';
 import { advancePetitions, type Petition, type Support } from './petitions';
 import { POLITICS, politicsRuleOf } from './politicsBalance';
 
@@ -34,6 +35,11 @@ export interface PoliticsState {
   nextPetitionId: number;
   // The first game day on which an ignored Petition may escalate and the Approval may be penalised.
   adaptationUntilDay: number;
+  // The current Term: the game day it started and its rank, from 1.
+  term: { startDay: number; number: number };
+  // How favourable the Council is after the last Election, between -1 and 1; 0 before the first.
+  mandate: number;
+  lastElection?: ElectionResult;
 }
 
 const POLITICS_STREAM = 'politics';
@@ -51,7 +57,7 @@ export function politicsDayOf(state: GameState): number {
 
 export function withPolitics(state: GameState): GameState {
   if (state.politics || !isPoliticsActive(state)) return state;
-  const started: PoliticsState = { rngState: hashSeed(`${state.seed}:${POLITICS_STREAM}`), approval: POLITICS.approval.initial, shock: 0, day: politicsDayOf(state), seats: { ...POLITICS.council.seats }, adopted: [], retryDay: {}, objectives: [], completed: [], grantsDue: 0, petitions: [], supports: [], nextPetitionId: 1, adaptationUntilDay: politicsDayOf(state) + POLITICS.adaptationDays };
+  const started: PoliticsState = { rngState: hashSeed(`${state.seed}:${POLITICS_STREAM}`), approval: POLITICS.approval.initial, shock: 0, day: politicsDayOf(state), seats: { ...POLITICS.council.seats }, adopted: [], retryDay: {}, objectives: [], completed: [], grantsDue: 0, petitions: [], supports: [], nextPetitionId: 1, adaptationUntilDay: politicsDayOf(state) + POLITICS.adaptationDays, term: { startDay: politicsDayOf(state), number: 1 }, mandate: 0 };
   return { ...state, politics: refillObjectives(state, started) };
 }
 
@@ -81,6 +87,12 @@ function payUpkeep(state: GameState, adopted: readonly OrdinanceId[]): { urbs: n
   return { urbs, adopted: kept };
 }
 
+function electionIfDue(state: GameState, politics: PoliticsState): PoliticsState {
+  if (!politicsRuleOf(difficultyOf(state)).election) return politics;
+  if (politics.day - politics.term.startDay < POLITICS.term.days) return politics;
+  return holdElection(politics, clamp(politics.approval + politics.shock), politics.day);
+}
+
 function advanceDay(state: GameState): GameState {
   const { dailyConvergence, shockFadePerDay } = POLITICS.approval;
   const politics = state.politics!;
@@ -88,17 +100,14 @@ function advanceDay(state: GameState): GameState {
   const { urbs, adopted } = payUpkeep(state, politics.adopted);
   const judged = judgeObjectives(state, politics);
   const petitioned = advancePetitions(state, judged);
-  return {
-    ...state,
-    urbs,
-    politics: {
-      ...petitioned.politics,
-      approval: clamp(politics.approval + (target - politics.approval) * dailyConvergence),
-      shock: politics.shock * (1 - shockFadePerDay) + petitioned.shock,
-      day: politics.day + 1,
-      adopted,
-    },
+  const next: PoliticsState = {
+    ...petitioned.politics,
+    approval: clamp(politics.approval + (target - politics.approval) * dailyConvergence),
+    shock: politics.shock * (1 - shockFadePerDay) + petitioned.shock,
+    day: politics.day + 1,
+    adopted,
   };
+  return { ...state, urbs, politics: electionIfDue(state, next) };
 }
 
 // Plays every game day elapsed since the politics was last advanced.

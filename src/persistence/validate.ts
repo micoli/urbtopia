@@ -185,6 +185,18 @@ function isTransitTile(key: 'brtRoads' | 'rails'): (tile: unknown) => boolean {
     isRecord(tile) && isCoord(tile) && isArrayOf(tile.exits, (direction) => ['N', 'E', 'S', 'W'].includes(direction as string)) && new Set(tile.exits as string[]).size === (tile.exits as string[]).length && (tile.kind === undefined || (key === 'brtRoads' && tile.kind === 'crossing'));
 }
 
+function isPoliticsTerm(politics: Json): boolean {
+  const { term, mandate, lastElection } = politics;
+  if (!isRecord(term) || !isInt(term.startDay, 0) || !isInt(term.number, 1) || !isNumber(mandate) || Math.abs(mandate) > 1) return false;
+  if (lastElection === undefined) return true;
+  return isRecord(lastElection) && isInt(lastElection.day, 0) && isNumber(lastElection.approval) && lastElection.approval >= 0 && lastElection.approval <= 100 && isNumber(lastElection.mandate) && Math.abs(lastElection.mandate) <= 1 && hasCouncilSeats(lastElection.seats);
+}
+
+function hasCouncilSeats(seats: unknown): boolean {
+  const total = FACTION_IDS.reduce((sum, faction) => sum + POLITICS.council.seats[faction], 0);
+  return isRecord(seats) && Object.keys(seats).length === FACTION_IDS.length && FACTION_IDS.every((faction) => isInt(seats[faction], 1)) && FACTION_IDS.reduce((sum, faction) => sum + (seats[faction] as number), 0) === total;
+}
+
 function isPoliticsPetitions(politics: Json): boolean {
   const { petitions, supports, nextPetitionId, adaptationUntilDay } = politics;
   const isParcel = (parcel: unknown) => isRecord(parcel) && isInt(parcel.x, 0) && isInt(parcel.y, 0);
@@ -208,7 +220,7 @@ function isPoliticsObjectives(politics: Json): boolean {
 function isPoliticsCouncil(politics: Json): boolean {
   const ordinanceIds = ORDINANCE_ENTRIES.map((entry) => entry.id as string);
   const { seats, adopted, retryDay } = politics;
-  if (!isRecord(seats) || !FACTION_IDS.every((faction) => isInt(seats[faction], 0)) || Object.keys(seats).length !== FACTION_IDS.length) return false;
+  if (!hasCouncilSeats(seats)) return false;
   if (!isArrayOf(adopted, (id) => typeof id === 'string' && ordinanceIds.includes(id)) || hasDuplicates(adopted as string[])) return false;
   const groups = (adopted as string[]).flatMap((id) => ORDINANCE_ENTRIES.find((entry) => entry.id === id)?.exclusiveGroup ?? []);
   if (hasDuplicates(groups)) return false;
@@ -269,7 +281,7 @@ function structureFailure(value: Json): string | null {
     entries('bridges', () => value.bridges, isBridge, true),
     field('casinoRng', () => value.casinoRng === undefined || isNumber(value.casinoRng)),
     field('difficulty', () => value.difficulty === undefined || isDifficulty(value.difficulty)),
-    field('politics', () => value.politics === undefined || (isRecord(value.politics) && isNumber(value.politics.rngState) && isNumber(value.politics.approval) && value.politics.approval >= 0 && value.politics.approval <= 100 && isNumber(value.politics.shock) && isInt(value.politics.day, 0) && isPoliticsCouncil(value.politics) && isPoliticsObjectives(value.politics) && isPoliticsPetitions(value.politics))),
+    field('politics', () => value.politics === undefined || (isRecord(value.politics) && isNumber(value.politics.rngState) && isNumber(value.politics.approval) && value.politics.approval >= 0 && value.politics.approval <= 100 && isNumber(value.politics.shock) && isInt(value.politics.day, 0) && isPoliticsCouncil(value.politics) && isPoliticsObjectives(value.politics) && isPoliticsPetitions(value.politics) && isPoliticsTerm(value.politics))),
     field('challenge', () => value.challenge === undefined || isChallengeProgress(value.challenge)),
     entries('challengeClaims', () => value.challengeClaims, isChallengeClaim, true),
     field('ecologyDismissed', () => value.ecologyDismissed === undefined || typeof value.ecologyDismissed === 'boolean'),

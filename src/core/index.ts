@@ -45,6 +45,8 @@ export type { ActiveObjective } from './politics/objectiveTracking';
 export { isObjectiveMet, objectiveValue } from './politics/objectiveMetrics';
 export { PETITION_CAUSES, SUPPORT_CAUSES, homeCauses } from './politics/petitions';
 export type { Petition, PetitionCause, Support, SupportCause } from './politics/petitions';
+export { holdElection, mandateOf, termDaysLeft } from './politics/election';
+export type { ElectionResult } from './politics/election';
 export { FACTION_IDS } from './politics/factions';
 export type { FactionId } from './politics/factions';
 export { POLITICS, politicsRuleOf } from './politics/politicsBalance';

@@ -5,6 +5,7 @@ import { approvalOf, isPoliticsActive, politicsDayOf } from './politics';
 import { ordinanceById, type OrdinanceId } from './ordinances';
 import { politicsRuleOf } from './politicsBalance';
 import { difficultyOf } from '../engine/difficulty';
+import { mandateOf } from './election';
 
 export type Vote = 'for' | 'against';
 
@@ -23,13 +24,13 @@ export interface CouncilForecast {
 
 export type ProposalIssue = 'inactive' | 'locked' | 'adopted' | 'excluded' | 'waiting';
 
-const NEUTRAL_APPROVAL = 50;
-
-// Between -1 and 1, and 0 unless the Difficulty makes the Approval weigh on the Council.
+// Between -1 and 1. Where the Difficulty holds Elections, the Council votes with the mandate of the last one; where it also makes the Approval weigh on the Council, the live Approval comes on top.
 export function councilGoodwill(state: GameState): number {
-  if (!politicsRuleOf(difficultyOf(state)).approvalWeighsOnCouncil) return 0;
+  const rule = politicsRuleOf(difficultyOf(state));
+  const mandate = rule.election ? state.politics?.mandate ?? 0 : 0;
   const approval = approvalOf(state);
-  return approval === null ? 0 : (approval - NEUTRAL_APPROVAL) / NEUTRAL_APPROVAL;
+  const live = rule.approvalWeighsOnCouncil && approval !== null ? mandateOf(approval) : 0;
+  return Math.max(-1, Math.min(1, mandate + live));
 }
 
 export function adoptedOrdinances(state: GameState): readonly OrdinanceId[] {
