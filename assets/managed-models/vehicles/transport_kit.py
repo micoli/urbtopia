@@ -292,7 +292,7 @@ def shorten(parts, start, end, by):
 
 
 FILLET = 0.014
-PLAIN_PARTS = ("flag", "eye", "arch", "strut", "yard band", "sail", "door frame", "door", "front window", "rear window", "lower band", "mirror", "coupler", "windscreen", "end window", "axle", "wheel hub", "pantograph", "window", "porthole", "rail", "mast", "seam", "bone", "skull")
+PLAIN_PARTS = ("carbody", "pillar", "truck", "wheel", "lamp", "equipment", "underframe", "axle", "roof vent", "roof unit", "number plate", "buffer", "louver", "flag", "eye", "arch", "strut", "yard band", "sail", "door frame", "door", "front window", "rear window", "lower band", "mirror", "coupler", "windscreen", "end window", "axle", "wheel hub", "pantograph", "window", "porthole", "rail", "mast", "seam", "bone", "skull")
 
 
 def strut(P, color, base, top, radius=0.02, sides=6):
