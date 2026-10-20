@@ -1,5 +1,5 @@
 import {
-    ECOLOGY, HOME_TIERS, cityBenefits, economicPower, energyStats, homePower, productionFactors, transportStats, type GameState, isHomeType } from '../../../core';
+    ECOLOGY, HOME_TIERS, cityBenefits, economicPower, energySavingOf, energyStats, homePower, productionFactors, transportStats, type GameState, isHomeType } from '../../../core';
 import {t} from '../../../i18n/t';
 import type {MessageKey} from '../../../i18n/messages';
 import {SectionHeading} from '../../common/SectionHeading';
@@ -19,13 +19,13 @@ function casinoRows(state: GameState, green: ReturnType<typeof cityBenefits>): [
     if (!casinos.length) return [];
     const withoutCasinos = cityBenefits({...state, buildings: state.buildings.filter(b => b.type !== 'casino')});
     return [
-        ['casino.demand', casinos.reduce((sum, b) => sum + economicPower(b), 0)],
+        ['casino.demand', casinos.reduce((sum, b) => sum + economicPower(b, energySavingOf(state)), 0)],
         ['casino.wellbeingGain', `+${(green.wellbeing - withoutCasinos.wellbeing).toFixed(1)}`],
     ];
 }
 
 export function EnergySection({state, energy, green, transport}: EnergySectionProps) {
-    const saved = state.buildings.filter(b => isHomeType(b.type)).reduce((sum, b) => sum + (HOME_TIERS[b.tier - 1]?.power ?? 0) - homePower(b), 0);
+    const saved = state.buildings.filter(b => isHomeType(b.type)).reduce((sum, b) => sum + (HOME_TIERS[b.tier - 1]?.power ?? 0) - homePower(b, energySavingOf(state)), 0);
     const rows: [MessageKey, number | string][] = [
         ['eco.demand', energy.demand], ['transit.power', energy.transitDemand], ['eco.saved', saved], ['eco.solar', energy.solar], ['eco.wind', energy.wind], ['eco.hydro', energy.hydro], ['eco.geothermal', energy.geothermal],
         ['eco.coalCapacity', energy.coalCapacity], ['eco.coal', energy.coal], ['eco.coalCost', energy.coalCostPerHour], ['eco.backup', energy.backup],

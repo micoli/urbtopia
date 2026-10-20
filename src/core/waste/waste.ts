@@ -8,6 +8,7 @@ import { isWithinReach } from '../services/facilities';
 import { totalCitizens } from '../buildings/city';
 import { hourOf, recyclingPlantPowerRatios } from './wastePower';
 import { footprintOfBuilding, pedestrianDistances, roadComponents, tilesOfBuilding, touchedRoadComponents, outsideNeighbours } from './wasteLinks';
+import { wasteReductionOf } from '../politics/ordinanceEffects';
 import { WASTE, WASTE_FACILITIES, WASTE_KINDS, WASTE_REQUIRED_FROM_CITIZENS, homeWasteProduction, wasteCapacity, wasteKindOf, type WasteKind } from './wasteBalance';
 
 export type WasteCause = 'outOfReach' | 'capacityFull' | 'noRoadLink' | 'beyondCarryingDistance' | 'facilityStopped';
@@ -55,7 +56,7 @@ interface ReachingFacility {
   running: boolean;
 }
 
-const cache = new WeakMap<readonly Building[], { roads: GameState['roads']; roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; paying: boolean; adapting: boolean; hour: number; report: WasteReport }>();
+const cache = new WeakMap<readonly Building[], { roads: GameState['roads']; roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; paying: boolean; adapting: boolean; hour: number; reduction: number; report: WasteReport }>();
 
 function centerOf(building: Building): Coord {
   const { width, depth } = footprintOfBuilding(building);
@@ -120,21 +121,22 @@ function causeOf(reaching: readonly ReachingFacility[]): WasteCause {
   return 'noRoadLink';
 }
 
-function withoutFacilities(homes: readonly Building[], required: boolean): WasteReport {
-  const results = new Map<number, HomeWaste>(homes.map(home => [home.id, { produced: homeWasteProduction(home.tier), facilityId: null, cost: 0, carried: false, cause: 'outOfReach' }]));
+function withoutFacilities(homes: readonly Building[], required: boolean, reduction: number): WasteReport {
+  const results = new Map<number, HomeWaste>(homes.map(home => [home.id, { produced: homeWasteProduction(home.tier, reduction), facilityId: null, cost: 0, carried: false, cause: 'outOfReach' }]));
   return { required, homes: results, facilities: new Map(), produced: [...results.values()].reduce((sum, home) => sum + home.produced, 0), processed: 0, costPerDay: 0, costPerHour: 0 };
 }
 
 function computeReport(state: GameState, paying: boolean): WasteReport {
   const homes = state.buildings.filter(building => isHomeType(building.type)).sort((a, b) => a.id - b.id);
   const required = totalCitizens(state) >= WASTE_REQUIRED_FROM_CITIZENS;
-  if (!state.buildings.some(building => wasteKindOf(building.type))) return withoutFacilities(homes, required);
+  const reduction = wasteReductionOf(state);
+  if (!state.buildings.some(building => wasteKindOf(building.type))) return withoutFacilities(homes, required, reduction);
   const components = roadComponents(state);
   const facilities = facilityGeometries(state, components);
   const homeData = homes.map(home => {
     const tiles = tilesOfBuilding(home);
     const roads = touchedRoadComponents(components, tiles);
-    return { home, center: centerOf(home), produced: homeWasteProduction(home.tier), roads, walk: roads.size === 0 ? pedestrianDistances(state, components, tiles, Infinity) : null };
+    return { home, center: centerOf(home), produced: homeWasteProduction(home.tier, reduction), roads, walk: roads.size === 0 ? pedestrianDistances(state, components, tiles, Infinity) : null };
   });
   const results = new Map<number, HomeWaste>();
   const powerRatios = recyclingPlantPowerRatios(state);
@@ -194,10 +196,11 @@ export function wasteReport(state: GameState): WasteReport {
   const paying = state.urbs > 1e-9;
   const adapting = isAdapting(state);
   const hour = hourOf(state);
+  const reduction = wasteReductionOf(state);
   const cached = cache.get(state.buildings);
-  if (cached && cached.adapting === adapting && cached.hour === hour && cached.roads === state.roads && cached.roundabouts === state.roundabouts && cached.pedestrianWays === state.pedestrianWays && cached.paying === paying) return cached.report;
+  if (cached && cached.adapting === adapting && cached.hour === hour && cached.roads === state.roads && cached.roundabouts === state.roundabouts && cached.pedestrianWays === state.pedestrianWays && cached.paying === paying && cached.reduction === reduction) return cached.report;
   const report = computeReport(state, paying);
-  cache.set(state.buildings, { roads: state.roads, roundabouts: state.roundabouts, pedestrianWays: state.pedestrianWays, paying, adapting, hour, report });
+  cache.set(state.buildings, { roads: state.roads, roundabouts: state.roundabouts, pedestrianWays: state.pedestrianWays, paying, adapting, hour, reduction, report });
   return report;
 }
 

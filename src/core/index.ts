@@ -49,6 +49,7 @@ export { holdElection, mandateOf, termDaysLeft } from './politics/election';
 export type { ElectionResult } from './politics/election';
 export { JOURNAL_TYPES, newJournalEntries } from './politics/journal';
 export type { JournalEntry, JournalType } from './politics/journal';
+export { congestionReliefOf, energySavingOf, esteemBonusOf, greenBeltBonusOf, officeYieldMultiplierOf, taxMultiplierOf, wasteReductionOf } from './politics/ordinanceEffects';
 export { FACTION_IDS } from './politics/factions';
 export type { FactionId } from './politics/factions';
 export { POLITICS, politicsRuleOf } from './politics/politicsBalance';

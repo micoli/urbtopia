@@ -16,6 +16,7 @@ import { poweredCasinoIds } from '../leisure/poweredCasinos';
 import type { Building, GameState } from '../engine/state';
 import { solidarityBonus } from '../economy/solidarity';
 import { isWasteCovered, wasteReport } from '../waste/waste';
+import { esteemBonusOf } from '../politics/ordinanceEffects';
 
 export const NEED_LEVELS = ['vital', 'safety', 'belonging', 'esteem', 'fulfilment'] as const;
 export type NeedLevelId = (typeof NEED_LEVELS)[number];
@@ -147,7 +148,7 @@ export function needsPyramid(state: GameState): NeedsPyramid {
     const own = factors.filter(factor => factor.level === id);
     const modelled = own.filter(factor => !factor.optional && factor.satisfaction !== null);
     const base = modelled.length ? modelled.reduce((sum, factor) => sum + factor.satisfaction!, 0) / modelled.length : null;
-    const satisfaction = base === null ? null : Math.min(100, base + (id === 'belonging' ? solidarityBonus(state) : 0));
+    const satisfaction = base === null ? null : Math.min(100, base + (id === 'belonging' ? solidarityBonus(state) : id === 'esteem' ? esteemBonusOf(state) : 0));
     const fragile = levels.some(level => level.satisfaction !== null && level.satisfaction < NEEDS.fragileBelow);
     levels.push({ id, satisfaction, fragile, factors: own });
   }

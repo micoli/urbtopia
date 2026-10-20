@@ -2,12 +2,13 @@ import { economicPower } from '../environment/ecology';
 import { isAdapting } from '../environment/adaptation';
 import { energyStats } from '../environment/energy';
 import type { Building, GameState } from '../engine/state';
+import { energySavingOf } from '../politics/ordinanceEffects';
 
 const POWER_EPSILON = 1e-9;
 
 export function isCasinoPowered(state: GameState, casino: Building, supplied: ReadonlyMap<number, number> = energyStats(state).supplied): boolean {
   if (isAdapting(state)) return true;
-  return (supplied.get(casino.id) ?? 0) >= economicPower(casino) - POWER_EPSILON;
+  return (supplied.get(casino.id) ?? 0) >= economicPower(casino, energySavingOf(state)) - POWER_EPSILON;
 }
 
 export function poweredCasinoIds(state: GameState, supplied?: ReadonlyMap<number, number>): ReadonlySet<number> {

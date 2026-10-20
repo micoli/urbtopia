@@ -11,6 +11,7 @@ import { judgeObjectives, refillObjectives, type ActiveObjective } from './objec
 import { withJournal, type JournalEntry } from './journal';
 import { holdElection, type ElectionResult } from './election';
 import { advancePetitions, type Petition, type Support } from './petitions';
+import { isPoliticsActive } from './politicsGate';
 import { POLITICS, politicsRuleOf } from './politicsBalance';
 
 export interface PoliticsState {
@@ -48,10 +49,7 @@ const POLITICS_STREAM = 'politics';
 
 const MAX_APPROVAL = 100;
 
-export function isPoliticsActive(state: GameState): boolean {
-  if (!politicsRuleOf(difficultyOf(state)).active) return false;
-  return state.buildings.some(building => building.type === 'townHall');
-}
+export { isPoliticsActive };
 
 export function politicsDayOf(state: GameState): number {
   return Math.floor((state.lastSeen + (state.timeOffset ?? 0)) / (POLITICS.dayHours * ECOLOGY.hourMs));

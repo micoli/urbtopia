@@ -48,6 +48,7 @@ export function wasteCapacity(kind: WasteKind, tier: number): number {
   return (tiers[tier - 1] ?? tiers[tiers.length - 1])!.capacity!;
 }
 
-export function homeWasteProduction(tier: number): number {
-  return citizensOf(tier) * WASTE.unitsPerCitizenPerDay;
+// `reduction` is the share an Ordinance takes off what Homes produce.
+export function homeWasteProduction(tier: number, reduction = 0): number {
+  return citizensOf(tier) * WASTE.unitsPerCitizenPerDay * (1 - reduction);
 }

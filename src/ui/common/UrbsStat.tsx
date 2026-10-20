@@ -1,13 +1,15 @@
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
+import { officeYieldMultiplierOf } from '../../core';
 import { collectBadgeLabel } from '../collect/CollectBadge';
 import { useGame } from './hooks';
 import { UrbsSymbol } from './UrbsSymbol';
 
 function collectPendingUrbs() {
   const { state, send } = gameStore.getState();
+  const officeYield = officeYieldMultiplierOf(state);
   for (const building of state.buildings) {
-    if (typeof collectBadgeLabel(building) !== 'number') continue;
+    if (typeof collectBadgeLabel(building, officeYield) !== 'number') continue;
     send({ type: 'Collect', buildingId: building.id });
   }
 }

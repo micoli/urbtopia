@@ -2,6 +2,7 @@ import { ECOLOGY, economicPower } from '../environment/ecology';
 import { isAdapting } from '../environment/adaptation';
 import { energyStats } from '../environment/energy';
 import type { GameState } from '../engine/state';
+import { energySavingOf } from '../politics/ordinanceEffects';
 
 const POWER_EPSILON = 1e-9;
 
@@ -12,7 +13,7 @@ export function recyclingPlantPowerRatios(state: GameState): ReadonlyMap<number,
   if (isAdapting(state)) return new Map(plants.map(plant => [plant.id, 1]));
   const { supplied } = energyStats(state);
   return new Map(plants.map(plant => {
-    const demand = economicPower(plant);
+    const demand = economicPower(plant, energySavingOf(state));
     if (demand <= 0) return [plant.id, 1];
     const ratio = Math.min(1, (supplied.get(plant.id) ?? 0) / demand);
     return [plant.id, ratio <= POWER_EPSILON ? 0 : ratio];

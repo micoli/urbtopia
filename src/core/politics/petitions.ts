@@ -9,6 +9,7 @@ import type { NeedFactorId } from '../environment/needFactors';
 import { homeNeedSatisfactions, needsContext, type NeedsContext } from '../environment/needs';
 import type { Coord } from '../map/coord';
 import { missingServicesOf } from '../services/services';
+import { energySavingOf } from './ordinanceEffects';
 import { POLITICS, politicsRuleOf } from './politicsBalance';
 import { difficultyOf } from '../engine/difficulty';
 import type { PoliticsState } from './politics';
@@ -49,7 +50,7 @@ export function homeCauses(state: GameState, home: Building, context: NeedsConte
   const satisfactions = homeNeedSatisfactions(state, home, context);
   const { belowSatisfaction } = POLITICS.petitions;
   const causes: PetitionCause[] = missingServicesOf(state, home, home.tier, context.coverage);
-  const need = homePower(home);
+  const need = homePower(home, energySavingOf(state));
   if (need > 0 && (context.energy.supplied.get(home.id) ?? 0) / need < POWER_SHORTAGE_RATIO) causes.push('electricity');
   for (const cause of ['pollution', 'congestion'] as const) if ((satisfactions.get(cause) ?? 100) < belowSatisfaction) causes.push(cause);
   return causes;

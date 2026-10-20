@@ -56,6 +56,7 @@ import { STOP_NAME_MAX_LENGTH, isTransitStopType } from '../transit/stopNames';
 import type { Difficulty } from './difficulty';
 import { proposeOrdinance, repealOrdinance } from '../politics/ordinanceCommands';
 import { claimGrants } from '../politics/objectiveCommands';
+import { officeYieldMultiplierOf } from '../politics/ordinanceEffects';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -921,9 +922,10 @@ function canLoseUtility(state: GameState, sold: Building): boolean {
 }
 
 function collectOfficeEarnings(state: GameState, building: Building): CommandOutcome {
-  const due = officeUrbsDue(building);
+  const yieldMultiplier = officeYieldMultiplierOf(state);
+  const due = officeUrbsDue(building, yieldMultiplier);
   if (due === 0) return fail('error.nothingToCollect');
-  const remainder = building.taxCitizenMs - due * OFFICE.hourMs / OFFICE.urbsPerJobPerHour;
+  const remainder = building.taxCitizenMs - due * OFFICE.hourMs / (OFFICE.urbsPerJobPerHour * yieldMultiplier);
   return {
     state: {
       ...state,

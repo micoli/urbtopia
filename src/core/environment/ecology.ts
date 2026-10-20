@@ -40,11 +40,16 @@ export function distance(a: Building, b: Building): number {
   return Math.abs(p.x - q.x) + Math.abs(p.y - q.y);
 }
 
-export function homePower(b: Building): number {
-  return (HOME_TIERS[b.tier - 1]?.power ?? 0) * (b.insulated ? 0.7 : 1);
+// `saving` is the share of its Demand a building saves, from an Ordinance.
+export function homePower(b: Building, saving = 0): number {
+  return (HOME_TIERS[b.tier - 1]?.power ?? 0) * (b.insulated ? 0.7 : 1) * (1 - saving);
 }
 
-export function economicPower(b: Building): number {
+export function economicPower(b: Building, saving = 0): number {
+  return basePower(b) * (1 - saving);
+}
+
+function basePower(b: Building): number {
   if (isIndustryType(b.type)) return industryWeightOf(b.type) * b.tier;
   if (isShopType(b.type)) return 0.5;
   if (isOfficeType(b.type)) return officeTierOf(b).power;
