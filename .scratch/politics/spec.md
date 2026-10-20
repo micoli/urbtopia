@@ -1,6 +1,6 @@
 # Politics
 
-Status: needs-triage
+Status: resolved
 
 The player becomes the **Mayor**. A simulated **Council** votes on the Mayor's **Ordinances**, the State pays **Grants** for held **Objectives**, and Citizens voice **Petitions** and **Support** that feed the **Approval**. Vocabulary: see `CONTEXT.md` (**Mayor**, **Council**, **Faction**, **Approval**, **Term**, **Election**, **Ordinance**, **Objective**, **Grant**, **Petition**, **Support**, **Demonstration**, **Politics window**, **Difficulty**, **Sanction**, **Adaptation period**).
 
@@ -65,6 +65,15 @@ The player becomes the **Mayor**. A simulated **Council** votes on the Mayor's *
 - **Town hall panel**: one status line (Approval, Term) and two buttons: open the Politics window, open the Codex page.
 - **Politics window**: first section is the **summary** of the current state (Approval, remaining days of the Term, Council forecast, active Objectives, open Petitions); then Council (circle), Ordinances, Objectives, Petitions. It links to the Codex page and does not repeat the rules.
 - **Codex page "Politics"** in the `build.publicFacilities` section, next to Sanctions and Waste, opened from the Town hall panel as the Waste page is from Waste facilities. It details every rule above, fully derived from the Balance table and the live state, in French and English.
+
+## Decisions made while building
+
+- The Tax level is two exclusive Ordinances (`taxRelief`, `taxIncrease`); standard is having neither. So the launch catalogue holds eight Ordinances.
+- Petitions and Support only inform on Easy: handling a Petition changes the Approval from Medium, and Demonstrations exist from Medium.
+- A Term and its Election exist from Medium. The Election sets a mandate (-1 to 1) from the Approval and, below a neutral Approval, moves up to two seats between Factions. The Council votes with that mandate from Medium; on Hard the live Approval comes on top.
+- An Ordinance whose upkeep cannot be paid lapses. The politics keeps a short journal of what it did by itself, read in the summary and signalled by a toast after an absence.
+- Absences beyond the offline cap are forfeited by the politics too, as for the rest of the city.
+- Ordinance effects live in one module (`src/core/politics/ordinanceEffects.ts`); the Congestion cache signature includes the transit subsidy.
 
 ## Out of scope
 
