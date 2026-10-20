@@ -8,7 +8,7 @@
   "coal": 2,
   "cost": 10,
   "emissions": 8,
-  "models": ["trains-train-locomotive-a", "trains-train-locomotive-passenger-a"],
+  "models": ["vehicles-steam-train", "vehicles-steam-wagon"],
   "name": {
     "en": "Coal train",
     "fr": "Train à charbon"

@@ -8,7 +8,7 @@
   "coal": 0,
   "cost": 8,
   "emissions": 0,
-  "models": ["trains-train-electric-city-a", "trains-train-electric-city-b"],
+  "models": ["vehicles-electric-train", "vehicles-electric-wagon"],
   "name": {
     "en": "Electric train",
     "fr": "Train électrique"

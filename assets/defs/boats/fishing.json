@@ -2,7 +2,7 @@
   "$schema": "../schemas/boat.schema.json",
   "kind": "boat",
   "family": "fishing",
-  "model": "watercraft-boat-fishing-small",
+  "model": "vehicles-trawler",
   "cost": 800,
   "unlockCitizens": 100,
   "name": {

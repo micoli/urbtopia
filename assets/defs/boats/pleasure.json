@@ -2,7 +2,7 @@
   "$schema": "../schemas/boat.schema.json",
   "kind": "boat",
   "family": "pleasure",
-  "model": "watercraft-boat-sail-a",
+  "model": "vehicles-catamaran",
   "cost": 400,
   "unlockCitizens": 80,
   "name": {

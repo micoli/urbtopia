@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createBuilding, newGame, transportStats, type GameState, type TransitTile } from '../core';
-import { TransitLayer } from './TransitLayer';
+import { MODE_LOOK, TransitLayer, VEHICLE_SPACING, poseAlong, slotOf } from './TransitLayer';
 
 it('renders dedicated infrastructure in bounded instance groups and animates a priority BRT crossing', () => {
   const layer = new TransitLayer();
@@ -15,7 +15,7 @@ it('renders dedicated infrastructure in bounded instance groups and animates a p
   expect(vehicle).toBeDefined();
   layer.update(-1);
   expect(vehicle.position.toArray().every(Number.isFinite)).toBe(true);
-  layer.update((198 - 5 + 1) / 1.5);
+  layer.update(199 / 1.5);
   expect(layer.priorityTiles.has('1,0')).toBe(true);
   const stopped = { ...state, urbs: 0 };
   layer.sync(stopped, transportStats(stopped).lines);
@@ -40,11 +40,67 @@ it('loads Kenney electric and coal Trains without disposing the library models',
   layer.sync(state, transportStats(state).lines);
   expect(library.ensure).toHaveBeenCalledWith(TRAIN_MODELS);
   expect(layer.root.children[1]!.children).toHaveLength(2);
+  layer.update(1);
   for (const train of layer.root.children[1]!.children) {
-    expect(train.children).toHaveLength(2);
+    const cars = train.children[0]!.children;
+    expect(cars).toHaveLength(2);
     expect(new THREE.Box3().setFromObject(train).getSize(new THREE.Vector3()).length()).toBeGreaterThan(1);
+    expect(Math.abs(cars[0]!.position.x - cars[1]!.position.x)).toBeCloseTo(0.7 * MODE_LOOK.rail.size);
+    expect(Math.abs(cars[0]!.position.z - 0.5)).toBeCloseTo(MODE_LOOK.rail.lane);
   }
   const dispose = vi.spyOn(geometry, 'dispose');
   layer.dispose();
   expect(dispose).not.toHaveBeenCalled();
+});
+
+describe('spacing of the vehicles of one line', () => {
+  const route = Array.from({ length: 21 }, (_, x) => ({ x, y: 0 }));
+
+  it('spreads them evenly so that none is closer than a vehicle length plus the safety distance', () => {
+    const service = { route, loop: false, mode: 'brt' as const, operatingVehicleIds: [3, 4, 5, 6] };
+    const phases = service.operatingVehicleIds.map((id) => slotOf(service, id).phase).sort((a, b) => a - b);
+    for (let index = 1; index < phases.length; index++) expect(phases[index]! - phases[index - 1]!).toBeGreaterThanOrEqual(VEHICLE_SPACING);
+    expect(phases[0]! + 40 - phases.at(-1)!).toBeGreaterThanOrEqual(VEHICLE_SPACING);
+  });
+
+  it('keeps the vehicles that do not fit out of the picture instead of stacking them', () => {
+    const shortLoop = { route: route.slice(0, 5), loop: true, mode: 'brt' as const, operatingVehicleIds: [1, 2, 3, 4, 5, 6] };
+    const slots = shortLoop.operatingVehicleIds.map((id) => slotOf(shortLoop, id));
+    expect(slots.filter((slot) => !slot.hidden)).toHaveLength(Math.floor(4 / VEHICLE_SPACING));
+    expect(slots.filter((slot) => slot.hidden).length).toBeGreaterThan(0);
+  });
+
+  it('draws the trains bigger and so spaces them further apart than BRT vehicles', () => {
+    const line = { route: route.slice(0, 6), loop: false, operatingVehicleIds: [1, 2, 3, 4, 5, 6] };
+    expect(MODE_LOOK.rail.size).toBe(1.8);
+    const brt = line.operatingVehicleIds.filter((id) => !slotOf({ ...line, mode: 'brt' }, id).hidden).length;
+    const rail = line.operatingVehicleIds.filter((id) => !slotOf({ ...line, mode: 'rail' }, id).hidden).length;
+    expect(rail).toBeLessThan(brt);
+    expect(10 / rail).toBeGreaterThanOrEqual(VEHICLE_SPACING * MODE_LOOK.rail.size);
+  });
+});
+
+describe('articulated vehicles', () => {
+  const bend = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 2, y: 1 }, { x: 2, y: 2 }];
+
+  it('lets each car turn on its own at a corner of the route', () => {
+    const head = poseAlong(bend, false, 2.4);
+    const tail = poseAlong(bend, false, 1.7);
+    expect(head.yaw).toBeCloseTo(0);
+    expect(tail.yaw).toBeCloseTo(Math.PI / 2);
+    expect(head.x).toBeCloseTo(2.5);
+    expect(head.z).toBeCloseTo(0.9);
+  });
+
+  it('keeps following the route round the end of a line that is not a loop', () => {
+    const head = poseAlong(bend, false, 4 + 0.3);
+    const tail = poseAlong(bend, false, 4 - 0.1);
+    expect(tail.yaw).toBeCloseTo(0);
+    expect(Math.abs(head.yaw)).toBeCloseTo(Math.PI);
+    expect(tail.z).toBeGreaterThan(head.z);
+  });
+
+  it('wraps round a loop', () => {
+    expect(poseAlong(bend, true, -0.5).z).toBeCloseTo(poseAlong(bend, true, 3.5).z);
+  });
 });

@@ -2,7 +2,7 @@
   "$schema": "../schemas/boat.schema.json",
   "kind": "boat",
   "family": "casino",
-  "model": "watercraft-ship-ocean-liner-small",
+  "model": "vehicles-cruise-ship",
   "cost": 3000,
   "unlockCitizens": 300,
   "name": {

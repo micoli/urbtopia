@@ -118,13 +118,13 @@ export const ASSET_PACKS: AssetPack[] = [
     name: 'watercraft',
     url: 'https://kenney.nl/media/pages/assets/watercraft-kit/a335cfed49-1713519620/kenney_watercraft-pack.zip',
     archive: 'kenney_watercraft-pack.zip',
-    files: ['boat-sail-a', 'boat-fishing-small', 'ship-ocean-liner-small'],
+    files: [],
   },
   {
     name: 'trains',
     url: 'https://kenney.nl/media/pages/assets/train-kit/cf8521d625-1727040883/kenney_train-kit.zip',
     archive: 'kenney_train-kit.zip',
-    files: ['train-electric-subway-a', 'railroad-straight', 'railroad-corner-small', 'train-electric-city-a', 'train-electric-city-b', 'train-electric-city-c', 'train-locomotive-a', 'train-locomotive-passenger-a'],
+    files: ['railroad-straight', 'railroad-corner-small'],
   },
   {
     name: 'mini-arcade',

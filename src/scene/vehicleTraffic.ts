@@ -3,12 +3,17 @@ import { neighboursOf, type RoadGraph } from './roadGraph';
 import { chooseNextTile } from './roadWalk';
 import { directionOf, sameTile, type Vehicle } from './vehicleMotion';
 
-export const MIN_GAP = 0.4;
+// Lengths and gaps are in tiles. A vehicle with no length of its own is as long as a car at the scene scale.
+export const DEFAULT_LENGTH = 0.64;
+export const SAFETY_GAP = 0.12;
+export const MIN_GAP = DEFAULT_LENGTH + SAFETY_GAP;
 export const NODE_CLEARANCE = 0.45;
 const STOP_BEFORE_NODE = 0.02;
 const TILE_EDGE_PROGRESS = 0.5;
 const STOP_BEFORE_CROSSING = 0.3;
 export const NODE_PATIENCE_SECONDS = 1.5;
+// A queue that cannot unwind (a ring of full roads) finally squeezes through, rather than freezing the city forever.
+export const GRIDLOCK_PATIENCE_SECONDS = 6;
 
 export interface BusRun {
   tiles: readonly Coord[];
@@ -22,12 +27,18 @@ export interface TrafficVehicle extends Vehicle {
   lane: number;
   lanes: number;
   blockedSeconds?: number;
+  length?: number;
   run?: BusRun;
 }
 
 export type LanesAt = (tile: Coord) => number;
 
 export const edgeKey = (from: Coord, to: Coord): string => `${tileKey(from)}>${tileKey(to)}`;
+
+// Distance to keep between the centres of two vehicles that follow each other: half of each body plus the safety distance.
+export function gapBetween(a: TrafficVehicle, b: TrafficVehicle): number {
+  return ((a.length ?? DEFAULT_LENGTH) + (b.length ?? DEFAULT_LENGTH)) / 2 + SAFETY_GAP;
+}
 
 function sameEdge(a: Vehicle, b: Vehicle): boolean {
   return sameTile(a.from, b.from) && sameTile(a.to, b.to);
@@ -42,7 +53,7 @@ export function distanceToLeader(vehicle: TrafficVehicle, others: readonly Traff
   let nearest = Infinity;
   for (const other of others) {
     if (other === vehicle || other.lane !== vehicle.lane || !sameEdge(other, vehicle) || other.progress <= vehicle.progress) continue;
-    nearest = Math.min(nearest, other.progress - vehicle.progress - MIN_GAP);
+    nearest = Math.min(nearest, other.progress - vehicle.progress - gapBetween(vehicle, other));
   }
   return nearest;
 }
@@ -52,14 +63,26 @@ export function nodeIsFree(vehicle: TrafficVehicle, others: readonly TrafficVehi
     if (other === vehicle) continue;
     if (sameTile(other.from, vehicle.to) && other.progress < NODE_CLEARANCE) return false;
     const arrivesAtSameNode = sameTile(other.to, vehicle.to) && !sameTile(other.from, vehicle.from);
-    if (arrivesAtSameNode && other.progress > 1 - NODE_CLEARANCE && hasPriority(other, vehicle)) return false;
+    if (arrivesAtSameNode && other.progress > 1 - Math.max(NODE_CLEARANCE, gapBetween(vehicle, other)) && hasPriority(other, vehicle)) return false;
   }
   return true;
 }
 
+// Free distance to the nearest vehicle that has just left the node this vehicle is heading to, whichever edge it took: a leader seen across the node.
+// The edge back to the tile it came from only counts when the vehicle is about to turn round.
+export function distanceAcrossNode(vehicle: TrafficVehicle, others: readonly TrafficVehicle[], turnsBack = false): number {
+  let nearest = Infinity;
+  for (const other of others) {
+    if (other === vehicle || !sameTile(other.from, vehicle.to) || (!turnsBack && sameTile(other.to, vehicle.from))) continue;
+    nearest = Math.min(nearest, 1 + other.progress - vehicle.progress - gapBetween(vehicle, other));
+  }
+  return nearest;
+}
+
 export function isSpotFree(candidate: TrafficVehicle, others: readonly TrafficVehicle[]): boolean {
   for (const other of others) {
-    if (sameEdge(other, candidate) && other.lane === candidate.lane && Math.abs(other.progress - candidate.progress) < MIN_GAP) return false;
+    if (sameEdge(other, candidate) && other.lane === candidate.lane && Math.abs(other.progress - candidate.progress) < gapBetween(candidate, other)) return false;
+    if (distanceAcrossNode(candidate, [other]) < 0 || distanceAcrossNode(other, [candidate]) < 0) return false;
     if (sameTile(other.from, candidate.from) && other.progress < NODE_CLEARANCE && candidate.progress < NODE_CLEARANCE) return false;
   }
   return true;
@@ -100,23 +123,33 @@ export function nextRunTile(run: BusRun): Coord {
   return run.tiles[run.index]!;
 }
 
-export function allowedTravel(vehicle: TrafficVehicle, wanted: number, others: readonly TrafficVehicle[], stopTiles: ReadonlySet<string> = NO_STOPS, deltaSeconds = 0): number {
+export function allowedTravel(vehicle: TrafficVehicle, wanted: number, others: readonly TrafficVehicle[], stopTiles: ReadonlySet<string> = NO_STOPS, deltaSeconds = 0, turnsBack = false): number {
+  const waited = vehicle.blockedSeconds ?? 0;
+  const squeezing = waited >= GRIDLOCK_PATIENCE_SECONDS;
   let travel = Math.min(wanted, Math.max(0, distanceToLeader(vehicle, others)));
+  const crossLimit = squeezing ? Infinity : Math.max(0, distanceAcrossNode(vehicle, others, turnsBack));
+  const held = crossLimit < travel;
+  if (held) travel = crossLimit;
   if (stopTiles.size > 0 && vehicle.progress < TILE_EDGE_PROGRESS && (stopTiles.has(tileKey(vehicle.to)) || stopTiles.has(edgeKey(vehicle.from, vehicle.to)))) travel = Math.min(travel, Math.max(0, STOP_BEFORE_CROSSING - vehicle.progress));
   if (vehicle.progress + travel < 1) {
+    vehicle.blockedSeconds = squeezing ? waited : held && travel < 1e-6 ? waited + deltaSeconds : 0;
+    return travel;
+  }
+  if (nodeIsFree(vehicle, others) || waited >= NODE_PATIENCE_SECONDS) {
     vehicle.blockedSeconds = 0;
     return travel;
   }
-  if (nodeIsFree(vehicle, others) || (vehicle.blockedSeconds ?? 0) >= NODE_PATIENCE_SECONDS) {
-    vehicle.blockedSeconds = 0;
-    return travel;
-  }
-  vehicle.blockedSeconds = (vehicle.blockedSeconds ?? 0) + deltaSeconds;
+  vehicle.blockedSeconds = waited + deltaSeconds;
   return Math.min(travel, Math.max(0, 1 - STOP_BEFORE_NODE - vehicle.progress));
 }
 
+function turnsBackAt(graph: RoadGraph, vehicle: TrafficVehicle): boolean {
+  if (vehicle.run) return !vehicle.run.loop && vehicle.run.tiles[vehicle.run.index + vehicle.run.step] === undefined;
+  return neighboursOf(graph, vehicle.to).length <= 1;
+}
+
 export function advanceTrafficVehicle(graph: RoadGraph, vehicle: TrafficVehicle, deltaSeconds: number, random: () => number, others: readonly TrafficVehicle[], lanesAt: LanesAt, stopTiles: ReadonlySet<string> = NO_STOPS): boolean {
-  const travel = allowedTravel(vehicle, vehicle.speed * deltaSeconds, others, stopTiles, deltaSeconds);
+  const travel = allowedTravel(vehicle, vehicle.speed * deltaSeconds, others, stopTiles, deltaSeconds, turnsBackAt(graph, vehicle));
   vehicle.progress += travel;
   if (vehicle.progress < 1) return true;
   const previous = vehicle.from;
