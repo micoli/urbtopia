@@ -55,6 +55,7 @@ import { colorVariantsOf, isRepaintableType } from '../buildings/paint';
 import { STOP_NAME_MAX_LENGTH, isTransitStopType } from '../transit/stopNames';
 import type { Difficulty } from './difficulty';
 import { proposeOrdinance, repealOrdinance } from '../politics/ordinanceCommands';
+import { claimGrants } from '../politics/objectiveCommands';
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -89,6 +90,7 @@ export type Command =
   | { readonly type: 'SetDifficulty'; readonly difficulty: Difficulty }
   | { readonly type: 'ProposeOrdinance'; readonly id: string }
   | { readonly type: 'RepealOrdinance'; readonly id: string }
+  | { readonly type: 'ClaimGrants' }
   | { readonly type: 'LayFields'; readonly tiles: readonly Coord[] }
   | { readonly type: 'RemoveFields'; readonly tiles: readonly Coord[] }
   | { readonly type: 'LayWater'; readonly tiles: readonly Coord[] }
@@ -240,6 +242,7 @@ export type ErrorKey =
   | 'error.notInChallenge'
   | 'error.challengeSurplus'
   | 'error.challengeInProgress'
+  | 'error.noGrants'
   | 'error.unknownOrdinance'
   | 'error.politicsInactive'
   | 'error.ordinanceLocked'
@@ -309,6 +312,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return { state: { ...state, busLines: (state.busLines ?? []).filter(line => line.id !== command.id) }, events: [] };
     case 'ProposeOrdinance':
       return proposeOrdinance(state, command.id);
+    case 'ClaimGrants':
+      return claimGrants(state);
     case 'RepealOrdinance':
       return repealOrdinance(state, command.id);
     case 'SetDifficulty':

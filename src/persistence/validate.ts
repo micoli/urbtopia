@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, ORDINANCE_ENTRIES, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -185,6 +185,15 @@ function isTransitTile(key: 'brtRoads' | 'rails'): (tile: unknown) => boolean {
     isRecord(tile) && isCoord(tile) && isArrayOf(tile.exits, (direction) => ['N', 'E', 'S', 'W'].includes(direction as string)) && new Set(tile.exits as string[]).size === (tile.exits as string[]).length && (tile.kind === undefined || (key === 'brtRoads' && tile.kind === 'crossing'));
 }
 
+function isPoliticsObjectives(politics: Json): boolean {
+  const objectiveIds = OBJECTIVE_ENTRIES.map((entry) => entry.id as string);
+  const { objectives, completed, grantsDue } = politics;
+  if (!isArrayOf(objectives, (objective) => isRecord(objective) && objectiveIds.includes(objective.id as string) && isInt(objective.heldDays, 0))) return false;
+  if ((objectives as { id: string }[]).length > POLITICS.objectives.activeCount || hasDuplicates((objectives as { id: string }[]).map((objective) => objective.id))) return false;
+  if (!isArrayOf(completed, (id) => typeof id === 'string' && objectiveIds.includes(id)) || hasDuplicates(completed as string[])) return false;
+  return isNonNegative(grantsDue);
+}
+
 function isPoliticsCouncil(politics: Json): boolean {
   const ordinanceIds = ORDINANCE_ENTRIES.map((entry) => entry.id as string);
   const { seats, adopted, retryDay } = politics;
@@ -249,7 +258,7 @@ function structureFailure(value: Json): string | null {
     entries('bridges', () => value.bridges, isBridge, true),
     field('casinoRng', () => value.casinoRng === undefined || isNumber(value.casinoRng)),
     field('difficulty', () => value.difficulty === undefined || isDifficulty(value.difficulty)),
-    field('politics', () => value.politics === undefined || (isRecord(value.politics) && isNumber(value.politics.rngState) && isNumber(value.politics.approval) && value.politics.approval >= 0 && value.politics.approval <= 100 && isNumber(value.politics.shock) && isInt(value.politics.day, 0) && isPoliticsCouncil(value.politics))),
+    field('politics', () => value.politics === undefined || (isRecord(value.politics) && isNumber(value.politics.rngState) && isNumber(value.politics.approval) && value.politics.approval >= 0 && value.politics.approval <= 100 && isNumber(value.politics.shock) && isInt(value.politics.day, 0) && isPoliticsCouncil(value.politics) && isPoliticsObjectives(value.politics))),
     field('challenge', () => value.challenge === undefined || isChallengeProgress(value.challenge)),
     entries('challengeClaims', () => value.challengeClaims, isChallengeClaim, true),
     field('ecologyDismissed', () => value.ecologyDismissed === undefined || typeof value.ecologyDismissed === 'boolean'),

@@ -563,6 +563,7 @@ export const CATALOG = {
   'venueTutorial.supermarket.stock': ['Pick a Good for the shelf and stock it from the {storehouse}. Produce some Goods first if it has none.', "Choisissez un Bien pour le rayon et approvisionnez-le depuis l'{storehouse}. Produisez d'abord des Biens s'il n'en a pas."],
   'venueTutorial.supermarket.cashier': ['Open Staff and hire a cashier to run the checkout.', 'Ouvrez Personnel et embauchez un caissier pour tenir la caisse.'],
   'venueTutorial.supermarket.collect': ['Wait for the first sales, then collect the Takings from the {supermarket} panel.', 'Attendez les premières ventes, puis collectez la recette depuis le panneau du {supermarket}.'],
+  'error.noGrants': ['There is no Grant to claim yet.', "Aucune subvention à percevoir pour l'instant."],
   'error.unknownOrdinance': ['That Ordinance does not exist or is not adopted.', "Cette ordonnance n'existe pas ou n'est pas adoptée."],
   'error.politicsInactive': ['The city has no politics yet: build a Town hall on Easy or above.', "La ville n'a pas encore de politique : construisez une mairie en difficulté Facile ou plus."],
   'error.ordinanceLocked': ['Not unlocked yet: grow your population.', "Pas encore débloquée : faites grandir la population."],

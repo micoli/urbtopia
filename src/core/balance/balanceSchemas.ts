@@ -121,7 +121,11 @@ export const politicsBalanceSchema = z
       // Points of Approval, positive or negative, added by one-off events.
       shocks: z.strictObject({ ordinanceAdopted: z.number(), popularOrdinanceRepealed: z.number(), petitionHandled: z.number(), demonstration: z.number() }),
     }),
-    objectives: z.strictObject({ activeCount: z.int().min(1) }),
+    objectives: z.strictObject({
+      activeCount: z.int().min(1),
+      // On Hard a Grant is multiplied by a factor that goes from the first value at an Approval of 0 to the second at 100.
+      grantScale: z.strictObject({ atZeroApproval: positive, atFullApproval: positive }),
+    }).refine(({ grantScale }) => grantScale.atFullApproval >= grantScale.atZeroApproval, { path: ['grantScale'], message: 'a higher Approval cannot lower a Grant' }),
     difficulties: z.strictObject(Object.fromEntries(DIFFICULTY_IDS.map(id => [id, politicsDifficultyRule])) as Record<(typeof DIFFICULTY_IDS)[number], typeof politicsDifficultyRule>),
   })
   .refine(({ difficulties }) => !difficulties.cozy.active, { path: ['difficulties', 'cozy', 'active'], message: 'Cozy has no politics' })

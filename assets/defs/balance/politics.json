@@ -25,7 +25,11 @@
     }
   },
   "objectives": {
-    "activeCount": 3
+    "activeCount": 3,
+    "grantScale": {
+      "atZeroApproval": 0.5,
+      "atFullApproval": 1.5
+    }
   },
   "difficulties": {
     "cozy": {

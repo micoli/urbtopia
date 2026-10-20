@@ -1,6 +1,6 @@
 # Objectives and Grants
 
-Status: needs-triage
+Status: resolved
 Blocked by: 02, 03
 Three active Objectives in rotation from the catalogue, judged on the game clock. A held Objective yields a Grant in Urbs, claimed by hand. Fixed on Easy and Medium, modulated by the Approval on Hard.
 

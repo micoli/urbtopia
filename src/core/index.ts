@@ -40,6 +40,9 @@ export { advancePolitics, approvalOf, isPoliticsActive, politicsDayOf, withAppro
 export type { PoliticsState } from './politics/politics';
 export { adoptedOrdinances, councilForecast, councilGoodwill, proposalIssue } from './politics/council';
 export type { CouncilForecast, FactionVote, ProposalIssue, Vote } from './politics/council';
+export { grantOf } from './politics/objectiveTracking';
+export type { ActiveObjective } from './politics/objectiveTracking';
+export { isObjectiveMet, objectiveValue } from './politics/objectiveMetrics';
 export { FACTION_IDS } from './politics/factions';
 export type { FactionId } from './politics/factions';
 export { POLITICS, politicsRuleOf } from './politics/politicsBalance';

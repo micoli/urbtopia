@@ -127,10 +127,29 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 9007199254740991
+        },
+        "grantScale": {
+          "type": "object",
+          "properties": {
+            "atZeroApproval": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "atFullApproval": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "required": [
+            "atZeroApproval",
+            "atFullApproval"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
-        "activeCount"
+        "activeCount",
+        "grantScale"
       ],
       "additionalProperties": false
     },
