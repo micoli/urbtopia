@@ -17,11 +17,11 @@ describe('Approval', () => {
   });
 
   it('moves toward the Citizen-weighted mean Well-being each game day', () => {
-    const city = withApproval(politicalCity(), 0);
+    const city = withApproval(politicalCity(), 50);
     expect(totalCitizens(city)).toBeGreaterThan(0);
-    const target = cityBenefits(city).wellbeing;
+    const target = Math.max(0, Math.min(100, cityBenefits(city).wellbeing));
     const next = advance(city, T0 + DAY).state;
-    expect(approvalOf(next)).toBeCloseTo(target * POLITICS.approval.dailyConvergence, 5);
+    expect(approvalOf(next)).toBeCloseTo(50 + (target - 50) * POLITICS.approval.dailyConvergence, 5);
   });
 
   it('moves down toward a lower target', () => {

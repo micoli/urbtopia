@@ -5,6 +5,7 @@
     "days": 10
   },
   "adaptationDays": 2,
+  "journalSize": 20,
   "council": {
     "seats": {
       "economy": 3,

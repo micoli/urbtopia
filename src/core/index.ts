@@ -47,6 +47,8 @@ export { PETITION_CAUSES, SUPPORT_CAUSES, homeCauses } from './politics/petition
 export type { Petition, PetitionCause, Support, SupportCause } from './politics/petitions';
 export { holdElection, mandateOf, termDaysLeft } from './politics/election';
 export type { ElectionResult } from './politics/election';
+export { JOURNAL_TYPES, newJournalEntries } from './politics/journal';
+export type { JournalEntry, JournalType } from './politics/journal';
 export { FACTION_IDS } from './politics/factions';
 export type { FactionId } from './politics/factions';
 export { POLITICS, politicsRuleOf } from './politics/politicsBalance';

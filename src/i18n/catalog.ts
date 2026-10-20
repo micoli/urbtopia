@@ -525,6 +525,7 @@ export const CATALOG = {
   'error.waterInUse': ['A Boat or a Bridge depends on this Water tile.', "Un bateau ou un pont dépend de cette tuile d'eau."],
   'error.noSeeds': ['No Seed packs of this species left.', "Plus de sachets de graines de cette espèce."],
   'error.nothingToPlant': ['No empty Field tile to plant.', 'Aucune parcelle de champ vide à planter.'],
+  'event.politicsDigest': ['The politics of the city moved while you were away: see the Town hall.', "La politique de la ville a bougé pendant votre absence : voyez la mairie."],
   'event.offlineTimeCapped': ['You were away for more than 48 h: the extra time was not counted.', "Vous étiez absent plus de 48 h : le temps en trop n'a pas été compté."],
   'event.buildingUpgraded': ['Building upgraded.', 'Bâtiment amélioré.'],
   'event.productionCompleted': ['Production completed.', 'Production terminée.'],

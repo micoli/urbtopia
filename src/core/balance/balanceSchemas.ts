@@ -107,6 +107,8 @@ export const politicsBalanceSchema = z
     term: z.strictObject({ days: z.int().min(1) }),
     // Days after the first activation during which no Demonstration and no Approval penalty applies.
     adaptationDays: count,
+    // How many of the latest things the politics did by itself are kept for the Mayor to read.
+    journalSize: z.int().min(1),
     council: z.strictObject({
       seats: z.strictObject({ economy: z.int().min(1), environment: z.int().min(1), services: z.int().min(1) }),
       // Days before a rejected Ordinance can be proposed again.

@@ -16,6 +16,7 @@ export const toastStore = createStore<ToastStore>((set) => ({
 
 export function toastKeyForEvents(events: GameEvent[]): MessageKey | null {
   if (events.some((event) => event.type === 'OfflineTimeCapped')) return 'event.offlineTimeCapped';
+  if (events.some((event) => event.type === 'PoliticsDigest')) return 'event.politicsDigest';
   const unlocked = events.find((event) => event.type === 'FacilityUnlocked');
   if (unlocked) return `event.unlocked.${unlocked.facility}`;
   if (events.some((event) => event.type === 'StorageFull')) return 'event.storageFull';

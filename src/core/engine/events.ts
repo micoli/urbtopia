@@ -21,6 +21,7 @@ export type GameEvent =
   | { readonly type: 'CasinoRoundStarted'; readonly buildingId: number; readonly game: 'blackjack' | 'blockmatch'; readonly stake: number; readonly roundSeed: number }
   | { readonly type: 'BlackjackSettled'; readonly buildingId: number; readonly stake: number; readonly doubled: boolean; readonly outcome: BlackjackOutcome; readonly payout: number }
   | { readonly type: 'BlockmatchSettled'; readonly buildingId: number; readonly stake: number; readonly stars: number; readonly payout: number }
+  | { readonly type: 'PoliticsDigest'; readonly entries: number }
   | { readonly type: 'GrantsClaimed'; readonly amount: number }
   | { readonly type: 'OrdinanceAdopted'; readonly id: string }
   | { readonly type: 'OrdinanceRejected'; readonly id: string }

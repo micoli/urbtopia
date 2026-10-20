@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { advance, homeCauses, PETITION_CAUSES, POLITICS, SUPPORT_CAUSES, type GameState, type Petition } from '../index';
 import { needsContext } from '../environment/needs';
-import { DAY, politicalCity } from './testSupport';
+import { DAY, adaptingCity, politicalCity } from './testSupport';
 
 const matured = (state: GameState): GameState => ({ ...state, adaptationUntil: 0 });
 
@@ -24,7 +24,7 @@ describe('Causes for complaint', () => {
 
 describe('Filing Petitions', () => {
   it('files none during the Adaptation period', () => {
-    const city = politicalCity();
+    const city = adaptingCity();
     expect(nextDay(city, 1).politics!.petitions).toEqual([]);
   });
 

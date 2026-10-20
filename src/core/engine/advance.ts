@@ -17,7 +17,8 @@ import { advanceVenues, venueBoundaries } from '../venues/venues';
 import { progressTutorial } from '../progression/tutorial';
 import { progressVenueTutorials } from '../progression/venueTutorial';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { advancePolitics, withPolitics } from '../politics/politics';
+import { newJournalEntries } from '../politics/journal';
+import { advancePolitics, forfeitPoliticsDays, withPolitics } from '../politics/politics';
 
 export interface AdvanceResult {
   state: GameState;
@@ -25,6 +26,12 @@ export interface AdvanceResult {
 }
 
 export function advance(state: GameState, now: number): AdvanceResult {
+  const result = advanceCity(state, now);
+  const entries = newJournalEntries(state, result.state).length;
+  return entries === 0 ? result : { ...result, events: [...result.events, { type: 'PoliticsDigest', entries }] };
+}
+
+function advanceCity(state: GameState, now: number): AdvanceResult {
   const effectiveNow = Math.max(now, state.lastSeen);
   const gap = effectiveNow - state.lastSeen;
   if (gap <= GAME_CONFIG.offlineCapMs) return replay(state, effectiveNow);
@@ -32,7 +39,7 @@ export function advance(state: GameState, now: number): AdvanceResult {
   const forfeitedMs = gap - GAME_CONFIG.offlineCapMs;
   const replayed = replay(state, state.lastSeen + GAME_CONFIG.offlineCapMs);
   return {
-    state: { ...shiftRunningTimers(replayed.state, forfeitedMs), lastSeen: effectiveNow },
+    state: forfeitPoliticsDays({ ...shiftRunningTimers(replayed.state, forfeitedMs), lastSeen: effectiveNow }),
     events: [...replayed.events, { type: 'OfflineTimeCapped', forfeitedMs }],
   };
 }

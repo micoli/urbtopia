@@ -13,7 +13,7 @@ import { migrate } from './migrations';
 const T0 = 1_700_000_000_000;
 const state = newGame({ seed: 'amber-fox-4821', now: T0 });
 
-const block = { rngState: 1, approval: 50, shock: 0, day: 0, seats: { economy: 3, environment: 3, services: 3 }, adopted: [], retryDay: {}, objectives: [], completed: [], grantsDue: 0, petitions: [], supports: [], nextPetitionId: 1, adaptationUntilDay: 0, term: { startDay: 0, number: 1 }, mandate: 0 };
+const block = { rngState: 1, approval: 50, shock: 0, day: 0, seats: { economy: 3, environment: 3, services: 3 }, adopted: [], retryDay: {}, objectives: [], completed: [], grantsDue: 0, petitions: [], supports: [], nextPetitionId: 1, adaptationUntilDay: 0, term: { startDay: 0, number: 1 }, mandate: 0, journal: [] };
 
 describe('validateGameState', () => {
   it.each(['cozy', 'easy', 'medium', 'hard'] as const)('accepts the %s Difficulty and keeps it across a round trip', (difficulty) => {
@@ -35,7 +35,7 @@ describe('validateGameState', () => {
   });
 
   it('keeps the politics block across a round trip', () => {
-    const politics: PoliticsState = { rngState: 123, approval: 40, shock: 2, day: 5, seats: { economy: 3, environment: 3, services: 3 }, adopted: ['greenBelt'], retryDay: { taxIncrease: 7 }, objectives: [{ id: 'growth100', heldDays: 1 }], completed: ['vitalComfort'], grantsDue: 120, petitions: [{ id: 1, cause: 'policeStation', parcel: { x: 3, y: 3 }, since: 4, escalated: false }], supports: [{ id: 2, cause: 'greenSpaces', parcel: { x: 4, y: 3 }, since: 5 }], nextPetitionId: 3, adaptationUntilDay: 2, term: { startDay: 1, number: 2 }, mandate: -0.4, lastElection: { day: 1, approval: 30, mandate: -0.4, seats: { economy: 4, environment: 3, services: 2 } } };
+    const politics: PoliticsState = { rngState: 123, approval: 40, shock: 2, day: 5, seats: { economy: 3, environment: 3, services: 3 }, adopted: ['greenBelt'], retryDay: { taxIncrease: 7 }, objectives: [{ id: 'growth100', heldDays: 1 }], completed: ['vitalComfort'], grantsDue: 120, petitions: [{ id: 1, cause: 'policeStation', parcel: { x: 3, y: 3 }, since: 4, escalated: false }], supports: [{ id: 2, cause: 'greenSpaces', parcel: { x: 4, y: 3 }, since: 5 }], nextPetitionId: 3, adaptationUntilDay: 2, term: { startDay: 1, number: 2 }, mandate: -0.4, lastElection: { day: 1, approval: 30, mandate: -0.4, seats: { economy: 4, environment: 3, services: 2 } }, journal: [{ day: 4, type: 'petitionFiled', subject: 'policeStation' }, { day: 5, type: 'election' }] };
     const city = { ...state, difficulty: 'easy' as const, politics };
     expect(validateGameState(city)).not.toBeNull();
     const loaded = parseEnvelope(serializeEnvelope(city, T0));
@@ -62,6 +62,8 @@ describe('validateGameState', () => {
     ['a Term that starts before day 0', { ...block, term: { startDay: -1, number: 1 } }],
     ['an Election with the wrong number of seats', { ...block, lastElection: { day: 1, approval: 30, mandate: -0.4, seats: { economy: 5, environment: 3, services: 2 } } }],
     ['a Council with an empty Faction', { ...block, seats: { economy: 6, environment: 3, services: 0 } }],
+    ['a Journal entry of an unknown type', { ...block, journal: [{ day: 1, type: 'coup' }] }],
+    ['a Journal longer than the city keeps', { ...block, journal: Array.from({ length: 21 }, (_, day) => ({ day, type: 'election' })) }],
     ['a negative Grant', { ...block, grantsDue: -1 }],
     ['a negative retry day', { ...block, retryDay: { greenBelt: -1 } }],
   ])('rejects a politics block that is %s', (_label, politics) => {
