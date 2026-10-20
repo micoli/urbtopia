@@ -9354,8 +9354,8 @@
     "source": "managed",
     "license": "Own work",
     "fit": {
-      "width": 0.95,
-      "height": 0.9
+      "width": 1.9,
+      "height": 1.8
     }
   },
   "vehicles-electric-train": {
