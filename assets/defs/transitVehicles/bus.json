@@ -2,7 +2,7 @@
   "$schema": "../schemas/transit-vehicle.schema.json",
   "kind": "transitVehicle",
   "mode": "bus",
-  "model": "trains-train-electric-subway-a",
+  "model": "vehicles-bus-modern",
   "name": {
     "en": "Bus",
     "fr": "Bus"

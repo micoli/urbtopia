@@ -9300,48 +9300,86 @@
     "source": "kenney",
     "license": "CC0"
   },
-  "trains-train-electric-city-a": {
-    "file": "trains/train-electric-city-a",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "trains-train-electric-city-b": {
-    "file": "trains/train-electric-city-b",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "trains-train-electric-city-c": {
-    "file": "trains/train-electric-city-c",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "trains-train-electric-subway-a": {
-    "file": "trains/train-electric-subway-a",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "trains-train-locomotive-a": {
-    "file": "trains/train-locomotive-a",
-    "source": "kenney",
-    "license": "CC0"
-  },
-  "trains-train-locomotive-passenger-a": {
-    "file": "trains/train-locomotive-passenger-a",
-    "source": "kenney",
-    "license": "CC0"
-  },
   "vehicles-ambulance": {
     "file": "vehicles/ambulance",
     "source": "managed",
     "license": "Own work"
+  },
+  "vehicles-bus-articulated": {
+    "file": "vehicles/bus-articulated",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-bus-articulated-front": {
+    "file": "vehicles/bus-articulated-front",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-bus-articulated-rear": {
+    "file": "vehicles/bus-articulated-rear",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-bus-double": {
+    "file": "vehicles/bus-double",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-bus-modern": {
+    "file": "vehicles/bus-modern",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-bus-old": {
+    "file": "vehicles/bus-old",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-catamaran": {
+    "file": "vehicles/catamaran",
+    "source": "managed",
+    "license": "Own work",
+    "fit": {
+      "width": 0.9,
+      "height": 1.1
+    }
   },
   "vehicles-city-car": {
     "file": "vehicles/city-car",
     "source": "managed",
     "license": "Own work"
   },
+  "vehicles-cruise-ship": {
+    "file": "vehicles/cruise-ship",
+    "source": "managed",
+    "license": "Own work",
+    "fit": {
+      "width": 0.95,
+      "height": 0.9
+    }
+  },
+  "vehicles-electric-train": {
+    "file": "vehicles/electric-train",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-electric-wagon": {
+    "file": "vehicles/electric-wagon",
+    "source": "managed",
+    "license": "Own work"
+  },
   "vehicles-firetruck": {
     "file": "vehicles/firetruck",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-future-train": {
+    "file": "vehicles/future-train",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-future-wagon": {
+    "file": "vehicles/future-wagon",
     "source": "managed",
     "license": "Own work"
   },
@@ -9355,10 +9393,28 @@
     "source": "managed",
     "license": "Own work"
   },
+  "vehicles-liner": {
+    "file": "vehicles/liner",
+    "source": "managed",
+    "license": "Own work",
+    "fit": {
+      "width": 0.95,
+      "height": 0.9
+    }
+  },
   "vehicles-pickup": {
     "file": "vehicles/pickup",
     "source": "managed",
     "license": "Own work"
+  },
+  "vehicles-pirate-ship": {
+    "file": "vehicles/pirate-ship",
+    "source": "managed",
+    "license": "Own work",
+    "fit": {
+      "width": 0.95,
+      "height": 1.1
+    }
   },
   "vehicles-police": {
     "file": "vehicles/police",
@@ -9380,15 +9436,76 @@
     "source": "managed",
     "license": "Own work"
   },
+  "vehicles-speedboat": {
+    "file": "vehicles/speedboat",
+    "source": "managed",
+    "license": "Own work",
+    "fit": {
+      "width": 0.8,
+      "height": 0.6
+    }
+  },
+  "vehicles-steam-train": {
+    "file": "vehicles/steam-train",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-steam-wagon": {
+    "file": "vehicles/steam-wagon",
+    "source": "managed",
+    "license": "Own work"
+  },
   "vehicles-suv": {
     "file": "vehicles/suv",
     "source": "managed",
     "license": "Own work"
   },
+  "vehicles-tgv": {
+    "file": "vehicles/tgv",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-tgv-wagon": {
+    "file": "vehicles/tgv-wagon",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-tram": {
+    "file": "vehicles/tram",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-trawler": {
+    "file": "vehicles/trawler",
+    "source": "managed",
+    "license": "Own work",
+    "fit": {
+      "width": 0.9,
+      "height": 0.8
+    }
+  },
+  "vehicles-trawler-large": {
+    "file": "vehicles/trawler-large",
+    "source": "managed",
+    "license": "Own work",
+    "fit": {
+      "width": 0.95,
+      "height": 0.8
+    }
+  },
   "vehicles-wagon": {
     "file": "vehicles/wagon",
     "source": "managed",
     "license": "Own work"
+  },
+  "vehicles-yacht": {
+    "file": "vehicles/yacht",
+    "source": "managed",
+    "license": "Own work",
+    "fit": {
+      "width": 0.9,
+      "height": 0.8
+    }
   },
   "venue-roller-coaster-4x6-7f": {
     "file": "venue/roller-coaster-4x6-7f",
@@ -9404,15 +9521,6 @@
     },
     "rotationOffset": 90
   },
-  "watercraft-boat-fishing-small": {
-    "file": "watercraft/boat-fishing-small",
-    "source": "kenney",
-    "license": "CC0",
-    "fit": {
-      "width": 0.9,
-      "height": 0.8
-    }
-  },
   "watercraft-boat-house-a": {
     "file": "watercraft/boat-house-a",
     "source": "kenney",
@@ -9424,24 +9532,6 @@
     "fit": {
       "width": 1.9,
       "height": 1.6
-    }
-  },
-  "watercraft-boat-sail-a": {
-    "file": "watercraft/boat-sail-a",
-    "source": "kenney",
-    "license": "CC0",
-    "fit": {
-      "width": 0.9,
-      "height": 1.1
-    }
-  },
-  "watercraft-ship-ocean-liner-small": {
-    "file": "watercraft/ship-ocean-liner-small",
-    "source": "kenney",
-    "license": "CC0",
-    "fit": {
-      "width": 0.95,
-      "height": 0.9
     }
   }
 }

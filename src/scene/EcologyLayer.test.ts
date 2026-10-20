@@ -20,6 +20,6 @@ it('leaves the bus stop signs to the stop models and the buses to the traffic la
   const sprites: THREE.Object3D[] = [];
   layer.root.traverse((node) => { if (node instanceof THREE.Sprite) sprites.push(node); });
   expect(sprites).toHaveLength(0);
-  expect(library.ensure).not.toHaveBeenCalledWith(['trains/train-electric-subway-a']);
+  expect(library.ensure).not.toHaveBeenCalledWith(['vehicles/bus-modern']);
   layer.dispose();
 });

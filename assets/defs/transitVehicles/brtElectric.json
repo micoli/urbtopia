@@ -8,7 +8,7 @@
   "coal": 0,
   "cost": 4,
   "emissions": 0,
-  "models": ["trains-train-electric-city-a", "trains-train-electric-city-c"],
+  "models": ["vehicles-bus-articulated-front", "vehicles-bus-articulated-rear"],
   "name": {
     "en": "Electric BRT",
     "fr": "BHNS électrique"
