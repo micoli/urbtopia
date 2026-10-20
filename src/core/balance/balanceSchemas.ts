@@ -89,7 +89,7 @@ export const wasteBalanceSchema = z
 const politicsDifficultyRule = z.strictObject({
   // Whether the Council, the Approval, the Objectives and the Petitions exist.
   active: z.boolean(),
-  // Whether an ignored Petition escalates into a Demonstration.
+  // Whether Petitions weigh on the Approval: handling one raises it, and an ignored one escalates into a Demonstration.
   demonstrations: z.boolean(),
   // Whether a Term ends with an Election.
   election: z.boolean(),
@@ -120,6 +120,21 @@ export const politicsBalanceSchema = z
       shockFadePerDay: share,
       // Points of Approval, positive or negative, added by one-off events.
       shocks: z.strictObject({ ordinanceAdopted: z.number(), popularOrdinanceRepealed: z.number(), petitionHandled: z.number(), demonstration: z.number() }),
+    }),
+    petitions: z.strictObject({
+      // A Home complains about a Need factor whose satisfaction (0-100) is below this.
+      belowSatisfaction: z.number().min(0).max(100),
+      // Chance, each game day, that a district with a cause for complaint files a Petition.
+      chancePerDay: share,
+      maxOpen: z.int().min(1),
+      // Game days after which an unhandled Petition escalates into a Demonstration.
+      escalationDays: z.int().min(1),
+      // A district whose Homes all have a satisfaction (0-100) above this can earn Support.
+      supportAbove: z.number().min(0).max(100),
+      supportChancePerDay: share,
+      maxSupport: z.int().min(1),
+      // Game days a Support message lasts.
+      supportDays: z.int().min(1),
     }),
     objectives: z.strictObject({
       activeCount: z.int().min(1),

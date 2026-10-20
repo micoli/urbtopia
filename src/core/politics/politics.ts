@@ -8,6 +8,7 @@ import { type FactionId } from './factions';
 import { ordinanceById, type OrdinanceId } from './ordinances';
 import type { ObjectiveId } from './objectives';
 import { judgeObjectives, refillObjectives, type ActiveObjective } from './objectiveTracking';
+import { advancePetitions, type Petition, type Support } from './petitions';
 import { POLITICS, politicsRuleOf } from './politicsBalance';
 
 export interface PoliticsState {
@@ -28,6 +29,11 @@ export interface PoliticsState {
   completed: ObjectiveId[];
   // Urbs of Grants earned and not yet claimed.
   grantsDue: number;
+  petitions: Petition[];
+  supports: Support[];
+  nextPetitionId: number;
+  // The first game day on which an ignored Petition may escalate and the Approval may be penalised.
+  adaptationUntilDay: number;
 }
 
 const POLITICS_STREAM = 'politics';
@@ -45,7 +51,7 @@ export function politicsDayOf(state: GameState): number {
 
 export function withPolitics(state: GameState): GameState {
   if (state.politics || !isPoliticsActive(state)) return state;
-  const started: PoliticsState = { rngState: hashSeed(`${state.seed}:${POLITICS_STREAM}`), approval: POLITICS.approval.initial, shock: 0, day: politicsDayOf(state), seats: { ...POLITICS.council.seats }, adopted: [], retryDay: {}, objectives: [], completed: [], grantsDue: 0 };
+  const started: PoliticsState = { rngState: hashSeed(`${state.seed}:${POLITICS_STREAM}`), approval: POLITICS.approval.initial, shock: 0, day: politicsDayOf(state), seats: { ...POLITICS.council.seats }, adopted: [], retryDay: {}, objectives: [], completed: [], grantsDue: 0, petitions: [], supports: [], nextPetitionId: 1, adaptationUntilDay: politicsDayOf(state) + POLITICS.adaptationDays };
   return { ...state, politics: refillObjectives(state, started) };
 }
 
@@ -81,13 +87,14 @@ function advanceDay(state: GameState): GameState {
   const target = totalCitizens(state) > 0 ? cityBenefits(state).wellbeing : politics.approval;
   const { urbs, adopted } = payUpkeep(state, politics.adopted);
   const judged = judgeObjectives(state, politics);
+  const petitioned = advancePetitions(state, judged);
   return {
     ...state,
     urbs,
     politics: {
-      ...judged,
+      ...petitioned.politics,
       approval: clamp(politics.approval + (target - politics.approval) * dailyConvergence),
-      shock: politics.shock * (1 - shockFadePerDay),
+      shock: politics.shock * (1 - shockFadePerDay) + petitioned.shock,
       day: politics.day + 1,
       adopted,
     },

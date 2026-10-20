@@ -186,7 +186,7 @@ The Urbs paid by the State when an Objective has been held for a period, claimed
 _Avoid_: Subsidy, reward (already used by Challenge)
 
 **Petition**:
-A localised message from Citizens naming the cause and the district of a lack of satisfaction, drawn from the existing Need factors. Handling it raises the Approval. Ignored, it escalates to a Demonstration.
+A localised message from Citizens naming the cause and the district of a lack of satisfaction, drawn from the existing Need factors. Handling it, by fixing its cause, raises the Approval from Medium Difficulty; on Easy it only informs. Ignored for long enough, it escalates to a Demonstration from Medium.
 _Avoid_: Complaint, ticket
 
 **Support**:

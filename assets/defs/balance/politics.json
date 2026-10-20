@@ -24,6 +24,16 @@
       "demonstration": -8
     }
   },
+  "petitions": {
+    "belowSatisfaction": 40,
+    "chancePerDay": 0.5,
+    "maxOpen": 6,
+    "escalationDays": 3,
+    "supportAbove": 80,
+    "supportChancePerDay": 0.3,
+    "maxSupport": 3,
+    "supportDays": 2
+  },
   "objectives": {
     "activeCount": 3,
     "grantScale": {

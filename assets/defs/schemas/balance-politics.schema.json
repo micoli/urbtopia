@@ -120,6 +120,62 @@
       ],
       "additionalProperties": false
     },
+    "petitions": {
+      "type": "object",
+      "properties": {
+        "belowSatisfaction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "chancePerDay": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maxOpen": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "escalationDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "supportAbove": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "supportChancePerDay": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maxSupport": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "supportDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "belowSatisfaction",
+        "chancePerDay",
+        "maxOpen",
+        "escalationDays",
+        "supportAbove",
+        "supportChancePerDay",
+        "maxSupport",
+        "supportDays"
+      ],
+      "additionalProperties": false
+    },
     "objectives": {
       "type": "object",
       "properties": {
@@ -284,6 +340,7 @@
     "adaptationDays",
     "council",
     "approval",
+    "petitions",
     "objectives",
     "difficulties"
   ],
