@@ -20,6 +20,10 @@ describe('toastKeyForEvents', () => {
     expect(toastKeyForEvents([{ type: 'BuildingUpgraded', buildingId: 1, tier: 2 }, { type: 'FacilityUnlocked', facility: 'school' }])).toBe('event.unlocked.school');
   });
 
+  it('announces the unlock of the Office', () => {
+    expect(toastKeyForEvents([{ type: 'FacilityUnlocked', facility: 'office' }])).toBe('event.unlocked.office');
+  });
+
   it('announces an upgraded building', () => {
     expect(toastKeyForEvents([{ type: 'BuildingUpgraded', buildingId: 1, tier: 2 }])).toBe('event.buildingUpgraded');
   });

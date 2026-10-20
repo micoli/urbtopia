@@ -811,6 +811,7 @@ export const CATALOG = {
   'panel.jobs': ['Jobs filled', 'Emplois occupés'],
   'office.income': ['Income', 'Revenu'],
   'office.due': ['Earned', 'À récupérer'],
+  'event.unlocked.office': ['New building available: Office.', 'Nouveau bâtiment disponible : Bureau.'],
   'home.demand': ['Demand', 'Demande'],
   'dock.parcels': ['Land', 'Terrain'],
   'error.outsideMap': ['This Parcel is outside the map.', 'Cette parcelle est en dehors de la carte.'],

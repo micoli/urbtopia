@@ -1,4 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { colorVariantsOf, isRepaintableType } from '../buildings/paint';
+import { facilitiesUnlockedBetween } from '../progression/unlocks';
 import { copyThresholds, maxCopies, nextCopyCost } from '../buildings/buildLimit';
 import { upgradeCostOf } from './tiers';
 import { advance, citizensOf, congestionStats, createBuilding, dispatch, jobsOf, newGame, type Building, type GameState } from '../index';
@@ -155,5 +157,32 @@ describe('Office Tiers', () => {
     const result = dispatch(state, { type: 'UpgradeBuilding', buildingId: office.id }, T0);
     if (!result.ok) throw new Error(result.error.key);
     expect(officeIn(result.state).tier).toBe(4);
+  });
+});
+
+describe('Repainting an Office', () => {
+  it('is repaintable in the four tones of its model at every Tier', () => {
+    expect(isRepaintableType('office')).toBe(true);
+    for (let tier = 1; tier <= 7; tier++) expect(colorVariantsOf('office', tier)).toEqual(['default', 'a', 'b', 'c']);
+  });
+
+  it('takes another tone and keeps it through an upgrade', () => {
+    const office: Building = { ...createBuilding(10, 'office', 57, 56, 2), tier: 3 };
+    const state: GameState = { ...empty, urbs: 1_000_000, storage: { materials: {}, goods: { glass: 50 } }, buildings: [office] };
+    const painted = dispatch(state, { type: 'RepaintBuilding', buildingId: office.id, colorVariant: 'b' }, T0);
+    if (!painted.ok) throw new Error(painted.error.key);
+    const upgraded = dispatch(painted.state, { type: 'UpgradeBuilding', buildingId: office.id }, T0);
+    if (!upgraded.ok) throw new Error(upgraded.error.key);
+    expect(officeIn(upgraded.state).colorVariant).toBe('b');
+  });
+});
+
+describe('Office unlock', () => {
+  const at = (citizens: number): GameState => ({ ...empty, buildings: Array.from({ length: Math.ceil(citizens / citizensOf(8)) }, (_, index) => ({ ...createBuilding(20 + index, 'home', 40 + (index % 10) * 2, 40 + Math.floor(index / 10) * 2, 0), tier: 8 })) });
+
+  it('is announced when the Citizens reach 500, and only then', () => {
+    expect(facilitiesUnlockedBetween(at(400), at(520))).toContain('office');
+    expect(facilitiesUnlockedBetween(at(520), at(700))).not.toContain('office');
+    expect(facilitiesUnlockedBetween(at(100), at(400))).not.toContain('office');
   });
 });
