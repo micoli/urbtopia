@@ -4,6 +4,8 @@ import { hashSeed } from '../engine/random';
 import type { GameState } from '../engine/state';
 import { ECOLOGY } from '../environment/ecology';
 import { cityBenefits } from '../environment/wellbeing';
+import { type FactionId } from './factions';
+import { ordinanceById, type OrdinanceId } from './ordinances';
 import { POLITICS, politicsRuleOf } from './politicsBalance';
 
 export interface PoliticsState {
@@ -14,6 +16,11 @@ export interface PoliticsState {
   shock: number;
   // The game day the politics was last advanced to.
   day: number;
+  seats: Record<FactionId, number>;
+  // The adopted Ordinances, in the order they were adopted.
+  adopted: OrdinanceId[];
+  // The game day from which a rejected Ordinance can be proposed again.
+  retryDay: Partial<Record<OrdinanceId, number>>;
 }
 
 const POLITICS_STREAM = 'politics';
@@ -31,7 +38,7 @@ export function politicsDayOf(state: GameState): number {
 
 export function withPolitics(state: GameState): GameState {
   if (state.politics || !isPoliticsActive(state)) return state;
-  return { ...state, politics: { rngState: hashSeed(`${state.seed}:${POLITICS_STREAM}`), approval: POLITICS.approval.initial, shock: 0, day: politicsDayOf(state) } };
+  return { ...state, politics: { rngState: hashSeed(`${state.seed}:${POLITICS_STREAM}`), approval: POLITICS.approval.initial, shock: 0, day: politicsDayOf(state), seats: { ...POLITICS.council.seats }, adopted: [], retryDay: {} } };
 }
 
 const clamp = (value: number): number => Math.max(0, Math.min(MAX_APPROVAL, value));
@@ -47,14 +54,34 @@ export function withApprovalShock(state: GameState, points: number): GameState {
   return { ...state, politics: { ...state.politics, shock: state.politics.shock + points } };
 }
 
-function advanceDay(state: GameState, politics: PoliticsState): PoliticsState {
+// The upkeep of the adopted Ordinances is paid in Urbs each day; one that cannot be paid lapses.
+function payUpkeep(state: GameState, adopted: readonly OrdinanceId[]): { urbs: number; adopted: OrdinanceId[] } {
+  let urbs = state.urbs;
+  const kept: OrdinanceId[] = [];
+  for (const id of adopted) {
+    const upkeep = ordinanceById(id).upkeepPerDay;
+    if (urbs < upkeep) continue;
+    urbs -= upkeep;
+    kept.push(id);
+  }
+  return { urbs, adopted: kept };
+}
+
+function advanceDay(state: GameState): GameState {
   const { dailyConvergence, shockFadePerDay } = POLITICS.approval;
+  const politics = state.politics!;
   const target = totalCitizens(state) > 0 ? cityBenefits(state).wellbeing : politics.approval;
+  const { urbs, adopted } = payUpkeep(state, politics.adopted);
   return {
-    ...politics,
-    approval: clamp(politics.approval + (target - politics.approval) * dailyConvergence),
-    shock: politics.shock * (1 - shockFadePerDay),
-    day: politics.day + 1,
+    ...state,
+    urbs,
+    politics: {
+      ...politics,
+      approval: clamp(politics.approval + (target - politics.approval) * dailyConvergence),
+      shock: politics.shock * (1 - shockFadePerDay),
+      day: politics.day + 1,
+      adopted,
+    },
   };
 }
 
@@ -62,8 +89,7 @@ function advanceDay(state: GameState, politics: PoliticsState): PoliticsState {
 export function advancePolitics(state: GameState): GameState {
   if (!state.politics || !isPoliticsActive(state)) return state;
   const today = politicsDayOf(state);
-  if (state.politics.day >= today) return state;
-  let politics = state.politics;
-  while (politics.day < today) politics = advanceDay(state, politics);
-  return { ...state, politics };
+  let current = state;
+  while (current.politics!.day < today) current = advanceDay(current);
+  return current;
 }

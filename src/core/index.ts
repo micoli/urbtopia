@@ -38,6 +38,8 @@ export { DEFAULT_DIFFICULTY, DIFFICULTIES, difficultyOf, isDifficulty } from './
 export type { Difficulty } from './engine/difficulty';
 export { advancePolitics, approvalOf, isPoliticsActive, politicsDayOf, withApprovalShock, withPolitics } from './politics/politics';
 export type { PoliticsState } from './politics/politics';
+export { adoptedOrdinances, councilForecast, councilGoodwill, proposalIssue } from './politics/council';
+export type { CouncilForecast, FactionVote, ProposalIssue, Vote } from './politics/council';
 export { FACTION_IDS } from './politics/factions';
 export type { FactionId } from './politics/factions';
 export { POLITICS, politicsRuleOf } from './politics/politicsBalance';

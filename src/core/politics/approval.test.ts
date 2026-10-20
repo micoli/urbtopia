@@ -1,18 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { advance, approvalOf, cityBenefits, newGame, POLITICS, totalCitizens, withApprovalShock, type Difficulty, type GameState } from '../index';
-import { createBuilding } from '../buildings/buildingSpecs';
-
-const DAY = POLITICS.dayHours * 3_600_000;
-// An hour past a game day boundary, so the tests count whole days from there.
-const T0 = Math.ceil(1_700_000_000_000 / DAY) * DAY + 3_600_000;
-
-function politicalCity(difficulty: Difficulty = 'easy'): GameState {
-  const city = newGame({ seed: 'amber-fox-4821', now: T0, difficulty });
-  const withHall = { ...city, nextId: city.nextId + 2, buildings: [...city.buildings, createBuilding(city.nextId, 'townHall', 8, 8, 0), createBuilding(city.nextId + 1, 'home', 4, 4, 0)] };
-  return advance(withHall, T0).state;
-}
-
-const withApproval = (state: GameState, approval: number, shock = 0): GameState => ({ ...state, politics: { ...state.politics!, approval, shock } });
+import { advance, approvalOf, cityBenefits, newGame, POLITICS, totalCitizens, withApprovalShock } from '../index';
+import { DAY, T0, politicalCity, withApproval } from './testSupport';
 
 describe('Approval', () => {
   it('has no value without politics', () => {

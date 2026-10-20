@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createBuilding, difficultyOf, newGame, storageCapacity, type GameState } from '../core';
+import { createBuilding, difficultyOf, newGame, storageCapacity, type GameState, type PoliticsState } from '../core';
 import fixtureV1 from './fixtures/save-v1.json';
 import fixtureV2 from './fixtures/save-v2.json';
 import fixtureV3 from './fixtures/save-v3.json';
@@ -12,6 +12,8 @@ import { migrate } from './migrations';
 
 const T0 = 1_700_000_000_000;
 const state = newGame({ seed: 'amber-fox-4821', now: T0 });
+
+const block = { rngState: 1, approval: 50, shock: 0, day: 0, seats: { economy: 3, environment: 3, services: 3 }, adopted: [], retryDay: {} };
 
 describe('validateGameState', () => {
   it.each(['cozy', 'easy', 'medium', 'hard'] as const)('accepts the %s Difficulty and keeps it across a round trip', (difficulty) => {
@@ -33,7 +35,7 @@ describe('validateGameState', () => {
   });
 
   it('keeps the politics block across a round trip', () => {
-    const politics = { rngState: 123, approval: 40, shock: 2, day: 5 };
+    const politics: PoliticsState = { rngState: 123, approval: 40, shock: 2, day: 5, seats: { economy: 3, environment: 3, services: 3 }, adopted: ['greenBelt'], retryDay: { taxIncrease: 7 } };
     const city = { ...state, difficulty: 'easy' as const, politics };
     expect(validateGameState(city)).not.toBeNull();
     const loaded = parseEnvelope(serializeEnvelope(city, T0));
@@ -44,8 +46,13 @@ describe('validateGameState', () => {
     ['a number', 1],
     ['null', null],
     ['a block without a stream', {}],
-    ['an Approval above 100', { rngState: 1, approval: 120, shock: 0, day: 0 }],
-    ['a fractional day', { rngState: 1, approval: 50, shock: 0, day: 1.5 }],
+    ['an Approval above 100', { ...block, approval: 120 }],
+    ['a fractional day', { ...block, day: 1.5 }],
+    ['an unknown Ordinance', { ...block, adopted: ['martialLaw'] }],
+    ['an Ordinance adopted twice', { ...block, adopted: ['greenBelt', 'greenBelt'] }],
+    ['two Ordinances of the same exclusive group', { ...block, adopted: ['taxRelief', 'taxIncrease'] }],
+    ['missing a Faction seat', { ...block, seats: { economy: 3, environment: 3 } }],
+    ['a negative retry day', { ...block, retryDay: { greenBelt: -1 } }],
   ])('rejects a politics block that is %s', (_label, politics) => {
     expect(validateGameState({ ...state, politics })).toBeNull();
   });
