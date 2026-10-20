@@ -36,6 +36,8 @@ export { NEED_FACTOR_IDS, SANCTIONABLE_FACTOR_IDS } from './environment/needFact
 export type { SanctionableFactorId } from './environment/needFactors';
 export { DEFAULT_DIFFICULTY, DIFFICULTIES, difficultyOf, isDifficulty } from './engine/difficulty';
 export type { Difficulty } from './engine/difficulty';
+export { isPoliticsActive, withPolitics } from './politics/politics';
+export type { PoliticsState } from './politics/politics';
 export type { Coord } from './map/coord';
 export type { Layout, LayoutHint, RoomReport, VenuePerformance, FixtureSpec, FixtureCategory } from './venues/venues';
 export type { VenueEvent } from './engine/state';

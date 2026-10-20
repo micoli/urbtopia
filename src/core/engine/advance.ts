@@ -17,6 +17,7 @@ import { advanceVenues, venueBoundaries } from '../venues/venues';
 import { progressTutorial } from '../progression/tutorial';
 import { progressVenueTutorials } from '../progression/venueTutorial';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { withPolitics } from '../politics/politics';
 
 export interface AdvanceResult {
   state: GameState;
@@ -104,7 +105,7 @@ function replay(state: GameState, until: number): AdvanceResult {
       buildings: withVenues.buildings.map(b => updateBattery(b, energy.batteryRates.get(b.id) ?? 0, batteryEnds.get(b.id), end, elapsed))
     };
   }
-  return { state: progressVenueTutorials(progressTutorial(current)), events };
+  return { state: withPolitics(progressVenueTutorials(progressTutorial(current))), events };
 }
 
 function updateBattery(building: Building, rate: number, boundary: number | undefined, now: number, elapsedMs: number): Building {
