@@ -16,13 +16,13 @@
   },
   "tiers": [
     {
-      "model": "buildings-factory-2x2-t1-tone-a",
+      "model": "buildings-office-octagon-2x2-t1-tone-a",
       "footprint": [2, 2],
       "jobs": 40,
       "power": 1
     },
     {
-      "model": "buildings-factory-2x2-t2-tone-a",
+      "model": "buildings-office-octagon-2x2-t2-tone-a",
       "jobs": 80,
       "power": 2,
       "upgradeCost": {
@@ -33,13 +33,58 @@
       }
     },
     {
-      "model": "buildings-factory-2x2-t3-tone-a",
+      "model": "buildings-office-octagon-2x2-t3-tone-a",
       "jobs": 120,
       "power": 3,
       "upgradeCost": {
         "urbs": 8000,
         "goods": {
           "tiles": 8
+        }
+      }
+    },
+    {
+      "model": "buildings-office-octagon-3x3-t4-tone-a",
+      "footprint": [3, 3],
+      "jobs": 150,
+      "power": 4,
+      "upgradeCost": {
+        "urbs": 15000,
+        "goods": {
+          "glass": 6
+        }
+      }
+    },
+    {
+      "model": "buildings-office-octagon-3x3-t5-tone-a",
+      "jobs": 190,
+      "power": 6,
+      "upgradeCost": {
+        "urbs": 30000,
+        "goods": {
+          "steel": 8
+        }
+      }
+    },
+    {
+      "model": "buildings-office-octagon-3x3-t6-tone-a",
+      "jobs": 240,
+      "power": 8,
+      "upgradeCost": {
+        "urbs": 60000,
+        "goods": {
+          "circuits": 8
+        }
+      }
+    },
+    {
+      "model": "buildings-office-octagon-3x3-t7-tone-a",
+      "jobs": 300,
+      "power": 10,
+      "upgradeCost": {
+        "urbs": 120000,
+        "goods": {
+          "crystal": 6
         }
       }
     }

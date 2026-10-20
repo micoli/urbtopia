@@ -32,7 +32,7 @@ describe('Office building', () => {
   it('is a workplace whose Jobs come from its Tier', () => {
     expect(OFFICE_TYPES).toEqual(['office']);
     const jobs = tiersOf('office').map((tier) => tier.jobs);
-    expect(jobs).toEqual([40, 80, 120]);
+    expect(jobs).toEqual([40, 80, 120, 150, 190, 240, 300]);
     for (const [index, expected] of jobs.entries()) expect(jobsOf({ ...createBuilding(1, 'office', 0, 0, 0), tier: index + 1 })).toBe(expected);
   });
 
@@ -114,6 +114,8 @@ describe('Office data', () => {
     const upgrades = [2, 3].map((tier) => upgradeCostOf('office', tier)!.urbs);
     expect(upgrades[0]).toBeGreaterThan(0);
     expect(upgrades[1]).toBeGreaterThan(upgrades[0]!);
+    const costs = [2, 3, 4, 5, 6, 7].map((tier) => upgradeCostOf('office', tier)!.urbs);
+    expect(costs).toEqual([...costs].sort((a, b) => a - b));
     const powers = tiersOf('office').map((tier) => tier.power!);
     expect(powers).toEqual([...powers].sort((a, b) => a - b));
   });
@@ -135,5 +137,23 @@ describe('Placing an Office', () => {
     if (!result.ok) throw new Error(result.error.key);
     expect(result.state.urbs).toBe(state.urbs - 1500);
     expect(officeIn(result.state).tier).toBe(1);
+  });
+});
+
+describe('Office Tiers', () => {
+  const footprints = tiersOf('office').map((tier) => tier.footprint);
+
+  it('draws a 2x2 block for the first three Tiers and a 3x3 block for the next four', () => {
+    expect(tiersOf('office')).toHaveLength(7);
+    expect(footprints.slice(0, 3)).toEqual([[2, 2], [2, 2], [2, 2]]);
+    expect(footprints.slice(3)).toEqual([[3, 3], [3, 3], [3, 3], [3, 3]]);
+  });
+
+  it('grows on its site when upgraded from the 2x2 block to the 3x3 block', () => {
+    const office: Building = { ...createBuilding(10, 'office', 57, 56, 2), tier: 3 };
+    const state: GameState = { ...empty, urbs: 1_000_000, storage: { materials: {}, goods: { glass: 50 } }, buildings: [office] };
+    const result = dispatch(state, { type: 'UpgradeBuilding', buildingId: office.id }, T0);
+    if (!result.ok) throw new Error(result.error.key);
+    expect(officeIn(result.state).tier).toBe(4);
   });
 });

@@ -5,7 +5,7 @@ Status: ready-for-agent
 Decisions from the grilling session. Vocabulary in `CONTEXT.md` (Office building). Rationale in ADR-0041.
 
 ## Rules
-- Office building: new family, 3 Tiers, footprints 2x2 / 2x3 / 3x3, 40 / 80 / 120 Jobs, Jobs defined in building data like the Shop.
+- Office building: new family, 7 Tiers drawn as the octagon office (`office-octagon-*-tone-a`, repaintable in four tones): Tiers 1 to 3 on a 2x2 footprint (2, 3, 4 floors), Tiers 4 to 7 on a 3x3 footprint (3 to 6 floors). Jobs 40 / 80 / 120 / 150 / 190 / 240 / 300, defined in building data like the Shop. Upgrades cost Urbs and a Good (planks, tiles, glass, steel, circuits, crystal).
 - Workplace: added to `workplaceTypes`, takes part in Commute, Traffic and Congestion. Nearest-first filling is unchanged.
 - Filled Jobs per workplace = Jobs − Jobs left, exposed from the congestion pass, all modes (car, walking, cycling, Riders).
 - Production: `urbsPerJobPerHour: 1` × filled Jobs, in `assets/defs/balance/economy.json` (new `office` section). Cap `capHours: 8`, same at every Tier. Computed at collection on the current filled Jobs, offline time counts within the cap.
@@ -22,7 +22,7 @@ Decisions from the grilling session. Vocabulary in `CONTEXT.md` (Office building
 - A BRT-only Office covered by a BRT stop counts as fully staffed (its Jobs are filled by Riders, which the Commute does not model per workplace).
 - `congestionStats(state).filledJobs` maps each workplace id to its filled Jobs, ready for the UI indicator of step 3.
 - Codex image of the Office is missing until the 3D models exist (`scripts/codexImages.test.ts` fails on a stale `dist/codex`; regenerate with `npm run codex:generate` once models are in).
-- `office.json` uses the Factory models as placeholders at 2x2 for every Tier; step 4 replaces them with the real footprints.
+- Step 4 done: the seven octagon models are registered (`rotationOffset` 180) and set on the seven Tiers of `office.json`. Check the facing of the entrance in the game once.
 
 ## UI
 - Building panel: Jobs filled / Jobs offered, Urbs per hour, stock to collect.
