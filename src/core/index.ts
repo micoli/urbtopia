@@ -153,7 +153,9 @@ export type { FacilitySpec, FacilityType, ServiceCategory, ServiceKey } from './
 export { isHomeInReach, categoryCoverageRatio, coveredCategories, coveredHomeIds, homesLackingRequiredServices, isServiceCovered, missingServices, missingServicesOf, previewFacilityCoverage, serviceCoverage, transitReachLinks } from './services/services';
 export { uncoveredReason } from './services/services';
 export type { ServiceCoverage, TransitReachLinks, UncoveredReason } from './services/services';
-export { TRANSIT_REACH } from './transit/transitReach';
+export { TRANSIT_REACH, TRANSIT_REACH_STOP_TYPES } from './transit/transitReach';
+export { transitReachCodexFigures } from './transit/transitReachCodexFigures';
+export type { TransitReachCategoryFigures, TransitReachCodexFigures, TransitReachFacilityFigures } from './transit/transitReachCodexFigures';
 export type { TransitLink } from './transit/transitReach';
 export { facilitiesUnlockedBetween } from './progression/unlocks';
 

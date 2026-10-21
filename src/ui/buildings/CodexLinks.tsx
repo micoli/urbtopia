@@ -1,8 +1,11 @@
-import { isHomeType, wasteKindOf, type Building } from '../../core';
+import { FACILITIES, isFacilityType, isHomeType, TRANSIT_REACH_STOP_TYPES, wasteKindOf, type Building } from '../../core';
 import { solarCodexIdOf, type CodexId } from '../../codex/catalog';
 import { t } from '../../i18n/t';
 import { ActionButton } from '../common/ActionButton';
 import { useUi } from '../common/hooks';
+
+const extendsOrUsesTransitReach = ({ type }: Building): boolean =>
+  (TRANSIT_REACH_STOP_TYPES as readonly string[]).includes(type) || (isFacilityType(type) && FACILITIES[type].category !== 'waste' && FACILITIES[type].radius !== null);
 
 export function CodexLinks({ building }: { building: Building }) {
   const openCodex = useUi((store) => store.openCodex);
@@ -18,6 +21,11 @@ export function CodexLinks({ building }: { building: Building }) {
       {building.type === 'townHall' && (
         <ActionButton aria-label={t('codex.about').replace('{name}', t('codex.politics.title'))} onClick={() => openCodex(undefined, 'politics')}>
           {t('codex.politics.title')}&nbsp;?
+        </ActionButton>
+      )}
+      {extendsOrUsesTransitReach(building) && (
+        <ActionButton aria-label={t('codex.about').replace('{name}', t('codex.transitReach.title'))} onClick={() => openCodex(undefined, 'transitReach')}>
+          {t('codex.transitReach.title')}&nbsp;?
         </ActionButton>
       )}
       {wasteKindOf(building.type) && (

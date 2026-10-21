@@ -1,6 +1,6 @@
 # Transit reach
 
-Status: Specified, not implemented
+Status: Implemented
 
 Vocabulary is defined in `CONTEXT.md` (Transit reach, Service coverage, Transit itinerary, Transit hub, BRT station, Railway station). Decision record: [ADR 0042](../../docs/adr/0042-transit-reach-extends-service-coverage-over-fast-lines.md).
 

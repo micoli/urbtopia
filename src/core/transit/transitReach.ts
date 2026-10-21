@@ -11,6 +11,9 @@ const MAX_LINES = 3;
 const MAX_TRANSFER_WALK = 2;
 const STOP_DWELL_MINUTES = 0.5;
 
+// The stops that extend reach; ordinary Bus stops never do.
+export const TRANSIT_REACH_STOP_TYPES = ['brtStation', 'railStation', 'transitHub'] as const;
+
 export interface TransitLink {
   facilityStopId: number;
   homeStopId: number;
@@ -74,6 +77,12 @@ function minutesFrom(start: Building, lines: ReachLine[], stops: ReadonlyMap<num
     if (index >= 0) walk(line, index, [line.id], 0);
   }
   return best;
+}
+
+// The stops of the lines that carry reach, and how many lines do.
+export function servingReach(state: GameState): { lines: number; stopIds: ReadonlySet<number> } {
+  const lines = reachLines(state);
+  return { lines: lines.length, stopIds: new Set(lines.flatMap(line => line.stops)) };
 }
 
 export interface TransitReach {
