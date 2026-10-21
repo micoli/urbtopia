@@ -1,0 +1,13 @@
+.parcel-tag {
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: var(--space-4) var(--space-10);
+  border-radius: var(--radius-xl);
+  background: var(--color-warning-a95);
+  color: var(--color-on-warning);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-base);
+  pointer-events: none;
+  z-index: 4;
+}

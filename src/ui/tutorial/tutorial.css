@@ -1,0 +1,55 @@
+.tutorial-banner {
+  position: fixed;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(92vw, 420px);
+  box-sizing: border-box;
+  padding: var(--space-10) var(--space-14);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  color: var(--color-text);
+  z-index: 26;
+}
+
+.tutorial-banner header {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-md);
+  opacity: 0.8;
+}
+
+.tutorial-banner p {
+  margin: var(--space-6) 0 var(--space-10);
+}
+
+.tutorial-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 1px var(--space-8) 1px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--white-a12);
+  font-weight: var(--font-weight-semibold);
+  vertical-align: middle;
+}
+
+.tutorial-chip img {
+  height: 32px;
+  width: 38px;
+  object-fit: contain;
+}
+
+.tutorial-handle {
+  cursor: grab;
+  touch-action: none;
+  padding-bottom: var(--space-6);
+}
+
+.tutorial-handle:active {
+  cursor: grabbing;
+}
+
+.tutorial-banner {
+  box-shadow: var(--shadow-lg);
+}

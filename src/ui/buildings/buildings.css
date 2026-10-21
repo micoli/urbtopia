@@ -1,0 +1,93 @@
+.home-color-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; padding-right: var(--space-6); }
+.home-color-picker button { display: flex; align-items: center; gap: 7px; min-width: 0; min-height: 38px; padding: var(--space-4) 7px; border: 1px solid var(--white-a12); border-radius: 9px; background: var(--white-a07); color: inherit; font: inherit; font-size: var(--font-size-xs); text-align: left; cursor: pointer; }
+.home-color-picker button[aria-pressed='true'] { border-color: var(--color-accent); background: var(--white-a15); box-shadow: inset 0 0 0 1px var(--color-accent); }
+.home-color-swatch { flex: 0 0 15px; width: 15px; height: 15px; border: 1px solid var(--white-a45); border-radius: var(--radius-round); }
+.home-color-swatch-default { background: var(--swatch-residential-default); }
+.home-color-swatch-a { background: var(--swatch-residential-a); }
+.home-color-swatch-b { background: var(--swatch-residential-b); }
+.home-color-swatch-c { background: var(--swatch-residential-c); }
+.home-color-swatch-commercial-default { background: var(--swatch-commercial-default); }
+.home-color-swatch-commercial-a { background: var(--swatch-commercial-a); }
+.home-color-swatch-commercial-b { background: var(--swatch-commercial-b); }
+.home-color-swatch-industrial-default { background: var(--swatch-industrial-default); }
+.home-color-swatch-industrial-a { background: var(--swatch-industrial-a); }
+.home-color-swatch-industrial-b { background: var(--swatch-industrial-b); }
+.home-color-swatch-industrial-c { background: var(--swatch-industrial-c); }
+
+.storage-tiles {
+  list-style: none;
+  margin: var(--space-6) 0 var(--space-12);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: var(--space-8);
+}
+
+.storage-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--white-a08);
+  text-align: center;
+}
+
+.storage-tile-label {
+  font-size: var(--font-size-sm);
+  line-height: 1.2;
+}
+
+.storage-tile-stock {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.storage-tile-amount {
+  font-weight: var(--font-weight-semibold);
+}
+
+.service-coverage-panel {
+  position: fixed;
+  box-sizing: border-box;
+  top: max(64px, env(safe-area-inset-top));
+  left: max(88px, env(safe-area-inset-left));
+  width: min(320px, calc(100vw - 100px));
+  padding: var(--space-12);
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface);
+  color: var(--color-text);
+  z-index: 8;
+}
+.service-coverage-panel header { display: flex; align-items: center; gap: var(--space-8); margin-bottom: var(--space-8); }
+.service-coverage-panel h2 { flex: 1; margin: 0; font-size: var(--font-size-base); }
+.service-coverage-panel:has([aria-expanded='true']) { z-index: 12; }
+.service-coverage-legend { display: flex; flex-wrap: wrap; gap: var(--space-6) var(--space-12); list-style: none; padding: 0; margin: var(--space-10) 0 0; font-size: var(--font-size-xs); }
+.service-coverage-legend li { display: flex; align-items: center; gap: 5px; }
+.service-coverage-swatch { width: 10px; height: 10px; border-radius: var(--radius-xs); }
+.service-coverage-swatch--covered { background: var(--color-accent); }
+.service-coverage-swatch--uncovered { background: var(--color-danger); }
+.service-coverage-swatch--facility { box-sizing: border-box; border: 2px solid var(--color-info); }
+[data-layout='A'] .service-coverage-panel,
+[data-layout='B'] .service-coverage-panel { left: max(12px, env(safe-area-inset-left)); width: min(320px, calc(100vw - 24px)); }
+@media (max-width: 600px) {
+  [data-layout='A'] .service-coverage-panel { top: 116px; }
+}
+.stop-name-field { display: flex; flex-direction: column; gap: var(--space-4); margin: var(--space-8) 0; }
+
+.crop-actions {
+  display: grid;
+  gap: var(--space-8);
+  margin-top: var(--space-8);
+}
+
+.crop-actions > .crop-plant {
+  grid-row: span 2;
+}
+
+.recipe-missing {
+  color: var(--color-text-disabled);
+}
+.eco-heat-item th i.home-color-swatch { display: inline-block; width: 10px; height: 10px; margin-right: var(--space-4); vertical-align: middle; }

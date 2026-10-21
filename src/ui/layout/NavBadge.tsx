@@ -1,4 +1,5 @@
 import { t } from '../../i18n/t';
+import { CountBadge } from '../common/CountBadge';
 
 interface NavBadgeProps {
     count?: number;
@@ -6,6 +7,5 @@ interface NavBadgeProps {
 }
 
 export function NavBadge({count = 0, label}: NavBadgeProps) {
-    if (count <= 0) return null;
-    return <small className="nav-badge" role="status" aria-label={`${label ?? t('social.title')}: ${count}`}>{count > 9 ? '9+' : count}</small>;
+    return <CountBadge floating role="status" count={count} label={label ?? t('social.title')}/>;
 }

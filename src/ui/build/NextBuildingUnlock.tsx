@@ -1,6 +1,7 @@
 import { nextBuildingUnlock, totalCitizens, type BuildingType } from '../../core';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
+import { ProgressBar } from '../common/ProgressBar';
 
 const LISTED = 3;
 
@@ -17,7 +18,7 @@ export function NextBuildingUnlock({ candidates }: NextBuildingUnlockProps) {
     <div className="next-building-unlock" role="group" aria-label={t('build.nextUnlock')}>
       <h4>{t('build.nextUnlock')}</h4>
       <p>{next.types.slice(0, LISTED).map(type => t(`building.${type}`)).join(', ')}{next.types.length > LISTED && ` +${next.types.length - LISTED}`}</p>
-      <progress max={next.citizens} value={Math.min(current, next.citizens)} />
+      <ProgressBar max={next.citizens} value={current} />
       <small>{t('build.nextUnlockProgress').replace('{current}', String(current)).replace('{citizens}', String(next.citizens))}</small>
     </div>
   );
