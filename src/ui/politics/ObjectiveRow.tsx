@@ -2,6 +2,7 @@ import { OBJECTIVE_METRICS_AT_MOST, grantOf, objectiveById, objectiveValue, type
 import type { MessageKey } from '../../i18n/messages';
 import { t } from '../../i18n/t';
 import { formatObjectiveValue } from './formatObjectiveValue';
+import { ProgressBar } from '../common/ProgressBar';
 
 export function ObjectiveRow({ state, active }: { state: GameState; active: ActiveObjective }) {
   const objective = objectiveById(active.id);
@@ -15,7 +16,7 @@ export function ObjectiveRow({ state, active }: { state: GameState; active: Acti
         <p>{t(`objective.${active.id}.description` as MessageKey)}</p>
         <small>{t(`objective.metric.${objective.metric}` as MessageKey)}: {t('politics.objective.now').replace('{value}', now).replace('{target}', target)}</small>
         <small>{t('politics.objective.progress').replace('{held}', String(active.heldDays)).replace('{hold}', String(objective.holdDays))} · {t('politics.objective.grant').replace('{amount}', String(grantOf(state, active.id)))}</small>
-        <progress max={objective.holdDays} value={active.heldDays} aria-label={t('politics.objective.progress').replace('{held}', String(active.heldDays)).replace('{hold}', String(objective.holdDays))} />
+        <ProgressBar max={objective.holdDays} value={active.heldDays} label={t('politics.objective.progress').replace('{held}', String(active.heldDays)).replace('{hold}', String(objective.holdDays))} />
       </div>
     </li>
   );

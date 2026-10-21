@@ -63,7 +63,7 @@ describe('friend list with messages', () => {
 
   it('shows no count without unread messages', () => {
     const html = renderToStaticMarkup(<FriendList friends={[{ userId: 'b', handle: 'Bob', avatar: null, since: 0, unread: 0, lastMessageAt: null, medals: [] }]} onMessage={noop} onTrade={noop} onRemove={noop} onBlock={noop} />);
-    expect(html).not.toContain('friends-unread');
+    expect(html).not.toContain('count-badge');
   });
 });
 

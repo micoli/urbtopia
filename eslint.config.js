@@ -33,4 +33,16 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    files: ['src/ui/**/*.tsx'],
+    ignores: ['src/ui/common/**', '**/*.stories.tsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        { selector: "JSXOpeningElement[name.name='progress']", message: 'Use ProgressBar from ui/common.' },
+        { selector: "JSXAttribute[name.name='role'][value.value='tablist']", message: 'Use Tabs from ui/common.' },
+        { selector: "JSXAttribute[name.name='style'] > JSXExpressionContainer > ObjectExpression > Property[value.type='Literal']", message: 'Static inline style: put it in the stylesheet with the tokens.' },
+      ],
+    },
+  },
 );

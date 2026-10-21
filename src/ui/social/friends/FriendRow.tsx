@@ -5,6 +5,7 @@ import { InlineConfirm } from '../../common/InlineConfirm';
 import type { MedalInfo } from '../../../challenges/types';
 import { HandleLabel } from '../HandleLabel';
 import { MedalList } from '../MedalList';
+import { CountBadge } from '../../common/CountBadge';
 
 interface FriendRowProps {
     userId: string;
@@ -27,7 +28,7 @@ export function FriendRow({userId, handle, avatar, unread, medals, onMessage, on
     return <li className="friends-row">
         <HandleLabel userId={userId} handle={handle} avatar={avatar}/>
         <MedalList medals={medals}/>
-        <ActionButton variant="primary" onClick={onMessage}>{t('friends.message')}{unread > 0 ? <small className="friends-unread" aria-label={`${t('friends.unread')}: ${unread}`}>{unread}</small> : null}</ActionButton>
+        <ActionButton variant="primary" onClick={onMessage}>{t('friends.message')}<CountBadge count={unread} label={t('friends.unread')}/></ActionButton>
         <ActionButton onClick={onTrade}>{t('friends.trade')}</ActionButton>
         {confirming !== 'block' ? <InlineConfirm confirming={confirming === 'remove'} triggerLabel={t('friends.remove')} confirmLabel={t('friends.remove')}
             message={t('friends.removeConfirm').replace('{H}', handle)} onRequest={() => setConfirming('remove')} onCancel={() => setConfirming(null)} onConfirm={done(onRemove)}/> : null}

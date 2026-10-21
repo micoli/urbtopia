@@ -8,7 +8,7 @@
 .council-seat[data-vote='against'] { fill: transparent; }
 .council-legend { margin: 0; padding: 0; list-style: none; font-size: var(--font-size-md); }
 .council-legend li { display: flex; align-items: center; gap: var(--space-8); padding: var(--space-2) 0; }
-.politics-window progress { width: 100%; height: 8px; margin: var(--space-8) 0; accent-color: var(--color-positive); }
+.politics-window .progress-bar { height: 8px; margin: var(--space-8) 0; }
 .politics-list { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-8); }
 .politics-row { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-12); border-radius: var(--radius-lg); background: var(--white-a06); }
 .politics-row[data-adopted='true'] { border-left: 3px solid var(--color-positive); }

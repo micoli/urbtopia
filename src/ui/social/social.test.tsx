@@ -15,7 +15,7 @@ describe('social tabs', () => {
 
   it('shows the Groups badge and keeps only the selected tab in the tab order', () => {
     const html = renderToStaticMarkup(<SocialTabs tab="groups" friendsPending={0} groupsPending={4} exchangesPending={0} onSelect={noop} />);
-    expect(html).toMatch(/id="social-tab-groups"[^>]*tabindex="0"[\s\S]*social-tab-badge[^>]*>4</);
+    expect(html).toMatch(/id="social-tab-groups"[^>]*tabindex="0"[\s\S]*count-badge[^>]*>4</);
     expect(html).toMatch(/id="social-tab-friends"[^>]*tabindex="-1"/);
   });
 
@@ -31,8 +31,8 @@ describe('social tabs', () => {
   it('shows the pending count on each tab, capped at 9+', () => {
     expect(renderToStaticMarkup(<SocialTabs tab="friends" friendsPending={3} groupsPending={0} exchangesPending={0} onSelect={noop} />)).toContain('>3<');
     expect(renderToStaticMarkup(<SocialTabs tab="friends" friendsPending={12} groupsPending={0} exchangesPending={0} onSelect={noop} />)).toContain('>9+<');
-    expect(renderToStaticMarkup(<SocialTabs tab="friends" friendsPending={0} groupsPending={0} exchangesPending={0} onSelect={noop} />)).not.toContain('social-tab-badge');
+    expect(renderToStaticMarkup(<SocialTabs tab="friends" friendsPending={0} groupsPending={0} exchangesPending={0} onSelect={noop} />)).not.toContain('count-badge');
     const exchanges = renderToStaticMarkup(<SocialTabs tab="friends" friendsPending={0} groupsPending={0} exchangesPending={2} onSelect={noop} />);
-    expect(exchanges).toMatch(/id="social-tab-exchanges"[\s\S]*social-tab-badge[^>]*>2</);
+    expect(exchanges).toMatch(/id="social-tab-exchanges"[\s\S]*count-badge[^>]*>2</);
   });
 });

@@ -1,5 +1,6 @@
 import { SOLIDARITY, solidarityTier } from '../../core';
 import { t } from '../../i18n/t';
+import { ProgressBar } from '../common/ProgressBar';
 
 interface SolidarityProgressProps {
   value: number;
@@ -15,7 +16,7 @@ export function SolidarityProgress({ value, pendingValue = 0 }: SolidarityProgre
     <p>{target
       ? t('solidarity.medal.progress').replace('{value}', String(value)).replace('{target}', String(target)).replace('{tier}', tierName)
       : t('solidarity.medal.gold').replace('{value}', String(value))}</p>
-    {target && <progress max={target} value={Math.min(value, target)} aria-label={t('solidarity.medal.title')} />}
+    {target && <ProgressBar max={target} value={value} label={t('solidarity.medal.title')} />}
     {pendingValue > 0 && <p className="note note--muted">{t('solidarity.pending').replace('{value}', String(pendingValue))}</p>}
   </div>;
 }
