@@ -3,9 +3,8 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { GAME_CONFIG, WILD_RIM_TILES, wildNoiseAt, wildTerrain, type Building, type GameState, type FacilityType } from '../core';
 import { CameraController } from './CameraController';
-import type { Coord } from '../core';
+import { footprintTiles, type Coord } from '../core';
 import type { DrawnExtent, GhostSpec } from '../tools/tools';
-import { buildingBoxes, pickBuilding } from './buildingPicking';
 import { ChunkedWorld } from './ChunkedWorld';
 import { WildScenery } from './WildScenery';
 import { groundGeometry } from './groundMesh';
@@ -126,10 +125,14 @@ export class GameScene {
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.controller.onTap = (clientX, clientY, shiftKey) =>
-      this.withTileAt(clientX, clientY, (tile) => this.handlers.onTap(tile, shiftKey, this.pickBuildingAt(clientX, clientY)));
+      this.withTileAt(clientX, clientY, (tile) => this.handlers.onTap(tile, shiftKey, this.buildingOnTile(tile)));
     this.controller.onLongPress = (clientX, clientY) => {
-      const buildingId = this.pickBuildingAt(clientX, clientY);
-      return buildingId !== null && this.handlers.onLongPress(buildingId);
+      let handled = false;
+      this.withTileAt(clientX, clientY, (tile) => {
+        const buildingId = this.buildingOnTile(tile);
+        handled = buildingId !== null && this.handlers.onLongPress(buildingId);
+      });
+      return handled;
     };
     this.controller.onMouseMove = (clientX, clientY) => this.withTileAt(clientX, clientY, (tile) => this.handlers.onMouseMove(tile));
     this.controller.onPointerKind = (pointerType) => this.handlers.onPointerKind(pointerType);
@@ -381,11 +384,9 @@ export class GameScene {
     }
   }
 
-  private pickBuildingAt(clientX: number, clientY: number): number | null {
-    const rect = this.canvas.getBoundingClientRect();
-    const pointer = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
-    this.raycaster.setFromCamera(pointer, this.controller.camera);
-    return pickBuilding(this.raycaster.ray, buildingBoxes(this.currentBuildings, (building) => this.buildingHeight(building)));
+  private buildingOnTile(tile: Coord): number | null {
+    const building = this.currentBuildings.find((candidate) => footprintTiles(candidate).some((t) => t.x === tile.x && t.y === tile.y));
+    return building?.id ?? null;
   }
 
   drawnExtentOf(building: Building): DrawnExtent | null {
