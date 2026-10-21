@@ -1,0 +1,14 @@
+[data-guided='true'] {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+  animation: guided-pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes guided-pulse {
+  from {
+    outline-color: transparent;
+  }
+  to {
+    outline-color: var(--color-accent);
+  }
+}

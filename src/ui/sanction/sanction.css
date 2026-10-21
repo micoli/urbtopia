@@ -1,0 +1,13 @@
+.sanction-badge {
+  position: fixed;
+  left: 0;
+  top: 0;
+  margin-top: 48px;
+  padding: var(--space-2) var(--space-6);
+  border-radius: var(--radius-xl);
+  background: var(--color-danger-strong);
+  color: var(--color-white);
+  font-weight: var(--font-weight-bold);
+  pointer-events: none;
+  z-index: 4;
+}

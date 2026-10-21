@@ -1,0 +1,112 @@
+.toast {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--space-10) var(--space-16);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  color: var(--color-text);
+  z-index: 200;
+}
+
+.credits-body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.credits-list {
+  margin: 0 0 var(--space-12);
+  padding-left: 18px;
+}
+
+.credits-dialog a {
+  color: inherit;
+}
+
+.update-prompt {
+  bottom: 140px;
+  z-index: 7;
+}
+
+.recovery {
+  z-index: 40;
+}
+
+.prefs {
+  margin-top: var(--space-16);
+  font-size: var(--font-size-base);
+}
+
+.prefs h3 {
+  margin: 0 0 var(--space-6);
+  font-size: var(--font-size-base);
+  opacity: 0.8;
+}
+
+.prefs-group {
+  display: flex;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.prefs-group button {
+  flex: 1;
+  min-height: var(--tap);
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--white-a10);
+  color: inherit;
+}
+
+.prefs-group button[aria-checked='true'] {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.settings-seed {
+  margin: 0 0 var(--space-12);
+  font-size: var(--font-size-sm);
+  opacity: 0.7;
+  user-select: all;
+}
+
+.build-id {
+  display: block;
+  margin-top: var(--space-12);
+  opacity: 0.5;
+  font-size: var(--font-size-xs);
+}
+
+.fps-overlay,
+.sim-overlay {
+  position: fixed;
+  left: 50%;
+  bottom: env(safe-area-inset-bottom, 0);
+  transform: translateX(-50%);
+  z-index: 100;
+  padding: var(--space-2) var(--space-8);
+  border-radius: var(--radius-sm);
+  background: var(--black-a70);
+  color: var(--color-debug);
+  font: 12px/1.4 monospace;
+  white-space: nowrap;
+}
+
+.sim-overlay {
+  top: env(safe-area-inset-top, 0);
+  bottom: auto;
+}
+
+.cloud-save { margin-top: var(--space-16); }
+.cloud-save h3 { margin: 0 0 var(--space-4); }
+.cloud-status { margin: 0 0 var(--space-8); font-size: 0.9em; opacity: 0.85; }
+.cloud-status--offline, .cloud-status--pending { opacity: 1; }
+.cloud-status--conflict, .cloud-status--error { color: var(--color-error-text); opacity: 1; }
+.cloud-versions { list-style: none; margin: var(--space-8) 0 0; padding: 0; display: grid; gap: var(--space-4); }
+.cloud-versions li { display: flex; align-items: center; justify-content: space-between; gap: var(--space-8); }
+.conflict-cities { display: flex; flex-wrap: wrap; gap: var(--space-16); }
+.conflict-city { flex: 1 1 12rem; display: grid; gap: var(--space-4); }
+.conflict-city h3 { margin: 0; }
+.cloud-email, .cloud-account { display: grid; gap: var(--space-8); margin: var(--space-8) 0; }
+.cloud-email input { padding: 0.4rem var(--space-8); font: inherit; }

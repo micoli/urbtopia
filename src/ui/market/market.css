@@ -1,0 +1,139 @@
+.market-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: min(280px, 70vw);
+  padding: var(--space-12);
+  background: var(--color-surface);
+  color: var(--color-text);
+  z-index: 9;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+[data-layout='C'] .market-panel {
+  right: 3px;
+  bottom: 3px;
+}
+
+.market-list {
+  list-style: none;
+  margin: var(--space-12) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.market-row {
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--white-a08);
+}
+
+.solidarity-status {
+  padding: var(--space-10);
+  border-radius: var(--radius-lg);
+  background: var(--color-positive-a10);
+}
+
+.solidarity-status h3, .solidarity-progress p { margin: var(--space-4) 0; }
+.solidarity-status progress, .solidarity-progress progress { width: 100%; accent-color: var(--color-positive); }
+.donation-form { display: flex; flex-direction: column; gap: var(--space-8); margin-top: var(--space-10); padding-top: var(--space-10); border-top: 1px solid var(--white-a15); }
+.donation-preview p { margin: var(--space-4) 0; font-size: var(--font-size-md); }
+
+.market-tabs { display: flex; gap: var(--space-4); margin: var(--space-12) 0; }
+.market-tabs button {
+  flex: 1;
+  padding: var(--space-8) var(--space-12);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--white-a06);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.market-tabs button:hover { background: var(--white-a12); }
+.market-tabs button[aria-selected='true'] { background: var(--color-positive-a25); box-shadow: inset 0 -3px 0 var(--color-positive); }
+.market-tab-badge { margin-left: var(--space-6); padding: 0 var(--space-6); border-radius: var(--radius-md); background: var(--color-danger); color: var(--color-white); font-size: var(--font-size-xs); line-height: 16px; }
+.challenge-list { list-style: none; margin: var(--space-12) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-8); }
+.challenge-card { padding: var(--space-8); border-radius: var(--radius-lg); background: var(--white-a08); display: flex; flex-direction: column; gap: var(--space-6); }
+.challenge-card header { display: flex; flex-direction: column; }
+.challenge-card header small, .challenge-note, .challenge-time { font-size: var(--font-size-sm); opacity: 0.75; }
+.challenge-active { margin-top: var(--space-8); box-shadow: inset 0 0 0 2px var(--color-positive-a45); }
+.challenge-lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-4); }
+.challenge-line { display: flex; align-items: center; gap: var(--space-8); }
+.challenge-line-text { display: flex; flex-direction: column; flex: 1; font-size: var(--font-size-md); }
+.challenge-line-actions { display: flex; gap: var(--space-4); flex-wrap: wrap; }
+.challenge-reward { margin: 0; font-size: var(--font-size-md); }
+.challenge-card-unavailable { opacity: 0.55; box-shadow: inset 0 0 0 1px var(--white-a16); }
+.challenge-card-unavailable header small { color: var(--color-text); }
+
+.challenge-success {
+  position: fixed;
+  z-index: 60;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(320px, calc(100vw - 48px));
+  box-sizing: border-box;
+  padding: var(--space-24);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-12);
+  border: 2px solid var(--color-accent);
+  border-radius: 20px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-xl);
+  text-align: center;
+  animation: challenge-success-enter 450ms ease-out both;
+}
+.challenge-success strong { font-size: var(--font-size-3xl); }
+.challenge-success p { margin: 0; color: var(--color-accent); font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); }
+.challenge-success-trophy { font-size: 56px; animation: challenge-trophy 800ms ease-out both; }
+.challenge-success-confetti { position: absolute; top: 24px; left: 50%; pointer-events: none; }
+.challenge-success-confetti i {
+  position: absolute;
+  width: 8px;
+  height: 14px;
+  background: var(--color-warning);
+  animation: challenge-confetti 1800ms var(--delay) ease-out both;
+}
+.challenge-success-confetti i:nth-child(3n) { background: var(--color-positive); }
+.challenge-success-confetti i:nth-child(3n + 1) { background: var(--color-celebration); }
+@keyframes challenge-success-enter {
+  from { opacity: 0; transform: translate(-50%, 24px) scale(0.9); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+@keyframes challenge-trophy {
+  0% { transform: scale(0.4) rotate(-20deg); }
+  60% { transform: scale(1.2) rotate(8deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes challenge-confetti {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--x), 260px) rotate(var(--spin)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .challenge-success, .challenge-success-trophy { animation: none; }
+  .challenge-success-confetti { display: none; }
+}
+
+.market-price {
+  font-size: var(--font-size-sm);
+  opacity: 0.75;
+}
+
+.market-dialog {
+  box-sizing: border-box;
+  width: min(420px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
