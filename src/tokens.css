@@ -1,0 +1,180 @@
+:root {
+  /* Surfaces and text */
+  --color-surface: rgba(24, 28, 40, 0.92);
+  --color-surface-translucent: rgba(24, 28, 40, 0.75);
+  --color-popover: #1f2636;
+  --color-venue: #232838;
+  --color-text: #f4f6fb;
+  --color-text-muted: rgba(244, 246, 251, 0.75);
+  --color-text-disabled: #8b8f99;
+  --color-text-on-light: #1b1f2a;
+  --color-ink: #111;
+  --color-ink-soft: #202020;
+  --color-white: #fff;
+  --color-black: #000;
+
+  /* Light overlays on dark surfaces */
+  --white-a04: rgba(255, 255, 255, 0.04);
+  --white-a05: rgba(255, 255, 255, 0.05);
+  --white-a06: rgba(255, 255, 255, 0.06);
+  --white-a07: rgba(255, 255, 255, 0.07);
+  --white-a08: rgba(255, 255, 255, 0.08);
+  --white-a10: rgba(255, 255, 255, 0.1);
+  --white-a12: rgba(255, 255, 255, 0.12);
+  --white-a14: rgba(255, 255, 255, 0.14);
+  --white-a15: rgba(255, 255, 255, 0.15);
+  --white-a16: rgba(255, 255, 255, 0.16);
+  --white-a18: rgba(255, 255, 255, 0.18);
+  --white-a20: rgba(255, 255, 255, 0.2);
+  --white-a22: rgba(255, 255, 255, 0.22);
+  --white-a24: rgba(255, 255, 255, 0.24);
+  --white-a28: rgba(255, 255, 255, 0.28);
+  --white-a35: rgba(255, 255, 255, 0.35);
+  --white-a45: rgba(255, 255, 255, 0.45);
+  --white-a50: rgba(255, 255, 255, 0.5);
+  --white-a55: rgba(255, 255, 255, 0.55);
+  --white-a85: rgba(255, 255, 255, 0.85);
+  --white-a90: rgba(255, 255, 255, 0.9);
+
+  /* Dark overlays */
+  --black-a08: rgba(0, 0, 0, 0.08);
+  --black-a25: rgba(0, 0, 0, 0.25);
+  --black-a35: rgba(0, 0, 0, 0.35);
+  --black-a45: rgba(0, 0, 0, 0.45);
+  --black-a50: rgba(0, 0, 0, 0.5);
+  --black-a55: rgba(0, 0, 0, 0.55);
+  --black-a70: rgba(0, 0, 0, 0.7);
+
+  /* Accent: actions and selection */
+  --color-accent: #35d07f;
+  --color-accent-a14: rgba(53, 208, 127, 0.14);
+  --color-accent-a28: rgba(53, 208, 127, 0.28);
+  --color-accent-a30: rgba(53, 208, 127, 0.3);
+  --color-on-accent: #08140d;
+  --color-on-accent-strong: #0b2a18;
+
+  /* Positive: reached, active, available */
+  --color-positive: #8ce2b5;
+  --color-positive-a10: rgba(140, 226, 181, 0.1);
+  --color-positive-a25: rgba(140, 226, 181, 0.25);
+  --color-positive-a45: rgba(140, 226, 181, 0.45);
+
+  /* Danger */
+  --color-danger: #e5484d;
+  --color-danger-a12: rgba(229, 72, 77, 0.12);
+  --color-danger-strong: #d62828;
+  --color-danger-text: #ff9ea1;
+  --color-error-text: #c0392b;
+
+  /* Warning: alerts, highlights */
+  --color-warning: #ffd23f;
+  --color-warning-a95: rgba(255, 210, 63, 0.95);
+  --color-on-warning: #2a2000;
+  --color-warning-strong: #ffa940;
+  --color-warning-dark: #7a4b00;
+  --color-highlight: #ffd43b;
+
+  /* Caution: pending, fragile, hints */
+  --color-caution: #ffd887;
+  --color-caution-a08: rgba(255, 216, 135, 0.08);
+  --color-caution-a14: rgba(255, 216, 135, 0.14);
+  --color-medal: rgba(255, 214, 102, 0.18);
+
+  /* Disconnected, errors in panels */
+  --color-alert: #ff9d8a;
+  --color-alert-a08: rgba(255, 157, 138, 0.08);
+  --color-alert-text: #ffc4b8;
+  --color-escalated: #d9644f;
+
+  /* Information and focus */
+  --color-info: #4da3ff;
+  --color-info-a25: rgba(62, 166, 255, 0.25);
+  --color-focus: #75c6ff;
+  --color-celebration: #bba4ff;
+  --color-debug: #7cfc00;
+
+  /* Urbs currency */
+  --color-urbs: #ffc21a;
+  --color-urbs-outline: #7a5200;
+  --color-urbs-glow: rgba(255, 194, 26, 0.55);
+
+  /* Data series (heat sources, council factions) */
+  --color-series-orange: #e8a44a;
+  --color-series-green: #6bcf8e;
+  --color-series-blue: #5aa9e6;
+  --color-series-grey: #8a8f98;
+  --color-series-red: #d9644f;
+
+  /* Building color tones, mirror the model palettes */
+  --swatch-residential-default: #6c9e57;
+  --swatch-residential-a: #4d8dbd;
+  --swatch-residential-b: #c75a50;
+  --swatch-residential-c: #858f78;
+  --swatch-commercial-default: #e9e9ee;
+  --swatch-commercial-a: #eb9a62;
+  --swatch-commercial-b: #d4583a;
+  --swatch-industrial-default: #dcdce8;
+  --swatch-industrial-a: #7f7bd0;
+  --swatch-industrial-b: #c06a4c;
+  --swatch-industrial-c: #b9b8e0;
+
+  /* Casino tables and cards */
+  --color-felt-rim: #5b3a1e;
+  --color-felt-light: #1f8a4c;
+  --color-felt: #146437;
+  --color-felt-dark: #0e4a28;
+  --color-card-red: #c62828;
+  --color-card-back-light: #34528f;
+  --color-card-back-dark: #2b4377;
+
+  /* Typography */
+  --font-family-base: system-ui, sans-serif;
+  --font-size-2xs: 10px;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-md: 13px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 22px;
+  --font-size-4xl: 24px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Radii */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 14px;
+  --radius-3xl: 16px;
+  --radius-pill: 999px;
+  --radius-round: 50%;
+
+  /* Spacing, named after their size in pixels */
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-14: 14px;
+  --space-16: 16px;
+  --space-24: 24px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px var(--black-a35);
+  --shadow-md: 0 4px 12px var(--black-a35);
+  --shadow-lg: 0 8px 24px var(--black-a35);
+  --shadow-lg-strong: 0 8px 24px var(--black-a50);
+  --shadow-xl: 0 16px 64px var(--black-a45);
+
+  /* Layout */
+  --dock-width: 64px;
+  --tap: 48px;
+}
