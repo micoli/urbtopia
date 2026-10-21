@@ -229,6 +229,10 @@ _Avoid_: Department, sector
 The state of a Home being served by a Public facility of a Service category: within the facility's reach (a square of twice its radius with corners rounded by 3 tiles) and inside its Citizen capacity, nearest Homes first. The Home that crosses the capacity is still served, so a single large Home can always be covered. Some facilities cover the whole city. Missing coverage lowers Well-being and can block Home Tier upgrades.
 _Avoid_: Service range, zone
 
+**Transit reach**:
+The extension of a Public facility's Service coverage through fast public transport. A Home beyond the facility's reach is still covered when a BRT station, Railway station or Transit hub near the facility is linked, within a maximum travel time, by a Transit itinerary to one near the Home. It applies to every Service category except Waste, uses the same Citizen capacity as direct reach, and Homes in direct reach are served first. Ordinary Bus stops never extend reach.
+_Avoid_: Isochrone, bus coverage
+
 **Waste**:
 What the Citizens of a Home throw away each day, in proportion to their number. It only matters once the city has about 1000 Citizens; collection is modelled per Home in aggregate, never as rubbish lying in the streets. A Home whose Waste is not processed lacks Waste Service coverage.
 _Avoid_: Garbage, trash, rubbish
