@@ -1,12 +1,13 @@
 import * as THREE from 'three';
-import { coveredHomeIds, footprintOf, isHomeType, wasteReport, type Building, type GameState, type FacilityType } from '../core';
+import { coveredHomeIds, footprintOf, isHomeType, transitReachLinks, wasteReport, type Building, type GameState, type FacilityType } from '../core';
 
-const COLORS = { covered: 0x35d07f, uncovered: 0xe5484d, facility: 0x4da3ff } as const;
+const COLORS = { covered: 0x35d07f, uncovered: 0xe5484d, transit: 0x2ec4d6, facility: 0x4da3ff } as const;
 
 export class ServiceCoverageLayer {
   readonly root = new THREE.Group();
   private tileGeometry = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
   private coveredMaterial = this.overlayMaterial(COLORS.covered);
+  private transitMaterial = this.overlayMaterial(COLORS.transit);
   private uncoveredMaterial = this.overlayMaterial(COLORS.uncovered);
   private markers = new THREE.LineSegments(
     new THREE.BufferGeometry(),
@@ -14,6 +15,7 @@ export class ServiceCoverageLayer {
   );
   private buildings: GameState['buildings'] | null = null;
   private wasteStamp: unknown = null;
+  private transitStamp: unknown = null;
   private type: FacilityType | null = null;
 
   constructor() {
@@ -32,19 +34,24 @@ export class ServiceCoverageLayer {
       return;
     }
     const wasteStamp = wasteReport(state);
-    if (this.buildings === state.buildings && this.type === type && this.wasteStamp === wasteStamp) return;
+    const transitStamp = transitReachLinks(state);
+    if (this.buildings === state.buildings && this.type === type && this.wasteStamp === wasteStamp && this.transitStamp === transitStamp) return;
     this.buildings = state.buildings;
     this.wasteStamp = wasteStamp;
+    this.transitStamp = transitStamp;
     this.type = type;
     this.root.visible = true;
     this.clearOverlays();
     const coveredIds = coveredHomeIds(state, type);
-    const covered: Building[] = [], uncovered: Building[] = [];
+    const covered: Building[] = [], viaTransit: Building[] = [], uncovered: Building[] = [];
     for (const home of state.buildings) {
       if (!isHomeType(home.type)) continue;
-      (coveredIds.has(home.id) ? covered : uncovered).push(home);
+      if (!coveredIds.has(home.id)) uncovered.push(home);
+      else if (transitStamp.get(home.id)?.has(type)) viaTransit.push(home);
+      else covered.push(home);
     }
     this.addOverlay(covered, this.coveredMaterial, 'covered-homes');
+    this.addOverlay(viaTransit, this.transitMaterial, 'transit-reach-homes');
     this.addOverlay(uncovered, this.uncoveredMaterial, 'uncovered-homes');
     const positions: number[] = [];
     for (const building of state.buildings) {
@@ -91,6 +98,7 @@ export class ServiceCoverageLayer {
     this.clearOverlays();
     this.tileGeometry.dispose();
     this.coveredMaterial.dispose();
+    this.transitMaterial.dispose();
     this.uncoveredMaterial.dispose();
     this.markers.geometry.dispose();
     this.markers.material.dispose();

@@ -1,4 +1,4 @@
-import { energySavingOf, ECOLOGY, FACILITY_TYPES, casinosReaching, sportVenuesReaching, isSportVenueType, poweredCasinoIds, homePower, homeBenefits, missingServicesOf, serviceCoverage, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, difficultyOf, homeSanction, needsContext, type Building } from '../../core';
+import { energySavingOf, ECOLOGY, FACILITY_TYPES, casinosReaching, sportVenuesReaching, isSportVenueType, poweredCasinoIds, homePower, homeBenefits, missingServicesOf, serviceCoverage, transitReachLinks, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, difficultyOf, homeSanction, needsContext, type Building, type FacilityType } from '../../core';
 import { t } from '../../i18n/t';
 import type { MessageKey } from '../../i18n/messages';
 import { gameStore } from '../../store/gameStore';
@@ -17,6 +17,7 @@ interface HomePanelProps {
 export function HomePanel({ building }: HomePanelProps) {
   const state = useGame(s => s.state);
   const coverage = serviceCoverage(state);
+  const viaTransit = transitReachLinks(state).get(building.id);
   const benefits = homeBenefits(state, building, undefined, coverage);
   const hasLeisure = state.buildings.some(b => b.type === 'casino' || isSportVenueType(b.type));
   const leisure = hasLeisure ? [
@@ -24,6 +25,11 @@ export function HomePanel({ building }: HomePanelProps) {
     ...sportVenuesReaching(state, building).map(venue => t(`building.${venue.type}`)),
   ] : null;
   const covered = FACILITY_TYPES.filter(type => coverage.get(building.id)?.has(type));
+  const stationOf = (id: number) => { const stop = state.buildings.find(b => b.id === id); return stop?.name ?? (stop ? t(`building.${stop.type}`) : ''); };
+  const coveredLabel = (type: FacilityType) => {
+    const link = viaTransit?.get(type);
+    return link ? `${t(`building.${type}`)} (${t('home.viaStation').replace('{station}', stationOf(link.homeStopId))})` : t(`building.${type}`);
+  };
   const missing = missingServicesOf(state, building, building.tier, coverage);
   const spec = HOME_TIERS[building.tier - 1];
   const due = taxDue(building);
@@ -42,7 +48,7 @@ export function HomePanel({ building }: HomePanelProps) {
           {t('eco.wellbeing')}: {benefits.wellbeing.toFixed(1)}
       </>}/>
 
-      <DrawerPanel.LabelValue label={t('home.services')} value={<>{covered.length ? covered.map(type => t(`building.${type}`)).join(', ') : t('home.servicesNone')}</>}/>
+      <DrawerPanel.LabelValue label={t('home.services')} value={<>{covered.length ? covered.map(type => coveredLabel(type)).join(', ') : t('home.servicesNone')}</>}/>
 
       {leisure && <DrawerPanel.LabelValue label={t('home.leisure')} value={<>{leisure.length ? leisure.join(', ') : t('home.leisureNone')}</>}/>}
       {missing.length > 0 && <DrawerPanel.LabelValue tone="warn" label={t('home.servicesMissing')} value={<>{missing.map(key => `${serviceName(key)} (${t(`home.reason.${uncoveredReason(state, building, key)}`)})`).join(', ')}{benefits.servicePenalty > 0 && ` · ${t('eco.servicePenalty')}: −${benefits.servicePenalty.toFixed(0)}`}</>}/>}

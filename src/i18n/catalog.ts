@@ -886,6 +886,7 @@ export const CATALOG = {
   "home.servicesCovered": ["Covered", "Couverts"],
   "home.servicesMissing": ["Not covered", "Non couverts"],
   "home.servicesNone": ["None", "Aucun"],
+  "home.viaStation": ["via {station}", "via {station}"],
   "home.upgradeBlocked": ["Upgrade blocked, required services missing", "Amélioration bloquée, services requis manquants"],
   "eco.servicePenalty": ["Missing services penalty", "Pénalité de services manquants"],
   "eco.serviceBonus": ["Public services bonus", "Bonus des services publics"],

@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createBuilding, newGame, type Difficulty, type GameState } from '../../core';
+import { createBuilding, newGame, type Difficulty, type GameState, type TransitTile } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { HomePanel } from './HomePanel';
@@ -60,5 +60,25 @@ describe('HomePanel Waste cause', () => {
     const html = renderToStaticMarkup(<HomePanel building={building} />).replaceAll('&#x27;', "'");
     expect(html).toContain(t('service.waste'));
     expect(html).toContain(t('home.reason.outOfReach'));
+  });
+});
+
+describe('HomePanel Transit reach', () => {
+  const strip: TransitTile[] = Array.from({ length: 45 }, (_, i) => ({ x: 50 + i, y: 40, exits: i === 0 ? ['E'] : i === 44 ? ['W'] : ['W', 'E'] }));
+  const renderTransit = (stationName?: string) => {
+    const home = { ...createBuilding(900, 'home', 90, 43, 0), tier: 2 };
+    context.state = { ...newGame({ seed: 'home-panel-transit', now: 0 }), adaptationUntil: 0, roads: [], brtRoads: strip,
+      buildings: [createBuilding(1, 'school', 53, 43, 0), home, createBuilding(4, 'brtStation', 53, 41, 0), { ...createBuilding(5, 'brtStation', 90, 41, 0), ...(stationName ? { name: stationName } : {}) }],
+      transitLines: [{ id: 6, mode: 'brt', stops: [4, 5], peakHeadway: 5, offPeakHeadway: 10 }], transitFleet: [{ id: 7, kind: 'brtElectric', purchasePrice: 900, lineId: 6 }] };
+    return renderToStaticMarkup(<HomePanel building={home} />);
+  };
+
+  it.each(['en', 'fr'] as const)('names the station through which a service covers the Home in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    expect(renderTransit('Central')).toContain(t('home.viaStation').replace('{station}', 'Central'));
+  });
+
+  it('falls back to the default designation of an unnamed station', () => {
+    expect(renderTransit()).toContain(t('home.viaStation').replace('{station}', t('building.brtStation')));
   });
 });

@@ -92,4 +92,15 @@ describe('service facility markers', () => {
     layer.sync(state, null);
     expect(layer.root.visible).toBe(false);
   });
+
+  it('tints Homes covered through Transit reach apart from those in direct reach', () => {
+    const layer = makeLayer();
+    const strip = Array.from({ length: 45 }, (_, i) => ({ x: 50 + i, y: 40, exits: i === 0 ? ['E' as const] : i === 44 ? ['W' as const] : ['W' as const, 'E' as const] }));
+    const state: GameState = { ...city([createBuilding(1, 'school', 53, 43, 0), { ...createBuilding(2, 'home', 58, 43, 0), tier: 1 }, { ...createBuilding(3, 'home', 90, 43, 0), tier: 1 }, createBuilding(4, 'brtStation', 53, 41, 0), createBuilding(5, 'brtStation', 90, 41, 0)]),
+      adaptationUntil: 0, brtRoads: strip, transitLines: [{ id: 6, mode: 'brt', stops: [4, 5], peakHeadway: 5, offPeakHeadway: 10 }], transitFleet: [{ id: 7, kind: 'brtElectric', purchasePrice: 900, lineId: 6 }] };
+    layer.sync(state, 'school');
+    expect(overlay(layer, 'covered-homes')?.count).toBe(1);
+    expect(overlay(layer, 'transit-reach-homes')?.count).toBe(1);
+    expect(overlay(layer, 'transit-reach-homes')!.material.color.getHex()).not.toBe(0x35d07f);
+  });
 });
