@@ -150,9 +150,11 @@ export type { NatureType, NatureFamily } from './environment/nature';
 
 export { FACILITIES, FACILITY_TYPES, facilityCapacity, isWithinReach, SERVICE_CATEGORIES, SERVICES, REQUIRED_SERVICES, facilitiesOfCategory, isFacilityType, requiredServices } from './services/facilities';
 export type { FacilitySpec, FacilityType, ServiceCategory, ServiceKey } from './services/facilities';
-export { isHomeInReach, categoryCoverageRatio, coveredCategories, coveredHomeIds, homesLackingRequiredServices, isServiceCovered, missingServices, missingServicesOf, previewFacilityCoverage, serviceCoverage } from './services/services';
+export { isHomeInReach, categoryCoverageRatio, coveredCategories, coveredHomeIds, homesLackingRequiredServices, isServiceCovered, missingServices, missingServicesOf, previewFacilityCoverage, serviceCoverage, transitReachLinks } from './services/services';
 export { uncoveredReason } from './services/services';
-export type { ServiceCoverage, UncoveredReason } from './services/services';
+export type { ServiceCoverage, TransitReachLinks, UncoveredReason } from './services/services';
+export { TRANSIT_REACH } from './transit/transitReach';
+export type { TransitLink } from './transit/transitReach';
 export { facilitiesUnlockedBetween } from './progression/unlocks';
 
 export { CASINO, CASINO_GAMES, MAX_CASINO_TIER, casinoFootprint, casinoPower, casinoRadius, casinoWellbeingBonus, gamesOfTier, isValidStake, maxStake, stakeStepsOf } from './leisure/casino';

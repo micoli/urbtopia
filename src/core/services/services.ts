@@ -6,21 +6,36 @@ import type { Building, GameState, Rotation } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { isWasteCovered, isWasteMissing, wasteCauseOf, wasteReport, type WasteCause } from '../waste/waste';
 import { WASTE_REQUIRED_TIER } from '../waste/wasteBalance';
+import { transitReachOf, type TransitLink, type TransitReach } from '../transit/transitReach';
 
 export type ServiceCoverage = ReadonlyMap<number, ReadonlySet<FacilityType>>;
 
-const coverageCache = new WeakMap<readonly Building[], ServiceCoverage>();
+export type TransitReachLinks = ReadonlyMap<number, ReadonlyMap<FacilityType, TransitLink & { facilityId: number }>>;
+
+interface Coverage {
+  coverage: ServiceCoverage;
+  viaTransit: TransitReachLinks;
+}
+
+// Fast public transport joins Homes to facilities, so the lines, their vehicles and the networks they run on count in the key besides the buildings.
+const coverageCache = new WeakMap<readonly Building[], { key: readonly unknown[]; result: Coverage }>();
+
+const transitKey = (state: GameState): readonly unknown[] => [state.transitLines, state.transitFleet, state.brtRoads, state.rails, state.roads, state.roundabouts];
+
+const sameKey = (a: readonly unknown[], b: readonly unknown[]) => a.every((part, index) => part === b[index]);
 
 const byDistanceThenId = (distances: ReadonlyMap<number, number>) => (a: Building, b: Building) =>
   (distances.get(a.id) ?? 0) - (distances.get(b.id) ?? 0) || a.id - b.id;
 
-function serve(covered: Set<number>, homes: Building[], capacity: number, distances: ReadonlyMap<number, number>): void {
+function serve(covered: Set<number>, homes: Building[], capacity: number, distances: ReadonlyMap<number, number>, served: (home: Building) => void = () => {}): number {
   let remaining = capacity;
   for (const home of homes.filter(candidate => !covered.has(candidate.id)).sort(byDistanceThenId(distances))) {
-    if (remaining <= 0) return;
+    if (remaining <= 0) return remaining;
     covered.add(home.id);
+    served(home);
     remaining -= citizensOf(home.tier);
   }
+  return remaining;
 }
 
 export function isHomeInReach(facility: Building, home: Building, radius: number): boolean {
@@ -33,35 +48,64 @@ function capacityOf(facility: Building): number {
   return facilityCapacity(facility.type as FacilityType, facility.tier) ?? Infinity;
 }
 
-function coveredHomes(type: FacilityType, facilities: Building[], homes: Building[]): Set<number> {
+interface TypeCoverage {
+  covered: Set<number>;
+  links: Map<number, TransitLink & { facilityId: number }>;
+}
+
+function coveredHomes(type: FacilityType, facilities: Building[], homes: Building[], transit: TransitReach | null): TypeCoverage {
   const { radius } = FACILITIES[type];
   const covered = new Set<number>();
+  const links = new Map<number, TransitLink & { facilityId: number }>();
   if (radius === null) {
     const nearest = new Map(homes.map(home => [home.id, Math.min(...facilities.map(facility => distance(facility, home)))]));
     serve(covered, homes, facilities.reduce((total, facility) => total + capacityOf(facility), 0), nearest);
-    return covered;
+    return { covered, links };
   }
+  const remaining = new Map<Building, number>();
   for (const facility of facilities) {
     const reachable = homes.filter(home => isHomeInReach(facility, home, radius));
-    serve(covered, reachable, capacityOf(facility), new Map(reachable.map(home => [home.id, distance(facility, home)])));
+    remaining.set(facility, serve(covered, reachable, capacityOf(facility), new Map(reachable.map(home => [home.id, distance(facility, home)]))));
   }
-  return covered;
+  if (!transit) return { covered, links };
+  for (const facility of facilities) {
+    const beyond = homes.filter(home => !covered.has(home.id) && !isHomeInReach(facility, home, radius));
+    const reached = transit.linksOf(facility, beyond);
+    const candidates = beyond.filter(home => reached.has(home.id));
+    serve(covered, candidates, remaining.get(facility) ?? 0, new Map(candidates.map(home => [home.id, reached.get(home.id)!.minutes])), home => links.set(home.id, { ...reached.get(home.id)!, facilityId: facility.id }));
+  }
+  return { covered, links };
 }
 
-export function serviceCoverage(state: GameState): ServiceCoverage {
-  const cached = coverageCache.get(state.buildings);
-  if (cached) return cached;
+function computeCoverage(state: GameState): Coverage {
   const homes = state.buildings.filter(building => isHomeType(building.type)).sort((a, b) => a.id - b.id);
   const result = new Map<number, Set<FacilityType>>(homes.map(home => [home.id, new Set()]));
+  const viaTransit = new Map<number, Map<FacilityType, TransitLink & { facilityId: number }>>();
+  const transit = transitReachOf(state);
   for (const type of FACILITY_TYPES) {
     if (FACILITIES[type].category === 'waste') continue;
     const facilities = state.buildings.filter(building => building.type === type).sort((a, b) => a.id - b.id);
     if (!facilities.length) continue;
-    for (const id of coveredHomes(type, facilities, homes)) result.get(id)?.add(type);
+    const { covered, links } = coveredHomes(type, facilities, homes, transit);
+    for (const id of covered) result.get(id)?.add(type);
+    for (const [id, link] of links) viaTransit.set(id, (viaTransit.get(id) ?? new Map()).set(type, link));
   }
-  coverageCache.set(state.buildings, result);
+  return { coverage: result, viaTransit };
+}
+
+function coverageOf(state: GameState): Coverage {
+  const key = transitKey(state);
+  const cached = coverageCache.get(state.buildings);
+  if (cached && sameKey(cached.key, key)) return cached.result;
+  const result = computeCoverage(state);
+  coverageCache.set(state.buildings, { key, result });
   return result;
 }
+
+export const serviceCoverage = (state: GameState): ServiceCoverage => coverageOf(state).coverage;
+
+// For each Home, the facilities that cover it only through Transit reach and the link that does.
+export const transitReachLinks = (state: GameState): TransitReachLinks => coverageOf(state).viaTransit;
 
 export type UncoveredReason = 'none' | 'outOfReach' | 'capacityFull' | WasteCause;
 

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "maxMinutes": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    }
+  },
+  "required": [
+    "maxMinutes"
+  ],
+  "additionalProperties": false,
+  "title": "Transit reach balance",
+  "description": "assets/defs/balance/transitReach.json: the travel time within which fast public transport extends Service coverage."
+}

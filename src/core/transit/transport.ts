@@ -10,6 +10,7 @@ import type { Building, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { isTransitStopType } from './stopNames';
 import { WALKING } from '../traffic/walking';
+import { legBetween } from './lineLeg';
 export { routeForLine, routeFailure } from './transitService';
 
 type Service = ReturnType<typeof transitServices>[number];
@@ -19,12 +20,6 @@ const carriesBikes = (line: Service) => line.mode !== 'bus';
 const bikeRadius = () => ECOLOGY.stopRadius * WALKING.cyclingFactor;
 
 export const TRANSIT_ELIGIBLE_SHARE = 0.7;
-
-function legBetween(line: Service, start: number, end: number): { distance: number; stops: number } {
-  if (!line.loop) return { distance: Math.abs(line.offsets[end]! - line.offsets[start]!), stops: Math.abs(end - start) };
-  if (end > start) return { distance: line.offsets[end]! - line.offsets[start]!, stops: end - start };
-  return { distance: line.offsets[line.stops.length]! - line.offsets[start]! + line.offsets[end]!, stops: line.stops.length - start + end };
-}
 
 // A cyclist takes the bicycle aboard, so every line of its itinerary must carry bikes; the walking itineraries are those of bikeMode off.
 function itineraries(first: Service, firstStop: number, lines: Service[], stops: Map<number, Building>, activities: Building[], bikeMode = false, homeBike = false): Itinerary[] {

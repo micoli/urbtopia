@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 import type { Reference } from './collections.ts';
-import { economyBalanceSchema, politicsBalanceSchema, sanctionsBalanceSchema, trafficBalanceSchema, venuesBalanceSchema, wasteBalanceSchema } from '../src/core/balance/balanceSchemas.ts';
+import { economyBalanceSchema, politicsBalanceSchema, sanctionsBalanceSchema, trafficBalanceSchema, transitReachBalanceSchema, venuesBalanceSchema, wasteBalanceSchema } from '../src/core/balance/balanceSchemas.ts';
 import { bridgeInfrastructureSchema, railsInfrastructureSchema, roadsInfrastructureSchema, sceneryInfrastructureSchema } from '../src/core/infrastructure/infrastructureSchemas.ts';
 import { natureDescriptionsSchema, NATURE_DESCRIPTION_VALUES } from '../src/core/descriptions/descriptionSchemas.ts';
 import { templateProblems } from '../src/core/descriptions/descriptionProblems.ts';
@@ -28,6 +28,7 @@ export const SINGLETONS = {
   sanctions: { file: 'assets/defs/balance/sanctions.json', title: 'Sanctions balance', schemaName: 'balance-sanctions', schema: sanctionsBalanceSchema },
   politics: { file: 'assets/defs/balance/politics.json', title: 'Politics balance', schemaName: 'balance-politics', schema: politicsBalanceSchema },
   waste: { file: 'assets/defs/balance/waste.json', title: 'Waste balance', schemaName: 'balance-waste', schema: wasteBalanceSchema },
+  transitReach: { file: 'assets/defs/balance/transitReach.json', title: 'Transit reach balance', schemaName: 'balance-transit-reach', schema: transitReachBalanceSchema },
   roads: {
     file: 'assets/defs/infrastructure/roads.json',
     title: 'Roads',

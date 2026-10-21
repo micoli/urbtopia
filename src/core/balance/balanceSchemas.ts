@@ -86,6 +86,15 @@ export const wasteBalanceSchema = z
   })
   .meta({ title: 'Waste balance', description: 'assets/defs/balance/waste.json: Waste production, Carrying distance.' });
 
+// How far fast public transport carries a Public facility's Service coverage; the stops themselves are building definitions.
+export const transitReachBalanceSchema = z
+  .strictObject({
+    ...schemaField,
+    // Longest travel time, in game minutes, of the Transit itinerary joining the stop near a facility to the stop near a Home.
+    maxMinutes: positive,
+  })
+  .meta({ title: 'Transit reach balance', description: 'assets/defs/balance/transitReach.json: the travel time within which fast public transport extends Service coverage.' });
+
 const politicsDifficultyRule = z.strictObject({
   // Whether the Council, the Approval, the Objectives and the Petitions exist.
   active: z.boolean(),

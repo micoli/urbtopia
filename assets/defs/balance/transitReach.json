@@ -1,0 +1,4 @@
+{
+  "$schema": "../schemas/balance-transit-reach.schema.json",
+  "maxMinutes": 20
+}
