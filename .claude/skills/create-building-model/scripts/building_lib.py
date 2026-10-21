@@ -3405,6 +3405,122 @@ def build_football_stadium(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+def build_colosseum(spec, out_dir):
+    """A ruined colosseum filling 5x5: an elliptical ring of arcaded bays turned 45 degrees, three arch levels and an attic on the tall side, stepping down to broken stumps on the other, with stepped seating, a sand arena with low cellar walls, rubble and bushes."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    stone, cornice, seat, sand, dark, slab, green = (index(n) for n in ("cream", "usand", "uwall", "usand", "graphite", "uslab", "bush"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    rng = random.Random(spec.get("seed", spec["id"]))
+    parts = []
+    bays = 40
+    turn = math.radians(45)
+    tall_angle = math.radians(100)
+    levels = [0.0, 0.28, 0.56, 0.84, 1.04]
+    wall_a, wall_b, wall_width = 2.62, 2.15, 0.32
+
+    def ring(a, b):
+        return [(a * math.cos(2 * math.pi * i / bays) * math.cos(turn) - b * math.sin(2 * math.pi * i / bays) * math.sin(turn),
+                 a * math.cos(2 * math.pi * i / bays) * math.sin(turn) + b * math.sin(2 * math.pi * i / bays) * math.cos(turn)) for i in range(bays)]
+
+    def ruin(x, y):
+        """0 on the tall side, 1 on the opposite side."""
+        gap = abs((math.atan2(y, x) - tall_angle + math.pi) % (2 * math.pi) - math.pi)
+        return gap / math.pi
+
+    def wedge(name, o0, o1, i0, i1, z0, z1, color):
+        verts = [(x, y, z) for z in (z0, z1) for x, y in (o0, o1, i1, i0)]
+        faces = [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
+        return lpm._object(name, _bm(verts, faces), color)
+
+    def opening(name, middle, right, normal, z, width, height, round_top, color):
+        outline = [(-width / 2, 0), (width / 2, 0)]
+        if round_top:
+            rise = height - width / 2
+            outline += [(width / 2, rise)] + [(width / 2 * math.cos(math.radians(a)), rise + width / 2 * math.sin(math.radians(a))) for a in (30, 60, 90, 120, 150)] + [(-width / 2, rise)]
+        else:
+            outline += [(width / 2, height), (-width / 2, height)]
+        points = [(middle[0] + right[0] * u + normal[0] * DECAL_OFFSET, middle[1] + right[1] * u + normal[1] * DECAL_OFFSET, z + v) for u, v in outline]
+        parts.append(_decal(name, points, color))
+
+    outer_ring = ring(wall_a, wall_b)
+    inner_ring = ring(wall_a - wall_width, wall_b - wall_width)
+    cornice_ring = ring(wall_a + 0.014, wall_b + 0.014)
+    parts.append(lpm.sweep("plinth", ring(2.72, 2.25), 0.03, color=slab, axis="z"))
+
+    tops = []
+    for k in range(bays):
+        n = (k + 1) % bays
+        mid = ((outer_ring[k][0] + outer_ring[n][0]) / 2, (outer_ring[k][1] + outer_ring[n][1]) / 2)
+        gap = ruin(*mid) + rng.uniform(-0.05, 0.05)
+        full = 4 if gap < 0.2 else 3 if gap < 0.36 else 2 if gap < 0.52 else 1 if gap < 0.8 else 0
+        if full == 0 and rng.random() < 0.2:
+            tops.append((0, 0.0))
+            continue
+        partial = 0.0 if full == 4 else rng.uniform(0.3, 0.9) if full else rng.uniform(0.2, 0.7)
+        height = levels[full] + partial * (levels[min(full + 1, 4)] - levels[full])
+        tops.append((full, height))
+        parts.append(wedge(f"bay_{k}", outer_ring[k], outer_ring[n], inner_ring[k], inner_ring[n], 0.02, height, stone))
+
+        tangent = (outer_ring[n][0] - outer_ring[k][0], outer_ring[n][1] - outer_ring[k][1])
+        length = math.hypot(*tangent)
+        tangent = (tangent[0] / length, tangent[1] / length)
+        outward = (tangent[1], -tangent[0])
+        inner_tangent = (inner_ring[n][0] - inner_ring[k][0], inner_ring[n][1] - inner_ring[k][1])
+        inner_length = math.hypot(*inner_tangent)
+        inner_tangent = (inner_tangent[0] / inner_length, inner_tangent[1] / inner_length)
+        inner_middle = ((inner_ring[k][0] + inner_ring[n][0]) / 2, (inner_ring[k][1] + inner_ring[n][1]) / 2)
+        for level in range(full):
+            top = levels[level + 1]
+            parts.append(wedge(f"cornice_{k}_{level}", cornice_ring[k], cornice_ring[n], outer_ring[k], outer_ring[n], top - 0.016, top, cornice))
+            attic = level == 3
+            width, rise = (0.1, 0.1) if attic else (length * 0.54, 0.22)
+            z = levels[level] + (0.06 if attic else 0.035)
+            opening(f"opening_{k}_{level}", mid, tangent, outward, z, width, rise, not attic, dark)
+            if level >= 2:
+                opening(f"inner_opening_{k}_{level}", inner_middle, (-inner_tangent[0], -inner_tangent[1]), (-inner_tangent[1], inner_tangent[0]), z, width * 0.85, rise, not attic, dark)
+
+    seat_a, seat_b = wall_a - wall_width, wall_b - wall_width
+    step_depth, step_heights = 0.17, [0.46, 0.37, 0.28, 0.19]
+    for number, base in enumerate(step_heights):
+        outer_steps = ring(seat_a - step_depth * number, seat_b - step_depth * number)
+        inner_steps = ring(seat_a - step_depth * (number + 1), seat_b - step_depth * (number + 1))
+        heights = [base * (1.0 if ruin(*p) < 0.5 else max(0.3, 1.0 - (ruin(*p) - 0.5) * 1.4)) for p in outer_steps]
+        parts.append(loop_solid(f"seats_{number}", outer_steps, inner_steps, (0.02, heights), (0.02, heights), seat if number % 2 == 0 else cornice))
+
+    arena_a, arena_b = seat_a - step_depth * len(step_heights), seat_b - step_depth * len(step_heights)
+    parts.append(lpm.sweep("arena", ring(arena_a, arena_b), 0.03, at=(0, 0, 0.02), color=sand, axis="z"))
+    for number, y in enumerate((-0.7, -0.35, 0.0, 0.35, 0.7)):
+        half = arena_a * math.sqrt(1 - (y / arena_b) ** 2) - 0.12
+        wall = lpm.box(f"cellar_long_{number}", (2 * half, 0.025, 0.05), at=(0, y, 0.05), color=stone)
+        parts.append(lpm.rotate(wall, 45))
+    for number, x in enumerate((-1.0, -0.5, 0.5, 1.0)):
+        half = arena_b * math.sqrt(1 - (x / arena_a) ** 2) - 0.1
+        wall = lpm.box(f"cellar_cross_{number}", (0.025, 2 * half, 0.05), at=(x, 0, 0.05), color=stone)
+        parts.append(lpm.rotate(wall, 45))
+
+    for number in range(16):
+        t = rng.uniform(0, 2 * math.pi)
+        a, b = wall_a + rng.uniform(0.02, 0.08), wall_b + rng.uniform(0.02, 0.08)
+        x, y = a * math.cos(t) * math.cos(turn) - b * math.sin(t) * math.sin(turn), a * math.cos(t) * math.sin(turn) + b * math.sin(t) * math.cos(turn)
+        if ruin(x, y) < 0.55:
+            continue
+        size = rng.uniform(0.05, 0.12)
+        block = lpm.box(f"rubble_{number}", (size, size * rng.uniform(0.7, 1.3), rng.uniform(0.04, 0.09)), at=(x, y, 0.03), color=rng.choice((stone, cornice, slab)))
+        parts.append(lpm.rotate(block, rng.uniform(0, 180), about=(x, y, 0)))
+
+    for number, (full, height) in enumerate(tops):
+        if full == 4 or not height or rng.random() > 0.35:
+            continue
+        x, y = (outer_ring[number][0] + inner_ring[number][0]) / 2, (outer_ring[number][1] + inner_ring[number][1]) / 2
+        parts.append(lpm.lathe(f"bush_{number}", [(0.0, 0.0), (0.06, 0.015), (0.065, 0.05), (0.035, 0.09), (0.0, 0.1)], segments=6, at=(x, y, height), color=green))
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")

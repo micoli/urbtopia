@@ -22,6 +22,7 @@ export type ModelId =
   | 'buildings-coal-1x1-t2-tone-a'
   | 'buildings-coal-1x1-t3-tone-a'
   | 'buildings-coal-1x1-t4-tone-a'
+  | 'buildings-colosseum-5x5'
   | 'buildings-community-hall-1x1'
   | 'buildings-community-hall-1x1-2f'
   | 'buildings-community-hall-1x1-3f'

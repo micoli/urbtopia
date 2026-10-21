@@ -506,6 +506,15 @@
       }
     }
   },
+  "buildings-colosseum-5x5": {
+    "file": "buildings/colosseum-5x5",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      5,
+      5
+    ]
+  },
   "buildings-community-hall-1x1": {
     "file": "buildings/community-hall-1x1",
     "source": "managed",

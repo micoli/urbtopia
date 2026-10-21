@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.leisure",
+  "model": "buildings-colosseum-5x5",
+  "footprint": [5, 5],
+  "cost": 20000,
+  "unlockCitizens": 800,
+  "requiresRoad": true,
+  "name": {
+    "en": "Colosseum",
+    "fr": "Colisée"
+  },
+  "description": {
+    "en": "A ruined arena of stone arches where crowds gather for grand shows.",
+    "fr": "Une arène en ruine aux arches de pierre où la foule se presse pour de grands spectacles."
+  }
+}

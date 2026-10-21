@@ -20,6 +20,7 @@ export type BuildingId =
   | 'catholicChurch'
   | 'cherryTree'
   | 'coalPlant'
+  | 'colosseum'
   | 'communityHall'
   | 'concertHall'
   | 'easterCandyPile'
