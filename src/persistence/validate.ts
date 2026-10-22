@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -241,7 +241,7 @@ function isBoat(boat: unknown): boolean {
 }
 
 function isBridge(bridge: unknown): boolean {
-  return isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string);
+  return isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string) && (bridge.carrier === undefined || bridge.carrier === 'road');
 }
 
 function isDonation(donation: unknown): boolean {
@@ -317,9 +317,15 @@ function invariantFailure(state: GameState): string | null {
     field('pedestrianWays: duplicate tile', () => !hasDuplicates(pedestrianWays)),
     field('pedestrianWays: overlaps a road', () => pedestrianWays.every((key) => !roadKeys.has(key))),
     ...(state.bridges ?? []).flatMap((bridge, index) => {
-      const keys = Array.from({ length: bridge.length }, (_, step) => (bridge.axis === 'x' ? `${bridge.x + step}:${bridge.y}` : `${bridge.x}:${bridge.y + step}`));
+      const keys = bridgeFootprint(bridge).map(tileKey);
       const overlapping = keys.some((key) => bridged.has(key));
       keys.forEach((key) => bridged.add(key));
+      if (isInfrastructureBridge(bridge)) {
+        return [
+          field(`bridges[${index}]: overlaps another bridge`, () => !overlapping),
+          field(`bridges[${index}]: a ramp is not a road`, () => bridgeRamps(bridge).every((tile) => roadKeys.has(tileKey(tile)))),
+        ];
+      }
       return [
         field(`bridges[${index}]: overlaps another bridge`, () => !overlapping),
         field(`bridges[${index}]: crosses a tile without a road`, () => keys.every((key) => roadKeys.has(key))),

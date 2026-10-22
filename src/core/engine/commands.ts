@@ -98,7 +98,7 @@ export type Command =
   | { readonly type: 'RemoveWater'; readonly tiles: readonly Coord[] }
   | { readonly type: 'BuyBoat'; readonly family: BoatFamily; readonly marinaId: number; readonly x: number; readonly y: number }
   | { readonly type: 'SellBoat'; readonly id: number }
-  | { readonly type: 'PlaceBridge'; readonly x: number; readonly y: number; readonly length: number; readonly axis: 'x' | 'y' }
+  | { readonly type: 'PlaceBridge'; readonly x: number; readonly y: number; readonly length: number; readonly axis: 'x' | 'y'; readonly carrier?: 'road' }
   | { readonly type: 'RemoveBridge'; readonly x: number; readonly y: number }
   | { readonly type: 'UpgradeBoat'; readonly id: number }
   | { readonly type: 'CollectCatch'; readonly marinaId: number }
@@ -184,6 +184,8 @@ export type ErrorKey =
   | 'error.needsWater'
   | 'error.bridgeNeedsWater'
   | 'error.bridgeNeedsRoad'
+  | 'error.bridgeNeedsInfrastructure'
+  | 'error.bridgeCrossesAlong'
   | 'error.bridgeTile'
   | 'error.noBridgeHere'
   | 'error.notOnMarinaWater'
@@ -334,7 +336,7 @@ export function handleCommand(state: GameState, command: Command, now: number): 
     case 'SellBoat':
       return sellBoat(state, command.id);
     case 'PlaceBridge':
-      return placeBridge(state, { x: command.x, y: command.y, length: command.length, axis: command.axis });
+      return placeBridge(state, { x: command.x, y: command.y, length: command.length, axis: command.axis, ...(command.carrier ? { carrier: command.carrier } : {}) });
     case 'RemoveBridge':
       return removeBridge(state, { x: command.x, y: command.y });
     case 'UpgradeBoat':

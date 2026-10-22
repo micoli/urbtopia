@@ -2,6 +2,8 @@ import type { GameState } from '../engine/state';
 import type { Coord } from './coord';
 import { DIRECTIONS, neighbour, tileKey } from './geometry';
 import { roadExits, roundaboutTiles } from './occupancy';
+import { bridgeRamps, isInfrastructureBridge } from '../water/bridgeGeometry';
+import type { Bridge } from '../engine/state';
 
 export interface RoadGraph extends ReadonlyMap<string, readonly Coord[]> {
   readonly roundaboutExits: ReadonlySet<string>;
@@ -20,6 +22,7 @@ export function buildRoadGraph(state: GameState): RoadGraph {
     );
   }
   for (const center of state.roundabouts) addRing(graph, state, center);
+  for (const bridge of state.bridges ?? []) joinRamps(graph, bridge);
   return graph;
 }
 
@@ -46,4 +49,12 @@ function addRing(graph: Map<string, readonly Coord[]> & { roundaboutExits: Set<s
 
 function isSideMiddle(tile: Coord, center: Coord): boolean {
   return tile.x === center.x || tile.y === center.y;
+}
+
+function joinRamps(graph: Map<string, readonly Coord[]>, bridge: Bridge): void {
+  if (!isInfrastructureBridge(bridge)) return;
+  const [first, last] = bridgeRamps(bridge);
+  if (!first || !last) return;
+  graph.set(tileKey(first), [...(graph.get(tileKey(first)) ?? []), last]);
+  graph.set(tileKey(last), [...(graph.get(tileKey(last)) ?? []), first]);
 }

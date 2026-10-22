@@ -1,6 +1,6 @@
 # Core: place a Road Bridge over infrastructure
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 
 ## What to build

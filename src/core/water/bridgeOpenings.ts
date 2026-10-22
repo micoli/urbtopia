@@ -1,7 +1,7 @@
 import { DIRECTIONS, neighbour, tileKey } from '../map/geometry';
 import type { Coord } from '../map/coord';
 import type { Bridge, GameState } from '../engine/state';
-import { bridgeTiles, bridgesOf } from './bridges';
+import { bridgeTiles, waterBridgesOf } from './bridges';
 import { waterKeys } from './waterTiles';
 
 export const BRIDGE_OPENING = {
@@ -39,7 +39,7 @@ export function closedFraction(state: GameState, bridge: Bridge): number {
 
 export function closedFractionsByTile(state: GameState): Map<string, number> {
   const fractions = new Map<string, number>();
-  for (const bridge of bridgesOf(state)) {
+  for (const bridge of waterBridgesOf(state)) {
     const fraction = closedFraction(state, bridge);
     if (fraction === 0) continue;
     for (const tile of bridgeTiles(bridge)) fractions.set(tileKey(tile), fraction);

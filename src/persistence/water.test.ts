@@ -80,3 +80,23 @@ describe('bridge save compatibility', () => {
     expect(parseEnvelope(serializeEnvelope({ ...base(), bridges } as never, 100))).toMatchObject({ ok: false, reason: 'invalid-state' });
   });
 });
+
+describe('Bridge over infrastructure save compatibility', () => {
+  const base = () => ({
+    ...newGame({ seed: 'overpass-save', now: 0 }),
+    roads: [{ x: 52, y: 50, kind: 'road' as const }, { x: 56, y: 50, kind: 'road' as const }],
+  });
+
+  it('round-trips a Road Bridge', () => {
+    const state = { ...base(), bridges: [{ x: 53, y: 50, length: 3, axis: 'x' as const, carrier: 'road' as const }] };
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+  });
+
+  it.each([
+    [[{ x: 53, y: 50, length: 3, axis: 'x', carrier: 'rail' }]],
+    [[{ x: 54, y: 50, length: 3, axis: 'x', carrier: 'road' }]],
+    [[{ x: 53, y: 50, length: 3, axis: 'x', carrier: 'road' }, { x: 53, y: 50, length: 1, axis: 'x', carrier: 'road' }]],
+  ])('rejects invalid Bridges %j', bridges => {
+    expect(parseEnvelope(serializeEnvelope({ ...base(), bridges } as never, 100))).toMatchObject({ ok: false, reason: 'invalid-state' });
+  });
+});

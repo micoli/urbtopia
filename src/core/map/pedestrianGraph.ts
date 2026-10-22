@@ -4,6 +4,7 @@ import type { Coord } from './coord';
 import { DIRECTIONS, frontDirection, neighbour, tileKey, type Direction } from './geometry';
 import { roadExits, roundaboutTiles } from './occupancy';
 import { frontTiles } from './placement';
+import { bridgeRamps } from '../water/bridgeGeometry';
 
 export const WALK = { crossingExtraCost: 2 };
 
@@ -103,6 +104,12 @@ export function buildPedestrianGraph(state: GameState): PedestrianGraph {
   }
 
   for (const center of state.roundabouts) addRing(edges, roads, exitsOf, center, link);
+
+  for (const bridge of state.bridges ?? []) {
+    const [first, last] = bridgeRamps(bridge);
+    if (!first || !last) continue;
+    for (const side of bridge.axis === 'x' ? (['N', 'S'] as const) : (['E', 'W'] as const)) link(sidewalkNode(first, side), sidewalkNode(last, side), bridge.length + 1);
+  }
 
   for (const way of ways.values()) {
     const node = pedestrianWayNode(way);

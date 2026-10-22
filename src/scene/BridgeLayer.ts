@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { bridgeTiles, bridgesOf, roadPiece, tileKey, type Bridge, type GameState } from '../core';
+import { bridgeTiles, waterBridgesOf, roadPiece, tileKey, type Bridge, type GameState } from '../core';
 import { BRIDGE_ROAD_MODEL as ROAD_MODEL } from '../core/infrastructure/infrastructure';
 import { fitMatrixOf } from './modelFit';
 import type { ModelLibrary } from './modelLibrary';
@@ -46,7 +46,7 @@ export class BridgeLayer {
     this.roads = state.roads;
     const previous = new Map(this.bridges.map((entry) => [`${entry.bridge.x},${entry.bridge.y},${entry.bridge.length},${entry.bridge.axis}`, entry.opening]));
     this.root.clear();
-    this.bridges = bridgesOf(state).map((bridge) => this.build(bridge, previous.get(`${bridge.x},${bridge.y},${bridge.length},${bridge.axis}`)));
+    this.bridges = waterBridgesOf(state).map((bridge) => this.build(bridge, previous.get(`${bridge.x},${bridge.y},${bridge.length},${bridge.axis}`)));
   }
 
   update(deltaSeconds: number, waiting: ReadonlySet<string>, occupied: ReadonlySet<string>, vehicles: readonly TrafficVehicle[]): void {
