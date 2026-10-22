@@ -120,10 +120,9 @@ function placeBrtBridge(state: GameState, bridge: Bridge, price: number): Comman
 }
 
 function joinsRamp(state: GameState, bridge: Bridge): boolean {
-  const [from, to] = [bridgeTiles(bridge)[0]!, bridgeTiles(bridge)[bridge.length - 1]!];
   const [firstRamp, lastRamp] = bridgeRamps(bridge);
   const lateral = [firstRamp!, lastRamp!].flatMap((ramp) => ACROSS[bridge.axis].map((direction) => neighbour(ramp, direction)));
-  return [from, to, ...lateral].some((tile) => isRoadLike(state, tile));
+  return lateral.some((tile) => isRoadLike(state, tile));
 }
 
 export function placeBridge(state: GameState, bridge: Bridge): CommandOutcome {

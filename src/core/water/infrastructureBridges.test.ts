@@ -91,9 +91,18 @@ describe('Placing a Bridge over infrastructure', () => {
     expect(failureKey(along, overpass(53, 3))).toBe('error.bridgeCrossesAlong');
   });
 
-  it('cannot start or end on a Road tile, which would join the ramp', () => {
-    const state = crossing({ roads: [...row(48, 51), ...row(57, 60), { x: 53, y: 49 }, { x: 53, y: 50 }, { x: 53, y: 51 }].map((tile) => ({ ...tile, kind: 'road' as const })) });
-    expect(failureKey(state, overpass(53, 3))).toBe('error.tilesOccupied');
+  it('can start or end on a Road tile, which the ramp does not join', () => {
+    const state = crossing({ rails: [], roads: [...row(48, 51), ...row(57, 60), ...column(53, 47, 53)].map((tile) => ({ ...tile, kind: 'road' as const })) });
+    const placed = succeed(state, overpass(53, 3));
+    expect([...roadExits(placed, { x: 53, y: 50 })].sort()).toEqual(['N', 'S']);
+    expect(roadExits(placed, { x: 52, y: 50 })).toEqual(['W']);
+  });
+
+  it('crosses a single Road with a span of one tile', () => {
+    const state = crossing({ rails: [], roads: [...row(48, 51), ...row(55, 60), ...column(53, 47, 53)].map((tile) => ({ ...tile, kind: 'road' as const })) });
+    const placed = succeed(state, overpass(53, 1));
+    expect([...roadExits(placed, { x: 53, y: 50 })].sort()).toEqual(['N', 'S']);
+    expect(congestionStats(placed)).toBeDefined();
   });
 
   it('cannot have a Road beside a ramp, which would join it', () => {
@@ -282,9 +291,9 @@ describe('What lies beneath a Bridge span', () => {
     expect(failureKey(placed, { type: 'BuildRoad', from: { x: 55, y: 50 }, to: { x: 56, y: 50 }, horizontalFirst: true })).toBe('error.bridgeCrossesAlong');
   });
 
-  it('takes no Road on the first or last tile of the span, nor beside a ramp', () => {
+  it('takes a Road across the first tile of the span but none beside a ramp', () => {
     const placed = succeed(wide(), overpass(53, 5));
-    expect(failureKey(placed, { type: 'BuildRoad', from: { x: 53, y: 48 }, to: { x: 53, y: 52 }, horizontalFirst: false })).toBe('error.bridgeCrossesAlong');
+    expect(failureKey(placed, { type: 'BuildRoad', from: { x: 53, y: 48 }, to: { x: 53, y: 52 }, horizontalFirst: false })).toBeNull();
     expect(failureKey(placed, { type: 'BuildRoad', from: { x: 52, y: 48 }, to: { x: 52, y: 49 }, horizontalFirst: false })).toBe('error.tilesOccupied');
   });
 
