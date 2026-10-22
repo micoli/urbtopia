@@ -1,6 +1,6 @@
 # Protect what lies beneath
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01
 Spec: ../spec.md
 

@@ -26,7 +26,7 @@ import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
-import { bridgeAt, bridgeKeys, bridgeUpgradeCost, bridgesOf, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
+import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
 import { withStartingCity } from './newGame';
@@ -186,6 +186,7 @@ export type ErrorKey =
   | 'error.bridgeNeedsRoad'
   | 'error.bridgeNeedsInfrastructure'
   | 'error.bridgeNeedsBrt'
+  | 'error.bridgeLastCrossing'
   | 'error.bridgeCrossesAlong'
   | 'error.bridgeTile'
   | 'error.noBridgeHere'
@@ -469,11 +470,14 @@ function buildRoad(state: GameState, from: Coord, to: Coord, horizontalFirst: bo
   const blocked = occupiedTiles(state);
   const missing = missingRoadTiles(state, path);
   const dedicated = new Set([...(state.brtRoads ?? []), ...(state.rails ?? [])].map(tileKey));
-  if (missing.some((tile) => blocked.has(tileKey(tile)) && !dedicated.has(tileKey(tile)))) return fail('error.tilesOccupied');
+  const underSpan = spanKeys(state);
+  if (missing.some((tile) => blocked.has(tileKey(tile)) && !dedicated.has(tileKey(tile)) && !underSpan.has(tileKey(tile)))) return fail('error.tilesOccupied');
   const cost = roadBuildCost(state, path);
   if (state.urbs < cost) return fail('error.notEnoughUrbs');
   const proposed = { ...state, roads: [...state.roads, ...missing.map(tile => ({ ...tile, kind: 'road' as const }))] };
   if (!validNetworkCrossings(proposed)) return fail('error.invalidCrossing');
+  const clearance = bridgeClearanceFailure(proposed);
+  if (clearance) return fail(clearance);
   return {
     state: { ...state, urbs: state.urbs - cost, roads: [...state.roads, ...missing.map((tile) => ({ ...tile, kind: 'road' as const }))] },
     events: [{ type: 'RoadBuilt', tiles: missing.length }],
@@ -483,7 +487,7 @@ function buildRoad(state: GameState, from: Coord, to: Coord, horizontalFirst: bo
 function upgradeRoads(state: GameState, tiles: readonly Coord[]): CommandOutcome {
   const targets = new Set(tiles.map(tileKey));
   const bridges = roadBridgesAt(state, targets);
-  const onBridge = bridgeKeys(state);
+  const onBridge = bridgeRoadKeys(state);
   const roads = state.roads.filter((road) => targets.has(tileKey(road)) && !onBridge.has(tileKey(road)));
   if (roads.length === 0 && bridges.length === 0) return fail('error.noRoadHere');
   const upgradable = roads.filter((road) => roadTierUpgradeCost(road.tier ?? 1) !== null);
@@ -600,7 +604,7 @@ function placeRoundabout(state: GameState, center: Coord): CommandOutcome {
 function demolishRoad(state: GameState, tiles: Coord[]): CommandOutcome {
   const isTarget = (candidate: Coord) => tiles.some((tile) => tile.x === candidate.x && tile.y === candidate.y);
   const roundabouts = state.roundabouts.filter((center) => roundaboutTiles(center).some(isTarget));
-  const onBridge = bridgeKeys(state);
+  const onBridge = bridgeRoadKeys(state);
   const targeted = state.roads.filter(isTarget);
   const roads = targeted.filter((road) => !onBridge.has(tileKey(road)));
   if (roads.length === 0 && roundabouts.length === 0) return fail(targeted.length > 0 ? 'error.bridgeTile' : 'error.noRoadHere');
@@ -610,6 +614,7 @@ function demolishRoad(state: GameState, tiles: Coord[]): CommandOutcome {
     roundabouts: state.roundabouts.filter((center) => !roundabouts.includes(center)),
   };
   if (strandsBuilding(state, next)) return fail('error.lastAccessOfBuilding');
+  if (bridgeLosesCrossing(next)) return fail('error.bridgeLastCrossing');
   return { state: next, events: [] };
 }
 
@@ -1077,9 +1082,11 @@ function transitCommand(state: GameState, command: Extract<Command, { type: 'Bui
     const targets = new Set(roadPath(command.from, command.to, command.horizontalFirst ?? true).map(tileKey));
     const kept = networkTiles(state, command.mode).filter(p => !targets.has(tileKey(p)));
     if (kept.length === networkTiles(state, command.mode).length) return fail('error.noRoadHere');
+    if (bridgesOf(state).some(bridge => bridgeRamps(bridge).some(ramp => command.mode === (bridge.carrier ?? 'water') && targets.has(tileKey(ramp))))) return fail('error.bridgeTile');
     const tiles = withoutDanglingExits(kept);
     const next = { ...state, [command.mode === 'brt' ? 'brtRoads' : 'rails']: tiles };
     if (strandsBuilding(state, next)) return fail('error.lastAccessOfBuilding');
+    if (bridgeLosesCrossing(next)) return fail('error.bridgeLastCrossing');
     return { state: next, events: [] };
   }
   if (command.type === 'RepairTransitNetwork') {

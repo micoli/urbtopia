@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_ROAD_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeKeys, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
+import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRoadKeys, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -222,7 +222,7 @@ function waterItems(state: GameState): RenderItem[] {
 
 function roadItems(state: GameState): RenderItem[] {
   const brtKeys = new Set((state.brtRoads ?? []).map(tileKey));
-  const onBridge = bridgeKeys(state);
+  const onBridge = bridgeRoadKeys(state);
   const tiles = state.roads.filter((road) => !onBridge.has(tileKey(road))).map((road) => {
     if (brtKeys.has(tileKey(road))) return { model: ROAD_PIECE_MODELS.crossroad, x: road.x + 0.5, z: road.y + 0.5, rotation: 0 };
     const { piece, rotation } = roadPiece(roadExits(state, road), road.kind);

@@ -254,3 +254,57 @@ describe('The Road tier of a Bridge over infrastructure', () => {
     expect(failureKey(placed, { type: 'UpgradeRoads', tiles: [{ x: 52, y: 50 }, { x: 54, y: 50 }] })).toBe('error.noRoadHere');
   });
 });
+
+describe('What lies beneath a Bridge span', () => {
+  const doubleRail = () =>
+    crossing({ rails: [54, 55].flatMap((x) => column(x, 47, 53).map((tile) => ({ ...tile, exits: tile.y === 47 ? ['S' as const] : tile.y === 53 ? ['N' as const] : ['N' as const, 'S' as const] }))) });
+
+  it('cannot lose its last infrastructure, by Road or by Railway', () => {
+    const placed = succeed(crossing(), overpass(53, 3));
+    expect(failureKey(placed, { type: 'DemolishTransit', mode: 'rail', from: { x: 54, y: 49 }, to: { x: 54, y: 51 } })).toBe('error.bridgeLastCrossing');
+    const road = succeed(crossing({ rails: [], roads: [...crossing().roads, ...column(54, 47, 53).map((tile) => ({ ...tile, kind: 'road' as const }))] }), overpass(53, 3));
+    expect(failureKey(road, { type: 'DemolishRoad', x: 54, y: 50 })).toBe('error.bridgeLastCrossing');
+  });
+
+  it('can lose one of several crossed lines', () => {
+    const placed = succeed(doubleRail(), overpass(53, 3));
+    const lighter = succeed(placed, { type: 'DemolishTransit', mode: 'rail', from: { x: 54, y: 49 }, to: { x: 54, y: 51 } });
+    expect(lighter.rails?.some((tile) => tile.x === 54 && tile.y === 50)).toBe(false);
+  });
+
+  const wide = () => crossing({ roads: [...row(48, 51), ...row(59, 62)].map((tile) => ({ ...tile, kind: 'road' as const })) });
+
+  it('takes a new Road only across the span', () => {
+    const placed = succeed(wide(), overpass(53, 5));
+    const across = succeed(placed, { type: 'BuildRoad', from: { x: 56, y: 48 }, to: { x: 56, y: 52 }, horizontalFirst: false });
+    expect(across.roads.some((road) => road.x === 56 && road.y === 50)).toBe(true);
+    expect([...roadExits(across, { x: 56, y: 50 })].sort()).toEqual(['N', 'S']);
+    expect(failureKey(placed, { type: 'BuildRoad', from: { x: 55, y: 50 }, to: { x: 56, y: 50 }, horizontalFirst: true })).toBe('error.bridgeCrossesAlong');
+  });
+
+  it('takes no Road on the first or last tile of the span, nor beside a ramp', () => {
+    const placed = succeed(wide(), overpass(53, 5));
+    expect(failureKey(placed, { type: 'BuildRoad', from: { x: 53, y: 48 }, to: { x: 53, y: 52 }, horizontalFirst: false })).toBe('error.bridgeCrossesAlong');
+    expect(failureKey(placed, { type: 'BuildRoad', from: { x: 52, y: 48 }, to: { x: 52, y: 49 }, horizontalFirst: false })).toBe('error.tilesOccupied');
+  });
+
+  it('takes a new Railway only across the span', () => {
+    const city = (state: GameState) => ({ ...state, buildings: [...state.buildings, ...Array.from({ length: 10 }, (_, index) => ({ ...createBuilding(10 + index, 'home', 20 + index * 3, 30, 0), tier: 6 }))], nextId: 400 });
+    const placed = city(succeed(wide(), overpass(53, 5)));
+    expect(failureKey(placed, { type: 'BuildTransit', mode: 'rail', from: { x: 56, y: 48 }, to: { x: 56, y: 52 }, horizontalFirst: false })).toBeNull();
+    expect(failureKey(placed, { type: 'BuildTransit', mode: 'rail', from: { x: 56, y: 50 }, to: { x: 57, y: 50 }, horizontalFirst: true })).toBe('error.bridgeCrossesAlong');
+  });
+
+  it('keeps the ramps of a BRT Bridge when its corridor is demolished', () => {
+    const placed = succeed(brtCrossing(), brtOverpass(53, 3));
+    expect(failureKey(placed, { type: 'DemolishTransit', mode: 'brt', from: { x: 52, y: 50 }, to: { x: 52, y: 50 } })).toBe('error.bridgeTile');
+  });
+
+  it('does not link a ramp to a facing dead end when the network is repaired', () => {
+    const state = brtCrossing({ brtRoads: [...brtRow(48, 51), ...brtRow(57, 60), { x: 52, y: 49, exits: [] }] });
+    const placed = succeed(state, brtOverpass(53, 3));
+    const repaired = placed.brtRoads?.find((tile) => tile.x === 52 && tile.y === 50)?.exits;
+    expect(repaired).toEqual(['W']);
+    expect(failureKey(placed, { type: 'RepairTransitNetwork', mode: 'brt' })).toBe('error.networkIntact');
+  });
+});

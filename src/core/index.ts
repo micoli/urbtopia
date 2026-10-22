@@ -81,7 +81,7 @@ export { civilDateOf, dayNumberOf } from './annualEvents/calendar';
 export { WATER, isWaterTile, waterKeys, waterTilesOf } from './water/waterTiles';
 export { BOATS, BOAT_FAMILIES, BOAT_MODELS, boatOperatingCost, casinoOf, boatTier, boatsOf, boatsOfMarina, isBoatOperating, waterStats } from './water/boats';
 export { BRIDGE_OPENING, boatsUsingBridge, closedFraction, closedFractionsByTile } from './water/bridgeOpenings';
-export { BRIDGES, BRIDGE_LENGTHS, bridgeAt, bridgeCost, bridgeEnds, bridgeFootprint, bridgeKeys, bridgeRamps, bridgeTiles, bridgesOf, isInfrastructureBridge, waterBridgesOf } from './water/bridges';
+export { BRIDGES, BRIDGE_LENGTHS, bridgeAt, bridgeCost, bridgeEnds, bridgeFootprint, bridgeKeys, bridgeRamps, bridgeRoadKeys, bridgeTiles, bridgesOf, isInfrastructureBridge, waterBridgesOf } from './water/bridges';
 export { FISHING, fishingSlots, readyCycles, readyFish } from './water/fishing';
 export { connectedWaterKeys, marinaCapacity, touchesWater } from './water/marina';
 export { cropReturns, type CropReturns } from './farming/returns';

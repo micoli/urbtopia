@@ -9,6 +9,7 @@ import type { FleetVehicleId } from './transitVehicleTypes.generated';
 import { FLEET_VEHICLES, type FleetVehicleEntry } from './vehicles';
 import { emptyRoadGraph, type RoadGraph } from '../map/roadGraph';
 import { bridgeRamps } from '../water/bridgeGeometry';
+import { bridgeClearanceFailure } from '../water/bridges';
 
 const networkOf = (station: 'brtStation' | 'railStation') => {
   const { unlockCitizens, network } = definitionOf(station);
@@ -79,9 +80,10 @@ export function validNetworkCrossings(state: GameState): boolean {
 function linkFacingDeadEnds(state: GameState, mode: 'brt' | 'rail', map: Map<string, TransitTile>): number {
   const key = mode === 'brt' ? 'brtRoads' : 'rails';
   let linked = 0;
+  const ramps = new Set((state.bridges ?? []).flatMap(bridgeRamps).map(tileKey));
   for (const a of [...map.values()]) for (const d of ['E', 'S'] as const) {
     const b = map.get(tileKey(neighbour(a, d)));
-    if (!b || a.exits.length > 1 || b.exits.length > 1 || a.exits.includes(d) || b.exits.includes(opposite(d))) continue;
+    if (!b || ramps.has(tileKey(a)) || ramps.has(tileKey(b)) || a.exits.length > 1 || b.exits.length > 1 || a.exits.includes(d) || b.exits.includes(opposite(d))) continue;
     a.exits.push(d); b.exits.push(opposite(d));
     if (validNetworkCrossings({ ...state, [key]: [...map.values()] })) { linked++; continue; }
     a.exits.pop(); b.exits.pop();
@@ -100,7 +102,7 @@ export function repairNetwork(state: GameState, mode: 'brt' | 'rail'): TransitTi
   return linkFacingDeadEnds(state, mode, map) > 0 ? [...map.values()] : null;
 }
 
-export function extendNetwork(state: GameState, mode: 'brt' | 'rail', from: Coord, to: Coord, horizontalFirst: boolean): { tiles: TransitTile[]; cost: number } | { key: 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.invalidCrossing' } {
+export function extendNetwork(state: GameState, mode: 'brt' | 'rail', from: Coord, to: Coord, horizontalFirst: boolean): { tiles: TransitTile[]; cost: number } | { key: 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.invalidCrossing' | 'error.bridgeCrossesAlong' } {
   if (![from.x, from.y, to.x, to.y].every(n => Number.isSafeInteger(n) && n >= 0) || !isInsideOwnedParcels(state, from) || !isInsideOwnedParcels(state, to)) return { key: 'error.outsideOwnedParcels' };
   const path = roadPath(from, to, horizontalFirst);
   if (!path.every(p => Number.isSafeInteger(p.x) && Number.isSafeInteger(p.y) && isInsideOwnedParcels(state, p))) return { key: 'error.outsideOwnedParcels' };
@@ -119,6 +121,8 @@ export function extendNetwork(state: GameState, mode: 'brt' | 'rail', from: Coor
   }
   linkFacingDeadEnds(state, mode, map);
   const tiles = [...map.values()];
-  if (!validNetworkCrossings({ ...state, [mode === 'brt' ? 'brtRoads' : 'rails']: tiles })) return { key: 'error.invalidCrossing' };
+  const proposed = { ...state, [mode === 'brt' ? 'brtRoads' : 'rails']: tiles };
+  if (!validNetworkCrossings(proposed)) return { key: 'error.invalidCrossing' };
+  if (bridgeClearanceFailure(proposed) === 'error.bridgeCrossesAlong') return { key: 'error.bridgeCrossesAlong' };
   return { tiles, cost: (tiles.length - existing.length) * TRANSIT[mode].tileCost };
 }

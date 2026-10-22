@@ -504,6 +504,7 @@ export const CATALOG = {
   'error.bridgeNeedsInfrastructure': ['A Bridge over infrastructure must cross a Road, BRT corridor or Railway.', 'Un pont au-dessus d’une infrastructure doit franchir une route, un couloir BRT ou une voie ferrée.'],
   'error.bridgeNeedsBrt': ['Both ends of a BRT Bridge need a BRT corridor.', 'Les deux extrémités d’un pont BRT doivent rejoindre un couloir BRT.'],
   'error.bridgeCrossesAlong': ['A Bridge can only cross infrastructure that runs across it.', 'Un pont ne peut franchir qu’une infrastructure qui le traverse.'],
+  'error.bridgeLastCrossing': ['This is the last infrastructure under a Bridge: remove the Bridge first.', 'C’est la dernière infrastructure sous un pont : retirez d’abord le pont.'],
   'error.bridgeTile': ['This Road belongs to a Bridge: remove the Bridge instead.', 'Cette route fait partie d’un pont : retirez le pont à la place.'],
   'error.noBridgeHere': ['There is no Bridge here.', "Il n'y a pas de pont ici."],
   'water.bridge': ['Bridge', 'Pont'],

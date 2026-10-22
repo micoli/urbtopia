@@ -44,8 +44,12 @@ function dedicatedTile(state: GameState, tile: Coord): { exits: readonly Directi
   return [...(state.brtRoads ?? []), ...(state.rails ?? [])].find((candidate) => tileKey(candidate) === tileKey(tile));
 }
 
+export function bridgeRoadKeys(state: GameState): Set<string> {
+  return new Set(bridgesOf(state).flatMap((bridge) => (isInfrastructureBridge(bridge) ? bridgeRamps(bridge) : bridgeTiles(bridge))).map(tileKey));
+}
+
 function infrastructureKeys(state: GameState): Set<string> {
-  const onBridge = bridgeKeys(state);
+  const onBridge = bridgeRoadKeys(state);
   const keys = [...state.roads, ...(state.brtRoads ?? []), ...(state.rails ?? [])].map(tileKey).filter((key) => !onBridge.has(key));
   return new Set(keys);
 }
@@ -63,6 +67,8 @@ function placeInfrastructureBridge(state: GameState, bridge: Bridge): CommandOut
   if (!footprint.every((tile) => isInsideOwnedParcels(state, tile))) return { key: 'error.outsideOwnedParcels' };
   const occupied = occupiedTiles(state);
   const beneath = infrastructureKeys(state);
+  const taken = bridgeKeys(state);
+  if (footprint.some((tile) => taken.has(tileKey(tile)))) return { key: 'error.tilesOccupied' };
   const span = bridgeTiles(bridge);
   const ramps = bridgeRamps(bridge);
   if (ramps.some((tile) => occupied.has(tileKey(tile)))) return { key: 'error.tilesOccupied' };
@@ -194,4 +200,29 @@ export function upgradedBridges(state: GameState, bridges: readonly Bridge[]): {
     }
   }
   return result;
+}
+
+export function spanKeys(state: GameState): Set<string> {
+  return new Set(bridgesOf(state).filter(isInfrastructureBridge).flatMap(bridgeTiles).map(tileKey));
+}
+
+export function bridgeClearanceFailure(state: GameState): 'error.bridgeCrossesAlong' | 'error.tilesOccupied' | null {
+  for (const bridge of bridgesOf(state).filter(isInfrastructureBridge)) {
+    const span = bridgeTiles(bridge);
+    if (span.some((tile) => runsAlongAnything(state, tile, bridge.axis))) return 'error.bridgeCrossesAlong';
+    if (bridge.carrier === 'road' && joinsRamp(state, bridge)) return 'error.tilesOccupied';
+  }
+  return null;
+}
+
+function runsAlongAnything(state: GameState, tile: Coord, axis: Bridge['axis']): boolean {
+  const key = tileKey(tile);
+  const onBridge = bridgeRoadKeys(state);
+  const lower = [...state.roads, ...(state.brtRoads ?? []), ...(state.rails ?? [])].some((candidate) => tileKey(candidate) === key) && !onBridge.has(key);
+  return lower && runsAlong(state, tile, axis);
+}
+
+export function bridgeLosesCrossing(state: GameState): boolean {
+  const beneath = infrastructureKeys(state);
+  return bridgesOf(state).filter(isInfrastructureBridge).some((bridge) => !bridgeTiles(bridge).some((tile) => beneath.has(tileKey(tile))));
 }
