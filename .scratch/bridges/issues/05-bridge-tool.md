@@ -1,6 +1,6 @@
 # Placement tool
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01, 02
 Spec: ../spec.md
 

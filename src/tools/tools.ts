@@ -2,7 +2,7 @@ import {
   extendNetwork,
   BOATS,
   bridgeCost,
-  bridgeTiles,
+  bridgeFootprint,
   BUILDING_SPECS,
   GAME_CONFIG,
   buyableParcels,
@@ -57,7 +57,7 @@ export type Tool =
   | { kind: 'upgradePedestrianWay'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'parcel' }
   | { kind: 'boat'; family: BoatFamily; marinaId: number }
-  | { kind: 'bridge'; length: number }
+  | { kind: 'bridge'; length: number; carrier?: 'road' | 'brt' }
   | { kind: 'removeBridge' }
   | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] };
 
@@ -191,7 +191,7 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
     case 'parcel':
       return evaluateParcel(state, tile);
     case 'bridge':
-      return evaluateBridge(state, tool.length, tile);
+      return evaluateBridge(state, tool.length, tile, tool.carrier, rotation);
     case 'removeBridge':
       return evaluation([tile], { type: 'RemoveBridge', x: tile.x, y: tile.y }, state);
     case 'boat':
@@ -302,12 +302,15 @@ function lineBetween(from: Coord, to: Coord): Coord[] {
   });
 }
 
-function evaluateBridge(state: GameState, length: number, tile: Coord): Evaluation {
-  const attempts = (['x', 'y'] as const).map((axis) => {
-    const command: Command = { type: 'PlaceBridge', x: tile.x, y: tile.y, length, axis };
-    return evaluation(bridgeTiles({ x: tile.x, y: tile.y, length, axis }), command, state, { cost: bridgeCost(length) ?? null });
-  });
-  return attempts.find((attempt) => attempt.valid) ?? attempts[0]!;
+function evaluateBridge(state: GameState, length: number, tile: Coord, carrier: 'road' | 'brt' | undefined, rotation: Rotation | null): Evaluation {
+  const attempt = (axis: 'x' | 'y') => {
+    const bridge = { x: tile.x, y: tile.y, length, axis, ...(carrier ? { carrier } : {}) };
+    const command: Command = { type: 'PlaceBridge', ...bridge };
+    return evaluation(bridgeFootprint(bridge), command, state, { cost: bridgeCost(length, carrier) ?? null, rotation: axis === 'x' ? 0 : 1 });
+  };
+  if (rotation !== null) return attempt(rotation % 2 === 0 ? 'x' : 'y');
+  const attempts = (['x', 'y'] as const).map(attempt);
+  return attempts.find((candidate) => candidate.valid) ?? attempts[0]!;
 }
 
 function evaluateParcel(state: GameState, tile: Coord): Evaluation {
