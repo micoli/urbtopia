@@ -241,7 +241,7 @@ function isBoat(boat: unknown): boolean {
 }
 
 function isBridge(bridge: unknown): boolean {
-  return isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string) && (bridge.carrier === undefined || bridge.carrier === 'road' || bridge.carrier === 'brt');
+  return isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string) && (bridge.carrier === undefined || bridge.carrier === 'road' || bridge.carrier === 'brt') && (bridge.tier === undefined || (bridge.carrier === 'road' && isInt(bridge.tier, 2, MAX_ROAD_TIER)));
 }
 
 function isDonation(donation: unknown): boolean {
@@ -327,6 +327,7 @@ function invariantFailure(state: GameState): string | null {
       if (isInfrastructureBridge(bridge)) {
         return [
           field(`bridges[${index}]: overlaps another bridge`, () => !overlapping),
+          field(`bridges[${index}]: a ramp has another tier than the bridge`, () => bridge.carrier !== 'road' || bridgeRamps(bridge).every((tile) => (state.roads.find((road) => tileKey(road) === tileKey(tile))?.tier ?? 1) === (bridge.tier ?? 1))),
           field(`bridges[${index}]: a ramp is not on its carrier`, () => bridgeRamps(bridge).every((tile) => carrierKeys(state, bridge).has(tileKey(tile)))),
         ];
       }

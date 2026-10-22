@@ -6,6 +6,7 @@ import type { Coord } from '../map/coord';
 import type { CommandOutcome } from '../engine/commands';
 import type { Bridge, GameState } from '../engine/state';
 import { waterKeys } from './waterTiles';
+import { roadTierOf, roadTierUpgradeCost } from '../traffic/roadTier';
 import { validNetworkCrossings } from '../transit/transitNetwork';
 import { bridgeEnds, bridgeFootprint, bridgeRamps, bridgeTiles, isInfrastructureBridge } from './bridgeGeometry';
 
@@ -76,12 +77,14 @@ function placeRoadBridge(state: GameState, bridge: Bridge, price: number): Comma
   if (joinsRamp(state, bridge)) return { key: 'error.tilesOccupied' };
   if (!bridgeEnds(bridge).every((end) => isRoadLike(state, end))) return { key: 'error.bridgeNeedsRoad' };
   if (state.urbs < price) return { key: 'error.notEnoughUrbs' };
+  const tier = Math.min(...bridgeEnds(bridge).map((end) => roadTierOf(state, end)));
+  const tiered = tier > 1 ? { tier } : {};
   return {
     state: {
       ...state,
       urbs: state.urbs - price,
-      bridges: [...bridgesOf(state), bridge],
-      roads: [...state.roads, ...bridgeRamps(bridge).map((tile) => ({ ...tile, kind: 'road' as const }))],
+      bridges: [...bridgesOf(state), { ...bridge, ...tiered }],
+      roads: [...state.roads, ...bridgeRamps(bridge).map((tile) => ({ ...tile, kind: 'road' as const, ...tiered }))],
     },
     events: [],
   };
@@ -170,4 +173,25 @@ function withoutBrtBridge(state: GameState, bridge: Bridge, ramps: ReadonlySet<s
       return exit ? { ...tile, exits: tile.exits.filter((direction) => direction !== exit) } : tile;
     });
   return { ...state, bridges: bridgesOf(state).filter((candidate) => candidate !== bridge), brtRoads };
+}
+
+export function roadBridgesAt(state: GameState, targets: ReadonlySet<string>): Bridge[] {
+  return bridgesOf(state).filter((bridge) => bridge.carrier === 'road' && bridgeFootprint(bridge).some((tile) => targets.has(tileKey(tile))));
+}
+
+export function bridgeUpgradeCost(bridge: Bridge): number {
+  return bridgeFootprint(bridge).length * (roadTierUpgradeCost(bridge.tier ?? 1) ?? 0);
+}
+
+export function upgradedBridges(state: GameState, bridges: readonly Bridge[]): { bridges: Map<Bridge, Bridge>; ramps: Map<string, GameState['roads'][number]> } {
+  const result = { bridges: new Map<Bridge, Bridge>(), ramps: new Map<string, GameState['roads'][number]>() };
+  for (const bridge of bridges) {
+    const tier = (bridge.tier ?? 1) + 1;
+    result.bridges.set(bridge, { ...bridge, tier });
+    for (const ramp of bridgeRamps(bridge)) {
+      const road = state.roads.find((candidate) => tileKey(candidate) === tileKey(ramp));
+      if (road) result.ramps.set(tileKey(ramp), { ...road, tier });
+    }
+  }
+  return result;
 }

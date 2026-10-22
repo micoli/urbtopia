@@ -26,7 +26,7 @@ import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
-import { bridgeAt, bridgeKeys, placeBridge, refundOf, withoutBridge } from '../water/bridges';
+import { bridgeAt, bridgeKeys, bridgeUpgradeCost, bridgesOf, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
 import { withStartingCity } from './newGame';
@@ -482,14 +482,23 @@ function buildRoad(state: GameState, from: Coord, to: Coord, horizontalFirst: bo
 
 function upgradeRoads(state: GameState, tiles: readonly Coord[]): CommandOutcome {
   const targets = new Set(tiles.map(tileKey));
-  const roads = state.roads.filter((road) => targets.has(tileKey(road)));
-  if (roads.length === 0) return fail('error.noRoadHere');
+  const bridges = roadBridgesAt(state, targets);
+  const onBridge = bridgeKeys(state);
+  const roads = state.roads.filter((road) => targets.has(tileKey(road)) && !onBridge.has(tileKey(road)));
+  if (roads.length === 0 && bridges.length === 0) return fail('error.noRoadHere');
   const upgradable = roads.filter((road) => roadTierUpgradeCost(road.tier ?? 1) !== null);
-  if (upgradable.length === 0) return fail('error.maxRoadTier');
-  const total = upgradable.reduce((sum, road) => sum + (roadTierUpgradeCost(road.tier ?? 1) ?? 0), 0);
+  const upgradableBridges = bridges.filter((bridge) => roadTierUpgradeCost(bridge.tier ?? 1) !== null);
+  if (upgradable.length === 0 && upgradableBridges.length === 0) return fail('error.maxRoadTier');
+  const total = upgradable.reduce((sum, road) => sum + (roadTierUpgradeCost(road.tier ?? 1) ?? 0), 0) + upgradableBridges.reduce((sum, bridge) => sum + bridgeUpgradeCost(bridge), 0);
   if (state.urbs < total) return fail('error.notEnoughUrbs');
+  const upgraded = upgradedBridges(state, upgradableBridges);
   return {
-    state: { ...state, urbs: state.urbs - total, roads: state.roads.map((road) => (upgradable.includes(road) ? { ...road, tier: (road.tier ?? 1) + 1 } : road)) },
+    state: {
+      ...state,
+      urbs: state.urbs - total,
+      roads: state.roads.map((road) => (upgradable.includes(road) ? { ...road, tier: (road.tier ?? 1) + 1 } : upgraded.ramps.get(tileKey(road)) ?? road)),
+      bridges: bridgesOf(state).map((bridge) => upgraded.bridges.get(bridge) ?? bridge),
+    },
     events: [],
   };
 }

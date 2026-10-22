@@ -92,6 +92,12 @@ describe('Bridge over infrastructure save compatibility', () => {
     expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
   });
 
+  it('round-trips a tiered Road Bridge and rejects a ramp with another tier', () => {
+    const tiered = { ...base(), roads: base().roads.map((road) => ({ ...road, tier: 2 })), bridges: [{ x: 53, y: 50, length: 3, axis: 'x' as const, carrier: 'road' as const, tier: 2 }] };
+    expect(parseEnvelope(serializeEnvelope(tiered, 100))).toEqual({ ok: true, state: tiered, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope({ ...tiered, roads: base().roads } as never, 100))).toMatchObject({ ok: false, reason: 'invalid-state' });
+  });
+
   it('round-trips a BRT Bridge', () => {
     const state = { ...base(), roads: [], brtRoads: [{ x: 52, y: 50, exits: ['W' as const] }, { x: 56, y: 50, exits: ['E' as const] }], bridges: [{ x: 53, y: 50, length: 3, axis: 'x' as const, carrier: 'brt' as const }] };
     expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });

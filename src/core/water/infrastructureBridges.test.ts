@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
+import { roadTierUpgradeCost } from '../traffic/roadTier';
 import { pedestrianGraph, sidewalkNode } from '../map/pedestrianGraph';
 import { buildRoadGraph } from '../map/roadGraph';
 import { buildNetworkGraph } from '../transit/transitNetwork';
@@ -201,5 +202,55 @@ describe('A BRT Bridge', () => {
     expect(removed.bridges).toEqual([]);
     expect(removed.brtRoads).toEqual(brtCrossing().brtRoads);
     expect(removed.urbs).toBe(placed.urbs + 675);
+  });
+});
+
+describe('The Road tier of a Bridge over infrastructure', () => {
+  const tiered = (west: number, east: number) =>
+    crossing({ roads: [...row(48, 51).map((tile) => ({ ...tile, kind: 'road' as const, ...(west > 1 ? { tier: west } : {}) })), ...row(57, 60).map((tile) => ({ ...tile, kind: 'road' as const, ...(east > 1 ? { tier: east } : {}) }))] });
+
+  it('starts at the lower tier of its two ends, on the three parts', () => {
+    const placed = succeed(tiered(3, 2), overpass(53, 3));
+    expect(placed.bridges?.[0]?.tier).toBe(2);
+    expect(placed.roads.filter((road) => road.x === 52 || road.x === 56).map((road) => road.tier)).toEqual([2, 2]);
+  });
+
+  it('is the first tier when an end is, without storing it', () => {
+    const placed = succeed(tiered(1, 3), overpass(53, 3));
+    expect(placed.bridges?.[0]?.tier).toBeUndefined();
+    expect(placed.roads.find((road) => road.x === 52)?.tier).toBeUndefined();
+  });
+
+  it('is upgraded as a whole from a ramp or from the span, at the summed cost of its tiles', () => {
+    const placed = succeed(crossing(), overpass(53, 3));
+    const fromRamp = succeed(placed, { type: 'UpgradeRoads', tiles: [{ x: 52, y: 50 }] });
+    expect(fromRamp.urbs).toBe(placed.urbs - 5 * roadTierUpgradeCost(1)!);
+    expect(fromRamp.bridges?.[0]?.tier).toBe(2);
+    expect(fromRamp.roads.filter((road) => road.x === 52 || road.x === 56).map((road) => road.tier)).toEqual([2, 2]);
+    const fromSpan = succeed(placed, { type: 'UpgradeRoads', tiles: [{ x: 54, y: 50 }] });
+    expect(fromSpan.bridges?.[0]?.tier).toBe(2);
+  });
+
+  it('is charged once when a drag covers several of its tiles', () => {
+    const placed = succeed(crossing(), overpass(53, 3));
+    const dragged = succeed(placed, { type: 'UpgradeRoads', tiles: row(48, 60) });
+    expect(dragged.bridges?.[0]?.tier).toBe(2);
+    expect(dragged.urbs).toBe(placed.urbs - (8 + 5) * roadTierUpgradeCost(1)!);
+  });
+
+  it('is capped like a Road', () => {
+    const placed = succeed(succeed(succeed(crossing(), overpass(53, 3)), { type: 'UpgradeRoads', tiles: [{ x: 52, y: 50 }] }), { type: 'UpgradeRoads', tiles: [{ x: 52, y: 50 }] });
+    expect(placed.bridges?.[0]?.tier).toBe(3);
+    expect(failureKey(placed, { type: 'UpgradeRoads', tiles: [{ x: 52, y: 50 }] })).toBe('error.maxRoadTier');
+  });
+
+  it('needs enough Urbs', () => {
+    const placed = { ...succeed(crossing(), overpass(53, 3)), urbs: 39 };
+    expect(failureKey(placed, { type: 'UpgradeRoads', tiles: [{ x: 52, y: 50 }] })).toBe('error.notEnoughUrbs');
+  });
+
+  it('does not exist for a BRT Bridge', () => {
+    const placed = succeed(brtCrossing(), brtOverpass(53, 3));
+    expect(failureKey(placed, { type: 'UpgradeRoads', tiles: [{ x: 52, y: 50 }, { x: 54, y: 50 }] })).toBe('error.noRoadHere');
   });
 });
