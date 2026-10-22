@@ -144,6 +144,7 @@ export type ModelId =
   | 'buildings-packhouse-2x2-t3-tone-a'
   | 'buildings-packhouse-2x2-t4-tone-a'
   | 'buildings-packhouse-2x2-t5-tone-a'
+  | 'buildings-padel-3x3'
   | 'buildings-police-station-2x2'
   | 'buildings-police-station-2x2-3f'
   | 'buildings-police-station-2x2-4f'

@@ -3115,6 +3115,15 @@
       }
     }
   },
+  "buildings-padel-3x3": {
+    "file": "buildings/padel-3x3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ]
+  },
   "buildings-police-station-2x2": {
     "file": "buildings/police-station-2x2",
     "source": "managed",

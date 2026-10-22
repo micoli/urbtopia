@@ -3405,6 +3405,102 @@ def build_football_stadium(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+def build_padel(spec, out_dir):
+    """A block of four padel courts filling 3x3: four blue courts of 1x2 turned like a pinwheel around a 1x1 yard, each with white lines, a net, glass back walls, glass and mesh side walls, a door on the yard, floodlight masts at the corners, and benches, ball baskets and a bush in the yard."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    court, apron, white, slab, frame, glass, wood, ball, bush = (index(n) for n in ("cobalt", "bush", "white", "uslab", "graphite", "glass_blue", "uwood", "sun", "bush"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = []
+    half_width, half_length, base = 0.44, 0.94, 0.02
+    center_x, center_y = -1.0, -0.5
+    glass_tall, glass_low, mesh_top = 0.15, 0.1, 0.22
+
+    def put(name, size, at, color, quarter):
+        """A box given in the frame of the left court, turned by `quarter` quarter turns around the block center."""
+        x, y = at[0], at[1]
+        sx, sy = size[0], size[1]
+        for _ in range(quarter):
+            x, y, sx, sy = -y, x, sy, sx
+        parts.append(lpm.box(name, (sx, sy, size[2]), at=(x, y, at[2]), color=color))
+
+    def court_part(name, size, at, color, quarter):
+        put(name, size, (center_x + at[0], center_y + at[1], at[2]), color, quarter)
+
+    parts.append(lpm.box("apron", (2.98, 2.98, base), at=(0, 0, 0), color=apron))
+    parts.append(lpm.box("yard", (0.98, 0.98, 0.004), at=(0, 0, base), color=slab))
+
+    posts_x = (-half_width - 0.01, -0.15, 0.15, half_width + 0.01)
+    door_y, door_half = 0.28, 0.08
+    for quarter in range(4):
+        tag = f"court{quarter}"
+
+        def add(name, size, at, color):
+            court_part(f"{tag}_{name}", size, at, color, quarter)
+
+        add("surface", (2 * half_width, 2 * half_length, 0.01), (0, 0, base), court)
+        line_z = base + 0.01
+        for side in (-1, 1):
+            add(f"side_line_{side}", (0.008, 2 * half_length - 0.02, 0.003), (side * (half_width - 0.012), 0, line_z), white)
+            add(f"end_line_{side}", (2 * half_width - 0.02, 0.008, 0.003), (0, side * (half_length - 0.012), line_z), white)
+            add(f"service_line_{side}", (2 * half_width - 0.02, 0.008, 0.003), (0, side * 0.65, line_z), white)
+        add("center_line", (0.008, 1.3, 0.003), (0, 0, line_z), white)
+
+        add("net", (2 * half_width, 0.006, 0.07), (0, 0, line_z), frame)
+        add("net_tape", (2 * half_width, 0.01, 0.008), (0, 0, line_z + 0.07), white)
+        for side in (-1, 1):
+            add(f"net_post_{side}", (0.014, 0.014, 0.09), (side * (half_width + 0.008), 0, line_z), frame)
+
+        for side in (-1, 1):
+            wall_y = side * (half_length + 0.01)
+            add(f"back_glass_{side}", (2 * half_width + 0.04, 0.008, glass_tall), (0, wall_y, base), glass)
+            for number, rail in enumerate((glass_tall, 0.185, mesh_top)):
+                add(f"back_rail_{side}_{number}", (2 * half_width + 0.04, 0.01, 0.008), (0, wall_y, base + rail), frame)
+            for number, post_x in enumerate(posts_x):
+                add(f"back_post_{side}_{number}", (0.014, 0.014, mesh_top), (post_x, wall_y, base), frame)
+
+        for side in (-1, 1):
+            wall_x = side * (half_width + 0.01)
+            for end in (-1, 1):
+                add(f"corner_glass_{side}_{end}", (0.008, 0.46, glass_tall), (wall_x, end * (half_length - 0.23), base), glass)
+            segments = [(-0.48, 0.48)] if side == -1 else [(-0.48, door_y - door_half), (door_y + door_half, 0.48)]
+            for number, (start, stop) in enumerate(segments):
+                add(f"low_glass_{side}_{number}", (0.008, stop - start, glass_low), (wall_x, (start + stop) / 2, base), glass)
+            for number, rail in enumerate((glass_low, 0.15, 0.185, mesh_top)):
+                add(f"side_rail_{side}_{number}", (0.01, 2 * half_length, 0.008), (wall_x, 0, base + rail), frame)
+            for number, post_y in enumerate((-half_length, -0.48, 0.0, 0.48, half_length)):
+                add(f"side_post_{side}_{number}", (0.014, 0.014, mesh_top), (wall_x, post_y, base), frame)
+        for edge in (-1, 1):
+            add(f"door_post_{edge}", (0.018, 0.018, 0.17), (half_width + 0.01, door_y + edge * door_half, base), frame)
+
+        bench_y = door_y
+        put(f"{tag}_bench_seat", (0.07, 0.26, 0.03), (center_x + half_width + 0.17, center_y + bench_y, base + 0.004), wood, quarter)
+        put(f"{tag}_bench_back", (0.012, 0.26, 0.04), (center_x + half_width + 0.205, center_y + bench_y, base + 0.034), wood, quarter)
+        for leg in (-1, 1):
+            put(f"{tag}_bench_leg_{leg}", (0.05, 0.015, 0.03), (center_x + half_width + 0.17, center_y + bench_y + leg * 0.1, base + 0.004), frame, quarter)
+        put(f"{tag}_basket", (0.07, 0.07, 0.05), (center_x + half_width + 0.3, center_y + bench_y - 0.22, base + 0.004), frame, quarter)
+        for number, (dx, dy) in enumerate(((-0.015, -0.01), (0.012, 0.012), (0.0, 0.0))):
+            put(f"{tag}_basket_ball_{number}", (0.026, 0.026, 0.026), (center_x + half_width + 0.3 + dx, center_y + bench_y - 0.22 + dy, base + 0.054 + 0.018 * (number == 2)), ball, quarter)
+
+    parts.append(lpm.box("planter", (0.18, 0.18, 0.04), at=(0, 0, base + 0.004), color=slab))
+    parts.append(lpm.lathe("bush", [(0.0, 0.0), (0.08, 0.02), (0.1, 0.07), (0.06, 0.12), (0.0, 0.14)], segments=7, at=(0, 0, base + 0.044), color=bush))
+
+    for number, (sx, sy) in enumerate(((-1, -1), (1, -1), (1, 1), (-1, 1))):
+        x, y = sx * 1.4, sy * 1.4
+        parts.append(lpm.prism(f"mast_{number}", 6, 0.014, 0.4, at=(x, y, base), color=frame))
+        bank = lpm.box(f"light_back_{number}", (0.16, 0.03, 0.06), at=(0, 0, 0), color=frame)
+        lamp = lpm.box(f"light_{number}", (0.14, 0.012, 0.05), at=(0, 0.02, 0.005), color=white)
+        for piece in (bank, lamp):
+            lpm.rotate(piece, -20, "X")
+            lpm.rotate(piece, math.degrees(math.atan2(sx, -sy)), "Z")
+            lpm.move(piece, x, y, base + 0.4)
+            parts.append(piece)
+    ob = lpm.finish(spec["id"], parts, palette, budget=8000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def build_colosseum(spec, out_dir):
     """A ruined colosseum filling 5x5: an elliptical ring of arcaded bays turned 45 degrees, three arch levels and an attic on the tall side, stepping down to broken stumps on the other, with stepped seating, a sand arena with low cellar walls, rubble and bushes."""
     style = spec.get("style", "urbtopia")

@@ -246,6 +246,7 @@ export type BuildingId =
   | 'office'
   | 'oliveTree'
   | 'packhouse'
+  | 'padelCourts'
   | 'park'
   | 'pirate-grass'
   | 'pirate-grass-patch'
@@ -296,6 +297,7 @@ export type BuildingId =
 export type SportVenueType =
   | 'baseballField'
   | 'footballStadium'
+  | 'padelCourts'
   | 'stadium';
 
 export type NatureType =

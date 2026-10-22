@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "sport",
+  "section": "build.sport",
+  "model": "buildings-padel-3x3",
+  "footprint": [3, 3],
+  "cost": 1500,
+  "unlockCitizens": 200,
+  "requiresRoad": true,
+  "name": {
+    "en": "Padel courts",
+    "fr": "Terrains de padel"
+  },
+  "description": {
+    "en": "A block of four padel courts around a small yard. It raises the Well-being of Homes in a {side}-tile square around it (+{wellbeingBonus}, like a service) and needs no power. It covers {width}×{depth} tiles; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs.",
+    "fr": "Un bloc de quatre terrains de padel autour d’une petite cour. Il augmente le bien-être des logements à moins de {side} cases (+{wellbeingBonus}) et ne consomme pas d’électricité. Il occupe {width}×{depth} cases ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs."
+  },
+  "radius": 8,
+  "wellbeingBonus": 6
+}
