@@ -116,7 +116,7 @@ export class TransitLayer {
         const pose = poseAlong(vehicle.route, vehicle.loop, vehicle.phase + vehicle.pitch * (0.5 - index));
         const car = cars[index];
         if (car) {
-          car.position.set(pose.x + Math.cos(pose.yaw) * side, .12 + this.elevation(pose.x, pose.z), pose.z - Math.sin(pose.yaw) * side);
+          car.position.set(pose.x + Math.cos(pose.yaw) * side, .12 + this.elevation(pose.x, pose.z, pose.from, pose.to), pose.z - Math.sin(pose.yaw) * side);
           car.rotation.y = pose.yaw;
         }
         if (vehicle.brt) for (const tile of [pose.from, pose.to]) if (this.crossings.has(tileKey(tile))) this.priorityTiles.add(tileKey(tile));

@@ -244,15 +244,15 @@ function pedestrianWayItems(state: GameState): RenderItem[] {
   });
 }
 
-// Quarter turns of the Kenney road models, whose road runs along +X and whose ramp rises towards +X.
-const AXIS_TURNS = { x: { forward: 0, back: 2 }, y: { forward: 3, back: 1 } } as const;
+// Quarter turns of the Kenney models: the road of a ramp runs along +X and rises towards +X, the road of a deck runs along Z.
+const AXIS_TURNS = { x: { forward: 0, back: 2, deck: 1 }, y: { forward: 3, back: 1, deck: 0 } } as const;
 
 function bridgeItems(state: GameState): RenderItem[] {
   return (state.bridges ?? []).filter(isInfrastructureBridge).flatMap((bridge) => {
     const [first, last] = bridgeRamps(bridge);
     const turns = AXIS_TURNS[bridge.axis];
     const at = (model: string, tile: Coord, rotation: number): RenderItem => ({ model, x: tile.x + 0.5, z: tile.y + 0.5, rotation, ...(bridge.carrier === 'brt' ? { textureVariant: 'roads-a' as const } : {}) });
-    return [at(BRIDGE_RAMP_MODEL, first!, turns.forward), ...bridgeTiles(bridge).map((tile) => at(BRIDGE_SPAN_MODEL, tile, turns.forward)), at(BRIDGE_RAMP_MODEL, last!, turns.back)];
+    return [at(BRIDGE_RAMP_MODEL, first!, turns.forward), ...bridgeTiles(bridge).map((tile) => at(BRIDGE_SPAN_MODEL, tile, turns.deck)), at(BRIDGE_RAMP_MODEL, last!, turns.back)];
   });
 }
 

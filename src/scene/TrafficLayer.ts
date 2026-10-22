@@ -228,7 +228,7 @@ export class TrafficLayer {
     const counts = this.models.map(() => 0);
     for (const vehicle of this.vehicles) {
       const pose = poseOf(vehicle);
-      this.placement.makeRotationY(pose.yaw).setPosition(pose.x, ROAD_SURFACE_HEIGHT + this.elevation(pose.x, pose.z), pose.z);
+      this.placement.makeRotationY(pose.yaw).setPosition(pose.x, ROAD_SURFACE_HEIGHT + this.elevation(pose.x, pose.z, vehicle.from, vehicle.to), pose.z);
       const model = this.models[vehicle.model];
       if (!model) continue;
       this.fitted.multiplyMatrices(this.placement, model.fit);

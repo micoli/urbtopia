@@ -35,7 +35,7 @@ export function startPedestrian(graph: PedestrianGraph, node: string, id: number
 }
 
 export function advancePedestrian(graph: PedestrianGraph, pedestrian: Pedestrian, deltaSeconds: number, random: () => number): boolean {
-  pedestrian.progress += pedestrian.speed * deltaSeconds;
+  pedestrian.progress += (pedestrian.speed * deltaSeconds) / edgeLength(pedestrian.from, pedestrian.to);
   while (pedestrian.progress >= 1) {
     const next = chooseNext(graph, pedestrian.to, pedestrian.from, random);
     if (next === null) return false;
@@ -84,4 +84,16 @@ function chooseNext(graph: PedestrianGraph, node: string, previous: string | nul
   const flat = options.filter((edge) => edge.crossing === null);
   const pool = crossings.length > 0 && (flat.length === 0 || random() < CROSSING_PREFERENCE) ? crossings : flat;
   return pool[Math.floor(random() * pool.length) % pool.length]?.to ?? null;
+}
+
+// A Bridge over infrastructure links the sidewalks of its two ramps by one long edge: a walker crosses it at the usual pace.
+function edgeLength(from: string, to: string): number {
+  const start = nodePosition(from);
+  const end = nodePosition(to);
+  return Math.max(1, Math.hypot(end.x - start.x, end.z - start.z));
+}
+
+export function tileOfNode(node: string): { x: number; y: number } {
+  const [x = 0, y = 0] = (node.split(':')[0] ?? '0,0').split(',').map(Number);
+  return { x, y };
 }

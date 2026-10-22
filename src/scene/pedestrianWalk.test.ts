@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { newGame, pedestrianGraph, type GameState } from '../core';
-import { advancePedestrian, crossedTile, isOnGraph, nodePosition, pedestrianPose, startPedestrian, targetPedestrianCount } from './pedestrianWalk';
+import { advancePedestrian, crossedTile, isOnGraph, nodePosition, pedestrianPose, startPedestrian, targetPedestrianCount, tileOfNode } from './pedestrianWalk';
 
 function graphOf(crossingAt: number[]) {
   const roads = Array.from({ length: 9 }, (_, x) => ({ x, y: 4, kind: crossingAt.includes(x) ? ('crossing' as const) : ('road' as const) }));
@@ -58,5 +58,19 @@ describe('pedestrian walk', () => {
     expect(targetPedestrianCount({ people: 100000, nodes: 100000, touch: false })).toBe(100);
     expect(targetPedestrianCount({ people: 100000, nodes: 100000, touch: true })).toBe(50);
     expect(targetPedestrianCount({ people: 100000, nodes: 100000, touch: false, max: 40 })).toBe(40);
+  });
+});
+
+describe('pedestrian walk over a Bridge', () => {
+  const graph = new Map([['52,50:N', [{ to: '56,50:N', cost: 4, crossing: null }]], ['56,50:N', [{ to: '52,50:N', cost: 4, crossing: null }]]]);
+
+  it('crosses the long edge between two ramps at the usual pace', () => {
+    const walker = { id: 1, from: '52,50:N', to: '56,50:N', previous: null, progress: 0, speed: 1 };
+    advancePedestrian(graph, walker, 1, () => 0);
+    expect(walker.progress).toBeCloseTo(0.25);
+  });
+
+  it('finds the tile of a node', () => {
+    expect(tileOfNode('52,50:N')).toEqual({ x: 52, y: 50 });
   });
 });

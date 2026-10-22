@@ -1,8 +1,9 @@
-import { bridgeRamps, isInfrastructureBridge, type Bridge } from '../core';
+import { bridgeRamps, isInfrastructureBridge, tileKey, type Bridge, type Coord } from '../core';
 
 export const BRIDGE_CLEARANCE = 0.5;
 
-export type ElevationAt = (x: number, z: number) => number;
+// `from` and `to` are the tiles of the edge the vehicle drives: only an edge that starts or ends on a ramp is on the Bridge, never the Road or Railway beneath.
+export type ElevationAt = (x: number, z: number, from: Coord, to: Coord) => number;
 
 const flat: ElevationAt = () => 0;
 
@@ -13,7 +14,9 @@ export function bridgeElevation(bridges: readonly Bridge[] | undefined): Elevati
     return { alongX: bridge.axis === 'x', along: bridge.axis === 'x' ? first.x : first.y, across: bridge.axis === 'x' ? first.y : first.x, spans: bridge.length };
   });
   if (decks.length === 0) return flat;
-  return (x, z) => {
+  const ramps = new Set((bridges ?? []).filter(isInfrastructureBridge).flatMap(bridgeRamps).map(tileKey));
+  return (x, z, from, to) => {
+    if (!ramps.has(tileKey(from)) && !ramps.has(tileKey(to))) return 0;
     for (const deck of decks) {
       const [along, across] = deck.alongX ? [x, z] : [z, x];
       if (across < deck.across || across >= deck.across + 1) continue;

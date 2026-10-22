@@ -126,7 +126,7 @@ export class ServiceVehicleLayer {
 
   private place(trip: Trip): void {
     const pose = poseOf(trip.vehicle);
-    trip.object.position.set(pose.x, ROAD_SURFACE_HEIGHT + this.elevation(pose.x, pose.z), pose.z);
+    trip.object.position.set(pose.x, ROAD_SURFACE_HEIGHT + this.elevation(pose.x, pose.z, trip.vehicle.from, trip.vehicle.to), pose.z);
     trip.object.rotation.y = pose.yaw;
   }
 
