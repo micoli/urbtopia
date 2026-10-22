@@ -159,7 +159,7 @@ export interface Boat extends Coord {
 export interface Bridge extends Coord {
   length: number;
   axis: 'x' | 'y';
-  carrier?: 'road';
+  carrier?: 'road' | 'brt';
 }
 
 export interface FieldTile extends Coord {

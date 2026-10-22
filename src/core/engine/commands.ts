@@ -98,7 +98,7 @@ export type Command =
   | { readonly type: 'RemoveWater'; readonly tiles: readonly Coord[] }
   | { readonly type: 'BuyBoat'; readonly family: BoatFamily; readonly marinaId: number; readonly x: number; readonly y: number }
   | { readonly type: 'SellBoat'; readonly id: number }
-  | { readonly type: 'PlaceBridge'; readonly x: number; readonly y: number; readonly length: number; readonly axis: 'x' | 'y'; readonly carrier?: 'road' }
+  | { readonly type: 'PlaceBridge'; readonly x: number; readonly y: number; readonly length: number; readonly axis: 'x' | 'y'; readonly carrier?: 'road' | 'brt' }
   | { readonly type: 'RemoveBridge'; readonly x: number; readonly y: number }
   | { readonly type: 'UpgradeBoat'; readonly id: number }
   | { readonly type: 'CollectCatch'; readonly marinaId: number }
@@ -185,6 +185,7 @@ export type ErrorKey =
   | 'error.bridgeNeedsWater'
   | 'error.bridgeNeedsRoad'
   | 'error.bridgeNeedsInfrastructure'
+  | 'error.bridgeNeedsBrt'
   | 'error.bridgeCrossesAlong'
   | 'error.bridgeTile'
   | 'error.noBridgeHere'

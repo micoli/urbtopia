@@ -6,6 +6,7 @@ import type { Coord } from '../map/coord';
 import type { CommandOutcome } from '../engine/commands';
 import type { Bridge, GameState } from '../engine/state';
 import { waterKeys } from './waterTiles';
+import { validNetworkCrossings } from '../transit/transitNetwork';
 import { bridgeEnds, bridgeFootprint, bridgeRamps, bridgeTiles, isInfrastructureBridge } from './bridgeGeometry';
 
 export { bridgeEnds, bridgeFootprint, bridgeRamps, bridgeTiles, isInfrastructureBridge };
@@ -16,6 +17,7 @@ export const BRIDGES = {
   unlockCitizens: 120,
   costs: { 1: 150, 2: 300, 3: 450, 5: 800 } as Readonly<Record<number, number>>,
   roadCosts: { 1: 300, 2: 450, 3: 600, 5: 950 } as Readonly<Record<number, number>>,
+  brtCosts: { 1: 450, 2: 675, 3: 900, 5: 1425 } as Readonly<Record<number, number>>,
 };
 
 export function bridgesOf(state: GameState): readonly Bridge[] {
@@ -31,6 +33,7 @@ export function bridgeKeys(state: GameState): Set<string> {
 }
 
 export function bridgeCost(length: number, carrier?: Bridge['carrier']): number | undefined {
+  if (carrier === 'brt') return BRIDGES.brtCosts[length];
   return carrier === 'road' ? BRIDGES.roadCosts[length] : BRIDGES.costs[length];
 }
 
@@ -54,7 +57,7 @@ function runsAlong(state: GameState, tile: Coord, axis: Bridge['axis']): boolean
 function placeInfrastructureBridge(state: GameState, bridge: Bridge): CommandOutcome {
   if (citizenCount(state) < BRIDGES.unlockCitizens) return { key: 'error.itemLocked' };
   const price = bridgeCost(bridge.length, bridge.carrier);
-  if (price === undefined || bridge.carrier !== 'road' || !Number.isInteger(bridge.x) || !Number.isInteger(bridge.y) || (bridge.axis !== 'x' && bridge.axis !== 'y')) return { key: 'error.unknownCommand' };
+  if (price === undefined || !Number.isInteger(bridge.x) || !Number.isInteger(bridge.y) || (bridge.axis !== 'x' && bridge.axis !== 'y')) return { key: 'error.unknownCommand' };
   const footprint = bridgeFootprint(bridge);
   if (!footprint.every((tile) => isInsideOwnedParcels(state, tile))) return { key: 'error.outsideOwnedParcels' };
   const occupied = occupiedTiles(state);
@@ -66,6 +69,10 @@ function placeInfrastructureBridge(state: GameState, bridge: Bridge): CommandOut
   const crossed = span.filter((tile) => beneath.has(tileKey(tile)));
   if (crossed.length === 0) return { key: 'error.bridgeNeedsInfrastructure' };
   if (crossed.some((tile) => runsAlong(state, tile, bridge.axis))) return { key: 'error.bridgeCrossesAlong' };
+  return bridge.carrier === 'brt' ? placeBrtBridge(state, bridge, price) : placeRoadBridge(state, bridge, price);
+}
+
+function placeRoadBridge(state: GameState, bridge: Bridge, price: number): CommandOutcome {
   if (joinsRamp(state, bridge)) return { key: 'error.tilesOccupied' };
   if (!bridgeEnds(bridge).every((end) => isRoadLike(state, end))) return { key: 'error.bridgeNeedsRoad' };
   if (state.urbs < price) return { key: 'error.notEnoughUrbs' };
@@ -74,10 +81,33 @@ function placeInfrastructureBridge(state: GameState, bridge: Bridge): CommandOut
       ...state,
       urbs: state.urbs - price,
       bridges: [...bridgesOf(state), bridge],
-      roads: [...state.roads, ...ramps.map((tile) => ({ ...tile, kind: 'road' as const }))],
+      roads: [...state.roads, ...bridgeRamps(bridge).map((tile) => ({ ...tile, kind: 'road' as const }))],
     },
     events: [],
   };
+}
+
+const TOWARD: Record<Bridge['axis'], readonly [Direction, Direction]> = { x: ['E', 'W'], y: ['S', 'N'] };
+
+function placeBrtBridge(state: GameState, bridge: Bridge, price: number): CommandOutcome {
+  const brt = state.brtRoads ?? [];
+  const [startEnd, finishEnd] = bridgeEnds(bridge);
+  const [forward, back] = TOWARD[bridge.axis];
+  const ends = [{ tile: startEnd, toward: forward }, { tile: finishEnd, toward: back }];
+  if (!ends.every(({ tile }) => brt.some((candidate) => tileKey(candidate) === tileKey(tile)))) return { key: 'error.bridgeNeedsBrt' };
+  if (state.urbs < price) return { key: 'error.notEnoughUrbs' };
+  const [firstRamp, lastRamp] = bridgeRamps(bridge);
+  const ramps = [
+    { ...firstRamp!, exits: [back] },
+    { ...lastRamp!, exits: [forward] },
+  ];
+  const widened = brt.map((candidate) => {
+    const end = ends.find((entry) => tileKey(entry.tile) === tileKey(candidate));
+    return end && !candidate.exits.includes(end.toward) ? { ...candidate, exits: [...candidate.exits, end.toward] } : candidate;
+  });
+  const next: GameState = { ...state, urbs: state.urbs - price, bridges: [...bridgesOf(state), bridge], brtRoads: [...widened, ...ramps] };
+  if (!validNetworkCrossings(next)) return { key: 'error.invalidCrossing' };
+  return { state: next, events: [] };
 }
 
 function joinsRamp(state: GameState, bridge: Bridge): boolean {
@@ -117,6 +147,7 @@ export function bridgeAt(state: GameState, tile: Coord): Bridge | undefined {
 
 export function withoutBridge(state: GameState, bridge: Bridge): GameState {
   const covered = new Set((isInfrastructureBridge(bridge) ? bridgeRamps(bridge) : bridgeTiles(bridge)).map(tileKey));
+  if (bridge.carrier === 'brt') return withoutBrtBridge(state, bridge, covered);
   return {
     ...state,
     bridges: bridgesOf(state).filter((candidate) => candidate !== bridge),
@@ -126,4 +157,17 @@ export function withoutBridge(state: GameState, bridge: Bridge): GameState {
 
 export function refundOf(bridge: Bridge): number {
   return Math.floor((bridgeCost(bridge.length, bridge.carrier) ?? 0) * GAME_CONFIG.sellRefundRatio);
+}
+
+function withoutBrtBridge(state: GameState, bridge: Bridge, ramps: ReadonlySet<string>): GameState {
+  const [startEnd, finishEnd] = bridgeEnds(bridge);
+  const [forward, back] = TOWARD[bridge.axis];
+  const released = new Map([[tileKey(startEnd), forward], [tileKey(finishEnd), back]]);
+  const brtRoads = (state.brtRoads ?? [])
+    .filter((tile) => !ramps.has(tileKey(tile)))
+    .map((tile) => {
+      const exit = released.get(tileKey(tile));
+      return exit ? { ...tile, exits: tile.exits.filter((direction) => direction !== exit) } : tile;
+    });
+  return { ...state, bridges: bridgesOf(state).filter((candidate) => candidate !== bridge), brtRoads };
 }

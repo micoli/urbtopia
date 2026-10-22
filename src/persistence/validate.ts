@@ -241,7 +241,7 @@ function isBoat(boat: unknown): boolean {
 }
 
 function isBridge(bridge: unknown): boolean {
-  return isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string) && (bridge.carrier === undefined || bridge.carrier === 'road');
+  return isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string) && (bridge.carrier === undefined || bridge.carrier === 'road' || bridge.carrier === 'brt');
 }
 
 function isDonation(donation: unknown): boolean {
@@ -305,6 +305,10 @@ function isStopOfKind(state: GameState, id: number, allowed: BuildingType[]): bo
   return id < state.nextId && (building === undefined || allowed.includes(building.type));
 }
 
+function carrierKeys(state: GameState, bridge: { carrier?: 'road' | 'brt' }): Set<string> {
+  return new Set((bridge.carrier === 'brt' ? (state.brtRoads ?? []) : state.roads).map(tileKey));
+}
+
 function invariantFailure(state: GameState): string | null {
   const ids = [...state.buildings.map((b) => b.id), ...(state.boats ?? []).map((b) => b.id), ...(state.busLines ?? []).map((l) => l.id), ...(state.transitLines ?? []).map((l) => l.id), ...(state.transitFleet ?? []).map((v) => v.id)];
   const roadKeys = new Set(state.roads.map(tileKey));
@@ -323,7 +327,7 @@ function invariantFailure(state: GameState): string | null {
       if (isInfrastructureBridge(bridge)) {
         return [
           field(`bridges[${index}]: overlaps another bridge`, () => !overlapping),
-          field(`bridges[${index}]: a ramp is not a road`, () => bridgeRamps(bridge).every((tile) => roadKeys.has(tileKey(tile)))),
+          field(`bridges[${index}]: a ramp is not on its carrier`, () => bridgeRamps(bridge).every((tile) => carrierKeys(state, bridge).has(tileKey(tile)))),
         ];
       }
       return [

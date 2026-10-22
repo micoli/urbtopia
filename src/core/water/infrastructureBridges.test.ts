@@ -1,6 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
 import { pedestrianGraph, sidewalkNode } from '../map/pedestrianGraph';
+import { buildRoadGraph } from '../map/roadGraph';
+import { buildNetworkGraph } from '../transit/transitNetwork';
 import { congestionStats, createBuilding, dispatch, newGame, roadExits, type Command, type GameState } from '../index';
 
 const T0 = 1_700_000_000_000;
@@ -143,5 +145,61 @@ describe('Removing a Bridge over infrastructure', () => {
     const placed = succeed(crossing(), overpass(53, 3));
     expect(failureKey(placed, { type: 'DemolishRoad', x: 52, y: 50 })).toBe('error.bridgeTile');
     expect(succeed(placed, { type: 'RemoveBridge', x: 56, y: 50 }).bridges).toEqual([]);
+  });
+});
+
+const brtRow = (from: number, to: number, y = 50) =>
+  row(from, to, y).map((tile) => ({ ...tile, exits: [...(tile.x > from ? ['W' as const] : []), ...(tile.x < to ? ['E' as const] : [])] }));
+const brtOverpass = (x: number, length: number): Command => ({ type: 'PlaceBridge', x, y: 50, length, axis: 'x', carrier: 'brt' });
+
+// BRT corridor on y=50 at x=48..51 and x=57..60, a Railway across at x=54.
+function brtCrossing(overrides: Partial<GameState> = {}): GameState {
+  return crossing({ roads: [], brtRoads: [...brtRow(48, 51), ...brtRow(57, 60)], ...overrides });
+}
+
+describe('A BRT Bridge', () => {
+  it.each([[1, 450], [2, 675], [3, 900], [5, 1425]])('with a span of %i costs %i Urbs', (length, price) => {
+    const start = 53;
+    const state = brtCrossing({ brtRoads: [...brtRow(48, 51), ...brtRow(start + length + 1, 62)], rails: column(start, 47, 53).map((tile) => ({ ...tile, exits: ['N' as const, 'S' as const] })) });
+    expect(succeed(state, brtOverpass(start, length)).urbs).toBe(100_000 - price);
+  });
+
+  it('adds BRT ramps that open onto the corridor at each end, and leaves the Roads alone', () => {
+    const placed = succeed(brtCrossing(), brtOverpass(53, 3));
+    expect(placed.bridges).toEqual([{ x: 53, y: 50, length: 3, axis: 'x', carrier: 'brt' }]);
+    expect(placed.roads).toEqual([]);
+    expect(placed.brtRoads?.find((tile) => tile.x === 52)?.exits).toEqual(['W']);
+    expect(placed.brtRoads?.find((tile) => tile.x === 51)?.exits).toEqual(['W', 'E']);
+    expect(placed.brtRoads?.find((tile) => tile.x === 57)?.exits).toEqual(['E', 'W']);
+  });
+
+  it('needs a BRT corridor at each end, not a Road', () => {
+    expect(failureKey(brtCrossing({ brtRoads: brtRow(48, 51) }), brtOverpass(53, 3))).toBe('error.bridgeNeedsBrt');
+    const roads = [...row(48, 51), ...row(57, 60)].map((tile) => ({ ...tile, kind: 'road' as const }));
+    expect(failureKey(brtCrossing({ brtRoads: [], roads }), brtOverpass(53, 3))).toBe('error.bridgeNeedsBrt');
+  });
+
+  it('crosses a Road, a BRT corridor or a Railway', () => {
+    const road = column(54, 47, 53).map((tile) => ({ ...tile, kind: 'road' as const }));
+    expect(failureKey(brtCrossing({ rails: [], roads: road }), brtOverpass(53, 3))).toBeNull();
+    const lower = column(54, 47, 53).map((tile) => ({ ...tile, exits: tile.y === 47 ? ['S' as const] : tile.y === 53 ? ['N' as const] : ['N' as const, 'S' as const] }));
+    expect(failureKey(brtCrossing({ rails: [], brtRoads: [...brtRow(48, 51), ...brtRow(57, 60), ...lower] }), brtOverpass(53, 3))).toBeNull();
+  });
+
+  it('joins the BRT graph only, and not the BRT corridor beneath', () => {
+    const lower = column(54, 47, 53).map((tile) => ({ ...tile, exits: tile.y === 47 ? ['S' as const] : tile.y === 53 ? ['N' as const] : ['N' as const, 'S' as const] }));
+    const placed = succeed(brtCrossing({ rails: [], brtRoads: [...brtRow(48, 51), ...brtRow(57, 60), ...lower] }), brtOverpass(53, 3));
+    const brt = buildNetworkGraph(placed, 'brt');
+    expect(brt.get('52,50')).toEqual(expect.arrayContaining([{ x: 56, y: 50 }, { x: 51, y: 50 }]));
+    expect(brt.get('54,50')).toEqual([{ x: 54, y: 49 }, { x: 54, y: 51 }]);
+    expect(buildRoadGraph(placed).has('52,50')).toBe(false);
+  });
+
+  it('is removed with its ramps, and gives the corridor its ends back', () => {
+    const placed = succeed(brtCrossing(), brtOverpass(53, 3));
+    const removed = succeed(placed, { type: 'RemoveBridge', x: 54, y: 50 });
+    expect(removed.bridges).toEqual([]);
+    expect(removed.brtRoads).toEqual(brtCrossing().brtRoads);
+    expect(removed.urbs).toBe(placed.urbs + 675);
   });
 });

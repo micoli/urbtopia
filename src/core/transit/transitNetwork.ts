@@ -4,10 +4,11 @@ import { DIRECTIONS, neighbour, tileKey, type Direction } from '../map/geometry'
 import { isInsideOwnedParcels, roadExits, roundaboutTiles } from '../map/occupancy';
 import { roadPath } from '../map/roads';
 import type { Coord } from '../map/coord';
-import type { GameState, TransitTile } from '../engine/state';
+import type { Bridge, GameState, TransitTile } from '../engine/state';
 import type { FleetVehicleId } from './transitVehicleTypes.generated';
 import { FLEET_VEHICLES, type FleetVehicleEntry } from './vehicles';
 import { emptyRoadGraph, type RoadGraph } from '../map/roadGraph';
+import { bridgeRamps } from '../water/bridgeGeometry';
 
 const networkOf = (station: 'brtStation' | 'railStation') => {
   const { unlockCitizens, network } = definitionOf(station);
@@ -32,7 +33,16 @@ export function buildNetworkGraph(state: GameState, mode: 'brt' | 'rail'): RoadG
   const tiles = networkTiles(state, mode);
   const graph = emptyRoadGraph() as RoadGraph & Map<string, readonly Coord[]>;
   for (const tile of tiles) graph.set(tileKey(tile), networkNeighbours(tiles, tile));
+  if (mode === 'brt') for (const bridge of state.bridges ?? []) joinRamps(graph, bridge);
   return graph;
+}
+
+function joinRamps(graph: Map<string, readonly Coord[]>, bridge: Bridge): void {
+  if (bridge.carrier !== 'brt') return;
+  const [first, last] = bridgeRamps(bridge);
+  if (!first || !last) return;
+  graph.set(tileKey(first), [...(graph.get(tileKey(first)) ?? []), last]);
+  graph.set(tileKey(last), [...(graph.get(tileKey(last)) ?? []), first]);
 }
 
 export function networkNeighbours(tiles: TransitTile[], tile: Coord): Coord[] {

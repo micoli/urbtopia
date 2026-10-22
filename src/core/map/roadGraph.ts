@@ -2,7 +2,7 @@ import type { GameState } from '../engine/state';
 import type { Coord } from './coord';
 import { DIRECTIONS, neighbour, tileKey } from './geometry';
 import { roadExits, roundaboutTiles } from './occupancy';
-import { bridgeRamps, isInfrastructureBridge } from '../water/bridgeGeometry';
+import { bridgeRamps } from '../water/bridgeGeometry';
 import type { Bridge } from '../engine/state';
 
 export interface RoadGraph extends ReadonlyMap<string, readonly Coord[]> {
@@ -52,7 +52,7 @@ function isSideMiddle(tile: Coord, center: Coord): boolean {
 }
 
 function joinRamps(graph: Map<string, readonly Coord[]>, bridge: Bridge): void {
-  if (!isInfrastructureBridge(bridge)) return;
+  if (bridge.carrier !== 'road') return;
   const [first, last] = bridgeRamps(bridge);
   if (!first || !last) return;
   graph.set(tileKey(first), [...(graph.get(tileKey(first)) ?? []), last]);
