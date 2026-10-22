@@ -1,3 +1,4 @@
+import { bridgeElevation, type ElevationAt } from './bridgeElevation';
 import * as THREE from 'three';
 import { congestionStats, hashSeed, nextRandom, tileKey, transportStats, type Coord, type GameState } from '../core';
 import { BUS_MODEL } from './busModel';
@@ -158,11 +159,14 @@ export class TrafficLayer {
     this.roads = state.roads;
     this.roundabouts = state.roundabouts;
     this.graph = buildRoadGraph(state);
+    this.elevation = bridgeElevation(state.bridges);
     this.roadTiles = [...this.graph.keys()].filter((key) => (this.graph.get(key)?.length ?? 0) > 0).map(parseTile);
     this.tiers = new Map(state.roads.map((road) => [tileKey(road), road.tier ?? 1]));
     this.laneTiles = laneTileCount(this.tiers, this.roadTiles);
     this.vehicles = this.vehicles.filter((vehicle) => isOnTrafficRoad(this.graph, vehicle));
   }
+
+  private elevation: ElevationAt = () => 0;
 
   private lanesAt = (tile: Coord): number => this.tiers.get(tileKey(tile)) ?? 1;
 
@@ -224,7 +228,7 @@ export class TrafficLayer {
     const counts = this.models.map(() => 0);
     for (const vehicle of this.vehicles) {
       const pose = poseOf(vehicle);
-      this.placement.makeRotationY(pose.yaw).setPosition(pose.x, ROAD_SURFACE_HEIGHT, pose.z);
+      this.placement.makeRotationY(pose.yaw).setPosition(pose.x, ROAD_SURFACE_HEIGHT + this.elevation(pose.x, pose.z), pose.z);
       const model = this.models[vehicle.model];
       if (!model) continue;
       this.fitted.multiplyMatrices(this.placement, model.fit);

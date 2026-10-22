@@ -1,3 +1,4 @@
+import { bridgeElevation, type ElevationAt } from './bridgeElevation';
 import type { ModelLibrary } from './modelLibrary';
 import { TRAIN_MODELS } from './renderItems';
 import * as THREE from 'three';
@@ -65,6 +66,7 @@ export class TransitLayer {
   }
 
   sync(state: GameState, services: Service[]) {
+    this.elevation = bridgeElevation(state.bridges);
     const trackSignature = JSON.stringify([state.brtRoads, state.rails]);
     this.crossings = new Set((state.brtRoads ?? []).filter(p => state.roads.some(r => tileKey(r) === tileKey(p))).map(tileKey));
     const tracksChanged = trackSignature !== this.trackSignature;
@@ -90,6 +92,8 @@ export class TransitLayer {
   }
 
   // Each car follows the route on its own, a pitch behind the one in front, so a long vehicle bends round the corners like an articulated bus.
+  private elevation: ElevationAt = () => 0;
+
   update(delta: number) {
     this.priorityTiles.clear();
     for (const vehicle of this.moving) {
@@ -103,7 +107,7 @@ export class TransitLayer {
         const pose = poseAlong(vehicle.route, vehicle.loop, vehicle.phase + vehicle.pitch * (0.5 - index));
         const car = cars[index];
         if (car) {
-          car.position.set(pose.x + Math.cos(pose.yaw) * side, .12, pose.z - Math.sin(pose.yaw) * side);
+          car.position.set(pose.x + Math.cos(pose.yaw) * side, .12 + this.elevation(pose.x, pose.z), pose.z - Math.sin(pose.yaw) * side);
           car.rotation.y = pose.yaw;
         }
         if (vehicle.brt) for (const tile of [pose.from, pose.to]) if (this.crossings.has(tileKey(tile))) this.priorityTiles.add(tileKey(tile));

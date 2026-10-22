@@ -60,6 +60,8 @@ export const ASSET_PACKS: AssetPack[] = [
       'road-square',
       'road-crossing',
       'road-roundabout',
+      'road-slant-flat-high',
+      'road-bridge',
     ],
   },
   {

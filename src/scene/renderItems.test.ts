@@ -234,3 +234,27 @@ describe('renderItemsOf bridges', () => {
     expect(items.some((item) => item.x === 52.5 && item.model.startsWith('procedural/water-tile'))).toBe(true);
   });
 });
+
+describe('renderItemsOf bridges over infrastructure', () => {
+  const road = [{ x: 51, y: 50, kind: 'road' as const }, { x: 52, y: 50, kind: 'road' as const }, { x: 56, y: 50, kind: 'road' as const }, { x: 57, y: 50, kind: 'road' as const }];
+  const base = { ...newGame({ seed: 'overpass-render', now: 0 }), buildings: [], roads: road, bridges: [{ x: 53, y: 50, length: 3, axis: 'x' as const, carrier: 'road' as const }] };
+
+  it('draws a ramp at each end of the span and a deck tile per span tile, instead of the ramp Road tiles', () => {
+    const items = renderItemsOf(base).filter((item) => item.z === 50.5);
+    expect(items.filter((item) => item.model === 'roads/road-slant-flat-high').map((item) => [item.x, item.rotation])).toEqual([[52.5, 0], [56.5, 2]]);
+    expect(items.filter((item) => item.model === 'roads/road-bridge').map((item) => item.x)).toEqual([53.5, 54.5, 55.5]);
+    expect(items.filter((item) => item.x === 52.5 || item.x === 56.5).every((item) => item.model === 'roads/road-slant-flat-high')).toBe(true);
+  });
+
+  it('turns a vertical Bridge', () => {
+    const vertical = { ...base, roads: [{ x: 50, y: 52, kind: 'road' as const }, { x: 50, y: 56, kind: 'road' as const }], bridges: [{ x: 50, y: 53, length: 3, axis: 'y' as const, carrier: 'road' as const }] };
+    const ramps = renderItemsOf(vertical).filter((item) => item.model === 'roads/road-slant-flat-high');
+    expect(ramps.map((item) => [item.z, item.rotation])).toEqual([[52.5, 3], [56.5, 1]]);
+  });
+
+  it('draws a BRT Bridge in variation A, without the BRT pieces of its ramps', () => {
+    const brt = { ...base, roads: [], brtRoads: [{ x: 52, y: 50, exits: ['W' as const] }, { x: 56, y: 50, exits: ['E' as const] }], bridges: [{ x: 53, y: 50, length: 3, axis: 'x' as const, carrier: 'brt' as const }] };
+    const items = renderItemsOf(brt).filter((item) => item.textureVariant === 'roads-a');
+    expect(items.map((item) => item.model)).toEqual(['roads/road-slant-flat-high', 'roads/road-bridge', 'roads/road-bridge', 'roads/road-bridge', 'roads/road-slant-flat-high']);
+  });
+});

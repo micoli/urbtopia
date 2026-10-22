@@ -1,3 +1,4 @@
+import { bridgeElevation, type ElevationAt } from './bridgeElevation';
 import * as THREE from 'three';
 import { buildNetworkGraph, type Coord, type GameState } from '../core';
 import type { ModelLibrary } from './modelLibrary';
@@ -31,6 +32,7 @@ export class ServiceVehicleLayer {
   private brtRoads: GameState['brtRoads'] | null = null;
   private roundabouts: GameState['roundabouts'] | null = null;
   private state: GameState | null = null;
+  private elevation: ElevationAt = () => 0;
   private enabled = true;
   private ready = false;
   private tiers: ReadonlyMap<string, number> = new Map();
@@ -50,6 +52,7 @@ export class ServiceVehicleLayer {
 
   sync(state: GameState): void {
     this.state = state;
+    this.elevation = bridgeElevation(state.bridges);
     if (state.roads !== this.roads || state.roundabouts !== this.roundabouts || state.brtRoads !== this.brtRoads) {
       this.roads = state.roads;
       this.roundabouts = state.roundabouts;
@@ -123,7 +126,7 @@ export class ServiceVehicleLayer {
 
   private place(trip: Trip): void {
     const pose = poseOf(trip.vehicle);
-    trip.object.position.set(pose.x, ROAD_SURFACE_HEIGHT, pose.z);
+    trip.object.position.set(pose.x, ROAD_SURFACE_HEIGHT + this.elevation(pose.x, pose.z), pose.z);
     trip.object.rotation.y = pose.yaw;
   }
 

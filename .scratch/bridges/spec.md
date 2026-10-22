@@ -1,6 +1,6 @@
 # Bridges over infrastructure
 
-Status: ready-for-agent
+Status: completed
 
 Vocabulary and decisions: `CONTEXT.md` (Bridge, Bridge span, Bridge ramp, Carrier), ADR 0043, extends ADR 0018. Values: `balancing.md` (to write).
 

@@ -1,8 +1,8 @@
 import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core/buildings/buildingDefinitions';
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
-import { BRIDGE_ROAD_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRoadKeys, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
+import { BRIDGE_RAMP_MODEL, BRIDGE_ROAD_MODEL, BRIDGE_SPAN_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
+import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRamps, bridgeRoadKeys, bridgeTiles, isInfrastructureBridge, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, type Coord, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -107,6 +107,8 @@ export const MODEL_KEYS: readonly string[] = [
     ...SOLAR_PANEL_FILES,
     PARK_TREE_MODEL,
     BRIDGE_ROAD_MODEL,
+    BRIDGE_RAMP_MODEL,
+    BRIDGE_SPAN_MODEL,
     ...ROAD_MODELS,
     ...Object.values(VENUE_SHELL_MODELS).flatMap(shell => Object.values(shell)),
     ...VENUE_CUSTOMER_MODELS,
@@ -161,7 +163,7 @@ export function renderItemsOf(state: GameState, afterHarvest: readonly Harvested
   lastBuildingItems = buildings;
 
   if (lastRoadItems?.roads !== state.roads || lastRoadItems.bridges !== state.bridges || lastRoadItems.roundabouts !== state.roundabouts || lastRoadItems.rails !== state.rails || lastRoadItems.brtRoads !== state.brtRoads || lastRoadItems.pedestrianWays !== state.pedestrianWays) {
-    lastRoadItems = { bridges: state.bridges, roads: state.roads, roundabouts: state.roundabouts, rails: state.rails, brtRoads: state.brtRoads, pedestrianWays: state.pedestrianWays, items: [...roadItems(state), ...pedestrianWayItems(state), ...brtItems(state), ...railItems(state)] };
+    lastRoadItems = { bridges: state.bridges, roads: state.roads, roundabouts: state.roundabouts, rails: state.rails, brtRoads: state.brtRoads, pedestrianWays: state.pedestrianWays, items: [...roadItems(state), ...pedestrianWayItems(state), ...brtItems(state), ...railItems(state), ...bridgeItems(state)] };
   }
   const roads = lastRoadItems.items;
 
@@ -242,9 +244,22 @@ function pedestrianWayItems(state: GameState): RenderItem[] {
   });
 }
 
+// Quarter turns of the Kenney road models, whose road runs along +X and whose ramp rises towards +X.
+const AXIS_TURNS = { x: { forward: 0, back: 2 }, y: { forward: 3, back: 1 } } as const;
+
+function bridgeItems(state: GameState): RenderItem[] {
+  return (state.bridges ?? []).filter(isInfrastructureBridge).flatMap((bridge) => {
+    const [first, last] = bridgeRamps(bridge);
+    const turns = AXIS_TURNS[bridge.axis];
+    const at = (model: string, tile: Coord, rotation: number): RenderItem => ({ model, x: tile.x + 0.5, z: tile.y + 0.5, rotation, ...(bridge.carrier === 'brt' ? { textureVariant: 'roads-a' as const } : {}) });
+    return [at(BRIDGE_RAMP_MODEL, first!, turns.forward), ...bridgeTiles(bridge).map((tile) => at(BRIDGE_SPAN_MODEL, tile, turns.forward)), at(BRIDGE_RAMP_MODEL, last!, turns.back)];
+  });
+}
+
 function brtItems(state: GameState): RenderItem[] {
   const roadKeys = new Set(state.roads.map(tileKey));
-  return (state.brtRoads ?? []).filter(tile => !roadKeys.has(tileKey(tile))).map(tile => {
+  const ramps = bridgeRoadKeys(state);
+  return (state.brtRoads ?? []).filter(tile => !roadKeys.has(tileKey(tile)) && !ramps.has(tileKey(tile))).map(tile => {
     const { piece, rotation } = roadPiece(tile.exits, tile.kind === 'crossing' ? 'crossing' : 'road');
     return { model: ROAD_PIECE_MODELS[piece], x: tile.x + 0.5, z: tile.y + 0.5, rotation, textureVariant: 'roads-a' as const };
   });

@@ -9428,6 +9428,15 @@
       1
     ]
   },
+  "roads-road-bridge": {
+    "file": "roads/road-bridge",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
+  },
   "roads-road-crossing": {
     "file": "roads/road-crossing",
     "source": "kenney",
@@ -9473,6 +9482,15 @@
       3
     ],
     "note": "exits assumed at the middle of each side; to verify"
+  },
+  "roads-road-slant-flat-high": {
+    "file": "roads/road-slant-flat-high",
+    "source": "kenney",
+    "license": "CC0",
+    "footprint": [
+      1,
+      1
+    ]
   },
   "roads-road-square": {
     "file": "roads/road-square",

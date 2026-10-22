@@ -1,4 +1,6 @@
 {
   "$schema": "../schemas/infrastructure-bridge.schema.json",
-  "road": "roads-road-straight"
+  "road": "roads-road-straight",
+  "ramp": "roads-road-slant-flat-high",
+  "span": "roads-road-bridge"
 }
