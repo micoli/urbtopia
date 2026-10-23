@@ -6,7 +6,7 @@ const modelId = filled.meta({ modelId: true });
 
 const schemaField = { $schema: z.string().optional() };
 
-export const ROAD_PIECES = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout'] as const;
+export const ROAD_PIECES = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout', 'roundaboutThree'] as const;
 
 const pieces = Object.fromEntries(ROAD_PIECES.map(piece => [piece, modelId])) as Record<(typeof ROAD_PIECES)[number], typeof modelId>;
 

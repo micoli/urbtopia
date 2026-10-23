@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_RAMP_MODEL, BRIDGE_ROAD_MODEL, BRIDGE_SPAN_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRamps, bridgeRoadKeys, bridgeTiles, isInfrastructureBridge, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, type Coord, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
+import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRamps, bridgeRoadKeys, bridgeTiles, isInfrastructureBridge, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, DIRECTION_VECTORS, roundaboutPiece, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, type Coord, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -230,7 +230,15 @@ function roadItems(state: GameState): RenderItem[] {
     const { piece, rotation } = roadPiece(roadExits(state, road), road.kind);
     return { model: ROAD_PIECE_MODELS[piece], x: road.x + 0.5, z: road.y + 0.5, rotation };
   });
-  const roundabouts = state.roundabouts.map((center) => ({ model: ROAD_PIECE_MODELS.roundabout, x: center.x + 0.5, z: center.y + 0.5, rotation: 0 }));
+  const roadKeys = new Set(state.roads.map(tileKey));
+  const roundabouts = state.roundabouts.map((center) => {
+    const exits = DIRECTIONS.filter((direction: Direction) => {
+      const vector = DIRECTION_VECTORS[direction];
+      return roadKeys.has(tileKey({ x: center.x + 2 * vector.x, y: center.y + 2 * vector.y }));
+    });
+    const { piece, rotation } = roundaboutPiece(exits);
+    return { model: ROAD_PIECE_MODELS[piece], x: center.x + 0.5, z: center.y + 0.5, rotation };
+  });
   return [...tiles, ...roundabouts];
 }
 

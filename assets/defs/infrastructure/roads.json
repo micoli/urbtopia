@@ -8,6 +8,7 @@
     "intersection": "roads-road-intersection",
     "crossroad": "roads-road-crossroad",
     "crossing": "roads-road-crossing",
-    "roundabout": "roads-road-roundabout"
+    "roundabout": "roads-road-roundabout",
+    "roundaboutThree": "roads-road-roundabout-three"
   }
 }

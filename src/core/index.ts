@@ -67,7 +67,7 @@ export type { VenueEvent } from './engine/state';
 export type { StaffRole, FixtureId, VenueType, ArcadeFixtureId, SupermarketFixtureId, HotelFixtureId, VenueData, VenueFixture, Boat, BoatFamily, Bridge, Building, BuildingType, GameState, ColorVariant, ParcelCoord, MarketPrice, QueueEntry, RoadTile, PedestrianWayTile, Rotation, FieldTile, PlantedCrop, SeedStock, ShopStack, Storage } from './engine/state';
 export { DIRECTIONS, DIRECTION_VECTORS, frontDirection, neighbour, tileKey } from './map/geometry';
 export type { Direction } from './map/geometry';
-export { roadPath, roadPiece } from './map/roads';
+export { roadPath, roadPiece, roundaboutPiece } from './map/roads';
 export type { RoadKind, RoadPiece, RoadPieceName } from './map/roads';
 export { missingRoadTiles, roadBuildCost, pedestrianWayBuildCost, PEDESTRIAN_WAY_COST_FACTOR } from './map/roadCost';
 export { buildRoadGraph, emptyRoadGraph, isRoundaboutExit, neighboursOf } from './map/roadGraph';
