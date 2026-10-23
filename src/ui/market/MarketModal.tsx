@@ -7,7 +7,7 @@ import { EventsContent } from './EventsContent';
 import { MarketContent } from './MarketContent';
 import { MarketTabs } from './MarketTabs';
 
-export function MarketModal() {
+function MarketModalDialog() {
   const open = useUi((store) => store.marketOpen);
   const toggle = useUi((store) => store.toggleMarket);
   const tab = useUi((store) => store.marketTab);
@@ -34,4 +34,9 @@ export function MarketModal() {
       </div>
     </div>
   );
+}
+
+export function MarketModal() {
+  const open = useUi((store) => store.marketOpen);
+  return open ? <MarketModalDialog /> : null;
 }

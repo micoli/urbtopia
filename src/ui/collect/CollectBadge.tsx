@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { useStore } from 'zustand';
 import { Building, Command, isShopType, isVenue, itemModelOf, taxDue, takingsDue, isHomeType, isOfficeType, officeUrbsDue } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
@@ -48,7 +48,11 @@ export function readyItemModels(building: Building): string[] {
   return models.slice(0, MAX_PREVIEWS);
 }
 
-export function CollectBadge({ worldX, worldZ, label, command, models = [] }: CollectBadgeProps) {
+function sameBadgeProps(a: CollectBadgeProps, b: CollectBadgeProps): boolean {
+  return a.worldX === b.worldX && a.worldZ === b.worldZ && a.label === b.label && (a.models ?? []).join() === (b.models ?? []).join() && JSON.stringify(a.command) === JSON.stringify(b.command);
+}
+
+export const CollectBadge = memo(function CollectBadge({ worldX, worldZ, label, command, models = [] }: CollectBadgeProps) {
   const ref = useRef<HTMLButtonElement>(null);
   const previewEnabled = useStore(prefsStore, (store) => store.showProductionPreview);
   const showPreview = previewEnabled && models.length > 0;
@@ -88,4 +92,4 @@ export function CollectBadge({ worldX, worldZ, label, command, models = [] }: Co
       }
     </button>
   );
-}
+}, sameBadgeProps);

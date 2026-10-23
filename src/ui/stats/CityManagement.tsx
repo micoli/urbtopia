@@ -22,7 +22,7 @@ import {WellbeingSection} from './management/WellbeingSection';
 import {scrollToSection} from './management/scrollToSection';
 import {useModalFocus} from './management/useModalFocus';
 
-export function CityManagement() {
+function CityManagementDialog() {
     const state = useGame(s => s.state);
     const open = useUi(s => s.statsOpen);
     const toggle = useUi(s => s.toggleStats);
@@ -66,4 +66,9 @@ export function CityManagement() {
             </div>
         </div>
     </div>;
+}
+
+export function CityManagement() {
+  const open = useUi((store) => store.statsOpen);
+  return open ? <CityManagementDialog /> : null;
 }
