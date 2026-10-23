@@ -149,7 +149,7 @@ function turnsBackAt(graph: RoadGraph, vehicle: TrafficVehicle): boolean {
 }
 
 export function advanceTrafficVehicle(graph: RoadGraph, vehicle: TrafficVehicle, deltaSeconds: number, random: () => number, others: readonly TrafficVehicle[], lanesAt: LanesAt, stopTiles: ReadonlySet<string> = NO_STOPS): boolean {
-  const travel = allowedTravel(vehicle, vehicle.speed * deltaSeconds, others, stopTiles, deltaSeconds, turnsBackAt(graph, vehicle));
+  const travel = allowedTravel(vehicle, (vehicle.speed * deltaSeconds) / edgeLength(vehicle.from, vehicle.to), others, stopTiles, deltaSeconds, turnsBackAt(graph, vehicle));
   vehicle.progress += travel;
   if (vehicle.progress < 1) return true;
   const previous = vehicle.from;
@@ -170,4 +170,9 @@ export function isOnTrafficRoad(graph: RoadGraph, vehicle: Vehicle): boolean {
 
 export function laneTileCount(tiers: ReadonlyMap<string, number>, roadTiles: readonly Coord[]): number {
   return roadTiles.reduce((sum, tile) => sum + (tiers.get(tileKey(tile)) ?? 1), 0);
+}
+
+// A Bridge over infrastructure is one long edge between its two ramps: the vehicle crosses it at the usual speed.
+function edgeLength(from: Coord, to: Coord): number {
+  return Math.max(1, Math.abs(to.x - from.x), Math.abs(to.y - from.y));
 }

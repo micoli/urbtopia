@@ -80,3 +80,34 @@ describe('bridge save compatibility', () => {
     expect(parseEnvelope(serializeEnvelope({ ...base(), bridges } as never, 100))).toMatchObject({ ok: false, reason: 'invalid-state' });
   });
 });
+
+describe('Bridge over infrastructure save compatibility', () => {
+  const base = () => ({
+    ...newGame({ seed: 'overpass-save', now: 0 }),
+    roads: [{ x: 52, y: 50, kind: 'road' as const }, { x: 56, y: 50, kind: 'road' as const }],
+  });
+
+  it('round-trips a Road Bridge', () => {
+    const state = { ...base(), bridges: [{ x: 53, y: 50, length: 3, axis: 'x' as const, carrier: 'road' as const }] };
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+  });
+
+  it('round-trips a tiered Road Bridge and rejects a ramp with another tier', () => {
+    const tiered = { ...base(), roads: base().roads.map((road) => ({ ...road, tier: 2 })), bridges: [{ x: 53, y: 50, length: 3, axis: 'x' as const, carrier: 'road' as const, tier: 2 }] };
+    expect(parseEnvelope(serializeEnvelope(tiered, 100))).toEqual({ ok: true, state: tiered, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope({ ...tiered, roads: base().roads } as never, 100))).toMatchObject({ ok: false, reason: 'invalid-state' });
+  });
+
+  it('round-trips a BRT Bridge', () => {
+    const state = { ...base(), roads: [], brtRoads: [{ x: 52, y: 50, exits: ['W' as const] }, { x: 56, y: 50, exits: ['E' as const] }], bridges: [{ x: 53, y: 50, length: 3, axis: 'x' as const, carrier: 'brt' as const }] };
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+  });
+
+  it.each([
+    [[{ x: 53, y: 50, length: 3, axis: 'x', carrier: 'rail' }]],
+    [[{ x: 54, y: 50, length: 3, axis: 'x', carrier: 'road' }]],
+    [[{ x: 53, y: 50, length: 3, axis: 'x', carrier: 'road' }, { x: 53, y: 50, length: 1, axis: 'x', carrier: 'road' }]],
+  ])('rejects invalid Bridges %j', bridges => {
+    expect(parseEnvelope(serializeEnvelope({ ...base(), bridges } as never, 100))).toMatchObject({ ok: false, reason: 'invalid-state' });
+  });
+});

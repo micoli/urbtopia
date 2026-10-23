@@ -290,6 +290,38 @@ describe('brush tool', () => {
     expect(horizontal.cost).toBe(450);
   });
 
+  describe('a Bridge over infrastructure', () => {
+    const crossing: GameState = {
+      ...newGame({ seed: 'overpass-tool', now: 0 }),
+      urbs: 100_000,
+      tutorial: null,
+      buildings: [{ ...createBuilding(1, 'home', 40, 40, 0), tier: 6 }],
+      roads: [48, 49, 50, 51, 57, 58].map((x) => ({ x, y: 50, kind: 'road' as const })),
+      rails: [49, 50, 51].map((y) => ({ x: 54, y, exits: y === 49 ? ['S' as const] : y === 51 ? ['N' as const] : ['N' as const, 'S' as const] })),
+    };
+
+    it('previews its ramps and span with the price of its Carrier', () => {
+      const evaluated = evaluateTool({ kind: 'bridge', length: 3, carrier: 'road' }, { state: crossing, tile: { x: 53, y: 50 }, rotation: null });
+      expect(evaluated.valid).toBe(true);
+      expect(evaluated.command).toEqual({ type: 'PlaceBridge', x: 53, y: 50, length: 3, axis: 'x', carrier: 'road' });
+      expect(evaluated.ghost.tiles).toEqual([52, 53, 54, 55, 56].map((x) => ({ x, y: 50 })));
+      expect(evaluated.cost).toBe(600);
+    });
+
+    it('turns with the rotation chosen by the player, even into an invalid ghost', () => {
+      const turned = evaluateTool({ kind: 'bridge', length: 3, carrier: 'road' }, { state: crossing, tile: { x: 53, y: 50 }, rotation: 1 });
+      expect(turned.command).toMatchObject({ axis: 'y' });
+      expect(turned.valid).toBe(false);
+      expect(turned.rotation).toBe(1);
+    });
+
+    it('explains an invalid place', () => {
+      const evaluated = evaluateTool({ kind: 'bridge', length: 3, carrier: 'road' }, { state: crossing, tile: { x: 60, y: 60 }, rotation: null });
+      expect(evaluated.valid).toBe(false);
+      expect(evaluated.issue).toBe('error.bridgeNeedsInfrastructure');
+    });
+  });
+
   it('removes a Bridge from the hovered tile', () => {
     expect(evaluateTool({ kind: 'removeBridge' }, { state: farmCity, tile: { x: 50, y: 50 }, rotation: null }).command).toEqual({ type: 'RemoveBridge', x: 50, y: 50 });
   });

@@ -8,7 +8,7 @@ describe('renderItemsOf', () => {
   it('renders BRT tiles with road kit pieces in variation A', () => {
     const brtRoads = [{ x: 60, y: 60, exits: ['E' as const] }, { x: 61, y: 60, exits: ['W' as const, 'E' as const] }, { x: 62, y: 60, exits: ['W' as const] }];
     const items = renderItemsOf({ ...state, brtRoads }).filter((item) => item.textureVariant === 'roads-a');
-    expect(items.map((item) => item.model)).toEqual(['roads/road-end', 'roads/road-straight', 'roads/road-end']);
+    expect(items.map((item) => item.model)).toEqual(['streets/road-end', 'streets/road-straight', 'streets/road-end']);
     expect(items[1]).toMatchObject({ x: 61.5, z: 60.5 });
   });
 
@@ -112,10 +112,26 @@ describe('road items', () => {
   const state = newGame({ seed: 'amber-fox-4821', now: 0 });
 
   it('uses straight pieces in the middle of a road and an end piece at its extremity', () => {
-    const items = renderItemsOf(state).filter((item) => item.model.startsWith('roads/'));
-    expect(items.find((item) => item.x === 57.5)).toMatchObject({ model: 'roads/road-straight', rotation: 0 });
-    expect(items.find((item) => item.x === 53.5)).toMatchObject({ model: 'roads/road-end', rotation: 0 });
-    expect(items.find((item) => item.x === 62.5)).toMatchObject({ model: 'roads/road-end', rotation: 2 });
+    const items = renderItemsOf(state).filter((item) => item.model.startsWith('streets/'));
+    expect(items.find((item) => item.x === 57.5)).toMatchObject({ model: 'streets/road-straight', rotation: 0 });
+    expect(items.find((item) => item.x === 53.5)).toMatchObject({ model: 'streets/road-end', rotation: 0 });
+    expect(items.find((item) => item.x === 62.5)).toMatchObject({ model: 'streets/road-end', rotation: 2 });
+  });
+});
+
+describe('roundabout items', () => {
+  const state = newGame({ seed: 'amber-fox-4821', now: 0 });
+  const roundaboutAt = (roads: [number, number][]) => renderItemsOf({ ...state, roads: roads.map(([x, y]) => ({ x, y, kind: 'road' as const })), roundabouts: [{ x: 20, y: 20 }], buildings: [] }).find((item) => item.x === 20.5 && item.z === 20.5);
+
+  it('uses the four-exit model unless exactly three roads are attached', () => {
+    expect(roundaboutAt([[22, 20], [18, 20]])).toMatchObject({ model: 'streets/road-roundabout', rotation: 0 });
+    expect(roundaboutAt([[22, 20], [18, 20], [20, 22], [20, 18]])).toMatchObject({ model: 'streets/road-roundabout', rotation: 0 });
+  });
+
+  it('turns the three-exit model so its closed side faces the missing road', () => {
+    expect(roundaboutAt([[22, 20], [18, 20], [20, 22]])).toMatchObject({ model: 'streets/road-roundabout-three', rotation: 0 });
+    expect(roundaboutAt([[22, 20], [18, 20], [20, 18]])).toMatchObject({ model: 'streets/road-roundabout-three', rotation: 2 });
+    expect(roundaboutAt([[18, 20], [20, 22], [20, 18]])).toMatchObject({ model: 'streets/road-roundabout-three', rotation: 3 });
   });
 });
 
@@ -229,8 +245,32 @@ describe('renderItemsOf bridges', () => {
   it('leaves the deck and the Road of a Bridge to the animated Bridge layer', () => {
     const items = renderItemsOf(base);
     expect(items.some((item) => item.model === 'procedural/bridge-deck')).toBe(false);
-    expect(items.some((item) => item.x === 52.5 && item.model.startsWith('roads/'))).toBe(false);
-    expect(items.some((item) => item.x === 51.5 && item.model.startsWith('roads/'))).toBe(true);
+    expect(items.some((item) => item.x === 52.5 && item.model.startsWith('streets/'))).toBe(false);
+    expect(items.some((item) => item.x === 51.5 && item.model.startsWith('streets/'))).toBe(true);
     expect(items.some((item) => item.x === 52.5 && item.model.startsWith('procedural/water-tile'))).toBe(true);
+  });
+});
+
+describe('renderItemsOf bridges over infrastructure', () => {
+  const road = [{ x: 51, y: 50, kind: 'road' as const }, { x: 52, y: 50, kind: 'road' as const }, { x: 56, y: 50, kind: 'road' as const }, { x: 57, y: 50, kind: 'road' as const }];
+  const base = { ...newGame({ seed: 'overpass-render', now: 0 }), buildings: [], roads: road, bridges: [{ x: 53, y: 50, length: 3, axis: 'x' as const, carrier: 'road' as const }] };
+
+  it('draws a ramp at each end of the span and a deck tile per span tile, instead of the ramp Road tiles', () => {
+    const items = renderItemsOf(base).filter((item) => item.z === 50.5);
+    expect(items.filter((item) => item.model === 'streets/road-slant-flat-high').map((item) => [item.x, item.rotation])).toEqual([[52.5, 0], [56.5, 2]]);
+    expect(items.filter((item) => item.model === 'streets/road-bridge').map((item) => item.x)).toEqual([53.5, 54.5, 55.5]);
+    expect(items.filter((item) => item.x === 52.5 || item.x === 56.5).every((item) => item.model === 'streets/road-slant-flat-high')).toBe(true);
+  });
+
+  it('turns a vertical Bridge', () => {
+    const vertical = { ...base, roads: [{ x: 50, y: 52, kind: 'road' as const }, { x: 50, y: 56, kind: 'road' as const }], bridges: [{ x: 50, y: 53, length: 3, axis: 'y' as const, carrier: 'road' as const }] };
+    const ramps = renderItemsOf(vertical).filter((item) => item.model === 'streets/road-slant-flat-high');
+    expect(ramps.map((item) => [item.z, item.rotation])).toEqual([[52.5, 3], [56.5, 1]]);
+  });
+
+  it('draws a BRT Bridge in variation A, without the BRT pieces of its ramps', () => {
+    const brt = { ...base, roads: [], brtRoads: [{ x: 52, y: 50, exits: ['W' as const] }, { x: 56, y: 50, exits: ['E' as const] }], bridges: [{ x: 53, y: 50, length: 3, axis: 'x' as const, carrier: 'brt' as const }] };
+    const items = renderItemsOf(brt).filter((item) => item.textureVariant === 'roads-a');
+    expect(items.map((item) => item.model)).toEqual(['streets/road-slant-flat-high', 'streets/road-bridge', 'streets/road-bridge', 'streets/road-bridge', 'streets/road-slant-flat-high']);
   });
 });

@@ -62,3 +62,16 @@ function line(from: Coord, to: Coord): Coord[] {
 function dedupe(tiles: Coord[]): Coord[] {
   return tiles.filter((tile, index) => index === 0 || tile.x !== tiles[index - 1]?.x || tile.y !== tiles[index - 1]?.y);
 }
+
+export interface RoundaboutPiece {
+  piece: 'roundabout' | 'roundaboutThree';
+  rotation: number;
+}
+
+// The three-exit model is closed on the north side; it turns until the unconnected side faces the missing exit.
+export function roundaboutPiece(exits: readonly Direction[]): RoundaboutPiece {
+  const missing = COUNTER_CLOCKWISE.filter((direction) => !exits.includes(direction));
+  const [only] = missing;
+  if (missing.length !== 1 || !only) return { piece: 'roundabout', rotation: 0 };
+  return { piece: 'roundaboutThree', rotation: (COUNTER_CLOCKWISE.indexOf(only) + 3) % 4 };
+}

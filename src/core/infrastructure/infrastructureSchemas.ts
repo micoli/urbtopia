@@ -6,7 +6,7 @@ const modelId = filled.meta({ modelId: true });
 
 const schemaField = { $schema: z.string().optional() };
 
-export const ROAD_PIECES = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout'] as const;
+export const ROAD_PIECES = ['square', 'end', 'straight', 'bend', 'intersection', 'crossroad', 'crossing', 'roundabout', 'roundaboutThree'] as const;
 
 const pieces = Object.fromEntries(ROAD_PIECES.map(piece => [piece, modelId])) as Record<(typeof ROAD_PIECES)[number], typeof modelId>;
 
@@ -21,8 +21,8 @@ export const railsInfrastructureSchema = z
   .meta({ title: 'Rails', description: 'assets/defs/infrastructure/rails.json: the Model ids of the rail pieces.' });
 
 export const bridgeInfrastructureSchema = z
-  .strictObject({ ...schemaField, road: modelId })
-  .meta({ title: 'Bridge', description: 'assets/defs/infrastructure/bridge.json: the Model id of a bridge approach.' });
+  .strictObject({ ...schemaField, road: modelId, ramp: modelId, span: modelId })
+  .meta({ title: 'Bridge', description: 'assets/defs/infrastructure/bridge.json: the Model ids of the road of a bridge over water, and of the ramp and the span of a bridge over infrastructure.' });
 
 // What the scene places around buildings and in Venues, owned by no Game object.
 export const sceneryInfrastructureSchema = z

@@ -47,6 +47,11 @@
           "type": "string",
           "pattern": "\\S",
           "modelId": true
+        },
+        "roundaboutThree": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
         }
       },
       "required": [
@@ -57,7 +62,8 @@
         "intersection",
         "crossroad",
         "crossing",
-        "roundabout"
+        "roundabout",
+        "roundaboutThree"
       ],
       "additionalProperties": false
     }

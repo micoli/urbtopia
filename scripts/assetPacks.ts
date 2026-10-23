@@ -47,22 +47,6 @@ const extraPacks = readExtraPacks();
 
 export const ASSET_PACKS: AssetPack[] = [
   {
-    name: 'roads',
-    colorVariants: ['a'],
-    url: 'https://kenney.nl/media/pages/assets/city-kit-roads/74288c9459-1787042796/kenney_city-kit-roads.zip',
-    archive: 'kenney_city-kit-roads.zip',
-    files: [
-      'road-straight',
-      'road-bend',
-      'road-intersection',
-      'road-crossroad',
-      'road-end',
-      'road-square',
-      'road-crossing',
-      'road-roundabout',
-    ],
-  },
-  {
     name: 'commercial',
     colorVariants: ['a', 'b'],
     url: 'https://kenney.nl/media/pages/assets/city-kit-commercial/a742d900eb-1753115042/kenney_city-kit-commercial_2.1.zip',

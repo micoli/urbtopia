@@ -25,7 +25,7 @@ export const CATALOG: CatalogItem[] = [
   { id: 'home', label: 'Home', category: 'habitat', cost: 150, model: 'suburban/building-type-a', yields: { resource: 'urbs', amount: 12 }, citizens: 6 },
   { id: 'power', label: 'Power plant', category: 'services', cost: 250, model: 'industrial/building-t' },
   { id: 'water', label: 'Water tower', category: 'services', cost: 200, model: 'industrial/water-tower' },
-  { id: 'road', label: 'Road', category: 'roads', cost: 5, model: 'roads/road-straight' },
+  { id: 'road', label: 'Road', category: 'roads', cost: 5, model: 'streets/road-straight' },
 ]
 
 export const itemById = (id: string) => CATALOG.find(i => i.id === id)!

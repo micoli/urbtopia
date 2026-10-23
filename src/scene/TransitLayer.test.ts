@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { createBuilding, newGame, transportStats, type GameState, type TransitTile } from '../core';
-import { MODE_LOOK, TransitLayer, VEHICLE_SPACING, poseAlong, slotOf } from './TransitLayer';
+import { MODE_LOOK, TransitLayer, VEHICLE_SPACING, poseAlong, routeLength, slotOf } from './TransitLayer';
 
 it('renders dedicated infrastructure in bounded instance groups and animates a priority BRT crossing', () => {
   const layer = new TransitLayer();
@@ -102,5 +102,15 @@ describe('articulated vehicles', () => {
 
   it('wraps round a loop', () => {
     expect(poseAlong(bend, true, -0.5).z).toBeCloseTo(poseAlong(bend, true, 3.5).z);
+  });
+});
+
+describe('poseAlong over a Bridge', () => {
+  const route = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 5, y: 0 }, { x: 6, y: 0 }];
+
+  it('counts the long edge between the ramps as its length in tiles', () => {
+    expect(routeLength(route)).toBe(6);
+    expect(poseAlong(route, false, 3).x).toBeCloseTo(3.5);
+    expect(poseAlong(route, false, 5.5).x).toBeCloseTo(6);
   });
 });

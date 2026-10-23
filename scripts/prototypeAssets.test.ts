@@ -1,8 +1,9 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { ARCHIVES_DIR, ASSET_PACKS } from './assetPacks';
 import { extractPack } from './extractPack';
+import { managedModelFile } from './managedModels';
 import { PROTOTYPE_ASSETS } from './prototypeAssets';
 
 const filesOf = (name: string, selection: string[] | 'all') => {
@@ -12,6 +13,10 @@ const filesOf = (name: string, selection: string[] | 'all') => {
 };
 
 describe('prototype assets', () => {
+  it.each(PROTOTYPE_ASSETS)('$prototype only asks for managed models that exist', ({ managed = [] }) => {
+    for (const key of managed) expect(existsSync(managedModelFile(key)), key).toBe(true);
+  });
+
   it.each(PROTOTYPE_ASSETS)('$prototype only asks for models that exist in the versioned archives', ({ packs }) => {
     for (const [name, selection] of Object.entries(packs)) {
       const files = filesOf(name, selection);

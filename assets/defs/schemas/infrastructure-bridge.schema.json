@@ -9,12 +9,24 @@
       "type": "string",
       "pattern": "\\S",
       "modelId": true
+    },
+    "ramp": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    },
+    "span": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
     }
   },
   "required": [
-    "road"
+    "road",
+    "ramp",
+    "span"
   ],
   "additionalProperties": false,
   "title": "Bridge",
-  "description": "assets/defs/infrastructure/bridge.json: the Model id of a bridge approach."
+  "description": "assets/defs/infrastructure/bridge.json: the Model ids of the road of a bridge over water, and of the ramp and the span of a bridge over infrastructure."
 }

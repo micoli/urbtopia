@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { congestionStats, hashSeed, nextRandom, pedestrianGraph, type GameState, type PedestrianGraph } from '../core';
 import { stickCyclist, stickPedestrian } from './stickFigures';
-import { MAX_CYCLISTS, MAX_PEDESTRIANS, advancePedestrian, crossedTile, isOnGraph, pedestrianPose, startPedestrian, targetPedestrianCount, type Pedestrian } from './pedestrianWalk';
+import { bridgeElevation, type ElevationAt } from './bridgeElevation';
+import { MAX_CYCLISTS, tileOfNode, MAX_PEDESTRIANS, advancePedestrian, crossedTile, isOnGraph, pedestrianPose, startPedestrian, targetPedestrianCount, type Pedestrian } from './pedestrianWalk';
 
 const SIDEWALK_HEIGHT = 0.03;
 const BASE_SPEED = 0.35;
@@ -38,6 +39,8 @@ export class PedestrianLayer {
   private brtRoads: GameState['brtRoads'] = undefined;
   private pedestrianWays: GameState['pedestrianWays'] | undefined;
   private enabled = true;
+  private bridges: GameState['bridges'] = undefined;
+  private elevation: ElevationAt = () => 0;
   private placement = new THREE.Object3D();
   private touch = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
 
@@ -52,6 +55,10 @@ export class PedestrianLayer {
 
   sync(state: GameState): void {
     if (state.seed !== this.seed) this.reset(state.seed);
+    if (state.bridges !== this.bridges) {
+      this.bridges = state.bridges;
+      this.elevation = bridgeElevation(state.bridges);
+    }
     if (state.roads !== this.roads || state.pedestrianWays !== this.pedestrianWays || state.brtRoads !== this.brtRoads) this.rebuildGraph(state);
     const stats = congestionStats(state);
     const walking = stats.walkers + tripsTotal(stats.walkingTrips);
@@ -118,7 +125,7 @@ export class PedestrianLayer {
   private draw(fleet: Fleet): void {
     fleet.figures.forEach((figure, index) => {
       const pose = pedestrianPose(figure);
-      this.placement.position.set(pose.x, SIDEWALK_HEIGHT, pose.z);
+      this.placement.position.set(pose.x, SIDEWALK_HEIGHT + this.elevation(pose.x, pose.z, tileOfNode(figure.from), tileOfNode(figure.to)), pose.z);
       this.placement.rotation.set(0, pose.yaw, 0);
       this.placement.updateMatrix();
       fleet.mesh.setMatrixAt(index, this.placement.matrix);

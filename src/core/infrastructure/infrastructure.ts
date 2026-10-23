@@ -15,6 +15,10 @@ export const RAIL_CORNER_MODEL = modelFileOf(rails.corner);
 
 export const BRIDGE_ROAD_MODEL = modelFileOf(bridge.road);
 
+export const BRIDGE_RAMP_MODEL = modelFileOf(bridge.ramp);
+
+export const BRIDGE_SPAN_MODEL = modelFileOf(bridge.span);
+
 export const PARK_TREE_MODEL = modelFileOf(scenery.parkTree);
 
 export const ROOF_PANEL_MODEL = modelFileOf(scenery.roofPanel);

@@ -81,12 +81,12 @@ export class GameScene {
 
   async init() {
     const loader = new GLTFLoader()
-    const paths = [...ALL_MODELS, 'roads/road-crossroad']
+    const paths = [...ALL_MODELS, 'streets/road-crossroad']
     await Promise.all(paths.map(async p => this.models.set(p, (await loader.loadAsync(`/models/${p}.glb`)).scene)))
     const roads = new THREE.Group()
     for (let x = MAP_MIN; x <= MAP_MAX; x++) for (let z = MAP_MIN; z <= MAP_MAX; z++) {
       if (!isRoad(x, z)) continue
-      const road = this.models.get(isCrossroad(x, z) ? 'roads/road-crossroad' : 'roads/road-straight')!.clone(true)
+      const road = this.models.get(isCrossroad(x, z) ? 'streets/road-crossroad' : 'streets/road-straight')!.clone(true)
       road.position.set(x, 0, z)
       road.rotation.y = !isCrossroad(x, z) && x % 6 === 0 ? Math.PI / 2 : 0
       roads.add(road)

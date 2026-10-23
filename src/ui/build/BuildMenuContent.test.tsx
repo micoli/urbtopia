@@ -174,7 +174,7 @@ describe('build menu sections', () => {
     context.state = big;
     context.flyout = 'roads';
     const roads = renderToStaticMarkup(<BuildMenuContent />);
-    for (const label of [t('water.lay'), `${t('water.bridge')} · 1 ${t('water.bridgeTiles')}`, `${t('water.bridge')} · 5 ${t('water.bridgeTiles')}`]) expect(roads).toContain(label);
+    for (const label of [t('water.lay'), `${t('water.bridge')} · 1 ${t('water.bridgeTiles')}`, `${t('water.bridge')} · 5 ${t('water.bridgeTiles')}`, `${t('bridge.road')} · 3 ${t('water.bridgeTiles')}`, `${t('bridge.brt')} · 5 ${t('water.bridgeTiles')}`]) expect(roads).toContain(label);
     context.state = { ...big, waterTiles: [{ x: 50, y: 50 }], bridges: [{ x: 52, y: 50, length: 1, axis: 'x' }] };
     const used = renderToStaticMarkup(<BuildMenuContent />);
     expect(used).toContain(t('water.remove'));

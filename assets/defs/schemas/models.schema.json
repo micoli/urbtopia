@@ -89,6 +89,10 @@
       "rotationOffset": {
         "type": "number"
       },
+      "flush": {
+        "description": "A managed model drawn edge to edge over its tile (a road piece): the scene does not inset it.",
+        "type": "boolean"
+      },
       "tones": {
         "description": "The color tones of this model: the name and swatch of each; a palette PNG `<file>.tone-<x>.png` sits next to it for tones b to d and Repaint swaps the palette texture.",
         "type": "object",

@@ -1,3 +1,4 @@
+import { bridgeElevation, type ElevationAt } from './bridgeElevation';
 import type { ModelLibrary } from './modelLibrary';
 import { TRAIN_MODELS } from './renderItems';
 import * as THREE from 'three';
@@ -33,15 +34,24 @@ interface RoutePose {
   to: { x: number; y: number };
 }
 
+const edgeLength = (from: { x: number; y: number }, to: { x: number; y: number }): number => Math.max(1, Math.abs(to.x - from.x), Math.abs(to.y - from.y));
+
+// The length of a route in tiles: a Bridge over infrastructure is one long edge between its ramps.
+export function routeLength(route: readonly { x: number; y: number }[]): number {
+  return route.slice(1).reduce((sum, tile, index) => sum + edgeLength(route[index]!, tile), 0);
+}
+
 // Where a car is on its route: `phase` runs along the route and, on a line that is not a loop, back along it.
 export function poseAlong(route: readonly { x: number; y: number }[], loop: boolean, phase: number): RoutePose {
-  const length = route.length - 1;
+  const length = routeLength(route);
   const cycle = (loop ? 1 : 2) * length;
   const wrapped = ((phase % cycle) + cycle) % cycle;
   const returning = !loop && wrapped > length;
   const offset = returning ? 2 * length - wrapped : wrapped;
-  const index = Math.min(length - 1, Math.floor(offset)), fraction = offset - index;
+  let index = 0, start = 0;
+  while (index < route.length - 2 && start + edgeLength(route[index]!, route[index + 1]!) <= offset) start += edgeLength(route[index]!, route[++index]!);
   const from = route[index]!, to = route[index + 1]!;
+  const fraction = (offset - start) / edgeLength(from, to);
   const direction = returning ? -1 : 1;
   return { x: from.x + .5 + (to.x - from.x) * fraction, z: from.y + .5 + (to.y - from.y) * fraction, yaw: Math.atan2((to.x - from.x) * direction, (to.y - from.y) * direction), from, to };
 }
@@ -65,6 +75,7 @@ export class TransitLayer {
   }
 
   sync(state: GameState, services: Service[]) {
+    this.elevation = bridgeElevation(state.bridges);
     const trackSignature = JSON.stringify([state.brtRoads, state.rails]);
     this.crossings = new Set((state.brtRoads ?? []).filter(p => state.roads.some(r => tileKey(r) === tileKey(p))).map(tileKey));
     const tracksChanged = trackSignature !== this.trackSignature;
@@ -90,10 +101,12 @@ export class TransitLayer {
   }
 
   // Each car follows the route on its own, a pitch behind the one in front, so a long vehicle bends round the corners like an articulated bus.
+  private elevation: ElevationAt = () => 0;
+
   update(delta: number) {
     this.priorityTiles.clear();
     for (const vehicle of this.moving) {
-      const length = vehicle.route.length - 1;
+      const length = routeLength(vehicle.route);
       if (length < 1 || vehicle.hidden) continue;
       vehicle.phase = (vehicle.phase + Math.max(0, delta) * vehicle.speed) % ((vehicle.loop ? 1 : 2) * length);
       const cars = vehicle.mesh.children[0]?.children ?? [];
@@ -103,7 +116,7 @@ export class TransitLayer {
         const pose = poseAlong(vehicle.route, vehicle.loop, vehicle.phase + vehicle.pitch * (0.5 - index));
         const car = cars[index];
         if (car) {
-          car.position.set(pose.x + Math.cos(pose.yaw) * side, .12, pose.z - Math.sin(pose.yaw) * side);
+          car.position.set(pose.x + Math.cos(pose.yaw) * side, .12 + this.elevation(pose.x, pose.z, pose.from, pose.to), pose.z - Math.sin(pose.yaw) * side);
           car.rotation.y = pose.yaw;
         }
         if (vehicle.brt) for (const tile of [pose.from, pose.to]) if (this.crossings.has(tileKey(tile))) this.priorityTiles.add(tileKey(tile));

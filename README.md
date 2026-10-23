@@ -135,7 +135,6 @@ The [`prototypes`](prototypes) folder holds throwaway prototypes (render benchma
 
 3D models: **[Kenney](https://kenney.nl)**, released under [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) (public domain). Attribution is not required, and is gladly given.
 
-- [City Kit (Roads)](https://kenney.nl/assets/city-kit-roads) 2.1
 - [City Kit (Commercial)](https://kenney.nl/assets/city-kit-commercial) 2.1
 - [City Kit (Suburban)](https://kenney.nl/assets/city-kit-suburban) 2.0
 - [City Kit (Industrial)](https://kenney.nl/assets/city-kit-industrial) 2.0
