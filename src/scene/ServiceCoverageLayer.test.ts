@@ -17,6 +17,16 @@ const overlay = (layer: ServiceCoverageLayer, name: string) => layer.root.getObj
 const counts = (layer: ServiceCoverageLayer) => [overlay(layer, 'covered-homes')?.count ?? 0, overlay(layer, 'uncovered-homes')?.count ?? 0];
 
 describe('service coverage overlay', () => {
+  it('tints only the Homes inside the reach of the focused facility', () => {
+    const layer = makeLayer();
+    const state = city([createBuilding(1, 'school', 50, 50, 0), home(2, 54), home(3, 95), createBuilding(4, 'school', 90, 50, 0)]);
+    layer.sync(state, 'school');
+    expect(counts(layer)).toEqual([2, 0]);
+    layer.sync(state, 'school', 1);
+    expect(counts(layer)).toEqual([1, 0]);
+    expect((layer.root.getObjectByName('service-facilities') as THREE.LineSegments).geometry.getAttribute('position').count).toBe(8);
+  });
+
   it('draws translucent footprints for actual homes without recoloring the models', () => {
     const layer = makeLayer();
     const state = city([createBuilding(1, 'school', 50, 50, 0), home(2, 54), home(3, 95), createBuilding(4, 'shop', 56, 50, 0)]);

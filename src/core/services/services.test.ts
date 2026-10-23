@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { FACILITIES, facilityCapacity, uncoveredReason, advance, isWithinReach, categoryCoverageRatio, createBuilding, dispatch, homeBenefits, missingServices, newGame, serviceCoverage, type Building, type Command, type GameState } from '../index';
+import { FACILITIES, citizensOf, facilityCapacity, uncoveredReason, reachLoad, advance, isWithinReach, categoryCoverageRatio, createBuilding, dispatch, homeBenefits, missingServices, newGame, serviceCoverage, type Building, type Command, type GameState } from '../index';
 import { ECOLOGY } from '../environment/ecology';
 
 const walkingEnabled = WALKING.enabled;
@@ -84,6 +84,19 @@ describe('Service coverage', () => {
     expect(uncoveredReason(state, near, 'hospital')).toBe('none');
     const uncovered = [near, crowded].find(home => !serviceCoverage(state).get(home.id)?.has('school'))!;
     expect(uncoveredReason(state, uncovered, 'school')).toBe('capacityFull');
+  });
+
+  it('counts the Citizens inside a facility reach that it does not serve', () => {
+    const near = b(2, 'home', 3, 0, { tier: 8 });
+    const crowded = b(3, 'home', 2, 0, { tier: 8 });
+    const far = b(4, 'home', 60, 0);
+    const school = b(1, 'school', 0);
+    const state = city([school, near, crowded, far]);
+    const load = reachLoad(state, school)!;
+    expect(load.citizensInReach).toBe(2 * citizensOf(8));
+    expect(load.unservedHomes).toBe(1);
+    expect(load.unservedCitizens).toBe(citizensOf(8));
+    expect(reachLoad(city([b(5, 'townHall', 0)]), b(5, 'townHall', 0))).toBeNull();
   });
 
   it('serves the nearest Homes first until capacity is used', () => {

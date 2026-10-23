@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { coveredHomeIds, footprintOf, isHomeType, transitReachLinks, wasteReport, type Building, type GameState, type FacilityType } from '../core';
+import { coveredHomeIds, FACILITIES, footprintOf, isHomeInReach, isHomeType, transitReachLinks, wasteReport, type Building, type GameState, type FacilityType } from '../core';
 
 const COLORS = { covered: 0x35d07f, uncovered: 0xe5484d, transit: 0x2ec4d6, facility: 0x4da3ff } as const;
 
@@ -17,6 +17,7 @@ export class ServiceCoverageLayer {
   private wasteStamp: unknown = null;
   private transitStamp: unknown = null;
   private type: FacilityType | null = null;
+  private facilityId: number | null = null;
 
   constructor() {
     this.root.name = 'service-coverage';
@@ -27,7 +28,8 @@ export class ServiceCoverageLayer {
     this.root.add(this.markers);
   }
 
-  sync(state: GameState, type: FacilityType | null): void {
+  // With a facilityId, only the Homes inside that facility's reach are tinted and only that facility is outlined.
+  sync(state: GameState, type: FacilityType | null, facilityId: number | null = null): void {
     if (!type) {
       this.type = null;
       this.root.visible = false;
@@ -35,17 +37,21 @@ export class ServiceCoverageLayer {
     }
     const wasteStamp = wasteReport(state);
     const transitStamp = transitReachLinks(state);
-    if (this.buildings === state.buildings && this.type === type && this.wasteStamp === wasteStamp && this.transitStamp === transitStamp) return;
+    if (this.buildings === state.buildings && this.type === type && this.facilityId === facilityId && this.wasteStamp === wasteStamp && this.transitStamp === transitStamp) return;
     this.buildings = state.buildings;
     this.wasteStamp = wasteStamp;
     this.transitStamp = transitStamp;
     this.type = type;
+    this.facilityId = facilityId;
     this.root.visible = true;
     this.clearOverlays();
     const coveredIds = coveredHomeIds(state, type);
     const covered: Building[] = [], viaTransit: Building[] = [], uncovered: Building[] = [];
+    const focus = facilityId === null ? null : state.buildings.find(building => building.id === facilityId) ?? null;
+    const radius = FACILITIES[type].radius;
     for (const home of state.buildings) {
       if (!isHomeType(home.type)) continue;
+      if (focus && radius !== null && !isHomeInReach(focus, home, radius)) continue;
       if (!coveredIds.has(home.id)) uncovered.push(home);
       else if (transitStamp.get(home.id)?.has(type)) viaTransit.push(home);
       else covered.push(home);
@@ -55,7 +61,7 @@ export class ServiceCoverageLayer {
     this.addOverlay(uncovered, this.uncoveredMaterial, 'uncovered-homes');
     const positions: number[] = [];
     for (const building of state.buildings) {
-      if (building.type !== type) continue;
+      if (building.type !== type || (facilityId !== null && building.id !== facilityId)) continue;
       const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
       const left = building.x - 0.15, right = building.x + width + 0.15;
       const top = building.y - 0.15, bottom = building.y + depth + 0.15;

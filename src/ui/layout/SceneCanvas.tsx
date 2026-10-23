@@ -6,6 +6,7 @@ import { harvestEffects } from '../../store/harvestEffects';
 import { sceneHandle } from '../../store/sceneHandle';
 import { uiStore } from '../../store/uiStore';
 import { pointerKindOf } from '../../tools/aim';
+import { FACILITIES, isFacilityType } from '../../core';
 import { selectionGhost } from '../../tools/tools';
 import { hideSplash, setSplashProgress } from '../system/splash';
 
@@ -55,6 +56,7 @@ export function SceneCanvas() {
       const selected = state.buildings.find(building => building.id === uiStore.getState().selectedBuildingId);
       scene.setSelection(selectionGhost(state, uiStore.getState().selectedBuildingId, prefsStore.getState().showReach, selected ? scene.drawnExtentOf(selected) : null));
       scene.setEcologicalSelection(uiStore.getState().selectedBuildingId);
+      scene.setCoverageFocus(selected && prefsStore.getState().showReach && isFacilityType(selected.type) && FACILITIES[selected.type].radius !== null ? { type: selected.type, facilityId: selected.id } : null);
     };
     showSelection();
     const unsubscribeGame = gameStore.subscribe((store) => {

@@ -52,6 +52,7 @@ export function HomePanel({ building }: HomePanelProps) {
 
       {leisure && <DrawerPanel.LabelValue label={t('home.leisure')} value={<>{leisure.length ? leisure.join(', ') : t('home.leisureNone')}</>}/>}
       {missing.length > 0 && <DrawerPanel.LabelValue tone="warn" label={t('home.servicesMissing')} value={<>{missing.map(key => `${serviceName(key)} (${t(`home.reason.${uncoveredReason(state, building, key)}`)})`).join(', ')}{benefits.servicePenalty > 0 && ` · ${t('eco.servicePenalty')}: −${benefits.servicePenalty.toFixed(0)}`}</>}/>}
+      {missing.some(key => uncoveredReason(state, building, key) === 'capacityFull') && <BlockedReason reason={t('home.capacityFullHint')} />}
       {benefits.pollutionPenalty > 0 && <DrawerPanel.LabelValue label={t('eco.coalPenalty')} value={<>−{benefits.pollutionPenalty.toFixed(1)} · {t('eco.coalPollutionHelp')}</>}/> }
 
       <ActionButton block disabled={building.insulated || state.urbs < insulationCost || totalCitizens(state) < 6} onClick={() => gameStore.getState().send({ type: 'EquipHome', buildingId: building.id, equipment: 'insulation' })}>

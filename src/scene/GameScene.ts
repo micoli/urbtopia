@@ -65,6 +65,7 @@ export class GameScene {
   private selectedId: number | null = null;
   private serviceCoverageType: FacilityType | null = null;
   private serviceCoverageLayer = new ServiceCoverageLayer();
+  private coverageFocus: { type: FacilityType; facilityId: number } | null = null;
   private afterHarvest: readonly HarvestedTile[] = [];
   private ecologicalState: GameState | null = null;
   private congestion = new CongestionLayer();
@@ -199,6 +200,14 @@ export class GameScene {
     void this.drain();
   }
 
+  setCoverageFocus(focus: { type: FacilityType; facilityId: number } | null): void {
+    if (this.coverageFocus?.facilityId === focus?.facilityId && this.coverageFocus?.type === focus?.type) return;
+    this.coverageFocus = focus;
+    if (!this.ecologicalState) return;
+    this.latest = this.ecologicalState;
+    void this.drain();
+  }
+
   setBrushMode(enabled: boolean): void {
     this.controller.brushMode = enabled;
   }
@@ -296,7 +305,8 @@ export class GameScene {
         await this.library.ensure(items.map((item) => item.model));
         await this.library.ensureTextureVariants(items.flatMap(item => item.textureVariant ? [item.textureVariant] : []));
         this.world.sync(items);
-        this.serviceCoverageLayer.sync(state, serviceType);
+        const focus = serviceType ? null : this.coverageFocus;
+        this.serviceCoverageLayer.sync(state, serviceType ?? focus?.type ?? null, focus?.facilityId ?? null);
         await this.scenery.sync(state);
         this.shapeGround(state);
         this.syncParcels(state);

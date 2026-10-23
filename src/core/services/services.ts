@@ -118,6 +118,26 @@ export function uncoveredReason(state: GameState, home: Building, type: ServiceK
   return 'capacityFull';
 }
 
+export interface ReachLoad {
+  citizensInReach: number;
+  unservedCitizens: number;
+  unservedHomes: number;
+}
+
+// Homes inside the reach of a non-Waste facility, and how many of them no facility of its type serves.
+export function reachLoad(state: GameState, facility: Building): ReachLoad | null {
+  const { radius } = FACILITIES[facility.type as FacilityType];
+  if (radius === null) return null;
+  const coverage = serviceCoverage(state);
+  const inReach = state.buildings.filter(home => isHomeType(home.type) && isHomeInReach(facility, home, radius));
+  const unserved = inReach.filter(home => !isServiceCovered(coverage, home.id, facility.type as FacilityType));
+  return {
+    citizensInReach: inReach.reduce((total, home) => total + citizensOf(home.tier), 0),
+    unservedCitizens: unserved.reduce((total, home) => total + citizensOf(home.tier), 0),
+    unservedHomes: unserved.length,
+  };
+}
+
 export function isServiceCovered(coverage: ServiceCoverage, homeId: number, key: FacilityType): boolean {
   const covered = coverage.get(homeId);
   if (!covered) return false;
