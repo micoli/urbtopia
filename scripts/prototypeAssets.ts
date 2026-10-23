@@ -3,12 +3,13 @@ export type Selection = string[] | 'all';
 export interface PrototypeAssets {
   prototype: string;
   packs: Record<string, Selection>;
+  managed?: string[];
 }
 
 const letters = (first: string, last: string) =>
   Array.from({ length: last.charCodeAt(0) - first.charCodeAt(0) + 1 }, (_, index) => String.fromCharCode(first.charCodeAt(0) + index));
 
-// The 3D models each throwaway prototype loads. They are copied from the versioned Kenney archives and never committed.
+// The 3D models each throwaway prototype loads. They are copied from the versioned Kenney archives and the managed models, and never committed.
 export const PROTOTYPE_ASSETS: PrototypeAssets[] = [
   {
     prototype: 'render-bench',
@@ -18,8 +19,8 @@ export const PROTOTYPE_ASSETS: PrototypeAssets[] = [
         ...letters('a', 'e').map((letter) => `building-skyscraper-${letter}`),
         ...letters('a', 'n').map((letter) => `low-detail-building-${letter}`),
       ],
-      roads: ['road-crossroad', 'road-straight'],
     },
+    managed: ['streets/road-crossroad', 'streets/road-straight'],
   },
   {
     prototype: 'touch-ux',
@@ -27,8 +28,8 @@ export const PROTOTYPE_ASSETS: PrototypeAssets[] = [
       industrial: ['building-a', 'building-h', 'building-t', 'water-tower'],
       commercial: ['building-a'],
       suburban: ['building-type-a'],
-      roads: ['road-straight', 'road-crossroad'],
     },
+    managed: ['streets/road-straight', 'streets/road-crossroad'],
   },
 ];
 

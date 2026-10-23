@@ -102,9 +102,9 @@ function layout(n: number): Item[] {
   for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
     const x = i - n / 2, z = j - n / 2
     const rx = i % 4 === 0, rz = j % 4 === 0
-    if (rx && rz) items.push({ path: 'roads/road-crossroad', x, z, rot: 0 })
-    else if (rx) items.push({ path: 'roads/road-straight', x, z, rot: Math.PI / 2 })
-    else if (rz) items.push({ path: 'roads/road-straight', x, z, rot: 0 })
+    if (rx && rz) items.push({ path: 'streets/road-crossroad', x, z, rot: 0 })
+    else if (rx) items.push({ path: 'streets/road-straight', x, z, rot: Math.PI / 2 })
+    else if (rz) items.push({ path: 'streets/road-straight', x, z, rot: 0 })
     else {
       const sky = !state.lowDetail && rnd() < 0.08
       const pool = sky ? SKY : names
