@@ -753,6 +753,7 @@ export type ModelId =
   | 'roads-road-end'
   | 'roads-road-intersection'
   | 'roads-road-roundabout'
+  | 'roads-road-roundabout-three'
   | 'roads-road-slant-flat-high'
   | 'roads-road-square'
   | 'roads-road-straight'

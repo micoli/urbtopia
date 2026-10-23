@@ -9420,95 +9420,114 @@
     "note": "Water Tower"
   },
   "roads-road-bend": {
-    "file": "roads/road-bend",
-    "source": "kenney",
-    "license": "CC0",
+    "file": "streets/road-bend",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "roads-road-bridge": {
-    "file": "roads/road-bridge",
-    "source": "kenney",
-    "license": "CC0",
+    "file": "streets/road-bridge",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "roads-road-crossing": {
-    "file": "roads/road-crossing",
-    "source": "kenney",
-    "license": "CC0",
+    "file": "streets/road-crossing",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "roads-road-crossroad": {
-    "file": "roads/road-crossroad",
-    "source": "kenney",
-    "license": "CC0",
+    "file": "streets/road-crossroad",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "roads-road-end": {
-    "file": "roads/road-end",
-    "source": "kenney",
-    "license": "CC0",
+    "file": "streets/road-end",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "roads-road-intersection": {
-    "file": "roads/road-intersection",
-    "source": "kenney",
-    "license": "CC0",
+    "file": "streets/road-intersection",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "roads-road-roundabout": {
-    "file": "roads/road-roundabout",
-    "source": "kenney",
-    "license": "CC0",
+    "file": "streets/road-roundabout",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       3,
       3
     ],
-    "note": "exits assumed at the middle of each side; to verify"
+    "flush": true
+  },
+  "roads-road-roundabout-three": {
+    "file": "streets/road-roundabout-three",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "flush": true
   },
   "roads-road-slant-flat-high": {
-    "file": "roads/road-slant-flat-high",
-    "source": "kenney",
-    "license": "CC0",
+    "file": "streets/road-slant-flat-high",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "roads-road-square": {
-    "file": "roads/road-square",
-    "source": "kenney",
-    "license": "CC0",
+    "file": "streets/road-square",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "roads-road-straight": {
-    "file": "roads/road-straight",
-    "source": "kenney",
-    "license": "CC0",
+    "file": "streets/road-straight",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "suburban-tree-large": {
     "file": "suburban/tree-large",
