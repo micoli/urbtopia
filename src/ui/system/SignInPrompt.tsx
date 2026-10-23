@@ -1,7 +1,7 @@
 import { totalCitizens } from '../../core';
 import { t } from '../../i18n/t';
 import { saveStore } from '../../persistence/instance';
-import { readCloudMeta } from '../../persistence/meta';
+import { readCloudMeta, readMeta, recordSignInDismissal } from '../../persistence/meta';
 import { dialogStore } from '../../store/dialogStore';
 import { uiStore } from '../../store/uiStore';
 import { ActionButton } from '../common/ActionButton';
@@ -15,9 +15,14 @@ export function SignInPrompt() {
   const account = useCloud((store) => store.account);
   const status = useCloud((store) => store.status);
   const dismissed = useDialogs((store) => store.signInPromptDismissed);
-  const open = shouldPromptSignIn({ citizens, cloudEnabled, account, status, cloudPaused: readCloudMeta(saveStore).paused, dismissed });
+  const now = Date.now();
+  const open = shouldPromptSignIn({ citizens, cloudEnabled, account, status, cloudPaused: readCloudMeta(saveStore).paused, dismissed, dismissedAt: readMeta(saveStore, now).signInDismissedAt, now });
   if (!open) return null;
 
+  const dismiss = () => {
+    recordSignInDismissal(saveStore, Date.now());
+    dialogStore.getState().dismissSignInPrompt();
+  };
   const signIn = () => {
     dialogStore.getState().dismissSignInPrompt();
     uiStore.getState().openSettingsForSignIn();
@@ -30,7 +35,7 @@ export function SignInPrompt() {
         <p>{t('signInPrompt.text')}</p>
       </Dialog.Body>
       <Dialog.Actions>
-        <ActionButton onClick={() => dialogStore.getState().dismissSignInPrompt()}>{t('signInPrompt.later')}</ActionButton>
+        <ActionButton onClick={dismiss}>{t('signInPrompt.later')}</ActionButton>
         <ActionButton variant="primary" onClick={signIn}>{t('signInPrompt.signIn')}</ActionButton>
       </Dialog.Actions>
     </Dialog>

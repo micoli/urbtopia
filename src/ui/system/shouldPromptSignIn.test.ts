@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shouldPromptSignIn, SIGN_IN_PROMPT_CITIZENS } from './shouldPromptSignIn';
+import { shouldPromptSignIn, SIGN_IN_PROMPT_CITIZENS, SIGN_IN_PROMPT_SNOOZE_MS } from './shouldPromptSignIn';
 
 const base = {
   citizens: SIGN_IN_PROMPT_CITIZENS,
@@ -8,6 +8,8 @@ const base = {
   status: { kind: 'synced', at: 0 } as const,
   cloudPaused: false,
   dismissed: false,
+  dismissedAt: null,
+  now: 1_000_000_000_000,
 };
 
 describe('shouldPromptSignIn', () => {
@@ -26,6 +28,12 @@ describe('shouldPromptSignIn', () => {
   it('does not prompt when the cloud is unavailable or the prompt was dismissed', () => {
     expect(shouldPromptSignIn({ ...base, cloudEnabled: false })).toBe(false);
     expect(shouldPromptSignIn({ ...base, dismissed: true })).toBe(false);
+  });
+
+  it('stays quiet for 12 hours after being dismissed, then prompts again', () => {
+    const dismissedAt = base.now - SIGN_IN_PROMPT_SNOOZE_MS + 1;
+    expect(shouldPromptSignIn({ ...base, dismissedAt })).toBe(false);
+    expect(shouldPromptSignIn({ ...base, dismissedAt: base.now - SIGN_IN_PROMPT_SNOOZE_MS })).toBe(true);
   });
 
   it('waits for the account while connecting, but not when sync is paused', () => {

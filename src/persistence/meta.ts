@@ -7,6 +7,7 @@ export interface Meta {
   createdAt: number;
   lastExportAt: number | null;
   remindedAt: number | null;
+  signInDismissedAt: number | null;
 }
 
 export function readMeta(store: SaveStore, now: number): Meta {
@@ -15,13 +16,13 @@ export function readMeta(store: SaveStore, now: number): Meta {
     try {
       const parsed = JSON.parse(raw) as Partial<Meta>;
       if (typeof parsed.createdAt === 'number') {
-        return { createdAt: parsed.createdAt, lastExportAt: parsed.lastExportAt ?? null, remindedAt: parsed.remindedAt ?? null };
+        return { createdAt: parsed.createdAt, lastExportAt: parsed.lastExportAt ?? null, remindedAt: parsed.remindedAt ?? null, signInDismissedAt: parsed.signInDismissedAt ?? null };
       }
     } catch {
       // A damaged meta record only costs a reminder date: start over below.
     }
   }
-  const fresh: Meta = { createdAt: now, lastExportAt: null, remindedAt: null };
+  const fresh: Meta = { createdAt: now, lastExportAt: null, remindedAt: null, signInDismissedAt: null };
   store.put(META_KEY, JSON.stringify(fresh));
   return fresh;
 }
@@ -76,6 +77,10 @@ export function recordExport(store: SaveStore, now: number): void {
 
 export function recordReminder(store: SaveStore, now: number): void {
   update(store, now, { remindedAt: now });
+}
+
+export function recordSignInDismissal(store: SaveStore, now: number): void {
+  update(store, now, { signInDismissedAt: now });
 }
 
 export function shouldRemindExport(input: Meta & { now: number; lastSavedAt: number }): boolean {

@@ -94,7 +94,7 @@ describe('importCity', () => {
 });
 
 describe('export reminder', () => {
-  const base = { createdAt: T0, lastExportAt: null, remindedAt: null, lastSavedAt: T0 + 20 * DAY };
+  const base = { createdAt: T0, lastExportAt: null, remindedAt: null, signInDismissedAt: null, lastSavedAt: T0 + 20 * DAY };
 
   it('stays quiet during the first 14 days', () => {
     expect(shouldRemindExport({ ...base, now: T0 + 13 * DAY, lastSavedAt: T0 + 13 * DAY })).toBe(false);
@@ -120,9 +120,9 @@ describe('export reminder', () => {
 
   it('remembers exports and the creation date in the meta record', () => {
     const store = new MemorySaveStore();
-    expect(readMeta(store, T0)).toEqual({ createdAt: T0, lastExportAt: null, remindedAt: null });
+    expect(readMeta(store, T0)).toEqual({ createdAt: T0, lastExportAt: null, remindedAt: null, signInDismissedAt: null });
     recordExport(store, T0 + DAY);
-    expect(readMeta(store, T0 + 5 * DAY)).toEqual({ createdAt: T0, lastExportAt: T0 + DAY, remindedAt: null });
+    expect(readMeta(store, T0 + 5 * DAY)).toEqual({ createdAt: T0, lastExportAt: T0 + DAY, remindedAt: null, signInDismissedAt: null });
     expect(store.get(META_KEY)).not.toBeNull();
   });
 });
