@@ -11,6 +11,7 @@ export interface Prefs {
   confirmSale: boolean;
   showReach: boolean;
   showProductionPreview: boolean;
+  debug: boolean;
   serviceCoverageType: FacilityType;
 }
 
@@ -24,7 +25,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, serviceCoverageType: 'school' };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, debug: false, serviceCoverageType: 'school' };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -35,6 +36,7 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       confirmSale: typeof parsed.confirmSale === 'boolean' ? parsed.confirmSale : fallback.confirmSale,
       showReach: typeof parsed.showReach === 'boolean' ? parsed.showReach : fallback.showReach,
       showProductionPreview: typeof parsed.showProductionPreview === 'boolean' ? parsed.showProductionPreview : fallback.showProductionPreview,
+      debug: typeof parsed.debug === 'boolean' ? parsed.debug : fallback.debug,
       serviceCoverageType: typeof parsed.serviceCoverageType === 'string' && isFacilityType(parsed.serviceCoverageType) ? parsed.serviceCoverageType : fallback.serviceCoverageType,
     };
   } catch {
@@ -50,9 +52,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, confirmSale, showReach, showProductionPreview, serviceCoverageType }: Prefs): void {
+function writeStored({ language, layout, traffic, confirmSale, showReach, showProductionPreview, debug, serviceCoverageType }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale, showReach, showProductionPreview, serviceCoverageType }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale, showReach, showProductionPreview, debug, serviceCoverageType }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -65,6 +67,7 @@ export interface PrefsStore extends Prefs {
   setConfirmSale: (confirmSale: boolean) => void;
   setShowReach: (showReach: boolean) => void;
   setShowProductionPreview: (showProductionPreview: boolean) => void;
+  setDebug: (debug: boolean) => void;
   setServiceCoverageType: (type: FacilityType) => void;
 }
 
@@ -94,6 +97,10 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   },
   setShowProductionPreview: (showProductionPreview) => {
     set({ showProductionPreview });
+    writeStored(get());
+  },
+  setDebug: (debug) => {
+    set({ debug });
     writeStored(get());
   },
   setServiceCoverageType: (serviceCoverageType) => {

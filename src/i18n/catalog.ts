@@ -881,6 +881,8 @@ export const CATALOG = {
   'prefs.traffic': ['Traffic', 'Trafic'],
   'facility.showReach': ["Show reach", "Afficher l'emprise"],
   'prefs.showReach': ["Show the reach of public buildings", "Afficher l'emprise des bâtiments publics"],
+  'prefs.debug': ['Debug mode', 'Mode debug'],
+  'panel.debugPosition': ['Position', 'Position'],
   'prefs.showProductionPreview': ['Display production preview', "Afficher l'aperçu de la production"],
   'lang.en': ['English', 'English'],
   'lang.fr': ['Français', 'Français'],

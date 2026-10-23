@@ -15,7 +15,8 @@ export function PreferencesContent() {
   const confirmSale = useStore(prefsStore, (store) => store.confirmSale);
   const showReach = useStore(prefsStore, (store) => store.showReach);
   const showProductionPreview = useStore(prefsStore, (store) => store.showProductionPreview);
-  const { setLanguage, setLayout, setTraffic, setConfirmSale, setShowReach, setShowProductionPreview } = prefsStore.getState();
+  const debug = useStore(prefsStore, (store) => store.debug);
+  const { setDebug, setLanguage, setLayout, setTraffic, setConfirmSale, setShowReach, setShowProductionPreview } = prefsStore.getState();
 
   return (
     <section className="prefs">
@@ -26,6 +27,7 @@ export function PreferencesContent() {
       <CheckboxField label={t('prefs.confirmSale')} checked={confirmSale} onChange={setConfirmSale} />
       <CheckboxField label={t('prefs.showReach')} checked={showReach} onChange={setShowReach} />
       <CheckboxField label={t('prefs.showProductionPreview')} checked={showProductionPreview} onChange={setShowProductionPreview} />
+      <CheckboxField label={t('prefs.debug')} checked={debug} onChange={setDebug} />
     </section>
   );
 }

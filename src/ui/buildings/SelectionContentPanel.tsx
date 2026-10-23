@@ -10,6 +10,8 @@ import { TownHallPanel } from '../politics/TownHallPanel';
 import { BuildingAccess } from './BuildingAccess';
 import { BuildingJobs } from './BuildingJobs';
 import { SolarPanelsRow } from './SolarPanelsRow';
+import { useStore } from 'zustand';
+import { prefsStore } from '../../i18n/prefsStore';
 import { useUi } from '../common/hooks';
 import { PANEL_BY_KIND } from './panelsByKind';
 import { useSelectedBuilding } from './useSelectedBuilding';
@@ -26,6 +28,7 @@ export function SelectionContentPanel() {
   const select = useUi((store) => store.select);
   const moveSelected = useUi((store) => store.moveSelected);
   const sellSelected = useUi((store) => store.sellSelected);
+  const debug = useStore(prefsStore, (store) => store.debug);
   if (!building) return null;
 
   const kind = kindOf(building.type);
@@ -34,6 +37,7 @@ export function SelectionContentPanel() {
   return (
     <>
       <PanelHeader title={t(`building.${building.type}`)} subtitle={building.tier} onClose={() => select(null)} />
+      {debug ? <p className="debug-position">{t('panel.debugPosition')} <code>X {building.x} · Y {building.y}</code></p> : null}
       <BuildingAccess building={building} />
       <BuildingJobs building={building} />
       {isTransitStopType(building.type) ? <StopNameField building={building} /> : null}
