@@ -18,7 +18,17 @@ export interface PedestrianPose {
   yaw: number;
 }
 
+const positions = new Map<string, { x: number; z: number }>();
+
 export function nodePosition(node: string): { x: number; z: number } {
+  const cached = positions.get(node);
+  if (cached) return cached;
+  const position = parseNodePosition(node);
+  positions.set(node, position);
+  return position;
+}
+
+function parseNodePosition(node: string): { x: number; z: number } {
   const [tile = '0,0', side = 'R'] = node.split(':');
   const [x = 0, y = 0] = tile.split(',').map(Number);
   if (side === 'N') return { x: x + 0.5, z: y + SIDEWALK_INSET };
