@@ -38,7 +38,17 @@ export function generatorOutput(state: GameState, b: Building, factors = product
   return generatorCapacity(b) * generatorFactor(state, b, factors);
 }
 
-export function energyStats(state: GameState, now = state.lastSeen) {
+const energyCache = new WeakMap<GameState, { now: number; stats: ReturnType<typeof computeEnergyStats> }>();
+
+export function energyStats(state: GameState, now = state.lastSeen): ReturnType<typeof computeEnergyStats> {
+  const cached = energyCache.get(state);
+  if (cached?.now === now) return cached.stats;
+  const stats = computeEnergyStats(state, now);
+  energyCache.set(state, { now, stats });
+  return stats;
+}
+
+function computeEnergyStats(state: GameState, now: number) {
   const transitDemand = transitServices(state, now).reduce((n, line) => n + line.powerDemand, 0);
   let transitSupplied: number;
   const buildings = [...state.buildings].sort((a, b) => a.id - b.id);

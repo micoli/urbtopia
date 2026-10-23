@@ -22,7 +22,22 @@ export function touchesWater(state: GameState, marina: Pick<Building, 'type' | '
   return shoreWaterKeys(state, marina).length > 0;
 }
 
+const connectedCache = new WeakMap<readonly Coord[], Map<string, Set<string>>>();
+
 export function connectedWaterKeys(state: GameState, marina: Pick<Building, 'type' | 'x' | 'y' | 'rotation' | 'tier'>): Set<string> {
+  const tiles = state.waterTiles;
+  if (!tiles) return floodFromShore(state, marina);
+  const perMarina = connectedCache.get(tiles) ?? new Map<string, Set<string>>();
+  connectedCache.set(tiles, perMarina);
+  const key = `${marina.type}:${marina.x},${marina.y},${marina.rotation},${marina.tier}`;
+  const cached = perMarina.get(key);
+  if (cached) return cached;
+  const reached = floodFromShore(state, marina);
+  perMarina.set(key, reached);
+  return reached;
+}
+
+function floodFromShore(state: GameState, marina: Pick<Building, 'type' | 'x' | 'y' | 'rotation' | 'tier'>): Set<string> {
   const water = waterKeys(state);
   const reached = new Set(shoreWaterKeys(state, marina));
   const queue = [...reached];
