@@ -37,6 +37,7 @@ export interface UiStore {
   socialTab: SocialTab;
   signInFromSocial: boolean;
   openSettingsFromSocial: (forSignIn: boolean) => void;
+  openSettingsForSignIn: () => void;
   toggleSocial: () => void;
   setSocialTab: (tab: SocialTab) => void;
   tradeWith: string | null;
@@ -163,6 +164,11 @@ export const uiStore = createStore<UiStore>((set, get) => {
         set({ signInFromSocial: false });
         get().toggleSocial();
       });
+    },
+    openSettingsForSignIn: () => {
+      leaveParcelMode();
+      stopWaitingForSignIn();
+      set({ socialOpen: false, statsOpen: false, marketOpen: false, settingsOpen: true, flyout: null, signInFromSocial: true });
     },
     tradeWith: null,
     startTrade: (userId) => set({ tradeWith: userId, socialTab: 'exchanges' }),

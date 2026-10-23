@@ -17,6 +17,7 @@ import { BackOfficeBanner } from '../system/BackOfficeBanner';
 import { ReadOnlyBanner } from '../system/ReadOnlyBanner';
 import { RecoveryScreen } from '../system/RecoveryScreen';
 import { SaveConflictOverlay } from '../system/SaveConflictOverlay';
+import { SignInPrompt } from '../system/SignInPrompt';
 import { SaveFailedDialog } from '../system/SaveFailedDialog';
 import { Toast } from '../system/Toast';
 import { TutorialBanner } from '../tutorial/TutorialBanner';
@@ -48,6 +49,7 @@ export function Overlays() {
       <CreditsDialog />
       <SaveFailedDialog />
       <SaveConflictOverlay />
+      <SignInPrompt />
       <RecoveryScreen />
       <Toast />
       <TutorialBanner />

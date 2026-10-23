@@ -1,15 +1,19 @@
 import { exportCurrentCity } from '../../persistence/exportCity';
 import { saveStore } from '../../persistence/instance';
-import { recordReminder } from '../../persistence/meta';
+import { readCloudMeta, recordReminder } from '../../persistence/meta';
 import { t } from '../../i18n/t';
 import { dialogStore } from '../../store/dialogStore';
-import { useDialogs } from '../common/hooks';
+import { useCloud, useDialogs } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
 import { OverlayBanner } from '../common/OverlayBanner';
 
 export function ExportReminder() {
   const open = useDialogs((store) => store.exportReminder);
-  if (!open) return null;
+  const cloudEnabled = useCloud((store) => store.enabled);
+  const status = useCloud((store) => store.status);
+  const signedIn = useCloud((store) => Boolean(store.account?.email));
+  const resolvingAccount = cloudEnabled && status.kind === 'idle' && !readCloudMeta(saveStore).paused;
+  if (!open || signedIn || resolvingAccount) return null;
 
   const dismiss = () => {
     recordReminder(saveStore, Date.now());

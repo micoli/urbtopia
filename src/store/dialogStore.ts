@@ -14,12 +14,14 @@ export interface DialogStore {
   exportReminder: boolean;
   updateReady: boolean;
   creditsOpen: boolean;
+  signInPromptDismissed: boolean;
   setSaveFailed: (open: boolean) => void;
   setPendingImport: (state: GameState | null) => void;
   setRecovery: (recovery: RecoveryInfo | null) => void;
   setExportReminder: (open: boolean) => void;
   setUpdateReady: (ready: boolean) => void;
   setCreditsOpen: (open: boolean) => void;
+  dismissSignInPrompt: () => void;
 }
 
 export const dialogStore = createStore<DialogStore>((set) => ({
@@ -29,10 +31,12 @@ export const dialogStore = createStore<DialogStore>((set) => ({
   exportReminder: false,
   updateReady: false,
   creditsOpen: false,
+  signInPromptDismissed: false,
   setSaveFailed: (saveFailed) => set({ saveFailed }),
   setPendingImport: (pendingImport) => set({ pendingImport }),
   setRecovery: (recovery) => set({ recovery }),
   setExportReminder: (exportReminder) => set({ exportReminder }),
   setUpdateReady: (updateReady) => set({ updateReady }),
   setCreditsOpen: (creditsOpen) => set({ creditsOpen }),
+  dismissSignInPrompt: () => set({ signInPromptDismissed: true }),
 }));
