@@ -7,6 +7,9 @@ export type ElevationAt = (x: number, z: number, from: Coord, to: Coord) => numb
 
 const flat: ElevationAt = () => 0;
 
+// Same cubic Bezier with flat ends as the ramp model.
+const smooth = (t: number): number => t * t * (3 - 2 * t);
+
 // The deck of a Bridge over infrastructure rises over its first ramp, stays level over its span and falls over its last ramp.
 export function bridgeElevation(bridges: readonly Bridge[] | undefined): ElevationAt {
   const decks = (bridges ?? []).filter(isInfrastructureBridge).map((bridge) => {
@@ -22,7 +25,7 @@ export function bridgeElevation(bridges: readonly Bridge[] | undefined): Elevati
       if (across < deck.across || across >= deck.across + 1) continue;
       const offset = along - deck.along;
       if (offset < 0 || offset > deck.spans + 2) continue;
-      return BRIDGE_CLEARANCE * Math.min(1, offset, deck.spans + 2 - offset);
+      return BRIDGE_CLEARANCE * smooth(Math.min(1, offset, deck.spans + 2 - offset));
     }
     return 0;
   };
