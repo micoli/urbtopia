@@ -5,7 +5,7 @@ import type { Building, GameState } from '../engine/state';
 import type { Coord } from '../map/coord';
 import { tileKey } from '../map/geometry';
 import { isWithinReach } from '../services/facilities';
-import { totalCitizens } from '../buildings/city';
+import { citizensOf, totalCitizens } from '../buildings/city';
 import { hourOf, recyclingPlantPowerRatios } from './wastePower';
 import { footprintOfBuilding, pedestrianDistances, roadComponents, tilesOfBuilding, touchedRoadComponents, outsideNeighbours } from './wasteLinks';
 import { wasteReductionOf } from '../politics/ordinanceEffects';
@@ -227,4 +227,12 @@ export function isWasteMissing(state: GameState, homeId: number): boolean {
   if (isAdapting(state)) return false;
   const report = wasteReport(state);
   return report.required && !isWasteCovered(report, homeId);
+}
+
+export function wasteCitizensServedBy(state: GameState, facilityId: number): number {
+  const report = wasteReport(state);
+  return state.buildings.reduce((total, building) => {
+    if (!isHomeType(building.type)) return total;
+    return report.homes.get(building.id)?.facilityId === facilityId ? total + citizensOf(building.tier) : total;
+  }, 0);
 }

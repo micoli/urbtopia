@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { WASTE, createBuilding, homeWasteProduction, newGame, wasteReport, wasteSituation, type Building, type GameState } from '../index';
+import { WASTE, createBuilding, homeWasteProduction, newGame, wasteCitizensServedBy, wasteReport, wasteSituation, type Building, type GameState } from '../index';
 
 const home = (id: number, x: number, y: number, tier = 1): Building => ({ ...createBuilding(id, 'home', x, y, 0), tier });
 const place = (id: number, type: 'mound' | 'incinerator' | 'recyclingPlant', x: number, y: number, tier = 1): Building => ({ ...createBuilding(id, type, x, y, 0), tier });
@@ -83,5 +83,14 @@ describe('wasteSituation', () => {
     expect(situation.pedestrianHomes).toBe(wasteReport(state).homes.get(10)!.carried ? 1 : 0);
     if (situation.pedestrianHomes === 0) return;
     expect(situation.pedestrianSurcharge).toBeCloseTo(situation.costPerDay * (1 - 1 / WASTE.carriedSurcharge), 9);
+  });
+
+  it('counts the Citizens a facility serves from the Waste report', () => {
+    const state = city([place(1, 'mound', 60, 50), home(10, 62, 50, 3), home(11, 64, 50, 3)]);
+    const report = wasteReport(state);
+    const servedHomes = [10, 11].filter(id => report.homes.get(id)!.facilityId === 1);
+    expect(servedHomes.length).toBeGreaterThan(0);
+    expect(wasteCitizensServedBy(state, 1)).toBeGreaterThan(0);
+    expect(wasteCitizensServedBy(state, 999)).toBe(0);
   });
 });

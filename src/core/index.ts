@@ -24,7 +24,7 @@ export type { HomeSanction, SanctionedHome } from './environment/sanction';
 export { WASTE, WASTE_FACILITIES, WASTE_KINDS, WASTE_REQUIRED_FROM_CITIZENS, WASTE_REQUIRED_TIER, homeWasteProduction, wasteCapacity, wasteKindOf } from './waste/wasteBalance';
 export type { WasteKind } from './waste/wasteBalance';
 export { incineratorPenaltyOf, odorPenaltyOf, wasteEmissions } from './waste/wasteNuisance';
-export { isWasteCovered, isWasteMissing, isWasteSanctioned, wasteCauseOf, wasteCostPerHour, wasteReport } from './waste/waste';
+export { isWasteCovered, isWasteMissing, isWasteSanctioned, wasteCauseOf, wasteCitizensServedBy, wasteCostPerHour, wasteReport } from './waste/waste';
 export type { FacilityWaste, HomeWaste, WasteCause, WasteReport } from './waste/waste';
 export { WASTE_CAUSES, wasteSituation } from './waste/wasteSituation';
 export type { WasteCauseSituation, WasteFamilySituation, WasteSituation } from './waste/wasteSituation';

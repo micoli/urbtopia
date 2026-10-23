@@ -1,4 +1,4 @@
-import { FACILITIES, citizensOf, facilityCapacity, serviceCoverage, type Building, type FacilityType, isHomeType } from '../../core';
+import { FACILITIES, citizensOf, facilityCapacity, serviceCoverage, wasteCitizensServedBy, type Building, type FacilityType, isHomeType } from '../../core';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { ReachToggle } from '../common/ReachToggle.tsx';
@@ -13,11 +13,14 @@ export function FacilityPanel({ building }: FacilityPanelProps) {
   const { radius } = FACILITIES[building.type];
   const capacity = facilityCapacity(building.type, building.tier);
   const coverage = serviceCoverage(state);
-  const served = state.buildings.reduce((total, home) => total + (isHomeType(home.type) && coverage.get(home.id)?.has(building.type) ? citizensOf(home.tier) : 0), 0);
+  const isWaste = FACILITIES[building.type].category === 'waste';
+  const served = isWaste
+    ? wasteCitizensServedBy(state, building.id)
+    : state.buildings.reduce((total, home) => total + (isHomeType(home.type) && coverage.get(home.id)?.has(building.type) ? citizensOf(home.tier) : 0), 0);
   return <DrawerPanel>
         <DrawerPanel.LabelValue label={t('facility.reach')} value={radius === null ? t('placement.cityWide') : `${2 * radius} × ${2 * radius}`}/>
         {radius !== null && <ReachToggle />}
-        <DrawerPanel.LabelValue label={t('facility.capacity')} value={`${capacity === null ? t('facility.unlimited') : capacity} · ${t('facility.served')}: ${served}`}/>
+        <DrawerPanel.LabelValue label={t(isWaste ? 'facility.wasteCapacity' : 'facility.capacity')} value={`${capacity === null ? t('facility.unlimited') : capacity} · ${t('facility.served')}: ${served}`}/>
       <DrawerPanel.Upgrade building={building} />
   </DrawerPanel>
 }

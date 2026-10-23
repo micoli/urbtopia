@@ -917,6 +917,7 @@ export const CATALOG = {
   "stats.waste.cost": ["cost", "coût"],
   "facility.reach": ["Reach (tiles)", "Portée (cases)"],
   "facility.capacity": ["Capacity (Citizens)", "Capacité (citoyens)"],
+  "facility.wasteCapacity": ["Capacity (Waste units a day)", "Capacité (unités de déchets par jour)"],
   "facility.served": ["Served", "Servis"],
   "facility.unlimited": ["unlimited", "illimitée"],
 } as const satisfies Record<string, Entry>;
