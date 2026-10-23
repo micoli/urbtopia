@@ -20,7 +20,7 @@ export function Shell({ profile }: Props) {
     <div className="flex h-full flex-col">
       <TopBar profile={profile} onRefresh={reload} />
       <div className="grid min-h-0 flex-1 grid-cols-[minmax(20rem,26rem)_1fr]">
-        <AccountList state={state} selectedId={selectedId} onSelect={setSelectedId} onRetry={reload} />
+        <AccountList client={client} state={state} selectedId={selectedId} onSelect={setSelectedId} onRetry={reload} />
         <section className="flex min-h-0 flex-col p-3">
           {selected ? (
             <AccountPanel key={selected.id} client={client} account={selected} gameUrl={profile.gameUrl} onChanged={reload} />

@@ -1,13 +1,16 @@
 import { accountLabel, isBanned, type AccountSummary } from '../domain/accounts'
+import { formatNumber } from '../domain/format'
+import type { SaveStats } from '../domain/saveStats'
 import { badge } from './styles'
 
 interface Props {
   account: AccountSummary
+  stats: SaveStats | undefined
   selected: boolean
   onSelect: () => void
 }
 
-export function AccountRow({ account, selected, onSelect }: Props) {
+export function AccountRow({ account, stats, selected, onSelect }: Props) {
   return (
     <li>
       <button
@@ -23,6 +26,11 @@ export function AccountRow({ account, selected, onSelect }: Props) {
         <span className="truncate text-xs text-zinc-500">
           {account.handle && account.email ? `${account.email} · ` : ''}{account.saveCount} save{account.saveCount === 1 ? '' : 's'}
         </span>
+        {stats?.readable && (
+          <span className="text-xs text-zinc-600">
+            <b>{formatNumber(stats.citizens)}</b> citizens · <b>{formatNumber(stats.urbs)}</b> Urbs
+          </span>
+        )}
       </button>
     </li>
   )

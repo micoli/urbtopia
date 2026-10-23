@@ -97,6 +97,17 @@ export async function loadAccountDetail(client: AdminClient, userId: string): Pr
   }
 }
 
+export async function loadLatestSaveStats(client: AdminClient, userIds: string[]): Promise<Map<string, SaveStats>> {
+  const entries = await Promise.all(
+    userIds.map(async (userId) => {
+      const { data, error } = await client.from('urb_saves').select('envelope').eq('user_id', userId).order('revision', { ascending: false }).limit(1)
+      if (error) throw new Error(error.message)
+      return [userId, data[0] ? statsOfEnvelope(data[0].envelope) : null] as const
+    }),
+  )
+  return new Map(entries.flatMap(([userId, stats]) => (stats ? [[userId, stats] as const] : [])))
+}
+
 export async function setBanned(client: AdminClient, userId: string, banned: boolean): Promise<void> {
   const { error } = await client.auth.admin.updateUserById(userId, { ban_duration: banned ? PERMANENT_BAN : 'none' })
   if (error) throw new Error(error.message)
