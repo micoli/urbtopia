@@ -1,6 +1,6 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { ARCHIVES_DIR, ASSET_PACKS, DEFINITION_MODEL_FILES, MODELS_DIR, POLY_PIZZA_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS, type AssetPack } from './assetPacks.ts';
+import { ARCHIVES_DIR, ASSET_PACKS, DEFINITION_MODEL_FILES, MANAGED_MODELS_DIR, MODELS_DIR, POLY_PIZZA_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS, type AssetPack } from './assetPacks.ts';
 import { managedModelFile, managedModelKeys, polyPizzaModelKeys } from './managedModels.ts';
 import { convertQuaterniusPack, type QuaterniusPack } from './quaternius.ts';
 import { extractPack } from './extractPack.ts';
@@ -57,6 +57,13 @@ function installManagedModels(): void {
       if (!force && existsSync(target) && readFileSync(target).equals(data)) continue;
       writeFileSync(target, data);
     }
+  }
+  for (const texture of readdirSync(join(MANAGED_MODELS_DIR, 'streets', 'Textures'))) {
+    const target = join(MODELS_DIR, 'streets', 'Textures', texture);
+    const data = readFileSync(join(MANAGED_MODELS_DIR, 'streets', 'Textures', texture));
+    if (!force && existsSync(target) && readFileSync(target).equals(data)) continue;
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, data);
   }
   console.log(`✓ managed models: ${keys.length} files`);
 }
