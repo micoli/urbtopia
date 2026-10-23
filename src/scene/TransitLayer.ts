@@ -61,6 +61,7 @@ export class TransitLayer {
   readonly priorityTiles = new Set<string>();
   private tracks = new THREE.Group();
   private vehicles = new THREE.Group();
+  private trackInputs: { brtRoads: GameState['brtRoads']; rails: GameState['rails']; roads: GameState['roads'] } | null = null;
   private trackSignature = '';
   private fleetSignature = '';
   private moving: { mesh: THREE.Group; route: { x: number; y: number }[]; loop: boolean; phase: number; speed: number; brt: boolean; kind: TransitVehicleKind; hidden: boolean; lane: number; pitch: number }[] = [];
@@ -76,13 +77,18 @@ export class TransitLayer {
 
   sync(state: GameState, services: Service[]) {
     this.elevation = bridgeElevation(state.bridges);
-    const trackSignature = JSON.stringify([state.brtRoads, state.rails]);
-    this.crossings = new Set((state.brtRoads ?? []).filter(p => state.roads.some(r => tileKey(r) === tileKey(p))).map(tileKey));
-    const tracksChanged = trackSignature !== this.trackSignature;
-    if (tracksChanged) {
-      this.trackSignature = trackSignature; this.clear(this.tracks);
+    const inputs = this.trackInputs;
+    if (inputs?.brtRoads !== state.brtRoads || inputs?.roads !== state.roads) {
+      const roadKeys = new Set(state.roads.map(tileKey));
+      this.crossings = new Set((state.brtRoads ?? []).map(tileKey).filter(key => roadKeys.has(key)));
     }
-    if (tracksChanged) this.compactTracks();
+    if (inputs?.brtRoads !== state.brtRoads || inputs?.rails !== state.rails) {
+      const trackSignature = JSON.stringify([state.brtRoads, state.rails]);
+      if (trackSignature !== this.trackSignature) {
+        this.trackSignature = trackSignature; this.clear(this.tracks); this.compactTracks();
+      }
+    }
+    this.trackInputs = { brtRoads: state.brtRoads, rails: state.rails, roads: state.roads };
     const fleetSignature = JSON.stringify([state.transitFleet, services.filter(l => l.mode !== 'bus').map(l => [l.id, l.active, l.loop, l.route, l.operatingVehicleIds])]);
     if (fleetSignature === this.fleetSignature) return;
     this.fleetSignature = fleetSignature; this.clear(this.vehicles); this.moving = []; this.priorityTiles.clear();

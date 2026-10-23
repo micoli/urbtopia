@@ -22,8 +22,19 @@ export function frontTiles(type: BuildingType, x: number, y: number, rotation: R
   return tiles.map((tile) => neighbour(tile, front)).filter((tile) => !inside.has(tileKey(tile)));
 }
 
-const isBrtTile = (state: GameState, tile: Coord) => (state.brtRoads ?? []).some((candidate) => tileKey(candidate) === tileKey(tile));
-const isRailTile = (state: GameState, tile: Coord) => (state.rails ?? []).some((candidate) => tileKey(candidate) === tileKey(tile));
+const tileKeySets = new WeakMap<readonly Coord[], Set<string>>();
+
+function tileKeysOf(tiles: readonly Coord[] | undefined): ReadonlySet<string> {
+  if (!tiles) return new Set();
+  const cached = tileKeySets.get(tiles);
+  if (cached) return cached;
+  const keys = new Set(tiles.map(tileKey));
+  tileKeySets.set(tiles, keys);
+  return keys;
+}
+
+const isBrtTile = (state: GameState, tile: Coord) => tileKeysOf(state.brtRoads).has(tileKey(tile));
+const isRailTile = (state: GameState, tile: Coord) => tileKeysOf(state.rails).has(tileKey(tile));
 
 // Every tile next to the footprint, on all four sides: a Transit hub is reached from any of them.
 export function perimeterTiles(type: BuildingType, x: number, y: number, rotation: Rotation, tier = 1): Coord[] {
@@ -43,7 +54,7 @@ const accessTiles = (type: BuildingType, x: number, y: number, rotation: Rotatio
 
 export function frontAccessModes(state: GameState, type: BuildingType, x: number, y: number, rotation: Rotation, tier = 1): AccessMode[] {
   const front = accessTiles(type, x, y, rotation, tier);
-  const pedestrianWays = new Set((state.pedestrianWays ?? []).map(tileKey));
+  const pedestrianWays = tileKeysOf(state.pedestrianWays);
   return BUILDING_SPECS[type].accessModes.filter((mode) => front.some((tile) => (
     mode === 'road' ? isRoadLike(state, tile) : mode === 'brt' ? isBrtTile(state, tile) : mode === 'rail' ? isRailTile(state, tile) : pedestrianWays.has(tileKey(tile))
   )));

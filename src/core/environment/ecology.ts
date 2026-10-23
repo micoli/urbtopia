@@ -83,26 +83,62 @@ export function greenSpaceCoverage(state: GameState, space: Building): number {
   }, 0);
 }
 
-export function greenBenefits(state: GameState, home: Building) {
+interface GreenContext {
+  signature: string;
+  spaces: { building: Building; connected: boolean; habitatWithoutVegetation: boolean }[];
+  benefits: Map<string, GreenBenefits>;
+}
+
+type GreenBenefits = { cooling: number; biodiversity: number; wellbeing: number };
+
+const greenContextCache = new WeakMap<readonly Building[], GreenContext>();
+let lastGreenContext: GreenContext | null = null;
+
+function greenContextOf(state: GameState): GreenContext {
+  const cached = greenContextCache.get(state.buildings);
+  if (cached) return cached;
   const spaces = state.buildings.filter(b => greenProfileOf(b.type));
+  const signature = spaces.map(b => `${b.id}:${b.type}:${b.x}:${b.y}:${b.rotation}:${b.tier}`).join('|');
+  if (lastGreenContext?.signature === signature) {
+    greenContextCache.set(state.buildings, lastGreenContext);
+    return lastGreenContext;
+  }
   const vegetation = spaces.filter(b => isVegetation(b.type));
+  const context: GreenContext = {
+    signature,
+    benefits: new Map(),
+    spaces: spaces.map(building => ({
+      building,
+      connected: isVegetation(building.type) && vegetation.some(other => other.id !== building.id && greenSpacesTouch(building, other)),
+      habitatWithoutVegetation: natureModelOf(building.type)?.[2] === 'habitat' && !vegetation.some(other => distance(building, other) <= 2),
+    })),
+  };
+  greenContextCache.set(state.buildings, context);
+  lastGreenContext = context;
+  return context;
+}
+
+export function greenBenefits(state: GameState, home: Building): GreenBenefits {
+  const context = greenContextOf(state);
+  const key = `${home.type}:${home.x}:${home.y}:${home.rotation}:${home.tier}`;
+  const cached = context.benefits.get(key);
+  if (cached) return cached;
   const weight = { cooling: 0, biodiversity: 0, wellbeing: 0 };
-  for (const b of spaces) {
-    const profile = greenProfileOf(b.type, b.tier)!;
-    if (distance(b, home) > profile.radius) continue;
-    const habitat = natureModelOf(b.type)?.[2] === 'habitat';
-    if (habitat && !vegetation.some(other => distance(b, other) <= 2)) continue;
-    const connected = isVegetation(b.type) && vegetation.some(other => other.id !== b.id && greenSpacesTouch(b, other));
+  for (const { building, connected, habitatWithoutVegetation } of context.spaces) {
+    const profile = greenProfileOf(building.type, building.tier)!;
+    if (distance(building, home) > profile.radius || habitatWithoutVegetation) continue;
     const bonus = connected ? 1.2 : 1;
     weight.cooling += profile.cooling * bonus;
     weight.biodiversity += profile.biodiversity * bonus;
     weight.wellbeing += profile.wellbeing * bonus;
   }
-  return {
+  const benefits = {
     cooling: 100 * weight.cooling / (weight.cooling + 4),
     biodiversity: 100 * weight.biodiversity / (weight.biodiversity + 6),
     wellbeing: 100 * weight.wellbeing / (weight.wellbeing + 5),
   };
+  context.benefits.set(key, benefits);
+  return benefits;
 }
 
 export function cityGreenBenefits(state: GameState) {

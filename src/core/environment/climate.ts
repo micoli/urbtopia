@@ -9,7 +9,17 @@ export function activityEmissionsOf(building: Building): number {
   return industryEmissionsOf(building.type) * building.tier;
 }
 
-export function climateStats(state: GameState) {
+const climateCache = new WeakMap<GameState, ReturnType<typeof computeClimateStats>>();
+
+export function climateStats(state: GameState): ReturnType<typeof computeClimateStats> {
+  const cached = climateCache.get(state);
+  if (cached) return cached;
+  const stats = computeClimateStats(state);
+  climateCache.set(state, stats);
+  return stats;
+}
+
+function computeClimateStats(state: GameState) {
   const energy = energyStats(state);
   const transport = cityTransportStats(state);
   const operatingRatio = (state.adaptationUntil ?? 0) > state.lastSeen ? 1 : energy.economicRatio;

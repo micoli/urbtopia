@@ -11,7 +11,7 @@ import { PetitionsSection } from './PetitionsSection';
 import { PoliticsObjectivesSection } from './PoliticsObjectivesSection';
 import { PoliticsSummary } from './PoliticsSummary';
 
-export function PoliticsWindow() {
+function PoliticsWindowDialog() {
   const state = useGame(store => store.state);
   const open = useUi(store => store.politicsOpen);
   const close = useUi(store => store.closePolitics);
@@ -40,4 +40,9 @@ export function PoliticsWindow() {
       </div>
     </div>
   );
+}
+
+export function PoliticsWindow() {
+  const open = useUi((store) => store.politicsOpen);
+  return open ? <PoliticsWindowDialog /> : null;
 }

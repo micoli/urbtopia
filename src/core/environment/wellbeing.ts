@@ -30,7 +30,27 @@ export function congestionPenaltyOf(ratio: number): number {
   return CONGESTION.penaltyCap * Math.min(1, (ratio - 1) / (CONGESTION.maxRatio - 1));
 }
 
-export function homeBenefits(state: GameState, home: Building, coalRates: ReadonlyMap<number, number> = energyStats(state).coalRates, coverage: ServiceCoverage = serviceCoverage(state), poweredCasinos: ReadonlySet<number> = poweredCasinoIds(state), congestion: CongestionStats = congestionStats(state)) {
+interface HomeBenefitsEntry {
+  coalRates: ReadonlyMap<number, number>;
+  coverage: ServiceCoverage;
+  poweredCasinos: ReadonlySet<number>;
+  congestion: CongestionStats;
+  result: ReturnType<typeof computeHomeBenefits>;
+}
+
+const homeBenefitsCache = new WeakMap<GameState, WeakMap<Building, HomeBenefitsEntry>>();
+
+export function homeBenefits(state: GameState, home: Building, coalRates: ReadonlyMap<number, number> = energyStats(state).coalRates, coverage: ServiceCoverage = serviceCoverage(state), poweredCasinos: ReadonlySet<number> = poweredCasinoIds(state), congestion: CongestionStats = congestionStats(state)): ReturnType<typeof computeHomeBenefits> {
+  const perHome = homeBenefitsCache.get(state) ?? new WeakMap<Building, HomeBenefitsEntry>();
+  homeBenefitsCache.set(state, perHome);
+  const cached = perHome.get(home);
+  if (cached?.coalRates === coalRates && cached.coverage === coverage && cached.poweredCasinos === poweredCasinos && cached.congestion === congestion) return cached.result;
+  const result = computeHomeBenefits(state, home, coalRates, coverage, poweredCasinos, congestion);
+  perHome.set(home, { coalRates, coverage, poweredCasinos, congestion, result });
+  return result;
+}
+
+function computeHomeBenefits(state: GameState, home: Building, coalRates: ReadonlyMap<number, number>, coverage: ServiceCoverage, poweredCasinos: ReadonlySet<number>, congestion: CongestionStats) {
   const green = greenBenefits(state, home);
   const penalty = state.buildings.reduce((sum, b) => {
     if (b.type !== 'coalPlant' || distance(b, home) > ECOLOGY.coalPollutionRadius) return sum;
