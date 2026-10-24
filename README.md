@@ -78,7 +78,7 @@ Stop everything with `pitchfork stop ur/dev ur/assets-editor ur/casino-sim` and 
 
 ## Cloud saves database
 
-The optional Cloud save lives in a Supabase project described by [`supabase/`](supabase/) (migrations, pgTAP tests, email templates); every Postgres object is prefixed `urb_`. Locally it runs from [`docker-compose.yml`](docker-compose.yml) (Postgres, Auth, REST, a small gateway, Mailpit and Studio, same ports as `supabase start`), which needs a Docker-compatible runtime (Docker, OrbStack, Colima). Migrations are applied when the stack starts.
+The optional Cloud save lives in a Supabase project described by [`supabase/`](supabase/) (migrations, pgTAP tests, email templates); every Postgres object is prefixed `urb_`. Locally it runs from [`docker-compose.yml`](docker-compose.yml) (Postgres, Auth, REST, a small gateway, Mailpit and Studio, same ports as `supabase start`), which needs a Docker-compatible runtime (Docker, OrbStack, Colima). Migrations are applied when the stack starts. The same database holds the Hall of fame: a public Showcase of each opted-in city, readable by every signed-in player (see [ADR 0029](docs/adr/0029-hall-of-fame-trusts-the-client-with-growth-caps.md)).
 
 | Command | Purpose |
 | --- | --- |

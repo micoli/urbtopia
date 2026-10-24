@@ -1,5 +1,6 @@
 import { advance } from '../../core';
 import { isBackOfficeSessionRequested } from '../../backOffice/handoff';
+import { showcasePublishHandle } from '../../showcase/publishHandle';
 import { cloudStore } from '../../store/cloudStore';
 import { gameStore } from '../../store/gameStore';
 import { readOnlyStore } from '../../store/readOnlyStore';
@@ -46,6 +47,7 @@ export function installCloudSync(): () => void {
       now: Date.now,
       canPush: () => !readOnlyStore.getState().readOnly,
       keepLocal: isKeepLocalRequested(window.location.search),
+      onPushed: (envelope) => showcasePublishHandle.current(envelope),
       onStatus: (status) => cloudStore.getState().setStatus(status),
       onAccount: (account) => {
         knownUserId = account?.userId ?? null;

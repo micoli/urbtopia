@@ -20,7 +20,8 @@ select results_eq(
        'urb_leave_group', 'urb_list_challenges', 'urb_list_group_messages', 'urb_list_groups', 'urb_list_messages', 'urb_list_saves', 'urb_list_social',
        'urb_push_save', 'urb_record_donations', 'urb_refuse_friend_request', 'urb_remove_friend', 'urb_remove_group_member', 'urb_rename_group',
        'urb_restore_save', 'urb_send_friend_request_by_email', 'urb_send_group_message', 'urb_send_message', 'urb_set_avatar',
-       'urb_set_findable', 'urb_set_handle', 'urb_unblock_user'
+       'urb_set_findable', 'urb_set_handle', 'urb_unblock_user',
+       'urb_get_showcase', 'urb_hall_of_fame', 'urb_mark_hall_of_fame_notice_seen', 'urb_publish_showcase', 'urb_set_hall_of_fame_opt_out', 'urb_showcase_status'
      ]) order by 1 $$,
   'authenticated can execute only the client-facing urb_ functions'
 );

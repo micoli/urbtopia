@@ -5,6 +5,7 @@ import { useCloud, useSocial, useUi } from '../common/hooks';
 import { useModalFocus } from '../stats/management/useModalFocus';
 import { ExchangesTab } from './ExchangesTab';
 import { FriendsTab } from './friends/FriendsTab';
+import { HallOfFameTab } from './hall/HallOfFameTab';
 import { GroupsTab } from './groups/GroupsTab';
 import { ProfileTab } from './profile/ProfileTab';
 import { SignInPrompt } from './SignInPrompt';
@@ -34,9 +35,9 @@ export function SocialWindow() {
             {account?.email ? <>
                 <SocialTabs tab={tab} friendsPending={friendsPending} groupsPending={groupsPending} exchangesPending={exchangesPending} onSelect={setTab}/>
                 <div id="social-panel" role="tabpanel" aria-labelledby={`social-tab-${tab}`}>
-                    {tab === 'friends' ? <FriendsTab/> : tab === 'groups' ? <GroupsTab/> : tab === 'profile' ? <ProfileTab/> : <ExchangesTab/>}
+                    {tab === 'friends' ? <FriendsTab/> : tab === 'groups' ? <GroupsTab/> : tab === 'hall' ? <HallOfFameTab/> : tab === 'profile' ? <ProfileTab/> : <ExchangesTab/>}
                 </div>
-            </> : account ? <SignInPrompt onSignIn={() => openSettings(true)}/> : <p>{t('friends.connecting')}</p>}
+            </> : account ? <><SignInPrompt onSignIn={() => openSettings(true)}/><HallOfFameTab/></> : <p>{t('friends.connecting')}</p>}
         </div>
     </div>;
 }

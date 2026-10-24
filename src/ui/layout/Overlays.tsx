@@ -15,6 +15,8 @@ import { ExportReminder } from '../system/ExportReminder';
 import { ImportConfirmDialog } from '../system/ImportConfirmDialog';
 import { BackOfficeBanner } from '../system/BackOfficeBanner';
 import { ReadOnlyBanner } from '../system/ReadOnlyBanner';
+import { VisitBanner } from '../system/VisitBanner';
+import { HallOfFameNotice } from '../social/hall/HallOfFameNotice';
 import { RecoveryScreen } from '../system/RecoveryScreen';
 import { SaveConflictOverlay } from '../system/SaveConflictOverlay';
 import { SignInPrompt } from '../system/SignInPrompt';
@@ -40,6 +42,8 @@ export function Overlays() {
       <FloatingBadges />
       <ConfirmPad />
       <ReadOnlyBanner />
+      <VisitBanner />
+      <HallOfFameNotice />
       <BackOfficeBanner />
       <AnnualEventNotice />
       <ExportReminder />

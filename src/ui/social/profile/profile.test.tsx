@@ -100,3 +100,13 @@ describe('sign-in prompt', () => {
     expect(html).not.toContain('type="email"');
   });
 });
+
+describe('profile panel Hall of fame', () => {
+  it('shows the opt-out toggle once the status is known', () => {
+    expect(panel({ hallOfFame: { optedOut: false, onChange: noop } })).toContain(t('hall.optOut'));
+  });
+
+  it('hides it before the status is known', () => {
+    expect(panel()).not.toContain(t('hall.optOut'));
+  });
+});

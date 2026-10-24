@@ -7,6 +7,7 @@ import { saveNowHandle } from './saveNow';
 import { installBackOffice } from '../backOffice/installBackOffice';
 import { installChallenges } from '../challenges/installChallenges';
 import { installSolidarity } from '../solidarity/installSolidarity';
+import { installShowcase } from '../showcase/installShowcase';
 import { installSocial } from '../social/installSocial';
 import { installCloudSync } from './cloud/installCloud';
 import { saveSession, saveStore } from './instance';
@@ -80,6 +81,7 @@ export function installPersistence(): () => void {
   const disposeCloud = installCloudSync();
   const disposeBackOffice = installBackOffice();
   const disposeSocial = installSocial();
+  const disposeShowcase = installShowcase();
   const disposeChallenges = installChallenges();
   const disposeSolidarity = installSolidarity();
 
@@ -88,6 +90,7 @@ export function installPersistence(): () => void {
     disposeCloud();
     disposeBackOffice();
     disposeSocial();
+    disposeShowcase();
     disposeChallenges();
     disposeSolidarity();
     unsubscribe();

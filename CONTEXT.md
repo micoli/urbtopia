@@ -746,6 +746,18 @@ _Avoid_: Basket, deposit, contribution
 A permanent distinction earned by completing a Challenge whose reward is a Medal, or by reaching cumulative Donation value milestones. It is shown in the Social window, on the Player account's own profile and on its Friends'.
 _Avoid_: Badge (reserved for the notification counter on a button), trophy, achievement
 
+**Hall of fame**:
+The public ranking of the ten biggest cities by Citizens, one per Player account that has a Handle and has not opted out. Each entry shows the Avatar, the Handle and the Citizens count of its city. Anyone can consult it.
+_Avoid_: Leaderboard, top 10, scoreboard
+
+**Showcase**:
+The copy of a Player account's city that other players can Visit. It is kept separate from the Cloud save, which stays private, and is replaced whenever the city is saved online. A Player account that opts out has no Showcase and is absent from the Hall of fame.
+_Avoid_: Public save, snapshot, preview
+
+**Visit**:
+Looking around another Player account's Showcase in the game, read-only: nothing advances, nothing can be built or changed, and the visitor's own city and saves are never touched. Anyone can Visit, including a Player account without email.
+_Avoid_: Spectate, preview, load
+
 **Back office**:
 The local tool, never deployed, with which an Admin lists Player accounts, moderates them and inspects their Cloud saves. It runs only on the Admin's machine and acts with the service key of the Supabase project it is pointed at.
 _Avoid_: Admin panel, dashboard, console
