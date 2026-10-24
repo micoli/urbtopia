@@ -6,13 +6,6 @@
 .home-color-swatch-a { background: var(--swatch-residential-a); }
 .home-color-swatch-b { background: var(--swatch-residential-b); }
 .home-color-swatch-c { background: var(--swatch-residential-c); }
-.home-color-swatch-commercial-default { background: var(--swatch-commercial-default); }
-.home-color-swatch-commercial-a { background: var(--swatch-commercial-a); }
-.home-color-swatch-commercial-b { background: var(--swatch-commercial-b); }
-.home-color-swatch-industrial-default { background: var(--swatch-industrial-default); }
-.home-color-swatch-industrial-a { background: var(--swatch-industrial-a); }
-.home-color-swatch-industrial-b { background: var(--swatch-industrial-b); }
-.home-color-swatch-industrial-c { background: var(--swatch-industrial-c); }
 
 .storage-tiles {
   list-style: none;

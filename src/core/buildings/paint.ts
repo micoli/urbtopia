@@ -3,35 +3,25 @@ import { BUILDING_ENTRIES, tiersOf } from './buildingDefinitions';
 import type { BuildingId } from './buildingTypes.generated';
 import { MODEL_ENTRIES } from '../models/modelFiles';
 
-// The Kenney kits a Building can be repainted with: each kit ships its own palette variations.
-export type PaintKit = 'suburban' | 'commercial' | 'industrial' | 'palette';
+// How a Building is repainted: its model ships a palette texture per color tone.
+export type PaintKit = 'palette';
 
 const ALL_COLORS: readonly ColorVariant[] = ['default', 'a', 'b', 'c'];
 
-// The commercial kit ships two variations, the others three.
-const PALETTES: Record<PaintKit, readonly ColorVariant[]> = {
-  suburban: ALL_COLORS,
-  palette: ALL_COLORS,
-  commercial: ['default', 'a', 'b'],
-  industrial: ALL_COLORS,
-};
+const PALETTES: Record<PaintKit, readonly ColorVariant[]> = { palette: ALL_COLORS };
 
 // The models that ship a palette texture per color tone: one model, repainted by swapping its palette.
 const TONED_MODELS: ReadonlySet<string> = new Set(Object.entries(MODEL_ENTRIES).filter(([, entry]) => Object.keys(entry.tones ?? {}).length).flatMap(([id, entry]) => [id, entry.file]));
 
 // Takes a Model id or the file the scene keys it by.
 export function paintKitOf(model: string): PaintKit | undefined {
-  if (TONED_MODELS.has(model)) return 'palette';
-  if (/^suburban[-/]building/.test(model)) return 'suburban';
-  if (/^commercial[-/]building/.test(model)) return 'commercial';
-  if (/^industrial[-/]/.test(model)) return 'industrial';
-  return undefined;
+  return TONED_MODELS.has(model) ? 'palette' : undefined;
 }
 
 const LEGACY_COLOR_KINDS: readonly string[] = ['home', 'shop', 'production', 'storage', 'utility', 'venue', 'sport'];
 const REPAINTABLE_KINDS: readonly string[] = [...LEGACY_COLOR_KINDS, 'transitStop', 'office'];
 
-// Homes, shops, Venues, production, storage, utility buildings, Offices and the Transit hub, as long as their model comes from a kit with palette variations.
+// Homes, shops, Venues, production, storage, utility buildings, Offices and the Transit hub, as long as their model has color tones.
 const REPAINTABLE_TYPES: ReadonlySet<string> = new Set(
   BUILDING_ENTRIES
     .filter(({ kind, model }) => REPAINTABLE_KINDS.includes(kind ?? '') && paintKitOf(model) !== undefined)

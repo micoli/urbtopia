@@ -17,4 +17,4 @@ export interface Asset {
   name: string
 }
 
-export const defaultLicense = (source: ModelSource) => (source === 'kenney' || source === 'quaternius' ? 'CC0' : '')
+export const defaultLicense = (source: ModelSource) => (source === 'quaternius' ? 'CC0' : '')

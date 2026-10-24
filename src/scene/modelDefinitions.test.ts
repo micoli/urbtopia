@@ -1,8 +1,8 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { ARCHIVES_DIR, ASSET_PACKS, MANAGED_MODELS_DIR, POLY_PIZZA_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS } from '../../scripts/assetPacks';
-import { extractFbx, extractPack } from '../../scripts/extractPack';
+import { MANAGED_MODELS_DIR, POLY_PIZZA_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS } from '../../scripts/assetPacks';
+import { extractFbx } from '../../scripts/extractPack';
 import { managedModelKeys } from '../../scripts/managedModels';
 import { modelProblems } from '../../scripts/modelsFile';
 import { MODEL_DEFINITIONS, recolorOf, type ModelSource } from './modelDefinitions';
@@ -13,21 +13,11 @@ const keysBySource = (): Map<string, ModelSource> => {
     expect(keys.has(key), `key collision: ${key}`).toBe(false);
     keys.set(key, source);
   };
-  const managed = managedModelKeys(MANAGED_MODELS_DIR);
-  // An own model replaces the Kenney model of the same key, which stays in the archive.
-  const replaced = new Set(managed);
-  for (const pack of ASSET_PACKS) {
-    const files = extractPack(new Uint8Array(readFileSync(join(ARCHIVES_DIR, pack.archive))), 'all', pack.colormap);
-    for (const { path } of files) {
-      const key = `${pack.name}/${path.slice(0, -'.glb'.length)}`;
-      if (path.endsWith('.glb') && !replaced.has(key)) add(key, 'kenney');
-    }
-  }
   for (const pack of QUATERNIUS_PACKS) {
     const files = extractFbx(new Uint8Array(readFileSync(join(QUATERNIUS_ARCHIVES_DIR, pack.archive))));
     for (const { path } of files) add(`${pack.name}/${path.slice(0, -'.fbx'.length)}`, 'quaternius');
   }
-  for (const key of managed) add(key, 'managed');
+  for (const key of managedModelKeys(MANAGED_MODELS_DIR)) add(key, 'managed');
   if (existsSync(POLY_PIZZA_DIR)) for (const slug of readdirSync(POLY_PIZZA_DIR)) add(`poly.pizza/${slug}`, 'poly.pizza');
   return keys;
 };

@@ -46,6 +46,7 @@ export function CreditsDialog() {
               </ul>
             </>
           )}
+          <p>{t('credits.kenneyInspiration')}</p>
         </div>
       </Dialog.Body>
       <Dialog.Actions>

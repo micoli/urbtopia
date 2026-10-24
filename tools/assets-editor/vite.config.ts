@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, type Plugin } from 'vite'
 import { MANAGED_MODELS_DIR, POLY_PIZZA_DIR } from '../../scripts/assetPacks.ts'
-import { archiveFile, archiveManifest, contentTypeOf, kenneyPackNames } from './archiveSources.ts'
+import { archiveFile, archiveManifest, contentTypeOf } from './archiveSources.ts'
 import { managedModelFile, managedModelKeys } from '../../scripts/managedModels.ts'
 import { deleteDefinition, readCatalog, saveDefinitions } from '../../scripts/definitionsStore.ts'
 import { addGlb, addPack, addPolyPizzaModel, removeModel, renameModel } from '../../scripts/assetOperations.ts'
@@ -52,7 +52,6 @@ const polyPizzaPacks = (): Record<string, string[]> => {
 }
 
 const sourcesByPack = () => ({
-  ...Object.fromEntries(kenneyPackNames().map((name) => [name, 'kenney'])),
   ...Object.fromEntries(Object.keys(managedPacks()).map((name) => [name, 'managed'])),
   'poly.pizza': 'poly.pizza',
 })
@@ -70,9 +69,7 @@ const liveSources = (): Plugin => ({
     server.middlewares.use('/models', (req, res, next) => {
       const path = decodeURIComponent((req.url ?? '').split('?')[0]!).replace(/^\//, '')
       const [pack = '', ...rest] = path.split('/')
-      // An own model replaces the archive entry of the same path.
-      const ownModel = /\.(?:glb|tone-.\.png)$/.test(path) && existsSync(managedFileOf(path))
-      const archived = ownModel ? undefined : archiveFile(pack, rest.join('/'))
+      const archived = archiveFile(pack, rest.join('/'))
       if (archived) {
         res.setHeader('Content-Type', contentTypeOf(path))
         return res.end(archived)

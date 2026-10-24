@@ -49,7 +49,7 @@ describe('building files', () => {
   it('refuses bad ids, ids differing by case only and unknown models', () => {
     expect(() => writeBuildings({ '1bad': standard }, temporaryDir())).toThrow('id must start with a letter');
     expect(buildingsProblems({ parka: nature, parkA: nature })).toEqual(['parkA: id differs from another one by case only']);
-    const catalog = { models: { 'nature-tree-oak': { file: 'nature/tree_oak', source: 'kenney' as const, license: 'CC0' } }, ships: (file: string) => file === 'nature/tree_pine' };
+    const catalog = { models: { 'nature-tree-oak': { file: 'nature/tree_oak', source: 'quaternius' as const, license: 'CC0' } }, ships: (file: string) => file === 'nature/tree_pine' };
     expect(buildingsProblems({ oak: nature }, catalog)).toEqual(['oak: model: unknown Model id nature/tree_oak']);
     expect(buildingsProblems({ oak: { ...nature, model: 'nature-tree-oak' } }, catalog)).toEqual(['oak: model: model nature-tree-oak has no installable file nature/tree_oak']);
   });

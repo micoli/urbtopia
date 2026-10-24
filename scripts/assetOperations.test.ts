@@ -12,7 +12,7 @@ import { fetchPolyPizzaModel, publicIdOf } from './polyPizza';
 
 const workspace = (): AssetPaths => {
   const root = mkdtempSync(join(tmpdir(), 'assets-'));
-  const paths = { managed: join(root, 'managed'), polyPizza: join(root, 'poly'), kenney: join(root, 'kenney'), quaternius: join(root, 'quaternius'), models: join(root, 'models.json'), extraPacks: join(root, 'extra.json'), defs: join(root, 'defs') };
+  const paths = { managed: join(root, 'managed'), polyPizza: join(root, 'poly'), quaternius: join(root, 'quaternius'), models: join(root, 'models.json'), extraPacks: join(root, 'extra.json'), defs: join(root, 'defs') };
   writeFileSync(paths.models, '{}\n');
   return paths;
 };
@@ -78,13 +78,6 @@ describe('asset operations', () => {
     expect(JSON.parse(readFileSync(paths.extraPacks, 'utf8')).quaternius).toEqual([{ name: 'city', archive: 'city.zip' }]);
     expect(existsSync(join(paths.quaternius, 'city.zip'))).toBe(true);
     expect(() => addPack({ kind: 'quaternius', name: 'city', archive: 'other.zip', data: zipSync({ 'a.fbx': data }) }, paths)).toThrow('already exists');
-  });
-
-  it('registers a Kenney zip with or without colormap', () => {
-    const paths = workspace();
-    addPack({ kind: 'kenney', name: 'plain', archive: 'plain.zip', data: zipSync({ 'Models/GLB format/a.glb': data }) }, paths);
-    addPack({ kind: 'kenney', name: 'mapped', archive: 'mapped.zip', data: zipSync({ 'Models/GLB format/a.glb': data, 'Models/GLB format/Textures/colormap.png': data }) }, paths);
-    expect(JSON.parse(readFileSync(paths.extraPacks, 'utf8')).kenney).toEqual([{ name: 'plain', archive: 'plain.zip', colormap: false }, { name: 'mapped', archive: 'mapped.zip', colormap: true }]);
   });
 });
 

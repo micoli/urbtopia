@@ -1,4 +1,4 @@
-// PROTOTYPE - throwaway. Question: can an iso ortho three.js scene with Kenney GLBs hold 60fps on phones?
+// PROTOTYPE - throwaway. Question: can an iso ortho three.js scene with low-poly GLBs hold 60fps on phones?
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
@@ -88,9 +88,9 @@ async function load(path: string) {
   return g.scene
 }
 
-const BUILDINGS = 'abcdefghijklmn'.split('').map(l => `building-${l}`)
-const LOW = 'abcdefghijklmn'.split('').map(l => `low-detail-building-${l}`)
-const SKY = 'abcde'.split('').map(l => `building-skyscraper-${l}`)
+const BUILDINGS = ['house-1x1-1f-tone-a', 'house-1x1-2f-mansard-a', 'house-1x1-3f-mansard-a', 'shop-construction-1x1-t1-tone-a', 'shop-equipment-1x1-t1-tone-a', 'coal-1x1-t1-tone-a', 'watertower-1x1-t1-tone-a']
+const LOW = ['house-1x1-1f-tone-a']
+const SKY = ['tower-1x1-4f-tone-a', 'tower-1x1-6f-tone-a', 'tower-1x1-8f-tone-a']
 
 type Item = { path: string; x: number; z: number; rot: number }
 
@@ -108,7 +108,7 @@ function layout(n: number): Item[] {
     else {
       const sky = !state.lowDetail && rnd() < 0.08
       const pool = sky ? SKY : names
-      items.push({ path: 'commercial/' + pool[Math.floor(rnd() * pool.length)], x, z, rot: Math.floor(rnd() * 4) * Math.PI / 2 })
+      items.push({ path: 'buildings/' + pool[Math.floor(rnd() * pool.length)], x, z, rot: Math.floor(rnd() * 4) * Math.PI / 2 })
     }
   }
   return items
@@ -117,8 +117,7 @@ function layout(n: number): Item[] {
 let world = new THREE.Group()
 scene.add(world)
 
-const toLow = (path: string) =>
-  path.includes('skyscraper') ? 'commercial/low-detail-building-a' : path.replace('building-', 'low-detail-building-')
+const LOW_PATH = 'buildings/' + LOW[0]
 
 async function buildInstanced(items: Item[], lod: 'high' | 'low' | 'both') {
   const byKey = new Map<string, Item[]>()
@@ -179,7 +178,7 @@ async function build() {
     const useLod = state.mode === 'chunked' && state.lod > 0 && !state.lowDetail
     await buildInstanced(items, useLod ? 'high' : 'both')
     if (useLod) {
-      const low = items.filter(i => !i.path.startsWith('roads/')).map(i => ({ ...i, path: toLow(i.path) }))
+      const low = items.filter(i => !i.path.startsWith('roads/')).map(i => ({ ...i, path: LOW_PATH }))
       await Promise.all([...new Set(low.map(i => i.path))].map(p => load(`/models/${p}.glb`)))
       await buildInstanced(low, 'low')
     }

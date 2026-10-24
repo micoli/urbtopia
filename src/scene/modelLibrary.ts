@@ -131,10 +131,7 @@ function variantTexturePath(variant: TextureVariant): string {
     return `${model}.tone-${tone}.png`;
   }
   if (variant === 'roads-a') return 'streets/Textures/variation-a.png';
-  if (variant === 'roads-pedestrian') return 'streets/Textures/colormap.png';
-  const [kit, letter] = variant.split('-');
-  if (kit === 'commercial' || kit === 'industrial') return `${kit}/Textures/variation-${letter}.png`;
-  return `suburban/Textures/variation-${variant}.png`;
+  return 'streets/Textures/colormap.png';
 }
 
 function pedestrianRoadTexture(source: THREE.Texture): THREE.CanvasTexture {

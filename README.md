@@ -33,8 +33,8 @@ npm run dev      # http://localhost:5173, prepares models and codex previews fir
 | `npm run preview` | Serve the production build |
 | `npm test` | Unit and property tests (Vitest) |
 | `npm run typecheck` / `npm run lint` | TypeScript and ESLint |
-| `npm run assets` | Extract the 3D models from the versioned archives into `public/models` |
-| `npm run assets:fetch` | Refresh the archives from kenney.nl (see [Assets](#assets)) |
+| `npm run assets` | Install the 3D models into `public/models` (copies the hand-made and Poly Pizza models, converts the Quaternius ones) |
+| `npm run assets:fetch` | Refresh the Poly Pizza models (see [Assets](#assets)) |
 | `npm run assets:prototypes` | Copy the models the prototypes load (render-bench, touch-ux) |
 | `npm run assets:editor` | Game editor: edit buildings (`assets/defs/`) and Model definitions (`assets/models.json`) with live validation, browse every model source, import assets |
 | `?bypass-tutorial` (URL parameter) | Starts a new game without the tutorial; use it in end-to-end and Playwright tests, e.g. `http://localhost:5173/?bypass-tutorial` |
@@ -46,7 +46,7 @@ npm run dev      # http://localhost:5173, prepares models and codex previews fir
 | `npm run test:codex` | Browser checks against a production build, including mobile and offline access |
 | `npm run test:codex:images` | CI check that every codex image exists in the production build and is served |
 
-`dev` and `build` prepare models and codex previews first. Models come from the archives committed in `assets/kenney/`; the preview generator uses local Chromium and reuses unchanged output. After installing dependencies and Chromium, these steps work offline.
+`dev` and `build` prepare models and codex previews first. Models come from the files committed under `assets/`; the preview generator uses local Chromium and reuses unchanged output. After installing dependencies and Chromium, these steps work offline.
 
 The codex catalog is checked against every building in `BUILDING_SPECS` and every network tool in the shared construction registry. Adding a constructible requires a section, French and English descriptions, and a preview for every Tier. Missing entries, translations, models or generated images block CI and deployment. CI checks image availability only, without checking pixels, dimensions or visual accuracy. Generated images and their manifest live in `public/codex/`, are excluded from Git, and are included in the offline cache.
 
@@ -121,34 +121,20 @@ The product spec and the work breakdown live in [`.scratch/urbix-mvp`](.scratch/
 
 ## Assets
 
-The 3D models come from Kenney asset packs (see [Credits](#credits)). The original archives are versioned in `assets/kenney/`, so installing and building never need the network. `npm run assets` extracts only the models the scene uses into `public/models`, which is generated and ignored by git. The assets editor (`npm run assets:editor`) reads the archives directly, including packs with no models selected for the game.
-
-To update the archives, run `npm run assets:fetch`. The download links contain a hash that changes with each Kenney release: if one fails, copy the new link from the pack page into `scripts/assetPacks.ts`. Archives are validated before they replace the old ones. Then run `npm run assets -- --force` and commit the new archives.
+Most 3D models are made in Blender from Python recipes and versioned as GLB in `assets/managed-models/<theme>/<name>/` (one folder per model: GLB, .blend, and the recipe or the shared recipe of its family). `npm run assets` copies them as is to `public/models/<theme>/`, which is generated and ignored by git, so installing and building never need the network.
 
 Crops and farm buildings come from two Quaternius packs, versioned in `assets/quaternus/`. They ship FBX only, so `npm run assets` converts the models the scene uses to GLB (scaled to one tile) with the three.js FBX loader, keeping a single GLTF loader at runtime.
 
-Models with no downloadable source (made by hand in Blender) are versioned as GLB in `assets/managed-models/<theme>/<name>/` (one folder per model: GLB, .blend, recipe, tone textures). `npm run assets` copies them as is to `public/models/<theme>/`, next to the extracted packs.
+A few models come from Poly Pizza, versioned in `assets/poly.pizza/` with their license; `npm run assets:fetch` refreshes them. The assets editor (`npm run assets:editor`) reads every source directly, including Quaternius packs with no models selected for the game.
 
 The [`prototypes`](prototypes) folder holds throwaway prototypes (render benchmark, touch UX, casino simulator) that informed the design. Only their sources are versioned; `npm run assets:prototypes` copies the models they load.
 
 ## Credits
 
-3D models: **[Kenney](https://kenney.nl)**, released under [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) (public domain). Attribution is not required, and is gladly given.
-
-- [City Kit (Commercial)](https://kenney.nl/assets/city-kit-commercial) 2.1
-- [City Kit (Suburban)](https://kenney.nl/assets/city-kit-suburban) 2.0
-- [City Kit (Industrial)](https://kenney.nl/assets/city-kit-industrial) 2.0
-- [Car Kit](https://kenney.nl/assets/car-kit) 3.1
-- [Nature Kit](https://kenney.nl/assets/nature-kit) 1.0
-- [Mini Forest](https://kenney.nl/assets/mini-forest) 1.0
-- [Graveyard Kit](https://kenney.nl/assets/graveyard-kit) 5.0
-- [Holiday Kit](https://kenney.nl/assets/holiday-kit) 2.0
-- [Pirate Kit](https://kenney.nl/assets/pirate-kit) 2.1
-- [Watercraft Kit](https://kenney.nl/assets/watercraft-kit) 2.1
-- [Train Kit](https://kenney.nl/assets/train-kit) 1.1
+3D models: made for the game, unless listed below. The look of many of them is inspired by the **[Kenney](https://kenney.nl)** kits.
 
 3D models of crops and farm buildings: **[Quaternius](https://quaternius.com)**, released under CC0 1.0 Universal (public domain), from the Farm Crops and Farm Buildings packs.
 
-Each archive in `assets/kenney/` includes its original `License.txt`. Research notes on the packs are in [`docs/research/kenney-city-kits.md`](docs/research/kenney-city-kits.md).
+Models from Poly Pizza are credited one by one in the game's Credits dialog.
 
 Built with [three.js](https://threejs.org), [React](https://react.dev), [Zustand](https://github.com/pmndrs/zustand), [Vite](https://vite.dev), [Vitest](https://vitest.dev), [fast-check](https://fast-check.dev) and [fflate](https://github.com/101arrowz/fflate).

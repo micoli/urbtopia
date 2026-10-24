@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const MODEL_ID_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-export const MODEL_SOURCES = ['kenney', 'quaternius', 'managed', 'poly.pizza'] as const;
+export const MODEL_SOURCES = ['quaternius', 'managed', 'poly.pizza'] as const;
 
 const color = z.string().regex(/^#[0-9a-f]{6}$/i, 'must be #rrggbb');
 

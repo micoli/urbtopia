@@ -142,7 +142,7 @@ describe('chunkKeyOf', () => {
   });
 });
 
-it('uses Kenney railway models for straights, corners and branch arms', () => {
+it('uses the railway models for straights, corners and branch arms', () => {
   const state = newGame({ seed: 'rail-models', now: 0 });
   expect(railItems({ ...state, rails: [{ x: 0, y: 0, exits: ['E', 'W'] }] })).toMatchObject([{ model: 'trains/railroad-straight', rotation: 1 }]);
   for (const [exits, rotation] of [[['N', 'W'], 0], [['W', 'S'], 1], [['S', 'E'], 2], [['E', 'N'], 3]] as const) {

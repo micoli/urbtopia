@@ -5466,79 +5466,6 @@
       }
     }
   },
-  "commercial-building-e": {
-    "file": "commercial/building-e",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "commercial-building-h": {
-    "file": "commercial/building-h",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      1
-    ]
-  },
-  "commercial-building-m": {
-    "file": "commercial/building-m",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ],
-    "note": "catalog suggested x1.5 to fill 2x2; the game scales facilities from their footprint instead"
-  },
-  "commercial-building-skyscraper-a": {
-    "file": "commercial/building-skyscraper-a",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "commercial-building-skyscraper-b": {
-    "file": "commercial/building-skyscraper-b",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "commercial-building-skyscraper-c": {
-    "file": "commercial/building-skyscraper-c",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "commercial-building-skyscraper-d": {
-    "file": "commercial/building-skyscraper-d",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "commercial-building-skyscraper-e": {
-    "file": "commercial/building-skyscraper-e",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
   "crops-apple-1": {
     "file": "crops/Apple_1",
     "source": "quaternius",
@@ -6949,78 +6876,6 @@
     "license": "Own work",
     "flush": true
   },
-  "industrial-building-g": {
-    "file": "industrial/building-g",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "industrial-building-i": {
-    "file": "industrial/building-i",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      2
-    ]
-  },
-  "industrial-building-k": {
-    "file": "industrial/building-k",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      1
-    ]
-  },
-  "industrial-building-m": {
-    "file": "industrial/building-m",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
-  "industrial-building-n": {
-    "file": "industrial/building-n",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      2
-    ]
-  },
-  "industrial-building-o": {
-    "file": "industrial/building-o",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      2
-    ]
-  },
-  "industrial-building-r": {
-    "file": "industrial/building-r",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      3,
-      2
-    ]
-  },
-  "industrial-building-t": {
-    "file": "industrial/building-t",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ]
-  },
   "industrial-solar-panel-flat": {
     "file": "industrial/solar-panel-flat",
     "source": "managed",
@@ -7042,15 +6897,6 @@
       1
     ],
     "flush": true
-  },
-  "industrial-solar-panel-portrait-group": {
-    "file": "industrial/solar-panel-portrait-group",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      1,
-      2
-    ]
   },
   "materials-apple": {
     "file": "materials/apple",
@@ -9863,18 +9709,5 @@
       "height": 4
     },
     "rotationOffset": 90
-  },
-  "watercraft-boat-house-a": {
-    "file": "watercraft/boat-house-a",
-    "source": "kenney",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ],
-    "fit": {
-      "width": 1.9,
-      "height": 1.6
-    }
   }
 }
