@@ -172,30 +172,30 @@ body {
   @apply block max-w-full overflow-x-auto;
 }
 
-.guide-content .eco-number-field {
+.guide-rules .eco-number-field {
   @apply my-4 flex items-center gap-3 text-sm;
 }
 
-.guide-content .eco-number-control {
+.guide-rules .eco-number-control {
   @apply inline-flex items-center gap-2;
 }
 
-.guide-content .eco-number-value {
+.guide-rules .eco-number-value {
   @apply min-w-8 text-center font-semibold tabular-nums;
 }
 
-.guide-content .icon-button,
-.guide-content [role="radiogroup"] > button,
-.guide-content [role="group"] > button {
+.guide-rules .icon-button,
+.guide-rules [role="radiogroup"] > button,
+.guide-rules [role="group"] > button {
   @apply cursor-pointer rounded-full border border-line bg-surface px-3 py-1 text-sm text-ink transition-colors hover:border-accent disabled:cursor-default disabled:opacity-40;
 }
 
-.guide-content [role="radiogroup"]:not([class*="grid"]),
-.guide-content [role="group"]:not(.eco-number-field) {
+.guide-rules [role="radiogroup"],
+.guide-rules [role="group"]:not(.eco-number-field) {
   @apply my-4 flex flex-wrap gap-2;
 }
 
-.guide-content [role="radiogroup"] > button[aria-checked="true"],
-.guide-content [role="group"] > button[aria-pressed="true"] {
+.guide-rules [role="radiogroup"] > button[aria-checked="true"],
+.guide-rules [role="group"] > button[aria-pressed="true"] {
   @apply border-accent bg-accent text-accent-ink;
 }

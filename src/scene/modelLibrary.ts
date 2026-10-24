@@ -19,6 +19,8 @@ export class ModelLibrary {
   private finished = 0;
   private progressListeners = new Set<(finished: number, requested: number) => void>();
 
+  constructor(private readonly modelsUrl = `${import.meta.env.BASE_URL}models/`) {}
+
   // Tells how many files (models and texture variants) were asked for and how many have arrived, as they do.
   onProgress(listener: (finished: number, requested: number) => void): () => void {
     this.progressListeners.add(listener);
@@ -47,7 +49,7 @@ export class ModelLibrary {
       if (this.variants.has(variant)) return Promise.resolve();
       const pending = this.pendingVariants.get(variant);
       if (pending) return pending.then(() => undefined);
-      const loading = this.track(this.textureLoader.loadAsync(`${import.meta.env.BASE_URL}models/${variantTexturePath(variant)}`).then(texture => {
+      const loading = this.track(this.textureLoader.loadAsync(`${this.modelsUrl}${variantTexturePath(variant)}`).then(texture => {
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.flipY = false;
         if (variant.startsWith('tone:')) {
@@ -111,7 +113,7 @@ export class ModelLibrary {
     }
     const inFlight = this.pending.get(key);
     if (inFlight) return inFlight;
-    const promise = this.track(this.loader.loadAsync(`${import.meta.env.BASE_URL}models/${key}.glb`).then((gltf) => {
+    const promise = this.track(this.loader.loadAsync(`${this.modelsUrl}${key}.glb`).then((gltf) => {
       fitNatureModel(gltf.scene, key);
       if (key === RAIL_CORNER_MODEL) fitRailCorner(gltf.scene);
       gltf.scene.updateMatrixWorld(true);

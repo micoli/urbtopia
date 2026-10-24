@@ -21,6 +21,11 @@ const texts = {
   'guide.search': ['Search', 'Rechercher'],
   'guide.searchPlaceholder': ['Search a building, a crop, a rule…', 'Chercher un bâtiment, une culture, une règle…'],
   'guide.noResults': ['Nothing matches this search.', 'Aucun résultat pour cette recherche.'],
+  'guide.viewer3d': ['3D model, drag to turn it', 'Modèle 3D, faites-le tourner en le glissant'],
+  'guide.viewer3dShow': ['View in 3D', 'Voir en 3D'],
+  'guide.viewer3dHide': ['Back to the picture', 'Revenir à l’image'],
+  'guide.viewer3dLoading': ['Loading the model…', 'Chargement du modèle…'],
+  'guide.viewer3dFailed': ['The 3D view is not available on this device.', 'La vue 3D n’est pas disponible sur cet appareil.'],
   'guide.navigation': ['Guide navigation', 'Navigation du Guide'],
 } as const;
 

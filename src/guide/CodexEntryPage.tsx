@@ -11,6 +11,7 @@ import { ColorPicker } from './ColorPicker';
 import type { GuideData } from './guideData';
 import { RelatedRules } from './RelatedRules';
 import { useReaderState } from './reader/useReaderState';
+import { ModelViewer } from './viewer/ModelViewer';
 import { codexEntryOf, gameRootOf, type GuideRoute } from './routes';
 
 interface CodexEntryPageProps {
@@ -23,6 +24,7 @@ export function CodexEntryPage({ route, id, data }: CodexEntryPageProps) {
   const entry = codexEntryOf(id);
   const [level, setLevel] = useState(entry.levels[0]!);
   const [color, setColor] = useState<ColorVariant>('default');
+  const [view3d, setView3d] = useState(false);
   const state = useReaderState();
   const available = totalCitizens(state) >= entry.unlockCitizens;
   const imageOf = (shown: number) => `${gameRootOf(route)}codex/${data.images[codexImageKey(entry.id, shown, color)]}`;
@@ -37,8 +39,13 @@ export function CodexEntryPage({ route, id, data }: CodexEntryPageProps) {
       </p>
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
         <figure className="guide-panel">
-          <img className="mx-auto aspect-square w-full max-w-md" src={imageOf(level)} width={512} height={512} alt={t('codex.preview').replace('{name}', t(entry.name)).replace('{level}', String(level))} />
-          <figcaption className="text-center font-semibold">{levelCaptionOf(entry, level)}</figcaption>
+          {view3d
+            ? <ModelViewer modelsUrl={`${gameRootOf(route)}models/`} id={entry.id} level={level} colorVariant={isHomeCodexId(entry.id) ? color : undefined} fallback={imageOf(level)} />
+            : <img className="mx-auto aspect-square w-full max-w-md" src={imageOf(level)} width={512} height={512} alt={t('codex.preview').replace('{name}', t(entry.name)).replace('{level}', String(level))} />}
+          <figcaption className="flex items-center justify-between gap-2 font-semibold">
+            {levelCaptionOf(entry, level)}
+            <button type="button" className="guide-chip cursor-pointer font-normal" aria-pressed={view3d} onClick={() => setView3d(shown => !shown)}>{t(view3d ? 'guide.viewer3dHide' : 'guide.viewer3dShow')}</button>
+          </figcaption>
         </figure>
         <div className="flex flex-col gap-6">
           {entry.levels.length > 1 && (

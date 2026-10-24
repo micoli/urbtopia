@@ -4,8 +4,14 @@
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Three.js is a separate chunk, fetched only on click.
-- [ ] Drag to rotate, auto-rotate otherwise; falls back to the PNG if WebGL is missing.
-- [ ] Lighting consistent with the Codex previews.
+- [x] Three.js is a separate chunk, fetched only on click.
+- [x] Drag to rotate, auto-rotate otherwise; falls back to the PNG if WebGL is missing.
+- [x] Lighting consistent with the Codex previews.
+
+## Comments
+
+- `src/guide/viewer/turntable.ts` is imported on click only (its own chunk, with Three.js); it renders `codexSnapshot` with the same scene layers and lights as `scripts/codex-render.ts`.
+- `ModelLibrary` takes the models URL (default unchanged for the game), since `./models/` does not resolve from nested Guide pages.
+- Without WebGL the PNG stays, with a short notice.
