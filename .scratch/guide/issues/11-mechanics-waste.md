@@ -4,4 +4,8 @@
 
 **Blocked by:** 05, 08
 
-**Status:** ready-for-agent
+**Status:** done
+
+## Comments
+
+- `mechanics/waste.<lang>.mdx` replaces the Waste rule page at the same URL and embeds `<LiveRules id="waste" />`. Capacities in its table checked against `assets/defs/buildings`.

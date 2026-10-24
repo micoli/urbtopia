@@ -1,0 +1,33 @@
+export const meta = {
+  title: 'Déchets',
+  summary: 'Ce que jettent vos habitants, comment c’est collecté et traité, et ce que ça coûte quand ça ne l’est pas.',
+  order: 30,
+};
+
+## Quand les déchets comptent
+
+Chaque logement produit des déchets chaque jour, en proportion de ses habitants. Ils ne comptent qu’à partir d’environ 1 000 habitants ; une ville qui a déjà dépassé cette taille reçoit une **période d’adaptation** avant qu’ils ne comptent.
+
+Les déchets sont un service, comme l’éducation ou la santé : un logement dont les déchets ne sont pas traités n’a pas de couverture déchets. Son bien-être baisse, il peut ne plus monter de niveau, et il perd des impôts à partir de la difficulté Facile.
+
+## Trois installations
+
+| Installation | Capacité | Inconvénients | Coût par unité |
+| --- | --- | --- | --- |
+| <EntryLink id="recyclingPlant" /> | Moyenne, la plus grande portée | Consomme de l’électricité | Le plus élevé |
+| <EntryLink id="incinerator" /> | Grande, sur peu de place | Baisse le bien-être alentour, ajoute des émissions | Moyen |
+| <EntryLink id="mound" /> | Petite : à construire en nombre côte à côte | Son odeur baisse le bien-être plus loin qu’elle ne collecte | Le plus bas |
+
+Une décharge ne se remplit jamais : elle traite une quantité par jour, pour toujours. L’odeur de plusieurs décharges ne s’additionne pas ; un logement subit la pire autour de lui, si bien qu’une décharge est surtout une question d’emplacement.
+
+## La collecte passe par la route
+
+Un logement est couvert quand une installation de traitement le **couvre**, a encore de la **capacité**, et lui est **reliée par la route**, car les camions doivent y arriver. Un logement desservi seulement par des voies piétonnes est relié quand ses chemins touchent une route reliée assez proche, pour un coût plus élevé. Quand un logement n’est pas couvert, son panneau dit pourquoi : hors de portée, capacité pleine, ou pas de liaison routière.
+
+## L’ordre de traitement
+
+Chaque jour, les déchets vont d’abord aux installations les plus propres : usines de recyclage, puis incinérateurs, puis décharges, quel que soit leur coût. Vous choisissez le mélange par ce que vous construisez, pas par un réglage. Chaque unité traitée coûte des Urbs ; une installation que vous ne pouvez pas payer s’arrête, et ses logements perdent leur couverture.
+
+## Les chiffres de votre ville
+
+<LiveRules id="waste" />

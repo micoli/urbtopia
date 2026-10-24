@@ -1,0 +1,33 @@
+export const meta = {
+  title: 'Waste',
+  summary: 'What your Citizens throw away, how it is collected and processed, and what it costs when it is not.',
+  order: 30,
+};
+
+## When Waste starts to matter
+
+Every Home produces Waste each day, in proportion to its Citizens. It only matters once the city has about 1,000 Citizens; a city that is already past that size gets an **Adaptation period** before Waste counts.
+
+Waste is a Service, like education or health: a Home whose Waste is not processed lacks Waste coverage. That lowers its Well-being, can stop it from reaching a higher Tier, and costs Tax from Easy Difficulty.
+
+## Three facilities
+
+| Facility | Capacity | Drawbacks | Cost per unit |
+| --- | --- | --- | --- |
+| <EntryLink id="recyclingPlant" /> | Medium, widest reach | Needs power | Highest |
+| <EntryLink id="incinerator" /> | Large, in a small footprint | Lowers nearby Well-being, adds emissions | Medium |
+| <EntryLink id="mound" /> | Small: build many side by side | Its odor lowers Well-being farther than it collects | Lowest |
+
+A Mound never fills up: it handles a daily amount, forever. The odor of several Mounds never adds up; a Home bears the worst one around it, so a landfill is a matter of where you put it.
+
+## Collection needs a road
+
+A Home is covered when a Waste facility **reaches** it, has **capacity** left, and is **joined to it by road**, since trucks have to get there. A Home reached only by Pedestrian ways is joined when its paths touch a linked road close enough, at a higher cost. When a Home is not covered, its panel says why: out of reach, capacity full, or no road link.
+
+## Processing order
+
+Each day, Waste goes to the cleanest facilities first: Recycling plants, then Incinerators, then Mounds, whatever they cost. You choose the mix by what you build, not with a setting. Each unit processed costs Urbs; a facility you cannot pay stops, and its Homes lose their coverage.
+
+## Your city's figures
+
+<LiveRules id="waste" />
