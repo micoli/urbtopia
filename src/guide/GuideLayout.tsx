@@ -5,6 +5,7 @@ import { GuideNav } from './GuideNav';
 import { ReaderSettingsBar } from './reader/ReaderSettingsBar';
 import { restoreReaderSettings } from './reader/readerSettingsStore';
 import { sectionOf, type GuideRoute } from './routes';
+import { SearchDialog } from './search/SearchDialog';
 import { followSystemTheme } from './theme';
 
 interface GuideLayoutProps {
@@ -14,10 +15,21 @@ interface GuideLayoutProps {
 
 export function GuideLayout({ route, children }: GuideLayoutProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(followSystemTheme, []);
 
   useEffect(restoreReaderSettings, []);
+
+  useEffect(() => {
+    const openSearch = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() !== 'k' || !(event.metaKey || event.ctrlKey)) return;
+      event.preventDefault();
+      setSearchOpen(true);
+    };
+    window.addEventListener('keydown', openSearch);
+    return () => window.removeEventListener('keydown', openSearch);
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -28,7 +40,8 @@ export function GuideLayout({ route, children }: GuideLayoutProps) {
 
   return (
     <div className="min-h-screen bg-surface text-ink">
-      <GuideHeader route={route} onOpenMenu={() => setMenuOpen(true)} />
+      <GuideHeader route={route} onOpenMenu={() => setMenuOpen(true)} onOpenSearch={() => setSearchOpen(true)} />
+      {searchOpen && <SearchDialog route={route} onClose={() => setSearchOpen(false)} />}
       <div className="mx-auto flex max-w-7xl">
         {menuOpen && <div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={() => setMenuOpen(false)} aria-hidden="true" />}
         <aside className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto border-r border-line bg-surface p-4 transition-transform lg:sticky lg:top-14 lg:z-auto lg:h-[calc(100vh-3.5rem)] lg:translate-x-0 lg:bg-transparent ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}>

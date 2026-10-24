@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexId, type CodexSection } from '../../codex/catalog';
+import { matchesSearch } from '../../codex/matchesSearch';
 import { CODEX_PAGES, type CodexPage } from '../../codex/pages';
 import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
@@ -18,12 +19,6 @@ import { useCodexManifest } from './useCodexManifest';
 import { CloseButton } from '../common/CloseButton';
 import { ActionButton } from '../common/ActionButton';
 import { AccordionSection } from '../common/AccordionSection';
-
-function matchesSearch(value: string, query: string): boolean {
-  const normalizedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase();
-  const terms = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
-  return terms.every(term => normalizedValue.includes(term));
-}
 
 export function CodexPanel() {
   const close = useUi(store => store.closeCodex);

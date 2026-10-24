@@ -6,7 +6,8 @@ import { guideDataOf, type GuideData } from './guideData';
 import type { GuideRoute } from './routes';
 import { titleOf } from './titleOf';
 
-export { GUIDE_ROUTES, docsRootOf } from './routes';
+export { GUIDE_LANGUAGES, GUIDE_ROUTES, docsRootOf } from './routes';
+export { searchIndexOf } from './search/searchIndex';
 
 export interface RenderedGuidePage {
   html: string;

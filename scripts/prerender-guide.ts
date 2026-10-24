@@ -3,13 +3,17 @@ import { dirname, join } from 'node:path';
 import { createServer } from 'vite';
 import type { CodexManifest } from '../src/codex/catalog';
 import type { GuideRoute } from '../src/guide/routes';
+import type { SearchItem } from '../src/guide/search/searchIndex';
+import type { Language } from '../src/i18n/prefsStore';
 import type { RenderedGuidePage } from '../src/guide/server';
 
 const dist = process.argv[2] ?? 'dist';
 const guideDir = join(dist, 'docs');
 
 interface GuideServer {
+  GUIDE_LANGUAGES: readonly Language[];
   GUIDE_ROUTES: readonly GuideRoute[];
+  searchIndexOf: (language: Language) => SearchItem[];
   docsRootOf: (route: GuideRoute) => string;
   renderGuidePage: (route: GuideRoute, manifest: CodexManifest) => RenderedGuidePage;
 }
@@ -32,11 +36,12 @@ async function prerender(): Promise<void> {
   const manifest = JSON.parse(readFileSync(join(dist, 'codex', 'manifest.json'), 'utf8')) as CodexManifest;
   const server = await createServer({ configFile: false, server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' });
   try {
-    const { GUIDE_ROUTES, docsRootOf, renderGuidePage } = await server.ssrLoadModule('/src/guide/server.tsx') as GuideServer;
-    const pages = GUIDE_ROUTES.map(route => ({ target: join(guideDir, route.path, 'index.html'), html: pageOf(template, route, docsRootOf(route), renderGuidePage(route, manifest)) }));
-    for (const { target, html } of pages) {
+    const { GUIDE_LANGUAGES, GUIDE_ROUTES, docsRootOf, renderGuidePage, searchIndexOf } = await server.ssrLoadModule('/src/guide/server.tsx') as GuideServer;
+    const pages = GUIDE_ROUTES.map(route => ({ target: join(guideDir, route.path, 'index.html'), content: pageOf(template, route, docsRootOf(route), renderGuidePage(route, manifest)) }));
+    const indexes = GUIDE_LANGUAGES.map(language => ({ target: join(guideDir, language, 'search.json'), content: JSON.stringify(searchIndexOf(language)) }));
+    for (const { target, content } of [...pages, ...indexes]) {
       mkdirSync(dirname(target), { recursive: true });
-      writeFileSync(target, html);
+      writeFileSync(target, content);
     }
     console.log(`✓ Guide: ${GUIDE_ROUTES.length} pages`);
   } finally {

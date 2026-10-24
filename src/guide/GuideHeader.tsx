@@ -1,14 +1,16 @@
 import { t } from '../i18n/t';
 import { LanguageSwitch } from './LanguageSwitch';
 import { gameRootOf, hrefOf, type GuideRoute } from './routes';
+import { SearchButton } from './search/SearchButton';
 import { ThemeToggle } from './ThemeToggle';
 
 interface GuideHeaderProps {
   route: GuideRoute;
   onOpenMenu: () => void;
+  onOpenSearch: () => void;
 }
 
-export function GuideHeader({ route, onOpenMenu }: GuideHeaderProps) {
+export function GuideHeader({ route, onOpenMenu, onOpenSearch }: GuideHeaderProps) {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-2 px-4">
@@ -22,6 +24,7 @@ export function GuideHeader({ route, onOpenMenu }: GuideHeaderProps) {
           <span className="truncate">{t('guide.name')}</span>
         </a>
         <div className="ml-auto flex items-center gap-2">
+          <SearchButton onOpen={onOpenSearch} />
           <LanguageSwitch route={route} />
           <ThemeToggle />
           <a className="guide-button" href={gameRootOf(route)}>{t('guide.play')}</a>

@@ -18,6 +18,9 @@ const texts = {
   'guide.difficulty': ['Difficulty', 'Difficulté'],
   'guide.citizens': ['{count} Citizens', '{count} habitants'],
   'guide.citizensLabel': ['City size', 'Taille de la ville'],
+  'guide.search': ['Search', 'Rechercher'],
+  'guide.searchPlaceholder': ['Search a building, a crop, a rule…', 'Chercher un bâtiment, une culture, une règle…'],
+  'guide.noResults': ['Nothing matches this search.', 'Aucun résultat pour cette recherche.'],
   'guide.navigation': ['Guide navigation', 'Navigation du Guide'],
 } as const;
 
