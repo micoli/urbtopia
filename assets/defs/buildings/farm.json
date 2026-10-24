@@ -15,7 +15,7 @@
   },
   "tiers": [
     {
-      "model": "farm-barn",
+      "model": "buildings-farm-barn-2x2-tone-a",
       "footprint": [2, 2],
       "seedCapacity": 20,
       "fieldCap": 12

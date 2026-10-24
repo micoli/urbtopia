@@ -187,7 +187,7 @@ describe('renderItemsOf farming', () => {
   });
 
   it('preloads every crop model', () => {
-    expect(MODEL_KEYS).toEqual(expect.arrayContaining(['crops/Wheat_1', 'crops/Palmtree_1'.replace('Palmtree', 'PalmTree'), 'crops/Flowers_Crop', 'farm/Barn']));
+    expect(MODEL_KEYS).toEqual(expect.arrayContaining(['crops/Wheat_1', 'crops/Palmtree_1'.replace('Palmtree', 'PalmTree'), 'crops/Flowers_Crop', 'buildings/farm-barn-2x2-tone-a']));
   });
 });
 
