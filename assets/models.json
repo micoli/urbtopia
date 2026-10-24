@@ -6555,8 +6555,8 @@
   },
   "furniture-bathtub": {
     "file": "furniture/bathtub",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       2,
       1
@@ -6564,12 +6564,13 @@
     "fit": {
       "width": 1.8,
       "height": 0.7
-    }
+    },
+    "flush": true
   },
   "furniture-bedbunk": {
     "file": "furniture/bedBunk",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       2
@@ -6577,12 +6578,13 @@
     "fit": {
       "width": 1.15,
       "height": 0.9
-    }
+    },
+    "flush": true
   },
   "furniture-beddouble": {
     "file": "furniture/bedDouble",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       2,
       2
@@ -6590,12 +6592,13 @@
     "fit": {
       "width": 1.9,
       "height": 0.8
-    }
+    },
+    "flush": true
   },
   "furniture-bedsingle": {
     "file": "furniture/bedSingle",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       2
@@ -6603,12 +6606,13 @@
     "fit": {
       "width": 1.15,
       "height": 0.6
-    }
+    },
+    "flush": true
   },
   "furniture-chair": {
     "file": "furniture/chair",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6616,12 +6620,13 @@
     "fit": {
       "width": 0.5,
       "height": 0.9
-    }
+    },
+    "flush": true
   },
   "furniture-desk": {
     "file": "furniture/desk",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6629,12 +6634,13 @@
     "fit": {
       "width": 0.9,
       "height": 0.6
-    }
+    },
+    "flush": true
   },
   "furniture-floorfull": {
     "file": "furniture/floorFull",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6642,12 +6648,13 @@
     "fit": {
       "width": 1,
       "height": 1
-    }
+    },
+    "flush": true
   },
   "furniture-kitchencoffeemachine": {
     "file": "furniture/kitchenCoffeeMachine",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6655,12 +6662,13 @@
     "fit": {
       "width": 0.5,
       "height": 0.5
-    }
+    },
+    "flush": true
   },
   "furniture-kitchenfridgesmall": {
     "file": "furniture/kitchenFridgeSmall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6668,12 +6676,13 @@
     "fit": {
       "width": 0.7,
       "height": 0.9
-    }
+    },
+    "flush": true
   },
   "furniture-lamproundfloor": {
     "file": "furniture/lampRoundFloor",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6681,12 +6690,13 @@
     "fit": {
       "width": 0.5,
       "height": 1
-    }
+    },
+    "flush": true
   },
   "furniture-loungesofa": {
     "file": "furniture/loungeSofa",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6694,12 +6704,13 @@
     "fit": {
       "width": 0.95,
       "height": 0.6
-    }
+    },
+    "flush": true
   },
   "furniture-pottedplant": {
     "file": "furniture/pottedPlant",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6707,12 +6718,13 @@
     "fit": {
       "width": 0.6,
       "height": 0.8
-    }
+    },
+    "flush": true
   },
   "furniture-rugrectangle": {
     "file": "furniture/rugRectangle",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       2,
       1
@@ -6720,12 +6732,13 @@
     "fit": {
       "width": 1.9,
       "height": 0.1
-    }
+    },
+    "flush": true
   },
   "furniture-shower": {
     "file": "furniture/shower",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6733,12 +6746,13 @@
     "fit": {
       "width": 0.95,
       "height": 1.4
-    }
+    },
+    "flush": true
   },
   "furniture-stoolbar": {
     "file": "furniture/stoolBar",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6746,12 +6760,13 @@
     "fit": {
       "width": 0.5,
       "height": 0.9
-    }
+    },
+    "flush": true
   },
   "furniture-table": {
     "file": "furniture/table",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6759,12 +6774,13 @@
     "fit": {
       "width": 0.9,
       "height": 0.6
-    }
+    },
+    "flush": true
   },
   "furniture-televisionmodern": {
     "file": "furniture/televisionModern",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6772,12 +6788,13 @@
     "fit": {
       "width": 0.8,
       "height": 0.7
-    }
+    },
+    "flush": true
   },
   "furniture-toilet": {
     "file": "furniture/toilet",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6785,12 +6802,13 @@
     "fit": {
       "width": 0.9,
       "height": 0.9
-    }
+    },
+    "flush": true
   },
   "furniture-wall": {
     "file": "furniture/wall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6798,12 +6816,13 @@
     "fit": {
       "width": 1,
       "height": 1.4
-    }
+    },
+    "flush": true
   },
   "furniture-wallcorner": {
     "file": "furniture/wallCorner",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6811,12 +6830,13 @@
     "fit": {
       "width": 0.6,
       "height": 1.4
-    }
+    },
+    "flush": true
   },
   "furniture-wallwindow": {
     "file": "furniture/wallWindow",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
@@ -6824,7 +6844,8 @@
     "fit": {
       "width": 1,
       "height": 1.4
-    }
+    },
+    "flush": true
   },
   "goods-applecake": {
     "file": "goods/appleCake",
@@ -7117,39 +7138,43 @@
   },
   "mini-arcade-air-hockey": {
     "file": "mini-arcade/air-hockey",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-arcade-machine": {
     "file": "mini-arcade/arcade-machine",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-basketball-game": {
     "file": "mini-arcade/basketball-game",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-cash-register": {
     "file": "mini-arcade/cash-register",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-character-employee": {
     "file": "mini-arcade/character-employee",
@@ -7162,93 +7187,103 @@
   },
   "mini-arcade-claw-machine": {
     "file": "mini-arcade/claw-machine",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-dance-machine": {
     "file": "mini-arcade/dance-machine",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-floor": {
     "file": "mini-arcade/floor",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-pinball": {
     "file": "mini-arcade/pinball",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-prize-wheel": {
     "file": "mini-arcade/prize-wheel",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-ticket-machine": {
     "file": "mini-arcade/ticket-machine",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-vending-machine": {
     "file": "mini-arcade/vending-machine",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-wall": {
     "file": "mini-arcade/wall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-wall-corner": {
     "file": "mini-arcade/wall-corner",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-wall-window": {
     "file": "mini-arcade/wall-window",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-characters-character-female-a": {
     "file": "mini-characters/character-female-a",
@@ -7426,21 +7461,23 @@
   },
   "mini-market-bottle-return": {
     "file": "mini-market/bottle-return",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-cash-register": {
     "file": "mini-market/cash-register",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-character-employee": {
     "file": "mini-market/character-employee",
@@ -7453,111 +7490,123 @@
   },
   "mini-market-display-bread": {
     "file": "mini-market/display-bread",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-display-fruit": {
     "file": "mini-market/display-fruit",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-floor": {
     "file": "mini-market/floor",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-freezer": {
     "file": "mini-market/freezer",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-freezers-standing": {
     "file": "mini-market/freezers-standing",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-shelf-bags": {
     "file": "mini-market/shelf-bags",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-shelf-boxes": {
     "file": "mini-market/shelf-boxes",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-shopping-basket": {
     "file": "mini-market/shopping-basket",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-shopping-cart": {
     "file": "mini-market/shopping-cart",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-wall": {
     "file": "mini-market/wall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-wall-corner": {
     "file": "mini-market/wall-corner",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-wall-window": {
     "file": "mini-market/wall-window",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "nature-cactus-short": {
     "file": "nature/cactus_short",
