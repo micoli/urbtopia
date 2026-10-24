@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node scripts/prerender-guide.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tools/back-office",
     "lint": "eslint src build scripts tools",
     "test": "vitest run",

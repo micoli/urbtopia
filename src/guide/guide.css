@@ -1,0 +1,57 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  --guide-text: #1c1f26;
+  --guide-muted: #5c6370;
+  --guide-accent: #2f6fde;
+  --guide-surface: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --guide-text: #e6e8ee;
+    --guide-muted: #9aa1ad;
+    --guide-accent: #7aa7ff;
+    --guide-surface: #14161c;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--guide-surface);
+  color: var(--guide-text);
+}
+
+a {
+  color: var(--guide-accent);
+}
+
+.guide-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.guide-section {
+  margin: 24px 0 0;
+  color: var(--guide-muted);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.guide-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+.guide-gallery figure {
+  margin: 0;
+}
+
+.guide-gallery img {
+  width: 100%;
+  height: auto;
+}

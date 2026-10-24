@@ -46,8 +46,10 @@ const cacheFirst = async (request) => {
   return response;
 };
 
+const isGuide = (url) => url.startsWith(new URL('./docs/', self.location).href);
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin || isGuide(request.url)) return;
   event.respondWith(request.mode === 'navigate' ? networkFirst(request) : cacheFirst(request));
 });

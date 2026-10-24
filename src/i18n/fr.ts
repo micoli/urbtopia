@@ -5,6 +5,7 @@ import { needsMessages } from './needs';
 import { wasteSectionMessages } from './wasteSection';
 import { sanctionsMessages } from './sanctions';
 import { wasteCodexMessages } from './wasteCodex';
+import { guideMessages } from './guide';
 import { transitReachCodexMessages } from './transitReachCodex';
 import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
@@ -32,6 +33,7 @@ export const FR: Record<MessageKey, string> = {
   ...difficultyMessages('fr'),
   ...sanctionsMessages('fr'),
   ...wasteCodexMessages('fr'),
+  ...guideMessages('fr'),
   ...transitReachCodexMessages('fr'),
   ...venueMessages('fr'),
   ...buildingMessages('fr'),

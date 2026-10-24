@@ -4,6 +4,7 @@ import { join } from 'node:path';
 const SECRET_KEY = /sb_secret_[A-Za-z0-9_-]{16,}/;
 const JWT = /eyJ[A-Za-z0-9_-]{10,}\.([A-Za-z0-9_-]{10,})\.[A-Za-z0-9_-]{10,}/g;
 const SUPABASE_JS_MARKER = 'sb_temp_';
+const THREE_MARKER = 'isWebGLRenderer';
 
 export function findLeakedSupabaseKey(text: string): string | null {
   if (SECRET_KEY.test(text)) return 'sb_secret_ key';
@@ -22,6 +23,10 @@ export function mainEntryOf(indexHtml: string): string | null {
   return /<script[^>]+src="\.?\/?(assets\/[^"]+\.js)"/.exec(indexHtml)?.[1] ?? null;
 }
 
+export function guideScriptsOf(guideHtml: string): string[] {
+  return [...guideHtml.matchAll(/(?:src|href)="(?:\.\.\/)+(assets\/[^"]+\.js)"/g)].map(([, path]) => path!);
+}
+
 export function checkDist(dist: string): string[] {
   const problems: string[] = [];
   const assets = readdirSync(join(dist, 'assets')).filter((name) => name.endsWith('.js'));
@@ -32,6 +37,9 @@ export function checkDist(dist: string): string[] {
   const entry = mainEntryOf(readFileSync(join(dist, 'index.html'), 'utf8'));
   if (!entry) return [...problems, 'main entry script not found in index.html'];
   if (readFileSync(join(dist, entry), 'utf8').includes(SUPABASE_JS_MARKER)) problems.push(`supabase-js is bundled in the main entry ${entry}`);
+  for (const script of guideScriptsOf(readFileSync(join(dist, 'docs', 'index.html'), 'utf8'))) {
+    if (readFileSync(join(dist, script), 'utf8').includes(THREE_MARKER)) problems.push(`Three.js is loaded by the Guide through ${script}`);
+  }
   return problems;
 }
 

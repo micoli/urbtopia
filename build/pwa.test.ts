@@ -45,6 +45,20 @@ describe('service worker stamping', () => {
     expect(first).not.toContain('__BUILD_ID__');
   });
 
+  it('leaves the Guide to the network, so a Guide page never replaces the cached game', () => {
+    const listeners: Record<string, (event: unknown) => void> = {};
+    const self = { location: new URL('https://example.com/urbtopia/sw.js'), addEventListener: (type: string, listener: (event: unknown) => void) => { listeners[type] = listener; } };
+    new Function('self', 'caches', stampSource(source, 'aaa', []))(self, {});
+    const respondedTo = (url: string) => {
+      let responded = false;
+      listeners.fetch!({ request: { method: 'GET', url, mode: 'navigate' }, respondWith: () => { responded = true; } });
+      return responded;
+    };
+    expect(respondedTo('https://example.com/urbtopia/docs/en/codex/buildings/house/')).toBe(false);
+    expect(respondedTo('https://example.com/urbtopia/docs/')).toBe(false);
+    expect(respondedTo('https://example.com/urbtopia/')).toBe(true);
+  });
+
   it('lists the files to precache for offline play', () => {
     const stamped = stampSource(source, 'aaa', ['./models/roads/road-end.glb']);
     expect(stamped).toContain('["./models/roads/road-end.glb"]');
