@@ -192,3 +192,7 @@ export { applyTradeEffect, findLedgerEntry, isTradeLine, isValidLot, lotReceiveI
 export type { TradeApplyInput } from './trade/tradeLedger';
 export { TRADE_EFFECTS, TRADE_LIMITS } from './trade/types';
 export type { TradeEffect, TradeLedgerEntry, TradeLine } from './trade/types';
+export { DIAGNOSIS, diagnosisOf } from './diagnosis/diagnosis';
+export type { Cause, Diagnosis } from './diagnosis/diagnosis';
+export { CONGESTION_DIAGNOSIS, diagnoseCongestion } from './traffic/diagnosis';
+export { WASTE_DIAGNOSIS, diagnoseWaste } from './waste/diagnosis';

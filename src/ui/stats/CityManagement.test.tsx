@@ -49,6 +49,18 @@ describe('city management panel', () => {
     expect(html).not.toContain('NaN');
     expect(html).not.toContain('undefined');
   });
+  it.each(['en', 'fr'] as const)('explains why the roads jam, and stays silent on a quiet city, in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    const start = newGame({ seed: 'diagnosis-panel', now: 0 });
+    const homes = [53, 55, 57, 59, 61].map((x, index) => ({ ...createBuilding(40 + index, 'home', x, 59, 0), tier: 7 }));
+    context.state = { ...start, adaptationUntil: 0, roads: [...start.roads], nextId: 100, buildings: [...start.buildings.map(building => ({ ...building, tier: 8 })), ...homes] };
+    const jammed = renderToStaticMarkup(<CityManagement />);
+    expect(jammed).toContain(language === 'fr' ? 'Pourquoi ?' : 'Why?');
+    expect(jammed).toContain(language === 'fr' ? 'encore de niveau 1' : 'still Tier 1');
+    expect(jammed).not.toContain('{');
+    context.state = { ...start, buildings: [...start.buildings, createBuilding(40, 'home', 56, 59, 0)] };
+    expect(renderToStaticMarkup(<CityManagement />)).not.toContain(language === 'fr' ? 'Pourquoi ?' : 'Why?');
+  });
   it.each(['en', 'fr'] as const)('shows the car, public transport and walking mix with the walking details in %s', language => {
     prefsStore.getState().setLanguage(language);
     WALKING.enabled = true;

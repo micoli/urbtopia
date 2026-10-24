@@ -1,7 +1,9 @@
-import {wasteSituation, type GameState} from '../../../core';
+import {useMemo} from 'react';
+import {diagnoseWaste, wasteSituation, type GameState} from '../../../core';
 import {t} from '../../../i18n/t';
 import {SectionHeading} from '../../common/SectionHeading';
 import {BottleneckButton} from './BottleneckButton';
+import {DiagnosisPanel} from './DiagnosisPanel';
 import {WasteBalance} from './waste/WasteBalance';
 import {WasteCodexLink} from './waste/WasteCodexLink';
 import {WasteCoverage} from './waste/WasteCoverage';
@@ -16,6 +18,7 @@ interface WasteSectionProps {
 
 export function WasteSection({state, onShowEmissions}: WasteSectionProps) {
     const situation = wasteSituation(state);
+    const diagnosis = useMemo(() => diagnoseWaste(state), [state]);
     return <section id="eco-waste">
         <SectionHeading icon="🗑️">{t('waste.section.title')}</SectionHeading>
         <p>{t('waste.section.help')}</p>
@@ -27,6 +30,7 @@ export function WasteSection({state, onShowEmissions}: WasteSectionProps) {
         <WasteCoverage situation={situation}/>
         <WasteImpacts situation={situation} onShowEmissions={onShowEmissions}/>
         <WastePedestrian situation={situation}/>
+        <DiagnosisPanel diagnosis={diagnosis}/>
         {situation.bottleneck && <BottleneckButton bottleneck={{tile: situation.bottleneck}}/>}
         <WasteCodexLink/>
     </section>;

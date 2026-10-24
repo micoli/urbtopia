@@ -50,6 +50,16 @@ describe('Waste section', () => {
     expect(html).not.toContain('power shortage');
   });
 
+  it.each(['en', 'fr'] as const)('explains why Waste is not handled, and stays silent when it is, in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    const bigHomes = [home(10, 58, 50, 8), home(11, 62, 50, 8)];
+    const html = render(city([{ ...createBuilding(1, 'mound', 60, 53, 0), tier: 1 }, ...bigHomes]));
+    expect(html).toContain(language === 'fr' ? 'Pourquoi ?' : 'Why?');
+    expect(html).toContain(language === 'fr' ? 'aucun lien routier' : 'no road link');
+    expect(html).not.toContain('{');
+    expect(render(city([]))).not.toContain(language === 'fr' ? 'Pourquoi ?' : 'Why?');
+  });
+
   it('stays calm in an empty city', () => {
     const html = render(city([]));
     expect(html).toContain('No Home produces Waste yet.');
