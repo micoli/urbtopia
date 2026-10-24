@@ -5,6 +5,7 @@ import { CODEX_PAGES, type CodexPage } from '../../codex/pages';
 import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
 import { CodexEntryContent } from './CodexEntryContent';
+import { CodexGuideLink } from './CodexGuideLink';
 import { CropEconomyPage } from './CropEconomyPage';
 import { ChallengesPage } from './ChallengesPage';
 import { EnergyProductionPage } from './EnergyProductionPage';
@@ -78,6 +79,7 @@ export function CodexPanel() {
       <header className="codex-header">
         <h2 id={heading}>{t('codex.title')}</h2>
         <div className="codex-header-actions">
+          <CodexGuideLink entry={entry} page={page} />
           {showDetail && <button type="button" className="codex-back" onClick={() => {
             setShowDetail(false);
             requestAnimationFrame(() => dialog.current?.querySelector<HTMLButtonElement>('.codex-list [aria-current="true"]')?.focus());

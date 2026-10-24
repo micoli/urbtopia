@@ -2,7 +2,10 @@ import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexEntry, type CodexId, type Code
 import { CODEX_PAGES, type CodexPage } from '../codex/pages';
 import type { Language } from '../i18n/prefsStore';
 import { ARTICLE_DIRECTORIES, ARTICLES, type Article } from './content/articles';
-import { MESSAGES, type MessageKey } from '../i18n/messages';
+import type { MessageKey } from '../i18n/messages';
+import { codexEntryPathOf, codexSectionPathOf, rulesPathOf, rulesSlugOf } from './paths';
+
+export { codexEntryPathOf, codexSectionPathOf, codexSectionSlugOf, rulesPathOf, rulesSlugOf } from './paths';
 
 export type GuidePage =
   | { kind: 'languageChoice' }
@@ -30,17 +33,6 @@ export const GUIDE_SECTIONS: readonly { id: GuideSection; title: MessageKey }[] 
   { id: 'glossary', title: 'guide.glossary' },
 ];
 
-const kebabOf = (name: string): string => name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-
-export const codexSectionSlugOf = (section: CodexSection): string => MESSAGES[section].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-
-export const codexSectionPathOf = (language: Language, section: CodexSection): string => `${language}/codex/${codexSectionSlugOf(section)}/`;
-
-export const codexEntryPathOf = (language: Language, entry: CodexEntry): string => `${codexSectionPathOf(language, entry.section)}${kebabOf(entry.id)}/`;
-
-export const rulesSlugOf = (id: CodexPage): string => kebabOf(id);
-
-export const rulesPathOf = (language: Language, id: CodexPage): string => `${language}/mechanics/${rulesSlugOf(id)}/`;
 
 export const articlePathOf = (language: Language, { section, slug }: Article): string => `${language}/${ARTICLE_DIRECTORIES[section]}/${slug === 'index' ? '' : `${slug}/`}`;
 

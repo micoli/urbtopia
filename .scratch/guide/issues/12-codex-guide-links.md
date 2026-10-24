@@ -4,6 +4,11 @@
 
 **Blocked by:** 05
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] URL built from the same route catalogue as the Guide.
+- [x] URL built from the same route catalogue as the Guide.
+
+## Comments
+
+- `CodexGuideLink` in the Codex header opens `docs/<lang>/...` of the shown entry or rule page in a new tab. A Mechanics article that replaced a rule page keeps its URL, so the link still lands on it.
+- Path builders live in `src/guide/paths.ts`, free of MDX, so the game bundle does not carry the articles; `routes.ts` re-exports them.
