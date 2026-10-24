@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { isTypingTarget } from '../dom/isTypingTarget';
 import { keyDirectionForYaw } from './cameraKeys';
+import type { CameraView } from './cameraUrl';
 
 const ISO_PITCH = Math.atan(1 / Math.SQRT2);
 const ZOOM_MIN = 16;
@@ -36,6 +37,7 @@ export class CameraController {
   private keys = new Map<string, number>();
   private gesture = { startX: 0, startY: 0, startTime: 0, moved: false, multiTouch: false };
   private pendingTap: { x: number; y: number; shiftKey: boolean } | null = null;
+  onViewChange: (view: CameraView) => void = () => {};
   onTap: (clientX: number, clientY: number, shiftKey: boolean) => void = () => {};
   onMouseMove: (clientX: number, clientY: number) => void = () => {};
   onPointerKind: (pointerType: string) => void = () => {};
@@ -53,6 +55,7 @@ export class CameraController {
   private longPressTimer: number | null = null;
   private longPressed = false;
   private abort = new AbortController();
+  private reportedView: CameraView | null = null;
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -64,6 +67,17 @@ export class CameraController {
 
   get center(): { x: number; z: number } {
     return { ...this.focus };
+  }
+
+  get view(): CameraView {
+    return { x: this.focus.x, z: this.focus.z, zoom: this.zoom };
+  }
+
+  setView({ x, z, zoom }: Partial<CameraView>): void {
+    if (zoom !== undefined) this.zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoom));
+    this.focus = { x: x ?? this.focus.x, z: z ?? this.focus.z };
+    this.clampFocus();
+    this.apply();
   }
 
   focusOn(x: number, z: number): void {
@@ -156,6 +170,15 @@ export class CameraController {
     );
     camera.lookAt(focus.x, 0, focus.z);
     camera.updateProjectionMatrix();
+    this.reportViewChange();
+  }
+
+  private reportViewChange(): void {
+    const view = this.view;
+    const previous = this.reportedView;
+    if (previous && previous.x === view.x && previous.z === view.z && previous.zoom === view.zoom) return;
+    this.reportedView = view;
+    this.onViewChange(view);
   }
 
   private bindInput(): void {

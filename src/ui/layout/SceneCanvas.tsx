@@ -8,7 +8,10 @@ import { uiStore } from '../../store/uiStore';
 import { pointerKindOf } from '../../tools/aim';
 import { FACILITIES, isFacilityType } from '../../core';
 import { selectionGhost } from '../../tools/tools';
+import { readCameraView, writeCameraView, type CameraView } from '../../scene/cameraUrl';
 import { hideSplash, setSplashProgress } from '../system/splash';
+
+const URL_UPDATE_DELAY_MS = 500;
 
 export function SceneCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -18,6 +21,24 @@ export function SceneCanvas() {
     if (!canvas) return;
     const scene = new GameScene(canvas);
     sceneHandle.current = scene;
+    scene.camera.setView(readCameraView(window.location.search));
+    const currentUrl = () => `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const urlFor = (view: CameraView) => `${window.location.pathname}${writeCameraView(window.location.search, view)}${window.location.hash}`;
+    window.history.replaceState(window.history.state, '', urlFor(scene.camera.view));
+    let urlTimer: number | undefined;
+    scene.camera.onViewChange = (view) => {
+      window.clearTimeout(urlTimer);
+      urlTimer = window.setTimeout(() => {
+        const url = urlFor(view);
+        if (url === currentUrl()) return;
+        window.history.pushState(window.history.state, '', url);
+      }, URL_UPDATE_DELAY_MS);
+    };
+    const onPopState = () => {
+      window.clearTimeout(urlTimer);
+      scene.camera.setView(readCameraView(window.location.search));
+    };
+    window.addEventListener('popstate', onPopState);
     scene.setHandlers({
       onTap: (tile, shiftKey, buildingId) => {
         const ui = uiStore.getState();
@@ -76,6 +97,8 @@ export function SceneCanvas() {
       if (prefs.showReach !== previous.showReach) showSelection();
     });
     return () => {
+      window.clearTimeout(urlTimer);
+      window.removeEventListener('popstate', onPopState);
       unsubscribeLoading();
       unsubscribeGame();
       unsubscribePrefs();
