@@ -1,6 +1,6 @@
 # Shared Diagnosis shape and panel
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 
 ## What to build

@@ -1,4 +1,5 @@
 import { facilityMessages } from './facilities';
+import { diagnosisMessages } from './diagnosis';
 import { casinoMessages } from './casino';
 import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
@@ -41,4 +42,5 @@ export const FR: Record<MessageKey, string> = {
   ...itemMessages('fr'),
   ...sportVenueMessages('fr'),
   ...facilityMessages('fr'),
+  ...diagnosisMessages('fr'),
 };
