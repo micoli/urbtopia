@@ -1,4 +1,4 @@
-import { energySavingOf, ECOLOGY, FACILITY_TYPES, casinosReaching, sportVenuesReaching, isSportVenueType, poweredCasinoIds, homePower, homeBenefits, missingServicesOf, serviceCoverage, transitReachLinks, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, difficultyOf, homeSanction, needsContext, type Building, type FacilityType } from '../../core';
+import { energySavingOf, ECOLOGY, FACILITY_TYPES, casinosReaching, sportVenuesReaching, isSportVenueType, poweredCasinoIds, homePower, homeBenefits, missingServicesOf, serviceCoverage, transitReachLinks, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, difficultyOf, homeSanction, needsContext, isWasteMissing, isWastePowerReduced, wasteReport, type Building, type FacilityType } from '../../core';
 import { t } from '../../i18n/t';
 import type { MessageKey } from '../../i18n/messages';
 import { gameStore } from '../../store/gameStore';
@@ -53,6 +53,7 @@ export function HomePanel({ building }: HomePanelProps) {
       {leisure && <DrawerPanel.LabelValue label={t('home.leisure')} value={<>{leisure.length ? leisure.join(', ') : t('home.leisureNone')}</>}/>}
       {missing.length > 0 && <DrawerPanel.LabelValue tone="warn" label={t('home.servicesMissing')} value={<>{missing.map(key => `${serviceName(key)} (${t(`home.reason.${uncoveredReason(state, building, key)}`)})`).join(', ')}{benefits.servicePenalty > 0 && ` · ${t('eco.servicePenalty')}: −${benefits.servicePenalty.toFixed(0)}`}</>}/>}
       {missing.some(key => uncoveredReason(state, building, key) === 'capacityFull') && <BlockedReason reason={t('home.capacityFullHint')} />}
+      {isWasteMissing(state, building.id) && isWastePowerReduced(wasteReport(state), building.id) && <BlockedReason reason={t('home.wastePowerReducedHint')} />}
       {missing.some(key => uncoveredReason(state, building, key) === 'noRoadLink') && <BlockedReason reason={t('home.noRoadLinkHint')} />}
       {benefits.pollutionPenalty > 0 && <DrawerPanel.LabelValue label={t('eco.coalPenalty')} value={<>−{benefits.pollutionPenalty.toFixed(1)} · {t('eco.coalPollutionHelp')}</>}/> }
 

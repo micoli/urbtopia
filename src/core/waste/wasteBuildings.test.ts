@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BUILDING_SPECS, COAL_CAPACITY, ECOLOGY, TAX, WASTE, WASTE_FACILITIES, WASTE_REQUIRED_TIER, climateStats, createBuilding, economicPower, energyStats, facilitiesUnlockedBetween, homeBenefits, incineratorPenaltyOf, missingServicesOf, needsPyramid, newGame, odorPenaltyOf, wasteCapacity, wasteEmissions, wasteReport, type Building, type GameState } from '../index';
+import { BUILDING_SPECS, COAL_CAPACITY, ECOLOGY, TAX, WASTE, WASTE_FACILITIES, WASTE_REQUIRED_TIER, climateStats, createBuilding, economicPower, energyStats, facilitiesUnlockedBetween, homeBenefits, incineratorPenaltyOf, missingServicesOf, needsPyramid, newGame, odorPenaltyOf, wasteCapacity, wasteEmissions, wasteFacilityFigures, wasteReport, type Building, type GameState } from '../index';
 import { definitionOf, tiersOf } from '../buildings/buildingDefinitions';
 
 const home = (id: number, x: number, y: number, tier = 1): Building => ({ ...createBuilding(id, 'home', x, y, 0), tier });
@@ -214,6 +214,7 @@ describe('Recycling plant under a power shortage', () => {
     expect(facility.powerRatio).toBeCloseTo(ratio, 12);
     expect(facility.capacity).toBeCloseTo(2200 * ratio, 6);
     expect(facility.nominalCapacity).toBe(2200);
+    expect(wasteFacilityFigures(state, 1)!.loss).toBe('powerReduced');
   });
 
   it('processes nothing with no power and leaves the Home uncovered as stopped', () => {
@@ -241,5 +242,17 @@ describe('Recycling plant under a power shortage', () => {
   it('keeps the capacityFull cause when a running facility is full', () => {
     const state = city([place(3, 'mound', 66, 50), plant(), ...Array.from({ length: 4 }, (_, index) => home(10 + index, 60 + 2 * index, 48, 3))]);
     expect(wasteReport(state).homes.get(10)?.cause).toBe('capacityFull');
+    expect(wasteReport(state).homes.get(10)?.powerReduced).toBe(false);
+  });
+
+  it('says a full Home would be served if its Recycling plant had all its power', () => {
+    const neighbours = Array.from({ length: 16 }, (_, index) => home(200 + index, 46 + 2 * index, 50, 4));
+    const remote = Array.from({ length: 10 }, (_, index) => home(400 + index, 5 + 2 * index, 80, 2));
+    const state = city([plant(3), ...neighbours, ...remote, ...grid(5)]);
+    const uncovered = [...wasteReport(state).homes.values()].filter(home => home.cause === 'capacityFull');
+    expect(facilityOf(state).powerRatio).toBeGreaterThan(0);
+    expect(facilityOf(state).powerRatio).toBeLessThan(1);
+    expect(uncovered.length).toBeGreaterThan(0);
+    expect(uncovered.every(home => home.powerReduced)).toBe(true);
   });
 });

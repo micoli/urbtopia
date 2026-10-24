@@ -19,6 +19,8 @@ export interface HomeWaste {
   cost: number;
   carried: boolean;
   cause: WasteCause | null;
+  // Full because a Recycling plant that would serve it receives too little power.
+  powerReduced: boolean;
 }
 
 export interface FacilityWaste {
@@ -54,6 +56,7 @@ type Link = { carried: boolean } | 'beyond' | null;
 interface ReachingFacility {
   link: Link;
   running: boolean;
+  powerRatio: number;
 }
 
 const cache = new WeakMap<readonly Building[], { roads: GameState['roads']; roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; paying: boolean; adapting: boolean; hour: number; reduction: number; report: WasteReport }>();
@@ -114,15 +117,17 @@ function linkOf(facility: FacilityGeometry, homeRoads: ReadonlySet<number>, home
   return Math.min(...walks) <= WASTE.carryingDistance ? { carried: true } : 'beyond';
 }
 
+const isLinked = ({ link }: ReachingFacility) => link !== null && link !== 'beyond';
+
 function causeOf(reaching: readonly ReachingFacility[]): WasteCause {
-  const linked = reaching.filter(({ link }) => link !== null && link !== 'beyond');
+  const linked = reaching.filter(isLinked);
   if (linked.length > 0) return linked.some(({ running }) => running) ? 'capacityFull' : 'facilityStopped';
   if (reaching.some(({ link }) => link === 'beyond')) return 'beyondCarryingDistance';
   return 'noRoadLink';
 }
 
 function withoutFacilities(homes: readonly Building[], required: boolean, reduction: number): WasteReport {
-  const results = new Map<number, HomeWaste>(homes.map(home => [home.id, { produced: homeWasteProduction(home.tier, reduction), facilityId: null, cost: 0, carried: false, cause: 'outOfReach' }]));
+  const results = new Map<number, HomeWaste>(homes.map(home => [home.id, { produced: homeWasteProduction(home.tier, reduction), facilityId: null, cost: 0, carried: false, cause: 'outOfReach', powerReduced: false }]));
   return { required, homes: results, facilities: new Map(), produced: [...results.values()].reduce((sum, home) => sum + home.produced, 0), processed: 0, costPerDay: 0, costPerHour: 0 };
 }
 
@@ -163,7 +168,7 @@ function computeReport(state: GameState, paying: boolean): WasteReport {
         for (const { data, link } of candidates) {
           if (served.processed >= served.capacity) break;
           const cost = data.produced * WASTE_FACILITIES[kind].tariff * (link.carried ? WASTE.carriedSurcharge : 1);
-          results.set(data.home.id, { produced: data.produced, facilityId: facility.building.id, cost, carried: link.carried, cause: null });
+          results.set(data.home.id, { produced: data.produced, facilityId: facility.building.id, cost, carried: link.carried, cause: null, powerReduced: false });
           served.processed += data.produced;
           served.cost += cost;
         }
@@ -173,9 +178,12 @@ function computeReport(state: GameState, paying: boolean): WasteReport {
 
   for (const data of homeData) {
     if (results.has(data.home.id)) continue;
-    const reaching = facilities.filter(facility => reaches(facility, data.center));
-    const cause = reaching.length === 0 ? 'outOfReach' : causeOf(reaching.map(facility => ({ link: linkOf(facility, data.roads, data.walk), running: isRunning(facility) })));
-    results.set(data.home.id, { produced: data.produced, facilityId: null, cost: 0, carried: false, cause });
+    const reaching = facilities
+      .filter(facility => reaches(facility, data.center))
+      .map(facility => ({ link: linkOf(facility, data.roads, data.walk), running: isRunning(facility), powerRatio: facilityResults.get(facility.building.id)!.powerRatio }));
+    const cause = reaching.length === 0 ? 'outOfReach' : causeOf(reaching);
+    const powerReduced = cause === 'capacityFull' && reaching.some(facility => isLinked(facility) && facility.running && facility.powerRatio < 1);
+    results.set(data.home.id, { produced: data.produced, facilityId: null, cost: 0, carried: false, cause, powerReduced });
   }
 
   const totals = [...results.values()];
@@ -206,6 +214,10 @@ export function wasteReport(state: GameState): WasteReport {
 
 export function isWasteCovered(report: WasteReport, homeId: number): boolean {
   return report.homes.get(homeId)?.cause === null;
+}
+
+export function isWastePowerReduced(report: WasteReport, homeId: number): boolean {
+  return report.homes.get(homeId)?.powerReduced ?? false;
 }
 
 export function wasteCauseOf(report: WasteReport, homeId: number): WasteCause | null {

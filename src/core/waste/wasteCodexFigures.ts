@@ -5,6 +5,15 @@ import { WASTE, WASTE_FACILITIES, WASTE_KINDS, wasteKindOf, type WasteKind } fro
 import { incineratorPenaltyOf, odorPenaltyOf, wasteEmissions } from './wasteNuisance';
 
 export type WasteStop = 'noUrbs' | 'powerShortage';
+export type WasteCapacityLoss = WasteStop | 'powerReduced';
+
+export interface WasteFacilityFigures {
+  nominalCapacity: number;
+  capacity: number;
+  processed: number;
+  powerRatio: number;
+  loss: WasteCapacityLoss | null;
+}
 
 export interface WasteKindFigures {
   kind: WasteKind;
@@ -40,6 +49,19 @@ function stoppedOf(state: GameState, served: readonly FacilityWaste[]): WasteSto
   if (served.length === 0) return null;
   if (state.urbs <= 1e-9) return 'noUrbs';
   return served.every(facility => facility.powerRatio === 0) ? 'powerShortage' : null;
+}
+
+export function wasteFacilityFigures(state: GameState, facilityId: number): WasteFacilityFigures | null {
+  const facility = wasteReport(state).facilities.get(facilityId);
+  if (!facility) return null;
+  const stopped = stoppedOf(state, [facility]);
+  return {
+    nominalCapacity: facility.nominalCapacity,
+    capacity: stopped ? 0 : facility.capacity,
+    processed: facility.processed,
+    powerRatio: facility.powerRatio,
+    loss: stopped ?? (facility.powerRatio < 1 ? 'powerReduced' : null),
+  };
 }
 
 // Every figure of the Waste Codex page, from the same report as the simulation.

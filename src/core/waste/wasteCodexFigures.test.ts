@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { wasteCodexFigures } from './wasteCodexFigures';
+import { wasteCodexFigures, wasteFacilityFigures } from './wasteCodexFigures';
 import { WASTE, WASTE_FACILITIES, createBuilding, newGame, wasteEmissions, wasteReport, type Building, type GameState } from '../index';
 
 const home = (id: number, x: number, y: number, tier = 1): Building => ({ ...createBuilding(id, 'home', x, y, 0), tier });
@@ -72,5 +72,28 @@ describe('wasteCodexFigures', () => {
     expect(smelly.incinerator.homesAffected).toBe(0);
     expect(smelly.mound.radius).toBe(WASTE_FACILITIES.mound.odor!.radius);
     expect(smoky.incinerator.malus).toBe(WASTE_FACILITIES.incinerator.pollution!.malus);
+  });
+});
+
+describe('wasteFacilityFigures', () => {
+  it('reports the full capacity of a running facility', () => {
+    const state = city([place(1, 'mound', 60, 50), home(10, 62, 50, 4)]);
+    const figures = wasteFacilityFigures(state, 1)!;
+    expect([figures.capacity, figures.nominalCapacity, figures.loss]).toEqual([60, 60, null]);
+    expect(figures.processed).toBe(wasteReport(state).facilities.get(1)!.processed);
+  });
+
+  it('drops the capacity to zero with no Urbs', () => {
+    const figures = wasteFacilityFigures(city([place(1, 'mound', 60, 50), home(10, 62, 50, 4)], { urbs: 0 }), 1)!;
+    expect([figures.capacity, figures.nominalCapacity, figures.loss]).toEqual([0, 60, 'noUrbs']);
+  });
+
+  it('says a Recycling plant without power is stopped', () => {
+    const figures = wasteFacilityFigures(city([place(1, 'recyclingPlant', 50, 47), home(10, 52, 50, 4)]), 1)!;
+    expect([figures.capacity, figures.nominalCapacity, figures.loss]).toEqual([0, 400, 'powerShortage']);
+  });
+
+  it('has no figures for a building that is not a Waste facility', () => {
+    expect(wasteFacilityFigures(city([home(10, 62, 50, 4)]), 10)).toBeNull();
   });
 });

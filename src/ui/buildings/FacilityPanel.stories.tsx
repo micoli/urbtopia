@@ -25,3 +25,9 @@ export const FireStation: Story = {
     <BuildingOfType type="fireStation">{(building: Building) => <FacilityPanel building={building as Parameters<typeof FacilityPanel>[0]['building']} />}</BuildingOfType>
   ),
 };
+
+export const RecyclingPlant: Story = {
+  render: () => (
+    <BuildingOfType type="recyclingPlant">{(building: Building) => <FacilityPanel building={building as Parameters<typeof FacilityPanel>[0]['building']} />}</BuildingOfType>
+  ),
+};
