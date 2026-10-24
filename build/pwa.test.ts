@@ -51,7 +51,7 @@ describe('service worker stamping', () => {
     new Function('self', 'caches', stampSource(source, 'aaa', []))(self, {});
     const respondedTo = (url: string) => {
       let responded = false;
-      listeners.fetch!({ request: { method: 'GET', url, mode: 'navigate' }, respondWith: () => { responded = true; } });
+      listeners.fetch!({ request: { method: 'GET', url, mode: 'navigate' }, respondWith: (response: Promise<unknown>) => { responded = true; response.catch(() => undefined); } });
       return responded;
     };
     expect(respondedTo('https://example.com/urbtopia/docs/en/codex/buildings/house/')).toBe(false);
