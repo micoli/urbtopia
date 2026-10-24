@@ -10,7 +10,7 @@ Cities are private: a player can only see their own. There is no way to see how 
 
 Recorded in [ADR 0029](../../docs/adr/0029-hall-of-fame-trusts-the-client-with-growth-caps.md). Vocabulary (Hall of fame, Showcase, Visit) in `CONTEXT.md`.
 
-- Ranking: the ten biggest cities by Citizens, one entry per Player account, ties broken by seniority. Each entry shows rank, Avatar, Handle, Citizens and a "Visit" button. No Medals, no add-Friend button for now.
+- Ranking: the ten biggest cities by Citizens, one entry per Player account, never the caller's own city (the ranks count only the others), ties broken by seniority. Each entry shows rank, Avatar, Handle, Citizens and a "Visit" button. No Medals, no add-Friend button for now.
 - Participation: every Player account with a Handle is in by default (opt-out, toggle in the Social window). A one-time notice on the first launch after release carries the toggle; nothing is published before it has been seen. Opting out deletes the Showcase at once. A Block hides the Showcase between the two accounts.
 - Showcase: the full city state minus the trade ledger, in a table separate from the Cloud save, replaced at each push (same 5 minute debounce) with the Citizens count stored beside it. Readable by every authenticated user, anonymous ones included; written only through `urb_` RPC functions. Subject to the same 1 MB cap.
 - Trust: the client declares Citizens. The RPC refuses a ranking value growing faster than 20 % and at least 500 Citizens per hour of server time; the Showcase is still replaced, the ranking keeps its previous value.

@@ -8,14 +8,13 @@ import { HallOfFameRow } from './HallOfFameRow';
 interface HallOfFameListProps {
     state: HallOfFameState;
     entries: HallOfFameEntry[];
-    ownUserId: string | null;
     visitBusy: boolean;
     visitFailure: VisitFailure | null;
     onVisit: (userId: string) => void;
     onRefresh: () => void;
 }
 
-export function HallOfFameList({state, entries, ownUserId, visitBusy, visitFailure, onVisit, onRefresh}: HallOfFameListProps) {
+export function HallOfFameList({state, entries, visitBusy, visitFailure, onVisit, onRefresh}: HallOfFameListProps) {
     return <section className="hall-of-fame">
         <h4>{t('hall.title')}</h4>
         <p>{t('hall.intro')}</p>
@@ -25,7 +24,7 @@ export function HallOfFameList({state, entries, ownUserId, visitBusy, visitFailu
         {state === 'loading' && entries.length === 0 ? <p>{t('hall.loading')}</p> : null}
         {state === 'ready' && entries.length === 0 ? <Note tone="muted">{t('hall.empty')}</Note> : null}
         {entries.length > 0 ? <ol className="hall-list">
-            {entries.map(entry => <HallOfFameRow key={entry.userId} entry={entry} mine={entry.userId === ownUserId} busy={visitBusy} onVisit={() => onVisit(entry.userId)}/>)}
+            {entries.map(entry => <HallOfFameRow key={entry.userId} entry={entry} busy={visitBusy} onVisit={() => onVisit(entry.userId)}/>)}
         </ol> : null}
         <ActionButton onClick={onRefresh}>{t('hall.refresh')}</ActionButton>
     </section>;

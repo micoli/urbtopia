@@ -750,7 +750,6 @@ export const CATALOG = {
   'hall.empty': ['No city is ranked yet.', 'Aucune ville n\'est encore classée.'],
   'hall.citizens': ['{N} Citizens', '{N} habitants'],
   'hall.visit': ['Visit', 'Visiter'],
-  'hall.you': ['You', 'Vous'],
   'hall.refresh': ['Refresh', 'Actualiser'],
   'hall.optOut': ['Appear in the Hall of fame', 'Apparaître dans le palmarès'],
   'hall.optOutHint': ['Other players can then see your city in the ranking and visit it, read-only. Turning this off removes it at once.', 'Les autres joueurs peuvent alors voir votre ville dans le classement et la visiter, en lecture seule. Désactivez pour la retirer aussitôt.'],

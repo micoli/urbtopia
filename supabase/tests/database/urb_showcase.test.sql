@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(21);
+select plan(22);
 
 insert into auth.users (id, instance_id, aud, role, email, email_confirmed_at, is_anonymous, created_at, last_sign_in_at) values
   ('00000000-0000-0000-0003-00000000000a', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'a@example.com', now(), false, now(), now()),
@@ -49,12 +49,24 @@ select is(public.urb_get_showcase('00000000-0000-0000-0003-00000000000b') -> 'en
 
 select pg_temp.act_as('00000000000a');
 select public.urb_publish_showcase('{"state":{"who":"alice2"}}'::jsonb, 16, 150);
+select pg_temp.act_as('00000000000d');
 select is((select e ->> 'citizens' from jsonb_array_elements(public.urb_hall_of_fame()) e where e ->> 'handle' = 'Alice'), '150', 'growth within the cap moves the ranking');
+select pg_temp.act_as('00000000000a');
 select public.urb_publish_showcase('{"state":{"who":"alice3"}}'::jsonb, 16, 5000000);
+select pg_temp.act_as('00000000000d');
 select is((select e ->> 'citizens' from jsonb_array_elements(public.urb_hall_of_fame()) e where e ->> 'handle' = 'Alice'), '150', 'growth beyond the cap keeps the previous ranking value');
 select is(public.urb_get_showcase('00000000-0000-0000-0003-00000000000a') -> 'envelope' -> 'state' ->> 'who', 'alice3', 'the Showcase is still replaced');
+select pg_temp.act_as('00000000000a');
 select public.urb_publish_showcase('{"state":{}}'::jsonb, 16, 10);
+select pg_temp.act_as('00000000000d');
 select is((select e ->> 'citizens' from jsonb_array_elements(public.urb_hall_of_fame()) e where e ->> 'handle' = 'Alice'), '10', 'a shrinking city lowers its rank at once');
+
+select pg_temp.act_as('00000000000a');
+select is(
+  (select jsonb_agg(e ->> 'handle' order by (e ->> 'rank')::int) from jsonb_array_elements(public.urb_hall_of_fame()) e),
+  '["Bob", "Carol"]'::jsonb,
+  'the player''s own city is not listed, and the ranks count only the others'
+);
 
 select pg_temp.act_as('00000000000b');
 select public.urb_block_user('00000000-0000-0000-0003-00000000000c');

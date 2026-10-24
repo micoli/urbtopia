@@ -15,7 +15,7 @@ const entries: HallOfFameEntry[] = [
 ];
 
 const list = (props: Partial<Parameters<typeof HallOfFameList>[0]> = {}) =>
-  renderToStaticMarkup(<HallOfFameList state="ready" entries={entries} ownUserId={null} visitBusy={false} visitFailure={null} onVisit={noop} onRefresh={noop} {...props} />);
+  renderToStaticMarkup(<HallOfFameList state="ready" entries={entries} visitBusy={false} visitFailure={null} onVisit={noop} onRefresh={noop} {...props} />);
 
 describe('Hall of fame list', () => {
   it('shows rank, Handle, Citizens and a Visit button for each entry', () => {
@@ -24,11 +24,6 @@ describe('Hall of fame list', () => {
     expect(html).toContain('Bob');
     expect(html).toContain(t('hall.citizens').replace('{N}', '1200'));
     expect(html.match(new RegExp(`>${t('hall.visit')}<`, 'g'))).toHaveLength(2);
-  });
-
-  it('marks the entry of the player', () => {
-    expect(list({ ownUserId: 'u2' })).toContain(t('hall.you'));
-    expect(list()).not.toContain(t('hall.you'));
   });
 
   it('says so when nobody is ranked yet', () => {

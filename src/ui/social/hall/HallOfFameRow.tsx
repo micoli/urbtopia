@@ -5,16 +5,14 @@ import { HandleLabel } from '../HandleLabel';
 
 interface HallOfFameRowProps {
     entry: HallOfFameEntry;
-    mine: boolean;
     busy: boolean;
     onVisit: () => void;
 }
 
-export function HallOfFameRow({entry, mine, busy, onVisit}: HallOfFameRowProps) {
-    return <li className="hall-row" data-mine={mine}>
+export function HallOfFameRow({entry, busy, onVisit}: HallOfFameRowProps) {
+    return <li className="hall-row">
         <span className="hall-rank">{entry.rank}</span>
         <HandleLabel userId={entry.userId} handle={entry.handle} avatar={entry.avatar}/>
-        {mine ? <span className="hall-you">{t('hall.you')}</span> : null}
         <span className="hall-citizens">{t('hall.citizens').replace('{N}', String(entry.citizens))}</span>
         <ActionButton variant="primary" disabled={busy} onClick={onVisit}>{t('hall.visit')}</ActionButton>
     </li>;
