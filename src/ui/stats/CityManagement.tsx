@@ -60,7 +60,7 @@ function CityManagementDialog() {
                 <TemperatureSection breakdown={temperature} elements={coolingElements(state)} items={heatSourceItems(state, {climate, energy, transport, cooling: green.cooling})}/>
                 <TransportSection transport={transport}/>
                 <TransportMapSection state={state} transport={transport} congestion={congestion}/>
-                <TrafficSection congestion={congestion} transport={transport} onShowTransport={() => showSection('eco-transport')}/>
+                <TrafficSection state={state} congestion={congestion} transport={transport} onShowTransport={() => showSection('eco-transport')}/>
                 <ObjectivesSection state={state} energy={energy} green={green} transport={transport}/>
                 <NextUnlockSection/>
             </div>
