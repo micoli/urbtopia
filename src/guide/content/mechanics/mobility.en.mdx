@@ -1,0 +1,42 @@
+export const meta = {
+  title: 'Mobility and congestion',
+  summary: 'How Citizens get to work and to their activities, and why a jammed road lowers Well-being.',
+  order: 20,
+};
+
+## Getting around
+
+Citizens go every day to their workplaces and their activities: shops, schools, health, culture, parks. Four ways are open to them, and the game picks for each Home, as a whole, never for each Citizen:
+
+- **On foot**, when the destination is close, along the sidewalks of every <EntryLink id="road" /> and the <EntryLink id="pedestrianWay">Pedestrian ways</EntryLink> you build. Walking gives Well-being and loads no road.
+- **By bicycle**, up to three times as far as on foot, over the same paths. Nothing to buy and nothing to build.
+- **By public transport**: bus lines between <EntryLink id="busStop">Bus stops</EntryLink>, the <EntryLink id="brt">BRT</EntryLink> on its own corridor, and trains on the <EntryLink id="rail">Railway</EntryLink>. A journey may change lines at most twice.
+- **By car**, for everyone else: the Commuters.
+
+## Commutes and congestion
+
+Commuters fill the nearest workplaces first and drive there by the shortest road. Each road section has a **Lane capacity** set by its Tier: 1, 2 or 3 lanes per direction. When more Commuters use a section than it can carry, it is congested, and the narrowest section of a Commute decides how bad it is. Congestion lowers the Well-being of the Homes whose Commute it slows, up to a cap.
+
+A set of roads that links Homes to no workplace, or workplaces to no Home, is **disconnected**: it is marked with a red cross, and its Homes suffer the worst congestion.
+
+Ways out of a jam:
+
+- **Widen the road**: upgrade the bottleneck to a higher Tier.
+- **Bring work closer**, so that Commuters walk instead of driving.
+- **Offer public transport**: when a road is saturated, part of its Commuters switch to the lines that serve their Home, as long as the lines have room.
+
+## Crossings and roundabouts
+
+People cross a road only at a <EntryLink id="crossing" /> or around a dead end. A busy Crossing takes capacity from the road, so a walkable street carries fewer cars. A <EntryLink id="roundabout" /> joins roads without that loss.
+
+## Buses, BRT and trains
+
+Buses drive on the ordinary roads: they load them like cars and slow down in jams, down to half their speed. The BRT and trains run on their own networks and are never slowed. These networks stay separate: a Road crossing a BRT corridor does not connect them. A <EntryLink id="transitHub" /> serves every network it touches, and changing lines inside it needs no walk.
+
+Cyclists may take their bicycle aboard BRT vehicles and trains, not buses. They reach a station from three times farther than on foot, but each takes two places.
+
+## Services across the city
+
+Fast public transport also extends the reach of public facilities: a Home beyond the reach of a school or a hospital is still covered when stations near both are linked quickly enough. Waste collection is the exception, since its trucks need a road.
+
+<LiveRules id="transitReach" />

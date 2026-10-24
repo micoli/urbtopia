@@ -1,0 +1,42 @@
+export const meta = {
+  title: 'Mobilité et congestion',
+  summary: 'Comment les habitants vont au travail et à leurs activités, et pourquoi une route saturée fait baisser le bien-être.',
+  order: 20,
+};
+
+## Se déplacer
+
+Chaque jour, les habitants vont à leur travail et à leurs activités : commerces, écoles, santé, culture, parcs. Quatre moyens s’offrent à eux, et le jeu décide pour chaque logement dans son ensemble, jamais pour chaque habitant :
+
+- **À pied**, quand la destination est proche, le long des trottoirs de chaque <EntryLink id="road">route</EntryLink> et des <EntryLink id="pedestrianWay">voies piétonnes</EntryLink> que vous construisez. La marche donne du bien-être et ne charge aucune route.
+- **À vélo**, jusqu’à trois fois plus loin qu’à pied, sur les mêmes chemins. Rien à acheter ni à construire.
+- **En transports en commun** : les lignes de bus entre les <EntryLink id="busStop">arrêts de bus</EntryLink>, le <EntryLink id="brt">BRT</EntryLink> sur son couloir, et les trains sur la <EntryLink id="rail">voie ferrée</EntryLink>. Un trajet compte au plus deux correspondances.
+- **En voiture**, pour tous les autres : les navetteurs.
+
+## Trajets et congestion
+
+Les navetteurs remplissent d’abord les lieux de travail les plus proches et s’y rendent par la route la plus courte. Chaque tronçon a une **capacité** fixée par son niveau : 1, 2 ou 3 voies par sens. Quand plus de navetteurs l’empruntent qu’il ne peut en porter, il est saturé, et le tronçon le plus étroit d’un trajet décide de sa gravité. La congestion fait baisser le bien-être des logements dont elle ralentit le trajet, jusqu’à un plafond.
+
+Un ensemble de routes qui ne relie des logements à aucun lieu de travail, ou des lieux de travail à aucun logement, est **déconnecté** : il est marqué d’une croix rouge, et ses logements subissent la pire congestion.
+
+Pour sortir d’un embouteillage :
+
+- **Élargir la route** : monter le goulot d’étranglement d’un niveau.
+- **Rapprocher le travail**, pour que les navetteurs marchent au lieu de conduire.
+- **Proposer des transports en commun** : quand une route est saturée, une partie de ses navetteurs passe aux lignes qui desservent leur logement, tant qu’elles ont de la place.
+
+## Passages piétons et ronds-points
+
+On ne traverse une route qu’à un <EntryLink id="crossing">passage piéton</EntryLink> ou autour d’une impasse. Un passage très fréquenté prend de la capacité à la route : une rue agréable à pied porte moins de voitures. Un <EntryLink id="roundabout">rond-point</EntryLink> relie des routes sans cette perte.
+
+## Bus, BRT et trains
+
+Les bus roulent sur les routes ordinaires : ils les chargent comme des voitures et ralentissent dans les bouchons, jusqu’à la moitié de leur vitesse. Le BRT et les trains roulent sur leurs propres réseaux et ne ralentissent jamais. Ces réseaux restent séparés : une route qui croise un couloir de BRT ne les relie pas. Un <EntryLink id="transitHub">pôle d’échanges</EntryLink> dessert chaque réseau qu’il touche, et y changer de ligne ne demande aucune marche.
+
+Les cyclistes peuvent monter avec leur vélo dans le BRT et les trains, pas dans les bus. Ils rejoignent une station depuis trois fois plus loin qu’à pied, mais chacun prend deux places.
+
+## Les services à travers la ville
+
+Des transports en commun rapides étendent aussi la portée des équipements publics : un logement hors de portée d’une école ou d’un hôpital reste couvert quand des stations proches de l’un et de l’autre sont reliées assez vite. La collecte des déchets fait exception, car ses camions ont besoin d’une route.
+
+<LiveRules id="transitReach" />

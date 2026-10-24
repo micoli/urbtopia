@@ -4,4 +4,8 @@
 
 **Blocked by:** 05, 08
 
-**Status:** ready-for-agent
+**Status:** done
+
+## Comments
+
+- `mechanics/mobility.<lang>.mdx`: walking, cycling, public transport, Commutes, Congestion, Crossings, separate networks, Transit reach; embeds `<LiveRules id="transitReach" />`. The Transit reach rule page keeps its own URL.
