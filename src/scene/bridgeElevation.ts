@@ -30,3 +30,13 @@ export function bridgeElevation(bridges: readonly Bridge[] | undefined): Elevati
     return 0;
   };
 }
+
+const PITCH_SAMPLE = 0.05;
+
+// Nose-up angle (radians) of a vehicle heading `yaw`, for a rotation about its own X axis applied after the yaw.
+export function bridgePitch(elevation: ElevationAt, x: number, z: number, yaw: number, from: Coord, to: Coord): number {
+  const dx = Math.sin(yaw) * PITCH_SAMPLE;
+  const dz = Math.cos(yaw) * PITCH_SAMPLE;
+  const rise = elevation(x + dx, z + dz, from, to) - elevation(x - dx, z - dz, from, to);
+  return -Math.atan2(rise, 2 * PITCH_SAMPLE);
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BRIDGE_CLEARANCE, bridgeElevation } from './bridgeElevation';
+import { BRIDGE_CLEARANCE, bridgeElevation, bridgePitch } from './bridgeElevation';
 
 describe('bridgeElevation', () => {
   const elevation = bridgeElevation([{ x: 53, y: 50, length: 3, axis: 'x', carrier: 'road' }]);
@@ -22,6 +22,15 @@ describe('bridgeElevation', () => {
 
   it('keeps what drives beneath the span on the ground', () => {
     expect(elevation(54.5, 50.5, { x: 54, y: 49 }, { x: 54, y: 51 })).toBe(0);
+  });
+
+  it('pitches the nose up on the way up, down on the way down, and stays level elsewhere', () => {
+    const pitch = (x: number, yaw: number) => bridgePitch(elevation, x, 50.5, yaw, ramp, farRamp);
+    expect(pitch(52.5, Math.PI / 2)).toBeLessThan(0);
+    expect(pitch(52.5, -Math.PI / 2)).toBeGreaterThan(0);
+    expect(pitch(54.5, Math.PI / 2)).toBeCloseTo(0);
+    expect(pitch(56.5, Math.PI / 2)).toBeGreaterThan(0);
+    expect(bridgePitch(elevation, 40.5, 50.5, Math.PI / 2, { x: 40, y: 50 }, { x: 41, y: 50 })).toBeCloseTo(0);
   });
 
   it('follows a vertical Bridge', () => {

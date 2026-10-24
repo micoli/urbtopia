@@ -1,4 +1,4 @@
-import { bridgeElevation, type ElevationAt } from './bridgeElevation';
+import { bridgeElevation, bridgePitch, type ElevationAt } from './bridgeElevation';
 import * as THREE from 'three';
 import { congestionStats, hashSeed, nextRandom, tileKey, transportStats, type Coord, type GameState } from '../core';
 import { BUS_MODEL } from './busModel';
@@ -53,6 +53,7 @@ export class TrafficLayer {
   private frustum = new THREE.Frustum();
   private projection = new THREE.Matrix4();
   private placement = new THREE.Matrix4();
+  private euler = new THREE.Euler();
   private combined = new THREE.Matrix4();
   private carFit = new THREE.Matrix4().makeScale(VEHICLE_SCALE, VEHICLE_SCALE, VEHICLE_SCALE);
   private fitted = new THREE.Matrix4();
@@ -228,7 +229,8 @@ export class TrafficLayer {
     const counts = this.models.map(() => 0);
     for (const vehicle of this.vehicles) {
       const pose = poseOf(vehicle);
-      this.placement.makeRotationY(pose.yaw).setPosition(pose.x, ROAD_SURFACE_HEIGHT + this.elevation(pose.x, pose.z, vehicle.from, vehicle.to), pose.z);
+      this.euler.set(bridgePitch(this.elevation, pose.x, pose.z, pose.yaw, vehicle.from, vehicle.to), pose.yaw, 0, 'YXZ');
+      this.placement.makeRotationFromEuler(this.euler).setPosition(pose.x, ROAD_SURFACE_HEIGHT + this.elevation(pose.x, pose.z, vehicle.from, vehicle.to), pose.z);
       const model = this.models[vehicle.model];
       if (!model) continue;
       this.fitted.multiplyMatrices(this.placement, model.fit);

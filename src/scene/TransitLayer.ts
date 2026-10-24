@@ -1,4 +1,4 @@
-import { bridgeElevation, type ElevationAt } from './bridgeElevation';
+import { bridgeElevation, bridgePitch, type ElevationAt } from './bridgeElevation';
 import type { ModelLibrary } from './modelLibrary';
 import { TRAIN_MODELS } from './renderItems';
 import * as THREE from 'three';
@@ -123,7 +123,8 @@ export class TransitLayer {
         const car = cars[index];
         if (car) {
           car.position.set(pose.x + Math.cos(pose.yaw) * side, .12 + this.elevation(pose.x, pose.z, pose.from, pose.to), pose.z - Math.sin(pose.yaw) * side);
-          car.rotation.y = pose.yaw;
+          car.rotation.order = 'YXZ';
+          car.rotation.set(bridgePitch(this.elevation, pose.x, pose.z, pose.yaw, pose.from, pose.to), pose.yaw, 0);
         }
         if (vehicle.brt) for (const tile of [pose.from, pose.to]) if (this.crossings.has(tileKey(tile))) this.priorityTiles.add(tileKey(tile));
       }
