@@ -4,4 +4,10 @@
 
 **Blocked by:** 06, 07, 08
 
-**Status:** ready-for-agent
+**Status:** done
+
+## Comments
+
+- `playwright.guide.config.ts` + `scripts/guide.e2e.ts`, scripts `test:guide` and `test:guide:update`; needs a prior `npm run build`.
+- Smoke: every `dist/docs/**/index.html` (the redirecting root aside), in 8 parallel batches, about 1.5 minutes locally.
+- macOS baselines committed; Linux ones are not generated and the test is not wired into CI yet.

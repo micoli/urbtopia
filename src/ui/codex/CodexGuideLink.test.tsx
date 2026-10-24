@@ -5,7 +5,7 @@ import { GUIDE_ROUTES } from '../../guide/routes';
 import { prefsStore } from '../../i18n/prefsStore';
 import { CodexGuideLink } from './CodexGuideLink';
 
-const hrefOf = (html: string) => /href="[^"]*docs\/([^"]*)"/.exec(html)![1];
+const hrefOf = (html: string): string => /href="[^"]*docs\/([^"]*)"/.exec(html)![1]!;
 
 describe('CodexGuideLink', () => {
   it('opens the Guide page of the entry or rule page, in the player language', () => {

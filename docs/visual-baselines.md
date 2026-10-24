@@ -18,3 +18,7 @@ Cities come from `scripts/visualScenes.ts` (fixed seed, fixed fill order, no eng
 ## Platforms
 
 Playwright keeps one baseline per OS (`*-darwin.png`, `*-linux.png`). The macOS ones are committed. For Linux, run the "Visual baselines" workflow by hand with `update` checked, download the `visual-baselines-linux` artifact and commit its PNGs; after that the workflow without `update` compares against them. It is manual on purpose: it does not slow the regular pipeline.
+
+## Guide
+
+`npm run test:guide` runs against the built site (`npm run build` first, served by `vite preview`): it visits every prerendered Guide page and fails on any console error, page error or failed request, then compares three pages (`guide-home`, `guide-codex-entry`, `guide-mechanics`) in light and dark with their baselines in `e2e-baselines/guide.e2e.ts-snapshots/`. `npm run test:guide:update` rewrites them.

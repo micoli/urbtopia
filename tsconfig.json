@@ -14,5 +14,5 @@
     "resolveJsonModule": true,
     "types": ["vite/client", "node", "mdx"]
   },
-  "include": ["src", ".storybook", "build", "scripts", "vite.config.ts", "playwright.config.ts", "playwright.gameplay.config.ts", "eslint.config.js"]
+  "include": ["src", ".storybook", "build", "scripts", "vite.config.ts", "playwright.config.ts", "playwright.gameplay.config.ts", "playwright.guide.config.ts", "eslint.config.js"]
 }

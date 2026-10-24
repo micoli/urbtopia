@@ -27,6 +27,8 @@
     "test:codex:images": "vitest run scripts/codexImages.test.ts",
     "test:gameplay": "playwright test --config playwright.gameplay.config.ts",
     "test:visual": "playwright test --config playwright.visual.config.ts",
+    "test:guide": "playwright test --config playwright.guide.config.ts",
+    "test:guide:update": "playwright test --config playwright.guide.config.ts --update-snapshots",
     "test:visual:update": "playwright test --config playwright.visual.config.ts --update-snapshots",
     "assets:fetch": "node scripts/fetch-assets.ts",
     "assets:prototypes": "node scripts/prototype-assets.ts",
