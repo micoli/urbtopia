@@ -1,5 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import mdx from '@mdx-js/rollup';
 import { createServer } from 'vite';
 import type { CodexManifest } from '../src/codex/catalog';
 import type { GuideRoute } from '../src/guide/routes';
@@ -34,7 +35,7 @@ async function prerender(): Promise<void> {
   const template = readFileSync(join(guideDir, 'index.html'), 'utf8');
   if (!template.includes('<!--guide-app-->')) throw new Error(`${guideDir}/index.html is already prerendered: run vite build first`);
   const manifest = JSON.parse(readFileSync(join(dist, 'codex', 'manifest.json'), 'utf8')) as CodexManifest;
-  const server = await createServer({ configFile: false, server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' });
+  const server = await createServer({ configFile: false, plugins: [{ enforce: 'pre', ...mdx() }], server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' });
   try {
     const { GUIDE_LANGUAGES, GUIDE_ROUTES, docsRootOf, renderGuidePage, searchIndexOf } = await server.ssrLoadModule('/src/guide/server.tsx') as GuideServer;
     const pages = GUIDE_ROUTES.map(route => ({ target: join(guideDir, route.path, 'index.html'), content: pageOf(template, route, docsRootOf(route), renderGuidePage(route, manifest)) }));

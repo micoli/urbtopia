@@ -26,6 +26,7 @@ const texts = {
   'guide.viewer3dHide': ['Back to the picture', 'Revenir à l’image'],
   'guide.viewer3dLoading': ['Loading the model…', 'Chargement du modèle…'],
   'guide.viewer3dFailed': ['The 3D view is not available on this device.', 'La vue 3D n’est pas disponible sur cet appareil.'],
+  'guide.notTranslated': ['This page is not translated yet.', 'Cette page n’est pas encore traduite : elle est affichée en anglais.'],
   'guide.navigation': ['Guide navigation', 'Navigation du Guide'],
 } as const;
 

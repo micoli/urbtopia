@@ -199,3 +199,44 @@ body {
 .guide-rules [role="group"] > button[aria-pressed="true"] {
   @apply border-accent bg-accent text-accent-ink;
 }
+
+.guide-prose ul,
+.guide-prose ol {
+  @apply my-4 pl-6;
+}
+
+.guide-prose ul {
+  @apply list-disc;
+}
+
+.guide-prose ol {
+  @apply list-decimal;
+}
+
+.guide-prose li {
+  @apply my-1.5 pl-1;
+}
+
+.guide-prose strong {
+  @apply font-semibold text-ink;
+}
+
+.guide-prose blockquote {
+  @apply my-6 border-l-2 border-accent pl-4 text-muted;
+}
+
+.guide-prose code {
+  @apply rounded bg-panel px-1 py-0.5 text-sm;
+}
+
+.guide-content .guide-glossary {
+  @apply mt-8 block text-base;
+}
+
+.guide-content .guide-glossary dt {
+  @apply mt-6 font-semibold text-ink;
+}
+
+.guide-content .guide-glossary dd {
+  @apply mt-1 text-left font-normal text-muted;
+}

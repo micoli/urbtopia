@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { t } from '../i18n/t';
 import { GuideHeader } from './GuideHeader';
 import { GuideNav } from './GuideNav';
+import { GuideRouteContext } from './guideRouteContext';
 import { ReaderSettingsBar } from './reader/ReaderSettingsBar';
 import { restoreReaderSettings } from './reader/readerSettingsStore';
 import { sectionOf, type GuideRoute } from './routes';
@@ -39,6 +40,7 @@ export function GuideLayout({ route, children }: GuideLayoutProps) {
   }, [menuOpen]);
 
   return (
+    <GuideRouteContext value={route}>
     <div className="min-h-screen bg-surface text-ink">
       <GuideHeader route={route} onOpenMenu={() => setMenuOpen(true)} onOpenSearch={() => setSearchOpen(true)} />
       {searchOpen && <SearchDialog route={route} onClose={() => setSearchOpen(false)} />}
@@ -55,10 +57,11 @@ export function GuideLayout({ route, children }: GuideLayoutProps) {
           <GuideNav route={route} />
         </aside>
         <main className="guide-content min-w-0 flex-1 px-4 pt-8 pb-24 sm:px-8 lg:px-12">
-          {sectionOf(route) !== null && <ReaderSettingsBar />}
+          {(sectionOf(route) === 'codex' || sectionOf(route) === 'mechanics') && <ReaderSettingsBar />}
           {children}
         </main>
       </div>
     </div>
+    </GuideRouteContext>
   );
 }
