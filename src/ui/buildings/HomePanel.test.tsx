@@ -63,6 +63,23 @@ describe('HomePanel Waste cause', () => {
   });
 });
 
+describe('HomePanel Waste road link', () => {
+  it.each(['en', 'fr'] as const)('explains the missing road link of a Home inside the reach of a Recycling plant in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    const building = { ...createBuilding(900, 'home', 56, 59, 0), tier: 7 };
+    context.state = { ...newGame({ seed: 'home-panel', now: 0 }), adaptationUntil: 0, roads: [], buildings: [building, createBuilding(901, 'recyclingPlant', 62, 59, 0), ...[1, 2, 3].map(index => ({ ...createBuilding(910 + index, 'home', 56, 59 + 4 * index, 0), tier: 7 }))] };
+    const html = renderToStaticMarkup(<HomePanel building={building} />).replaceAll('&#x27;', "'");
+    expect(html).toContain(t('home.reason.noRoadLink'));
+    expect(html).toContain(t('home.noRoadLinkHint'));
+  });
+
+  it('shows no road link hint for a Home out of reach', () => {
+    const building = { ...createBuilding(900, 'home', 56, 59, 0), tier: 7 };
+    context.state = { ...newGame({ seed: 'home-panel', now: 0 }), adaptationUntil: 0, roads: [], buildings: [building] };
+    expect(renderToStaticMarkup(<HomePanel building={building} />)).not.toContain(t('home.noRoadLinkHint').replaceAll("'", '&#x27;'));
+  });
+});
+
 describe('HomePanel Transit reach', () => {
   const strip: TransitTile[] = Array.from({ length: 45 }, (_, i) => ({ x: 50 + i, y: 40, exits: i === 0 ? ['E'] : i === 44 ? ['W'] : ['W', 'E'] }));
   const renderTransit = (stationName?: string) => {

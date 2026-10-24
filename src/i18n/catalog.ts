@@ -917,6 +917,7 @@ export const CATALOG = {
   "facility.inReach": ["Citizens inside the reach", "Citoyens dans le rayon"],
   "facility.unserved": ["Inside the reach but not served", "Dans le rayon mais non servis"],
   "facility.overloadedHint": ["The reach only shows where this facility can serve. Its capacity is smaller than the Citizens inside it, so the farthest Homes get nothing. Upgrade it or build another one.", "Le rayon montre seulement où ce service peut servir. Sa capacité est inférieure au nombre de citoyens qu'il contient : les maisons les plus éloignées ne sont pas servies. Améliorez-le ou construisez-en un autre."],
+  "home.noRoadLinkHint": ["Being inside a facility's reach is not enough: the Home must touch a Road, or a Pedestrian way leading to a Road, connected to that facility.", "Être dans le rayon d'un service ne suffit pas : le logement doit toucher une route, ou une voie piétonne menant à une route, reliée à ce service."],
   "home.reason.noRoadLink": ["no road link", "pas de liaison routière"],
   "home.reason.beyondCarryingDistance": ["beyond the carrying distance", "au-delà de la distance de portage"],
   "home.reason.facilityStopped": ["facility stopped, no Urbs", "installation à l’arrêt, plus d’Urbs"],
