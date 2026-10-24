@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, type Plugin } from 'vite'
 import { MANAGED_MODELS_DIR, POLY_PIZZA_DIR } from '../../scripts/assetPacks.ts'
-import { archiveFile, archiveManifest, contentTypeOf, kenneyPackNames } from './archiveSources.ts'
+import { archiveFile, archiveManifest, contentTypeOf } from './archiveSources.ts'
 import { managedModelFile, managedModelKeys } from '../../scripts/managedModels.ts'
 import { deleteDefinition, readCatalog, saveDefinitions } from '../../scripts/definitionsStore.ts'
 import { addGlb, addPack, addPolyPizzaModel, removeModel, renameModel } from '../../scripts/assetOperations.ts'
@@ -52,7 +52,6 @@ const polyPizzaPacks = (): Record<string, string[]> => {
 }
 
 const sourcesByPack = () => ({
-  ...Object.fromEntries(kenneyPackNames().map((name) => [name, 'kenney'])),
   ...Object.fromEntries(Object.keys(managedPacks()).map((name) => [name, 'managed'])),
   'poly.pizza': 'poly.pizza',
 })

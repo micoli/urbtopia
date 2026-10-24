@@ -71,6 +71,23 @@
       }
     }
   ],
+  "solarPanels": {
+    "cost": 180,
+    "unlockCitizens": 200,
+    "output": 1,
+    "panels": [
+      {
+        "model": "industrial-solar-panel-flat",
+        "x": 0,
+        "y": -0.48,
+        "z": 0.56,
+        "rotationX": 0,
+        "rotationY": -90,
+        "rotationZ": -32.5,
+        "scale": 0.6
+      }
+    ]
+  },
   "category": "worship",
   "power": 1,
   "water": 0

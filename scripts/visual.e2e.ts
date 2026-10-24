@@ -11,11 +11,15 @@ async function openCity(page: Page, scene: 'denseCity' | 'cornerCity', focus: [n
   await page.evaluate(async ([name, [x, y]]) => {
     const { gameStore } = await import('../src/store/gameStore.ts');
     const { sceneHandle } = await import('../src/store/sceneHandle.ts');
+    const { dialogStore } = await import('../src/store/dialogStore.ts');
     const scenes = await import('../scripts/visualScenes.ts');
     gameStore.getState().replaceState(scenes[name as 'denseCity' | 'cornerCity']());
+    dialogStore.getState().dismissSignInPrompt();
     sceneHandle.current!.setTrafficEnabled(false);
     sceneHandle.current!.camera.focusOn(x!, y!);
   }, [scene, focus] as const);
+  // The season notice and the clock follow the real date: dismiss the notice, and leave the clock out of the screenshots.
+  await page.getByRole('button', { name: 'Compris', exact: true }).click({ timeout: 5000 }).catch(() => undefined);
   await page.mouse.move(640, 400);
   for (let step = 0; step < zoomOut; step++) await page.mouse.wheel(0, 100);
   await page.waitForTimeout(3000);
@@ -23,12 +27,12 @@ async function openCity(page: Page, scene: 'denseCity' | 'cornerCity', focus: [n
 
 test('dense city', async ({ page }) => {
   await openCity(page, 'denseCity', [64, 64], 4);
-  await expect(page).toHaveScreenshot('dense-city.png');
+  await expect(page).toHaveScreenshot('dense-city.png', { mask: [page.locator('.game-clock')] });
 });
 
 test('map edge', async ({ page }) => {
   await openCity(page, 'cornerCity', [6, 6], 3);
-  await expect(page).toHaveScreenshot('map-edge.png');
+  await expect(page).toHaveScreenshot('map-edge.png', { mask: [page.locator('.game-clock')] });
 });
 
 test('open build menu', async ({ page }) => {
@@ -52,5 +56,5 @@ test('venue interior', async ({ page }) => {
     venueStore.getState().open(venueId);
   });
   await page.waitForTimeout(3000);
-  await expect(page).toHaveScreenshot('venue.png');
+  await expect(page).toHaveScreenshot('venue.png', { mask: [page.locator('.game-clock')] });
 });

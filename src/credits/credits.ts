@@ -8,7 +8,6 @@ export interface PackCredit {
 }
 
 export const PACK_CREDITS: PackCredit[] = [
-  { name: 'Kenney', url: 'https://kenney.nl', licence: 'CC0' },
   { name: 'Quaternius', url: 'https://quaternius.com', licence: 'CC0' },
 ];
 

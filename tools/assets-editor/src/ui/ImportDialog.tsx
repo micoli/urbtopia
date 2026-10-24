@@ -4,13 +4,12 @@ import { base64Of, callAssets, fetchCatalog } from '../api'
 import { useDocument } from '../store/documentStore'
 import { button, dialogContent, dialogOverlay, input } from './styles'
 
-const MODES = { glb: 'Hand-made GLB', poly: 'Poly Pizza', kenney: 'Kenney zip', quaternius: 'Quaternius zip' } as const
+const MODES = { glb: 'Hand-made GLB', poly: 'Poly Pizza', quaternius: 'Quaternius zip' } as const
 type Mode = keyof typeof MODES
 
 const FIELDS: Record<Mode, string[]> = {
   glb: ['category', 'name', 'license', 'author', 'url', 'note'],
   poly: ['input', 'license'],
-  kenney: ['name'],
   quaternius: ['name'],
 }
 
@@ -18,7 +17,7 @@ const LABELS: Record<string, string> = { category: 'Category (folder)', input: '
 
 const slugOf = (fileName: string) => fileName.toLowerCase().replace(/\.[^.]+$/, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
-export const modeOfFile = (file: File): Mode => (file.name.endsWith('.zip') ? 'kenney' : 'glb')
+export const modeOfFile = (file: File): Mode => (file.name.endsWith('.zip') ? 'quaternius' : 'glb')
 
 interface Props {
   initialFile?: File
@@ -59,7 +58,7 @@ export function ImportDialog({ initialFile, initialUrl, onClose }: Props) {
         <Dialog.Content className={dialogContent}>
           <Dialog.Title className="text-base font-semibold">Import an asset</Dialog.Title>
           <Dialog.Description className="text-sm text-zinc-600">The file is added under assets/ and the game models are refreshed. Your pending edits are kept.</Dialog.Description>
-          <div className="grid grid-cols-2 gap-1 rounded-lg bg-zinc-100 p-1">
+          <div className="grid grid-cols-3 gap-1 rounded-lg bg-zinc-100 p-1">
             {(Object.keys(MODES) as Mode[]).map(option => (
               <button key={option} onClick={() => setMode(option)} className={`rounded-md px-2 py-1 text-xs font-medium ${mode === option ? 'bg-white shadow-sm' : 'text-zinc-600'}`}>{MODES[option]}</button>
             ))}

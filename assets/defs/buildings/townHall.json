@@ -20,6 +20,22 @@
       "footprint": [3, 2]
     }
   ],
+  "solarPanels": {
+    "cost": 400,
+    "unlockCitizens": 160,
+    "output": 1,
+    "panels": [
+      {
+        "model": "industrial-solar-panel-landscape",
+        "rotationZ": 0,
+        "rotationY": 180,
+        "x": -0.152,
+        "y": -0.552,
+        "z": 0.359,
+        "rotationX": 0
+      }
+    ]
+  },
   "category": "administration",
   "drawnToScale": true,
   "power": 2,

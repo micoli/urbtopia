@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, readdirSync, rmSync, rmdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { managedModelFile } from './managedModels.ts';
-import { EXTRA_PACKS_FILE, MANAGED_MODELS_DIR, POLY_PIZZA_DIR, ARCHIVES_DIR, QUATERNIUS_ARCHIVES_DIR, readExtraPacks } from './assetPacks.ts';
-import { extractFbx, extractPack } from './extractPack.ts';
+import { EXTRA_PACKS_FILE, MANAGED_MODELS_DIR, POLY_PIZZA_DIR, QUATERNIUS_ARCHIVES_DIR, readExtraPacks } from './assetPacks.ts';
+import { extractFbx } from './extractPack.ts';
 import { writeCollection, writeSingleton } from './collectionFiles.ts';
 import { DEFS_ROOT, collectionDir, readCollection, readSingleton, singletonFileIn } from './collectionRead.ts';
 import { COLLECTION_NAMES, specOf, type Definition } from './collections.ts';
@@ -14,14 +14,13 @@ import { licenseText, type PolyPizzaModel } from './polyPizza.ts';
 export interface AssetPaths {
   managed: string;
   polyPizza: string;
-  kenney: string;
   quaternius: string;
   models: string;
   extraPacks: string;
   defs: string;
 }
 
-export const ASSET_PATHS: AssetPaths = { managed: MANAGED_MODELS_DIR, polyPizza: POLY_PIZZA_DIR, kenney: ARCHIVES_DIR, quaternius: QUATERNIUS_ARCHIVES_DIR, models: MODELS_FILE, extraPacks: EXTRA_PACKS_FILE, defs: DEFS_ROOT };
+export const ASSET_PATHS: AssetPaths = { managed: MANAGED_MODELS_DIR, polyPizza: POLY_PIZZA_DIR, quaternius: QUATERNIUS_ARCHIVES_DIR, models: MODELS_FILE, extraPacks: EXTRA_PACKS_FILE, defs: DEFS_ROOT };
 
 export interface Attribution {
   license: string;
@@ -69,34 +68,19 @@ export function addPolyPizzaModel(model: PolyPizzaModel, license: string, paths 
   return key;
 }
 
-export function addPack(input: { kind: 'kenney' | 'quaternius'; name: string; archive: string; data: Uint8Array }, paths = ASSET_PATHS): void {
+export function addPack(input: { kind: 'quaternius'; name: string; archive: string; data: Uint8Array }, paths = ASSET_PATHS): void {
   requireName('pack name', input.name);
   if (!/^[\w.-]+\.zip$/.test(input.archive)) throw new Error(`Not a zip file name: ${input.archive}`);
   const extra = readExtraPacks(paths.extraPacks);
-  const registered = [...extra.kenney, ...extra.quaternius].some((pack) => pack.name === input.name);
+  const registered = extra.quaternius.some((pack) => pack.name === input.name);
   const target = join(paths[input.kind], input.archive);
   if (registered || existsSync(target)) throw new Error(`Pack ${input.name} or archive ${input.archive} already exists`);
 
-  if (input.kind === 'quaternius') {
-    if (extractFbx(input.data).length === 0) throw new Error('No FBX model in the archive');
-    extra.quaternius.push({ name: input.name, archive: input.archive });
-  } else {
-    const colormap = hasColormap(input.data);
-    if (extractPack(input.data, 'all', colormap).filter((file) => file.path.endsWith('.glb')).length === 0) throw new Error('No GLB model in the archive');
-    extra.kenney.push({ name: input.name, archive: input.archive, colormap });
-  }
+  if (extractFbx(input.data).length === 0) throw new Error('No FBX model in the archive');
+  extra.quaternius.push({ name: input.name, archive: input.archive });
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(target, input.data);
   writeFileSync(paths.extraPacks, `${JSON.stringify(extra, null, 2)}\n`);
-}
-
-function hasColormap(zip: Uint8Array): boolean {
-  try {
-    extractPack(zip, 'all', true);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 export function removeModel(key: string, usedKeys: readonly string[], paths = ASSET_PATHS): void {

@@ -7,7 +7,7 @@ const definitions: Record<string, ModelDefinition> = {
   'poly.pizza/bank': { source: 'poly.pizza', license: 'CC-BY 3.0', author: 'Poly by Google', url: 'https://poly.pizza/m/bank', note: 'Bank' },
   'poly.pizza/unused': { source: 'poly.pizza', license: 'CC-BY 3.0', author: 'Someone', note: 'Unused' },
   'farm/Barn': { source: 'managed', license: 'CC0', author: 'Me' },
-  'roads/road-straight': { source: 'kenney', license: 'CC0' },
+  'roads/road-straight': { source: 'quaternius', license: 'CC0' },
 };
 
 describe('model credits', () => {
@@ -22,6 +22,6 @@ describe('model credits', () => {
   });
 
   it('skip models without an author', () => {
-    expect(creditsOf('kenney', ['roads/road-straight'], definitions)).toEqual([]);
+    expect(creditsOf('quaternius', ['roads/road-straight'], definitions)).toEqual([]);
   });
 });

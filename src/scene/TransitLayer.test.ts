@@ -24,7 +24,7 @@ it('renders dedicated infrastructure in bounded instance groups and animates a p
   layer.dispose();
 });
 
-it('loads Kenney electric and coal Trains without disposing the library models', async () => {
+it('loads the electric and coal Trains without disposing the library models', async () => {
   const { TRAIN_MODELS } = await import('./renderItems');
   const { vi } = await import('vitest');
   const model = new THREE.Group();

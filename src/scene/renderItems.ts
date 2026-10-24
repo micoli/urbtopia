@@ -11,7 +11,7 @@ import { BUS_MODEL } from './busModel';
 import { SERVICE_VEHICLE_MODELS } from './serviceTrip';
 import { VENUE_CUSTOMER_MODELS, VENUE_STAFF_MODELS } from './venueCrowdModels';
 
-export const TEXTURE_VARIANTS = ['a', 'b', 'c', 'roads-a', 'roads-pedestrian', 'commercial-a', 'commercial-b', 'industrial-a', 'industrial-b', 'industrial-c'] as const;
+export const TEXTURE_VARIANTS = ['roads-a', 'roads-pedestrian'] as const;
 
 export type TextureVariant = (typeof TEXTURE_VARIANTS)[number] | `tone:${string}`;
 
@@ -71,12 +71,11 @@ const SOLAR_HOME_MODELS = new Map(BUILDING_ENTRIES.filter(({ kind, variants }) =
 // The letter of the palette texture of each Home color: the default color is the model's own palette, a to c are its tones b to d.
 const TONE_LETTER: Record<ColorVariant, string> = { default: 'a', a: 'b', b: 'c', c: 'd' };
 
-// Kenney models, and the models with color tones, repaint by swapping their palette texture.
+// The models with color tones repaint by swapping their palette texture.
 const textureVariantOf = (model: string, colorVariant: ColorVariant = 'default'): TextureVariant | undefined => {
   const kit = paintKitOf(model);
   if (!kit || colorVariant === 'default' || !colorVariantsOfKit(kit).includes(colorVariant)) return undefined;
-  if (kit === 'palette') return `tone:${model}:${TONE_LETTER[colorVariant]}`;
-  return (kit === 'suburban' ? colorVariant : `${kit}-${colorVariant}`) as TextureVariant;
+  return `tone:${model}:${TONE_LETTER[colorVariant]}`;
 };
 
 export const TRAIN_MODELS: readonly string[] = [...new Set(FLEET_VEHICLES.flatMap(({ models }) => models.map(modelFileOf)))];

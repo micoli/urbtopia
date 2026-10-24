@@ -16,7 +16,6 @@
       "source": {
         "type": "string",
         "enum": [
-          "kenney",
           "quaternius",
           "managed",
           "poly.pizza"

@@ -21,122 +21,16 @@ const withDefinitionModels = <T extends { name: string; files: string[] }>(pack:
   return { ...pack, files: [...new Set([...pack.files, ...used])] };
 };
 
-export interface AssetPack {
-  name: string;
-  url: string;
-  archive: string;
-  files: string[];
-  colormap?: boolean;
-  colorVariants?: readonly string[];
-}
-
-// Kenney asset packs (CC0). The original archives are versioned in ARCHIVES_DIR, so installing and building never
-// need the network. The URLs are only used by `npm run assets:fetch` to refresh them: they contain a hash that
-// changes with each Kenney release, copy the new link from the pack page on https://kenney.nl/assets when it fails.
+// Packs added with tools/assets-editor: the archive is listed for browsing, none of its models is installed for the game.
 export const EXTRA_PACKS_FILE = 'assets/extra-packs.json';
 
 export interface ExtraPacks {
-  kenney: { name: string; archive: string; colormap: boolean }[];
   quaternius: { name: string; archive: string }[];
 }
 
-// Packs added with tools/assets-editor: the archive is listed for browsing, none of its models is installed for the game.
-export const readExtraPacks = (file = EXTRA_PACKS_FILE): ExtraPacks => (existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : { kenney: [], quaternius: [] });
+export const readExtraPacks = (file = EXTRA_PACKS_FILE): ExtraPacks => (existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : { quaternius: [] });
 
 const extraPacks = readExtraPacks();
-
-export const ASSET_PACKS: AssetPack[] = [
-  {
-    name: 'commercial',
-    colorVariants: ['a', 'b'],
-    url: 'https://kenney.nl/media/pages/assets/city-kit-commercial/a742d900eb-1753115042/kenney_city-kit-commercial_2.1.zip',
-    archive: 'kenney_city-kit-commercial_2.1.zip',
-    files: [],
-  },
-  {
-    name: 'suburban',
-    colorVariants: ['a', 'b', 'c'],
-    url: 'https://kenney.nl/media/pages/assets/city-kit-suburban/2c871b7af2-1745479373/kenney_city-kit-suburban_20.zip',
-    archive: 'kenney_city-kit-suburban_20.zip',
-    files: ['tree-small', 'tree-large'],
-  },
-  {
-    name: 'industrial',
-    colorVariants: ['a', 'b', 'c'],
-    url: 'https://kenney.nl/media/pages/assets/city-kit-industrial/0ec35b139d-1788171848/kenney_city-kit-industrial_2.0.zip',
-    archive: 'kenney_city-kit-industrial_2.0.zip',
-    files: ['solar-panel-flat', 'solar-panel-landscape', 'solar-panel-landscape-group'],
-  },
-  {
-    name: 'nature',
-    colormap: false,
-    url: 'https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip',
-    archive: 'kenney_nature-kit.zip',
-    files: [],
-  },
-  {
-    name: 'mini-forest',
-    url: 'https://kenney.nl/media/pages/assets/mini-forest/44a89aed7f-1784024079/kenney_mini-forest_1.0.zip',
-    archive: 'kenney_mini-forest_1.0.zip',
-    files: [],
-  },
-  {
-    name: 'graveyard',
-    url: 'https://kenney.nl/media/pages/assets/graveyard-kit/ba8d4b4517-1760691807/kenney_graveyard-kit_5.0.zip',
-    archive: 'kenney_graveyard-kit_5.0.zip',
-    files: [],
-  },
-  {
-    name: 'holiday',
-    url: 'https://kenney.nl/media/pages/assets/holiday-kit/3976a6496a-1733923970/kenney_holiday-kit.zip',
-    archive: 'kenney_holiday-kit.zip',
-    files: [],
-  },
-  {
-    name: 'pirate',
-    url: 'https://kenney.nl/media/pages/assets/pirate-kit/e6d4bb1525-1771333093/kenney_pirate-kit.zip',
-    archive: 'kenney_pirate-kit.zip',
-    files: [],
-  },
-  {
-    name: 'watercraft',
-    url: 'https://kenney.nl/media/pages/assets/watercraft-kit/a335cfed49-1713519620/kenney_watercraft-pack.zip',
-    archive: 'kenney_watercraft-pack.zip',
-    files: [],
-  },
-  {
-    name: 'trains',
-    url: 'https://kenney.nl/media/pages/assets/train-kit/cf8521d625-1727040883/kenney_train-kit.zip',
-    archive: 'kenney_train-kit.zip',
-    files: ['railroad-straight', 'railroad-corner-small'],
-  },
-  {
-    name: 'mini-arcade',
-    url: 'https://kenney.nl/media/pages/assets/mini-arcade/ece1e8f320-1721638600/kenney_mini-arcade.zip',
-    archive: 'kenney_mini-arcade.zip',
-    files: ['arcade-machine', 'floor', 'wall', 'wall-corner', 'air-hockey', 'basketball-game', 'cash-register', 'claw-machine', 'dance-machine', 'pinball', 'prize-wheel', 'ticket-machine', 'vending-machine', 'character-employee', 'wall-window'],
-  },
-  {
-    name: 'mini-market',
-    url: 'https://kenney.nl/media/pages/assets/mini-market/463f38da51-1729865423/kenney_mini-market.zip',
-    archive: 'kenney_mini-market.zip',
-    files: ['cash-register', 'shelf-bags', 'shelf-boxes', 'display-bread', 'display-fruit', 'freezer', 'freezers-standing', 'shopping-basket', 'shopping-cart', 'bottle-return', 'floor', 'wall', 'wall-corner', 'wall-window', 'character-employee'],
-  },
-  {
-    name: 'mini-characters',
-    url: 'https://kenney.nl/media/pages/assets/mini-characters/bfc7e272b4-1774770718/kenney_mini-characters.zip',
-    archive: 'kenney_mini-characters.zip',
-    files: ['female', 'male'].flatMap((sex) => ['a', 'b', 'c', 'd', 'e', 'f'].map((letter) => `character-${sex}-${letter}`)),
-  },
-  {
-    name: 'furniture',
-    colormap: false,
-    url: 'https://kenney.nl/media/pages/assets/furniture-kit/440e0608a4-1677580847/kenney_furniture-kit.zip',
-    archive: 'kenney_furniture-kit.zip',
-    files: ['table', 'chair', 'stoolBar', 'desk', 'bedSingle', 'bedDouble', 'bedBunk', 'toilet', 'shower', 'bathtub', 'loungeSofa', 'televisionModern', 'lampRoundFloor', 'rugRectangle', 'pottedPlant', 'kitchenCoffeeMachine', 'kitchenFridgeSmall', 'floorFull', 'wall', 'wallCorner', 'wallWindow'],
-  },
-  ...extraPacks.kenney.map(({ name, archive, colormap }) => ({ name, url: '', archive, files: [], colormap })),
-].map(withDefinitionModels);
 
 // Quaternius packs (CC0) ship FBX only: they are converted to GLB at install time so the runtime keeps one GLTF loader.
 export const QUATERNIUS_PACKS: QuaterniusPack[] = [
@@ -148,7 +42,6 @@ export const QUATERNIUS_PACKS: QuaterniusPack[] = [
 
 export const QUATERNIUS_ARCHIVES_DIR = 'assets/quaternus';
 export const MODELS_DIR = 'public/models';
-export const ARCHIVES_DIR = 'assets/kenney';
 export const POLY_PIZZA_LIST_ID = 'Ml5TEydHhn';
 export const POLY_PIZZA_DIR = 'assets/poly.pizza';
 export const MANAGED_MODELS_DIR = 'assets/managed-models';

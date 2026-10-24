@@ -19,12 +19,12 @@ export const CATEGORIES: { id: Category; label: string; icon: string }[] = [
 ]
 
 export const CATALOG: CatalogItem[] = [
-  { id: 'workshop', label: 'Workshop', category: 'production', cost: 80, model: 'industrial/building-a', yields: { resource: 'wood', amount: 2 } },
-  { id: 'factory', label: 'Factory', category: 'production', cost: 200, model: 'industrial/building-h', yields: { resource: 'planks', amount: 1 } },
-  { id: 'shop', label: 'Shop', category: 'production', cost: 150, model: 'commercial/building-a', yields: { resource: 'urbs', amount: 35 } },
-  { id: 'home', label: 'Home', category: 'habitat', cost: 150, model: 'suburban/building-type-a', yields: { resource: 'urbs', amount: 12 }, citizens: 6 },
-  { id: 'power', label: 'Power plant', category: 'services', cost: 250, model: 'industrial/building-t' },
-  { id: 'water', label: 'Water tower', category: 'services', cost: 200, model: 'industrial/water-tower' },
+  { id: 'workshop', label: 'Workshop', category: 'production', cost: 80, model: 'buildings/factory-2x2-t1-tone-a', yields: { resource: 'wood', amount: 2 } },
+  { id: 'factory', label: 'Factory', category: 'production', cost: 200, model: 'buildings/factory-2x2-t3-tone-a', yields: { resource: 'planks', amount: 1 } },
+  { id: 'shop', label: 'Shop', category: 'production', cost: 150, model: 'buildings/shop-construction-1x1-t1-tone-a', yields: { resource: 'urbs', amount: 35 } },
+  { id: 'home', label: 'Home', category: 'habitat', cost: 150, model: 'buildings/house-1x1-1f-tone-a', yields: { resource: 'urbs', amount: 12 }, citizens: 6 },
+  { id: 'power', label: 'Power plant', category: 'services', cost: 250, model: 'buildings/coal-1x1-t1-tone-a' },
+  { id: 'water', label: 'Water tower', category: 'services', cost: 200, model: 'buildings/watertower-1x1-t1-tone-a' },
   { id: 'road', label: 'Road', category: 'roads', cost: 5, model: 'streets/road-straight' },
 ]
 

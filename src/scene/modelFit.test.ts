@@ -9,7 +9,7 @@ describe('fitMatrixOf', () => {
   });
 });
 
-it('fits Kenney straight rails to tile boundaries while preserving a visible gauge', () => {
+it('fits the straight rails to tile boundaries while preserving a visible gauge', () => {
   const fit = fitMatrixOf('trains/railroad-straight');
   const start = new THREE.Vector3(0, -1, 0).applyMatrix4(fit);
   const end = new THREE.Vector3(0, -1, 4).applyMatrix4(fit);
@@ -18,7 +18,7 @@ it('fits Kenney straight rails to tile boundaries while preserving a visible gau
   expect(new THREE.Vector3(.5, -1, 2).applyMatrix4(fit).x).toBeCloseTo(.35);
 });
 
-it('fits Kenney corner endpoints and gauge to adjoining straight rails', () => {
+it('fits the corner endpoints and gauge to adjoining straight rails', () => {
   const model = new THREE.Group();
   const geometry = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0, -2, 0, 2, .35, 0, 0], 3));
   const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial()); model.add(mesh);

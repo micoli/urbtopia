@@ -2,10 +2,7 @@ import { colorVariantsOf, paintKitAt, toneLabelOf, type BuildingType, type Color
 import type { MessageKey } from '../../i18n/messages';
 
 const KIT_STYLE: Record<PaintKit, { labels: string; swatch: string }> = {
-  suburban: { labels: 'build.homeColor', swatch: '' },
   palette: { labels: 'build.homeColor', swatch: '' },
-  commercial: { labels: 'build.commercialColor', swatch: 'commercial-' },
-  industrial: { labels: 'build.industrialColor', swatch: 'industrial-' },
 };
 
 export interface ColorChoice {

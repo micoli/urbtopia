@@ -1,4 +1,4 @@
-import { bridgeElevation, type ElevationAt } from './bridgeElevation';
+import { bridgeElevation, bridgePitch, type ElevationAt } from './bridgeElevation';
 import * as THREE from 'three';
 import { buildNetworkGraph, type Coord, type GameState } from '../core';
 import type { ModelLibrary } from './modelLibrary';
@@ -127,7 +127,8 @@ export class ServiceVehicleLayer {
   private place(trip: Trip): void {
     const pose = poseOf(trip.vehicle);
     trip.object.position.set(pose.x, ROAD_SURFACE_HEIGHT + this.elevation(pose.x, pose.z, trip.vehicle.from, trip.vehicle.to), pose.z);
-    trip.object.rotation.y = pose.yaw;
+    trip.object.rotation.order = 'YXZ';
+    trip.object.rotation.set(bridgePitch(this.elevation, pose.x, pose.z, pose.yaw, trip.vehicle.from, trip.vehicle.to), pose.yaw, 0);
   }
 
   private rest(dispatcher: Dispatcher): void {
