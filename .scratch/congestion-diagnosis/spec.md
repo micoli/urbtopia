@@ -21,7 +21,7 @@ A good explanation can be derived from data the game already computes (`congesti
 
 ## Causes
 
-Thresholds are starting values, kept in a balance file and covered by tests, to be tuned on real saves.
+Thresholds are starting values, kept in the `CONGESTION_DIAGNOSIS` constant next to the rules (like `CONGESTION` in `roadTier.ts`) and covered by tests, to be tuned on real saves. `emptyJobsFarAway` was dropped: unfilled Jobs far from the Homes do not load the roads.
 
 | Cause | Detected when | Figures | Place |
 |---|---|---|---|
@@ -29,11 +29,11 @@ Thresholds are starting values, kept in a balance file and covered by tests, to 
 | `corridor` | a run of contiguous saturated sections with nearly equal load carries at least a given share of the car Commuters | length, load, capacity, ends of the run | the run |
 | `crossingsChoke` | saturated or heavy Crossings sit on saturated sections whose capacity is cut by pedestrians | number of Crossings, capacity lost | the worst Crossing |
 | `homesFarFromJobs` | the Citizen-weighted barycentre of Homes and the Job-weighted barycentre of workplaces are far apart relative to the city size | distance in tiles, bearing | both barycentres |
-| `emptyJobsFarAway` | workplaces with unfilled Jobs lie farther from the Homes than filled ones | unfilled Jobs, count of buildings | the largest empty one |
-| `carHeavy` | the car share of trips is high and the modal shift is close to zero | car share, shifted Riders | none |
+| `carHeavy` | the car share of trips is high and the modal shift is close to zero, while public transport lines exist | car share, shifted Riders | none |
+| `noTransit` | same, and the city has no public transport line yet | car share | none |
 | `disconnected` | `disconnectedSections` is not empty | number of Homes cut off | the first section |
 
-Open questions for triage: do we want a `bridgeOpenings` Cause (capacity lost to open Bridges), and should `carHeavy` be dropped when no Bus line or BRT exists yet (then the advice is "build one", a different text)?
+Open question for triage: do we want a `bridgeOpenings` Cause (capacity lost to open Bridges)?
 
 ## Out of scope
 
