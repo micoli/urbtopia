@@ -758,6 +758,14 @@ _Avoid_: Moderator, operator
 The single module that applies a Command to the live game and owns all its consequences: the read-only guard, the toast of an error or an event, the effects bound to an event type (harvest, Casino rounds), the end-of-Tutorial notice, the undo of a deletion and the replacement of the game state. The player, a Trade and a Challenge all reach the game through it.
 _Avoid_: Dispatcher, command bus, game service
 
+**Codex**:
+The in-game reference window: one entry per Building, road, water construction and Crop, with its levels, plus rule pages on the game's systems. Some of its figures reflect the current city.
+_Avoid_: Encyclopedia, wiki, help
+
+**Guide**:
+The public website, readable without playing, that presents every Codex entry and page and explains the game's mechanics. Its figures come from the game's definitions, never from a player's city.
+_Avoid_: Docs, documentation, manual, wiki
+
 ## Relationships
 
 - Politics (Council, Approval, Objectives, Grants, Petitions) exists only once a Town hall is built and only from Easy Difficulty. Under Cozy there is none, and cities saved before it stay untouched.
