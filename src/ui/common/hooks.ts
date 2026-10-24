@@ -3,6 +3,7 @@ import { challengeStore, type ChallengeStore } from '../../store/challengeStore'
 import { cloudStore, type CloudStore } from '../../store/cloudStore';
 import { gameStore, type GameStore } from '../../store/gameStore';
 import { dialogStore, type DialogStore } from '../../store/dialogStore';
+import { showcaseStore, type ShowcaseStore } from '../../store/showcaseStore';
 import { socialStore, type SocialStore } from '../../store/socialStore';
 import { readOnlyStore } from '../../store/readOnlyStore';
 import { uiStore, type UiStore } from '../../store/uiStore';
@@ -38,4 +39,8 @@ export function useSocial<T>(selector: (store: SocialStore) => T): T {
 
 export function useChallenges<T>(selector: (store: ChallengeStore) => T): T {
   return useStore(challengeStore, selector);
+}
+
+export function useShowcase<T>(selector: (store: ShowcaseStore) => T): T {
+  return useStore(showcaseStore, selector);
 }

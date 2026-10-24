@@ -1,6 +1,6 @@
 # Trade offers use a server escrow that trusts the client's stocks
 
-Accepted. Extends [ADR 0003](0003-localstorage-versioned-save-envelope.md) and [ADR 0015](0015-supabase-cloud-save-mirror-with-rpc-only-writes.md), which stay valid: the local save remains the source of truth, the server never knows the city.
+Accepted. Amended by [ADR 0029](0029-hall-of-fame-trusts-the-client-with-growth-caps.md) for the leaderboard. Extends [ADR 0003](0003-localstorage-versioned-save-envelope.md) and [ADR 0015](0015-supabase-cloud-save-mirror-with-rpc-only-writes.md), which stay valid: the local save remains the source of truth, the server never knows the city.
 
 A Trade offer moves a lot of Materials and Goods, and a price in Urbs, between two Friends. The sender debits the lot from the local save, then the server holds it in an Escrow. The recipient accepts after checking locally that the Urbs and the storage room are there, debits the price locally, and the server holds that payment in turn. Each side then claims what is owed to it. Postgres functions (`urb_`-prefixed, RPC-only writes, as in ADR 0015) enforce the rules: one claim per Escrow, return to the owner on refusal, expiry after 72 hours or Block, at most 5 open offers per sender, 10 000 Urbs per offer and 30 offers created per day.
 

@@ -486,3 +486,40 @@ describe('CloudSync accounts', () => {
   });
 });
 
+
+describe('CloudSync publication hook', () => {
+  it('hands the pushed envelope to the Showcase publisher after a push', async () => {
+    const clock = { now: T0 };
+    const client = new FakeCloudSaveClient(() => clock.now);
+    const store = new MemorySaveStore();
+    const pushed: string[] = [];
+    const sync = new CloudSync({
+      client,
+      store,
+      now: () => clock.now,
+      local: { adopt: () => {}, keepAsPreviousVersion: () => {} },
+      canPush: () => true,
+      onStatus: () => {},
+      onPushed: (envelope) => pushed.push(envelope),
+    });
+    store.put(SAVE_KEY, envelopeAt(T0));
+    sync.noteEdit();
+    await sync.start();
+    await sync.tick();
+    expect(pushed).toEqual([envelopeAt(T0)]);
+  });
+
+  it('hands nothing over when the push fails', async () => {
+    const clock = { now: T0 };
+    const client = new FakeCloudSaveClient(() => clock.now);
+    const store = new MemorySaveStore();
+    const pushed: string[] = [];
+    const sync = new CloudSync({ client, store, now: () => clock.now, local: { adopt: () => {}, keepAsPreviousVersion: () => {} }, canPush: () => true, onStatus: () => {}, onPushed: (envelope) => pushed.push(envelope) });
+    store.put(SAVE_KEY, envelopeAt(T0));
+    sync.noteEdit();
+    await sync.start();
+    client.goOffline();
+    await sync.tick();
+    expect(pushed).toEqual([]);
+  });
+});

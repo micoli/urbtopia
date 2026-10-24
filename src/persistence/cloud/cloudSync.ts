@@ -46,6 +46,7 @@ export interface CloudSyncDeps {
   onAccount?: (account: CloudAccount | null) => void;
   parseOptions?: ParseOptions;
   keepLocal?: boolean;
+  onPushed?: (envelope: string) => void;
 }
 
 interface LocalSnapshot {
@@ -303,6 +304,7 @@ export class CloudSync {
     try {
       const revision = await this.deps.client.push({ baseRevision, envelope: local.envelope, savedAt: local.savedAt, formatVersion: CURRENT_VERSION, keepPrevious });
       this.recordSync(revision, local.savedAt, editsAtStart);
+      this.deps.onPushed?.(local.envelope);
     } catch (error) {
       if (!(error instanceof CloudError) || error.kind !== 'conflict') throw error;
       await this.onPushConflict();

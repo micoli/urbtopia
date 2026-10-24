@@ -14,7 +14,7 @@ import type { CodexPage } from '../codex/pages';
 
 export type Flyout = 'build' | 'roads' | null;
 export type MarketTab = 'market' | 'events';
-export type SocialTab = 'friends' | 'groups' | 'exchanges' | 'profile';
+export type SocialTab = 'friends' | 'groups' | 'exchanges' | 'hall' | 'profile';
 
 export interface UiStore {
   tool: Tool | null;

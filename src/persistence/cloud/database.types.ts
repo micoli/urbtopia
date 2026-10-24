@@ -399,6 +399,8 @@ export type Database = {
           created_at: string;
           findable: boolean;
           groups_revision: number;
+          hall_of_fame_notice_seen: boolean;
+          hall_of_fame_opted_out: boolean;
           handle: string;
           handle_changed_at: string;
           social_revision: number;
@@ -410,6 +412,8 @@ export type Database = {
           created_at?: string;
           findable?: boolean;
           groups_revision?: number;
+          hall_of_fame_notice_seen?: boolean;
+          hall_of_fame_opted_out?: boolean;
           handle: string;
           handle_changed_at?: string;
           social_revision?: number;
@@ -420,6 +424,8 @@ export type Database = {
           created_at?: string;
           findable?: boolean;
           groups_revision?: number;
+          hall_of_fame_notice_seen?: boolean;
+          hall_of_fame_opted_out?: boolean;
           handle?: string;
           handle_changed_at?: string;
           social_revision?: number;
@@ -473,6 +479,48 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [];
+      };
+      urb_showcase: {
+        Row: {
+          citizens: number;
+          created_at: string;
+          envelope: NonNullable<Json>;
+          format_version: number;
+          ranking_at: string;
+          ranking_citizens: number;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          citizens: number;
+          created_at?: string;
+          envelope: NonNullable<Json>;
+          format_version: number;
+          ranking_at?: string;
+          ranking_citizens: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          citizens?: number;
+          created_at?: string;
+          envelope?: NonNullable<Json>;
+          format_version?: number;
+          ranking_at?: string;
+          ranking_citizens?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_showcase_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
       };
       urb_trade_offers: {
         Row: {
@@ -594,6 +642,7 @@ export type Database = {
       urb_expire_offers: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_friend_count: { Args: { p_user: string }; Returns: number };
       urb_generate_daily_challenges: { Args: Record<PropertyKey, never>; Returns: undefined };
+      urb_get_showcase: { Args: { p_user: string }; Returns: Json };
       urb_group_add: {
         Args: { p_creator: string; p_group: string; p_members: string[] };
         Returns: undefined;
@@ -601,6 +650,7 @@ export type Database = {
       urb_group_creator: { Args: { p_group: string; p_user: string }; Returns: undefined };
       urb_group_member: { Args: { p_group: string; p_user: string }; Returns: undefined };
       urb_group_name: { Args: { p_name: string }; Returns: string };
+      urb_hall_of_fame: { Args: Record<PropertyKey, never>; Returns: Json };
       urb_has_blocked: { Args: { p_blocked: string; p_blocker: string }; Returns: boolean };
       urb_leave_group: { Args: { p_group: string }; Returns: undefined };
       urb_list_challenges: { Args: Record<PropertyKey, never>; Returns: Json };
@@ -620,9 +670,14 @@ export type Database = {
       urb_list_social: { Args: { p_cursor?: number }; Returns: Json };
       urb_lock_pair: { Args: { p_a: string; p_b: string }; Returns: undefined };
       urb_lot_is_valid: { Args: { p_lot: Json }; Returns: boolean };
+      urb_mark_hall_of_fame_notice_seen: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_offers_json: { Args: { p_user: string }; Returns: Json };
       urb_open_request: { Args: { p_from: string; p_to: string }; Returns: undefined };
       urb_outgoing_count: { Args: { p_user: string }; Returns: number };
+      urb_publish_showcase: {
+        Args: { p_citizens: number; p_envelope: Json; p_format_version: number };
+        Returns: undefined;
+      };
       urb_purge_inactive_anonymous_users: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_purge_old_messages: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_push_save: {
@@ -646,9 +701,15 @@ export type Database = {
       urb_send_message: { Args: { p_body: string; p_to: string }; Returns: number };
       urb_set_avatar: { Args: { p_avatar: string }; Returns: undefined };
       urb_set_findable: { Args: { p_findable: boolean }; Returns: undefined };
+      urb_set_hall_of_fame_opt_out: { Args: { p_opted_out: boolean }; Returns: undefined };
       urb_set_handle: { Args: { p_handle: string }; Returns: undefined };
       urb_settle_acceptance: { Args: { p_challenge: string; p_user: string }; Returns: undefined };
       urb_settle_offer: { Args: { p_id: string }; Returns: undefined };
+      urb_showcase_allowed_ranking: {
+        Args: { p_declared: number; p_previous: number; p_since: string };
+        Returns: number;
+      };
+      urb_showcase_status: { Args: Record<PropertyKey, never>; Returns: Json };
       urb_social_member: { Args: Record<PropertyKey, never>; Returns: string };
       urb_unblock_user: { Args: { p_user: string }; Returns: undefined };
     };
