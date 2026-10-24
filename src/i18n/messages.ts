@@ -1,6 +1,7 @@
 import { facilityMessages } from './facilities';
 import { diagnosisMessages } from './diagnosis';
 import { congestionDiagnosisMessages } from './congestionDiagnosis';
+import { wasteDiagnosisMessages } from './wasteDiagnosis';
 import { casinoMessages } from './casino';
 import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
@@ -44,6 +45,7 @@ export const MESSAGES = {
   ...facilityMessages('en'),
   ...diagnosisMessages('en'),
   ...congestionDiagnosisMessages('en'),
+  ...wasteDiagnosisMessages('en'),
 };
 
 export type MessageKey = keyof typeof MESSAGES;

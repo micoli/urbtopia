@@ -22,16 +22,15 @@ Like the [Congestion Diagnosis](../congestion-diagnosis/spec.md), this can be de
 
 | Cause | Detected when | Figures | Place |
 |---|---|---|---|
+| `noFacility` | the city has no Waste facility at all (the only Cause shown then) | produced per day | none |
 | `capacityShort` | processing capacity is below production and the main uncovered cause is `capacityFull` | produced, capacity, missing per day | none |
-| `facilitiesStopped` | at least one facility is stopped: no Urbs, no road link, or power shortage | which of the three, how many facilities, Citizens left uncovered | the first stopped facility |
+| `stopped.noUrbs` / `stopped.noRoad` / `stopped.noPower` | at least one facility is stopped for that reason (the dominant one is named); weight counts the uncovered Homes in reach of a stopped facility | which of the three, how many facilities, Citizens left uncovered | the first stopped facility |
 | `noRoadLink` | Homes are uncovered by `noRoadLink` | Homes, Citizens | the largest such Home |
 | `farFromFacilities` | Homes are uncovered by `outOfReach` or `beyondCarryingDistance` | Homes, Citizens, distance to the nearest facility | the largest such Home |
-| `costsTooMuch` | the daily processing cost is a large share of the daily income, or processing stops for lack of Urbs | cost per day, share of income | none |
 | `carriedSurcharge` | Homes reached only by Pedestrian ways make the pedestrian surcharge a large share of the cost | Homes, extra cost | the first such Home |
-| `nuisance` | Homes bear an Odor or Incinerator malus | Homes concerned, worst malus | the worst facility |
-| `noSorting` | Waste sorting Ordinance is available and not adopted while production exceeds capacity | possible reduction | none |
+| `odor` / `incinerator` | Homes bear an Odor or Incinerator malus | Homes concerned | the largest such Home |
 
-Open questions for triage: should `noSorting` exist at all (it points at an Ordinance, which the Politics system owns), and should `costsTooMuch` use the city's income per day or per hour?
+`costsTooMuch` (no daily income figure to compare with; a lack of Urbs is already named by `stopped.noUrbs`) and `noSorting` (it points at an Ordinance, which the Politics system owns) were dropped. The capacity text mentions sorting without detecting it.
 
 ## Out of scope
 

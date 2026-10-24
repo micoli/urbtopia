@@ -1,6 +1,7 @@
 import { facilityMessages } from './facilities';
 import { diagnosisMessages } from './diagnosis';
 import { congestionDiagnosisMessages } from './congestionDiagnosis';
+import { wasteDiagnosisMessages } from './wasteDiagnosis';
 import { casinoMessages } from './casino';
 import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
@@ -45,4 +46,5 @@ export const FR: Record<MessageKey, string> = {
   ...facilityMessages('fr'),
   ...diagnosisMessages('fr'),
   ...congestionDiagnosisMessages('fr'),
+  ...wasteDiagnosisMessages('fr'),
 };

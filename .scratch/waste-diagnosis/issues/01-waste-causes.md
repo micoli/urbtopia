@@ -1,12 +1,12 @@
 # Waste Causes
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: congestion-diagnosis 01
 
 ## What to build
 
-`diagnoseWaste(state)` in `src/core/waste/diagnosis.ts`, implementing the Causes of the spec on top of `wasteSituation`. Thresholds in `assets/defs/balance/waste.json` (and its schema).
+`diagnoseWaste(state)` in `src/core/waste/diagnosis.ts`, implementing the Causes of the spec on top of `wasteSituation`. Thresholds in the `WASTE_DIAGNOSIS` constant.
 
 ## Acceptance criteria
 
