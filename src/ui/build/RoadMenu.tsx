@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { BRIDGES, GAME_CONFIG, ROAD_TIER_COSTS, TRANSIT, WATER, totalCitizens } from '../../core';
+import { BRIDGES, ROAD_TIER_COSTS, TRANSIT, WATER, totalCitizens } from '../../core';
 import { t } from '../../i18n/t';
 import type { Tool } from '../../tools/tools';
 import type { MessageKey } from '../../i18n/messages';
