@@ -5495,509 +5495,509 @@
     }
   },
   "crops-apple-1": {
-    "file": "crops/Apple_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/apple-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-apple-2": {
-    "file": "crops/Apple_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/apple-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-apple-3": {
-    "file": "crops/Apple_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/apple-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-apple-4": {
-    "file": "crops/Apple_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/apple-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-apple-crop": {
-    "file": "crops/Apple_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/apple-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-apple-harvested": {
-    "file": "crops/Apple_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/apple-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bamboo-1": {
-    "file": "crops/Bamboo_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bamboo-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bamboo-2": {
-    "file": "crops/Bamboo_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bamboo-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bamboo-3": {
-    "file": "crops/Bamboo_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bamboo-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bamboo-4": {
-    "file": "crops/Bamboo_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bamboo-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bamboo-crop": {
-    "file": "crops/Bamboo_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bamboo-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-beet-1": {
-    "file": "crops/Beet_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/beet-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-beet-2": {
-    "file": "crops/Beet_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/beet-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-beet-3": {
-    "file": "crops/Beet_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/beet-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-beet-4": {
-    "file": "crops/Beet_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/beet-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-beet-crop": {
-    "file": "crops/Beet_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/beet-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bushberries-1": {
-    "file": "crops/BushBerries_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bushberries-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bushberries-2": {
-    "file": "crops/BushBerries_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bushberries-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bushberries-3": {
-    "file": "crops/BushBerries_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bushberries-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bushberries-4": {
-    "file": "crops/BushBerries_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bushberries-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bushberries-crop": {
-    "file": "crops/BushBerries_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bushberries-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bushberries-harvested": {
-    "file": "crops/BushBerries_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bushberries-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-cactus-1": {
-    "file": "crops/Cactus_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/cactus-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-cactus-2": {
-    "file": "crops/Cactus_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/cactus-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-cactus-3": {
-    "file": "crops/Cactus_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/cactus-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-cactus-4": {
-    "file": "crops/Cactus_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/cactus-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-cactus-crop": {
-    "file": "crops/Cactus_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/cactus-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-cactus-harvested": {
-    "file": "crops/Cactus_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/cactus-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-carrot-1": {
-    "file": "crops/Carrot_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/carrot-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-carrot-2": {
-    "file": "crops/Carrot_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/carrot-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-carrot-3": {
-    "file": "crops/Carrot_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/carrot-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-carrot-4": {
-    "file": "crops/Carrot_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/carrot-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-carrot-crop": {
-    "file": "crops/Carrot_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/carrot-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-corn-1": {
-    "file": "crops/Corn_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/corn-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-corn-2": {
-    "file": "crops/Corn_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/corn-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-corn-3": {
-    "file": "crops/Corn_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/corn-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-corn-4": {
-    "file": "crops/Corn_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/corn-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-corn-crop": {
-    "file": "crops/Corn_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/corn-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-corn-harvested": {
-    "file": "crops/Corn_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/corn-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-flower-1": {
-    "file": "crops/Flower_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/flower-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-flower-2": {
-    "file": "crops/Flower_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/flower-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-flower-3": {
-    "file": "crops/Flower_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/flower-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-flower-4": {
-    "file": "crops/Flower_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/flower-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-flowers-crop": {
-    "file": "crops/Flowers_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/flowers-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-flowers-harvested": {
-    "file": "crops/Flowers_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/flowers-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-grass-1": {
-    "file": "crops/Grass_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/grass-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-grass-2": {
-    "file": "crops/Grass_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/grass-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-grass-3": {
-    "file": "crops/Grass_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/grass-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-grass-4": {
-    "file": "crops/Grass_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/grass-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-lettuce-1": {
-    "file": "crops/Lettuce_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/lettuce-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-lettuce-2": {
-    "file": "crops/Lettuce_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/lettuce-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-lettuce-3": {
-    "file": "crops/Lettuce_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/lettuce-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-lettuce-4": {
-    "file": "crops/Lettuce_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/lettuce-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-lettuce-crop": {
-    "file": "crops/Lettuce_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/lettuce-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-lettuce-harvested": {
-    "file": "crops/Lettuce_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/lettuce-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-mushroom-1": {
-    "file": "crops/Mushroom_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/mushroom-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-mushroom-2": {
-    "file": "crops/Mushroom_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/mushroom-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-mushroom-3": {
-    "file": "crops/Mushroom_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/mushroom-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-mushroom-4": {
-    "file": "crops/Mushroom_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/mushroom-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-mushroom-crop": {
-    "file": "crops/Mushroom_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/mushroom-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-mushroom-harvested": {
-    "file": "crops/Mushroom_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/mushroom-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-orange-1": {
-    "file": "crops/Orange_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/orange-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-orange-2": {
-    "file": "crops/Orange_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/orange-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-orange-3": {
-    "file": "crops/Orange_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/orange-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-orange-4": {
-    "file": "crops/Orange_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/orange-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-orange-crop": {
-    "file": "crops/Orange_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/orange-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-orange-harvested": {
-    "file": "crops/Orange_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/orange-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-palmtree-1": {
-    "file": "crops/PalmTree_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/palmtree-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-palmtree-2": {
-    "file": "crops/PalmTree_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/palmtree-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-palmtree-3": {
-    "file": "crops/PalmTree_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/palmtree-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-palmtree-4": {
-    "file": "crops/PalmTree_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/palmtree-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-palmtree-crop": {
-    "file": "crops/PalmTree_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/palmtree-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-palmtree-harvested": {
-    "file": "crops/PalmTree_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/palmtree-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-pumpkin-1": {
-    "file": "crops/Pumpkin_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/pumpkin-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-pumpkin-2": {
-    "file": "crops/Pumpkin_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/pumpkin-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-pumpkin-3": {
-    "file": "crops/Pumpkin_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/pumpkin-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-pumpkin-4": {
-    "file": "crops/Pumpkin_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/pumpkin-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-pumpkin-crop": {
-    "file": "crops/Pumpkin_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/pumpkin-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-pumpkin-harvested": {
-    "file": "crops/Pumpkin_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/pumpkin-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-rice-1": {
-    "file": "crops/Rice_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/rice-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-rice-2": {
-    "file": "crops/Rice_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/rice-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-rice-3": {
-    "file": "crops/Rice_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/rice-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-rice-4": {
-    "file": "crops/Rice_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/rice-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-rice-crop": {
-    "file": "crops/Rice_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/rice-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-tomato-1": {
-    "file": "crops/Tomato_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/tomato-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-tomato-2": {
-    "file": "crops/Tomato_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/tomato-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-tomato-3": {
-    "file": "crops/Tomato_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/tomato-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-tomato-4": {
-    "file": "crops/Tomato_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/tomato-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-tomato-crop": {
-    "file": "crops/Tomato_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/tomato-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-tomato-harvested": {
-    "file": "crops/Tomato_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/tomato-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-watermelon-1": {
-    "file": "crops/Watermelon_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/watermelon-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-watermelon-2": {
-    "file": "crops/Watermelon_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/watermelon-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-watermelon-3": {
-    "file": "crops/Watermelon_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/watermelon-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-watermelon-4": {
-    "file": "crops/Watermelon_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/watermelon-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-watermelon-crop": {
-    "file": "crops/Watermelon_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/watermelon-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-watermelon-harvested": {
-    "file": "crops/Watermelon_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/watermelon-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-wheat-1": {
-    "file": "crops/Wheat_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/wheat-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-wheat-2": {
-    "file": "crops/Wheat_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/wheat-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-wheat-3": {
-    "file": "crops/Wheat_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/wheat-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-wheat-4": {
-    "file": "crops/Wheat_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/wheat-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-wheat-crop": {
-    "file": "crops/Wheat_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/wheat-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "cult-buddhist-temple": {
     "file": "cult/buddhist-temple",
