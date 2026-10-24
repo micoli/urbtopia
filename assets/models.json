@@ -6883,6 +6883,7 @@
     "file": "holiday/bench",
     "source": "managed",
     "license": "Own work",
+    "scale": 0.25,
     "flush": true
   },
   "holiday-lantern": {
