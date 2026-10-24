@@ -2,6 +2,7 @@ import {cityBenefits, climateStats, cityTransportStats, congestionStats, energyS
 import {t} from '../../i18n/t';
 import {useGame, useUi} from '../common/hooks';
 import {CloseButton} from '../common/CloseButton';
+import {useSanctionedHomes} from '../common/useSanctionedHomes';
 import {ServicesSection} from '../buildings/ServicesSection';
 import {CityOverview} from './management/CityOverview';
 import {EmissionsSection} from './management/EmissionsSection';
@@ -27,6 +28,7 @@ function CityManagementDialog() {
     const open = useUi(s => s.statsOpen);
     const toggle = useUi(s => s.toggleStats);
     const panel = useModalFocus(open, toggle);
+    const sanctionedCount = useSanctionedHomes().length;
     if (!open) return null;
     const energy = energyStats(state);
     const green = cityBenefits(state, energy.coalRates);
