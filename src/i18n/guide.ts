@@ -14,6 +14,10 @@ const texts = {
   'guide.closeMenu': ['Close the menu', 'Fermer le menu'],
   'guide.toggleTheme': ['Switch between light and dark', 'Basculer entre clair et sombre'],
   'guide.otherLanguage': ['Français', 'English'],
+  'guide.readerSettings': ['Show the figures for', 'Afficher les chiffres pour'],
+  'guide.difficulty': ['Difficulty', 'Difficulté'],
+  'guide.citizens': ['{count} Citizens', '{count} habitants'],
+  'guide.citizensLabel': ['City size', 'Taille de la ville'],
   'guide.navigation': ['Guide navigation', 'Navigation du Guide'],
 } as const;
 

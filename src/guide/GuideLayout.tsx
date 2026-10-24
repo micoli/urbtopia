@@ -2,7 +2,9 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { t } from '../i18n/t';
 import { GuideHeader } from './GuideHeader';
 import { GuideNav } from './GuideNav';
-import type { GuideRoute } from './routes';
+import { ReaderSettingsBar } from './reader/ReaderSettingsBar';
+import { restoreReaderSettings } from './reader/readerSettingsStore';
+import { sectionOf, type GuideRoute } from './routes';
 import { followSystemTheme } from './theme';
 
 interface GuideLayoutProps {
@@ -14,6 +16,8 @@ export function GuideLayout({ route, children }: GuideLayoutProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(followSystemTheme, []);
+
+  useEffect(restoreReaderSettings, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -37,7 +41,10 @@ export function GuideLayout({ route, children }: GuideLayoutProps) {
           </div>
           <GuideNav route={route} />
         </aside>
-        <main className="guide-content min-w-0 flex-1 px-4 pt-8 pb-24 sm:px-8 lg:px-12">{children}</main>
+        <main className="guide-content min-w-0 flex-1 px-4 pt-8 pb-24 sm:px-8 lg:px-12">
+          {sectionOf(route) !== null && <ReaderSettingsBar />}
+          {children}
+        </main>
       </div>
     </div>
   );
