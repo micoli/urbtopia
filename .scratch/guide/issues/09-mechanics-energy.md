@@ -4,4 +4,9 @@
 
 **Blocked by:** 05, 08
 
-**Status:** ready-for-agent
+**Status:** done
+
+## Comments
+
+- `mechanics/energy.<lang>.mdx`. A Mechanics article whose slug is a rule page's slug replaces that page (same URL) and embeds its live figures with `<LiveRules id="energy" />`.
+- GFM tables through `remark-gfm`; the MDX plugin lives in `build/guideMdx.ts`, shared by Vite and the prerender.

@@ -1,0 +1,41 @@
+export const meta = {
+  title: 'Énergie',
+  summary: 'D’où vient votre électricité, dans quel ordre elle est utilisée, et ce qui se passe quand elle manque.',
+  order: 10,
+};
+
+## La demande
+
+Chaque logement consomme de l’électricité et de l’eau, davantage à chaque niveau. Les lieux de travail consomment aussi de l’électricité. Le total forme la **demande** de la ville. La demande d’électricité peut dépasser la production, et le service baisse alors ; celle d’eau jamais : un <EntryLink id="waterTower">château d’eau</EntryLink> doit suivre avant que la ville puisse grandir.
+
+## Les sources
+
+| Source | Production | Coût et inconvénients |
+| --- | --- | --- |
+| <EntryLink id="powerPlant" /> | Varie avec la météo | Propre, rien à payer pour fonctionner |
+| <EntryLink id="solar" /> et <EntryLink id="solarHome" /> | Seulement de jour | Propre ; les panneaux couvrent d’abord leur logement, puis partagent avec les voisins |
+| <EntryLink id="hydroPlant" /> | Régulière, selon l’eau qui l’entoure | Propre ; doit toucher des tuiles d’eau, pleine production avec 8 tuiles reliées |
+| <EntryLink id="geothermalPlant" /> | Constante, jour et nuit | Propre, mais chère, débloquée tard et en nombre limité |
+| <EntryLink id="coalPlant" /> | Stable | Combustible payé en Urbs, émissions, bien-être réduit autour ; peut être éteinte |
+| <EntryLink id="backup" /> | Seulement en cas de manque | Payée en Urbs par unité fournie, polluante |
+
+## L’ordre d’approvisionnement
+
+À chaque instant, l’électricité est utilisée dans le même ordre :
+
+1. **Les renouvelables** d’abord : vent, soleil, eau et chaleur du sol.
+2. **Le charbon** ensuite, pour garder l’énergie stockée pour plus tard.
+3. **Les batteries de quartier** couvrent ce qui manque encore. Une <EntryLink id="battery">batterie</EntryLink> ne se charge qu’avec le surplus renouvelable proche, jamais avec le charbon ni le secours.
+4. **Les centrales de secours** comblent le reste, contre paiement.
+
+## Les pénuries
+
+Quand l’électricité manque encore, les logements sont servis en premier ; les lieux de travail se partagent le reste en proportion de leurs besoins, et un casino est coupé avant tous les autres. Un lieu de travail mal alimenté produit plus lentement. Quand une nouvelle pénurie apparaît, une **période d’adaptation** vous laisse le temps de réagir avant qu’elle ne coûte quoi que ce soit.
+
+Pour baisser la demande plutôt qu’augmenter la production, isolez vos logements ou équipez-les de panneaux solaires.
+
+## Les chiffres de votre ville
+
+Choisissez une difficulté et une taille de ville en haut de la page : le tableau ci-dessous montre la demande et l’approvisionnement d’une telle ville.
+
+<LiveRules id="energy" />

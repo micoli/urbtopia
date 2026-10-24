@@ -44,6 +44,9 @@ export const rulesPathOf = (language: Language, id: CodexPage): string => `${lan
 
 export const articlePathOf = (language: Language, { section, slug }: Article): string => `${language}/${ARTICLE_DIRECTORIES[section]}/${slug === 'index' ? '' : `${slug}/`}`;
 
+// A Mechanics article with the slug of a rule page replaces it and embeds its figures.
+export const isRulesWrittenUp = (id: CodexPage): boolean => ARTICLES.some(article => article.section === 'mechanics' && article.slug === rulesSlugOf(id));
+
 export const codexEntryOf = (id: CodexId): CodexEntry => CODEX_ENTRIES.find(entry => entry.id === id)!;
 
 export const GUIDE_ROUTES: readonly GuideRoute[] = [
@@ -54,7 +57,7 @@ export const GUIDE_ROUTES: readonly GuideRoute[] = [
     { path: `${language}/codex/`, language, page: { kind: 'codexIndex' } },
     ...CODEX_SECTIONS.map((section): GuideRoute => ({ path: codexSectionPathOf(language, section), language, page: { kind: 'codexSection', section } })),
     ...CODEX_ENTRIES.map((entry): GuideRoute => ({ path: codexEntryPathOf(language, entry), language, page: { kind: 'codexEntry', id: entry.id } })),
-    ...CODEX_PAGES.map(({ id }): GuideRoute => ({ path: rulesPathOf(language, id), language, page: { kind: 'rules', id } })),
+    ...CODEX_PAGES.filter(({ id }) => !isRulesWrittenUp(id)).map(({ id }): GuideRoute => ({ path: rulesPathOf(language, id), language, page: { kind: 'rules', id } })),
   ]),
 ];
 

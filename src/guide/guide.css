@@ -240,3 +240,16 @@ body {
 .guide-content .guide-glossary dd {
   @apply mt-1 text-left font-normal text-muted;
 }
+
+.guide-live-rules {
+  @apply my-8 rounded-2xl border border-line p-4 sm:p-6;
+}
+
+.guide-live-rules > .codex-entry-name:first-child,
+.guide-live-rules > .codex-entry-name:first-child + p {
+  @apply hidden;
+}
+
+.guide-live-rules > h4:first-of-type {
+  @apply mt-0;
+}

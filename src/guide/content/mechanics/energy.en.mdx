@@ -1,0 +1,41 @@
+export const meta = {
+  title: 'Energy',
+  summary: 'Where your power comes from, in which order it is used, and what happens when it runs short.',
+  order: 10,
+};
+
+## Demand
+
+Every Home needs power and water, more at each Tier. Workplaces need power too. The sum is the city's **Demand**. Power Demand may exceed production, and service then drops; water Demand never may: a <EntryLink id="waterTower" /> must keep up before the city can grow.
+
+## Sources
+
+| Source | Output | Cost and drawbacks |
+| --- | --- | --- |
+| <EntryLink id="powerPlant" /> | Varies with the weather | Clean, nothing to run |
+| <EntryLink id="solar" /> and <EntryLink id="solarHome" /> | Daylight only | Clean; panels first cover their own Home, then share with neighbours |
+| <EntryLink id="hydroPlant" /> | Steady, scaled by the water around it | Clean; must touch Water tiles, full output with 8 connected tiles |
+| <EntryLink id="geothermalPlant" /> | Constant, day and night | Clean, but expensive, unlocked late and limited in number |
+| <EntryLink id="coalPlant" /> | Stable | Fuel paid in Urbs, emissions, lower Well-being around it; can be switched off |
+| <EntryLink id="backup" /> | Only during a shortage | Paid in Urbs per unit supplied, polluting |
+
+## The supply order
+
+Each moment, power is used in the same order:
+
+1. **Renewables** first: wind, sun, water and ground heat.
+2. **Coal** next, so that stored energy is kept for later.
+3. **Neighborhood batteries** cover what is still missing. A <EntryLink id="battery" /> charges only from renewable surplus nearby, never from coal or backup.
+4. **Backup** power plants close the remaining gap, at a price.
+
+## Shortages
+
+When power still falls short, Homes are served first; workplaces share what remains in proportion to their needs, and a Casino is cut before any of them. A short workplace produces more slowly. When a new shortage appears, an **Adaptation period** gives you time to react before it costs anything.
+
+To lower Demand rather than raise production, insulate your Homes or equip them with solar panels.
+
+## Your city's figures
+
+Choose a Difficulty and a city size at the top of the page: the table below shows the Demand and supply of such a city.
+
+<LiveRules id="energy" />
