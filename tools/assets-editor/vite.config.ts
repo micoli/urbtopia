@@ -70,7 +70,9 @@ const liveSources = (): Plugin => ({
     server.middlewares.use('/models', (req, res, next) => {
       const path = decodeURIComponent((req.url ?? '').split('?')[0]!).replace(/^\//, '')
       const [pack = '', ...rest] = path.split('/')
-      const archived = archiveFile(pack, rest.join('/'))
+      // An own model replaces the archive entry of the same path.
+      const ownModel = /\.(?:glb|tone-.\.png)$/.test(path) && existsSync(managedFileOf(path))
+      const archived = ownModel ? undefined : archiveFile(pack, rest.join('/'))
       if (archived) {
         res.setHeader('Content-Type', contentTypeOf(path))
         return res.end(archived)

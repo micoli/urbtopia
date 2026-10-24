@@ -7545,8 +7545,8 @@
   },
   "nature-cactus-short": {
     "file": "nature/cactus_short",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.7,
       "height": 1
@@ -7554,8 +7554,8 @@
   },
   "nature-cactus-tall": {
     "file": "nature/cactus_tall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.7,
       "height": 1
@@ -7563,28 +7563,28 @@
   },
   "nature-cliff-blockcave-rock": {
     "file": "nature/cliff_blockCave_rock",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work"
   },
   "nature-cliff-steps-rock": {
     "file": "nature/cliff_steps_rock",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work"
   },
   "nature-cliff-stepscorner-rock": {
     "file": "nature/cliff_stepsCorner_rock",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work"
   },
   "nature-cliff-stepscornerinner-rock": {
     "file": "nature/cliff_stepsCornerInner_rock",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work"
   },
   "nature-flower-purplea": {
     "file": "nature/flower_purpleA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7592,8 +7592,8 @@
   },
   "nature-flower-purpleb": {
     "file": "nature/flower_purpleB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7601,8 +7601,8 @@
   },
   "nature-flower-purplec": {
     "file": "nature/flower_purpleC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7610,8 +7610,8 @@
   },
   "nature-flower-reda": {
     "file": "nature/flower_redA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7619,8 +7619,8 @@
   },
   "nature-flower-redb": {
     "file": "nature/flower_redB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7628,8 +7628,8 @@
   },
   "nature-flower-redc": {
     "file": "nature/flower_redC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7637,8 +7637,8 @@
   },
   "nature-flower-yellowa": {
     "file": "nature/flower_yellowA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7646,8 +7646,8 @@
   },
   "nature-flower-yellowb": {
     "file": "nature/flower_yellowB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7655,8 +7655,8 @@
   },
   "nature-flower-yellowc": {
     "file": "nature/flower_yellowC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7664,8 +7664,8 @@
   },
   "nature-grass": {
     "file": "nature/grass",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 0.35
@@ -7673,8 +7673,8 @@
   },
   "nature-grass-large": {
     "file": "nature/grass_large",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 0.35
@@ -7682,8 +7682,8 @@
   },
   "nature-grass-leafs": {
     "file": "nature/grass_leafs",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 0.35
@@ -7691,8 +7691,8 @@
   },
   "nature-grass-leafslarge": {
     "file": "nature/grass_leafsLarge",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 0.35
@@ -7700,8 +7700,8 @@
   },
   "nature-ground-grass": {
     "file": "nature/ground_grass",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 0.35
@@ -7709,8 +7709,8 @@
   },
   "nature-lily-large": {
     "file": "nature/lily_large",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7718,8 +7718,8 @@
   },
   "nature-lily-small": {
     "file": "nature/lily_small",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7727,8 +7727,8 @@
   },
   "nature-log": {
     "file": "nature/log",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7736,8 +7736,8 @@
   },
   "nature-log-large": {
     "file": "nature/log_large",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7745,8 +7745,8 @@
   },
   "nature-log-stack": {
     "file": "nature/log_stack",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7754,8 +7754,8 @@
   },
   "nature-log-stacklarge": {
     "file": "nature/log_stackLarge",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7763,8 +7763,8 @@
   },
   "nature-mushroom-red": {
     "file": "nature/mushroom_red",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7772,8 +7772,8 @@
   },
   "nature-mushroom-redgroup": {
     "file": "nature/mushroom_redGroup",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7781,8 +7781,8 @@
   },
   "nature-mushroom-redtall": {
     "file": "nature/mushroom_redTall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7790,8 +7790,8 @@
   },
   "nature-mushroom-tan": {
     "file": "nature/mushroom_tan",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7799,8 +7799,8 @@
   },
   "nature-mushroom-tangroup": {
     "file": "nature/mushroom_tanGroup",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7808,8 +7808,8 @@
   },
   "nature-mushroom-tantall": {
     "file": "nature/mushroom_tanTall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.55,
       "height": 0.5
@@ -7817,8 +7817,8 @@
   },
   "nature-plant-bush": {
     "file": "nature/plant_bush",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.7,
       "height": 1
@@ -7826,8 +7826,8 @@
   },
   "nature-plant-bushlarge": {
     "file": "nature/plant_bushLarge",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.7,
       "height": 1
@@ -7835,8 +7835,8 @@
   },
   "nature-plant-bushlargetriangle": {
     "file": "nature/plant_bushLargeTriangle",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.7,
       "height": 1
@@ -7844,8 +7844,8 @@
   },
   "nature-plant-bushsmall": {
     "file": "nature/plant_bushSmall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.7,
       "height": 1
@@ -7853,8 +7853,8 @@
   },
   "nature-plant-bushtriangle": {
     "file": "nature/plant_bushTriangle",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.7,
       "height": 1
@@ -7862,8 +7862,8 @@
   },
   "nature-plant-flatshort": {
     "file": "nature/plant_flatShort",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.7,
       "height": 1
@@ -7871,8 +7871,8 @@
   },
   "nature-plant-flattall": {
     "file": "nature/plant_flatTall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.7,
       "height": 1
@@ -7880,8 +7880,8 @@
   },
   "nature-rock-largea": {
     "file": "nature/rock_largeA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7889,8 +7889,8 @@
   },
   "nature-rock-largeb": {
     "file": "nature/rock_largeB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7898,8 +7898,8 @@
   },
   "nature-rock-largec": {
     "file": "nature/rock_largeC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7907,8 +7907,8 @@
   },
   "nature-rock-larged": {
     "file": "nature/rock_largeD",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7916,8 +7916,8 @@
   },
   "nature-rock-largee": {
     "file": "nature/rock_largeE",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7925,8 +7925,8 @@
   },
   "nature-rock-largef": {
     "file": "nature/rock_largeF",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7934,8 +7934,8 @@
   },
   "nature-rock-smalla": {
     "file": "nature/rock_smallA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7943,8 +7943,8 @@
   },
   "nature-rock-smallb": {
     "file": "nature/rock_smallB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7952,8 +7952,8 @@
   },
   "nature-rock-smallc": {
     "file": "nature/rock_smallC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7961,8 +7961,8 @@
   },
   "nature-rock-smalld": {
     "file": "nature/rock_smallD",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7970,8 +7970,8 @@
   },
   "nature-rock-smalle": {
     "file": "nature/rock_smallE",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7979,8 +7979,8 @@
   },
   "nature-rock-smallf": {
     "file": "nature/rock_smallF",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7988,8 +7988,8 @@
   },
   "nature-rock-smallflata": {
     "file": "nature/rock_smallFlatA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -7997,8 +7997,8 @@
   },
   "nature-rock-smallflatb": {
     "file": "nature/rock_smallFlatB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8006,8 +8006,8 @@
   },
   "nature-rock-smallflatc": {
     "file": "nature/rock_smallFlatC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8015,8 +8015,8 @@
   },
   "nature-rock-smallg": {
     "file": "nature/rock_smallG",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8024,8 +8024,8 @@
   },
   "nature-rock-smallh": {
     "file": "nature/rock_smallH",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8033,8 +8033,8 @@
   },
   "nature-rock-smalli": {
     "file": "nature/rock_smallI",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8042,8 +8042,8 @@
   },
   "nature-rock-smalltopa": {
     "file": "nature/rock_smallTopA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8051,8 +8051,8 @@
   },
   "nature-rock-smalltopb": {
     "file": "nature/rock_smallTopB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8060,8 +8060,8 @@
   },
   "nature-rock-talla": {
     "file": "nature/rock_tallA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8069,8 +8069,8 @@
   },
   "nature-rock-tallb": {
     "file": "nature/rock_tallB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8078,8 +8078,8 @@
   },
   "nature-rock-tallc": {
     "file": "nature/rock_tallC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8087,8 +8087,8 @@
   },
   "nature-rock-talld": {
     "file": "nature/rock_tallD",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8096,8 +8096,8 @@
   },
   "nature-rock-talle": {
     "file": "nature/rock_tallE",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8105,8 +8105,8 @@
   },
   "nature-rock-tallf": {
     "file": "nature/rock_tallF",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8114,8 +8114,8 @@
   },
   "nature-rock-tallg": {
     "file": "nature/rock_tallG",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8123,8 +8123,8 @@
   },
   "nature-rock-tallh": {
     "file": "nature/rock_tallH",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8132,8 +8132,8 @@
   },
   "nature-rock-talli": {
     "file": "nature/rock_tallI",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8141,8 +8141,8 @@
   },
   "nature-rock-tallj": {
     "file": "nature/rock_tallJ",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8150,8 +8150,8 @@
   },
   "nature-statue-column": {
     "file": "nature/statue_column",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8159,8 +8159,8 @@
   },
   "nature-statue-head": {
     "file": "nature/statue_head",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8168,8 +8168,8 @@
   },
   "nature-statue-obelisk": {
     "file": "nature/statue_obelisk",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8177,8 +8177,8 @@
   },
   "nature-statue-ring": {
     "file": "nature/statue_ring",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8186,8 +8186,8 @@
   },
   "nature-stone-largea": {
     "file": "nature/stone_largeA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8195,8 +8195,8 @@
   },
   "nature-stone-largeb": {
     "file": "nature/stone_largeB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8204,8 +8204,8 @@
   },
   "nature-stone-largec": {
     "file": "nature/stone_largeC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8213,8 +8213,8 @@
   },
   "nature-stone-larged": {
     "file": "nature/stone_largeD",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8222,8 +8222,8 @@
   },
   "nature-stone-largee": {
     "file": "nature/stone_largeE",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8231,8 +8231,8 @@
   },
   "nature-stone-largef": {
     "file": "nature/stone_largeF",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8240,8 +8240,8 @@
   },
   "nature-stone-smalla": {
     "file": "nature/stone_smallA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8249,8 +8249,8 @@
   },
   "nature-stone-smallb": {
     "file": "nature/stone_smallB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8258,8 +8258,8 @@
   },
   "nature-stone-smallc": {
     "file": "nature/stone_smallC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8267,8 +8267,8 @@
   },
   "nature-stone-smalld": {
     "file": "nature/stone_smallD",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8276,8 +8276,8 @@
   },
   "nature-stone-smalle": {
     "file": "nature/stone_smallE",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8285,8 +8285,8 @@
   },
   "nature-stone-smallf": {
     "file": "nature/stone_smallF",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8294,8 +8294,8 @@
   },
   "nature-stone-smallflata": {
     "file": "nature/stone_smallFlatA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8303,8 +8303,8 @@
   },
   "nature-stone-smallflatb": {
     "file": "nature/stone_smallFlatB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8312,8 +8312,8 @@
   },
   "nature-stone-smallflatc": {
     "file": "nature/stone_smallFlatC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8321,8 +8321,8 @@
   },
   "nature-stone-smallg": {
     "file": "nature/stone_smallG",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8330,8 +8330,8 @@
   },
   "nature-stone-smallh": {
     "file": "nature/stone_smallH",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8339,8 +8339,8 @@
   },
   "nature-stone-smalli": {
     "file": "nature/stone_smallI",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8348,8 +8348,8 @@
   },
   "nature-stone-smalltopa": {
     "file": "nature/stone_smallTopA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8357,8 +8357,8 @@
   },
   "nature-stone-smalltopb": {
     "file": "nature/stone_smallTopB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8366,8 +8366,8 @@
   },
   "nature-stone-talla": {
     "file": "nature/stone_tallA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8375,8 +8375,8 @@
   },
   "nature-stone-tallb": {
     "file": "nature/stone_tallB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8384,8 +8384,8 @@
   },
   "nature-stone-tallc": {
     "file": "nature/stone_tallC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8393,8 +8393,8 @@
   },
   "nature-stone-talld": {
     "file": "nature/stone_tallD",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8402,8 +8402,8 @@
   },
   "nature-stone-talle": {
     "file": "nature/stone_tallE",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8411,8 +8411,8 @@
   },
   "nature-stone-tallf": {
     "file": "nature/stone_tallF",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8420,8 +8420,8 @@
   },
   "nature-stone-tallg": {
     "file": "nature/stone_tallG",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8429,8 +8429,8 @@
   },
   "nature-stone-tallh": {
     "file": "nature/stone_tallH",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8438,8 +8438,8 @@
   },
   "nature-stone-talli": {
     "file": "nature/stone_tallI",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8447,8 +8447,8 @@
   },
   "nature-stone-tallj": {
     "file": "nature/stone_tallJ",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8456,8 +8456,8 @@
   },
   "nature-stump-old": {
     "file": "nature/stump_old",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8465,8 +8465,8 @@
   },
   "nature-stump-oldtall": {
     "file": "nature/stump_oldTall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8474,8 +8474,8 @@
   },
   "nature-stump-round": {
     "file": "nature/stump_round",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8483,8 +8483,8 @@
   },
   "nature-stump-square": {
     "file": "nature/stump_square",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.8,
       "height": 0.8
@@ -8492,8 +8492,8 @@
   },
   "nature-tent-detailedclosed": {
     "file": "nature/tent_detailedClosed",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8501,8 +8501,8 @@
   },
   "nature-tent-detailedopen": {
     "file": "nature/tent_detailedOpen",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.9,
       "height": 1.2
@@ -8510,8 +8510,8 @@
   },
   "nature-tree-blocks": {
     "file": "nature/tree_blocks",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8519,8 +8519,8 @@
   },
   "nature-tree-blocks-dark": {
     "file": "nature/tree_blocks_dark",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8528,8 +8528,8 @@
   },
   "nature-tree-blocks-fall": {
     "file": "nature/tree_blocks_fall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8537,8 +8537,8 @@
   },
   "nature-tree-cone": {
     "file": "nature/tree_cone",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8546,8 +8546,8 @@
   },
   "nature-tree-cone-dark": {
     "file": "nature/tree_cone_dark",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8555,8 +8555,8 @@
   },
   "nature-tree-cone-fall": {
     "file": "nature/tree_cone_fall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8564,8 +8564,8 @@
   },
   "nature-tree-default": {
     "file": "nature/tree_default",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8573,8 +8573,8 @@
   },
   "nature-tree-default-dark": {
     "file": "nature/tree_default_dark",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8582,8 +8582,8 @@
   },
   "nature-tree-default-fall": {
     "file": "nature/tree_default_fall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8591,8 +8591,8 @@
   },
   "nature-tree-fat": {
     "file": "nature/tree_fat",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8600,8 +8600,8 @@
   },
   "nature-tree-fat-darkh": {
     "file": "nature/tree_fat_darkh",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8609,8 +8609,8 @@
   },
   "nature-tree-fat-fall": {
     "file": "nature/tree_fat_fall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8618,8 +8618,8 @@
   },
   "nature-tree-oak": {
     "file": "nature/tree_oak",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8627,8 +8627,8 @@
   },
   "nature-tree-oak-dark": {
     "file": "nature/tree_oak_dark",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8636,8 +8636,8 @@
   },
   "nature-tree-oak-fall": {
     "file": "nature/tree_oak_fall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8645,8 +8645,8 @@
   },
   "nature-tree-palm": {
     "file": "nature/tree_palm",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8654,8 +8654,8 @@
   },
   "nature-tree-palmbend": {
     "file": "nature/tree_palmBend",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8663,8 +8663,8 @@
   },
   "nature-tree-palmshort": {
     "file": "nature/tree_palmShort",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8672,8 +8672,8 @@
   },
   "nature-tree-palmtall": {
     "file": "nature/tree_palmTall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8681,8 +8681,8 @@
   },
   "nature-tree-pinedefaulta": {
     "file": "nature/tree_pineDefaultA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8690,8 +8690,8 @@
   },
   "nature-tree-pinedefaultb": {
     "file": "nature/tree_pineDefaultB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8699,8 +8699,8 @@
   },
   "nature-tree-pinegrounda": {
     "file": "nature/tree_pineGroundA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8708,8 +8708,8 @@
   },
   "nature-tree-pinegroundb": {
     "file": "nature/tree_pineGroundB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8717,8 +8717,8 @@
   },
   "nature-tree-pinerounda": {
     "file": "nature/tree_pineRoundA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8726,8 +8726,8 @@
   },
   "nature-tree-pineroundb": {
     "file": "nature/tree_pineRoundB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8735,8 +8735,8 @@
   },
   "nature-tree-pineroundc": {
     "file": "nature/tree_pineRoundC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8744,8 +8744,8 @@
   },
   "nature-tree-pineroundd": {
     "file": "nature/tree_pineRoundD",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8753,8 +8753,8 @@
   },
   "nature-tree-pinerounde": {
     "file": "nature/tree_pineRoundE",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8762,8 +8762,8 @@
   },
   "nature-tree-pineroundf": {
     "file": "nature/tree_pineRoundF",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8771,8 +8771,8 @@
   },
   "nature-tree-pinesmalla": {
     "file": "nature/tree_pineSmallA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8780,8 +8780,8 @@
   },
   "nature-tree-pinesmallb": {
     "file": "nature/tree_pineSmallB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8789,8 +8789,8 @@
   },
   "nature-tree-pinesmallc": {
     "file": "nature/tree_pineSmallC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8798,8 +8798,8 @@
   },
   "nature-tree-pinesmalld": {
     "file": "nature/tree_pineSmallD",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8807,8 +8807,8 @@
   },
   "nature-tree-pinetalla": {
     "file": "nature/tree_pineTallA",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8816,8 +8816,8 @@
   },
   "nature-tree-pinetallb": {
     "file": "nature/tree_pineTallB",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8825,8 +8825,8 @@
   },
   "nature-tree-pinetallc": {
     "file": "nature/tree_pineTallC",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8834,8 +8834,8 @@
   },
   "nature-tree-pinetalld": {
     "file": "nature/tree_pineTallD",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.8
@@ -8843,8 +8843,8 @@
   },
   "nature-tree-plateau": {
     "file": "nature/tree_plateau",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8852,8 +8852,8 @@
   },
   "nature-tree-plateau-dark": {
     "file": "nature/tree_plateau_dark",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8861,8 +8861,8 @@
   },
   "nature-tree-plateau-fall": {
     "file": "nature/tree_plateau_fall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8870,8 +8870,8 @@
   },
   "nature-tree-simple": {
     "file": "nature/tree_simple",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8879,8 +8879,8 @@
   },
   "nature-tree-simple-dark": {
     "file": "nature/tree_simple_dark",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8888,8 +8888,8 @@
   },
   "nature-tree-simple-fall": {
     "file": "nature/tree_simple_fall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8897,8 +8897,8 @@
   },
   "nature-tree-small": {
     "file": "nature/tree_small",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8906,8 +8906,8 @@
   },
   "nature-tree-small-dark": {
     "file": "nature/tree_small_dark",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8915,8 +8915,8 @@
   },
   "nature-tree-small-fall": {
     "file": "nature/tree_small_fall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8924,8 +8924,8 @@
   },
   "nature-tree-tall": {
     "file": "nature/tree_tall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8933,8 +8933,8 @@
   },
   "nature-tree-tall-dark": {
     "file": "nature/tree_tall_dark",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8942,8 +8942,8 @@
   },
   "nature-tree-tall-fall": {
     "file": "nature/tree_tall_fall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8951,8 +8951,8 @@
   },
   "nature-tree-thin": {
     "file": "nature/tree_thin",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8960,8 +8960,8 @@
   },
   "nature-tree-thin-dark": {
     "file": "nature/tree_thin_dark",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
@@ -8969,8 +8969,8 @@
   },
   "nature-tree-thin-fall": {
     "file": "nature/tree_thin_fall",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "fit": {
       "width": 0.85,
       "height": 2.5
