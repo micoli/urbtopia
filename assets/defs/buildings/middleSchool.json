@@ -75,6 +75,22 @@
       }
     }
   ],
+  "solarPanels": {
+    "cost": 120,
+    "unlockCitizens": 60,
+    "output": 1,
+    "panels": [
+      {
+        "model": "industrial-solar-panel-landscape",
+        "x": -0.139,
+        "y": -0.482,
+        "z": 0.266,
+        "rotationX": 0,
+        "rotationY": 180,
+        "rotationZ": 0
+      }
+    ]
+  },
   "category": "education",
   "drawnToScale": true,
   "power": 2,

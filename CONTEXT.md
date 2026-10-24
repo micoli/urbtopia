@@ -539,7 +539,7 @@ A Home equipped with panels that first cover its own power Demand and can share 
 _Avoid_: Solar house, solar residence
 
 **Solar panels**:
-A paid improvement, independent of Tier, that equips an eligible building with panels so it produces power from daylight. A Home can be built with them (a Solar Home) or retrofitted; any other eligible building can only be retrofitted. A building is eligible when its definition declares Solar panels. Its price, unlock threshold, output and the placement of the panels on its roof are set per building definition. On a Home the panels are part of its solar models; on any other building they are a generic roof overlay, so its color and Repaint are unaffected.
+A paid improvement, independent of Tier, that equips an eligible building with panels so it produces power from daylight. A Home can be built with them (a Solar Home) or retrofitted; any other eligible building can only be retrofitted. Public facilities of the Education, Administration, Culture, Health, Safety and Worship categories are eligible (not Waste facilities nor the Ferris wheel and Roller coaster). A building is eligible when its definition declares Solar panels. Its price, unlock threshold, output and the placement of the panels on its roof are set per building definition. On a Home the panels are part of its solar models; on any other building they are a generic roof overlay, so its color and Repaint are unaffected.
 _Avoid_: Solar Home (that is a Home built with them), Solar installation, Solar upgrade
 
 **Mansard Home**:

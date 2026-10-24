@@ -75,6 +75,22 @@
       }
     }
   ],
+  "solarPanels": {
+    "cost": 100,
+    "unlockCitizens": 32,
+    "output": 1,
+    "panels": [
+      {
+        "model": "industrial-solar-panel-flat",
+        "x": 0,
+        "y": -0.664,
+        "z": 0.258,
+        "rotationX": 0,
+        "rotationY": 90,
+        "rotationZ": 36
+      }
+    ]
+  },
   "category": "culture",
   "drawnToScale": true,
   "power": 2,
