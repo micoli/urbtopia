@@ -19,6 +19,7 @@ const DESCRIPTIONS = {
   ...Object.fromEntries(BUILDING_ENTRIES.map(({ id }) => [`solar-${id}`, 'codex.description.solarHome'])) as Record<SolarHomeCodexId, MessageKey>,
   road: 'codex.description.road',
   crossing: 'codex.description.crossing',
+  pedestrianWay: 'codex.description.pedestrianWay',
   roundabout: 'codex.description.roundabout',
   brt: 'codex.description.brt',
   rail: 'codex.description.rail',

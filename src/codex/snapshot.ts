@@ -46,6 +46,10 @@ export function codexSnapshot(id: CodexId, tier: number, colorVariant: ColorVari
     state.roads = tiles.map(tile => ({ ...tile, kind: id === 'crossing' && tile.x === 1 ? 'crossing' : 'road' }));
     return state;
   }
+  if (id === 'pedestrianWay') {
+    state.pedestrianWays = tiles;
+    return state;
+  }
   const network = tiles.map(tile => ({ ...tile, exits: ['E', 'W'] as const })).map(tile => ({ ...tile, exits: [...tile.exits] }));
   if (id === 'brt') state.brtRoads = network;
   if (id === 'rail') state.rails = network;

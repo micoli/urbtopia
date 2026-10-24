@@ -148,7 +148,7 @@ describe('build menu sections', () => {
     context.state = big;
     context.flyout = 'roads';
     const sections = renderToStaticMarkup(<BuildMenuContent />).match(/<section\b[^>]*>[\s\S]*?<\/section>/g) ?? [];
-    const demolishLabels = ['tool.demolishRoad', 'tool.demolishBrt', 'tool.demolishRail', 'water.remove', 'water.removeBridge'] as const;
+    const demolishLabels = ['tool.demolishRoad', 'tool.demolishPedestrianWay', 'tool.demolishBrt', 'tool.demolishRail', 'water.remove', 'water.removeBridge', 'water.removeBridge'] as const;
     expect(sections).toHaveLength(demolishLabels.length);
     demolishLabels.forEach((key, index) => expect(sections[index]).toContain(`aria-label="${t(key)}"`));
     expect(sections[0]).toContain('▾');
@@ -174,7 +174,7 @@ describe('build menu sections', () => {
     context.state = big;
     context.flyout = 'roads';
     const roads = renderToStaticMarkup(<BuildMenuContent />);
-    for (const label of [t('water.lay'), `${t('water.bridge')} · 1 ${t('water.bridgeTiles')}`, `${t('water.bridge')} · 5 ${t('water.bridgeTiles')}`, `${t('bridge.road')} · 3 ${t('water.bridgeTiles')}`, `${t('bridge.brt')} · 5 ${t('water.bridgeTiles')}`]) expect(roads).toContain(label);
+    for (const label of [t('water.lay'), t('roads.section.maritimeBridges'), t('roads.section.roadBridges'), `1 ${t('water.bridgeTiles')}`, `5 ${t('water.bridgeTiles')}`]) expect(roads).toContain(label);
     context.state = { ...big, waterTiles: [{ x: 50, y: 50 }], bridges: [{ x: 52, y: 50, length: 1, axis: 'x' }] };
     const used = renderToStaticMarkup(<BuildMenuContent />);
     expect(used).toContain(t('water.remove'));

@@ -15,7 +15,7 @@ import { BridgeTools } from './BridgeTools';
 import { SectionDemolishButton } from './SectionDemolishButton';
 import { WaterTools } from './WaterTools';
 
-type RoadSection = 'road' | 'brt' | 'rail' | 'water' | 'bridges';
+type RoadSection = 'road' | 'pedestrian' | 'brt' | 'rail' | 'water' | 'maritimeBridges' | 'roadBridges';
 
 interface RoadItem {
   label: string;
@@ -26,15 +26,17 @@ interface RoadItem {
 
 const SECTION_TITLES: Record<RoadSection, MessageKey> = {
   road: 'roads.section.road',
+  pedestrian: 'roads.section.pedestrian',
   brt: 'roads.section.brt',
   rail: 'roads.section.rail',
   water: 'roads.section.water',
-  bridges: 'roads.section.bridges',
+  maritimeBridges: 'roads.section.maritimeBridges',
+  roadBridges: 'roads.section.roadBridges',
 };
 
 const demolishRoad = (mode?: 'brt' | 'rail'): Tool => ({ kind: 'demolishRoad', ...(mode ? { mode } : {}), start: null, horizontalFirst: true });
 
-const constructionItem = (id: 'brt' | 'rail'): RoadItem => {
+const constructionItem = (id: 'pedestrianWay' | 'brt' | 'rail'): RoadItem => {
   const construction = ROAD_CONSTRUCTIONS.find(item => item.id === id)!;
   return { label: t(construction.name), cost: `${construction.cost} ${t('tool.perTile')}`, tool: construction.tool, codexId: construction.id };
 };
@@ -54,18 +56,24 @@ export function RoadMenu() {
   };
 
   const roadItems: RoadItem[] = [
-    ...ROAD_CONSTRUCTIONS.filter(item => item.unlockCitizens === 0).map(item => ({ label: t(item.name), cost: item.perTile ? `${item.cost} ${t('tool.perTile')}` : <UrbsAmount value={item.cost} />, tool: item.tool, codexId: item.id })),
+    ...ROAD_CONSTRUCTIONS.filter(item => item.unlockCitizens === 0 && item.id !== 'pedestrianWay').map(item => ({ label: t(item.name), cost: item.perTile ? `${item.cost} ${t('tool.perTile')}` : <UrbsAmount value={item.cost} />, tool: item.tool, codexId: item.id })),
     { label: t('tool.upgradeRoad'), cost: `${ROAD_TIER_COSTS[1]!}–${ROAD_TIER_COSTS[2]!} ${t('tool.perTile')}`, tool: { kind: 'upgradeRoad', start: null, horizontalFirst: true } },
-    { label: t('tool.pedestrianWay'), cost: `${Math.round(GAME_CONFIG.roadCostPerTile * 0.9)} ${t('tool.perTile')}`, tool: { kind: 'pedestrianWay', start: null, horizontalFirst: true } },
+  ];
+  const removeBridge = hasBridge ? { label: t('water.removeBridge'), tool: { kind: 'removeBridge' } as Tool } : undefined;
+  const pedestrianItems: RoadItem[] = [
+    constructionItem('pedestrianWay'),
     { label: t('tool.upgradePedestrianWay'), cost: `${Math.round(ROAD_TIER_COSTS[1]! * 0.9)}–${Math.round(ROAD_TIER_COSTS[2]! * 0.9)} ${t('tool.perTile')}`, tool: { kind: 'upgradePedestrianWay', start: null, horizontalFirst: true } },
-    { label: t('tool.demolishPedestrianWay'), tool: { kind: 'demolishPedestrianWay', start: null, horizontalFirst: true } },
   ];
   const sections: { id: RoadSection; items?: RoadItem[]; content?: ReactNode; demolish?: { label: string; tool: Tool } }[] = [
     { id: 'road', items: roadItems, demolish: { label: t('tool.demolishRoad'), tool: demolishRoad() } },
+    { id: 'pedestrian', items: pedestrianItems, demolish: { label: t('tool.demolishPedestrianWay'), tool: { kind: 'demolishPedestrianWay', start: null, horizontalFirst: true } } },
     ...(citizens >= TRANSIT.brt.unlock ? [{ id: 'brt' as const, items: [constructionItem('brt')], demolish: { label: t('tool.demolishBrt'), tool: demolishRoad('brt') } }] : []),
     ...(citizens >= TRANSIT.rail.unlock ? [{ id: 'rail' as const, items: [constructionItem('rail')], demolish: { label: t('tool.demolishRail'), tool: demolishRoad('rail') } }] : []),
     ...(citizens >= WATER.unlockCitizens ? [{ id: 'water' as const, content: <WaterTools />, demolish: hasWater ? { label: t('water.remove'), tool: { kind: 'brush', action: 'removeWater', tiles: [] } as Tool } : undefined }] : []),
-    ...(citizens >= BRIDGES.unlockCitizens || hasBridge ? [{ id: 'bridges' as const, content: <BridgeTools />, demolish: hasBridge ? { label: t('water.removeBridge'), tool: { kind: 'removeBridge' } as Tool } : undefined }] : []),
+    ...(citizens >= BRIDGES.unlockCitizens || hasBridge ? [
+      { id: 'maritimeBridges' as const, content: <BridgeTools variant="maritime" />, demolish: removeBridge },
+      { id: 'roadBridges' as const, content: <BridgeTools variant="road" />, demolish: removeBridge },
+    ] : []),
   ];
   const activeSection = sections.some(section => section.id === openSection) ? openSection : 'road';
 
