@@ -7178,12 +7178,13 @@
   },
   "mini-arcade-character-employee": {
     "file": "mini-arcade/character-employee",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-arcade-claw-machine": {
     "file": "mini-arcade/claw-machine",
@@ -7287,111 +7288,123 @@
   },
   "mini-characters-character-female-a": {
     "file": "mini-characters/character-female-a",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-characters-character-female-b": {
     "file": "mini-characters/character-female-b",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-characters-character-female-c": {
     "file": "mini-characters/character-female-c",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-characters-character-female-d": {
     "file": "mini-characters/character-female-d",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-characters-character-female-e": {
     "file": "mini-characters/character-female-e",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-characters-character-female-f": {
     "file": "mini-characters/character-female-f",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-characters-character-male-a": {
     "file": "mini-characters/character-male-a",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-characters-character-male-b": {
     "file": "mini-characters/character-male-b",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-characters-character-male-c": {
     "file": "mini-characters/character-male-c",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-characters-character-male-d": {
     "file": "mini-characters/character-male-d",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-characters-character-male-e": {
     "file": "mini-characters/character-male-e",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-characters-character-male-f": {
     "file": "mini-characters/character-male-f",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-forest-building-platform": {
     "file": "mini-forest/building-platform",
@@ -7481,12 +7494,13 @@
   },
   "mini-market-character-employee": {
     "file": "mini-market/character-employee",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       1,
       1
-    ]
+    ],
+    "flush": true
   },
   "mini-market-display-bread": {
     "file": "mini-market/display-bread",

@@ -4,6 +4,7 @@ import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(REPO, "tools", "blender"))
+import bmesh  # noqa: E402
 import lpm  # noqa: E402
 
 
@@ -11,6 +12,23 @@ def requested(model_ids):
     """The model ids named after `--` on the command line, or all of them."""
     args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     return [model_id for model_id in model_ids if not args or model_id in args]
+
+
+def fillet(ob, width, segments=2, min_angle=0.35):
+    """Round the sharp edges of a single-coloured part with a small bevel."""
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    layer = bm.faces.layers.int["lpm_color"]
+    bm.faces.ensure_lookup_table()
+    color = bm.faces[0][layer]
+    edges = [e for e in bm.edges if len(e.link_faces) == 2 and e.calc_face_angle(0) > min_angle]
+    bmesh.ops.bevel(bm, geom=edges, offset=width, offset_type="OFFSET", segments=segments, profile=0.5, affect="EDGES", clamp_overlap=True)
+    for f in bm.faces:
+        f[layer] = color
+        f.smooth = False
+    bm.to_mesh(ob.data)
+    bm.free()
+    return ob
 
 
 def fit_box(ob, low, high):
