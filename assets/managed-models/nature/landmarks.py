@@ -111,11 +111,12 @@ def tent(open_front):
     return build
 
 
-export_all({
-    "statue_column": column,
-    "statue_head": head,
-    "statue_obelisk": obelisk,
-    "statue_ring": ring,
-    "tent_detailedClosed": tent(False),
-    "tent_detailedOpen": tent(True),
-}, P, budget=300)
+if __name__ == "__main__":
+    export_all({
+        "statue_column": column,
+        "statue_head": head,
+        "statue_obelisk": obelisk,
+        "statue_ring": ring,
+        "tent_detailedClosed": tent(False),
+        "tent_detailedOpen": tent(True),
+    }, P, budget=300)

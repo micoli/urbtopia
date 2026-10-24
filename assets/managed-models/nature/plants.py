@@ -187,4 +187,5 @@ MODELS.update({
     **{f"mushroom_{color}{suffix}": mushrooms(color, kind) for color in ("red", "tan") for suffix, kind in (("", "single"), ("Group", "group"), ("Tall", "tall"))},
 })
 
-export_all(MODELS, P, budget=400)
+if __name__ == "__main__":
+    export_all(MODELS, P, budget=400)

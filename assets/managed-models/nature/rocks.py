@@ -84,14 +84,15 @@ def requested():
     return [m for m in MODELS if not args or m[0] in args]
 
 
-out_dir = os.path.dirname(os.path.abspath(__file__))
-for model_id, kind, shape in requested():
-    lpm.reset()
-    rng = random.Random(shape)
-    parts = []
-    for k, spec in enumerate(SHAPES[shape]):
-        ob = boulder(f"b{k}", rng, *spec)
-        paint(ob, kind)
-        parts.append(ob)
-    ob = lpm.finish(model_id, parts, P, budget=300, center=False)
-    lpm.export_glb(ob, os.path.join(out_dir, model_id, model_id))
+if __name__ == "__main__":
+    out_dir = os.path.dirname(os.path.abspath(__file__))
+    for model_id, kind, shape in requested():
+        lpm.reset()
+        rng = random.Random(shape)
+        parts = []
+        for k, spec in enumerate(SHAPES[shape]):
+            ob = boulder(f"b{k}", rng, *spec)
+            paint(ob, kind)
+            parts.append(ob)
+        ob = lpm.finish(model_id, parts, P, budget=300, center=False)
+        lpm.export_glb(ob, os.path.join(out_dir, model_id, model_id))

@@ -151,9 +151,10 @@ def requested():
     return [m for m in MODELS if not args or m[0] in args]
 
 
-out_dir = os.path.dirname(os.path.abspath(__file__))
-for model_id, shape, season in requested():
-    lpm.reset()
-    rng = random.Random(model_id.split("_")[1])
-    ob = lpm.finish(model_id, SHAPES[shape](SEASONS[season], rng), P, budget=400)
-    lpm.export_glb(ob, os.path.join(out_dir, model_id, model_id))
+if __name__ == "__main__":
+    out_dir = os.path.dirname(os.path.abspath(__file__))
+    for model_id, shape, season in requested():
+        lpm.reset()
+        rng = random.Random(model_id.split("_")[1])
+        ob = lpm.finish(model_id, SHAPES[shape](SEASONS[season], rng), P, budget=400)
+        lpm.export_glb(ob, os.path.join(out_dir, model_id, model_id))

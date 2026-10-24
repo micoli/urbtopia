@@ -82,8 +82,9 @@ def requested():
     return [m for m in VARIANTS if not args or m in args]
 
 
-out_dir = os.path.dirname(os.path.abspath(__file__))
-for model_id in requested():
-    lpm.reset()
-    ob = lpm.finish(model_id, palm(*VARIANTS[model_id], random.Random(model_id)), P, budget=500, center=False)
-    lpm.export_glb(ob, os.path.join(out_dir, model_id, model_id))
+if __name__ == "__main__":
+    out_dir = os.path.dirname(os.path.abspath(__file__))
+    for model_id in requested():
+        lpm.reset()
+        ob = lpm.finish(model_id, palm(*VARIANTS[model_id], random.Random(model_id)), P, budget=500, center=False)
+        lpm.export_glb(ob, os.path.join(out_dir, model_id, model_id))

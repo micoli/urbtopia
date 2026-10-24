@@ -6918,13 +6918,15 @@
   },
   "holiday-bench": {
     "file": "holiday/bench",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "holiday-lantern": {
     "file": "holiday/lantern",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "industrial-building-g": {
     "file": "industrial/building-g",
@@ -7000,22 +7002,25 @@
   },
   "industrial-solar-panel-flat": {
     "file": "industrial/solar-panel-flat",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "industrial-solar-panel-landscape": {
     "file": "industrial/solar-panel-landscape",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "industrial-solar-panel-landscape-group": {
     "file": "industrial/solar-panel-landscape-group",
-    "source": "kenney",
-    "license": "CC0",
+    "source": "managed",
+    "license": "Own work",
     "footprint": [
       2,
       1
-    ]
+    ],
+    "flush": true
   },
   "industrial-solar-panel-portrait-group": {
     "file": "industrial/solar-panel-portrait-group",
@@ -7355,58 +7360,69 @@
   },
   "mini-forest-building-platform": {
     "file": "mini-forest/building-platform",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "mini-forest-building-roof": {
     "file": "mini-forest/building-roof",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "mini-forest-patch-grass": {
     "file": "mini-forest/patch-grass",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "mini-forest-plant": {
     "file": "mini-forest/plant",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "mini-forest-rocks-high": {
     "file": "mini-forest/rocks-high",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "mini-forest-rocks-low": {
     "file": "mini-forest/rocks-low",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "mini-forest-rocks-ramp": {
     "file": "mini-forest/rocks-ramp",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "mini-forest-stones": {
     "file": "mini-forest/stones",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "mini-forest-tent": {
     "file": "mini-forest/tent",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "mini-forest-tree": {
     "file": "mini-forest/tree",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "mini-forest-tree-high": {
     "file": "mini-forest/tree-high",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "mini-market-bottle-return": {
     "file": "mini-market/bottle-return",
@@ -7564,22 +7580,26 @@
   "nature-cliff-blockcave-rock": {
     "file": "nature/cliff_blockCave_rock",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "flush": true
   },
   "nature-cliff-steps-rock": {
     "file": "nature/cliff_steps_rock",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "flush": true
   },
   "nature-cliff-stepscorner-rock": {
     "file": "nature/cliff_stepsCorner_rock",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "flush": true
   },
   "nature-cliff-stepscornerinner-rock": {
     "file": "nature/cliff_stepsCornerInner_rock",
     "source": "managed",
-    "license": "Own work"
+    "license": "Own work",
+    "flush": true
   },
   "nature-flower-purplea": {
     "file": "nature/flower_purpleA",
@@ -8978,38 +8998,45 @@
   },
   "pirate-grass": {
     "file": "pirate/grass",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "pirate-grass-patch": {
     "file": "pirate/grass-patch",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "pirate-grass-plant": {
     "file": "pirate/grass-plant",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "pirate-palm-bend": {
     "file": "pirate/palm-bend",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "pirate-palm-straight": {
     "file": "pirate/palm-straight",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "pirate-patch-grass": {
     "file": "pirate/patch-grass",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "pirate-patch-grass-foliage": {
     "file": "pirate/patch-grass-foliage",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "poly-pizza-above-ground-swimming-pool": {
     "file": "poly.pizza/above-ground-swimming-pool",
@@ -9531,25 +9558,27 @@
   },
   "suburban-tree-large": {
     "file": "suburban/tree-large",
-    "source": "kenney",
-    "license": "CC0",
-    "scale": 1.5
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "suburban-tree-small": {
     "file": "suburban/tree-small",
-    "source": "kenney",
-    "license": "CC0",
-    "scale": 1.5
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "trains-railroad-corner-small": {
     "file": "trains/railroad-corner-small",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "trains-railroad-straight": {
     "file": "trains/railroad-straight",
-    "source": "kenney",
-    "license": "CC0"
+    "source": "managed",
+    "license": "Own work",
+    "flush": true
   },
   "vehicles-ambulance": {
     "file": "vehicles/ambulance",
