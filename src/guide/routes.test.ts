@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { docsRootOf, gameRootOf, guideRouteOf, hrefOf } from './routes';
+import { docsRootOf, gameRootOf, guideRouteOf, hrefOf, translatedPathOf } from './routes';
 
 describe('guideRouteOf', () => {
   it('finds a page whatever sub-path the site is served from', () => {
@@ -21,5 +21,12 @@ describe('relative links', () => {
     expect(gameRootOf(route)).toBe('../../../../../');
     expect(hrefOf(route, 'fr/')).toBe('../../../../fr/');
     expect(hrefOf(guideRouteOf('/docs/'), '')).toBe('./');
+  });
+});
+
+describe('translatedPathOf', () => {
+  it('keeps the page and swaps the language', () => {
+    expect(translatedPathOf(guideRouteOf('/docs/en/codex/buildings/home/'), 'fr')).toBe('fr/codex/buildings/home/');
+    expect(translatedPathOf(guideRouteOf('/docs/fr/'), 'en')).toBe('en/');
   });
 });

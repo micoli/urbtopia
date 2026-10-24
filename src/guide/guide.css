@@ -1,57 +1,132 @@
-:root {
-  color-scheme: light dark;
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  line-height: 1.6;
-  --guide-text: #1c1f26;
-  --guide-muted: #5c6370;
-  --guide-accent: #2f6fde;
-  --guide-surface: #ffffff;
+@import "tailwindcss" source(none);
+@source "./";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-surface: oklch(99% 0.002 260);
+  --color-panel: oklch(97% 0.004 260);
+  --color-line: oklch(91% 0.006 260);
+  --color-ink: oklch(22% 0.02 265);
+  --color-muted: oklch(50% 0.02 265);
+  --color-accent: oklch(55% 0.17 250);
+  --color-accent-ink: oklch(99% 0 0);
+  --color-positive: oklch(55% 0.14 150);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --guide-text: #e6e8ee;
-    --guide-muted: #9aa1ad;
-    --guide-accent: #7aa7ff;
-    --guide-surface: #14161c;
-  }
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-surface: oklch(17% 0.012 265);
+  --color-panel: oklch(21% 0.014 265);
+  --color-line: oklch(29% 0.016 265);
+  --color-ink: oklch(94% 0.006 265);
+  --color-muted: oklch(70% 0.016 265);
+  --color-accent: oklch(72% 0.13 250);
+  --color-accent-ink: oklch(17% 0.012 265);
+  --color-positive: oklch(75% 0.14 150);
+}
+
+html {
+  color-scheme: light;
 }
 
 body {
   margin: 0;
-  background: var(--guide-surface);
-  color: var(--guide-text);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-a {
-  color: var(--guide-accent);
+@layer components {
+  .guide-icon-button {
+    @apply inline-flex size-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-panel hover:text-ink;
+  }
+
+  .guide-chip {
+    @apply rounded-full border border-line px-3 py-1 text-sm text-ink no-underline transition-colors hover:border-accent;
+  }
+
+  .guide-button {
+    @apply rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-accent-ink no-underline transition-opacity hover:opacity-90;
+  }
+
+  .guide-nav-link {
+    @apply block rounded-md px-3 py-1.5 text-sm text-ink no-underline transition-colors hover:bg-panel;
+  }
+
+  .guide-nav-link[aria-current="page"] {
+    @apply bg-panel font-semibold text-accent;
+  }
+
+  .guide-card {
+    @apply block rounded-xl border border-line bg-panel p-5 font-semibold text-ink no-underline transition-colors hover:border-accent;
+  }
+
+  .guide-panel {
+    @apply m-0 rounded-xl border border-line bg-panel p-4;
+  }
+
+  .guide-eyebrow {
+    @apply mb-1 text-xs font-semibold tracking-wider text-accent uppercase;
+  }
 }
 
-.guide-page {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 24px 16px 64px;
+.guide-content {
+  line-height: 1.65;
 }
 
-.guide-section {
-  margin: 24px 0 0;
-  color: var(--guide-muted);
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+.guide-content h1 {
+  @apply mt-0 mb-3 text-3xl font-semibold tracking-tight sm:text-4xl;
 }
 
-.guide-gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 24px;
+.guide-content h2 {
+  @apply mt-12 mb-4 text-xl font-semibold tracking-tight;
 }
 
-.guide-gallery figure {
-  margin: 0;
+.guide-content h3 {
+  @apply mt-8 mb-3 text-lg font-semibold;
 }
 
-.guide-gallery img {
-  width: 100%;
-  height: auto;
+.guide-content p {
+  @apply my-4;
+}
+
+.guide-content a:not([class]) {
+  @apply text-accent underline decoration-accent/30 underline-offset-2 hover:decoration-accent;
+}
+
+.guide-content dl {
+  @apply m-0 grid gap-1 text-sm;
+}
+
+.guide-content dl > div {
+  @apply flex justify-between gap-3 border-t border-line pt-1;
+}
+
+.guide-content dt {
+  @apply text-muted;
+}
+
+.guide-content dd {
+  @apply m-0 text-right font-medium tabular-nums;
+}
+
+.guide-content table {
+  @apply my-6 w-full border-collapse text-sm;
+}
+
+.guide-content th,
+.guide-content td {
+  @apply border-b border-line px-3 py-2 text-left;
+}
+
+.guide-content th {
+  @apply font-semibold text-muted;
+}
+
+.guide-content .codex-level-gain {
+  @apply ml-1.5 text-positive;
 }

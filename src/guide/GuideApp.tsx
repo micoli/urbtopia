@@ -1,5 +1,6 @@
 import { CodexEntryPage } from './CodexEntryPage';
 import { GuideHomePage } from './GuideHomePage';
+import { GuideLayout } from './GuideLayout';
 import { LanguageChoicePage } from './LanguageChoicePage';
 import type { GuideData } from './guideData';
 import type { GuideRoute } from './routes';
@@ -12,6 +13,9 @@ interface GuideAppProps {
 export function GuideApp({ route, data }: GuideAppProps) {
   const { page } = route;
   if (page.kind === 'languageChoice') return <LanguageChoicePage />;
-  if (page.kind === 'home') return <GuideHomePage route={route} />;
-  return <CodexEntryPage route={route} id={page.id} data={data} />;
+  return (
+    <GuideLayout route={route}>
+      {page.kind === 'home' ? <GuideHomePage route={route} /> : <CodexEntryPage route={route} id={page.id} data={data} />}
+    </GuideLayout>
+  );
 }

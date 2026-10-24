@@ -4,10 +4,16 @@
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Navigation shows the four sections: Getting started, Mechanics, Codex, Glossary.
-- [ ] Theme toggle persists per viewer; no flash of the wrong theme on load of a prerendered page.
-- [ ] Switching language keeps the current page (same slug, other language).
-- [ ] No horizontal scroll at phone width.
-- [ ] Does not reuse `codex.css`.
+- [x] Navigation shows the four sections: Getting started, Mechanics, Codex, Glossary.
+- [x] Theme toggle persists per viewer; no flash of the wrong theme on load of a prerendered page.
+- [x] Switching language keeps the current page (same slug, other language).
+- [x] No horizontal scroll at phone width.
+- [x] Does not reuse `codex.css`.
+
+## Comments
+
+- Tailwind v4 through the main Vite config, scanning only `src/guide` (`source(none)`), so the game's CSS is unchanged.
+- Theme tokens on `:root` and `[data-theme="dark"]`; an inline script in `docs/index.html` sets `data-theme` before paint. The toggle stores `urbtopia-guide-theme`; with nothing stored the system theme is followed live.
+- Reused game components are styled through element rules under `.guide-content` (dl, table, headings).

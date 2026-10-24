@@ -1,21 +1,28 @@
-import { CODEX_ENTRIES } from '../codex/catalog';
 import { t } from '../i18n/t';
-import { GUIDE_ROUTES, hrefOf, type GuideRoute } from './routes';
+import { GUIDE_ROUTES, GUIDE_SECTIONS, hrefOf, sectionOf, type GuideRoute } from './routes';
 
 interface GuideHomePageProps {
   route: GuideRoute;
 }
 
 export function GuideHomePage({ route }: GuideHomePageProps) {
-  const links = GUIDE_ROUTES.flatMap(item => item.language === route.language && item.page.kind === 'codexEntry' ? [{ path: item.path, id: item.page.id }] : []);
+  const routes = GUIDE_ROUTES.filter(item => item.language === route.language);
   return (
-    <main className="guide-page">
+    <article className="max-w-3xl">
       <h1>{t('guide.name')}</h1>
-      <p>{t('guide.intro')}</p>
-      <h2>{t('guide.codex')}</h2>
-      <ul className="guide-links">
-        {links.map(({ path, id }) => <li key={path}><a href={hrefOf(route, path)}>{t(CODEX_ENTRIES.find(entry => entry.id === id)!.name)}</a></li>)}
+      <p className="text-lg text-muted">{t('guide.intro')}</p>
+      <ul className="not-prose mt-10 grid gap-4 sm:grid-cols-2">
+        {GUIDE_SECTIONS.map(section => {
+          const first = routes.find(item => sectionOf(item) === section.id);
+          return (
+            <li key={section.id}>
+              {first
+                ? <a className="guide-card" href={hrefOf(route, first.path)}>{t(section.title)}</a>
+                : <span className="guide-card opacity-60">{t(section.title)} · {t('guide.comingSoon')}</span>}
+            </li>
+          );
+        })}
       </ul>
-    </main>
+    </article>
   );
 }

@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="../icon-192.png" />
     <title>Urbtopia Guide</title>
+    <script>
+      (function () {
+        var stored = null;
+        try { stored = localStorage.getItem('urbtopia-guide-theme'); } catch (error) {}
+        var dark = stored === 'dark' || (stored !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      })();
+    </script>
   </head>
   <body>
     <div id="guide"><!--guide-app--></div>
