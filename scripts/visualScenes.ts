@@ -41,7 +41,7 @@ function filled(state: GameState, from: number, to: number): GameState {
 }
 
 function baseCity(parcels: GameState['ownedParcels'], roads: RoadTile[]): GameState {
-  const state = newGame({ seed: 'visual-baselines', now: FIXED_NOW });
+  const state = newGame({ seed: 'visual-baselines', now: FIXED_NOW, tutorial: false, venueTutorials: false });
   return { ...state, urbs: 1_000_000, ownedParcels: parcels, buildings: [], roads, nextId: 100, adaptationUntil: 0 };
 }
 
