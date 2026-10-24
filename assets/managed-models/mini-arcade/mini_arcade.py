@@ -13,7 +13,7 @@ P = lpm.Palette([
     ("screen", "#7fe0ff", 0.0, 0.3, 1.2), ("marquee", "#ffd24a", 0.0, 0.4, 1.0),
     ("red", "#e04848", 0.0, 0.6), ("orange", "#f28a2c", 0.0, 0.6), ("green", "#3fb27f", 0.0, 0.6), ("blue", "#4a8fe0", 0.0, 0.6),
     ("pink", "#e65aa8", 0.0, 0.6), ("white", "#f2f4f8", 0.0, 0.6), ("glass", "#cfeefa", 0.0, 0.2), ("metal", "#a9b0c0", 0.5, 0.4),
-    ("wood", "#b97a4a", 0.0, 0.8),
+    ("wood", "#b97a4a", 0.0, 0.8), ("wood_dark", "#7a4a2a", 0.0, 0.8), ("felt", "#2f9b62", 0.0, 0.95), ("felt_dark", "#23784c", 0.0, 0.95),
 ])
 
 # Bounding boxes of the Kenney models these replace, in Blender axes (front on -y).
@@ -25,6 +25,7 @@ BOXES = {
     "claw-machine": ((-0.33, -0.35, 0.0), (0.33, 0.35, 0.95)),
     "dance-machine": ((-0.36, -0.51, 0.0), (0.36, 0.51, 0.95)),
     "pinball": ((-0.25, -0.43, 0.0), (0.25, 0.32, 0.74)),
+    "pool-table": ((-0.95, -0.45, 0.0), (0.95, 0.45, 0.5)),
     "prize-wheel": ((-0.36, -0.15, 0.0), (0.36, 0.15, 0.91)),
     "ticket-machine": ((-0.2, -0.23, 0.0), (0.2, 0.16, 0.92)),
     "vending-machine": ((-0.25, -0.25, 0.0), (0.25, 0.22, 0.75)),
@@ -110,6 +111,25 @@ def pinball(rng):
     return parts
 
 
+def pool_table(rng):
+    parts = [block("apron", -0.9, 0.9, -0.4, 0.4, 0.22, 0.4, P["wood_dark"]), block("felt", -0.84, 0.84, -0.34, 0.34, 0.4, 0.42, P["felt"])]
+    for k, (x, y) in enumerate(((-0.82, -0.32), (0.82, -0.32), (0.82, 0.32), (-0.82, 0.32))):
+        parts.append(block(f"leg{k}", x - 0.07, x + 0.07, y - 0.07, y + 0.07, 0, 0.22, P["wood_dark"]))
+    parts += [block("rail_back", -0.95, 0.95, 0.34, 0.45, 0.4, 0.48, P["wood"]), block("rail_front", -0.95, 0.95, -0.45, -0.34, 0.4, 0.48, P["wood"]),
+              block("rail_left", -0.95, -0.84, -0.34, 0.34, 0.4, 0.48, P["wood"]), block("rail_right", 0.84, 0.95, -0.34, 0.34, 0.4, 0.48, P["wood"])]
+    parts += [block("cushion_back", -0.78, 0.78, 0.3, 0.34, 0.42, 0.45, P["felt_dark"]), block("cushion_front", -0.78, 0.78, -0.34, -0.3, 0.42, 0.45, P["felt_dark"]),
+              block("cushion_left", -0.84, -0.8, -0.28, 0.28, 0.42, 0.45, P["felt_dark"]), block("cushion_right", 0.8, 0.84, -0.28, 0.28, 0.42, 0.45, P["felt_dark"])]
+    for k, (x, y) in enumerate(((-0.82, -0.32), (0.82, -0.32), (0.82, 0.32), (-0.82, 0.32), (0.0, -0.33), (0.0, 0.33))):
+        parts.append(disc(f"pocket{k}", 0.055, 0.004, (x, y, 0.42), P["panel"], 8))
+    radius = 0.03
+    colors = ("marquee", "blue", "red", "pink", "orange", "green", "panel", "marquee", "blue", "red")
+    rack = [(0.28 + 0.052 * column, (row - column / 2) * 0.06) for column in range(4) for row in range(column + 1)]
+    for k, ((x, y), color) in enumerate(zip(rack, colors)):
+        parts.append(lpm.lathe(f"ball{k}", [(0.004, 0), (radius, radius), (0.004, 2 * radius)], segments=6, at=(x, y, 0.42), color=P[color]))
+    parts.append(lpm.lathe("cue_ball", [(0.004, 0), (radius, radius), (0.004, 2 * radius)], segments=6, at=(-0.4, 0.02, 0.42), color=P["white"]))
+    return parts
+
+
 def prize_wheel(rng):
     parts = [block("foot", -0.25, 0.25, -0.15, 0.15, 0, 0.06, P["panel"]), block("post", -0.04, 0.04, -0.04, 0.04, 0.06, 0.4, P["metal"]),
              vertical_disc("rim", 0.36, 0.06, (0, 0, 0.55), P["cabinet"], 16)]
@@ -143,7 +163,7 @@ def vending_machine(rng):
 if __name__ == "__main__":
     export_all({
         "air-hockey": air_hockey, "arcade-machine": arcade_machine, "basketball-game": basketball, "cash-register": cash_register,
-        "claw-machine": claw_machine, "dance-machine": dance_machine, "pinball": pinball, "prize-wheel": prize_wheel,
+        "claw-machine": claw_machine, "dance-machine": dance_machine, "pinball": pinball, "pool-table": pool_table, "prize-wheel": prize_wheel,
         "ticket-machine": ticket_machine, "vending-machine": vending_machine,
         "floor": lambda rng: checker_floor(P, "floor", "floor_dark"),
         "wall": lambda rng: thick_wall(P, "wall", "band", "plinth", "wall_cap"),

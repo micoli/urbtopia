@@ -7087,6 +7087,16 @@
     ],
     "flush": true
   },
+  "mini-arcade-pool-table": {
+    "file": "mini-arcade/pool-table",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "flush": true
+  },
   "mini-arcade-prize-wheel": {
     "file": "mini-arcade/prize-wheel",
     "source": "managed",
@@ -9265,22 +9275,6 @@
     "author": "Poly by Google",
     "url": "https://poly.pizza/m/3Xf6ko_eSAC",
     "note": "Palace"
-  },
-  "poly-pizza-pool-table": {
-    "file": "poly.pizza/pool-table",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Evol-Love",
-    "url": "https://poly.pizza/m/7GzmqI1M0fC",
-    "footprint": [
-      2,
-      1
-    ],
-    "fit": {
-      "width": 1.9,
-      "height": 0.9
-    },
-    "note": "Pool Table"
   },
   "poly-pizza-santo-spirito-fountain": {
     "file": "poly.pizza/santo-spirito-fountain",
