@@ -1,10 +1,13 @@
-import { copyThresholds, maxCopies, nextCopyCost, ownedCopies, totalCitizens, type BuildingType } from '../../core';
+import { copyThresholds, maxCopies, nextCopyCost, ownedCopies, totalCitizens, type BuildingType, type GameState } from '../../core';
 import { t } from '../../i18n/t';
 import { UrbsAmount } from '../common/UrbsAmount';
-import { useGame } from '../common/hooks';
 
-export function BuildLimitRow({ type }: { type: BuildingType }) {
-  const state = useGame((store) => store.state);
+interface BuildLimitRowProps {
+  type: BuildingType;
+  state: GameState;
+}
+
+export function BuildLimitRow({ type, state }: BuildLimitRowProps) {
   const owned = ownedCopies(state, type);
   const max = maxCopies(type);
   const citizens = totalCitizens(state);

@@ -155,3 +155,47 @@ body {
 .guide-swatch-a { background: #4d8dbd; }
 .guide-swatch-b { background: #c75a50; }
 .guide-swatch-c { background: #858f78; }
+
+.guide-content h4 {
+  @apply mt-6 mb-2 text-base font-semibold;
+}
+
+.guide-rules > .codex-entry-name:first-child {
+  @apply mt-0 mb-3 text-3xl font-semibold tracking-tight sm:text-4xl;
+}
+
+.guide-rules > .codex-entry-name:first-child + p {
+  @apply text-lg text-muted;
+}
+
+.guide-rules table {
+  @apply block max-w-full overflow-x-auto;
+}
+
+.guide-content .eco-number-field {
+  @apply my-4 flex items-center gap-3 text-sm;
+}
+
+.guide-content .eco-number-control {
+  @apply inline-flex items-center gap-2;
+}
+
+.guide-content .eco-number-value {
+  @apply min-w-8 text-center font-semibold tabular-nums;
+}
+
+.guide-content .icon-button,
+.guide-content [role="radiogroup"] > button,
+.guide-content [role="group"] > button {
+  @apply cursor-pointer rounded-full border border-line bg-surface px-3 py-1 text-sm text-ink transition-colors hover:border-accent disabled:cursor-default disabled:opacity-40;
+}
+
+.guide-content [role="radiogroup"]:not([class*="grid"]),
+.guide-content [role="group"]:not(.eco-number-field) {
+  @apply my-4 flex flex-wrap gap-2;
+}
+
+.guide-content [role="radiogroup"] > button[aria-checked="true"],
+.guide-content [role="group"] > button[aria-pressed="true"] {
+  @apply border-accent bg-accent text-accent-ink;
+}

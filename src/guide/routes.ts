@@ -1,4 +1,5 @@
 import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexEntry, type CodexId, type CodexSection } from '../codex/catalog';
+import { CODEX_PAGES, type CodexPage } from '../codex/pages';
 import type { Language } from '../i18n/prefsStore';
 import { MESSAGES, type MessageKey } from '../i18n/messages';
 
@@ -7,7 +8,8 @@ export type GuidePage =
   | { kind: 'home' }
   | { kind: 'codexIndex' }
   | { kind: 'codexSection'; section: CodexSection }
-  | { kind: 'codexEntry'; id: CodexId };
+  | { kind: 'codexEntry'; id: CodexId }
+  | { kind: 'rules'; id: CodexPage };
 
 export type GuideSection = 'gettingStarted' | 'mechanics' | 'codex' | 'glossary';
 
@@ -34,6 +36,8 @@ export const codexSectionPathOf = (language: Language, section: CodexSection): s
 
 export const codexEntryPathOf = (language: Language, entry: CodexEntry): string => `${codexSectionPathOf(language, entry.section)}${kebabOf(entry.id)}/`;
 
+export const rulesPathOf = (language: Language, id: CodexPage): string => `${language}/mechanics/${kebabOf(id)}/`;
+
 export const codexEntryOf = (id: CodexId): CodexEntry => CODEX_ENTRIES.find(entry => entry.id === id)!;
 
 export const GUIDE_ROUTES: readonly GuideRoute[] = [
@@ -43,11 +47,13 @@ export const GUIDE_ROUTES: readonly GuideRoute[] = [
     { path: `${language}/codex/`, language, page: { kind: 'codexIndex' } },
     ...CODEX_SECTIONS.map((section): GuideRoute => ({ path: codexSectionPathOf(language, section), language, page: { kind: 'codexSection', section } })),
     ...CODEX_ENTRIES.map((entry): GuideRoute => ({ path: codexEntryPathOf(language, entry), language, page: { kind: 'codexEntry', id: entry.id } })),
+    ...CODEX_PAGES.map(({ id }): GuideRoute => ({ path: rulesPathOf(language, id), language, page: { kind: 'rules', id } })),
   ]),
 ];
 
 export function sectionOf({ page }: GuideRoute): GuideSection | null {
   if (page.kind === 'codexIndex' || page.kind === 'codexSection' || page.kind === 'codexEntry') return 'codex';
+  if (page.kind === 'rules') return 'mechanics';
   return null;
 }
 

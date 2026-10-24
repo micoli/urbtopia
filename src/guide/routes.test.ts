@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CODEX_ENTRIES, CODEX_SECTIONS } from '../codex/catalog';
+import { CODEX_PAGES } from '../codex/pages';
 import { docsRootOf, gameRootOf, GUIDE_LANGUAGES, GUIDE_ROUTES, guideRouteOf, hrefOf, translatedPathOf } from './routes';
 
 describe('guideRouteOf', () => {
@@ -33,11 +34,12 @@ describe('translatedPathOf', () => {
 });
 
 describe('route catalogue', () => {
-  it('gives every Codex entry and section one page per language', () => {
+  it('gives every Codex entry, section and rule page one page per language', () => {
     for (const language of GUIDE_LANGUAGES) {
       const routes = GUIDE_ROUTES.filter(route => route.language === language);
       for (const entry of CODEX_ENTRIES) expect(routes.filter(route => route.page.kind === 'codexEntry' && route.page.id === entry.id), entry.id).toHaveLength(1);
       for (const section of CODEX_SECTIONS) expect(routes.filter(route => route.page.kind === 'codexSection' && route.page.section === section), section).toHaveLength(1);
+      for (const { id } of CODEX_PAGES) expect(routes.filter(route => route.page.kind === 'rules' && route.page.id === id), id).toHaveLength(1);
     }
   });
 

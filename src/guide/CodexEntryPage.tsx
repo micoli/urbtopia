@@ -9,6 +9,7 @@ import { CropFacts } from '../ui/codex/CropFacts';
 import { LevelFacts } from '../ui/codex/LevelFacts';
 import { ColorPicker } from './ColorPicker';
 import type { GuideData } from './guideData';
+import { RelatedRules } from './RelatedRules';
 import { useReaderState } from './reader/useReaderState';
 import { codexEntryOf, gameRootOf, type GuideRoute } from './routes';
 
@@ -56,6 +57,7 @@ export function CodexEntryPage({ route, id, data }: CodexEntryPageProps) {
           <AnnualEventFacts id={entry.id} />
         </div>
       </div>
+      <RelatedRules route={route} section={entry.section} />
     </article>
   );
 }
