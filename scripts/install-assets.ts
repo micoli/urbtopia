@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { DEFINITION_MODEL_FILES, MANAGED_MODELS_DIR, MODELS_DIR, POLY_PIZZA_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS } from './assetPacks.ts';
-import { managedModelFile, managedModelKeys, polyPizzaModelKeys } from './managedModels.ts';
+import { MANAGED_MODELS_DIR, MODELS_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS } from './assetPacks.ts';
+import { managedModelFile, managedModelKeys } from './managedModels.ts';
 import { convertQuaterniusPack, type QuaterniusPack } from './quaternius.ts';
 
 const force = process.argv.includes('--force');
@@ -49,23 +49,8 @@ function installManagedModels(): void {
   console.log(`✓ managed models: ${keys.length} files`);
 }
 
-function installPolyPizzaModels(): void {
-  const definitionModels = new Set(DEFINITION_MODEL_FILES);
-  const keys = polyPizzaModelKeys().filter(key => definitionModels.has(key));
-  for (const key of keys) {
-    const slug = key.slice('poly.pizza/'.length);
-    const data = readFileSync(join(POLY_PIZZA_DIR, slug, `${slug}.glb`));
-    const target = join(MODELS_DIR, `${key}.glb`);
-    if (!force && existsSync(target) && readFileSync(target).equals(data)) continue;
-    mkdirSync(dirname(target), { recursive: true });
-    writeFileSync(target, data);
-  }
-  console.log(`✓ poly.pizza models: ${keys.length} files`);
-}
-
 try {
   installManagedModels();
-  installPolyPizzaModels();
   for (const pack of QUATERNIUS_PACKS) await installQuaterniusPack(pack);
 } catch (error) {
   console.error(`\nAsset install failed: ${error instanceof Error ? error.message : error}`);

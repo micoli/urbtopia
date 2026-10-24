@@ -20,7 +20,7 @@ export type ModelDefinitions = Record<string, ModelEntry>;
 
 export interface ModelCatalog {
   models: ModelDefinitions;
-  // Whether the game can install the file: a model of an installable pack, a hand-made or a Poly Pizza model.
+  // Whether the game can install the file: a model of an installable pack or a hand-made model.
   ships: (file: string) => boolean;
 }
 

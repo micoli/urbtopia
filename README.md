@@ -33,8 +33,7 @@ npm run dev      # http://localhost:5173, prepares models and codex previews fir
 | `npm run preview` | Serve the production build |
 | `npm test` | Unit and property tests (Vitest) |
 | `npm run typecheck` / `npm run lint` | TypeScript and ESLint |
-| `npm run assets` | Install the 3D models into `public/models` (copies the hand-made and Poly Pizza models, converts the Quaternius ones) |
-| `npm run assets:fetch` | Refresh the Poly Pizza models (see [Assets](#assets)) |
+| `npm run assets` | Install the 3D models into `public/models` (copies the hand-made models, converts the Quaternius ones) |
 | `npm run assets:prototypes` | Copy the models the prototypes load (render-bench, touch-ux) |
 | `npm run assets:editor` | Game editor: edit buildings (`assets/defs/`) and Model definitions (`assets/models.json`) with live validation, browse every model source, import assets |
 | `?bypass-tutorial` (URL parameter) | Starts a new game without the tutorial; use it in end-to-end and Playwright tests, e.g. `http://localhost:5173/?bypass-tutorial` |
@@ -123,18 +122,12 @@ The product spec and the work breakdown live in [`.scratch/urbix-mvp`](.scratch/
 
 Most 3D models are made in Blender from Python recipes and versioned as GLB in `assets/managed-models/<theme>/<name>/` (one folder per model: GLB, .blend, and the recipe or the shared recipe of its family). `npm run assets` copies them as is to `public/models/<theme>/`, which is generated and ignored by git, so installing and building never need the network.
 
-Crops and farm buildings come from two Quaternius packs, versioned in `assets/quaternus/`. They ship FBX only, so `npm run assets` converts the models the scene uses to GLB (scaled to one tile) with the three.js FBX loader, keeping a single GLTF loader at runtime.
-
-A few models come from Poly Pizza, versioned in `assets/poly.pizza/` with their license; `npm run assets:fetch` refreshes them. The assets editor (`npm run assets:editor`) reads every source directly, including Quaternius packs with no models selected for the game.
+The game ships only these hand-made models. The assets editor (`npm run assets:editor`) reads every source directly and can import a Quaternius FBX zip into `assets/quaternus/` for browsing; `npm run assets` would convert any of its models a Game object uses to GLB with the three.js FBX loader, keeping a single GLTF loader at runtime.
 
 The [`prototypes`](prototypes) folder holds throwaway prototypes (render benchmark, touch UX, casino simulator) that informed the design. Only their sources are versioned; `npm run assets:prototypes` copies the models they load.
 
 ## Credits
 
-3D models: made for the game, unless listed below. The look of many of them is inspired by the **[Kenney](https://kenney.nl)** kits.
-
-3D models of crops and farm buildings: **[Quaternius](https://quaternius.com)**, released under CC0 1.0 Universal (public domain), from the Farm Crops and Farm Buildings packs.
-
-Models from Poly Pizza are credited one by one in the game's Credits dialog.
+3D models: made for the game, unless listed below. The look of many of them is inspired by the **[Kenney](https://kenney.nl)** kits and the **[Quaternius](https://quaternius.com)** packs.
 
 Built with [three.js](https://threejs.org), [React](https://react.dev), [Zustand](https://github.com/pmndrs/zustand), [Vite](https://vite.dev), [Vitest](https://vitest.dev), [fast-check](https://fast-check.dev) and [fflate](https://github.com/101arrowz/fflate).

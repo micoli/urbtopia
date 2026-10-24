@@ -1,6 +1,6 @@
 import { t } from '../../i18n/t';
 import { dialogStore } from '../../store/dialogStore';
-import { OTHER_MODEL_CREDITS, PACK_CREDITS, POLY_PIZZA_CREDITS } from '../../credits/credits';
+import { OTHER_MODEL_CREDITS } from '../../credits/credits';
 import { ActionButton } from '../common/ActionButton';
 import { Dialog } from '../common/Dialog';
 import { useDialogs } from '../common/hooks';
@@ -14,26 +14,6 @@ export function CreditsDialog() {
       <Dialog.Title>{t('credits.title')}</Dialog.Title>
       <Dialog.Body>
         <div className="credits-body">
-          <ul className="credits-list">
-            {PACK_CREDITS.map((pack) => (
-              <li key={pack.name}>
-                <a href={pack.url} target="_blank" rel="noreferrer">{pack.name}</a> ({pack.licence})
-              </li>
-            ))}
-          </ul>
-          {POLY_PIZZA_CREDITS.length > 0 && (
-            <>
-              <h3>{t('credits.polyPizza')}</h3>
-              <ul className="credits-list">
-                {POLY_PIZZA_CREDITS.map((credit) => (
-                  <li key={credit.model}>
-                    {credit.url ? <a href={credit.url} target="_blank" rel="noreferrer">{credit.title}</a> : credit.title} {t('credits.by')} {credit.author} (
-                    {credit.licenseUrl ? <a href={credit.licenseUrl} target="_blank" rel="noreferrer">{credit.license}</a> : credit.license})
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
           {OTHER_MODEL_CREDITS.length > 0 && (
             <>
               <h3>{t('credits.otherModels')}</h3>

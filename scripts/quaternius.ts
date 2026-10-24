@@ -4,13 +4,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import type { ExtractedFile } from './extractPack.ts';
 
-export const TILE_FILL = 0.85;
-export const MAX_PLANT_HEIGHT = 1.6;
-export const PRODUCE_WIDTH = 0.4;
 export const BUILDING_FILL = 1.9;
-
-// A tier of the Casino is fitted to its footprint width, one column wider per Tier.
-export const CASINO_MODEL_WIDTHS: Record<string, number> = { '2Story_Stairs_Mat': 1.9, '2Story_Wide_Mat': 2.85, '2Story_Wide_2Doors_Mat': 5.7 };
 
 export interface QuaterniusPack {
   name: string;
@@ -24,12 +18,6 @@ export interface Size {
   depth: number;
 }
 
-export function plantScale(stages: readonly Size[]): number {
-  const footprint = Math.max(...stages.map((size) => Math.max(size.width, size.depth)));
-  const height = Math.max(...stages.map((size) => size.height));
-  return Math.min(TILE_FILL / footprint, MAX_PLANT_HEIGHT / height);
-}
-
 export function fitScale(size: Size, width: number): number {
   return width / Math.max(size.width, size.depth);
 }
@@ -41,10 +29,6 @@ interface ModelPlan {
   placement: Placement;
   turned?: boolean;
 }
-
-const growthStage = /^(.+)_[1-4]$/;
-const suffixes = ['_1', '_2', '_3', '_4', '_Crop', '_Harvested'];
-const speciesOf = (name: string): string => suffixes.reduce((base, suffix) => (base.endsWith(suffix) ? base.slice(0, -suffix.length) : base), name).replace(/^Flowers$/, 'Flower');
 
 function installFileReader(): void {
   if (typeof globalThis.FileReader !== 'undefined') return;
@@ -109,22 +93,8 @@ async function toGlb(model: THREE.Object3D): Promise<Uint8Array> {
   return new Uint8Array(glb as ArrayBuffer);
 }
 
-function plansOf(pack: QuaterniusPack, sizes: Map<string, Size>): Map<string, ModelPlan> {
-  const plans = new Map<string, ModelPlan>();
-  if (pack.name === 'crops') {
-    const scaleBySpecies = new Map<string, number>();
-    for (const species of new Set(pack.files.map(speciesOf))) {
-      const stages = [...sizes].filter(([name]) => growthStage.test(name) && speciesOf(name) === species).map(([, size]) => size);
-      scaleBySpecies.set(species, plantScale(stages));
-    }
-    for (const name of pack.files) {
-      const produce = name.endsWith('_Crop');
-      plans.set(name, produce ? { scaleOf: (size) => fitScale(size, PRODUCE_WIDTH), placement: 'centered' } : { scaleOf: () => scaleBySpecies.get(speciesOf(name))!, placement: 'origin' });
-    }
-    return plans;
-  }
-  for (const name of pack.files) plans.set(name, { scaleOf: (size) => fitScale(size, CASINO_MODEL_WIDTHS[name] ?? BUILDING_FILL), placement: 'centered', turned: true });
-  return plans;
+function plansOf(pack: QuaterniusPack): Map<string, ModelPlan> {
+  return new Map(pack.files.map((name) => [name, { scaleOf: (size: Size) => fitScale(size, BUILDING_FILL), placement: 'centered' as const, turned: true }]));
 }
 
 export async function convertQuaterniusPack(archive: Uint8Array, pack: QuaterniusPack): Promise<ExtractedFile[]> {
@@ -136,7 +106,7 @@ export async function convertQuaterniusPack(archive: Uint8Array, pack: Quaterniu
   const models = new Map(pack.files.map((name) => [name, parseFbx(byName.get(name)!)]));
   for (const model of models.values()) standardMaterials(model);
   const sizes = new Map([...models].map(([name, model]) => [name, sizeOf(model)]));
-  const plans = plansOf(pack, sizes);
+  const plans = plansOf(pack);
   return Promise.all(pack.files.map(async (name) => {
     const plan = plans.get(name)!;
     const placed = place(models.get(name)!, plan.scaleOf(sizes.get(name)!), plan.placement, plan.turned);
