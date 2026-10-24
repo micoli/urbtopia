@@ -3,6 +3,8 @@ const texts = {
   'guide.intro': ['Every building, road and crop of Urbtopia, and how the city works.', 'Tous les bâtiments, routes et cultures d’Urbtopia, et le fonctionnement de la ville.'],
   'guide.chooseLanguage': ['Choose a language', 'Choisissez une langue'],
   'guide.codex': ['Codex', 'Codex'],
+  'guide.codexIntro': ['Every building, crop, road and water construction, with its unlock threshold and the figures of each Tier.', 'Chaque bâtiment, culture, route et construction sur l’eau, avec son seuil de déblocage et les chiffres de chaque niveau.'],
+  'guide.entryCount': ['{count} entries', '{count} fiches'],
   'guide.gettingStarted': ['Getting started', 'Premiers pas'],
   'guide.mechanics': ['Mechanics', 'Mécaniques'],
   'guide.glossary': ['Glossary', 'Glossaire'],

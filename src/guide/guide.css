@@ -69,6 +69,22 @@ body {
     @apply m-0 rounded-xl border border-line bg-panel p-4;
   }
 
+  .guide-tiles {
+    @apply m-0 mt-8 grid list-none grid-cols-2 gap-4 p-0 sm:grid-cols-3 xl:grid-cols-4;
+  }
+
+  .guide-tile {
+    @apply flex h-full flex-col gap-1 rounded-xl border border-line bg-panel p-3 text-ink no-underline transition-colors hover:border-accent;
+  }
+
+  .guide-thumb {
+    @apply flex cursor-pointer flex-col items-center gap-1 rounded-lg border border-line bg-panel p-1.5 text-ink transition-colors hover:border-accent aria-checked:border-accent aria-checked:ring-1 aria-checked:ring-accent;
+  }
+
+  .guide-swatch {
+    @apply size-3.5 rounded-full;
+  }
+
   .guide-eyebrow {
     @apply mb-1 text-xs font-semibold tracking-wider text-accent uppercase;
   }
@@ -130,3 +146,8 @@ body {
 .guide-content .codex-level-gain {
   @apply ml-1.5 text-positive;
 }
+
+.guide-swatch-default { background: #6c9e57; }
+.guide-swatch-a { background: #4d8dbd; }
+.guide-swatch-b { background: #c75a50; }
+.guide-swatch-c { background: #858f78; }

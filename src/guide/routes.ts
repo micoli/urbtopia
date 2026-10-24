@@ -1,8 +1,13 @@
-import type { CodexId } from '../codex/catalog';
+import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexEntry, type CodexId, type CodexSection } from '../codex/catalog';
 import type { Language } from '../i18n/prefsStore';
-import type { MessageKey } from '../i18n/messages';
+import { MESSAGES, type MessageKey } from '../i18n/messages';
 
-export type GuidePage = { kind: 'languageChoice' } | { kind: 'home' } | { kind: 'codexEntry'; id: CodexId };
+export type GuidePage =
+  | { kind: 'languageChoice' }
+  | { kind: 'home' }
+  | { kind: 'codexIndex' }
+  | { kind: 'codexSection'; section: CodexSection }
+  | { kind: 'codexEntry'; id: CodexId };
 
 export type GuideSection = 'gettingStarted' | 'mechanics' | 'codex' | 'glossary';
 
@@ -21,18 +26,34 @@ export const GUIDE_SECTIONS: readonly { id: GuideSection; title: MessageKey }[] 
   { id: 'glossary', title: 'guide.glossary' },
 ];
 
-const CODEX_ENTRY_PATHS: readonly { group: string; slug: string; id: CodexId }[] = [{ group: 'buildings', slug: 'home', id: 'home' }];
+const kebabOf = (name: string): string => name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+
+export const codexSectionSlugOf = (section: CodexSection): string => MESSAGES[section].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+export const codexSectionPathOf = (language: Language, section: CodexSection): string => `${language}/codex/${codexSectionSlugOf(section)}/`;
+
+export const codexEntryPathOf = (language: Language, entry: CodexEntry): string => `${codexSectionPathOf(language, entry.section)}${kebabOf(entry.id)}/`;
+
+export const codexEntryOf = (id: CodexId): CodexEntry => CODEX_ENTRIES.find(entry => entry.id === id)!;
 
 export const GUIDE_ROUTES: readonly GuideRoute[] = [
   { path: '', language: 'en', page: { kind: 'languageChoice' } },
   ...GUIDE_LANGUAGES.flatMap((language): GuideRoute[] => [
     { path: `${language}/`, language, page: { kind: 'home' } },
-    ...CODEX_ENTRY_PATHS.map(({ group, slug, id }): GuideRoute => ({ path: `${language}/codex/${group}/${slug}/`, language, page: { kind: 'codexEntry', id } })),
+    { path: `${language}/codex/`, language, page: { kind: 'codexIndex' } },
+    ...CODEX_SECTIONS.map((section): GuideRoute => ({ path: codexSectionPathOf(language, section), language, page: { kind: 'codexSection', section } })),
+    ...CODEX_ENTRIES.map((entry): GuideRoute => ({ path: codexEntryPathOf(language, entry), language, page: { kind: 'codexEntry', id: entry.id } })),
   ]),
 ];
 
 export function sectionOf({ page }: GuideRoute): GuideSection | null {
-  if (page.kind === 'codexEntry') return 'codex';
+  if (page.kind === 'codexIndex' || page.kind === 'codexSection' || page.kind === 'codexEntry') return 'codex';
+  return null;
+}
+
+export function codexSectionOf({ page }: GuideRoute): CodexSection | null {
+  if (page.kind === 'codexSection') return page.section;
+  if (page.kind === 'codexEntry') return codexEntryOf(page.id).section;
   return null;
 }
 

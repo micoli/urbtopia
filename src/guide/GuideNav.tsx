@@ -1,39 +1,38 @@
-import { CODEX_ENTRIES } from '../codex/catalog';
+import { CODEX_ENTRIES, CODEX_SECTIONS } from '../codex/catalog';
 import { t } from '../i18n/t';
-import { GUIDE_ROUTES, GUIDE_SECTIONS, hrefOf, sectionOf, type GuideRoute } from './routes';
-import { titleOf } from './titleOf';
+import { GuideNavLink } from './GuideNavLink';
+import { codexEntryPathOf, codexSectionOf, codexSectionPathOf, GUIDE_SECTIONS, type GuideRoute } from './routes';
 
 interface GuideNavProps {
   route: GuideRoute;
 }
 
-function labelOf(route: GuideRoute): string {
-  const { page } = route;
-  if (page.kind === 'codexEntry') return t(CODEX_ENTRIES.find(entry => entry.id === page.id)!.name);
-  return titleOf(route);
-}
-
 export function GuideNav({ route }: GuideNavProps) {
-  const routes = GUIDE_ROUTES.filter(item => item.language === route.language);
+  const { language } = route;
+  const openSection = codexSectionOf(route);
   return (
     <nav aria-label={t('guide.navigation')} className="flex flex-col gap-6">
-      {GUIDE_SECTIONS.map(section => {
-        const links = routes.filter(item => sectionOf(item) === section.id);
-        return (
-          <section key={section.id}>
-            <h2 className="mb-2 px-3 text-xs font-semibold tracking-wider text-muted uppercase">{t(section.title)}</h2>
-            {links.length === 0
-              ? <p className="px-3 text-sm text-muted">{t('guide.comingSoon')}</p>
-              : <ul className="flex flex-col gap-0.5">
-                {links.map(item => (
-                  <li key={item.path}>
-                    <a className="guide-nav-link" href={hrefOf(route, item.path)} aria-current={item.path === route.path ? 'page' : undefined}>{labelOf(item)}</a>
-                  </li>
-                ))}
-              </ul>}
-          </section>
-        );
-      })}
+      {GUIDE_SECTIONS.map(section => (
+        <section key={section.id}>
+          <h2 className="mb-2 px-3 text-xs font-semibold tracking-wider text-muted uppercase">{t(section.title)}</h2>
+          {section.id === 'codex'
+            ? <ul className="flex flex-col gap-0.5">
+              {CODEX_SECTIONS.map(codexSection => (
+                <li key={codexSection}>
+                  <GuideNavLink route={route} path={codexSectionPathOf(language, codexSection)}>{t(codexSection)}</GuideNavLink>
+                  {codexSection === openSection && (
+                    <ul className="my-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-2">
+                      {CODEX_ENTRIES.filter(entry => entry.section === codexSection).map(entry => (
+                        <li key={entry.id}><GuideNavLink route={route} path={codexEntryPathOf(language, entry)}>{t(entry.name)}</GuideNavLink></li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
+            : <p className="px-3 text-sm text-muted">{t('guide.comingSoon')}</p>}
+        </section>
+      ))}
     </nav>
   );
 }

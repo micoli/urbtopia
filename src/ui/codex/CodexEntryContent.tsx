@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { isCrop, totalCitizens } from '../../core';
 import { codexImageKey, isHomeCodexId, type CodexEntry, type CodexManifest } from '../../codex/catalog';
+import { levelCaptionOf } from '../../codex/levelCaption';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { readHomeColor } from '../buildings/homeColor';
@@ -12,11 +13,6 @@ import { LevelFacts } from './LevelFacts';
 interface CodexEntryContentProps {
   entry: CodexEntry;
   manifest: CodexManifest | null;
-}
-
-function captionOf(entry: CodexEntry, level: number): string {
-  if (!isCrop(entry.id)) return t('codex.level').replace('{level}', String(level));
-  return level > 4 ? t('codex.stageReady') : t('codex.stage').replace('{level}', String(level));
 }
 
 export function CodexEntryContent({ entry, manifest }: CodexEntryContentProps) {
@@ -46,7 +42,7 @@ export function CodexEntryContent({ entry, manifest }: CodexEntryContentProps) {
               alt={t('codex.preview').replace('{name}', t(entry.name)).replace('{level}', String(level))}
               onError={() => setFailedImages(levels => [...levels, level])}
             />}
-            <figcaption>{captionOf(entry, level)}</figcaption>
+            <figcaption>{levelCaptionOf(entry, level)}</figcaption>
             {!isCrop(entry.id) && <LevelFacts id={entry.id} level={level} />}
           </figure>
         ))}

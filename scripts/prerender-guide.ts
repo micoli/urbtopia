@@ -33,10 +33,10 @@ async function prerender(): Promise<void> {
   const server = await createServer({ configFile: false, server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' });
   try {
     const { GUIDE_ROUTES, docsRootOf, renderGuidePage } = await server.ssrLoadModule('/src/guide/server.tsx') as GuideServer;
-    for (const route of GUIDE_ROUTES) {
-      const target = join(guideDir, route.path, 'index.html');
+    const pages = GUIDE_ROUTES.map(route => ({ target: join(guideDir, route.path, 'index.html'), html: pageOf(template, route, docsRootOf(route), renderGuidePage(route, manifest)) }));
+    for (const { target, html } of pages) {
       mkdirSync(dirname(target), { recursive: true });
-      writeFileSync(target, pageOf(template, route, docsRootOf(route), renderGuidePage(route, manifest)));
+      writeFileSync(target, html);
     }
     console.log(`✓ Guide: ${GUIDE_ROUTES.length} pages`);
   } finally {

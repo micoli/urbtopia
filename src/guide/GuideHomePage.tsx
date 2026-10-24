@@ -11,7 +11,7 @@ export function GuideHomePage({ route }: GuideHomePageProps) {
     <article className="max-w-3xl">
       <h1>{t('guide.name')}</h1>
       <p className="text-lg text-muted">{t('guide.intro')}</p>
-      <ul className="not-prose mt-10 grid gap-4 sm:grid-cols-2">
+      <ul className="mt-10 grid list-none gap-4 p-0 sm:grid-cols-2">
         {GUIDE_SECTIONS.map(section => {
           const first = routes.find(item => sectionOf(item) === section.id);
           return (
