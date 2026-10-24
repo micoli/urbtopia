@@ -1,6 +1,6 @@
 # Vocabulary, Guide article and docs
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 03
 

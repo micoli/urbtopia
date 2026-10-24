@@ -1,6 +1,6 @@
 # Congestion Diagnosis
 
-Status: ready-for-agent
+Status: resolved
 
 ## Problem
 

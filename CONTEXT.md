@@ -405,6 +405,14 @@ _Avoid_: Avenue, road type
 The state of a Road section whose Commuters exceed its Lane capacity. The bottleneck of a Commute is its lowest-capacity section. A connected set of Roads that serves Homes but no workplace, or workplaces but no Home, is a disconnected section, marked with a red cross; the Commute of its Homes is at maximum Congestion.
 _Avoid_: Jam, bouchon
 
+**Diagnosis**:
+The short ranked list of Causes the game gives for a state of the city, such as why the roads jam or why Homes lack Waste coverage. It is derived from the figures the simulation already computes, in plain rules, never from a free-text generator. Shown at most three Causes at a time, heaviest first, and nothing when the city is fine.
+_Avoid_: Advice, analysis, report
+
+**Cause**:
+One entry of a Diagnosis: a statement with its figures, a weight (the share of the city's Citizens it hurts) and, when it has a place, a spot on the map to show. A Cause is not a Sanction, a Petition or a Need.
+_Avoid_: Reason, problem
+
 **Power plant**:
 A building that supplies power to the city, using wind, water, the heat of the ground or coal. The code name `powerPlant` is the wind one; the others have their own names. Backup generation is a separate service role.
 _Avoid_: Generator, energy station
