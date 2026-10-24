@@ -21,13 +21,13 @@ export function libraryEntries(manifest: Record<string, string[]>, sourceByPack:
   )
 }
 
-// The same rule as the build: a model of an installable pack, a hand-made or a Poly Pizza model can ship with the game.
+// The same rule as the build: a model of an installable pack or a hand-made model can ship with the game.
 export function shipsFrom(manifest: Record<string, string[]>, sourceByPack: Record<string, ModelSource | undefined>, installablePacks: readonly string[]): (file: string) => boolean {
   const packs = new Set(installablePacks)
   const sources = new Map(libraryEntries(manifest, sourceByPack, {}).map(({ file, source }) => [file, source]))
   return file => {
     const source = sources.get(file)
-    return source === 'managed' || source === 'poly.pizza' || (source !== undefined && packs.has(file.split('/')[0]!))
+    return source === 'managed' || (source !== undefined && packs.has(file.split('/')[0]!))
   }
 }
 

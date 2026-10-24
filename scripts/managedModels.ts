@@ -1,6 +1,6 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { basename, join } from 'node:path';
-import { MANAGED_MODELS_DIR, POLY_PIZZA_DIR } from './assetPacks.ts';
+import { MANAGED_MODELS_DIR } from './assetPacks.ts';
 
 // A managed model lives in its own folder: <theme>/<name>/<name>.glb, next to its .blend, recipe and tone textures.
 export function managedModelFile(key: string, suffix = '.glb', directory = MANAGED_MODELS_DIR): string {
@@ -17,11 +17,4 @@ export function managedModelKeys(directory = MANAGED_MODELS_DIR, prefix = ''): s
 
 export function reservedModelKeys(directory = MANAGED_MODELS_DIR): string[] {
   return managedModelKeys(directory).filter(key => existsSync(managedModelFile(key, '.reserved', directory)));
-}
-
-export function polyPizzaModelKeys(directory = POLY_PIZZA_DIR): string[] {
-  return readdirSync(directory, { withFileTypes: true })
-    .filter(entry => entry.isDirectory())
-    .map(entry => `poly.pizza/${entry.name}`)
-    .sort();
 }

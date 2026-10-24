@@ -1,17 +1,12 @@
 import { useEffect, useState } from 'react'
 import { ImportDialog } from './ImportDialog'
 
-interface Dropped {
-  file?: File
-  url?: string
-}
+const carriesAsset = (event: DragEvent) => [...(event.dataTransfer?.types ?? [])].includes('Files')
 
-const carriesAsset = (event: DragEvent) => [...(event.dataTransfer?.types ?? [])].some(type => type === 'Files' || type === 'text/uri-list')
-
-// Native drops (files from the desktop, links from a browser) open the import flow; dnd-kit drags inside the page are not native.
+// Native drops of files from the desktop open the import flow; dnd-kit drags inside the page are not native.
 export function FileDropZone() {
   const [hovering, setHovering] = useState(false)
-  const [dropped, setDropped] = useState<Dropped | null>(null)
+  const [dropped, setDropped] = useState<File | null>(null)
 
   useEffect(() => {
     let depth = 0
@@ -31,9 +26,7 @@ export function FileDropZone() {
       depth = 0
       setHovering(false)
       const file = event.dataTransfer?.files[0]
-      const url = event.dataTransfer?.getData('text/uri-list') || event.dataTransfer?.getData('text/plain')
-      if (file && /\.(glb|zip)$/i.test(file.name)) return setDropped({ file })
-      if (url?.includes('poly.pizza')) setDropped({ url: url.trim() })
+      if (file && /\.(glb|zip)$/i.test(file.name)) setDropped(file)
     }
     window.addEventListener('dragenter', onEnter)
     window.addEventListener('dragleave', onLeave)
@@ -51,10 +44,10 @@ export function FileDropZone() {
     <>
       {hovering && (
         <div className="pointer-events-none fixed inset-3 z-30 flex items-center justify-center rounded-2xl border-2 border-dashed border-indigo-500 bg-indigo-50/80">
-          <p className="text-lg font-semibold text-indigo-700">Drop a GLB, a zip or a Poly Pizza link to import it</p>
+          <p className="text-lg font-semibold text-indigo-700">Drop a GLB or a zip to import it</p>
         </div>
       )}
-      {dropped && <ImportDialog initialFile={dropped.file} initialUrl={dropped.url} onClose={() => setDropped(null)} />}
+      {dropped && <ImportDialog initialFile={dropped} onClose={() => setDropped(null)} />}
     </>
   )
 }

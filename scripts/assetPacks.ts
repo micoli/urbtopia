@@ -34,13 +34,9 @@ const extraPacks = readExtraPacks();
 
 // Quaternius packs (CC0) ship FBX only: they are converted to GLB at install time so the runtime keeps one GLTF loader.
 export const QUATERNIUS_PACKS: QuaterniusPack[] = [
-  { name: 'crops', archive: 'crops.zip', files: [] },
-  { name: 'buildings', archive: 'buildings.zip', files: [] },
   ...extraPacks.quaternius.map(({ name, archive }) => ({ name, archive, files: [] })),
 ].map(withDefinitionModels);
 
 export const QUATERNIUS_ARCHIVES_DIR = 'assets/quaternus';
 export const MODELS_DIR = 'public/models';
-export const POLY_PIZZA_LIST_ID = 'Ml5TEydHhn';
-export const POLY_PIZZA_DIR = 'assets/poly.pizza';
 export const MANAGED_MODELS_DIR = 'assets/managed-models';

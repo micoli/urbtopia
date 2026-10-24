@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS, readExtraPacks } from '../../scripts/assetPacks.ts'
 import { extractFbx, type ExtractedFile } from '../../scripts/extractPack.ts'
@@ -19,10 +19,10 @@ const unpacked = (name: string, extract: () => ExtractedFile[]) => {
   return files
 }
 
-// Packs added from the editor are written to extra-packs.json after the config was loaded, so they are read again here.
+// Packs added from the editor are written to extra-packs.json after the config was loaded, so they are read again here; an archive that no longer exists is skipped.
 const quaterniusPacks = () => {
   const extras = readExtraPacks().quaternius.filter((extra) => !QUATERNIUS_PACKS.some((pack) => pack.name === extra.name))
-  return [...QUATERNIUS_PACKS, ...extras]
+  return [...QUATERNIUS_PACKS, ...extras].filter((pack) => existsSync(join(QUATERNIUS_ARCHIVES_DIR, pack.archive)))
 }
 
 const quaterniusFiles = (name: string, archive: string) =>
