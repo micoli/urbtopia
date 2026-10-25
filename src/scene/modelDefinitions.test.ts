@@ -1,7 +1,7 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { MANAGED_MODELS_DIR, POLY_PIZZA_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS } from '../../scripts/assetPacks';
+import { MANAGED_MODELS_DIR, QUATERNIUS_ARCHIVES_DIR, QUATERNIUS_PACKS } from '../../scripts/assetPacks';
 import { extractFbx } from '../../scripts/extractPack';
 import { managedModelKeys } from '../../scripts/managedModels';
 import { modelProblems } from '../../scripts/modelsFile';
@@ -18,7 +18,6 @@ const keysBySource = (): Map<string, ModelSource> => {
     for (const { path } of files) add(`${pack.name}/${path.slice(0, -'.fbx'.length)}`, 'quaternius');
   }
   for (const key of managedModelKeys(MANAGED_MODELS_DIR)) add(key, 'managed');
-  if (existsSync(POLY_PIZZA_DIR)) for (const slug of readdirSync(POLY_PIZZA_DIR)) add(`poly.pizza/${slug}`, 'poly.pizza');
   return keys;
 };
 

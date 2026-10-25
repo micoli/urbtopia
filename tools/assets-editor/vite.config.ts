@@ -4,12 +4,11 @@ import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, type Plugin } from 'vite'
-import { MANAGED_MODELS_DIR, POLY_PIZZA_DIR } from '../../scripts/assetPacks.ts'
+import { MANAGED_MODELS_DIR } from '../../scripts/assetPacks.ts'
 import { archiveFile, archiveManifest, contentTypeOf } from './archiveSources.ts'
 import { managedModelFile, managedModelKeys } from '../../scripts/managedModels.ts'
 import { deleteDefinition, readCatalog, saveDefinitions } from '../../scripts/definitionsStore.ts'
-import { addGlb, addPack, addPolyPizzaModel, removeModel, renameModel } from '../../scripts/assetOperations.ts'
-import { fetchPolyPizzaModel } from '../../scripts/polyPizza.ts'
+import { addGlb, addPack, removeModel, renameModel } from '../../scripts/assetOperations.ts'
 
 const editorDir = dirname(fileURLToPath(import.meta.url))
 const miscellaneousDir = join(editorDir, 'miscellaneous')
@@ -23,7 +22,7 @@ const liveManifestData = (): Record<string, string[]> => {
   const manifest = archiveManifest()
   const miscellaneous = miscellaneousNamesIn(miscellaneousDir)
   if (miscellaneous.length) manifest.miscellaneous = miscellaneous
-  return Object.assign(manifest, managedPacks(), polyPizzaPacks())
+  return Object.assign(manifest, managedPacks())
 }
 
 // Builds the manifest on each request: archives are unzipped on demand and the miscellaneous folder (subfolders included) is rescanned, so dropped-in OBJ, 3MF and GLB files show up without a restart.
@@ -44,17 +43,7 @@ const managedPacks = (): Record<string, string[]> => {
   return packs
 }
 
-const polyPizzaSlugs = () => (existsSync(POLY_PIZZA_DIR) ? readdirSync(POLY_PIZZA_DIR, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort() : [])
-
-const polyPizzaPacks = (): Record<string, string[]> => {
-  const slugs = polyPizzaSlugs()
-  return slugs.length ? { 'poly.pizza': slugs } : {}
-}
-
-const sourcesByPack = () => ({
-  ...Object.fromEntries(Object.keys(managedPacks()).map((name) => [name, 'managed'])),
-  'poly.pizza': 'poly.pizza',
-})
+const sourcesByPack = () => Object.fromEntries(Object.keys(managedPacks()).map((name) => [name, 'managed']))
 
 // Maps a served path such as buildings/mosque.glb or buildings/mosque.tone-b.png to its file in the model's own folder.
 const managedFileOf = (path: string) => {
@@ -62,7 +51,7 @@ const managedFileOf = (path: string) => {
   return managedModelFile(key, suffix)
 }
 
-// Serves models without copying them: archive entries from memory, hand-made and Poly Pizza GLBs from assets/, miscellaneous files from their folder.
+// Serves models without copying them: archive entries from memory, hand-made GLBs from assets/, miscellaneous files from their folder.
 const liveSources = (): Plugin => ({
   name: 'live-asset-sources',
   configureServer(server) {
@@ -74,9 +63,8 @@ const liveSources = (): Plugin => ({
         res.setHeader('Content-Type', contentTypeOf(path))
         return res.end(archived)
       }
-      const slug = path.match(/^poly\.pizza\/([^/]+)\.glb$/)?.[1]
-      const root = slug ? POLY_PIZZA_DIR : pack === 'miscellaneous' ? miscellaneousDir : MANAGED_MODELS_DIR
-      const file = slug ? join(POLY_PIZZA_DIR, slug, `${slug}.glb`) : pack === 'miscellaneous' ? join(root, rest.join('/')) : managedFileOf(path)
+      const root = pack === 'miscellaneous' ? miscellaneousDir : MANAGED_MODELS_DIR
+      const file = pack === 'miscellaneous' ? join(root, rest.join('/')) : managedFileOf(path)
       if (!resolve(file).startsWith(resolve(root)) || !existsSync(file)) return next()
       res.setHeader('Content-Type', contentTypeOf(file))
       res.end(readFileSync(file))
@@ -128,7 +116,6 @@ const operation = <Body,>(run: (body: Body) => Promise<unknown> | unknown): Oper
 
 const OPERATIONS: Record<string, Operation> = {
   'add-glb': operation(({ dataBase64, ...input }: WithFile<Parameters<typeof addGlb>[0]>) => addGlb({ ...input, data: bytesOf(dataBase64) })),
-  'add-poly': operation(async ({ input, license }: { input: string; license: string }) => addPolyPizzaModel(await fetchPolyPizzaModel(input), license)),
   'add-pack': operation(({ dataBase64, ...input }: WithFile<Parameters<typeof addPack>[0]>) => addPack({ ...input, data: bytesOf(dataBase64) })),
   remove: operation(({ key, usedKeys }: { key: string; usedKeys: string[] }) => removeModel(key, usedKeys)),
   'rename-model': operation(({ from, to }: { from: string; to: string }) => renameModel(from, to)),

@@ -166,28 +166,28 @@ describe('renderItemsOf farming', () => {
 
   it('shows the growth stage of a planted Crop from the clock', () => {
     const planted = (minutes: number) => withFields([{ x: 50, y: 60, crop: { species: 'wheat', plantedAt: base.lastSeen - minutes * 60_000 } }]);
-    expect(fieldModels(planted(0))).toContain('crops/Wheat_1');
-    expect(fieldModels(planted(2))).toContain('crops/Wheat_2');
-    expect(fieldModels(planted(3))).toContain('crops/Wheat_3');
-    expect(fieldModels(planted(4))).toContain('crops/Wheat_4');
+    expect(fieldModels(planted(0))).toContain('crops/wheat-1');
+    expect(fieldModels(planted(2))).toContain('crops/wheat-2');
+    expect(fieldModels(planted(3))).toContain('crops/wheat-3');
+    expect(fieldModels(planted(4))).toContain('crops/wheat-4');
   });
 
   it('shows the mature plant with its produce when ready, and only the plant when the species has no produce model', () => {
     const ready = (species: 'apple' | 'grass') => withFields([{ x: 50, y: 60, crop: { species, plantedAt: 0 } }]);
-    expect(fieldModels(ready('apple'))).toEqual(expect.arrayContaining(['crops/Apple_4', 'crops/Apple_Crop']));
-    expect(fieldModels(ready('grass'))).toContain('crops/Grass_4');
+    expect(fieldModels(ready('apple'))).toEqual(expect.arrayContaining(['crops/apple-4', 'crops/apple-crop']));
+    expect(fieldModels(ready('grass'))).toContain('crops/grass-4');
     expect(fieldModels(ready('grass')).filter((model) => model.endsWith('_Crop'))).toEqual([]);
   });
 
   it('shows the after-harvest stage on a just harvested tile, when the species has one', () => {
     const harvested = [{ x: 50, y: 60, species: 'apple' as const }, { x: 51, y: 60, species: 'wheat' as const }];
     const state = withFields([{ x: 50, y: 60 }, { x: 51, y: 60 }]);
-    expect(fieldModels(state, harvested)).toContain('crops/Apple_Harvested');
-    expect(fieldModels(state, harvested).filter((model) => model.startsWith('crops/Wheat'))).toEqual([]);
+    expect(fieldModels(state, harvested)).toContain('crops/apple-harvested');
+    expect(fieldModels(state, harvested).filter((model) => model.startsWith('crops/wheat'))).toEqual([]);
   });
 
   it('preloads every crop model', () => {
-    expect(MODEL_KEYS).toEqual(expect.arrayContaining(['crops/Wheat_1', 'crops/Palmtree_1'.replace('Palmtree', 'PalmTree'), 'crops/Flowers_Crop', 'farm/Barn']));
+    expect(MODEL_KEYS).toEqual(expect.arrayContaining(['crops/wheat-1', 'crops/palmtree-1', 'crops/flowers-crop', 'buildings/farm-barn-2x2-tone-a']));
   });
 });
 

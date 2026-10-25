@@ -17,8 +17,7 @@
         "type": "string",
         "enum": [
           "quaternius",
-          "managed",
-          "poly.pizza"
+          "managed"
         ]
       },
       "license": {

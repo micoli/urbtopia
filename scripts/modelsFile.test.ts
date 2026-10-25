@@ -34,7 +34,7 @@ describe('models file', () => {
   it('names a model after its file', () => {
     expect(modelIdOf('suburban/building-type-k')).toBe('suburban-building-type-k');
     expect(modelIdOf('buildings/2Story_Stairs_Mat')).toBe('buildings-2story-stairs-mat');
-    expect(modelIdOf('poly.pizza/pool-table')).toBe('poly-pizza-pool-table');
+    expect(modelIdOf('mini-arcade/pool-table')).toBe('mini-arcade-pool-table');
   });
 });
 

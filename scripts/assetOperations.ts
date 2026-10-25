@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, rmSync, rmdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { managedModelFile } from './managedModels.ts';
-import { EXTRA_PACKS_FILE, MANAGED_MODELS_DIR, POLY_PIZZA_DIR, QUATERNIUS_ARCHIVES_DIR, readExtraPacks } from './assetPacks.ts';
+import { EXTRA_PACKS_FILE, MANAGED_MODELS_DIR, QUATERNIUS_ARCHIVES_DIR, readExtraPacks } from './assetPacks.ts';
 import { extractFbx } from './extractPack.ts';
 import { writeCollection, writeSingleton } from './collectionFiles.ts';
 import { DEFS_ROOT, collectionDir, readCollection, readSingleton, singletonFileIn } from './collectionRead.ts';
@@ -9,18 +9,16 @@ import { COLLECTION_NAMES, specOf, type Definition } from './collections.ts';
 import { SINGLETON_NAMES, singletonSpecOf } from './singletons.ts';
 import { pathOf, setIn } from './paths.ts';
 import { MODELS_FILE, idByFile, modelIdOf, readModels, writeModels } from './modelsFile.ts';
-import { licenseText, type PolyPizzaModel } from './polyPizza.ts';
 
 export interface AssetPaths {
   managed: string;
-  polyPizza: string;
   quaternius: string;
   models: string;
   extraPacks: string;
   defs: string;
 }
 
-export const ASSET_PATHS: AssetPaths = { managed: MANAGED_MODELS_DIR, polyPizza: POLY_PIZZA_DIR, quaternius: QUATERNIUS_ARCHIVES_DIR, models: MODELS_FILE, extraPacks: EXTRA_PACKS_FILE, defs: DEFS_ROOT };
+export const ASSET_PATHS: AssetPaths = { managed: MANAGED_MODELS_DIR, quaternius: QUATERNIUS_ARCHIVES_DIR, models: MODELS_FILE, extraPacks: EXTRA_PACKS_FILE, defs: DEFS_ROOT };
 
 export interface Attribution {
   license: string;
@@ -55,19 +53,6 @@ export function addGlb(input: { category: string; name: string; data: Uint8Array
   return key;
 }
 
-export function addPolyPizzaModel(model: PolyPizzaModel, license: string, paths = ASSET_PATHS): string {
-  requireLicense(license);
-  const key = `poly.pizza/${model.slug}`;
-  const directory = join(paths.polyPizza, model.slug);
-  if (existsSync(directory)) throw new Error(`${key} already exists`);
-  const models = readModels(paths.models);
-  mkdirSync(directory, { recursive: true });
-  writeFileSync(join(directory, `${model.slug}.glb`), model.glb);
-  writeFileSync(join(directory, 'license.txt'), licenseText({ title: model.title, author: model.author, publicID: model.url.split('/m/')[1] ?? '', licence: license.trim() }));
-  writeModels({ ...models, [modelIdOf(key)]: defined({ file: key, source: 'poly.pizza' as const, license: license.trim(), author: model.author, url: model.url }) }, paths.models);
-  return key;
-}
-
 export function addPack(input: { kind: 'quaternius'; name: string; archive: string; data: Uint8Array }, paths = ASSET_PATHS): void {
   requireName('pack name', input.name);
   if (!/^[\w.-]+\.zip$/.test(input.archive)) throw new Error(`Not a zip file name: ${input.archive}`);
@@ -86,15 +71,11 @@ export function addPack(input: { kind: 'quaternius'; name: string; archive: stri
 export function removeModel(key: string, usedKeys: readonly string[], paths = ASSET_PATHS): void {
   if (usedKeys.includes(key)) throw new Error(`${key} is used in the game`);
   const models = readModels(paths.models);
-  const polySlug = key.match(/^poly\.pizza\/([^/]+)$/)?.[1];
-  if (polySlug) rmSync(join(paths.polyPizza, polySlug), { recursive: true, force: true });
-  else {
-    const directory = dirname(managedModelFile(key, '.glb', paths.managed));
-    if (!existsSync(managedModelFile(key, '.glb', paths.managed))) throw new Error(`${key} is not a hand-made or Poly Pizza model`);
-    rmSync(directory, { recursive: true });
-    const theme = dirname(directory);
-    if (readdirSync(theme).length === 0) rmdirSync(theme);
-  }
+  const directory = dirname(managedModelFile(key, '.glb', paths.managed));
+  if (!existsSync(managedModelFile(key, '.glb', paths.managed))) throw new Error(`${key} is not a hand-made model`);
+  rmSync(directory, { recursive: true });
+  const theme = dirname(directory);
+  if (readdirSync(theme).length === 0) rmdirSync(theme);
   if (!idByFile(models).has(key)) return;
   writeModels(Object.fromEntries(Object.entries(models).filter(([, { file }]) => file !== key)), paths.models);
 }

@@ -938,6 +938,34 @@
       }
     }
   },
+  "buildings-farm-barn-2x2-tone-a": {
+    "file": "buildings/farm-barn-2x2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
   "buildings-ferris-wheel-3x5-8f": {
     "file": "buildings/ferris-wheel-3x5-8f",
     "source": "managed",
@@ -5467,509 +5495,509 @@
     }
   },
   "crops-apple-1": {
-    "file": "crops/Apple_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/apple-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-apple-2": {
-    "file": "crops/Apple_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/apple-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-apple-3": {
-    "file": "crops/Apple_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/apple-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-apple-4": {
-    "file": "crops/Apple_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/apple-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-apple-crop": {
-    "file": "crops/Apple_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/apple-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-apple-harvested": {
-    "file": "crops/Apple_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/apple-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bamboo-1": {
-    "file": "crops/Bamboo_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bamboo-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bamboo-2": {
-    "file": "crops/Bamboo_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bamboo-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bamboo-3": {
-    "file": "crops/Bamboo_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bamboo-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bamboo-4": {
-    "file": "crops/Bamboo_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bamboo-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bamboo-crop": {
-    "file": "crops/Bamboo_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bamboo-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-beet-1": {
-    "file": "crops/Beet_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/beet-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-beet-2": {
-    "file": "crops/Beet_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/beet-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-beet-3": {
-    "file": "crops/Beet_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/beet-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-beet-4": {
-    "file": "crops/Beet_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/beet-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-beet-crop": {
-    "file": "crops/Beet_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/beet-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bushberries-1": {
-    "file": "crops/BushBerries_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bushberries-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bushberries-2": {
-    "file": "crops/BushBerries_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bushberries-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bushberries-3": {
-    "file": "crops/BushBerries_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bushberries-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bushberries-4": {
-    "file": "crops/BushBerries_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bushberries-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bushberries-crop": {
-    "file": "crops/BushBerries_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bushberries-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-bushberries-harvested": {
-    "file": "crops/BushBerries_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/bushberries-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-cactus-1": {
-    "file": "crops/Cactus_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/cactus-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-cactus-2": {
-    "file": "crops/Cactus_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/cactus-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-cactus-3": {
-    "file": "crops/Cactus_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/cactus-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-cactus-4": {
-    "file": "crops/Cactus_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/cactus-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-cactus-crop": {
-    "file": "crops/Cactus_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/cactus-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-cactus-harvested": {
-    "file": "crops/Cactus_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/cactus-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-carrot-1": {
-    "file": "crops/Carrot_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/carrot-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-carrot-2": {
-    "file": "crops/Carrot_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/carrot-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-carrot-3": {
-    "file": "crops/Carrot_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/carrot-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-carrot-4": {
-    "file": "crops/Carrot_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/carrot-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-carrot-crop": {
-    "file": "crops/Carrot_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/carrot-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-corn-1": {
-    "file": "crops/Corn_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/corn-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-corn-2": {
-    "file": "crops/Corn_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/corn-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-corn-3": {
-    "file": "crops/Corn_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/corn-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-corn-4": {
-    "file": "crops/Corn_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/corn-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-corn-crop": {
-    "file": "crops/Corn_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/corn-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-corn-harvested": {
-    "file": "crops/Corn_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/corn-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-flower-1": {
-    "file": "crops/Flower_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/flower-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-flower-2": {
-    "file": "crops/Flower_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/flower-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-flower-3": {
-    "file": "crops/Flower_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/flower-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-flower-4": {
-    "file": "crops/Flower_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/flower-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-flowers-crop": {
-    "file": "crops/Flowers_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/flowers-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-flowers-harvested": {
-    "file": "crops/Flowers_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/flowers-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-grass-1": {
-    "file": "crops/Grass_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/grass-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-grass-2": {
-    "file": "crops/Grass_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/grass-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-grass-3": {
-    "file": "crops/Grass_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/grass-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-grass-4": {
-    "file": "crops/Grass_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/grass-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-lettuce-1": {
-    "file": "crops/Lettuce_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/lettuce-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-lettuce-2": {
-    "file": "crops/Lettuce_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/lettuce-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-lettuce-3": {
-    "file": "crops/Lettuce_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/lettuce-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-lettuce-4": {
-    "file": "crops/Lettuce_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/lettuce-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-lettuce-crop": {
-    "file": "crops/Lettuce_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/lettuce-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-lettuce-harvested": {
-    "file": "crops/Lettuce_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/lettuce-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-mushroom-1": {
-    "file": "crops/Mushroom_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/mushroom-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-mushroom-2": {
-    "file": "crops/Mushroom_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/mushroom-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-mushroom-3": {
-    "file": "crops/Mushroom_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/mushroom-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-mushroom-4": {
-    "file": "crops/Mushroom_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/mushroom-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-mushroom-crop": {
-    "file": "crops/Mushroom_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/mushroom-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-mushroom-harvested": {
-    "file": "crops/Mushroom_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/mushroom-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-orange-1": {
-    "file": "crops/Orange_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/orange-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-orange-2": {
-    "file": "crops/Orange_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/orange-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-orange-3": {
-    "file": "crops/Orange_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/orange-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-orange-4": {
-    "file": "crops/Orange_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/orange-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-orange-crop": {
-    "file": "crops/Orange_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/orange-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-orange-harvested": {
-    "file": "crops/Orange_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/orange-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-palmtree-1": {
-    "file": "crops/PalmTree_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/palmtree-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-palmtree-2": {
-    "file": "crops/PalmTree_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/palmtree-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-palmtree-3": {
-    "file": "crops/PalmTree_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/palmtree-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-palmtree-4": {
-    "file": "crops/PalmTree_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/palmtree-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-palmtree-crop": {
-    "file": "crops/PalmTree_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/palmtree-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-palmtree-harvested": {
-    "file": "crops/PalmTree_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/palmtree-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-pumpkin-1": {
-    "file": "crops/Pumpkin_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/pumpkin-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-pumpkin-2": {
-    "file": "crops/Pumpkin_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/pumpkin-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-pumpkin-3": {
-    "file": "crops/Pumpkin_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/pumpkin-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-pumpkin-4": {
-    "file": "crops/Pumpkin_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/pumpkin-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-pumpkin-crop": {
-    "file": "crops/Pumpkin_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/pumpkin-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-pumpkin-harvested": {
-    "file": "crops/Pumpkin_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/pumpkin-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-rice-1": {
-    "file": "crops/Rice_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/rice-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-rice-2": {
-    "file": "crops/Rice_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/rice-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-rice-3": {
-    "file": "crops/Rice_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/rice-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-rice-4": {
-    "file": "crops/Rice_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/rice-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-rice-crop": {
-    "file": "crops/Rice_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/rice-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-tomato-1": {
-    "file": "crops/Tomato_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/tomato-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-tomato-2": {
-    "file": "crops/Tomato_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/tomato-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-tomato-3": {
-    "file": "crops/Tomato_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/tomato-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-tomato-4": {
-    "file": "crops/Tomato_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/tomato-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-tomato-crop": {
-    "file": "crops/Tomato_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/tomato-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-tomato-harvested": {
-    "file": "crops/Tomato_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/tomato-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-watermelon-1": {
-    "file": "crops/Watermelon_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/watermelon-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-watermelon-2": {
-    "file": "crops/Watermelon_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/watermelon-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-watermelon-3": {
-    "file": "crops/Watermelon_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/watermelon-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-watermelon-4": {
-    "file": "crops/Watermelon_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/watermelon-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-watermelon-crop": {
-    "file": "crops/Watermelon_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/watermelon-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-watermelon-harvested": {
-    "file": "crops/Watermelon_Harvested",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/watermelon-harvested",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-wheat-1": {
-    "file": "crops/Wheat_1",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/wheat-1",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-wheat-2": {
-    "file": "crops/Wheat_2",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/wheat-2",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-wheat-3": {
-    "file": "crops/Wheat_3",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/wheat-3",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-wheat-4": {
-    "file": "crops/Wheat_4",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/wheat-4",
+    "source": "managed",
+    "license": "Own work"
   },
   "crops-wheat-crop": {
-    "file": "crops/Wheat_Crop",
-    "source": "quaternius",
-    "license": "CC0"
+    "file": "crops/wheat-crop",
+    "source": "managed",
+    "license": "Own work"
   },
   "cult-buddhist-temple": {
     "file": "cult/buddhist-temple",
@@ -6467,19 +6495,6 @@
     ],
     "rotationOffset": 180
   },
-  "farm-barn": {
-    "file": "farm/Barn",
-    "source": "quaternius",
-    "license": "CC0",
-    "footprint": [
-      2,
-      2
-    ],
-    "fit": {
-      "width": 2,
-      "height": 2
-    }
-  },
   "furniture-bathtub": {
     "file": "furniture/bathtub",
     "source": "managed",
@@ -6868,6 +6883,7 @@
     "file": "holiday/bench",
     "source": "managed",
     "license": "Own work",
+    "scale": 0.25,
     "flush": true
   },
   "holiday-lantern": {
@@ -7068,6 +7084,16 @@
     "license": "Own work",
     "footprint": [
       1,
+      1
+    ],
+    "flush": true
+  },
+  "mini-arcade-pool-table": {
+    "file": "mini-arcade/pool-table",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
       1
     ],
     "flush": true
@@ -8946,414 +8972,6 @@
     "source": "managed",
     "license": "Own work",
     "flush": true
-  },
-  "poly-pizza-above-ground-swimming-pool": {
-    "file": "poly.pizza/above-ground-swimming-pool",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/2R5gjVusWRN",
-    "note": "Above ground swimming pool"
-  },
-  "poly-pizza-archway": {
-    "file": "poly.pizza/archway",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/erbvRcGd7YA",
-    "note": "Archway"
-  },
-  "poly-pizza-ballpark-8p3rzdaoytp": {
-    "file": "poly.pizza/ballpark-8p3rzdaoytp",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/8P3RzdaoYTP",
-    "note": "Ballpark"
-  },
-  "poly-pizza-bank": {
-    "file": "poly.pizza/bank",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/f1GOJtZFtsR",
-    "note": "Bank"
-  },
-  "poly-pizza-bar": {
-    "file": "poly.pizza/bar",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/cr_gfObT2-R",
-    "note": "Bar"
-  },
-  "poly-pizza-barn-0qthkuzrye": {
-    "file": "poly.pizza/barn-0qthkuzrye",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/0QTh_KUZRYE",
-    "note": "Barn"
-  },
-  "poly-pizza-barn-6oqd70uscs": {
-    "file": "poly.pizza/barn-6oqd70uscs",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/6OQd70uscs-",
-    "note": "Barn"
-  },
-  "poly-pizza-big-barn": {
-    "file": "poly.pizza/big-barn",
-    "source": "poly.pizza",
-    "license": "CC0 1.0",
-    "author": "Quaternius",
-    "url": "https://poly.pizza/m/q1N3xn2SpC",
-    "note": "Big Barn"
-  },
-  "poly-pizza-casino": {
-    "file": "poly.pizza/casino",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/ch4RRNmqTUI",
-    "note": "Casino"
-  },
-  "poly-pizza-chickencoop": {
-    "file": "poly.pizza/chickencoop",
-    "source": "poly.pizza",
-    "license": "CC0 1.0",
-    "author": "Quaternius",
-    "url": "https://poly.pizza/m/DM0F8siLam",
-    "note": "ChickenCoop"
-  },
-  "poly-pizza-cinema": {
-    "file": "poly.pizza/cinema",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/c-5balfj4bu",
-    "note": "Cinema"
-  },
-  "poly-pizza-cloister-garden": {
-    "file": "poly.pizza/cloister-garden",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Bruno Oliveira",
-    "url": "https://poly.pizza/m/9kOXKJvTgKS",
-    "note": "Cloister Garden"
-  },
-  "poly-pizza-club": {
-    "file": "poly.pizza/club",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/bnNROJXnfsP",
-    "note": "Club"
-  },
-  "poly-pizza-colosseum": {
-    "file": "poly.pizza/colosseum",
-    "source": "poly.pizza",
-    "license": "CC0 1.0",
-    "author": "CreativeTrio",
-    "url": "https://poly.pizza/m/83ftBPyiSf",
-    "note": "Colosseum"
-  },
-  "poly-pizza-concert-stage": {
-    "file": "poly.pizza/concert-stage",
-    "source": "poly.pizza",
-    "license": "CC0 1.0",
-    "author": "iPoly3D",
-    "url": "https://poly.pizza/m/BQPFzsjXJF",
-    "note": "Concert Stage"
-  },
-  "poly-pizza-dettweiler-block-stage-no-fx": {
-    "file": "poly.pizza/dettweiler-block-stage-no-fx",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Ulric Dettweiler",
-    "url": "https://poly.pizza/m/1oeJ9IH1igP",
-    "note": "Dettweiler Block Stage (No FX)"
-  },
-  "poly-pizza-ferris-wheel-5kivenxn5cw": {
-    "file": "poly.pizza/ferris-wheel-5kivenxn5cw",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/5KiVEnXN5Cw",
-    "note": "Ferris wheel"
-  },
-  "poly-pizza-ferris-wheel-6cepszjxbw": {
-    "file": "poly.pizza/ferris-wheel-6cepszjxbw",
-    "source": "poly.pizza",
-    "license": "CC0 1.0",
-    "author": "CreativeTrio",
-    "url": "https://poly.pizza/m/6CepsZjXBw",
-    "note": "Ferris Wheel"
-  },
-  "poly-pizza-fire-engine": {
-    "file": "poly.pizza/fire-engine",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "J-Toastie",
-    "url": "https://poly.pizza/m/P4XkeNmBLj",
-    "note": "Fire Engine"
-  },
-  "poly-pizza-fire-station-with-fire-trucks": {
-    "file": "poly.pizza/fire-station-with-fire-trucks",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Ivan Klus",
-    "url": "https://poly.pizza/m/akzBrALzbei",
-    "note": "Fire Station with Fire Trucks"
-  },
-  "poly-pizza-fire-truck": {
-    "file": "poly.pizza/fire-truck",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Ivan Klus",
-    "url": "https://poly.pizza/m/7iHJ519SwxG",
-    "note": "Fire Truck"
-  },
-  "poly-pizza-football-stadium": {
-    "file": "poly.pizza/football-stadium",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/6TZCkGh76m5",
-    "note": "Football stadium"
-  },
-  "poly-pizza-fountain": {
-    "file": "poly.pizza/fountain",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/0YTMlW0CUHU",
-    "note": "Fountain"
-  },
-  "poly-pizza-greek-temple": {
-    "file": "poly.pizza/greek-temple",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Alexandre Thomas (Ashtom)",
-    "url": "https://poly.pizza/m/cdMQnl19MB9",
-    "note": "Greek Temple"
-  },
-  "poly-pizza-hospital": {
-    "file": "poly.pizza/hospital",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/asNvyjkcSG1",
-    "note": "Hospital"
-  },
-  "poly-pizza-japanese-torii": {
-    "file": "poly.pizza/japanese-torii",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Jacques Fourie",
-    "url": "https://poly.pizza/m/cXyQGUwmlA5",
-    "note": "Japanese Torii"
-  },
-  "poly-pizza-lighthouse-6gfe4vkpyaj": {
-    "file": "poly.pizza/lighthouse-6gfe4vkpyaj",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/6gFE4VkpYAJ",
-    "note": "Lighthouse"
-  },
-  "poly-pizza-lighthouse-b7ttdcccjcf": {
-    "file": "poly.pizza/lighthouse-b7ttdcccjcf",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/b7tTDCCCjcF",
-    "note": "Lighthouse"
-  },
-  "poly-pizza-lighthouse-bk72chfpgo": {
-    "file": "poly.pizza/lighthouse-bk72chfpgo",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/bk72ChfpGo-",
-    "note": "Lighthouse"
-  },
-  "poly-pizza-lighthouse-c1hm3zs8u": {
-    "file": "poly.pizza/lighthouse-c1hm3zs8u",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "CG ART Creation",
-    "url": "https://poly.pizza/m/c1-hm3Zs-8U",
-    "note": "Lighthouse"
-  },
-  "poly-pizza-market-stalls-compact": {
-    "file": "poly.pizza/market-stalls-compact",
-    "source": "poly.pizza",
-    "license": "CC0 1.0",
-    "author": "Quaternius",
-    "url": "https://poly.pizza/m/fmHUuX9AS3",
-    "note": "Market Stalls Compact"
-  },
-  "poly-pizza-mayan-ziggurat": {
-    "file": "poly.pizza/mayan-ziggurat",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Bruno Oliveira",
-    "url": "https://poly.pizza/m/0rEriuH2sVr",
-    "note": "Mayan Ziggurat"
-  },
-  "poly-pizza-mine": {
-    "file": "poly.pizza/mine",
-    "source": "poly.pizza",
-    "license": "CC0 1.0",
-    "author": "Quaternius",
-    "url": "https://poly.pizza/m/wOJ61Fa0Lt",
-    "note": "Mine"
-  },
-  "poly-pizza-pagoda-1zs7ucaad4j": {
-    "file": "poly.pizza/pagoda-1zs7ucaad4j",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/1zS7ucaAd4J",
-    "note": "Pagoda"
-  },
-  "poly-pizza-pagoda-d1m5ncmbudi": {
-    "file": "poly.pizza/pagoda-d1m5ncmbudi",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/d1M5ncMBUDi",
-    "note": "Pagoda"
-  },
-  "poly-pizza-pagoda-ehoi2vgw1ol": {
-    "file": "poly.pizza/pagoda-ehoi2vgw1ol",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/eHOI2VgW1ol",
-    "note": "Pagoda"
-  },
-  "poly-pizza-palace-1d1nn3qb1e7": {
-    "file": "poly.pizza/palace-1d1nn3qb1e7",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "jeremy",
-    "url": "https://poly.pizza/m/1d1nN3qb1E7",
-    "note": "Palace"
-  },
-  "poly-pizza-palace-3xf6koesac": {
-    "file": "poly.pizza/palace-3xf6koesac",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/3Xf6ko_eSAC",
-    "note": "Palace"
-  },
-  "poly-pizza-pool-table": {
-    "file": "poly.pizza/pool-table",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Evol-Love",
-    "url": "https://poly.pizza/m/7GzmqI1M0fC",
-    "footprint": [
-      2,
-      1
-    ],
-    "fit": {
-      "width": 1.9,
-      "height": 0.9
-    },
-    "note": "Pool Table"
-  },
-  "poly-pizza-santo-spirito-fountain": {
-    "file": "poly.pizza/santo-spirito-fountain",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Don Carson",
-    "url": "https://poly.pizza/m/7b_tCaBRLCI",
-    "note": "Santo Spirito Fountain"
-  },
-  "poly-pizza-school-bus": {
-    "file": "poly.pizza/school-bus",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Kyle Li",
-    "url": "https://poly.pizza/m/2_1dZHNPJqJ",
-    "note": "SCHOOL BUS"
-  },
-  "poly-pizza-stadium": {
-    "file": "poly.pizza/stadium",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Zsky",
-    "url": "https://poly.pizza/m/FNOmnIZJLs",
-    "note": "Stadium"
-  },
-  "poly-pizza-stadium-seats": {
-    "file": "poly.pizza/stadium-seats",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Zsky",
-    "url": "https://poly.pizza/m/KAHX68dbXO",
-    "note": "Stadium Seats"
-  },
-  "poly-pizza-stage": {
-    "file": "poly.pizza/stage",
-    "source": "poly.pizza",
-    "license": "CC0 1.0",
-    "author": "iPoly3D",
-    "url": "https://poly.pizza/m/dGRAisemWy",
-    "note": "Stage"
-  },
-  "poly-pizza-swimming-pool": {
-    "file": "poly.pizza/swimming-pool",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Poly by Google",
-    "url": "https://poly.pizza/m/fZTY7mCI_lv",
-    "note": "Swimming pool"
-  },
-  "poly-pizza-temple-for-tilt-integration": {
-    "file": "poly.pizza/temple-for-tilt-integration",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "kris pilcher",
-    "url": "https://poly.pizza/m/2c77k-iimuh",
-    "note": "temple for tilt integration"
-  },
-  "poly-pizza-temple-of-prophecy-ruined": {
-    "file": "poly.pizza/temple-of-prophecy-ruined",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Duncan Anderson",
-    "url": "https://poly.pizza/m/7LV6QMkGBNo",
-    "note": "Temple of Prophecy: Ruined"
-  },
-  "poly-pizza-village-market": {
-    "file": "poly.pizza/village-market",
-    "source": "poly.pizza",
-    "license": "CC0 1.0",
-    "author": "Quaternius",
-    "url": "https://poly.pizza/m/0TsHLxX6CB",
-    "note": "Village Market"
-  },
-  "poly-pizza-water-tank": {
-    "file": "poly.pizza/water-tank",
-    "source": "poly.pizza",
-    "license": "CC0 1.0",
-    "author": "Quaternius",
-    "url": "https://poly.pizza/m/XVB8vUbnZb",
-    "note": "Water Tank"
-  },
-  "poly-pizza-water-tower": {
-    "file": "poly.pizza/water-tower",
-    "source": "poly.pizza",
-    "license": "CC-BY 3.0",
-    "author": "Alex Safayan",
-    "url": "https://poly.pizza/m/9JYqZyTiVkU",
-    "note": "Water Tower"
   },
   "roads-road-bend": {
     "file": "streets/road-bend",

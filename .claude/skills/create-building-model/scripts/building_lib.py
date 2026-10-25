@@ -3000,6 +3000,92 @@ def build_silo(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+def extrude_y(name, outline, y0, y1, color):
+    """Extrude a closed (x, z) outline along Y from y0 to y1."""
+    count = len(outline)
+    verts = [(x, y0, z) for x, z in outline] + [(x, y1, z) for x, z in outline]
+    faces = [(i, (i + 1) % count, count + (i + 1) % count, count + i) for i in range(count)]
+    faces.append(tuple(reversed(range(count))))
+    faces.append(tuple(range(count, 2 * count)))
+    return lpm._object(name, _bm(verts, faces), color)
+
+
+def build_barn(spec, out_dir):
+    """A farm barn filling its 2x2 cell: red walls with white corner posts and battens under a khaki gambrel roof whose gable faces the front, a big sliding door with a white cross brace and a hayloft door above it, three plain windows per side, a ridge cupola and two hay bales by the door, no slab."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    red, dark_red, dark, glass, white, hay = (index(n) for n in ("vtone1", "vtone2", "udark", "glass_blue", "white", "usand"))
+    roof = index("vtone3")
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    width, depth, wall_height = 1.9, 1.78, 0.42
+    half = width / 2
+    cy = 0.06
+    front, back = cy - depth / 2, cy + depth / 2
+    knee, ridge = 0.75, 0.62
+    parts = [rounded_block("body", width, depth, wall_height, red, 0.03 / depth, at=(0, cy, 0))]
+    gable = [(-half, wall_height), (-knee, wall_height + ridge * 0.55 - 0.02), (0, wall_height + ridge - 0.04), (knee, wall_height + ridge * 0.55 - 0.02), (half, wall_height)]
+    parts.append(extrude_y("gable", gable, front + 0.01, back - 0.01, red))
+    slope = [(-half - 0.02, wall_height), (-knee, wall_height + ridge * 0.6), (0, wall_height + ridge), (knee, wall_height + ridge * 0.6), (half + 0.02, wall_height)]
+    shell = slope + list(reversed(offset_path(slope, -0.035)))
+    parts.append(extrude_y("roof", shell, front - 0.04, back + 0.04, roof))
+    parts.append(extrude_y("roof_edge", [(x, z - 0.012) for x, z in slope] + [(x, z - 0.03) for x, z in reversed(slope)], front - 0.045, front - 0.03, dark))
+
+    def gable_height(x):
+        for (x0, z0), (x1, z1) in zip(gable, gable[1:]):
+            if x0 <= x <= x1:
+                return z0 + (z1 - z0) * (x - x0) / (x1 - x0)
+        return wall_height
+
+    post = 0.035
+    for face_y, direction in ((front, -1), (back, 1)):
+        for x in (-half + post / 2, -0.62, 0.62, half - post / 2):
+            parts.append(lpm.box(f"post_{direction}_{x:.2f}", (post, 0.012, gable_height(x) - 0.01), at=(x, face_y + direction * 0.004, 0.0), color=white))
+    for side in (-1, 1):
+        for y in (front + post / 2, cy - 0.275, cy + 0.275, cy + 0.825, back - post / 2):
+            parts.append(lpm.box(f"batten_{side}_{y:.2f}", (0.012, post, wall_height - 0.01), at=(side * (half + 0.004), y, 0.0), color=white))
+
+    door_w, door_h = 0.8, 0.38
+    parts.append(lpm.box("door", (door_w, 0.014, door_h), at=(0, front - 0.004, 0.0), color=dark_red))
+    door_frame(parts, "door", 0, front, 0.0, door_w, door_h, white, 0.02)
+    def cross_brace(name, cx, bottom, width, height, thickness):
+        """Two white planks crossing corner to corner on a panel of `width` x `height` centred on `cx`."""
+        length = math.hypot(width, height) - 0.03
+        angle = math.degrees(math.atan2(width, height))
+        for sign in (-1, 1):
+            plank = lpm.box(f"{name}_{sign}", (thickness, 0.01, length), at=(0, 0, -length / 2), color=white)
+            lpm.rotate(plank, sign * angle, "Y")
+            lpm.move(plank, cx, front - 0.012, bottom + height / 2)
+            parts.append(plank)
+
+    for half_x in (-1, 1):
+        cross_brace(f"brace_{half_x}", half_x * door_w / 4, 0.0, door_w / 2 - 0.02, door_h - 0.01, 0.022)
+    parts.append(lpm.box("door_split", (0.014, 0.01, door_h), at=(0, front - 0.012, 0.0), color=white))
+
+    loft_w, loft_h, loft_z = 0.26, 0.2, wall_height + 0.06
+    parts.append(lpm.box("loft_door", (loft_w, 0.014, loft_h), at=(0, front - 0.004, loft_z), color=dark_red))
+    door_frame(parts, "loft", 0, front, loft_z, loft_w, loft_h, white, 0.016)
+    cross_brace("loft_brace", 0, loft_z, loft_w - 0.01, loft_h - 0.01, 0.016)
+    parts.append(lpm.box("hoist", (0.03, 0.1, 0.03), at=(0, front - 0.05, wall_height + ridge - 0.08), color=dark))
+
+    for side in (-1, 1):
+        wall_x = side * half
+        for number, y in enumerate((cy - 0.55, cy, cy + 0.55)):
+            parts.append(lpm.box(f"window_{side}_{number}", (0.016, 0.19, 0.19), at=(wall_x + side * 0.003, y, 0.13), color=glass))
+
+    cupola_z = wall_height + ridge - 0.02
+    parts.append(lpm.box("cupola", (0.2, 0.2, 0.12), at=(0, cy, cupola_z), color=red))
+    parts.append(extrude_x("cupola_roof", [(cy - 0.125, cupola_z + 0.12), (cy, cupola_z + 0.2), (cy + 0.125, cupola_z + 0.12)], -0.125, 0.125, roof))
+    parts.append(lpm.box("cupola_vent", (0.12, 0.01, 0.06), at=(0, cy - 0.101, cupola_z + 0.03), color=dark))
+
+    for number, (x, y, lift) in enumerate(((-0.72, front - 0.095, 0.0), (-0.5, front - 0.095, 0.0), (-0.61, front - 0.095, 0.12))):
+        parts.append(lpm.box(f"bale_{number}", (0.2, 0.16, 0.12), at=(x, y, lift), color=hay))
+        parts.append(lpm.box(f"bale_{number}_strap", (0.204, 0.02, 0.122), at=(x, y, lift), color=dark))
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def offset_path(points, distance):
     """Offset an open polyline to its right-hand side (dy, -dx) by `distance`, with mitred joints."""
     normals = []

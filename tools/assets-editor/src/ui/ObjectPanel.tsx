@@ -15,7 +15,7 @@ export function ObjectPanel() {
     return (
       <div className={`${panel} flex h-full min-h-64 flex-col items-center justify-center gap-2 p-8 text-center`}>
         <p className="text-sm font-medium text-zinc-700">Pick a Game object or a model</p>
-        <p className="max-w-sm text-sm text-zinc-500">Edit its definition here; drag models from the library onto a model field, drop a GLB, a zip or a Poly Pizza link anywhere to import it.</p>
+        <p className="max-w-sm text-sm text-zinc-500">Edit its definition here; drag models from the library onto a model field, drop a GLB or a zip anywhere to import it.</p>
       </div>
     )
   if (selection.kind === 'models') return <ModelPanel key={selection.id} id={selection.id} />

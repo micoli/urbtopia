@@ -3,7 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 import { guideMdx } from './build/guideMdx.ts';
 import { guideDevFallback } from './build/guideDevFallback.ts';
-import { stampServiceWorker } from './build/stampServiceWorker';
+import { stampServiceWorker } from './build/stampServiceWorker.ts';
 import { validateDefinitions } from './build/validateDefinitions.ts';
 
 const BUILD_ID = Date.now().toString(36);

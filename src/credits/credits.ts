@@ -1,16 +1,6 @@
 import { MODEL_DEFINITIONS, type ModelDefinition, type ModelSource } from '../scene/modelDefinitions';
 import { MODEL_KEYS } from '../scene/renderItems';
 
-export interface PackCredit {
-  name: string;
-  url: string;
-  licence: string;
-}
-
-export const PACK_CREDITS: PackCredit[] = [
-  { name: 'Quaternius', url: 'https://quaternius.com', licence: 'CC0' },
-];
-
 export interface ModelCredit {
   model: string;
   title: string;
@@ -35,5 +25,4 @@ export function creditsOf(source: ModelSource, usedKeys: readonly string[], defi
     .sort((a, b) => a.title.localeCompare(b.title) || a.author.localeCompare(b.author));
 }
 
-export const POLY_PIZZA_CREDITS = creditsOf('poly.pizza', MODEL_KEYS, MODEL_DEFINITIONS);
 export const OTHER_MODEL_CREDITS = creditsOf('managed', MODEL_KEYS, MODEL_DEFINITIONS);
