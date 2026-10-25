@@ -13,5 +13,6 @@
   "durationMinutes": 20,
   "unlockCitizens": 500,
   "minTier": 1,
-  "value": 9
+  "value": 9,
+  "animal": "animals-alpaca"
 }

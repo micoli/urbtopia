@@ -13,5 +13,6 @@
   "durationMinutes": 14,
   "unlockCitizens": 300,
   "minTier": 1,
-  "value": 5
+  "value": 5,
+  "animal": "animals-goat"
 }

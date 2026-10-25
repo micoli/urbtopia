@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_RAMP_MODEL, BRIDGE_ROAD_MODEL, BRIDGE_SPAN_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { ITEM_MODEL_FILES, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRamps, bridgeRoadKeys, bridgeTiles, isInfrastructureBridge, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, DIRECTION_VECTORS, roundaboutPiece, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, type Coord, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
+import { ANIMAL_MODEL_FILES, ITEM_MODEL_FILES, penAnimalsOf, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRamps, bridgeRoadKeys, bridgeTiles, isInfrastructureBridge, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, DIRECTION_VECTORS, roundaboutPiece, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, type Coord, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -121,6 +121,7 @@ export const MODEL_KEYS: readonly string[] = [
     ...Object.values(BOAT_MODELS),
     ...CROP_IDS.flatMap((species) => cropModelsOf(species)),
     ...ITEM_MODEL_FILES,
+    ...ANIMAL_MODEL_FILES,
   ])
 ];
 
@@ -299,6 +300,16 @@ function solarPanelItems(building: Building, roofModel: string, rotation: number
   });
 }
 
+const PEN_FLOOR = 0.01;
+
+// The animals standing in the Pens of a Livestock farm, one per production running or waiting to be collected.
+function penAnimalItems(building: Building, rotation: number, x: number, z: number): RenderItem[] {
+  return penAnimalsOf(building).map(({ x: penX, z: penZ, animal }) => {
+    const offset = turnedOffset(penX, penZ, rotation);
+    return { model: modelFileOf(animal), x: x + offset.x, z: z + offset.z, rotation, elevation: PEN_FLOOR };
+  });
+}
+
 function buildingItems(state: GameState): RenderItem[] {
   return state.buildings.flatMap((building) => {
     const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
@@ -321,6 +332,7 @@ function buildingItems(state: GameState): RenderItem[] {
       items.push({ model: PARK_TREE_MODEL, x: x + width / 4, z: z + depth / 4, rotation, ...(scale ? { scale } : {}) });
     }
     items.push(...solarPanelItems(building, model, rotation, x, z));
+    items.push(...penAnimalItems(building, rotation, x, z));
     return items;
   });
 }

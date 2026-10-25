@@ -274,3 +274,33 @@ describe('renderItemsOf bridges over infrastructure', () => {
     expect(items.map((item) => item.model)).toEqual(['streets/road-slant-flat-high', 'streets/road-bridge', 'streets/road-bridge', 'streets/road-bridge', 'streets/road-slant-flat-high']);
   });
 });
+
+describe('renderItemsOf Livestock farm pens', () => {
+  const farm = (rotation: 0 | 1 | 2 | 3, queue: GameState['buildings'][number]['queue']): GameState => ({
+    ...newGame({ seed: 'amber-fox-4821', now: 0 }),
+    roads: [],
+    buildings: [{ ...createBuilding(9, 'livestockFarm', 10, 20, rotation), tier: 2, queue }],
+  });
+  const running = (item: 'henEgg' | 'milk'): GameState['buildings'][number]['queue'][number] => ({ item, duration: 60_000, startedAt: 0, done: false, quantity: 1 });
+
+  it('draws no animal while nothing is produced', () => {
+    expect(renderItemsOf(farm(0, [])).map((item) => item.model)).toEqual(['buildings/livestock-farm-2x2-t2-tone-a']);
+  });
+
+  it('draws the animal of each production in its pen, on the floor of the pen', () => {
+    const items = renderItemsOf(farm(0, [running('henEgg'), { ...running('milk'), startedAt: null, done: true }]));
+    expect(items.slice(1)).toEqual([
+      { model: 'animals/hen', x: 11.64, z: 20.26, rotation: 0, elevation: 0.01 },
+      { model: 'animals/cow', x: 11, z: 20.26, rotation: 0, elevation: 0.01 },
+    ]);
+  });
+
+  it('turns the pens with the building', () => {
+    const [, hen] = renderItemsOf(farm(2, [running('henEgg')]));
+    expect(hen).toMatchObject({ model: 'animals/hen', x: 10.36, z: 21.74, rotation: 2 });
+  });
+
+  it('loads every animal model', () => {
+    for (const animal of ['cow', 'sheep', 'goat', 'alpaca', 'hen', 'duck', 'silkworm']) expect(MODEL_KEYS).toContain(`animals/${animal}`);
+  });
+});

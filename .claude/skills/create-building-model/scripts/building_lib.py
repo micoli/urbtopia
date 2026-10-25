@@ -3115,54 +3115,12 @@ def arc_points(cx, cy, radius, start, end, steps):
     return [(cx + radius * math.sin(math.radians(start + (end - start) * i / steps)), cy + radius * math.cos(math.radians(start + (end - start) * i / steps))) for i in range(steps + 1)]
 
 
-LIVESTOCK_ANIMALS = ("cow", "sheep", "hen", "goat", "duck")
-
-
-def livestock_animal(parts, kind, cx, cy, colors, k=1.5):
-    """A small blocky animal standing at (cx, cy), head toward the front (-Y); every size is multiplied by `k`."""
-    white, dark, tan, sun, red, hide = (colors[n] for n in ("white", "dark", "tan", "sun", "red", "hide"))
-
-    def box(name, size, x, y, z, color):
-        parts.append(lpm.box(f"{kind}_{name}", tuple(v * k for v in size), at=(cx + x * k, cy + y * k, z * k), color=color))
-
-    if kind in ("cow", "sheep", "goat"):
-        body_color, head_color = {"cow": (white, white), "sheep": (white, dark), "goat": (tan, tan)}[kind]
-        length, width, height, lift = {"cow": (0.2, 0.11, 0.1, 0.055), "sheep": (0.16, 0.12, 0.1, 0.05), "goat": (0.15, 0.07, 0.075, 0.055)}[kind]
-        parts.append(rounded_block(f"{kind}_body", width * k, length * k, height * k, body_color, 0.2, at=(cx, cy, lift * k)))
-        for x in (-width / 2 + 0.02, width / 2 - 0.02):
-            for y in (-length / 2 + 0.03, length / 2 - 0.03):
-                box(f"leg_{x:.3f}_{y:.3f}", (0.022, 0.022, lift - 0.01), x, y, 0.012, dark)
-        head = {"cow": (0.07, 0.07, 0.07), "sheep": (0.06, 0.065, 0.065), "goat": (0.05, 0.065, 0.06)}[kind]
-        head_z = lift + height - head[2] + 0.015
-        box("head", head, 0, -length / 2 - head[1] / 2 + 0.01, head_z, head_color)
-        if kind == "cow":
-            box("patch", (width + 0.004, 0.07, height * 0.5), 0, 0.02, lift + height * 0.4, dark)
-            box("muzzle", (0.05, 0.02, 0.03), 0, -length / 2 - head[1] + 0.005, head_z, hide)
-            for side in (-1, 1):
-                box(f"horn_{side}", (0.012, 0.012, 0.03), side * 0.032, -length / 2 - 0.02, lift + height + 0.01, sun)
-        if kind == "goat":
-            for side in (-1, 1):
-                box(f"horn_{side}", (0.01, 0.01, 0.035), side * 0.015, -length / 2 - 0.03, lift + height + 0.01, dark)
-        return
-    body = (0.075, 0.1, 0.07) if kind == "hen" else (0.07, 0.11, 0.06)
-    body_color = white if kind == "hen" else sun
-    parts.append(rounded_block(f"{kind}_body", body[0] * k, body[1] * k, body[2] * k, body_color, 0.25, at=(cx, cy, 0.02 * k)))
-    box("tail", (0.03, 0.03, 0.05), 0, body[1] / 2 - 0.01, 0.07 if kind == "hen" else 0.055, body_color)
-    box("head", (0.045, 0.045, 0.05), 0, -body[1] / 2 - 0.01, 0.07, body_color)
-    box("beak", (0.025, 0.025, 0.014), 0, -body[1] / 2 - 0.04, 0.09, red if kind == "duck" else sun)
-    if kind == "hen":
-        box("comb", (0.01, 0.025, 0.02), 0, -body[1] / 2 - 0.01, 0.12, red)
-    for side in (-1, 1):
-        box(f"foot_{side}", (0.012, 0.02, 0.02), side * 0.016, -0.01, 0.0, sun if kind == "duck" else tan)
-
-
 def build_livestock(spec, out_dir):
-    """A livestock farm filling its 2x2 cell: a low red stable with white corner posts and a khaki two-pitch roof at the back (sliding door, two windows, hay bales), and in front a row of up to five fenced pens, one more per Tier, filled from the left and each holding an animal (cow, sheep, hen, goat, duck), no slab."""
+    """A livestock farm filling its 2x2 cell: a low red stable with white corner posts and a khaki two-pitch roof at the back (sliding door, two windows, hay bales), and in front a row of up to five fenced pens, one more per Tier, filled from the left left empty: the game puts an animal in a pen for each production running or waiting to be collected (animal models in `assets/managed-models/animals`), no slab."""
     style = spec.get("style", "urbtopia")
     entries = palette_for(spec, style)
     index = PALETTE_NAMES.index
     red, dark_red, roof, dark, glass, white, hay, trim = (index(n) for n in ("vtone1", "vtone2", "vtone3", "udark", "glass_blue", "white", "usand", "uframe"))
-    colors = {"white": white, "dark": dark, "tan": hay, "sun": index("sun"), "red": index("brick"), "hide": index("tangerine")}
     lpm.reset()
     palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
     width, depth, wall_height = 1.92, 0.6, 0.28
@@ -3210,7 +3168,7 @@ def build_livestock(spec, out_dir):
         parts.append(lpm.box(f"bale_{number}_strap", (0.204, 0.02, 0.122), at=(x, front - 0.09, lift), color=dark))
 
     pen_w, pen_d = 0.6, 0.52
-    slots = ((-0.64, -0.68), (0.0, -0.68), (0.64, -0.68), (-0.64, -0.1), (0.64, -0.1))
+    slots = ((-0.64, -0.7), (0.0, -0.7), (0.64, -0.7), (-0.64, -0.1), (0.64, -0.1))
     tier = min(5, spec["count"])
     for number, (cx, pen_cy) in enumerate(slots[:tier]):
         pen_front, pen_back = pen_cy - pen_d / 2, pen_cy + pen_d / 2
@@ -3224,7 +3182,6 @@ def build_livestock(spec, out_dir):
             for px in (cx - pen_w / 2 + 0.01, cx + pen_w / 2 - 0.01):
                 parts.append(lpm.box(f"pen_{number}_side_rail_{px:.2f}_{z}", (0.012, pen_d - 0.02, 0.014), at=(px, pen_cy, z), color=trim))
         parts.append(lpm.box(f"pen_{number}_trough", (0.2, 0.05, 0.04), at=(cx, pen_back - 0.08, 0.01), color=dark_red))
-        livestock_animal(parts, LIVESTOCK_ANIMALS[number], cx, pen_cy - 0.04, colors)
     ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
     return export_model(ob, spec, out_dir)
 

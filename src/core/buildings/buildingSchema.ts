@@ -73,6 +73,9 @@ const homeBuilding = z.strictObject({
 // A counter lets a production building sell some Goods itself, in its own sales Slots, whatever its Tier.
 const counterSchema = z.strictObject({ slots: z.int().min(1), sells: z.array(filled), saleIntervalFactor: z.number().positive() });
 
+// Where the animals of the Pens stand, as offsets from the center of the footprint in tiles; a Tier shows its first `penCount` Pens, each holding the animal of one production running or waiting to be collected.
+const pensSchema = z.array(z.strictObject({ x: z.number(), z: z.number() })).min(1);
+
 // Workshop, Factory, Packhouse: a higher Tier crafts faster, holds more Slots and yields more per cycle.
 const productionBuilding = z.strictObject({
   kind: z.literal('production'),
@@ -81,7 +84,8 @@ const productionBuilding = z.strictObject({
   ...panelled,
   ...repeatable,
   counter: counterSchema.optional(),
-  tiers: tiersOf({ ...homeLook, durationFactor: z.number().positive(), maxSlots: z.int().min(1), yield: z.int().min(1) }, ['model', 'footprint', 'durationFactor', 'maxSlots', 'yield']),
+  pens: pensSchema.optional(),
+  tiers: tiersOf({ ...homeLook, durationFactor: z.number().positive(), maxSlots: z.int().min(1), yield: z.int().min(1), penCount: count }, ['model', 'footprint', 'durationFactor', 'maxSlots', 'yield']),
 });
 
 // The Farm holds the seed stock and bounds the number of Field tiles.

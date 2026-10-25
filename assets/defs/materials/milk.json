@@ -17,5 +17,6 @@
   "packing": {
     "minutes": 3,
     "value": 50
-  }
+  },
+  "animal": "animals-cow"
 }

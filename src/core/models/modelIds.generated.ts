@@ -1,5 +1,12 @@
 // Generated from assets/models.json by scripts/modelsFile.ts. Do not edit.
 export type ModelId =
+  | 'animals-alpaca'
+  | 'animals-cow'
+  | 'animals-duck'
+  | 'animals-goat'
+  | 'animals-hen'
+  | 'animals-sheep'
+  | 'animals-silkworm'
   | 'buildings-apple-tree-1x1'
   | 'buildings-arcade-2x2-t1-tone-a'
   | 'buildings-arcade-3x2-t2-tone-a'

@@ -30,6 +30,8 @@ export const materialSchema = z
     minTier: z.int().min(1),
     value: count,
     packing: z.strictObject({ minutes: z.number().positive(), value: count }).optional(),
+    // The Model id of the animal a Livestock farm shows in a Pen while this Material is produced or waits to be collected.
+    animal: filled.optional(),
   })
   .meta({ title: 'Material', description: 'A raw resource, one file per Material id in assets/defs/materials. Crop Materials come from assets/defs/crops.' });
 

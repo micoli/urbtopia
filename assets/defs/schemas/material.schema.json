@@ -91,6 +91,10 @@
         "value"
       ],
       "additionalProperties": false
+    },
+    "animal": {
+      "type": "string",
+      "pattern": "\\S"
     }
   },
   "required": [

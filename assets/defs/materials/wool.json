@@ -13,5 +13,6 @@
   "durationMinutes": 16,
   "unlockCitizens": 250,
   "minTier": 1,
-  "value": 5
+  "value": 5,
+  "animal": "animals-sheep"
 }

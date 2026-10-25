@@ -1,5 +1,47 @@
 {
   "$schema": "defs/schemas/models.schema.json",
+  "animals-alpaca": {
+    "file": "animals/alpaca",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "animals-cow": {
+    "file": "animals/cow",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "animals-duck": {
+    "file": "animals/duck",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "animals-goat": {
+    "file": "animals/goat",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "animals-hen": {
+    "file": "animals/hen",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "animals-sheep": {
+    "file": "animals/sheep",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "animals-silkworm": {
+    "file": "animals/silkworm",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "buildings-apple-tree-1x1": {
     "file": "buildings/apple-tree-1x1",
     "source": "managed",

@@ -101,6 +101,10 @@ _Avoid_: Factory, cannery, packing plant
 A Workshop that turns the care of animals into Animal Materials (Eggs, Milk, Wool, Silk). Each animal species is a recipe worked in a Slot; each cycle consumes one Feed: Corn for poultry (hens, ducks), Wheat for ruminants (cows, goats, sheep, alpacas), Mulberry leaves for Silkworms, all taken from the Grain silo. Without Feed in stock the Slot waits. Species unlock by Citizens count, not by Tier. It is not a Farm, which holds the seed stock and produces nothing.
 _Avoid_: Farm (already the cultivation entry point), ranch, barn
 
+**Pen**:
+A fenced enclosure of the Livestock farm, one more per Tier up to five. A Pen holds the animal of one production running or waiting to be collected, in the order of the queue; with no such production it stays empty.
+_Avoid_: Paddock, stall
+
 **Animal Material**:
 A Material that comes from living animals or insects, never from killing them. No Good, Material or building of the game is made of meat, hide or any other part of a slaughtered animal.
 _Avoid_: Meat, leather, animal product (too generic)

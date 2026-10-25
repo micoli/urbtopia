@@ -17,5 +17,6 @@
   "packing": {
     "minutes": 3,
     "value": 40
-  }
+  },
+  "animal": "animals-hen"
 }
