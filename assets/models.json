@@ -975,6 +975,15 @@
       }
     }
   },
+  "buildings-eye-museum-5x4": {
+    "file": "buildings/eye-museum-5x4",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      5,
+      4
+    ]
+  },
   "buildings-factory-2x2-t1-tone-a": {
     "file": "buildings/factory-2x2-t1-tone-a",
     "source": "managed",
@@ -1327,6 +1336,15 @@
         "color": "#c2432e"
       }
     }
+  },
+  "buildings-guggenheim-bilbao-6x5": {
+    "file": "buildings/guggenheim-bilbao-6x5",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      6,
+      5
+    ]
   },
   "buildings-high-school-3x2": {
     "file": "buildings/high-school-3x2",
@@ -3220,6 +3238,15 @@
     },
     "rotationOffset": 180
   },
+  "buildings-mas-museum-3x3": {
+    "file": "buildings/mas-museum-3x3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ]
+  },
   "buildings-middle-school-2x2": {
     "file": "buildings/middle-school-2x2",
     "source": "managed",
@@ -3312,6 +3339,15 @@
     "footprint": [
       1,
       1
+    ]
+  },
+  "buildings-niteroi-museum-4x4": {
+    "file": "buildings/niteroi-museum-4x4",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      4,
+      4
     ]
   },
   "buildings-office-octagon-2x2-t1-tone-a": {
@@ -3517,6 +3553,15 @@
     "footprint": [
       1,
       1
+    ]
+  },
+  "buildings-ordos-museum-5x5": {
+    "file": "buildings/ordos-museum-5x5",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      5,
+      5
     ]
   },
   "buildings-packhouse-2x2-t1-tone-a": {
