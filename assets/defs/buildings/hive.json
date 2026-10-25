@@ -16,7 +16,7 @@
   },
   "tiers": [
     {
-      "model": "buildings-cherry-tree-1x1",
+      "model": "buildings-hive-1x1-t1",
       "footprint": [1, 1],
       "radius": 4,
       "cooling": 0,
@@ -31,7 +31,7 @@
       "upgradeCost": {
         "urbs": 60
       },
-      "scale": 1.1
+      "model": "buildings-hive-1x1-t2"
     },
     {
       "radius": 5,
@@ -41,7 +41,7 @@
       "upgradeCost": {
         "urbs": 90
       },
-      "scale": 1.2
+      "model": "buildings-hive-1x1-t3"
     },
     {
       "radius": 5,
@@ -51,7 +51,7 @@
       "upgradeCost": {
         "urbs": 135
       },
-      "scale": 1.3
+      "model": "buildings-hive-1x1-t4"
     },
     {
       "radius": 6,
@@ -61,7 +61,7 @@
       "upgradeCost": {
         "urbs": 200
       },
-      "scale": 1.4
+      "model": "buildings-hive-1x1-t5"
     }
   ]
 }

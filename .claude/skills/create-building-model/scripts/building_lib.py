@@ -3229,6 +3229,62 @@ def build_livestock(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+HIVE_LAYOUTS = {
+    1: ((0.0, 0.05),),
+    2: ((-0.22, 0.05), (0.22, 0.05)),
+    3: ((-0.24, 0.18), (0.24, 0.18), (0.0, -0.14)),
+    4: ((-0.24, 0.2), (0.24, 0.2), (-0.24, -0.12), (0.24, -0.12)),
+    5: ((-0.27, 0.22), (0.27, 0.22), (0.0, 0.02), (-0.27, -0.16), (0.27, -0.16)),
+}
+HIVE_SCALES = {1: 1.55, 2: 1.35, 3: 1.2, 4: 1.05, 5: 0.95}
+
+
+def build_hive(spec, out_dir):
+    """An apiary on its 1x1 cell: `count` straw skeps (one more per Tier) made of five stepped rings with a dark arched entrance and a few bees at each door, standing on the ground among scattered flowers (seeded, kept clear of the skeps), no slab."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    wood, straw, ring, dark, sun, leaf = (index(n) for n in ("uwood", "usand", "sun", "udark", "sun", "lime"))
+    petals = [index(n) for n in ("coral", "pink", "sky", "white", "violet", "tangerine")]
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    tier = min(5, spec["count"])
+    k = HIVE_SCALES[tier]
+    parts = []
+    radii = (0.15, 0.15, 0.125, 0.095, 0.06, 0.025)
+    ring_height = 0.04
+    for number, (x, y) in enumerate(HIVE_LAYOUTS[tier]):
+        for step in range(5):
+            parts.append(lpm.prism(f"skep_{number}_ring_{step}", 12, radii[step] * k, ring_height * k, at=(x, y, step * ring_height * k), color=straw if step % 2 == 0 else ring, radius_top=radii[step + 1] * k))
+        parts.append(lpm.prism(f"skep_{number}_knob", 8, 0.03 * k, 0.03 * k, at=(x, y, 5 * ring_height * k), color=wood))
+        front = y - radii[0] * k
+        parts.append(lpm.box(f"skep_{number}_door", (0.06 * k, 0.03 * k, 0.05 * k), at=(x, front - 0.005, 0.0), color=dark))
+        parts.append(lpm.box(f"skep_{number}_door_top", (0.04 * k, 0.03 * k, 0.02 * k), at=(x, front - 0.005, 0.05 * k), color=dark))
+        for bee, (dx, dz) in enumerate(((-0.06, 0.08), (0.07, 0.05))):
+            parts.append(lpm.box(f"skep_{number}_bee_{bee}", (0.028, 0.034, 0.026), at=(x + dx * k, front - 0.05 * k, dz * k), color=sun))
+            parts.append(lpm.box(f"skep_{number}_bee_{bee}_stripe", (0.03, 0.012, 0.028), at=(x + dx * k, front - 0.05 * k, dz * k), color=dark))
+    rng = random.Random(f"hive-flowers-{tier}")
+    corners = [(-0.47, -0.47), (0.47, -0.47), (-0.47, 0.47), (0.47, 0.47)]
+    spots = list(corners)
+    for _ in range(400):
+        if len(spots) >= 22:
+            break
+        x, y = rng.uniform(-0.47, 0.47), rng.uniform(-0.47, 0.47)
+        if any(math.hypot(x - sx, y - sy) < radii[0] * k + 0.05 for sx, sy in HIVE_LAYOUTS[tier]):
+            continue
+        if any(math.hypot(x - ox, y - oy) < 0.1 for ox, oy in spots):
+            continue
+        spots.append((x, y))
+    for number, (x, y) in enumerate(spots):
+        height = rng.uniform(0.05, 0.1)
+        size = rng.uniform(0.035, 0.05)
+        parts.append(lpm.box(f"stem_{number}", (0.012, 0.012, height), at=(x, y, 0.0), color=leaf))
+        parts.append(lpm.box(f"flower_{number}", (size, size, 0.03), at=(x, y, height), color=rng.choice(petals)))
+        parts.append(lpm.box(f"flower_{number}_heart", (0.016, 0.016, 0.034), at=(x, y, height + 0.005), color=sun))
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def build_ballpark(spec, out_dir):
     """A baseball ballpark filling 7x7: a fan-shaped field with a diamond and a warning track under a blue outfield wall, three red grandstand tiers wrapping behind home plate and along the foul lines, six floodlight masts, a scoreboard and two dugout benches."""
     style = spec.get("style", "urbtopia")

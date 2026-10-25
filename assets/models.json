@@ -1201,6 +1201,56 @@
     "scale": 1,
     "rotationOffset": 180
   },
+  "buildings-hive-1x1-t1": {
+    "file": "buildings/hive-1x1-t1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-hive-1x1-t2": {
+    "file": "buildings/hive-1x1-t2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-hive-1x1-t3": {
+    "file": "buildings/hive-1x1-t3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-hive-1x1-t4": {
+    "file": "buildings/hive-1x1-t4",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-hive-1x1-t5": {
+    "file": "buildings/hive-1x1-t5",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
   "buildings-hospital-3x3": {
     "file": "buildings/hospital-3x3",
     "source": "managed",
