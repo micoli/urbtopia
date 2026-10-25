@@ -12,6 +12,10 @@ import { toastStore } from './toastStore';
 import type { CodexId } from '../codex/catalog';
 import type { CodexPage } from '../codex/pages';
 
+export interface LocatorPosition { x: number; y: number; z: number }
+
+const LOCATOR_DURATION_MS = 2000;
+
 export type Flyout = 'build' | 'roads' | null;
 export type MarketTab = 'market' | 'events';
 export type SocialTab = 'friends' | 'groups' | 'exchanges' | 'hall' | 'profile';
@@ -33,6 +37,10 @@ export interface UiStore {
   serviceCoverageOpen: boolean;
   openServiceCoverage: () => void;
   closeServiceCoverage: () => void;
+  locator: LocatorPosition | null;
+  buildingSearchOpen: boolean;
+  toggleBuildingSearch: () => void;
+  closeBuildingSearch: () => void;
   socialOpen: boolean;
   socialTab: SocialTab;
   signInFromSocial: boolean;
@@ -116,6 +124,12 @@ export const uiStore = createStore<UiStore>((set, get) => {
   const leaveParcelMode = () => {
     if (get().tool?.kind === 'parcel') get().cancelTool();
   };
+  let locatorTimer: ReturnType<typeof setTimeout> | undefined;
+  const showLocator = (locator: LocatorPosition) => {
+    clearTimeout(locatorTimer);
+    set({ locator });
+    locatorTimer = setTimeout(() => set({ locator: null }), LOCATOR_DURATION_MS);
+  };
   let grabOffset: Coord = { x: 0, y: 0 };
   let stopWaitingForSignIn = () => {};
 
@@ -138,6 +152,10 @@ export const uiStore = createStore<UiStore>((set, get) => {
     serviceCoverageOpen: false,
     openServiceCoverage: () => set({ serviceCoverageOpen: true, statsOpen: false }),
     closeServiceCoverage: () => set({ serviceCoverageOpen: false }),
+    locator: null,
+    buildingSearchOpen: false,
+    toggleBuildingSearch: () => set({ buildingSearchOpen: !get().buildingSearchOpen }),
+    closeBuildingSearch: () => set({ buildingSearchOpen: false }),
     toggleStats: () => {
       if (!get().statsOpen) get().cancelTool();
       set({ statsOpen: !get().statsOpen, socialOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
@@ -310,6 +328,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       if (!scene) return;
       scene.focusOnTile(building);
       scene.flash(selectionGhost(state, id, false, scene.drawnExtentOf(building)));
+      showLocator(scene.arrowAnchorOf(building));
     },
     moveSelected: () => {
       const id = get().selectedBuildingId;

@@ -213,11 +213,12 @@ describe('showBuilding', () => {
     gameStore.getState().replaceState({ ...gameStore.getState().state, buildings: [building] });
     const focusOnTile = vi.fn();
     const flash = vi.fn();
-    sceneHandle.current = { focusOnTile, flash, drawnExtentOf: () => null } as never;
+    sceneHandle.current = { focusOnTile, flash, drawnExtentOf: () => null, arrowAnchorOf: () => ({ x: 4.5, y: 2, z: 5.5 }) } as never;
     uiStore.getState().showBuilding(building.id);
     expect(uiStore.getState().statsOpen).toBe(false);
     expect(focusOnTile).toHaveBeenCalledWith(building);
     expect(flash).toHaveBeenCalledOnce();
+    expect(uiStore.getState().locator).toEqual({ x: 4.5, y: 2, z: 5.5 });
     sceneHandle.current = null;
   });
 

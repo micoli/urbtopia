@@ -25,6 +25,7 @@ import { Toast } from '../system/Toast';
 import { TutorialBanner } from '../tutorial/TutorialBanner';
 import { UpdatePrompt } from '../system/UpdatePrompt';
 import { ServiceCoveragePanel } from '../buildings/ServiceCoveragePanel';
+import { BuildingSearchPanel } from '../buildings/BuildingSearchPanel';
 import { PoliticsWindow } from '../politics/PoliticsWindow';
 
 export function Overlays() {
@@ -32,6 +33,7 @@ export function Overlays() {
     <>
       <CityManagement />
       <ServiceCoveragePanel />
+      <BuildingSearchPanel />
       <PoliticsWindow />
       <SocialWindow />
       <CodexDialog />
