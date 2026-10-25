@@ -1,9 +1,10 @@
 import { EcologyLayer } from './EcologyLayer';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { GAME_CONFIG, WILD_RIM_TILES, wildNoiseAt, wildTerrain, type Building, type GameState, type FacilityType } from '../core';
+import { GAME_CONFIG, WILD_RIM_TILES, congestionStats, wildNoiseAt, wildTerrain, type Building, type GameState, type FacilityType } from '../core';
 import { CameraController } from './CameraController';
 import { footprintTiles, type Coord } from '../core';
+import { congestionTints } from './congestionMarkers';
 import type { DrawnExtent, GhostSpec } from '../tools/tools';
 import { ChunkedWorld } from './ChunkedWorld';
 import { WildScenery } from './WildScenery';
@@ -301,7 +302,8 @@ export class GameScene {
         const state = this.latest;
         this.latest = null;
         const serviceType = this.serviceCoverageType;
-        const items = renderItemsOf(state, this.afterHarvest);
+        const roadTints = congestionTints(congestionStats(state));
+        const items = renderItemsOf(state, this.afterHarvest, roadTints);
         await this.library.ensure(items.map((item) => item.model));
         await this.library.ensureTextureVariants(items.flatMap(item => item.textureVariant ? [item.textureVariant] : []));
         this.world.sync(items);
@@ -315,7 +317,7 @@ export class GameScene {
     this.pedestrians.sync(state);
         this.serviceVehicles.sync(state);
         this.boats.sync(state);
-        this.bridges.sync(state);
+        this.bridges.sync(state, roadTints);
         this.markReady();
       }
     } finally {

@@ -1,12 +1,8 @@
 import * as THREE from 'three';
 import { congestionStats, type CongestionStats, type GameState } from '../core';
-import { dividerStrips, tintColor } from './congestionMarkers';
+import { dividerStrips } from './congestionMarkers';
 
-const TINT_HEIGHT = 0.03;
 const MARKER_HEIGHT = 0.04;
-const TINT_SIZE = 0.9;
-const CROSSING_TINT = 0x3a86ff;
-const CROSSING_TINT_HEIGHT = 0.035;
 const CROSS_LENGTH = 0.7;
 const CROSS_WIDTH = 0.1;
 const DIVIDER_LENGTH = 0.9;
@@ -18,7 +14,6 @@ export class CongestionLayer {
   private roads: GameState['roads'] | null = null;
   private meshes: THREE.InstancedMesh[] = [];
   private flat = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
-  private tintMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
   private crossMaterial = new THREE.MeshBasicMaterial({ color: 0xd62828, polygonOffset: true, polygonOffsetFactor: -4 });
   private dividerMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, polygonOffset: true, polygonOffsetFactor: -3 });
   private placement = new THREE.Object3D();
@@ -29,8 +24,6 @@ export class CongestionLayer {
     this.stats = stats;
     this.roads = state.roads;
     this.clear();
-    this.addTints(stats);
-    this.addCrossingTints(stats);
     this.addCrosses(stats);
     this.addDividers(state);
   }
@@ -38,7 +31,6 @@ export class CongestionLayer {
   dispose(): void {
     this.clear();
     this.flat.dispose();
-    this.tintMaterial.dispose();
     this.crossMaterial.dispose();
     this.dividerMaterial.dispose();
   }
@@ -49,28 +41,6 @@ export class CongestionLayer {
       mesh.dispose();
     }
     this.meshes = [];
-  }
-
-  private addTints(stats: CongestionStats): void {
-    const saturated = [...stats.sections.values()].filter((section) => section.ratio > 1);
-    if (saturated.length === 0) return;
-    const mesh = this.makeMesh(this.tintMaterial, saturated.length);
-    saturated.forEach((section, index) => {
-      this.place(mesh, index, section.tile.x + 0.5, TINT_HEIGHT, section.tile.y + 0.5, 0, TINT_SIZE, TINT_SIZE);
-      mesh.setColorAt(index, new THREE.Color(tintColor(section.ratio)));
-    });
-    this.finish(mesh);
-  }
-
-  private addCrossingTints(stats: CongestionStats): void {
-    const saturated = [...stats.crossings.values()].filter((crossing) => crossing.saturated);
-    if (saturated.length === 0) return;
-    const mesh = this.makeMesh(this.tintMaterial, saturated.length);
-    saturated.forEach((crossing, index) => {
-      this.place(mesh, index, crossing.tile.x + 0.5, CROSSING_TINT_HEIGHT, crossing.tile.y + 0.5, 0, TINT_SIZE, TINT_SIZE);
-      mesh.setColorAt(index, new THREE.Color(CROSSING_TINT));
-    });
-    this.finish(mesh);
   }
 
   private addCrosses(stats: CongestionStats): void {

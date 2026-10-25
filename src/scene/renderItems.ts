@@ -137,7 +137,9 @@ export function modelOfBuilding(building: Building): string {
 }
 
 let lastBuildingItems: RenderItem[] = [];
-let lastRoadItems: { bridges: GameState['bridges']; roads: GameState['roads']; roundabouts: GameState['roundabouts']; rails: GameState['rails']; brtRoads: GameState['brtRoads']; pedestrianWays: GameState['pedestrianWays']; items: RenderItem[] } | null = null;
+const NO_TINTS: ReadonlyMap<string, number> = new Map();
+
+let lastRoadItems: { tints: ReadonlyMap<string, number>; bridges: GameState['bridges']; roads: GameState['roads']; roundabouts: GameState['roundabouts']; rails: GameState['rails']; brtRoads: GameState['brtRoads']; pedestrianWays: GameState['pedestrianWays']; items: RenderItem[] } | null = null;
 let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; fields: RenderItem[]; water: RenderItem[]; items: RenderItem[] } | null = null;
 
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
@@ -156,13 +158,13 @@ export interface HarvestedTile {
 let lastFieldItems: RenderItem[] = [];
 let lastWaterItems: RenderItem[] = [];
 
-export function renderItemsOf(state: GameState, afterHarvest: readonly HarvestedTile[] = []): RenderItem[] {
+export function renderItemsOf(state: GameState, afterHarvest: readonly HarvestedTile[] = [], roadTints: ReadonlyMap<string, number> = NO_TINTS): RenderItem[] {
   const builtBuildings = buildingItems(state);
   const buildings = sameItems(builtBuildings, lastBuildingItems) ? lastBuildingItems : builtBuildings;
   lastBuildingItems = buildings;
 
-  if (lastRoadItems?.roads !== state.roads || lastRoadItems.bridges !== state.bridges || lastRoadItems.roundabouts !== state.roundabouts || lastRoadItems.rails !== state.rails || lastRoadItems.brtRoads !== state.brtRoads || lastRoadItems.pedestrianWays !== state.pedestrianWays) {
-    lastRoadItems = { bridges: state.bridges, roads: state.roads, roundabouts: state.roundabouts, rails: state.rails, brtRoads: state.brtRoads, pedestrianWays: state.pedestrianWays, items: [...roadItems(state), ...pedestrianWayItems(state), ...brtItems(state), ...railItems(state), ...bridgeItems(state)] };
+  if (lastRoadItems?.roads !== state.roads || lastRoadItems.bridges !== state.bridges || lastRoadItems.roundabouts !== state.roundabouts || lastRoadItems.rails !== state.rails || lastRoadItems.brtRoads !== state.brtRoads || lastRoadItems.pedestrianWays !== state.pedestrianWays || lastRoadItems.tints !== roadTints) {
+    lastRoadItems = { tints: roadTints, bridges: state.bridges, roads: state.roads, roundabouts: state.roundabouts, rails: state.rails, brtRoads: state.brtRoads, pedestrianWays: state.pedestrianWays, items: [...tinted(roadItems(state), roadTints), ...pedestrianWayItems(state), ...brtItems(state), ...railItems(state), ...bridgeItems(state, roadTints)] };
   }
   const roads = lastRoadItems.items;
 
@@ -221,6 +223,14 @@ function waterItems(state: GameState): RenderItem[] {
   });
 }
 
+function tinted(items: RenderItem[], tints: ReadonlyMap<string, number>): RenderItem[] {
+  if (tints.size === 0) return items;
+  return items.map((item) => {
+    const tint = tints.get(tileKey({ x: Math.floor(item.x), y: Math.floor(item.z) }));
+    return tint === undefined ? item : { ...item, tint };
+  });
+}
+
 function roadItems(state: GameState): RenderItem[] {
   const brtKeys = new Set((state.brtRoads ?? []).map(tileKey));
   const onBridge = bridgeRoadKeys(state);
@@ -254,11 +264,13 @@ function pedestrianWayItems(state: GameState): RenderItem[] {
 // Quarter turns of the Kenney models: the road of a ramp runs along +X and rises towards +X, the road of a deck runs along Z.
 const AXIS_TURNS = { x: { forward: 0, back: 2, deck: 1 }, y: { forward: 3, back: 1, deck: 0 } } as const;
 
-function bridgeItems(state: GameState): RenderItem[] {
+// Traffic crosses a Bridge from ramp to ramp, so the whole Bridge takes the tint of its ramps, never that of the Road beneath its span.
+function bridgeItems(state: GameState, tints: ReadonlyMap<string, number>): RenderItem[] {
   return (state.bridges ?? []).filter(isInfrastructureBridge).flatMap((bridge) => {
     const [first, last] = bridgeRamps(bridge);
     const turns = AXIS_TURNS[bridge.axis];
-    const at = (model: string, tile: Coord, rotation: number): RenderItem => ({ model, x: tile.x + 0.5, z: tile.y + 0.5, rotation, ...(bridge.carrier === 'brt' ? { textureVariant: 'roads-a' as const } : {}) });
+    const tint = tints.get(tileKey(first!)) ?? tints.get(tileKey(last!));
+    const at = (model: string, tile: Coord, rotation: number): RenderItem => ({ model, x: tile.x + 0.5, z: tile.y + 0.5, rotation, ...(bridge.carrier === 'brt' ? { textureVariant: 'roads-a' as const } : {}), ...(tint === undefined ? {} : { tint }) });
     return [at(BRIDGE_RAMP_MODEL, first!, turns.forward), ...bridgeTiles(bridge).map((tile) => at(BRIDGE_SPAN_MODEL, tile, turns.deck)), at(BRIDGE_RAMP_MODEL, last!, turns.back)];
   });
 }

@@ -31,19 +31,24 @@ export class BridgeLayer {
   private source: GameState['bridges'] | null = null;
   private ready = false;
   private pending: GameState | null = null;
+  private pendingTints: ReadonlyMap<string, number> = new Map();
+  private tints: ReadonlyMap<string, number> = new Map();
+  private tinted = new WeakMap<object, Map<number, THREE.Material | THREE.Material[]>>();
 
   constructor(private library: ModelLibrary) {
     void this.load();
   }
 
-  sync(state: GameState): void {
+  sync(state: GameState, tints: ReadonlyMap<string, number> = new Map()): void {
     if (!this.ready) {
       this.pending = state;
+      this.pendingTints = tints;
       return;
     }
-    if (state.bridges === this.source && state.roads === this.roads) return;
+    if (state.bridges === this.source && state.roads === this.roads && tints === this.tints) return;
     this.source = state.bridges;
     this.roads = state.roads;
+    this.tints = tints;
     const previous = new Map(this.bridges.map((entry) => [`${entry.bridge.x},${entry.bridge.y},${entry.bridge.length},${entry.bridge.axis}`, entry.opening]));
     this.root.clear();
     this.bridges = waterBridgesOf(state).map((bridge) => this.build(bridge, previous.get(`${bridge.x},${bridge.y},${bridge.length},${bridge.axis}`)));
@@ -82,8 +87,9 @@ export class BridgeLayer {
       const [hingeX, hingeZ] = bridge.axis === 'x' ? [bridge.x + hinge, bridge.y + 0.5] : [bridge.x + 0.5, bridge.y + hinge];
       group.position.set(hingeX, 0, hingeZ);
       for (let step = 0; step < count; step++) {
-        const piece = this.tile(bridge.axis);
         const along = direction * (step + 0.5);
+        const tile = bridge.axis === 'x' ? { x: Math.floor(hingeX + along), y: bridge.y } : { x: bridge.x, y: Math.floor(hingeZ + along) };
+        const piece = this.tile(bridge.axis, this.tints.get(tileKey(tile)));
         if (bridge.axis === 'x') piece.position.x = along;
         else piece.position.z = along;
         group.add(piece);
@@ -94,14 +100,27 @@ export class BridgeLayer {
     return { bridge, deck: new Set(tiles.map(tileKey)), gates: gateEdges(bridge), opening, leaves };
   }
 
-  private tile(axis: Bridge['axis']): THREE.Group {
+  private tile(axis: Bridge['axis'], tint?: number): THREE.Group {
     const group = new THREE.Group();
     group.add(this.clone(BRIDGE_DECK_MODEL));
     const road = this.clone(ROAD_MODEL);
+    if (tint !== undefined) this.applyTint(road, tint);
     road.position.y = DECK_THICKNESS;
     road.rotation.y = (roadPiece(axis === 'x' ? ['E', 'W'] : ['N', 'S']).rotation * Math.PI) / 2;
     group.add(road);
     return group;
+  }
+
+  private applyTint(object: THREE.Object3D, tint: number): void {
+    object.traverse((node) => {
+      const mesh = node as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const byTint = this.tinted.get(mesh.material as object) ?? new Map();
+      this.tinted.set(mesh.material as object, byTint);
+      const source = mesh.material;
+      byTint.set(tint, byTint.get(tint) ?? this.library.withTint(source, tint));
+      mesh.material = byTint.get(tint)!;
+    });
   }
 
   private clone(model: string): THREE.Object3D {
@@ -115,7 +134,7 @@ export class BridgeLayer {
     this.ready = true;
     const pending = this.pending;
     this.pending = null;
-    if (pending) this.sync(pending);
+    if (pending) this.sync(pending, this.pendingTints);
   }
 }
 
