@@ -2983,6 +2983,15 @@
     ],
     "rotationOffset": 180
   },
+  "buildings-mulberry-tree-1x1": {
+    "file": "buildings/mulberry-tree-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ]
+  },
   "buildings-office-octagon-2x2-t1-tone-a": {
     "file": "buildings/office-octagon-2x2-t1-tone-a",
     "source": "managed",

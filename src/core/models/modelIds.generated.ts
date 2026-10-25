@@ -142,6 +142,7 @@ export type ModelId =
   | 'buildings-mound-1x1-t1'
   | 'buildings-mound-1x1-t2'
   | 'buildings-mound-1x1-t3'
+  | 'buildings-mulberry-tree-1x1'
   | 'buildings-office-octagon-2x2-t1-tone-a'
   | 'buildings-office-octagon-2x2-t2-tone-a'
   | 'buildings-office-octagon-2x2-t3-tone-a'
