@@ -5,6 +5,7 @@
     "en": "Alpaca wool",
     "fr": "Laine d'alpaga"
   },
+  "model": "materials-alpaca-wool",
   "producedBy": "livestockFarm",
   "recipe": {
     "wheat": 1

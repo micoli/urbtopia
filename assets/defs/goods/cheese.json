@@ -5,6 +5,7 @@
     "en": "Cheese",
     "fr": "Fromage"
   },
+  "model": "goods-cheese",
   "category": "food",
   "producedBy": "dairy",
   "recipe": {

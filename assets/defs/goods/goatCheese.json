@@ -5,6 +5,7 @@
     "en": "Goat cheese",
     "fr": "Fromage de chèvre"
   },
+  "model": "goods-goatcheese",
   "category": "food",
   "producedBy": "dairy",
   "recipe": {

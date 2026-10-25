@@ -5,6 +5,7 @@
     "en": "Mulberry leaves",
     "fr": "Feuilles de mûrier"
   },
+  "model": "materials-mulberry-leaf",
   "producedBy": "orchard",
   "durationMinutes": 20,
   "unlockCitizens": 600,

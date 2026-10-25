@@ -5,6 +5,7 @@
     "en": "Honey",
     "fr": "Miel"
   },
+  "model": "materials-honey",
   "producedBy": "hive",
   "durationMinutes": 24,
   "unlockCitizens": 80,

@@ -5,6 +5,7 @@
     "en": "Milk",
     "fr": "Lait"
   },
+  "model": "materials-milk",
   "producedBy": "livestockFarm",
   "recipe": {
     "wheat": 1

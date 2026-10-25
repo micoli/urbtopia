@@ -8,6 +8,13 @@ import item_lib  # noqa: E402
 from item_lib import color, lpm  # noqa: E402
 
 
+def leaf(name, at, yaw, length, width, body):
+    outline = [(0, 0), (length * 0.4, width / 2), (length, 0), (length * 0.4, -width / 2)]
+    part = lpm.sweep(name, outline, 0.004, at=at, color=color(body), axis="z")
+    lpm.rotate(part, yaw, "Z", about=at)
+    return part
+
+
 def spin(parts, deg, about):
     for part in parts:
         lpm.rotate(part, deg, "Z", about=about)
@@ -253,12 +260,125 @@ def bread():
     return parts
 
 
+def cream():
+    pot = lpm.lathe("pot", [(0, 0), (0.075, 0), (0.088, 0.02), (0.088, 0.10), (0.078, 0.108), (0, 0.108)], segments=9, color=color("cream_pot"))
+    lpm.paint(pot, color("crust_light"), where=lambda c, n, i: c.z < 0.05 and abs(n.z) < 0.5 and i % 2 == 0)
+    swirl = lpm.lathe("swirl", [(0, 0.10), (0.075, 0.10), (0.065, 0.13), (0.045, 0.155), (0.02, 0.175), (0, 0.19)], segments=8, color=color("milk_white"))
+    spoon = lpm.prism("spoon", 4, 0.007, 0.16, at=(0, 0, 0), color=color("wood"))
+    lpm.rotate(spoon, 70, "Y")
+    lpm.move(spoon, 0.12, -0.02, 0.02)
+    bowl = lpm.lathe("spoon_bowl", [(0, 0), (0.022, 0.004), (0.026, 0.015), (0, 0.02)], segments=6, at=(0.27, -0.02, 0.06), color=color("wood"))
+    return [pot, swirl, lpm.prism("rim", 9, 0.09, 0.012, at=(0, 0, 0.1), color=color("cream_pot")), spoon, bowl]
+
+
+def cheese_wheel(name, radius, height, at):
+    x, y, z = at
+    parts = [
+        lpm.prism(f"{name}_rind", 12, radius, height, color=color("cheese_rind")),
+        lpm.prism(f"{name}_body", 12, radius * 0.97, height * 0.84, at=(0, 0, height * 0.08), color=color("cheese")),
+    ]
+    for index, (hx, hy) in enumerate(((0.35, 0.1), (-0.3, 0.35), (-0.1, -0.4), (0.25, -0.35))):
+        parts.append(lpm.box(f"{name}_hole{index}", (radius * 0.2, radius * 0.2, 0.006), at=(radius * hx, radius * hy, height), color=color("cheese_dark")))
+    for part in parts:
+        lpm.move(part, x, y, z)
+    return parts
+
+
+def cheese():
+    parts = cheese_wheel("wheel", 0.15, 0.1, (-0.06, 0.04, 0))
+    wedge = lpm.sweep("wedge", [(0, 0), (0.17, 0.05), (0.17, -0.05)], 0.08, at=(0.12, -0.12, 0), color=color("cheese"), axis="z")
+    lpm.rotate(wedge, 20, "Z", about=(0.12, -0.12, 0))
+    parts.append(wedge)
+    return parts
+
+
+def goat_cheese():
+    parts = []
+    for index, (x, y, scale) in enumerate(((-0.08, 0.0, 1.0), (0.08, 0.02, 1.0), (0.0, -0.1, 0.9))):
+        parts.append(lpm.prism(f"puck{index}", 10, 0.075 * scale, 0.045, at=(x, y, 0.0), color=color("goat_white"), radius_top=0.07 * scale))
+        parts.append(lpm.prism(f"puck{index}_band", 10, 0.0765 * scale, 0.012, at=(x, y, 0.015), color=color("wool_shade")))
+    parts.append(lpm.prism("top", 10, 0.06, 0.04, at=(0.0, 0.0, 0.045), color=color("goat_white"), radius_top=0.055))
+    parts.append(leaf("herb_a", (0.0, 0.0, 0.088), 30, 0.07, 0.035, "herb"))
+    parts.append(leaf("herb_b", (0.0, 0.0, 0.09), 150, 0.06, 0.03, "herb"))
+    return parts
+
+
+def sweater_parts(prefix, body, dark, stripe=None):
+    parts = [
+        lpm.box(f"{prefix}body", (0.2, 0.19, 0.05), at=(0, 0, 0), color=color(body)),
+        lpm.box(f"{prefix}hem", (0.202, 0.03, 0.052), at=(0, -0.08, 0), color=color(dark)),
+        lpm.prism(f"{prefix}neck", 8, 0.04, 0.054, at=(0, 0.085, 0), color=color(dark)),
+    ]
+    for side in (-1, 1):
+        sleeve = lpm.box(f"{prefix}sleeve{side}", (0.15, 0.07, 0.044), at=(side * 0.175, 0.045, 0), color=color(body))
+        cuff = lpm.box(f"{prefix}cuff{side}", (0.03, 0.074, 0.046), at=(side * 0.25, 0.045, 0), color=color(dark))
+        for part in (sleeve, cuff):
+            lpm.rotate(part, side * -25, "Z", about=(side * 0.1, 0.07, 0))
+        parts += [sleeve, cuff]
+    if stripe:
+        for index, y in enumerate((-0.02, 0.03)):
+            parts.append(lpm.box(f"{prefix}stripe{index}", (0.204, 0.018, 0.053), at=(0, y, 0), color=color(stripe)))
+    return parts
+
+
+def sweater():
+    return sweater_parts("s_", "jumper_pink", "jumper_pink_dark")
+
+
+def alpaca_sweater():
+    return sweater_parts("a_", "alpaca", "fabric_alpaca_dark", "alpaca_light")
+
+
+def mitten(prefix, at, yaw):
+    x, y, z = at
+    parts = [
+        lpm.box(f"{prefix}palm", (0.1, 0.13, 0.045), at=(0, 0, 0), color=color("glove_blue"), taper=(1.0, 0.9)),
+        lpm.box(f"{prefix}fingers", (0.1, 0.07, 0.04), at=(0, 0.12, 0), color=color("glove_blue"), taper=(0.8, 0.7)),
+        lpm.box(f"{prefix}cuff", (0.11, 0.035, 0.05), at=(0, -0.07, 0), color=color("glove_blue_dark")),
+        lpm.box(f"{prefix}thumb", (0.04, 0.07, 0.038), at=(0.065, 0.03, 0), color=color("glove_blue")),
+    ]
+    lpm.rotate(parts[3], -30, "Z", about=(0.065, 0.0, 0))
+    for part in parts:
+        lpm.rotate(part, yaw, "Z")
+        lpm.move(part, x, y, z)
+    return parts
+
+
+def gloves():
+    return mitten("l_", (-0.08, -0.04, 0), 12) + mitten("r_", (0.1, 0.0, 0), -8)
+
+
+def hat():
+    dome = lpm.lathe("dome", [(0.115, 0.03), (0.12, 0.06), (0.105, 0.1), (0.07, 0.135), (0.03, 0.155), (0, 0.16)], segments=10, color=color("hat_red"))
+    lpm.paint(dome, color("hat_cream"), where=lambda c, n, i: i % 5 == 2)
+    cuff = lpm.prism("cuff", 10, 0.125, 0.045, color=color("hat_cream"))
+    pom = lpm.lathe("pom", [(0, 0), (0.03, 0.005), (0.04, 0.03), (0.03, 0.055), (0, 0.06)], segments=7, at=(0, 0, 0.158), color=color("hat_cream"))
+    return [dome, cuff, pom]
+
+
+def scarf():
+    colors = ("scarf_violet", "scarf_pink")
+    parts = []
+    for index in range(6):
+        parts.append(lpm.box(f"low{index}", (0.055, 0.1, 0.028), at=(-0.15 + index * 0.055, -0.07, 0), color=color(colors[index % 2])))
+        parts.append(lpm.box(f"up{index}", (0.055, 0.1, 0.028), at=(-0.15 + index * 0.055, 0.07, 0.03), color=color(colors[(index + 1) % 2])))
+    parts.append(lpm.box("fold", (0.07, 0.24, 0.03), at=(-0.18, 0.0, 0.0), color=color("scarf_violet")))
+    for index, x in enumerate((-0.14, -0.08, -0.02, 0.04)):
+        parts.append(lpm.box(f"fringe{index}", (0.012, 0.045, 0.012), at=(0.19, -0.08 + index * 0.05, 0.0), color=color("scarf_pink")))
+    return parts
+
+
 MODELS = {
     "appleCake": apple_cake, "bread": bread, "cherryClafoutis": cherry_clafoutis, "fougasse": fougasse,
     "bricks": bricks, "cannedFish": canned_fish, "cement": cement, "circuits": circuits, "crystal": crystal,
     "glass": glass, "jewelry": jewelry, "planks": planks, "steel": steel, "tiles": tiles, "tools": tools,
+    "cream": cream, "cheese": cheese, "goatCheese": goat_cheese, "sweater": sweater, "alpacaSweater": alpaca_sweater,
+    "gloves": gloves, "hat": hat, "scarf": scarf,
 }
 
 out_dir = os.path.dirname(os.path.abspath(__file__))
+only = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 for model_id, make_parts in MODELS.items():
+    if only and model_id not in only:
+        continue
     item_lib.build(model_id, make_parts, out_dir)

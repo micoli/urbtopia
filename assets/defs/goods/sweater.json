@@ -5,6 +5,7 @@
     "en": "Sweater",
     "fr": "Pull"
   },
+  "model": "goods-sweater",
   "category": "equipment",
   "producedBy": "knitwearFactory",
   "recipe": {

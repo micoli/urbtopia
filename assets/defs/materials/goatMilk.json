@@ -5,6 +5,7 @@
     "en": "Goat milk",
     "fr": "Lait de chèvre"
   },
+  "model": "materials-goat-milk",
   "producedBy": "livestockFarm",
   "recipe": {
     "wheat": 1

@@ -5,6 +5,7 @@
     "en": "Cream",
     "fr": "Crème"
   },
+  "model": "goods-cream",
   "category": "food",
   "producedBy": "dairy",
   "recipe": {

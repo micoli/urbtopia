@@ -5,6 +5,7 @@
     "en": "Silk",
     "fr": "Soie"
   },
+  "model": "materials-silk",
   "producedBy": "livestockFarm",
   "recipe": {
     "mulberryLeaf": 1

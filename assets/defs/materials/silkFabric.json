@@ -5,6 +5,7 @@
     "en": "Silk fabric",
     "fr": "Soierie"
   },
+  "model": "materials-silk-fabric",
   "producedBy": "textileMill",
   "recipe": {
     "silk": 1

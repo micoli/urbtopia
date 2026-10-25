@@ -5,6 +5,7 @@
     "en": "Gloves",
     "fr": "Gants"
   },
+  "model": "goods-gloves",
   "category": "equipment",
   "producedBy": "knitwearFactory",
   "recipe": {

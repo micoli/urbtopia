@@ -5,6 +5,7 @@
     "en": "Alpaca sweater",
     "fr": "Pull en alpaga"
   },
+  "model": "goods-alpacasweater",
   "category": "equipment",
   "producedBy": "knitwearFactory",
   "recipe": {

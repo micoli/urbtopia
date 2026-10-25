@@ -5,6 +5,7 @@
     "en": "Wool",
     "fr": "Laine"
   },
+  "model": "materials-wool",
   "producedBy": "livestockFarm",
   "recipe": {
     "wheat": 1

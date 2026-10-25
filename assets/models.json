@@ -7408,6 +7408,12 @@
     },
     "flush": true
   },
+  "goods-alpacasweater": {
+    "file": "goods/alpacaSweater",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "goods-applecake": {
     "file": "goods/appleCake",
     "source": "managed",
@@ -7438,6 +7444,12 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "goods-cheese": {
+    "file": "goods/cheese",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "goods-cherryclafoutis": {
     "file": "goods/cherryClafoutis",
     "source": "managed",
@@ -7446,6 +7458,12 @@
   },
   "goods-circuits": {
     "file": "goods/circuits",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "goods-cream": {
+    "file": "goods/cream",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180
@@ -7468,6 +7486,24 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "goods-gloves": {
+    "file": "goods/gloves",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "goods-goatcheese": {
+    "file": "goods/goatCheese",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "goods-hat": {
+    "file": "goods/hat",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "goods-jewelry": {
     "file": "goods/jewelry",
     "source": "managed",
@@ -7480,8 +7516,20 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "goods-scarf": {
+    "file": "goods/scarf",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "goods-steel": {
     "file": "goods/steel",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "goods-sweater": {
+    "file": "goods/sweater",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180
@@ -7533,6 +7581,18 @@
     ],
     "flush": true
   },
+  "materials-alpaca-textile": {
+    "file": "materials/alpaca-textile",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-alpaca-wool": {
+    "file": "materials/alpaca-wool",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-apple": {
     "file": "materials/apple",
     "source": "managed",
@@ -7557,6 +7617,12 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "materials-duck-egg": {
+    "file": "materials/duck-egg",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-fish": {
     "file": "materials/fish",
     "source": "managed",
@@ -7569,14 +7635,44 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "materials-goat-milk": {
+    "file": "materials/goat-milk",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-gold": {
     "file": "materials/gold",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180
   },
+  "materials-hen-egg": {
+    "file": "materials/hen-egg",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-honey": {
+    "file": "materials/honey",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-metal": {
     "file": "materials/metal",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-milk": {
+    "file": "materials/milk",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-mulberry-leaf": {
+    "file": "materials/mulberry-leaf",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180
@@ -7605,14 +7701,38 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "materials-silk": {
+    "file": "materials/silk",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-silk-fabric": {
+    "file": "materials/silk-fabric",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-stone": {
     "file": "materials/stone",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180
   },
+  "materials-textile": {
+    "file": "materials/textile",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-wood": {
     "file": "materials/wood",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-wool": {
+    "file": "materials/wool",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180

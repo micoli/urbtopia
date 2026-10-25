@@ -5,6 +5,7 @@
     "en": "Duck eggs",
     "fr": "Œufs de canard"
   },
+  "model": "materials-duck-egg",
   "producedBy": "livestockFarm",
   "recipe": {
     "corn": 1

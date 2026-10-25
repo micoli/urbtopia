@@ -5,6 +5,7 @@
     "en": "Alpaca textile",
     "fr": "Textile d'alpaga"
   },
+  "model": "materials-alpaca-textile",
   "producedBy": "textileMill",
   "recipe": {
     "alpacaWool": 1

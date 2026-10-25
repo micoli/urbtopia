@@ -5,6 +5,7 @@
     "en": "Hen eggs",
     "fr": "Œufs de poule"
   },
+  "model": "materials-hen-egg",
   "producedBy": "livestockFarm",
   "recipe": {
     "corn": 1

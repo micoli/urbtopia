@@ -5,6 +5,7 @@
     "en": "Hat",
     "fr": "Bonnet"
   },
+  "model": "goods-hat",
   "category": "equipment",
   "producedBy": "knitwearFactory",
   "recipe": {

@@ -5,6 +5,7 @@
     "en": "Textile",
     "fr": "Textile"
   },
+  "model": "materials-textile",
   "producedBy": "textileMill",
   "recipe": {
     "wool": 1

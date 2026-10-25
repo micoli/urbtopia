@@ -5,6 +5,7 @@
     "en": "Scarf",
     "fr": "Écharpe"
   },
+  "model": "goods-scarf",
   "category": "luxury",
   "producedBy": "knitwearFactory",
   "recipe": {
