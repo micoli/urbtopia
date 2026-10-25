@@ -3412,6 +3412,104 @@ def build_textile_mill(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+KNIT_BALL_XS = (-0.8, -0.58, -0.36, -0.14, 0.08)
+KNIT_BALL_COLORS = ("pink", "sky", "sun", "violet", "tangerine")
+
+
+def yarn_ball(parts, name, x, y, z, radius, color, needle_color, wrap_color):
+    """A ball of yarn centred at (x, y, z): a faceted sphere, two bands of a second color and two knitting needles stuck in it."""
+    profile = [(radius * math.cos(math.radians(a)), radius * math.sin(math.radians(a))) for a in (-90, -60, -30, 0, 30, 60, 90)]
+    parts.append(lpm.lathe(f"{name}_ball", profile, segments=8, at=(x, y, z), color=color))
+    for number, dz in enumerate((-0.35, 0.35)):
+        ring = radius * math.cos(math.asin(dz))
+        parts.append(lpm.prism(f"{name}_wrap_{number}", 8, ring * 1.03, radius * 0.18, at=(x, y, z + dz * radius - radius * 0.09), color=wrap_color))
+    for number, tilt in enumerate((32, -32)):
+        needle = lpm.prism(f"{name}_needle_{number}", 4, radius * 0.07, radius * 2.6, at=(0, 0, -radius * 1.0), color=needle_color)
+        lpm.rotate(needle, tilt, "Y")
+        lpm.move(needle, x, y, z)
+        parts.append(needle)
+
+
+def build_knitwear(spec, out_dir):
+    """A knitwear factory on a 2x2 cell: a cream shop block on the left (pink band with a "KNITWEAR" plate, door, big shop window under a striped awning, three mannequins in jumpers in front) and a lower workshop wing on the right with a glazed sawtooth roof; on the back half of the shop roof `count` giant balls of yarn with knitting needles (one more per Tier, left to right, the front half stays free for the Solar panel), and two yarn carts at the front, no slab."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    accent, accent_dark, wall, slab, dark, frame, glass, white, wood = (index(n) for n in ("vtone1", "vtone2", "vtone3", "uslab", "udark", "uframe", "glass_blue", "white", "uwood"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    y0, y1 = -0.2, 0.97
+    depth = y1 - y0
+    cy = (y0 + y1) / 2
+    shop_x0, shop_x1, shop_h = -0.96, 0.15, 0.34
+    shop_w = shop_x1 - shop_x0
+    shop_cx = (shop_x0 + shop_x1) / 2
+    wing_x0, wing_x1, wing_h = 0.15, 0.98, 0.26
+    wing_w = wing_x1 - wing_x0
+    wing_cx = (wing_x0 + wing_x1) / 2
+    front = y0
+    parts = [rounded_block("shop", shop_w, depth, shop_h, wall, 0.03 / depth, at=(shop_cx, cy, 0))]
+    parts.append(lpm.box("shop_roof", (shop_w + 0.04, depth + 0.04, 0.03), at=(shop_cx, cy, shop_h), color=slab))
+    parts.append(lpm.box("band", (shop_w + 0.012, 0.012, 0.075), at=(shop_cx, front - 0.004, shop_h - 0.085), color=accent))
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "KNITWEAR", shop_cx, shop_h - 0.075, 0.04, white, -front + 0.012))
+    parts.append(rounded_block("wing", wing_w, depth, wing_h, wall, 0.03 / depth, at=(wing_cx, cy, 0)))
+    teeth = (y0, y0 + 0.38, y0 + 0.76)
+    outline = [(y0, wing_h - 0.01)]
+    for start in teeth:
+        outline += [(start, wing_h + 0.13), (start + 0.38, wing_h + 0.01)]
+        if start != teeth[-1]:
+            outline.append((start + 0.38, wing_h + 0.13))
+    outline += [(y1, wing_h + 0.01), (y1, wing_h - 0.01)]
+    parts.append(extrude_x("sawtooth", [(y, z) for y, z in outline], wing_x0, wing_x1, slab))
+    for number, start in enumerate(teeth):
+        parts.append(lpm.box(f"saw_glass_{number}", (wing_w - 0.1, 0.01, 0.09), at=(wing_cx, start - 0.004, wing_h + 0.03), color=glass))
+    for number, x in enumerate((0.35, 0.58, 0.8)):
+        parts.append(lpm.box(f"wing_window_{number}", (0.16, 0.012, 0.11), at=(x, front - 0.003, 0.09), color=glass))
+        window_frame(parts, f"wing_window_{number}", x, front, 0.09, 0.16, 0.11, white, 0.01)
+    door_x = -0.78
+    parts.append(lpm.box("door", (0.18, 0.014, 0.2), at=(door_x, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "door", door_x, front, 0.0, 0.18, 0.2, white, 0.012)
+    window_x, window_w = -0.3, 0.5
+    parts.append(lpm.box("shop_window", (window_w, 0.012, 0.15), at=(window_x, front - 0.003, 0.05), color=glass))
+    window_frame(parts, "shop_window", window_x, front, 0.05, window_w, 0.15, white, 0.012)
+    stripes = 6
+    awning_w = window_w + 0.08
+    for number in range(stripes):
+        stripe_x = window_x - awning_w / 2 + (number + 0.5) * awning_w / stripes
+        awning = lpm.box(f"awning_{number}", (awning_w / stripes, 0.14, 0.018), at=(0, 0, 0), color=accent if number % 2 == 0 else white)
+        lpm.rotate(awning, -18, "X")
+        lpm.move(awning, stripe_x, front - 0.07, 0.205)
+        parts.append(awning)
+    for number, (x, jumper, sleeve) in enumerate(((-0.55, "pink", "white"), (-0.02, "sky", "white"), (0.45, "violet", "white"))):
+        y = -0.52
+        parts.append(lpm.prism(f"mannequin_{number}_base", 10, 0.07, 0.015, at=(x, y, 0.0), color=dark))
+        parts.append(lpm.prism(f"mannequin_{number}_pole", 6, 0.01, 0.1, at=(x, y, 0.015), color=frame))
+        parts.append(lpm.box(f"mannequin_{number}_torso", (0.11, 0.06, 0.13), at=(x, y, 0.115), color=index(jumper)))
+        parts.append(lpm.box(f"mannequin_{number}_hem", (0.115, 0.065, 0.025), at=(x, y, 0.115), color=index(sleeve)))
+        for side in (-1, 1):
+            parts.append(lpm.box(f"mannequin_{number}_arm_{side}", (0.03, 0.04, 0.1), at=(x + side * 0.07, y, 0.14), color=index(jumper)))
+        parts.append(lpm.prism(f"mannequin_{number}_neck", 6, 0.015, 0.025, at=(x, y, 0.245), color=white))
+        parts.append(lpm.prism(f"mannequin_{number}_head", 8, 0.035, 0.06, at=(x, y, 0.265), color=white, radius_top=0.025))
+    tier = min(5, spec["count"])
+    for number in range(tier):
+        yarn_ball(parts, f"yarn_{number}", KNIT_BALL_XS[number], 0.62, shop_h + 0.015 + 0.1, 0.1, index(KNIT_BALL_COLORS[number]), wood, white)
+    cart_y = -0.875
+    for cart, (cart_x, ball_colors) in enumerate(((0.55, ("pink", "sun", "sky")), (-0.4, ("violet", "tangerine", "white")))):
+        parts.append(lpm.box(f"cart_{cart}_tray", (0.34, 0.2, 0.07), at=(cart_x, cart_y, 0.07), color=wood))
+        parts.append(lpm.box(f"cart_{cart}_tray_inner", (0.3, 0.16, 0.02), at=(cart_x, cart_y, 0.125), color=dark))
+        for side in (-1, 1):
+            wheel = lpm.prism(f"cart_{cart}_wheel_{side}", 10, 0.06, 0.02, at=(0, 0, 0), color=dark)
+            lpm.rotate(wheel, 90, "Y")
+            lpm.move(wheel, cart_x + side * 0.18, cart_y, 0.06)
+            parts.append(wheel)
+            parts.append(lpm.box(f"cart_{cart}_handle_{side}", (0.015, 0.1, 0.015), at=(cart_x + side * 0.15, cart_y + 0.15, 0.12), color=wood))
+        for number, (dx, color) in enumerate(zip((-0.09, 0.02, 0.11), ball_colors)):
+            parts.append(lpm.lathe(f"cart_{cart}_ball_{number}", [(0.06 * math.cos(math.radians(a)), 0.06 * math.sin(math.radians(a))) for a in (-90, -45, 0, 45, 90)], segments=8, at=(cart_x + dx, cart_y, 0.19), color=index(color)))
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def build_ballpark(spec, out_dir):
     """A baseball ballpark filling 7x7: a fan-shaped field with a diamond and a warning track under a blue outfield wall, three red grandstand tiers wrapping behind home plate and along the foul lines, six floodlight masts, a scoreboard and two dugout benches."""
     style = spec.get("style", "urbtopia")
