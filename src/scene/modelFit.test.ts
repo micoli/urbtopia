@@ -9,6 +9,11 @@ describe('fitMatrixOf', () => {
   });
 });
 
+it('applies the scale of a managed model', () => {
+  const fit = fitMatrixOf('holiday/bench');
+  expect(new THREE.Vector3(1, 1, 1).applyMatrix4(fit).length()).toBeCloseTo(Math.sqrt(3) * 0.25);
+});
+
 it('fits the straight rails to tile boundaries while preserving a visible gauge', () => {
   const fit = fitMatrixOf('trains/railroad-straight');
   const start = new THREE.Vector3(0, -1, 0).applyMatrix4(fit);

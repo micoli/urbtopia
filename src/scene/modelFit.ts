@@ -11,7 +11,11 @@ export function fitMatrixOf(model: string): THREE.Matrix4 {
   if (model === RAIL_STRAIGHT_MODEL) return new THREE.Matrix4().makeScale(.7, 1, .25).multiply(new THREE.Matrix4().makeTranslation(0, 1, -2));
   if (model === RAIL_CORNER_MODEL) return new THREE.Matrix4().makeTranslation(0, 1, 0);
   const definition = definitionOf(model);
-  if (definition?.source === 'managed') return definition.flush ? turnedBy(definition.rotationOffset ?? 0) : MANAGED_INSET.clone().multiply(turnedBy(definition.rotationOffset ?? 0));
+  if (definition?.source === 'managed') {
+    const size = definition.scale ?? 1;
+    const fitted = definition.flush ? turnedBy(definition.rotationOffset ?? 0) : MANAGED_INSET.clone().multiply(turnedBy(definition.rotationOffset ?? 0));
+    return new THREE.Matrix4().makeScale(size, size, size).multiply(fitted);
+  }
   if (definition?.scale === undefined || definition.fit) return IDENTITY;
   const [centerX, centerZ] = definition.center ?? [0, 0];
   const rotation = turnedBy(definition.rotationOffset ?? 0);
