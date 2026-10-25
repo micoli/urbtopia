@@ -5,6 +5,7 @@
   padding: var(--space-6) 0;
   border-radius: var(--radius-lg);
   background: var(--white-a08);
+  touch-action: manipulation;
 }
 
 .dock-stat-value {
