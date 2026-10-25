@@ -323,6 +323,8 @@
   outline-offset: 2px;
 }
 
+.dock-stat-pending { color: var(--color-accent); font-size: var(--font-size-xs); font-variant-numeric: tabular-nums; }
+
 .top-bar .dock-stat {
   flex-direction: row;
   gap: var(--space-6);
