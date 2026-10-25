@@ -1,5 +1,7 @@
 import { useStoreWithEqualityFn } from 'zustand/traditional';
+import { useStore } from 'zustand';
 import { footprintOf, officeYieldMultiplierOf } from '../../core';
+import { prefsStore } from '../../i18n/prefsStore';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 import { CollectBadge, collectBadgeLabel, readyItemModels } from './CollectBadge';
@@ -34,7 +36,9 @@ function badgeSpecsOf(buildings: readonly Parameters<typeof collectBadgeLabel>[0
 
 export function CollectBadges() {
   const officeYield = useGame((store) => officeYieldMultiplierOf(store.state));
-  const badges = useStoreWithEqualityFn(gameStore, (store) => badgeSpecsOf(store.state.buildings, officeYield), sameBadges);
+  const showTaxBadges = useStore(prefsStore, (store) => store.showTaxBadges);
+  const allBadges = useStoreWithEqualityFn(gameStore, (store) => badgeSpecsOf(store.state.buildings, officeYield), sameBadges);
+  const badges = showTaxBadges ? allBadges : allBadges.filter((badge) => typeof badge.label !== 'number');
   return (
     <>
       {badges.map((badge) => (

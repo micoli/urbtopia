@@ -11,6 +11,7 @@ export interface Prefs {
   confirmSale: boolean;
   showReach: boolean;
   showProductionPreview: boolean;
+  showTaxBadges: boolean;
   debug: boolean;
   serviceCoverageType: FacilityType;
 }
@@ -25,7 +26,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, debug: false, serviceCoverageType: 'school' };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, serviceCoverageType: 'school' };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -36,6 +37,7 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       confirmSale: typeof parsed.confirmSale === 'boolean' ? parsed.confirmSale : fallback.confirmSale,
       showReach: typeof parsed.showReach === 'boolean' ? parsed.showReach : fallback.showReach,
       showProductionPreview: typeof parsed.showProductionPreview === 'boolean' ? parsed.showProductionPreview : fallback.showProductionPreview,
+      showTaxBadges: typeof parsed.showTaxBadges === 'boolean' ? parsed.showTaxBadges : fallback.showTaxBadges,
       debug: typeof parsed.debug === 'boolean' ? parsed.debug : fallback.debug,
       serviceCoverageType: typeof parsed.serviceCoverageType === 'string' && isFacilityType(parsed.serviceCoverageType) ? parsed.serviceCoverageType : fallback.serviceCoverageType,
     };
@@ -52,9 +54,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, confirmSale, showReach, showProductionPreview, debug, serviceCoverageType }: Prefs): void {
+function writeStored({ language, layout, traffic, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, serviceCoverageType }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale, showReach, showProductionPreview, debug, serviceCoverageType }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, serviceCoverageType }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -67,6 +69,7 @@ export interface PrefsStore extends Prefs {
   setConfirmSale: (confirmSale: boolean) => void;
   setShowReach: (showReach: boolean) => void;
   setShowProductionPreview: (showProductionPreview: boolean) => void;
+  setShowTaxBadges: (showTaxBadges: boolean) => void;
   setDebug: (debug: boolean) => void;
   setServiceCoverageType: (type: FacilityType) => void;
 }
@@ -97,6 +100,10 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   },
   setShowProductionPreview: (showProductionPreview) => {
     set({ showProductionPreview });
+    writeStored(get());
+  },
+  setShowTaxBadges: (showTaxBadges) => {
+    set({ showTaxBadges });
     writeStored(get());
   },
   setDebug: (debug) => {

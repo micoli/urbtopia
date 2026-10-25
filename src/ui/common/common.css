@@ -5,6 +5,7 @@
   padding: var(--space-6) 0;
   border-radius: var(--radius-lg);
   background: var(--white-a08);
+  touch-action: manipulation;
 }
 
 .dock-stat-value {
@@ -321,6 +322,8 @@
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
+
+.dock-stat-pending { color: var(--color-accent); font-size: var(--font-size-xs); font-variant-numeric: tabular-nums; }
 
 .top-bar .dock-stat {
   flex-direction: row;

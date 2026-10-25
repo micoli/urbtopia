@@ -3,6 +3,14 @@ import type { Language } from './prefsStore';
 type Entry = readonly [english: string, french: string];
 
 export const CATALOG = {
+  'collect.all': ['Everything collected: +{amount} {U}', 'Tout est collecté : +{amount} {U}'],
+  'collect.nothing': ['Nothing to collect', 'Rien à collecter'],
+  'stat.uncollected': ['Uncollected taxes', 'Taxes non collectées'],
+  'search.open': ['Search buildings', 'Rechercher un bâtiment'],
+  'search.title': ['Find a building', 'Trouver un bâtiment'],
+  'search.placeholder': ['Building name', 'Nom du bâtiment'],
+  'search.empty': ['No building found', 'Aucun bâtiment trouvé'],
+  'search.close': ['Close building search', 'Fermer la recherche de bâtiments'],
   'coverage.open': ['Show service coverage', 'Voir la couverture des services'],
   'coverage.title': ['Service coverage', 'Couverture des services'],
   'coverage.type': ['Public service type', 'Type de service public'],
@@ -920,6 +928,7 @@ export const CATALOG = {
   'prefs.showReach': ["Show the reach of public buildings", "Afficher l'emprise des bâtiments publics"],
   'prefs.debug': ['Debug mode', 'Mode debug'],
   'panel.debugPosition': ['Position', 'Position'],
+  'prefs.showTaxBadges': ['Display uncollected tax badges', 'Afficher les badges de taxes non collectées'],
   'prefs.showProductionPreview': ['Display production preview', "Afficher l'aperçu de la production"],
   'lang.en': ['English', 'English'],
   'lang.fr': ['Français', 'Français'],

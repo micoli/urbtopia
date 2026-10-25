@@ -30,6 +30,7 @@ const SELECTION_COLOR = 0x4da3ff;
 const FLASH_COLOR = 0xffd23f;
 const FLASH_DURATION_MS = 2000;
 const FLASH_INTERVAL_MS = 250;
+const ARROW_MIN_HEIGHT = 1.5;
 const FALLBACK_HEIGHT = 1.5;
 
 export interface SceneHandlers {
@@ -399,6 +400,19 @@ export class GameScene {
   private buildingOnTile(tile: Coord): number | null {
     const building = this.currentBuildings.find((candidate) => footprintTiles(candidate).some((t) => t.x === tile.x && t.y === tile.y));
     return building?.id ?? null;
+  }
+
+  arrowAnchorOf(building: Building): { x: number; y: number; z: number } {
+    const model = modelOfBuilding(building);
+    const topY = facilityFootprint(building) === null && this.library.has(model)
+      ? new THREE.Box3().setFromObject(this.library.get(model)).applyMatrix4(fitMatrixOf(model)).max.y
+      : 0;
+    const tiles = footprintTiles(building);
+    return {
+      x: tiles.reduce((sum, tile) => sum + tile.x + 0.5, 0) / tiles.length,
+      y: Math.max(topY, ARROW_MIN_HEIGHT),
+      z: tiles.reduce((sum, tile) => sum + tile.y + 0.5, 0) / tiles.length,
+    };
   }
 
   drawnExtentOf(building: Building): DrawnExtent | null {
