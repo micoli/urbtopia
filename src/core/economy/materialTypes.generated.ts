@@ -23,3 +23,7 @@ export type WorkshopMaterialId =
   | 'silicon'
   | 'stone'
   | 'wood';
+
+export type PackableMaterialId =
+  | 'cherry'
+  | 'oliveOil';

@@ -253,3 +253,114 @@ body {
 .guide-live-rules > h4:first-of-type {
   @apply mt-0;
 }
+
+.guide-rules {
+  --chain-building: oklch(58% 0.14 70);
+  --chain-material: oklch(52% 0.14 150);
+  --chain-good: oklch(52% 0.15 250);
+  --chain-sale: oklch(55% 0.17 350);
+}
+
+[data-theme="dark"] .guide-rules {
+  --chain-building: oklch(80% 0.13 75);
+  --chain-material: oklch(78% 0.14 150);
+  --chain-good: oklch(77% 0.12 250);
+  --chain-sale: oklch(78% 0.13 350);
+}
+
+.guide-rules [data-kind="building"] { --chain-color: var(--chain-building); }
+.guide-rules [data-kind="material"] { --chain-color: var(--chain-material); }
+.guide-rules [data-kind="good"] { --chain-color: var(--chain-good); }
+.guide-rules [data-kind="sale"] { --chain-color: var(--chain-sale); }
+
+.guide-rules .codex-chain-legend {
+  @apply my-4 flex list-none flex-wrap gap-x-4 gap-y-2 p-0 text-sm;
+}
+
+.guide-rules .codex-chain-legend li {
+  @apply flex items-center gap-1.5;
+}
+
+.guide-rules .codex-chain-legend li::before {
+  content: "";
+  @apply size-2.5 rounded-full;
+  background: var(--chain-color);
+}
+
+.guide-rules .codex-chain-filter {
+  @apply my-4 flex flex-wrap items-center gap-x-4 gap-y-2;
+}
+
+.guide-rules .codex-search {
+  @apply min-h-10 flex-1 rounded-lg border border-line bg-surface px-3 py-2 text-base text-ink;
+}
+
+.guide-rules .prefs-toggle {
+  @apply flex cursor-pointer items-center gap-2 text-sm text-ink;
+}
+
+.guide-rules .prefs-toggle__box {
+  @apply inline-block size-4 rounded border border-line bg-surface;
+}
+
+.guide-rules .prefs-toggle[aria-checked="true"] .prefs-toggle__box {
+  @apply border-accent bg-accent;
+}
+
+.guide-rules .codex-chain {
+  @apply my-4 flex flex-col gap-3;
+}
+
+.guide-rules .codex-chain ul {
+  @apply m-0 list-none p-0 pl-4;
+}
+
+.guide-rules .codex-chain-root > summary {
+  @apply flex cursor-pointer items-center gap-2 py-1;
+}
+
+.guide-rules .codex-chain-root > summary strong {
+  color: var(--chain-building);
+}
+
+.guide-rules .codex-chain-item,
+.guide-rules .codex-chain-step {
+  @apply flex flex-wrap items-baseline gap-x-2 gap-y-1 border-l-[3px] py-1 pl-2 text-sm;
+  border-color: var(--chain-color);
+}
+
+.guide-rules .codex-chain-item > ul,
+.guide-rules .codex-chain-step > ul {
+  @apply basis-full;
+}
+
+.guide-rules .codex-chain-item[data-unlocked="false"] {
+  @apply opacity-60;
+}
+
+.guide-rules .codex-chain-name {
+  @apply font-semibold;
+  color: var(--chain-color);
+}
+
+.guide-rules .codex-chain-building {
+  color: var(--chain-building);
+}
+
+.guide-rules .codex-chain-icon,
+.guide-rules .codex-chain-item .item-icon {
+  @apply size-7 shrink-0 self-center object-contain;
+}
+
+.guide-rules .codex-chain small {
+  @apply text-muted;
+}
+
+.guide-rules .codex-chain .codex-chain-sold {
+  @apply basis-full;
+  color: var(--chain-sale);
+}
+
+.guide-rules .codex-search-empty {
+  @apply my-3 text-muted;
+}

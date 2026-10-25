@@ -51,6 +51,11 @@ describe('Shop categories', () => {
     expect(canSell(city('shopConstruction').building, 'wheatCrate')).toBe(false);
   });
 
+  it('sells packed cherries and olive oil in the Grocery', () => {
+    for (const good of ['cherryCrate', 'oliveOilCrate', 'oliveOilPallet'] as const) expect(canSell(city('shopFood').building, good)).toBe(true);
+    expect(canSell(city('shopConstruction').building, 'oliveOilCrate')).toBe(false);
+  });
+
   it('lets the General shop sell Goods of every category', () => {
     const { building } = city('shop');
     for (const good of ['planks', 'tools', 'cannedFish', 'wheatBox'] as const) expect(canSell(building, good)).toBe(true);

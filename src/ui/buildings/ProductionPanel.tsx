@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SLOT_PRICES, isItemUnlocked, minTierOf, producibleItems, productionDurationOf, productionTierOf, recipeOf, rushPrice, unlockCitizensOf, type Building, type ItemId, type MaterialId, type QueueEntry } from '../../core';
+import { SLOT_PRICES, hasCounter, isItemUnlocked, minTierOf, producibleItems, productionDurationOf, productionTierOf, recipeMultiplierOf, recipeOf, rushPrice, unlockCitizensOf, type Building, type ItemId, type MaterialId, type QueueEntry } from '../../core';
 import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
 import { formatDuration } from '../common/formatDuration';
@@ -15,6 +15,7 @@ import { SlotList } from '../common/SlotList';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { PowerShortageNote } from './PowerShortageNote';
 import { RecipeLabel } from './RecipeLabel';
+import { SalesStacks } from './SalesStacks';
 
 interface ProductionPanelProps {
   building: Building;
@@ -26,7 +27,8 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
   const items = [...producibleItems(building.type)];
   const [onlyCraftable, setOnlyCraftable] = useState(false);
   const hasFreeSlot = building.queue.length < building.slotCount;
-  const hasReadyOutput = building.queue.some((entry) => entry.done);
+  const counter = hasCounter(building.type);
+  const hasReadyOutput = building.queue.some((entry) => entry.done) || building.stacks.some((stack) => stack.earned > 0);
   const send = gameStore.getState().send;
   const slotPrice = building.slotCount < productionTierOf(building).maxSlots ? SLOT_PRICES[building.slotCount + 1] : undefined;
 
@@ -38,8 +40,9 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
     return conditions.join(' · ');
   }
 
+  const multiplier = recipeMultiplierOf(building);
   const isAvailable = (item: ItemId) => isItemUnlocked(state, item) && building.tier >= minTierOf(item);
-  const lacksMaterials = (item: ItemId) => Object.entries(recipeOf(item)).some(([material, amount]) => (state.storage.materials[material as MaterialId] ?? 0) < amount);
+  const lacksMaterials = (item: ItemId) => Object.entries(recipeOf(item)).some(([material, amount]) => (state.storage.materials[material as MaterialId] ?? 0) < amount * multiplier);
 
   const canFilter = building.type === 'packhouse' && items.some((item) => isAvailable(item) && !lacksMaterials(item));
   const filtering = canFilter && onlyCraftable;
@@ -79,7 +82,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
             isAvailable(item) ? (
               <ActionButton key={item} aria-disabled={lacksMaterials(item) || undefined} onClick={() => !lacksMaterials(item) && send({ type: 'QueueProduction', buildingId: building.id, item })}>
                 {itemName(item)}
-                <RecipeLabel item={item} materials={state.storage.materials} /> · {formatDuration(productionDurationOf(building, item))}
+                <RecipeLabel item={item} materials={state.storage.materials} multiplier={multiplier} /> · {formatDuration(productionDurationOf(building, item))}
               </ActionButton>
             ) : (
               <ActionButton key={item} disabled>
@@ -94,6 +97,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
           {t('panel.buySlot')} (<UrbsAmount value={slotPrice} />)
         </ActionButton>
       ) : null}
+      {counter ? <><h4>{t('shop.counter')}</h4><SalesStacks building={building} /></> : null}
       {hasReadyOutput ? (
         <ActionButton variant="primary" block onClick={() => send({ type: 'Collect', buildingId: building.id })}>
           {t('panel.collect')}

@@ -13,5 +13,9 @@
   "durationMinutes": 12,
   "unlockCitizens": 80,
   "minTier": 1,
-  "value": 5
+  "value": 5,
+  "packing": {
+    "minutes": 4,
+    "value": 60
+  }
 }

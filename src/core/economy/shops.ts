@@ -2,11 +2,19 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf } from '../buildings/buildingDe
 import type { ShopType } from '../buildings/buildingTypes.generated';
 import type { Building } from '../engine/state';
 import { SHOP, SLOT_PRICES } from './economy';
-import { CROP_PACK_IDS, GOODS, type GoodId } from './items';
+import { PACK_IDS, GOODS, type GoodId } from './items';
 
 export const SHOP_TYPES: readonly ShopType[] = BUILDING_ENTRIES.filter(({ kind }) => kind === 'shop').map(({ id }) => id as ShopType);
 
 export const isShopType = (type: string): type is ShopType => (SHOP_TYPES as readonly string[]).includes(type);
+
+const counterOf = (type: string) => BUILDING_ENTRIES.find(({ id }) => id === type)?.counter;
+
+export const hasCounter = (type: string): boolean => counterOf(type) !== undefined;
+
+export const sellsGoods = (type: string): boolean => isShopType(type) || hasCounter(type);
+
+export const stackCountOf = (type: string): number => counterOf(type)?.slots ?? 0;
 
 type ShopGoodCategory = NonNullable<ReturnType<typeof definitionOf>['goodCategory']>;
 
@@ -25,12 +33,14 @@ export function shopTierOf(building: ShopBuilding): ShopTier {
   return { maxSlots: maxSlots!, sells: sells as GoodId[], saleIntervalFactor: saleIntervalFactor!, jobs: jobs! };
 }
 
-export const saleIntervalOf = (building: ShopBuilding): number => SHOP.saleIntervalMs * shopTierOf(building).saleIntervalFactor;
+export const saleIntervalOf = (building: ShopBuilding): number => SHOP.saleIntervalMs * (counterOf(building.type)?.saleIntervalFactor ?? shopTierOf(building).saleIntervalFactor);
 
 // Packed Crops are Food Goods, always sold by a Shop that sells Food.
 export function sellableGoodsOf(building: ShopBuilding): readonly GoodId[] {
+  const counter = counterOf(building.type);
+  if (counter) return counter.sells as GoodId[];
   const { goodCategory } = definitionOf(building.type as ShopType);
-  const packs = goodCategory === 'food' || goodCategory === 'all' ? CROP_PACK_IDS : [];
+  const packs = goodCategory === 'food' || goodCategory === 'all' ? PACK_IDS : [];
   return [...shopTierOf(building).sells, ...packs];
 }
 

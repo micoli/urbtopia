@@ -61,7 +61,7 @@ describe('nextUnlock', () => {
     expect(nextUnlock(withCitizens(18))).toEqual({ citizens: 20, items: ['grass', 'flower', 'wheat', 'flour', 'bread', 'grassCrate', 'grassBox', 'grassPallet', 'flowerCrate', 'flowerBox', 'flowerPallet', 'wheatCrate', 'wheatBox', 'wheatPallet'] });
     expect(nextUnlock(withCitizens(24))).toEqual({ citizens: 30, items: ['clay', 'tiles'] });
     expect(nextUnlock(withCitizens(36))).toEqual({ citizens: 60, items: ['carrot', 'beet', 'lettuce', 'carrotCrate', 'carrotBox', 'carrotPallet', 'beetCrate', 'beetBox', 'beetPallet', 'lettuceCrate', 'lettuceBox', 'lettucePallet'] });
-    expect(nextUnlock(withCitizens(66))).toEqual({ citizens: 80, items: ['metal', 'cherry', 'olive', 'oliveOil', 'tools', 'appleCake', 'cherryClafoutis', 'fougasse'] });
+    expect(nextUnlock(withCitizens(66))).toEqual({ citizens: 80, items: ['metal', 'cherry', 'olive', 'oliveOil', 'tools', 'appleCake', 'cherryClafoutis', 'fougasse', 'cherryCrate', 'cherryBox', 'cherryPallet', 'oliveOilCrate', 'oliveOilBox', 'oliveOilPallet'] });
   });
 
   it('announces the late-game items after 200 Citizens', () => {

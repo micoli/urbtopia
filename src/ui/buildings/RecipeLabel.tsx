@@ -5,10 +5,11 @@ import { t } from '../../i18n/t';
 interface RecipeLabelProps {
   item: ItemId;
   materials: Storage['materials'];
+  multiplier?: number;
 }
 
-export function RecipeLabel({ item, materials }: RecipeLabelProps) {
-  const parts = isPack(item) ? [] : Object.entries(recipeOf(item));
+export function RecipeLabel({ item, materials, multiplier = 1 }: RecipeLabelProps) {
+  const parts = isPack(item) ? [] : Object.entries(recipeOf(item)).map(([material, amount]): [string, number] => [material, amount * multiplier]);
   if (parts.length === 0) return null;
   return (
     <>

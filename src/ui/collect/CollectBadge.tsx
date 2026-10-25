@@ -37,7 +37,9 @@ export function collectBadgeLabel(building: Building, officeYield = 1): string |
     return due > 0 ? due : null;
   }
   const ready = building.queue.filter((entry) => entry.done).length;
-  return ready > 0 ? `✓ ${ready}` : null;
+  const earned = building.stacks.reduce((total, stack) => total + stack.earned, 0);
+  if (ready > 0) return earned > 0 ? `✓ ${ready} · ${earned}` : `✓ ${ready}`;
+  return earned > 0 ? earned : null;
 }
 
 export function readyItemModels(building: Building): string[] {

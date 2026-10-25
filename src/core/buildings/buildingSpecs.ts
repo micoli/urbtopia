@@ -1,6 +1,6 @@
 import { BUILDING_ENTRIES, tiersOf, type BuildingEntry } from './buildingDefinitions';
 import type { AccessMode } from './buildingDefinition';
-import { isShopType } from '../economy/shops';
+import { isShopType, stackCountOf } from '../economy/shops';
 import { NATURE_FAMILIES } from '../environment/natureFamilies';
 import type { Coord } from '../map/coord';
 import { isVenueType } from '../venues/profiles';
@@ -52,9 +52,15 @@ export function emptyStack(): ShopStack {
   return { good: null, stock: 0, nextSaleAt: null, earned: 0 };
 }
 
+// A building saved before it had a counter has fewer stacks than its counter has Slots.
+export function stacksOf(building: Pick<Building, 'type' | 'stacks'>): ShopStack[] {
+  const missing = stackCountOf(building.type) - building.stacks.length;
+  return missing > 0 ? [...building.stacks, ...Array.from({ length: missing }, emptyStack)] : building.stacks;
+}
+
 export function createBuilding(id: number, type: BuildingType, x: number, y: number, rotation: Rotation): Building {
   const slotCount = BUILDING_SPECS[type].initialSlots;
-  const stacks = isShopType(type) ? Array.from({ length: slotCount }, emptyStack) : [];
+  const stacks = Array.from({ length: isShopType(type) ? slotCount : stackCountOf(type) }, emptyStack);
   return { id, type, x, y, rotation, slotCount, queue: [], stacks, tier: 1, taxCitizenMs: 0, ...(type === 'coalPlant' ? { coalEnabled: true } : {}), ...(isVenueType(type) ? { venue: { fixtures: [], nextFixtureId: 1, takings: 0 } } : {}) };
 }
 

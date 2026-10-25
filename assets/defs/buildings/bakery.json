@@ -11,8 +11,8 @@
     "fr": "Boulangerie-pâtisserie"
   },
   "description": {
-    "en": "Turns flour and orchard fruit into baked goods. Production needs electricity and a road connection.",
-    "fr": "Transforme la farine et les fruits du verger en pâtisseries. La production nécessite de l'électricité et une connexion routière."
+    "en": "Turns flour and orchard fruit into baked goods and sells them over its own counter. Production needs electricity and a road connection.",
+    "fr": "Transforme la farine et les fruits du verger en pâtisseries et les vend à son comptoir. La production nécessite de l'électricité et une connexion routière."
   },
   "tiers": [
     {
@@ -61,5 +61,10 @@
       },
       "model": "buildings-bakery-2x2-t5-tone-a"
     }
-  ]
+  ],
+  "counter": {
+    "slots": 3,
+    "sells": ["bread", "fougasse", "appleCake", "cherryClafoutis"],
+    "saleIntervalFactor": 1
+  }
 }

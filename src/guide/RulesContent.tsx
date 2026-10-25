@@ -3,6 +3,7 @@ import { ChallengesPage } from '../ui/codex/ChallengesPage';
 import { CropEconomyRules } from '../ui/codex/CropEconomyRules';
 import { EnergyProductionRules } from '../ui/codex/EnergyProductionRules';
 import { MarketRules } from '../ui/codex/MarketRules';
+import { ProductionChainsRules } from '../ui/codex/ProductionChainsRules';
 import { PoliticsRules } from '../ui/codex/PoliticsRules';
 import { SanctionsRules } from '../ui/codex/SanctionsRules';
 import { SolidarityPage } from '../ui/codex/SolidarityPage';
@@ -26,5 +27,6 @@ export function RulesContent({ id }: RulesContentProps) {
   if (id === 'solidarity') return <SolidarityPage />;
   if (id === 'waste') return <WasteRules state={state} />;
   if (id === 'transitReach') return <TransitReachRules state={state} />;
+  if (id === 'chains') return <ProductionChainsRules state={state} />;
   return <PoliticsRules state={state} />;
 }
