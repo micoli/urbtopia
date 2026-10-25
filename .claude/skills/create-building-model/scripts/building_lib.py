@@ -3285,6 +3285,74 @@ def build_hive(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+DAIRY_TANK_YS = (-0.66, -0.3, 0.06, 0.42, 0.78)
+
+
+def build_dairy(spec, out_dir):
+    """A dairy on a 2x2 cell: a low cream hall with a butter-yellow band spotted like a cow, a shop window under a striped awning and a "DAIRY" plate on the front, a roller door on the back, vents on the back half of the roof (the front half stays free for the Solar panel), milk cans in front of the door, and along the right wall `count` steel tanks with a domed top and an accent ring (one more per Tier, from the front), no slab."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    accent, accent_dark, wall, slab, dark, frame, glass, white = (index(n) for n in ("vtone1", "vtone2", "vtone3", "uslab", "udark", "uframe", "glass_blue", "white"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    hall_x0, hall_x1, hall_y0, hall_y1, hall_h = -0.95, 0.56, -0.6, 0.95, 0.34
+    width, depth = hall_x1 - hall_x0, hall_y1 - hall_y0
+    cx, cy = (hall_x0 + hall_x1) / 2, (hall_y0 + hall_y1) / 2
+    front = hall_y0
+    parts = [rounded_block("hall", width, depth, hall_h, wall, 0.03 / depth, at=(cx, cy, 0))]
+    parts.append(rounded_block("band", width + 0.012, depth + 0.012, 0.07, accent, 0.03 / depth, at=(cx, cy, hall_h - 0.1)))
+    parts.append(lpm.box("roof_slab", (width + 0.04, depth + 0.04, 0.03), at=(cx, cy, hall_h), color=slab))
+    for number, x in enumerate((-0.82, -0.52, 0.14, 0.44)):
+        parts.append(lpm.box(f"spot_{number}", (0.09 + 0.03 * (number % 2), 0.008, 0.045), at=(x, front - 0.006, hall_h - 0.085 + 0.01 * (number % 3)), color=dark))
+    door_x = -0.7
+    parts.append(lpm.box("door", (0.2, 0.014, 0.21), at=(door_x, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "door", door_x, front, 0.0, 0.2, 0.21, frame, 0.012)
+    window_x, window_w = 0.02, 0.62
+    parts.append(lpm.box("shop_window", (window_w, 0.012, 0.14), at=(window_x, front - 0.003, 0.08), color=glass))
+    window_frame(parts, "shop_window", window_x, front, 0.08, window_w, 0.14, frame, 0.012)
+    parts.append(lpm.box("counter", (window_w + 0.04, 0.06, 0.07), at=(window_x, front - 0.04, 0.0), color=accent))
+    stripes = 6
+    awning_w = window_w + 0.1
+    for number in range(stripes):
+        stripe_x = window_x - awning_w / 2 + (number + 0.5) * awning_w / stripes
+        awning = lpm.box(f"awning_{number}", (awning_w / stripes, 0.14, 0.018), at=(0, 0, 0), color=accent if number % 2 == 0 else white)
+        lpm.rotate(awning, -18, "X")
+        lpm.move(awning, stripe_x, front - 0.07, 0.235)
+        parts.append(awning)
+    plate_x = door_x + 0.02
+    parts.append(lpm.box("plate", (0.3, 0.014, 0.06), at=(plate_x, front - 0.004, 0.255), color=accent_dark))
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "DAIRY", plate_x, 0.255 + 0.012, 0.036, white, -front + 0.012))
+    back = hall_y1
+    parts.append(lpm.box("roller_door", (0.5, 0.014, 0.25), at=(-0.35, back + 0.004, 0.0), color=dark))
+    door_frame(parts, "roller_door_back", -0.35, back, 0.0, 0.5, 0.25, frame, 0.014)
+    for rib in range(5):
+        parts.append(lpm.box(f"roller_rib_{rib}", (0.48, 0.006, 0.01), at=(-0.35, back + 0.012, 0.03 + rib * 0.045), color=frame))
+    for side_y in (-0.2, 0.45):
+        parts.append(lpm.box(f"window_left_{side_y}", (0.012, 0.22, 0.12), at=(hall_x0 - 0.003, side_y, 0.1), color=glass))
+    for number, x in enumerate((-0.6, -0.15, 0.3)):
+        parts.append(lpm.prism(f"vent_{number}", 8, 0.05, 0.05, at=(x, 0.7, hall_h + 0.03), color=frame))
+        parts.append(lpm.prism(f"vent_cap_{number}", 8, 0.07, 0.015, at=(x, 0.7, hall_h + 0.08), color=slab))
+    for number, (x, y) in enumerate(((-0.3, -0.95), (-0.2, -0.92), (-0.38, -0.9))):
+        parts.append(lpm.prism(f"can_{number}", 8, 0.045, 0.1, at=(x, y, 0.0), color=white, radius_top=0.036))
+        parts.append(lpm.prism(f"can_{number}_band", 8, 0.044, 0.025, at=(x, y, 0.035), color=accent))
+        parts.append(lpm.prism(f"can_{number}_lid", 8, 0.04, 0.02, at=(x, y, 0.1), color=dark))
+    tier = min(5, spec["count"])
+    tank_x, radius, tank_h = 0.84, 0.15, 0.5
+    for number, y in enumerate(DAIRY_TANK_YS[:tier]):
+        parts.append(lpm.prism(f"tank_{number}_foot", 12, radius + 0.015, 0.04, at=(tank_x, y, 0.0), color=slab))
+        parts.append(lpm.prism(f"tank_{number}", 12, radius, tank_h, at=(tank_x, y, 0.04), color=white))
+        parts.append(lpm.prism(f"tank_{number}_ring", 12, radius + 0.008, 0.045, at=(tank_x, y, 0.04 + tank_h * 0.55), color=accent))
+        dome = [(radius * math.cos(math.radians(a)), radius * 0.7 * math.sin(math.radians(a))) for a in (0, 20, 40, 60, 80, 90)]
+        parts.append(lpm.lathe(f"tank_{number}_dome", dome, segments=12, at=(tank_x, y, 0.04 + tank_h), color=slab))
+        parts.append(lpm.prism(f"tank_{number}_hatch", 8, 0.03, 0.03, at=(tank_x, y, 0.04 + tank_h + radius * 0.7 - 0.01), color=dark))
+        parts.append(lpm.box(f"tank_{number}_pipe", (tank_x - hall_x1 - radius + 0.02, 0.035, 0.035), at=((hall_x1 + tank_x - radius) / 2 + 0.01, y, 0.12), color=frame))
+        parts.append(lpm.box(f"tank_{number}_ladder", (0.03, 0.012, tank_h - 0.05), at=(tank_x - 0.06, y - radius - 0.003, 0.06), color=frame))
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def build_ballpark(spec, out_dir):
     """A baseball ballpark filling 7x7: a fan-shaped field with a diamond and a warning track under a blue outfield wall, three red grandstand tiers wrapping behind home plate and along the foul lines, six floodlight masts, a scoreboard and two dugout benches."""
     style = spec.get("style", "urbtopia")

@@ -13,4 +13,4 @@ Use the `create-building-model` skill, one model at a time, shown in the live Bl
 
 ## Progress
 
-- Livestock farm: done (5 Tiers `livestock-farm-2x2-t1..t5-tone-a`, recipe `build_livestock`, one more fenced pen per Tier, four tones). Hive: done (5 Tiers `hive-1x1-t1..t5`, `build_hive`, one straw skep more per Tier, scattered seeded flowers, no platform). Mulberry tree: done (`mulberry-tree-1x1`, standalone recipe, one model scaled per Tier like the cherry tree). Remaining: Dairy, Textile mill, Knitwear factory, item icons.
+- Livestock farm: done (5 Tiers `livestock-farm-2x2-t1..t5-tone-a`, recipe `build_livestock`, one more fenced pen per Tier, four tones). Hive: done (5 Tiers `hive-1x1-t1..t5`, `build_hive`, one straw skep more per Tier, scattered seeded flowers, no platform). Mulberry tree: done (`mulberry-tree-1x1`, standalone recipe, one model scaled per Tier like the cherry tree). Dairy: done (5 Tiers `dairy-2x2-t1..t5-tone-a`, `build_dairy`, one steel tank more per Tier, four tones). Remaining: Textile mill, Knitwear factory, item icons.
