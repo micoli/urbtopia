@@ -22,7 +22,7 @@ describe('ProductionChainsPage', () => {
     prefsStore.getState().setLanguage(language);
     const html = render(newGame({ seed: 'chains', now: 0 }));
     expect(html).toContain(t('codex.chains.title'));
-    for (const building of ['workshop', 'marina', 'farm', 'oliveTree', 'appleTree', 'cherryTree', 'bakery'] as const) expect(html).toContain(t(`building.${building}`));
+    for (const building of ['workshop', 'marina', 'farm', 'oliveTree', 'appleTree', 'cherryTree', 'mulberryTree', 'hive', 'bakery', 'livestockFarm', 'dairy'] as const) expect(html).toContain(t(`building.${building}`));
     expect(html).toContain(`${t('building.bakery')} · ${t('shop.counter')}`);
   });
 

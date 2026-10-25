@@ -26,3 +26,6 @@ export const newOrchardQueue = (type: BuildingType, startedAt: number) => {
   const orchard = ORCHARDS[type];
   return orchard ? [{ item: orchard.item, duration: orchard.cycleMs, startedAt, done: false, quantity: 1 }] : undefined;
 };
+
+// Orchard buildings in the order the production chains and counts list them.
+export const ORCHARD_BUILDINGS = Object.entries(ORCHARDS).map(([building, { item }]) => ({ building: building as BuildingType, item }));
