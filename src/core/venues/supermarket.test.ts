@@ -56,6 +56,14 @@ describe('Supermarket Venue', () => {
     expect(performance(state).layout.hints.get(shelfOf(state).id)).toContain('emptyShelf');
   });
 
+  it('stocks any Good, dairy and clothing included', () => {
+    const state = fitted(market({ cream: 5, scarf: 5 }));
+    const creamed = send(state, { type: 'StockShelf', buildingId: 1, fixtureId: shelfOf(state, 0).id, good: 'cream' });
+    const both = send(creamed, { type: 'StockShelf', buildingId: 1, fixtureId: shelfOf(creamed, 1).id, good: 'scarf' });
+    expect(shelfOf(both, 0).good).toBe('cream');
+    expect(shelfOf(both, 1).good).toBe('scarf');
+  });
+
   it('stocks a shelf from the Storehouse for a handling fee', () => {
     const state = fitted();
     const shelf = shelfOf(state);
