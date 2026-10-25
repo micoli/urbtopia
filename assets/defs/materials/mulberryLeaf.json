@@ -1,0 +1,13 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "name": {
+    "en": "Mulberry leaves",
+    "fr": "Feuilles de mûrier"
+  },
+  "producedBy": "orchard",
+  "durationMinutes": 20,
+  "unlockCitizens": 600,
+  "minTier": 1,
+  "value": 1
+}

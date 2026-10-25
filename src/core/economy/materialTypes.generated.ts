@@ -1,18 +1,30 @@
 // Generated from assets/defs/materials by scripts/collectionFiles.ts. Do not edit.
 export type DefinedMaterialId =
+  | 'alpacaTextile'
+  | 'alpacaWool'
   | 'cherry'
   | 'clay'
   | 'coal'
+  | 'duckEgg'
   | 'fish'
   | 'flour'
+  | 'goatMilk'
   | 'gold'
+  | 'henEgg'
+  | 'honey'
   | 'metal'
+  | 'milk'
+  | 'mulberryLeaf'
   | 'olive'
   | 'oliveOil'
   | 'sand'
   | 'silicon'
+  | 'silk'
+  | 'silkFabric'
   | 'stone'
-  | 'wood';
+  | 'textile'
+  | 'wood'
+  | 'wool';
 
 export type WorkshopMaterialId =
   | 'clay'
@@ -26,4 +38,8 @@ export type WorkshopMaterialId =
 
 export type PackableMaterialId =
   | 'cherry'
+  | 'duckEgg'
+  | 'henEgg'
+  | 'honey'
+  | 'milk'
   | 'oliveOil';

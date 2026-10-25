@@ -1,7 +1,7 @@
 import { FARM_CROP_CAPACITY, STORAGE_TYPES, storageTierOf, type StorageType } from './economy';
 import { CROPS } from '../farming/crops';
 import type { GameState, Storage } from '../engine/state';
-import { isMaterial } from './items';
+import { isMaterial, isOrchardMaterial } from './items';
 import { compartmentProducedBy, isProductionType } from './productionTypes';
 import { productionTierOf } from './tiers';
 
@@ -51,13 +51,15 @@ function sum(record: Partial<Record<string, number>>): number {
   return Object.values(record).reduce<number>((total, amount) => total + (amount ?? 0), 0);
 }
 
+const isCropCompartmentItem = (item: string): boolean => Object.hasOwn(CROPS, item) || isOrchardMaterial(item);
+
 export function compartmentOf(item: string): Compartment {
-  if (Object.hasOwn(CROPS, item) || item === 'olive' || item === 'cherry') return 'crops';
+  if (isCropCompartmentItem(item)) return 'crops';
   return isMaterial(item) ? 'materials' : 'goods';
 }
 
 export function storageUsed(storage: Storage): Compartments {
-  const cropStock = Object.fromEntries(Object.entries(storage.materials).filter(([item]) => Object.hasOwn(CROPS, item) || item === 'olive' || item === 'cherry'));
+  const cropStock = Object.fromEntries(Object.entries(storage.materials).filter(([item]) => isCropCompartmentItem(item)));
   const crops = sum(cropStock);
   return { materials: sum(storage.materials) - crops, crops, goods: sum(storage.goods) };
 }

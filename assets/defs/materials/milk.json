@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "name": {
+    "en": "Milk",
+    "fr": "Lait"
+  },
+  "producedBy": "livestockFarm",
+  "recipe": {
+    "wheat": 1
+  },
+  "durationMinutes": 12,
+  "unlockCitizens": 150,
+  "minTier": 1,
+  "value": 4,
+  "packing": {
+    "minutes": 3,
+    "value": 50
+  }
+}

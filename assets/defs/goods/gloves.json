@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "name": {
+    "en": "Gloves",
+    "fr": "Gants"
+  },
+  "category": "equipment",
+  "producedBy": "knitwearFactory",
+  "recipe": {
+    "textile": 1
+  },
+  "durationMinutes": 12,
+  "value": 17,
+  "unlockCitizens": 400,
+  "minTier": 1
+}

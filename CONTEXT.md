@@ -47,7 +47,7 @@ A Workshop that turns Wheat into Flour and Olives into Olive oil.
 A Factory that turns Flour and other Materials into Food Goods, and sells those Goods itself over its Counter.
 
 **Counter**:
-The sales Slots of a Production building that sells some Goods itself. The Bakery has one, with three Slots whatever its Tier, apart from its production Slots; it sells only the Goods its definition lists and is stocked from the Storehouse like a Shop.
+The sales Slots of a Production building that sells some Goods itself. The Bakery, the Dairy and the Knitwear factory each have one, with three Slots whatever its Tier, apart from its production Slots; it sells only the Goods its definition lists and is stocked from the Storehouse like a Shop.
 _Avoid_: Shop (a Shop is a building of its own)
 
 **Shop**:
@@ -63,7 +63,7 @@ The original Shop, kept in the cities that have it and still buildable: it sells
 _Avoid_: Universal shop, Retired shop
 
 **Build limit**:
-The number of copies of a building the player may own at once. It rises with the Citizens count, by thresholds set for each building, and its list of thresholds gives the maximum. Applies to the Farm, Packhouse, Storehouse, Material depot, Vault, Grain silo, Office building, Hydro power plant and Geothermal power plant.
+The number of copies of a building the player may own at once. It rises with the Citizens count, by thresholds set for each building, and its list of thresholds gives the maximum. Applies to the Farm, Livestock farm, Packhouse, Storehouse, Material depot, Vault, Grain silo, Office building, Hydro power plant and Geothermal power plant.
 _Avoid_: Quota, cap (already the Field cap)
 
 **Escalating price**:
@@ -94,11 +94,38 @@ The player gesture that collects ready Crops by pressing a ready Field's bubble 
 _Avoid_: Picking, gathering
 
 **Packhouse**:
-A building that packs Crop Materials, Cherries and Olive oil into packed Goods, the only way to sell a Harvest. Several can be built, up to its Build limit; each has its own Tiers.
+A building that packs Crop Materials, Cherries, Olive oil, Eggs, Milk and Honey into packed Goods, the only way to sell a Harvest. Several can be built, up to its Build limit; each has its own Tiers.
 _Avoid_: Factory, cannery, packing plant
 
+**Livestock farm**:
+A Workshop that turns the care of animals into Animal Materials (Eggs, Milk, Wool, Silk). Each animal species is a recipe worked in a Slot; each cycle consumes one Feed: Corn for poultry (hens, ducks), Wheat for ruminants (cows, goats, sheep, alpacas), Mulberry leaves for Silkworms, all taken from the Grain silo. Without Feed in stock the Slot waits. Species unlock by Citizens count, not by Tier. It is not a Farm, which holds the seed stock and produces nothing.
+_Avoid_: Farm (already the cultivation entry point), ranch, barn
+
+**Animal Material**:
+A Material that comes from living animals or insects, never from killing them. No Good, Material or building of the game is made of meat, hide or any other part of a slaughtered animal.
+_Avoid_: Meat, leather, animal product (too generic)
+
+**Hive**:
+A perennial placed on owned land that produces Honey for Harvest, then remains in place and starts another production cycle. Like an Orchard tree, it is a free-standing object, independent of the Livestock farm; unlike it, it needs no water and no road, and brings biodiversity and Well-being but no cooling.
+_Avoid_: Beehive, apiary
+
+**Dairy**:
+A Factory that turns Milk into Cream and Cheese, and sells those Goods itself over its Counter.
+
+**Textile mill**:
+A Workshop of the Mill kind that turns Wool, Alpaca wool and Silk into Textile, Alpaca textile and Silk fabric. It has no Counter, since Textile is a Material.
+
+**Knitwear factory**:
+A Factory that turns Textile into clothing Goods (Sweater, Gloves, Hat, Alpaca sweater, Scarf), and sells those Goods itself over its Counter.
+
+**Textile**:
+The Material a Textile mill makes from Wool. Alpaca wool makes Alpaca textile and Silk makes Silk fabric: a recipe has a single input, so each wool has its own fabric. A Knitwear factory turns them into clothing Goods (Sweater, Gloves and Hat from Textile, Alpaca sweater from Alpaca textile, Scarf from Silk fabric).
+
+**Mulberry tree**:
+An Orchard tree whose harvest is Mulberry leaves. The leaves are kept in the Grain silo and serve only as Feed for Silkworms: the Packhouse does not pack them and the Market does not buy them.
+
 **Production building**:
-A Workshop, Factory, Mill, Bakery or Packhouse: a building that works a queue of items in Slots, faster, wider and richer with each Tier. Selling one is refused when the city's storage could no longer hold what it stores.
+A Workshop, Factory, Mill, Bakery, Dairy, Knitwear factory, Livestock farm or Packhouse: a building that works a queue of items in Slots, faster, wider and richer with each Tier. Selling one is refused when the city's storage could no longer hold what it stores.
 _Avoid_: Producer, plant
 
 **Industry building**:

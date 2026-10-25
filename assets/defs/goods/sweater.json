@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "name": {
+    "en": "Sweater",
+    "fr": "Pull"
+  },
+  "category": "equipment",
+  "producedBy": "knitwearFactory",
+  "recipe": {
+    "textile": 2
+  },
+  "durationMinutes": 20,
+  "value": 34,
+  "unlockCitizens": 400,
+  "minTier": 1
+}

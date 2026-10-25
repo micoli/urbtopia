@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "name": {
+    "en": "Silk fabric",
+    "fr": "Soierie"
+  },
+  "producedBy": "textileMill",
+  "recipe": {
+    "silk": 1
+  },
+  "durationMinutes": 20,
+  "unlockCitizens": 600,
+  "minTier": 1,
+  "value": 22
+}

@@ -5,7 +5,7 @@ import goodOrder from '../../../assets/defs/order/goods.json' with { type: 'json
 import { CROPS, CROP_IDS, type CropId } from '../farming/crops';
 import type { BuildingType } from '../engine/state';
 import type { BaseGoodId } from './goodTypes.generated';
-import type { GoodCategory, GoodDefinition, MaterialDefinition } from './itemSchemas';
+import type { GoodCategory, GoodDefinition, GoodProducer, MaterialDefinition } from './itemSchemas';
 import type { DefinedMaterialId, PackableMaterialId } from './materialTypes.generated';
 
 export type { BaseGoodId };
@@ -42,11 +42,15 @@ const CROP_MATERIALS = Object.fromEntries(
 
 export const MATERIALS = { ...materialsWhere(({ producedBy }) => producedBy === 'workshop'), ...CROP_MATERIALS, ...materialsWhere(({ producedBy }) => producedBy !== 'workshop') } as Record<MaterialId, MaterialSpec>;
 
+const ORCHARD_MATERIAL_IDS: ReadonlySet<string> = new Set(MATERIAL_ENTRIES.filter(({ producedBy }) => producedBy === 'orchard').map(({ id }) => id));
+
+export const isOrchardMaterial = (item: string): boolean => ORCHARD_MATERIAL_IDS.has(item);
+
 export const FISH_MATERIAL: MaterialSpec = MATERIALS.fish;
 
 export interface GoodSpec {
   category: GoodCategory;
-  producedBy?: 'factory' | 'bakery';
+  producedBy?: GoodProducer;
   recipe: Partial<Record<MaterialId, number>>;
   durationMs: number;
   value: number;

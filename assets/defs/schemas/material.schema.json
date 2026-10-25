@@ -37,7 +37,10 @@
         "workshop",
         "fishingBoat",
         "orchard",
-        "mill"
+        "mill",
+        "livestockFarm",
+        "hive",
+        "textileMill"
       ]
     },
     "recipe": {

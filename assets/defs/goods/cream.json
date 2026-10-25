@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "name": {
+    "en": "Cream",
+    "fr": "Crème"
+  },
+  "category": "food",
+  "producedBy": "dairy",
+  "recipe": {
+    "milk": 1
+  },
+  "durationMinutes": 10,
+  "value": 7,
+  "unlockCitizens": 150,
+  "minTier": 1
+}

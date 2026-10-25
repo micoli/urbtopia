@@ -17,7 +17,7 @@ const common = {
 
 export const GOOD_CATEGORIES = ['construction', 'food', 'equipment', 'luxury'] as const;
 
-export const MATERIAL_PRODUCERS = ['workshop', 'fishingBoat', 'orchard', 'mill'] as const;
+export const MATERIAL_PRODUCERS = ['workshop', 'fishingBoat', 'orchard', 'mill', 'livestockFarm', 'hive', 'textileMill'] as const;
 
 export const materialSchema = z
   .strictObject({
@@ -33,12 +33,14 @@ export const materialSchema = z
   })
   .meta({ title: 'Material', description: 'A raw resource, one file per Material id in assets/defs/materials. Crop Materials come from assets/defs/crops.' });
 
+export const GOOD_PRODUCERS = ['factory', 'bakery', 'dairy', 'knitwearFactory'] as const;
+
 export const goodSchema = z
   .strictObject({
     kind: z.literal('good'),
     ...common,
     category: z.enum(GOOD_CATEGORIES),
-    producedBy: z.enum(['factory', 'bakery']).optional(),
+    producedBy: z.enum(GOOD_PRODUCERS).optional(),
     recipe: z.record(z.string(), z.int().min(1)).refine(recipe => Object.keys(recipe).length > 0, 'needs at least one Material'),
     durationMinutes: minutes,
     value: count,
@@ -56,5 +58,6 @@ export const packFormatsSchema = z
 
 export type MaterialDefinition = z.infer<typeof materialSchema>;
 export type GoodCategory = (typeof GOOD_CATEGORIES)[number];
+export type GoodProducer = (typeof GOOD_PRODUCERS)[number];
 export type GoodDefinition = z.infer<typeof goodSchema>;
 export type PackFormats = z.infer<typeof packFormatsSchema>;

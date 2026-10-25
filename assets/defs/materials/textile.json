@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "name": {
+    "en": "Textile",
+    "fr": "Textile"
+  },
+  "producedBy": "textileMill",
+  "recipe": {
+    "wool": 1
+  },
+  "durationMinutes": 12,
+  "unlockCitizens": 250,
+  "minTier": 1,
+  "value": 8
+}
