@@ -69,3 +69,31 @@
   .codex-back { display: block; padding: var(--space-8) var(--space-12); border: 0; border-radius: var(--radius-md); background: var(--white-a12); color: inherit; }
   .codex-gallery { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
 }
+
+.codex-chain { display: flex; flex-direction: column; gap: var(--space-12); margin-top: var(--space-12); }
+.codex-chain ul { list-style: none; margin: 0; padding-left: var(--space-16); }
+.codex-chain-root > summary { cursor: pointer; padding: var(--space-6) 0; }
+.codex-chain-item, .codex-chain-step { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-4) var(--space-8); padding: var(--space-4) 0; }
+.codex-chain-item > ul, .codex-chain-step > ul { flex-basis: 100%; }
+.codex-chain-item[data-unlocked='false'] { opacity: 0.5; }
+.codex-chain-name { font-weight: var(--font-weight-bold); }
+.codex-chain-building { opacity: 0.85; }
+.codex-chain-sold, .codex-chain-warning { flex-basis: 100%; opacity: 0.75; }
+.codex-chain-warning { opacity: 1; }
+.codex-chain-filter { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8) var(--space-16); margin-top: var(--space-12); }
+.codex-chain-filter .codex-search { flex: 1 1 14rem; width: auto; margin-bottom: 0; }
+.codex-chain-icon { width: 28px; height: 28px; flex: none; align-self: center; object-fit: contain; }
+.codex-chain-item .item-icon { width: 28px; height: 28px; align-self: center; }
+.codex-chain, .codex-chain-legend { --chain-building: #f2b45a; --chain-material: #7fcf8f; --chain-good: #7fb6f2; --chain-sale: #e58fb8; }
+.codex-chain [data-kind='building'], .codex-chain-legend [data-kind='building'] { --chain-color: var(--chain-building); }
+.codex-chain [data-kind='material'], .codex-chain-legend [data-kind='material'] { --chain-color: var(--chain-material); }
+.codex-chain [data-kind='good'], .codex-chain-legend [data-kind='good'] { --chain-color: var(--chain-good); }
+.codex-chain [data-kind='sale'], .codex-chain-legend [data-kind='sale'] { --chain-color: var(--chain-sale); }
+.codex-chain-legend { display: flex; flex-wrap: wrap; gap: var(--space-8) var(--space-16); margin: var(--space-12) 0 0; padding: 0; list-style: none; }
+.codex-chain-legend li { display: flex; align-items: center; gap: var(--space-6); font-size: var(--font-size-sm); }
+.codex-chain-legend li::before { content: ''; width: 10px; height: 10px; border-radius: var(--radius-pill); background: var(--chain-color); }
+.codex-chain-item { border-left: 3px solid var(--chain-color); padding-left: var(--space-8); }
+.codex-chain-step { border-left: 3px solid var(--chain-color); padding-left: var(--space-8); }
+.codex-chain-name { color: var(--chain-color); }
+.codex-chain-building, .codex-chain-root > summary strong { color: var(--chain-building); }
+.codex-chain-sold { color: var(--chain-sale); }
