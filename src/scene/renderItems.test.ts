@@ -295,6 +295,11 @@ describe('renderItemsOf Livestock farm pens', () => {
     ]);
   });
 
+  it('draws the animal of a production still waiting for its Slot', () => {
+    const items = renderItemsOf(farm(0, [running('henEgg'), { ...running('milk'), startedAt: null }]));
+    expect(items.slice(1).map((item) => item.model)).toEqual(['animals/hen', 'animals/cow']);
+  });
+
   it('turns the pens with the building', () => {
     const [, hen] = renderItemsOf(farm(2, [running('henEgg')]));
     expect(hen).toMatchObject({ model: 'animals/hen', x: 10.36, z: 21.74, rotation: 2 });

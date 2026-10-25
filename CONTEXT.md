@@ -102,7 +102,7 @@ A Workshop that turns the care of animals into Animal Materials (Eggs, Milk, Woo
 _Avoid_: Farm (already the cultivation entry point), ranch, barn
 
 **Pen**:
-A fenced enclosure of the Livestock farm, one more per Tier up to five. A Pen holds the animal of one production running or waiting to be collected, in the order of the queue; with no such production it stays empty.
+A fenced enclosure of the Livestock farm, one more per Tier up to five. A Pen holds the animal of one production of the queue, whether running, waiting for its Slot or waiting to be collected, in the order of the queue; with an empty queue it stays empty.
 _Avoid_: Paddock, stall
 
 **Animal Material**:

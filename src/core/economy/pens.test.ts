@@ -25,14 +25,14 @@ describe('Pens of the Livestock farm', () => {
     expect(penAnimalsOf(farm(1, [entry('henEgg', 'running')]))).toEqual([{ x: 0.64, z: -0.74, animal: 'animals-hen' }]);
   });
 
-  it('show the animal of each production waiting to be collected, then the running one, pen by pen', () => {
+  it('show the animal of every production of the queue, pen by pen', () => {
     const animals = penAnimalsOf(farm(3, [entry('milk', 'done'), entry('wool', 'done'), entry('goatMilk', 'running')]));
     expect(animals.map(({ animal }) => animal)).toEqual(['animals-cow', 'animals-sheep', 'animals-goat']);
     expect(animals.map(({ x }) => x)).toEqual([0.64, 0, -0.64]);
   });
 
-  it('ignore a production still waiting for its Slot', () => {
-    expect(penAnimalsOf(farm(2, [entry('duckEgg', 'running'), entry('silk', 'waiting')])).map(({ animal }) => animal)).toEqual(['animals-duck']);
+  it('show the animal of a production still waiting for its Slot too', () => {
+    expect(penAnimalsOf(farm(2, [entry('duckEgg', 'running'), entry('silk', 'waiting')])).map(({ animal }) => animal)).toEqual(['animals-duck', 'animals-silkworm']);
   });
 
   it('hold no more animals than the Tier has pens', () => {
