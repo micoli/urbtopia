@@ -3115,6 +3115,358 @@ def arc_points(cx, cy, radius, start, end, steps):
     return [(cx + radius * math.sin(math.radians(start + (end - start) * i / steps)), cy + radius * math.cos(math.radians(start + (end - start) * i / steps))) for i in range(steps + 1)]
 
 
+def build_livestock(spec, out_dir):
+    """A livestock farm filling its 2x2 cell: a low red stable with white corner posts and a khaki two-pitch roof at the back (sliding door, two windows, hay bales), and in front a row of up to five fenced pens, one more per Tier, filled from the left left empty: the game puts an animal in a pen for each production running or waiting to be collected (animal models in `assets/managed-models/animals`), no slab."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    red, dark_red, roof, dark, glass, white, hay, trim = (index(n) for n in ("vtone1", "vtone2", "vtone3", "udark", "glass_blue", "white", "usand", "uframe"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    width, depth, wall_height = 1.92, 0.6, 0.28
+    half = width / 2
+    front = 0.35
+    back = front + depth
+    cy = (front + back) / 2
+    ridge = 0.17
+    parts = [rounded_block("body", width, depth, wall_height, red, 0.03 / depth, at=(0, cy, 0))]
+    gable = [(front + 0.01, wall_height), (cy, wall_height + ridge - 0.03), (back - 0.01, wall_height)]
+    parts.append(extrude_x("gable", gable, -half + 0.005, half - 0.005, red))
+    slope = [(front - 0.05, wall_height), (cy, wall_height + ridge), (back + 0.05, wall_height)]
+    shell = slope + list(reversed(offset_path(slope, -0.035)))
+    parts.append(extrude_x("roof", shell, -half - 0.02, half + 0.02, roof))
+    parts.append(extrude_x("roof_edge", [(y, z - 0.012) for y, z in slope] + [(y, z - 0.03) for y, z in reversed(slope)], -half - 0.025, -half - 0.015, dark))
+    parts.append(extrude_x("roof_edge_right", [(y, z - 0.012) for y, z in slope] + [(y, z - 0.03) for y, z in reversed(slope)], half + 0.015, half + 0.025, dark))
+
+    post = 0.035
+    for x in (-half + post / 2, half - post / 2, -0.4, 0.4):
+        parts.append(lpm.box(f"post_{x:.2f}", (post, 0.012, wall_height - 0.01), at=(x, front - 0.004, 0.0), color=white))
+
+    door_w, door_h = 0.46, 0.22
+    parts.append(lpm.box("door", (door_w, 0.014, door_h), at=(0, front - 0.004, 0.0), color=dark_red))
+    door_frame(parts, "door", 0, front, 0.0, door_w, door_h, white, 0.02)
+    brace = math.hypot(door_w / 2, door_h) - 0.03
+    angle = math.degrees(math.atan2(door_w / 2, door_h))
+    for half_x in (-1, 1):
+        for sign in (-1, 1):
+            plank = lpm.box(f"brace_{half_x}_{sign}", (0.018, 0.01, brace), at=(0, 0, -brace / 2), color=white)
+            lpm.rotate(plank, sign * angle, "Y")
+            lpm.move(plank, half_x * door_w / 4, front - 0.012, door_h / 2)
+            parts.append(plank)
+    parts.append(lpm.box("door_split", (0.014, 0.01, door_h), at=(0, front - 0.012, 0.0), color=white))
+    for x in (-0.68, 0.68):
+        parts.append(lpm.box(f"window_{x}", (0.18, 0.012, 0.12), at=(x, front - 0.003, 0.1), color=glass))
+        window_frame(parts, f"window_{x}", x, front, 0.1, 0.18, 0.12, white, 0.012)
+    for side in (-1, 1):
+        parts.append(lpm.box(f"side_window_{side}", (0.012, 0.18, 0.12), at=(side * (half + 0.003), cy, 0.1), color=glass))
+
+    parts.append(lpm.box("vent", (0.3, 0.1, 0.05), at=(0.4, cy, wall_height + ridge - 0.01), color=red))
+    parts.append(extrude_x("vent_roof", [(cy - 0.065, wall_height + ridge + 0.04), (cy, wall_height + ridge + 0.09), (cy + 0.065, wall_height + ridge + 0.04)], 0.24, 0.56, roof))
+
+    for number, (x, lift) in enumerate(((0.45, 0.0), (0.45, 0.12))):
+        parts.append(lpm.box(f"bale_{number}", (0.2, 0.16, 0.12), at=(x, front - 0.09, lift), color=hay))
+        parts.append(lpm.box(f"bale_{number}_strap", (0.204, 0.02, 0.122), at=(x, front - 0.09, lift), color=dark))
+
+    pen_w, pen_d = 0.6, 0.52
+    slots = ((-0.64, -0.7), (0.0, -0.7), (0.64, -0.7), (-0.64, -0.1), (0.64, -0.1))
+    tier = min(5, spec["count"])
+    for number, (cx, pen_cy) in enumerate(slots[:tier]):
+        pen_front, pen_back = pen_cy - pen_d / 2, pen_cy + pen_d / 2
+        parts.append(lpm.box(f"pen_{number}_floor", (pen_w, pen_d, 0.01), at=(cx, pen_cy, 0.0), color=hay))
+        for px in (cx - pen_w / 2 + 0.01, cx + pen_w / 2 - 0.01):
+            for py in (pen_front + 0.01, pen_back - 0.01):
+                parts.append(lpm.box(f"pen_{number}_post_{px:.2f}_{py:.2f}", (0.02, 0.02, 0.12), at=(px, py, 0.0), color=trim))
+        for z in (0.04, 0.09):
+            parts.append(lpm.box(f"pen_{number}_front_rail_{z}", (pen_w - 0.02, 0.012, 0.014), at=(cx, pen_front + 0.01, z), color=trim))
+            parts.append(lpm.box(f"pen_{number}_back_rail_{z}", (pen_w - 0.02, 0.012, 0.014), at=(cx, pen_back - 0.01, z), color=trim))
+            for px in (cx - pen_w / 2 + 0.01, cx + pen_w / 2 - 0.01):
+                parts.append(lpm.box(f"pen_{number}_side_rail_{px:.2f}_{z}", (0.012, pen_d - 0.02, 0.014), at=(px, pen_cy, z), color=trim))
+        parts.append(lpm.box(f"pen_{number}_trough", (0.2, 0.05, 0.04), at=(cx, pen_back - 0.08, 0.01), color=dark_red))
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+HIVE_LAYOUTS = {
+    1: ((0.0, 0.05),),
+    2: ((-0.22, 0.05), (0.22, 0.05)),
+    3: ((-0.24, 0.18), (0.24, 0.18), (0.0, -0.14)),
+    4: ((-0.24, 0.2), (0.24, 0.2), (-0.24, -0.12), (0.24, -0.12)),
+    5: ((-0.27, 0.22), (0.27, 0.22), (0.0, 0.02), (-0.27, -0.16), (0.27, -0.16)),
+}
+HIVE_SCALES = {1: 1.55, 2: 1.35, 3: 1.2, 4: 1.05, 5: 0.95}
+
+
+def build_hive(spec, out_dir):
+    """An apiary on its 1x1 cell: `count` straw skeps (one more per Tier) made of five stepped rings with a dark arched entrance and a few bees at each door, standing on the ground among scattered flowers (seeded, kept clear of the skeps), no slab."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    wood, straw, ring, dark, sun, leaf = (index(n) for n in ("uwood", "usand", "sun", "udark", "sun", "lime"))
+    petals = [index(n) for n in ("coral", "pink", "sky", "white", "violet", "tangerine")]
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    tier = min(5, spec["count"])
+    k = HIVE_SCALES[tier]
+    parts = []
+    radii = (0.15, 0.15, 0.125, 0.095, 0.06, 0.025)
+    ring_height = 0.04
+    for number, (x, y) in enumerate(HIVE_LAYOUTS[tier]):
+        for step in range(5):
+            parts.append(lpm.prism(f"skep_{number}_ring_{step}", 12, radii[step] * k, ring_height * k, at=(x, y, step * ring_height * k), color=straw if step % 2 == 0 else ring, radius_top=radii[step + 1] * k))
+        parts.append(lpm.prism(f"skep_{number}_knob", 8, 0.03 * k, 0.03 * k, at=(x, y, 5 * ring_height * k), color=wood))
+        front = y - radii[0] * k
+        parts.append(lpm.box(f"skep_{number}_door", (0.06 * k, 0.03 * k, 0.05 * k), at=(x, front - 0.005, 0.0), color=dark))
+        parts.append(lpm.box(f"skep_{number}_door_top", (0.04 * k, 0.03 * k, 0.02 * k), at=(x, front - 0.005, 0.05 * k), color=dark))
+        for bee, (dx, dz) in enumerate(((-0.06, 0.08), (0.07, 0.05))):
+            parts.append(lpm.box(f"skep_{number}_bee_{bee}", (0.028, 0.034, 0.026), at=(x + dx * k, front - 0.05 * k, dz * k), color=sun))
+            parts.append(lpm.box(f"skep_{number}_bee_{bee}_stripe", (0.03, 0.012, 0.028), at=(x + dx * k, front - 0.05 * k, dz * k), color=dark))
+    rng = random.Random(f"hive-flowers-{tier}")
+    corners = [(-0.47, -0.47), (0.47, -0.47), (-0.47, 0.47), (0.47, 0.47)]
+    spots = list(corners)
+    for _ in range(400):
+        if len(spots) >= 22:
+            break
+        x, y = rng.uniform(-0.47, 0.47), rng.uniform(-0.47, 0.47)
+        if any(math.hypot(x - sx, y - sy) < radii[0] * k + 0.05 for sx, sy in HIVE_LAYOUTS[tier]):
+            continue
+        if any(math.hypot(x - ox, y - oy) < 0.1 for ox, oy in spots):
+            continue
+        spots.append((x, y))
+    for number, (x, y) in enumerate(spots):
+        height = rng.uniform(0.05, 0.1)
+        size = rng.uniform(0.035, 0.05)
+        parts.append(lpm.box(f"stem_{number}", (0.012, 0.012, height), at=(x, y, 0.0), color=leaf))
+        parts.append(lpm.box(f"flower_{number}", (size, size, 0.03), at=(x, y, height), color=rng.choice(petals)))
+        parts.append(lpm.box(f"flower_{number}_heart", (0.016, 0.016, 0.034), at=(x, y, height + 0.005), color=sun))
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+DAIRY_TANK_YS = (-0.66, -0.3, 0.06, 0.42, 0.78)
+
+
+def build_dairy(spec, out_dir):
+    """A dairy on a 2x2 cell: a low cream hall with a butter-yellow band spotted like a cow, a shop window under a striped awning and a "DAIRY" plate on the front, a roller door on the back, vents on the back half of the roof (the front half stays free for the Solar panel), milk cans in front of the door, and along the right wall `count` steel tanks with a domed top and an accent ring (one more per Tier, from the front), no slab."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    accent, accent_dark, wall, slab, dark, frame, glass, white = (index(n) for n in ("vtone1", "vtone2", "vtone3", "uslab", "udark", "uframe", "glass_blue", "white"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    hall_x0, hall_x1, hall_y0, hall_y1, hall_h = -0.95, 0.56, -0.6, 0.95, 0.34
+    width, depth = hall_x1 - hall_x0, hall_y1 - hall_y0
+    cx, cy = (hall_x0 + hall_x1) / 2, (hall_y0 + hall_y1) / 2
+    front = hall_y0
+    parts = [rounded_block("hall", width, depth, hall_h, wall, 0.03 / depth, at=(cx, cy, 0))]
+    parts.append(rounded_block("band", width + 0.012, depth + 0.012, 0.07, accent, 0.03 / depth, at=(cx, cy, hall_h - 0.1)))
+    parts.append(lpm.box("roof_slab", (width + 0.04, depth + 0.04, 0.03), at=(cx, cy, hall_h), color=slab))
+    for number, x in enumerate((-0.82, -0.52, 0.14, 0.44)):
+        parts.append(lpm.box(f"spot_{number}", (0.09 + 0.03 * (number % 2), 0.008, 0.045), at=(x, front - 0.006, hall_h - 0.085 + 0.01 * (number % 3)), color=dark))
+    door_x = -0.7
+    parts.append(lpm.box("door", (0.2, 0.014, 0.21), at=(door_x, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "door", door_x, front, 0.0, 0.2, 0.21, frame, 0.012)
+    window_x, window_w = 0.02, 0.62
+    parts.append(lpm.box("shop_window", (window_w, 0.012, 0.14), at=(window_x, front - 0.003, 0.08), color=glass))
+    window_frame(parts, "shop_window", window_x, front, 0.08, window_w, 0.14, frame, 0.012)
+    parts.append(lpm.box("counter", (window_w + 0.04, 0.06, 0.07), at=(window_x, front - 0.04, 0.0), color=accent))
+    stripes = 6
+    awning_w = window_w + 0.1
+    for number in range(stripes):
+        stripe_x = window_x - awning_w / 2 + (number + 0.5) * awning_w / stripes
+        awning = lpm.box(f"awning_{number}", (awning_w / stripes, 0.14, 0.018), at=(0, 0, 0), color=accent if number % 2 == 0 else white)
+        lpm.rotate(awning, -18, "X")
+        lpm.move(awning, stripe_x, front - 0.07, 0.235)
+        parts.append(awning)
+    plate_x = door_x + 0.02
+    parts.append(lpm.box("plate", (0.3, 0.014, 0.06), at=(plate_x, front - 0.004, 0.255), color=accent_dark))
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "DAIRY", plate_x, 0.255 + 0.012, 0.036, white, -front + 0.012))
+    back = hall_y1
+    parts.append(lpm.box("roller_door", (0.5, 0.014, 0.25), at=(-0.35, back + 0.004, 0.0), color=dark))
+    door_frame(parts, "roller_door_back", -0.35, back, 0.0, 0.5, 0.25, frame, 0.014)
+    for rib in range(5):
+        parts.append(lpm.box(f"roller_rib_{rib}", (0.48, 0.006, 0.01), at=(-0.35, back + 0.012, 0.03 + rib * 0.045), color=frame))
+    for side_y in (-0.2, 0.45):
+        parts.append(lpm.box(f"window_left_{side_y}", (0.012, 0.22, 0.12), at=(hall_x0 - 0.003, side_y, 0.1), color=glass))
+    for number, x in enumerate((-0.6, -0.15, 0.3)):
+        parts.append(lpm.prism(f"vent_{number}", 8, 0.05, 0.05, at=(x, 0.7, hall_h + 0.03), color=frame))
+        parts.append(lpm.prism(f"vent_cap_{number}", 8, 0.07, 0.015, at=(x, 0.7, hall_h + 0.08), color=slab))
+    for number, (x, y) in enumerate(((-0.3, -0.95), (-0.2, -0.92), (-0.38, -0.9))):
+        parts.append(lpm.prism(f"can_{number}", 8, 0.045, 0.1, at=(x, y, 0.0), color=white, radius_top=0.036))
+        parts.append(lpm.prism(f"can_{number}_band", 8, 0.044, 0.025, at=(x, y, 0.035), color=accent))
+        parts.append(lpm.prism(f"can_{number}_lid", 8, 0.04, 0.02, at=(x, y, 0.1), color=dark))
+    tier = min(5, spec["count"])
+    tank_x, radius, tank_h = 0.84, 0.15, 0.5
+    for number, y in enumerate(DAIRY_TANK_YS[:tier]):
+        parts.append(lpm.prism(f"tank_{number}_foot", 12, radius + 0.015, 0.04, at=(tank_x, y, 0.0), color=slab))
+        parts.append(lpm.prism(f"tank_{number}", 12, radius, tank_h, at=(tank_x, y, 0.04), color=white))
+        parts.append(lpm.prism(f"tank_{number}_ring", 12, radius + 0.008, 0.045, at=(tank_x, y, 0.04 + tank_h * 0.55), color=accent))
+        dome = [(radius * math.cos(math.radians(a)), radius * 0.7 * math.sin(math.radians(a))) for a in (0, 20, 40, 60, 80, 90)]
+        parts.append(lpm.lathe(f"tank_{number}_dome", dome, segments=12, at=(tank_x, y, 0.04 + tank_h), color=slab))
+        parts.append(lpm.prism(f"tank_{number}_hatch", 8, 0.03, 0.03, at=(tank_x, y, 0.04 + tank_h + radius * 0.7 - 0.01), color=dark))
+        parts.append(lpm.box(f"tank_{number}_pipe", (tank_x - hall_x1 - radius + 0.02, 0.035, 0.035), at=((hall_x1 + tank_x - radius) / 2 + 0.01, y, 0.12), color=frame))
+        parts.append(lpm.box(f"tank_{number}_ladder", (0.03, 0.012, tank_h - 0.05), at=(tank_x - 0.06, y - radius - 0.003, 0.06), color=frame))
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+TEXTILE_SPOOL_XS = (-0.8, -0.52, -0.24, 0.04, 0.32)
+TEXTILE_SPOOL_COLORS = ("violet", "pink", "sky", "sun", "tangerine")
+
+
+def build_textile_mill(spec, out_dir):
+    """A textile mill on a 2x2 cell: a brick hall with a cream band, a two-pitch dark roof, a tall chimney, a door, windows and a "TEXTILE" plate; in the yard `count` giant thread spools (one more per Tier, left to right) and two wool bales, no slab."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    brick, brick_dark, cream, dark, glass, frame, slab, wood, white, water = (index(n) for n in ("vtone1", "vtone2", "vtone3", "udark", "glass_blue", "uframe", "uslab", "uwood", "white", "aqua"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    x0, x1, y0, y1, wall_h = -0.95, 0.95, 0.05, 0.95, 0.32
+    width, depth = x1 - x0, y1 - y0
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    ridge = 0.2
+    parts = [rounded_block("hall", width, depth, wall_h, brick, 0.03 / depth, at=(cx, cy, 0))]
+    parts.append(rounded_block("band", width + 0.012, depth + 0.012, 0.045, cream, 0.03 / depth, at=(cx, cy, wall_h - 0.075)))
+    gable = [(y0 + 0.01, wall_h), (cy, wall_h + ridge - 0.03), (y1 - 0.01, wall_h)]
+    parts.append(extrude_x("gable", gable, x0 + 0.005, x1 - 0.005, brick))
+    slope = [(y0 - 0.05, wall_h), (cy, wall_h + ridge), (y1 + 0.05, wall_h)]
+    shell = slope + list(reversed(offset_path(slope, -0.035)))
+    parts.append(extrude_x("roof", shell, x0 - 0.03, x1 + 0.03, brick_dark))
+    front = y0
+    door_x = -0.7
+    parts.append(lpm.box("door", (0.2, 0.014, 0.21), at=(door_x, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "door", door_x, front, 0.0, 0.2, 0.21, cream, 0.014)
+    for number, x in enumerate((-0.35, 0.0, 0.35, 0.7)):
+        parts.append(lpm.box(f"window_{number}", (0.2, 0.012, 0.13), at=(x, front - 0.003, 0.09), color=glass))
+        window_frame(parts, f"window_{number}", x, front, 0.09, 0.2, 0.13, cream, 0.012)
+    plate_x = door_x
+    parts.append(lpm.box("plate", (0.4, 0.014, 0.06), at=(plate_x, front - 0.004, 0.235), color=cream))
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "TEXTILE", plate_x, 0.235 + 0.012, 0.036, dark, -front + 0.012))
+    parts.append(lpm.box("back_door", (0.3, 0.014, 0.22), at=(-0.4, y1 + 0.004, 0.0), color=dark))
+    door_frame(parts, "back_door", -0.4, y1, 0.0, 0.3, 0.22, cream, 0.014)
+    for side in (-1, 1):
+        parts.append(lpm.box(f"side_window_{side}", (0.012, 0.22, 0.12), at=(side * (x1 + 0.003), cy, 0.1), color=glass))
+    parts.append(lpm.prism("chimney", 8, 0.06, 0.58, at=(-0.78, 0.8, 0.0), color=brick_dark, radius_top=0.045))
+    parts.append(lpm.prism("chimney_cap", 8, 0.06, 0.03, at=(-0.78, 0.8, 0.58), color=dark))
+    parts.append(lpm.prism("chimney_band", 8, 0.052, 0.025, at=(-0.78, 0.8, 0.5), color=cream))
+
+    tier = min(5, spec["count"])
+    spool_y = -0.84
+    for number in range(tier):
+        x = TEXTILE_SPOOL_XS[number]
+        thread = index(TEXTILE_SPOOL_COLORS[number])
+        parts.append(lpm.prism(f"spool_{number}_foot", 12, 0.14, 0.03, at=(x, spool_y, 0.0), color=white))
+        parts.append(lpm.prism(f"spool_{number}_thread", 12, 0.1, 0.2, at=(x, spool_y, 0.03), color=thread))
+        parts.append(lpm.prism(f"spool_{number}_top", 12, 0.14, 0.03, at=(x, spool_y, 0.23), color=white))
+        parts.append(lpm.prism(f"spool_{number}_core", 8, 0.03, 0.05, at=(x, spool_y, 0.26), color=slab))
+        parts.append(lpm.box(f"spool_{number}_end", (0.04, 0.06, 0.015), at=(x + 0.1, spool_y - 0.07, 0.2), color=thread))
+    for number, (x, y, lift) in enumerate(((0.62, -0.4, 0.0), (0.86, -0.4, 0.0), (0.74, -0.4, 0.12))):
+        parts.append(lpm.box(f"bale_{number}", (0.22, 0.18, 0.12), at=(x, y, lift), color=white))
+        parts.append(lpm.box(f"bale_{number}_strap", (0.224, 0.02, 0.122), at=(x, y, lift), color=slab))
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+KNIT_BALL_XS = (-0.8, -0.58, -0.36, -0.14, 0.08)
+KNIT_BALL_COLORS = ("pink", "sky", "sun", "violet", "tangerine")
+
+
+def yarn_ball(parts, name, x, y, z, radius, color, needle_color, wrap_color):
+    """A ball of yarn centred at (x, y, z): a faceted sphere, two bands of a second color and two knitting needles stuck in it."""
+    profile = [(radius * math.cos(math.radians(a)), radius * math.sin(math.radians(a))) for a in (-90, -60, -30, 0, 30, 60, 90)]
+    parts.append(lpm.lathe(f"{name}_ball", profile, segments=8, at=(x, y, z), color=color))
+    for number, dz in enumerate((-0.35, 0.35)):
+        ring = radius * math.cos(math.asin(dz))
+        parts.append(lpm.prism(f"{name}_wrap_{number}", 8, ring * 1.03, radius * 0.18, at=(x, y, z + dz * radius - radius * 0.09), color=wrap_color))
+    for number, tilt in enumerate((32, -32)):
+        needle = lpm.prism(f"{name}_needle_{number}", 4, radius * 0.07, radius * 2.6, at=(0, 0, -radius * 1.0), color=needle_color)
+        lpm.rotate(needle, tilt, "Y")
+        lpm.move(needle, x, y, z)
+        parts.append(needle)
+
+
+def build_knitwear(spec, out_dir):
+    """A knitwear factory on a 2x2 cell: a cream shop block on the left (pink band with a "KNITWEAR" plate, door, big shop window under a striped awning, three mannequins in jumpers in front) and a lower workshop wing on the right with a glazed sawtooth roof; on the back half of the shop roof `count` giant balls of yarn with knitting needles (one more per Tier, left to right, the front half stays free for the Solar panel), and two yarn carts at the front, no slab."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    accent, accent_dark, wall, slab, dark, frame, glass, white, wood = (index(n) for n in ("vtone1", "vtone2", "vtone3", "uslab", "udark", "uframe", "glass_blue", "white", "uwood"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    y0, y1 = -0.2, 0.97
+    depth = y1 - y0
+    cy = (y0 + y1) / 2
+    shop_x0, shop_x1, shop_h = -0.96, 0.15, 0.34
+    shop_w = shop_x1 - shop_x0
+    shop_cx = (shop_x0 + shop_x1) / 2
+    wing_x0, wing_x1, wing_h = 0.15, 0.98, 0.26
+    wing_w = wing_x1 - wing_x0
+    wing_cx = (wing_x0 + wing_x1) / 2
+    front = y0
+    parts = [rounded_block("shop", shop_w, depth, shop_h, wall, 0.03 / depth, at=(shop_cx, cy, 0))]
+    parts.append(lpm.box("shop_roof", (shop_w + 0.04, depth + 0.04, 0.03), at=(shop_cx, cy, shop_h), color=slab))
+    parts.append(lpm.box("band", (shop_w + 0.012, 0.012, 0.075), at=(shop_cx, front - 0.004, shop_h - 0.085), color=accent))
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "KNITWEAR", shop_cx, shop_h - 0.075, 0.04, white, -front + 0.012))
+    parts.append(rounded_block("wing", wing_w, depth, wing_h, wall, 0.03 / depth, at=(wing_cx, cy, 0)))
+    teeth = (y0, y0 + 0.38, y0 + 0.76)
+    outline = [(y0, wing_h - 0.01)]
+    for start in teeth:
+        outline += [(start, wing_h + 0.13), (start + 0.38, wing_h + 0.01)]
+        if start != teeth[-1]:
+            outline.append((start + 0.38, wing_h + 0.13))
+    outline += [(y1, wing_h + 0.01), (y1, wing_h - 0.01)]
+    parts.append(extrude_x("sawtooth", [(y, z) for y, z in outline], wing_x0, wing_x1, slab))
+    for number, start in enumerate(teeth):
+        parts.append(lpm.box(f"saw_glass_{number}", (wing_w - 0.1, 0.01, 0.09), at=(wing_cx, start - 0.004, wing_h + 0.03), color=glass))
+    for number, x in enumerate((0.35, 0.58, 0.8)):
+        parts.append(lpm.box(f"wing_window_{number}", (0.16, 0.012, 0.11), at=(x, front - 0.003, 0.09), color=glass))
+        window_frame(parts, f"wing_window_{number}", x, front, 0.09, 0.16, 0.11, white, 0.01)
+    door_x = -0.78
+    parts.append(lpm.box("door", (0.18, 0.014, 0.2), at=(door_x, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "door", door_x, front, 0.0, 0.18, 0.2, white, 0.012)
+    window_x, window_w = -0.3, 0.5
+    parts.append(lpm.box("shop_window", (window_w, 0.012, 0.15), at=(window_x, front - 0.003, 0.05), color=glass))
+    window_frame(parts, "shop_window", window_x, front, 0.05, window_w, 0.15, white, 0.012)
+    stripes = 6
+    awning_w = window_w + 0.08
+    for number in range(stripes):
+        stripe_x = window_x - awning_w / 2 + (number + 0.5) * awning_w / stripes
+        awning = lpm.box(f"awning_{number}", (awning_w / stripes, 0.14, 0.018), at=(0, 0, 0), color=accent if number % 2 == 0 else white)
+        lpm.rotate(awning, -18, "X")
+        lpm.move(awning, stripe_x, front - 0.07, 0.205)
+        parts.append(awning)
+    for number, (x, jumper, sleeve) in enumerate(((-0.55, "pink", "white"), (-0.02, "sky", "white"), (0.45, "violet", "white"))):
+        y = -0.52
+        parts.append(lpm.prism(f"mannequin_{number}_base", 10, 0.07, 0.015, at=(x, y, 0.0), color=dark))
+        parts.append(lpm.prism(f"mannequin_{number}_pole", 6, 0.01, 0.1, at=(x, y, 0.015), color=frame))
+        parts.append(lpm.box(f"mannequin_{number}_torso", (0.11, 0.06, 0.13), at=(x, y, 0.115), color=index(jumper)))
+        parts.append(lpm.box(f"mannequin_{number}_hem", (0.115, 0.065, 0.025), at=(x, y, 0.115), color=index(sleeve)))
+        for side in (-1, 1):
+            parts.append(lpm.box(f"mannequin_{number}_arm_{side}", (0.03, 0.04, 0.1), at=(x + side * 0.07, y, 0.14), color=index(jumper)))
+        parts.append(lpm.prism(f"mannequin_{number}_neck", 6, 0.015, 0.025, at=(x, y, 0.245), color=white))
+        parts.append(lpm.prism(f"mannequin_{number}_head", 8, 0.035, 0.06, at=(x, y, 0.265), color=white, radius_top=0.025))
+    tier = min(5, spec["count"])
+    for number in range(tier):
+        yarn_ball(parts, f"yarn_{number}", KNIT_BALL_XS[number], 0.62, shop_h + 0.015 + 0.1, 0.1, index(KNIT_BALL_COLORS[number]), wood, white)
+    cart_y = -0.875
+    for cart, (cart_x, ball_colors) in enumerate(((0.55, ("pink", "sun", "sky")), (-0.4, ("violet", "tangerine", "white")))):
+        parts.append(lpm.box(f"cart_{cart}_tray", (0.34, 0.2, 0.07), at=(cart_x, cart_y, 0.07), color=wood))
+        parts.append(lpm.box(f"cart_{cart}_tray_inner", (0.3, 0.16, 0.02), at=(cart_x, cart_y, 0.125), color=dark))
+        for side in (-1, 1):
+            wheel = lpm.prism(f"cart_{cart}_wheel_{side}", 10, 0.06, 0.02, at=(0, 0, 0), color=dark)
+            lpm.rotate(wheel, 90, "Y")
+            lpm.move(wheel, cart_x + side * 0.18, cart_y, 0.06)
+            parts.append(wheel)
+            parts.append(lpm.box(f"cart_{cart}_handle_{side}", (0.015, 0.1, 0.015), at=(cart_x + side * 0.15, cart_y + 0.15, 0.12), color=wood))
+        for number, (dx, color) in enumerate(zip((-0.09, 0.02, 0.11), ball_colors)):
+            parts.append(lpm.lathe(f"cart_{cart}_ball_{number}", [(0.06 * math.cos(math.radians(a)), 0.06 * math.sin(math.radians(a))) for a in (-90, -45, 0, 45, 90)], segments=8, at=(cart_x + dx, cart_y, 0.19), color=index(color)))
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def build_ballpark(spec, out_dir):
     """A baseball ballpark filling 7x7: a fan-shaped field with a diamond and a warning track under a blue outfield wall, three red grandstand tiers wrapping behind home plate and along the foul lines, six floodlight masts, a scoreboard and two dugout benches."""
     style = spec.get("style", "urbtopia")

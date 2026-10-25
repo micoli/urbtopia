@@ -44,7 +44,9 @@
       "type": "string",
       "enum": [
         "factory",
-        "bakery"
+        "bakery",
+        "dairy",
+        "knitwearFactory"
       ]
     },
     "recipe": {

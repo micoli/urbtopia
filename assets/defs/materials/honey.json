@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "name": {
+    "en": "Honey",
+    "fr": "Miel"
+  },
+  "model": "materials-honey",
+  "producedBy": "hive",
+  "durationMinutes": 24,
+  "unlockCitizens": 80,
+  "minTier": 1,
+  "value": 8,
+  "packing": {
+    "minutes": 4,
+    "value": 90
+  }
+}

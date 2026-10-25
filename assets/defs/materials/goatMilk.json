@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "name": {
+    "en": "Goat milk",
+    "fr": "Lait de chèvre"
+  },
+  "model": "materials-goat-milk",
+  "producedBy": "livestockFarm",
+  "recipe": {
+    "wheat": 1
+  },
+  "durationMinutes": 14,
+  "unlockCitizens": 300,
+  "minTier": 1,
+  "value": 5,
+  "animal": "animals-goat"
+}

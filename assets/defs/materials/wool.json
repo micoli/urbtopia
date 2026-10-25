@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "name": {
+    "en": "Wool",
+    "fr": "Laine"
+  },
+  "model": "materials-wool",
+  "producedBy": "livestockFarm",
+  "recipe": {
+    "wheat": 1
+  },
+  "durationMinutes": 16,
+  "unlockCitizens": 250,
+  "minTier": 1,
+  "value": 5,
+  "animal": "animals-sheep"
+}

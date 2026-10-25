@@ -1,0 +1,16 @@
+# 3D models for the new buildings and perennials
+
+Status: resolved
+Blocked by: 02, 03, 04
+
+Use the `create-building-model` skill, one model at a time, shown in the live Blender at each step. English texts on signs; commit only on request.
+
+- Livestock farm: 5 Tiers, repaintable four tones.
+- Hive, Mulberry tree.
+- Dairy, Textile mill, Knitwear factory (5 Tiers each).
+- Then register with `add-building` and regenerate codex images (`npm run codex:generate`).
+- Done when: every Tier has a model set in its definition.
+
+## Progress
+
+- Livestock farm: done (5 Tiers `livestock-farm-2x2-t1..t5-tone-a`, recipe `build_livestock`, one more fenced pen per Tier, four tones). Hive: done (5 Tiers `hive-1x1-t1..t5`, `build_hive`, one straw skep more per Tier, scattered seeded flowers, no platform). Mulberry tree: done (`mulberry-tree-1x1`, standalone recipe, one model scaled per Tier like the cherry tree). Dairy: done (5 Tiers `dairy-2x2-t1..t5-tone-a`, `build_dairy`, one steel tank more per Tier, four tones). Textile mill: done (5 Tiers `textile-mill-2x2-t1..t5-tone-a`, `build_textile_mill`, one giant spool more per Tier, wool bales on the right, four tones). Knitwear factory: done (5 Tiers `knitwear-factory-2x2-t1..t5-tone-a`, `build_knitwear`, one giant yarn ball more per Tier, three mannequins, two carts, four tones). Item icons: done (12 Materials in `materials.py`, 8 Goods in `goods.py`, models `materials-*` and `goods-*`, `model` set in each definition). Remaining: none; the facing of each model in the game is still to check once.

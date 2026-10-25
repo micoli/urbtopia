@@ -226,13 +226,163 @@ def olive_oil():
     return bottle("big", (-0.05, 0.02, 0), 1.0) + bottle("small", (0.11, -0.05, 0), 0.7)
 
 
+def blob(name, radius, at, body, shade=None, segments=7):
+    profile = [(radius * math.cos(math.radians(a)), radius * math.sin(math.radians(a)) + radius) for a in (-90, -60, -30, 0, 30, 60, 90)]
+    part = lpm.lathe(name, profile, segments=segments, at=at, color=color(body))
+    if shade:
+        lpm.paint(part, color(shade), where=lambda c, n, i: i % 3 == 1)
+    return part
+
+
+def egg(name, at, body, shade, scale, yaw):
+    profile = [(0, 0), (0.03, 0.004), (0.047, 0.03), (0.05, 0.06), (0.04, 0.09), (0.02, 0.11), (0, 0.115)]
+    part = lpm.lathe(name, profile, segments=7, at=(0, 0, 0), color=color(body))
+    lpm.paint(part, color(shade), where=lambda c, n, i: i % 3 == 1)
+    lpm.scale(part, scale, scale, scale)
+    lpm.rotate(part, yaw, "Z")
+    lpm.move(part, *at)
+    return part
+
+
+def nest(eggs, scale, shell, shade):
+    base = lpm.lathe("nest", [(0.0, 0.0), (0.13, 0.0), (0.15, 0.03), (0.135, 0.055), (0.1, 0.04), (0.0, 0.03)], segments=9, color=color("straw"))
+    lpm.paint(base, color("straw_dark"), where=lambda c, n, i: i % 3 == 0)
+    parts = [base]
+    for index, (x, y, body, yaw) in enumerate(eggs):
+        parts.append(egg(f"egg{index}", (x, y, 0.035), body, shade, scale, yaw))
+    return parts
+
+
+def hen_egg():
+    return nest(((-0.045, -0.025, "egg_brown", 20), (0.05, -0.03, "egg_cream", -30), (0.0, 0.04, "egg_brown", 70)), 1.0, "egg_brown", "egg_cream")
+
+
+def duck_egg():
+    return nest(((-0.05, -0.02, "duck_shell", 10), (0.05, -0.03, "duck_shell", -40), (0.0, 0.045, "duck_shell", 60)), 1.15, "duck_shell", "egg_cream")
+
+
+def churn(name, at, scale):
+    x, y, z = at
+    parts = [
+        lpm.prism(f"{name}_body", 10, 0.07, 0.17, color=color("tin"), radius_top=0.06),
+        lpm.prism(f"{name}_band", 10, 0.072, 0.03, at=(0, 0, 0.05), color=color("label")),
+        lpm.prism(f"{name}_neck", 10, 0.045, 0.04, at=(0, 0, 0.17), color=color("tin_dark")),
+        lpm.prism(f"{name}_lid", 10, 0.058, 0.025, at=(0, 0, 0.21), color=color("tin")),
+        lpm.box(f"{name}_handle_a", (0.03, 0.02, 0.05), at=(-0.075, 0, 0.1), color=color("tin_dark")),
+        lpm.box(f"{name}_handle_b", (0.03, 0.02, 0.05), at=(0.075, 0, 0.1), color=color("tin_dark")),
+    ]
+    for part in parts:
+        lpm.scale(part, scale, scale, scale)
+        lpm.move(part, x, y, z)
+    return parts
+
+
+def milk_bottle(name, at, scale, cap):
+    x, y, z = at
+    profile = [(0, 0), (0.045, 0), (0.052, 0.02), (0.052, 0.12), (0.04, 0.16), (0.022, 0.19), (0.02, 0.22), (0, 0.22)]
+    parts = [
+        lpm.lathe(f"{name}_body", profile, segments=8, color=color("milk_white")),
+        lpm.prism(f"{name}_label", 8, 0.0535, 0.05, at=(0, 0, 0.04), color=color(cap)),
+        lpm.prism(f"{name}_cap", 6, 0.026, 0.028, at=(0, 0, 0.218), color=color(cap)),
+    ]
+    for part in parts:
+        lpm.scale(part, scale, scale, scale)
+        lpm.move(part, x, y, z)
+    return parts
+
+
+def milk():
+    return churn("churn", (-0.07, 0.02, 0), 1.0) + milk_bottle("bottle", (0.1, -0.05, 0), 0.8, "fish_blue")
+
+
+def goat_milk():
+    return milk_bottle("big", (-0.05, 0.02, 0), 1.0, "herb") + milk_bottle("small", (0.1, -0.05, 0), 0.7, "herb")
+
+
+def fluff(prefix, body, shade, light):
+    spots = ((0, 0, 0.0, 0.105), (-0.09, 0.03, 0.0, 0.08), (0.09, -0.02, 0.0, 0.085), (0.0, -0.08, 0.0, 0.07), (-0.03, 0.08, 0.05, 0.07), (0.04, 0.0, 0.1, 0.08))
+    parts = [blob(f"{prefix}{index}", radius, (x, y, z), light if index == 5 else body, shade) for index, (x, y, z, radius) in enumerate(spots)]
+    return parts
+
+
+def wool():
+    return fluff("wool", "wool", "wool_shade", "wool")
+
+
+def alpaca_wool():
+    return fluff("alpaca", "alpaca", "alpaca_light", "alpaca_light")
+
+
+def silk():
+    parts = []
+    for index, (x, y, scale, yaw) in enumerate(((-0.07, -0.02, 1.0, 20), (0.06, -0.04, 0.9, -30), (0.0, 0.06, 1.0, 80))):
+        part = lpm.lathe(f"cocoon{index}", [(0, 0), (0.03, 0.005), (0.048, 0.04), (0.05, 0.08), (0.035, 0.115), (0.012, 0.135), (0, 0.14)], segments=8, color=color("silk"))
+        lpm.paint(part, color("silk_shade"), where=lambda c, n, i: i % 3 == 1)
+        lpm.scale(part, scale, scale, scale)
+        lpm.rotate(part, 80, "Y")
+        lpm.rotate(part, yaw, "Z")
+        lpm.move(part, x, y, 0.05)
+        parts.append(part)
+    parts += item_lib.ngon_ring("skein", 10, 0.1, 0.012, 0.03, (0.0, 0.03, 0.0), color("silk_shade"))
+    return parts
+
+
+def honey():
+    jar = lpm.lathe("jar", [(0, 0), (0.07, 0), (0.08, 0.02), (0.08, 0.12), (0.06, 0.15), (0.055, 0.17), (0, 0.17)], segments=8, color=color("honey"))
+    lpm.paint(jar, color("honey_dark"), where=lambda c, n, i: c.z < 0.1 and abs(n.z) < 0.5 and i % 2 == 0)
+    parts = [
+        jar,
+        lpm.prism("label", 8, 0.0815, 0.06, at=(0, 0, 0.04), color=color("paper")),
+        lpm.prism("lid", 8, 0.06, 0.035, at=(0, 0, 0.17), color=color("wood_dark")),
+        lpm.prism("comb", 6, 0.06, 0.03, at=(-0.16, 0.05, 0), color=color("honey")),
+        lpm.prism("comb_cell", 6, 0.03, 0.032, at=(-0.16, 0.05, 0), color=color("honey_dark")),
+        stick("dipper", (0.14, 0.0, 0.01), (0.2, -0.02, 0.15), 0.008, "wood"),
+        lpm.prism("dipper_head", 8, 0.026, 0.05, at=(0.2, -0.02, 0.12), color=color("honey_dark")),
+    ]
+    return parts
+
+
+def mulberry_leaf():
+    parts = []
+    for index, yaw in enumerate((20, 140, 260)):
+        parts.append(leaf(f"leaf{index}", (0, 0, 0.012 + 0.006 * index), yaw, 0.2, 0.13, "leaf_green"))
+        parts.append(stick(f"vein{index}", (0, 0, 0.016 + 0.006 * index), (0.17 * math.cos(math.radians(yaw)), 0.17 * math.sin(math.radians(yaw)), 0.016 + 0.006 * index), 0.005, "stem_green"))
+    for index, (x, y, body) in enumerate(((0.0, -0.03, "mulberry"), (0.035, -0.045, "mulberry_red"), (-0.03, -0.05, "mulberry_red"), (0.01, -0.075, "mulberry"))):
+        parts.append(blob(f"berry{index}", 0.026, (x, y, 0.03), body))
+    return parts
+
+
+def cloth_rolls(body, dark, band):
+    parts = [bar(f"roll_a", 10, 0.06, 0.28, -0.06, 0.06, body, dark), bar("roll_b", 10, 0.06, 0.28, 0.065, 0.06, body, dark), bar("roll_c", 10, 0.06, 0.28, 0.0, 0.16, body, dark)]
+    parts.append(lpm.box("sheet", (0.26, 0.2, 0.025), at=(0.0, 0.25, 0.0), color=color(body)))
+    parts.append(lpm.box("hem", (0.26, 0.02, 0.027), at=(0.0, 0.35, 0.0), color=color(band)))
+    return parts
+
+
+def textile():
+    return cloth_rolls("fabric_beige", "fabric_beige_dark", "fabric_beige_dark")
+
+
+def alpaca_textile():
+    return cloth_rolls("fabric_alpaca", "fabric_alpaca_dark", "alpaca_light")
+
+
+def silk_fabric():
+    return cloth_rolls("fabric_silk", "silk_shade", "fabric_silk_light")
+
+
 MODELS = {
     "clay": clay, "coal": coal, "fish": fish, "gold": gold, "metal": metal,
     "sand": sand, "silicon": silicon, "stone": stone, "wood": wood,
     "apple": apple, "cherry": cherry, "olive": olive,
     "flour": flour, "olive-oil": olive_oil,
+    "hen-egg": hen_egg, "duck-egg": duck_egg, "milk": milk, "goat-milk": goat_milk, "wool": wool, "alpaca-wool": alpaca_wool,
+    "silk": silk, "honey": honey, "mulberry-leaf": mulberry_leaf, "textile": textile, "alpaca-textile": alpaca_textile, "silk-fabric": silk_fabric,
 }
 
 out_dir = os.path.dirname(os.path.abspath(__file__))
+only = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 for model_id, make_parts in MODELS.items():
+    if only and model_id not in only:
+        continue
     item_lib.build(model_id, make_parts, out_dir)

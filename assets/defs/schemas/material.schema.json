@@ -37,7 +37,10 @@
         "workshop",
         "fishingBoat",
         "orchard",
-        "mill"
+        "mill",
+        "livestockFarm",
+        "hive",
+        "textileMill"
       ]
     },
     "recipe": {
@@ -88,6 +91,10 @@
         "value"
       ],
       "additionalProperties": false
+    },
+    "animal": {
+      "type": "string",
+      "pattern": "\\S"
     }
   },
   "required": [

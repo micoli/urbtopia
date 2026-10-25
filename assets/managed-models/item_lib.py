@@ -30,6 +30,16 @@ PALETTE_ENTRIES = [
     ("oil_glass", "#8fa83c"), ("oil_gold", "#d9b52c"),
     ("crust", "#c98a3e"), ("crust_dark", "#9a5c24"), ("crust_light", "#e3b062"), ("batter", "#f0d98a"),
     ("apple_slice", "#f4e6a8"), ("sugar", "#fbf6ea"),
+    ("egg_cream", "#f2e6cf"), ("egg_brown", "#c9915a"), ("straw", "#e0b85a"), ("straw_dark", "#b98f38"), ("duck_shell", "#cfe6d8"),
+    ("milk_white", "#fbfbf7"), ("wool", "#f6f1e8"), ("wool_shade", "#ddd3c2"), ("alpaca", "#b98a5e"), ("alpaca_light", "#e1c59f"),
+    ("silk", "#f7eef5"), ("silk_shade", "#d9c3d6"), ("honey", "#e8a317"), ("honey_dark", "#b9770e"),
+    ("mulberry", "#5a1f70"), ("mulberry_red", "#b02a50"),
+    ("fabric_beige", "#dbc9a4"), ("fabric_beige_dark", "#bba57a"), ("fabric_alpaca", "#b4764a"), ("fabric_alpaca_dark", "#8c5430"),
+    ("fabric_silk", "#b58be0"), ("fabric_silk_light", "#e6d0fb"),
+    ("cheese", "#f2c94c"), ("cheese_dark", "#d6a420"), ("cheese_rind", "#c98b2f"), ("goat_white", "#f4f1ea"), ("herb", "#5d9a3c"),
+    ("cream_pot", "#e9d8c0"), ("jumper_pink", "#ff8fb8"), ("jumper_pink_dark", "#d95c8c"),
+    ("glove_blue", "#4a8de0"), ("glove_blue_dark", "#2d5fa8"), ("hat_red", "#d8463d"), ("hat_cream", "#f5ecd8"),
+    ("scarf_violet", "#8a4dff"), ("scarf_pink", "#ff8fb8"),
 ]
 PALETTE_NAMES = [name for name, _ in PALETTE_ENTRIES]
 

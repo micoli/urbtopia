@@ -1,0 +1,93 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "production",
+  "section": "build.agriculture",
+  "cost": 300,
+  "unlockCitizens": 80,
+  "requiresRoad": true,
+  "initialSlots": 2,
+  "name": {
+    "en": "Livestock farm",
+    "fr": "Élevage"
+  },
+  "description": {
+    "en": "Keeps hens, ducks, cows, goats, sheep, alpacas and silkworms for eggs, milk, wool and silk, never for meat. Each cycle feeds the animals with Corn, Wheat or mulberry leaves from the grain silo. Production needs electricity and a road connection.",
+    "fr": "Élève poules, canards, vaches, chèvres, moutons, alpagas et vers à soie pour les œufs, le lait, la laine et la soie, jamais pour la viande. Chaque cycle nourrit les animaux avec du maïs, du blé ou des feuilles de mûrier du silo à grains. La production nécessite de l'électricité et une connexion routière."
+  },
+  "tiers": [
+    {
+      "model": "buildings-livestock-farm-2x2-t1-tone-a",
+      "footprint": [2, 2],
+      "durationFactor": 1,
+      "maxSlots": 5,
+      "yield": 1,
+      "penCount": 1
+    },
+    {
+      "durationFactor": 0.75,
+      "upgradeCost": {
+        "urbs": 300,
+        "goods": {
+          "planks": 3
+        }
+      },
+      "model": "buildings-livestock-farm-2x2-t2-tone-a",
+      "penCount": 2
+    },
+    {
+      "maxSlots": 8,
+      "upgradeCost": {
+        "urbs": 800,
+        "goods": {
+          "bricks": 4
+        }
+      },
+      "model": "buildings-livestock-farm-2x2-t3-tone-a",
+      "penCount": 3
+    },
+    {
+      "yield": 2,
+      "upgradeCost": {
+        "urbs": 2000,
+        "goods": {
+          "tiles": 4
+        }
+      },
+      "model": "buildings-livestock-farm-2x2-t4-tone-a",
+      "penCount": 4
+    },
+    {
+      "upgradeCost": {
+        "urbs": 5000,
+        "goods": {
+          "tools": 4
+        }
+      },
+      "model": "buildings-livestock-farm-2x2-t5-tone-a",
+      "penCount": 5
+    }
+  ],
+  "extraCopyCitizens": [300, 800],
+  "pens": [
+    {
+      "x": 0.64,
+      "z": -0.74
+    },
+    {
+      "x": 0,
+      "z": -0.74
+    },
+    {
+      "x": -0.64,
+      "z": -0.74
+    },
+    {
+      "x": 0.64,
+      "z": -0.14
+    },
+    {
+      "x": -0.64,
+      "z": -0.14
+    }
+  ]
+}

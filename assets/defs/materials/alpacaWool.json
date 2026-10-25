@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "name": {
+    "en": "Alpaca wool",
+    "fr": "Laine d'alpaga"
+  },
+  "model": "materials-alpaca-wool",
+  "producedBy": "livestockFarm",
+  "recipe": {
+    "wheat": 1
+  },
+  "durationMinutes": 20,
+  "unlockCitizens": 500,
+  "minTier": 1,
+  "value": 9,
+  "animal": "animals-alpaca"
+}

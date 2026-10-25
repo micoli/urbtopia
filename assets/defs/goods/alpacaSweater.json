@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "name": {
+    "en": "Alpaca sweater",
+    "fr": "Pull en alpaga"
+  },
+  "model": "goods-alpacasweater",
+  "category": "equipment",
+  "producedBy": "knitwearFactory",
+  "recipe": {
+    "alpacaTextile": 2
+  },
+  "durationMinutes": 24,
+  "value": 70,
+  "unlockCitizens": 500,
+  "minTier": 1
+}

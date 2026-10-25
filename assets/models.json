@@ -1,5 +1,47 @@
 {
   "$schema": "defs/schemas/models.schema.json",
+  "animals-alpaca": {
+    "file": "animals/alpaca",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "animals-cow": {
+    "file": "animals/cow",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "animals-duck": {
+    "file": "animals/duck",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "animals-goat": {
+    "file": "animals/goat",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "animals-hen": {
+    "file": "animals/hen",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "animals-sheep": {
+    "file": "animals/sheep",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "animals-silkworm": {
+    "file": "animals/silkworm",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "buildings-apple-tree-1x1": {
     "file": "buildings/apple-tree-1x1",
     "source": "managed",
@@ -625,6 +667,146 @@
     "scale": 1,
     "rotationOffset": 180
   },
+  "buildings-dairy-2x2-t1-tone-a": {
+    "file": "buildings/dairy-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "sun",
+        "color": "#ffd21f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      }
+    }
+  },
+  "buildings-dairy-2x2-t2-tone-a": {
+    "file": "buildings/dairy-2x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "sun",
+        "color": "#ffd21f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      }
+    }
+  },
+  "buildings-dairy-2x2-t3-tone-a": {
+    "file": "buildings/dairy-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "sun",
+        "color": "#ffd21f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      }
+    }
+  },
+  "buildings-dairy-2x2-t4-tone-a": {
+    "file": "buildings/dairy-2x2-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "sun",
+        "color": "#ffd21f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      }
+    }
+  },
+  "buildings-dairy-2x2-t5-tone-a": {
+    "file": "buildings/dairy-2x2-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "sun",
+        "color": "#ffd21f"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      }
+    }
+  },
   "buildings-depot-2x1-t1-tone-a": {
     "file": "buildings/depot-2x1-t1-tone-a",
     "source": "managed",
@@ -1199,6 +1381,56 @@
       2
     ],
     "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-hive-1x1-t1": {
+    "file": "buildings/hive-1x1-t1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-hive-1x1-t2": {
+    "file": "buildings/hive-1x1-t2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-hive-1x1-t3": {
+    "file": "buildings/hive-1x1-t3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-hive-1x1-t4": {
+    "file": "buildings/hive-1x1-t4",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
+  "buildings-hive-1x1-t5": {
+    "file": "buildings/hive-1x1-t5",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
     "rotationOffset": 180
   },
   "buildings-hospital-3x3": {
@@ -2680,6 +2912,286 @@
     ],
     "rotationOffset": 180
   },
+  "buildings-knitwear-factory-2x2-t1-tone-a": {
+    "file": "buildings/knitwear-factory-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pink",
+        "color": "#ff8fb8"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "violet",
+        "color": "#8a4dff"
+      },
+      "d": {
+        "name": "sun",
+        "color": "#ffd21f"
+      }
+    }
+  },
+  "buildings-knitwear-factory-2x2-t2-tone-a": {
+    "file": "buildings/knitwear-factory-2x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pink",
+        "color": "#ff8fb8"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "violet",
+        "color": "#8a4dff"
+      },
+      "d": {
+        "name": "sun",
+        "color": "#ffd21f"
+      }
+    }
+  },
+  "buildings-knitwear-factory-2x2-t3-tone-a": {
+    "file": "buildings/knitwear-factory-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pink",
+        "color": "#ff8fb8"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "violet",
+        "color": "#8a4dff"
+      },
+      "d": {
+        "name": "sun",
+        "color": "#ffd21f"
+      }
+    }
+  },
+  "buildings-knitwear-factory-2x2-t4-tone-a": {
+    "file": "buildings/knitwear-factory-2x2-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pink",
+        "color": "#ff8fb8"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "violet",
+        "color": "#8a4dff"
+      },
+      "d": {
+        "name": "sun",
+        "color": "#ffd21f"
+      }
+    }
+  },
+  "buildings-knitwear-factory-2x2-t5-tone-a": {
+    "file": "buildings/knitwear-factory-2x2-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pink",
+        "color": "#ff8fb8"
+      },
+      "b": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "c": {
+        "name": "violet",
+        "color": "#8a4dff"
+      },
+      "d": {
+        "name": "sun",
+        "color": "#ffd21f"
+      }
+    }
+  },
+  "buildings-livestock-farm-2x2-t1-tone-a": {
+    "file": "buildings/livestock-farm-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-livestock-farm-2x2-t2-tone-a": {
+    "file": "buildings/livestock-farm-2x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-livestock-farm-2x2-t3-tone-a": {
+    "file": "buildings/livestock-farm-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-livestock-farm-2x2-t4-tone-a": {
+    "file": "buildings/livestock-farm-2x2-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-livestock-farm-2x2-t5-tone-a": {
+    "file": "buildings/livestock-farm-2x2-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
   "buildings-marina-captaincy": {
     "file": "buildings/marina-captaincy",
     "source": "managed",
@@ -2792,6 +3304,15 @@
       1
     ],
     "rotationOffset": 180
+  },
+  "buildings-mulberry-tree-1x1": {
+    "file": "buildings/mulberry-tree-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ]
   },
   "buildings-office-octagon-2x2-t1-tone-a": {
     "file": "buildings/office-octagon-2x2-t1-tone-a",
@@ -4621,6 +5142,146 @@
       "d": {
         "name": "greygreen",
         "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-textile-mill-2x2-t1-tone-a": {
+    "file": "buildings/textile-mill-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-textile-mill-2x2-t2-tone-a": {
+    "file": "buildings/textile-mill-2x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-textile-mill-2x2-t3-tone-a": {
+    "file": "buildings/textile-mill-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-textile-mill-2x2-t4-tone-a": {
+    "file": "buildings/textile-mill-2x2-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-textile-mill-2x2-t5-tone-a": {
+    "file": "buildings/textile-mill-2x2-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
       }
     }
   },
@@ -6789,6 +7450,12 @@
     },
     "flush": true
   },
+  "goods-alpacasweater": {
+    "file": "goods/alpacaSweater",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "goods-applecake": {
     "file": "goods/appleCake",
     "source": "managed",
@@ -6819,6 +7486,12 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "goods-cheese": {
+    "file": "goods/cheese",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "goods-cherryclafoutis": {
     "file": "goods/cherryClafoutis",
     "source": "managed",
@@ -6827,6 +7500,12 @@
   },
   "goods-circuits": {
     "file": "goods/circuits",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "goods-cream": {
+    "file": "goods/cream",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180
@@ -6849,6 +7528,24 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "goods-gloves": {
+    "file": "goods/gloves",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "goods-goatcheese": {
+    "file": "goods/goatCheese",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "goods-hat": {
+    "file": "goods/hat",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "goods-jewelry": {
     "file": "goods/jewelry",
     "source": "managed",
@@ -6861,8 +7558,20 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "goods-scarf": {
+    "file": "goods/scarf",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "goods-steel": {
     "file": "goods/steel",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "goods-sweater": {
+    "file": "goods/sweater",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180
@@ -6914,6 +7623,18 @@
     ],
     "flush": true
   },
+  "materials-alpaca-textile": {
+    "file": "materials/alpaca-textile",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-alpaca-wool": {
+    "file": "materials/alpaca-wool",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-apple": {
     "file": "materials/apple",
     "source": "managed",
@@ -6938,6 +7659,12 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "materials-duck-egg": {
+    "file": "materials/duck-egg",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-fish": {
     "file": "materials/fish",
     "source": "managed",
@@ -6950,14 +7677,44 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "materials-goat-milk": {
+    "file": "materials/goat-milk",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-gold": {
     "file": "materials/gold",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180
   },
+  "materials-hen-egg": {
+    "file": "materials/hen-egg",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-honey": {
+    "file": "materials/honey",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-metal": {
     "file": "materials/metal",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-milk": {
+    "file": "materials/milk",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-mulberry-leaf": {
+    "file": "materials/mulberry-leaf",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180
@@ -6986,14 +7743,38 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "materials-silk": {
+    "file": "materials/silk",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-silk-fabric": {
+    "file": "materials/silk-fabric",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-stone": {
     "file": "materials/stone",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180
   },
+  "materials-textile": {
+    "file": "materials/textile",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
   "materials-wood": {
     "file": "materials/wood",
+    "source": "managed",
+    "license": "Own work",
+    "rotationOffset": 180
+  },
+  "materials-wool": {
+    "file": "materials/wool",
     "source": "managed",
     "license": "Own work",
     "rotationOffset": 180

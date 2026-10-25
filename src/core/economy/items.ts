@@ -5,7 +5,7 @@ import goodOrder from '../../../assets/defs/order/goods.json' with { type: 'json
 import { CROPS, CROP_IDS, type CropId } from '../farming/crops';
 import type { BuildingType } from '../engine/state';
 import type { BaseGoodId } from './goodTypes.generated';
-import type { GoodCategory, GoodDefinition, MaterialDefinition } from './itemSchemas';
+import type { GoodCategory, GoodDefinition, GoodProducer, MaterialDefinition } from './itemSchemas';
 import type { DefinedMaterialId, PackableMaterialId } from './materialTypes.generated';
 
 export type { BaseGoodId };
@@ -42,11 +42,15 @@ const CROP_MATERIALS = Object.fromEntries(
 
 export const MATERIALS = { ...materialsWhere(({ producedBy }) => producedBy === 'workshop'), ...CROP_MATERIALS, ...materialsWhere(({ producedBy }) => producedBy !== 'workshop') } as Record<MaterialId, MaterialSpec>;
 
+const ORCHARD_MATERIAL_IDS: ReadonlySet<string> = new Set(MATERIAL_ENTRIES.filter(({ producedBy }) => producedBy === 'orchard').map(({ id }) => id));
+
+export const isOrchardMaterial = (item: string): boolean => ORCHARD_MATERIAL_IDS.has(item);
+
 export const FISH_MATERIAL: MaterialSpec = MATERIALS.fish;
 
 export interface GoodSpec {
   category: GoodCategory;
-  producedBy?: 'factory' | 'bakery';
+  producedBy?: GoodProducer;
   recipe: Partial<Record<MaterialId, number>>;
   durationMs: number;
   value: number;
@@ -124,8 +128,12 @@ export function recipeOf(item: ItemId): Partial<Record<MaterialId, number>> {
 const PRODUCIBLE_BY_BUILDING: Partial<Record<BuildingType, readonly ItemId[]>> = {
   workshop: MATERIAL_ENTRIES.filter(({ producedBy }) => producedBy === 'workshop').map(({ id }) => id),
   mill: MATERIAL_ENTRIES.filter(({ producedBy }) => producedBy === 'mill').map(({ id }) => id),
+  livestockFarm: MATERIAL_ENTRIES.filter(({ producedBy }) => producedBy === 'livestockFarm').map(({ id }) => id),
   factory: Object.entries(BASE_GOODS).filter(([, good]) => good.producedBy === 'factory').map(([id]) => id as BaseGoodId),
+  textileMill: MATERIAL_ENTRIES.filter(({ producedBy }) => producedBy === 'textileMill').map(({ id }) => id),
   bakery: Object.entries(BASE_GOODS).filter(([, good]) => good.producedBy === 'bakery').map(([id]) => id as BaseGoodId),
+  dairy: Object.entries(BASE_GOODS).filter(([, good]) => good.producedBy === 'dairy').map(([id]) => id as BaseGoodId),
+  knitwearFactory: Object.entries(BASE_GOODS).filter(([, good]) => good.producedBy === 'knitwearFactory').map(([id]) => id as BaseGoodId),
   packhouse: Object.keys(PACKED_GOODS) as PackId[],
 };
 

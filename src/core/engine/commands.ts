@@ -16,6 +16,7 @@ import { utilityCapacity, utilityDemand, type UtilityTotals } from '../buildings
 import { HOME_TIERS, SHOP, TAX, SLOT_PRICES } from '../economy/economy';
 import { OFFICE, isOfficeType, officeUrbsDue } from '../economy/offices';
 import { canSell, hasCounter, isShopType, saleIntervalOf, sellsGoods, shopTierOf, slotPriceOf } from '../economy/shops';
+import { newOrchardQueue } from '../economy/orchards';
 import { GOODS, isGood, isMaterial, minTierOf, producibleItems, recipeOf, type GoodId } from '../economy/items';
 import { marketQuote } from '../economy/market';
 import { donationQuote } from '../economy/solidarity';
@@ -643,8 +644,8 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
   if (issue) return fail(issue);
   if (state.urbs < nextCopyCost(state, type) + extraCost) return fail('error.notEnoughUrbs');
   const created = createBuilding(state.nextId, type, x, y, rotation);
-  const orchardFruit: QueueEntry['item'] | undefined = type === 'oliveTree' ? 'olive' : type === 'appleTree' ? 'apple' : type === 'cherryTree' ? 'cherry' : undefined;
-  const building = { ...created, ...(orchardFruit ? { queue: [{ item: orchardFruit, duration: 20 * 60_000, startedAt: state.lastSeen, done: false, quantity: 1 }] } : {}), ...(solar ? { solar: true } : {}), ...(isHomeType(type) && colorVariant ? { colorVariant } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
+  const orchardQueue = newOrchardQueue(type, state.lastSeen);
+  const building = { ...created, ...(orchardQueue ? { queue: orchardQueue } : {}), ...(solar ? { solar: true } : {}), ...(isHomeType(type) && colorVariant ? { colorVariant } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
   const utilityIssue = isHomeType(type) ? utilityIssueFor(state, tierDemand(1)) : isFacilityType(type) ? utilityIssueFor(state, { power: 0, water: FACILITIES[type].water }) : null;
   if (utilityIssue) return fail(utilityIssue);
   return {
@@ -804,8 +805,8 @@ function collectProduction(state: GameState, building: Building): CommandOutcome
       marketUnlocked: state.marketUnlocked || Object.values(goods).some((amount) => (amount ?? 0) > 0),
       buildings: state.buildings.map((candidate) => {
         if (candidate !== building) return candidate;
-        const orchardFruit = building.type === 'oliveTree' ? 'olive' : building.type === 'appleTree' ? 'apple' : building.type === 'cherryTree' ? 'cherry' : undefined;
-        return { ...building, queue: orchardFruit && collected > 0 ? [{ item: orchardFruit, duration: 20 * 60_000, startedAt: state.lastSeen, done: false, quantity: 1 }] : remaining };
+        const orchardQueue = newOrchardQueue(building.type, state.lastSeen);
+        return { ...building, queue: orchardQueue && collected > 0 ? orchardQueue : remaining };
       }),
     },
     events,

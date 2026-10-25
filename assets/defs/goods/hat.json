@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "name": {
+    "en": "Hat",
+    "fr": "Bonnet"
+  },
+  "model": "goods-hat",
+  "category": "equipment",
+  "producedBy": "knitwearFactory",
+  "recipe": {
+    "textile": 1
+  },
+  "durationMinutes": 12,
+  "value": 17,
+  "unlockCitizens": 400,
+  "minTier": 1
+}

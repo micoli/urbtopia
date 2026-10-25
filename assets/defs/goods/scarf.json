@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "name": {
+    "en": "Scarf",
+    "fr": "Écharpe"
+  },
+  "model": "goods-scarf",
+  "category": "luxury",
+  "producedBy": "knitwearFactory",
+  "recipe": {
+    "silkFabric": 1
+  },
+  "durationMinutes": 16,
+  "value": 50,
+  "unlockCitizens": 600,
+  "minTier": 1
+}

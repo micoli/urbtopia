@@ -1,0 +1,67 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "green",
+  "section": "build.agriculture",
+  "cost": 120,
+  "unlockCitizens": 80,
+  "requiresRoad": false,
+  "initialSlots": 1,
+  "name": {
+    "en": "Hive",
+    "fr": "Ruche"
+  },
+  "description": {
+    "en": "A freely placed hive that makes honey and improves nearby biodiversity and well-being. It needs no water and no road.",
+    "fr": "Une ruche à placer librement qui produit du miel et améliore la biodiversité et le bien-être à proximité. Elle ne demande ni eau ni route."
+  },
+  "tiers": [
+    {
+      "model": "buildings-hive-1x1-t1",
+      "footprint": [1, 1],
+      "radius": 4,
+      "cooling": 0,
+      "biodiversity": 1,
+      "wellbeing": 1
+    },
+    {
+      "radius": 4,
+      "cooling": 0,
+      "biodiversity": 1.5,
+      "wellbeing": 1.5,
+      "upgradeCost": {
+        "urbs": 60
+      },
+      "model": "buildings-hive-1x1-t2"
+    },
+    {
+      "radius": 5,
+      "cooling": 0,
+      "biodiversity": 2,
+      "wellbeing": 2,
+      "upgradeCost": {
+        "urbs": 90
+      },
+      "model": "buildings-hive-1x1-t3"
+    },
+    {
+      "radius": 5,
+      "cooling": 0,
+      "biodiversity": 2.5,
+      "wellbeing": 2.5,
+      "upgradeCost": {
+        "urbs": 135
+      },
+      "model": "buildings-hive-1x1-t4"
+    },
+    {
+      "radius": 6,
+      "cooling": 0,
+      "biodiversity": 3,
+      "wellbeing": 3,
+      "upgradeCost": {
+        "urbs": 200
+      },
+      "model": "buildings-hive-1x1-t5"
+    }
+  ]
+}

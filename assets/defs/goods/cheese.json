@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/good.schema.json",
+  "kind": "good",
+  "name": {
+    "en": "Cheese",
+    "fr": "Fromage"
+  },
+  "model": "goods-cheese",
+  "category": "food",
+  "producedBy": "dairy",
+  "recipe": {
+    "milk": 2
+  },
+  "durationMinutes": 16,
+  "value": 16,
+  "unlockCitizens": 150,
+  "minTier": 1
+}

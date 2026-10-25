@@ -1,0 +1,86 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "production",
+  "section": "build.production",
+  "cost": 450,
+  "unlockCitizens": 400,
+  "requiresRoad": true,
+  "initialSlots": 2,
+  "name": {
+    "en": "Knitwear factory",
+    "fr": "Tricoterie"
+  },
+  "description": {
+    "en": "Knits textile into sweaters, gloves, hats and scarves, and sells them over its own counter. Production needs electricity and a road connection.",
+    "fr": "Tricote le textile en pulls, gants, bonnets et écharpes et les vend à son comptoir. La production nécessite de l'électricité et une connexion routière."
+  },
+  "tiers": [
+    {
+      "model": "buildings-knitwear-factory-2x2-t1-tone-a",
+      "footprint": [2, 2],
+      "durationFactor": 1,
+      "maxSlots": 5,
+      "yield": 1
+    },
+    {
+      "durationFactor": 0.75,
+      "upgradeCost": {
+        "urbs": 300,
+        "goods": {
+          "planks": 3
+        }
+      },
+      "model": "buildings-knitwear-factory-2x2-t2-tone-a"
+    },
+    {
+      "maxSlots": 8,
+      "upgradeCost": {
+        "urbs": 800,
+        "goods": {
+          "bricks": 4
+        }
+      },
+      "model": "buildings-knitwear-factory-2x2-t3-tone-a"
+    },
+    {
+      "yield": 2,
+      "upgradeCost": {
+        "urbs": 2000,
+        "goods": {
+          "tiles": 4
+        }
+      },
+      "model": "buildings-knitwear-factory-2x2-t4-tone-a"
+    },
+    {
+      "upgradeCost": {
+        "urbs": 5000,
+        "goods": {
+          "tools": 4
+        }
+      },
+      "model": "buildings-knitwear-factory-2x2-t5-tone-a"
+    }
+  ],
+  "solarPanels": {
+    "panels": [
+      {
+        "model": "industrial-solar-panel-landscape",
+        "x": 0.165,
+        "y": -0.387,
+        "z": -0.454,
+        "rotationX": 0,
+        "rotationY": 0,
+        "rotationZ": 0
+      }
+    ],
+    "cost": 500,
+    "unlockCitizens": 0,
+    "output": 1.5
+  },
+  "counter": {
+    "slots": 3,
+    "sells": ["sweater", "gloves", "hat", "alpacaSweater", "scarf"],
+    "saleIntervalFactor": 1
+  }
+}

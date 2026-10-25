@@ -61,14 +61,17 @@ describe('nextUnlock', () => {
     expect(nextUnlock(withCitizens(18))).toEqual({ citizens: 20, items: ['grass', 'flower', 'wheat', 'flour', 'bread', 'grassCrate', 'grassBox', 'grassPallet', 'flowerCrate', 'flowerBox', 'flowerPallet', 'wheatCrate', 'wheatBox', 'wheatPallet'] });
     expect(nextUnlock(withCitizens(24))).toEqual({ citizens: 30, items: ['clay', 'tiles'] });
     expect(nextUnlock(withCitizens(36))).toEqual({ citizens: 60, items: ['carrot', 'beet', 'lettuce', 'carrotCrate', 'carrotBox', 'carrotPallet', 'beetCrate', 'beetBox', 'beetPallet', 'lettuceCrate', 'lettuceBox', 'lettucePallet'] });
-    expect(nextUnlock(withCitizens(66))).toEqual({ citizens: 80, items: ['metal', 'cherry', 'olive', 'oliveOil', 'tools', 'appleCake', 'cherryClafoutis', 'fougasse', 'cherryCrate', 'cherryBox', 'cherryPallet', 'oliveOilCrate', 'oliveOilBox', 'oliveOilPallet'] });
+    expect(nextUnlock(withCitizens(66))).toEqual({ citizens: 80, items: ['metal', 'cherry', 'olive', 'oliveOil', 'henEgg', 'honey', 'tools', 'appleCake', 'cherryClafoutis', 'fougasse', 'cherryCrate', 'cherryBox', 'cherryPallet', 'oliveOilCrate', 'oliveOilBox', 'oliveOilPallet', 'henEggCrate', 'henEggBox', 'henEggPallet', 'honeyCrate', 'honeyBox', 'honeyPallet'] });
   });
 
   it('announces the late-game items after 200 Citizens', () => {
-    expect(nextUnlock(withCitizens(204))).toEqual({ citizens: 250, items: ['pumpkin', 'watermelon', 'mushroom', 'pumpkinCrate', 'pumpkinBox', 'pumpkinPallet', 'watermelonCrate', 'watermelonBox', 'watermelonPallet', 'mushroomCrate', 'mushroomBox', 'mushroomPallet'] });
-    expect(nextUnlock(withCitizens(258))).toEqual({ citizens: 350, items: ['sand', 'cement'] });
-    expect(nextUnlock(withCitizens(354))).toEqual({ citizens: 450, items: ['bushBerries', 'bamboo', 'cactus', 'bushBerriesCrate', 'bushBerriesBox', 'bushBerriesPallet', 'bambooCrate', 'bambooBox', 'bambooPallet', 'cactusCrate', 'cactusBox', 'cactusPallet'] });
-    expect(nextUnlock(withCitizens(456))).toEqual({ citizens: 600, items: ['coal', 'steel'] });
+    expect(nextUnlock(withCitizens(204))).toEqual({ citizens: 250, items: ['pumpkin', 'watermelon', 'mushroom', 'wool', 'textile', 'pumpkinCrate', 'pumpkinBox', 'pumpkinPallet', 'watermelonCrate', 'watermelonBox', 'watermelonPallet', 'mushroomCrate', 'mushroomBox', 'mushroomPallet'] });
+    expect(nextUnlock(withCitizens(258))).toEqual({ citizens: 300, items: ['goatMilk', 'goatCheese'] });
+    expect(nextUnlock(withCitizens(304))).toEqual({ citizens: 350, items: ['sand', 'cement'] });
+    expect(nextUnlock(withCitizens(354))).toEqual({ citizens: 400, items: ['sweater', 'gloves', 'hat'] });
+    expect(nextUnlock(withCitizens(404))).toEqual({ citizens: 450, items: ['bushBerries', 'bamboo', 'cactus', 'bushBerriesCrate', 'bushBerriesBox', 'bushBerriesPallet', 'bambooCrate', 'bambooBox', 'bambooPallet', 'cactusCrate', 'cactusBox', 'cactusPallet'] });
+    expect(nextUnlock(withCitizens(456))).toEqual({ citizens: 500, items: ['alpacaWool', 'alpacaTextile', 'alpacaSweater'] });
+    expect(nextUnlock(withCitizens(504))).toEqual({ citizens: 600, items: ['coal', 'silk', 'mulberryLeaf', 'silkFabric', 'steel', 'scarf'] });
     expect(nextUnlock(withCitizens(606))).toEqual({ citizens: 800, items: ['apple', 'orange', 'palmtree', 'appleCrate', 'appleBox', 'applePallet', 'orangeCrate', 'orangeBox', 'orangePallet', 'palmtreeCrate', 'palmtreeBox', 'palmtreePallet'] });
     expect(nextUnlock(withCitizens(804))).toEqual({ citizens: 1000, items: ['gold', 'jewelry', 'crystal'] });
   });

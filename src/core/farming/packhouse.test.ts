@@ -54,7 +54,7 @@ describe('Packed Goods', () => {
   });
 
   it('is produced by the Packhouse only', () => {
-    expect(producibleItems('packhouse')).toEqual([...CROP_IDS, 'cherry', 'oliveOil'].flatMap(id => [`${id}Crate`, `${id}Box`, `${id}Pallet`]));
+    expect(producibleItems('packhouse')).toEqual([...CROP_IDS, 'cherry', 'oliveOil', 'henEgg', 'duckEgg', 'milk', 'honey'].flatMap(id => [`${id}Crate`, `${id}Box`, `${id}Pallet`]));
     expect(producibleItems('factory').every(item => !/(Crate|Box|Pallet)$/.test(String(item)))).toBe(true);
     expect(producibleItems('factory')).toContain('planks');
     expect(failureKey(packed, { type: 'QueueProduction', buildingId: 2, item: 'wheatCrate' })).toBe('error.cannotProduce');

@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/material.schema.json",
+  "kind": "material",
+  "name": {
+    "en": "Silk",
+    "fr": "Soie"
+  },
+  "model": "materials-silk",
+  "producedBy": "livestockFarm",
+  "recipe": {
+    "mulberryLeaf": 1
+  },
+  "durationMinutes": 24,
+  "unlockCitizens": 600,
+  "minTier": 1,
+  "value": 12,
+  "animal": "animals-silkworm"
+}

@@ -390,6 +390,8 @@ export const CATALOG = {
   'color.tangerine': ['Orange', 'Orange'],
   'color.cream': ['Cream', 'Crème'],
   'color.sun': ['Yellow', 'Jaune'],
+  'color.pink': ['Pink', 'Rose'],
+  'color.violet': ['Violet', 'Violet'],
   'color.coral': ['Coral', 'Corail'],
   'color.cobalt': ['Cobalt blue', 'Bleu cobalt'],
   'color.custom': ['Custom', 'Personnalisé'],

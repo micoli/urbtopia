@@ -1,0 +1,70 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "production",
+  "section": "build.production",
+  "cost": 350,
+  "unlockCitizens": 150,
+  "requiresRoad": true,
+  "initialSlots": 2,
+  "name": {
+    "en": "Dairy",
+    "fr": "Laiterie"
+  },
+  "description": {
+    "en": "Turns milk into cream and cheese, and sells them over its own counter. Production needs electricity and a road connection.",
+    "fr": "Transforme le lait en crème et en fromage et les vend à son comptoir. La production nécessite de l'électricité et une connexion routière."
+  },
+  "tiers": [
+    {
+      "model": "buildings-dairy-2x2-t1-tone-a",
+      "footprint": [2, 2],
+      "durationFactor": 1,
+      "maxSlots": 5,
+      "yield": 1
+    },
+    {
+      "durationFactor": 0.75,
+      "upgradeCost": {
+        "urbs": 300,
+        "goods": {
+          "planks": 3
+        }
+      },
+      "model": "buildings-dairy-2x2-t2-tone-a"
+    },
+    {
+      "maxSlots": 8,
+      "upgradeCost": {
+        "urbs": 800,
+        "goods": {
+          "bricks": 4
+        }
+      },
+      "model": "buildings-dairy-2x2-t3-tone-a"
+    },
+    {
+      "yield": 2,
+      "upgradeCost": {
+        "urbs": 2000,
+        "goods": {
+          "tiles": 4
+        }
+      },
+      "model": "buildings-dairy-2x2-t4-tone-a"
+    },
+    {
+      "upgradeCost": {
+        "urbs": 5000,
+        "goods": {
+          "tools": 4
+        }
+      },
+      "model": "buildings-dairy-2x2-t5-tone-a"
+    }
+  ],
+  "counter": {
+    "slots": 3,
+    "sells": ["cream", "cheese", "goatCheese"],
+    "saleIntervalFactor": 1
+  }
+}
