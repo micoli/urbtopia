@@ -4,14 +4,18 @@ import type { MessageKey } from '../i18n/messages';
 
 export interface ToastStore {
   toast: MessageKey | null;
+  text: string | null;
   show: (key: MessageKey) => void;
+  showText: (text: string) => void;
   dismiss: () => void;
 }
 
 export const toastStore = createStore<ToastStore>((set) => ({
   toast: null,
-  show: (key) => set({ toast: key }),
-  dismiss: () => set({ toast: null }),
+  text: null,
+  show: (key) => set({ toast: key, text: null }),
+  showText: (text) => set({ toast: null, text }),
+  dismiss: () => set({ toast: null, text: null }),
 }));
 
 export function toastKeyForEvents(events: GameEvent[]): MessageKey | null {
