@@ -70,6 +70,9 @@ const homeBuilding = z.strictObject({
   variants: variantsOf(homeLook).optional(),
 });
 
+// A counter lets a production building sell some Goods itself, in its own sales Slots, whatever its Tier.
+const counterSchema = z.strictObject({ slots: z.int().min(1), sells: z.array(filled), saleIntervalFactor: z.number().positive() });
+
 // Workshop, Factory, Packhouse: a higher Tier crafts faster, holds more Slots and yields more per cycle.
 const productionBuilding = z.strictObject({
   kind: z.literal('production'),
@@ -77,6 +80,7 @@ const productionBuilding = z.strictObject({
   ...sited,
   ...panelled,
   ...repeatable,
+  counter: counterSchema.optional(),
   tiers: tiersOf({ ...homeLook, durationFactor: z.number().positive(), maxSlots: z.int().min(1), yield: z.int().min(1) }, ['model', 'footprint', 'durationFactor', 'maxSlots', 'yield']),
 });
 

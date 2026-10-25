@@ -1,7 +1,7 @@
 import { shiftCropTimers } from '../farming/growth';
 import { citizensOf } from '../buildings/city';
 import { RUSH, SHOP, TAX } from './economy';
-import { isIndustryType } from './productionTypes';
+import { isIndustryType, scalesRecipeWithYield } from './productionTypes';
 import { advanceOffice } from './offices';
 import { isShopType, saleIntervalOf } from './shops';
 import type { GameEvent } from '../engine/events';
@@ -10,6 +10,9 @@ import { durationOf, valueOf, type ItemId } from './items';
 import type { Building, GameState, QueueEntry, ShopStack } from '../engine/state';
 import { productionTierOf } from './tiers';
 import { isHomeType } from '../buildings/buildingDefinitions';
+
+// A Mill or a Bakery consumes as many recipes as its yield per cycle.
+export const recipeMultiplierOf = (building: Building): number => (scalesRecipeWithYield(building.type) ? productionTierOf(building).yield : 1);
 
 export const productionDurationOf = (building: Building, item: ItemId): number => Math.round(durationOf(item) * productionTierOf(building).durationFactor);
 

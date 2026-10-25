@@ -44,7 +44,11 @@ _Avoid_: Plant, mill
 A Workshop that turns Wheat into Flour and Olives into Olive oil.
 
 **Bakery**:
-A Factory that turns Flour and other Materials into Food Goods.
+A Factory that turns Flour and other Materials into Food Goods, and sells those Goods itself over its Counter.
+
+**Counter**:
+The sales Slots of a Production building that sells some Goods itself. The Bakery has one, with three Slots whatever its Tier, apart from its production Slots; it sells only the Goods its definition lists and is stocked from the Storehouse like a Shop.
+_Avoid_: Shop (a Shop is a building of its own)
 
 **Shop**:
 A building that sells Goods to citizens for Urbs. There is one Shop per Good category, each with four Tiers; it sells only the Goods of its Good category that its Tier makes available. The General shop is the exception: it sells the Goods of every Good category available at its Tier, and costs more to build, to upgrade and to extend with Slots.
@@ -90,7 +94,7 @@ The player gesture that collects ready Crops by pressing a ready Field's bubble 
 _Avoid_: Picking, gathering
 
 **Packhouse**:
-A building that packs Crop Materials into packed Goods, the only way to sell a Harvest. Several can be built, up to its Build limit; each has its own Tiers.
+A building that packs Crop Materials, Cherries and Olive oil into packed Goods, the only way to sell a Harvest. Several can be built, up to its Build limit; each has its own Tiers.
 _Avoid_: Factory, cannery, packing plant
 
 **Production building**:

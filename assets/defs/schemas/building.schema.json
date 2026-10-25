@@ -900,6 +900,33 @@
           "type": "number",
           "minimum": 1
         },
+        "counter": {
+          "type": "object",
+          "properties": {
+            "slots": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "sells": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            },
+            "saleIntervalFactor": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "required": [
+            "slots",
+            "sells",
+            "saleIntervalFactor"
+          ],
+          "additionalProperties": false
+        },
         "tiers": {
           "minItems": 1,
           "type": "array",

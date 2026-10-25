@@ -868,6 +868,7 @@ export const CATALOG = {
   'shop.units': ['units', 'unités'],
   'shop.category': ['Category', 'Catégorie'],
   'shop.sells': ['Sells', 'Vend'],
+  'shop.counter': ['Counter', 'Comptoir'],
   'shop.packs': ['packed Crops', 'récoltes emballées'],
   'shop.nextTier': ['Next Tier adds', 'Le niveau suivant ajoute'],
   'goodCategory.all': ['All categories', 'Toutes les catégories'],

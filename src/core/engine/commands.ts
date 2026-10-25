@@ -4,9 +4,9 @@ import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
 import { canHaveSolarPanels, solarInstallCostOf, solarPanelsCost, solarPanelsUnlockCitizens } from '../environment/solarPanels';
 import { routeFailure, routeForLine } from '../transit/transport';
 import { nextCopyCost } from '../buildings/buildLimit';
-import { BUILDING_SPECS, createBuilding, emptyStack, footprintOf, placementCost } from '../buildings/buildingSpecs';
+import { BUILDING_SPECS, createBuilding, emptyStack, footprintOf, stacksOf, placementCost } from '../buildings/buildingSpecs';
 import { isRetired } from '../buildings/buildingDefinitions';
-import { isProductionType, scalesRecipeWithYield } from '../economy/productionTypes';
+import { isProductionType } from '../economy/productionTypes';
 import { advance } from './advance';
 import { GAME_CONFIG } from './config';
 import type { Coord } from '../map/coord';
@@ -15,7 +15,7 @@ import { neighbour, tileKey } from '../map/geometry';
 import { utilityCapacity, utilityDemand, type UtilityTotals } from '../buildings/city';
 import { HOME_TIERS, SHOP, TAX, SLOT_PRICES } from '../economy/economy';
 import { OFFICE, isOfficeType, officeUrbsDue } from '../economy/offices';
-import { canSell, isShopType, saleIntervalOf, shopTierOf, slotPriceOf } from '../economy/shops';
+import { canSell, hasCounter, isShopType, saleIntervalOf, sellsGoods, shopTierOf, slotPriceOf } from '../economy/shops';
 import { GOODS, isGood, isMaterial, minTierOf, producibleItems, recipeOf, type GoodId } from '../economy/items';
 import { marketQuote } from '../economy/market';
 import { donationQuote } from '../economy/solidarity';
@@ -37,7 +37,7 @@ import { FACILITIES, isFacilityType } from '../services/facilities';
 import { missingServicesOf } from '../services/services';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from '../map/occupancy';
 import { autoRotation, frontHasAccess, placementIssue, type PlacementIssue } from '../map/placement';
-import { newQueueEntry, restartRunningProduction, runningEntry, rushPrice, rushRunningProduction, shiftRunningTimers, taxDue } from '../economy/production';
+import { newQueueEntry, recipeMultiplierOf, restartRunningProduction, runningEntry, rushPrice, rushRunningProduction, shiftRunningTimers, taxDue } from '../economy/production';
 import { roadBuildCost, pedestrianWayBuildCost, missingRoadTiles, PEDESTRIAN_WAY_COST_FACTOR } from '../map/roadCost';
 import { roadPath } from '../map/roads';
 import { roadTierUpgradeCost } from '../traffic/roadTier';
@@ -726,7 +726,7 @@ function queueProduction(state: GameState, buildingId: number, item: string, now
   if (building.tier < minTierOf(item)) return fail('error.tierTooLow');
   if (building.queue.length >= building.slotCount) return fail('error.queueFull');
   const materials = { ...state.storage.materials };
-  const recipeMultiplier = scalesRecipeWithYield(building.type) ? productionTierOf(building).yield : 1;
+  const recipeMultiplier = recipeMultiplierOf(building);
   for (const [material, needed] of Object.entries(recipeOf(item))) {
     const required = needed * recipeMultiplier;
     const available = materials[material as keyof typeof materials] ?? 0;
@@ -765,9 +765,15 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
   if (isShopType(building.type)) return collectShopEarnings(state, building);
+  if (hasCounter(building.type)) return collectCounter(state, building);
   if (isHomeType(building.type)) return collectTax(state, building);
   if (isOfficeType(building.type)) return collectOfficeEarnings(state, building);
   if (isVenue(building)) return collectTakings(state, building);
+  return collectProduction(state, building);
+}
+
+function collectProduction(state: GameState, building: Building): CommandOutcome {
+  const buildingId = building.id;
   if (!building.queue.some((entry) => entry.done)) return fail('error.nothingToCollect');
   if (!hasStorage(state)) return fail('error.noStorehouse');
 
@@ -827,6 +833,16 @@ function buySlot(state: GameState, buildingId: number): CommandOutcome {
   };
 }
 
+// A counter pays out its sales first, then the finished production is collected as usual; a full storage never blocks the sales.
+function collectCounter(state: GameState, building: Building): CommandOutcome {
+  const paid = building.stacks.some((stack) => stack.earned > 0) ? collectShopEarnings(state, building) : null;
+  const afterSales = paid && 'state' in paid ? paid.state : state;
+  const refreshed = afterSales.buildings.find((candidate) => candidate.id === building.id)!;
+  const produced = refreshed.queue.some((entry) => entry.done) ? collectProduction(afterSales, refreshed) : null;
+  if (produced && 'state' in produced) return paid && 'state' in paid ? { ...produced, events: [...paid.events, ...produced.events] } : produced;
+  return paid ?? produced ?? fail('error.nothingToCollect');
+}
+
 function collectShopEarnings(state: GameState, building: Building): CommandOutcome {
   const earned = building.stacks.reduce((total, stack) => total + stack.earned, 0);
   if (earned === 0) return fail('error.nothingToCollect');
@@ -845,13 +861,14 @@ function collectShopEarnings(state: GameState, building: Building): CommandOutco
 function stockShop(state: GameState, buildingId: number, good: GoodId, now: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
-  if (!isShopType(building.type) || !Object.hasOwn(GOODS, good)) return fail('error.notAShop');
+  if (!sellsGoods(building.type) || !Object.hasOwn(GOODS, good)) return fail('error.notAShop');
   if (!canSell(building, good)) return fail('error.notSoldHere');
-  const slotIndex = building.stacks.findIndex((stack) => stack.stock === 0);
+  const current = stacksOf(building);
+  const slotIndex = current.findIndex((stack) => stack.stock === 0);
   if (slotIndex === -1) return fail('error.queueFull');
   const available = state.storage.goods[good] ?? 0;
   if (available < SHOP.stackSize) return fail('error.missingGoods');
-  const stacks = building.stacks.map((stack, index) =>
+  const stacks = current.map((stack, index) =>
     index === slotIndex ? { ...stack, good, stock: SHOP.stackSize, nextSaleAt: now + saleIntervalOf(building) } : stack,
   );
   return {
