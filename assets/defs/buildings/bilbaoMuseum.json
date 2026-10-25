@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.leisure",
+  "model": "buildings-guggenheim-bilbao-6x5",
+  "footprint": [6, 5],
+  "cost": 22000,
+  "unlockCitizens": 900,
+  "requiresRoad": true,
+  "name": {
+    "en": "Titanium museum",
+    "fr": "Musée de titane"
+  },
+  "description": {
+    "en": "Curved titanium volumes on the riverbank, with a reflecting pool and a giant spider sculpture.",
+    "fr": "Des volumes de titane courbes au bord du fleuve, avec un bassin et une sculpture d’araignée géante."
+  }
+}

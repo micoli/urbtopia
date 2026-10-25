@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.leisure",
+  "model": "buildings-niteroi-museum-4x4",
+  "footprint": [4, 4],
+  "cost": 11000,
+  "unlockCitizens": 600,
+  "requiresRoad": true,
+  "name": {
+    "en": "Saucer museum",
+    "fr": "Musée soucoupe"
+  },
+  "description": {
+    "en": "A white saucer on a slim stem, reached by a curving ramp over a green headland.",
+    "fr": "Une soucoupe blanche sur un pied élancé, atteinte par une rampe courbe sur un promontoire vert."
+  }
+}

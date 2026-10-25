@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.leisure",
+  "model": "buildings-ordos-museum-5x5",
+  "footprint": [5, 5],
+  "cost": 15000,
+  "unlockCitizens": 700,
+  "requiresRoad": true,
+  "name": {
+    "en": "Copper dune museum",
+    "fr": "Musée de la dune de cuivre"
+  },
+  "description": {
+    "en": "A louvered copper blob resting on a stone mound.",
+    "fr": "Une masse de cuivre à lamelles posée sur un tertre de pierre."
+  }
+}
