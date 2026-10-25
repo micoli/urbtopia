@@ -23,6 +23,7 @@ export type BuildingId =
   | 'colosseum'
   | 'communityHall'
   | 'concertHall'
+  | 'dairy'
   | 'easterCandyPile'
   | 'easterEggs'
   | 'easterEggsWide'
@@ -60,6 +61,7 @@ export type BuildingId =
   | 'hotel'
   | 'hydroPlant'
   | 'incinerator'
+  | 'knitwearFactory'
   | 'livestockFarm'
   | 'marina'
   | 'materialDepot'
@@ -281,6 +283,7 @@ export type BuildingId =
   | 'summerSurfboard'
   | 'supermarket'
   | 'synagogue'
+  | 'textileMill'
   | 'theater'
   | 'townHall'
   | 'transitHub'
@@ -494,10 +497,13 @@ export type StorageType =
 
 export type ProductionType =
   | 'bakery'
+  | 'dairy'
   | 'factory'
+  | 'knitwearFactory'
   | 'livestockFarm'
   | 'mill'
   | 'packhouse'
+  | 'textileMill'
   | 'workshop';
 
 export type FacilityType =

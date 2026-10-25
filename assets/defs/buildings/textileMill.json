@@ -1,0 +1,61 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "production",
+  "section": "build.production",
+  "cost": 300,
+  "unlockCitizens": 250,
+  "requiresRoad": true,
+  "initialSlots": 2,
+  "name": {
+    "en": "Textile mill",
+    "fr": "Filature"
+  },
+  "description": {
+    "en": "Spins wool, alpaca wool and silk into textile. Production needs electricity and a road connection.",
+    "fr": "Transforme la laine, la laine d'alpaga et la soie en textile. La production nécessite de l'électricité et une connexion routière."
+  },
+  "tiers": [
+    {
+      "model": "buildings-windmill-2x2-t1",
+      "footprint": [2, 2],
+      "durationFactor": 1,
+      "maxSlots": 5,
+      "yield": 1
+    },
+    {
+      "durationFactor": 0.75,
+      "upgradeCost": {
+        "urbs": 300,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "maxSlots": 8,
+      "upgradeCost": {
+        "urbs": 800,
+        "goods": {
+          "bricks": 4
+        }
+      }
+    },
+    {
+      "yield": 2,
+      "upgradeCost": {
+        "urbs": 2000,
+        "goods": {
+          "tiles": 4
+        }
+      }
+    },
+    {
+      "upgradeCost": {
+        "urbs": 5000,
+        "goods": {
+          "tools": 4
+        }
+      }
+    }
+  ]
+}

@@ -12,7 +12,7 @@ interface ProductionRules {
   emissions: number;
   // The storage compartment its Slots count towards.
   produces: 'materials' | 'goods';
-  // A Mill, a Livestock farm or a Bakery consumes as many recipes as its yield per cycle.
+  // A Mill, a Textile mill, a Livestock farm, a Bakery or a Dairy consumes as many recipes as its yield per cycle.
   scalesRecipeWithYield: boolean;
 }
 
@@ -20,7 +20,10 @@ const RULES: Record<ProductionType, ProductionRules> = {
   workshop: { weight: 1, emissions: 0.5, produces: 'materials', scalesRecipeWithYield: false },
   mill: { weight: 1, emissions: 0.5, produces: 'materials', scalesRecipeWithYield: true },
   livestockFarm: { weight: 1, emissions: 0.5, produces: 'materials', scalesRecipeWithYield: true },
+  textileMill: { weight: 1, emissions: 0.5, produces: 'materials', scalesRecipeWithYield: true },
   factory: { weight: 2, emissions: 2, produces: 'goods', scalesRecipeWithYield: false },
+  dairy: { weight: 2, emissions: 2, produces: 'goods', scalesRecipeWithYield: true },
+  knitwearFactory: { weight: 2, emissions: 2, produces: 'goods', scalesRecipeWithYield: false },
   bakery: { weight: 2, emissions: 2, produces: 'goods', scalesRecipeWithYield: true },
   packhouse: { weight: 0, emissions: 0, produces: 'goods', scalesRecipeWithYield: false },
 };
