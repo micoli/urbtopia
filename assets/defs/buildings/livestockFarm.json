@@ -16,7 +16,7 @@
   },
   "tiers": [
     {
-      "model": "buildings-farm-barn-2x2-tone-a",
+      "model": "buildings-livestock-farm-2x2-t1-tone-a",
       "footprint": [2, 2],
       "durationFactor": 1,
       "maxSlots": 5,
@@ -29,7 +29,8 @@
         "goods": {
           "planks": 3
         }
-      }
+      },
+      "model": "buildings-livestock-farm-2x2-t2-tone-a"
     },
     {
       "maxSlots": 8,
@@ -38,7 +39,8 @@
         "goods": {
           "bricks": 4
         }
-      }
+      },
+      "model": "buildings-livestock-farm-2x2-t3-tone-a"
     },
     {
       "yield": 2,
@@ -47,7 +49,8 @@
         "goods": {
           "tiles": 4
         }
-      }
+      },
+      "model": "buildings-livestock-farm-2x2-t4-tone-a"
     },
     {
       "upgradeCost": {
@@ -55,7 +58,8 @@
         "goods": {
           "tools": 4
         }
-      }
+      },
+      "model": "buildings-livestock-farm-2x2-t5-tone-a"
     }
   ],
   "extraCopyCitizens": [300, 800]

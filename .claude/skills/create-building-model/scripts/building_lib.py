@@ -3115,6 +3115,120 @@ def arc_points(cx, cy, radius, start, end, steps):
     return [(cx + radius * math.sin(math.radians(start + (end - start) * i / steps)), cy + radius * math.cos(math.radians(start + (end - start) * i / steps))) for i in range(steps + 1)]
 
 
+LIVESTOCK_ANIMALS = ("cow", "sheep", "hen", "goat", "duck")
+
+
+def livestock_animal(parts, kind, cx, cy, colors, k=1.5):
+    """A small blocky animal standing at (cx, cy), head toward the front (-Y); every size is multiplied by `k`."""
+    white, dark, tan, sun, red, hide = (colors[n] for n in ("white", "dark", "tan", "sun", "red", "hide"))
+
+    def box(name, size, x, y, z, color):
+        parts.append(lpm.box(f"{kind}_{name}", tuple(v * k for v in size), at=(cx + x * k, cy + y * k, z * k), color=color))
+
+    if kind in ("cow", "sheep", "goat"):
+        body_color, head_color = {"cow": (white, white), "sheep": (white, dark), "goat": (tan, tan)}[kind]
+        length, width, height, lift = {"cow": (0.2, 0.11, 0.1, 0.055), "sheep": (0.16, 0.12, 0.1, 0.05), "goat": (0.15, 0.07, 0.075, 0.055)}[kind]
+        parts.append(rounded_block(f"{kind}_body", width * k, length * k, height * k, body_color, 0.2, at=(cx, cy, lift * k)))
+        for x in (-width / 2 + 0.02, width / 2 - 0.02):
+            for y in (-length / 2 + 0.03, length / 2 - 0.03):
+                box(f"leg_{x:.3f}_{y:.3f}", (0.022, 0.022, lift - 0.01), x, y, 0.012, dark)
+        head = {"cow": (0.07, 0.07, 0.07), "sheep": (0.06, 0.065, 0.065), "goat": (0.05, 0.065, 0.06)}[kind]
+        head_z = lift + height - head[2] + 0.015
+        box("head", head, 0, -length / 2 - head[1] / 2 + 0.01, head_z, head_color)
+        if kind == "cow":
+            box("patch", (width + 0.004, 0.07, height * 0.5), 0, 0.02, lift + height * 0.4, dark)
+            box("muzzle", (0.05, 0.02, 0.03), 0, -length / 2 - head[1] + 0.005, head_z, hide)
+            for side in (-1, 1):
+                box(f"horn_{side}", (0.012, 0.012, 0.03), side * 0.032, -length / 2 - 0.02, lift + height + 0.01, sun)
+        if kind == "goat":
+            for side in (-1, 1):
+                box(f"horn_{side}", (0.01, 0.01, 0.035), side * 0.015, -length / 2 - 0.03, lift + height + 0.01, dark)
+        return
+    body = (0.075, 0.1, 0.07) if kind == "hen" else (0.07, 0.11, 0.06)
+    body_color = white if kind == "hen" else sun
+    parts.append(rounded_block(f"{kind}_body", body[0] * k, body[1] * k, body[2] * k, body_color, 0.25, at=(cx, cy, 0.02 * k)))
+    box("tail", (0.03, 0.03, 0.05), 0, body[1] / 2 - 0.01, 0.07 if kind == "hen" else 0.055, body_color)
+    box("head", (0.045, 0.045, 0.05), 0, -body[1] / 2 - 0.01, 0.07, body_color)
+    box("beak", (0.025, 0.025, 0.014), 0, -body[1] / 2 - 0.04, 0.09, red if kind == "duck" else sun)
+    if kind == "hen":
+        box("comb", (0.01, 0.025, 0.02), 0, -body[1] / 2 - 0.01, 0.12, red)
+    for side in (-1, 1):
+        box(f"foot_{side}", (0.012, 0.02, 0.02), side * 0.016, -0.01, 0.0, sun if kind == "duck" else tan)
+
+
+def build_livestock(spec, out_dir):
+    """A livestock farm filling its 2x2 cell: a low red stable with white corner posts and a khaki two-pitch roof at the back (sliding door, two windows, hay bales), and in front a row of up to five fenced pens, one more per Tier, filled from the left and each holding an animal (cow, sheep, hen, goat, duck), no slab."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    red, dark_red, roof, dark, glass, white, hay, trim = (index(n) for n in ("vtone1", "vtone2", "vtone3", "udark", "glass_blue", "white", "usand", "uframe"))
+    colors = {"white": white, "dark": dark, "tan": hay, "sun": index("sun"), "red": index("brick"), "hide": index("tangerine")}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    width, depth, wall_height = 1.92, 0.6, 0.28
+    half = width / 2
+    front = 0.35
+    back = front + depth
+    cy = (front + back) / 2
+    ridge = 0.17
+    parts = [rounded_block("body", width, depth, wall_height, red, 0.03 / depth, at=(0, cy, 0))]
+    gable = [(front + 0.01, wall_height), (cy, wall_height + ridge - 0.03), (back - 0.01, wall_height)]
+    parts.append(extrude_x("gable", gable, -half + 0.005, half - 0.005, red))
+    slope = [(front - 0.05, wall_height), (cy, wall_height + ridge), (back + 0.05, wall_height)]
+    shell = slope + list(reversed(offset_path(slope, -0.035)))
+    parts.append(extrude_x("roof", shell, -half - 0.02, half + 0.02, roof))
+    parts.append(extrude_x("roof_edge", [(y, z - 0.012) for y, z in slope] + [(y, z - 0.03) for y, z in reversed(slope)], -half - 0.025, -half - 0.015, dark))
+    parts.append(extrude_x("roof_edge_right", [(y, z - 0.012) for y, z in slope] + [(y, z - 0.03) for y, z in reversed(slope)], half + 0.015, half + 0.025, dark))
+
+    post = 0.035
+    for x in (-half + post / 2, half - post / 2, -0.4, 0.4):
+        parts.append(lpm.box(f"post_{x:.2f}", (post, 0.012, wall_height - 0.01), at=(x, front - 0.004, 0.0), color=white))
+
+    door_w, door_h = 0.46, 0.22
+    parts.append(lpm.box("door", (door_w, 0.014, door_h), at=(0, front - 0.004, 0.0), color=dark_red))
+    door_frame(parts, "door", 0, front, 0.0, door_w, door_h, white, 0.02)
+    brace = math.hypot(door_w / 2, door_h) - 0.03
+    angle = math.degrees(math.atan2(door_w / 2, door_h))
+    for half_x in (-1, 1):
+        for sign in (-1, 1):
+            plank = lpm.box(f"brace_{half_x}_{sign}", (0.018, 0.01, brace), at=(0, 0, -brace / 2), color=white)
+            lpm.rotate(plank, sign * angle, "Y")
+            lpm.move(plank, half_x * door_w / 4, front - 0.012, door_h / 2)
+            parts.append(plank)
+    parts.append(lpm.box("door_split", (0.014, 0.01, door_h), at=(0, front - 0.012, 0.0), color=white))
+    for x in (-0.68, 0.68):
+        parts.append(lpm.box(f"window_{x}", (0.18, 0.012, 0.12), at=(x, front - 0.003, 0.1), color=glass))
+        window_frame(parts, f"window_{x}", x, front, 0.1, 0.18, 0.12, white, 0.012)
+    for side in (-1, 1):
+        parts.append(lpm.box(f"side_window_{side}", (0.012, 0.18, 0.12), at=(side * (half + 0.003), cy, 0.1), color=glass))
+
+    parts.append(lpm.box("vent", (0.3, 0.1, 0.05), at=(0.4, cy, wall_height + ridge - 0.01), color=red))
+    parts.append(extrude_x("vent_roof", [(cy - 0.065, wall_height + ridge + 0.04), (cy, wall_height + ridge + 0.09), (cy + 0.065, wall_height + ridge + 0.04)], 0.24, 0.56, roof))
+
+    for number, (x, lift) in enumerate(((0.45, 0.0), (0.45, 0.12))):
+        parts.append(lpm.box(f"bale_{number}", (0.2, 0.16, 0.12), at=(x, front - 0.09, lift), color=hay))
+        parts.append(lpm.box(f"bale_{number}_strap", (0.204, 0.02, 0.122), at=(x, front - 0.09, lift), color=dark))
+
+    pen_w, pen_d = 0.6, 0.52
+    slots = ((-0.64, -0.68), (0.0, -0.68), (0.64, -0.68), (-0.64, -0.1), (0.64, -0.1))
+    tier = min(5, spec["count"])
+    for number, (cx, pen_cy) in enumerate(slots[:tier]):
+        pen_front, pen_back = pen_cy - pen_d / 2, pen_cy + pen_d / 2
+        parts.append(lpm.box(f"pen_{number}_floor", (pen_w, pen_d, 0.01), at=(cx, pen_cy, 0.0), color=hay))
+        for px in (cx - pen_w / 2 + 0.01, cx + pen_w / 2 - 0.01):
+            for py in (pen_front + 0.01, pen_back - 0.01):
+                parts.append(lpm.box(f"pen_{number}_post_{px:.2f}_{py:.2f}", (0.02, 0.02, 0.12), at=(px, py, 0.0), color=trim))
+        for z in (0.04, 0.09):
+            parts.append(lpm.box(f"pen_{number}_front_rail_{z}", (pen_w - 0.02, 0.012, 0.014), at=(cx, pen_front + 0.01, z), color=trim))
+            parts.append(lpm.box(f"pen_{number}_back_rail_{z}", (pen_w - 0.02, 0.012, 0.014), at=(cx, pen_back - 0.01, z), color=trim))
+            for px in (cx - pen_w / 2 + 0.01, cx + pen_w / 2 - 0.01):
+                parts.append(lpm.box(f"pen_{number}_side_rail_{px:.2f}_{z}", (0.012, pen_d - 0.02, 0.014), at=(px, pen_cy, z), color=trim))
+        parts.append(lpm.box(f"pen_{number}_trough", (0.2, 0.05, 0.04), at=(cx, pen_back - 0.08, 0.01), color=dark_red))
+        livestock_animal(parts, LIVESTOCK_ANIMALS[number], cx, pen_cy - 0.04, colors)
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def build_ballpark(spec, out_dir):
     """A baseball ballpark filling 7x7: a fan-shaped field with a diamond and a warning track under a blue outfield wall, three red grandstand tiers wrapping behind home plate and along the foul lines, six floodlight masts, a scoreboard and two dugout benches."""
     style = spec.get("style", "urbtopia")
