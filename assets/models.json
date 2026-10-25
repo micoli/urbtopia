@@ -4963,6 +4963,146 @@
       }
     }
   },
+  "buildings-textile-mill-2x2-t1-tone-a": {
+    "file": "buildings/textile-mill-2x2-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-textile-mill-2x2-t2-tone-a": {
+    "file": "buildings/textile-mill-2x2-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-textile-mill-2x2-t3-tone-a": {
+    "file": "buildings/textile-mill-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-textile-mill-2x2-t4-tone-a": {
+    "file": "buildings/textile-mill-2x2-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
+  "buildings-textile-mill-2x2-t5-tone-a": {
+    "file": "buildings/textile-mill-2x2-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#96ddbc"
+      }
+    }
+  },
   "buildings-theater-2x2": {
     "file": "buildings/theater-2x2",
     "source": "managed",

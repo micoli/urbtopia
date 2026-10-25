@@ -3353,6 +3353,65 @@ def build_dairy(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+TEXTILE_SPOOL_XS = (-0.8, -0.52, -0.24, 0.04, 0.32)
+TEXTILE_SPOOL_COLORS = ("violet", "pink", "sky", "sun", "tangerine")
+
+
+def build_textile_mill(spec, out_dir):
+    """A textile mill on a 2x2 cell: a brick hall with a cream band, a two-pitch dark roof, a tall chimney, a door, windows and a "TEXTILE" plate; in the yard `count` giant thread spools (one more per Tier, left to right) and two wool bales, no slab."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    brick, brick_dark, cream, dark, glass, frame, slab, wood, white, water = (index(n) for n in ("vtone1", "vtone2", "vtone3", "udark", "glass_blue", "uframe", "uslab", "uwood", "white", "aqua"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    x0, x1, y0, y1, wall_h = -0.95, 0.95, 0.05, 0.95, 0.32
+    width, depth = x1 - x0, y1 - y0
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    ridge = 0.2
+    parts = [rounded_block("hall", width, depth, wall_h, brick, 0.03 / depth, at=(cx, cy, 0))]
+    parts.append(rounded_block("band", width + 0.012, depth + 0.012, 0.045, cream, 0.03 / depth, at=(cx, cy, wall_h - 0.075)))
+    gable = [(y0 + 0.01, wall_h), (cy, wall_h + ridge - 0.03), (y1 - 0.01, wall_h)]
+    parts.append(extrude_x("gable", gable, x0 + 0.005, x1 - 0.005, brick))
+    slope = [(y0 - 0.05, wall_h), (cy, wall_h + ridge), (y1 + 0.05, wall_h)]
+    shell = slope + list(reversed(offset_path(slope, -0.035)))
+    parts.append(extrude_x("roof", shell, x0 - 0.03, x1 + 0.03, brick_dark))
+    front = y0
+    door_x = -0.7
+    parts.append(lpm.box("door", (0.2, 0.014, 0.21), at=(door_x, front - 0.004, 0.0), color=dark))
+    door_frame(parts, "door", door_x, front, 0.0, 0.2, 0.21, cream, 0.014)
+    for number, x in enumerate((-0.35, 0.0, 0.35, 0.7)):
+        parts.append(lpm.box(f"window_{number}", (0.2, 0.012, 0.13), at=(x, front - 0.003, 0.09), color=glass))
+        window_frame(parts, f"window_{number}", x, front, 0.09, 0.2, 0.13, cream, 0.012)
+    plate_x = door_x
+    parts.append(lpm.box("plate", (0.4, 0.014, 0.06), at=(plate_x, front - 0.004, 0.235), color=cream))
+    parts.append(glyph_decal({"cfg": cfg}, "sign_text", "front", "TEXTILE", plate_x, 0.235 + 0.012, 0.036, dark, -front + 0.012))
+    parts.append(lpm.box("back_door", (0.3, 0.014, 0.22), at=(-0.4, y1 + 0.004, 0.0), color=dark))
+    door_frame(parts, "back_door", -0.4, y1, 0.0, 0.3, 0.22, cream, 0.014)
+    for side in (-1, 1):
+        parts.append(lpm.box(f"side_window_{side}", (0.012, 0.22, 0.12), at=(side * (x1 + 0.003), cy, 0.1), color=glass))
+    parts.append(lpm.prism("chimney", 8, 0.06, 0.58, at=(-0.78, 0.8, 0.0), color=brick_dark, radius_top=0.045))
+    parts.append(lpm.prism("chimney_cap", 8, 0.06, 0.03, at=(-0.78, 0.8, 0.58), color=dark))
+    parts.append(lpm.prism("chimney_band", 8, 0.052, 0.025, at=(-0.78, 0.8, 0.5), color=cream))
+
+    tier = min(5, spec["count"])
+    spool_y = -0.84
+    for number in range(tier):
+        x = TEXTILE_SPOOL_XS[number]
+        thread = index(TEXTILE_SPOOL_COLORS[number])
+        parts.append(lpm.prism(f"spool_{number}_foot", 12, 0.14, 0.03, at=(x, spool_y, 0.0), color=white))
+        parts.append(lpm.prism(f"spool_{number}_thread", 12, 0.1, 0.2, at=(x, spool_y, 0.03), color=thread))
+        parts.append(lpm.prism(f"spool_{number}_top", 12, 0.14, 0.03, at=(x, spool_y, 0.23), color=white))
+        parts.append(lpm.prism(f"spool_{number}_core", 8, 0.03, 0.05, at=(x, spool_y, 0.26), color=slab))
+        parts.append(lpm.box(f"spool_{number}_end", (0.04, 0.06, 0.015), at=(x + 0.1, spool_y - 0.07, 0.2), color=thread))
+    for number, (x, y, lift) in enumerate(((0.62, -0.4, 0.0), (0.86, -0.4, 0.0), (0.74, -0.4, 0.12))):
+        parts.append(lpm.box(f"bale_{number}", (0.22, 0.18, 0.12), at=(x, y, lift), color=white))
+        parts.append(lpm.box(f"bale_{number}_strap", (0.224, 0.02, 0.122), at=(x, y, lift), color=slab))
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def build_ballpark(spec, out_dir):
     """A baseball ballpark filling 7x7: a fan-shaped field with a diamond and a warning track under a blue outfield wall, three red grandstand tiers wrapping behind home plate and along the foul lines, six floodlight masts, a scoreboard and two dugout benches."""
     style = spec.get("style", "urbtopia")
