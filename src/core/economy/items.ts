@@ -6,17 +6,18 @@ import { CROPS, CROP_IDS, type CropId } from '../farming/crops';
 import type { BuildingType } from '../engine/state';
 import type { BaseGoodId } from './goodTypes.generated';
 import type { GoodCategory, GoodDefinition, MaterialDefinition } from './itemSchemas';
-import type { DefinedMaterialId } from './materialTypes.generated';
+import type { DefinedMaterialId, PackableMaterialId } from './materialTypes.generated';
 
 export type { BaseGoodId };
 export type BaseMaterialId = DefinedMaterialId;
 export type MaterialId = DefinedMaterialId | CropId;
 export type PackSuffix = 'Crate' | 'Box' | 'Pallet';
-export type CropCrateId = `${CropId}Crate`;
-export type CropBoxId = `${CropId}Box`;
-export type CropPalletId = `${CropId}Pallet`;
-export type CropPackId = CropCrateId | CropBoxId | CropPalletId;
-export type GoodId = BaseGoodId | CropPackId;
+export type PackableId = CropId | PackableMaterialId;
+export type CrateId = `${PackableId}Crate`;
+export type BoxId = `${PackableId}Box`;
+export type PalletId = `${PackableId}Pallet`;
+export type PackId = CrateId | BoxId | PalletId;
+export type GoodId = BaseGoodId | PackId;
 export type ItemId = MaterialId | GoodId;
 
 const MINUTE_MS = 60_000;
@@ -59,25 +60,37 @@ const BASE_GOODS = Object.fromEntries(
 
 export const PACK_FORMATS = packFormats.formats as readonly { suffix: PackSuffix; size: number; valueBonus: number }[];
 
-const CROP_GOODS = Object.fromEntries(
-  CROP_IDS.flatMap((id) =>
-    PACK_FORMATS.map(({ suffix, size, valueBonus }): [CropPackId, GoodSpec] => [
+interface Packable {
+  id: PackableId;
+  packingMs: number;
+  packedValue: number;
+  unlockCitizens: number;
+}
+
+const PACKABLES: Packable[] = [
+  ...CROP_IDS.map((id): Packable => ({ id, ...CROPS[id] })),
+  ...MATERIAL_ENTRIES.flatMap(({ id, packing, unlockCitizens }): Packable[] => (packing ? [{ id: id as PackableMaterialId, packingMs: packing.minutes * MINUTE_MS, packedValue: packing.value, unlockCitizens }] : [])),
+];
+
+const PACKED_GOODS = Object.fromEntries(
+  PACKABLES.flatMap(({ id, packingMs, packedValue, unlockCitizens }) =>
+    PACK_FORMATS.map(({ suffix, size, valueBonus }): [PackId, GoodSpec] => [
       `${id}${suffix}`,
       {
         category: 'food',
         recipe: { [id]: size },
-        durationMs: (CROPS[id].packingMs * size) / 2,
-        value: Math.round((CROPS[id].packedValue * size * valueBonus) / 2),
-        unlockCitizens: CROPS[id].unlockCitizens,
+        durationMs: (packingMs * size) / 2,
+        value: Math.round((packedValue * size * valueBonus) / 2),
+        unlockCitizens,
         minTier: 1,
       },
     ]),
   ),
-) as Record<CropPackId, GoodSpec>;
+) as Record<PackId, GoodSpec>;
 
-export const GOODS: Record<GoodId, GoodSpec> = { ...BASE_GOODS, ...CROP_GOODS };
+export const GOODS: Record<GoodId, GoodSpec> = { ...BASE_GOODS, ...PACKED_GOODS };
 
-export const CROP_PACK_IDS = Object.keys(CROP_GOODS) as CropPackId[];
+export const PACK_IDS = Object.keys(PACKED_GOODS) as PackId[];
 
 export function isMaterial(item: string): item is MaterialId {
   return Object.hasOwn(MATERIALS, item);
@@ -113,7 +126,7 @@ const PRODUCIBLE_BY_BUILDING: Partial<Record<BuildingType, readonly ItemId[]>> =
   mill: MATERIAL_ENTRIES.filter(({ producedBy }) => producedBy === 'mill').map(({ id }) => id),
   factory: Object.entries(BASE_GOODS).filter(([, good]) => good.producedBy === 'factory').map(([id]) => id as BaseGoodId),
   bakery: Object.entries(BASE_GOODS).filter(([, good]) => good.producedBy === 'bakery').map(([id]) => id as BaseGoodId),
-  packhouse: Object.keys(CROP_GOODS) as CropPackId[],
+  packhouse: Object.keys(PACKED_GOODS) as PackId[],
 };
 
 export function producibleItems(type: BuildingType): readonly ItemId[] {

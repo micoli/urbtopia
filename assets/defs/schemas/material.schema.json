@@ -69,6 +69,25 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "packing": {
+      "type": "object",
+      "properties": {
+        "minutes": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "minutes",
+        "value"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [

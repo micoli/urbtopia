@@ -87,6 +87,7 @@ export const COLLECTIONS = {
       unions: (materials: Record<string, MaterialDefinition>) => ({
         DefinedMaterialId: idsWhere(materials),
         WorkshopMaterialId: idsWhere(materials, ({ producedBy }) => producedBy === 'workshop'),
+        PackableMaterialId: idsWhere(materials, ({ packing }) => packing !== undefined),
       }),
     },
     schema: materialSchema,

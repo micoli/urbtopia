@@ -54,11 +54,17 @@ describe('Packed Goods', () => {
   });
 
   it('is produced by the Packhouse only', () => {
-    expect(producibleItems('packhouse')).toEqual(CROP_IDS.flatMap(id => [`${id}Crate`, `${id}Box`, `${id}Pallet`]));
+    expect(producibleItems('packhouse')).toEqual([...CROP_IDS, 'cherry', 'oliveOil'].flatMap(id => [`${id}Crate`, `${id}Box`, `${id}Pallet`]));
     expect(producibleItems('factory').every(item => !/(Crate|Box|Pallet)$/.test(String(item)))).toBe(true);
     expect(producibleItems('factory')).toContain('planks');
     expect(failureKey(packed, { type: 'QueueProduction', buildingId: 2, item: 'wheatCrate' })).toBe('error.cannotProduce');
     expect(failureKey(packed, { type: 'QueueProduction', buildingId: packhouse.id, item: 'planks' })).toBe('error.cannotProduce');
+  });
+
+  it('packs cherries and olive oil like a Crop Material', () => {
+    expect(GOODS.cherryCrate).toMatchObject({ category: 'food', recipe: { cherry: 2 }, durationMs: 3 * MINUTE, value: 45, unlockCitizens: 80 });
+    expect(GOODS.oliveOilCrate).toMatchObject({ category: 'food', recipe: { oliveOil: 2 }, durationMs: 4 * MINUTE, value: 60, unlockCitizens: 80 });
+    expect(GOODS.oliveOilPallet).toMatchObject({ recipe: { oliveOil: 10 } });
   });
 
   it('packs 10 Crop Material into 1 pallet, taking the Materials at once', () => {
