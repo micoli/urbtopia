@@ -1,3 +1,4 @@
+import { orchardWaterDemandOf } from '../economy/orchards';
 import { homePower, economicPower } from '../environment/ecology';
 import { energyStats } from '../environment/energy';
 import { cropWaterDemand } from '../farming/growth';
@@ -57,6 +58,6 @@ function computeUtilityDemand(state: GameState): UtilityTotals {
     },
     { power: 0, water: 0 },
   );
-  const orchardWater = state.buildings.reduce((total, building) => total + (['oliveTree', 'appleTree', 'cherryTree'].includes(building.type) ? 1 : 0), 0);
+  const orchardWater = state.buildings.reduce((total, building) => total + orchardWaterDemandOf(building.type), 0);
   return { power: buildings.power, water: buildings.water + cropWaterDemand(state) + orchardWater };
 }
