@@ -6,13 +6,13 @@ import { INDUSTRY_TYPES, PRODUCTION_TYPES, compartmentProducedBy, industryEmissi
 
 describe('production family', () => {
   it('is every building defined with the production kind', () => {
-    expect([...PRODUCTION_TYPES].sort()).toEqual(['bakery', 'factory', 'mill', 'packhouse', 'workshop']);
+    expect([...PRODUCTION_TYPES].sort()).toEqual(['bakery', 'factory', 'livestockFarm', 'mill', 'packhouse', 'workshop']);
     expect(isProductionType('mill')).toBe(true);
     expect(isProductionType('shop')).toBe(false);
   });
 
   it('counts as industry every production building but the Packhouse', () => {
-    expect([...INDUSTRY_TYPES].sort()).toEqual(['bakery', 'factory', 'mill', 'workshop']);
+    expect([...INDUSTRY_TYPES].sort()).toEqual(['bakery', 'factory', 'livestockFarm', 'mill', 'workshop']);
     expect(isIndustryType('packhouse')).toBe(false);
     expect(isIndustryType('home')).toBe(false);
   });
@@ -33,8 +33,8 @@ describe('production family', () => {
 
   it('gives each production building its emissions, its compartment and its recipe rule', () => {
     expect(['workshop', 'mill', 'factory', 'bakery', 'packhouse', 'home'].map(industryEmissionsOf)).toEqual([0.5, 0.5, 2, 2, 0, 0]);
-    expect(PRODUCTION_TYPES.filter((type) => compartmentProducedBy(type) === 'materials').sort()).toEqual(['mill', 'workshop']);
-    expect(PRODUCTION_TYPES.filter(scalesRecipeWithYield).sort()).toEqual(['bakery', 'mill']);
+    expect(PRODUCTION_TYPES.filter((type) => compartmentProducedBy(type) === 'materials').sort()).toEqual(['livestockFarm', 'mill', 'workshop']);
+    expect(PRODUCTION_TYPES.filter(scalesRecipeWithYield).sort()).toEqual(['bakery', 'livestockFarm', 'mill']);
     expect(scalesRecipeWithYield('home')).toBe(false);
   });
 });

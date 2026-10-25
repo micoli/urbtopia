@@ -59,6 +59,7 @@ export type BuildingId =
   | 'hotel'
   | 'hydroPlant'
   | 'incinerator'
+  | 'livestockFarm'
   | 'marina'
   | 'materialDepot'
   | 'middleSchool'
@@ -492,6 +493,7 @@ export type StorageType =
 export type ProductionType =
   | 'bakery'
   | 'factory'
+  | 'livestockFarm'
   | 'mill'
   | 'packhouse'
   | 'workshop';
