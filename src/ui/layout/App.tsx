@@ -8,6 +8,8 @@ import { Overlays } from './Overlays';
 import { useUndoKeys } from '../build/useUndoKeys';
 import { SceneCanvas } from './SceneCanvas';
 import { isDevelopmentHost } from '../../devtools/isDevelopmentHost';
+import { uiStore } from '../../store/uiStore';
+import { StreetViewHud } from './StreetViewHud';
 
 const DevTools = import.meta.env.DEV ? lazy(() => import('../../devtools/DevTools')) : null;
 
@@ -15,6 +17,7 @@ export function App() {
   useUndoKeys();
   const language = useStore(prefsStore, (store) => store.language);
   const layout = useStore(prefsStore, (store) => store.layout);
+  const streetView = useStore(uiStore, (store) => store.streetView);
 
   useEffect(() => {
     document.documentElement.dataset.layout = layout;
@@ -27,7 +30,7 @@ export function App() {
       {DevTools && isDevelopmentHost(window.location.hostname) ? <Suspense fallback={null}><DevTools /></Suspense> : null}
       <Fragment key={language}>
         <Overlays />
-        {layout === 'A' ? <LayoutBottomMenu /> : layout === 'B' ? <LayoutRadial /> : <LayoutLeftMenu />}
+        {streetView ? <StreetViewHud /> : layout === 'A' ? <LayoutBottomMenu /> : layout === 'B' ? <LayoutRadial /> : <LayoutLeftMenu />}
       </Fragment>
     </>
   );

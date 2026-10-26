@@ -320,3 +320,26 @@
 }
 
 .dock-button, .bottom-bar-button { position: relative; }
+
+.street-view-exit {
+  position: fixed;
+  top: var(--space-12);
+  left: var(--space-12);
+  z-index: 100;
+}
+
+.street-view-hint {
+  position: fixed;
+  top: var(--space-12);
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: var(--space-10) var(--space-16);
+  max-width: calc(100% - 200px);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-align: center;
+  pointer-events: none;
+  z-index: 100;
+}

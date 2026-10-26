@@ -22,6 +22,7 @@ export function SceneCanvas() {
     const scene = new GameScene(canvas);
     sceneHandle.current = scene;
     scene.camera.setView(readCameraView(window.location.search));
+    scene.setStreetViewExit(() => uiStore.getState().exitStreetView());
     const currentUrl = () => `${window.location.pathname}${window.location.search}${window.location.hash}`;
     const urlFor = (view: CameraView) => `${window.location.pathname}${writeCameraView(window.location.search, view)}${window.location.hash}`;
     window.history.replaceState(window.history.state, '', urlFor(scene.camera.view));
@@ -42,6 +43,7 @@ export function SceneCanvas() {
     scene.setHandlers({
       onTap: (tile, shiftKey, buildingId) => {
         const ui = uiStore.getState();
+        if (ui.streetViewPicking) return ui.dropStreetView(tile);
         if (ui.tool && ui.pointerKind === 'mouse') return ui.clickTile(tile, shiftKey);
         if (ui.tool) return ui.pinTile(tile);
         ui.tapTile(tile, buildingId);
@@ -56,7 +58,10 @@ export function SceneCanvas() {
       onCenterTileChange: (tile) => uiStore.getState().setCenterTile(tile),
       onMouseMove: (tile) => uiStore.getState().hoverTile(tile),
       onPointerKind: (pointerType) => uiStore.getState().setPointerKind(pointerKindOf(pointerType)),
-      onSecondaryClick: () => uiStore.getState().cancelTool(),
+      onSecondaryClick: () => {
+        uiStore.getState().cancelPickStreetView();
+        uiStore.getState().cancelTool();
+      },
       onGrabStart: (tile) => uiStore.getState().grabGhost(tile),
       onGrabMove: (tile) => uiStore.getState().dragGhost(tile),
       onBrushStart: (tile) => uiStore.getState().brushStart(tile),

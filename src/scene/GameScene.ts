@@ -1,8 +1,10 @@
 import { EcologyLayer } from './EcologyLayer';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { GAME_CONFIG, WILD_RIM_TILES, congestionStats, wildNoiseAt, wildTerrain, type Building, type GameState, type FacilityType } from '../core';
+import { GAME_CONFIG, WILD_RIM_TILES, congestionStats, pedestrianGraph, wildNoiseAt, wildTerrain, type Building, type GameState, type FacilityType } from '../core';
+import { bridgeElevation } from './bridgeElevation';
 import { CameraController } from './CameraController';
+import { StreetViewController } from './StreetViewController';
 import { footprintTiles, type Coord } from '../core';
 import { congestionTints } from './congestionMarkers';
 import type { DrawnExtent, GhostSpec } from '../tools/tools';
@@ -32,6 +34,9 @@ const FLASH_DURATION_MS = 2000;
 const FLASH_INTERVAL_MS = 250;
 const ARROW_MIN_HEIGHT = 1.5;
 const FALLBACK_HEIGHT = 1.5;
+const HORIZON_COLOR = 0x9ec5e8;
+const STREET_FOG_NEAR = 8;
+const STREET_FOG_FAR = 40;
 
 export interface SceneHandlers {
   onTap: (tile: Coord, shiftKey: boolean, buildingId: number | null) => void;
@@ -95,6 +100,7 @@ export class GameScene {
   };
   private ownedSignature = '';
   private controller: CameraController;
+  private streetView: StreetViewController;
   private latest: GameState | null = null;
   private currentBuildings: readonly Building[] = [];
   private modelHeights = new Map<string, number>();
@@ -118,7 +124,7 @@ export class GameScene {
     this.renderer.setPixelRatio(renderPixelRatio());
     this.renderer.toneMapping = THREE.NeutralToneMapping;
     this.renderer.toneMappingExposure = 0.8;
-    this.scene.background = new THREE.Color(0x9ec5e8);
+    this.scene.background = new THREE.Color(HORIZON_COLOR);
     this.scene.environment = this.buildEnvironment();
     this.scene.environmentIntensity = 0.25;
     const sun = new THREE.DirectionalLight(0xfff2d6, 1.7);
@@ -127,6 +133,8 @@ export class GameScene {
     this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
+    this.streetView = new StreetViewController(canvas);
+    this.scene.add(this.streetView.markers);
     this.controller.onTap = (clientX, clientY, shiftKey) =>
       this.withTileAt(clientX, clientY, (tile) => this.handlers.onTap(tile, shiftKey, this.buildingOnTile(tile)));
     this.controller.onLongPress = (clientX, clientY) => {
@@ -162,6 +170,35 @@ export class GameScene {
 
   get camera(): CameraController {
     return this.controller;
+  }
+
+  get inStreetView(): boolean {
+    return this.streetView.active;
+  }
+
+  setStreetViewExit(onExit: () => void): void {
+    this.streetView.onExit = onExit;
+  }
+
+  enterStreetView(at?: Coord): boolean {
+    const state = this.ecologicalState;
+    if (!state || this.streetView.active) return false;
+    const { x, z } = at ? { x: at.x + 0.5, z: at.y + 0.5 } : this.controller.center;
+    if (!this.streetView.enter(pedestrianGraph(state), bridgeElevation(state.bridges), x, z, this.controller.heading)) return false;
+    this.controller.setEnabled(false);
+    this.scene.fog = new THREE.Fog(HORIZON_COLOR, STREET_FOG_NEAR, STREET_FOG_FAR);
+    return true;
+  }
+
+  exitStreetView(): void {
+    if (!this.streetView.active) return;
+    this.streetView.exit();
+    this.scene.fog = null;
+    this.controller.setEnabled(true);
+  }
+
+  private get activeCamera(): THREE.Camera {
+    return this.streetView.active ? this.streetView.camera : this.controller.camera;
   }
 
   setHandlers(handlers: SceneHandlers): void {
@@ -228,7 +265,7 @@ export class GameScene {
   }
 
   project(x: number, y: number, z: number): { x: number; y: number; visible: boolean } {
-    const point = new THREE.Vector3(x, y, z).project(this.controller.camera);
+    const point = new THREE.Vector3(x, y, z).project(this.activeCamera);
     const rect = this.canvasRect;
     return {
       x: ((point.x + 1) / 2) * rect.width + rect.left,
@@ -272,10 +309,12 @@ export class GameScene {
     this.ecologyLayer.sync(state,this.selectedId);
     this.latest = state;
     this.currentBuildings = state.buildings;
+    if (this.streetView.active) this.streetView.setWorld(pedestrianGraph(state), bridgeElevation(state.bridges));
     void this.drain();
   }
 
   dispose(): void {
+    this.streetView.dispose();
     cancelAnimationFrame(this.frameHandle);
     this.stopWatchingHidden();
     this.resizeObserver.disconnect();
@@ -461,6 +500,7 @@ export class GameScene {
     this.canvasRect = this.canvas.getBoundingClientRect();
     this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
     this.controller.resize();
+    this.streetView.resize();
   }
 
   private notifyCenterTile(): void {
@@ -480,6 +520,7 @@ export class GameScene {
     const delta = Math.max(0, Math.min(0.1, elapsed / 1000));
     this.lastFrame = now;
     this.controller.update(delta);
+    this.streetView.update(delta);
     this.notifyCenterTile();
     this.ecologyLayer.update(delta);
     this.traffic.priorityTiles = this.ecologyLayer.transit.priorityTiles;
@@ -490,10 +531,10 @@ export class GameScene {
     this.serviceVehicles.stopTiles = new Set([...this.pedestrians.crossingTiles, ...this.ecologyLayer.transit.priorityTiles]);
     this.serviceVehicles.gateTiles = this.bridges.stopTiles;
     this.traffic.externalVehicles = this.serviceVehicles.followingVehicles;
-    this.traffic.update(delta, this.controller.camera);
+    this.traffic.update(delta, this.activeCamera);
     this.serviceVehicles.update(delta);
     this.boats.update(delta, this.bridges.closedTiles);
-    this.renderer.render(this.scene, this.controller.camera);
+    this.renderer.render(this.scene, this.activeCamera);
     this.frameHandle = requestAnimationFrame(this.frame);
   };
 }

@@ -27,8 +27,11 @@ import { UpdatePrompt } from '../system/UpdatePrompt';
 import { ServiceCoveragePanel } from '../buildings/ServiceCoveragePanel';
 import { BuildingSearchPanel } from '../buildings/BuildingSearchPanel';
 import { PoliticsWindow } from '../politics/PoliticsWindow';
+import { useUi } from '../common/hooks';
+import { StreetViewDropHint } from './StreetViewDropHint';
 
 export function Overlays() {
+  const streetView = useUi((store) => store.streetView);
   return (
     <>
       <CityManagement />
@@ -41,7 +44,7 @@ export function Overlays() {
       <VenueDialog />
       <MarketModal />
       <ChallengeSuccessOverlay />
-      <FloatingBadges />
+      {streetView ? null : <FloatingBadges />}
       <ConfirmPad />
       <ReadOnlyBanner />
       <VisitBanner />
@@ -59,7 +62,8 @@ export function Overlays() {
       <RecoveryScreen />
       <Toast />
       <TutorialBanner />
-      <StaticButtons />
+      {streetView ? null : <StaticButtons />}
+      <StreetViewDropHint />
     </>
   );
 }

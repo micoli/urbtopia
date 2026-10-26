@@ -50,6 +50,7 @@ export class CameraController {
   onBrushEnd: () => void = () => {};
   onBrushCancel: () => void = () => {};
   brushMode = false;
+  private enabled = true;
   private brushPointer: number | null = null;
   private grabPointer: number | null = null;
   private longPressTimer: number | null = null;
@@ -67,6 +68,10 @@ export class CameraController {
 
   get center(): { x: number; z: number } {
     return { ...this.focus };
+  }
+
+  get heading(): number {
+    return this.yawTarget + Math.PI;
   }
 
   get view(): CameraView {
@@ -90,11 +95,23 @@ export class CameraController {
     this.yawTarget += (quarterTurns * Math.PI) / 2;
   }
 
+  setEnabled(enabled: boolean): void {
+    this.enabled = enabled;
+    if (enabled) return;
+    this.cancelLongPress();
+    this.keys.clear();
+    this.pointers.clear();
+    this.pendingTap = null;
+    this.grabPointer = null;
+    this.brushPointer = null;
+  }
+
   resize(): void {
     this.apply();
   }
 
   update(deltaSeconds: number): void {
+    if (!this.enabled) return;
     this.applyKeys(deltaSeconds);
     const difference = this.yawTarget - this.yaw;
     if (Math.abs(difference) > 1e-4) {
@@ -190,13 +207,14 @@ export class CameraController {
     canvas.addEventListener('pointercancel', (event) => this.onPointerEnd(event), { signal });
     canvas.addEventListener('click', () => this.onClick(), { signal });
     canvas.addEventListener('contextmenu', (event) => this.onContextMenu(event), { signal });
-    canvas.addEventListener('wheel', (event) => this.zoomBy(event.deltaY < 0 ? 1.1 : 0.9), { signal, passive: true });
+    canvas.addEventListener('wheel', (event) => this.enabled && this.zoomBy(event.deltaY < 0 ? 1.1 : 0.9), { signal, passive: true });
     window.addEventListener('keydown', (event) => this.onKey(event, true), { signal });
     window.addEventListener('keyup', (event) => this.onKey(event, false), { signal });
     window.addEventListener('blur', () => this.keys.clear(), { signal });
   }
 
   private onKey(event: KeyboardEvent, pressed: boolean): void {
+    if (!this.enabled) return;
     if (pressed && (isTypingTarget(event.target) || (event.target instanceof HTMLElement && event.target.closest('[role="dialog"]')))) return;
     const key = event.key.toLowerCase();
     if (pressed && key === 'q') return this.rotate(-1);
@@ -213,10 +231,12 @@ export class CameraController {
 
   private onContextMenu(event: MouseEvent): void {
     event.preventDefault();
+    if (!this.enabled) return;
     this.onSecondaryClick();
   }
 
   private onPointerDown(event: PointerEvent): void {
+    if (!this.enabled) return;
     this.pendingTap = null;
     this.onPointerKind(event.pointerType);
     if (event.pointerType === 'mouse' && event.button !== 0) return;
@@ -264,6 +284,7 @@ export class CameraController {
   }
 
   private onPointerEnd(event: PointerEvent): void {
+    if (!this.enabled) return;
     this.cancelLongPress();
     const wasSingle = this.pointers.size === 1 && event.type === 'pointerup';
     const { startX, startY, startTime, moved, multiTouch } = this.gesture;
@@ -283,6 +304,7 @@ export class CameraController {
   }
 
   private onClick(): void {
+    if (!this.enabled) return;
     const tap = this.pendingTap;
     this.pendingTap = null;
     if (!tap) return;
@@ -290,6 +312,7 @@ export class CameraController {
   }
 
   private onPointerMove(event: PointerEvent): void {
+    if (!this.enabled) return;
     if (event.pointerType === 'mouse') {
       this.onPointerKind(event.pointerType);
       this.onMouseMove(event.clientX, event.clientY);
