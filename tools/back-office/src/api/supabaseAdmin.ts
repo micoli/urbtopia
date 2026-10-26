@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '../../../../src/persistence/cloud/database.types'
 import type { AccountSummary } from '../domain/accounts'
+import { biggestCityStats, groupByCity, type CityGroup } from '../domain/cityGroups'
 import { neutralHandle } from '../domain/handle'
 import { statsOfEnvelope, type SaveStats } from '../domain/saveStats'
 import type { Profile } from '../domain/profiles'
@@ -60,6 +61,7 @@ export async function listAccounts(client: AdminClient): Promise<AccountSummary[
 }
 
 export interface SaveRevision {
+  cityId: string
   revision: number
   formatVersion: number
   clientSavedAt: string
@@ -72,20 +74,21 @@ export interface SaveRevision {
 export interface AccountDetail {
   friendCount: number
   medals: { code: string; earnedAt: string }[]
-  saves: SaveRevision[]
+  cities: CityGroup<SaveRevision>[]
 }
 
 export async function loadAccountDetail(client: AdminClient, userId: string): Promise<AccountDetail> {
   const [friends, medals, saves] = await Promise.all([
     client.from('urb_friendships').select('user_low', { count: 'exact', head: true }).eq('state', 'accepted').or(`user_low.eq.${userId},user_high.eq.${userId}`),
     client.from('urb_medals').select('medal_code, earned_at').eq('user_id', userId).order('earned_at', { ascending: false }),
-    client.from('urb_saves').select('revision, format_version, envelope, client_saved_at, created_at').eq('user_id', userId).order('revision', { ascending: false }),
+    client.from('urb_saves').select('city_id, revision, format_version, envelope, client_saved_at, created_at').eq('user_id', userId).order('revision', { ascending: false }),
   ])
   for (const { error } of [friends, medals, saves]) if (error) throw new Error(error.message)
   return {
     friendCount: friends.count ?? 0,
     medals: (medals.data ?? []).map(medal => ({ code: medal.medal_code, earnedAt: medal.earned_at })),
-    saves: (saves.data ?? []).map(save => ({
+    cities: groupByCity((saves.data ?? []).map(save => ({
+      cityId: save.city_id,
       revision: save.revision,
       formatVersion: save.format_version,
       clientSavedAt: save.client_saved_at,
@@ -93,16 +96,16 @@ export async function loadAccountDetail(client: AdminClient, userId: string): Pr
       size: JSON.stringify(save.envelope).length,
       stats: statsOfEnvelope(save.envelope),
       envelope: save.envelope,
-    })),
+    }))),
   }
 }
 
 export async function loadLatestSaveStats(client: AdminClient, userIds: string[]): Promise<Map<string, SaveStats>> {
   const entries = await Promise.all(
     userIds.map(async (userId) => {
-      const { data, error } = await client.from('urb_saves').select('envelope').eq('user_id', userId).order('revision', { ascending: false }).limit(1)
+      const { data, error } = await client.from('urb_saves').select('city_id, revision, envelope').eq('user_id', userId).order('revision', { ascending: false }).limit(30)
       if (error) throw new Error(error.message)
-      return [userId, data[0] ? statsOfEnvelope(data[0].envelope) : null] as const
+      return [userId, biggestCityStats(data.map(save => ({ cityId: save.city_id, revision: save.revision, envelope: save.envelope, stats: statsOfEnvelope(save.envelope) })))] as const
     }),
   )
   return new Map(entries.flatMap(([userId, stats]) => (stats ? [[userId, stats] as const] : [])))

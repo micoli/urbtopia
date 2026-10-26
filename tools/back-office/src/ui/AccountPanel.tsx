@@ -7,7 +7,7 @@ import { BanControl } from './BanControl'
 import { Fact } from './Fact'
 import { GameFrame, type GameLaunch } from './GameFrame'
 import { HandleEditor } from './HandleEditor'
-import { SaveList } from './SaveList'
+import { CityList } from './CityList'
 import { badge, panel } from './styles'
 
 interface Props {
@@ -54,8 +54,8 @@ export function AccountPanel({ client, account, gameUrl, onChanged }: Props) {
           {detail.kind === 'loading' && <p className="text-sm text-zinc-500">Loading…</p>}
           {detail.kind === 'error' && <p className="text-sm text-red-700">Cannot load the account: {detail.message}</p>}
           {detail.kind === 'ready' && (
-            <SaveList
-              saves={detail.detail.saves}
+            <CityList
+              cities={detail.detail.cities}
               handle={account.handle}
               accountId={account.id}
               onOpen={save => setLaunch(previous => ({ id: (previous?.id ?? 0) + 1, save: { handle: account.handle, revision: save.revision, envelope: save.envelope } }))}
