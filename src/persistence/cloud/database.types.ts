@@ -486,6 +486,40 @@ export type Database = {
         };
         Relationships: [];
       };
+      urb_shipments: {
+        Row: {
+          created_at: string;
+          from_city_id: string;
+          id: string;
+          lot: NonNullable<Json>;
+          state: string;
+          to_city_id: string;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          from_city_id: string;
+          id: string;
+          lot: NonNullable<Json>;
+          state?: string;
+          to_city_id: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          from_city_id?: string;
+          id?: string;
+          lot?: NonNullable<Json>;
+          state?: string;
+          to_city_id?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       urb_showcase: {
         Row: {
           citizens: number;
@@ -614,6 +648,7 @@ export type Database = {
       urb_bump_group_members: { Args: { p_group: string }; Returns: undefined };
       urb_bump_groups: { Args: { p_user: string }; Returns: undefined };
       urb_bump_social: { Args: { p_user: string }; Returns: undefined };
+      urb_cancel_shipment: { Args: { p_city: string; p_id: string }; Returns: Json };
       urb_challenge_json: {
         Args: {
           p_challenge: Omit<
@@ -624,6 +659,7 @@ export type Database = {
         Returns: Json;
       };
       urb_check_send_caps: { Args: { p_user: string }; Returns: undefined };
+      urb_claim_shipment: { Args: { p_city: string; p_id: string }; Returns: Json };
       urb_claim_trade: { Args: { p_city: string; p_id: string; p_slot: string }; Returns: Json };
       urb_close_offer: { Args: { p_id: string }; Returns: undefined };
       urb_close_offers_between: { Args: { p_a: string; p_b: string }; Returns: undefined };
@@ -641,6 +677,10 @@ export type Database = {
         Returns: string;
       };
       urb_create_group: { Args: { p_members: string[]; p_name: string }; Returns: string };
+      urb_create_shipment: {
+        Args: { p_from: string; p_id: string; p_lot: Json; p_to: string };
+        Returns: string;
+      };
       urb_create_trade_offer: {
         Args: { p_city: string; p_id: string; p_lot: Json; p_price: number; p_to: string };
         Returns: string;
@@ -688,6 +728,7 @@ export type Database = {
           updated_at: string;
         }[];
       };
+      urb_list_shipments: { Args: Record<PropertyKey, never>; Returns: Json };
       urb_list_social: { Args: { p_cursor?: number }; Returns: Json };
       urb_lock_pair: { Args: { p_a: string; p_b: string }; Returns: undefined };
       urb_lot_is_valid: { Args: { p_lot: Json }; Returns: boolean };
@@ -701,6 +742,7 @@ export type Database = {
       };
       urb_purge_inactive_anonymous_users: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_purge_old_messages: { Args: Record<PropertyKey, never>; Returns: undefined };
+      urb_purge_settled_shipments: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_push_save: {
         Args: {
           p_base_revision: number;
@@ -730,6 +772,7 @@ export type Database = {
         Returns: undefined;
       };
       urb_settle_offer: { Args: { p_id: string }; Returns: undefined };
+      urb_shipment_owner: { Args: Record<PropertyKey, never>; Returns: string };
       urb_showcase_allowed_ranking: {
         Args: { p_declared: number; p_previous: number; p_since: string };
         Returns: number;

@@ -15,9 +15,9 @@ select results_eq(
      where n.nspname = 'public' and p.proname like 'urb\_%' and has_function_privilege('authenticated', p.oid, 'execute')
      order by 1 $$,
   $$ select unnest(array[
-       'urb_abandon_challenge', 'urb_accept_challenge', 'urb_accept_friend_request', 'urb_accept_trade_offer', 'urb_add_group_members', 'urb_block_user', 'urb_claim_trade',
-       'urb_create_group', 'urb_create_trade_offer', 'urb_declare_challenge', 'urb_decline_trade_offer', 'urb_delete_city_saves', 'urb_delete_group', 'urb_delete_my_saves',
-       'urb_leave_group', 'urb_list_challenges', 'urb_list_cities', 'urb_list_group_messages', 'urb_list_groups', 'urb_list_messages', 'urb_list_saves', 'urb_list_social',
+       'urb_abandon_challenge', 'urb_accept_challenge', 'urb_accept_friend_request', 'urb_accept_trade_offer', 'urb_add_group_members', 'urb_block_user', 'urb_cancel_shipment', 'urb_claim_shipment', 'urb_claim_trade',
+       'urb_create_group', 'urb_create_shipment', 'urb_create_trade_offer', 'urb_declare_challenge', 'urb_decline_trade_offer', 'urb_delete_city_saves', 'urb_delete_group', 'urb_delete_my_saves',
+       'urb_leave_group', 'urb_list_challenges', 'urb_list_cities', 'urb_list_group_messages', 'urb_list_groups', 'urb_list_messages', 'urb_list_saves', 'urb_list_shipments', 'urb_list_social',
        'urb_push_save', 'urb_record_donations', 'urb_refuse_friend_request', 'urb_remove_friend', 'urb_remove_group_member', 'urb_rename_group',
        'urb_restore_save', 'urb_send_friend_request_by_email', 'urb_send_group_message', 'urb_send_message', 'urb_set_avatar',
        'urb_set_findable', 'urb_set_handle', 'urb_unblock_user',
