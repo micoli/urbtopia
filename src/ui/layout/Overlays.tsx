@@ -8,6 +8,7 @@ import { MarketModal } from '../market/MarketModal';
 import { ChallengeSuccessOverlay } from '../market/ChallengeSuccessOverlay';
 import { StaticButtons } from './StaticButtons.tsx';
 import { FloatingBadges } from './FloatingBadges';
+import { LocatorArrow } from '../buildings/LocatorArrow';
 import { ConfirmPad } from '../build/ConfirmPad';
 import { ConfirmSaleDialog } from '../build/ConfirmSaleDialog';
 import { AnnualEventNotice } from '../system/AnnualEventNotice';
@@ -48,6 +49,7 @@ export function Overlays() {
       <MarketModal />
       <ChallengeSuccessOverlay />
       {streetView || analytics ? null : <FloatingBadges />}
+      {analytics ? <LocatorArrow /> : null}
       <ConfirmPad />
       <ReadOnlyBanner />
       <VisitBanner />

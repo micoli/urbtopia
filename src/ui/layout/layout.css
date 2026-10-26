@@ -356,29 +356,72 @@
   max-width: calc(100vw - 2 * var(--space-12));
 }
 
+.analytics-widget .dock-button {
+  width: var(--tap);
+  margin: var(--space-8);
+  background: var(--white-a10);
+}
+
 .analytics-hud-title {
-  padding: var(--space-4) var(--space-12);
+  font-size: var(--font-size-xs);
+}
+
+.analytics-widget {
+  display: flex;
+  align-items: stretch;
+  max-width: 100%;
+  overflow: hidden;
   border-radius: var(--radius-md);
   background: var(--color-surface);
   color: var(--color-text);
+}
+
+.analytics-step {
+  padding: 0 var(--space-8);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: var(--font-size-xl);
+  cursor: pointer;
+}
+
+.analytics-step:hover {
+  background: var(--white-a10);
+}
+
+.analytics-legends {
+  display: grid;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-2xs);
+}
+
+/* Every analytic is laid out in the same cell: the widget keeps the width of the widest one. */
+.analytics-ghost,
+.analytics-current {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.analytics-ghost {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .analytics-legend {
   display: flex;
   align-items: center;
   gap: var(--space-4) var(--space-8);
-  max-width: 100%;
-  box-sizing: border-box;
-  padding: var(--space-4) var(--space-12);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-text);
+  white-space: nowrap;
 }
 
 .analytics-legend-ramp {
   flex: 0 1 140px;
   min-width: 60px;
-  height: 10px;
+  height: 6px;
   border-radius: var(--radius-md);
 }
 
@@ -393,8 +436,8 @@
 }
 
 .analytics-legend-swatch {
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
   border-radius: 3px;
 }
 

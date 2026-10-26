@@ -12,7 +12,7 @@ interface FlowListProps {
 }
 
 function FlowList({ title, endpoints, color }: FlowListProps) {
-  const showTile = useUi(store => store.showTile);
+  const showBuilding = useUi(store => store.showBuilding);
   if (endpoints.length === 0) return null;
   return (
     <section className="analytics-flow-list">
@@ -20,7 +20,7 @@ function FlowList({ title, endpoints, color }: FlowListProps) {
       <ul>
         {endpoints.map(endpoint => (
           <li key={endpoint.id}>
-            <button type="button" aria-label={`${t(`building.${endpoint.type}` as MessageKey)}: ${t('analytics.flows.show')}`} onClick={() => showTile({ x: endpoint.x, y: endpoint.y })}>
+            <button type="button" aria-label={`${t(`building.${endpoint.type}` as MessageKey)}: ${t('analytics.flows.show')}`} onClick={() => showBuilding(endpoint.id)}>
               {t(`building.${endpoint.type}` as MessageKey)} ({endpoint.x}, {endpoint.y})
             </button>
             <span>{endpoint.volume}</span>

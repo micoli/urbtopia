@@ -1,12 +1,10 @@
 import { useState, type ReactNode } from 'react';
-import { DATA_LAYERS, MOVEMENT_LAYERS, SERVICE_CATEGORIES, type AnalyticsLayerId } from '../../core';
+import { SERVICE_CATEGORIES, type AnalyticsLayerId } from '../../core';
 import { t } from '../../i18n/t';
 import { AccordionSection } from '../common/AccordionSection';
 import { useUi } from '../common/hooks';
+import { dataLayers, movementLayers } from '../analytics/analyticsOrder';
 import { FlyoutItem } from '../layout/FlyoutItem';
-
-const movementLayers: readonly AnalyticsLayerId[] = MOVEMENT_LAYERS.map(layer => `movement.${layer}` as const);
-const dataLayers: readonly AnalyticsLayerId[] = DATA_LAYERS.filter(layer => layer !== 'coverage').map(layer => `data.${layer}` as const);
 
 type LandSection = 'movement' | 'data' | 'coverage';
 
@@ -31,7 +29,7 @@ export function LandMenu() {
 
   return (
     <>
-      <FlyoutItem label={t('land.parcels')} onChoose={() => chooseTool({ kind: 'parcel' })} />
+      <FlyoutItem label={t('land.parcels')} icon="map.png" onChoose={() => chooseTool({ kind: 'parcel' })} />
       {section('movement', t('analytics.movement'), layerItems(movementLayers))}
       {section('data', t('analytics.data'), layerItems(dataLayers))}
       {section('coverage', t('analytics.layer.data.coverage'), SERVICE_CATEGORIES.map(category => (
