@@ -1,6 +1,6 @@
 # Land Value Layer
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 03, 04
 

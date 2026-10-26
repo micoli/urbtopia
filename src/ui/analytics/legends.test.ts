@@ -11,8 +11,7 @@ describe('layer legends', () => {
     expect(legendsOf('movement.all').map(legend => legend.label)).toEqual(['roads', 'sidewalks', 'crossings']);
   });
 
-  it('keeps every Layer but the per-Home ones with at least one legend', () => {
-    const without = ANALYTICS_LAYERS.filter(layer => legendsOf(layer).length === 0);
-    expect(without).toEqual(['data.landValue']);
+  it('has at least one legend for every Layer', () => {
+    expect(ANALYTICS_LAYERS.filter(layer => legendsOf(layer).length === 0)).toEqual([]);
   });
 });

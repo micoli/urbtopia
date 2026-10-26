@@ -1,6 +1,7 @@
 import type { RampId } from '../core';
 
 export const RAMPS: Record<RampId, readonly string[]> = {
+  value: ['#d0ebff', '#74c0fc', '#4263eb', '#5f3dc4'],
   heat: ['#ffe066', '#ff9f43', '#e5484d', '#7a1f3d'],
   odor: ['#e8e2a0', '#b9a93f', '#8a5a2b', '#4b2a1a'],
   road: ['#ffc078', '#ff8a3d', '#e5484d'],

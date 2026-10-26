@@ -2,13 +2,14 @@ import * as THREE from 'three';
 import { homeTintsOf, layerFieldsOf, type AnalyticsLayerId, type GameState, type HomeTint, type LayerField, type ServiceCategory } from '../core';
 import { rampColor } from './analyticsRamps';
 
-const REFRESH_MS = 2000;
+const REFRESH_MS = 5000;
+const LAYOUT_REFRESH_MS = 500;
 
 export class AnalyticsLayer {
   readonly root = new THREE.Group();
   private tileGeometry = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
   private material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6, depthTest: false, depthWrite: false, toneMapped: false });
-  private buildings: GameState['buildings'] | null = null;
+  private layout = '';
   private layer: AnalyticsLayerId | null = null;
   private category: ServiceCategory | null = null;
   private builtAt = 0;
@@ -25,11 +26,13 @@ export class AnalyticsLayer {
       this.root.visible = false;
       return;
     }
-    const unchanged = this.layer === layer && this.category === category && this.buildings === state.buildings && now - this.builtAt < REFRESH_MS;
-    if (unchanged) return;
+    const layout = `${state.buildings.length}:${state.roads.length}:${state.pedestrianWays?.length ?? 0}`;
+    const elapsed = now - this.builtAt;
+    const sameView = this.layer === layer && this.category === category;
+    if (sameView && (elapsed < LAYOUT_REFRESH_MS || (layout === this.layout && elapsed < REFRESH_MS))) return;
     this.layer = layer;
     this.category = category;
-    this.buildings = state.buildings;
+    this.layout = layout;
     this.builtAt = now;
     this.clearMeshes();
     const fields = layerFieldsOf(state, layer);

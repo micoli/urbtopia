@@ -1,7 +1,7 @@
 import { createBuilding } from '../buildings/buildingSpecs';
 import type { GameState } from '../engine/state';
 import { odorPenaltyOf } from '../waste/wasteNuisance';
-import { WASTE_FACILITIES } from '../waste/wasteBalance';
+import { WASTE_FACILITIES, wasteKindOf } from '../waste/wasteBalance';
 import { buildTileField, type TileField } from './tileField';
 
 const cache = new WeakMap<GameState, TileField>();
@@ -10,7 +10,8 @@ const cache = new WeakMap<GameState, TileField>();
 export function odorField(state: GameState): TileField {
   const cached = cache.get(state);
   if (cached) return cached;
-  const field = buildTileField(state, (x, y) => odorPenaltyOf(state, createBuilding(0, 'home', x, y, 0)), WASTE_FACILITIES.mound.odor?.malus ?? 1);
+  const smells = state.buildings.some(building => wasteKindOf(building.type) === 'mound');
+  const field = buildTileField(state, (x, y) => !smells ? 0 : odorPenaltyOf(state, createBuilding(0, 'home', x, y, 0)), WASTE_FACILITIES.mound.odor?.malus ?? 1);
   cache.set(state, field);
   return field;
 }

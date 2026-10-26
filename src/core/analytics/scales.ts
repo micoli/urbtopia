@@ -3,7 +3,7 @@ import { CONGESTION } from '../traffic/roadTier';
 import { WASTE_FACILITIES } from '../waste/wasteBalance';
 import type { AnalyticsLayerId } from './layers';
 
-export type RampId = 'heat' | 'odor' | 'road' | 'sidewalk' | 'saturation' | 'coverage' | 'wellbeing';
+export type RampId = 'value' | 'heat' | 'odor' | 'road' | 'sidewalk' | 'saturation' | 'coverage' | 'wellbeing';
 export type ScaleLabel = 'roads' | 'sidewalks' | 'crossings';
 
 export interface LayerScale {
@@ -18,6 +18,7 @@ export interface LayerScale {
 export const LAYER_SCALES: Partial<Record<AnalyticsLayerId, readonly LayerScale[]>> = {
   'data.coverage': [{ ramp: 'coverage', max: 'discrete' }],
   'data.wellbeing': [{ ramp: 'wellbeing', max: 100 }],
+  'data.landValue': [{ ramp: 'value', max: 100 }],
   'data.pollution': [{ ramp: 'heat', max: ECOLOGY.coalWellbeingCap }],
   'data.odor': [{ ramp: 'odor', max: WASTE_FACILITIES.mound.odor?.malus ?? 1 }],
   'data.congestion': [{ ramp: 'saturation', max: CONGESTION.maxRatio * 100, suffix: '%' }],
