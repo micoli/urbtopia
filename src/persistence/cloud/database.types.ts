@@ -435,6 +435,7 @@ export type Database = {
       };
       urb_saves: {
         Row: {
+          city_id: string;
           client_saved_at: string;
           created_at: string;
           envelope: NonNullable<Json>;
@@ -445,6 +446,7 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          city_id: string;
           client_saved_at: string;
           created_at?: string;
           envelope: NonNullable<Json>;
@@ -454,6 +456,7 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          city_id?: string;
           client_saved_at?: string;
           created_at?: string;
           envelope?: NonNullable<Json>;
@@ -635,6 +638,7 @@ export type Database = {
       };
       urb_declare_challenge: { Args: { p_challenge: string }; Returns: Json };
       urb_decline_trade_offer: { Args: { p_id: string }; Returns: undefined };
+      urb_delete_city_saves: { Args: { p_city_id: string }; Returns: undefined };
       urb_delete_conversation: { Args: { p_a: string; p_b: string }; Returns: undefined };
       urb_delete_group: { Args: { p_group: string }; Returns: undefined };
       urb_delete_my_saves: { Args: Record<PropertyKey, never>; Returns: undefined };
@@ -654,11 +658,19 @@ export type Database = {
       urb_has_blocked: { Args: { p_blocked: string; p_blocker: string }; Returns: boolean };
       urb_leave_group: { Args: { p_group: string }; Returns: undefined };
       urb_list_challenges: { Args: Record<PropertyKey, never>; Returns: Json };
+      urb_list_cities: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          city_id: string;
+          client_saved_at: string;
+          revision: number;
+        }[];
+      };
       urb_list_group_messages: { Args: { p_after?: number; p_group: string }; Returns: Json };
       urb_list_groups: { Args: { p_cursor?: number }; Returns: Json };
       urb_list_messages: { Args: { p_after?: number; p_with: string }; Returns: Json };
       urb_list_saves: {
-        Args: Record<PropertyKey, never>;
+        Args: { p_city_id: string };
         Returns: {
           client_saved_at: string;
           created_at: string;
@@ -683,6 +695,7 @@ export type Database = {
       urb_push_save: {
         Args: {
           p_base_revision: number;
+          p_city_id: string;
           p_client_saved_at: string;
           p_envelope: Json;
           p_format_version: number;
@@ -695,7 +708,7 @@ export type Database = {
       urb_remove_friend: { Args: { p_user: string }; Returns: undefined };
       urb_remove_group_member: { Args: { p_group: string; p_user: string }; Returns: undefined };
       urb_rename_group: { Args: { p_group: string; p_name: string }; Returns: undefined };
-      urb_restore_save: { Args: { p_revision: number }; Returns: number };
+      urb_restore_save: { Args: { p_city_id: string; p_revision: number }; Returns: number };
       urb_send_friend_request_by_email: { Args: { p_email: string }; Returns: undefined };
       urb_send_group_message: { Args: { p_body: string; p_group: string }; Returns: number };
       urb_send_message: { Args: { p_body: string; p_to: string }; Returns: number };

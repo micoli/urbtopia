@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { FIRST_CITY_ID } from '../cities';
 import { readCloudConfig } from './cloudConfig';
 import { FakeCloudSaveClient } from './fakeCloudSaveClient';
 import { isPlausibleEmail } from './email';
 import { loadCloudClient } from './loadCloudClient';
 import { isEmailTaken, toCloudError } from './supabaseCloudSaveClient';
 import { CloudError } from './types';
+
 
 describe('readCloudConfig', () => {
   it('returns the URL and publishable key when both are set', () => {
@@ -52,6 +54,10 @@ describe('toCloudError', () => {
     expect(toCloudError({ message: 'Token has expired or is invalid' })).toMatchObject({ kind: 'invalid-code' });
   });
 
+  it('maps the City limit to its own error', () => {
+    expect(toCloudError({ message: 'urb_city_limit', code: '54000' })).toMatchObject({ kind: 'city-limit' });
+  });
+
   it('maps network failures to offline and anything else to unknown', () => {
     expect(toCloudError({ message: 'TypeError: Failed to fetch', code: '' })).toMatchObject({ kind: 'offline' });
     expect(toCloudError({ message: 'boom', code: '500' })).toMatchObject({ kind: 'unknown' });
@@ -64,11 +70,11 @@ describe('FakeCloudSaveClient', () => {
     const client = new FakeCloudSaveClient(() => now);
     for (let i = 0; i < 12; i += 1) {
       now += 2 * 3_600_000;
-      await client.push({ baseRevision: i, envelope: `e${i}`, savedAt: now, formatVersion: 11 });
+      await client.push({ cityId: FIRST_CITY_ID, baseRevision: i, envelope: `e${i}`, savedAt: now, formatVersion: 11 });
     }
     expect(client.rows).toHaveLength(10);
-    await expect(client.push({ baseRevision: 1, envelope: 'x', savedAt: 0, formatVersion: 11 })).rejects.toMatchObject({ kind: 'conflict', serverRevision: 12 });
-    await expect(client.push({ baseRevision: 12, envelope: 'x'.repeat(1_048_577), savedAt: 0, formatVersion: 11 })).rejects.toBeInstanceOf(CloudError);
+    await expect(client.push({ cityId: FIRST_CITY_ID, baseRevision: 1, envelope: 'x', savedAt: 0, formatVersion: 11 })).rejects.toMatchObject({ kind: 'conflict', serverRevision: 12 });
+    await expect(client.push({ cityId: FIRST_CITY_ID, baseRevision: 12, envelope: 'x'.repeat(1_048_577), savedAt: 0, formatVersion: 11 })).rejects.toBeInstanceOf(CloudError);
   });
 });
 

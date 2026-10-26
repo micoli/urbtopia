@@ -13,12 +13,12 @@ function createStore(): SaveStore {
   }
 }
 
-function newCityId(): string {
-  return crypto.randomUUID();
+export const rawSaveStore: SaveStore = createStore();
+const openId = bootCities(rawSaveStore, Date.now()).lastPlayed;
+
+export function openCityId(): string {
+  return openId;
 }
 
-export const rawSaveStore: SaveStore = createStore();
-const openCityId = bootCities(rawSaveStore, Date.now(), newCityId).lastPlayed;
-
-export const saveStore: SaveStore = new CityScopedSaveStore(rawSaveStore, () => openCityId);
+export const saveStore: SaveStore = new CityScopedSaveStore(rawSaveStore, openCityId);
 export const saveSession = new SaveSession(saveStore);

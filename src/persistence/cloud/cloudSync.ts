@@ -2,14 +2,14 @@ import { totalCitizens } from '../../core';
 import { CURRENT_VERSION, parseEnvelope, type ParseOptions } from '../envelope';
 import { readCloudMeta, writeCloudMeta } from '../meta';
 import { SAVE_KEY, type SaveStore } from '../saveStore';
-import { CloudError, type CloudAccount, type CloudSaveClient, type CloudSaveVersion } from './types';
+import { CloudError, type CloudAccount, type CloudCity, type CloudSave, type CloudSaveClient, type CloudSaveVersion } from './types';
 
 export const PUSH_INTERVAL_MS = 5 * 60_000;
 const BACKOFF_START_MS = 30_000;
 const BACKOFF_MAX_MS = 10 * 60_000;
 
-export type CloudFailure = 'newer-version' | 'invalid-cloud-save' | 'too-large' | 'unauthenticated' | 'unknown';
-const FATAL_FAILURES: readonly CloudFailure[] = ['newer-version', 'invalid-cloud-save', 'too-large'];
+export type CloudFailure = 'newer-version' | 'invalid-cloud-save' | 'too-large' | 'city-limit' | 'unauthenticated' | 'unknown';
+const FATAL_FAILURES: readonly CloudFailure[] = ['newer-version', 'invalid-cloud-save', 'too-large', 'city-limit'];
 export type SaveConflictChoice = 'local' | 'cloud';
 
 export interface CitySummary {
@@ -38,6 +38,7 @@ export interface LocalSavePort {
 
 export interface CloudSyncDeps {
   client: CloudSaveClient;
+  cityId: string;
   store: SaveStore;
   now: () => number;
   local: LocalSavePort;
@@ -118,6 +119,7 @@ export class CloudSync {
     this.busy = true;
     void this.deps.client
       .push({
+        cityId: this.deps.cityId,
         baseRevision: readCloudMeta(this.deps.store).baseRevision,
         envelope: local.envelope,
         savedAt: local.savedAt,
@@ -143,8 +145,8 @@ export class CloudSync {
         return;
       }
       if (local) {
-        await this.deps.client.push({ baseRevision: cloud.revision, envelope: local.envelope, savedAt: local.savedAt, formatVersion: CURRENT_VERSION, keepPrevious: true });
-        const restored = await this.deps.client.restore(cloud.revision);
+        await this.deps.client.push({ cityId: this.deps.cityId, baseRevision: cloud.revision, envelope: local.envelope, savedAt: local.savedAt, formatVersion: CURRENT_VERSION, keepPrevious: true });
+        const restored = await this.deps.client.restore(this.deps.cityId, cloud.revision);
         this.deps.local.keepAsPreviousVersion();
         this.adoptCloud({ ...cloud, revision: restored });
         return;
@@ -153,11 +155,29 @@ export class CloudSync {
     });
   }
 
+  async listCloudCities(): Promise<CloudCity[]> {
+    let cities: CloudCity[] = [];
+    await this.guarded(async () => {
+      await this.ensureSignedIn();
+      cities = await this.deps.client.listCities();
+    });
+    return cities;
+  }
+
+  async fetchCloudCity(cityId: string): Promise<CloudSave | null> {
+    let save: CloudSave | null = null;
+    await this.guarded(async () => {
+      await this.ensureSignedIn();
+      save = await this.deps.client.latest(cityId);
+    });
+    return save;
+  }
+
   async listVersions(): Promise<CloudSaveVersion[]> {
     let versions: CloudSaveVersion[] = [];
     await this.guarded(async () => {
       await this.ensureSignedIn();
-      versions = await this.deps.client.list();
+      versions = await this.deps.client.list(this.deps.cityId);
     });
     return versions;
   }
@@ -165,8 +185,8 @@ export class CloudSync {
   async restoreVersion(revision: number): Promise<void> {
     await this.guarded(async () => {
       await this.ensureSignedIn();
-      await this.deps.client.restore(revision);
-      const restored = await this.deps.client.latest();
+      await this.deps.client.restore(this.deps.cityId, revision);
+      const restored = await this.deps.client.latest(this.deps.cityId);
       if (!restored) return;
       this.deps.local.keepAsPreviousVersion();
       this.adoptCloud(restored);
@@ -213,7 +233,7 @@ export class CloudSync {
 
   private handleFailure(error: unknown): void {
     const kind = error instanceof CloudError ? error.kind : 'unknown';
-    if (kind === 'too-large') return this.setStatus({ kind: 'error', reason: kind });
+    if (kind === 'too-large' || kind === 'city-limit') return this.setStatus({ kind: 'error', reason: kind });
     if (kind === 'unauthenticated') this.signedIn = false;
     this.failures += 1;
     this.retryAt = this.deps.now() + Math.min(BACKOFF_START_MS * 2 ** (this.failures - 1), BACKOFF_MAX_MS);
@@ -260,7 +280,7 @@ export class CloudSync {
   }
 
   private async reconcile(): Promise<void> {
-    const cloud = await this.deps.client.latest();
+    const cloud = await this.deps.client.latest(this.deps.cityId);
     this.reconciled = true;
     this.failures = 0;
     const meta = readCloudMeta(this.deps.store);
@@ -302,7 +322,7 @@ export class CloudSync {
     this.lastAttemptAt = this.deps.now();
     const editsAtStart = this.editCount;
     try {
-      const revision = await this.deps.client.push({ baseRevision, envelope: local.envelope, savedAt: local.savedAt, formatVersion: CURRENT_VERSION, keepPrevious });
+      const revision = await this.deps.client.push({ cityId: this.deps.cityId, baseRevision, envelope: local.envelope, savedAt: local.savedAt, formatVersion: CURRENT_VERSION, keepPrevious });
       this.recordSync(revision, local.savedAt, editsAtStart);
       this.deps.onPushed?.(local.envelope);
     } catch (error) {

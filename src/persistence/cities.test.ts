@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { newGame } from '../core';
-import { bootCities, cityNameFromSeed, nameOpenCity, readRegistry, REGISTRY_KEY } from './cities';
+import { bootCities, cityNameFromSeed, FIRST_CITY_ID, nameOpenCity, readRegistry, REGISTRY_KEY } from './cities';
 import { CityScopedSaveStore } from './cityStore';
 import { serializeEnvelope } from './envelope';
 import { META_KEY } from './meta';
@@ -10,11 +10,6 @@ import { SaveSession } from './saveSession';
 
 const T0 = 1_700_000_000_000;
 const city = newGame({ seed: 'gently-amber-fox-4821', now: T0 });
-
-function idGenerator(...ids: string[]): () => string {
-  let index = 0;
-  return () => ids[index++] ?? `extra-${index}`;
-}
 
 describe('cityNameFromSeed', () => {
   it('drops the digits and title-cases the words', () => {
@@ -29,8 +24,8 @@ describe('cityNameFromSeed', () => {
 describe('bootCities', () => {
   it('creates a first City without a name on a fresh device and opens it', () => {
     const raw = new MemorySaveStore();
-    const registry = bootCities(raw, T0, idGenerator('c1'));
-    expect(registry).toEqual({ lastPlayed: 'c1', cities: [{ id: 'c1', name: null, createdAt: T0 }] });
+    const registry = bootCities(raw, T0);
+    expect(registry).toEqual({ lastPlayed: FIRST_CITY_ID, cities: [{ id: FIRST_CITY_ID, name: null, createdAt: T0 }] });
     expect(readRegistry(raw)).toEqual(registry);
   });
 
@@ -42,10 +37,10 @@ describe('bootCities', () => {
     raw.put(versionedBackupKey(3), 'backup-v3');
     raw.put(META_KEY, '{"createdAt":1}');
 
-    const registry = bootCities(raw, T0 + 1, idGenerator('c1'));
+    const registry = bootCities(raw, T0 + 1);
 
-    expect(registry.cities).toEqual([{ id: 'c1', name: 'Gently Amber Fox', createdAt: T0 + 1 }]);
-    const scoped = new CityScopedSaveStore(raw, () => 'c1');
+    expect(registry.cities).toEqual([{ id: FIRST_CITY_ID, name: 'Gently Amber Fox', createdAt: T0 + 1 }]);
+    const scoped = new CityScopedSaveStore(raw, () => FIRST_CITY_ID);
     expect(scoped.get(SAVE_KEY)).toBe(envelope);
     expect(scoped.get(BACKUP_KEY)).toBe('backup');
     expect(scoped.get(versionedBackupKey(3))).toBe('backup-v3');
@@ -59,15 +54,15 @@ describe('bootCities', () => {
   it('leaves the City unnamed when the legacy save cannot be read', () => {
     const raw = new MemorySaveStore();
     raw.put(SAVE_KEY, 'not json');
-    const registry = bootCities(raw, T0, idGenerator('c1'));
+    const registry = bootCities(raw, T0);
     expect(registry.cities[0]?.name).toBeNull();
-    expect(new CityScopedSaveStore(raw, () => 'c1').get(SAVE_KEY)).toBe('not json');
+    expect(new CityScopedSaveStore(raw, () => FIRST_CITY_ID).get(SAVE_KEY)).toBe('not json');
   });
 
   it('is idempotent once the registry exists', () => {
     const raw = new MemorySaveStore();
-    const first = bootCities(raw, T0, idGenerator('c1'));
-    const second = bootCities(raw, T0 + 5, idGenerator('c2'));
+    const first = bootCities(raw, T0);
+    const second = bootCities(raw, T0 + 5);
     expect(second).toEqual(first);
   });
 
@@ -75,7 +70,7 @@ describe('bootCities', () => {
     const raw = new MemorySaveStore();
     raw.put(REGISTRY_KEY, '{broken');
     raw.put(SAVE_KEY, serializeEnvelope(city, T0));
-    const registry = bootCities(raw, T0, idGenerator('c1'));
+    const registry = bootCities(raw, T0);
     expect(registry.cities).toHaveLength(1);
     expect(registry.cities[0]?.name).toBe('Gently Amber Fox');
   });
@@ -84,14 +79,14 @@ describe('bootCities', () => {
 describe('nameOpenCity', () => {
   it('names the open City after its Seed when it has no name yet', () => {
     const raw = new MemorySaveStore();
-    bootCities(raw, T0, idGenerator('c1'));
+    bootCities(raw, T0);
     nameOpenCity(raw, 'gently-amber-fox-4821');
     expect(readRegistry(raw)?.cities[0]?.name).toBe('Gently Amber Fox');
   });
 
   it('keeps an existing name', () => {
     const raw = new MemorySaveStore();
-    bootCities(raw, T0, idGenerator('c1'));
+    bootCities(raw, T0);
     nameOpenCity(raw, 'gently-amber-fox-4821');
     nameOpenCity(raw, 'bold-vivid-owl-1000');
     expect(readRegistry(raw)?.cities[0]?.name).toBe('Gently Amber Fox');

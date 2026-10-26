@@ -1,6 +1,6 @@
 # Cloud saves per City
 
-Status: ready-for-agent
+Status: done - implemented
 Blocked by: 01
 Spec: ../spec.md
 
@@ -10,9 +10,9 @@ Spec: ../spec.md
 
 ## Acceptance criteria
 
-- [ ] Migration adds `city_id` to `urb_saves` (key `(user_id, city_id, revision)`); existing rows are attached to the first City id sent by the upgraded client.
-- [ ] `urb_push_save`, `urb_list_saves`, `urb_restore_save` take a City id; caps (size, 10 versions, hourly rotation, compare-and-swap) apply per City; at most three Cities per account.
-- [ ] A RPC deletes one City's Cloud save; `urb_delete_my_saves` still deletes all.
-- [ ] The sync layer pushes and detects Save conflicts per City; a conflict on one City never touches another.
-- [ ] Signing in on a new device lists the account's Cities from the cloud and can restore each.
-- [ ] pgTAP covers the per-City rules; client logic tested with the fake client; TypeScript types regenerated.
+- [x] Migration adds `city_id` to `urb_saves` (key `(user_id, city_id, revision)`); existing rows are attached to the fixed first City id, which every device uses for its first City (see ADR 0047).
+- [x] `urb_push_save`, `urb_list_saves`, `urb_restore_save` take a City id; caps (size, 10 versions, hourly rotation, compare-and-swap) apply per City; at most three Cities per account.
+- [x] A RPC deletes one City's Cloud save; `urb_delete_my_saves` still deletes all.
+- [x] The sync layer pushes and detects Save conflicts per City; a conflict on one City never touches another.
+- [x] Signing in on a new device lists the account's Cities from the cloud and can restore each.
+- [x] pgTAP covers the per-City rules; client logic tested with the fake client; TypeScript types regenerated.

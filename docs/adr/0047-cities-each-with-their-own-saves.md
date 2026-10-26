@@ -2,7 +2,7 @@
 
 Accepted. Amends [ADR 0003](0003-localstorage-versioned-save-envelope.md) ("one save slot, one backup slot") and [ADR 0015](0015-supabase-cloud-save-mirror-with-rpc-only-writes.md) (one Cloud save per Player account), which otherwise stay valid.
 
-A Player account owns one to three Cities. Each City is a complete game: its own envelope, backup, cloud meta (`baseRevision`), Save conflicts and Cloud save history of ten versions. `urb_saves` is keyed by `(user_id, city_id, revision)` and every rule of ADR 0015 applies per City. Only the open City is simulated; the others are frozen and caught up by the usual Catch-up when reopened. The existing save becomes the first City on upgrade.
+A Player account owns one to three Cities. Each City is a complete game: its own envelope, backup, cloud meta (`baseRevision`), Save conflicts and Cloud save history of ten versions. `urb_saves` is keyed by `(user_id, city_id, revision)` and every rule of ADR 0015 applies per City. Only the open City is simulated; the others are frozen and caught up by the usual Catch-up when reopened. The existing save becomes the first City on upgrade. The first City of every account has the fixed id `00000000-0000-0000-0000-000000000001` on every device, so Cloud saves written before Cities existed already belong to it and two devices of one account still meet in a Save conflict as before; other Cities get a random id.
 
 ## Why
 

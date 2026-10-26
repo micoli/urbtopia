@@ -4,6 +4,9 @@ import { META_KEY } from './meta';
 import { BACKUP_KEY, SAVE_KEY, versionedBackupKey, type SaveStore } from './saveStore';
 
 export const REGISTRY_KEY = 'urbtopia-cities';
+export const MAX_CITIES = 3;
+// The first City of every account, whatever the device: cities saved before Cities existed keep their Cloud save under this id (ADR 0047).
+export const FIRST_CITY_ID = '00000000-0000-0000-0000-000000000001';
 
 export interface CityEntry {
   id: string;
@@ -66,7 +69,7 @@ function adoptLegacyKeys(store: SaveStore, cityId: string): void {
   }
 }
 
-export function bootCities(store: SaveStore, now: number, newId: () => string): CityRegistry {
+export function bootCities(store: SaveStore, now: number): CityRegistry {
   const existing = readRegistry(store);
   if (existing) {
     const first = existing.cities[0] as CityEntry;
@@ -74,7 +77,7 @@ export function bootCities(store: SaveStore, now: number, newId: () => string): 
     return existing;
   }
   const seed = legacySeed(store);
-  const first: CityEntry = { id: newId(), name: seed === null ? null : cityNameFromSeed(seed), createdAt: now };
+  const first: CityEntry = { id: FIRST_CITY_ID, name: seed === null ? null : cityNameFromSeed(seed), createdAt: now };
   const registry: CityRegistry = { lastPlayed: first.id, cities: [first] };
   writeRegistry(store, registry);
   adoptLegacyKeys(store, first.id);

@@ -5,7 +5,7 @@ import { cloudStore } from '../../store/cloudStore';
 import { gameStore } from '../../store/gameStore';
 import { readOnlyStore } from '../../store/readOnlyStore';
 import { parseEnvelope } from '../envelope';
-import { saveSession, saveStore } from '../instance';
+import { openCityId, saveSession, saveStore } from '../instance';
 import { SAVE_KEY } from '../saveStore';
 import { cloudEnabled } from './cloudConfig';
 import { CloudSync } from './cloudSync';
@@ -43,6 +43,7 @@ export function installCloudSync(): () => void {
     if (!client || disposed) return;
     sync = new CloudSync({
       client,
+      cityId: openCityId(),
       store: saveStore,
       now: Date.now,
       canPush: () => !readOnlyStore.getState().readOnly,

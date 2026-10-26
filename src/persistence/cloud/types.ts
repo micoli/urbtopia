@@ -1,4 +1,4 @@
-export type CloudErrorKind = 'offline' | 'rate-limited' | 'invalid-code' | 'conflict' | 'too-large' | 'unauthenticated' | 'unknown';
+export type CloudErrorKind = 'offline' | 'rate-limited' | 'invalid-code' | 'conflict' | 'too-large' | 'city-limit' | 'unauthenticated' | 'unknown';
 
 export class CloudError extends Error {
   constructor(
@@ -21,7 +21,14 @@ export interface CloudSaveVersion {
   createdAt: number;
 }
 
+export interface CloudCity {
+  cityId: string;
+  revision: number;
+  clientSavedAt: number;
+}
+
 export interface PushInput {
+  cityId: string;
   baseRevision: number;
   envelope: string;
   savedAt: number;
@@ -43,9 +50,11 @@ export interface CloudSaveClient {
   verifyEmailCode(email: string, code: string): Promise<void>;
   onAccountChange(listener: (account: CloudAccount | null) => void): () => void;
   push(input: PushInput): Promise<number>;
-  latest(): Promise<CloudSave | null>;
-  list(): Promise<CloudSaveVersion[]>;
-  restore(revision: number): Promise<number>;
+  latest(cityId: string): Promise<CloudSave | null>;
+  list(cityId: string): Promise<CloudSaveVersion[]>;
+  listCities(): Promise<CloudCity[]>;
+  restore(cityId: string, revision: number): Promise<number>;
+  deleteCity(cityId: string): Promise<void>;
   deleteMine(): Promise<void>;
   signOut(): Promise<void>;
 }

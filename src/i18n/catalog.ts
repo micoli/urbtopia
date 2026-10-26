@@ -669,6 +669,7 @@ export const CATALOG = {
   'cloud.error.newer-version': ['The online save comes from a newer version of the game. Reload the app.', "La sauvegarde en ligne vient d'une version plus récente du jeu. Rechargez l'application."],
   'cloud.error.invalid-cloud-save': ['The online save is damaged and was not loaded.', "La sauvegarde en ligne est abîmée et n'a pas été chargée."],
   'cloud.error.too-large': ['The city is too large for the online save.', 'La ville est trop grande pour la sauvegarde en ligne.'],
+  'cloud.error.city-limit': ['Your account already has three online cities.', 'Votre compte a déjà trois villes en ligne.'],
   'cloud.error.unauthenticated': ['The online account is no longer valid.', "Le compte en ligne n'est plus valide."],
   'cloud.error.unknown': ['The online save failed, will retry.', 'La sauvegarde en ligne a échoué, nouvel essai à venir.'],
   'cloud.lastSync': ['Last sync', 'Dernière synchronisation'],
