@@ -26,8 +26,8 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Generate the assets
         run: npm run assets
-      - name: Install Chromium and its system dependencies
-        run: npx playwright install --with-deps chromium
+      - name: Set up Chromium
+        uses: ./.github/actions/setup-chromium
       - name: Regenerate the baselines
         if: inputs.update
         run: npm run test:visual:update
