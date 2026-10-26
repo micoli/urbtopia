@@ -1,13 +1,16 @@
 import type { AnalyticsLayerId } from '../core';
 
-export type RampId = 'heat' | 'odor';
+export type RampId = 'heat' | 'odor' | 'road' | 'sidewalk' | 'saturation';
 
 export const RAMPS: Record<RampId, readonly string[]> = {
   heat: ['#ffe066', '#ff9f43', '#e5484d', '#7a1f3d'],
   odor: ['#e8e2a0', '#b9a93f', '#8a5a2b', '#4b2a1a'],
+  road: ['#ffc078', '#ff8a3d', '#e5484d'],
+  sidewalk: ['#74c0fc', '#4c6ef5', '#9c36b8'],
+  saturation: ['#35d07f', '#ffe066', '#e5484d', '#7a1f3d'],
 };
 
-export const LAYER_RAMPS: Partial<Record<AnalyticsLayerId, RampId>> = { 'data.pollution': 'heat', 'data.odor': 'odor' };
+export const LAYER_RAMPS: Partial<Record<AnalyticsLayerId, RampId>> = { 'data.pollution': 'heat', 'data.odor': 'odor', 'movement.cars': 'road', 'data.congestion': 'saturation' };
 
 function channels(hex: string): [number, number, number] {
   const value = parseInt(hex.slice(1), 16);

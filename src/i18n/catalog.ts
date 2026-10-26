@@ -890,6 +890,7 @@ export const CATALOG = {
   'analytics.title': ['Analytics', 'Analytique'],
   'analytics.movement': ['Movement layers', 'Calques de déplacements'],
   'analytics.data': ['Data layers', 'Calques de données'],
+  'analytics.legend.busiest': ['Busiest', 'Le plus chargé'],
   'analytics.exit': ['Leave analytics', "Quitter l'analytique"],
   'analytics.layer.movement.pedestrians': ['Pedestrians', 'Piétons'],
   'analytics.layer.movement.cars': ['Cars', 'Voitures'],

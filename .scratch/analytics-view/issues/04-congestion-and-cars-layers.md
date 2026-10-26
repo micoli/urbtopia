@@ -1,6 +1,6 @@
 # Congestion And Cars Layers
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 02
 
