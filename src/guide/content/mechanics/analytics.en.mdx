@@ -1,0 +1,32 @@
+export const meta = {
+  title: 'The Analytics view',
+  summary: 'See how Citizens move through the city and where Pollution, Odor, Congestion or Service coverage hurt, one Layer at a time.',
+  order: 25,
+};
+
+## Opening it
+
+The Analytics view lives in the **Land** menu, beside the Parcels. It never changes the city: it only paints the map with one **Layer** at a time, hides the badges, the Vehicles and the walking Pedestrians so that the colours read clearly, and leaves the build tools aside. Press Escape, or open any other menu, to leave it.
+
+Tap a tile, or point at it with a mouse, to read its figure and its two or three main causes, worked out from the same numbers the game already uses.
+
+## Movement layers
+
+They show how much Commuters and Pedestrians load the networks, as a whole and never one by one.
+
+- **Cars**: the Commuters, and the Buses counted as cars, on each Road tile. The scale is the busiest tile of the city.
+- **Pedestrians**: the walking trips along Sidewalks and Pedestrian ways, on a scale relative to the busiest tile, and each Crossing against the point where it saturates.
+- **All**: both at once, with a colour ramp of their own for Roads (orange to red) and for Sidewalks (blue to violet).
+
+## Data layers
+
+- **Service coverage**: pick a Service category and see which Homes are covered, covered only by public transport, or not covered.
+- **Well-being**: the Well-being of each Home.
+- **Pollution**: the smoke a Home would bear on each tile, from Coal plants and Incinerators, which add up to a cap.
+- **Congestion**: how far each Road is over its Lane capacity, up to twice, with disconnected sections at the top of the scale.
+- **Odor radius**: the Odor a Home would bear on each tile. Mounds never add up: the worst one counts.
+- **Land value**: how desirable each tile is, higher near Green spaces, Public facilities, Leisure buildings and good access, lower under Pollution, Odor and Congestion.
+
+## Land value is only a reading
+
+Land value is a new indicator and nothing in the game reads it. It does not change the price of a Parcel, the Tax or the Well-being. It is there to help you choose where to build.
