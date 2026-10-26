@@ -57,6 +57,12 @@ export interface UiStore {
   marketTab: MarketTab;
   setMarketTab: (tab: MarketTab) => void;
   settingsOpen: boolean;
+  streetView: boolean;
+  streetViewPicking: boolean;
+  pickStreetView: () => void;
+  cancelPickStreetView: () => void;
+  dropStreetView: (tile: Coord) => void;
+  exitStreetView: () => void;
   codexOpen: boolean;
   codexFromSettings: boolean;
   codexFromMarket: boolean;
@@ -195,6 +201,22 @@ export const uiStore = createStore<UiStore>((set, get) => {
     marketTab: 'market',
     setMarketTab: (marketTab) => set({ marketTab }),
     settingsOpen: false,
+    streetView: false,
+    streetViewPicking: false,
+    pickStreetView: () => {
+      if (get().streetViewPicking) return get().cancelPickStreetView();
+      get().cancelTool();
+      set({ streetViewPicking: true, flyout: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false, selectedBuildingId: null });
+    },
+    cancelPickStreetView: () => set({ streetViewPicking: false }),
+    dropStreetView: (tile) => {
+      if (!sceneHandle.current?.enterStreetView(tile)) return toastStore.getState().show('streetView.noSidewalk');
+      set({ streetView: true, streetViewPicking: false });
+    },
+    exitStreetView: () => {
+      sceneHandle.current?.exitStreetView();
+      set({ streetView: false });
+    },
     codexOpen: false,
     codexFromSettings: false,
     codexFromMarket: false,

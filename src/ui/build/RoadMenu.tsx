@@ -47,6 +47,7 @@ export function RoadMenu() {
   const hasBridge = useGame(store => (store.state.bridges ?? []).length > 0);
   const chooseTool = useUi(store => store.chooseTool);
   const openCodex = useUi(store => store.openCodex);
+  const pickStreetView = useUi(store => store.pickStreetView);
   const guide = guideOf(useGame(store => store.state.tutorial));
   const [openSection, setOpenSection] = useState<RoadSection>('road');
   const { manifest } = useCodexManifest();
@@ -79,6 +80,7 @@ export function RoadMenu() {
 
   return (
     <>
+      <FlyoutItem label={t('dock.streetView')} icon="street-view.svg" onChoose={pickStreetView} />
       {sections.map(({ id, items, content, demolish }) => (
         <AccordionSection
           key={id}
