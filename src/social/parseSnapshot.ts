@@ -97,6 +97,7 @@ function parseOffer(row: Row): TradeOffer {
   return {
     id: text(row, 'id'),
     role: oneOf(row, 'role', ['sender', 'recipient'] as const),
+    cityId: optionalText(row, 'cityId'),
     peerId: text(row, 'peerId'),
     peerHandle: text(row, 'peerHandle'),
     peerAvatar: optionalText(row, 'peerAvatar'),

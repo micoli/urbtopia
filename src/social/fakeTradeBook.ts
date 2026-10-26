@@ -1,3 +1,4 @@
+import { FIRST_CITY_ID } from '../persistence/cities';
 import { isValidLot, TRADE_LIMITS, type TradeEffect, type TradeLine } from '../core';
 import { SocialError, type TradeClaim, type TradeOffer, type TradeOfferState, type TradeSlot } from './types';
 
@@ -12,6 +13,8 @@ interface StoredOffer {
   id: string;
   senderId: string;
   recipientId: string;
+  senderCityId: string;
+  recipientCityId: string | null;
   lot: TradeLine[];
   price: number;
   state: TradeOfferState;
@@ -39,11 +42,11 @@ export class FakeTradeBook {
 
   constructor(private hooks: Hooks) {}
 
-  create(senderId: string, id: string, to: string, lot: TradeLine[], price: number): void {
+  create(senderId: string, id: string, to: string, lot: TradeLine[], price: number, cityId: string = FIRST_CITY_ID): void {
     if (!id || !isValidLot(lot) || !Number.isInteger(price) || price < 0 || price > TRADE_LIMITS.maxPrice) throw new SocialError('trade-invalid');
     const existing = this.offers.find((offer) => offer.id === id);
     if (existing) {
-      const same = existing.senderId === senderId && existing.recipientId === to && existing.price === price && JSON.stringify(existing.lot) === JSON.stringify(lot);
+      const same = existing.senderId === senderId && existing.recipientId === to && existing.senderCityId === cityId && existing.price === price && JSON.stringify(existing.lot) === JSON.stringify(lot);
       if (!same) throw new SocialError('trade-conflict');
       return;
     }
@@ -58,18 +61,19 @@ export class FakeTradeBook {
       throw new SocialError('rate-limited', Math.max(1, Math.ceil((Math.min(...lastDay.map((offer) => offer.createdAt)) + DAY_MS - now) / 1000)));
     }
     this.offers.push({
-      id, senderId, recipientId: to, lot: lot.map((line) => ({ ...line })), price, state: 'open', createdAt: now, expiresAt: now + OPEN_WINDOW_MS,
+      id, senderId, recipientId: to, senderCityId: cityId, recipientCityId: null, lot: lot.map((line) => ({ ...line })), price, state: 'open', createdAt: now, expiresAt: now + OPEN_WINDOW_MS,
       claimDeadline: null, acceptedAt: null, lotClaimed: false, paymentClaimed: false,
     });
     this.hooks.bump(senderId, to);
   }
 
-  accept(userId: string, id: string): void {
+  accept(userId: string, id: string, cityId: string = FIRST_CITY_ID): void {
     const offer = this.find(id);
     if (offer.recipientId !== userId) throw new SocialError('trade-unavailable');
     if (offer.acceptedAt !== null) return;
     if (offer.state !== 'open') throw new SocialError('trade-unavailable');
     offer.state = 'accepted';
+    offer.recipientCityId = cityId;
     offer.acceptedAt = this.hooks.clock();
     offer.claimDeadline = this.hooks.clock() + CLAIM_WINDOW_MS;
     this.hooks.bump(offer.senderId, offer.recipientId);
@@ -82,13 +86,13 @@ export class FakeTradeBook {
     this.hooks.bump(offer.senderId, offer.recipientId);
   }
 
-  claim(userId: string, id: string, slot: TradeSlot): TradeClaim {
+  claim(userId: string, id: string, slot: TradeSlot, cityId: string = FIRST_CITY_ID): TradeClaim {
     const offer = this.find(id);
     const isLot = slot === 'lot';
     const owner = isLot
       ? offer.state === 'accepted' ? offer.recipientId : RETURNED.includes(offer.state) ? offer.senderId : null
       : offer.state === 'accepted' && offer.lotClaimed ? offer.senderId : offer.state === 'lapsed' ? offer.recipientId : null;
-    if (owner !== userId) throw new SocialError('trade-unavailable');
+    if (owner !== userId || cityId !== (owner === offer.senderId ? offer.senderCityId : offer.recipientCityId)) throw new SocialError('trade-unavailable');
     const already = isLot ? offer.lotClaimed : offer.paymentClaimed;
     if (!already) {
       if (isLot) offer.lotClaimed = true;
@@ -123,6 +127,7 @@ export class FakeTradeBook {
         return {
           id: offer.id,
           role: offer.senderId === userId ? 'sender' : 'recipient',
+          cityId: offer.senderId === userId ? offer.senderCityId : offer.recipientCityId,
           peerId,
           peerHandle: this.hooks.handleOf(peerId),
           peerAvatar: this.hooks.avatarOf(peerId),

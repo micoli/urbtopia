@@ -1,4 +1,5 @@
 import { cloudEnabled } from '../persistence/cloud/cloudConfig';
+import { openCityId } from '../persistence/instance';
 import { saveNowHandle } from '../persistence/saveNow';
 import { gameStore } from '../store/gameStore';
 import { createLiveGamePort } from '../store/liveGamePort';
@@ -21,7 +22,7 @@ export function installSocial(): () => void {
   let disposed = false;
   let stopWatching = () => {};
 
-  void loadSocialClient().then((client) => {
+  void loadSocialClient(openCityId()).then((client) => {
     if (!client || disposed) return;
     const game: TradeGame = {
       ...createLiveGamePort({ store: gameStore, gateway: liveCommandGateway, persist: () => saveNowHandle.current() }),

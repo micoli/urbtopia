@@ -75,6 +75,8 @@ export type TradeSlot = 'lot' | 'payment';
 export interface TradeOffer {
   id: string;
   role: 'sender' | 'recipient';
+  // The City of the viewer's side: null while a recipient has not accepted yet, absent in older answers.
+  cityId?: string | null;
   peerId: string;
   peerHandle: string;
   peerAvatar: string | null;

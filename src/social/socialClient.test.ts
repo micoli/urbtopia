@@ -7,7 +7,7 @@ import { SocialError } from './types';
 
 describe('loadSocialClient', () => {
   it('returns null without configuration, so supabase-js is never imported', async () => {
-    expect(await loadSocialClient({})).toBeNull();
+    expect(await loadSocialClient('city', {})).toBeNull();
   });
 });
 

@@ -539,7 +539,9 @@ export type Database = {
           lot_claimed_at: string | null;
           payment_claimed_at: string | null;
           price: number;
+          recipient_city_id: string | null;
           recipient_id: string | null;
+          sender_city_id: string;
           sender_id: string | null;
           state: string;
           updated_at: string;
@@ -555,7 +557,9 @@ export type Database = {
           lot_claimed_at?: string | null;
           payment_claimed_at?: string | null;
           price: number;
+          recipient_city_id?: string | null;
           recipient_id?: string | null;
+          sender_city_id: string;
           sender_id?: string | null;
           state?: string;
           updated_at?: string;
@@ -570,7 +574,9 @@ export type Database = {
           lot_claimed_at?: string | null;
           payment_claimed_at?: string | null;
           price?: number;
+          recipient_city_id?: string | null;
           recipient_id?: string | null;
+          sender_city_id?: string;
           sender_id?: string | null;
           state?: string;
           updated_at?: string;
@@ -600,7 +606,7 @@ export type Database = {
       urb_abandon_challenge: { Args: { p_challenge: string; p_city: string }; Returns: undefined };
       urb_accept_challenge: { Args: { p_challenge: string; p_city: string }; Returns: Json };
       urb_accept_friend_request: { Args: { p_user: string }; Returns: undefined };
-      urb_accept_trade_offer: { Args: { p_id: string }; Returns: undefined };
+      urb_accept_trade_offer: { Args: { p_city: string; p_id: string }; Returns: undefined };
       urb_add_group_members: { Args: { p_group: string; p_members: string[] }; Returns: undefined };
       urb_are_friends: { Args: { p_a: string; p_b: string }; Returns: boolean };
       urb_block_user: { Args: { p_user: string }; Returns: undefined };
@@ -618,7 +624,7 @@ export type Database = {
         Returns: Json;
       };
       urb_check_send_caps: { Args: { p_user: string }; Returns: undefined };
-      urb_claim_trade: { Args: { p_id: string; p_slot: string }; Returns: Json };
+      urb_claim_trade: { Args: { p_city: string; p_id: string; p_slot: string }; Returns: Json };
       urb_close_offer: { Args: { p_id: string }; Returns: undefined };
       urb_close_offers_between: { Args: { p_a: string; p_b: string }; Returns: undefined };
       urb_create_event: {
@@ -636,7 +642,7 @@ export type Database = {
       };
       urb_create_group: { Args: { p_members: string[]; p_name: string }; Returns: string };
       urb_create_trade_offer: {
-        Args: { p_id: string; p_lot: Json; p_price: number; p_to: string };
+        Args: { p_city: string; p_id: string; p_lot: Json; p_price: number; p_to: string };
         Returns: string;
       };
       urb_declare_challenge: { Args: { p_challenge: string; p_city: string }; Returns: Json };
