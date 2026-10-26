@@ -8,7 +8,7 @@ import { AnalyticsFlows } from './AnalyticsFlows';
 const context = vi.hoisted(() => ({ state: null as GameState | null, layer: 'movement.cars' as string | null }));
 vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
-  useUi: (selector: (store: { analyticsLayer: string | null; showTile: () => void }) => unknown) => selector({ analyticsLayer: context.layer, showTile: () => {} }),
+  useUi: (selector: (store: { analyticsLayer: string | null; showBuilding: () => void }) => unknown) => selector({ analyticsLayer: context.layer, showBuilding: () => {} }),
 }));
 
 const city = (): GameState => {
