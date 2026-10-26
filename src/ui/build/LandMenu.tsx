@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DATA_LAYERS, MOVEMENT_LAYERS, type AnalyticsLayerId } from '../../core';
+import { DATA_LAYERS, MOVEMENT_LAYERS, SERVICE_CATEGORIES, type AnalyticsLayerId } from '../../core';
 import { t } from '../../i18n/t';
 import { AccordionSection } from '../common/AccordionSection';
 import { useUi } from '../common/hooks';
@@ -12,11 +12,25 @@ export function LandMenu() {
   const chooseTool = useUi(store => store.chooseTool);
   const enterAnalytics = useUi(store => store.enterAnalytics);
   const lastLayer = useUi(store => store.lastAnalyticsLayer);
+  const lastCategory = useUi(store => store.analyticsCategory);
+  const [coverageOpen, setCoverageOpen] = useState(lastLayer === 'data.coverage');
   const [openSection, setOpenSection] = useState<'movement' | 'data'>(lastLayer?.startsWith('data.') ? 'data' : 'movement');
 
-  const layerItems = (layers: readonly AnalyticsLayerId[]) => layers.map(layer => (
-    <FlyoutItem key={layer} label={t(`analytics.layer.${layer}`)} selected={layer === lastLayer} onChoose={() => enterAnalytics(layer)} />
-  ));
+  const layerItems = (layers: readonly AnalyticsLayerId[]) => layers.map(layer => {
+    if (layer !== 'data.coverage') return <FlyoutItem key={layer} label={t(`analytics.layer.${layer}`)} selected={layer === lastLayer} onChoose={() => enterAnalytics(layer)} />;
+    return (
+      <div key={layer}>
+        <FlyoutItem label={`${t(`analytics.layer.${layer}`)} ${coverageOpen ? '▾' : '▸'}`} selected={layer === lastLayer} onChoose={() => setCoverageOpen(!coverageOpen)} />
+        {coverageOpen ? (
+          <div className="flyout-sub">
+            {SERVICE_CATEGORIES.map(category => (
+              <FlyoutItem key={category} label={t(`service.${category}`)} selected={layer === lastLayer && category === lastCategory} onChoose={() => enterAnalytics(layer, category)} />
+            ))}
+          </div>
+        ) : null}
+      </div>
+    );
+  });
 
   return (
     <>

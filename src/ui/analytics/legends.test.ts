@@ -13,6 +13,6 @@ describe('layer legends', () => {
 
   it('keeps every Layer but the per-Home ones with at least one legend', () => {
     const without = ANALYTICS_LAYERS.filter(layer => legendsOf(layer).length === 0);
-    expect(without).toEqual(['data.coverage', 'data.wellbeing', 'data.landValue']);
+    expect(without).toEqual(['data.landValue']);
   });
 });

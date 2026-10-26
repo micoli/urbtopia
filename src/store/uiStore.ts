@@ -1,6 +1,6 @@
 import { createStore } from 'zustand/vanilla';
-import { footprintTiles, nextFront, type AnalyticsLayerId, type Coord, type CropId, type Rotation } from '../core';
-import { readAnalyticsLayer, writeAnalyticsLayer } from '../ui/analytics/analyticsLayerPref';
+import { footprintTiles, nextFront, type AnalyticsLayerId, type Coord, type CropId, type Rotation, type ServiceCategory } from '../core';
+import { readAnalyticsCategory, readAnalyticsLayer, writeAnalyticsCategory, writeAnalyticsLayer } from '../ui/analytics/analyticsLayerPref';
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
 import { confirmTool, evaluateTool, extendBrush, isPathTool, selectionGhost, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
@@ -60,7 +60,8 @@ export interface UiStore {
   settingsOpen: boolean;
   analyticsLayer: AnalyticsLayerId | null;
   lastAnalyticsLayer: AnalyticsLayerId | null;
-  enterAnalytics: (layer: AnalyticsLayerId) => void;
+  analyticsCategory: ServiceCategory;
+  enterAnalytics: (layer: AnalyticsLayerId, category?: ServiceCategory) => void;
   exitAnalytics: () => void;
   streetView: boolean;
   streetViewPicking: boolean;
@@ -208,10 +209,12 @@ export const uiStore = createStore<UiStore>((set, get) => {
     settingsOpen: false,
     analyticsLayer: null,
     lastAnalyticsLayer: readAnalyticsLayer(),
-    enterAnalytics: (layer) => {
+    analyticsCategory: readAnalyticsCategory(),
+    enterAnalytics: (layer, category = get().analyticsCategory) => {
       get().cancelTool();
       writeAnalyticsLayer(layer);
-      set({ analyticsLayer: layer, lastAnalyticsLayer: layer, flyout: null, selectedBuildingId: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false });
+      writeAnalyticsCategory(category);
+      set({ analyticsLayer: layer, lastAnalyticsLayer: layer, analyticsCategory: category, flyout: null, selectedBuildingId: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false });
     },
     exitAnalytics: () => set({ analyticsLayer: null }),
     streetView: false,

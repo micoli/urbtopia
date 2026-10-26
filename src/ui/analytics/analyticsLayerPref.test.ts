@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { ANALYTICS_LAYER_KEY, readAnalyticsLayer, writeAnalyticsLayer } from './analyticsLayerPref';
+import { ANALYTICS_CATEGORY_KEY, ANALYTICS_LAYER_KEY, readAnalyticsCategory, readAnalyticsLayer, writeAnalyticsCategory, writeAnalyticsLayer } from './analyticsLayerPref';
 
 function stubStorage(initial: Record<string, string> = {}) {
   const data = new Map(Object.entries(initial));
@@ -25,5 +25,14 @@ describe('analytics layer preference', () => {
     vi.stubGlobal('localStorage', { getItem: () => { throw new Error('blocked'); }, setItem: () => { throw new Error('blocked'); } });
     expect(readAnalyticsLayer()).toBeNull();
     expect(() => writeAnalyticsLayer('data.odor')).not.toThrow();
+  });
+
+  it('round-trips a Service category and falls back to the first one', () => {
+    stubStorage();
+    expect(readAnalyticsCategory()).toBe('education');
+    writeAnalyticsCategory('health');
+    expect(readAnalyticsCategory()).toBe('health');
+    stubStorage({ [ANALYTICS_CATEGORY_KEY]: 'nope' });
+    expect(readAnalyticsCategory()).toBe('education');
   });
 });

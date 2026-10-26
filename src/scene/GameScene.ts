@@ -5,7 +5,7 @@ import { GAME_CONFIG, WILD_RIM_TILES, congestionStats, pedestrianGraph, wildNois
 import { bridgeElevation } from './bridgeElevation';
 import { CameraController } from './CameraController';
 import { StreetViewController } from './StreetViewController';
-import { footprintTiles, type AnalyticsLayerId, type Coord } from '../core';
+import { footprintTiles, type AnalyticsLayerId, type Coord, type ServiceCategory } from '../core';
 import { congestionTints } from './congestionMarkers';
 import type { DrawnExtent, GhostSpec } from '../tools/tools';
 import { ChunkedWorld } from './ChunkedWorld';
@@ -75,6 +75,7 @@ export class GameScene {
   private serviceCoverageLayer = new ServiceCoverageLayer();
   private analyticsLayer = new AnalyticsLayer();
   private analyticsLayerId: AnalyticsLayerId | null = null;
+  private analyticsCategory: ServiceCategory = 'education';
   private coverageFocus: { type: FacilityType; facilityId: number } | null = null;
   private afterHarvest: readonly HarvestedTile[] = [];
   private ecologicalState: GameState | null = null;
@@ -242,9 +243,10 @@ export class GameScene {
     void this.drain();
   }
 
-  setAnalyticsLayer(layer: AnalyticsLayerId | null): void {
-    if (this.analyticsLayerId === layer) return;
+  setAnalyticsLayer(layer: AnalyticsLayerId | null, category: ServiceCategory): void {
+    if (this.analyticsLayerId === layer && this.analyticsCategory === category) return;
     this.analyticsLayerId = layer;
+    this.analyticsCategory = category;
     if (!this.ecologicalState) return;
     this.latest = this.ecologicalState;
     void this.drain();
@@ -361,7 +363,7 @@ export class GameScene {
         this.world.sync(items);
         const focus = serviceType ? null : this.coverageFocus;
         this.serviceCoverageLayer.sync(state, serviceType ?? focus?.type ?? null, focus?.facilityId ?? null);
-        this.analyticsLayer.sync(state, this.analyticsLayerId);
+        this.analyticsLayer.sync(state, this.analyticsLayerId, this.analyticsCategory);
         await this.scenery.sync(state);
         this.shapeGround(state);
         this.syncParcels(state);

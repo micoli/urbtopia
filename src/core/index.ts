@@ -203,6 +203,8 @@ export { ANALYTICS_LAYERS, DATA_LAYERS, MOVEMENT_LAYERS, isAnalyticsLayerId } fr
 export type { AnalyticsLayerId, DataLayer, MovementLayer } from './analytics/layers';
 export { layerFieldsOf } from './analytics/fields';
 export type { LayerField } from './analytics/fields';
+export { COVERAGE_SHARE, homeTintsOf } from './analytics/homeTints';
+export type { HomeTint } from './analytics/homeTints';
 export { LAYER_SCALES } from './analytics/scales';
 export type { LayerScale, RampId, ScaleLabel } from './analytics/scales';
 export { fieldValueAt } from './analytics/tileField';

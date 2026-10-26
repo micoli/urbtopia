@@ -374,3 +374,19 @@
   height: 10px;
   border-radius: var(--radius-md);
 }
+
+.analytics-legend-state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.analytics-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.flyout-sub {
+  padding-left: var(--space-12);
+}

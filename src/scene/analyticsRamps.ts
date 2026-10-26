@@ -6,6 +6,8 @@ export const RAMPS: Record<RampId, readonly string[]> = {
   road: ['#ffc078', '#ff8a3d', '#e5484d'],
   sidewalk: ['#74c0fc', '#4c6ef5', '#9c36b8'],
   saturation: ['#35d07f', '#ffe066', '#e5484d', '#7a1f3d'],
+  coverage: ['#e5484d', '#2ec4d6', '#35d07f'],
+  wellbeing: ['#e5484d', '#ffe066', '#35d07f'],
 };
 
 
