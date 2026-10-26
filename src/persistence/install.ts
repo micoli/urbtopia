@@ -8,6 +8,7 @@ import { installBackOffice } from '../backOffice/installBackOffice';
 import { installChallenges } from '../challenges/installChallenges';
 import { installSolidarity } from '../solidarity/installSolidarity';
 import { installShowcase } from '../showcase/installShowcase';
+import { installShipments } from '../shipments/installShipments';
 import { installSocial } from '../social/installSocial';
 import { installCloudSync } from './cloud/installCloud';
 import { nameOpenCity } from './cities';
@@ -87,6 +88,7 @@ export function installPersistence(): () => void {
   const disposeShowcase = installShowcase();
   const disposeChallenges = installChallenges();
   const disposeSolidarity = installSolidarity();
+  const disposeShipments = installShipments();
 
   return () => {
     saveNowHandle.current = () => {};
@@ -96,6 +98,7 @@ export function installPersistence(): () => void {
     disposeShowcase();
     disposeChallenges();
     disposeSolidarity();
+    disposeShipments();
     unsubscribe();
     document.removeEventListener('visibilitychange', onVisibility);
     window.removeEventListener('pagehide', autosave.flush);

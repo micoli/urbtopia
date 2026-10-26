@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(32);
+select plan(34);
 
 -- Anonymous accounts: no email, no Handle
 insert into auth.users (id, instance_id, aud, role, email, is_anonymous, created_at, last_sign_in_at) values
@@ -83,6 +83,10 @@ insert into public.urb_shipments (id, user_id, from_city_id, to_city_id, lot, st
 set local role authenticated;
 select pg_temp.act_as('00000000000a');
 select throws_ok($$ select public.urb_create_shipment(pg_temp.ship(200), pg_temp.city(3), pg_temp.city(1), pg_temp.lot()) $$, 'urb_rate_limited', 'the 31st Shipment within a day is refused');
+
+-- A City with a waiting Shipment keeps its Cloud save
+select throws_ok($$ select public.urb_delete_city_saves(pg_temp.city(1)) $$, 'urb_city_has_shipments', 'the sending City of a waiting Shipment cannot be deleted');
+select throws_ok($$ select public.urb_delete_city_saves(pg_temp.city(3)) $$, 'urb_city_has_shipments', 'nor the destination City');
 
 -- Direct access and purge
 select throws_ok($$ select count(*) from public.urb_shipments $$, '42501', null, 'the table cannot be read directly');

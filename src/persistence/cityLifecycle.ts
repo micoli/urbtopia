@@ -18,6 +18,7 @@ export interface CityLifecycleDeps {
   lockSaves: () => void;
   reload: () => void;
   wait: (ms: number) => Promise<void>;
+  hasWaitingShipment: (cityId: string) => boolean;
   deleteCloudCity: (cityId: string) => Promise<boolean>;
 }
 
@@ -39,7 +40,8 @@ export function createCityLifecycle(deps: CityLifecycleDeps): CityLifecycle {
   const blockersOf = (cityId: string): DeletionBlocker[] => {
     const saved = new CityScopedSaveStore(deps.raw, () => cityId).get(SAVE_KEY);
     const parsed = saved === null ? null : parseEnvelope(saved);
-    return parsed?.ok ? cityDeletionBlockers(parsed.state) : [];
+    const blockers = parsed?.ok ? cityDeletionBlockers(parsed.state) : [];
+    return deps.hasWaitingShipment(cityId) && !blockers.includes('shipment') ? [...blockers, 'shipment'] : blockers;
   };
 
   return {

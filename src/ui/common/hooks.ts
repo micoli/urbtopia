@@ -7,7 +7,12 @@ import { showcaseStore, type ShowcaseStore } from '../../store/showcaseStore';
 import { socialStore, type SocialStore } from '../../store/socialStore';
 import { readOnlyStore } from '../../store/readOnlyStore';
 import { uiStore, type UiStore } from '../../store/uiStore';
+import { shipmentStore, type ShipmentStore } from '../../store/shipmentStore';
 import { solidarityStore, type SolidarityStore } from '../../store/solidarityStore';
+
+export function useShipments<T>(selector: (store: ShipmentStore) => T): T {
+  return useStore(shipmentStore, selector);
+}
 
 export function useSolidarity<T>(selector: (store: SolidarityStore) => T): T {
   return useStore(solidarityStore, selector);

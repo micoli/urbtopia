@@ -25,6 +25,7 @@ function setup(overrides: Partial<CityLifecycleDeps> = {}) {
     lockSaves,
     reload,
     wait: () => new Promise<void>(() => {}),
+    hasWaitingShipment: () => false,
     deleteCloudCity: vi.fn(async () => true),
     ...overrides,
   } satisfies CityLifecycleDeps;
@@ -96,6 +97,13 @@ describe('City lifecycle', () => {
     if (!started.ok) throw new Error(started.error.key);
     new CityScopedSaveStore(raw, () => 'c1').put(SAVE_KEY, serializeEnvelope(started.state, T0));
     expect(await lifecycle.remove('c1')).toEqual({ kind: 'blocked', blockers: ['challenge'] });
+    expect(readRegistry(raw)?.cities).toHaveLength(2);
+  });
+
+  it('refuses to delete a City that has a Shipment waiting, sent or received', async () => {
+    const { raw, lifecycle } = setup({ hasWaitingShipment: (cityId) => cityId === 'c1' });
+    lifecycle.create('cozy');
+    expect(await lifecycle.remove('c1')).toEqual({ kind: 'blocked', blockers: ['shipment'] });
     expect(readRegistry(raw)?.cities).toHaveLength(2);
   });
 });

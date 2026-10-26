@@ -10,6 +10,7 @@ import { toastStore } from '../../store/toastStore';
 import { useGame, useUi } from '../common/hooks';
 import { reloadApp } from '../../pwa/reloadApp';
 import { useInstallPrompt } from '../../pwa/useInstallPrompt';
+import { ShipmentsSection } from '../shipments/ShipmentsSection';
 import { CitiesSection } from './CitiesSection';
 import { CloudSaveSection } from './CloudSaveSection';
 import { PreferencesContent } from './PreferencesContent';
@@ -64,6 +65,7 @@ export function SettingsContent() {
         <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={onFileChosen} />
       </ButtonRow>
       <CitiesSection />
+      <ShipmentsSection />
       <DifficultySettings />
       <PreferencesContent />
       <hr/>

@@ -138,3 +138,17 @@
   gap: var(--space-8);
   width: 100%;
 }
+
+.shipment-list {
+  margin: 0 0 var(--space-12);
+  padding: 0;
+  list-style: none;
+}
+
+.shipment-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) 0;
+}
