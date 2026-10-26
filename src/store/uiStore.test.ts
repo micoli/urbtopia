@@ -231,3 +231,34 @@ describe('showBuilding', () => {
     sceneHandle.current = null;
   });
 });
+
+describe('analytics view', () => {
+  beforeEach(() => {
+    vi.stubGlobal('localStorage', { getItem: () => null, setItem: () => {} });
+    uiStore.getState().exitAnalytics();
+    uiStore.getState().cancelTool();
+    uiStore.setState({ flyout: null, statsOpen: false, settingsOpen: false });
+  });
+
+  it('enters a layer, closing panels and the construction tool', () => {
+    uiStore.getState().chooseTool(shop);
+    uiStore.getState().enterAnalytics('data.pollution');
+    expect(uiStore.getState()).toMatchObject({ analyticsLayer: 'data.pollution', lastAnalyticsLayer: 'data.pollution', tool: null, flyout: null });
+  });
+
+  it('leaves when another menu entry opens', () => {
+    uiStore.getState().enterAnalytics('movement.cars');
+    uiStore.getState().openFlyout('land');
+    expect(uiStore.getState().analyticsLayer).toBeNull();
+  });
+
+  it('leaves when a tool is chosen, and from exitAnalytics', () => {
+    uiStore.getState().enterAnalytics('movement.all');
+    uiStore.getState().chooseTool(shop);
+    expect(uiStore.getState().analyticsLayer).toBeNull();
+    uiStore.getState().cancelTool();
+    uiStore.getState().enterAnalytics('data.odor');
+    uiStore.getState().exitAnalytics();
+    expect(uiStore.getState().analyticsLayer).toBeNull();
+  });
+});

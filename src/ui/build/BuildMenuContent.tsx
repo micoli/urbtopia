@@ -13,6 +13,7 @@ import { useNow } from '../common/useNow';
 import { guideOf } from '../tutorial/tutorialGuide';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { FieldTools } from './FieldTools';
+import { LandMenu } from './LandMenu';
 import { RoadMenu } from './RoadMenu';
 import { BUILDING_SECTIONS, readBuildSection, writeBuildSection, type BuildSection } from './buildMenuSections';
 import { codexImageKey, isHomeCodexId, solarCodexIdOf, type CodexId } from '../../codex/catalog';
@@ -149,5 +150,6 @@ export function BuildMenuContent() {
     );
   }
 
+  if (flyout === 'land') return <LandMenu />;
   return <RoadMenu />;
 }

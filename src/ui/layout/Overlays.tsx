@@ -29,9 +29,11 @@ import { BuildingSearchPanel } from '../buildings/BuildingSearchPanel';
 import { PoliticsWindow } from '../politics/PoliticsWindow';
 import { useUi } from '../common/hooks';
 import { StreetViewDropHint } from './StreetViewDropHint';
+import { AnalyticsHud } from '../analytics/AnalyticsHud';
 
 export function Overlays() {
   const streetView = useUi((store) => store.streetView);
+  const analytics = useUi((store) => store.analyticsLayer !== null);
   return (
     <>
       <CityManagement />
@@ -44,7 +46,7 @@ export function Overlays() {
       <VenueDialog />
       <MarketModal />
       <ChallengeSuccessOverlay />
-      {streetView ? null : <FloatingBadges />}
+      {streetView || analytics ? null : <FloatingBadges />}
       <ConfirmPad />
       <ReadOnlyBanner />
       <VisitBanner />
@@ -64,6 +66,7 @@ export function Overlays() {
       <TutorialBanner />
       {streetView ? null : <StaticButtons />}
       <StreetViewDropHint />
+      <AnalyticsHud />
     </>
   );
 }

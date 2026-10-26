@@ -75,7 +75,8 @@ export function SceneCanvas() {
     const showServiceCoverage = () => scene.setServiceCoverage(uiStore.getState().serviceCoverageOpen ? prefsStore.getState().serviceCoverageType : null);
     showServiceCoverage();
     scene.setGhost(uiStore.getState().evaluation?.ghost ?? null);
-    scene.setTrafficEnabled(prefsStore.getState().traffic);
+    const showTraffic = () => scene.setTrafficEnabled(prefsStore.getState().traffic && uiStore.getState().analyticsLayer === null);
+    showTraffic();
     scene.setBrushMode(uiStore.getState().tool?.kind === 'brush');
     const showSelection = () => {
       const state = gameStore.getState().state;
@@ -91,6 +92,7 @@ export function SceneCanvas() {
     });
     const unsubscribeUi = uiStore.subscribe((store, previous) => {
       if (store.serviceCoverageOpen !== previous.serviceCoverageOpen) showServiceCoverage();
+      if (store.analyticsLayer !== previous.analyticsLayer) showTraffic();
       if (store.tool?.kind !== previous.tool?.kind) scene.setBrushMode(store.tool?.kind === 'brush');
       if (store.evaluation !== previous.evaluation) scene.setGhost(store.evaluation?.ghost ?? null);
       if (store.selectedBuildingId !== previous.selectedBuildingId) showSelection();
@@ -98,7 +100,7 @@ export function SceneCanvas() {
     const unsubscribeHarvest = harvestEffects.subscribe((effects) => scene.setAfterHarvest(effects.tiles));
     const unsubscribePrefs = prefsStore.subscribe((prefs, previous) => {
       if (prefs.serviceCoverageType !== previous.serviceCoverageType) showServiceCoverage();
-      scene.setTrafficEnabled(prefs.traffic);
+      showTraffic();
       if (prefs.showReach !== previous.showReach) showSelection();
     });
     return () => {

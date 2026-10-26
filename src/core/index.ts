@@ -199,3 +199,5 @@ export { DIAGNOSIS, diagnosisOf } from './diagnosis/diagnosis';
 export type { Cause, Diagnosis } from './diagnosis/diagnosis';
 export { CONGESTION_DIAGNOSIS, diagnoseCongestion } from './traffic/diagnosis';
 export { WASTE_DIAGNOSIS, diagnoseWaste } from './waste/diagnosis';
+export { ANALYTICS_LAYERS, DATA_LAYERS, MOVEMENT_LAYERS, isAnalyticsLayerId } from './analytics/layers';
+export type { AnalyticsLayerId, DataLayer, MovementLayer } from './analytics/layers';

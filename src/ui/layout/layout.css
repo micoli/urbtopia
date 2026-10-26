@@ -343,3 +343,19 @@
   pointer-events: none;
   z-index: 100;
 }
+
+.analytics-hud {
+  position: fixed;
+  top: var(--space-12);
+  left: var(--space-12);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.analytics-hud-title {
+  padding: var(--space-4) var(--space-12);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}

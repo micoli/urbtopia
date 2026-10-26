@@ -31,8 +31,7 @@ export function useNavActions(): NavAction[] {
   const codexOpen = useUi(store => store.codexOpen);
   const openCodex = useUi(store => store.openCodex);
   const openFlyout = useUi((store) => store.openFlyout);
-  const chooseTool = useUi((store) => store.chooseTool);
-  const cancelTool = useUi((store) => store.cancelTool);
+  const analyticsLayer = useUi((store) => store.analyticsLayer);
   const toggleMarket = useUi((store) => store.toggleMarket);
   const toggleSettings = useUi((store) => store.toggleSettings);
   const marketUnlocked = useGame((store) => store.state.marketUnlocked);
@@ -47,7 +46,7 @@ export function useNavActions(): NavAction[] {
   return [
     { id: 'build', icon: '🏗', image: 'bulldozer.png', label: t('dock.build'), pressed: flyout === 'build', disabled: false, guided: guidedFlyout === 'build', onClick: () => openFlyout('build') },
     { id: 'roads', icon: '🛣', image: 'infrastructure-networks.png', label: t('dock.networks'), pressed: flyout === 'roads', disabled: false, guided: guidedFlyout === 'roads', onClick: () => openFlyout('roads') },
-    { id: 'parcels', icon: '🗺', image: 'map.png', label: t('dock.parcels'), pressed: tool?.kind === 'parcel', disabled: false, guided: false, onClick: () => (tool?.kind === 'parcel' ? cancelTool() : chooseTool({ kind: 'parcel' })) },
+    { id: 'parcels', icon: '🗺', image: 'map.png', label: t('dock.parcels'), pressed: flyout === 'land' || tool?.kind === 'parcel' || analyticsLayer !== null, disabled: false, guided: false, onClick: () => openFlyout('land') },
     { id: 'market', icon: '💱', image: 'market.png', label: t('dock.market'), pressed: marketOpen, disabled: !marketUnlocked, guided: false, badge: newChallenges, badgeLabel: t('challenge.badge'), onClick: toggleMarket },
     { id: 'stats', icon: '📊', image: 'town-management.png', label: t('eco.title'), pressed: statsOpen, disabled: false, guided: false, badge: sanctionedCount, badgeLabel: t('sanction.alert'), onClick: toggleStats },
     ...(cloudEnabled ? [{ id: 'social', icon: '🌐', image: 'social-network.png', label: t('social.title'), pressed: socialOpen, disabled: false, guided: false, badge: pendingRequests, onClick: toggleSocial }] : []),

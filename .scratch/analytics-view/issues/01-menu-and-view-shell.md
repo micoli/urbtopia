@@ -1,6 +1,6 @@
 # Menu And View Shell
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 
 ## What to build
