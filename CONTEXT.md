@@ -440,6 +440,24 @@ _Avoid_: Avenue, road type
 The state of a Road section whose Commuters exceed its Lane capacity. The bottleneck of a Commute is its lowest-capacity section. A connected set of Roads that serves Homes but no workplace, or workplaces but no Home, is a disconnected section, marked with a red cross; the Commute of its Homes is at maximum Congestion.
 _Avoid_: Jam, bouchon
 
+**Analytics view**:
+A read-only view of the city reached from the Land menu, in which the map is drawn through one Layer at a time. It never changes the city, is never saved and adds no simulation: every Layer projects figures the city already computes, except Land value.
+_Avoid_: Heatmap, overlay, dashboard
+
+**Layer**:
+One reading of the city shown in the Analytics view. A Movement layer or a Data layer.
+
+**Movement layer**:
+A Layer showing how much Commuters or Pedestrians load the Roads and Sidewalks, as a share of capacity or as a volume: Pedestrians, Cars or All. It shows the city's aggregate load, never individual Vehicles or Pedestrians.
+_Avoid_: Flow layer (Flow factor is a hydro term), traffic animation
+
+**Data layer**:
+A Layer showing a measure of the city over the map: Service coverage of one Service category, Well-being, Pollution, Congestion, Odor radius or Land value. Pollution, Odor, Congestion and Land value are read at every tile; Well-being and Service coverage are read per Home.
+
+**Land value**:
+A read-only indicator of how desirable a tile is: higher near Green spaces, Public facilities, Leisure buildings and Road or public transport access, lower near Pollution, Odor and Congestion. It has no effect on Parcel prices, Tax or Well-being.
+_Avoid_: Price, rent
+
 **Diagnosis**:
 The short ranked list of Causes the game gives for a state of the city, such as why the roads jam or why Homes lack Waste coverage. It is derived from the figures the simulation already computes, in plain rules, never from a free-text generator. Shown at most three Causes at a time, heaviest first, and nothing when the city is fine.
 _Avoid_: Advice, analysis, report
