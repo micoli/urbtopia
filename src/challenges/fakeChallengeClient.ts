@@ -1,3 +1,4 @@
+import { FIRST_CITY_ID } from '../persistence/cities';
 import { ChallengeError, type AcceptedChallenge, type Challenge, type ChallengeClient, type ChallengeDeclaration, type ChallengeSnapshot, type Medal } from './types';
 
 const DAY_MS = 86_400_000;
@@ -14,14 +15,15 @@ export class FakeChallengeWorld {
 
   constructor(public now: () => number = Date.now) {}
 
-  client(userId: string | null, options: { email?: boolean; handle?: boolean } = {}): ChallengeClient {
-    return new FakeChallengeClient(this, userId, options.email ?? true, options.handle ?? true);
+  client(userId: string | null, options: { email?: boolean; handle?: boolean; cityId?: string } = {}): ChallengeClient {
+    return new FakeChallengeClient(this, userId, options.email ?? true, options.handle ?? true, options.cityId ?? FIRST_CITY_ID);
   }
 
-  acceptancesOf(userId: string): Acceptance[] {
-    const found = this.acceptances.get(userId) ?? [];
+  acceptancesOf(userId: string, cityId: string = FIRST_CITY_ID): Acceptance[] {
+    const key = `${userId}|${cityId}`;
+    const found = this.acceptances.get(key) ?? [];
     for (const acceptance of found) if (acceptance.state === 'accepted' && acceptance.deadline <= this.now()) acceptance.state = 'expired';
-    this.acceptances.set(userId, found);
+    this.acceptances.set(key, found);
     return found;
   }
 
@@ -40,16 +42,17 @@ class FakeChallengeClient implements ChallengeClient {
     private userId: string | null,
     private email: boolean,
     private handle: boolean,
+    private cityId: string,
   ) {}
 
   async list(): Promise<ChallengeSnapshot> {
     const user = this.member();
     const now = this.world.now();
-    const active = this.world.acceptancesOf(user).find(({ state }) => state === 'accepted');
+    const active = this.world.acceptancesOf(user, this.cityId).find(({ state }) => state === 'accepted');
     return {
       serverNow: now,
-      challenges: this.world.challenges.filter(({ id, startsAt, endsAt }) => ((startsAt <= now && endsAt > now) || active?.challengeId === id) && !this.world.acceptancesOf(user).some((acceptance) => acceptance.challengeId === id && acceptance.state === 'completed')),
-      abandoned: this.world.acceptancesOf(user).filter(({ state }) => state === 'abandoned').map(({ challengeId }) => challengeId),
+      challenges: this.world.challenges.filter(({ id, startsAt, endsAt }) => ((startsAt <= now && endsAt > now) || active?.challengeId === id) && !this.world.acceptancesOf(user, this.cityId).some((acceptance) => acceptance.challengeId === id && acceptance.state === 'completed')),
+      abandoned: this.world.acceptancesOf(user, this.cityId).filter(({ state }) => state === 'abandoned').map(({ challengeId }) => challengeId),
       accepted: active ? { challengeId: active.challengeId, acceptedAt: active.acceptedAt, deadline: active.deadline } : null,
       medals: this.world.medalsOf(user),
     };
@@ -58,7 +61,7 @@ class FakeChallengeClient implements ChallengeClient {
   async accept(challengeId: string): Promise<AcceptedChallenge> {
     const user = this.member();
     const now = this.world.now();
-    const acceptances = this.world.acceptancesOf(user);
+    const acceptances = this.world.acceptancesOf(user, this.cityId);
     const existing = acceptances.find((acceptance) => acceptance.challengeId === challengeId);
     if (existing) {
       if (existing.state !== 'accepted') throw new ChallengeError('challenge-unavailable');
@@ -74,7 +77,7 @@ class FakeChallengeClient implements ChallengeClient {
 
   async declare(challengeId: string): Promise<ChallengeDeclaration> {
     const user = this.member();
-    const acceptance = this.world.acceptancesOf(user).find((candidate) => candidate.challengeId === challengeId);
+    const acceptance = this.world.acceptancesOf(user, this.cityId).find((candidate) => candidate.challengeId === challengeId);
     const challenge = this.world.challenges.find(({ id }) => id === challengeId);
     if (!acceptance || acceptance.state === 'expired' || !challenge) throw new ChallengeError('challenge-unavailable');
     const alreadyClaimed = acceptance.state === 'completed';
@@ -86,7 +89,7 @@ class FakeChallengeClient implements ChallengeClient {
   }
 
   async abandon(challengeId: string): Promise<void> {
-    const acceptance = this.world.acceptancesOf(this.member()).find((candidate) => candidate.challengeId === challengeId);
+    const acceptance = this.world.acceptancesOf(this.member(), this.cityId).find((candidate) => candidate.challengeId === challengeId);
     if (acceptance?.state !== 'accepted') throw new ChallengeError('challenge-unavailable');
     acceptance.state = 'abandoned';
   }

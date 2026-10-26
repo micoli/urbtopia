@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { challengeReward, dispatch, newGame, type Command, type GameState } from '../core';
+import { FIRST_CITY_ID } from '../persistence/cities';
 import { challengeStore } from '../store/challengeStore';
 import { createChallengeActions, type ChallengeGame } from './challengeActions';
 import { FakeChallengeWorld } from './fakeChallengeClient';
@@ -28,7 +29,7 @@ function event(id: string, minCitizens = 0): Challenge {
 
 describe('loadChallengeClient', () => {
   it('returns null without configuration, so supabase-js is never imported', async () => {
-    expect(await loadChallengeClient({})).toBeNull();
+    expect(await loadChallengeClient(FIRST_CITY_ID, {})).toBeNull();
   });
 });
 
@@ -156,6 +157,53 @@ describe('FakeChallengeWorld', () => {
     expect((await world.client('p1').list()).challenges).toEqual([]);
     await expect(client.accept('a')).rejects.toMatchObject({ kind: 'challenge-unavailable' });
     expect((await world.client('p2').list()).challenges).toHaveLength(1);
+  });
+});
+
+describe('Challenges per City', () => {
+  const SECOND = '00000000-0000-0000-0000-0000000000c2';
+
+  it('lets two Cities of one account accept the same Challenge, each with its own deadline and claim', async () => {
+    const world = new FakeChallengeWorld(() => T0);
+    world.challenges = [daily('a', 'easy', 0)];
+    const first = world.client('p1');
+    const second = world.client('p1', { cityId: SECOND });
+    await first.accept('a');
+    await expect(second.accept('a')).resolves.toMatchObject({ challengeId: 'a' });
+    expect((await first.declare('a')).alreadyClaimed).toBe(false);
+    expect((await second.declare('a')).alreadyClaimed).toBe(false);
+  });
+
+  it('limits each City to one accepted Challenge', async () => {
+    const world = new FakeChallengeWorld(() => T0);
+    world.challenges = [daily('a', 'easy', 0), daily('b', 'medium', 0)];
+    const first = world.client('p1');
+    const second = world.client('p1', { cityId: SECOND });
+    await first.accept('a');
+    await expect(first.accept('b')).rejects.toMatchObject({ kind: 'challenge-busy' });
+    await expect(second.accept('b')).resolves.toMatchObject({ challengeId: 'b' });
+  });
+
+  it('abandons for one City only, and offers a completed Challenge to the other', async () => {
+    const world = new FakeChallengeWorld(() => T0);
+    world.challenges = [daily('a', 'easy', 0)];
+    const first = world.client('p1');
+    const second = world.client('p1', { cityId: SECOND });
+    await first.accept('a');
+    await first.abandon('a');
+    await expect(first.accept('a')).rejects.toMatchObject({ kind: 'challenge-unavailable' });
+    expect((await first.list()).abandoned).toEqual(['a']);
+    expect((await second.list()).abandoned).toEqual([]);
+    await expect(second.accept('a')).resolves.toMatchObject({ challengeId: 'a' });
+  });
+
+  it('keeps the Medals of the account whichever City earned them', async () => {
+    const world = new FakeChallengeWorld(() => T0);
+    world.challenges = [event('ev')];
+    const second = world.client('p1', { cityId: SECOND });
+    await second.accept('ev');
+    await second.declare('ev');
+    expect((await world.client('p1').list()).medals).toHaveLength(1);
   });
 });
 

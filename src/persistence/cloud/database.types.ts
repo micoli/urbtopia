@@ -7,6 +7,7 @@ export type Database = {
         Row: {
           accepted_at: string;
           challenge_id: string;
+          city_id: string;
           completed_at: string | null;
           deadline: string;
           state: string;
@@ -16,6 +17,7 @@ export type Database = {
         Insert: {
           accepted_at?: string;
           challenge_id: string;
+          city_id: string;
           completed_at?: string | null;
           deadline: string;
           state?: string;
@@ -24,6 +26,7 @@ export type Database = {
         Update: {
           accepted_at?: string;
           challenge_id?: string;
+          city_id?: string;
           completed_at?: string | null;
           deadline?: string;
           state?: string;
@@ -594,8 +597,8 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      urb_abandon_challenge: { Args: { p_challenge: string }; Returns: undefined };
-      urb_accept_challenge: { Args: { p_challenge: string }; Returns: Json };
+      urb_abandon_challenge: { Args: { p_challenge: string; p_city: string }; Returns: undefined };
+      urb_accept_challenge: { Args: { p_challenge: string; p_city: string }; Returns: Json };
       urb_accept_friend_request: { Args: { p_user: string }; Returns: undefined };
       urb_accept_trade_offer: { Args: { p_id: string }; Returns: undefined };
       urb_add_group_members: { Args: { p_group: string; p_members: string[] }; Returns: undefined };
@@ -636,7 +639,7 @@ export type Database = {
         Args: { p_id: string; p_lot: Json; p_price: number; p_to: string };
         Returns: string;
       };
-      urb_declare_challenge: { Args: { p_challenge: string }; Returns: Json };
+      urb_declare_challenge: { Args: { p_challenge: string; p_city: string }; Returns: Json };
       urb_decline_trade_offer: { Args: { p_id: string }; Returns: undefined };
       urb_delete_city_saves: { Args: { p_city_id: string }; Returns: undefined };
       urb_delete_conversation: { Args: { p_a: string; p_b: string }; Returns: undefined };
@@ -657,7 +660,7 @@ export type Database = {
       urb_hall_of_fame: { Args: Record<PropertyKey, never>; Returns: Json };
       urb_has_blocked: { Args: { p_blocked: string; p_blocker: string }; Returns: boolean };
       urb_leave_group: { Args: { p_group: string }; Returns: undefined };
-      urb_list_challenges: { Args: Record<PropertyKey, never>; Returns: Json };
+      urb_list_challenges: { Args: { p_city: string }; Returns: Json };
       urb_list_cities: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -716,7 +719,10 @@ export type Database = {
       urb_set_findable: { Args: { p_findable: boolean }; Returns: undefined };
       urb_set_hall_of_fame_opt_out: { Args: { p_opted_out: boolean }; Returns: undefined };
       urb_set_handle: { Args: { p_handle: string }; Returns: undefined };
-      urb_settle_acceptance: { Args: { p_challenge: string; p_user: string }; Returns: undefined };
+      urb_settle_acceptance: {
+        Args: { p_challenge: string; p_city: string; p_user: string };
+        Returns: undefined;
+      };
       urb_settle_offer: { Args: { p_id: string }; Returns: undefined };
       urb_showcase_allowed_ranking: {
         Args: { p_declared: number; p_previous: number; p_since: string };

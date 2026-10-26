@@ -27,10 +27,10 @@ select is(jsonb_typeof(public.urb_record_donations() -> 'medal'), 'null', 'no Me
 select is((public.urb_record_donations('[{"id":"10000000-0000-4000-8000-000000000001","value":1000}]') ->> 'value')::bigint, 1000::bigint, 'a donation adds value');
 select is((public.urb_record_donations('[{"id":"10000000-0000-4000-8000-000000000001","value":1000}]') ->> 'value')::bigint, 1000::bigint, 'a retried donation counts once');
 select is(public.urb_record_donations() -> 'medal' ->> 'nameFr', 'Ville solidaire — bronze', 'Bronze is earned at 1000');
-select ok(exists(select 1 from jsonb_array_elements(public.urb_list_challenges() -> 'medals') m where m ->> 'medalCode' = 'solidarity' and m -> 'challengeId' = 'null'::jsonb), 'the generic Medal list includes the Donation Medal');
+select ok(exists(select 1 from jsonb_array_elements(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'medals') m where m ->> 'medalCode' = 'solidarity' and m -> 'challengeId' = 'null'::jsonb), 'the generic Medal list includes the Donation Medal');
 select is((public.urb_record_donations('[{"id":"10000000-0000-4000-8000-000000000002","value":9000}]') ->> 'value')::bigint, 10000::bigint, 'donations from another city add to account progress');
 select is(public.urb_record_donations() -> 'medal' ->> 'nameEn', 'Solidary city — silver', 'the same Medal evolves to Silver');
-select is((select count(*)::int from jsonb_array_elements(public.urb_list_challenges() -> 'medals') m where m ->> 'medalCode' = 'solidarity'), 1, 'the Donation Medal appears only once');
+select is((select count(*)::int from jsonb_array_elements(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'medals') m where m ->> 'medalCode' = 'solidarity'), 1, 'the Donation Medal appears only once');
 select is(public.urb_record_donations('[{"id":"10000000-0000-4000-8000-000000000003","value":90000}]') -> 'medal' ->> 'nameFr', 'Ville solidaire — or', 'Gold is earned at 100000');
 
 select pg_temp.act_as('00000000000b');

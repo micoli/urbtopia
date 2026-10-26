@@ -1,6 +1,6 @@
 # Challenges per City
 
-Status: ready-for-agent
+Status: done - implemented
 Blocked by: 01
 Spec: ../spec.md
 
@@ -10,8 +10,8 @@ Accepted Challenges bound to the City that accepted them.
 
 ## Acceptance criteria
 
-- [ ] Each City has at most one accepted Challenge; several Cities of one account may accept the same Challenge.
-- [ ] The Challenge stock comes from that City's Storehouse.
-- [ ] Abandoning closes the Challenge for that City only; that City cannot accept it again.
-- [ ] Time skip is refused only in a City with an unfinished accepted Challenge.
-- [ ] Server rows and RPC carry the City id; pgTAP covers acceptance per City.
+- [x] Each City has at most one accepted Challenge; several Cities of one account may accept the same Challenge.
+- [x] The Challenge stock comes from that City's Storehouse.
+- [x] Abandoning closes the Challenge for that City only; that City cannot accept it again.
+- [x] Time skip is refused only in a City with an unfinished accepted Challenge.
+- [x] Server rows and RPC carry the City id; pgTAP covers acceptance per City.

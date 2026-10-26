@@ -29,28 +29,31 @@ export function toChallengeError(failure: PostgrestFailure): ChallengeError {
   return new ChallengeError('unknown');
 }
 
-export async function createSupabaseChallengeClient(config: CloudConfig): Promise<ChallengeClient> {
+export async function createSupabaseChallengeClient(config: CloudConfig, cityId: string): Promise<ChallengeClient> {
   const { client } = await loadSharedSupabase(config);
-  return new SupabaseChallengeClient(client);
+  return new SupabaseChallengeClient(client, cityId);
 }
 
 class SupabaseChallengeClient implements ChallengeClient {
-  constructor(private client: Client) {}
+  constructor(
+    private client: Client,
+    private cityId: string,
+  ) {}
 
   async list(): Promise<ChallengeSnapshot> {
-    return parseChallengeSnapshot(await this.call(() => this.client.rpc('urb_list_challenges')));
+    return parseChallengeSnapshot(await this.call(() => this.client.rpc('urb_list_challenges', { p_city: this.cityId })));
   }
 
   async accept(challengeId: string): Promise<AcceptedChallenge> {
-    return parseAcceptance(await this.call(() => this.client.rpc('urb_accept_challenge', { p_challenge: challengeId })));
+    return parseAcceptance(await this.call(() => this.client.rpc('urb_accept_challenge', { p_challenge: challengeId, p_city: this.cityId })));
   }
 
   async declare(challengeId: string): Promise<ChallengeDeclaration> {
-    return parseDeclaration(await this.call(() => this.client.rpc('urb_declare_challenge', { p_challenge: challengeId })));
+    return parseDeclaration(await this.call(() => this.client.rpc('urb_declare_challenge', { p_challenge: challengeId, p_city: this.cityId })));
   }
 
   async abandon(challengeId: string): Promise<void> {
-    await this.call(() => this.client.rpc('urb_abandon_challenge', { p_challenge: challengeId }));
+    await this.call(() => this.client.rpc('urb_abandon_challenge', { p_challenge: challengeId, p_city: this.cityId }));
   }
 
   private async call<T>(request: () => PromiseLike<{ data: T; error: PostgrestFailure | null }>): Promise<T> {
