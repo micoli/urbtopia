@@ -71,23 +71,27 @@ export interface SaveRevision {
   envelope: unknown
 }
 
+// The name other players read, when the City has a Showcase: the player's own, or the default after an Admin reset.
+export type OnlineCityGroup = CityGroup<SaveRevision> & { onlineName: string | null }
+
 export interface AccountDetail {
   friendCount: number
   medals: { code: string; earnedAt: string }[]
-  cities: CityGroup<SaveRevision>[]
+  cities: OnlineCityGroup[]
 }
 
 export async function loadAccountDetail(client: AdminClient, userId: string): Promise<AccountDetail> {
-  const [friends, medals, saves] = await Promise.all([
+  const [friends, medals, saves, showcases] = await Promise.all([
     client.from('urb_friendships').select('user_low', { count: 'exact', head: true }).eq('state', 'accepted').or(`user_low.eq.${userId},user_high.eq.${userId}`),
     client.from('urb_medals').select('medal_code, earned_at').eq('user_id', userId).order('earned_at', { ascending: false }),
     client.from('urb_saves').select('city_id, revision, format_version, envelope, client_saved_at, created_at').eq('user_id', userId).order('revision', { ascending: false }),
+    client.from('urb_showcase').select('city_id, city_name').eq('user_id', userId),
   ])
-  for (const { error } of [friends, medals, saves]) if (error) throw new Error(error.message)
+  for (const { error } of [friends, medals, saves, showcases]) if (error) throw new Error(error.message)
   return {
     friendCount: friends.count ?? 0,
     medals: (medals.data ?? []).map(medal => ({ code: medal.medal_code, earnedAt: medal.earned_at })),
-    cities: groupByCity((saves.data ?? []).map(save => ({
+    cities: withOnlineNames(groupByCity((saves.data ?? []).map(save => ({
       cityId: save.city_id,
       revision: save.revision,
       formatVersion: save.format_version,
@@ -96,8 +100,20 @@ export async function loadAccountDetail(client: AdminClient, userId: string): Pr
       size: JSON.stringify(save.envelope).length,
       stats: statsOfEnvelope(save.envelope),
       envelope: save.envelope,
-    }))),
+    }))), new Map((showcases.data ?? []).map(showcase => [showcase.city_id, showcase.city_name]))),
   }
+}
+
+function withOnlineNames(groups: CityGroup<SaveRevision>[], names: ReadonlyMap<string, string>): OnlineCityGroup[] {
+  return groups.map(group => ({ ...group, onlineName: names.get(group.cityId) ?? null }))
+}
+
+// The name goes back to its Seed-based default, and the name it replaces cannot be published again.
+export async function resetCityName(client: AdminClient, userId: string, cityId: string, defaultName: string): Promise<void> {
+  const { data, error: readError } = await client.from('urb_showcase').select('city_name').eq('user_id', userId).eq('city_id', cityId).single()
+  if (readError) throw new Error(readError.message)
+  const { error } = await client.from('urb_showcase').update({ city_name: defaultName, blocked_city_name: data.city_name }).eq('user_id', userId).eq('city_id', cityId)
+  if (error) throw new Error(error.message)
 }
 
 export async function loadLatestSaveStats(client: AdminClient, userIds: string[]): Promise<Map<string, SaveStats>> {

@@ -6,6 +6,7 @@ export interface ShowcasePublisherDeps {
   client: ShowcaseClient;
   isMember: () => boolean;
   readLocal: () => string | null;
+  cityName: () => string;
   onStatus: (status: ShowcaseStatus | null) => void;
   parseOptions?: ParseOptions;
 }
@@ -41,7 +42,7 @@ export class ShowcasePublisher {
     if (!content) return;
     this.busy = true;
     try {
-      await this.deps.client.publish(content.envelope, content.formatVersion, content.citizens);
+      await this.deps.client.publish(content.envelope, content.formatVersion, content.citizens, this.deps.cityName());
     } catch (error) {
       if (error instanceof ShowcaseError && error.kind === 'notice-required') this.setStatus({ ...status, noticeSeen: false });
     } finally {

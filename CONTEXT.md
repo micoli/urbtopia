@@ -869,6 +869,7 @@ _Avoid_: Docs, documentation, manual, wiki
 - What a Trade offer pays or returns (the payment, a refused or expired Lot or price) goes back to the City it left, claimed when that City is next opened.
 - Deleting a City is refused while it has an open Trade offer, a waiting Shipment, sent or received, or an accepted Challenge.
 - Exporting saves the open City to a file; importing a file always creates a new City, refused when the Player account already has three.
+- A City's first Showcase publication enters the Hall of fame at 500 Citizens at most and climbs under the same growth cap as any later one, so importing an edited file cannot enter the ranking at an arbitrary value.
 - A Shipment carries no Urbs, Seed packs or buildings. A sending City has at most 5 Shipments waiting, and a Player account sends at most 30 per day.
 - A Trade offer can only be accepted if the recipient's Storehouse compartment has room for the lot and their Urbs cover the price.
 - Blocking a Friend closes their conversation and returns any open Trade offer between them.

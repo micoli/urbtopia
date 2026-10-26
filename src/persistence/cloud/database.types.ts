@@ -314,6 +314,30 @@ export type Database = {
           },
         ];
       };
+      urb_hall_of_fame_opt_outs: {
+        Row: {
+          city_id: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          city_id: string;
+          user_id: string;
+        };
+        Update: {
+          city_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_hall_of_fame_opt_outs_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_profiles";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
       urb_medals: {
         Row: {
           challenge_id: string | null;
@@ -403,7 +427,6 @@ export type Database = {
           findable: boolean;
           groups_revision: number;
           hall_of_fame_notice_seen: boolean;
-          hall_of_fame_opted_out: boolean;
           handle: string;
           handle_changed_at: string;
           social_revision: number;
@@ -416,7 +439,6 @@ export type Database = {
           findable?: boolean;
           groups_revision?: number;
           hall_of_fame_notice_seen?: boolean;
-          hall_of_fame_opted_out?: boolean;
           handle: string;
           handle_changed_at?: string;
           social_revision?: number;
@@ -428,7 +450,6 @@ export type Database = {
           findable?: boolean;
           groups_revision?: number;
           hall_of_fame_notice_seen?: boolean;
-          hall_of_fame_opted_out?: boolean;
           handle?: string;
           handle_changed_at?: string;
           social_revision?: number;
@@ -522,7 +543,10 @@ export type Database = {
       };
       urb_showcase: {
         Row: {
+          blocked_city_name: string | null;
           citizens: number;
+          city_id: string;
+          city_name: string;
           created_at: string;
           envelope: NonNullable<Json>;
           format_version: number;
@@ -533,7 +557,10 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          blocked_city_name?: string | null;
           citizens: number;
+          city_id: string;
+          city_name: string;
           created_at?: string;
           envelope: NonNullable<Json>;
           format_version: number;
@@ -543,7 +570,10 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          blocked_city_name?: string | null;
           citizens?: number;
+          city_id?: string;
+          city_name?: string;
           created_at?: string;
           envelope?: NonNullable<Json>;
           format_version?: number;
@@ -556,7 +586,7 @@ export type Database = {
           {
             foreignKeyName: "urb_showcase_user_id_fkey";
             columns: ["user_id"];
-            isOneToOne: true;
+            isOneToOne: false;
             referencedRelation: "urb_profiles";
             referencedColumns: ["user_id"];
           },
@@ -687,6 +717,7 @@ export type Database = {
       };
       urb_declare_challenge: { Args: { p_challenge: string; p_city: string }; Returns: Json };
       urb_decline_trade_offer: { Args: { p_id: string }; Returns: undefined };
+      urb_default_city_name: { Args: { p_seed: string }; Returns: string };
       urb_delete_city_saves: { Args: { p_city_id: string }; Returns: undefined };
       urb_delete_conversation: { Args: { p_a: string; p_b: string }; Returns: undefined };
       urb_delete_group: { Args: { p_group: string }; Returns: undefined };
@@ -695,7 +726,7 @@ export type Database = {
       urb_expire_offers: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_friend_count: { Args: { p_user: string }; Returns: number };
       urb_generate_daily_challenges: { Args: Record<PropertyKey, never>; Returns: undefined };
-      urb_get_showcase: { Args: { p_user: string }; Returns: Json };
+      urb_get_showcase: { Args: { p_city: string; p_user: string }; Returns: Json };
       urb_group_add: {
         Args: { p_creator: string; p_group: string; p_members: string[] };
         Returns: undefined;
@@ -737,7 +768,13 @@ export type Database = {
       urb_open_request: { Args: { p_from: string; p_to: string }; Returns: undefined };
       urb_outgoing_count: { Args: { p_user: string }; Returns: number };
       urb_publish_showcase: {
-        Args: { p_citizens: number; p_envelope: Json; p_format_version: number };
+        Args: {
+          p_citizens: number;
+          p_city: string;
+          p_city_name: string;
+          p_envelope: Json;
+          p_format_version: number;
+        };
         Returns: undefined;
       };
       urb_purge_inactive_anonymous_users: { Args: Record<PropertyKey, never>; Returns: undefined };
@@ -765,7 +802,10 @@ export type Database = {
       urb_send_message: { Args: { p_body: string; p_to: string }; Returns: number };
       urb_set_avatar: { Args: { p_avatar: string }; Returns: undefined };
       urb_set_findable: { Args: { p_findable: boolean }; Returns: undefined };
-      urb_set_hall_of_fame_opt_out: { Args: { p_opted_out: boolean }; Returns: undefined };
+      urb_set_hall_of_fame_opt_out: {
+        Args: { p_city: string; p_opted_out: boolean };
+        Returns: undefined;
+      };
       urb_set_handle: { Args: { p_handle: string }; Returns: undefined };
       urb_settle_acceptance: {
         Args: { p_challenge: string; p_city: string; p_user: string };
@@ -777,9 +817,13 @@ export type Database = {
         Args: { p_declared: number; p_previous: number; p_since: string };
         Returns: number;
       };
-      urb_showcase_status: { Args: Record<PropertyKey, never>; Returns: Json };
+      urb_showcase_status: { Args: { p_city: string }; Returns: Json };
       urb_social_member: { Args: Record<PropertyKey, never>; Returns: string };
       urb_unblock_user: { Args: { p_user: string }; Returns: undefined };
+      urb_visible_city_name: {
+        Args: { p_blocked: string; p_name: string; p_seed: string };
+        Returns: string;
+      };
     };
     Enums: {
       [_ in never]: never;

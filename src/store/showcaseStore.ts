@@ -7,14 +7,14 @@ export type VisitFailure = 'not-found' | 'newer-version' | 'invalid' | 'offline'
 export type VisitState =
   | { kind: 'idle' }
   | { kind: 'loading'; userId: string }
-  | { kind: 'visiting'; userId: string; handle: string; avatar: string | null }
+  | { kind: 'visiting'; userId: string; handle: string; cityName: string; avatar: string | null }
   | { kind: 'failed'; reason: VisitFailure };
 
 export interface ShowcaseActions {
   refreshHallOfFame: () => Promise<void>;
   acknowledgeNotice: () => Promise<void>;
   setOptOut: (optedOut: boolean) => Promise<void>;
-  visit: (userId: string) => Promise<void>;
+  visit: (userId: string, cityId: string) => Promise<void>;
   leaveVisit: () => void;
 }
 

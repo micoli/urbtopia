@@ -18,7 +18,8 @@ interface Props {
 }
 
 export function AccountPanel({ client, account, gameUrl, onChanged }: Props) {
-  const detail = useAccountDetail(client, account.id)
+  const [reloadKey, setReloadKey] = useState(0)
+  const detail = useAccountDetail(client, account.id, reloadKey)
   const [launch, setLaunch] = useState<GameLaunch | null>(null)
 
   return (
@@ -55,6 +56,8 @@ export function AccountPanel({ client, account, gameUrl, onChanged }: Props) {
           {detail.kind === 'error' && <p className="text-sm text-red-700">Cannot load the account: {detail.message}</p>}
           {detail.kind === 'ready' && (
             <CityList
+              client={client}
+              onChanged={() => setReloadKey(key => key + 1)}
               cities={detail.detail.cities}
               handle={account.handle}
               accountId={account.id}

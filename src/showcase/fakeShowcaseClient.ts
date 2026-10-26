@@ -1,6 +1,7 @@
 import { ShowcaseError, type HallOfFameEntry, type Showcase, type ShowcaseClient, type ShowcaseStatus } from './types';
 
 export interface PublishedShowcase {
+  cityName: string;
   envelope: string;
   formatVersion: number;
   citizens: number;
@@ -31,11 +32,11 @@ export class FakeShowcaseClient implements ShowcaseClient {
     if (optedOut) this.published = [];
   }
 
-  async publish(envelope: string, formatVersion: number, citizens: number): Promise<void> {
+  async publish(envelope: string, formatVersion: number, citizens: number, cityName: string): Promise<void> {
     this.check();
     if (!this.statusValue.noticeSeen) throw new ShowcaseError('notice-required');
     if (this.statusValue.optedOut) return;
-    this.published.push({ envelope, formatVersion, citizens });
+    this.published.push({ cityName, envelope, formatVersion, citizens });
   }
 
   async hallOfFame(): Promise<HallOfFameEntry[]> {
@@ -43,9 +44,10 @@ export class FakeShowcaseClient implements ShowcaseClient {
     return this.entries.map((entry) => ({ ...entry }));
   }
 
-  async getShowcase(userId: string): Promise<Showcase> {
+  // A Showcase is found by `userId:cityId`, or by `userId` alone when the test does not care about the City.
+  async getShowcase(userId: string, cityId: string): Promise<Showcase> {
     this.check();
-    const showcase = this.showcases.get(userId);
+    const showcase = this.showcases.get(`${userId}:${cityId}`) ?? this.showcases.get(userId);
     if (!showcase) throw new ShowcaseError('not-found');
     return showcase;
   }
