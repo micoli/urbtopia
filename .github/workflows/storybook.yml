@@ -9,6 +9,9 @@ permissions:
 jobs:
   storybook:
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble@sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27
+      options: --ipc=host
     steps:
       - name: Check out the repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -19,8 +22,6 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci --ignore-scripts
-      - name: Set up Chromium
-        uses: ./.github/actions/setup-chromium
       - name: Build Storybook
         run: npm run build-storybook
       - name: Fail if a story crashes
