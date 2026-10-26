@@ -60,7 +60,7 @@ describe('crossings field', () => {
 
 describe('Movement layers', () => {
   it('draw roads, sidewalks and crossings together in All', () => {
-    expect(layerFieldsOf(city(), 'movement.all').map(({ ramp }) => ramp)).toEqual(['road', 'sidewalk', 'saturation']);
-    expect(layerFieldsOf(city(), 'movement.pedestrians').map(({ ramp }) => ramp)).toEqual(['sidewalk', 'saturation']);
+    expect(layerFieldsOf(city(), 'movement.all', 'education').map(({ ramp }) => ramp)).toEqual(['road', 'sidewalk', 'saturation']);
+    expect(layerFieldsOf(city(), 'movement.pedestrians', 'education').map(({ ramp }) => ramp)).toEqual(['sidewalk', 'saturation']);
   });
 });

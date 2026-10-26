@@ -61,6 +61,7 @@ export interface UiStore {
   analyticsLayer: AnalyticsLayerId | null;
   lastAnalyticsLayer: AnalyticsLayerId | null;
   analyticsCategory: ServiceCategory;
+  analyticsProbe: Coord | null;
   enterAnalytics: (layer: AnalyticsLayerId, category?: ServiceCategory) => void;
   exitAnalytics: () => void;
   streetView: boolean;
@@ -210,13 +211,14 @@ export const uiStore = createStore<UiStore>((set, get) => {
     analyticsLayer: null,
     lastAnalyticsLayer: readAnalyticsLayer(),
     analyticsCategory: readAnalyticsCategory(),
+    analyticsProbe: null,
     enterAnalytics: (layer, category = get().analyticsCategory) => {
       get().cancelTool();
       writeAnalyticsLayer(layer);
       writeAnalyticsCategory(category);
-      set({ analyticsLayer: layer, lastAnalyticsLayer: layer, analyticsCategory: category, flyout: null, selectedBuildingId: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false });
+      set({ analyticsLayer: layer, lastAnalyticsLayer: layer, analyticsCategory: category, analyticsProbe: null, flyout: null, selectedBuildingId: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false });
     },
-    exitAnalytics: () => set({ analyticsLayer: null }),
+    exitAnalytics: () => set({ analyticsLayer: null, analyticsProbe: null }),
     streetView: false,
     streetViewPicking: false,
     pickStreetView: () => {
@@ -310,7 +312,8 @@ export const uiStore = createStore<UiStore>((set, get) => {
       if (tool?.kind === 'brush') reevaluate({ tool: { ...tool, tiles: [] } });
     },
     hoverTile: (tile) => {
-      const { hovered } = get();
+      const { hovered, analyticsLayer, pointerKind } = get();
+      if (analyticsLayer && pointerKind === 'mouse') set({ analyticsProbe: tile });
       if (hovered?.x === tile.x && hovered.y === tile.y) return;
       reevaluate({ hovered: tile });
     },
@@ -333,6 +336,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       get().confirm(keepTool);
     },
     tapTile: (tile, buildingId = null) => {
+      if (get().analyticsLayer) return set({ analyticsProbe: tile });
       if (get().tool) return;
       const building = gameStore.getState().state.buildings.find((candidate) => footprintTiles(candidate).some((t) => t.x === tile.x && t.y === tile.y));
       set({ selectedBuildingId: buildingId ?? building?.id ?? null, flyout: null });

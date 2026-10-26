@@ -1,7 +1,7 @@
 import { congestionStats } from '../traffic/congestion';
 import { CONGESTION } from '../traffic/roadTier';
 import type { GameState } from '../engine/state';
-import { MAP_TILES, type TileField } from './tileField';
+import { MAP_TILES, buildTileField, splat, type TileField } from './tileField';
 
 const carsCache = new WeakMap<GameState, TileField>();
 const congestionCache = new WeakMap<GameState, TileField>();
@@ -28,20 +28,23 @@ export function carsField(state: GameState): TileField {
   return field;
 }
 
-// Load over Lane capacity, in percent, capped at the maximum ratio; disconnected sections read at the cap.
+export const CONGESTION_REACH = 3;
+
+// Load over Lane capacity, in percent, capped at the maximum ratio, read on every owned tile as the worst Road section
+// within reach; disconnected sections read at the cap.
 export function congestionField(state: GameState): TileField {
   const cached = congestionCache.get(state);
   if (cached) return cached;
   const cap = CONGESTION.maxRatio * 100;
   const stats = congestionStats(state);
-  const field = roadField(values => {
-    for (const section of stats.sections.values()) {
-      if (isOnMap(section.tile)) values[indexOf(section.tile)] = Math.min(cap, section.ratio * 100);
-    }
-    for (const tile of stats.disconnectedSections.flat()) {
-      if (isOnMap(tile)) values[indexOf(tile)] = cap;
-    }
-  }, () => cap);
+  const grid = new Float32Array(MAP_TILES * MAP_TILES);
+  for (const section of stats.sections.values()) {
+    if (isOnMap(section.tile)) splat(grid, section.tile.x, section.tile.y, CONGESTION_REACH, Math.min(cap, section.ratio * 100));
+  }
+  for (const tile of stats.disconnectedSections.flat()) {
+    if (isOnMap(tile)) splat(grid, tile.x, tile.y, CONGESTION_REACH, cap);
+  }
+  const field = buildTileField(state, (x, y) => grid[y * MAP_TILES + x]!, cap);
   congestionCache.set(state, field);
   return field;
 }

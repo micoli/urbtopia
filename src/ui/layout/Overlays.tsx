@@ -30,6 +30,7 @@ import { PoliticsWindow } from '../politics/PoliticsWindow';
 import { useUi } from '../common/hooks';
 import { StreetViewDropHint } from './StreetViewDropHint';
 import { AnalyticsHud } from '../analytics/AnalyticsHud';
+import { AnalyticsReadout } from '../analytics/AnalyticsReadout';
 
 export function Overlays() {
   const streetView = useUi((store) => store.streetView);
@@ -67,6 +68,7 @@ export function Overlays() {
       {streetView ? null : <StaticButtons />}
       <StreetViewDropHint />
       <AnalyticsHud />
+      <AnalyticsReadout />
     </>
   );
 }

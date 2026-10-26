@@ -207,5 +207,7 @@ export { COVERAGE_SHARE, homeTintsOf } from './analytics/homeTints';
 export type { HomeTint } from './analytics/homeTints';
 export { LAYER_SCALES } from './analytics/scales';
 export type { LayerScale, RampId, ScaleLabel } from './analytics/scales';
-export { fieldValueAt } from './analytics/tileField';
+export { fieldValueAt, isPainted } from './analytics/tileField';
 export type { TileField } from './analytics/tileField';
+export { probeOf } from './analytics/probe';
+export type { Probe, ProbeLine } from './analytics/probe';

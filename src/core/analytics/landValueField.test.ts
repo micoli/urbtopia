@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, newGame, type Building, type GameState } from '../index';
 import { LAND_VALUE, landValueField } from './landValueField';
-import { fieldValueAt } from './tileField';
+import { fieldValueAt, paintedValues } from './tileField';
 
 const base = newGame({ seed: 'land-value', now: 0 });
 const city = (...buildings: Building[]): GameState => ({ ...base, buildings, nextId: 1000, adaptationUntil: 0, roads: [] });
@@ -14,8 +14,8 @@ describe('land value field', () => {
 
   it('stays within 0 and the maximum', () => {
     const field = landValueField(city(createBuilding(1, 'school', 62, 60, 0), createBuilding(2, 'park', 63, 63, 0)));
-    expect(Math.min(...field.values)).toBeGreaterThanOrEqual(0);
-    expect(Math.max(...field.values)).toBeLessThanOrEqual(LAND_VALUE.max);
+    expect(Math.min(...paintedValues(field))).toBeGreaterThanOrEqual(0);
+    expect(Math.max(...paintedValues(field))).toBeLessThanOrEqual(LAND_VALUE.max);
   });
 
   it('rises near a Public facility', () => {

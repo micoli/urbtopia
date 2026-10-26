@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import { homeTintsOf, layerFieldsOf, type AnalyticsLayerId, type GameState, type HomeTint, type LayerField, type ServiceCategory } from '../core';
+import { isPainted, homeTintsOf, layerFieldsOf, type AnalyticsLayerId, type GameState, type HomeTint, type LayerField, type ServiceCategory } from '../core';
 import { rampColor } from './analyticsRamps';
 
-const REFRESH_MS = 5000;
+const REFRESH_MS = 15000;
 const LAYOUT_REFRESH_MS = 500;
 
 export class AnalyticsLayer {
@@ -35,7 +35,7 @@ export class AnalyticsLayer {
     this.layout = layout;
     this.builtAt = now;
     this.clearMeshes();
-    const fields = layerFieldsOf(state, layer);
+    const fields = layerFieldsOf(state, layer, category);
     const tints = homeTintsOf(state, layer, category);
     this.root.visible = fields.length > 0 || tints.length > 0;
     fields.forEach((field, index) => this.addField(field, `analytics-${layer}-${index}`, 6 + index * 0.1));
@@ -46,7 +46,7 @@ export class AnalyticsLayer {
     if (!tints.length) return;
     const mesh = new THREE.InstancedMesh(this.tileGeometry, this.material, tints.length);
     mesh.name = name;
-    mesh.renderOrder = 6;
+    mesh.renderOrder = 7;
     const matrix = new THREE.Matrix4();
     const color = new THREE.Color();
     tints.forEach((tint, instance) => {
@@ -62,7 +62,7 @@ export class AnalyticsLayer {
   private addField({ field, ramp }: LayerField, name: string, renderOrder: number): void {
     const tiles: number[] = [];
     field.values.forEach((value, index) => {
-      if (value > 0) tiles.push(index);
+      if (isPainted(field, value)) tiles.push(index);
     });
     if (!tiles.length) return;
     const mesh = new THREE.InstancedMesh(this.tileGeometry, this.material, tiles.length);

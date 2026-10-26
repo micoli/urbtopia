@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, energyStats, homeBenefits, newGame, type GameState } from '../index';
-import { fieldValueAt } from './tileField';
+import { fieldValueAt, paintedValues } from './tileField';
 import { pollutionField } from './pollutionField';
 
 const NOW = 1_700_000_000_000;
@@ -10,7 +10,8 @@ const city = (...buildings: ReturnType<typeof createBuilding>[]): GameState => (
 describe('pollution field', () => {
   it('is zero everywhere in a city without emitters', () => {
     const field = pollutionField(city());
-    expect(Math.max(...field.values)).toBe(0);
+    expect(paintedValues(field).length).toBeGreaterThan(0);
+    expect(Math.max(...paintedValues(field))).toBe(0);
   });
 
   it('matches the Pollution malus of a Home standing on the tile', () => {
@@ -35,6 +36,6 @@ describe('pollution field', () => {
 
   it('stays at zero on tiles outside owned Parcels', () => {
     const state = { ...city(createBuilding(1, 'coalPlant', 60, 60, 0)), ownedParcels: [] };
-    expect(Math.max(...pollutionField(state).values)).toBe(0);
+    expect(paintedValues(pollutionField(state))).toEqual([]);
   });
 });

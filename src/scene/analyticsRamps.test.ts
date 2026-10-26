@@ -3,7 +3,7 @@ import { rampColor } from './analyticsRamps';
 
 describe('ramp colours', () => {
   it('starts and ends on the first and last stop', () => {
-    expect(rampColor('heat', 0)).toBe(0xffe066);
+    expect(rampColor('heat', 0)).toBe(0x35d07f);
     expect(rampColor('heat', 1)).toBe(0x7a1f3d);
   });
 
