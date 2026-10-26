@@ -187,6 +187,27 @@ describe('PlaceCrossing on a BRT corridor', () => {
   });
 });
 
+describe('RemoveCrossing', () => {
+  it('turns a crossing back into a plain road at no cost', () => {
+    const crossed = succeed(initial, { type: 'PlaceCrossing', x: 57, y: 58 });
+    const state = succeed(crossed, { type: 'RemoveCrossing', x: 57, y: 58 });
+    expect(state.roads.find((tile) => tile.x === 57 && tile.y === 58)?.kind).toBe('road');
+    expect(state.urbs).toBe(crossed.urbs);
+  });
+
+  it('refuses a tile without a crossing', () => {
+    expect(failureKey(initial, { type: 'RemoveCrossing', x: 57, y: 58 })).toBe('error.noCrossingHere');
+    expect(failureKey(initial, { type: 'RemoveCrossing', x: 70, y: 70 })).toBe('error.noCrossingHere');
+  });
+
+  it('clears the crossing of a BRT corridor', () => {
+    const corridor = { ...initial, brtRoads: [{ x: 70, y: 70, exits: ['E' as const] }, { x: 71, y: 70, exits: ['W' as const, 'E' as const] }, { x: 72, y: 70, exits: ['W' as const] }] };
+    const crossed = succeed(corridor, { type: 'PlaceCrossing', x: 71, y: 70 });
+    const state = succeed(crossed, { type: 'RemoveCrossing', x: 71, y: 70 });
+    expect(state.brtRoads?.find((tile) => tile.x === 71)?.kind).toBeUndefined();
+  });
+});
+
 describe('PlaceRoundabout', () => {
   it('occupies a 3x3 square centred on the given tile', () => {
     const state = succeed(initial, { type: 'PlaceRoundabout', x: 70, y: 70 });

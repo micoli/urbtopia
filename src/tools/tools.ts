@@ -50,6 +50,7 @@ export type Tool =
   | { kind: 'road'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'pedestrianWay'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'crossing' }
+  | { kind: 'removeCrossing' }
   | { kind: 'roundabout' }
   | { kind: 'demolishRoad'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'upgradeRoad'; start: Coord | null; horizontalFirst: boolean }
@@ -178,6 +179,8 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
       return evaluatePedestrianWay(state, tool, tile);
     case 'crossing':
       return evaluation([tile], { type: 'PlaceCrossing', x: tile.x, y: tile.y }, state);
+    case 'removeCrossing':
+      return evaluation([tile], { type: 'RemoveCrossing', x: tile.x, y: tile.y }, state);
     case 'roundabout':
       return evaluation(roundaboutTiles(tile), { type: 'PlaceRoundabout', x: tile.x, y: tile.y }, state);
     case 'demolishRoad':

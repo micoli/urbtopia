@@ -77,6 +77,7 @@ export type Command =
   | { readonly type: 'DemolishPedestrianWay'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishPedestrianWayPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'PlaceCrossing'; readonly x: number; readonly y: number }
+  | { readonly type: 'RemoveCrossing'; readonly x: number; readonly y: number }
   | { readonly type: 'PlaceRoundabout'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoad'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoadPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
@@ -150,6 +151,7 @@ export type Command =
   | { readonly type: 'ReplayVenueTutorial'; readonly venueType: VenueTutorialType };
 
 export type ErrorKey =
+  | 'error.noCrossingHere'
   | 'error.unknownCommand'
   | 'error.unknownBuilding'
   | 'error.unknownFixture'
@@ -294,6 +296,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return demolishPedestrianWays(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
     case 'PlaceCrossing':
       return placeCrossing(state, { x: command.x, y: command.y });
+    case 'RemoveCrossing':
+      return removeCrossing(state, { x: command.x, y: command.y });
     case 'PlaceRoundabout':
       return placeRoundabout(state, { x: command.x, y: command.y });
     case 'DemolishRoad':
@@ -568,6 +572,15 @@ function placeBrtCrossing(state: GameState, brtTile: TransitTile): CommandOutcom
     },
     events: [],
   };
+}
+
+function removeCrossing(state: GameState, tile: Coord): CommandOutcome {
+  const isTile = (candidate: Coord) => candidate.x === tile.x && candidate.y === tile.y;
+  const road = state.roads.find((candidate) => isTile(candidate) && candidate.kind === 'crossing');
+  if (road) return { state: { ...state, roads: state.roads.map((candidate) => (candidate === road ? { ...candidate, kind: 'road' as const } : candidate)) }, events: [] };
+  const brtTile = (state.brtRoads ?? []).find((candidate) => isTile(candidate) && candidate.kind === 'crossing');
+  if (!brtTile) return fail('error.noCrossingHere');
+  return { state: { ...state, brtRoads: (state.brtRoads ?? []).map((candidate) => (candidate === brtTile ? { x: candidate.x, y: candidate.y, exits: candidate.exits } : candidate)) }, events: [] };
 }
 
 function placeCrossing(state: GameState, tile: Coord): CommandOutcome {

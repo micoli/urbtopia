@@ -58,6 +58,7 @@ export function RoadMenu() {
 
   const roadItems: RoadItem[] = [
     ...ROAD_CONSTRUCTIONS.filter(item => item.unlockCitizens === 0 && item.id !== 'pedestrianWay').map(item => ({ label: t(item.name), cost: item.perTile ? `${item.cost} ${t('tool.perTile')}` : <UrbsAmount value={item.cost} />, tool: item.tool, codexId: item.id })),
+    { label: t('tool.removeCrossing'), tool: { kind: 'removeCrossing' } },
     { label: t('tool.upgradeRoad'), cost: `${ROAD_TIER_COSTS[1]!}–${ROAD_TIER_COSTS[2]!} ${t('tool.perTile')}`, tool: { kind: 'upgradeRoad', start: null, horizontalFirst: true } },
   ];
   const removeBridge = hasBridge ? { label: t('water.removeBridge'), tool: { kind: 'removeBridge' } as Tool } : undefined;
