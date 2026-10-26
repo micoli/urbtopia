@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { t } from '../../i18n/t';
 import { ActionButton } from '../common/ActionButton';
 import { useUi } from '../common/hooks';
+import { AnalyticsFlows } from './AnalyticsFlows';
 import { AnalyticsLegend } from './AnalyticsLegend';
 import { legendsOf } from './layerLegends';
 
@@ -26,6 +27,7 @@ export function AnalyticsHud() {
       <strong className="analytics-hud-title">{t(`analytics.layer.${layer}`)}{layer === 'data.coverage' ? ` · ${t(`service.${category}`)}` : ''}</strong>
       <ActionButton variant="primary" onClick={exitAnalytics}>{t('analytics.exit')}</ActionButton>
       {legends.map((legend, index) => <AnalyticsLegend key={index} legend={legend} />)}
+      <AnalyticsFlows />
     </div>
   );
 }

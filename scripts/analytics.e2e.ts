@@ -31,9 +31,9 @@ test.describe('analytics view', () => {
       const { newGame, createBuilding } = await import('../src/core/index.ts');
       const state = newGame({ seed: 'analytics-ui', now: Date.now() });
       gameStore.getState().replaceState({
-        ...state, urbs: 1_000_000, nextId: 20,
-        buildings: [createBuilding(1, 'school', 52, 50, 0), createBuilding(2, 'coalPlant', 70, 70, 0),
-          ...[54, 56, 58].map((x, index) => ({ ...createBuilding(3 + index, 'home', x, 50, 0), tier: 3, taxCitizenMs: 100_000_000 }))],
+        ...state, urbs: 1_000_000, nextId: 200,
+        buildings: [...state.buildings, createBuilding(101, 'school', 52, 50, 0), createBuilding(102, 'coalPlant', 70, 70, 0), { ...createBuilding(103, 'home', 56, 59, 0), tier: 3, taxCitizenMs: 100_000_000 },
+          ...[54, 56, 58].map((x, index) => ({ ...createBuilding(104 + index, 'home', x, 50, 0), tier: 3, taxCitizenMs: 100_000_000 }))],
       });
       const { sceneHandle } = await import('../src/store/sceneHandle.ts');
       sceneHandle.current?.focusOnTile({ x: 58, y: 53 });
@@ -46,7 +46,12 @@ test.describe('analytics view', () => {
       await expandSection(page, 'land-movement');
       await page.locator('#land-movement').getByRole('button', { name: layer, exact: true }).click();
       await expect(page.locator('.analytics-hud-title')).toHaveText(layer);
+      await expect(page.locator('[data-action="parcels"]')).toHaveCount(0);
       await expect(page.locator('.collect-badge, .sanction-badge, .working-indicator, .parcel-tag')).toHaveCount(0);
+      if (layer === 'Piétons') {
+        await expect(page.locator('.analytics-flow-list').first()).toBeVisible();
+        await page.screenshot({ path: '/private/tmp/claude-501/-Users-omichaud-src-urbix/6c16ae93-ff53-4af6-ac83-89ad530b2d14/scratchpad/flows.png' });
+      }
       await page.keyboard.press('Escape');
       await expect(page.locator('.analytics-hud')).toHaveCount(0);
       await expect(page.locator('.collect-badge').first()).toBeVisible();

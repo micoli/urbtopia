@@ -54,6 +54,10 @@ export interface CongestionStats {
   cyclingTrips: WalkingTrips;
   pedestrians: ReadonlyMap<string, number>;
   sidewalkLoads: ReadonlyMap<string, number>;
+  // Commuters driving to, and Pedestrians walking to, each building; and the walking trips leaving each Home.
+  carArrivals: ReadonlyMap<number, number>;
+  walkArrivals: ReadonlyMap<number, number>;
+  walkTripsByHome: ReadonlyMap<number, number>;
   crossings: ReadonlyMap<string, CrossingLoad>;
   saturatedCrossings: number;
   busSpeeds: ReadonlyMap<number, BusSpeed>;
@@ -132,6 +136,9 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
   const destinations = WALKING.enabled ? walkDestinations(state, walkable) : [];
   const pedestrians = new Map<string, number>();
   const sidewalkLoads = new Map<string, number>();
+  const carArrivals = new Map<number, number>();
+  const walkArrivals = new Map<number, number>();
+  const walkTripsByHome = new Map<number, number>();
   const walkingTrips = emptyTrips();
   const cyclingTrips = emptyTrips();
   const workplaceById = new Map(workplaces.map((workplace) => [workplace.building.id, workplace]));
@@ -165,7 +172,9 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
       continue;
     }
     const walk = walkFrom(walkable, WALKING.enabled ? home.sidewalks : [], maxWalkCost());
-    const walkAccess = WALKING.enabled ? walkServices(walk, destinations, citizens, pedestrians, walkingTrips, cyclingTrips, sidewalkLoads) : 0;
+    const walkedBefore = tripsTotal(walkingTrips);
+    const walkAccess = WALKING.enabled ? walkServices(walk, destinations, citizens, pedestrians, walkingTrips, cyclingTrips, sidewalkLoads, walkArrivals) : 0;
+    const walkedServices = tripsTotal(walkingTrips) - walkedBefore;
     const roadOptions = home.access.length === 0 ? [] : reachableWorkplaces(graph, home, workplaces);
     const roadOptionIds = new Set(roadOptions.map((option) => option.id));
     const walkOptions = WALKING.enabled ? workplaces.flatMap((workplace) => {
@@ -190,12 +199,15 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
       remaining -= taken;
       const target = WALKING.enabled ? nearestTarget(walk, workplaceById.get(option.id)?.sidewalks ?? []) : null;
       if (target !== null && target.cost <= WALKING.workThreshold * WALKING.cyclingFactor) {
-        if (target.cost <= WALKING.workThreshold) walking += taken;
-        else cycling += taken;
+        if (target.cost <= WALKING.workThreshold) {
+          walking += taken;
+          walkArrivals.set(option.id, (walkArrivals.get(option.id) ?? 0) + taken);
+        } else cycling += taken;
         for (const crossing of crossingsOnPath(walk, target.node)) pedestrians.set(crossing, (pedestrians.get(crossing) ?? 0) + taken);
         for (const node of nodesOnPath(walk, target.node)) sidewalkLoads.set(node, (sidewalkLoads.get(node) ?? 0) + taken);
         continue;
       }
+      carArrivals.set(option.id, (carArrivals.get(option.id) ?? 0) + taken);
       for (const tile of option.path) {
         const key = tileKey(tile);
         loads.set(key, (loads.get(key) ?? 0) + taken);
@@ -206,6 +218,7 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     walkersTotal += walking;
     cyclistsTotal += cycling;
     unemployedTotal += remaining;
+    walkTripsByHome.set(home.building.id, walking + walkedServices);
     used.set(home.building.id, tiles);
     result.set(home.building.id, { commuters: wanting - remaining - walking - cycling, walkers: walking, cyclists: cycling, walkAccess, unemployed: remaining, ratio: 0, disconnected: false });
   }
@@ -252,6 +265,9 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     cyclingTrips,
     pedestrians,
     sidewalkLoads,
+    carArrivals,
+    walkArrivals,
+    walkTripsByHome,
     crossings,
     saturatedCrossings: [...crossings.values()].filter((crossing) => crossing.saturated).length,
     busSpeeds,
@@ -296,12 +312,16 @@ function noCommute(state: GameState, homes: Endpoint[], jobs: number, covered: T
   const destinations = WALKING.enabled ? walkDestinations(state, graph) : [];
   const pedestrians = new Map<string, number>();
   const sidewalkLoads = new Map<string, number>();
+  const walkArrivals = new Map<number, number>();
+  const walkTripsByHome = new Map<number, number>();
   const walkingTrips = emptyTrips();
   const cyclingTrips = emptyTrips();
   const entries = homes.map((home): [number, HomeCongestion] => {
     if (isBrtOnly(state, home)) return [home.building.id, brtOnlyEntry(covered.homes.has(home.building.id))];
     const walk = walkFrom(graph, WALKING.enabled ? home.sidewalks : [], maxWalkCost());
-    const walkAccess = WALKING.enabled ? walkServices(walk, destinations, citizensOf(home.building.tier), pedestrians, walkingTrips, cyclingTrips, sidewalkLoads) : 0;
+    const walkedBefore = tripsTotal(walkingTrips);
+    const walkAccess = WALKING.enabled ? walkServices(walk, destinations, citizensOf(home.building.tier), pedestrians, walkingTrips, cyclingTrips, sidewalkLoads, walkArrivals) : 0;
+    walkTripsByHome.set(home.building.id, tripsTotal(walkingTrips) - walkedBefore);
     return [home.building.id, { commuters: 0, walkers: 0, cyclists: 0, walkAccess, unemployed: 0, ratio: 0, disconnected: false }];
   });
   const stranded = homes.filter((home) => isBrtOnly(state, home) && !covered.homes.has(home.building.id));
@@ -319,6 +339,9 @@ function noCommute(state: GameState, homes: Endpoint[], jobs: number, covered: T
     cyclingTrips,
     pedestrians,
     sidewalkLoads,
+    carArrivals: new Map(),
+    walkArrivals,
+    walkTripsByHome,
     crossings: new Map([...pedestrians].map(([key, count]) => {
       const cut = crossingCut(count);
       return [key, { tile: parseTile(key), pedestrians: count, cut, saturated: cut >= WALKING.maxCrossingCut }];
@@ -336,6 +359,10 @@ function noCommute(state: GameState, homes: Endpoint[], jobs: number, covered: T
     saturatedSections: 0,
     disconnectedSections: stranded.map((home) => footprintTiles(home.building)),
   };
+}
+
+function tripsTotal(trips: WalkingTrips): number {
+  return Object.values(trips).reduce((sum, count) => sum + count, 0);
 }
 
 export function worstSection(sections: ReadonlyMap<string, SectionLoad>): SectionLoad | null {

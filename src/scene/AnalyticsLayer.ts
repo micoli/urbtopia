@@ -1,14 +1,19 @@
 import * as THREE from 'three';
-import { isPainted, homeTintsOf, layerFieldsOf, type AnalyticsLayerId, type GameState, type HomeTint, type LayerField, type ServiceCategory } from '../core';
-import { rampColor } from './analyticsRamps';
+import { flowEndpointsOf, isPainted, homeTintsOf, layerFieldsOf, type AnalyticsLayerId, type FlowEndpoint, type GameState, type HomeTint, type LayerField, type ServiceCategory } from '../core';
+import { FLOW_COLORS, rampColor } from './analyticsRamps';
 
 const REFRESH_MS = 15000;
+const BEACON_WIDTH = 0.5;
+const BEACON_MIN_HEIGHT = 1.5;
+const BEACON_EXTRA_HEIGHT = 2.5;
 const LAYOUT_REFRESH_MS = 500;
 
 export class AnalyticsLayer {
   readonly root = new THREE.Group();
   private tileGeometry = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
   private material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6, depthTest: false, depthWrite: false, toneMapped: false });
+  private beaconGeometry = new THREE.BoxGeometry(1, 1, 1);
+  private beaconMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, toneMapped: false });
   private layout = '';
   private layer: AnalyticsLayerId | null = null;
   private category: ServiceCategory | null = null;
@@ -40,6 +45,31 @@ export class AnalyticsLayer {
     this.root.visible = fields.length > 0 || tints.length > 0;
     fields.forEach((field, index) => this.addField(field, `analytics-${layer}-${index}`, 6 + index * 0.1));
     this.addHomeTints(tints, `analytics-${layer}-homes`);
+    const flows = flowEndpointsOf(state, layer);
+    if (flows) {
+      this.addBeacons(flows.origins, FLOW_COLORS.origins, `analytics-${layer}-origins`);
+      this.addBeacons(flows.destinations, FLOW_COLORS.destinations, `analytics-${layer}-destinations`);
+      this.root.visible = true;
+    }
+  }
+
+  // A column over each building, taller for the busier ones.
+  private addBeacons(endpoints: readonly FlowEndpoint[], color: string, name: string): void {
+    if (!endpoints.length) return;
+    const busiest = Math.max(...endpoints.map(endpoint => endpoint.volume));
+    const mesh = new THREE.InstancedMesh(this.beaconGeometry, this.beaconMaterial, endpoints.length);
+    mesh.name = name;
+    mesh.renderOrder = 8;
+    const matrix = new THREE.Matrix4();
+    endpoints.forEach((endpoint, instance) => {
+      const height = BEACON_MIN_HEIGHT + BEACON_EXTRA_HEIGHT * endpoint.volume / busiest;
+      matrix.makeScale(BEACON_WIDTH, height, BEACON_WIDTH).setPosition(endpoint.x + endpoint.width / 2, height / 2 + 0.1, endpoint.y + endpoint.depth / 2);
+      mesh.setMatrixAt(instance, matrix);
+      mesh.setColorAt(instance, new THREE.Color(color));
+    });
+    mesh.instanceMatrix.needsUpdate = true;
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    this.root.add(mesh);
   }
 
   private addHomeTints(tints: readonly HomeTint[], name: string): void {
@@ -92,6 +122,8 @@ export class AnalyticsLayer {
     this.clearMeshes();
     this.tileGeometry.dispose();
     this.material.dispose();
+    this.beaconGeometry.dispose();
+    this.beaconMaterial.dispose();
     this.root.clear();
   }
 }

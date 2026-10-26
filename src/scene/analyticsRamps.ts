@@ -27,3 +27,6 @@ export function rampColor(ramp: RampId, share: number): number {
   const [r, g, b] = from.map((channel, i) => Math.round(channel + (to[i]! - channel) * mix));
   return (r! << 16) | (g! << 8) | b!;
 }
+
+// Beacons over the Homes trips leave from and over the buildings they go to.
+export const FLOW_COLORS = { origins: '#69db7c', destinations: '#f06595' } as const;
