@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { CloudConfig } from './cloudConfig';
 import type { Database, Json } from './database.types';
 import { loadSharedSupabase } from './sharedSupabase';
-import { CloudError, type CloudAccount, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
+import { CloudError, type CloudAccount, type CloudCity, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
 
 const KEEPALIVE_BODY_LIMIT = 60_000;
 
@@ -17,6 +17,7 @@ interface PostgrestFailure {
 export function toCloudError(failure: PostgrestFailure): CloudError {
   if (failure.message.includes('urb_conflict')) return new CloudError('conflict', Number(failure.details ?? 0));
   if (failure.message.includes('urb_too_large')) return new CloudError('too-large');
+  if (failure.message.includes('urb_city_limit')) return new CloudError('city-limit');
   if (failure.message.includes('urb_unauthenticated') || failure.code === '28000' || failure.code === '42501') return new CloudError('unauthenticated');
   if (failure.code === 'otp_expired' || failure.code === 'otp_disabled' || failure.message.includes('Token has expired or is invalid')) return new CloudError('invalid-code');
   if (failure.code === 'over_email_send_rate_limit' || failure.code === 'over_request_rate_limit' || /rate limit/i.test(failure.message)) return new CloudError('rate-limited');
@@ -114,6 +115,7 @@ class SupabaseCloudSaveClient implements CloudSaveClient {
     try {
       const { data, error } = await this.attempt(() =>
         this.client.rpc('urb_push_save', {
+          p_city_id: input.cityId,
           p_base_revision: input.baseRevision,
           p_envelope: JSON.parse(input.envelope) as Json,
           p_format_version: input.formatVersion,
@@ -128,25 +130,36 @@ class SupabaseCloudSaveClient implements CloudSaveClient {
     }
   }
 
-  async latest(): Promise<CloudSave | null> {
+  async latest(cityId: string): Promise<CloudSave | null> {
     const { data, error } = await this.attempt(() =>
-      this.client.from('urb_saves').select('revision, envelope, client_saved_at').order('revision', { ascending: false }).limit(1).maybeSingle(),
+      this.client.from('urb_saves').select('revision, envelope, client_saved_at').eq('city_id', cityId).order('revision', { ascending: false }).limit(1).maybeSingle(),
     );
     if (error) throw toCloudError(error);
     if (!data) return null;
     return { revision: data.revision, envelope: JSON.stringify(data.envelope), clientSavedAt: Date.parse(data.client_saved_at) };
   }
 
-  async list(): Promise<CloudSaveVersion[]> {
-    const { data, error } = await this.attempt(() => this.client.rpc('urb_list_saves'));
+  async list(cityId: string): Promise<CloudSaveVersion[]> {
+    const { data, error } = await this.attempt(() => this.client.rpc('urb_list_saves', { p_city_id: cityId }));
     if (error) throw toCloudError(error);
     return data.map((row) => ({ revision: row.revision, clientSavedAt: Date.parse(row.client_saved_at), createdAt: Date.parse(row.created_at) }));
   }
 
-  async restore(revision: number): Promise<number> {
-    const { data, error } = await this.attempt(() => this.client.rpc('urb_restore_save', { p_revision: revision }));
+  async listCities(): Promise<CloudCity[]> {
+    const { data, error } = await this.attempt(() => this.client.rpc('urb_list_cities'));
+    if (error) throw toCloudError(error);
+    return data.map((row) => ({ cityId: row.city_id, revision: row.revision, clientSavedAt: Date.parse(row.client_saved_at) }));
+  }
+
+  async restore(cityId: string, revision: number): Promise<number> {
+    const { data, error } = await this.attempt(() => this.client.rpc('urb_restore_save', { p_city_id: cityId, p_revision: revision }));
     if (error) throw toCloudError(error);
     return data;
+  }
+
+  async deleteCity(cityId: string): Promise<void> {
+    const { error } = await this.attempt(() => this.client.rpc('urb_delete_city_saves', { p_city_id: cityId }));
+    if (error) throw toCloudError(error);
   }
 
   async deleteMine(): Promise<void> {

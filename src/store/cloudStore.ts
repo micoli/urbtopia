@@ -25,6 +25,7 @@ export interface CloudActions {
   loadVersions: () => Promise<void>;
   restoreVersion: (revision: number) => Promise<void>;
   deleteCloudData: () => Promise<void>;
+  deleteCity: (cityId: string) => Promise<boolean>;
 }
 
 export interface CloudStore {

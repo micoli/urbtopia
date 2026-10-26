@@ -22,6 +22,8 @@ export function parseHallOfFame(data: unknown): HallOfFameEntry[] {
     return {
       rank: integer(entry.rank),
       userId: text(entry.userId),
+      cityId: text(entry.cityId),
+      cityName: text(entry.cityName),
       handle: text(entry.handle),
       avatar: entry.avatar === null ? null : text(entry.avatar),
       citizens: integer(entry.citizens),
@@ -33,6 +35,7 @@ export function parseShowcase(data: unknown): Showcase {
   const row = record(data);
   return {
     handle: text(row.handle),
+    cityName: text(row.cityName),
     avatar: row.avatar === null ? null : text(row.avatar),
     formatVersion: integer(row.formatVersion),
     envelope: JSON.stringify(row.envelope),

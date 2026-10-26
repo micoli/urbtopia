@@ -3,7 +3,7 @@ import { loadAccountDetail, type AccountDetail, type AdminClient } from '../api/
 
 export type DetailState = { kind: 'loading' } | { kind: 'error'; message: string } | { kind: 'ready'; detail: AccountDetail }
 
-export function useAccountDetail(client: AdminClient, userId: string) {
+export function useAccountDetail(client: AdminClient, userId: string, reloadKey = 0) {
   const [state, setState] = useState<DetailState>({ kind: 'loading' })
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export function useAccountDetail(client: AdminClient, userId: string) {
     return () => {
       current = false
     }
-  }, [client, userId])
+  }, [client, userId, reloadKey])
 
   return state
 }

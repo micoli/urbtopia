@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(45);
+select plan(53);
 
 insert into auth.users (id, instance_id, aud, role, email, email_confirmed_at, is_anonymous, created_at, last_sign_in_at)
   select ('00000000-0000-0000-0006-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', n || '@example.com', now(), false, now(), now()
@@ -51,57 +51,57 @@ $$;
 -- Access
 set local role authenticated;
 select pg_temp.act_as('00000000000c');
-select throws_ok($$ select public.urb_list_challenges() $$, 'urb_email_required', 'an account without email cannot list Challenges');
+select throws_ok($$ select public.urb_list_challenges('00000000-0000-0000-0000-000000000001') $$, 'urb_email_required', 'an account without email cannot list Challenges');
 reset role;
 delete from public.urb_profiles where user_id = '00000000-0000-0000-0006-00000000000b';
 set local role authenticated;
 select pg_temp.act_as('00000000000b');
-select throws_ok($$ select public.urb_list_challenges() $$, 'urb_handle_required', 'an account without Handle cannot list Challenges');
+select throws_ok($$ select public.urb_list_challenges('00000000-0000-0000-0000-000000000001') $$, 'urb_handle_required', 'an account without Handle cannot list Challenges');
 reset role;
 insert into public.urb_profiles (user_id, handle) values ('00000000-0000-0000-0006-00000000000b', 'Bob');
 set local role authenticated;
 
 -- Listing
 select pg_temp.act_as('00000000000a');
-select is(jsonb_array_length(public.urb_list_challenges() -> 'challenges'), 13, 'the 12 Daily challenges and the Event are listed');
-select is(jsonb_typeof(public.urb_list_challenges() -> 'accepted'), 'null', 'nothing is accepted yet');
-select throws_ok($$ select public.urb_accept_challenge(gen_random_uuid()) $$, 'urb_challenge_unavailable', 'an unknown Challenge cannot be accepted');
+select is(jsonb_array_length(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'challenges'), 13, 'the 12 Daily challenges and the Event are listed');
+select is(jsonb_typeof(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'accepted'), 'null', 'nothing is accepted yet');
+select throws_ok($$ select public.urb_accept_challenge(gen_random_uuid(), '00000000-0000-0000-0000-000000000001') $$, 'urb_challenge_unavailable', 'an unknown Challenge cannot be accepted');
 
 -- Accepting
-select lives_ok($$ select public.urb_accept_challenge(pg_temp.daily_id()) $$, 'a Daily challenge is accepted');
+select lives_ok($$ select public.urb_accept_challenge(pg_temp.daily_id(), '00000000-0000-0000-0000-000000000001') $$, 'a Daily challenge is accepted');
 select is(
-  (select (public.urb_accept_challenge(pg_temp.daily_id()) ->> 'deadline')::timestamptz - (public.urb_list_challenges() -> 'accepted' ->> 'acceptedAt')::timestamptz),
+  (select (public.urb_accept_challenge(pg_temp.daily_id(), '00000000-0000-0000-0000-000000000001') ->> 'deadline')::timestamptz - (public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'accepted' ->> 'acceptedAt')::timestamptz),
   interval '24 hours', 'a Daily deadline is 24 hours after the acceptance');
-select is(public.urb_list_challenges() -> 'accepted' ->> 'challengeId', pg_temp.daily_id()::text, 'the accepted Challenge is listed');
-select throws_ok($$ select public.urb_accept_challenge(pg_temp.event_id()) $$, 'urb_challenge_busy', 'a second Challenge is refused while one is accepted');
+select is(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'accepted' ->> 'challengeId', pg_temp.daily_id()::text, 'the accepted Challenge is listed');
+select throws_ok($$ select public.urb_accept_challenge(pg_temp.event_id(), '00000000-0000-0000-0000-000000000001') $$, 'urb_challenge_busy', 'a second Challenge is refused while one is accepted');
 
 -- Declaring
-select throws_ok($$ select public.urb_declare_challenge(pg_temp.event_id()) $$, 'urb_challenge_unavailable', 'declaring a Challenge that was not accepted is refused');
-select is(public.urb_declare_challenge(pg_temp.daily_id()) ->> 'rewardKind', 'urbs', 'declaring answers with the reward kind');
-select is((public.urb_declare_challenge(pg_temp.daily_id()) ->> 'alreadyClaimed')::boolean, true, 'declaring again answers already claimed');
-select is(jsonb_array_length(public.urb_declare_challenge(pg_temp.daily_id()) -> 'goal'), 2, 'declaring answers with the goal');
-select is(jsonb_typeof(public.urb_list_challenges() -> 'accepted'), 'null', 'a completed Challenge is no longer accepted');
-select throws_ok($$ select public.urb_accept_challenge(pg_temp.daily_id()) $$, 'urb_challenge_unavailable', 'a completed Challenge cannot be accepted again');
-select ok(not exists (select 1 from jsonb_array_elements(public.urb_list_challenges() -> 'challenges') c where c ->> 'id' = pg_temp.daily_id()::text), 'a completed Daily challenge is not listed again');
+select throws_ok($$ select public.urb_declare_challenge(pg_temp.event_id(), '00000000-0000-0000-0000-000000000001') $$, 'urb_challenge_unavailable', 'declaring a Challenge that was not accepted is refused');
+select is(public.urb_declare_challenge(pg_temp.daily_id(), '00000000-0000-0000-0000-000000000001') ->> 'rewardKind', 'urbs', 'declaring answers with the reward kind');
+select is((public.urb_declare_challenge(pg_temp.daily_id(), '00000000-0000-0000-0000-000000000001') ->> 'alreadyClaimed')::boolean, true, 'declaring again answers already claimed');
+select is(jsonb_array_length(public.urb_declare_challenge(pg_temp.daily_id(), '00000000-0000-0000-0000-000000000001') -> 'goal'), 2, 'declaring answers with the goal');
+select is(jsonb_typeof(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'accepted'), 'null', 'a completed Challenge is no longer accepted');
+select throws_ok($$ select public.urb_accept_challenge(pg_temp.daily_id(), '00000000-0000-0000-0000-000000000001') $$, 'urb_challenge_unavailable', 'a completed Challenge cannot be accepted again');
+select ok(not exists (select 1 from jsonb_array_elements(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'challenges') c where c ->> 'id' = pg_temp.daily_id()::text), 'a completed Daily challenge is not listed again');
 
 -- Event and Medal
-select lives_ok($$ select public.urb_accept_challenge(pg_temp.event_id()) $$, 'an Event is accepted once the Daily is done');
-select is((public.urb_list_challenges() -> 'accepted' ->> 'deadline')::timestamptz, pg_temp.event_ends_at(), 'an Event deadline is its end date');
-select is(public.urb_declare_challenge(pg_temp.event_id()) ->> 'medalCode', 'port-festival', 'declaring an Event answers with its Medal');
-select is(jsonb_array_length(public.urb_list_challenges() -> 'medals'), 1, 'the Medal is listed');
-select ok(not exists (select 1 from jsonb_array_elements(public.urb_list_challenges() -> 'challenges') c where c ->> 'id' = pg_temp.event_id()::text), 'a completed Event is not listed again');
+select lives_ok($$ select public.urb_accept_challenge(pg_temp.event_id(), '00000000-0000-0000-0000-000000000001') $$, 'an Event is accepted once the Daily is done');
+select is((public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'accepted' ->> 'deadline')::timestamptz, pg_temp.event_ends_at(), 'an Event deadline is its end date');
+select is(public.urb_declare_challenge(pg_temp.event_id(), '00000000-0000-0000-0000-000000000001') ->> 'medalCode', 'port-festival', 'declaring an Event answers with its Medal');
+select is(jsonb_array_length(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'medals'), 1, 'the Medal is listed');
+select ok(not exists (select 1 from jsonb_array_elements(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'challenges') c where c ->> 'id' = pg_temp.event_id()::text), 'a completed Event is not listed again');
 
 -- Isolation and deadline
 select pg_temp.act_as('00000000000b');
-select ok(exists (select 1 from jsonb_array_elements(public.urb_list_challenges() -> 'challenges') c where c ->> 'id' = pg_temp.daily_id()::text), 'another player still sees the completed Daily challenge');
-select is(jsonb_array_length(public.urb_list_challenges() -> 'medals'), 0, 'another player sees none of those Medals');
-select lives_ok($$ select public.urb_accept_challenge(pg_temp.daily_id()) $$, 'another player accepts the same Daily challenge');
+select ok(exists (select 1 from jsonb_array_elements(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'challenges') c where c ->> 'id' = pg_temp.daily_id()::text), 'another player still sees the completed Daily challenge');
+select is(jsonb_array_length(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'medals'), 0, 'another player sees none of those Medals');
+select lives_ok($$ select public.urb_accept_challenge(pg_temp.daily_id(), '00000000-0000-0000-0000-000000000001') $$, 'another player accepts the same Daily challenge');
 reset role;
 update public.urb_challenge_acceptances set deadline = now() - interval '1 minute' where user_id = '00000000-0000-0000-0006-00000000000b';
 set local role authenticated;
 select pg_temp.act_as('00000000000b');
-select throws_ok($$ select public.urb_declare_challenge(pg_temp.daily_id()) $$, 'urb_challenge_unavailable', 'declaring after the deadline is refused');
-select is(jsonb_typeof(public.urb_list_challenges() -> 'accepted'), 'null', 'an expired acceptance frees the player');
+select throws_ok($$ select public.urb_declare_challenge(pg_temp.daily_id(), '00000000-0000-0000-0000-000000000001') $$, 'urb_challenge_unavailable', 'declaring after the deadline is refused');
+select is(jsonb_typeof(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'accepted'), 'null', 'an expired acceptance frees the player');
 select is(pg_temp.accepted_state('00000000000b'), 'expired', 'an acceptance past its deadline is expired once listed');
 
 reset role;
@@ -115,9 +115,28 @@ update public.urb_challenge_acceptances set state = 'accepted', completed_at = n
 select pg_temp.close_event_window();
 set local role authenticated;
 select pg_temp.act_as('00000000000b');
-select ok(not exists (select 1 from jsonb_array_elements(public.urb_list_challenges() -> 'challenges') c where c ->> 'kind' = 'event'), 'a Challenge whose window closed is not listed to a player who did not accept it');
+select ok(not exists (select 1 from jsonb_array_elements(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'challenges') c where c ->> 'kind' = 'event'), 'a Challenge whose window closed is not listed to a player who did not accept it');
 select pg_temp.act_as('00000000000a');
-select ok(exists (select 1 from jsonb_array_elements(public.urb_list_challenges() -> 'challenges') c where c ->> 'id' = pg_temp.event_id()::text), 'the accepted Challenge stays listed after its window closed');
+select ok(exists (select 1 from jsonb_array_elements(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'challenges') c where c ->> 'id' = pg_temp.event_id()::text), 'the accepted Challenge stays listed after its window closed');
+-- Cities: each City of an account has its own accepted Challenge
+reset role;
+create function pg_temp.medium_id() returns uuid language sql security definer as $$
+  select id from public.urb_challenges where kind = 'daily' and difficulty = 'medium' and min_citizens = 0;
+$$;
+set local role authenticated;
+select pg_temp.act_as('00000000000a');
+select is(jsonb_typeof(public.urb_list_challenges('00000000-0000-0000-0000-0000000000c2') -> 'accepted'), 'null', 'a second City has nothing accepted while the first runs an Event');
+select ok(exists (select 1 from jsonb_array_elements(public.urb_list_challenges('00000000-0000-0000-0000-0000000000c2') -> 'challenges') c where c ->> 'id' = pg_temp.daily_id()::text), 'the Daily completed in the first City is still offered to the second');
+select lives_ok($$ select public.urb_accept_challenge(pg_temp.daily_id(), '00000000-0000-0000-0000-0000000000c2') $$, 'the second City accepts the same Daily challenge');
+select throws_ok($$ select public.urb_accept_challenge(pg_temp.medium_id(), '00000000-0000-0000-0000-0000000000c2') $$, 'urb_challenge_busy', 'a second Challenge is refused in a City that already runs one');
+select is((public.urb_declare_challenge(pg_temp.daily_id(), '00000000-0000-0000-0000-0000000000c2') ->> 'alreadyClaimed')::boolean, false, 'the second City claims the Daily on its own');
+select lives_ok($$ select public.urb_accept_challenge(pg_temp.medium_id(), '00000000-0000-0000-0000-0000000000c2') $$, 'the second City accepts another Challenge once done');
+select lives_ok($$ select public.urb_abandon_challenge(pg_temp.medium_id(), '00000000-0000-0000-0000-0000000000c2') $$, 'the second City abandons it');
+select ok(
+  public.urb_list_challenges('00000000-0000-0000-0000-0000000000c2') -> 'abandoned' ? pg_temp.medium_id()::text
+    and not (public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'abandoned' ? pg_temp.medium_id()::text)
+    and public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'accepted' ->> 'challengeId' = pg_temp.event_id()::text,
+  'abandoning in one City leaves the other City and its accepted Event alone');
 reset role;
 select finish();
 rollback;

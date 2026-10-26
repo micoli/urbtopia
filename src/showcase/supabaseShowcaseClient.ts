@@ -29,16 +29,19 @@ export function toShowcaseError(failure: PostgrestFailure): ShowcaseError {
   return new ShowcaseError('unknown');
 }
 
-export async function createSupabaseShowcaseClient(config: CloudConfig): Promise<ShowcaseClient> {
+export async function createSupabaseShowcaseClient(config: CloudConfig, cityId: string): Promise<ShowcaseClient> {
   const { client } = await loadSharedSupabase(config);
-  return new SupabaseShowcaseClient(client);
+  return new SupabaseShowcaseClient(client, cityId);
 }
 
 class SupabaseShowcaseClient implements ShowcaseClient {
-  constructor(private client: Client) {}
+  constructor(
+    private client: Client,
+    private cityId: string,
+  ) {}
 
   async status(): Promise<ShowcaseStatus> {
-    return parseStatus(await this.call(() => this.client.rpc('urb_showcase_status')));
+    return parseStatus(await this.call(() => this.client.rpc('urb_showcase_status', { p_city: this.cityId })));
   }
 
   async markNoticeSeen(): Promise<void> {
@@ -46,19 +49,21 @@ class SupabaseShowcaseClient implements ShowcaseClient {
   }
 
   async setOptOut(optedOut: boolean): Promise<void> {
-    await this.call(() => this.client.rpc('urb_set_hall_of_fame_opt_out', { p_opted_out: optedOut }));
+    await this.call(() => this.client.rpc('urb_set_hall_of_fame_opt_out', { p_city: this.cityId, p_opted_out: optedOut }));
   }
 
-  async publish(envelope: string, formatVersion: number, citizens: number): Promise<void> {
-    await this.call(() => this.client.rpc('urb_publish_showcase', { p_envelope: JSON.parse(envelope) as Json, p_format_version: formatVersion, p_citizens: citizens }));
+  async publish(envelope: string, formatVersion: number, citizens: number, cityName: string): Promise<void> {
+    await this.call(() =>
+      this.client.rpc('urb_publish_showcase', { p_city: this.cityId, p_city_name: cityName, p_envelope: JSON.parse(envelope) as Json, p_format_version: formatVersion, p_citizens: citizens }),
+    );
   }
 
   async hallOfFame(): Promise<HallOfFameEntry[]> {
     return parseHallOfFame(await this.call(() => this.client.rpc('urb_hall_of_fame')));
   }
 
-  async getShowcase(userId: string): Promise<Showcase> {
-    return parseShowcase(await this.call(() => this.client.rpc('urb_get_showcase', { p_user: userId })));
+  async getShowcase(userId: string, cityId: string): Promise<Showcase> {
+    return parseShowcase(await this.call(() => this.client.rpc('urb_get_showcase', { p_user: userId, p_city: cityId })));
   }
 
   private async call<T>(request: () => PromiseLike<{ data: T; error: PostgrestFailure | null }>): Promise<T> {

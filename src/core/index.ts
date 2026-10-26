@@ -193,7 +193,7 @@ export { CHALLENGE_REWARD_MULTIPLIER } from './challenges/types';
 export type { ChallengeClaim, ChallengeProgress, ChallengeRewardKind } from './challenges/types';
 export { applyTradeEffect, findLedgerEntry, isTradeLine, isValidLot, lotReceiveIssue, pendingTradeEntries } from './trade/tradeLedger';
 export type { TradeApplyInput } from './trade/tradeLedger';
-export { TRADE_EFFECTS, TRADE_LIMITS } from './trade/types';
+export { isShipmentLedgerId, shipmentLedgerId, TRADE_EFFECTS, TRADE_LIMITS } from './trade/types';
 export type { TradeEffect, TradeLedgerEntry, TradeLine } from './trade/types';
 export { DIAGNOSIS, diagnosisOf } from './diagnosis/diagnosis';
 export type { Cause, Diagnosis } from './diagnosis/diagnosis';

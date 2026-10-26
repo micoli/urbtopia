@@ -8,9 +8,11 @@ import { installBackOffice } from '../backOffice/installBackOffice';
 import { installChallenges } from '../challenges/installChallenges';
 import { installSolidarity } from '../solidarity/installSolidarity';
 import { installShowcase } from '../showcase/installShowcase';
+import { installShipments } from '../shipments/installShipments';
 import { installSocial } from '../social/installSocial';
 import { installCloudSync } from './cloud/installCloud';
-import { saveSession, saveStore } from './instance';
+import { nameOpenCity } from './cities';
+import { rawSaveStore, saveSession, saveStore } from './instance';
 import { readMeta, shouldRemindExport } from './meta';
 import { TabOwnership } from './tabOwnership';
 
@@ -35,6 +37,8 @@ export function installPersistence(): () => void {
     if (bootResult.detail) console.warn(`Save rejected: ${bootResult.detail}`);
     dialogStore.getState().setRecovery({ reason: bootResult.reason, raw: bootResult.raw });
   }
+
+  nameOpenCity(rawSaveStore, gameStore.getState().state.seed);
 
   const autosave = createAutosave({
     save: () => {
@@ -84,6 +88,7 @@ export function installPersistence(): () => void {
   const disposeShowcase = installShowcase();
   const disposeChallenges = installChallenges();
   const disposeSolidarity = installSolidarity();
+  const disposeShipments = installShipments();
 
   return () => {
     saveNowHandle.current = () => {};
@@ -93,6 +98,7 @@ export function installPersistence(): () => void {
     disposeShowcase();
     disposeChallenges();
     disposeSolidarity();
+    disposeShipments();
     unsubscribe();
     document.removeEventListener('visibilitychange', onVisibility);
     window.removeEventListener('pagehide', autosave.flush);

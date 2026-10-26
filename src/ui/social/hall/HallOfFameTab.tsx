@@ -20,5 +20,5 @@ export function HallOfFameTab() {
     if (!actions) return null;
     return <HallOfFameList state={state} entries={entries} visitBusy={visit.kind === 'loading'}
                            visitFailure={visit.kind === 'failed' ? visit.reason : null}
-                           onVisit={userId => void actions.visit(userId)} onRefresh={() => void actions.refreshHallOfFame()}/>;
+                           onVisit={(userId, cityId) => void actions.visit(userId, cityId)} onRefresh={() => void actions.refreshHallOfFame()}/>;
 }

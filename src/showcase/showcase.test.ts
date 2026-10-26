@@ -20,6 +20,7 @@ function setup(overrides: { member?: boolean } = {}) {
   const publisher = new ShowcasePublisher({
     client,
     isMember: () => client.member,
+    cityName: () => 'My Town',
     readLocal: () => local,
     onStatus: (status) => statuses.push(status),
   });
@@ -28,7 +29,7 @@ function setup(overrides: { member?: boolean } = {}) {
 
 describe('loadShowcaseClient', () => {
   it('returns null without configuration, so supabase-js is never imported', async () => {
-    expect(await loadShowcaseClient({})).toBeNull();
+    expect(await loadShowcaseClient('c1', {})).toBeNull();
   });
 });
 
@@ -68,17 +69,20 @@ describe('showcaseContent', () => {
 
 describe('parsers', () => {
   it('reads the ranking', () => {
-    expect(parseHallOfFame([{ rank: 1, userId: 'u', handle: 'Alice', avatar: null, citizens: 12 }])).toEqual([{ rank: 1, userId: 'u', handle: 'Alice', avatar: null, citizens: 12 }]);
+    const row = { rank: 1, userId: 'u', cityId: 'c1', cityName: 'Alice Harbour', handle: 'Alice', avatar: null, citizens: 12 };
+    expect(parseHallOfFame([row])).toEqual([row]);
   });
 
   it('refuses a malformed ranking', () => {
     expect(() => parseHallOfFame([{ rank: 'one' }])).toThrow();
+    expect(() => parseHallOfFame([{ rank: 1, userId: 'u', handle: 'Alice', avatar: null, citizens: 12 }])).toThrow();
     expect(() => parseHallOfFame({})).toThrow();
   });
 
   it('hands the Showcase envelope back as text', () => {
-    const showcase = parseShowcase({ handle: 'Alice', avatar: 'character-male-a', formatVersion: 16, envelope: { a: 1 } });
+    const showcase = parseShowcase({ cityName: 'Alice Harbour', handle: 'Alice', avatar: 'character-male-a', formatVersion: 16, envelope: { a: 1 } });
     expect(JSON.parse(showcase.envelope)).toEqual({ a: 1 });
+    expect(showcase.cityName).toBe('Alice Harbour');
   });
 });
 
@@ -98,6 +102,13 @@ describe('ShowcasePublisher', () => {
     const parsed = parseEnvelope(client.published[0]?.envelope ?? "");
     expect(parsed.ok && parsed.state.tradeLedger).toEqual([]);
     expect(client.published[0]?.citizens).toBe(totalCitizens(city));
+  });
+
+  it('publishes under the name of the open City', async () => {
+    const { client, publisher } = setup();
+    await publisher.loadStatus();
+    await publisher.acknowledgeNotice();
+    expect(client.published[0]?.cityName).toBe('My Town');
   });
 
   it('publishes nothing for an account without a Handle', async () => {

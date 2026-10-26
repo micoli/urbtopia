@@ -1,6 +1,7 @@
 import { cloudEnabled } from '../persistence/cloud/cloudConfig';
 import { SAVE_KEY } from '../persistence/saveStore';
-import { saveStore } from '../persistence/instance';
+import { readRegistry } from '../persistence/cities';
+import { openCityId, rawSaveStore, saveStore } from '../persistence/instance';
 import { gameStore } from '../store/gameStore';
 import { readOnlyStore } from '../store/readOnlyStore';
 import { showcaseStore } from '../store/showcaseStore';
@@ -35,13 +36,14 @@ export function installShowcase(): () => void {
   let disposed = false;
   let stopWatching = () => {};
 
-  void loadShowcaseClient().then((client) => {
+  void loadShowcaseClient(openCityId()).then((client) => {
     if (!client || disposed) return;
     const store = showcaseStore.getState();
     const publisher = new ShowcasePublisher({
       client,
       isMember: () => socialStore.getState().profile !== null,
       readLocal: () => saveStore.get(SAVE_KEY),
+      cityName: () => readRegistry(rawSaveStore)?.cities.find((city) => city.id === openCityId())?.name ?? '',
       onStatus: (status) => showcaseStore.getState().setStatus(status),
     });
     const visits = new VisitController({
@@ -66,8 +68,8 @@ export function installShowcase(): () => void {
       },
       acknowledgeNotice: () => publisher.acknowledgeNotice().catch(() => {}),
       setOptOut: (optedOut) => publisher.setOptOut(optedOut).catch(() => {}),
-      visit: async (userId) => {
-        await visits.visit(userId);
+      visit: async (userId, cityId) => {
+        await visits.visit(userId, cityId);
         if (showcaseStore.getState().visit.kind === 'visiting') presentVisit();
       },
       leaveVisit: () => {

@@ -2,6 +2,7 @@ import type { MedalInfo } from '../challenges/types';
 import type { TradeLine } from '../core';
 import { isAvatarId } from './avatar';
 import { FakeGroupBook } from './fakeGroupBook';
+import { FIRST_CITY_ID } from '../persistence/cities';
 import { FakeTradeBook } from './fakeTradeBook';
 import { isValidHandle } from './handle';
 import { HANDLE_CHANGE_DELAY_DAYS, MAX_FRIENDS, MAX_MESSAGE_LENGTH, MAX_MESSAGES_PER_MINUTE, MAX_OUTGOING_REQUESTS, SEARCHES_PER_DAY, SEARCHES_PER_HOUR } from './limits';
@@ -76,6 +77,10 @@ export class FakeSocialWorld {
   addPlayer(userId: string, email: string | null = `${userId}@example.com`, handle: string | null = null): FakeSocialClient {
     this.members.set(userId, { userId, email: email ?? '', handle, avatar: null, findable: true, handleChangedAt: 0, revision: 1, searches: [] });
     return new FakeSocialClient(this, userId, email !== null);
+  }
+
+  clientInCity(userId: string, cityId: string): FakeSocialClient {
+    return new FakeSocialClient(this, userId, true, cityId);
   }
 
   member(userId: string): Member {
@@ -188,6 +193,7 @@ export class FakeSocialClient implements SocialClient {
     private world: FakeSocialWorld,
     readonly userId: string,
     private hasEmail: boolean,
+    private cityId: string = FIRST_CITY_ID,
   ) {}
 
   goOffline(): void {
@@ -302,7 +308,7 @@ export class FakeSocialClient implements SocialClient {
       blocked: links
         .filter((link) => link.state === 'blocked' && link.actorId === this.userId)
         .map((link) => ({ userId: userIdOf(link), handle: handleOf(link), avatar: avatarOf(link) })),
-      offers: this.world.trades.listFor(this.userId),
+      offers: this.world.trades.listFor(this.userId).filter((offer) => offer.cityId == null || offer.cityId === this.cityId),
     };
   }
 
@@ -330,12 +336,12 @@ export class FakeSocialClient implements SocialClient {
 
   async createTradeOffer(id: string, to: string, lot: TradeLine[], price: number): Promise<void> {
     this.guard();
-    this.world.trades.create(this.userId, id, to, lot, price);
+    this.world.trades.create(this.userId, id, to, lot, price, this.cityId);
   }
 
   async acceptTradeOffer(id: string): Promise<void> {
     this.guard();
-    this.world.trades.accept(this.userId, id);
+    this.world.trades.accept(this.userId, id, this.cityId);
   }
 
   async declineTradeOffer(id: string): Promise<void> {
@@ -345,7 +351,7 @@ export class FakeSocialClient implements SocialClient {
 
   async claimTrade(id: string, slot: TradeSlot): Promise<TradeClaim> {
     this.guard();
-    return this.world.trades.claim(this.userId, id, slot);
+    return this.world.trades.claim(this.userId, id, slot, this.cityId);
   }
 
   async listGroups(cursor: number | null = null): Promise<GroupsSnapshot> {

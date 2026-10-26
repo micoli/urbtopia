@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(60);
+select plan(75);
 
 insert into auth.users (id, instance_id, aud, role, email, email_confirmed_at, is_anonymous, created_at, last_sign_in_at)
   select ('00000000-0000-0000-0004-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', n || '@example.com', now(), false, now(), now()
@@ -50,18 +50,18 @@ select ok(public.urb_lot_is_valid((select jsonb_agg(jsonb_build_object('item', '
 -- Creating
 set local role authenticated;
 select pg_temp.act_as('00000000000a');
-select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000b', '[]', 10) $$, 'urb_trade_invalid', 'an invalid Lot is refused');
-select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 10001) $$, 'urb_trade_invalid', 'a price over 10 000 is refused');
-select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000a', pg_temp.lot(), 10) $$, 'urb_trade_invalid', 'an offer to oneself is refused');
-select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000d', pg_temp.lot(), 10) $$, 'urb_not_friends', 'an offer to a non Friend is refused');
-select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 50) $$, 'an offer to a Friend is created');
-select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 50) $$, 'creating it again is idempotent');
-select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 60) $$, 'urb_trade_conflict', 'reusing an id with other content is refused');
-select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(2), '00000000-0000-0000-0004-00000000000b', pg_temp.lot('planks', 2), 0) $$, 'a gift (price 0) is created');
-select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(3), '00000000-0000-0000-0004-00000000000c', pg_temp.lot(), 5) $$, 'a third offer is created');
-select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(4), '00000000-0000-0000-0004-00000000000c', pg_temp.lot(), 5) $$, 'a fourth offer is created');
-select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(5), '00000000-0000-0000-0004-00000000000c', pg_temp.lot(), 5) $$, 'a fifth offer is created');
-select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(6), '00000000-0000-0000-0004-00000000000c', pg_temp.lot(), 5) $$, 'urb_cap_trades_open', 'a sixth open offer is refused');
+select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000b', '[]', 10, '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_invalid', 'an invalid Lot is refused');
+select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 10001, '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_invalid', 'a price over 10 000 is refused');
+select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000a', pg_temp.lot(), 10, '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_invalid', 'an offer to oneself is refused');
+select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000d', pg_temp.lot(), 10, '00000000-0000-0000-0000-000000000001') $$, 'urb_not_friends', 'an offer to a non Friend is refused');
+select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 50, '00000000-0000-0000-0000-000000000001') $$, 'an offer to a Friend is created');
+select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 50, '00000000-0000-0000-0000-000000000001') $$, 'creating it again is idempotent');
+select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 60, '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_conflict', 'reusing an id with other content is refused');
+select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(2), '00000000-0000-0000-0004-00000000000b', pg_temp.lot('planks', 2), 0, '00000000-0000-0000-0000-000000000001') $$, 'a gift (price 0) is created');
+select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(3), '00000000-0000-0000-0004-00000000000c', pg_temp.lot(), 5, '00000000-0000-0000-0000-000000000001') $$, 'a third offer is created');
+select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(4), '00000000-0000-0000-0004-00000000000c', pg_temp.lot(), 5, '00000000-0000-0000-0000-000000000001') $$, 'a fourth offer is created');
+select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(5), '00000000-0000-0000-0004-00000000000c', pg_temp.lot(), 5, '00000000-0000-0000-0000-000000000001') $$, 'a fifth offer is created');
+select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(6), '00000000-0000-0000-0004-00000000000c', pg_temp.lot(), 5, '00000000-0000-0000-0000-000000000001') $$, 'urb_cap_trades_open', 'a sixth open offer is refused');
 
 -- Listing
 select is(jsonb_array_length(public.urb_list_social() -> 'offers'), 5, 'the sender sees the open offers');
@@ -72,37 +72,37 @@ select is((public.urb_list_social() -> 'offers' -> 1 ->> 'peerHandle'), 'Alice',
 
 -- Accept and claims
 select pg_temp.act_as('00000000000a');
-select throws_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1)) $$, 'urb_trade_unavailable', 'the sender cannot accept their own offer');
+select throws_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_unavailable', 'the sender cannot accept their own offer');
 select pg_temp.act_as('00000000000c');
-select throws_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1)) $$, 'urb_trade_unavailable', 'a third party cannot accept');
+select throws_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_unavailable', 'a third party cannot accept');
 select pg_temp.act_as('00000000000b');
-select lives_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1)) $$, 'the recipient accepts');
-select lives_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1)) $$, 'accepting twice changes nothing');
+select lives_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0000-000000000001') $$, 'the recipient accepts');
+select lives_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0000-000000000001') $$, 'accepting twice changes nothing');
 select pg_temp.act_as('00000000000a');
-select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(1), 'payment') $$, 'urb_trade_unavailable', 'the sender is not paid before the recipient has the Lot');
-select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(1), 'lot') $$, 'urb_trade_unavailable', 'the sender cannot claim a Lot that went to the recipient');
+select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(1), 'payment', '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_unavailable', 'the sender is not paid before the recipient has the Lot');
+select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(1), 'lot', '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_unavailable', 'the sender cannot claim a Lot that went to the recipient');
 select pg_temp.act_as('00000000000b');
-select is(public.urb_claim_trade(pg_temp.offer(1), 'lot') ->> 'effect', 'receive-lot', 'the recipient claims the Lot');
-select is((public.urb_claim_trade(pg_temp.offer(1), 'lot') ->> 'alreadyClaimed')::boolean, true, 'a repeated claim answers again, flagged as already claimed');
+select is(public.urb_claim_trade(pg_temp.offer(1), 'lot', '00000000-0000-0000-0000-000000000001') ->> 'effect', 'receive-lot', 'the recipient claims the Lot');
+select is((public.urb_claim_trade(pg_temp.offer(1), 'lot', '00000000-0000-0000-0000-000000000001') ->> 'alreadyClaimed')::boolean, true, 'a repeated claim answers again, flagged as already claimed');
 select pg_temp.act_as('00000000000a');
-select is((public.urb_claim_trade(pg_temp.offer(1), 'payment') ->> 'urbs')::int, 50, 'the sender then claims the payment');
-select is((public.urb_claim_trade(pg_temp.offer(1), 'payment') ->> 'alreadyClaimed')::boolean, true, 'and again without a second payment');
+select is((public.urb_claim_trade(pg_temp.offer(1), 'payment', '00000000-0000-0000-0000-000000000001') ->> 'urbs')::int, 50, 'the sender then claims the payment');
+select is((public.urb_claim_trade(pg_temp.offer(1), 'payment', '00000000-0000-0000-0000-000000000001') ->> 'alreadyClaimed')::boolean, true, 'and again without a second payment');
 
 -- Replays: accepting again is a no-op, claimed slots stay listed
 select pg_temp.act_as('00000000000b');
-select lives_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1)) $$, 'accepting an offer already accepted is a no-op');
+select lives_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(1), '00000000-0000-0000-0000-000000000001') $$, 'accepting an offer already accepted is a no-op');
 select is(pg_temp.listed_offer(1) -> 'claimed', '["lot"]'::jsonb, 'a claimed Lot stays listed to its recipient');
 select is(pg_temp.listed_offer(1) -> 'claimable', '[]'::jsonb, 'and is no longer claimable');
 select pg_temp.act_as('00000000000a');
 select is((select o ->> 'id' from jsonb_array_elements(public.urb_list_social() -> 'offers') o where o ->> 'id' = pg_temp.offer(1)::text), pg_temp.offer(1)::text, 'a claimed payment stays listed to its sender');
-select throws_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(2)) $$, 'urb_trade_unavailable', 'the sender still cannot accept');
+select throws_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(2), '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_unavailable', 'the sender still cannot accept');
 
 -- Refuse and cancel
 select pg_temp.act_as('00000000000b');
 select lives_ok($$ select public.urb_decline_trade_offer(pg_temp.offer(2)) $$, 'the recipient refuses an offer');
-select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(2), 'lot') $$, 'urb_trade_unavailable', 'the recipient cannot claim a refused Lot');
+select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(2), 'lot', '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_unavailable', 'the recipient cannot claim a refused Lot');
 select pg_temp.act_as('00000000000a');
-select is(public.urb_claim_trade(pg_temp.offer(2), 'lot') ->> 'effect', 'return-lot', 'the sender claims the Lot back');
+select is(public.urb_claim_trade(pg_temp.offer(2), 'lot', '00000000-0000-0000-0000-000000000001') ->> 'effect', 'return-lot', 'the sender claims the Lot back');
 select lives_ok($$ select public.urb_decline_trade_offer(pg_temp.offer(3)) $$, 'the sender cancels an open offer');
 select pg_temp.act_as('00000000000d');
 select throws_ok($$ select public.urb_decline_trade_offer(pg_temp.offer(4)) $$, 'urb_trade_unavailable', 'a stranger cannot cancel it');
@@ -111,7 +111,7 @@ select throws_ok($$ select public.urb_decline_trade_offer(pg_temp.offer(4)) $$, 
 select throws_ok($$ select count(*) from public.urb_trade_offers $$, '42501', null, 'offers are not readable directly');
 reset role;
 set local role anon;
-select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(1), 'lot') $$, '42501', null, 'anon cannot claim');
+select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(1), 'lot', '00000000-0000-0000-0000-000000000001') $$, '42501', null, 'anon cannot claim');
 reset role;
 
 -- Expiry of an open offer, lapse of an accepted one
@@ -120,35 +120,35 @@ select public.urb_expire_offers();
 select is((select state from public.urb_trade_offers where id = pg_temp.offer(4)), 'expired', 'an open offer expires after its deadline');
 set local role authenticated;
 select pg_temp.act_as('00000000000a');
-select is(public.urb_claim_trade(pg_temp.offer(4), 'lot') ->> 'effect', 'return-lot', 'and the Lot returns to its sender');
+select is(public.urb_claim_trade(pg_temp.offer(4), 'lot', '00000000-0000-0000-0000-000000000001') ->> 'effect', 'return-lot', 'and the Lot returns to its sender');
 
 reset role;
-insert into public.urb_trade_offers (id, sender_id, recipient_id, lot, price, state, expires_at, accepted_at, claim_deadline)
-  values (pg_temp.offer(20), '00000000-0000-0000-0004-00000000000a', '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 80, 'accepted', now() + interval '1 day', now() - interval '4 days', now() - interval '1 day');
+insert into public.urb_trade_offers (sender_city_id, recipient_city_id, id, sender_id, recipient_id, lot, price, state, expires_at, accepted_at, claim_deadline)
+  values ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', pg_temp.offer(20), '00000000-0000-0000-0004-00000000000a', '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 80, 'accepted', now() + interval '1 day', now() - interval '4 days', now() - interval '1 day');
 select public.urb_expire_offers();
 select is((select state from public.urb_trade_offers where id = pg_temp.offer(20)), 'lapsed', 'an accepted offer whose Lot is not claimed in time lapses');
 set local role authenticated;
 select pg_temp.act_as('00000000000a');
-select is(public.urb_claim_trade(pg_temp.offer(20), 'lot') ->> 'effect', 'return-lot', 'the Lot goes back to the sender');
-select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(20), 'payment') $$, 'urb_trade_unavailable', 'and the sender is not paid');
+select is(public.urb_claim_trade(pg_temp.offer(20), 'lot', '00000000-0000-0000-0000-000000000001') ->> 'effect', 'return-lot', 'the Lot goes back to the sender');
+select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(20), 'payment', '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_unavailable', 'and the sender is not paid');
 select pg_temp.act_as('00000000000b');
-select is(public.urb_claim_trade(pg_temp.offer(20), 'payment') ->> 'effect', 'return-payment', 'the payment goes back to the recipient');
+select is(public.urb_claim_trade(pg_temp.offer(20), 'payment', '00000000-0000-0000-0000-000000000001') ->> 'effect', 'return-payment', 'the payment goes back to the recipient');
 
 -- Daily limit
 reset role;
 delete from public.urb_trade_offers where sender_id = '00000000-0000-0000-0004-00000000000a';
-insert into public.urb_trade_offers (id, sender_id, recipient_id, lot, price, state, created_at, expires_at)
-  select pg_temp.offer(100 + g), '00000000-0000-0000-0004-00000000000a', '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 1, 'refused', now() - interval '1 hour', now() + interval '1 day' from generate_series(1, 30) g;
+insert into public.urb_trade_offers (sender_city_id, id, sender_id, recipient_id, lot, price, state, created_at, expires_at)
+  select '00000000-0000-0000-0000-000000000001'::uuid, pg_temp.offer(100 + g), '00000000-0000-0000-0004-00000000000a', '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 1, 'refused', now() - interval '1 hour', now() + interval '1 day' from generate_series(1, 30) g;
 set local role authenticated;
 select pg_temp.act_as('00000000000a');
-select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(200), '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 1) $$, 'urb_rate_limited', 'the 31st offer within a day is refused');
+select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(200), '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 1, '00000000-0000-0000-0000-000000000001') $$, 'urb_rate_limited', 'the 31st offer within a day is refused');
 
 -- Block and unfriend close the offers
 reset role;
 delete from public.urb_trade_offers;
-insert into public.urb_trade_offers (id, sender_id, recipient_id, lot, price, state, expires_at, accepted_at, claim_deadline) values
-  (pg_temp.offer(300), '00000000-0000-0000-0004-00000000000a', '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 5, 'open', now() + interval '1 day', null, null),
-  (pg_temp.offer(301), '00000000-0000-0000-0004-00000000000a', '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 5, 'accepted', now() + interval '1 day', now(), now() + interval '3 days');
+insert into public.urb_trade_offers (sender_city_id, recipient_city_id, id, sender_id, recipient_id, lot, price, state, expires_at, accepted_at, claim_deadline) values
+  ('00000000-0000-0000-0000-000000000001', null, pg_temp.offer(300), '00000000-0000-0000-0004-00000000000a', '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 5, 'open', now() + interval '1 day', null, null),
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', pg_temp.offer(301), '00000000-0000-0000-0004-00000000000a', '00000000-0000-0000-0004-00000000000b', pg_temp.lot(), 5, 'accepted', now() + interval '1 day', now(), now() + interval '3 days');
 set local role authenticated;
 select pg_temp.act_as('00000000000b');
 select public.urb_block_user('00000000-0000-0000-0004-00000000000a');
@@ -157,13 +157,39 @@ select is((select state from public.urb_trade_offers where id = pg_temp.offer(30
 select is((select state from public.urb_trade_offers where id = pg_temp.offer(301)), 'lapsed', 'and lapses the accepted ones whose Lot is unclaimed');
 
 -- Deleting cloud data
-insert into public.urb_trade_offers (id, sender_id, recipient_id, lot, price, state, expires_at)
-  values (pg_temp.offer(310), '00000000-0000-0000-0004-00000000000a', '00000000-0000-0000-0004-00000000000c', pg_temp.lot(), 5, 'open', now() + interval '1 day');
+insert into public.urb_trade_offers (sender_city_id, id, sender_id, recipient_id, lot, price, state, expires_at)
+  values ('00000000-0000-0000-0000-000000000001', pg_temp.offer(310), '00000000-0000-0000-0004-00000000000a', '00000000-0000-0000-0004-00000000000c', pg_temp.lot(), 5, 'open', now() + interval '1 day');
 set local role authenticated;
 select pg_temp.act_as('00000000000c');
 select public.urb_delete_my_saves();
 select pg_temp.act_as('00000000000a');
-select is(public.urb_claim_trade(pg_temp.offer(310), 'lot') ->> 'effect', 'return-lot', 'when the recipient deletes their data, the sender gets the Lot back');
+select is(public.urb_claim_trade(pg_temp.offer(310), 'lot', '00000000-0000-0000-0000-000000000001') ->> 'effect', 'return-lot', 'when the recipient deletes their data, the sender gets the Lot back');
+
+-- Cities: an offer leaves one City and lands in the City open at acceptance; what it gives back returns to the City it left
+reset role;
+insert into public.urb_friendships (user_low, user_high, state, actor_id) values
+  ('00000000-0000-0000-0004-00000000000a', '00000000-0000-0000-0004-00000000000d', 'accepted', '00000000-0000-0000-0004-00000000000a');
+set local role authenticated;
+select pg_temp.act_as('00000000000a');
+select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(400), '00000000-0000-0000-0004-00000000000d', pg_temp.lot(), 50, '00000000-0000-0000-0000-0000000000c2') $$, 'an offer is sent from a given City');
+select throws_ok($$ select public.urb_create_trade_offer(pg_temp.offer(400), '00000000-0000-0000-0004-00000000000d', pg_temp.lot(), 50, '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_conflict', 'replaying it from another City is a conflict');
+select is(pg_temp.listed_offer(400) ->> 'cityId', '00000000-0000-0000-0000-0000000000c2', 'the sender sees the City the offer left');
+select pg_temp.act_as('00000000000d');
+select is(pg_temp.listed_offer(400) ->> 'cityId', null, 'the recipient has no City until they accept');
+select lives_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(400), '00000000-0000-0000-0000-0000000000c3') $$, 'the recipient accepts into one of their Cities');
+select lives_ok($$ select public.urb_accept_trade_offer(pg_temp.offer(400), '00000000-0000-0000-0000-000000000001') $$, 'accepting again is a no-op');
+select is(pg_temp.listed_offer(400) ->> 'cityId', '00000000-0000-0000-0000-0000000000c3', 'and keeps the first City');
+select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(400), 'lot', '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_unavailable', 'another City cannot claim the Lot');
+select is(public.urb_claim_trade(pg_temp.offer(400), 'lot', '00000000-0000-0000-0000-0000000000c3') ->> 'effect', 'receive-lot', 'the accepting City claims the Lot');
+select pg_temp.act_as('00000000000a');
+select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(400), 'payment', '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_unavailable', 'the payment is not claimable by a City other than the sender one');
+select is(public.urb_claim_trade(pg_temp.offer(400), 'payment', '00000000-0000-0000-0000-0000000000c2') ->> 'effect', 'receive-payment', 'the payment goes back to the City the offer left');
+select lives_ok($$ select public.urb_create_trade_offer(pg_temp.offer(401), '00000000-0000-0000-0004-00000000000d', pg_temp.lot(), 0, '00000000-0000-0000-0000-0000000000c2') $$, 'a second offer is sent');
+select pg_temp.act_as('00000000000d');
+select lives_ok($$ select public.urb_decline_trade_offer(pg_temp.offer(401)) $$, 'the recipient refuses it');
+select pg_temp.act_as('00000000000a');
+select throws_ok($$ select public.urb_claim_trade(pg_temp.offer(401), 'lot', '00000000-0000-0000-0000-000000000001') $$, 'urb_trade_unavailable', 'a refused Lot is not claimable by another City');
+select is(public.urb_claim_trade(pg_temp.offer(401), 'lot', '00000000-0000-0000-0000-0000000000c2') ->> 'effect', 'return-lot', 'it returns to the City it left');
 
 select * from finish();
 rollback;

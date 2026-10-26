@@ -28,8 +28,8 @@ create temp table before_revision as select (public.urb_list_social() ->> 'revis
 select is(jsonb_array_length(public.urb_list_social() -> 'friends' -> 0 -> 'medals'), 0, 'a Friend without Medal shows an empty list');
 
 select pg_temp.act_as('00000000000a');
-select lives_ok($$ select public.urb_accept_challenge(pg_temp.event_id()) $$, 'Alice accepts the Event');
-select lives_ok($$ select public.urb_declare_challenge(pg_temp.event_id()) $$, 'Alice completes the Event');
+select lives_ok($$ select public.urb_accept_challenge(pg_temp.event_id(), '00000000-0000-0000-0000-000000000001') $$, 'Alice accepts the Event');
+select lives_ok($$ select public.urb_declare_challenge(pg_temp.event_id(), '00000000-0000-0000-0000-000000000001') $$, 'Alice completes the Event');
 
 select pg_temp.act_as('00000000000b');
 select is((public.urb_list_social((select revision from before_revision)) ->> 'changed')::boolean, true, 'earning a Medal changes the Friends state of Bob');
@@ -42,9 +42,9 @@ select pg_temp.act_as('00000000000c');
 select is(jsonb_array_length(public.urb_list_social() -> 'friends'), 0, 'a blocked account sees no Friend, so no Medal');
 
 select pg_temp.act_as('00000000000a');
-select is(jsonb_array_length(public.urb_list_challenges() -> 'medals'), 1, 'Alice sees her own Medal in the Challenge state');
+select is(jsonb_array_length(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'medals'), 1, 'Alice sees her own Medal in the Challenge state');
 
-select is(public.urb_list_challenges() -> 'medals' -> 0 ->> 'nameEn', 'Port festival', 'her own Medal carries its name');
+select is(public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'medals' -> 0 ->> 'nameEn', 'Port festival', 'her own Medal carries its name');
 
 select finish();
 rollback;

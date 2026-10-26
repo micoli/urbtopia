@@ -1,4 +1,4 @@
-import { findLedgerEntry, isValidLot, lotReceiveIssue, pendingTradeEntries, TRADE_LIMITS, type Command, type ErrorKey, type GameState, type TradeEffect, type TradeLedgerEntry, type TradeLine } from '../core';
+import { findLedgerEntry, isShipmentLedgerId, isValidLot, lotReceiveIssue, pendingTradeEntries, TRADE_LIMITS, type Command, type ErrorKey, type GameState, type TradeEffect, type TradeLedgerEntry, type TradeLine } from '../core';
 import { SocialError, type SocialClient, type SocialErrorKind, type TradeOffer, type TradeSlot } from './types';
 
 // The game side the coordinator needs: read the state, apply a command (null when it worked), write the save.
@@ -138,6 +138,7 @@ export class TradeCoordinator {
 
   private async replayPending(offers: readonly TradeOffer[]): Promise<void> {
     for (const entry of pendingTradeEntries(this.deps.game.state())) {
+      if (isShipmentLedgerId(entry.offerId)) continue;
       if (CLAIM_EFFECTS.has(entry.effect)) {
         this.confirm(entry.offerId, entry.effect);
         continue;

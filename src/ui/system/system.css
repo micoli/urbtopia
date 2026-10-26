@@ -110,3 +110,45 @@
 .conflict-city h3 { margin: 0; }
 .cloud-email, .cloud-account { display: grid; gap: var(--space-8); margin: var(--space-8) 0; }
 .cloud-email input { padding: 0.4rem var(--space-8); font: inherit; }
+
+.cities-list {
+  margin: 0 0 var(--space-12);
+  padding: 0;
+  list-style: none;
+}
+
+.city-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) 0;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+}
+
+.city-row[aria-current='true'] strong::before {
+  content: '● ';
+}
+
+.city-rename,
+.city-delete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.shipment-list {
+  margin: 0 0 var(--space-12);
+  padding: 0;
+  list-style: none;
+}
+
+.shipment-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) 0;
+}

@@ -10,8 +10,8 @@ import { HallOfFameToggle } from './HallOfFameToggle';
 
 const noop = () => {};
 const entries: HallOfFameEntry[] = [
-  { rank: 1, userId: 'u1', handle: 'Alice', avatar: null, citizens: 1200 },
-  { rank: 2, userId: 'u2', handle: 'Bob', avatar: 'character-male-a', citizens: 900 },
+  { rank: 1, userId: 'u1', cityId: 'c1', cityName: 'Alice Harbour', handle: 'Alice', avatar: null, citizens: 1200 },
+  { rank: 2, userId: 'u2', cityId: 'c2', cityName: 'Bobville', handle: 'Bob', avatar: 'character-male-a', citizens: 900 },
 ];
 
 const list = (props: Partial<Parameters<typeof HallOfFameList>[0]> = {}) =>
@@ -67,8 +67,9 @@ describe('Hall of fame notice', () => {
 
 describe('Visit banner', () => {
   it('names the visited Handle and offers to leave', () => {
-    const html = renderToStaticMarkup(<VisitBannerView handle="Bob" onLeave={noop} />);
+    const html = renderToStaticMarkup(<VisitBannerView handle="Bob" cityName="Bobville" onLeave={noop} />);
     expect(html).toContain('Bob');
+    expect(html).toContain('Bobville');
     expect(html).toContain(t('visit.leave'));
   });
 });

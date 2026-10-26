@@ -56,13 +56,22 @@ export function toSocialError(failure: PostgrestFailure): SocialError {
   return new SocialError('unknown');
 }
 
-export async function createSupabaseSocialClient(config: CloudConfig): Promise<SocialClient> {
+export async function createSupabaseSocialClient(config: CloudConfig, cityId: string): Promise<SocialClient> {
   const { client } = await loadSharedSupabase(config);
-  return new SupabaseSocialClient(client);
+  return new SupabaseSocialClient(client, cityId);
+}
+
+// An offer belongs to the City on the viewer's side; a recipient who has not accepted yet sees it from every City.
+export function forCity(snapshot: SocialSnapshot, cityId: string): SocialSnapshot {
+  if (!snapshot.changed) return snapshot;
+  return { ...snapshot, offers: snapshot.offers.filter((offer) => offer.cityId == null || offer.cityId === cityId) };
 }
 
 class SupabaseSocialClient implements SocialClient {
-  constructor(private client: Client) {}
+  constructor(
+    private client: Client,
+    private cityId: string,
+  ) {}
 
   async setHandle(handle: string): Promise<void> {
     await this.call(() => this.client.rpc('urb_set_handle', { p_handle: handle }));
@@ -102,7 +111,7 @@ class SupabaseSocialClient implements SocialClient {
 
   async list(cursor: number | null = null): Promise<SocialSnapshot> {
     const data = await this.call(() => this.client.rpc('urb_list_social', cursor === null ? {} : { p_cursor: cursor }));
-    return parseSnapshot(data);
+    return forCity(parseSnapshot(data), this.cityId);
   }
 
   async sendMessage(userId: string, body: string): Promise<number> {
@@ -117,11 +126,11 @@ class SupabaseSocialClient implements SocialClient {
   }
 
   async createTradeOffer(id: string, to: string, lot: TradeLine[], price: number): Promise<void> {
-    await this.call(() => this.client.rpc('urb_create_trade_offer', { p_id: id, p_to: to, p_lot: lot as unknown as Json, p_price: price }));
+    await this.call(() => this.client.rpc('urb_create_trade_offer', { p_id: id, p_to: to, p_lot: lot as unknown as Json, p_price: price, p_city: this.cityId }));
   }
 
   async acceptTradeOffer(id: string): Promise<void> {
-    await this.call(() => this.client.rpc('urb_accept_trade_offer', { p_id: id }));
+    await this.call(() => this.client.rpc('urb_accept_trade_offer', { p_id: id, p_city: this.cityId }));
   }
 
   async declineTradeOffer(id: string): Promise<void> {
@@ -129,7 +138,7 @@ class SupabaseSocialClient implements SocialClient {
   }
 
   async claimTrade(id: string, slot: TradeSlot): Promise<TradeClaim> {
-    const data = await this.call(() => this.client.rpc('urb_claim_trade', { p_id: id, p_slot: slot }));
+    const data = await this.call(() => this.client.rpc('urb_claim_trade', { p_id: id, p_slot: slot, p_city: this.cityId }));
     return parseTradeClaim(data);
   }
 

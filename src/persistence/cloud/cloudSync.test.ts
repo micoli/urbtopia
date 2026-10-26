@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { newGame } from '../../core';
 import { CURRENT_VERSION, serializeEnvelope } from '../envelope';
 import { readCloudMeta } from '../meta';
+import { restoreCloudCity } from '../restoreCloudCity';
+import { bootCities, FIRST_CITY_ID, readRegistry } from '../cities';
+import { CityScopedSaveStore } from '../cityStore';
 import { MemorySaveStore, SAVE_KEY } from '../saveStore';
 import { CloudSync, PUSH_INTERVAL_MS, type CloudStatus } from './cloudSync';
 import { FakeCloudSaveClient } from './fakeCloudSaveClient';
@@ -15,11 +18,12 @@ function envelopeAt(savedAt: number): string {
   return serializeEnvelope(game, savedAt);
 }
 
-function setup(client: FakeCloudSaveClient, clock: { now: number }, keepLocal = false) {
+function setup(client: FakeCloudSaveClient, clock: { now: number }, keepLocal = false, cityId = FIRST_CITY_ID) {
   const store = new MemorySaveStore();
   const log = { adopted: [] as string[], previousKept: 0, statuses: [] as CloudStatus[], canPush: true };
   const sync = new CloudSync({
     client,
+    cityId,
     store,
     now: () => clock.now,
     local: {
@@ -473,6 +477,7 @@ describe('CloudSync accounts', () => {
     const store = new MemorySaveStore();
     const sync = new CloudSync({
       client,
+      cityId: FIRST_CITY_ID,
       store,
       now: () => clock.now,
       local: { adopt: () => {}, keepAsPreviousVersion: () => {} },
@@ -495,6 +500,7 @@ describe('CloudSync publication hook', () => {
     const pushed: string[] = [];
     const sync = new CloudSync({
       client,
+      cityId: FIRST_CITY_ID,
       store,
       now: () => clock.now,
       local: { adopt: () => {}, keepAsPreviousVersion: () => {} },
@@ -514,12 +520,98 @@ describe('CloudSync publication hook', () => {
     const client = new FakeCloudSaveClient(() => clock.now);
     const store = new MemorySaveStore();
     const pushed: string[] = [];
-    const sync = new CloudSync({ client, store, now: () => clock.now, local: { adopt: () => {}, keepAsPreviousVersion: () => {} }, canPush: () => true, onStatus: () => {}, onPushed: (envelope) => pushed.push(envelope) });
+    const sync = new CloudSync({ client, cityId: FIRST_CITY_ID, store, now: () => clock.now, local: { adopt: () => {}, keepAsPreviousVersion: () => {} }, canPush: () => true, onStatus: () => {}, onPushed: (envelope) => pushed.push(envelope) });
     store.put(SAVE_KEY, envelopeAt(T0));
     sync.noteEdit();
     await sync.start();
     client.goOffline();
     await sync.tick();
     expect(pushed).toEqual([]);
+  });
+});
+
+describe('Cities', () => {
+  const SECOND = '00000000-0000-0000-0000-0000000000c2';
+  const THIRD = '00000000-0000-0000-0000-0000000000c3';
+  const FOURTH = '00000000-0000-0000-0000-0000000000c4';
+
+  async function pushNew(client: FakeCloudSaveClient, clock: { now: number }, cityId: string, savedAt = T0) {
+    const device = setup(client, clock, false, cityId);
+    device.edit(savedAt);
+    await device.sync.pushNow();
+    return device;
+  }
+
+  it('keeps one history per City under the same account', async () => {
+    const { clock, client } = world();
+    await pushNew(client, clock, FIRST_CITY_ID);
+    await pushNew(client, clock, SECOND, T0 + 1);
+    expect(client.rowsOf(FIRST_CITY_ID)).toHaveLength(1);
+    expect(client.rowsOf(SECOND)).toHaveLength(1);
+    expect((await client.listCities()).map((city) => city.cityId).sort()).toEqual([FIRST_CITY_ID, SECOND]);
+  });
+
+  it('raises a Save conflict on one City without touching another', async () => {
+    const { clock, client } = world();
+    const first = await pushNew(client, clock, FIRST_CITY_ID);
+    const second = await pushNew(client, clock, SECOND);
+    const otherDevice = setup(client, clock, false, FIRST_CITY_ID);
+    await otherDevice.sync.start();
+    clock.now += HOUR;
+    otherDevice.edit(clock.now);
+    await otherDevice.sync.pushNow();
+
+    first.edit(clock.now + 1);
+    await first.sync.pushNow();
+
+    expect(first.sync.current.kind).toBe('conflict');
+    second.edit(clock.now + 2);
+    await second.sync.pushNow();
+    expect(second.sync.current.kind).toBe('synced');
+  });
+
+  it('refuses a fourth City for good, without retrying', async () => {
+    const { clock, client } = world();
+    for (const id of [FIRST_CITY_ID, SECOND, THIRD]) await pushNew(client, clock, id);
+    const fourth = await pushNew(client, clock, FOURTH);
+    expect(fourth.sync.current).toEqual({ kind: 'error', reason: 'city-limit' });
+    const attempts = client.pushes.length;
+    clock.now += HOUR;
+    await fourth.sync.tick();
+    expect(client.pushes).toHaveLength(attempts);
+  });
+
+  it('lists the account Cities and fetches one that is not open', async () => {
+    const { clock, client } = world();
+    await pushNew(client, clock, SECOND, T0 + 5);
+    const device = setup(client, clock);
+    const cities = await device.sync.listCloudCities();
+    expect(cities.map((city) => city.cityId)).toEqual([SECOND]);
+    expect((await device.sync.fetchCloudCity(SECOND))?.envelope).toBe(envelopeAt(T0 + 5));
+  });
+
+  it('restores a Cloud City onto the device as a closed City in sync with its revision', async () => {
+    const { clock, client } = world();
+    await pushNew(client, clock, SECOND, T0 + 5);
+    const raw = new MemorySaveStore();
+    bootCities(raw, T0);
+    const cloud = await client.latest(SECOND);
+    if (!cloud) throw new Error('missing');
+
+    expect(restoreCloudCity(raw, T0, { cityId: SECOND, revision: cloud.revision, envelope: cloud.envelope })).toEqual({ ok: true });
+
+    expect(readRegistry(raw)?.cities.map((city) => city.id)).toEqual([FIRST_CITY_ID, SECOND]);
+    const restored = new CityScopedSaveStore(raw, () => SECOND);
+    expect(restored.get(SAVE_KEY)).toBe(cloud.envelope);
+    expect(readCloudMeta(restored)).toMatchObject({ baseRevision: cloud.revision, editedSinceSync: false });
+    expect(restoreCloudCity(raw, T0, { cityId: SECOND, revision: 1, envelope: cloud.envelope })).toEqual({ ok: false, reason: 'already-here' });
+  });
+
+  it('refuses to restore a fourth City or a damaged save', () => {
+    const raw = new MemorySaveStore();
+    bootCities(raw, T0);
+    expect(restoreCloudCity(raw, T0, { cityId: SECOND, revision: 1, envelope: 'junk' })).toEqual({ ok: false, reason: 'invalid' });
+    for (const id of [SECOND, THIRD]) expect(restoreCloudCity(raw, T0, { cityId: id, revision: 1, envelope: envelopeAt(T0) }).ok).toBe(true);
+    expect(restoreCloudCity(raw, T0, { cityId: FOURTH, revision: 1, envelope: envelopeAt(T0) })).toEqual({ ok: false, reason: 'limit' });
   });
 });

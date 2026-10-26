@@ -10,7 +10,7 @@ interface HallOfFameListProps {
     entries: HallOfFameEntry[];
     visitBusy: boolean;
     visitFailure: VisitFailure | null;
-    onVisit: (userId: string) => void;
+    onVisit: (userId: string, cityId: string) => void;
     onRefresh: () => void;
 }
 
@@ -24,7 +24,7 @@ export function HallOfFameList({state, entries, visitBusy, visitFailure, onVisit
         {state === 'loading' && entries.length === 0 ? <p>{t('hall.loading')}</p> : null}
         {state === 'ready' && entries.length === 0 ? <Note tone="muted">{t('hall.empty')}</Note> : null}
         {entries.length > 0 ? <ol className="hall-list">
-            {entries.map(entry => <HallOfFameRow key={entry.userId} entry={entry} busy={visitBusy} onVisit={() => onVisit(entry.userId)}/>)}
+            {entries.map(entry => <HallOfFameRow key={`${entry.userId}:${entry.cityId}`} entry={entry} busy={visitBusy} onVisit={() => onVisit(entry.userId, entry.cityId)}/>)}
         </ol> : null}
         <ActionButton onClick={onRefresh}>{t('hall.refresh')}</ActionButton>
     </section>;

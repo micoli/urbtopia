@@ -1,4 +1,5 @@
 import { cloudEnabled } from '../persistence/cloud/cloudConfig';
+import { openCityId } from '../persistence/instance';
 import { saveNowHandle } from '../persistence/saveNow';
 import { SocialPoller } from '../social/socialPoller';
 import { challengeStore } from '../store/challengeStore';
@@ -18,7 +19,7 @@ export function installChallenges(): () => void {
   let disposed = false;
   let stopWatching = () => {};
 
-  void loadChallengeClient().then((client) => {
+  void loadChallengeClient(openCityId()).then((client) => {
     if (!client || disposed) return;
     const game: ChallengeGame = {
       ...createLiveGamePort({ store: gameStore, gateway: liveCommandGateway, persist: () => saveNowHandle.current() }),

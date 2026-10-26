@@ -1,5 +1,5 @@
-import { advance, type GameState } from '../core';
-import { CURRENT_VERSION, parseEnvelope, type ParseFailure } from './envelope';
+import type { GameState } from '../core';
+import { CURRENT_VERSION, parseEnvelope, serializeEnvelope } from './envelope';
 import { BACKUP_KEY, SAVE_KEY, versionedBackupKey, type SaveStore } from './saveStore';
 import type { SaveSession } from './saveSession';
 
@@ -32,11 +32,18 @@ export function restoreBackup(store: SaveStore, session: SaveSession): RestoreRe
   return { ok: false, reason: 'no-backup' };
 }
 
-export type ImportResult = { ok: true; state: GameState } | { ok: false; reason: ParseFailure };
 
-export function importCity(text: string, session: SaveSession, now: number): ImportResult {
-  const parsed = parseEnvelope(text);
-  if (!parsed.ok) return { ok: false, reason: parsed.reason };
-  session.backupNow();
-  return { ok: true, state: advance(parsed.state, now).state };
+// The City name rides next to the envelope, outside the state, so the format version does not change.
+export function exportEnvelope(state: GameState, savedAt: number, cityName: string | null): string {
+  const envelope = JSON.parse(serializeEnvelope(state, savedAt)) as Record<string, unknown>;
+  return JSON.stringify(cityName === null ? envelope : { ...envelope, cityName });
+}
+
+export function readExportedCityName(text: string): string | null {
+  try {
+    const parsed = JSON.parse(text) as { cityName?: unknown };
+    return typeof parsed.cityName === 'string' && parsed.cityName.trim() !== '' ? parsed.cityName.trim() : null;
+  } catch {
+    return null;
+  }
 }

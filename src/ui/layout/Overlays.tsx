@@ -13,7 +13,6 @@ import { ConfirmPad } from '../build/ConfirmPad';
 import { ConfirmSaleDialog } from '../build/ConfirmSaleDialog';
 import { AnnualEventNotice } from '../system/AnnualEventNotice';
 import { ExportReminder } from '../system/ExportReminder';
-import { ImportConfirmDialog } from '../system/ImportConfirmDialog';
 import { BackOfficeBanner } from '../system/BackOfficeBanner';
 import { ReadOnlyBanner } from '../system/ReadOnlyBanner';
 import { VisitBanner } from '../system/VisitBanner';
@@ -59,7 +58,6 @@ export function Overlays() {
       <ExportReminder />
       <UpdatePrompt />
       <ConfirmSaleDialog />
-      <ImportConfirmDialog />
       <CreditsDialog />
       <SaveFailedDialog />
       <SaveConflictOverlay />
