@@ -712,15 +712,23 @@ A public transport journey linking a Home to an activity through one or more lin
 _Avoid_: Infrastructure route, Individual Citizen simulation
 
 **Player account**:
-The anonymous identity a Cloud save belongs to, created silently on first play and bound to the device. The player can later attach an email to it to recover their city on another device.
+The anonymous identity that owns up to three Cities and their Cloud saves, created silently on first play and bound to the device. The player can later attach an email to it to recover their Cities on another device. Its Handle, Avatar, Friends, Groups and Medals are shared by all its Cities.
 _Avoid_: User, profile, login
 
+**City**:
+One complete game owned by a Player account, with its own Urbs, Storehouses, Seed, Difficulty, politics, Tutorial and Solidarity reserve. Only the open City advances; the others stand still until reopened, when Catch-up applies to them. A City can be created, renamed and deleted (never the last one), and the game reopens the last City played.
+_Avoid_: Game, save, slot, world, town
+
+**City name**:
+The name of a City, at most 32 characters, unique among the Cities of its Player account regardless of case, and visible to other players. It defaults to the words of the City's Seed without its digits ("Gently Amber Fox"), followed by a number if another City of the account already bears it, can be changed at any time, and an Admin can reset it.
+_Avoid_: Title, label
+
 **Cloud save**:
-The copy of the city kept online for a Player account: the current one plus the 9 previous versions. The local save stays the source of truth; the Cloud save mirrors it.
+The copy of a City kept online for its Player account: the current one plus the 9 previous versions, for each City. The local save stays the source of truth; the Cloud save mirrors it.
 _Avoid_: Remote save, sync, server save
 
 **Save conflict**:
-The situation where the local save and the Cloud save have both advanced since they last matched. The player chooses which one to keep; the other is kept as a previous version.
+The situation where the local save of a City and its Cloud save have both advanced since they last matched. The player chooses which one to keep; the other is kept as a previous version.
 _Avoid_: Merge, overwrite
 
 **Handle**:
@@ -763,16 +771,20 @@ _Avoid_: Post, broadcast
 A Lot of Materials and/or Goods that one Friend proposes to another, for a price in Urbs set by the sender (0 for a gift). The recipient accepts or refuses; an offer left open expires after 72 hours. Seed packs, buildings and bare Urbs cannot be offered.
 _Avoid_: Deal, auction, barter
 
+**Shipment**:
+A Lot that a Player account sends from one of its Cities to another of its own, with no price and no Friend involved. The server holds it in an Escrow until the destination City claims it when it is next opened online; it waits there as long as that City's Storehouse lacks room, never expires, and the sending City can cancel it until it is claimed. Open to accounts without Handle or email.
+_Avoid_: Transfer, delivery, internal trade, Trade offer
+
 **Lot**:
-The Materials and Goods of a Trade offer: up to ten lines, one item each, with a quantity.
+The Materials and Goods of a Trade offer or a Shipment: up to ten lines, one item each, with a quantity.
 _Avoid_: Bundle, parcel, cargo
 
 **Escrow**:
-The hold the server keeps on a lot or a payment between the creation of a Trade offer and its claim, so that each side claims once and a refused or expired offer returns everything to its owner. The server does not check that the lot ever existed in the sender's city.
+The hold the server keeps on a lot or a payment between the creation of a Trade offer or a Shipment and its claim, so that each side claims once and a refused or expired offer returns everything to its owner. The server does not check that the lot ever existed in the sender's city.
 _Avoid_: Deposit, lock
 
 **Challenge**:
-A goal published by the server to all Player accounts: deliver a list of Materials and Goods (several kinds, each with a quantity) to the Challenge stock before a deadline. A Challenge is either a Daily challenge or an Event. Accepting one is optional; a player has at most one accepted Challenge at a time. The player can abandon the accepted Challenge: it is closed for good, the Challenge stock is lost and it cannot be accepted again, so the player waits for the next one.
+A goal published by the server to all Player accounts: deliver a list of Materials and Goods (several kinds, each with a quantity) to the Challenge stock before a deadline. A Challenge is either a Daily challenge or an Event. Accepting one is optional and done City by City: each City has at most one accepted Challenge at a time, and several Cities of a Player account may accept the same Challenge. The player can abandon a City's accepted Challenge: it is closed for good for that City, its Challenge stock is lost and that City cannot accept it again, so it waits for the next one.
 _Avoid_: Quest, mission, task
 
 **Challenge name**:
@@ -800,7 +812,7 @@ A Building that belongs to an Annual event, sold at a high price in Urbs and pur
 _Avoid_: Seasonal item, limited item
 
 **Challenge stock**:
-The units the player has set aside for an accepted Challenge, taken from the Storehouse at any time before the deadline, from any source (production, purchase, Trade offer). They are consumed: kept by the Challenge whether it succeeds or fails, and never returned.
+The units the player has set aside for an accepted Challenge, taken from the Storehouse of the City that accepted it at any time before the deadline, from any source (production, purchase, Trade offer). They are consumed: kept by the Challenge whether it succeeds or fails, and never returned.
 _Avoid_: Basket, deposit, contribution
 
 **Medal**:
@@ -808,15 +820,15 @@ A permanent distinction earned by completing a Challenge whose reward is a Medal
 _Avoid_: Badge (reserved for the notification counter on a button), trophy, achievement
 
 **Hall of fame**:
-The public ranking of the ten biggest cities by Citizens, one per Player account that has a Handle and has not opted out. Each entry shows the Avatar, the Handle and the Citizens count of its city. Anyone can consult it.
+The public ranking of the ten biggest Cities by Citizens, among the Cities that have a Showcase and whose Player account has a Handle. A Player account can have several Cities in it. Each entry shows the Avatar, the Handle, the City name and the Citizens count of its City. Anyone can consult it.
 _Avoid_: Leaderboard, top 10, scoreboard
 
 **Showcase**:
-The copy of a Player account's city that other players can Visit. It is kept separate from the Cloud save, which stays private, and is replaced whenever the city is saved online. A Player account that opts out has no Showcase and is absent from the Hall of fame.
+The copy of a City that other players can Visit, one per City. It is kept separate from the Cloud save, which stays private, and is replaced whenever the City is saved online. A City whose player opts it out has no Showcase and is absent from the Hall of fame; the choice is made City by City.
 _Avoid_: Public save, snapshot, preview
 
 **Visit**:
-Looking around another Player account's Showcase in the game, read-only: nothing advances, nothing can be built or changed, and the visitor's own city and saves are never touched. Anyone can Visit, including a Player account without email.
+Looking around the Showcase of another Player account's City in the game, chosen among its Cities that have one, read-only: nothing advances, nothing can be built or changed, and the visitor's own city and saves are never touched. Anyone can Visit, including a Player account without email.
 _Avoid_: Spectate, preview, load
 
 **Back office**:
@@ -852,11 +864,17 @@ _Avoid_: Docs, documentation, manual, wiki
 - The launch Ordinances rest on existing systems only: Tax level (3 levels), Waste sorting, Green belt, subsidised public transit, energy saving, Office relief, Cultural festival. The launch Objectives are a Vital Need level threshold, full Waste coverage, Congestion under a threshold, a Green space share and Citizens milestones.
 - From Easy Difficulty: Council, Ordinances, Objectives and Grants, with Petitions and Support informative only. From Medium: Demonstrations and the Election. On Hard the Approval also weighs on the Grants and on the Council's goodwill.
 - A Command from the player, a Trade or a Challenge reaches the game through the Command gateway: the same read-only guard, toasts and event effects. Only the player's Commands keep a deletion undo.
+- A Trade offer is sent from the open City and accepted into the City open at the time of acceptance.
+- An accepted Challenge belongs to the City that accepted it.
+- What a Trade offer pays or returns (the payment, a refused or expired Lot or price) goes back to the City it left, claimed when that City is next opened.
+- Deleting a City is refused while it has an open Trade offer, a waiting Shipment, sent or received, or an accepted Challenge.
+- Exporting saves the open City to a file; importing a file always creates a new City, refused when the Player account already has three.
+- A Shipment carries no Urbs, Seed packs or buildings. A sending City has at most 5 Shipments waiting, and a Player account sends at most 30 per day.
 - A Trade offer can only be accepted if the recipient's Storehouse compartment has room for the lot and their Urbs cover the price.
 - Blocking a Friend closes their conversation and returns any open Trade offer between them.
 - A Cloud save never replaces the local save without the player's consent when a Save conflict exists.
 - A Daily challenge pays twice the sum of the values of the items of its goal in Urbs, only if the Challenge stock is complete before the deadline (judged by the server clock, online); otherwise the stock is lost.
-- While a Challenge is accepted and unfinished, a Time skip is refused. Catch-up still applies.
+- While a City has an accepted and unfinished Challenge, a Time skip is refused in that City. Catch-up still applies.
 - A Casino is a Leisure building, never a Public facility.
 - A Venue is distinct from a Casino and a Shop: Minigames and Stakes belong to the Casino only.
 - A breakdown of a Fixture is drawn from the Venue's own stream of the game's Seed, so reloading never dodges it.
