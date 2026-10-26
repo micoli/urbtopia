@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 import { tileFieldOf, type AnalyticsLayerId, type GameState } from '../core';
-import { rampColor, type RampId } from './analyticsRamps';
+import { LAYER_RAMPS, rampColor } from './analyticsRamps';
 
-const RAMP_OF: Partial<Record<AnalyticsLayerId, RampId>> = { 'data.pollution': 'heat' };
 const REFRESH_MS = 2000;
 
 export class AnalyticsLayer {
@@ -21,7 +20,7 @@ export class AnalyticsLayer {
   }
 
   sync(state: GameState, layer: AnalyticsLayerId | null, now = performance.now()): void {
-    const ramp = layer ? RAMP_OF[layer] : undefined;
+    const ramp = layer ? LAYER_RAMPS[layer] : undefined;
     if (!layer || !ramp) {
       this.layer = null;
       this.root.visible = false;
