@@ -12,7 +12,7 @@ export function useUndoKeys(): void {
       if (window.matchMedia('(pointer: coarse)').matches) return;
       if (isTypingTarget(event.target)) return;
       const dialogs = dialogStore.getState();
-      if (dialogs.pendingImport || dialogs.recovery || dialogs.saveFailed || uiStore.getState().statsOpen || uiStore.getState().codexOpen || uiStore.getState().pendingSaleId !== null) return;
+      if (dialogs.recovery || dialogs.saveFailed || uiStore.getState().statsOpen || uiStore.getState().codexOpen || uiStore.getState().pendingSaleId !== null) return;
       if (readOnlyStore.getState().readOnly || !gameStore.getState().deletionUndo) return;
       event.preventDefault();
       gameStore.getState().undo();

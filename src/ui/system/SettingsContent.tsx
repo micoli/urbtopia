@@ -1,7 +1,6 @@
 import { useRef, type ChangeEvent } from 'react';
 import { exportCurrentCity } from '../../persistence/exportCity';
-import { saveSession } from '../../persistence/instance';
-import { importCity } from '../../persistence/transfer';
+import { liveCityLifecycle } from '../../persistence/liveCityLifecycle';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { t } from '../../i18n/t';
@@ -31,10 +30,8 @@ export function SettingsContent() {
     const file = event.target.files?.[0];
     event.target.value = '';
     if (!file) return;
-    const result = importCity(await file.text(), saveSession, Date.now());
-    if (!result.ok) return toastStore.getState().show(`import.${result.reason}`);
-    dialogStore.getState().setPendingImport(result.state);
-    toggle();
+    const result = liveCityLifecycle.importFile(await file.text());
+    if (!result.ok) toastStore.getState().show(`import.${result.reason}`);
   };
 
   return (

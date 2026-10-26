@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { advance, newGame, type GameState } from '../core';
+import { newGame, type GameState } from '../core';
 import fixtureV1 from './fixtures/save-v1.json';
-import { FORMAT, parseEnvelope, serializeEnvelope } from './envelope';
-import { BACKUP_KEY, exportFileName, hasBackup, importCity, restoreBackup } from './transfer';
+import { BACKUP_KEY, exportFileName, hasBackup, restoreBackup } from './transfer';
 import { MemorySaveStore, SAVE_KEY, SaveQuotaError, versionedBackupKey } from './saveStore';
 import { SaveSession } from './saveSession';
 import { META_KEY, readMeta, recordExport, shouldRemindExport } from './meta';
@@ -11,7 +10,6 @@ import { TabOwnership } from './tabOwnership';
 const T0 = 1_700_000_000_000;
 const DAY = 86_400_000;
 const state: GameState = newGame({ seed: 'amber-fox-4821', now: T0 });
-const other: GameState = { ...newGame({ seed: 'brisk-owl-1234', now: T0 }), urbs: 123 };
 
 describe('backup', () => {
   let store: MemorySaveStore;
@@ -61,35 +59,6 @@ describe('backup', () => {
 describe('export', () => {
   it('names the file with the Seed and the date', () => {
     expect(exportFileName(state, Date.UTC(2026, 9, 2))).toBe('urbtopia-amber-fox-4821-2026-10-02.json');
-  });
-});
-
-describe('importCity', () => {
-  it('refuses a file that is not a valid save, and touches nothing', () => {
-    const store = new MemorySaveStore();
-    const session = new SaveSession(store);
-    session.save(state, T0);
-    const before = store.get(SAVE_KEY);
-    expect(importCity('nonsense', session, T0)).toEqual({ ok: false, reason: 'invalid-json' });
-    expect(importCity(JSON.stringify({ format: FORMAT, version: 99, savedAt: 0, state }), session, T0)).toEqual({ ok: false, reason: 'newer-version' });
-    expect(store.get(SAVE_KEY)).toBe(before);
-    expect(store.get(BACKUP_KEY)).toBeNull();
-  });
-
-  it('puts the previous save in the backup slot and returns the imported city brought up to date', () => {
-    const store = new MemorySaveStore();
-    const session = new SaveSession(store);
-    session.save(state, T0);
-    const previous = store.get(SAVE_KEY);
-    const result = importCity(serializeEnvelope(other, T0), session, T0 + 3_600_000);
-    expect(result.ok).toBe(true);
-    if (result.ok) expect(result.state).toEqual(advance(other, T0 + 3_600_000).state);
-    expect(store.get(BACKUP_KEY)).toBe(previous);
-  });
-
-  it('round trips an exported city', () => {
-    const text = serializeEnvelope(other, T0);
-    expect(parseEnvelope(text)).toMatchObject({ ok: true });
   });
 });
 

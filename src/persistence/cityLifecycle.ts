@@ -1,4 +1,5 @@
 import type { Difficulty } from '../core';
+import { importCityFile, type ImportCityResult } from './cityImport';
 import { createCity, removeCity, renameCity, switchCity, type RenameResult } from './cityActions';
 import { cityDeletionBlockers, type DeletionBlocker } from './cityDeletion';
 import { CityScopedSaveStore } from './cityStore';
@@ -29,6 +30,7 @@ export interface CityLifecycle {
   open: (cityId: string) => void;
   create: (difficulty: Difficulty) => boolean;
   rename: (cityId: string, name: string) => RenameResult;
+  importFile: (text: string) => ImportCityResult;
   remove: (cityId: string) => Promise<DeleteOutcome>;
 }
 
@@ -57,6 +59,15 @@ export function createCityLifecycle(deps: CityLifecycleDeps): CityLifecycle {
     },
 
     rename: (cityId, name) => renameCity(deps.raw, cityId, name),
+
+    importFile: (text) => {
+      deps.flush();
+      const imported = importCityFile(deps.raw, text, deps.now(), deps.newCityId());
+      if (!imported.ok) return imported;
+      switchCity(deps.raw, imported.cityId);
+      deps.reload();
+      return imported;
+    },
 
     remove: async (cityId) => {
       deps.flush();
