@@ -18,6 +18,7 @@ export function App() {
   const language = useStore(prefsStore, (store) => store.language);
   const layout = useStore(prefsStore, (store) => store.layout);
   const streetView = useStore(uiStore, (store) => store.streetView);
+  const analytics = useStore(uiStore, (store) => store.analyticsLayer !== null);
 
   useEffect(() => {
     document.documentElement.dataset.layout = layout;
@@ -30,7 +31,7 @@ export function App() {
       {DevTools && isDevelopmentHost(window.location.hostname) ? <Suspense fallback={null}><DevTools /></Suspense> : null}
       <Fragment key={language}>
         <Overlays />
-        {streetView ? <StreetViewHud /> : layout === 'A' ? <LayoutBottomMenu /> : layout === 'B' ? <LayoutRadial /> : <LayoutLeftMenu />}
+        {streetView ? <StreetViewHud /> : analytics ? null : layout === 'A' ? <LayoutBottomMenu /> : layout === 'B' ? <LayoutRadial /> : <LayoutLeftMenu />}
       </Fragment>
     </>
   );
