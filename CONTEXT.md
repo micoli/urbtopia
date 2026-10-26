@@ -273,7 +273,7 @@ What the Citizens of a Home throw away each day, in proportion to their number. 
 _Avoid_: Garbage, trash, rubbish
 
 **Waste coverage**:
-The Service coverage of the Waste category. Unlike other categories it also needs a road link: a Home is covered only if a Waste facility reaches it, has capacity left, and is joined to it by the Road network. A Home reached only by Pedestrian ways is joined when its Pedestrian path network touches a Road linked to the facility within the Carrying distance. When it is not covered, the Home says which cause applies: out of reach, capacity full, or no road link.
+The Service coverage of the Waste category. Unlike other categories it also needs a road link: a Home is covered only if a Waste facility reaches it, has capacity left, and is joined to it by the Road network, where a BRT corridor joins the Roads it touches or crosses. A Home reached only by Pedestrian ways is joined when its Pedestrian path network touches a Road linked to the facility within the Carrying distance. When it is not covered, the Home says which cause applies: out of reach, capacity full, or no road link.
 _Avoid_: Collection range
 
 **Carrying distance**:
@@ -656,7 +656,7 @@ The announced grace period during which new electricity shortages or newly requi
 _Avoid_: Permanent exemption, free energy
 
 **BRT corridor**:
-A dedicated infrastructure for bus rapid transit, separate from the ordinary road network. A crossing with a Road does not connect the two networks.
+A dedicated infrastructure for bus rapid transit, separate from the ordinary road network. A crossing with a Road does not connect the two networks, except for Waste coverage.
 _Avoid_: Ordinary Road, Bus line
 
 **Railway**:
