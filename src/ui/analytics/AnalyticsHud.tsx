@@ -3,7 +3,7 @@ import { t } from '../../i18n/t';
 import { ActionButton } from '../common/ActionButton';
 import { useUi } from '../common/hooks';
 import { AnalyticsLegend } from './AnalyticsLegend';
-import { legendOf } from './layerLegends';
+import { legendsOf } from './layerLegends';
 
 export function AnalyticsHud() {
   const layer = useUi(store => store.analyticsLayer);
@@ -19,12 +19,12 @@ export function AnalyticsHud() {
   }, [layer, exitAnalytics]);
 
   if (!layer) return null;
-  const legend = legendOf(layer);
+  const legends = legendsOf(layer);
   return (
     <div className="analytics-hud">
       <strong className="analytics-hud-title">{t(`analytics.layer.${layer}`)}</strong>
       <ActionButton variant="primary" onClick={exitAnalytics}>{t('analytics.exit')}</ActionButton>
-      {legend ? <AnalyticsLegend legend={legend} /> : null}
+      {legends.map((legend, index) => <AnalyticsLegend key={index} legend={legend} />)}
     </div>
   );
 }

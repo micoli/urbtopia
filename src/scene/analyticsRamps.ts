@@ -1,6 +1,4 @@
-import type { AnalyticsLayerId } from '../core';
-
-export type RampId = 'heat' | 'odor' | 'road' | 'sidewalk' | 'saturation';
+import type { RampId } from '../core';
 
 export const RAMPS: Record<RampId, readonly string[]> = {
   heat: ['#ffe066', '#ff9f43', '#e5484d', '#7a1f3d'],
@@ -10,7 +8,6 @@ export const RAMPS: Record<RampId, readonly string[]> = {
   saturation: ['#35d07f', '#ffe066', '#e5484d', '#7a1f3d'],
 };
 
-export const LAYER_RAMPS: Partial<Record<AnalyticsLayerId, RampId>> = { 'data.pollution': 'heat', 'data.odor': 'odor', 'movement.cars': 'road', 'data.congestion': 'saturation' };
 
 function channels(hex: string): [number, number, number] {
   const value = parseInt(hex.slice(1), 16);

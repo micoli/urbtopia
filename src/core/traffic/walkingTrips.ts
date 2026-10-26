@@ -1,5 +1,5 @@
 import type { Building, GameState } from '../engine/state';
-import { adjacentNodes, crossingsOnPath, nearestTarget, type PedestrianGraph, type WalkMap } from '../map/pedestrianGraph';
+import { adjacentNodes, crossingsOnPath, nearestTarget, nodesOnPath, type PedestrianGraph, type WalkMap } from '../map/pedestrianGraph';
 import { WALKING, WALK_DESTINATIONS, walkAccessOf, walkDestinationOf, type WalkDestination } from './walking';
 
 export interface WalkDestinationSite {
@@ -25,7 +25,7 @@ export function walkDestinations(state: GameState, graph: PedestrianGraph): Walk
   return sites.sort((a, b) => a.id - b.id);
 }
 
-export function walkServices(walk: WalkMap, sites: readonly WalkDestinationSite[], citizens: number, pedestrians: Map<string, number>, walkingTotals: WalkingTrips, cyclingTotals: WalkingTrips): number {
+export function walkServices(walk: WalkMap, sites: readonly WalkDestinationSite[], citizens: number, pedestrians: Map<string, number>, walkingTotals: WalkingTrips, cyclingTotals: WalkingTrips, sidewalkLoads: Map<string, number> = new Map()): number {
   const trips = new Map<WalkDestination, number>();
   for (const kind of WALK_DESTINATIONS) {
     let best: { node: string; cost: number } | null = null;
@@ -40,6 +40,7 @@ export function walkServices(walk: WalkMap, sites: readonly WalkDestinationSite[
     trips.set(kind, count);
     (best.cost <= WALKING.thresholds[kind] ? walkingTotals : cyclingTotals)[kind] += count;
     for (const crossing of crossingsOnPath(walk, best.node)) pedestrians.set(crossing, (pedestrians.get(crossing) ?? 0) + count);
+    for (const node of nodesOnPath(walk, best.node)) sidewalkLoads.set(node, (sidewalkLoads.get(node) ?? 0) + count);
   }
   return walkAccessOf(trips, citizens);
 }

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { tileFieldOf, type AnalyticsLayerId, type GameState } from '../core';
-import { LAYER_RAMPS, rampColor } from './analyticsRamps';
+import { layerFieldsOf, type AnalyticsLayerId, type GameState, type LayerField } from '../core';
+import { rampColor } from './analyticsRamps';
 
 const REFRESH_MS = 2000;
 
@@ -8,7 +8,6 @@ export class AnalyticsLayer {
   readonly root = new THREE.Group();
   private tileGeometry = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
   private material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6, depthTest: false, depthWrite: false, toneMapped: false });
-  private mesh: THREE.InstancedMesh | null = null;
   private buildings: GameState['buildings'] | null = null;
   private layer: AnalyticsLayerId | null = null;
   private builtAt = 0;
@@ -20,8 +19,7 @@ export class AnalyticsLayer {
   }
 
   sync(state: GameState, layer: AnalyticsLayerId | null, now = performance.now()): void {
-    const ramp = layer ? LAYER_RAMPS[layer] : undefined;
-    if (!layer || !ramp) {
+    if (!layer) {
       this.layer = null;
       this.root.visible = false;
       return;
@@ -31,18 +29,21 @@ export class AnalyticsLayer {
     this.layer = layer;
     this.buildings = state.buildings;
     this.builtAt = now;
-    this.root.visible = true;
-    this.clearMesh();
-    const field = tileFieldOf(state, layer);
-    if (!field) return;
+    this.clearMeshes();
+    const fields = layerFieldsOf(state, layer);
+    this.root.visible = fields.length > 0;
+    fields.forEach((field, index) => this.addField(field, `analytics-${layer}-${index}`, 6 + index * 0.1));
+  }
+
+  private addField({ field, ramp }: LayerField, name: string, renderOrder: number): void {
     const tiles: number[] = [];
     field.values.forEach((value, index) => {
       if (value > 0) tiles.push(index);
     });
     if (!tiles.length) return;
     const mesh = new THREE.InstancedMesh(this.tileGeometry, this.material, tiles.length);
-    mesh.name = `analytics-${layer}`;
-    mesh.renderOrder = 6;
+    mesh.name = name;
+    mesh.renderOrder = renderOrder;
     const matrix = new THREE.Matrix4();
     const color = new THREE.Color();
     tiles.forEach((index, instance) => {
@@ -52,19 +53,19 @@ export class AnalyticsLayer {
     });
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-    this.mesh = mesh;
     this.root.add(mesh);
   }
 
-  private clearMesh(): void {
-    if (!this.mesh) return;
-    this.root.remove(this.mesh);
-    this.mesh.dispose();
-    this.mesh = null;
+  private clearMeshes(): void {
+    for (const child of [...this.root.children]) {
+      if (!(child instanceof THREE.InstancedMesh)) continue;
+      this.root.remove(child);
+      child.dispose();
+    }
   }
 
   dispose(): void {
-    this.clearMesh();
+    this.clearMeshes();
     this.tileGeometry.dispose();
     this.material.dispose();
     this.root.clear();
