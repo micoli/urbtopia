@@ -85,6 +85,21 @@ describe('Waste coverage and its causes', () => {
   });
 });
 
+describe('Waste through a BRT corridor', () => {
+  const brtColumn = (x: number, from: number, to: number) => Array.from({ length: to - from + 1 }, (_, index) => ({ x, y: from + index, exits: [...(index > 0 ? ['N' as const] : []), ...(index < to - from ? ['S' as const] : [])] }));
+
+  it('covers a Home beside a BRT corridor that touches a Road linked to the facility', () => {
+    const state = city([facility(1, 'incinerator', 66, 47), home(10, 66, 54)], { brtRoads: brtColumn(65, 50, 56) });
+    expect(isWasteCovered(wasteReport(state), 10)).toBe(true);
+    expect(wasteReport(state).homes.get(10)?.carried).toBe(false);
+  });
+
+  it('says no road link for a Home beside a BRT corridor that touches no Road', () => {
+    const state = city([facility(1, 'incinerator', 66, 47), home(10, 66, 54)], { brtRoads: brtColumn(65, 52, 56) });
+    expect(wasteCauseOf(wasteReport(state), 10)).toBe('noRoadLink');
+  });
+});
+
 describe('Waste through a Pedestrian path network', () => {
   const carrying = (wayLength: number, homeY: number) => city([facility(1, 'incinerator', 66, 47), home(10, 71, homeY)], { pedestrianWays: wayColumn(70, 50, 50 + wayLength) });
 

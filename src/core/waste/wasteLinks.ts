@@ -28,17 +28,30 @@ export function outsideNeighbours(tiles: readonly Coord[]): Coord[] {
   return [...outside.values()];
 }
 
-// Road tiles joined by the Road network share a component number.
+// Road tiles joined by the Road network share a component number. For Waste a BRT corridor joins the Road tiles it touches or crosses, so a Home beside a corridor is linked to the Roads the corridor meets.
 export function roadComponents(state: GameState): RoadComponents {
   const graph = buildRoadGraph(state);
   const links = new Map<string, string[]>();
+  const link = (a: string, b: string) => {
+    links.set(a, [...(links.get(a) ?? []), b]);
+    links.set(b, [...(links.get(b) ?? []), a]);
+  };
   for (const [key, next] of graph) {
-    links.set(key, [...(links.get(key) ?? []), ...next.map(tileKey)]);
-    for (const other of next) links.set(tileKey(other), [...(links.get(tileKey(other)) ?? []), key]);
+    links.set(key, links.get(key) ?? []);
+    for (const other of next) link(key, tileKey(other));
+  }
+  const brtKeys = new Set((state.brtRoads ?? []).map(tileKey));
+  const nodes = new Set([...graph.keys(), ...brtKeys]);
+  for (const tile of state.brtRoads ?? []) {
+    const key = tileKey(tile);
+    for (const direction of DIRECTIONS) {
+      const next = tileKey(neighbour(tile, direction));
+      if (graph.has(next) || (tile.exits.includes(direction) && brtKeys.has(next))) link(key, next);
+    }
   }
   const components = new Map<string, number>();
   let count = 0;
-  for (const start of graph.keys()) {
+  for (const start of nodes) {
     if (components.has(start)) continue;
     const pending = [start];
     components.set(start, count);
