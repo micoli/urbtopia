@@ -1,5 +1,6 @@
 import { createStore } from 'zustand/vanilla';
-import { footprintTiles, nextFront, type Coord, type CropId, type Rotation } from '../core';
+import { footprintTiles, nextFront, type AnalyticsLayerId, type Coord, type CropId, type Rotation, type ServiceCategory } from '../core';
+import { readAnalyticsCategory, readAnalyticsLayer, writeAnalyticsCategory, writeAnalyticsLayer } from '../ui/analytics/analyticsLayerPref';
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
 import { confirmTool, evaluateTool, extendBrush, isPathTool, selectionGhost, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
@@ -16,7 +17,7 @@ export interface LocatorPosition { x: number; y: number; z: number }
 
 const LOCATOR_DURATION_MS = 2000;
 
-export type Flyout = 'build' | 'roads' | null;
+export type Flyout = 'build' | 'roads' | 'land' | null;
 export type MarketTab = 'market' | 'events';
 export type SocialTab = 'friends' | 'groups' | 'exchanges' | 'hall' | 'profile';
 
@@ -57,6 +58,12 @@ export interface UiStore {
   marketTab: MarketTab;
   setMarketTab: (tab: MarketTab) => void;
   settingsOpen: boolean;
+  analyticsLayer: AnalyticsLayerId | null;
+  lastAnalyticsLayer: AnalyticsLayerId | null;
+  analyticsCategory: ServiceCategory;
+  analyticsProbe: Coord | null;
+  enterAnalytics: (layer: AnalyticsLayerId, category?: ServiceCategory) => void;
+  exitAnalytics: () => void;
   streetView: boolean;
   streetViewPicking: boolean;
   pickStreetView: () => void;
@@ -201,6 +208,17 @@ export const uiStore = createStore<UiStore>((set, get) => {
     marketTab: 'market',
     setMarketTab: (marketTab) => set({ marketTab }),
     settingsOpen: false,
+    analyticsLayer: null,
+    lastAnalyticsLayer: readAnalyticsLayer(),
+    analyticsCategory: readAnalyticsCategory(),
+    analyticsProbe: null,
+    enterAnalytics: (layer, category = get().analyticsCategory) => {
+      get().cancelTool();
+      writeAnalyticsLayer(layer);
+      writeAnalyticsCategory(category);
+      set({ analyticsLayer: layer, lastAnalyticsLayer: layer, analyticsCategory: category, analyticsProbe: null, flyout: null, selectedBuildingId: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false });
+    },
+    exitAnalytics: () => set({ analyticsLayer: null, analyticsProbe: null }),
     streetView: false,
     streetViewPicking: false,
     pickStreetView: () => {
@@ -294,7 +312,8 @@ export const uiStore = createStore<UiStore>((set, get) => {
       if (tool?.kind === 'brush') reevaluate({ tool: { ...tool, tiles: [] } });
     },
     hoverTile: (tile) => {
-      const { hovered } = get();
+      const { hovered, analyticsLayer, pointerKind } = get();
+      if (analyticsLayer && pointerKind === 'mouse') set({ analyticsProbe: tile });
       if (hovered?.x === tile.x && hovered.y === tile.y) return;
       reevaluate({ hovered: tile });
     },
@@ -317,6 +336,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       get().confirm(keepTool);
     },
     tapTile: (tile, buildingId = null) => {
+      if (get().analyticsLayer) return set({ analyticsProbe: tile });
       if (get().tool) return;
       const building = gameStore.getState().state.buildings.find((candidate) => footprintTiles(candidate).some((t) => t.x === tile.x && t.y === tile.y));
       set({ selectedBuildingId: buildingId ?? building?.id ?? null, flyout: null });
@@ -368,4 +388,14 @@ export const uiStore = createStore<UiStore>((set, get) => {
 gameStore.subscribe(() => {
   const { tool, centerTile, pointerKind, hovered, pinnedTile, rotation } = uiStore.getState();
   uiStore.setState({ evaluation: evaluate(tool, aimTile(pointerKind, hovered, centerTile, pinnedTile), rotation) });
+});
+
+const leavesAnalytics = (store: UiStore, previous: UiStore) =>
+  store.analyticsLayer !== null && previous.analyticsLayer === store.analyticsLayer &&
+  ((store.flyout && !previous.flyout) || (store.tool && !previous.tool) || (store.statsOpen && !previous.statsOpen) || (store.socialOpen && !previous.socialOpen) ||
+    (store.marketOpen && !previous.marketOpen) || (store.settingsOpen && !previous.settingsOpen) || (store.codexOpen && !previous.codexOpen) ||
+    (store.politicsOpen && !previous.politicsOpen) || (store.streetViewPicking && !previous.streetViewPicking));
+
+uiStore.subscribe((store, previous) => {
+  if (leavesAnalytics(store, previous)) store.exitAnalytics();
 });

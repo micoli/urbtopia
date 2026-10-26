@@ -197,6 +197,12 @@ export function nearestTarget(map: WalkMap, targets: readonly string[]): WalkTar
   return best;
 }
 
+export function nodesOnPath(map: WalkMap, node: string): string[] {
+  const nodes = [node];
+  for (let step = map.parents.get(node); step !== undefined; step = map.parents.get(step.from)) nodes.push(step.from);
+  return nodes;
+}
+
 export function crossingsOnPath(map: WalkMap, node: string): string[] {
   const crossings: string[] = [];
   for (let step = map.parents.get(node); step !== undefined; step = map.parents.get(step.from)) {

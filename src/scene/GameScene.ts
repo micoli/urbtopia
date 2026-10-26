@@ -5,7 +5,7 @@ import { GAME_CONFIG, WILD_RIM_TILES, congestionStats, pedestrianGraph, wildNois
 import { bridgeElevation } from './bridgeElevation';
 import { CameraController } from './CameraController';
 import { StreetViewController } from './StreetViewController';
-import { footprintTiles, type Coord } from '../core';
+import { footprintTiles, type AnalyticsLayerId, type Coord, type ServiceCategory } from '../core';
 import { congestionTints } from './congestionMarkers';
 import type { DrawnExtent, GhostSpec } from '../tools/tools';
 import { ChunkedWorld } from './ChunkedWorld';
@@ -23,6 +23,7 @@ import { BoatLayer } from './BoatLayer';
 import { BridgeLayer } from './BridgeLayer';
 import { TrafficLayer } from './TrafficLayer';
 import { renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } from './renderBudget';
+import { AnalyticsLayer } from './AnalyticsLayer';
 import { ServiceCoverageLayer } from './ServiceCoverageLayer';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
@@ -72,6 +73,9 @@ export class GameScene {
   private selectedId: number | null = null;
   private serviceCoverageType: FacilityType | null = null;
   private serviceCoverageLayer = new ServiceCoverageLayer();
+  private analyticsLayer = new AnalyticsLayer();
+  private analyticsLayerId: AnalyticsLayerId | null = null;
+  private analyticsCategory: ServiceCategory = 'education';
   private coverageFocus: { type: FacilityType; facilityId: number } | null = null;
   private afterHarvest: readonly HarvestedTile[] = [];
   private ecologicalState: GameState | null = null;
@@ -130,7 +134,7 @@ export class GameScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 1.7);
     sun.position.set(20, 40, 10);
     const sky = new THREE.HemisphereLight(0xbcd8f5, 0x8a7a64, 0.5);
-    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root);
+    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root, this.analyticsLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.streetView = new StreetViewController(canvas);
@@ -239,6 +243,15 @@ export class GameScene {
     void this.drain();
   }
 
+  setAnalyticsLayer(layer: AnalyticsLayerId | null, category: ServiceCategory): void {
+    if (this.analyticsLayerId === layer && this.analyticsCategory === category) return;
+    this.analyticsLayerId = layer;
+    this.analyticsCategory = category;
+    if (!this.ecologicalState) return;
+    this.latest = this.ecologicalState;
+    void this.drain();
+  }
+
   setCoverageFocus(focus: { type: FacilityType; facilityId: number } | null): void {
     if (this.coverageFocus?.facilityId === focus?.facilityId && this.coverageFocus?.type === focus?.type) return;
     this.coverageFocus = focus;
@@ -331,6 +344,7 @@ export class GameScene {
     this.bridges.dispose();
     this.ecologyLayer.dispose();
     this.serviceCoverageLayer.dispose();
+    this.analyticsLayer.dispose();
     this.renderer.dispose();
   }
 
@@ -349,6 +363,7 @@ export class GameScene {
         this.world.sync(items);
         const focus = serviceType ? null : this.coverageFocus;
         this.serviceCoverageLayer.sync(state, serviceType ?? focus?.type ?? null, focus?.facilityId ?? null);
+        this.analyticsLayer.sync(state, this.analyticsLayerId, this.analyticsCategory);
         await this.scenery.sync(state);
         this.shapeGround(state);
         this.syncParcels(state);

@@ -1,0 +1,36 @@
+export const meta = {
+  title: 'La vue analytique',
+  summary: 'Voir comment les habitants circulent dans la ville et où la pollution, les odeurs, la congestion ou le manque de services pèsent, un calque à la fois.',
+  order: 25,
+};
+
+## L’ouvrir
+
+La vue analytique se trouve dans le menu **Terrain**, à côté des parcelles. Elle ne change jamais la ville : elle peint la carte avec un seul **calque** à la fois, masque les badges, les véhicules et les piétons animés pour que les couleurs se lisent bien, et met de côté les outils de construction. Appuyez sur Échap, ou ouvrez un autre menu, pour la quitter.
+
+Touchez une parcelle, ou pointez-la à la souris, pour lire sa valeur et ses deux ou trois causes principales, déduites des chiffres que le jeu calcule déjà.
+
+## Les calques de déplacements
+
+Ils montrent la charge que les navetteurs et les piétons font peser sur les réseaux, en bloc et jamais un par un.
+
+- **Voitures** : les navetteurs, et les bus comptés comme des voitures, sur chaque tuile de route. L’échelle est celle de la tuile la plus chargée de la ville.
+- **Piétons** : les trajets à pied le long des trottoirs et des voies piétonnes, sur une échelle relative à la tuile la plus fréquentée, et chaque passage piéton face au seuil où il sature.
+- **Tous** : les deux à la fois, avec une rampe de couleurs propre aux routes (de l’orange au rouge) et aux trottoirs (du bleu au violet).
+
+## Les calques de données
+
+- **Couverture des services** : choisissez une catégorie de service et voyez quels logements sont couverts, couverts seulement par les transports en commun, ou non couverts.
+- **Bien-être** : le bien-être de chaque logement.
+- **Pollution** : la fumée que subirait un logement sur chaque parcelle, des centrales à charbon et des incinérateurs, qui s’additionnent jusqu’à un plafond.
+- **Congestion** : de combien chaque route dépasse sa capacité de voie, jusqu’au double, les sections déconnectées étant en haut de l’échelle.
+- **Rayon des odeurs** : l’odeur que subirait un logement sur chaque parcelle. Les décharges ne s’additionnent jamais : la pire compte.
+- **Valeur du terrain** : l’attrait de chaque parcelle, plus élevé près des espaces verts, des équipements publics, des loisirs et d’un bon accès, plus bas sous la pollution, les odeurs et la congestion.
+
+## La valeur du terrain n’est qu’un relevé
+
+La valeur du terrain est un nouvel indicateur que rien d’autre dans le jeu ne lit. Elle ne change ni le prix d’une parcelle, ni la taxe, ni le bien-être. Elle sert à choisir où construire.
+
+## Les chiffres de votre ville
+
+<LiveRules id="analytics" />

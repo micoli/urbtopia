@@ -50,15 +50,20 @@ export function homeBenefits(state: GameState, home: Building, coalRates: Readon
   return result;
 }
 
-function computeHomeBenefits(state: GameState, home: Building, coalRates: ReadonlyMap<number, number>, coverage: ServiceCoverage, poweredCasinos: ReadonlySet<number>, congestion: CongestionStats) {
-  const green = greenBenefits(state, home);
+// Coal plants and Incinerators add up, up to a cap.
+export function pollutionPenaltyOf(state: GameState, home: Building, coalRates: ReadonlyMap<number, number>): number {
   const penalty = state.buildings.reduce((sum, b) => {
     if (b.type !== 'coalPlant' || distance(b, home) > ECOLOGY.coalPollutionRadius) return sum;
     const capacity = COAL_CAPACITY[b.tier - 1] ?? 0;
     if (capacity <= 0) return sum;
     return sum + ECOLOGY.coalWellbeingPenalty * (coalRates.get(b.id) ?? 0) / capacity;
   }, 0);
-  const pollutionPenalty = Math.min(ECOLOGY.coalWellbeingCap, penalty + incineratorPenaltyOf(state, home));
+  return Math.min(ECOLOGY.coalWellbeingCap, penalty + incineratorPenaltyOf(state, home));
+}
+
+function computeHomeBenefits(state: GameState, home: Building, coalRates: ReadonlyMap<number, number>, coverage: ServiceCoverage, poweredCasinos: ReadonlySet<number>, congestion: CongestionStats) {
+  const green = greenBenefits(state, home);
+  const pollutionPenalty = pollutionPenaltyOf(state, home, coalRates);
   const odorPenalty = odorPenaltyOf(state, home);
   const retained = (1 - SERVICES.wellbeingBonus / WELLBEING_LIMIT) ** coveredServiceUnits(coverage, home.id) * leisureRetention(state, home, poweredCasinos, WELLBEING_LIMIT);
   const withServices = WELLBEING_LIMIT - (WELLBEING_LIMIT - green.wellbeing) * retained;

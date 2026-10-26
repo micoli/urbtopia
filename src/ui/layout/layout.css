@@ -343,3 +343,123 @@
   pointer-events: none;
   z-index: 100;
 }
+
+.analytics-hud {
+  position: fixed;
+  top: var(--space-12);
+  left: var(--space-12);
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8) var(--space-12);
+  max-width: calc(100vw - 2 * var(--space-12));
+}
+
+.analytics-hud-title {
+  padding: var(--space-4) var(--space-12);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.analytics-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4) var(--space-8);
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-4) var(--space-12);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.analytics-legend-ramp {
+  flex: 0 1 140px;
+  min-width: 60px;
+  height: 10px;
+  border-radius: var(--radius-md);
+}
+
+.analytics-legend:has(.analytics-legend-state) {
+  flex-wrap: wrap;
+}
+
+.analytics-legend-state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.analytics-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.analytics-readout {
+  position: fixed;
+  left: var(--space-12);
+  bottom: calc(var(--space-24) + env(safe-area-inset-bottom));
+  z-index: 100;
+  max-width: min(320px, calc(100vw - 2 * var(--space-12)));
+  padding: var(--space-8) var(--space-12);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.analytics-readout ul {
+  margin: 0;
+  padding-left: var(--space-12);
+}
+
+@media (max-width: 600px) {
+  .analytics-readout {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+}
+
+.analytics-flows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  flex-basis: 100%;
+}
+
+.analytics-flow-list {
+  padding: var(--space-4) var(--space-12);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+}
+
+.analytics-flow-list h4 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin: 0 0 var(--space-4);
+}
+
+.analytics-flow-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.analytics-flow-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-12);
+}
+
+.analytics-flow-list button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}

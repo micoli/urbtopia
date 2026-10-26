@@ -231,3 +231,65 @@ describe('showBuilding', () => {
     sceneHandle.current = null;
   });
 });
+
+describe('analytics view', () => {
+  beforeEach(() => {
+    vi.stubGlobal('localStorage', { getItem: () => null, setItem: () => {} });
+    uiStore.getState().exitAnalytics();
+    uiStore.getState().cancelTool();
+    uiStore.setState({ flyout: null, statsOpen: false, settingsOpen: false });
+  });
+
+  it('enters a layer, closing panels and the construction tool', () => {
+    uiStore.getState().chooseTool(shop);
+    uiStore.getState().enterAnalytics('data.pollution');
+    expect(uiStore.getState()).toMatchObject({ analyticsLayer: 'data.pollution', lastAnalyticsLayer: 'data.pollution', tool: null, flyout: null });
+  });
+
+  it('leaves when another menu entry opens', () => {
+    uiStore.getState().enterAnalytics('movement.cars');
+    uiStore.getState().openFlyout('land');
+    expect(uiStore.getState().analyticsLayer).toBeNull();
+  });
+
+  it('leaves when a tool is chosen, and from exitAnalytics', () => {
+    uiStore.getState().enterAnalytics('movement.all');
+    uiStore.getState().chooseTool(shop);
+    expect(uiStore.getState().analyticsLayer).toBeNull();
+    uiStore.getState().cancelTool();
+    uiStore.getState().enterAnalytics('data.odor');
+    uiStore.getState().exitAnalytics();
+    expect(uiStore.getState().analyticsLayer).toBeNull();
+  });
+});
+
+describe('analytics probe', () => {
+  beforeEach(() => {
+    vi.stubGlobal('localStorage', { getItem: () => null, setItem: () => {} });
+    uiStore.getState().exitAnalytics();
+    uiStore.getState().cancelTool();
+  });
+
+  it('reads the tapped tile instead of selecting a building', () => {
+    uiStore.getState().enterAnalytics('data.odor');
+    uiStore.getState().tapTile({ x: 5, y: 6 }, 1);
+    expect(uiStore.getState()).toMatchObject({ analyticsProbe: { x: 5, y: 6 }, selectedBuildingId: null });
+  });
+
+  it('follows the mouse, but not a touch', () => {
+    uiStore.getState().enterAnalytics('data.odor');
+    uiStore.getState().setPointerKind('touch');
+    uiStore.getState().hoverTile({ x: 1, y: 1 });
+    expect(uiStore.getState().analyticsProbe).toBeNull();
+    uiStore.getState().setPointerKind('mouse');
+    uiStore.getState().hoverTile({ x: 2, y: 3 });
+    expect(uiStore.getState().analyticsProbe).toEqual({ x: 2, y: 3 });
+  });
+
+  it('forgets the probe when the view is left', () => {
+    uiStore.getState().enterAnalytics('data.odor');
+    uiStore.getState().tapTile({ x: 5, y: 6 });
+    uiStore.getState().exitAnalytics();
+    expect(uiStore.getState().analyticsProbe).toBeNull();
+  });
+});
