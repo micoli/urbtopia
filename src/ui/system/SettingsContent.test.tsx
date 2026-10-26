@@ -12,6 +12,7 @@ vi.mock('../common/hooks', () => ({
   useUi: (selector: (store: { toggleSettings: () => void }) => unknown) => selector({ toggleSettings: () => {} }),
 }));
 vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: vi.fn(), newGame: vi.fn() }) } }));
+vi.mock('./CitiesSection', () => ({ CitiesSection: () => null }));
 vi.mock('./CloudSaveSection', () => ({ CloudSaveSection: () => null }));
 vi.mock('./PreferencesContent', () => ({ PreferencesContent: () => null }));
 vi.mock('./DifficultySettings', () => ({ DifficultySettings: () => null }));

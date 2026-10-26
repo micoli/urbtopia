@@ -13,6 +13,7 @@ const CLOUD_ACTIONS: CloudActions = {
   loadVersions: resolved,
   restoreVersion: resolved,
   deleteCloudData: resolved,
+  deleteCity: async () => true,
 };
 
 const meta = { title: 'System/SaveConflictOverlay', component: SaveConflictOverlay, parameters: { layout: 'fullscreen' } } satisfies Meta<typeof SaveConflictOverlay>;

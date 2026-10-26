@@ -193,6 +193,16 @@ export class CloudSync {
     });
   }
 
+  async deleteCity(cityId: string): Promise<boolean> {
+    let deleted = false;
+    await this.guarded(async () => {
+      await this.ensureSignedIn();
+      await this.deps.client.deleteCity(cityId);
+      deleted = true;
+    });
+    return deleted;
+  }
+
   async deleteCloudData(): Promise<void> {
     await this.guarded(async () => {
       await this.ensureSignedIn();

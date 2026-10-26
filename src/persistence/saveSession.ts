@@ -57,6 +57,10 @@ export class SaveSession {
     if (raw !== null && parseEnvelope(raw, this.options).ok) this.store.put(BACKUP_KEY, raw);
   }
 
+  lock(): void {
+    this.locked = true;
+  }
+
   unlock(): void {
     this.locked = false;
   }

@@ -13,6 +13,7 @@ const CLOUD_ACTIONS: CloudActions = {
   loadVersions: resolved,
   restoreVersion: resolved,
   deleteCloudData: resolved,
+  deleteCity: async () => true,
 };
 
 const meta = { title: 'System/CloudSaveSection', component: CloudSaveSection } satisfies Meta<typeof CloudSaveSection>;

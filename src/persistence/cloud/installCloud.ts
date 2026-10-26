@@ -113,6 +113,7 @@ export function installCloudSync(): () => void {
         await engine.restoreVersion(revision);
         cloudStore.getState().setVersions(await engine.listVersions());
       },
+      deleteCity: (cityId) => engine.deleteCity(cityId),
       deleteCloudData: async () => {
         await engine.deleteCloudData();
         cloudStore.getState().setVersions(null);
