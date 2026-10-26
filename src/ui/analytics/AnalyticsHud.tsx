@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { t } from '../../i18n/t';
 import { ActionButton } from '../common/ActionButton';
 import { useUi } from '../common/hooks';
+import { AnalyticsLegend } from './AnalyticsLegend';
+import { LAYER_LEGENDS } from './layerLegends';
 
 export function AnalyticsHud() {
   const layer = useUi(store => store.analyticsLayer);
@@ -17,10 +19,12 @@ export function AnalyticsHud() {
   }, [layer, exitAnalytics]);
 
   if (!layer) return null;
+  const legend = LAYER_LEGENDS[layer];
   return (
     <div className="analytics-hud">
       <strong className="analytics-hud-title">{t(`analytics.layer.${layer}`)}</strong>
       <ActionButton variant="primary" onClick={exitAnalytics}>{t('analytics.exit')}</ActionButton>
+      {legend ? <AnalyticsLegend legend={legend} /> : null}
     </div>
   );
 }

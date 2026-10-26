@@ -201,3 +201,6 @@ export { CONGESTION_DIAGNOSIS, diagnoseCongestion } from './traffic/diagnosis';
 export { WASTE_DIAGNOSIS, diagnoseWaste } from './waste/diagnosis';
 export { ANALYTICS_LAYERS, DATA_LAYERS, MOVEMENT_LAYERS, isAnalyticsLayerId } from './analytics/layers';
 export type { AnalyticsLayerId, DataLayer, MovementLayer } from './analytics/layers';
+export { tileFieldOf } from './analytics/fields';
+export { fieldValueAt } from './analytics/tileField';
+export type { TileField } from './analytics/tileField';

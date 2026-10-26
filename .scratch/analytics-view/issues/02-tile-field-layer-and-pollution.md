@@ -1,6 +1,6 @@
 # Tile Field Layer And Pollution
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 01
 

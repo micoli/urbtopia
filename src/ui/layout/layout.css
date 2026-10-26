@@ -359,3 +359,18 @@
   border-radius: var(--radius-md);
   background: var(--color-surface);
 }
+
+.analytics-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-4) var(--space-12);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.analytics-legend-ramp {
+  width: 140px;
+  height: 10px;
+  border-radius: var(--radius-md);
+}

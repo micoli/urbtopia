@@ -75,6 +75,8 @@ export function SceneCanvas() {
     const showServiceCoverage = () => scene.setServiceCoverage(uiStore.getState().serviceCoverageOpen ? prefsStore.getState().serviceCoverageType : null);
     showServiceCoverage();
     scene.setGhost(uiStore.getState().evaluation?.ghost ?? null);
+    const showAnalytics = () => scene.setAnalyticsLayer(uiStore.getState().analyticsLayer);
+    showAnalytics();
     const showTraffic = () => scene.setTrafficEnabled(prefsStore.getState().traffic && uiStore.getState().analyticsLayer === null);
     showTraffic();
     scene.setBrushMode(uiStore.getState().tool?.kind === 'brush');
@@ -92,7 +94,10 @@ export function SceneCanvas() {
     });
     const unsubscribeUi = uiStore.subscribe((store, previous) => {
       if (store.serviceCoverageOpen !== previous.serviceCoverageOpen) showServiceCoverage();
-      if (store.analyticsLayer !== previous.analyticsLayer) showTraffic();
+      if (store.analyticsLayer !== previous.analyticsLayer) {
+        showTraffic();
+        showAnalytics();
+      }
       if (store.tool?.kind !== previous.tool?.kind) scene.setBrushMode(store.tool?.kind === 'brush');
       if (store.evaluation !== previous.evaluation) scene.setGhost(store.evaluation?.ghost ?? null);
       if (store.selectedBuildingId !== previous.selectedBuildingId) showSelection();
