@@ -43,7 +43,10 @@ test('visits a Showcase read-only and returns to the own city untouched', async 
     return { seed: state.seed, unchanged: gameStore.getState().state === state, blocked: readOnlyStore.getState().readOnly };
   });
   expect(during).toEqual({ seed: 'visited-city', unchanged: true, blocked: true });
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('urbtopia-save') ?? '{}').state?.seed)).not.toBe('visited-city');
+  expect(await page.evaluate(() => {
+    const { lastPlayed } = JSON.parse(localStorage.getItem('urbtopia-cities') ?? '{}');
+    return JSON.parse(localStorage.getItem(`urbtopia-save:${lastPlayed}`) ?? '{}').state?.seed;
+  })).not.toBe('visited-city');
 
   await page.getByRole('button', { name: 'Back to my city' }).click();
   await expect(page.locator('.visit-banner')).toHaveCount(0);

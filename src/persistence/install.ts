@@ -10,7 +10,8 @@ import { installSolidarity } from '../solidarity/installSolidarity';
 import { installShowcase } from '../showcase/installShowcase';
 import { installSocial } from '../social/installSocial';
 import { installCloudSync } from './cloud/installCloud';
-import { saveSession, saveStore } from './instance';
+import { nameOpenCity } from './cities';
+import { rawSaveStore, saveSession, saveStore } from './instance';
 import { readMeta, shouldRemindExport } from './meta';
 import { TabOwnership } from './tabOwnership';
 
@@ -35,6 +36,8 @@ export function installPersistence(): () => void {
     if (bootResult.detail) console.warn(`Save rejected: ${bootResult.detail}`);
     dialogStore.getState().setRecovery({ reason: bootResult.reason, raw: bootResult.raw });
   }
+
+  nameOpenCity(rawSaveStore, gameStore.getState().state.seed);
 
   const autosave = createAutosave({
     save: () => {
