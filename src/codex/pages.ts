@@ -1,7 +1,7 @@
 import type { MessageKey } from '../i18n/messages';
 import type { CodexSection } from './catalog';
 
-export type CodexPage = 'economy' | 'storage' | 'energy' | 'sanctions' | 'market' | 'challenges' | 'solidarity' | 'waste' | 'politics' | 'transitReach' | 'chains';
+export type CodexPage = 'economy' | 'storage' | 'energy' | 'sanctions' | 'market' | 'challenges' | 'solidarity' | 'waste' | 'politics' | 'transitReach' | 'chains' | 'analytics';
 
 export const CODEX_PAGES: readonly { id: CodexPage; section: CodexSection; title: MessageKey; description: MessageKey }[] = [
   { id: 'economy', section: 'codex.crops', title: 'codex.economy.title', description: 'codex.economy.intro' },
@@ -14,5 +14,6 @@ export const CODEX_PAGES: readonly { id: CodexPage; section: CodexSection; title
   { id: 'solidarity', section: 'codex.trade', title: 'codex.solidarity.title', description: 'codex.solidarity.intro' },
   { id: 'waste', section: 'build.publicFacilities', title: 'codex.waste.title', description: 'codex.waste.intro' },
   { id: 'transitReach', section: 'build.transport', title: 'codex.transitReach.title', description: 'codex.transitReach.intro' },
+  { id: 'analytics', section: 'codex.roads', title: 'codex.analytics.title', description: 'codex.analytics.intro' },
   { id: 'politics', section: 'build.publicFacilities', title: 'codex.politics.title', description: 'codex.politics.intro' },
 ];

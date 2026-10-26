@@ -209,5 +209,6 @@ export { LAYER_SCALES } from './analytics/scales';
 export type { LayerScale, RampId, ScaleLabel } from './analytics/scales';
 export { fieldValueAt, isPainted } from './analytics/tileField';
 export type { TileField } from './analytics/tileField';
+export { LAND_VALUE } from './analytics/landValueField';
 export { probeOf } from './analytics/probe';
 export type { Probe, ProbeLine } from './analytics/probe';

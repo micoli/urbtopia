@@ -14,6 +14,7 @@ import { MarketRulesPage } from './MarketRulesPage';
 import { SanctionsPage } from './SanctionsPage';
 import { StorageRulesPage } from './StorageRulesPage';
 import { SolidarityPage } from './SolidarityPage';
+import { AnalyticsPage } from './AnalyticsPage';
 import { WastePage } from './WastePage';
 import { TransitReachPage } from './TransitReachPage';
 import { PoliticsPage } from './PoliticsPage';
@@ -115,7 +116,7 @@ export function CodexPanel() {
             );
           })}
         </nav>
-        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : page === 'energy' ? 'codex.energy.title' : page === 'sanctions' ? 'codex.sanctions.title' : page === 'market' ? 'codex.market.title' : page === 'challenges' ? 'codex.challenges.title' : page === 'solidarity' ? 'codex.solidarity.title' : page === 'waste' ? 'codex.waste.title' : page === 'politics' ? 'codex.politics.title' : page === 'transitReach' ? 'codex.transitReach.title' : page === 'chains' ? 'codex.chains.title' : entry.name)}>
+        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : page === 'energy' ? 'codex.energy.title' : page === 'sanctions' ? 'codex.sanctions.title' : page === 'market' ? 'codex.market.title' : page === 'challenges' ? 'codex.challenges.title' : page === 'solidarity' ? 'codex.solidarity.title' : page === 'waste' ? 'codex.waste.title' : page === 'politics' ? 'codex.politics.title' : page === 'transitReach' ? 'codex.transitReach.title' : page === 'chains' ? 'codex.chains.title' : page === 'analytics' ? 'codex.analytics.title' : entry.name)}>
           {page === 'economy' && <CropEconomyPage />}
           {page === 'storage' && <StorageRulesPage />}
           {page === 'energy' && <EnergyProductionPage />}
@@ -127,6 +128,7 @@ export function CodexPanel() {
           {page === 'politics' && <PoliticsPage />}
           {page === 'transitReach' && <TransitReachPage />}
           {page === 'chains' && <ProductionChainsPage />}
+          {page === 'analytics' && <AnalyticsPage />}
           {!pageOpen && <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />}
           {!pageOpen && !manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}
         </article>
