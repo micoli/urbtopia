@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(53);
+select plan(54);
 
 insert into auth.users (id, instance_id, aud, role, email, email_confirmed_at, is_anonymous, created_at, last_sign_in_at)
   select ('00000000-0000-0000-0006-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', n || '@example.com', now(), false, now(), now()
@@ -137,6 +137,7 @@ select ok(
     and not (public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'abandoned' ? pg_temp.medium_id()::text)
     and public.urb_list_challenges('00000000-0000-0000-0000-000000000001') -> 'accepted' ->> 'challengeId' = pg_temp.event_id()::text,
   'abandoning in one City leaves the other City and its accepted Event alone');
+select throws_ok($$ select public.urb_declare_challenge(pg_temp.medium_id(), '00000000-0000-0000-0000-0000000000c2') $$, 'urb_challenge_unavailable', 'an abandoned Challenge cannot be declared complete');
 reset role;
 select finish();
 rollback;

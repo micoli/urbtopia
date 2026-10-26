@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(36);
+select plan(38);
 
 insert into auth.users (id, instance_id, aud, role, email, email_confirmed_at, is_anonymous, created_at, last_sign_in_at) values
   ('00000000-0000-0000-0003-00000000000a', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'a@example.com', now(), false, now(), now()),
@@ -146,6 +146,14 @@ select pg_temp.act_as('00000000000c');
 select public.urb_delete_my_saves();
 select pg_temp.act_as('00000000000d');
 select throws_ok($$ select public.urb_get_showcase('00000000-0000-0000-0003-00000000000c', '00000000-0000-0000-0000-000000000001') $$, 'urb_not_found', 'deleting cloud data deletes the Showcase');
+
+-- Deleting a City takes its Showcase and its opt-out with it
+select pg_temp.act_as('00000000000a');
+select public.urb_delete_city_saves('00000000-0000-0000-0000-0000000000c3');
+select public.urb_delete_city_saves('00000000-0000-0000-0000-0000000000c2');
+reset role;
+select is((select count(*) from public.urb_showcase where city_id = '00000000-0000-0000-0000-0000000000c3'), 0::bigint, 'deleting a City deletes its Showcase');
+select is((select count(*) from public.urb_hall_of_fame_opt_outs where city_id = '00000000-0000-0000-0000-0000000000c2'), 0::bigint, 'and its Hall of fame opt-out');
 
 select * from finish();
 rollback;
