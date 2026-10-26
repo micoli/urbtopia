@@ -398,10 +398,6 @@
   border-radius: 3px;
 }
 
-.flyout-sub {
-  padding-left: var(--space-12);
-}
-
 .analytics-readout {
   position: fixed;
   left: var(--space-12);

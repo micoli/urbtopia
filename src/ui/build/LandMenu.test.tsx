@@ -18,6 +18,12 @@ describe('Land menu', () => {
     expect(html).toContain(t('analytics.data'));
   });
 
+  it('puts Service coverage at the first level, with a category per item', () => {
+    expect(html).toContain('id="land-coverage"');
+    expect(html).toContain(t('service.health'));
+    expect(html).not.toContain('flyout-sub');
+  });
+
   it('lists every Layer, with the remembered one selected', () => {
     for (const layer of ANALYTICS_LAYERS) expect(html).toContain(t(`analytics.layer.${layer}`));
     expect(html).toMatch(/data-selected="true"[^>]*>\s*<span>Pollution/);

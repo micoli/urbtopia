@@ -8,7 +8,7 @@ async function openLandMenu(page: Page) {
   await page.locator('[data-action="parcels"]').click();
 }
 
-async function expandSection(page: Page, id: 'land-movement' | 'land-data') {
+async function expandSection(page: Page, id: 'land-movement' | 'land-data' | 'land-coverage') {
   const toggle = page.locator(`#${id}-toggle`);
   if ((await toggle.getAttribute('aria-expanded')) !== 'true') await toggle.click();
 }
@@ -66,9 +66,8 @@ test.describe('analytics view', () => {
       await openLandMenu(page);
     }
 
-    await expandSection(page, 'land-data');
-    await page.locator('#land-data').getByRole('button', { name: /^Couverture des services/ }).click();
-    await page.locator('.flyout-sub').getByRole('button', { name: 'Éducation', exact: true }).click();
+    await expandSection(page, 'land-coverage');
+    await page.locator('#land-coverage').getByRole('button', { name: 'Éducation', exact: true }).click();
     await expect(page.locator('.analytics-hud-title')).toHaveText('Couverture des services · Éducation');
     await expect(page.locator('.analytics-legend-state')).toHaveCount(3);
     await page.getByRole('button', { name: 'Quitter l’analytique', exact: true }).or(page.getByRole('button', { name: "Quitter l'analytique", exact: true })).click();
