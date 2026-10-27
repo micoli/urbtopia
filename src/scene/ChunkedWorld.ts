@@ -14,8 +14,22 @@ export class ChunkedWorld {
   private chunks = new Map<string, Chunk>();
   private lastItems: RenderItem[] | null = null;
   private fittedBoxes = new Map<string, THREE.Box3>();
+  private unpowered: ReadonlySet<number> = new Set();
 
   constructor(private library: ModelLibrary, private chunkSize?: number) {}
+
+  // Windows of an unpowered building stay dark at Night. Only the chunks that hold a changed building are rebuilt.
+  setUnpowered(ids: ReadonlySet<number>): void {
+    if (ids.size === this.unpowered.size && [...ids].every(id => this.unpowered.has(id))) return;
+    this.unpowered = ids;
+    const items = this.lastItems;
+    this.lastItems = null;
+    if (items) this.sync(items);
+  }
+
+  private darkKey(item: RenderItem): string {
+    return item.buildingId !== undefined && this.unpowered.has(item.buildingId) ? '!' : '';
+  }
 
   sync(items: RenderItem[]): void {
     if (items === this.lastItems) return;
@@ -35,7 +49,7 @@ export class ChunkedWorld {
 
   private syncChunk(key: string, items: RenderItem[]): void {
     const signature = items
-      .map((item) => `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}:${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.pitch ?? 0},${item.yaw ?? 0},${item.roll ?? 0},${item.lengthScale ?? 1},${item.scale ?? 1},${item.footprint ?? 0}`)
+      .map((item) => `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}${this.darkKey(item)}:${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.pitch ?? 0},${item.yaw ?? 0},${item.roll ?? 0},${item.lengthScale ?? 1},${item.scale ?? 1},${item.footprint ?? 0}`)
       .sort()
       .join('|');
     if (this.chunks.get(key)?.signature === signature) return;
@@ -73,7 +87,7 @@ export class ChunkedWorld {
     const group = new THREE.Group();
     const byModel = new Map<string, RenderItem[]>();
     for (const item of items) {
-      const key = `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}`;
+      const key = `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}${this.darkKey(item)}`;
       const modelItems = byModel.get(key);
       if (modelItems) modelItems.push(item);
       else byModel.set(key, [item]);
@@ -85,16 +99,18 @@ export class ChunkedWorld {
     const facilityMatrix = new THREE.Matrix4();
     const combined = new THREE.Matrix4();
     for (const [key, modelItems] of byModel) {
-      const separator = key.lastIndexOf('@');
-      const model = key.slice(0, separator);
-      const [variant = '', tint = ''] = key.slice(separator + 1).split('#');
+      const dark = key.endsWith('!');
+      const plainKey = dark ? key.slice(0, -1) : key;
+      const separator = plainKey.lastIndexOf('@');
+      const model = plainKey.slice(0, separator);
+      const [variant = '', tint = ''] = plainKey.slice(separator + 1).split('#');
       const fit = fitMatrixOf(model);
       this.library.get(model).traverse((node) => {
         const mesh = node as THREE.Mesh;
         if (!mesh.isMesh) return;
         const textured = variant ? this.library.withTextureVariant(mesh.material, variant as TextureVariant) : mesh.material;
         const tinted = tint ? this.library.withTint(textured, Number(tint)) : textured;
-        const instanced = new THREE.InstancedMesh(mesh.geometry, isGlowingModel(model) ? withWindowGlow(tinted) : tinted, modelItems.length);
+        const instanced = new THREE.InstancedMesh(mesh.geometry, isGlowingModel(model) && !dark ? withWindowGlow(tinted) : tinted, modelItems.length);
         modelItems.forEach((item, index) => {
           const elevation = item.roofBase ? this.fittedBox(item.roofBase).max.y + (item.elevation ?? 0) : item.elevation ?? 0;
           placement.makeRotationY((item.rotation * Math.PI) / 2).setPosition(item.x, elevation, item.z);

@@ -123,6 +123,7 @@ export type { VenueTutorialStep, VenueTutorialType } from './progression/venueTu
 
 export { ECOLOGY, ECOLOGY_UNLOCKS, distance as buildingDistance, homePower, economicPower, greenSpaceCoverage, greenBenefits, cityGreenBenefits } from './environment/ecology';
 export { DAY_CYCLE, cycleHourOf, cycleTimeOf, dayCycleOffsetAt, nextCycleHourAfter, timeOfCycleHour, daylightOf, isDaytime, phaseOf, type DayPhase } from './environment/dayCycle';
+export { unpoweredBuildingIds } from './environment/powered';
 export { energyStats, generatorCapacity, generatorFactor, generatorOutput, productionFactors, factorsAt } from './environment/energy';
 export { solarPanelPlacements, turnedOffset, type PanelPlacement } from './environment/solarPanelLayout';
 export { canHaveSolarPanels, solarInstallCostOf, solarPanelsCost, solarPanelsOf, solarPanelsUnlockCitizens, solarPanelsCapacity } from './environment/solarPanels';

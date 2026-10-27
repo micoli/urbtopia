@@ -5,7 +5,7 @@ import { GAME_CONFIG, WILD_RIM_TILES, congestionStats, footbridgeStops, pedestri
 import { bridgeElevation } from './bridgeElevation';
 import { CameraController } from './CameraController';
 import { StreetViewController } from './StreetViewController';
-import { cycleTimeOf, daylightOf, timeOfCycleHour, footprintTiles, type AnalyticsLayerId, type Coord, type ServiceCategory } from '../core';
+import { cycleTimeOf, daylightOf, timeOfCycleHour, unpoweredBuildingIds, footprintTiles, type AnalyticsLayerId, type Coord, type ServiceCategory } from '../core';
 import { congestionTints } from './congestionMarkers';
 import type { DrawnExtent, GhostSpec } from '../tools/tools';
 import { ChunkedWorld } from './ChunkedWorld';
@@ -533,6 +533,7 @@ export class GameScene {
     this.applyLighting(lightingOf(this.alwaysDayNow ? 1 : daylightOf(cycleTime)));
     setWindowGlow(this.alwaysDayNow ? 0 : 1);
     setWindowNight(nightClockOf(cycleTime));
+    this.world.setUnpowered(unpoweredBuildingIds(this.ecologicalState));
   }
 
   setDayCycleOverride(alwaysDay: boolean, pinnedCycleHour: number | null): void {
