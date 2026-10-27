@@ -322,6 +322,35 @@ describe('brush tool', () => {
     });
   });
 
+  describe('a Footbridge', () => {
+    const crossing: GameState = {
+      ...newGame({ seed: 'footbridge-tool', now: 0 }),
+      urbs: 100_000,
+      tutorial: null,
+      buildings: [{ ...createBuilding(1, 'home', 40, 40, 0), tier: 6 }],
+      roads: Array.from({ length: 11 }, (_, index) => ({ x: 50, y: 45 + index, kind: 'road' as const })),
+    };
+
+    it('previews its 2-wide footprint with its price, turned to the first valid placement', () => {
+      const evaluated = evaluateTool({ kind: 'bridge', length: 1, carrier: 'pedestrian' }, { state: crossing, tile: { x: 50, y: 50 }, rotation: null });
+      expect(evaluated.valid).toBe(true);
+      expect(evaluated.command).toEqual({ type: 'PlaceBridge', x: 50, y: 50, length: 1, axis: 'x', carrier: 'pedestrian', side: 1 });
+      expect(evaluated.ghost.tiles).toHaveLength(6);
+      expect(evaluated.cost).toBe(180);
+    });
+
+    it('takes the four placements from the rotation chosen by the player', () => {
+      const sides = [0, 1, 2, 3].map((rotation) => evaluateTool({ kind: 'bridge', length: 1, carrier: 'pedestrian' }, { state: crossing, tile: { x: 50, y: 50 }, rotation: rotation as 0 | 1 | 2 | 3 }).command);
+      expect(sides.map((command) => command && 'axis' in command && [command.axis, command.side])).toEqual([['x', 1], ['y', 1], ['x', -1], ['y', -1]]);
+    });
+
+    it('explains an invalid place', () => {
+      const evaluated = evaluateTool({ kind: 'bridge', length: 1, carrier: 'pedestrian' }, { state: crossing, tile: { x: 60, y: 60 }, rotation: null });
+      expect(evaluated.valid).toBe(false);
+      expect(evaluated.issue).toBe('error.bridgeNeedsInfrastructure');
+    });
+  });
+
   it('removes a Bridge from the hovered tile', () => {
     expect(evaluateTool({ kind: 'removeBridge' }, { state: farmCity, tile: { x: 50, y: 50 }, rotation: null }).command).toEqual({ type: 'RemoveBridge', x: 50, y: 50 });
   });

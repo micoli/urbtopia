@@ -537,6 +537,7 @@ export const CATALOG = {
   'bridge.road': ['Road Bridge', 'Pont routier'],
   'bridge.brt': ['BRT Bridge', 'Pont BRT'],
   'water.bridgeTiles': ['tiles', 'cases'],
+  'water.footbridge': ['Footbridge', 'Passerelle'],
   'water.removeBridge': ['Remove a Bridge', 'Retirer un pont'],
   'marina.capacity': ['Boats held', 'Bateaux accueillis'],
   'marina.boats': ['Boats', 'Bateaux'],

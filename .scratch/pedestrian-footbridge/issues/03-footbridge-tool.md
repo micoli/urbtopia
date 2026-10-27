@@ -1,6 +1,6 @@
 # Placement tool, price, unlock, refund
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01
 Spec: ../spec.md
 

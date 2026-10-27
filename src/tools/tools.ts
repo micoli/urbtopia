@@ -58,7 +58,7 @@ export type Tool =
   | { kind: 'upgradePedestrianWay'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'parcel' }
   | { kind: 'boat'; family: BoatFamily; marinaId: number }
-  | { kind: 'bridge'; length: number; carrier?: 'road' | 'brt' }
+  | { kind: 'bridge'; length: number; carrier?: 'road' | 'brt' | 'pedestrian' }
   | { kind: 'removeBridge' }
   | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] };
 
@@ -305,7 +305,23 @@ function lineBetween(from: Coord, to: Coord): Coord[] {
   });
 }
 
-function evaluateBridge(state: GameState, length: number, tile: Coord, carrier: 'road' | 'brt' | undefined, rotation: Rotation | null): Evaluation {
+// A Footbridge has four placements: both axes, with the corridors on either side of the deck.
+const FOOTBRIDGE_TURNS = [{ axis: 'x', side: 1 }, { axis: 'y', side: 1 }, { axis: 'x', side: -1 }, { axis: 'y', side: -1 }] as const;
+
+function evaluateFootbridge(state: GameState, length: number, tile: Coord, rotation: Rotation | null): Evaluation {
+  const attempt = (turn: Rotation) => {
+    const { axis, side } = FOOTBRIDGE_TURNS[turn]!;
+    const bridge = { x: tile.x, y: tile.y, length, axis, carrier: 'pedestrian' as const, side };
+    const command: Command = { type: 'PlaceBridge', ...bridge };
+    return evaluation(bridgeFootprint(bridge), command, state, { cost: bridgeCost(length, 'pedestrian') ?? null, rotation: turn });
+  };
+  if (rotation !== null) return attempt(rotation);
+  const attempts = ([0, 1, 2, 3] as const).map(attempt);
+  return attempts.find((candidate) => candidate.valid) ?? attempts[0]!;
+}
+
+function evaluateBridge(state: GameState, length: number, tile: Coord, carrier: 'road' | 'brt' | 'pedestrian' | undefined, rotation: Rotation | null): Evaluation {
+  if (carrier === 'pedestrian') return evaluateFootbridge(state, length, tile, rotation);
   const attempt = (axis: 'x' | 'y') => {
     const bridge = { x: tile.x, y: tile.y, length, axis, ...(carrier ? { carrier } : {}) };
     const command: Command = { type: 'PlaceBridge', ...bridge };
