@@ -310,7 +310,7 @@ export const CATALOG = {
   "codex.energy.tiles": ["Connected Water tiles", "Tuiles d’eau connectées"],
   "codex.energy.flow": ["Flow factor", "Facteur de débit"],
   "codex.energy.noHydro": ["No Hydro power plant yet.", "Aucune centrale hydraulique pour l’instant."],
-  "codex.energy.forecast": ["Next 24 hours", "Prochaines 24 heures"],
+  "codex.energy.forecast": ["Next 4 hours", "Prochaines 4 heures"],
   "codex.energy.now": ["Now", "Maintenant"],
   "codex.energy.simulator": ["Plan a lake", "Dimensionner un lac"],
   "codex.energy.simulatorHelp": ["The Water tiles connected to a Hydro power plant set its flow: full at {full}. Try a number of tiles to see what each Tier delivers.", "Les tuiles d’eau connectées à une centrale hydraulique fixent son débit : plein à {full}. Essayez un nombre de tuiles pour voir ce que chaque Tier fournit."],

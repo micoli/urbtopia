@@ -9,6 +9,7 @@ import { hasBrtOnlyAccess } from '../map/placement';
 import { transportStats } from '../transit/transport';
 import { waterStats } from '../water/boats';
 import { wasteCostPerHour } from '../waste/waste';
+import { nextCycleHourAfter } from '../environment/dayCycle';
 import { GAME_CONFIG } from './config';
 import type { GameEvent } from './events';
 import { advanceProduction, shiftRunningTimers } from '../economy/production';
@@ -65,7 +66,7 @@ function replay(state: GameState, until: number): AdvanceResult {
       events.push(...caught.events);
     }
     const energy = energyStats(current, now), transport = transportStats(current, now);
-    let end = Math.min(until, (Math.floor((now + (current.timeOffset ?? 0)) / ECOLOGY.hourMs) + 1) * ECOLOGY.hourMs - (current.timeOffset ?? 0));
+    let end = Math.min(until, (Math.floor((now + (current.timeOffset ?? 0)) / ECOLOGY.hourMs) + 1) * ECOLOGY.hourMs - (current.timeOffset ?? 0), nextCycleHourAfter(current, now));
     if ((current.adaptationUntil ?? 0) > now) end = Math.min(end, current.adaptationUntil!);
     const solidarityEnd = (current.solidarityMs ?? 0) > 0 ? now + current.solidarityMs! : Infinity;
     end = Math.min(end, solidarityEnd);

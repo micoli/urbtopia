@@ -52,9 +52,15 @@ export function cycleTimeOf(state: Pick<GameState, 'timeOffset' | 'dayCycleOffse
   return now + (state.timeOffset ?? 0) + (state.dayCycleOffset ?? 0);
 }
 
-// Offset that puts the Day cycle at its start hour at `now`.
-export function dayCycleOffsetAt(now: number): number {
-  const target = DAY_CYCLE.startHour * CYCLE_HOUR_MS;
+// Offset that puts the Day cycle at `cycleHour` (its start hour by default) at `now`.
+export function dayCycleOffsetAt(now: number, cycleHour = DAY_CYCLE.startHour): number {
+  const target = cycleHour * CYCLE_HOUR_MS;
   const current = ((now % DAY_CYCLE.durationMs) + DAY_CYCLE.durationMs) % DAY_CYCLE.durationMs;
   return ((target - current) % DAY_CYCLE.durationMs + DAY_CYCLE.durationMs) % DAY_CYCLE.durationMs;
+}
+
+// Game-clock time of the next Cycle hour boundary after `now`.
+export function nextCycleHourAfter(state: Pick<GameState, 'timeOffset' | 'dayCycleOffset'>, now: number): number {
+  const shift = cycleTimeOf(state, 0);
+  return (Math.floor((now + shift) / CYCLE_HOUR_MS) + 1) * CYCLE_HOUR_MS - shift;
 }

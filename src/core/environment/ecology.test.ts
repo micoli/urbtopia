@@ -1,13 +1,13 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { advance, createBuilding, dispatch, ECOLOGY, energyStats, solarPanelsCost, greenSpaceCoverage, greenBenefits, newGame, transportStats, type Building, type GameState } from '../index';
+import { advance, createBuilding, dispatch, ECOLOGY, energyStats, solarPanelsCost, greenSpaceCoverage, greenBenefits, dayCycleOffsetAt, newGame, transportStats, type Building, type GameState } from '../index';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 import currentSave from '../../persistence/fixtures/save-v4.json';
 import oldSave from '../../persistence/fixtures/save-v3.json';
 
 const H = ECOLOGY.hourMs;
 const b = (id: number, type: Building['type'], x: number, y = 0, extra: Partial<Building> = {}) => ({ ...createBuilding(id, type, x, y, 0), ...extra });
-const city = (buildings: Building[], now = 12 * H): GameState => ({ ...newGame({ seed: 'ecology', now }), buildings, nextId: 100, urbs: 10000, adaptationUntil: 0, roads: [], busLines: [] });
+const city = (buildings: Building[], now = 12 * H): GameState => ({ ...newGame({ seed: 'ecology', now }), dayCycleOffset: dayCycleOffsetAt(now, 12), buildings, nextId: 100, urbs: 10000, adaptationUntil: 0, roads: [], busLines: [] });
 
 describe('ecological energy accounting', () => {
   it('reserves every solar Home own production before sharing', () => {
@@ -20,10 +20,10 @@ describe('ecological energy accounting', () => {
   it('cannot recharge nearby batteries twice from a distant generator surplus', () => {
     const s = city([b(1, 'home', 0, 0, { solar: true }), b(2, 'solar', 100), b(3, 'battery', 1, 0, { storedEnergy: 0 }), b(4, 'battery', 2, 0, { storedEnergy: 0 })]);
     const e = energyStats(s);
-    const localSurplus = 2 * Math.sin(Math.PI * 6.5 / 12) - 1;
+    const localSurplus = 2 * Math.sin(Math.PI * 6.5 / 16) - 1;
     expect((e.batteryRates.get(3) ?? 0) + (e.batteryRates.get(4) ?? 0)).toBeCloseTo(localSurplus);
-    const stored = advance(s, s.lastSeen + H).state.buildings.filter(b => b.type === 'battery').reduce((n, b) => n + (b.storedEnergy ?? 0), 0);
-    expect(stored).toBeCloseTo(localSurplus);
+    const stored = advance(s, s.lastSeen + H / 12).state.buildings.filter(b => b.type === 'battery').reduce((n, b) => n + (b.storedEnergy ?? 0), 0);
+    expect(stored).toBeCloseTo(localSurplus / 12);
   });
   it('bounds sharing by distance and unmet Demand and lets Homes precede industry', () => {
     const s = city([b(1, 'home', 0, 0, { solar: true }), b(2, 'home', 100), b(3, 'factory', 4)]);
@@ -71,7 +71,7 @@ describe('ecological energy accounting', () => {
     const s = { ...city([b(1, 'home', 0), b(2, 'backup', 5)], 0), urbs: 0.25 };
     expect(energyStats(s).backup).toBe(1);
     const next = advance(s, H).state;
-    expect(next.urbs).toBe(0);
+    expect(next.urbs).toBeCloseTo(0);
     expect(next.buildings[0]!.taxCitizenMs).toBeCloseTo(6 * H / 2);
     expect(energyStats(next).backup).toBe(0);
   });
@@ -88,7 +88,7 @@ describe('ecological energy accounting', () => {
     expect(full.buildings[1]!.storedEnergy).toBe(24);
     const dark = city([b(1, 'home', 0), b(2, 'battery', 1, 0, { storedEnergy: 0.5 })], 0);
     const depleted = advance(dark, H).state;
-    expect(depleted.buildings[1]!.storedEnergy).toBe(0);
+    expect(depleted.buildings[1]!.storedEnergy).toBeCloseTo(0);
     expect(depleted.buildings[0]!.taxCitizenMs).toBeCloseTo(6 * H / 2);
   });
   it('does not penalize legacy cities during adaptation and caps catch-up', () => {

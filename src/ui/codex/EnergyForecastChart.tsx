@@ -8,13 +8,14 @@ const SERIES = [
   { id: 'geothermal', color: '#ff8a65', dash: '6 4' },
 ] as const;
 
-const HOURS = 24;
+const HOURS = 4;
+const SAMPLES_PER_HOUR = 12;
 const WIDTH = 480;
 const HEIGHT = 220;
 const MARGIN = { left: 40, right: 12, top: 12, bottom: 28 };
 const PLOT_WIDTH = WIDTH - MARGIN.left - MARGIN.right;
 const PLOT_HEIGHT = HEIGHT - MARGIN.top - MARGIN.bottom;
-const X_TICKS = [0, 6, 12, 18, 24];
+const X_TICKS = [0, 1, 2, 3, 4];
 const Y_TICKS = [0, 0.5, 1];
 
 const xOf = (hour: number) => MARGIN.left + (hour / HOURS) * PLOT_WIDTH;
@@ -25,7 +26,7 @@ interface EnergyForecastChartProps {
 }
 
 export function EnergyForecastChart({ state }: EnergyForecastChartProps) {
-  const forecast = Array.from({ length: HOURS + 1 }, (_, hour) => sourceFactors(state, hour));
+  const forecast = Array.from({ length: HOURS * SAMPLES_PER_HOUR + 1 }, (_, sample) => sourceFactors(state, sample / SAMPLES_PER_HOUR));
   return (
     <figure className="codex-energy-chart">
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label={t('codex.energy.forecast')}>
@@ -46,7 +47,7 @@ export function EnergyForecastChart({ state }: EnergyForecastChartProps) {
             strokeWidth={2.5}
             strokeLinejoin="round"
             strokeDasharray={dash}
-            points={forecast.map((factors, hour) => `${xOf(hour)},${yOf(factors[id])}`).join(' ')}
+            points={forecast.map((factors, sample) => `${xOf(sample / SAMPLES_PER_HOUR)},${yOf(factors[id])}`).join(' ')}
           />
         ))}
       </svg>

@@ -33,10 +33,10 @@ describe('EnergyProductionPage', () => {
     for (const source of ENERGY_SOURCES) expect(html).toContain(t(`eco.${source}`));
   });
 
-  it('charts the next 24 hours of every renewable source', () => {
+  it('charts the next 4 hours of every renewable source', () => {
     const html = render(newGame({ seed: 'energy-page', now: 0 }));
     expect(html).toContain(`aria-label="${t('codex.energy.forecast')}"`);
-    expect(html).toContain('+24h');
+    expect(html).toContain('+4h');
     expect(html.match(/<polyline/g)).toHaveLength(4);
   });
 

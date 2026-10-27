@@ -1,6 +1,6 @@
 # Energy curves and Cycle hour steps
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 01
 

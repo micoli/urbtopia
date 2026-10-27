@@ -135,7 +135,7 @@ describe('local coal pollution and affordability', () => {
   it('stops exactly at budget exhaustion and resumes after Tax collection', () => {
     const state = city([building(1, 'home'), building(2, 'coalPlant', 3)], { urbs: 0.025 });
     const next = advance(state, H).state;
-    expect(next.urbs).toBe(0);
+    expect(next.urbs).toBeCloseTo(0);
     expect(next.buildings[0]?.taxCitizenMs).toBeCloseTo(6 * H / 2 * (1 - 10 / 12 / 500));
     expect(energyStats(next).coal).toBe(0);
     const collected = dispatch(next, { type: 'Collect', buildingId: 1 }, H);

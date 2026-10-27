@@ -1,7 +1,6 @@
 import { COAL_CAPACITY } from '../economy/economy';
 import type { Building, GameState } from '../engine/state';
-import { ECOLOGY } from './ecology';
-import { energyStats, generatorCapacity, productionFactors } from './energy';
+import { energyStats, factorsAt, generatorCapacity } from './energy';
 import { ENERGY_SOURCES, PLANT_TYPES, generatedSourceOf, type EnergySourceId } from './generators';
 
 export { ENERGY_SOURCES, type EnergySourceId };
@@ -30,5 +29,5 @@ export function energySources(state: GameState, energy = energyStats(state)): En
 }
 
 export function sourceFactors(state: GameState, hoursAhead = 0) {
-  return productionFactors(state.lastSeen + (state.timeOffset ?? 0) + hoursAhead * ECOLOGY.hourMs);
+  return factorsAt(state, state.lastSeen, hoursAhead);
 }

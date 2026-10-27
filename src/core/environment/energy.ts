@@ -1,3 +1,4 @@
+import { DAY_CYCLE, cycleHourOf, cycleTimeOf, isDaytime } from './dayCycle';
 import { isVenueType } from '../venues/profiles';
 import { transitServices } from '../transit/transitService';
 import { ECOLOGY, distance, economicPower, homePower } from './ecology';
@@ -9,15 +10,22 @@ import { PLANT_TYPES, generatedSourceOf, isGeneratingPlant, type EnergySourceId 
 import { solarPanelsCapacity } from './solarPanels';
 import { energySavingOf } from '../politics/ordinanceEffects';
 
-export function productionFactors(now: number) {
+// `now` is the game clock, which sets the wind; `cycleTime` is the Day cycle clock, which sets solar and hydro.
+export function productionFactors(now: number, cycleTime = now) {
   const hour = Math.floor(now / ECOLOGY.hourMs);
-  const dayHour = ((hour % 24) + 24) % 24;
+  const cycleHour = Math.floor(cycleHourOf(cycleTime));
+  const daytimeHours = DAY_CYCLE.daytimeEnd - DAY_CYCLE.daytimeStart;
   return {
-    solar: dayHour >= 6 && dayHour < 18 ? Math.sin(Math.PI * (dayHour - 5.5) / 12) : 0,
+    solar: isDaytime(cycleTime) ? Math.sin(Math.PI * (cycleHour + 0.5 - DAY_CYCLE.daytimeStart) / daytimeHours) : 0,
     wind: [0.7, 0.9, 1, 0.8, 0.6, 0.75][((hour % 6) + 6) % 6]!,
-    hydro: 1 - (1 - ECOLOGY.hydroMinFactor) * (1 - Math.sin(2 * Math.PI * dayHour / 24)) / 2,
+    hydro: 1 - (1 - ECOLOGY.hydroMinFactor) * (1 - Math.sin(2 * Math.PI * cycleHour / DAY_CYCLE.cycleHours)) / 2,
     geothermal: 1
   };
+}
+
+export function factorsAt(state: Pick<GameState, 'timeOffset' | 'dayCycleOffset'>, now: number, hoursAhead = 0) {
+  const ahead = hoursAhead * ECOLOGY.hourMs;
+  return productionFactors(now + (state.timeOffset ?? 0) + ahead, cycleTimeOf(state, now) + ahead);
 }
 
 export function generatorCapacity(b: Building): number {
@@ -25,7 +33,7 @@ export function generatorCapacity(b: Building): number {
   return b.type === 'solar' ? ECOLOGY.solarOutput : solarPanelsCapacity(b);
 }
 
-export function generatorFactor(state: GameState, b: Building, factors = productionFactors(state.lastSeen + (state.timeOffset ?? 0))): number {
+export function generatorFactor(state: GameState, b: Building, factors = factorsAt(state, state.lastSeen)): number {
   switch (generatedSourceOf(b)) {
     case 'wind': return factors.wind;
     case 'hydro': return flowFactor(state, b) * factors.hydro;
@@ -34,7 +42,7 @@ export function generatorFactor(state: GameState, b: Building, factors = product
   }
 }
 
-export function generatorOutput(state: GameState, b: Building, factors = productionFactors(state.lastSeen + (state.timeOffset ?? 0))): number {
+export function generatorOutput(state: GameState, b: Building, factors = factorsAt(state, state.lastSeen)): number {
   return generatorCapacity(b) * generatorFactor(state, b, factors);
 }
 
@@ -53,7 +61,7 @@ function computeEnergyStats(state: GameState, now: number) {
   let transitSupplied: number;
   const buildings = [...state.buildings].sort((a, b) => a.id - b.id);
   const homes = buildings.filter(b => isHomeType(b.type)), casinos = buildings.filter(b => b.type === 'casino'), arcades = buildings.filter(b => isVenueType(b.type)), economic = buildings.filter(b => b.type !== 'casino' && !isVenueType(b.type) && economicPower(b) > 0);
-  const factors = productionFactors(now + (state.timeOffset ?? 0));
+  const factors = factorsAt(state, now);
   const saving = energySavingOf(state);
   const need = new Map(buildings.map(b => [b.id, isHomeType(b.type) ? homePower(b, saving) : economicPower(b, saving)]));
   const supplied = new Map(buildings.map(b => [b.id, 0]));
