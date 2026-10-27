@@ -18,6 +18,7 @@ RISE = ELEVATION / (2 * STEPS)
 LANDING = ELEVATION / 2
 SLAB = lib.DECK
 PIER = 0.07
+FLARE = RAIL_H
 
 
 def solid(kit, x0, y0, z0, x1, y1, z1, top, side):
@@ -36,36 +37,42 @@ def rail(kit, x0, y0, x1, y1, z):
     solid(kit, x0, y0, z, x1, y1, z + RAIL_H, "curb", "curb")
 
 
-def chamfered_rail(kit, x0, x1, y0, y1, z, cut_low=False, cut_high=False):
-    """A rail along X whose end at `x0` and/or `x1` is cut at 45° in the vertical plane: the top slopes down to the ground over its own height."""
-    top = z + RAIL_H
-    upper = ([(x0, z), (x0 + RAIL_H, top)] if cut_low else [(x0, top)]) + ([(x1 - RAIL_H, top), (x1, z)] if cut_high else [(x1, top)])
-    profile = [(x0, z), (x1, z), *reversed(upper)]
-    profile = [point for index, point in enumerate(profile) if point != profile[index - 1]]
-    for y, facing in ((y0, (0, -1, 0)), (y1, (0, 1, 0))):
-        kit.poly([(x, y, h) for x, h in profile], "curb", facing)
-    for (xa, ha), (xb, hb) in zip(upper, upper[1:]):
-        kit.poly([(xa, y0, ha), (xb, y0, hb), (xb, y1, hb), (xa, y1, ha)], "curb", (ha - hb, 0, xb - xa))
-    kit.poly([(x0, y0, z), (x1, y0, z), (x1, y1, z), (x0, y1, z)], "curb", (0, 0, -1))
-    for x, shut, facing in ((x0, not cut_low, (-1, 0, 0)), (x1, not cut_high, (1, 0, 0))):
-        if shut:
-            kit.poly([(x, y0, z), (x, y1, z), (x, y1, top), (x, y0, top)], "curb", facing)
+def splayed_rail_end(kit, end, lane, z):
+    """End of a rail of the bar at the mouth of the corridor: it splays outwards at 45° in plan over FLARE, and its top slopes down to the ground at 45° over the same length, so the rail ends flush. `end` and `lane` are the signs of the end along X and of the rail along Y; the floor widens under the splay."""
+    def at(x, y, h=0.0):
+        return (end * x, lane * y, z + h)
+
+    def face(points, cell, facing):
+        kit.poly(points, cell, (end * facing[0], lane * facing[1], facing[2]))
+
+    near, far = 0.5 - FLARE, 0.5
+    inner = (near, HALF - RAIL_T, far, HALF - RAIL_T + FLARE)
+    outer = (near, HALF, far, HALF + FLARE)
+    face([at(inner[0], inner[1]), at(outer[0], outer[1]), at(outer[2], outer[3]), at(inner[2], inner[3])], "curb", (0, 0, -1))
+    face([at(inner[0], inner[1], RAIL_H), at(inner[2], inner[3]), at(outer[2], outer[3]), at(outer[0], outer[1], RAIL_H)], "curb", (1, 0, 1))
+    face([at(inner[0], inner[1]), at(inner[2], inner[3]), at(inner[0], inner[1], RAIL_H)], "curb", (1, -1, 0))
+    face([at(outer[0], outer[1]), at(outer[2], outer[3]), at(outer[0], outer[1], RAIL_H)], "curb", (-1, 1, 0))
+    face([at(inner[0], inner[1]), at(outer[0], outer[1]), at(outer[0], outer[1], RAIL_H), at(inner[0], inner[1], RAIL_H)], "curb", (-1, 0, 0))
+    face([at(near + RAIL_T, HALF), at(far, HALF), at(far, HALF - RAIL_T + FLARE)], "road", (0, 0, 1))
 
 
 def corridor(kit, closed=None):
-    """Flat walkway as wide as the stairs, a T: a bar along X, and a stem along Y open on the south edge, where the stair is. Rails on both sides of every arm. The bar is open at both ends, or stops at the line of the stem on the `closed` side ('W' or 'E'), where the rail of the stair goes straight on along the bar. The rails of an open end are cut at 45° in elevation."""
+    """Flat walkway as wide as the stairs, a T: a bar along X, and a stem along Y open on the south edge, where the stair is. Rails on both sides of every arm. The bar is open at both ends, or stops at the line of the stem on the `closed` side ('W' or 'E'), where the rail of the stair goes straight on along the bar. The rails of an open end splay outwards and slope down to the ground, both at 45°."""
     z = lib.Z_FLAT
     low = -HALF if closed == "W" else -0.5
     high = HALF if closed == "E" else 0.5
     kit.rect(low, -HALF, high, HALF, z, "road")
     kit.rect(-HALF, -0.5, HALF, -HALF, z, "road")
     open_ends = [sign for sign in (-1, 1) if closed != ("W" if sign < 0 else "E")]
-    chamfered_rail(kit, low, high, HALF - RAIL_T, HALF, z, cut_low=-1 in open_ends, cut_high=1 in open_ends)
-    for sign, end in ((-1, low), (1, high)):
+    reach = {sign: (-low if sign < 0 else high) - (FLARE if sign in open_ends else 0) for sign in (-1, 1)}
+    rail(kit, -reach[-1], HALF - RAIL_T, reach[1], HALF, z)
+    for sign in (-1, 1):
         shut = sign not in open_ends
         if not shut:
-            x0, x1 = sorted((sign * HALF, end))
-            chamfered_rail(kit, x0, x1, -HALF, -HALF + RAIL_T, z, cut_low=sign < 0, cut_high=sign > 0)
+            x0, x1 = sorted((sign * HALF, sign * reach[sign]))
+            rail(kit, x0, -HALF, x1, -HALF + RAIL_T, z)
+            for lane in (-1, 1):
+                splayed_rail_end(kit, sign, lane, z)
         x0, x1 = sorted((sign * HALF, sign * (HALF - RAIL_T)))
         rail(kit, x0, -0.5, x1, HALF if shut else -HALF, z)
 
