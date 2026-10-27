@@ -175,6 +175,21 @@ export function placeBridge(state: GameState, bridge: Bridge): CommandOutcome {
   };
 }
 
+// Moving or turning a Bridge over infrastructure is free: it is lifted and placed again with its own length, Carrier and tier.
+export function moveBridge(state: GameState, from: Coord, target: Pick<Bridge, 'x' | 'y' | 'axis' | 'side'>): CommandOutcome {
+  const bridge = bridgeAt(state, from);
+  if (!bridge) return { key: 'error.noBridgeHere' };
+  if (!isInfrastructureBridge(bridge)) return { key: 'error.bridgeNotMovable' };
+  const moved: Bridge = { x: target.x, y: target.y, length: bridge.length, axis: target.axis, carrier: bridge.carrier!, ...(isPedestrianBridge(bridge) ? { side: target.side } : {}) };
+  const placed = placeBridge({ ...withoutBridge(state, bridge), urbs: Number.MAX_SAFE_INTEGER }, moved);
+  if (!('state' in placed)) return placed;
+  const tier = bridge.tier;
+  const bridges = placed.state.bridges!.map((candidate) => (candidate.x === moved.x && candidate.y === moved.y && candidate.axis === moved.axis && tier !== undefined ? { ...candidate, tier } : candidate));
+  const ramps = new Set(bridgeRamps(moved).map(tileKey));
+  const roads = tier === undefined ? placed.state.roads : placed.state.roads.map((road) => (ramps.has(tileKey(road)) ? { ...road, tier } : road));
+  return { state: { ...placed.state, urbs: state.urbs, bridges, roads }, events: [] };
+}
+
 export function bridgeAt(state: GameState, tile: Coord): Bridge | undefined {
   return bridgesOf(state).find((bridge) => bridgeFootprint(bridge).some((candidate) => tileKey(candidate) === tileKey(tile)));
 }

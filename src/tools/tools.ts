@@ -1,8 +1,11 @@
 import {
   extendNetwork,
   BOATS,
+  bridgeAt,
   bridgeCost,
   bridgeFootprint,
+  isInfrastructureBridge,
+  isPedestrianBridge,
   BUILDING_SPECS,
   GAME_CONFIG,
   buyableParcels,
@@ -38,6 +41,7 @@ import {
   type Direction,
   type CropId,
   type ErrorKey,
+  type Bridge,
   type FacilityType,
   type GameState,
   type ColorVariant,
@@ -60,6 +64,7 @@ export type Tool =
   | { kind: 'boat'; family: BoatFamily; marinaId: number }
   | { kind: 'bridge'; length: number; carrier?: 'road' | 'brt' | 'pedestrian' }
   | { kind: 'removeBridge' }
+  | { kind: 'moveBridge'; bridge: Bridge | null }
   | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] };
 
 export type PathTool = Extract<Tool, { kind: 'road' | 'demolishRoad' | 'upgradeRoad' | 'pedestrianWay' | 'demolishPedestrianWay' | 'upgradePedestrianWay' }>;
@@ -102,6 +107,7 @@ export interface Evaluation {
   rotation: Rotation | null;
   fronts?: Rotation[];
   coverage?: { cityWide: boolean; homes: number };
+  bridge?: Bridge;
 }
 
 export interface Confirmation {
@@ -197,6 +203,8 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
       return evaluateBridge(state, tool.length, tile, tool.carrier, rotation);
     case 'removeBridge':
       return evaluation([tile], { type: 'RemoveBridge', x: tile.x, y: tile.y }, state);
+    case 'moveBridge':
+      return evaluateMoveBridge(state, tool.bridge, tile, rotation);
     case 'boat':
       return evaluation([tile], { type: 'BuyBoat', family: tool.family, marinaId: tool.marinaId, x: tile.x, y: tile.y }, state, { cost: BOATS[tool.family].cost });
     case 'brush':
@@ -320,6 +328,22 @@ function evaluateFootbridge(state: GameState, length: number, tile: Coord, rotat
   return attempts.find((candidate) => candidate.valid) ?? attempts[0]!;
 }
 
+// First pick the Bridge under the pointer, then place it again with the rotation chosen, keeping its own turn until the player changes it.
+function evaluateMoveBridge(state: GameState, picked: Bridge | null, tile: Coord, rotation: Rotation | null): Evaluation {
+  if (!picked) {
+    const bridge = bridgeAt(state, tile);
+    const movable = bridge !== undefined && isInfrastructureBridge(bridge);
+    const result = evaluation(bridge ? bridgeFootprint(bridge) : [tile], null, state);
+    return { ...result, valid: movable, ghost: { ...result.ghost, valid: movable }, issue: movable ? null : bridge ? 'error.bridgeNotMovable' : 'error.noBridgeHere', ...(movable ? { bridge } : {}) };
+  }
+  const pedestrian = isPedestrianBridge(picked);
+  const turn = (rotation ?? (pedestrian ? FOOTBRIDGE_TURNS.findIndex(({ axis, side }) => axis === picked.axis && side === picked.side) : picked.axis === 'x' ? 0 : 1)) as Rotation;
+  const { axis, side } = pedestrian ? FOOTBRIDGE_TURNS[turn]! : { axis: turn % 2 === 0 ? 'x' as const : 'y' as const, side: undefined };
+  const target = { x: tile.x, y: tile.y, length: picked.length, axis, carrier: picked.carrier, ...(side ? { side } : {}) };
+  const command: Command = { type: 'MoveBridge', from: { x: picked.x, y: picked.y }, x: tile.x, y: tile.y, axis, ...(side ? { side } : {}) };
+  return evaluation(bridgeFootprint(target), command, state, { cost: 0, rotation: turn });
+}
+
 function evaluateBridge(state: GameState, length: number, tile: Coord, carrier: 'road' | 'brt' | 'pedestrian' | undefined, rotation: Rotation | null): Evaluation {
   if (carrier === 'pedestrian') return evaluateFootbridge(state, length, tile, rotation);
   const attempt = (axis: 'x' | 'y') => {
@@ -386,6 +410,7 @@ function evaluateUpgradeRoad(state: GameState, tool: Extract<Tool, { kind: 'upgr
 }
 
 export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTool = false): Confirmation {
+  if (tool.kind === 'moveBridge' && !tool.bridge) return { command: null, nextTool: current.valid && current.bridge ? { kind: 'moveBridge', bridge: current.bridge } : tool };
   if (tool.kind === 'brush') return { command: current.valid ? current.command : null, nextTool: { ...tool, tiles: [] } };
   const pathTool = isPathTool(tool);
   if (pathTool && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
@@ -393,6 +418,6 @@ export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTo
   if (pathTool) return { command: current.command, nextTool: { ...tool, start: null } };
   if (tool.kind === 'building') return { command: current.command, nextTool: keepTool || tool.repeat ? tool : null };
   if (tool.kind === 'boat') return { command: current.command, nextTool: keepTool ? tool : null };
-  if (tool.kind === 'move') return { command: current.command, nextTool: null };
+  if (tool.kind === 'move' || tool.kind === 'moveBridge') return { command: current.command, nextTool: null };
   return { command: current.command, nextTool: tool };
 }

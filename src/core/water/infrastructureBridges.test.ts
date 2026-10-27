@@ -142,6 +142,58 @@ describe('A Bridge over infrastructure for Pedestrians', () => {
   });
 });
 
+describe('Moving and turning a Road Bridge', () => {
+  const move = (x: number, y: number, axis: 'x' | 'y', from = { x: 54, y: 50 }): Command => ({ type: 'MoveBridge', from, x, y, axis });
+  // Two crossings of the same Railway, on y=50 and y=56.
+  const twoSites = () => crossing({
+    roads: [...row(48, 51), ...row(57, 60), ...row(48, 51, 56), ...row(57, 60, 56)].map((tile) => ({ ...tile, kind: 'road' as const })),
+    rails: column(54, 47, 59).map((tile) => ({ ...tile, exits: tile.y === 47 ? ['S' as const] : tile.y === 59 ? ['N' as const] : ['N' as const, 'S' as const] })),
+  });
+
+  it('lifts it and places it again elsewhere for free, keeping its length and tier', () => {
+    const placed = succeed(succeed(twoSites(), overpass(53, 3)), { type: 'UpgradeRoads', tiles: [{ x: 54, y: 50 }] });
+    const tier = placed.bridges![0]!.tier;
+    expect(tier).toBe(2);
+    const moved = succeed(placed, move(53, 56, 'x'));
+    expect(moved.urbs).toBe(placed.urbs);
+    expect(moved.bridges).toEqual([{ x: 53, y: 56, length: 3, axis: 'x', carrier: 'road', tier }]);
+    expect(moved.roads.some((road) => road.y === 50 && road.x >= 52 && road.x <= 56)).toBe(false);
+    expect(moved.roads.filter((road) => road.y === 56 && (road.x === 52 || road.x === 56)).map((road) => road.tier)).toEqual([tier, tier]);
+  });
+
+  it('turns it while moving it over a Railway that crosses the other way', () => {
+    const base = twoSites();
+    const turnable = {
+      ...base,
+      roads: [...base.roads, ...column(66, 48, 51), ...column(66, 57, 60)].map((tile) => ({ ...tile, kind: 'road' as const })),
+      rails: [...base.rails!, ...row(62, 70, 53).map((tile) => ({ ...tile, exits: tile.x === 62 ? ['E' as const] : tile.x === 70 ? ['W' as const] : ['E' as const, 'W' as const] }))],
+    };
+    const moved = succeed(succeed(turnable, overpass(53, 3)), move(66, 53, 'y', { x: 53, y: 50 }));
+    expect(moved.bridges).toEqual([{ x: 66, y: 53, length: 3, axis: 'y', carrier: 'road' }]);
+    expect(moved.roads.filter((road) => road.x === 66 && (road.y === 52 || road.y === 56))).toHaveLength(2);
+  });
+
+  it('keeps the city as it was when the new place is refused', () => {
+    const placed = succeed(twoSites(), overpass(53, 3));
+    expect(failureKey(placed, move(53, 54, 'x'))).toBe('error.bridgeNeedsRoad');
+    expect(placed.bridges).toHaveLength(1);
+  });
+
+  it('can be placed back over its own tiles', () => {
+    const placed = succeed(twoSites(), overpass(53, 3));
+    expect(succeed(placed, move(53, 50, 'x')).bridges).toEqual(placed.bridges);
+  });
+
+  it('refuses a place where nothing is built', () => {
+    expect(failureKey(twoSites(), move(53, 50, 'x', { x: 20, y: 20 }))).toBe('error.noBridgeHere');
+  });
+
+  it('does not move a Bridge over Water', () => {
+    const water = { ...crossing(), waterTiles: [{ x: 52, y: 50 }], roads: [48, 49, 50, 51, 52, 53, 54].map((x) => ({ x, y: 50, kind: 'road' as const })), bridges: [{ x: 52, y: 50, length: 1, axis: 'x' as const }] };
+    expect(failureKey(water, move(52, 50, 'x', { x: 52, y: 50 }))).toBe('error.bridgeNotMovable');
+  });
+});
+
 describe('Removing a Bridge over infrastructure', () => {
   it('refunds part of its price and removes its ramps', () => {
     const placed = succeed(crossing(), overpass(53, 3));

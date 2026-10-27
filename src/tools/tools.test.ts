@@ -322,6 +322,45 @@ describe('brush tool', () => {
     });
   });
 
+  describe('moving a Bridge', () => {
+    const crossing: GameState = {
+      ...newGame({ seed: 'move-bridge-tool', now: 0 }),
+      urbs: 100_000,
+      tutorial: null,
+      buildings: [{ ...createBuilding(1, 'home', 40, 40, 0), tier: 6 }],
+      roads: [48, 49, 50, 51, 57, 58].map((x) => ({ x, y: 50, kind: 'road' as const })),
+      rails: [49, 50, 51].map((y) => ({ x: 54, y, exits: y === 49 ? ['S' as const] : y === 51 ? ['N' as const] : ['N' as const, 'S' as const] })),
+      bridges: [{ x: 53, y: 50, length: 3, axis: 'x', carrier: 'road' }],
+    };
+    const picked = crossing.bridges![0]!;
+
+    it('first picks the Bridge under the pointer', () => {
+      const evaluated = evaluateTool({ kind: 'moveBridge', bridge: null }, { state: crossing, tile: { x: 54, y: 50 }, rotation: null });
+      expect(evaluated.valid).toBe(true);
+      expect(evaluated.bridge).toEqual(picked);
+      expect(evaluated.ghost.tiles).toHaveLength(5);
+      expect(confirmTool({ kind: 'moveBridge', bridge: null }, { x: 54, y: 50 }, evaluated).nextTool).toEqual({ kind: 'moveBridge', bridge: picked });
+    });
+
+    it('says when there is nothing to pick', () => {
+      const evaluated = evaluateTool({ kind: 'moveBridge', bridge: null }, { state: crossing, tile: { x: 10, y: 10 }, rotation: null });
+      expect(evaluated.valid).toBe(false);
+      expect(evaluated.issue).toBe('error.noBridgeHere');
+      expect(confirmTool({ kind: 'moveBridge', bridge: null }, { x: 10, y: 10 }, evaluated).nextTool).toEqual({ kind: 'moveBridge', bridge: null });
+    });
+
+    it('then previews it free, keeping its turn until the player rotates it', () => {
+      const tool = { kind: 'moveBridge' as const, bridge: picked };
+      const kept = evaluateTool(tool, { state: crossing, tile: { x: 53, y: 50 }, rotation: null });
+      expect(kept.command).toEqual({ type: 'MoveBridge', from: { x: 53, y: 50 }, x: 53, y: 50, axis: 'x' });
+      expect(kept.valid).toBe(true);
+      expect(kept.cost).toBe(0);
+      const turned = evaluateTool(tool, { state: crossing, tile: { x: 53, y: 50 }, rotation: 1 });
+      expect(turned.command).toMatchObject({ axis: 'y' });
+      expect(confirmTool(tool, { x: 53, y: 50 }, kept)).toEqual({ command: kept.command, nextTool: null });
+    });
+  });
+
   describe('a Footbridge', () => {
     const crossing: GameState = {
       ...newGame({ seed: 'footbridge-tool', now: 0 }),

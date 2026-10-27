@@ -238,3 +238,12 @@ describe('The Street view stop of a Footbridge', () => {
     expect(footbridgeStops(crossing()).size).toBe(0);
   });
 });
+
+describe('Moving and turning a Footbridge', () => {
+  it('puts the corridors on the other side of the deck, for free', () => {
+    const placed = succeed(crossing(), footbridge(50, 1));
+    const turned = succeed(placed, { type: 'MoveBridge', from: { x: 50, y: 50 }, x: 50, y: 50, axis: 'x', side: -1 });
+    expect(turned.bridges).toEqual([{ x: 50, y: 50, length: 1, axis: 'x', carrier: 'pedestrian', side: -1 }]);
+    expect(turned.urbs).toBe(placed.urbs);
+  });
+});
