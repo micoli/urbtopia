@@ -183,6 +183,7 @@ export { cityTransportStats } from './traffic/cityTransport';
 export { congestionStats, workplaceTypes } from './traffic/congestion';
 export type { CongestionStats, CrossingLoad, HomeCongestion, SectionLoad } from './traffic/congestion';
 export { footbridgeStops, pedestrianGraph, walkFrom } from './map/pedestrianGraph';
+export { footbridgeOpenSides } from './map/footbridgeAccess';
 export type { WalkMap } from './map/pedestrianGraph';
 export type { PedestrianGraph } from './map/pedestrianGraph';
 export { WALKING, WALK_DESTINATIONS, modeShares } from './traffic/walking';

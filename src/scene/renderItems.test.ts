@@ -286,11 +286,16 @@ describe('renderItemsOf Footbridges', () => {
     expect(items.every((item) => item.textureVariant === 'roads-pedestrian')).toBe(true);
   });
 
+  it('keeps a corridor open at both ends when a Pedestrian way reaches its far end, and closes the end that reaches nothing', () => {
+    const state = { ...city({ axis: 'x', side: 1 }), pedestrianWays: [{ x: 48, y: 51 }] };
+    expect(pieces(state).filter(([model]) => String(model).startsWith('corridor'))).toEqual([['corridor', 49.5, 51.5, 2], ['corridor-closed-west', 51.5, 51.5, 2]]);
+  });
+
   it.each([
-    ['x', 1, [['corridor', 49.5, 51.5, 2], ['corridor', 51.5, 51.5, 2], ['stair-right', 49.5, 50.5, 0], ['stair-left', 51.5, 50.5, 2], ['deck', 50.5, 50.5, 0]]],
-    ['x', -1, [['corridor', 49.5, 49.5, 0], ['corridor', 51.5, 49.5, 0], ['stair-left', 49.5, 50.5, 0], ['stair-right', 51.5, 50.5, 2], ['deck', 50.5, 50.5, 0]]],
-    ['y', 1, [['corridor', 51.5, 49.5, 3], ['corridor', 51.5, 51.5, 3], ['stair-left', 50.5, 49.5, 3], ['stair-right', 50.5, 51.5, 1], ['deck', 50.5, 50.5, 1]]],
-    ['y', -1, [['corridor', 49.5, 49.5, 1], ['corridor', 49.5, 51.5, 1], ['stair-right', 50.5, 49.5, 3], ['stair-left', 50.5, 51.5, 1], ['deck', 50.5, 50.5, 1]]],
+    ['x', 1, [['corridor-closed-east', 49.5, 51.5, 2], ['corridor-closed-west', 51.5, 51.5, 2], ['stair-right', 49.5, 50.5, 0], ['stair-left', 51.5, 50.5, 2], ['deck', 50.5, 50.5, 0]]],
+    ['x', -1, [['corridor-closed-west', 49.5, 49.5, 0], ['corridor-closed-east', 51.5, 49.5, 0], ['stair-left', 49.5, 50.5, 0], ['stair-right', 51.5, 50.5, 2], ['deck', 50.5, 50.5, 0]]],
+    ['y', 1, [['corridor-closed-west', 51.5, 49.5, 3], ['corridor-closed-east', 51.5, 51.5, 3], ['stair-left', 50.5, 49.5, 3], ['stair-right', 50.5, 51.5, 1], ['deck', 50.5, 50.5, 1]]],
+    ['y', -1, [['corridor-closed-east', 49.5, 49.5, 1], ['corridor-closed-west', 49.5, 51.5, 1], ['stair-right', 50.5, 49.5, 3], ['stair-left', 50.5, 51.5, 1], ['deck', 50.5, 50.5, 1]]],
   ] as const)('turns the pieces of a Footbridge on axis %s with the corridors on side %i', (axis, side, expected) => {
     expect(pieces(city({ axis, side }))).toEqual(expected);
   });

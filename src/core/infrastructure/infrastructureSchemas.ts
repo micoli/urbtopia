@@ -20,8 +20,8 @@ export const railsInfrastructureSchema = z
   .strictObject({ ...schemaField, straight: modelId, corner: modelId })
   .meta({ title: 'Rails', description: 'assets/defs/infrastructure/rails.json: the Model ids of the rail pieces.' });
 
-// The corridor and the deck are shared by both ends of a Footbridge; the stair is mirrored, entered from the north or the south edge.
-const footbridgeSchema = z.strictObject({ corridor: modelId, deck: modelId, stairLeft: modelId, stairRight: modelId });
+// The corridor is open at both ends of its walkway, or closed at one (west or east, seen with the stair to the south); the stair is mirrored, entered from the north or the south edge.
+const footbridgeSchema = z.strictObject({ corridor: modelId, corridorClosedWest: modelId, corridorClosedEast: modelId, deck: modelId, stairLeft: modelId, stairRight: modelId });
 
 export const bridgeInfrastructureSchema = z
   .strictObject({ ...schemaField, road: modelId, ramp: modelId, span: modelId, footbridge: footbridgeSchema })

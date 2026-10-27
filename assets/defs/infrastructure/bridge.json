@@ -5,6 +5,8 @@
   "span": "roads-road-bridge",
   "footbridge": {
     "corridor": "roads-footbridge-corridor",
+    "corridorClosedWest": "roads-footbridge-corridor-closed-west",
+    "corridorClosedEast": "roads-footbridge-corridor-closed-east",
     "deck": "roads-footbridge-deck",
     "stairLeft": "roads-footbridge-stair-left",
     "stairRight": "roads-footbridge-stair-right"

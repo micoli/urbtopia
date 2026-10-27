@@ -21,6 +21,8 @@ export const BRIDGE_SPAN_MODEL = modelFileOf(bridge.span);
 
 export const FOOTBRIDGE_MODELS = {
   corridor: modelFileOf(bridge.footbridge.corridor),
+  corridorClosedWest: modelFileOf(bridge.footbridge.corridorClosedWest),
+  corridorClosedEast: modelFileOf(bridge.footbridge.corridorClosedEast),
   deck: modelFileOf(bridge.footbridge.deck),
   stairLeft: modelFileOf(bridge.footbridge.stairLeft),
   stairRight: modelFileOf(bridge.footbridge.stairRight),

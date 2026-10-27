@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_RAMP_MODEL, BRIDGE_ROAD_MODEL, BRIDGE_SPAN_MODEL, FOOTBRIDGE_MODELS, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { ANIMAL_MODEL_FILES, ITEM_MODEL_FILES, penAnimalsOf, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRamps, bridgeRoadKeys, bridgeTiles, footbridgeParts, isInfrastructureBridge, isPedestrianBridge, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, DIRECTION_VECTORS, roundaboutPiece, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, type Coord, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
+import { ANIMAL_MODEL_FILES, ITEM_MODEL_FILES, penAnimalsOf, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRamps, bridgeRoadKeys, bridgeTiles, footbridgeOpenSides, footbridgeParts, isInfrastructureBridge, isPedestrianBridge, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, DIRECTION_VECTORS, roundaboutPiece, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, type Coord, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -280,7 +280,7 @@ function bridgeItems(state: GameState, tints: ReadonlyMap<string, number>): Rend
 const TURNS_FROM_EAST: Record<Direction, number> = { E: 0, N: 1, W: 2, S: 3 };
 const OPPOSITE_DIRECTION: Record<Direction, Direction> = { N: 'S', S: 'N', E: 'W', W: 'E' };
 
-// The Footbridge models are drawn along +X and turn counter-clockwise on the map, E to N to W to S. The stair is entered from the corridor and left towards the deck: it is the left-hand model when the corridor lies a quarter turn counter-clockwise from the exit, the right-hand one otherwise.
+// A corridor closed on the side that reaches nothing is drawn with a rail across that end. The Footbridge models are drawn along +X and turn counter-clockwise on the map, E to N to W to S. The stair is entered from the corridor and left towards the deck: it is the left-hand model when the corridor lies a quarter turn counter-clockwise from the exit, the right-hand one otherwise.
 function footbridgeItems(state: GameState): RenderItem[] {
   return (state.bridges ?? []).filter(isPedestrianBridge).flatMap((bridge) => {
     const { stairs, corridors, deck } = footbridgeParts(bridge);
@@ -292,8 +292,16 @@ function footbridgeItems(state: GameState): RenderItem[] {
       return at(left ? FOOTBRIDGE_MODELS.stairLeft : FOOTBRIDGE_MODELS.stairRight, tile, TURNS_FROM_EAST[exit]);
     };
     const corridorTurn = (TURNS_FROM_EAST[OPPOSITE_DIRECTION[toCorridor]] + 1) % 4;
+    const openSides = footbridgeOpenSides(state, bridge);
+    const corridor = (tile: Coord, index: 0 | 1): RenderItem => {
+      const { inner, outer } = openSides[index];
+      if (inner && outer) return at(FOOTBRIDGE_MODELS.corridor, tile, corridorTurn);
+      const shut = outer ? (index === 0 ? forward : back) : index === 0 ? back : forward;
+      return at(TURNS_FROM_EAST[shut] === corridorTurn ? FOOTBRIDGE_MODELS.corridorClosedEast : FOOTBRIDGE_MODELS.corridorClosedWest, tile, corridorTurn);
+    };
     return [
-      ...corridors.map((tile) => at(FOOTBRIDGE_MODELS.corridor, tile, corridorTurn)),
+      corridor(corridors[0], 0),
+      corridor(corridors[1], 1),
       stair(stairs[0], forward),
       stair(stairs[1], back),
       ...deck.map((tile) => at(FOOTBRIDGE_MODELS.deck, tile, bridge.axis === 'x' ? 0 : 1)),

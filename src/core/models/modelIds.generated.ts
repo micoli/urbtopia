@@ -739,6 +739,8 @@ export type ModelId =
   | 'pirate-patch-grass'
   | 'pirate-patch-grass-foliage'
   | 'roads-footbridge-corridor'
+  | 'roads-footbridge-corridor-closed-east'
+  | 'roads-footbridge-corridor-closed-west'
   | 'roads-footbridge-deck'
   | 'roads-footbridge-stair-left'
   | 'roads-footbridge-stair-right'

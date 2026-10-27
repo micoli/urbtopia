@@ -9809,6 +9809,26 @@
     ],
     "flush": true
   },
+  "roads-footbridge-corridor-closed-east": {
+    "file": "streets/footbridge-corridor-closed-east",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "roads-footbridge-corridor-closed-west": {
+    "file": "streets/footbridge-corridor-closed-west",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "roads-footbridge-deck": {
     "file": "streets/footbridge-deck",
     "source": "managed",
