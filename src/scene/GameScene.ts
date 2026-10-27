@@ -24,6 +24,8 @@ import { BridgeLayer } from './BridgeLayer';
 import { TrafficLayer } from './TrafficLayer';
 import { renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } from './renderBudget';
 import { AnalyticsLayer } from './AnalyticsLayer';
+import { nightClockOf } from './windowSchedule';
+import { setWindowGlow, setWindowNight } from './windowGlow';
 import { DAY_BACKGROUND, lightingOf, type DayLighting } from './dayLighting';
 import { ServiceCoverageLayer } from './ServiceCoverageLayer';
 
@@ -527,7 +529,10 @@ export class GameScene {
   private refreshLighting(now: number): void {
     if (now - this.lightingRefreshedAt < LIGHTING_REFRESH_MS || !this.ecologicalState) return;
     this.lightingRefreshedAt = now;
-    this.applyLighting(lightingOf(this.daylight(this.ecologicalState)));
+    const cycleTime = this.cycleTime(this.ecologicalState);
+    this.applyLighting(lightingOf(this.alwaysDayNow ? 1 : daylightOf(cycleTime)));
+    setWindowGlow(this.alwaysDayNow ? 0 : 1);
+    setWindowNight(nightClockOf(cycleTime));
   }
 
   setDayCycleOverride(alwaysDay: boolean, pinnedCycleHour: number | null): void {
@@ -536,10 +541,12 @@ export class GameScene {
     this.lightingRefreshedAt = -Infinity;
   }
 
-  private daylight(state: GameState): number {
-    if (this.pinnedCycleHour !== null) return daylightOf(timeOfCycleHour(this.pinnedCycleHour));
-    if (this.alwaysDay) return 1;
-    return daylightOf(cycleTimeOf(state, state.lastSeen));
+  private get alwaysDayNow(): boolean {
+    return this.alwaysDay && this.pinnedCycleHour === null;
+  }
+
+  private cycleTime(state: GameState): number {
+    return this.pinnedCycleHour === null ? cycleTimeOf(state, state.lastSeen) : timeOfCycleHour(this.pinnedCycleHour);
   }
 
   private applyLighting(lighting: DayLighting): void {

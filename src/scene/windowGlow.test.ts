@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
-import { isGlowingModel, patchWindowGlowShader, setWindowGlow, windowGlowLevel, withWindowGlow } from './windowGlow';
+import { isGlowingModel, patchWindowGlowShader, patchWindowGlowVertexShader, setWindowGlow, windowGlowLevel, withWindowGlow } from './windowGlow';
 
 const FRAGMENT = 'void main() {\n  vec3 totalEmissiveRadiance = emissive;\n  #include <emissivemap_fragment>\n}';
 
@@ -10,6 +10,20 @@ describe('window glow', () => {
     expect(patched).toContain('uniform float uWindowGlow;');
     expect(patched.indexOf('uniform float uWindowGlow;')).toBeLessThan(patched.indexOf('void main() {'));
     expect(patched.indexOf('#include <emissivemap_fragment>')).toBeLessThan(patched.indexOf('totalEmissiveRadiance += uGlowColor'));
+  });
+
+  it('hands the world position of the vertex to the fragment shader', () => {
+    const patched = patchWindowGlowVertexShader('void main() {\n  #include <project_vertex>\n}');
+    expect(patched).toContain('varying vec3 vWindowWorld;');
+    expect(patched.indexOf('#include <project_vertex>')).toBeLessThan(patched.indexOf('vWindowWorld = '));
+    expect(patched).toContain('instanceMatrix');
+  });
+
+  it('draws a window from the same constants as the schedule', () => {
+    const patched = patchWindowGlowShader(FRAGMENT);
+    expect(patched).toContain('747796405u');
+    expect(patched).toContain('0.6000');
+    expect(patched).toContain('uint windowHash(ivec3 cell)');
   });
 
   it('clamps the level of every window of the map', () => {
