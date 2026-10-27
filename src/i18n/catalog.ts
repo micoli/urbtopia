@@ -1059,6 +1059,7 @@ export const CATALOG = {
   'prefs.traffic': ['Traffic', 'Trafic'],
   'facility.showReach': ["Show reach", "Afficher l'emprise"],
   'prefs.showReach': ["Show the reach of public buildings", "Afficher l'emprise des bâtiments publics"],
+  'prefs.alwaysDay': ['Always day', 'Toujours de jour'],
   'prefs.debug': ['Debug mode', 'Mode debug'],
   'panel.debugPosition': ['Position', 'Position'],
   'prefs.showTaxBadges': ['Display uncollected tax badges', 'Afficher les badges de taxes non collectées'],

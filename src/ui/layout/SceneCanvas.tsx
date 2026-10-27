@@ -9,6 +9,7 @@ import { pointerKindOf } from '../../tools/aim';
 import { FACILITIES, isFacilityType } from '../../core';
 import { selectionGhost } from '../../tools/tools';
 import { readCameraView, writeCameraView, type CameraView } from '../../scene/cameraUrl';
+import { isAlwaysDayRequested, pinnedCycleHourOf } from '../../store/dayCycleFlags';
 import { hideSplash, setSplashProgress } from '../system/splash';
 
 const URL_UPDATE_DELAY_MS = 500;
@@ -79,6 +80,8 @@ export function SceneCanvas() {
     showAnalytics();
     const showTraffic = () => scene.setTrafficEnabled(prefsStore.getState().traffic && uiStore.getState().analyticsLayer === null);
     showTraffic();
+    const showDayCycle = () => scene.setDayCycleOverride(prefsStore.getState().alwaysDay || isAlwaysDayRequested(window.location.search), pinnedCycleHourOf(window.location.search));
+    showDayCycle();
     scene.setBrushMode(uiStore.getState().tool?.kind === 'brush');
     const showSelection = () => {
       const state = gameStore.getState().state;
@@ -106,6 +109,7 @@ export function SceneCanvas() {
     const unsubscribePrefs = prefsStore.subscribe((prefs, previous) => {
       if (prefs.serviceCoverageType !== previous.serviceCoverageType) showServiceCoverage();
       showTraffic();
+      if (prefs.alwaysDay !== previous.alwaysDay) showDayCycle();
       if (prefs.showReach !== previous.showReach) showSelection();
     });
     return () => {

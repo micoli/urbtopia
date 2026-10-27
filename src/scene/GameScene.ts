@@ -5,7 +5,7 @@ import { GAME_CONFIG, WILD_RIM_TILES, congestionStats, footbridgeStops, pedestri
 import { bridgeElevation } from './bridgeElevation';
 import { CameraController } from './CameraController';
 import { StreetViewController } from './StreetViewController';
-import { cycleTimeOf, daylightOf, footprintTiles, type AnalyticsLayerId, type Coord, type ServiceCategory } from '../core';
+import { cycleTimeOf, daylightOf, timeOfCycleHour, footprintTiles, type AnalyticsLayerId, type Coord, type ServiceCategory } from '../core';
 import { congestionTints } from './congestionMarkers';
 import type { DrawnExtent, GhostSpec } from '../tools/tools';
 import { ChunkedWorld } from './ChunkedWorld';
@@ -124,6 +124,8 @@ export class GameScene {
   private sun = new THREE.DirectionalLight(0xfff2d6, 1.7);
   private sky = new THREE.HemisphereLight(0xbcd8f5, 0x8a7a64, 0.5);
   private lightingRefreshedAt = -Infinity;
+  private alwaysDay = false;
+  private pinnedCycleHour: number | null = null;
   private lastFrame = performance.now();
   private resizeObserver: ResizeObserver;
   private canvasRect!: DOMRect;
@@ -525,7 +527,19 @@ export class GameScene {
   private refreshLighting(now: number): void {
     if (now - this.lightingRefreshedAt < LIGHTING_REFRESH_MS || !this.ecologicalState) return;
     this.lightingRefreshedAt = now;
-    this.applyLighting(lightingOf(daylightOf(cycleTimeOf(this.ecologicalState, this.ecologicalState.lastSeen))));
+    this.applyLighting(lightingOf(this.daylight(this.ecologicalState)));
+  }
+
+  setDayCycleOverride(alwaysDay: boolean, pinnedCycleHour: number | null): void {
+    this.alwaysDay = alwaysDay;
+    this.pinnedCycleHour = pinnedCycleHour;
+    this.lightingRefreshedAt = -Infinity;
+  }
+
+  private daylight(state: GameState): number {
+    if (this.pinnedCycleHour !== null) return daylightOf(timeOfCycleHour(this.pinnedCycleHour));
+    if (this.alwaysDay) return 1;
+    return daylightOf(cycleTimeOf(state, state.lastSeen));
   }
 
   private applyLighting(lighting: DayLighting): void {

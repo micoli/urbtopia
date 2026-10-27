@@ -1,6 +1,6 @@
 # Always day setting and URL flags
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 03
 
@@ -10,6 +10,6 @@ Per-device setting "Always day" (off by default, outside the save) plus URL flag
 
 ## Acceptance criteria
 
-- [ ] Setting in the settings UI, persisted in local storage (try/catch), FR/EN strings.
-- [ ] Always day lights the map as Daytime without changing power or the cycle.
-- [ ] `?e2e`, `?always-day`, `?time=` documented in CLAUDE.md; visual baselines stay stable.
+- [x] Setting in the settings UI, persisted in local storage (try/catch), FR/EN strings.
+- [x] Always day lights the map as Daytime without changing power or the cycle.
+- [x] `?e2e`, `?always-day`, `?time=` documented in CLAUDE.md; visual baselines stay stable.

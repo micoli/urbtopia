@@ -64,3 +64,8 @@ export function nextCycleHourAfter(state: Pick<GameState, 'timeOffset' | 'dayCyc
   const shift = cycleTimeOf(state, 0);
   return (Math.floor((now + shift) / CYCLE_HOUR_MS) + 1) * CYCLE_HOUR_MS - shift;
 }
+
+// Game-clock time at which the Day cycle shows `cycleHour`.
+export function timeOfCycleHour(cycleHour: number): number {
+  return cycleHour * CYCLE_HOUR_MS;
+}
