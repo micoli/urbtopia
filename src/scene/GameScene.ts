@@ -22,10 +22,10 @@ import { PedestrianLayer } from './PedestrianLayer';
 import { BoatLayer } from './BoatLayer';
 import { BridgeLayer } from './BridgeLayer';
 import { TrafficLayer } from './TrafficLayer';
-import { renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } from './renderBudget';
+import { FrameBudgetMonitor, renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } from './renderBudget';
 import { AnalyticsLayer } from './AnalyticsLayer';
 import { nightClockOf } from './windowSchedule';
-import { setWindowGlow, setWindowNight } from './windowGlow';
+import { setWindowGlow, setWindowNight, windowGlowLevel, windowNightClock } from './windowGlow';
 import { DAY_BACKGROUND, lightingOf, type DayLighting } from './dayLighting';
 import { ServiceCoverageLayer } from './ServiceCoverageLayer';
 
@@ -127,6 +127,8 @@ export class GameScene {
   private sky = new THREE.HemisphereLight(0xbcd8f5, 0x8a7a64, 0.5);
   private lightingRefreshedAt = -Infinity;
   private alwaysDay = false;
+  private windowsEnabled = true;
+  private frameBudget = new FrameBudgetMonitor();
   private pinnedCycleHour: number | null = null;
   private lastFrame = performance.now();
   private resizeObserver: ResizeObserver;
@@ -531,7 +533,7 @@ export class GameScene {
     this.lightingRefreshedAt = now;
     const cycleTime = this.cycleTime(this.ecologicalState);
     this.applyLighting(lightingOf(this.alwaysDayNow ? 1 : daylightOf(cycleTime)));
-    setWindowGlow(this.alwaysDayNow ? 0 : 1);
+    setWindowGlow(this.alwaysDayNow || !this.windowsEnabled ? 0 : 1);
     setWindowNight(nightClockOf(cycleTime));
     this.world.setUnpowered(unpoweredBuildingIds(this.ecologicalState));
   }
@@ -561,6 +563,15 @@ export class GameScene {
     this.scene.fog?.color.setHex(lighting.background);
   }
 
+  // Lit windows are optional: a device that cannot keep the frame budget while they shine loses them until the page reloads.
+  private watchFrameBudget(elapsed: number): void {
+    if (!this.windowsEnabled || windowGlowLevel() === 0 || windowNightClock() < 0) return;
+    this.frameBudget.push(elapsed);
+    if (!this.frameBudget.isSlow) return;
+    this.windowsEnabled = false;
+    setWindowGlow(0);
+  }
+
   private notifyCenterTile(): void {
     const tile = this.centerTile;
     const key = `${tile.x},${tile.y}`;
@@ -578,6 +589,7 @@ export class GameScene {
     const delta = Math.max(0, Math.min(0.1, elapsed / 1000));
     this.lastFrame = now;
     this.refreshLighting(now);
+    this.watchFrameBudget(elapsed);
     this.controller.update(delta);
     this.streetView.update(delta);
     this.notifyCenterTile();
