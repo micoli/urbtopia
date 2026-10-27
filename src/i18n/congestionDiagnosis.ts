@@ -8,8 +8,8 @@ const texts = {
     'Une route très chargée, longue de {length} cases entre ({fromX}, {fromY}) et ({toX}, {toY}), porte environ {load} navetteurs pour une capacité de {capacity}. Élargissez-la, ou offrez un autre chemin à vos navetteurs.',
   ],
   'diagnosis.congestion.crossingsChoke': [
-    'Pedestrian Crossings on {count} saturated tiles take up to {cut}% of their capacity. Move them off the busy roads, or use a Roundabout.',
-    'Des passages piétons sur {count} cases saturées leur retirent jusqu’à {cut} % de capacité. Éloignez-les des routes chargées, ou utilisez un rond-point.',
+    'Pedestrian Crossings on {count} saturated tiles take up to {cut}% of their capacity. Move them off the busy roads, replace them with a Footbridge, or use a Roundabout.',
+    'Des passages piétons sur {count} cases saturées leur retirent jusqu’à {cut} % de capacité. Éloignez-les des routes chargées, remplacez-les par une passerelle, ou utilisez un rond-point.',
   ],
   'diagnosis.congestion.homesFarFromJobs': [
     'Most Homes are around ({homeX}, {homeY}) but most Jobs around ({jobX}, {jobY}), {distance} tiles apart. Build workplaces and services near the Homes, or a public transport line between the two.',

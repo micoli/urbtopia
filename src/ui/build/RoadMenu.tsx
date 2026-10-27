@@ -56,19 +56,21 @@ export function RoadMenu() {
     return image ? `${import.meta.env.BASE_URL}codex/${image}` : undefined;
   };
 
+  const roadItem = (item: (typeof ROAD_CONSTRUCTIONS)[number]): RoadItem => ({ label: t(item.name), cost: item.perTile ? `${item.cost} ${t('tool.perTile')}` : <UrbsAmount value={item.cost} />, tool: item.tool, codexId: item.id });
   const roadItems: RoadItem[] = [
-    ...ROAD_CONSTRUCTIONS.filter(item => item.unlockCitizens === 0 && item.id !== 'pedestrianWay').map(item => ({ label: t(item.name), cost: item.perTile ? `${item.cost} ${t('tool.perTile')}` : <UrbsAmount value={item.cost} />, tool: item.tool, codexId: item.id })),
-    { label: t('tool.removeCrossing'), tool: { kind: 'removeCrossing' } },
+    ...ROAD_CONSTRUCTIONS.filter(item => item.unlockCitizens === 0 && item.id !== 'pedestrianWay' && item.id !== 'crossing').map(roadItem),
     { label: t('tool.upgradeRoad'), cost: `${ROAD_TIER_COSTS[1]!}–${ROAD_TIER_COSTS[2]!} ${t('tool.perTile')}`, tool: { kind: 'upgradeRoad', start: null, horizontalFirst: true } },
   ];
   const removeBridge = hasBridge ? { label: t('water.removeBridge'), tool: { kind: 'removeBridge' } as Tool } : undefined;
   const pedestrianItems: RoadItem[] = [
+    roadItem(ROAD_CONSTRUCTIONS.find(item => item.id === 'crossing')!),
+    { label: t('tool.removeCrossing'), tool: { kind: 'removeCrossing' } },
     constructionItem('pedestrianWay'),
     { label: t('tool.upgradePedestrianWay'), cost: `${Math.round(ROAD_TIER_COSTS[1]! * 0.9)}–${Math.round(ROAD_TIER_COSTS[2]! * 0.9)} ${t('tool.perTile')}`, tool: { kind: 'upgradePedestrianWay', start: null, horizontalFirst: true } },
   ];
   const sections: { id: RoadSection; items?: RoadItem[]; content?: ReactNode; demolish?: { label: string; tool: Tool } }[] = [
     { id: 'road', items: roadItems, demolish: { label: t('tool.demolishRoad'), tool: demolishRoad() } },
-    { id: 'pedestrian', items: pedestrianItems, demolish: { label: t('tool.demolishPedestrianWay'), tool: { kind: 'demolishPedestrianWay', start: null, horizontalFirst: true } } },
+    { id: 'pedestrian', items: pedestrianItems, content: <BridgeTools variant="footbridge" />, demolish: { label: t('tool.demolishPedestrianWay'), tool: { kind: 'demolishPedestrianWay', start: null, horizontalFirst: true } } },
     ...(citizens >= TRANSIT.brt.unlock ? [{ id: 'brt' as const, items: [constructionItem('brt')], demolish: { label: t('tool.demolishBrt'), tool: demolishRoad('brt') } }] : []),
     ...(citizens >= TRANSIT.rail.unlock ? [{ id: 'rail' as const, items: [constructionItem('rail')], demolish: { label: t('tool.demolishRail'), tool: demolishRoad('rail') } }] : []),
     ...(citizens >= WATER.unlockCitizens ? [{ id: 'water' as const, content: <WaterTools />, demolish: hasWater ? { label: t('water.remove'), tool: { kind: 'brush', action: 'removeWater', tiles: [] } as Tool } : undefined }] : []),

@@ -1,7 +1,7 @@
 import { EcologyLayer } from './EcologyLayer';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { GAME_CONFIG, WILD_RIM_TILES, congestionStats, pedestrianGraph, wildNoiseAt, wildTerrain, type Building, type GameState, type FacilityType } from '../core';
+import { GAME_CONFIG, WILD_RIM_TILES, congestionStats, footbridgeStops, pedestrianGraph, wildNoiseAt, wildTerrain, type Building, type GameState, type FacilityType } from '../core';
 import { bridgeElevation } from './bridgeElevation';
 import { CameraController } from './CameraController';
 import { StreetViewController } from './StreetViewController';
@@ -188,7 +188,7 @@ export class GameScene {
     const state = this.ecologicalState;
     if (!state || this.streetView.active) return false;
     const { x, z } = at ? { x: at.x + 0.5, z: at.y + 0.5 } : this.controller.center;
-    if (!this.streetView.enter(pedestrianGraph(state), bridgeElevation(state.bridges), x, z, this.controller.heading)) return false;
+    if (!this.streetView.enter(pedestrianGraph(state), bridgeElevation(state.bridges), footbridgeStops(state), x, z, this.controller.heading)) return false;
     this.controller.setEnabled(false);
     this.scene.fog = new THREE.Fog(HORIZON_COLOR, STREET_FOG_NEAR, STREET_FOG_FAR);
     return true;
@@ -322,7 +322,7 @@ export class GameScene {
     this.ecologyLayer.sync(state,this.selectedId);
     this.latest = state;
     this.currentBuildings = state.buildings;
-    if (this.streetView.active) this.streetView.setWorld(pedestrianGraph(state), bridgeElevation(state.bridges));
+    if (this.streetView.active) this.streetView.setWorld(pedestrianGraph(state), bridgeElevation(state.bridges), footbridgeStops(state));
     void this.drain();
   }
 

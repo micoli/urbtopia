@@ -159,7 +159,8 @@ export interface Boat extends Coord {
 export interface Bridge extends Coord {
   length: number;
   axis: 'x' | 'y';
-  carrier?: 'road' | 'brt';
+  carrier?: 'road' | 'brt' | 'pedestrian';
+  side?: 1 | -1;
   tier?: number;
 }
 

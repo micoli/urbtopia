@@ -27,7 +27,7 @@ import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
-import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
+import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
 import { withStartingCity } from './newGame';
@@ -100,8 +100,9 @@ export type Command =
   | { readonly type: 'RemoveWater'; readonly tiles: readonly Coord[] }
   | { readonly type: 'BuyBoat'; readonly family: BoatFamily; readonly marinaId: number; readonly x: number; readonly y: number }
   | { readonly type: 'SellBoat'; readonly id: number }
-  | { readonly type: 'PlaceBridge'; readonly x: number; readonly y: number; readonly length: number; readonly axis: 'x' | 'y'; readonly carrier?: 'road' | 'brt' }
+  | { readonly type: 'PlaceBridge'; readonly x: number; readonly y: number; readonly length: number; readonly axis: 'x' | 'y'; readonly carrier?: 'road' | 'brt' | 'pedestrian'; readonly side?: 1 | -1 }
   | { readonly type: 'RemoveBridge'; readonly x: number; readonly y: number }
+  | { readonly type: 'MoveBridge'; readonly from: Coord; readonly x: number; readonly y: number; readonly axis: 'x' | 'y'; readonly side?: 1 | -1 }
   | { readonly type: 'UpgradeBoat'; readonly id: number }
   | { readonly type: 'CollectCatch'; readonly marinaId: number }
   | { readonly type: 'Plant'; readonly crop: CropId; readonly tiles: readonly Coord[] }
@@ -189,10 +190,12 @@ export type ErrorKey =
   | 'error.bridgeNeedsRoad'
   | 'error.bridgeNeedsInfrastructure'
   | 'error.bridgeNeedsBrt'
+  | 'error.bridgeNeedsPath'
   | 'error.bridgeLastCrossing'
   | 'error.bridgeCrossesAlong'
   | 'error.bridgeTile'
   | 'error.noBridgeHere'
+  | 'error.bridgeNotMovable'
   | 'error.notOnMarinaWater'
   | 'error.marinaFull'
   | 'error.marinaInUse'
@@ -343,9 +346,11 @@ export function handleCommand(state: GameState, command: Command, now: number): 
     case 'SellBoat':
       return sellBoat(state, command.id);
     case 'PlaceBridge':
-      return placeBridge(state, { x: command.x, y: command.y, length: command.length, axis: command.axis, ...(command.carrier ? { carrier: command.carrier } : {}) });
+      return placeBridge(state, { x: command.x, y: command.y, length: command.length, axis: command.axis, ...(command.carrier ? { carrier: command.carrier } : {}), ...(command.side ? { side: command.side } : {}) });
     case 'RemoveBridge':
       return removeBridge(state, { x: command.x, y: command.y });
+    case 'MoveBridge':
+      return moveBridgeCommand(state, command);
     case 'UpgradeBoat':
       return upgradeBoat(state, command.id);
     case 'CollectCatch':
@@ -630,6 +635,12 @@ function demolishRoad(state: GameState, tiles: Coord[]): CommandOutcome {
   if (strandsBuilding(state, next)) return fail('error.lastAccessOfBuilding');
   if (bridgeLosesCrossing(next)) return fail('error.bridgeLastCrossing');
   return { state: next, events: [] };
+}
+
+function moveBridgeCommand(state: GameState, command: Extract<Command, { type: 'MoveBridge' }>): CommandOutcome {
+  const outcome = moveBridge(state, command.from, { x: command.x, y: command.y, axis: command.axis, side: command.side });
+  if (!('state' in outcome)) return outcome;
+  return strandsBuilding(state, outcome.state) ? fail('error.lastAccessOfBuilding') : outcome;
 }
 
 function removeBridge(state: GameState, tile: Coord): CommandOutcome {

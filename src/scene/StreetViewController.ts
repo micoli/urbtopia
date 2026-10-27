@@ -41,6 +41,8 @@ export class StreetViewController {
   onExit: () => void = () => {};
   private graph: PedestrianGraph = new Map();
   private elevation: ElevationAt = flat;
+  private stops: ReadonlySet<string> = new Set();
+  private mustRelease = false;
   private node: string | null = null;
   private step: Step | null = null;
   private queue: string[] = [];
@@ -70,8 +72,9 @@ export class StreetViewController {
     return this.abort !== null;
   }
 
-  enter(graph: PedestrianGraph, elevation: ElevationAt, x: number, z: number, yaw: number): boolean {
-    this.setWorld(graph, elevation);
+  enter(graph: PedestrianGraph, elevation: ElevationAt, stops: ReadonlySet<string>, x: number, z: number, yaw: number): boolean {
+    this.setWorld(graph, elevation, stops);
+    this.mustRelease = false;
     const start = nearestNode(graph, x, z, DROP_REACH);
     if (start === null) return false;
     this.node = start;
@@ -94,9 +97,10 @@ export class StreetViewController {
     this.markers.visible = false;
   }
 
-  setWorld(graph: PedestrianGraph, elevation: ElevationAt): void {
+  setWorld(graph: PedestrianGraph, elevation: ElevationAt, stops: ReadonlySet<string>): void {
     this.graph = graph;
     this.elevation = elevation;
+    this.stops = stops;
     if (!this.active || this.node === null || graph.has(this.node)) return;
     const here = nodePosition(this.node);
     this.node = nearestNode(graph, here.x, here.z);
@@ -133,12 +137,16 @@ export class StreetViewController {
       if (this.step.progress < 1) return;
       this.node = this.step.to;
       this.step = null;
+      if (this.queue.length === 0 && this.stops.has(this.node)) this.mustRelease = true;
     }
     if (this.node === null) return;
     const following = this.queue.shift();
     if (following !== undefined) return this.startStep(following);
-    if (this.holdsAny(FORWARD_KEYS)) this.walkAlong(nextJump(this.graph, this.node, this.yaw));
-    else if (this.holdsAny(BACKWARD_KEYS)) this.walkAlong(nextJump(this.graph, this.node, this.yaw + Math.PI));
+    const walking = this.holdsAny(FORWARD_KEYS) || this.holdsAny(BACKWARD_KEYS);
+    if (this.mustRelease && walking) return;
+    this.mustRelease = false;
+    if (this.holdsAny(FORWARD_KEYS)) this.walkAlong(nextJump(this.graph, this.node, this.yaw, this.stops));
+    else if (this.holdsAny(BACKWARD_KEYS)) this.walkAlong(nextJump(this.graph, this.node, this.yaw + Math.PI, this.stops));
   }
 
   private walkAlong(path: string[] | null): void {
@@ -185,7 +193,7 @@ export class StreetViewController {
   // Straight jumps first, then the Pedestrian crossings in sight.
   private choices(): { path: string[] }[] {
     if (this.step || this.node === null) return [];
-    const jumps = jumpPaths(this.graph, this.node).map((path) => ({ path }));
+    const jumps = jumpPaths(this.graph, this.node, this.stops).map((path) => ({ path }));
     const taken = new Set(jumps.map(({ path }) => path.at(-1)));
     this.refreshSightings(this.node);
     this.camera.updateMatrixWorld();

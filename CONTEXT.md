@@ -425,7 +425,7 @@ A trip by bicycle from a Home to the same destinations as a Walking trip, within
 _Avoid_: Bike lane, bike sharing, individual journey
 
 **Crossing**:
-A straight Road tile where pedestrians can cross the road. The more pedestrians use it, the less capacity the road keeps for cars.
+A straight Road tile where pedestrians can cross the road. The more pedestrians use it, the less capacity the road keeps for cars. A Footbridge crosses without that loss.
 _Avoid_: Zebra, pedestrian crossing, crosswalk
 
 **Lane**:
@@ -523,17 +523,21 @@ A building on land touching a Water tile, reached by Road. Boats can only be pla
 _Avoid_: Port, harbour, dock
 
 **Bridge**:
-A structure carrying a Road or a BRT corridor over an obstacle. A Bridge over Water is a single span of fixed length (1, 2, 3 or 5 tiles), from one bank to the other, aligned with a Road or Crossing at each end; Boats cannot be placed on it but still navigate beneath it, and it opens for them: see Bridge opening. A Bridge over infrastructure has three mandatory parts, a rising Bridge ramp, a Bridge span (1, 2, 3 or 5 tiles) and a descending Bridge ramp, and carries one network, its Carrier. Either kind joins the graph of its Carrier.
+A structure carrying a Road, a BRT corridor or pedestrians over an obstacle. A Bridge over Water is a single span of fixed length (1, 2, 3 or 5 tiles), from one bank to the other, aligned with a Road or Crossing at each end; Boats cannot be placed on it but still navigate beneath it, and it opens for them: see Bridge opening. A Bridge over infrastructure has three mandatory parts, a rising Bridge ramp, a Bridge span (1, 2, 3 or 5 tiles) and a descending Bridge ramp, and carries one network, its Carrier. Either kind joins the graph of its Carrier.
 _Avoid_: Viaduct, overpass
 
 **Bridge span**:
 The raised part of a Bridge over infrastructure, whose tiles pass above at least one Road, BRT corridor or Railway tile, the other tiles being free land. Nothing but infrastructure and free land may lie under it, and no Bridge lies under another.
 
+**Footbridge**:
+A Bridge over infrastructure whose Carrier is the pedestrian network. It is 2 tiles wide and span + 2 long (span of 1, 2, 3 or 5 tiles): at each end a corridor and a stair of two flights at 90°, and between them a deck above at least one Road, BRT corridor or Railway tile. Both corridors lie on the same side of the deck. It lets pedestrians cross without loading any Road tile, so it never reduces Road capacity. It has no ramp: its stairs stand on free land.
+_Avoid_: Pedestrian bridge, overpass, underpass
+
 **Bridge ramp**:
 The one-tile slope at each end of a Bridge over infrastructure, lifting the Carrier up to the Bridge span and bringing it back down. It stands on free land and is aligned at its outer end with a tile of the Carrier's network.
 
 **Carrier**:
-The network a Bridge over infrastructure carries: the Road or the BRT corridor. A Railway is never a Carrier.
+The network a Bridge over infrastructure carries: the Road, the BRT corridor or the pedestrian network (a Footbridge). A Railway is never a Carrier.
 
 **Bridge opening**:
 The raising of a Bridge in two leaves when a Boat has to pass beneath it, each leaf hinged on its bank (a 1-tile Bridge has one leaf; 3 tiles give 2 + 1, 5 tiles give 3 + 2). Traffic stops before it, like at a red light. Its cost is a closed fraction of time, from the Boats that can reach the Bridge, which lowers the capacity of its Road tiles.
@@ -885,7 +889,9 @@ _Avoid_: Docs, documentation, manual, wiki
 - A Bridge is part of the graph of its Carrier: Commute, Congestion and Pedestrian paths use a Road Bridge like any Road. Bridge openings lower the capacity of a Bridge over Water in proportion to the Boats that can reach it.
 - A Bridge over infrastructure does not connect to the networks beneath it. It has no side exit, no stop, station, Crossing or building access on its span or ramps, and its Sidewalks join those of the Road that extends it.
 - A Road Bridge over infrastructure has one Road tier for its three parts, starting at the lower tier of its two ends, upgraded as a whole and capped like a Road. A BRT Bridge has no tier.
-- Demolishing the last infrastructure tile under a Bridge span is refused. A new network may be built under an existing Bridge span only across it.
+- A Footbridge joins the Pedestrian path network only. Each corridor reaches a Sidewalk or a Pedestrian way next to it along the Footbridge axis, never sideways; the walk from one corridor to the other costs span + 3 and counts no Crossing. Neither the corridors, the stairs nor the deck give access to a building.
+- A Bridge over infrastructure can be moved or turned for free: it is lifted and placed again with its own length, Carrier and tier, under the same rules as a new Bridge. A Bridge over Water cannot be moved.
+- Demolishing the last infrastructure tile under a Bridge span (under the deck, for a Footbridge) is refused. A new network may be built under an existing Bridge span only across it.
 - A Pedestrian way joins the Pedestrian path network but not the Road or BRT networks. Homes, Schools, Shops and the Town hall can use it as their only access; other buildings still require their existing access modes.
 - A Pedestrian path uses the shortest route through the combined Sidewalk and Pedestrian way network. It crosses Roads only at a Crossing or around a dead end, and only the Crossings it uses reduce Road capacity.
 - A building touching both a Road and a BRT corridor keeps the Road as its primary access, and its front faces the Road.

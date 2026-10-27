@@ -241,7 +241,7 @@ function isBoat(boat: unknown): boolean {
 }
 
 function isBridge(bridge: unknown): boolean {
-  return isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string) && (bridge.carrier === undefined || bridge.carrier === 'road' || bridge.carrier === 'brt') && (bridge.tier === undefined || (bridge.carrier === 'road' && isInt(bridge.tier, 2, MAX_ROAD_TIER)));
+  return isRecord(bridge) && isCoord(bridge) && [1, 2, 3, 5].includes(bridge.length as number) && ['x', 'y'].includes(bridge.axis as string) && (bridge.carrier === undefined || bridge.carrier === 'road' || bridge.carrier === 'brt' || bridge.carrier === 'pedestrian') && (bridge.carrier === 'pedestrian' ? bridge.side === 1 || bridge.side === -1 : bridge.side === undefined) && (bridge.tier === undefined || (bridge.carrier === 'road' && isInt(bridge.tier, 2, MAX_ROAD_TIER)));
 }
 
 function isDonation(donation: unknown): boolean {
@@ -305,7 +305,7 @@ function isStopOfKind(state: GameState, id: number, allowed: BuildingType[]): bo
   return id < state.nextId && (building === undefined || allowed.includes(building.type));
 }
 
-function carrierKeys(state: GameState, bridge: { carrier?: 'road' | 'brt' }): Set<string> {
+function carrierKeys(state: GameState, bridge: { carrier?: 'road' | 'brt' | 'pedestrian' }): Set<string> {
   return new Set((bridge.carrier === 'brt' ? (state.brtRoads ?? []) : state.roads).map(tileKey));
 }
 

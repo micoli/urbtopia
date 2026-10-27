@@ -1,10 +1,12 @@
 import { footprintTiles } from '../buildings/buildingSpecs';
-import type { Building, GameState } from '../engine/state';
+import type { Bridge, Building, GameState } from '../engine/state';
 import type { Coord } from './coord';
 import { DIRECTIONS, frontDirection, neighbour, tileKey, type Direction } from './geometry';
 import { roadExits, roundaboutTiles } from './occupancy';
 import { frontTiles } from './placement';
-import { bridgeRamps } from '../water/bridgeGeometry';
+import { bridgeFootprint, bridgeRamps, isPedestrianBridge } from '../water/bridgeGeometry';
+import { footbridgeParts } from '../water/footbridgeGeometry';
+import { footbridgeEndLinks } from './footbridgeAccess';
 
 export const WALK = { crossingExtraCost: 2 };
 
@@ -28,13 +30,13 @@ export interface WalkTarget {
 
 const OPPOSITE: Record<Direction, Direction> = { N: 'S', S: 'N', E: 'W', W: 'E' };
 
-const graphCache = new WeakMap<GameState['roads'], { roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; brtRoads: GameState['brtRoads']; graph: PedestrianGraph }>();
+const graphCache = new WeakMap<GameState['roads'], { roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; brtRoads: GameState['brtRoads']; bridges: GameState['bridges']; graph: PedestrianGraph }>();
 
 export function pedestrianGraph(state: GameState): PedestrianGraph {
   const cached = graphCache.get(state.roads);
-  if (cached?.roundabouts === state.roundabouts && cached.pedestrianWays === state.pedestrianWays && cached.brtRoads === state.brtRoads) return cached.graph;
+  if (cached?.roundabouts === state.roundabouts && cached.pedestrianWays === state.pedestrianWays && cached.brtRoads === state.brtRoads && cached.bridges === state.bridges) return cached.graph;
   const graph = buildPedestrianGraph(state);
-  graphCache.set(state.roads, { roundabouts: state.roundabouts, pedestrianWays: state.pedestrianWays, brtRoads: state.brtRoads, graph });
+  graphCache.set(state.roads, { roundabouts: state.roundabouts, pedestrianWays: state.pedestrianWays, brtRoads: state.brtRoads, bridges: state.bridges, graph });
   return graph;
 }
 
@@ -105,6 +107,8 @@ export function buildPedestrianGraph(state: GameState): PedestrianGraph {
 
   for (const center of state.roundabouts) addRing(edges, roads, exitsOf, center, link);
 
+  for (const bridge of (state.bridges ?? []).filter(isPedestrianBridge)) addFootbridge(edges, state, bridge, link);
+
   for (const bridge of state.bridges ?? []) {
     const [first, last] = bridgeRamps(bridge);
     if (!first || !last) continue;
@@ -128,6 +132,27 @@ export function buildPedestrianGraph(state: GameState): PedestrianGraph {
   return edges;
 }
 
+// The walk goes corridor, stair, deck tiles, stair, corridor, one node per tile so that walkers follow the stairs and the deck. It costs `span + 3` from corridor to corridor, and nothing beside it joins it.
+function addFootbridge(edges: Map<string, PedestrianEdge[]>, state: GameState, bridge: Bridge, link: (a: string, b: string, cost: number) => void): void {
+  const { corridors, stairs, deck } = footbridgeParts(bridge);
+  const route = [corridors[0], stairs[0], ...deck, stairs[1], corridors[1]].map(pedestrianWayNode);
+  for (const node of route) addNode(edges, node);
+  route.slice(1).forEach((node, index) => link(route[index]!, node, 1));
+  const ends = [route[0]!, route[route.length - 1]!];
+  footbridgeEndLinks(state, bridge).forEach((links, end) => {
+    for (const reach of links) link(ends[end]!, reach.kind === 'way' ? pedestrianWayNode(reach.tile) : sidewalkNode(reach.tile, reach.side), 1);
+  });
+}
+
+// Where the Street view halts on a Footbridge: the middle of its deck, to look around from the top.
+export function footbridgeStops(state: GameState): ReadonlySet<string> {
+  return new Set((state.bridges ?? []).filter(isPedestrianBridge).map((bridge) => pedestrianWayNode(footbridgeParts(bridge).deck[Math.floor((bridge.length - 1) / 2)]!)));
+}
+
+function footbridgeTileKeys(state: GameState): ReadonlySet<string> {
+  return new Set((state.bridges ?? []).filter(isPedestrianBridge).flatMap(bridgeFootprint).map(tileKey));
+}
+
 function brtOnlyTileKeys(state: GameState): ReadonlySet<string> {
   const roadKeys = new Set(state.roads.map(tileKey));
   return new Set((state.brtRoads ?? []).map(tileKey).filter((key) => !roadKeys.has(key)));
@@ -135,11 +160,12 @@ function brtOnlyTileKeys(state: GameState): ReadonlySet<string> {
 
 export function accessNodes(state: GameState, graph: PedestrianGraph, building: Building): string[] {
   const brtOnly = brtOnlyTileKeys(state);
+  const corridors = footbridgeTileKeys(state);
   const back = OPPOSITE[frontDirection(building.rotation)];
   const nodes: string[] = [];
   for (const tile of frontTiles(building.type, building.x, building.y, building.rotation, building.tier)) {
     for (const node of [sidewalkNode(tile, back), sidewalkNode(tile, 'R'), pedestrianWayNode(tile)]) {
-      if (graph.has(node) && !brtOnly.has(tileKey(tile))) nodes.push(node);
+      if (graph.has(node) && !brtOnly.has(tileKey(tile)) && !corridors.has(tileKey(tile))) nodes.push(node);
     }
   }
   return nodes;
@@ -147,12 +173,13 @@ export function accessNodes(state: GameState, graph: PedestrianGraph, building: 
 
 export function adjacentNodes(state: GameState, graph: PedestrianGraph, building: Building): string[] {
   const brtOnly = brtOnlyTileKeys(state);
+  const corridors = footbridgeTileKeys(state);
   const inside = new Set(footprintTiles(building).map(tileKey));
   const nodes = new Set<string>();
   for (const tile of footprintTiles(building)) {
     for (const direction of DIRECTIONS) {
       const outside = neighbour(tile, direction);
-      if (inside.has(tileKey(outside)) || brtOnly.has(tileKey(outside))) continue;
+      if (inside.has(tileKey(outside)) || brtOnly.has(tileKey(outside)) || corridors.has(tileKey(outside))) continue;
       for (const node of [sidewalkNode(outside, OPPOSITE[direction]), sidewalkNode(outside, 'R'), pedestrianWayNode(outside)]) {
         if (graph.has(node)) nodes.add(node);
       }

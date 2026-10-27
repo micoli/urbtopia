@@ -8,9 +8,11 @@ import type { Bridge, GameState } from '../engine/state';
 import { waterKeys } from './waterTiles';
 import { roadTierOf, roadTierUpgradeCost } from '../traffic/roadTier';
 import { validNetworkCrossings } from '../transit/transitNetwork';
-import { bridgeEnds, bridgeFootprint, bridgeRamps, bridgeTiles, isInfrastructureBridge } from './bridgeGeometry';
+import { footbridgeEndLinks } from '../map/footbridgeAccess';
+import { bridgeDeck, bridgeEnds, bridgeFootprint, bridgeRamps, bridgeTiles, isInfrastructureBridge, isPedestrianBridge } from './bridgeGeometry';
+import { footbridgeParts } from './footbridgeGeometry';
 
-export { bridgeEnds, bridgeFootprint, bridgeRamps, bridgeTiles, isInfrastructureBridge };
+export { bridgeDeck, bridgeEnds, bridgeFootprint, bridgeRamps, bridgeTiles, footbridgeParts, isInfrastructureBridge, isPedestrianBridge };
 
 export const BRIDGE_LENGTHS: readonly number[] = [1, 2, 3, 5];
 
@@ -19,6 +21,7 @@ export const BRIDGES = {
   costs: { 1: 150, 2: 300, 3: 450, 5: 800 } as Readonly<Record<number, number>>,
   roadCosts: { 1: 300, 2: 450, 3: 600, 5: 950 } as Readonly<Record<number, number>>,
   brtCosts: { 1: 450, 2: 675, 3: 900, 5: 1425 } as Readonly<Record<number, number>>,
+  footCosts: { 1: 180, 2: 270, 3: 360, 5: 570 } as Readonly<Record<number, number>>,
 };
 
 export function bridgesOf(state: GameState): readonly Bridge[] {
@@ -35,6 +38,7 @@ export function bridgeKeys(state: GameState): Set<string> {
 
 export function bridgeCost(length: number, carrier?: Bridge['carrier']): number | undefined {
   if (carrier === 'brt') return BRIDGES.brtCosts[length];
+  if (carrier === 'pedestrian') return BRIDGES.footCosts[length];
   return carrier === 'road' ? BRIDGES.roadCosts[length] : BRIDGES.costs[length];
 }
 
@@ -60,6 +64,7 @@ function runsAlong(state: GameState, tile: Coord, axis: Bridge['axis']): boolean
 }
 
 function placeInfrastructureBridge(state: GameState, bridge: Bridge): CommandOutcome {
+  if (isPedestrianBridge(bridge)) return placeFootbridge(state, bridge);
   if (citizenCount(state) < BRIDGES.unlockCitizens) return { key: 'error.itemLocked' };
   const price = bridgeCost(bridge.length, bridge.carrier);
   if (price === undefined || !Number.isInteger(bridge.x) || !Number.isInteger(bridge.y) || (bridge.axis !== 'x' && bridge.axis !== 'y')) return { key: 'error.unknownCommand' };
@@ -77,6 +82,27 @@ function placeInfrastructureBridge(state: GameState, bridge: Bridge): CommandOut
   if (crossed.length === 0) return { key: 'error.bridgeNeedsInfrastructure' };
   if (crossed.some((tile) => runsAlong(state, tile, bridge.axis))) return { key: 'error.bridgeCrossesAlong' };
   return bridge.carrier === 'brt' ? placeBrtBridge(state, bridge, price) : placeRoadBridge(state, bridge, price);
+}
+
+function placeFootbridge(state: GameState, bridge: Bridge): CommandOutcome {
+  if (citizenCount(state) < BRIDGES.unlockCitizens) return { key: 'error.itemLocked' };
+  const price = bridgeCost(bridge.length, 'pedestrian');
+  if (price === undefined || !Number.isInteger(bridge.x) || !Number.isInteger(bridge.y) || (bridge.axis !== 'x' && bridge.axis !== 'y') || (bridge.side !== 1 && bridge.side !== -1)) return { key: 'error.unknownCommand' };
+  const footprint = bridgeFootprint(bridge);
+  if (!footprint.every((tile) => isInsideOwnedParcels(state, tile))) return { key: 'error.outsideOwnedParcels' };
+  const occupied = occupiedTiles(state);
+  const beneath = infrastructureKeys(state);
+  const taken = bridgeKeys(state);
+  if (footprint.some((tile) => taken.has(tileKey(tile)))) return { key: 'error.tilesOccupied' };
+  const { stairs, corridors } = footbridgeParts(bridge);
+  if ([...stairs, ...corridors].some((tile) => occupied.has(tileKey(tile)))) return { key: 'error.tilesOccupied' };
+  const passedOver = bridgeTiles(bridge);
+  if (passedOver.some((tile) => occupied.has(tileKey(tile)) && !beneath.has(tileKey(tile)))) return { key: 'error.tilesOccupied' };
+  if (!bridgeDeck(bridge).some((tile) => beneath.has(tileKey(tile)))) return { key: 'error.bridgeNeedsInfrastructure' };
+  if (passedOver.some((tile) => beneath.has(tileKey(tile)) && runsAlong(state, tile, bridge.axis))) return { key: 'error.bridgeCrossesAlong' };
+  if (footbridgeEndLinks(state, bridge).some((links) => links.length === 0)) return { key: 'error.bridgeNeedsPath' };
+  if (state.urbs < price) return { key: 'error.notEnoughUrbs' };
+  return { state: { ...state, urbs: state.urbs - price, bridges: [...bridgesOf(state), { x: bridge.x, y: bridge.y, length: bridge.length, axis: bridge.axis, carrier: 'pedestrian', side: bridge.side }] }, events: [] };
 }
 
 function placeRoadBridge(state: GameState, bridge: Bridge, price: number): CommandOutcome {
@@ -149,11 +175,27 @@ export function placeBridge(state: GameState, bridge: Bridge): CommandOutcome {
   };
 }
 
+// Moving or turning a Bridge over infrastructure is free: it is lifted and placed again with its own length, Carrier and tier.
+export function moveBridge(state: GameState, from: Coord, target: Pick<Bridge, 'x' | 'y' | 'axis' | 'side'>): CommandOutcome {
+  const bridge = bridgeAt(state, from);
+  if (!bridge) return { key: 'error.noBridgeHere' };
+  if (!isInfrastructureBridge(bridge)) return { key: 'error.bridgeNotMovable' };
+  const moved: Bridge = { x: target.x, y: target.y, length: bridge.length, axis: target.axis, carrier: bridge.carrier!, ...(isPedestrianBridge(bridge) ? { side: target.side } : {}) };
+  const placed = placeBridge({ ...withoutBridge(state, bridge), urbs: Number.MAX_SAFE_INTEGER }, moved);
+  if (!('state' in placed)) return placed;
+  const tier = bridge.tier;
+  const bridges = placed.state.bridges!.map((candidate) => (candidate.x === moved.x && candidate.y === moved.y && candidate.axis === moved.axis && tier !== undefined ? { ...candidate, tier } : candidate));
+  const ramps = new Set(bridgeRamps(moved).map(tileKey));
+  const roads = tier === undefined ? placed.state.roads : placed.state.roads.map((road) => (ramps.has(tileKey(road)) ? { ...road, tier } : road));
+  return { state: { ...placed.state, urbs: state.urbs, bridges, roads }, events: [] };
+}
+
 export function bridgeAt(state: GameState, tile: Coord): Bridge | undefined {
   return bridgesOf(state).find((bridge) => bridgeFootprint(bridge).some((candidate) => tileKey(candidate) === tileKey(tile)));
 }
 
 export function withoutBridge(state: GameState, bridge: Bridge): GameState {
+  if (isPedestrianBridge(bridge)) return { ...state, bridges: bridgesOf(state).filter((candidate) => candidate !== bridge) };
   const covered = new Set((isInfrastructureBridge(bridge) ? bridgeRamps(bridge) : bridgeTiles(bridge)).map(tileKey));
   if (bridge.carrier === 'brt') return withoutBrtBridge(state, bridge, covered);
   return {
@@ -223,5 +265,5 @@ function runsAlongAnything(state: GameState, tile: Coord, axis: Bridge['axis']):
 
 export function bridgeLosesCrossing(state: GameState): boolean {
   const beneath = infrastructureKeys(state);
-  return bridgesOf(state).filter(isInfrastructureBridge).some((bridge) => !bridgeTiles(bridge).some((tile) => beneath.has(tileKey(tile))));
+  return bridgesOf(state).filter(isInfrastructureBridge).some((bridge) => !bridgeDeck(bridge).some((tile) => beneath.has(tileKey(tile))));
 }

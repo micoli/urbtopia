@@ -37,3 +37,31 @@ describe('bridgeElevation', () => {
     expect(bridgeElevation([{ x: 60, y: 50, length: 1, axis: 'y', carrier: 'brt' }])(60.5, 50.5, { x: 60, y: 49 }, { x: 60, y: 51 })).toBe(BRIDGE_CLEARANCE);
   });
 });
+
+
+describe('bridgeElevation over a Footbridge', () => {
+  const elevation = bridgeElevation([{ x: 50, y: 50, length: 2, axis: 'x', carrier: 'pedestrian', side: 1 }]);
+  const corridor = { x: 49, y: 51 };
+  const stair = { x: 49, y: 50 };
+  const deck = { x: 50, y: 50 };
+
+  it('is on the ground at the corridor and half way up at the landing of the stair', () => {
+    expect(elevation(49.5, 51.5, corridor, corridor)).toBe(0);
+    expect(elevation(49.5, 50.5, stair, stair)).toBeCloseTo(BRIDGE_CLEARANCE / 2);
+  });
+
+  it('climbs from the corridor to the landing, then from the landing to the deck', () => {
+    expect(elevation(49.5, 51, corridor, stair)).toBeCloseTo(BRIDGE_CLEARANCE / 4);
+    expect(elevation(50, 50.5, stair, deck)).toBeCloseTo((BRIDGE_CLEARANCE * 3) / 4);
+    expect(elevation(50.5, 50.5, deck, deck)).toBe(BRIDGE_CLEARANCE);
+  });
+
+  it('is the same walking back down', () => {
+    expect(elevation(50, 50.5, deck, stair)).toBeCloseTo((BRIDGE_CLEARANCE * 3) / 4);
+  });
+
+  it('stays level over the deck and leaves the Road beneath on the ground', () => {
+    expect(elevation(51, 50.5, { x: 50, y: 50 }, { x: 51, y: 50 })).toBe(BRIDGE_CLEARANCE);
+    expect(elevation(50.5, 50.5, { x: 50, y: 49 }, { x: 50, y: 51 })).toBe(0);
+  });
+});

@@ -3,7 +3,7 @@ import { GAME_CONFIG } from '../engine/config';
 import type { Coord } from './coord';
 import { DIRECTIONS, DIRECTION_VECTORS, neighbour, tileKey, type Direction } from './geometry';
 import type { GameState } from '../engine/state';
-import { bridgeRamps, bridgeTiles, isInfrastructureBridge } from '../water/bridgeGeometry';
+import { bridgeFootprint, bridgeRamps, bridgeTiles, isInfrastructureBridge, isPedestrianBridge } from '../water/bridgeGeometry';
 
 export function roundaboutTiles(center: Coord): Coord[] {
   const radius = Math.floor(GAME_CONFIG.roundaboutSize / 2);
@@ -25,7 +25,7 @@ export function occupiedTiles(state: GameState, ignoreBuildingId?: number): Set<
   for (const water of state.waterTiles ?? []) occupied.add(tileKey(water));
   for (const road of state.roads) occupied.add(tileKey(road));
   for (const tile of state.pedestrianWays ?? []) occupied.add(tileKey(tile));
-  for (const bridge of state.bridges ?? []) if (isInfrastructureBridge(bridge)) for (const tile of bridgeTiles(bridge)) occupied.add(tileKey(tile));
+  for (const bridge of state.bridges ?? []) if (isInfrastructureBridge(bridge)) for (const tile of isPedestrianBridge(bridge) ? bridgeFootprint(bridge) : bridgeTiles(bridge)) occupied.add(tileKey(tile));
   for (const center of state.roundabouts) {
     for (const tile of roundaboutTiles(center)) occupied.add(tileKey(tile));
   }

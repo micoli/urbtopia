@@ -9799,6 +9799,66 @@
     "license": "Own work",
     "flush": true
   },
+  "roads-footbridge-corridor": {
+    "file": "streets/footbridge-corridor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "roads-footbridge-corridor-closed-east": {
+    "file": "streets/footbridge-corridor-closed-east",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "roads-footbridge-corridor-closed-west": {
+    "file": "streets/footbridge-corridor-closed-west",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "roads-footbridge-deck": {
+    "file": "streets/footbridge-deck",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "roads-footbridge-stair-left": {
+    "file": "streets/footbridge-stair-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "roads-footbridge-stair-right": {
+    "file": "streets/footbridge-stair-right",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "roads-road-bend": {
     "file": "streets/road-bend",
     "source": "managed",
