@@ -16,6 +16,7 @@ import { solidarityBonus } from '../economy/solidarity';
 import { isWasteMissing } from '../waste/waste';
 import { greenBeltBonusOf } from '../politics/ordinanceEffects';
 import { incineratorPenaltyOf, odorPenaltyOf } from '../waste/wasteNuisance';
+import { buildingsOfType } from '../buildings/buildingIndex';
 
 const WELLBEING_LIMIT = 100;
 
@@ -52,8 +53,8 @@ export function homeBenefits(state: GameState, home: Building, coalRates: Readon
 
 // Coal plants and Incinerators add up, up to a cap.
 export function pollutionPenaltyOf(state: GameState, home: Building, coalRates: ReadonlyMap<number, number>): number {
-  const penalty = state.buildings.reduce((sum, b) => {
-    if (b.type !== 'coalPlant' || distance(b, home) > ECOLOGY.coalPollutionRadius) return sum;
+  const penalty = buildingsOfType(state.buildings, 'coalPlant').reduce((sum, b) => {
+    if (distance(b, home) > ECOLOGY.coalPollutionRadius) return sum;
     const capacity = COAL_CAPACITY[b.tier - 1] ?? 0;
     if (capacity <= 0) return sum;
     return sum + ECOLOGY.coalWellbeingPenalty * (coalRates.get(b.id) ?? 0) / capacity;

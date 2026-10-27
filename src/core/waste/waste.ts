@@ -9,6 +9,7 @@ import { citizensOf, totalCitizens } from '../buildings/city';
 import { hourOf, recyclingPlantPowerRatios } from './wastePower';
 import { footprintOfBuilding, pedestrianDistances, roadComponents, tilesOfBuilding, touchedRoadComponents, outsideNeighbours } from './wasteLinks';
 import { wasteReductionOf } from '../politics/ordinanceEffects';
+import { layoutOf } from '../buildings/buildingIndex';
 import { WASTE, WASTE_FACILITIES, WASTE_KINDS, WASTE_REQUIRED_FROM_CITIZENS, homeWasteProduction, wasteCapacity, wasteKindOf, type WasteKind } from './wasteBalance';
 
 export type WasteCause = 'outOfReach' | 'capacityFull' | 'noRoadLink' | 'beyondCarryingDistance' | 'facilityStopped';
@@ -59,7 +60,8 @@ interface ReachingFacility {
   powerRatio: number;
 }
 
-const cache = new WeakMap<readonly Building[], { roads: GameState['roads']; roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; paying: boolean; adapting: boolean; hour: number; reduction: number; report: WasteReport }>();
+const stateCache = new WeakMap<GameState, WasteReport>();
+const cache = new WeakMap<object, { roads: GameState['roads']; roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; paying: boolean; adapting: boolean; hour: number; reduction: number; power: string; report: WasteReport }>();
 
 function centerOf(building: Building): Coord {
   const { width, depth } = footprintOfBuilding(building);
@@ -131,7 +133,7 @@ function withoutFacilities(homes: readonly Building[], required: boolean, reduct
   return { required, homes: results, facilities: new Map(), produced: [...results.values()].reduce((sum, home) => sum + home.produced, 0), processed: 0, costPerDay: 0, costPerHour: 0 };
 }
 
-function computeReport(state: GameState, paying: boolean): WasteReport {
+function computeReport(state: GameState, paying: boolean, powerRatios: ReadonlyMap<number, number>): WasteReport {
   const homes = state.buildings.filter(building => isHomeType(building.type)).sort((a, b) => a.id - b.id);
   const required = totalCitizens(state) >= WASTE_REQUIRED_FROM_CITIZENS;
   const reduction = wasteReductionOf(state);
@@ -144,7 +146,6 @@ function computeReport(state: GameState, paying: boolean): WasteReport {
     return { home, center: centerOf(home), produced: homeWasteProduction(home.tier, reduction), roads, walk: roads.size === 0 ? pedestrianDistances(state, components, tiles, Infinity) : null };
   });
   const results = new Map<number, HomeWaste>();
-  const powerRatios = recyclingPlantPowerRatios(state);
   const facilityResults = new Map<number, FacilityWaste>(facilities.map(({ building, kind, roadComponents: reachable }) => {
     const nominalCapacity = wasteCapacity(kind, building.tier);
     const powerRatio = powerRatios.get(building.id) ?? 1;
@@ -201,14 +202,25 @@ function computeReport(state: GameState, paying: boolean): WasteReport {
 
 // Facilities that cannot pay stop at once: with no Urbs left nothing is processed. A Recycling plant processes in proportion to the power it receives.
 export function wasteReport(state: GameState): WasteReport {
+  const known = stateCache.get(state);
+  if (known) return known;
+  const report = layoutReport(state);
+  stateCache.set(state, report);
+  return report;
+}
+
+function layoutReport(state: GameState): WasteReport {
   const paying = state.urbs > 1e-9;
   const adapting = isAdapting(state);
   const hour = hourOf(state);
   const reduction = wasteReductionOf(state);
-  const cached = cache.get(state.buildings);
-  if (cached && cached.adapting === adapting && cached.hour === hour && cached.roads === state.roads && cached.roundabouts === state.roundabouts && cached.pedestrianWays === state.pedestrianWays && cached.paying === paying && cached.reduction === reduction) return cached.report;
-  const report = computeReport(state, paying);
-  cache.set(state.buildings, { roads: state.roads, roundabouts: state.roundabouts, pedestrianWays: state.pedestrianWays, paying, adapting, hour, reduction, report });
+  const powerRatios = recyclingPlantPowerRatios(state);
+  const power = [...powerRatios].join(';');
+  const layout = layoutOf(state.buildings);
+  const cached = cache.get(layout);
+  if (cached && cached.adapting === adapting && cached.hour === hour && cached.roads === state.roads && cached.roundabouts === state.roundabouts && cached.pedestrianWays === state.pedestrianWays && cached.paying === paying && cached.reduction === reduction && cached.power === power) return cached.report;
+  const report = computeReport(state, paying, powerRatios);
+  cache.set(layout, { roads: state.roads, roundabouts: state.roundabouts, pedestrianWays: state.pedestrianWays, paying, adapting, hour, reduction, power, report });
   return report;
 }
 

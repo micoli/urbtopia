@@ -7,6 +7,7 @@ import { isHomeType } from '../buildings/buildingDefinitions';
 import { isWasteCovered, isWasteMissing, wasteCauseOf, wasteReport, type WasteCause } from '../waste/waste';
 import { WASTE_REQUIRED_TIER } from '../waste/wasteBalance';
 import { transitReachOf, type TransitLink, type TransitReach } from '../transit/transitReach';
+import { buildingsOfType, layoutOf } from '../buildings/buildingIndex';
 
 export type ServiceCoverage = ReadonlyMap<number, ReadonlySet<FacilityType>>;
 
@@ -18,7 +19,7 @@ interface Coverage {
 }
 
 // Fast public transport joins Homes to facilities, so the lines, their vehicles and the networks they run on count in the key besides the buildings.
-const coverageCache = new WeakMap<readonly Building[], { key: readonly unknown[]; result: Coverage }>();
+const coverageCache = new WeakMap<object, { key: readonly unknown[]; result: Coverage }>();
 
 const transitKey = (state: GameState): readonly unknown[] => [state.transitLines, state.transitFleet, state.brtRoads, state.rails, state.roads, state.roundabouts];
 
@@ -84,7 +85,7 @@ function computeCoverage(state: GameState): Coverage {
   const transit = transitReachOf(state);
   for (const type of FACILITY_TYPES) {
     if (FACILITIES[type].category === 'waste') continue;
-    const facilities = state.buildings.filter(building => building.type === type).sort((a, b) => a.id - b.id);
+    const facilities = [...buildingsOfType(state.buildings, type)].sort((a, b) => a.id - b.id);
     if (!facilities.length) continue;
     const { covered, links } = coveredHomes(type, facilities, homes, transit);
     for (const id of covered) result.get(id)?.add(type);
@@ -95,10 +96,11 @@ function computeCoverage(state: GameState): Coverage {
 
 function coverageOf(state: GameState): Coverage {
   const key = transitKey(state);
-  const cached = coverageCache.get(state.buildings);
+  const layout = layoutOf(state.buildings);
+  const cached = coverageCache.get(layout);
   if (cached && sameKey(cached.key, key)) return cached.result;
   const result = computeCoverage(state);
-  coverageCache.set(state.buildings, { key, result });
+  coverageCache.set(layout, { key, result });
   return result;
 }
 

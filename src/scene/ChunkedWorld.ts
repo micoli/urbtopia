@@ -12,6 +12,7 @@ export class ChunkedWorld {
   readonly root = new THREE.Group();
   private chunks = new Map<string, Chunk>();
   private lastItems: RenderItem[] | null = null;
+  private fittedBoxes = new Map<string, THREE.Box3>();
 
   constructor(private library: ModelLibrary, private chunkSize?: number) {}
 
@@ -21,7 +22,9 @@ export class ChunkedWorld {
     const byChunk = new Map<string, RenderItem[]>();
     for (const item of items) {
       const key = chunkKeyOf(item.x, item.z, this.chunkSize);
-      byChunk.set(key, [...(byChunk.get(key) ?? []), item]);
+      const chunkItems = byChunk.get(key);
+      if (chunkItems) chunkItems.push(item);
+      else byChunk.set(key, [item]);
     }
     for (const key of [...this.chunks.keys()]) {
       if (!byChunk.has(key)) this.removeChunk(key);
@@ -43,9 +46,16 @@ export class ChunkedWorld {
 
   private facilityScaleMatrix(item: RenderItem, target: THREE.Matrix4): THREE.Matrix4 {
     if (!item.footprint || !item.fitModel) return target.identity();
-    const box = new THREE.Box3().setFromObject(this.library.get(item.fitModel)).applyMatrix4(fitMatrixOf(item.fitModel));
-    const { horizontal, vertical } = facilityScaleOf(box, item.footprint);
+    const { horizontal, vertical } = facilityScaleOf(this.fittedBox(item.fitModel), item.footprint);
     return target.makeScale(horizontal, vertical, horizontal);
+  }
+
+  private fittedBox(model: string): THREE.Box3 {
+    const cached = this.fittedBoxes.get(model);
+    if (cached) return cached;
+    const box = new THREE.Box3().setFromObject(this.library.get(model)).applyMatrix4(fitMatrixOf(model));
+    this.fittedBoxes.set(model, box);
+    return box;
   }
 
   private removeChunk(key: string): void {
@@ -63,7 +73,9 @@ export class ChunkedWorld {
     const byModel = new Map<string, RenderItem[]>();
     for (const item of items) {
       const key = `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}`;
-      byModel.set(key, [...(byModel.get(key) ?? []), item]);
+      const modelItems = byModel.get(key);
+      if (modelItems) modelItems.push(item);
+      else byModel.set(key, [item]);
     }
 
     const placement = new THREE.Matrix4();
@@ -83,7 +95,7 @@ export class ChunkedWorld {
         const tinted = tint ? this.library.withTint(textured, Number(tint)) : textured;
         const instanced = new THREE.InstancedMesh(mesh.geometry, tinted, modelItems.length);
         modelItems.forEach((item, index) => {
-          const elevation = item.roofBase ? new THREE.Box3().setFromObject(this.library.get(item.roofBase)).applyMatrix4(fitMatrixOf(item.roofBase)).max.y + (item.elevation ?? 0) : item.elevation ?? 0;
+          const elevation = item.roofBase ? this.fittedBox(item.roofBase).max.y + (item.elevation ?? 0) : item.elevation ?? 0;
           placement.makeRotationY((item.rotation * Math.PI) / 2).setPosition(item.x, elevation, item.z);
           if (item.pitch || item.yaw || item.roll) placement.multiply(tilt.makeRotationFromEuler(new THREE.Euler(THREE.MathUtils.degToRad(item.pitch ?? 0), THREE.MathUtils.degToRad(item.yaw ?? 0), THREE.MathUtils.degToRad(item.roll ?? 0), 'YXZ')));
           combined.copy(placement).multiply(lengthScale.makeScale(item.scale ?? 1, item.scale ?? 1, (item.scale ?? 1) * (item.lengthScale ?? 1))).multiply(this.facilityScaleMatrix(item, facilityMatrix)).multiply(fit).multiply(mesh.matrixWorld);

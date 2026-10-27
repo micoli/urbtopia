@@ -2,7 +2,8 @@ import type { Building, GameState } from '../engine/state';
 import { centerOf } from '../environment/ecology';
 import { isWithinReach } from '../services/facilities';
 import { wasteReport } from './waste';
-import { WASTE, WASTE_FACILITIES, wasteKindOf } from './wasteBalance';
+import { WASTE, WASTE_FACILITIES } from './wasteBalance';
+import { buildingsOfType } from '../buildings/buildingIndex';
 
 function reaches(facility: Building, home: Building, radius: number): boolean {
   const from = centerOf(facility);
@@ -14,8 +15,7 @@ function reaches(facility: Building, home: Building, radius: number): boolean {
 export function odorPenaltyOf(state: GameState, home: Building): number {
   const report = wasteReport(state);
   let worst = 0;
-  for (const facility of state.buildings) {
-    if (wasteKindOf(facility.type) !== 'mound') continue;
+  for (const facility of buildingsOfType(state.buildings, 'mound')) {
     const { odor } = WASTE_FACILITIES.mound;
     if (!odor || odor.malus <= worst || !(report.facilities.get(facility.id)?.processed)) continue;
     if (reaches(facility, home, odor.radius)) worst = odor.malus;
@@ -29,8 +29,7 @@ export function incineratorPenaltyOf(state: GameState, home: Building): number {
   const { pollution } = WASTE_FACILITIES.incinerator;
   if (!pollution) return 0;
   let total = 0;
-  for (const facility of state.buildings) {
-    if (wasteKindOf(facility.type) !== 'incinerator') continue;
+  for (const facility of buildingsOfType(state.buildings, 'incinerator')) {
     const served = report.facilities.get(facility.id);
     if (!served || served.processed <= 0 || !reaches(facility, home, pollution.radius)) continue;
     total += pollution.malus * served.processed / served.capacity;

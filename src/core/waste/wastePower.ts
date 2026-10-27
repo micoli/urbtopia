@@ -3,12 +3,13 @@ import { isAdapting } from '../environment/adaptation';
 import { energyStats } from '../environment/energy';
 import type { GameState } from '../engine/state';
 import { energySavingOf } from '../politics/ordinanceEffects';
+import { buildingsOfType } from '../buildings/buildingIndex';
 
 const POWER_EPSILON = 1e-9;
 
 // Share of its power Demand each Recycling plant receives; an Adaptation period exempts shedding.
 export function recyclingPlantPowerRatios(state: GameState): ReadonlyMap<number, number> {
-  const plants = state.buildings.filter(building => building.type === 'recyclingPlant');
+  const plants = buildingsOfType(state.buildings, 'recyclingPlant');
   if (plants.length === 0) return new Map();
   if (isAdapting(state)) return new Map(plants.map(plant => [plant.id, 1]));
   const { supplied } = energyStats(state);
