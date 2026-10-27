@@ -611,6 +611,10 @@ _Avoid_: Darkness
 One twenty-fourth of the Day cycle, 5 real minutes. Distinct from a game hour, which lasts one real hour and is the unit of production costs, taxes and Catch-up.
 _Avoid_: Hour (alone)
 
+**Lit window**:
+A glass window of a powered building that shows light at Night. Each window is lit on its own: about 60% of them are lit at least once in a Night, switched on between 22:00 and 00:30 and off between 00:30 and 05:30, drawn from the window's place and the number of the Day cycle. A building without power keeps its windows dark. Purely visual: never saved and never read by the simulation.
+_Avoid_: Night lights, street lamp (a separate thing, not modelled)
+
 **Always day**:
 A setting of the device, outside the save, that shows the map in Daytime light at all times without changing the Day cycle or power. Off by default.
 
