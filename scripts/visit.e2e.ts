@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test('visits a Showcase read-only and returns to the own city untouched', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
-  await page.goto('/?bypass-tutorial&keep-local');
+  await page.goto('/?e2e');
   await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
 
   await page.evaluate(async () => {

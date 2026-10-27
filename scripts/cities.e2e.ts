@@ -13,7 +13,7 @@ test('creates, renames, switches and deletes Cities', async ({ page }) => {
   await page.addInitScript(() => {
     if (!localStorage.getItem('urbtopia-prefs')) localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
   });
-  await page.goto('/?bypass-tutorial&keep-local');
+  await page.goto('/?e2e');
   await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   const first = (await registry(page)).lastPlayed;
 
@@ -58,7 +58,7 @@ test('imports a file as a new City and never replaces the open one', async ({ pa
   await page.addInitScript(() => {
     if (!localStorage.getItem('urbtopia-prefs')) localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
   });
-  await page.goto('/?bypass-tutorial&keep-local');
+  await page.goto('/?e2e');
   await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   const first = (await registry(page)).lastPlayed;
   const file = await page.evaluate(async () => {

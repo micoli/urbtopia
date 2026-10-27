@@ -17,7 +17,7 @@ test('sends a Shipment to another City and receives it when that City is opened'
   await page.addInitScript(() => {
     if (!localStorage.getItem('urbtopia-prefs')) localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
   });
-  await page.goto('/?bypass-tutorial&keep-local');
+  await page.goto('/?e2e');
   await ready(page);
   await syncOpenCity(page);
   const first = await page.evaluate(() => JSON.parse(localStorage.getItem('urbtopia-cities') ?? '{}').lastPlayed as string);

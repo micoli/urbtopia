@@ -6,7 +6,7 @@ for (const mobile of [false, true]) {
 
     test('donates with a preview, preserves pending Medal progress after a reset, and explains the rules in the Codex', async ({ page }, testInfo) => {
       await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
-      await page.goto('/?bypass-tutorial&keep-local');
+      await page.goto('/?e2e');
       await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
       await page.evaluate(async () => {
         const { gameStore } = await import('../src/store/gameStore.ts');

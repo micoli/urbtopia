@@ -7,6 +7,10 @@ describe('isBypassTutorialRequested', () => {
     expect(isBypassTutorialRequested('?fps&bypass-tutorial=1')).toBe(true);
   });
 
+  it('is on with the e2e parameter', () => {
+    expect(isBypassTutorialRequested('?e2e')).toBe(true);
+  });
+
   it('is off otherwise', () => {
     expect(isBypassTutorialRequested('')).toBe(false);
     expect(isBypassTutorialRequested('?fps')).toBe(false);

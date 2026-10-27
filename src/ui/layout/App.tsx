@@ -24,7 +24,6 @@ export function App() {
     document.documentElement.dataset.layout = layout;
     document.documentElement.lang = language;
   }, [layout, language]);
-    console.log(layout)
   return (
     <>
       <SceneCanvas />
