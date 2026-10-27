@@ -1,6 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { bridgeFootprint, bridgeTiles, createBuilding, dispatch, newGame, type Command, type GameState } from '../index';
+import { pedestrianGraph, pedestrianWayNode, sidewalkNode, walkFrom, crossingsOnPath, adjacentNodes, accessNodes } from '../map/pedestrianGraph';
+import { buildRoadGraph } from '../map/roadGraph';
+import { buildNetworkGraph } from '../transit/transitNetwork';
+import { bridgeFootprint, bridgeTiles, createBuilding, dispatch, newGame, tileKey, type Command, type GameState } from '../index';
 
 const T0 = 1_700_000_000_000;
 
@@ -152,5 +155,70 @@ describe('Removing a Footbridge', () => {
     expect(removed.roads).toEqual(state.roads);
     expect(removed.urbs).toBeGreaterThan(placed.urbs);
     expect(removed.urbs).toBeLessThan(state.urbs);
+  });
+});
+
+const walkCost = (state: GameState, from: string, to: string): number | undefined => walkFrom(pedestrianGraph(state), [from], 40).costs.get(to);
+const westSide = sidewalkNode({ x: 50, y: 51 }, 'W');
+const eastSide = sidewalkNode({ x: 50, y: 51 }, 'E');
+
+describe('A Footbridge in the pedestrian graph', () => {
+  it('joins the two Sidewalks of the Road across the deck, at the cost of the stairs', () => {
+    const placed = succeed(crossing(), footbridge(50, 1));
+    expect(walkCost(placed, westSide, eastSide)).toBe(1 + 1 + 3 + 1);
+  });
+
+  it('shortens the walk from one side to the other, which goes round the dead end without it', () => {
+    const state = crossing();
+    expect(walkCost(succeed(state, footbridge(50, 1)), westSide, eastSide)).toBeLessThan(walkCost(state, westSide, eastSide) ?? Infinity);
+  });
+
+  it('loads no Crossing on the way', () => {
+    const placed = succeed(crossing(), footbridge(50, 1));
+    const map = walkFrom(pedestrianGraph(placed), [westSide], 40);
+    expect(crossingsOnPath(map, eastSide)).toEqual([]);
+  });
+
+  it('is not used when a Crossing is cheaper, and the Crossing then carries the walk', () => {
+    const roads = column(50, 45, 55).map((tile) => ({ ...tile, kind: tile.y === 51 ? ('crossing' as const) : ('road' as const) }));
+    const placed = succeed(crossing(1, { roads }), footbridge(50, 1));
+    const map = walkFrom(pedestrianGraph(placed), [westSide], 40);
+    expect(map.costs.get(eastSide)).toBe(3);
+    expect(crossingsOnPath(map, eastSide)).toEqual([tileKey({ x: 50, y: 51 })]);
+  });
+
+  it('joins the two sides of a Railway', () => {
+    const rails = column(50, 45, 55).map((tile) => ({ ...tile, exits: tile.y === 45 ? ['S' as const] : tile.y === 55 ? ['N' as const] : ['N' as const, 'S' as const] }));
+    const placed = succeed(crossing(1, { roads: [], rails, pedestrianWays: [{ x: 48, y: 51 }, { x: 52, y: 51 }] }), footbridge(50, 1));
+    expect(walkCost(placed, pedestrianWayNode({ x: 48, y: 51 }), pedestrianWayNode({ x: 52, y: 51 }))).toBe(1 + 4 + 1);
+  });
+
+  it('gives no access to a Road running beside the footprint', () => {
+    const roads = [...column(50, 45, 55), ...row(45, 49, 52)].map((tile) => ({ ...tile, kind: 'road' as const }));
+    const placed = succeed(crossing(1, { roads }), footbridge(50, 1));
+    const edges = pedestrianGraph(placed).get(pedestrianWayNode({ x: 49, y: 51 })) ?? [];
+    expect(edges.map((edge) => edge.to).sort()).toEqual([westSide, pedestrianWayNode({ x: 51, y: 51 })].sort());
+  });
+
+  it('gives no access to a building next to a corridor', () => {
+    const placed = succeed(crossing(1, { pedestrianWays: [{ x: 48, y: 51 }] }), footbridge(50, 1));
+    const neighbour = createBuilding(2, 'home', 47, 51, 0);
+    const graph = pedestrianGraph(placed);
+    expect(adjacentNodes(placed, graph, neighbour)).not.toContain(pedestrianWayNode({ x: 49, y: 51 }));
+    expect(accessNodes(placed, graph, createBuilding(3, 'home', 49, 52, 0))).not.toContain(pedestrianWayNode({ x: 49, y: 51 }));
+  });
+
+  it('stays out of the Road and BRT graphs', () => {
+    const state = crossing();
+    const placed = succeed(state, footbridge(50, 1));
+    expect(buildRoadGraph(placed)).toEqual(buildRoadGraph(state));
+    expect(buildNetworkGraph(placed, 'brt')).toEqual(buildNetworkGraph(state, 'brt'));
+  });
+
+  it('is refreshed when it is removed', () => {
+    const placed = succeed(crossing(), footbridge(50, 1));
+    expect(walkCost(placed, westSide, eastSide)).toBe(6);
+    const removed = succeed(placed, { type: 'RemoveBridge', x: 50, y: 50 });
+    expect(walkCost(removed, westSide, eastSide)).not.toBe(6);
   });
 });

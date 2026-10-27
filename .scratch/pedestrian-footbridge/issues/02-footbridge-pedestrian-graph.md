@@ -1,6 +1,6 @@
 # Core: pedestrian graph edge and network isolation
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01
 Spec: ../spec.md
 
