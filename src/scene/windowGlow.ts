@@ -88,6 +88,10 @@ export function setWindowGlow(level: number): void {
   uniforms.uWindowGlow.value = Math.min(1, Math.max(0, level));
 }
 
+export function windowNightClock(): number {
+  return uniforms.uNightClock.value;
+}
+
 export function windowGlowLevel(): number {
   return uniforms.uWindowGlow.value;
 }

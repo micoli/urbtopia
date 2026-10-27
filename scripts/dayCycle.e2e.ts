@@ -68,4 +68,48 @@ test.describe('day cycle', () => {
     expect(await lightOf(page)).toBeGreaterThan(night);
     expect(await lightOf(page)).toBeCloseTo(1.7, 1);
   });
+
+  test('lights the windows of a powered building at Night, and none in Always day', async ({ page }, testInfo) => {
+    test.setTimeout(90_000);
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'A' })));
+    const windows = () => page.evaluate(async () => {
+      const { windowGlowLevel, windowNightClock } = await import('../src/scene/windowGlow.ts');
+      const { unpoweredBuildingIds } = await import('../src/core/index.ts');
+      const state = (window as unknown as { __gameStore: { getState: () => { state: Parameters<typeof unpoweredBuildingIds>[0] } } }).__gameStore.getState().state;
+      return { glow: windowGlowLevel(), nightClock: windowNightClock(), dark: [...unpoweredBuildingIds(state)] };
+    });
+
+    await page.goto('/?bypass-tutorial&keep-local&time=23:30');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+    await page.evaluate(async () => {
+      const store = (window as unknown as { __gameStore: { getState: () => { state: object; replaceState: (state: unknown) => void } } }).__gameStore;
+      const { state, replaceState } = store.getState();
+      replaceState({ ...state, adaptationUntil: 0 });
+    });
+    await settle(page);
+    const unpowered = await windows();
+    expect(unpowered.glow).toBe(1);
+    expect(unpowered.nightClock).toBeGreaterThanOrEqual(0);
+    expect(unpowered.dark.length).toBeGreaterThan(0);
+
+    await page.evaluate(async () => {
+      const { createBuilding } = await import('../src/core/index.ts');
+      const store = (window as unknown as { __gameStore: { getState: () => { state: { buildings: unknown[] }; replaceState: (state: unknown) => void } } }).__gameStore;
+      const { state, replaceState } = store.getState();
+      replaceState({ ...state, nextId: 1000, buildings: [...state.buildings, { ...createBuilding(900, 'geothermalPlant', 60, 60, 0), tier: 3 }] });
+    });
+    await settle(page);
+    await page.waitForTimeout(1500);
+    expect((await windows()).dark).toEqual([]);
+    await testInfo.attach('night', { body: await page.screenshot(), contentType: 'image/png' });
+
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+    await settle(page);
+    expect((await windows()).glow).toBe(0);
+    expect(errors).toEqual([]);
+  });
 });
+
