@@ -606,3 +606,4 @@
 
 .progress-bar { width: 100%; accent-color: var(--color-positive); }
 .action-button .count-badge { margin-left: var(--space-6); }
+.text-field { padding: 0.4rem var(--space-8); font: inherit; }

@@ -4,6 +4,7 @@ import type { RenameResult } from '../../persistence/cityActions';
 import { t } from '../../i18n/t';
 import { ActionButton } from '../common/ActionButton';
 import { Note } from '../common/Note';
+import { TextField } from '../common/TextField';
 
 interface RenameCityFormProps {
   name: string;
@@ -19,7 +20,7 @@ export function RenameCityForm({ name, onRename }: RenameCityFormProps) {
   };
   return (
     <div className="city-rename">
-      <input aria-label={t('cities.nameLabel')} value={value} maxLength={MAX_CITY_NAME_LENGTH + 8} onChange={(event) => setValue(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && submit()} />
+      <TextField label={t('cities.nameLabel')} value={value} maxLength={MAX_CITY_NAME_LENGTH + 8} onChange={setValue} onSubmit={submit} />
       <ActionButton onClick={submit} disabled={value.trim() === name}>
         {t('cities.rename')}
       </ActionButton>

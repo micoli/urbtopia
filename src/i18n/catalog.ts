@@ -100,6 +100,7 @@ export const CATALOG = {
   'error.challengeSurplus': ['The Challenge needs fewer units of this item.', 'Le défi demande moins d’unités de cet objet.'],
   'error.challengeInProgress': ['A Challenge is in progress: time cannot be skipped.', 'Un défi est en cours : impossible d’avancer le temps.'],
   'eco.title': ['City management', 'Gestion de la ville'],
+  'eco.tab.dashboard': ['Dashboard', 'Tableau de bord'],
   'eco.units': ['Game indicators, not scientific measurements. Power: units/hour; storage: energy units.', 'Indicateurs du jeu, sans valeur scientifique. Puissance : unités/heure ; stockage : unités d’énergie.'],
   'eco.insulate': ['Insulate', 'Isoler'],
   'eco.repaint': ['Repaint', 'Repeindre'],

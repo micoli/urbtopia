@@ -152,3 +152,5 @@
   gap: var(--space-8);
   padding: var(--space-8) 0;
 }
+
+.cities > summary, .shipments > summary { cursor: pointer; font-weight: bold; padding: var(--space-6) 0; }

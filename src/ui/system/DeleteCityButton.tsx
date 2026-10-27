@@ -4,6 +4,7 @@ import type { DeleteOutcome } from '../../persistence/cityLifecycle';
 import { t } from '../../i18n/t';
 import { ActionButton } from '../common/ActionButton';
 import { Note } from '../common/Note';
+import { TextField } from '../common/TextField';
 
 interface DeleteCityButtonProps {
   cityName: string;
@@ -37,7 +38,7 @@ export function DeleteCityButton({ cityName, isLast, onDelete }: DeleteCityButto
   return (
     <div className="city-delete">
       <Note tone="muted">{t('cities.deleteTyped')}</Note>
-      <input aria-label={t('cities.nameLabel')} value={typed} onChange={(event) => setTyped(event.target.value)} placeholder={cityName} />
+      <TextField label={t('cities.nameLabel')} value={typed} placeholder={cityName} onChange={setTyped} />
       <ActionButton onClick={() => setTyping(false)}>{t('sale.no')}</ActionButton>
       <ActionButton variant="danger" disabled={typed !== cityName} onClick={() => void confirm()}>
         {t('cities.delete')}
