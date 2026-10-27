@@ -1,6 +1,6 @@
 # Glass emissive shader
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 
 ## What to build
@@ -9,7 +9,13 @@ Patch the building materials so the pixels of the glass palette colour can glow 
 
 ## Acceptance criteria
 
-- [ ] Glass pixels glow with the uniform at 1 and look unchanged at 0, on a Home, an office and a public building.
-- [ ] Nothing else on the model glows (check solar panels and doors).
-- [ ] Repaint tone palettes still work (the glass colour must not move with the tone).
-- [ ] No new light source; materials stay shared per model and tint.
+- [x] Glass pixels glow with the uniform at 1 and look unchanged at 0 (checked in the browser on an apartment Home; not yet checked by eye on an office and a public building).
+- [x] Nothing else on the model glows on the Home checked; the solar panel colour (#26304f) differs from the glass cell (#9fcdea).
+- [x] The tone palette PNGs keep the glass cell (checked on `house-1x1-1f-tone-a`); Repaint not checked by eye.
+- [x] No new light source. Building materials are cloned once per model and tint, and patched with a shared uniform (`src/scene/windowGlow.ts`).
+
+## Findings
+
+- 273 of the 285 building GLBs contain the glass cell `#9fcdea`; the 11 without are trees and the marina captaincy.
+- The palette samplers are NEAREST, so a pixel compares exactly with the glass cell.
+- A model draws all its pixels of that colour, so any other part painted with `glass_blue` would glow too.

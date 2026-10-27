@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { facilityScaleOf, fitMatrixOf } from './modelFit';
 import type { ModelLibrary } from './modelLibrary';
+import { isGlowingModel, withWindowGlow } from './windowGlow';
 import { chunkKeyOf, type RenderItem, type TextureVariant } from './renderItems';
 
 interface Chunk {
@@ -93,7 +94,7 @@ export class ChunkedWorld {
         if (!mesh.isMesh) return;
         const textured = variant ? this.library.withTextureVariant(mesh.material, variant as TextureVariant) : mesh.material;
         const tinted = tint ? this.library.withTint(textured, Number(tint)) : textured;
-        const instanced = new THREE.InstancedMesh(mesh.geometry, tinted, modelItems.length);
+        const instanced = new THREE.InstancedMesh(mesh.geometry, isGlowingModel(model) ? withWindowGlow(tinted) : tinted, modelItems.length);
         modelItems.forEach((item, index) => {
           const elevation = item.roofBase ? this.fittedBox(item.roofBase).max.y + (item.elevation ?? 0) : item.elevation ?? 0;
           placement.makeRotationY((item.rotation * Math.PI) / 2).setPosition(item.x, elevation, item.z);
