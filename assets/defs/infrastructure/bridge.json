@@ -2,5 +2,11 @@
   "$schema": "../schemas/infrastructure-bridge.schema.json",
   "road": "roads-road-straight",
   "ramp": "roads-road-slant-flat-high",
-  "span": "roads-road-bridge"
+  "span": "roads-road-bridge",
+  "footbridge": {
+    "corridor": "roads-footbridge-corridor",
+    "deck": "roads-footbridge-deck",
+    "stairLeft": "roads-footbridge-stair-left",
+    "stairRight": "roads-footbridge-stair-right"
+  }
 }

@@ -19,6 +19,13 @@ export const BRIDGE_RAMP_MODEL = modelFileOf(bridge.ramp);
 
 export const BRIDGE_SPAN_MODEL = modelFileOf(bridge.span);
 
+export const FOOTBRIDGE_MODELS = {
+  corridor: modelFileOf(bridge.footbridge.corridor),
+  deck: modelFileOf(bridge.footbridge.deck),
+  stairLeft: modelFileOf(bridge.footbridge.stairLeft),
+  stairRight: modelFileOf(bridge.footbridge.stairRight),
+};
+
 export const PARK_TREE_MODEL = modelFileOf(scenery.parkTree);
 
 export const ROOF_PANEL_MODEL = modelFileOf(scenery.roofPanel);

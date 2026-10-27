@@ -20,9 +20,12 @@ export const railsInfrastructureSchema = z
   .strictObject({ ...schemaField, straight: modelId, corner: modelId })
   .meta({ title: 'Rails', description: 'assets/defs/infrastructure/rails.json: the Model ids of the rail pieces.' });
 
+// The corridor and the deck are shared by both ends of a Footbridge; the stair is mirrored, entered from the north or the south edge.
+const footbridgeSchema = z.strictObject({ corridor: modelId, deck: modelId, stairLeft: modelId, stairRight: modelId });
+
 export const bridgeInfrastructureSchema = z
-  .strictObject({ ...schemaField, road: modelId, ramp: modelId, span: modelId })
-  .meta({ title: 'Bridge', description: 'assets/defs/infrastructure/bridge.json: the Model ids of the road of a bridge over water, and of the ramp and the span of a bridge over infrastructure.' });
+  .strictObject({ ...schemaField, road: modelId, ramp: modelId, span: modelId, footbridge: footbridgeSchema })
+  .meta({ title: 'Bridge', description: 'assets/defs/infrastructure/bridge.json: the Model ids of the road of a bridge over water, of the ramp and the span of a bridge over infrastructure, and of the pieces of a Footbridge.' });
 
 // What the scene places around buildings and in Venues, owned by no Game object.
 export const sceneryInfrastructureSchema = z

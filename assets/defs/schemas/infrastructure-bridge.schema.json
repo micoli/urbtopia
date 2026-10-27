@@ -19,14 +19,47 @@
       "type": "string",
       "pattern": "\\S",
       "modelId": true
+    },
+    "footbridge": {
+      "type": "object",
+      "properties": {
+        "corridor": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "deck": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "stairLeft": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "stairRight": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        }
+      },
+      "required": [
+        "corridor",
+        "deck",
+        "stairLeft",
+        "stairRight"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
     "road",
     "ramp",
-    "span"
+    "span",
+    "footbridge"
   ],
   "additionalProperties": false,
   "title": "Bridge",
-  "description": "assets/defs/infrastructure/bridge.json: the Model ids of the road of a bridge over water, and of the ramp and the span of a bridge over infrastructure."
+  "description": "assets/defs/infrastructure/bridge.json: the Model ids of the road of a bridge over water, of the ramp and the span of a bridge over infrastructure, and of the pieces of a Footbridge."
 }
