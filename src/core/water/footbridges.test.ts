@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { pedestrianGraph, pedestrianWayNode, sidewalkNode, walkFrom, crossingsOnPath, adjacentNodes, accessNodes } from '../map/pedestrianGraph';
+import { footbridgeStops, pedestrianGraph, pedestrianWayNode, sidewalkNode, walkFrom, crossingsOnPath, adjacentNodes, accessNodes } from '../map/pedestrianGraph';
 import { buildRoadGraph } from '../map/roadGraph';
 import { buildNetworkGraph } from '../transit/transitNetwork';
 import { bridgeFootprint, bridgeTiles, createBuilding, dispatch, newGame, tileKey, type Command, type GameState } from '../index';
@@ -221,5 +221,20 @@ describe('A Footbridge in the pedestrian graph', () => {
     expect(walkCost(placed, westSide, eastSide)).toBe(6);
     const removed = succeed(placed, { type: 'RemoveBridge', x: 50, y: 50 });
     expect(walkCost(removed, westSide, eastSide)).not.toBe(6);
+  });
+});
+
+describe('The Street view stop of a Footbridge', () => {
+  it('is the middle of the deck', () => {
+    expect([...footbridgeStops(succeed(crossing(), footbridge(50, 1)))]).toEqual([pedestrianWayNode({ x: 50, y: 50 })]);
+    expect([...footbridgeStops(succeed(crossing(3), footbridge(50, 3)))]).toEqual([pedestrianWayNode({ x: 51, y: 50 })]);
+    expect([...footbridgeStops(succeed(crossing(2), footbridge(50, 2)))]).toEqual([pedestrianWayNode({ x: 50, y: 50 })]);
+  });
+
+  it('is on the walk of the Footbridge, and absent without one', () => {
+    const placed = succeed(crossing(3), footbridge(50, 3));
+    const [stop] = [...footbridgeStops(placed)];
+    expect(pedestrianGraph(placed).has(stop!)).toBe(true);
+    expect(footbridgeStops(crossing()).size).toBe(0);
   });
 });

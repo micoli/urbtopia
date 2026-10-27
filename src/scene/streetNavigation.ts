@@ -7,6 +7,7 @@ const STRAIGHT = (20 * Math.PI) / 180;
 const MAX_JUMP = 3;
 const SIGHT_COST = 14;
 const SIGHT_DISTANCE = 10;
+const NO_STOPS: ReadonlySet<string> = new Set();
 
 export interface Heading {
   x: number;
@@ -50,15 +51,15 @@ export function nextNode(graph: PedestrianGraph, node: string, yaw: number): str
   return best;
 }
 
-// Each path starts after `node` and runs straight on, up to MAX_JUMP nodes, until a branch or a bend.
-export function jumpPaths(graph: PedestrianGraph, node: string): string[][] {
-  return neighbourNodes(graph, node).map((first) => extend(graph, [node, first]).slice(1));
+// Each path starts after `node` and runs straight on, up to MAX_JUMP nodes, until a branch, a bend or a stop.
+export function jumpPaths(graph: PedestrianGraph, node: string, stops: ReadonlySet<string> = NO_STOPS): string[][] {
+  return neighbourNodes(graph, node).map((first) => extend(graph, [node, first], stops).slice(1));
 }
 
-export function nextJump(graph: PedestrianGraph, node: string, yaw: number): string[] | null {
+export function nextJump(graph: PedestrianGraph, node: string, yaw: number, stops: ReadonlySet<string> = NO_STOPS): string[] | null {
   let best: string[] | null = null;
   let bestTurn = MAX_TURN;
-  for (const path of jumpPaths(graph, node)) {
+  for (const path of jumpPaths(graph, node, stops)) {
     const turn = Math.abs(normalizeAngle(yawBetween(node, path[0]!) - yaw));
     if (turn < bestTurn) {
       best = path;
@@ -97,8 +98,8 @@ function pathTo(map: WalkMap, target: string): string[] {
   return path.slice(1);
 }
 
-function extend(graph: PedestrianGraph, path: string[]): string[] {
-  while (path.length - 1 < MAX_JUMP) {
+function extend(graph: PedestrianGraph, path: string[], stops: ReadonlySet<string>): string[] {
+  while (path.length - 1 < MAX_JUMP && !stops.has(path.at(-1)!)) {
     const here = path.at(-1)!;
     const before = path.at(-2)!;
     const onward = neighbourNodes(graph, here).filter((next) => next !== before);

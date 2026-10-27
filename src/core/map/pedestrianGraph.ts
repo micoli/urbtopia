@@ -144,6 +144,11 @@ function addFootbridge(edges: Map<string, PedestrianEdge[]>, state: GameState, b
   });
 }
 
+// Where the Street view halts on a Footbridge: the middle of its deck, to look around from the top.
+export function footbridgeStops(state: GameState): ReadonlySet<string> {
+  return new Set((state.bridges ?? []).filter(isPedestrianBridge).map((bridge) => pedestrianWayNode(footbridgeParts(bridge).deck[Math.floor((bridge.length - 1) / 2)]!)));
+}
+
 function footbridgeTileKeys(state: GameState): ReadonlySet<string> {
   return new Set((state.bridges ?? []).filter(isPedestrianBridge).flatMap(bridgeFootprint).map(tileKey));
 }

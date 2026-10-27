@@ -60,4 +60,13 @@ describe('streetNavigation', () => {
     expect(crossingSightings(graph, '1,1:N')).toEqual([{ node: '3,1:N', path: ['2,1:N', '3,1:N'] }]);
     expect(crossingSightings(graph, '3,1:N')).toEqual([]);
   });
+
+  it('runs straight on past a node, but halts at a stop', () => {
+    expect(jumpPaths(line(), '1,1:N').map((path) => path.at(-1)).sort()).toEqual(['1,1:W', '3,1:N']);
+    expect(jumpPaths(line(), '1,1:N', new Set(['2,1:N'])).map((path) => path.at(-1)).sort()).toEqual(['1,1:W', '2,1:N']);
+  });
+
+  it('starts again from a stop', () => {
+    expect(nextJump(line(), '2,1:N', Math.PI / 2, new Set(['2,1:N']))).toEqual(['3,1:N']);
+  });
 });
