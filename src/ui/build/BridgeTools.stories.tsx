@@ -9,3 +9,5 @@ type Story = StoryObj<typeof meta>;
 export const Maritime: Story = {};
 
 export const Road: Story = { args: { variant: 'road' } };
+
+export const Footbridge: Story = { args: { variant: 'footbridge' } };
