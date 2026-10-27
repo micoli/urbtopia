@@ -13,11 +13,15 @@ Chaque logement consomme de l’électricité et de l’eau, davantage à chaque
 | Source | Production | Coût et inconvénients |
 | --- | --- | --- |
 | <EntryLink id="powerPlant" /> | Varie avec la météo | Propre, rien à payer pour fonctionner |
-| <EntryLink id="solar" /> et <EntryLink id="solarHome" /> | Seulement de jour | Propre ; les panneaux couvrent d’abord leur logement, puis partagent avec les voisins |
-| <EntryLink id="hydroPlant" /> | Régulière, selon l’eau qui l’entoure | Propre ; doit toucher des tuiles d’eau, pleine production avec 8 tuiles reliées |
+| <EntryLink id="solar" /> et <EntryLink id="solarHome" /> | Seulement pendant la journée | Propre ; les panneaux couvrent d’abord leur logement, puis partagent avec les voisins |
+| <EntryLink id="hydroPlant" /> | Varie lentement avec le cycle jour/nuit, selon l’eau qui l’entoure | Propre ; doit toucher des tuiles d’eau, pleine production avec 8 tuiles reliées |
 | <EntryLink id="geothermalPlant" /> | Constante, jour et nuit | Propre, mais chère, débloquée tard et en nombre limité |
 | <EntryLink id="coalPlant" /> | Stable | Combustible payé en Urbs, émissions, bien-être réduit autour ; peut être éteinte |
 | <EntryLink id="backup" /> | Seulement en cas de manque | Payée en Urbs par unité fournie, polluante |
+
+## Jour et nuit
+
+La carte suit un **cycle jour/nuit** de 2 heures réelles : 16 heures de jour, puis 8 de nuit (l’horloge en haut indique son heure, avec un soleil ou une lune). Les panneaux solaires ne produisent que de jour, au maximum à midi ; la nuit, le vent, l’eau et la chaleur du sol font tourner la ville, et une <EntryLink id="battery">batterie</EntryLink> peut lui garder le surplus solaire. Le cycle jour/nuit n’éclaire que la carte et ne règle que le solaire et l’hydraulique : les temps de production, les taxes et toutes les autres règles continuent de compter en heures réelles. Un saut dans le temps déplace le cycle avec l’horloge. Dans les réglages, **Toujours de jour** garde la carte éclairée comme en journée sans changer la production d’électricité.
 
 ## L’ordre d’approvisionnement
 
