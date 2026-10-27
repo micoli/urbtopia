@@ -19,7 +19,7 @@ describe('renderItemsOf', () => {
 
   it('turns a building by quarter turns', () => {
     const rotated = { ...state, roads: [], buildings: [createBuilding(9, 'factory', 10, 20, 1)] };
-    expect(renderItemsOf(rotated)).toEqual([{ model: 'buildings/factory-2x2-t1-tone-a', x: 11, z: 21, rotation: 1 }]);
+    expect(renderItemsOf(rotated)).toEqual([{ model: 'buildings/factory-2x2-t1-tone-a', x: 11, z: 21, rotation: 1, buildingId: 9 }]);
   });
 });
 
@@ -35,7 +35,7 @@ describe('renderItemsOf Public facilities', () => {
   it.each(['school', 'hospital', 'theater'] as const)('draws the %s as it is, with no resize, tint, detail or overlay', (type) => {
     const items = only(type);
     expect(items).toHaveLength(1);
-    expect(Object.keys(items[0]!).sort()).toEqual(['model', 'rotation', 'x', 'z']);
+    expect(Object.keys(items[0]!).sort()).toEqual(['buildingId', 'model', 'rotation', 'x', 'z']);
   });
 });
 
@@ -46,7 +46,7 @@ describe('renderItemsOf Tier models', () => {
       const building = { ...createBuilding(9, 'coalPlant', 10, 20, 1), tier: i + 1 };
       expect(modelOf('coalPlant', i + 1)).toBe(model);
       expect(MODEL_KEYS).toContain(model);
-      expect(renderItemsOf({ ...newGame({ seed: 'coal-models', now: 0 }), roads: [], buildings: [building] })).toEqual([{ model, x: 10.5, z: 20.5, rotation: 1 }]);
+      expect(renderItemsOf({ ...newGame({ seed: 'coal-models', now: 0 }), roads: [], buildings: [building] })).toEqual([{ model, x: 10.5, z: 20.5, rotation: 1, buildingId: 9 }]);
     }
   });
   const modelAt = (type: 'factory' | 'storehouse' | 'materialDepot' | 'vault' | 'grainSilo', tier: number) => {
@@ -316,8 +316,8 @@ describe('renderItemsOf Livestock farm pens', () => {
   it('draws the animal of each production in its pen, on the floor of the pen', () => {
     const items = renderItemsOf(farm(0, [running('henEgg'), { ...running('milk'), startedAt: null, done: true }]));
     expect(items.slice(1)).toEqual([
-      { model: 'animals/hen', x: 11.64, z: 20.26, rotation: 0, elevation: 0.01 },
-      { model: 'animals/cow', x: 11, z: 20.26, rotation: 0, elevation: 0.01 },
+      { model: 'animals/hen', x: 11.64, z: 20.26, rotation: 0, elevation: 0.01, buildingId: 9 },
+      { model: 'animals/cow', x: 11, z: 20.26, rotation: 0, elevation: 0.01, buildingId: 9 },
     ]);
   });
 

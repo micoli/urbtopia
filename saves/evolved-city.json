@@ -13,6 +13,7 @@
     "rngState": 3424803721,
     "urbs": 48250,
     "lastSeen": 1790000000000,
+    "dayCycleOffset": 1000000,
     "nextId": 51,
     "ownedParcels": [
       {

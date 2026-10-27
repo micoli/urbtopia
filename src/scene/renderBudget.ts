@@ -21,3 +21,27 @@ export function watchPageHidden(onChange: (hidden: boolean) => void): () => void
   document.addEventListener('visibilitychange', listener);
   return () => document.removeEventListener('visibilitychange', listener);
 }
+
+const SLOW_SAMPLES = 90;
+const SLOW_MEDIAN_MS = 45;
+
+// Watches the time between two rendered frames. The loop is capped at 30 FPS (about 33 ms), so a median well above that
+// means the device cannot keep up, and optional effects should go.
+export class FrameBudgetMonitor {
+  private samples: number[] = [];
+
+  push(elapsedMs: number): void {
+    this.samples.push(elapsedMs);
+    if (this.samples.length > SLOW_SAMPLES) this.samples.shift();
+  }
+
+  get isSlow(): boolean {
+    if (this.samples.length < SLOW_SAMPLES) return false;
+    const sorted = [...this.samples].sort((a, b) => a - b);
+    return sorted[Math.floor(sorted.length / 2)]! > SLOW_MEDIAN_MS;
+  }
+
+  reset(): void {
+    this.samples = [];
+  }
+}

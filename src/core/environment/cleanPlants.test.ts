@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { copyThresholds, createBuilding, dispatch, ECOLOGY, energyStats, flowFactor, newGame, productionFactors, UTILITY_CAPACITY, type Building, type GameState } from '../index';
+import { copyThresholds, createBuilding, dispatch, ECOLOGY, energyStats, flowFactor, factorsAt, newGame, productionFactors, UTILITY_CAPACITY, type Building, type GameState } from '../index';
 
 const H = ECOLOGY.hourMs;
 const building = (id: number, type: Building['type'], x = 0, y = 0, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
@@ -44,7 +44,7 @@ describe('Hydro power plant', () => {
   });
 
   it('follows a slow daily cycle between 80% and 100%', () => {
-    const factors = Array.from({ length: 24 }, (_, hour) => productionFactors(hour * H).hydro);
+    const factors = Array.from({ length: 24 }, (_, cycleHour) => productionFactors(0, cycleHour * H / 12).hydro);
     expect(Math.min(...factors)).toBeGreaterThanOrEqual(0.8);
     expect(Math.max(...factors)).toBeLessThanOrEqual(1);
     expect(Math.max(...factors) - Math.min(...factors)).toBeGreaterThan(0.15);
@@ -52,7 +52,7 @@ describe('Hydro power plant', () => {
 
   it('produces its Capacity times flow times the daily factor', () => {
     const state = city([hydroBesideLake(2), ...homes(3)], { waterTiles: lake(4), lastSeen: 5 * H });
-    const expected = 28 * 0.5 * productionFactors(5 * H).hydro;
+    const expected = 28 * 0.5 * factorsAt(state, state.lastSeen).hydro;
     expect(energyStats(state).hydro).toBeCloseTo(expected);
   });
 

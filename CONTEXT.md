@@ -595,6 +595,29 @@ _Avoid_: Onboarding, intro, walkthrough
 The player action that advances game time by a set number of hours or up to the end of a Tutorial step.
 _Avoid_: Time warp, fast-forward
 
+**Day cycle**:
+The repeating alternation of Daytime and Night, lasting 2 real hours and anchored on the game clock, so every City shows the same moment of it. It is independent of the economy's hours: a game day of 24 hours is not a Day cycle. It lights the map and sets the output of solar and water power. A new City starts at dawn.
+_Avoid_: Season (taken by Annual event), Sunlight cycle, Day (alone)
+
+**Daytime**:
+The 16 Cycle hours of the Day cycle between 06:00 and 22:00, during which solar power is produced.
+_Avoid_: Day (alone)
+
+**Night**:
+The 8 Cycle hours of the Day cycle between 22:00 and 06:00. Dawn (05:00 to 06:00) and dusk (22:00 to 23:00) are one-Cycle-hour fades that fall within the Night.
+_Avoid_: Darkness
+
+**Cycle hour**:
+One twenty-fourth of the Day cycle, 5 real minutes. Distinct from a game hour, which lasts one real hour and is the unit of production costs, taxes and Catch-up.
+_Avoid_: Hour (alone)
+
+**Lit window**:
+A glass window of a powered building that shows light at Night. Each window is lit on its own: about 60% of them are lit at least once in a Night, switched on between 22:00 and 00:30 and off between 00:30 and 05:30, drawn from the window's place and the number of the Day cycle. A building without power keeps its windows dark. Purely visual: never saved and never read by the simulation.
+_Avoid_: Night lights, street lamp (a separate thing, not modelled)
+
+**Always day**:
+A setting of the device, outside the save, that shows the map in Daytime light at all times without changing the Day cycle or power. Off by default.
+
 **Seed**:
 The text code generated for each game that fixes all of its chance-based outcomes.
 _Avoid_: Random key, map code

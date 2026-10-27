@@ -5,7 +5,7 @@ import { GAME_CONFIG, WILD_RIM_TILES, congestionStats, footbridgeStops, pedestri
 import { bridgeElevation } from './bridgeElevation';
 import { CameraController } from './CameraController';
 import { StreetViewController } from './StreetViewController';
-import { footprintTiles, type AnalyticsLayerId, type Coord, type ServiceCategory } from '../core';
+import { cycleTimeOf, daylightOf, timeOfCycleHour, unpoweredBuildingIds, footprintTiles, type AnalyticsLayerId, type Coord, type ServiceCategory } from '../core';
 import { congestionTints } from './congestionMarkers';
 import type { DrawnExtent, GhostSpec } from '../tools/tools';
 import { ChunkedWorld } from './ChunkedWorld';
@@ -22,8 +22,11 @@ import { PedestrianLayer } from './PedestrianLayer';
 import { BoatLayer } from './BoatLayer';
 import { BridgeLayer } from './BridgeLayer';
 import { TrafficLayer } from './TrafficLayer';
-import { renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } from './renderBudget';
+import { FrameBudgetMonitor, renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } from './renderBudget';
 import { AnalyticsLayer } from './AnalyticsLayer';
+import { nightClockOf } from './windowSchedule';
+import { setWindowGlow, setWindowNight, windowGlowLevel, windowNightClock } from './windowGlow';
+import { DAY_BACKGROUND, lightingOf, type DayLighting } from './dayLighting';
 import { ServiceCoverageLayer } from './ServiceCoverageLayer';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
@@ -35,7 +38,8 @@ const FLASH_DURATION_MS = 2000;
 const FLASH_INTERVAL_MS = 250;
 const ARROW_MIN_HEIGHT = 1.5;
 const FALLBACK_HEIGHT = 1.5;
-const HORIZON_COLOR = 0x9ec5e8;
+const HORIZON_COLOR = DAY_BACKGROUND;
+const LIGHTING_REFRESH_MS = 1000;
 const STREET_FOG_NEAR = 8;
 const STREET_FOG_FAR = 40;
 
@@ -119,6 +123,13 @@ export class GameScene {
   }
 
   readonly ready = new Promise<void>((resolve) => (this.markReady = resolve));
+  private sun = new THREE.DirectionalLight(0xfff2d6, 1.7);
+  private sky = new THREE.HemisphereLight(0xbcd8f5, 0x8a7a64, 0.5);
+  private lightingRefreshedAt = -Infinity;
+  private alwaysDay = false;
+  private windowsEnabled = true;
+  private frameBudget = new FrameBudgetMonitor();
+  private pinnedCycleHour: number | null = null;
   private lastFrame = performance.now();
   private resizeObserver: ResizeObserver;
   private canvasRect!: DOMRect;
@@ -131,9 +142,8 @@ export class GameScene {
     this.scene.background = new THREE.Color(HORIZON_COLOR);
     this.scene.environment = this.buildEnvironment();
     this.scene.environmentIntensity = 0.25;
-    const sun = new THREE.DirectionalLight(0xfff2d6, 1.7);
+    const sun = this.sun, sky = this.sky;
     sun.position.set(20, 40, 10);
-    const sky = new THREE.HemisphereLight(0xbcd8f5, 0x8a7a64, 0.5);
     this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root, this.analyticsLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
@@ -190,7 +200,7 @@ export class GameScene {
     const { x, z } = at ? { x: at.x + 0.5, z: at.y + 0.5 } : this.controller.center;
     if (!this.streetView.enter(pedestrianGraph(state), bridgeElevation(state.bridges), footbridgeStops(state), x, z, this.controller.heading)) return false;
     this.controller.setEnabled(false);
-    this.scene.fog = new THREE.Fog(HORIZON_COLOR, STREET_FOG_NEAR, STREET_FOG_FAR);
+    this.scene.fog = new THREE.Fog((this.scene.background as THREE.Color).getHex(), STREET_FOG_NEAR, STREET_FOG_FAR);
     return true;
   }
 
@@ -518,6 +528,50 @@ export class GameScene {
     this.streetView.resize();
   }
 
+  private refreshLighting(now: number): void {
+    if (now - this.lightingRefreshedAt < LIGHTING_REFRESH_MS || !this.ecologicalState) return;
+    this.lightingRefreshedAt = now;
+    const cycleTime = this.cycleTime(this.ecologicalState);
+    this.applyLighting(lightingOf(this.alwaysDayNow ? 1 : daylightOf(cycleTime)));
+    setWindowGlow(this.alwaysDayNow || !this.windowsEnabled ? 0 : 1);
+    setWindowNight(nightClockOf(cycleTime));
+    this.world.setUnpowered(unpoweredBuildingIds(this.ecologicalState));
+  }
+
+  setDayCycleOverride(alwaysDay: boolean, pinnedCycleHour: number | null): void {
+    this.alwaysDay = alwaysDay;
+    this.pinnedCycleHour = pinnedCycleHour;
+    this.lightingRefreshedAt = -Infinity;
+  }
+
+  private get alwaysDayNow(): boolean {
+    return this.alwaysDay && this.pinnedCycleHour === null;
+  }
+
+  private cycleTime(state: GameState): number {
+    return this.pinnedCycleHour === null ? cycleTimeOf(state, state.lastSeen) : timeOfCycleHour(this.pinnedCycleHour);
+  }
+
+  private applyLighting(lighting: DayLighting): void {
+    this.sun.color.setHex(lighting.sunColor);
+    this.sun.intensity = lighting.sunIntensity;
+    this.sky.color.setHex(lighting.skyColor);
+    this.sky.groundColor.setHex(lighting.groundColor);
+    this.sky.intensity = lighting.hemisphereIntensity;
+    this.scene.environmentIntensity = lighting.environmentIntensity;
+    (this.scene.background as THREE.Color).setHex(lighting.background);
+    this.scene.fog?.color.setHex(lighting.background);
+  }
+
+  // Lit windows are optional: a device that cannot keep the frame budget while they shine loses them until the page reloads.
+  private watchFrameBudget(elapsed: number): void {
+    if (!this.windowsEnabled || windowGlowLevel() === 0 || windowNightClock() < 0) return;
+    this.frameBudget.push(elapsed);
+    if (!this.frameBudget.isSlow) return;
+    this.windowsEnabled = false;
+    setWindowGlow(0);
+  }
+
   private notifyCenterTile(): void {
     const tile = this.centerTile;
     const key = `${tile.x},${tile.y}`;
@@ -534,6 +588,8 @@ export class GameScene {
     }
     const delta = Math.max(0, Math.min(0.1, elapsed / 1000));
     this.lastFrame = now;
+    this.refreshLighting(now);
+    this.watchFrameBudget(elapsed);
     this.controller.update(delta);
     this.streetView.update(delta);
     this.notifyCenterTile();

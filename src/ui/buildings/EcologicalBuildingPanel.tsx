@@ -13,7 +13,7 @@ import {
 import {lineStatusKey} from '../stats/management/transit/lineStatusKey';
 import {t} from '../../i18n/t';
 import {useGame, useUi} from '../common/hooks';
-import {productionFactors} from '../../core/environment/energy';
+import {factorsAt, productionFactors} from '../../core/environment/energy';
 import { ActionButton } from '../common/ActionButton';
 import { DrawerPanel } from '../common/DrawerPanel';
 
@@ -36,7 +36,7 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
 
         {building.type === 'solar' && <DrawerPanel.LabelValue
             label={t('eco.solar')}
-            value={<>{(16 * productionFactors(state.lastSeen + (state.timeOffset ?? 0)).solar).toFixed(1)} / h</>}/>}
+            value={<>{(16 * factorsAt(state, state.lastSeen).solar).toFixed(1)} / h</>}/>}
 
         {building.type === 'backup' && <DrawerPanel.LabelValue
             label={t('eco.backup')}

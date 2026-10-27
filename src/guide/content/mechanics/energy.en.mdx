@@ -13,11 +13,15 @@ Every Home needs power and water, more at each Tier. Workplaces need power too. 
 | Source | Output | Cost and drawbacks |
 | --- | --- | --- |
 | <EntryLink id="powerPlant" /> | Varies with the weather | Clean, nothing to run |
-| <EntryLink id="solar" /> and <EntryLink id="solarHome" /> | Daylight only | Clean; panels first cover their own Home, then share with neighbours |
-| <EntryLink id="hydroPlant" /> | Steady, scaled by the water around it | Clean; must touch Water tiles, full output with 8 connected tiles |
+| <EntryLink id="solar" /> and <EntryLink id="solarHome" /> | Daytime only | Clean; panels first cover their own Home, then share with neighbours |
+| <EntryLink id="hydroPlant" /> | Slowly varies over the Day cycle, scaled by the water around it | Clean; must touch Water tiles, full output with 8 connected tiles |
 | <EntryLink id="geothermalPlant" /> | Constant, day and night | Clean, but expensive, unlocked late and limited in number |
 | <EntryLink id="coalPlant" /> | Stable | Fuel paid in Urbs, emissions, lower Well-being around it; can be switched off |
 | <EntryLink id="backup" /> | Only during a shortage | Paid in Urbs per unit supplied, polluting |
+
+## Day and night
+
+The map goes through a **Day cycle** that lasts 2 real hours: 16 hours of Daytime, then 8 of Night (the clock at the top shows its time, with a sun or a moon). Solar panels produce only in Daytime, strongest at midday; at Night, wind, water and ground heat carry the city, and a <EntryLink id="battery" /> can hold the solar surplus for it. The Day cycle only lights the map and shapes solar and water power: production times, taxes and every other rule keep counting real hours. A Time skip moves the Day cycle along with the clock. In the settings, **Always day** keeps the map lit as in Daytime without changing power.
 
 ## The supply order
 

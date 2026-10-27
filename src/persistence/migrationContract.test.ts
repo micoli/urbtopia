@@ -11,7 +11,7 @@ const versions = Array.from({ length: CURRENT_VERSION }, (_, index) => index + 1
 const SCHEMA_SNAPSHOT = {
   version: 16,
   keys: [
-    'adaptationUntil', 'brtRoads', 'buildings', 'busLines', 'casinoRng', 'fields', 'lastSeen', 'market', 'marketUnlocked', 'nextId',
+    'adaptationUntil', 'brtRoads', 'buildings', 'busLines', 'casinoRng', 'dayCycleOffset', 'fields', 'lastSeen', 'market', 'marketUnlocked', 'nextId',
     'ownedParcels', 'rails', 'rngState', 'roads', 'roundabouts', 'seed', 'seedStock', 'storage', 'tradeLedger', 'transitFleet', 'transitLines', 'tutorial', 'urbs',
   ],
 };

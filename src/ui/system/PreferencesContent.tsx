@@ -17,7 +17,8 @@ export function PreferencesContent() {
   const showProductionPreview = useStore(prefsStore, (store) => store.showProductionPreview);
   const showTaxBadges = useStore(prefsStore, (store) => store.showTaxBadges);
   const debug = useStore(prefsStore, (store) => store.debug);
-  const { setDebug, setLanguage, setLayout, setTraffic, setConfirmSale, setShowReach, setShowProductionPreview, setShowTaxBadges } = prefsStore.getState();
+  const alwaysDay = useStore(prefsStore, (store) => store.alwaysDay);
+  const { setAlwaysDay, setDebug, setLanguage, setLayout, setTraffic, setConfirmSale, setShowReach, setShowProductionPreview, setShowTaxBadges } = prefsStore.getState();
 
   return (
     <section className="prefs">
@@ -29,6 +30,7 @@ export function PreferencesContent() {
       <CheckboxField label={t('prefs.showReach')} checked={showReach} onChange={setShowReach} />
       <CheckboxField label={t('prefs.showProductionPreview')} checked={showProductionPreview} onChange={setShowProductionPreview} />
       <CheckboxField label={t('prefs.showTaxBadges')} checked={showTaxBadges} onChange={setShowTaxBadges} />
+      <CheckboxField label={t('prefs.alwaysDay')} checked={alwaysDay} onChange={setAlwaysDay} />
       <CheckboxField label={t('prefs.debug')} checked={debug} onChange={setDebug} />
     </section>
   );

@@ -32,6 +32,8 @@ export interface RenderItem {
   footprint?: number;
   fitModel?: string;
   tint?: number;
+  // The building an item belongs to, so the scene can darken the windows of one that has no power.
+  buildingId?: number;
 }
 
 export const MODEL_BY_BUILDING = Object.fromEntries(BUILDING_ENTRIES.map(({ id, model }) => [id, modelFileOf(model)])) as Record<BuildingType, string>;
@@ -147,7 +149,7 @@ let lastItems: { buildings: RenderItem[]; roads: RenderItem[]; fields: RenderIte
 function sameItems(a: RenderItem[], b: RenderItem[]): boolean {
   return a.length === b.length && a.every((item, index) => {
     const other = b[index] as RenderItem;
-    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.pitch === other.pitch && item.yaw === other.yaw && item.roll === other.roll && item.scale === other.scale && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.tint === other.tint;
+    return item.model === other.model && item.x === other.x && item.z === other.z && item.rotation === other.rotation && item.elevation === other.elevation && item.roofBase === other.roofBase && item.pitch === other.pitch && item.yaw === other.yaw && item.roll === other.roll && item.scale === other.scale && item.lengthScale === other.lengthScale && item.textureVariant === other.textureVariant && item.footprint === other.footprint && item.tint === other.tint && item.buildingId === other.buildingId;
   });
 }
 
@@ -366,7 +368,7 @@ function buildingItems(state: GameState): RenderItem[] {
     }
     items.push(...solarPanelItems(building, model, rotation, x, z));
     items.push(...penAnimalItems(building, rotation, x, z));
-    return items;
+    return items.map(item => ({ ...item, buildingId: building.id }));
   });
 }
 
