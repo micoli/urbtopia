@@ -25,6 +25,8 @@ if (isFpsOverlayRequested(window.location.search)) installFpsOverlay();
 
 if (import.meta.env.DEV && isSimulation) void import('./sim/installSimulation').then((module) => module.installSimulation());
 
+if (import.meta.env.DEV) void import('./devtools/installSkipTime').then((module) => module.installSkipTime());
+
 blockPageZoom();
 hideSplashAfterFailsafe();
 

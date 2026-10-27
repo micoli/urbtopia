@@ -16,8 +16,8 @@ const DAY: DayLighting = {
 
 // A bluish dusk, never black: about 40% of the day light, so the grid and the colours stay readable.
 const NIGHT: DayLighting = {
-  sunColor: 0x8aa4e0, sunIntensity: 0.7,
-  skyColor: 0x6a84c0, groundColor: 0x40465e, hemisphereIntensity: 0.3,
+  sunColor: 0x5a7bd6, sunIntensity: 0.7,
+  skyColor: 0x4a63b8, groundColor: 0x2a3050, hemisphereIntensity: 0.3,
   background: 0x1f2c4d, environmentIntensity: 0.1,
 };
 

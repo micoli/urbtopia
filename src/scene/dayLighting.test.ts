@@ -34,7 +34,7 @@ describe('day lighting', () => {
     expect(lightingOf(0.5).sunColor).not.toBe(plain);
     expect(lightingOf(0.5).sunColor >> 16).toBeGreaterThan(plain >> 16);
     expect(lightingOf(1).sunColor).toBe(0xfff2d6);
-    expect(lightingOf(0).sunColor).toBe(0x8aa4e0);
+    expect(lightingOf(0).sunColor).toBe(0x5a7bd6);
   });
 
   it('clamps out-of-range daylight', () => {
