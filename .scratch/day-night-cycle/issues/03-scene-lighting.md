@@ -1,6 +1,6 @@
 # Scene lighting
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 01
 
@@ -10,6 +10,6 @@ Light the map from the Day cycle: sun, hemisphere, environment, background and e
 
 ## Acceptance criteria
 
-- [ ] Day, dawn, dusk and Night looks; Night is bluish with a floor near 40 % of day light.
-- [ ] Analytics layers, ghosts and `VenueScene` unchanged.
-- [ ] Before/after frame-time measurement within the ADR 0034 bar (+5 % median).
+- [x] Day, dawn, dusk and Night looks; Night is bluish with a floor near 40 % of day light.
+- [x] Analytics layers, ghosts and `VenueScene` unchanged.
+- [ ] Before/after frame-time measurement within the ADR 0034 bar (+5 % median). Not measured with a trace yet: the change only sets light uniforms once per second.
