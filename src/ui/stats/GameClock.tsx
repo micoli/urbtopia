@@ -1,5 +1,6 @@
 import type { MouseEvent } from 'react';
-import { ECOLOGY } from '../../core';
+import { cycleTimeOf } from '../../core';
+import { cycleClockOf } from './cycleClock';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
@@ -13,15 +14,12 @@ function skipOnQuadrupleClick(event: MouseEvent) {
 }
 
 export function GameClock() {
-  const now = useGame((store) => store.state.lastSeen + (store.state.timeOffset ?? 0));
-  const dayMinutes = 24 * 60;
-  const minutes = ((Math.floor(now / (ECOLOGY.hourMs / 60)) % dayMinutes) + dayMinutes) % dayMinutes;
-  const hours = Math.floor(minutes / 60);
-  const time = `${String(hours).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+  const cycleTime = useGame((store) => cycleTimeOf(store.state, store.state.lastSeen));
+  const { time, icon } = cycleClockOf(cycleTime);
 
   return (
     <time onClick={skipOnQuadrupleClick} className="game-clock" dateTime={time} title={t('stat.time')} aria-label={`${t('stat.time')}: ${time}`}>
-      🕒 {time}
+      {icon} {time}
     </time>
   );
 }

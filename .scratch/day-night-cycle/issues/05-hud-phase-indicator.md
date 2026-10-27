@@ -1,6 +1,6 @@
 # HUD phase indicator
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 01
 
@@ -10,5 +10,5 @@ The HUD already shows a clock (`src/ui/stats/GameClock.tsx`, game clock hh:mm). 
 
 ## Acceptance criteria
 
-- [ ] Updates once per second, follows Time skip.
-- [ ] FR/EN strings; story and test in the style of neighbouring HUD components.
+- [x] Updates once per second, follows Time skip.
+- [x] FR/EN strings; story and test in the style of neighbouring HUD components.
