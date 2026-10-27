@@ -12,7 +12,7 @@ At Night, the windows of the buildings of the map light up on their own, at rand
 
 **The draw runs on the GPU with an integer hash.** A window is the cell of its world position (0.5 wide, 0.3 high). A PCG hash of the cell and of the number of the Night decides whether it is used, when it lights and when it goes out. `windowSchedule.ts` holds the constants and the same hash in TypeScript for the tests. A `sin`-based hash was rejected because its result differs from one GPU to another, and every player must see the same city. The pattern is not saved and not in the core.
 
-**Power splits the instanced meshes.** A model's geometry is shared by every chunk, so a per-instance "dark" attribute would have needed a copy of the geometry per chunk. The items of an unpowered building go into their own instanced mesh with an unpatched material instead, and only the chunks that hold a changed building are rebuilt. A building is unpowered when it needs power and gets less (`unpoweredBuildingIds`), never during an Adaptation period.
+**Power splits the instanced meshes.** A model's geometry is shared by every chunk, so a per-instance "dark" attribute would have needed a copy of the geometry per chunk. The items of an unpowered building go into their own instanced mesh with an unpatched material instead, and only the chunks that hold a changed building are rebuilt. A building is unpowered when it needs power and gets less than a quarter of it (`unpoweredBuildingIds`), never during an Adaptation period. A shortage is shared out evenly, so a stricter rule turned every window of a city that was only a little short dark.
 
 ## Budget
 

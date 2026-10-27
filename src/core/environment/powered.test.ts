@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, dayCycleOffsetAt, ECOLOGY, newGame, unpoweredBuildingIds, type GameState } from '../index';
+import { createBuilding, dayCycleOffsetAt, ECOLOGY, homePower, newGame, unpoweredBuildingIds, type GameState } from '../index';
 
 const city = (cycleHour: number, extra: Partial<GameState> = {}): GameState => ({
   ...newGame({ seed: 'powered', now: 0 }), dayCycleOffset: dayCycleOffsetAt(0, cycleHour), tutorial: null, adaptationUntil: 0, urbs: 0,
@@ -7,9 +7,16 @@ const city = (cycleHour: number, extra: Partial<GameState> = {}): GameState => (
 });
 
 describe('unpowered buildings', () => {
-  it('lists a Home that gets less power than it needs', () => {
+  it('lists a Home that gets next to no power', () => {
     const state = city(12, { buildings: [{ ...createBuilding(1, 'home', 40, 40, 0), tier: 3 }] });
     expect([...unpoweredBuildingIds(state)]).toEqual([1]);
+  });
+
+  it('keeps the light of a Home that is only partly short, since a shortage is shared out evenly', () => {
+    const state = city(12, { buildings: [{ ...createBuilding(1, 'home', 40, 40, 0), tier: 3 }] });
+    const need = homePower(state.buildings[0]!);
+    expect(unpoweredBuildingIds(state, new Map([[1, need * 0.47]])).size).toBe(0);
+    expect(unpoweredBuildingIds(state, new Map([[1, need * 0.2]])).has(1)).toBe(true);
   });
 
   it('leaves out a Home that is fully supplied', () => {
