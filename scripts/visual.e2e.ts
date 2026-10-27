@@ -6,7 +6,7 @@ async function openCity(page: Page, scene: 'denseCity' | 'cornerCity', focus: [n
     let seed = 42;
     Math.random = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32);
   });
-  await page.goto('/?bypass-tutorial&keep-local');
+  await page.goto('/?e2e');
   await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   await page.evaluate(async ([name, [x, y]]) => {
     const { gameStore } = await import('../src/store/gameStore.ts');

@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import { footprintTiles, nextFront, type AnalyticsLayerId, type Coord, type CropId, type Rotation, type ServiceCategory } from '../core';
+import { bridgeAt, footprintTiles, isInfrastructureBridge, nextFront, type AnalyticsLayerId, type Coord, type CropId, type Rotation, type ServiceCategory } from '../core';
 import { readAnalyticsCategory, readAnalyticsLayer, writeAnalyticsCategory, writeAnalyticsLayer } from '../ui/analytics/analyticsLayerPref';
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
@@ -107,6 +107,8 @@ export interface UiStore {
   confirmSale: () => void;
   cancelSale: () => void;
   moveSelected: () => void;
+  moveMode: boolean;
+  toggleMoveMode: () => void;
 }
 
 const INITIAL_CENTER: Coord = { x: 64, y: 64 };
@@ -144,6 +146,12 @@ export const uiStore = createStore<UiStore>((set, get) => {
     locatorTimer = setTimeout(() => set({ locator: null }), LOCATOR_DURATION_MS);
   };
   let grabOffset: Coord = { x: 0, y: 0 };
+  const startMove = (tool: Extract<Tool, { kind: 'move' | 'moveBridge' }>, tile: Coord) => {
+    grabOffset = { x: 0, y: 0 };
+    set({ selectedBuildingId: null });
+    sceneHandle.current?.focusOnTile(tile);
+    reevaluate({ tool, rotation: null, centerTile: tile, hovered: null, pinnedTile: null });
+  };
   let stopWaitingForSignIn = () => {};
 
   return {
@@ -338,7 +346,15 @@ export const uiStore = createStore<UiStore>((set, get) => {
     tapTile: (tile, buildingId = null) => {
       if (get().analyticsLayer) return set({ analyticsProbe: tile });
       if (get().tool) return;
-      const building = gameStore.getState().state.buildings.find((candidate) => footprintTiles(candidate).some((t) => t.x === tile.x && t.y === tile.y));
+      const state = gameStore.getState().state;
+      const building = state.buildings.find((candidate) => footprintTiles(candidate).some((t) => t.x === tile.x && t.y === tile.y));
+      if (get().moveMode) {
+        const movedId = buildingId ?? building?.id ?? null;
+        if (movedId !== null) return startMove({ kind: 'move', buildingId: movedId }, tile);
+        const bridge = bridgeAt(state, tile);
+        if (bridge && isInfrastructureBridge(bridge)) return startMove({ kind: 'moveBridge', bridge }, tile);
+        return;
+      }
       set({ selectedBuildingId: buildingId ?? building?.id ?? null, flyout: null });
     },
     select: (id) => set({ selectedBuildingId: id }),
@@ -376,11 +392,13 @@ export const uiStore = createStore<UiStore>((set, get) => {
       const id = get().selectedBuildingId;
       const building = gameStore.getState().state.buildings.find((candidate) => candidate.id === id);
       if (!building) return;
-      const tile = { x: building.x, y: building.y };
-      grabOffset = { x: 0, y: 0 };
-      set({ selectedBuildingId: null });
-      sceneHandle.current?.focusOnTile(tile);
-      reevaluate({ tool: { kind: 'move', buildingId: building.id }, rotation: null, centerTile: tile, hovered: null, pinnedTile: null });
+      startMove({ kind: 'move', buildingId: building.id }, { x: building.x, y: building.y });
+    },
+    moveMode: false,
+    toggleMoveMode: () => {
+      const { moveMode, tool } = get();
+      if (moveMode && (tool?.kind === 'move' || tool?.kind === 'moveBridge')) get().cancelTool();
+      set({ moveMode: !moveMode, selectedBuildingId: null, flyout: null });
     },
   };
 });

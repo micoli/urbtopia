@@ -7,7 +7,7 @@ for (const layout of ['A', 'B', 'C']) {
       test.use({ viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 900 }, hasTouch: mobile, isMobile: mobile });
       test('opens directly from the main navigation', async ({ page }) => {
         await page.addInitScript(layout => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout })), layout);
-        await page.goto('/?bypass-tutorial&keep-local');
+        await page.goto('/?e2e');
         await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
         if (layout === 'B') await page.getByRole('button', { name: 'Ouvrir le menu' }).click();
         const shortcut = page.locator('[data-action="codex"]');
@@ -104,7 +104,7 @@ test('codex previews are included in the offline cache', async ({ request }) => 
 
 test('codex previews remain available offline after PWA installation', async ({ page, context }) => {
   await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
-  await page.goto('/?bypass-tutorial&keep-local');
+  await page.goto('/?e2e');
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
     if (navigator.serviceWorker.controller) return;
@@ -132,7 +132,7 @@ test('natural construction and Codex share Citizen unlocks and real previews', a
     localStorage.setItem('urbtopia-save', save);
     localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' }));
   }, serializeEnvelope(state, state.lastSeen));
-  await page.goto('/?bypass-tutorial&keep-local');
+  await page.goto('/?e2e');
   await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   await page.getByRole('button', { name: 'Construire', exact: true }).click();
   await page.getByRole('button', { name: 'Espaces verts', exact: true }).click();

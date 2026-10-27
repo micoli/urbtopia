@@ -90,7 +90,9 @@
 [data-layout='A'] .confirm-pad {
   bottom: 76px;
 }
-.build-search { display: flex; flex-direction: column; gap: var(--space-6); margin-bottom: var(--space-6); }
+.build-toolbar { display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-6); align-items: start; margin-bottom: var(--space-6); }
+.build-toolbar .flyout-item { width: 100%; justify-content: center; }
+.build-search { display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }
 .build-search input { width: 100%; min-height: var(--tap); padding: var(--space-6) var(--space-12); border: 1px solid var(--white-a18); border-radius: var(--radius-lg); background: var(--white-a07); color: inherit; font: inherit; font-size: var(--font-size-md); }
 .next-building-unlock { margin-top: var(--space-8); padding: var(--space-8) var(--space-12); border-radius: var(--radius-lg); background: var(--white-a05); font-size: var(--font-size-sm); }
 .next-building-unlock h4 { margin: 0 0 var(--space-4); font-size: var(--font-size-xs); letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.7; }

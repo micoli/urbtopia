@@ -13,6 +13,7 @@ import { installSocial } from '../social/installSocial';
 import { installCloudSync } from './cloud/installCloud';
 import { nameOpenCity } from './cities';
 import { rawSaveStore, saveSession, saveStore } from './instance';
+import { isE2eRequested } from '../store/e2eFlag';
 import { readMeta, shouldRemindExport } from './meta';
 import { TabOwnership } from './tabOwnership';
 
@@ -80,7 +81,7 @@ export function installPersistence(): () => void {
 
   const now = Date.now();
   const meta = readMeta(saveStore, now);
-  if (shouldRemindExport({ ...meta, now, lastSavedAt: gameStore.getState().state.lastSeen })) dialogStore.getState().setExportReminder(true);
+  if (!isE2eRequested(window.location.search) && shouldRemindExport({ ...meta, now, lastSavedAt: gameStore.getState().state.lastSeen })) dialogStore.getState().setExportReminder(true);
 
   const disposeCloud = installCloudSync();
   const disposeBackOffice = installBackOffice();

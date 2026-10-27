@@ -7,7 +7,7 @@ test.describe('politics', () => {
 
   test('an ignored Petition escalates into a Demonstration that lowers the Approval', async ({ page }, testInfo) => {
     await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
-    await page.goto('/?bypass-tutorial&keep-local');
+    await page.goto('/?e2e');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
 
     const before = await page.evaluate(async () => {

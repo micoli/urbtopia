@@ -24,7 +24,7 @@ test.describe('analytics view', () => {
       if (localStorage.getItem('urbtopia-prefs')) return;
       localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'A' }));
     });
-    await page.goto('/?bypass-tutorial&keep-local');
+    await page.goto('/?e2e');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     await page.evaluate(async () => {
       const { gameStore } = await import('../src/store/gameStore.ts');

@@ -3,6 +3,7 @@ import { BUILDING_SPECS, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, annualEventOf, is
 import { t } from '../../i18n/t';
 import { FlyoutItem } from '../layout/FlyoutItem';
 import { BuildSearch } from './BuildSearch';
+import { MoveModeItem } from './MoveModeItem';
 import { BuildTypeItem } from './BuildTypeItem';
 import { NextBuildingUnlock } from './NextBuildingUnlock';
 import { FirstUseHint } from '../common/FirstUseHint';
@@ -62,7 +63,10 @@ export function BuildMenuContent() {
     return (
       <>
         <FirstUseHint id="build">{t('hint.build')}</FirstUseHint>
-        <BuildSearch query={query} onChange={setQuery} />
+        <div className="build-toolbar">
+          <BuildSearch query={query} onChange={setQuery} />
+          <MoveModeItem />
+        </div>
         {searching && (
           <div className="build-section-items">
             {results.length === 0 && <Note tone="muted">{t('build.noResults').replace('{query}', query.trim())}</Note>}

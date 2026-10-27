@@ -13,7 +13,7 @@ Four reference scenes, each a Playwright screenshot compared with a committed ba
 
 ## Determinism
 
-Cities come from `scripts/visualScenes.ts` (fixed seed, fixed fill order, no engine rules involved), loaded with `/?bypass-tutorial&keep-local` and `replaceState`. `Math.random` is seeded, traffic, pedestrians and service vehicles are off, the viewport is 1280x800 at scale 1, and CSS animations are disabled. Chromium runs with SwiftShader so the GPU does not matter.
+Cities come from `scripts/visualScenes.ts` (fixed seed, fixed fill order, no engine rules involved), loaded with `/?e2e` and `replaceState`. `Math.random` is seeded, traffic, pedestrians and service vehicles are off, the viewport is 1280x800 at scale 1, and CSS animations are disabled. Chromium runs with SwiftShader so the GPU does not matter.
 
 ## Platforms
 

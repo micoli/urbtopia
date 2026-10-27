@@ -2,6 +2,7 @@ import { useStore } from 'zustand';
 import { t } from '../../i18n/t';
 import { prefsStore } from '../../i18n/prefsStore';
 import { formatDay } from '../../i18n/formatDay';
+import { isE2eRequested } from '../../store/e2eFlag';
 import { annualEventNoticeStore } from '../../store/annualEventNoticeStore';
 import { uiStore } from '../../store/uiStore';
 import { useGame, useReadOnly } from '../common/hooks';
@@ -17,7 +18,7 @@ export function AnnualEventNotice() {
   const tutorialDone = useGame(store => store.state.tutorial === null);
   const readOnly = useReadOnly();
   const dismissed = useStore(annualEventNoticeStore, store => store.dismissed);
-  const notice = tutorialDone && !readOnly ? nextAnnualEventNotice(now, dismissed) : undefined;
+  const notice = tutorialDone && !readOnly && !isE2eRequested(window.location.search) ? nextAnnualEventNotice(now, dismissed) : undefined;
   if (!notice) return null;
 
   const see = () => {

@@ -36,6 +36,7 @@ npm run dev      # http://localhost:5173, prepares models and codex previews fir
 | `npm run assets` | Install the 3D models into `public/models` (copies the hand-made models, converts the Quaternius ones) |
 | `npm run assets:prototypes` | Copy the models the prototypes load (render-bench, touch-ux) |
 | `npm run assets:editor` | Game editor: edit buildings (`assets/defs/`) and Model definitions (`assets/models.json`) with live validation, browse every model source, import assets |
+| `?e2e` (URL parameter) | End-to-end test mode: implies `bypass-tutorial` and `keep-local`, and hides the annual event notice and the export reminder; use it in end-to-end and Playwright tests, e.g. `http://localhost:5173/?e2e` |
 | `?bypass-tutorial` (URL parameter) | Starts a new game without the tutorial; use it in end-to-end and Playwright tests, e.g. `http://localhost:5173/?bypass-tutorial` |
 | `?keep-local` (URL parameter) | When the local city and the Cloud save diverged, keeps the local city without the Save conflict dialog; use it in end-to-end and Playwright tests, with `?bypass-tutorial` |
 | `npm run storybook` | Storybook (port 6006, or `pitchfork start ur/storybook` on 5183): every UI primitive and panel, driven by game fixtures; see [docs/storybook.md](docs/storybook.md) |
