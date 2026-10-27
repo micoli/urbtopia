@@ -1,14 +1,15 @@
 import { centerOf } from '../environment/ecology';
 import { isWithinReach } from '../services/facilities';
 import { casinoRadius, casinoWellbeingBonus } from './casino';
-import { SPORT_VENUES, isSportVenueType, type SportVenueType } from './sportVenues';
+import { SPORT_VENUES, SPORT_VENUE_TYPES, type SportVenueType } from './sportVenues';
 import { BOATS, boatTier, boatsOf, isBoatOperating } from '../water/boats';
+import { buildingsOfType } from '../buildings/buildingIndex';
 import type { Building, GameState } from '../engine/state';
 
 export function casinosReaching(state: GameState, home: Building, powered: ReadonlySet<number>): Building[] {
   const to = centerOf(home);
-  return state.buildings.filter(building => {
-    if (building.type !== 'casino' || !powered.has(building.id)) return false;
+  return buildingsOfType(state.buildings, 'casino').filter(building => {
+    if (!powered.has(building.id)) return false;
     const from = centerOf(building);
     return isWithinReach(to.x - from.x, to.y - from.y, casinoRadius(building.tier));
   });
@@ -16,11 +17,10 @@ export function casinosReaching(state: GameState, home: Building, powered: Reado
 
 export function sportVenuesReaching(state: GameState, home: Building): Building[] {
   const to = centerOf(home);
-  return state.buildings.filter(building => {
-    if (!isSportVenueType(building.type)) return false;
+  return SPORT_VENUE_TYPES.flatMap(type => buildingsOfType(state.buildings, type).filter(building => {
     const from = centerOf(building);
-    return isWithinReach(to.x - from.x, to.y - from.y, SPORT_VENUES[building.type].radius);
-  });
+    return isWithinReach(to.x - from.x, to.y - from.y, SPORT_VENUES[type].radius);
+  })).sort((a, b) => a.id - b.id);
 }
 
 export function pleasureBoatsReaching(state: GameState, home: Building): number {

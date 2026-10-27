@@ -82,6 +82,11 @@ export function buildPedestrianGraph(state: GameState): PedestrianGraph {
       }
     }
 
+    for (const side of free) {
+      const beside = neighbour(road, side);
+      if (hasSide(beside, OPPOSITE[side])) link(sidewalkNode(road, side), sidewalkNode(beside, OPPOSITE[side]), 1);
+    }
+
     for (const [index, first] of free.entries()) {
       for (const second of free.slice(index + 1)) {
         if (OPPOSITE[first] === second) continue;
