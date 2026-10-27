@@ -5,8 +5,8 @@ The map alternates Daytime and Night. Vocabulary: see `CONTEXT.md` (Day cycle, D
 ## Rules
 
 - Day cycle: 2 real hours, anchored on the game clock (`now + timeOffset`, UTC epoch). No saved state.
-- Daytime 06:00 to 22:00 (16 Cycle hours), Night 22:00 to 06:00 (8). Dawn and dusk are one-Cycle-hour fades inside the Night (05:00-06:00, 21:00-22:00).
-- A new City and the Tutorial start at dawn (initial `timeOffset`).
+- Daytime 06:00 to 22:00 (16 Cycle hours), Night 22:00 to 06:00 (8). Dawn and dusk are one-Cycle-hour fades inside the Night (05:00-06:00, 22:00-23:00).
+- A new City and the Tutorial start at dawn (initial `dayCycleOffset`, apart from `timeOffset`).
 - The economy is untouched: game hours, game days and the 48 h Catch-up cap stay as they are. A Time skip counts real hours and moves the cycle.
 
 ## Energy

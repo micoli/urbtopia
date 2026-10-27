@@ -5,6 +5,7 @@ import { generateSeed } from './seed';
 import { DEFAULT_DIFFICULTY, type Difficulty } from './difficulty';
 import type { GameState } from './state';
 import { TUTORIAL_STEPS } from '../progression/tutorial';
+import { dayCycleOffsetAt } from '../environment/dayCycle';
 
 export interface NewGameOptions {
   seed?: string;
@@ -24,6 +25,7 @@ export function newGame(options: NewGameOptions): GameState {
     rngState: hashSeed(seed),
     urbs: 0,
     lastSeen: options.now,
+    dayCycleOffset: dayCycleOffsetAt(options.now),
     nextId: GAME_CONFIG.firstEntityId,
     ownedParcels: GAME_CONFIG.startingParcels.map((parcel) => ({ ...parcel })),
     buildings: [],

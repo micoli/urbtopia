@@ -4,13 +4,13 @@ status: accepted
 
 # Day cycle separate from the economy clock
 
-The map alternates Daytime and Night on a Day cycle of 2 real hours: 16 Cycle hours of Daytime (06:00 to 22:00) and 8 of Night, with one-Cycle-hour fades of dawn and dusk inside the Night. The Day cycle is a second clock, derived from the game clock (real time plus `timeOffset`, anchored on the UTC epoch). It drives the light of the map and the output of solar and water power, and nothing else. The economy keeps its own hours: production in absolute real milliseconds, taxes and costs per real hour, the game day of 24 real hours of Terms and Approval, and the 48 hour Catch-up cap of ADR-0002.
+The map alternates Daytime and Night on a Day cycle of 2 real hours: 16 Cycle hours of Daytime (06:00 to 22:00) and 8 of Night, with one-Cycle-hour fades of dawn (05:00 to 06:00) and dusk (22:00 to 23:00) inside the Night. The Day cycle is a second clock, derived from the game clock (real time plus `timeOffset` plus the City's `dayCycleOffset`, anchored on the UTC epoch). It drives the light of the map and the output of solar and water power, and nothing else. The economy keeps its own hours: production in absolute real milliseconds, taxes and costs per real hour, the game day of 24 real hours of Terms and Approval, and the 48 hour Catch-up cap of ADR-0002.
 
 ## Why
 
 - Accelerating the whole clock to a 2 hour game day was rejected. Every per-hour rate, the length of a Term, the Catch-up cap and the meaning of a Time skip would have to be rebalanced, which is a redesign of the game and not a lighting feature.
 - Anchored on the game clock, the phase needs no saved state, is the same on every device and in every City, and is replayed identically by Catch-up (ADR-0002). The device's local time is not used, since a 2 hour cycle has no relation to it and it would make the core depend on the time zone.
-- A new City gets an initial `timeOffset` so it starts at dawn and the first minutes of the Tutorial are in daylight.
+- A new City gets an initial `dayCycleOffset`, a field apart from `timeOffset` (which also shifts the hour boundaries of the economy), so it starts at dawn and the first minutes of the Tutorial are in daylight.
 
 ## Consequences
 

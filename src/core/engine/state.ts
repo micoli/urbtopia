@@ -183,6 +183,7 @@ export interface GameState {
   transitLines?: TransitLine[];
   transitFleet?: TransitVehicle[];
   timeOffset?: number;
+  dayCycleOffset?: number;
   busLines?: BusLine[];
   adaptationUntil?: number;
   ecologyDismissed?: boolean;

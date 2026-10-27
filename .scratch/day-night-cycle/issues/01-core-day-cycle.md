@@ -1,11 +1,11 @@
 # Core Day cycle
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 
 ## What to build
 
-Pure function giving the Cycle hour, the phase (day, night, dawn, dusk) and a light level from a game-clock time. Constants in the core, no clock read. A new City gets an initial `timeOffset` that starts it at dawn.
+Pure function giving the Cycle hour, the phase (day, night, dawn, dusk) and a light level from a game-clock time. Constants in the core, no clock read. A new City gets an initial `dayCycleOffset` that starts it at dawn.
 
 ## Acceptance criteria
 

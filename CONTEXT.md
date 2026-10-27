@@ -604,7 +604,7 @@ The 16 Cycle hours of the Day cycle between 06:00 and 22:00, during which solar 
 _Avoid_: Day (alone)
 
 **Night**:
-The 8 Cycle hours of the Day cycle between 22:00 and 06:00. Dawn and dusk are one-Cycle-hour fades that fall within the Night, before 06:00 and before 22:00.
+The 8 Cycle hours of the Day cycle between 22:00 and 06:00. Dawn (05:00 to 06:00) and dusk (22:00 to 23:00) are one-Cycle-hour fades that fall within the Night.
 _Avoid_: Darkness
 
 **Cycle hour**:
