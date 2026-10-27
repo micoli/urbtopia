@@ -29,6 +29,18 @@ describe('pedestrianGraph on a BRT corridor', () => {
     expect(crossingsOnPath(reach, sidewalkNode({ x: 10, y: 10 }, 'S'))).toEqual([tileKey({ x: 10, y: 10 })]);
   });
 
+  it('joins the sidewalk of a road to the sidewalk of the BRT corridor running beside it', () => {
+    const graph = pedestrianGraph({ ...withRoads(base, row(0, 20, 10)), brtRoads: brtRow(0, 20, 11) });
+    const reach = walkFrom(graph, [sidewalkNode({ x: 10, y: 10 }, 'S')], 4);
+    expect(reach.costs.get(sidewalkNode({ x: 10, y: 11 }, 'N'))).toBe(1);
+  });
+
+  it('joins the facing sidewalks of two parallel BRT corridors side by side', () => {
+    const graph = pedestrianGraph({ ...withRoads(base, []), brtRoads: [...brtRow(0, 20, 10), ...brtRow(0, 20, 11)] });
+    const reach = walkFrom(graph, [sidewalkNode({ x: 10, y: 10 }, 'S')], 4);
+    expect(reach.costs.get(sidewalkNode({ x: 10, y: 11 }, 'N'))).toBe(1);
+  });
+
   it('keeps the two sides of a BRT corridor apart without a Crossing', () => {
     const graph = pedestrianGraph({ ...withRoads(base, []), brtRoads: brtRow(0, 20, 10) });
     const reach = walkFrom(graph, [sidewalkNode({ x: 10, y: 10 }, 'N')], 8);
