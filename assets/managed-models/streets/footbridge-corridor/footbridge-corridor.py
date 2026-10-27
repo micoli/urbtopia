@@ -1,4 +1,4 @@
-"""Footbridge corridor: a flat tile open on the west, east and south edges, closed by a rail on the north edge."""
+"""Footbridge corridor: a flat walkway as wide as the stairs, open on the west, east and south edges, with a rail on each side."""
 import os
 import sys
 

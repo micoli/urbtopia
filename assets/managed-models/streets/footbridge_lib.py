@@ -1,6 +1,6 @@
 """Pieces of the Footbridge, in the cells of the road kit (see street_lib). Frame as street_lib: Z up, one tile is 1 unit, N is +Y, E is +X.
 
-The walking route runs along X over the deck. A stair climbs in two flights at 90° inside one tile: it is entered from the north edge (`stair_left`) or the south edge (`stair_right`) and left at the east edge, at the height of the deck.
+The walking route runs along X over the deck. The corridor is a flat walkway as wide as the stairs, aligned with them. A stair climbs in two flights at 90° inside one tile: it is entered from the north edge (`stair_left`) or the south edge (`stair_right`) and left at the east edge, at the height of the deck.
 """
 import os
 import sys
@@ -36,10 +36,38 @@ def rail(kit, x0, y0, x1, y1, z):
     solid(kit, x0, y0, z, x1, y1, z + RAIL_H, "curb", "curb")
 
 
-def corridor(kit):
-    """Flat tile open on the west, east and south edges, closed by a rail on the north edge."""
-    kit.rect(-0.5, -0.5, 0.5, 0.5, lib.Z_FLAT, "road")
-    rail(kit, -0.5, 0.5 - RAIL_T, 0.5, 0.5, lib.Z_FLAT)
+def chamfered_rail(kit, x0, x1, y0, y1, z, cut_low=False, cut_high=False):
+    """A rail along X whose end at `x0` and/or `x1` is cut at 45° in the vertical plane: the top slopes down to the ground over its own height."""
+    top = z + RAIL_H
+    upper = ([(x0, z), (x0 + RAIL_H, top)] if cut_low else [(x0, top)]) + ([(x1 - RAIL_H, top), (x1, z)] if cut_high else [(x1, top)])
+    profile = [(x0, z), (x1, z), *reversed(upper)]
+    profile = [point for index, point in enumerate(profile) if point != profile[index - 1]]
+    for y, facing in ((y0, (0, -1, 0)), (y1, (0, 1, 0))):
+        kit.poly([(x, y, h) for x, h in profile], "curb", facing)
+    for (xa, ha), (xb, hb) in zip(upper, upper[1:]):
+        kit.poly([(xa, y0, ha), (xb, y0, hb), (xb, y1, hb), (xa, y1, ha)], "curb", (ha - hb, 0, xb - xa))
+    kit.poly([(x0, y0, z), (x1, y0, z), (x1, y1, z), (x0, y1, z)], "curb", (0, 0, -1))
+    for x, shut, facing in ((x0, not cut_low, (-1, 0, 0)), (x1, not cut_high, (1, 0, 0))):
+        if shut:
+            kit.poly([(x, y0, z), (x, y1, z), (x, y1, top), (x, y0, top)], "curb", facing)
+
+
+def corridor(kit, closed=None):
+    """Flat walkway as wide as the stairs, a T: a bar along X, and a stem along Y open on the south edge, where the stair is. Rails on both sides of every arm. The bar is open at both ends, or stops at the line of the stem on the `closed` side ('W' or 'E'), where the rail of the stair goes straight on along the bar. The rails of an open end are cut at 45° in elevation."""
+    z = lib.Z_FLAT
+    low = -HALF if closed == "W" else -0.5
+    high = HALF if closed == "E" else 0.5
+    kit.rect(low, -HALF, high, HALF, z, "road")
+    kit.rect(-HALF, -0.5, HALF, -HALF, z, "road")
+    open_ends = [sign for sign in (-1, 1) if closed != ("W" if sign < 0 else "E")]
+    chamfered_rail(kit, low, high, HALF - RAIL_T, HALF, z, cut_low=-1 in open_ends, cut_high=1 in open_ends)
+    for sign, end in ((-1, low), (1, high)):
+        shut = sign not in open_ends
+        if not shut:
+            x0, x1 = sorted((sign * HALF, end))
+            chamfered_rail(kit, x0, x1, -HALF, -HALF + RAIL_T, z, cut_low=sign < 0, cut_high=sign > 0)
+        x0, x1 = sorted((sign * HALF, sign * (HALF - RAIL_T)))
+        rail(kit, x0, -0.5, x1, HALF if shut else -HALF, z)
 
 
 def deck(kit):
