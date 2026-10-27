@@ -621,6 +621,7 @@ export const CATALOG = {
   'error.invalidQuantity': ['Invalid quantity.', 'Quantité invalide.'],
   'dock.market': ['Market / Events', 'Marché / Événements'],
   'dock.settings': ['Settings', 'Réglages'],
+  'build.moveMode': ['Move', 'Move'],
   'dock.streetView': ['Street view', 'Vue rue'],
   'streetView.drop': ['Tap the map where to drop the view', 'Touchez la carte pour poser le point de vue'],
   'streetView.cancelDrop': ['Cancel', 'Annuler'],

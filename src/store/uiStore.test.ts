@@ -293,3 +293,30 @@ describe('analytics probe', () => {
     expect(uiStore.getState().analyticsProbe).toBeNull();
   });
 });
+
+describe('move mode', () => {
+  beforeEach(() => {
+    uiStore.getState().cancelTool();
+    uiStore.setState({ moveMode: false, selectedBuildingId: null });
+  });
+
+  it('starts moving the tapped building without selecting it, and stays on after the move', () => {
+    const state = gameStore.getState().state;
+    const building = createBuilding(7, 'shop', 10, 10, 0);
+    gameStore.getState().replaceState({ ...state, buildings: [building] });
+    uiStore.getState().toggleMoveMode();
+    uiStore.getState().tapTile({ x: 10, y: 10 });
+    expect(uiStore.getState()).toMatchObject({ tool: { kind: 'move', buildingId: building.id }, selectedBuildingId: null, moveMode: true });
+    uiStore.getState().cancelTool();
+    expect(uiStore.getState().moveMode).toBe(true);
+  });
+
+  it('selects on tap when off, and cancels a move in progress when turned off', () => {
+    uiStore.getState().tapTile({ x: 10, y: 10 });
+    expect(uiStore.getState().tool).toBeNull();
+    uiStore.getState().toggleMoveMode();
+    uiStore.getState().tapTile({ x: 10, y: 10 });
+    uiStore.getState().toggleMoveMode();
+    expect(uiStore.getState()).toMatchObject({ tool: null, moveMode: false });
+  });
+});

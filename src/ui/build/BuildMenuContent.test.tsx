@@ -9,7 +9,8 @@ import { BUILD_SECTION_KEY, readBuildSection, writeBuildSection } from './buildM
 const context = vi.hoisted(() => ({ state: null as GameState | null, flyout: 'build' }));
 vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
-  useUi: (selector: (store: { flyout: string; chooseTool: () => void }) => unknown) => selector({ flyout: context.flyout, chooseTool: () => {} }),
+  useUi: (selector: (store: { flyout: string; chooseTool: () => void; moveMode: boolean; toggleMoveMode: () => void }) => unknown) => selector({ flyout: context.flyout, chooseTool: () => {}, moveMode: false, toggleMoveMode: () => {} }),
+  useReadOnly: () => false,
 }));
 
 const AUGUST_FIRST = new Date(2026, 7, 1, 12).getTime();
