@@ -595,6 +595,25 @@ _Avoid_: Onboarding, intro, walkthrough
 The player action that advances game time by a set number of hours or up to the end of a Tutorial step.
 _Avoid_: Time warp, fast-forward
 
+**Day cycle**:
+The repeating alternation of Daytime and Night, lasting 2 real hours and anchored on the game clock, so every City shows the same moment of it. It is independent of the economy's hours: a game day of 24 hours is not a Day cycle. It lights the map and sets the output of solar and water power. A new City starts at dawn.
+_Avoid_: Season (taken by Annual event), Sunlight cycle, Day (alone)
+
+**Daytime**:
+The 16 Cycle hours of the Day cycle between 06:00 and 22:00, during which solar power is produced.
+_Avoid_: Day (alone)
+
+**Night**:
+The 8 Cycle hours of the Day cycle between 22:00 and 06:00. Dawn and dusk are one-Cycle-hour fades that fall within the Night, before 06:00 and before 22:00.
+_Avoid_: Darkness
+
+**Cycle hour**:
+One twenty-fourth of the Day cycle, 5 real minutes. Distinct from a game hour, which lasts one real hour and is the unit of production costs, taxes and Catch-up.
+_Avoid_: Hour (alone)
+
+**Always day**:
+A setting of the device, outside the save, that shows the map in Daytime light at all times without changing the Day cycle or power. Off by default.
+
 **Seed**:
 The text code generated for each game that fixes all of its chance-based outcomes.
 _Avoid_: Random key, map code
