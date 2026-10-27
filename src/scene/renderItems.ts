@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_RAMP_MODEL, BRIDGE_ROAD_MODEL, BRIDGE_SPAN_MODEL, GROUND_PANEL_MODEL, PARK_TREE_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL } from '../core/infrastructure/infrastructure';
-import { ANIMAL_MODEL_FILES, ITEM_MODEL_FILES, penAnimalsOf, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRamps, bridgeRoadKeys, bridgeTiles, isInfrastructureBridge, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, DIRECTION_VECTORS, roundaboutPiece, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, type Coord, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
+import { ANIMAL_MODEL_FILES, ITEM_MODEL_FILES, penAnimalsOf, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRamps, bridgeRoadKeys, bridgeTiles, isInfrastructureBridge, isPedestrianBridge, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, DIRECTION_VECTORS, roundaboutPiece, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, type Coord, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
 import type { VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -267,7 +267,7 @@ const AXIS_TURNS = { x: { forward: 0, back: 2, deck: 1 }, y: { forward: 3, back:
 
 // Traffic crosses a Bridge from ramp to ramp, so the whole Bridge takes the tint of its ramps, never that of the Road beneath its span.
 function bridgeItems(state: GameState, tints: ReadonlyMap<string, number>): RenderItem[] {
-  return (state.bridges ?? []).filter(isInfrastructureBridge).flatMap((bridge) => {
+  return (state.bridges ?? []).filter((bridge) => isInfrastructureBridge(bridge) && !isPedestrianBridge(bridge)).flatMap((bridge) => {
     const [first, last] = bridgeRamps(bridge);
     const turns = AXIS_TURNS[bridge.axis];
     const tint = tints.get(tileKey(first!)) ?? tints.get(tileKey(last!));

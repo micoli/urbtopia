@@ -1,4 +1,4 @@
-import { bridgeRamps, isInfrastructureBridge, tileKey, type Bridge, type Coord } from '../core';
+import { bridgeRamps, isInfrastructureBridge, isPedestrianBridge, tileKey, type Bridge, type Coord } from '../core';
 
 export const BRIDGE_CLEARANCE = 0.5;
 
@@ -12,12 +12,13 @@ const smooth = (t: number): number => t * t * (3 - 2 * t);
 
 // The deck of a Bridge over infrastructure rises over its first ramp, stays level over its span and falls over its last ramp.
 export function bridgeElevation(bridges: readonly Bridge[] | undefined): ElevationAt {
-  const decks = (bridges ?? []).filter(isInfrastructureBridge).map((bridge) => {
+  const vehicleBridges = (bridges ?? []).filter((bridge) => isInfrastructureBridge(bridge) && !isPedestrianBridge(bridge));
+  const decks = vehicleBridges.map((bridge) => {
     const first = bridgeRamps(bridge)[0]!;
     return { alongX: bridge.axis === 'x', along: bridge.axis === 'x' ? first.x : first.y, across: bridge.axis === 'x' ? first.y : first.x, spans: bridge.length };
   });
   if (decks.length === 0) return flat;
-  const ramps = new Set((bridges ?? []).filter(isInfrastructureBridge).flatMap(bridgeRamps).map(tileKey));
+  const ramps = new Set(vehicleBridges.flatMap(bridgeRamps).map(tileKey));
   return (x, z, from, to) => {
     if (!ramps.has(tileKey(from)) && !ramps.has(tileKey(to))) return 0;
     for (const deck of decks) {
