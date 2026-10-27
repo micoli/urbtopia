@@ -163,7 +163,7 @@ const westSide = sidewalkNode({ x: 50, y: 51 }, 'W');
 const eastSide = sidewalkNode({ x: 50, y: 51 }, 'E');
 
 describe('A Footbridge in the pedestrian graph', () => {
-  it('joins the two Sidewalks of the Road across the deck, at the cost of the stairs', () => {
+  it('joins the two Sidewalks of the Road across the deck, one node per tile, at the cost of the stairs', () => {
     const placed = succeed(crossing(), footbridge(50, 1));
     expect(walkCost(placed, westSide, eastSide)).toBe(1 + 1 + 3 + 1);
   });
@@ -197,14 +197,15 @@ describe('A Footbridge in the pedestrian graph', () => {
     const roads = [...column(50, 45, 55), ...row(45, 49, 52)].map((tile) => ({ ...tile, kind: 'road' as const }));
     const placed = succeed(crossing(1, { roads }), footbridge(50, 1));
     const edges = pedestrianGraph(placed).get(pedestrianWayNode({ x: 49, y: 51 })) ?? [];
-    expect(edges.map((edge) => edge.to).sort()).toEqual([westSide, pedestrianWayNode({ x: 51, y: 51 })].sort());
+    expect(edges.map((edge) => edge.to).sort()).toEqual([westSide, pedestrianWayNode({ x: 49, y: 50 })].sort());
   });
 
-  it('gives no access to a building next to a corridor', () => {
+  it('gives no access to a building next to a corridor or a stair', () => {
     const placed = succeed(crossing(1, { pedestrianWays: [{ x: 48, y: 51 }] }), footbridge(50, 1));
     const neighbour = createBuilding(2, 'home', 47, 51, 0);
     const graph = pedestrianGraph(placed);
     expect(adjacentNodes(placed, graph, neighbour)).not.toContain(pedestrianWayNode({ x: 49, y: 51 }));
+    expect(adjacentNodes(placed, graph, createBuilding(4, 'home', 48, 50, 0))).not.toContain(pedestrianWayNode({ x: 49, y: 50 }));
     expect(accessNodes(placed, graph, createBuilding(3, 'home', 49, 52, 0))).not.toContain(pedestrianWayNode({ x: 49, y: 51 }));
   });
 

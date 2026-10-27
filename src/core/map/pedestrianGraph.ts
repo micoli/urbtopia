@@ -4,11 +4,11 @@ import type { Coord } from './coord';
 import { DIRECTIONS, frontDirection, neighbour, tileKey, type Direction } from './geometry';
 import { roadExits, roundaboutTiles } from './occupancy';
 import { frontTiles } from './placement';
-import { bridgeRamps, isPedestrianBridge } from '../water/bridgeGeometry';
+import { bridgeFootprint, bridgeRamps, isPedestrianBridge } from '../water/bridgeGeometry';
 import { footbridgeParts } from '../water/footbridgeGeometry';
 import { footbridgeEndLinks } from './footbridgeAccess';
 
-export const WALK = { crossingExtraCost: 2, footbridgeExtraCost: 3 };
+export const WALK = { crossingExtraCost: 2 };
 
 export interface PedestrianEdge {
   to: string;
@@ -132,19 +132,20 @@ export function buildPedestrianGraph(state: GameState): PedestrianGraph {
   return edges;
 }
 
-// Only the corridors are nodes: the stairs and the deck are crossed in one edge, and nothing beside the Footbridge joins it.
+// The walk goes corridor, stair, deck tiles, stair, corridor, one node per tile so that walkers follow the stairs and the deck. It costs `span + 3` from corridor to corridor, and nothing beside it joins it.
 function addFootbridge(edges: Map<string, PedestrianEdge[]>, state: GameState, bridge: Bridge, link: (a: string, b: string, cost: number) => void): void {
-  const { corridors } = footbridgeParts(bridge);
-  const nodes = corridors.map(pedestrianWayNode);
-  for (const node of nodes) addNode(edges, node);
-  link(nodes[0]!, nodes[1]!, bridge.length + WALK.footbridgeExtraCost);
+  const { corridors, stairs, deck } = footbridgeParts(bridge);
+  const route = [corridors[0], stairs[0], ...deck, stairs[1], corridors[1]].map(pedestrianWayNode);
+  for (const node of route) addNode(edges, node);
+  route.slice(1).forEach((node, index) => link(route[index]!, node, 1));
+  const ends = [route[0]!, route[route.length - 1]!];
   footbridgeEndLinks(state, bridge).forEach((links, end) => {
-    for (const reach of links) link(nodes[end]!, reach.kind === 'way' ? pedestrianWayNode(reach.tile) : sidewalkNode(reach.tile, reach.side), 1);
+    for (const reach of links) link(ends[end]!, reach.kind === 'way' ? pedestrianWayNode(reach.tile) : sidewalkNode(reach.tile, reach.side), 1);
   });
 }
 
-function footbridgeCorridorKeys(state: GameState): ReadonlySet<string> {
-  return new Set((state.bridges ?? []).filter(isPedestrianBridge).flatMap((bridge) => footbridgeParts(bridge).corridors).map(tileKey));
+function footbridgeTileKeys(state: GameState): ReadonlySet<string> {
+  return new Set((state.bridges ?? []).filter(isPedestrianBridge).flatMap(bridgeFootprint).map(tileKey));
 }
 
 function brtOnlyTileKeys(state: GameState): ReadonlySet<string> {
@@ -154,7 +155,7 @@ function brtOnlyTileKeys(state: GameState): ReadonlySet<string> {
 
 export function accessNodes(state: GameState, graph: PedestrianGraph, building: Building): string[] {
   const brtOnly = brtOnlyTileKeys(state);
-  const corridors = footbridgeCorridorKeys(state);
+  const corridors = footbridgeTileKeys(state);
   const back = OPPOSITE[frontDirection(building.rotation)];
   const nodes: string[] = [];
   for (const tile of frontTiles(building.type, building.x, building.y, building.rotation, building.tier)) {
@@ -167,7 +168,7 @@ export function accessNodes(state: GameState, graph: PedestrianGraph, building: 
 
 export function adjacentNodes(state: GameState, graph: PedestrianGraph, building: Building): string[] {
   const brtOnly = brtOnlyTileKeys(state);
-  const corridors = footbridgeCorridorKeys(state);
+  const corridors = footbridgeTileKeys(state);
   const inside = new Set(footprintTiles(building).map(tileKey));
   const nodes = new Set<string>();
   for (const tile of footprintTiles(building)) {
