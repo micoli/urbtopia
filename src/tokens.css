@@ -176,6 +176,11 @@
   --shadow-lg-strong: 0 8px 24px var(--black-a50);
   --shadow-xl: 0 16px 64px var(--black-a45);
 
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
   /* Glass */
   --surface-blur: blur(18px) saturate(140%);
   --surface-edge: 1px solid var(--white-a12);

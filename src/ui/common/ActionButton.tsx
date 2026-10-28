@@ -5,7 +5,7 @@ import './tailwind.css';
 
 // `action-button` stays as a hook for the structural selectors of the legacy CSS (button rows, casino tiles).
 const actionButton = cva(
-  'action-button rounded-ui-lg border-0 bg-ui-muted px-3 py-0 text-inherit [font-family:inherit] [font-size:inherit] [line-height:inherit] cursor-pointer disabled:cursor-not-allowed disabled:opacity-45 aria-disabled:cursor-not-allowed',
+  'action-button rounded-ui-lg border-0 bg-ui-muted px-3 py-0 text-inherit [font-family:inherit] [font-size:inherit] [line-height:inherit] cursor-pointer transition-[filter,transform] duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ui-focus enabled:hover:brightness-110 enabled:active:scale-[0.98] motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-45 aria-disabled:cursor-not-allowed',
   {
     variants: {
       variant: {
