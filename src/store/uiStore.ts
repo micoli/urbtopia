@@ -233,7 +233,11 @@ export const uiStore = createStore<UiStore>((set, get) => {
       get().enterAnalytics('movement.flows');
       set({ analyticsBuildingId: id });
     },
-    exitAnalytics: () => set({ analyticsLayer: null, analyticsProbe: null, analyticsBuildingId: null }),
+    exitAnalytics: () => {
+      const { analyticsLayer, analyticsBuildingId } = get();
+      const kept = analyticsLayer === 'movement.flows' && gameStore.getState().state.buildings.some((building) => building.id === analyticsBuildingId) ? analyticsBuildingId : null;
+      set({ analyticsLayer: null, analyticsProbe: null, analyticsBuildingId: null, selectedBuildingId: kept });
+    },
     streetView: false,
     streetViewPicking: false,
     pickStreetView: () => {

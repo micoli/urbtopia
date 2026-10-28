@@ -293,6 +293,19 @@ describe('analytics probe', () => {
     expect(uiStore.getState()).toMatchObject({ analyticsLayer: 'movement.flows', analyticsBuildingId: 7, selectedBuildingId: null });
   });
 
+  it('keeps the building of the flows selected when the view is left', () => {
+    const building = gameStore.getState().state.buildings[0]!;
+    uiStore.getState().showBuildingFlows(building.id);
+    uiStore.getState().exitAnalytics();
+    expect(uiStore.getState()).toMatchObject({ analyticsLayer: null, selectedBuildingId: building.id });
+  });
+
+  it('selects nothing on leaving the flows when no building was picked', () => {
+    uiStore.getState().enterAnalytics('movement.flows');
+    uiStore.getState().exitAnalytics();
+    expect(uiStore.getState().selectedBuildingId).toBeNull();
+  });
+
   it('follows the mouse, but not a touch', () => {
     uiStore.getState().enterAnalytics('data.odor');
     uiStore.getState().setPointerKind('touch');
