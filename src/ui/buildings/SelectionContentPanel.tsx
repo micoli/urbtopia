@@ -26,7 +26,6 @@ import {RepaintRow} from "./RepaintRow.tsx";
 export function SelectionContentPanel() {
   const building = useSelectedBuilding();
   const select = useUi((store) => store.select);
-  const moveSelected = useUi((store) => store.moveSelected);
   const sellSelected = useUi((store) => store.sellSelected);
   const showBuildingFlows = useUi((store) => store.showBuildingFlows);
   const debug = useStore(prefsStore, (store) => store.debug);
@@ -35,29 +34,27 @@ export function SelectionContentPanel() {
   const kind = kindOf(building.type);
   const KindPanel = kind ? PANEL_BY_KIND[kind] : undefined;
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
-  return (
+  const isEcologicalBuilding = greenProfileOf(building.type) || ['solar','battery','backup'].includes(building.type) || isTransitStopType(building.type) || building.solar;
+    return (
     <>
       <PanelHeader title={t(`building.${building.type}`)} subtitle={building.tier} onClose={() => select(null)} />
       {debug ? <p className="debug-position">{t('panel.debugPosition')} <code>X {building.x} · Y {building.y}</code></p> : null}
       <BuildingAccess building={building} />
       <BuildingJobs building={building} />
       {isTransitStopType(building.type) ? <StopNameField building={building} /> : null}
+      {isEcologicalBuilding ? <EcologicalBuildingPanel building={building} /> : null}
       {KindPanel ? <KindPanel building={building} /> : null}
       {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}
       {building.type === 'townHall' ? <TownHallPanel building={building} /> : null}
       {isUtilityType(building.type) ? <UtilityPanel building={building} type={building.type} /> : null}
       {building.type === 'coalPlant' ? <CoalPlantPanel building={building} /> : null}
-      {greenProfileOf(building.type) || ['solar','battery','backup'].includes(building.type) || isTransitStopType(building.type) || building.solar ? <EcologicalBuildingPanel building={building} /> : null}
       {canHaveSolarPanels(building.type) ? <SolarPanelsRow building={building} /> : null}
       {natureModelOf(building.type)?.[2] === 'decoration' ? <DecorationRotation building={building} /> : null}
       <FrontRotation building={building} />
       {isRepaintableType(building.type) ? <RepaintRow building={building}/> : null}
       <ButtonRow align="stretch" spaced className="side-panel-actions">
-        <ActionButton onClick={moveSelected}>
-          ✥ {t('panel.move')}
-        </ActionButton>
-        {hasTrips(building) ? <ActionButton onClick={() => showBuildingFlows(building.id)}>🚶 {t('panel.flows')}</ActionButton> : null}
         <CodexLinks building={building} />
+        {hasTrips(building) ? <ActionButton onClick={() => showBuildingFlows(building.id)}>🚶 {t('panel.flows')}</ActionButton> : null}
         <ActionButton onClick={sellSelected}>
           ❌ {t('panel.sell')} · +<UrbsAmount value={refund}/>
         </ActionButton>
