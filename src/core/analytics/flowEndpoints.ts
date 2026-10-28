@@ -1,5 +1,7 @@
 import { footprintOf } from '../buildings/buildingSpecs';
-import { congestionStats, type TripMode } from '../traffic/congestion';
+import { isHomeType } from '../buildings/buildingDefinitions';
+import { congestionStats, workplaceTypes, type TripMode } from '../traffic/congestion';
+import { walkDestinationOf } from '../traffic/walking';
 import type { Building, BuildingType, GameState } from '../engine/state';
 import type { Coord } from '../map/coord';
 import { tileKey } from '../map/geometry';
@@ -52,6 +54,9 @@ export function flowEndpointsOf(state: GameState, layer: AnalyticsLayerId): Flow
   const destinations = layer === 'movement.cars' ? stats.carArrivals : layer === 'movement.pedestrians' ? stats.walkArrivals : summed(stats.carArrivals, stats.walkArrivals);
   return { origins: topOf(state, origins), destinations: topOf(state, destinations) };
 }
+
+// A Home, a workplace or somewhere to walk to: the buildings Citizens travel to or from.
+export const hasTrips = (building: Building): boolean => isHomeType(building.type) || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null;
 
 export type ModeVolumes = Record<TripMode, number>;
 

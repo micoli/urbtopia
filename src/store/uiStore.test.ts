@@ -287,6 +287,12 @@ describe('analytics probe', () => {
     expect(uiStore.getState().analyticsBuildingId).toBeNull();
   });
 
+  it('opens the flows of a given building', () => {
+    uiStore.getState().select(7);
+    uiStore.getState().showBuildingFlows(7);
+    expect(uiStore.getState()).toMatchObject({ analyticsLayer: 'movement.flows', analyticsBuildingId: 7, selectedBuildingId: null });
+  });
+
   it('follows the mouse, but not a touch', () => {
     uiStore.getState().enterAnalytics('data.odor');
     uiStore.getState().setPointerKind('touch');

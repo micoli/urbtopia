@@ -65,6 +65,7 @@ export interface UiStore {
   analyticsBuildingId: number | null;
   enterAnalytics: (layer: AnalyticsLayerId, category?: ServiceCategory) => void;
   exitAnalytics: () => void;
+  showBuildingFlows: (id: number) => void;
   streetView: boolean;
   streetViewPicking: boolean;
   pickStreetView: () => void;
@@ -227,6 +228,10 @@ export const uiStore = createStore<UiStore>((set, get) => {
       writeAnalyticsLayer(layer);
       writeAnalyticsCategory(category);
       set({ analyticsLayer: layer, lastAnalyticsLayer: layer, analyticsCategory: category, analyticsProbe: null, analyticsBuildingId: null, flyout: null, selectedBuildingId: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false });
+    },
+    showBuildingFlows: (id) => {
+      get().enterAnalytics('movement.flows');
+      set({ analyticsBuildingId: id });
     },
     exitAnalytics: () => set({ analyticsLayer: null, analyticsProbe: null, analyticsBuildingId: null }),
     streetView: false,
