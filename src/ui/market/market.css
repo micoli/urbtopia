@@ -70,7 +70,7 @@
   align-items: center;
   gap: var(--space-12);
   border: 2px solid var(--color-accent);
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: var(--shadow-xl);
@@ -79,7 +79,7 @@
 }
 .challenge-success strong { font-size: var(--font-size-3xl); }
 .challenge-success p { margin: 0; color: var(--color-accent); font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); }
-.challenge-success-trophy { font-size: 56px; animation: challenge-trophy 800ms ease-out both; }
+.challenge-success-trophy { font-size: var(--font-size-7xl); animation: challenge-trophy 800ms ease-out both; }
 .challenge-success-confetti { position: absolute; top: 24px; left: 50%; pointer-events: none; }
 .challenge-success-confetti i {
   position: absolute;

@@ -55,7 +55,7 @@
 }
 
 .dock-stat-label .urbs-symbol {
-  font-size: 15px;
+  font-size: var(--font-size-base);
 }
 
 .urbs-amount {
@@ -307,7 +307,7 @@
   width: 20px;
   height: 20px;
   border: 2px solid var(--white-a50);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   background: transparent;
 }
 
@@ -379,7 +379,7 @@
   background: var(--color-popover);
   box-shadow: var(--shadow-lg-strong);
 }
-.dropdown-list [role='option'] { padding: var(--space-10) var(--space-12); border-radius: 6px; overflow-wrap: anywhere; cursor: pointer; }
+.dropdown-list [role='option'] { padding: var(--space-10) var(--space-12); border-radius: var(--radius-sm); overflow-wrap: anywhere; cursor: pointer; }
 .dropdown-list [data-active='true'] { background: var(--white-a15); }
 .dropdown-list [aria-selected='true'] { font-weight: var(--font-weight-bold); }
 .dropdown-list [aria-disabled='true'] { opacity: 0.45; cursor: not-allowed; }
@@ -412,7 +412,7 @@
   height: 88px;
   border-radius: var(--radius-lg);
   background: var(--color-white);
-  font-size: 44px;
+  font-size: var(--font-size-6xl);
 }
 
 .slot-reel[data-spinning='true'] {
@@ -540,7 +540,7 @@
   width: 56px;
   height: 56px;
   border-radius: var(--radius-2xl);
-  font-size: 26px;
+  font-size: var(--font-size-5xl);
 }
 
 .icon-button--subtle {
@@ -567,7 +567,7 @@
   cursor: not-allowed;
 }
 
-.first-use-hint { display: flex; align-items: center; gap: var(--space-8); margin: var(--space-6) 0; padding: var(--space-8) var(--space-10); border: 1px solid var(--white-a18); border-left: 3px solid var(--color-accent); border-radius: 9px; background: var(--white-a07); font-size: var(--font-size-sm); }
+.first-use-hint { display: flex; align-items: center; gap: var(--space-8); margin: var(--space-6) 0; padding: var(--space-8) var(--space-10); border: 1px solid var(--white-a18); border-left: 3px solid var(--color-accent); border-radius: var(--radius-md); background: var(--white-a07); font-size: var(--font-size-sm); }
 .first-use-hint p { flex: 1; margin: 0; }
 
 .tabs { display: flex; gap: var(--space-4); margin: var(--space-12) 0; }

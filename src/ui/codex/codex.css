@@ -84,7 +84,7 @@
 .codex-chain-filter .codex-search { flex: 1 1 14rem; width: auto; margin-bottom: 0; }
 .codex-chain-icon { width: 28px; height: 28px; flex: none; align-self: center; object-fit: contain; }
 .codex-chain-item .item-icon { width: 28px; height: 28px; align-self: center; }
-.codex-chain, .codex-chain-legend { --chain-building: #f2b45a; --chain-material: #7fcf8f; --chain-good: #7fb6f2; --chain-sale: #e58fb8; }
+.codex-chain, .codex-chain-legend { --chain-building: var(--color-chain-building); --chain-material: var(--color-chain-material); --chain-good: var(--color-chain-good); --chain-sale: var(--color-chain-sale); }
 .codex-chain [data-kind='building'], .codex-chain-legend [data-kind='building'] { --chain-color: var(--chain-building); }
 .codex-chain [data-kind='material'], .codex-chain-legend [data-kind='material'] { --chain-color: var(--chain-material); }
 .codex-chain [data-kind='good'], .codex-chain-legend [data-kind='good'] { --chain-color: var(--chain-good); }

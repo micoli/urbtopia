@@ -1,5 +1,5 @@
 .home-color-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; padding-right: var(--space-6); }
-.home-color-picker button { display: flex; align-items: center; gap: 7px; min-width: 0; min-height: 38px; padding: var(--space-4) 7px; border: 1px solid var(--white-a12); border-radius: 9px; background: var(--white-a07); color: inherit; font: inherit; font-size: var(--font-size-xs); text-align: left; cursor: pointer; }
+.home-color-picker button { display: flex; align-items: center; gap: 7px; min-width: 0; min-height: 38px; padding: var(--space-4) 7px; border: 1px solid var(--white-a12); border-radius: var(--radius-md); background: var(--white-a07); color: inherit; font: inherit; font-size: var(--font-size-xs); text-align: left; cursor: pointer; }
 .home-color-picker button[aria-pressed='true'] { border-color: var(--color-accent); background: var(--white-a15); box-shadow: inset 0 0 0 1px var(--color-accent); }
 .home-color-swatch { flex: 0 0 15px; width: 15px; height: 15px; border: 1px solid var(--white-a45); border-radius: var(--radius-round); }
 .home-color-swatch-default { background: var(--swatch-residential-default); }

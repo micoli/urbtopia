@@ -105,6 +105,12 @@
   --color-series-grey: #8a8f98;
   --color-series-red: #d9644f;
 
+  /* Production chain kinds */
+  --color-chain-building: #f2b45a;
+  --color-chain-material: #7fcf8f;
+  --color-chain-good: #7fb6f2;
+  --color-chain-sale: #e58fb8;
+
   /* Building color tones, mirror the model palettes */
   --swatch-residential-default: #6c9e57;
   --swatch-residential-a: #4d8dbd;
@@ -121,7 +127,7 @@
   --color-card-back-dark: #2b4377;
 
   /* Typography */
-  --font-family-base: 'Inter', 'SF Pro Text', system-ui, sans-serif;
+  --font-family-base: 'Inter Variable', 'Inter', 'SF Pro Text', system-ui, sans-serif;
   --font-size-2xs: 10px;
   --font-size-xs: 11px;
   --font-size-sm: 12px;
@@ -132,6 +138,9 @@
   --font-size-2xl: 20px;
   --font-size-3xl: 22px;
   --font-size-4xl: 24px;
+  --font-size-5xl: 26px;
+  --font-size-6xl: 44px;
+  --font-size-7xl: 56px;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;

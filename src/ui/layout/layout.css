@@ -444,7 +444,7 @@
 .analytics-legend-swatch {
   width: 8px;
   height: 8px;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 .analytics-readout {
