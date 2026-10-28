@@ -56,7 +56,7 @@ export function SelectionContentPanel() {
         <CodexLinks building={building} />
         {hasTrips(building) ? <ActionButton onClick={() => showBuildingFlows(building.id)}>🚶 {t('panel.flows')}</ActionButton> : null}
         <ActionButton onClick={sellSelected}>
-          ❌ {t('panel.sell')} · +<UrbsAmount value={refund}/>
+          ❌ {t('panel.sell')} +<UrbsAmount value={refund}/>
         </ActionButton>
       </ButtonRow>
     </>
