@@ -1,7 +1,9 @@
 import type {ReactNode} from 'react';
+import { Icon } from '../../common/Icon';
+import type { IconName } from '../../common/iconRegistry';
 
 interface OverviewTileProps {
-    icon: string;
+    icon: IconName;
     warning?: boolean;
     title?: string;
     children: ReactNode;
@@ -9,7 +11,7 @@ interface OverviewTileProps {
 
 export function OverviewTile({icon, warning, title, children}: OverviewTileProps) {
     return <div data-warning={warning} title={title}>
-        <span aria-hidden="true">{icon}</span>
+        <Icon name={icon} />
         <div>{children}</div>
     </div>;
 }

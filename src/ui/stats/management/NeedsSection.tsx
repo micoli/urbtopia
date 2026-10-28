@@ -20,7 +20,7 @@ export function NeedsSection({state, onShowSection}: NeedsSectionProps) {
             .replace('{difficulty}', t(`difficulty.${difficulty}` as MessageKey))
             .replace('{floor}', String(Math.round(100 * SANCTIONS[difficulty].taxFloor)));
     return <section id="eco-needs" className="eco-wide">
-        <SectionHeading icon="♧">{t('needs.title')}</SectionHeading>
+        <SectionHeading icon="needs">{t('needs.title')}</SectionHeading>
         <p>{help}</p>
         {totalCitizens(state) === 0 && <p>{t('needs.noCitizens')}</p>}
         <NeedsPyramidDiagram levels={pyramid.levels}/>

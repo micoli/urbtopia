@@ -19,7 +19,7 @@ export function ProductionSection({state, energy}: ProductionSectionProps) {
     const citizens = totalCitizens(state);
     const adapting = (state.adaptationUntil ?? 0) > state.lastSeen;
     return <section id="eco-production" className="eco-wide">
-        <SectionHeading icon="▦">{t('eco.production')}</SectionHeading>
+        <SectionHeading icon="production">{t('eco.production')}</SectionHeading>
         <div className="eco-counts">
             {COUNT_TYPES.map(type => {
                 const locked = citizens < (ECOLOGY_UNLOCKS[type] ?? 0);

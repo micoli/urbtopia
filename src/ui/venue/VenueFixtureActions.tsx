@@ -46,7 +46,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
         <ButtonRow align="stretch" spaced>
           {Math.round(100-conditionOf(fixture)) > 2
               ? <ActionButton variant="primary" onClick={() => send({ type: 'RepairFixture', buildingId: venueId, fixtureId: fixture.id })}>
-                🔧 {t('venue.repair')} <UrbsAmount value={repairCost(fixture)} />
+                <Icon name="repair" /> {t('venue.repair')} <UrbsAmount value={repairCost(fixture)} />
                 </ActionButton>
               : null
           }

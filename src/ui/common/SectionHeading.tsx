@@ -1,14 +1,16 @@
 import { ReactNode } from 'react';
+import { Icon } from './Icon';
+import type { IconName } from './iconRegistry';
 
 interface SectionHeadingProps {
-    icon?: string;
+    icon?: IconName;
     children: ReactNode;
 }
 
 export function SectionHeading({ icon, children }: SectionHeadingProps) {
     return (
         <h3>
-            {icon && <><span aria-hidden="true">{icon}</span>{' '}</>}
+            {icon && <><Icon name={icon} />{' '}</>}
             {children}
         </h3>
     );

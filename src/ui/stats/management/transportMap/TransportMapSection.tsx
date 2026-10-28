@@ -30,7 +30,7 @@ export function TransportMapSection({ state, transport, congestion }: TransportM
     return next;
   });
   return <section id="eco-transportMap" className="eco-wide">
-    <SectionHeading icon="🗺️">{t('eco.transportMap')}</SectionHeading>
+    <SectionHeading icon="map">{t('eco.transportMap')}</SectionHeading>
     <p>{t('transportMap.help')}</p>
     <ModeMix congestion={congestion} />
     {model.lines.length === 0

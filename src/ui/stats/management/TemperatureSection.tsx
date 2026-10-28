@@ -18,7 +18,7 @@ const TIPS: Record<HeatSource, MessageKey> = {
 
 export function TemperatureSection({breakdown, elements, items}: TemperatureSectionProps) {
     return <section id="eco-temperature" className="eco-wide">
-        <SectionHeading icon="🌡️">{t('eco.temperatureSection')}</SectionHeading>
+        <SectionHeading icon="temperature">{t('eco.temperatureSection')}</SectionHeading>
         <p>{t('eco.temperatureHelp')}</p>
         <h4>{t('eco.heatSources')}</h4>
         <HeatSourcesTable sources={breakdown.sources} items={items} temperature={breakdown.temperature}/>

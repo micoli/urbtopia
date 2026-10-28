@@ -1,5 +1,7 @@
+import { Icon } from './Icon';
+import type { IconName } from './iconRegistry';
 interface StatChipProps {
-    icon: string;
+    icon: IconName;
     value: string | number;
     title: string;
     tone?: 'normal' | 'warning' | 'critical';
@@ -9,7 +11,7 @@ interface StatChipProps {
 export function StatChip({ icon, value, title, tone, labelled = false }: StatChipProps) {
     return (
         <div title={title} aria-label={labelled ? title : undefined} className={tone && `utility-${tone}`}>
-            {icon} {value}
+            <Icon name={icon} /> {value}
         </div>
     );
 }

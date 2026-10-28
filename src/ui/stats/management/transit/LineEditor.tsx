@@ -15,6 +15,7 @@ import { LineMetrics, type LineSummary } from './LineMetrics.tsx';
 import { stopLabel } from './stopLabel.ts';
 import { StopList } from './StopList.tsx';
 import { routeFailureKey } from './routeFailureKey.ts';
+import { Icon } from '../../../common/Icon';
 
 interface LineEditorProps {
   lineId: number | undefined;
@@ -77,7 +78,7 @@ export function LineEditor({ lineId, summary, onSaved, onDeleted, onCancel }: Li
       onChange={changeMode}
       options={TRANSIT_MODES.map(value => ({
         value,
-        label: value === 'bus' ? t(MODE_LABEL[value]) : `${t(MODE_LABEL[value])} · ${TRANSIT[value].unlock} 👥`,
+        label: value === 'bus' ? t(MODE_LABEL[value]) : <>{t(MODE_LABEL[value])} · {TRANSIT[value].unlock} <Icon name="citizens" /></>,
         disabled: citizens < unlockOf(value),
       }))}
     />

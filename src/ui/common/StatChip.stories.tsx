@@ -4,7 +4,7 @@ import { StatChip } from './StatChip';
 const meta = {
   title: 'Common/StatChip',
   component: StatChip,
-  args: { icon: '⚡', value: 42, title: 'Power' },
+  args: { icon: 'power', value: 42, title: 'Power' },
   argTypes: { tone: { control: 'inline-radio', options: ['normal', 'warning', 'critical'] } },
 } satisfies Meta<typeof StatChip>;
 

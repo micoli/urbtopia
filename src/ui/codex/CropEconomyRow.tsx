@@ -2,6 +2,7 @@ import { cropReturns, CROPS, type CropId } from '../../core';
 import { t } from '../../i18n/t';
 import { formatDuration } from '../common/formatDuration';
 import { UrbsAmount } from '../common/UrbsAmount';
+import { Icon } from '../common/Icon';
 
 interface CropEconomyRowProps {
   crop: CropId;
@@ -15,7 +16,7 @@ export function CropEconomyRow({ crop, tiles, unlocked }: CropEconomyRowProps) {
   return (
     <tr data-unlocked={unlocked}>
       <th scope="row">
-        {unlocked ? '' : '🔒 '}{t(`item.${crop}`)}
+        {unlocked ? null : <><Icon name="lock" />{' '}</>}{t(`item.${crop}`)}
         <small>{formatDuration(spec.growthMs)} · {Math.round(spec.seedShare * 100)}%</small>
       </th>
       <td>{returns.seeds}</td>

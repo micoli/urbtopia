@@ -4,6 +4,7 @@ import { cycleClockOf } from './cycleClock';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
+import { Icon } from '../common/Icon';
 
 const QUADRUPLE_CLICK = 4;
 const QUICK_SKIP_HOURS = 12;
@@ -19,7 +20,7 @@ export function GameClock() {
 
   return (
     <time onClick={skipOnQuadrupleClick} className="game-clock" dateTime={time} title={t('stat.time')} aria-label={`${t('stat.time')}: ${time}`}>
-      {icon} {time}
+      <Icon name={icon} /> {time}
     </time>
   );
 }

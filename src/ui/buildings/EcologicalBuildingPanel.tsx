@@ -15,6 +15,7 @@ import {t} from '../../i18n/t';
 import {useGame} from '../common/hooks';
 import {factorsAt, productionFactors} from '../../core/environment/energy';
 import { DrawerPanel } from '../common/DrawerPanel';
+import { Icon } from '../common/Icon';
 
 export function EcologicalBuildingPanel({building}: { building: Building; }) {
     const state = useGame(s => s.state);
@@ -28,7 +29,7 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
                 label={t('eco.storage')}
                 value={<>{(building.storedEnergy ?? 0).toFixed(1)} / ${ECOLOGY.batteryCapacity}</>}
             >
-                ⚡ {(energy.batteryRates.get(building.id) ?? 0).toFixed(1)} / h
+                <Icon name="power" /> {(energy.batteryRates.get(building.id) ?? 0).toFixed(1)} / h
             </DrawerPanel.LabelValue>
         </>}
 
@@ -40,7 +41,7 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
             label={t('eco.backup')}
             value={<>{ECOLOGY.backupCapacity} / h</>}
         >
-            {t('eco.cost')}: {ECOLOGY.backupCost} / ⚡ · {t('eco.emissions')}: 2 / ⚡
+            {t('eco.cost')}: {ECOLOGY.backupCost} / <Icon name="power" /> · {t('eco.emissions')}: 2 / <Icon name="power" />
         </DrawerPanel.LabelValue>}
 
         {greenProfile && <DrawerPanel.LabelValue

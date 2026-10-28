@@ -5,6 +5,7 @@ import { t } from '../../i18n/t';
 import { ProductionChainItemIcon } from './ProductionChainItemIcon';
 import { ProductionChainChannels } from './ProductionChainChannels';
 import { ProductionChainStep } from './ProductionChainStep';
+import { Icon } from '../common/Icon';
 
 interface ProductionChainItemProps {
   chain: ChainItem;
@@ -20,7 +21,7 @@ export function ProductionChainItem({ chain, state }: ProductionChainItemProps) 
       <ProductionChainItemIcon item={item} />
       <span className="codex-chain-name">{itemName(item)}</span>
       {chain.alsoAs.length > 0 ? <small>{t('codex.chains.alsoAs')} {chain.alsoAs.map(itemName).join(', ')}</small> : null}
-      <small>{unlocked ? `${t('codex.chains.stock')} ${stock}` : `🔒 ${t('codex.chains.locked')}`}</small>
+      <small>{unlocked ? `${t('codex.chains.stock')} ${stock}` : <><Icon name="lock" /> {t('codex.chains.locked')}</>}</small>
       {isDeadEnd(chain) ? <small className="codex-chain-warning">{t('codex.chains.deadEnd')}</small> : null}
       <ProductionChainChannels channels={chain.soldAt} isGood={isGood(item)} />
       {chain.steps.length > 0 ? (

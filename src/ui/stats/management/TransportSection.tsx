@@ -6,7 +6,7 @@ import {TransitTabs} from './transit/TransitTabs';
 
 export function TransportSection({transport}: { transport: ReturnType<typeof transportStats> }) {
     return <section id="eco-transport" className="eco-wide">
-        <SectionHeading icon="↔">{t('eco.transport')}</SectionHeading>
+        <SectionHeading icon="transport">{t('eco.transport')}</SectionHeading>
         <p>{t('eco.coverage')}: {transport.covered} · {t('eco.riders')}: {transport.riders.toFixed(1)} · {t('eco.cost')}: {transport.costPerHour}</p>
         <p>{t('eco.transportHelp')}</p>
         {transport.lines.some(l => l.active && !l.riders) && <p>{t('eco.adviceBus')}</p>}

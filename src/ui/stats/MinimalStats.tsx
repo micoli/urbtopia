@@ -3,6 +3,7 @@ import { climateStats, totalCitizens } from '../../core';
 import { useGame, useUi } from '../common/hooks';
 import { UrbsSymbol } from '../common/UrbsSymbol';
 import { GameClock } from './GameClock';
+import { Icon } from '../common/Icon';
 
 export function MinimalStats() {
   const toggleStats = useUi(s => s.toggleStats);
@@ -12,8 +13,8 @@ export function MinimalStats() {
   return (
     <button type="button" className="minimal-stats" aria-label={t('eco.title')} onClick={toggleStats}>
       <GameClock />{' · '}
-      <strong>{Math.floor(urbs)}</strong> <UrbsSymbol /> · 👥 {citizens}
-      {' · '}<span className="city-temperature" title={t('eco.temperatureHelp')} aria-label={`${t('eco.temperature')}: ${temperature.toFixed(1)} °C`}><span aria-hidden="true">🌡️</span> {temperature.toFixed(1)} °C</span>
+      <strong>{Math.floor(urbs)}</strong> <UrbsSymbol /> · <Icon name="citizens" /> {citizens}
+      {' · '}<span className="city-temperature" title={t('eco.temperatureHelp')} aria-label={`${t('eco.temperature')}: ${temperature.toFixed(1)} °C`}><Icon name="temperature" /> {temperature.toFixed(1)} °C</span>
     </button>
   );
 }

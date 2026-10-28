@@ -3,6 +3,7 @@ import { t } from '../../i18n/t';
 import { UrbsStat } from '../common/UrbsStat';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { VenueRates } from './VenueRates';
+import { Icon } from '../common/Icon';
 
 interface VenueStatsProps {
   venue: Building;
@@ -17,7 +18,7 @@ export function VenueStats({ venue }: VenueStatsProps) {
         <>
           <div className="dock-stat" title={t('venue.takings')}>
             <span className="dock-stat-value"><UrbsAmount value={takingsDue(venue.venue)} /></span>
-            <span className="dock-stat-label" aria-hidden="true">💰</span>
+            <span className="dock-stat-label"><Icon name="money" /></span>
           </div>
           <VenueRates venue={venue} />
         </>

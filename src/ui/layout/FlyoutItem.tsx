@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { t } from '../../i18n/t';
 import { useSingleOrDoubleClick } from './useSingleOrDoubleClick';
 import type { CodexId } from '../../codex/catalog';
+import { Icon } from '../common/Icon';
 
 interface FlyoutItemProps {
   label: string;
@@ -35,7 +36,7 @@ export function FlyoutItem({ label, badge, cost, guided = false, onChoose, onCho
       {item}
       <button type="button" className="flyout-info" data-codex-id={codexId} data-guided={guided} aria-label={onInfo ? t('codex.about').replace('{name}', label) : label} disabled={disabled} onClick={choose}>
         {cost ? <small className="flyout-cost">{cost}</small> : null}
-        {picture ? <img src={picture} width={44} height={38} alt="" loading="lazy" /> : <span aria-hidden="true">📖</span>}
+        {picture ? <img src={picture} width={44} height={38} alt="" loading="lazy" /> : <Icon name="book" />}
       </button>
     </div>
   );

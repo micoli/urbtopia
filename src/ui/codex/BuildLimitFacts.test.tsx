@@ -20,9 +20,9 @@ describe('BuildLimitFacts', () => {
     const state: GameState = { ...base, nextId: base.nextId + 1, buildings: [...base.buildings, createBuilding(base.nextId, 'farm', 56, 59, 0)] };
     const html = render(state, 'farm');
     expect(html).toContain('1/3');
-    expect(html).toContain('🔒 from 20 Citizens');
-    expect(html).toContain('🔒 from 300 Citizens');
-    expect(html).toContain('🔒 from 800 Citizens');
+    expect(html).toContain('from 20 Citizens');
+    expect(html).toContain('from 300 Citizens');
+    expect(html).toContain('from 800 Citizens');
     expect(html).toContain('400');
   });
 

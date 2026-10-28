@@ -23,9 +23,9 @@ export function CityStats() {
   return (
     <button className="city-stats" aria-label={t('eco.title')} onClick={toggleSearch}>
       <GameClock />
-      <StatChip icon="👥" value={totalCitizens(state)} title={t('stat.citizens')} />
-      <StatChip icon="⚡" value={powerDemand} title={powerLabel} tone={utilityStatus(powerDemand, capacity.power)} labelled />
-      <StatChip icon="💧" value={demand.water} title={waterLabel} tone={utilityStatus(demand.water, capacity.water)} labelled />
+      <StatChip icon="citizens" value={totalCitizens(state)} title={t('stat.citizens')} />
+      <StatChip icon="power" value={powerDemand} title={powerLabel} tone={utilityStatus(powerDemand, capacity.power)} labelled />
+      <StatChip icon="water" value={demand.water} title={waterLabel} tone={utilityStatus(demand.water, capacity.water)} labelled />
     </button>
   );
 }

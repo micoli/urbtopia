@@ -57,7 +57,7 @@ export function SelectionContentPanel() {
       {isRepaintableType(building.type) ? <RepaintRow building={building}/> : null}
       <ButtonRow align="stretch" spaced className="side-panel-actions">
         <CodexLinks building={building} />
-        {hasTrips(building) ? <ActionButton onClick={() => showBuildingFlows(building.id)}>🚶 {t('panel.flows')}</ActionButton> : null}
+        {hasTrips(building) ? <ActionButton onClick={() => showBuildingFlows(building.id)}><Icon name="walk" /> {t('panel.flows')}</ActionButton> : null}
         <ActionButton onClick={sellSelected}>
           <Icon name="trash" /> {t('panel.sell')} +<UrbsAmount value={refund}/>
         </ActionButton>

@@ -41,7 +41,7 @@ export function AnalyticsHud() {
   return (
     <div className="analytics-hud">
       <div className="analytics-widget">
-        <NavActionButton variant="dock" action={{ id: 'exit', icon: '↩', label: t('analytics.exit'), pressed: false, disabled: false, guided: false, onClick: exitAnalytics }} />
+        <NavActionButton variant="dock" action={{ id: 'exit', icon: 'undo', label: t('analytics.exit'), pressed: false, disabled: false, guided: false, onClick: exitAnalytics }} />
         <button type="button" className="analytics-step" aria-label={t('analytics.previous')} onClick={() => go(-1)}>‹</button>
         <div className="analytics-legends">
           {ANALYTICS_ORDER.map(entry => (

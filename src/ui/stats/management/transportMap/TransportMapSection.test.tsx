@@ -16,13 +16,13 @@ describe('Transport map section', () => {
     expect(html).toContain('id="eco-transportMap"');
     expect(html).toContain(language === 'fr' ? 'Carte des transports' : 'Transport map');
     expect(html).toContain(language === 'fr' ? 'Aucune ligne de transport' : 'No transport line yet');
-    expect(html).not.toContain('<svg');
+    expect(html).not.toContain('role="img"');
   });
 
   it('draws the lines, the loop arrows, the hub and the bicycle stops', () => {
     const state = transportMapCity();
     const html = renderToStaticMarkup(<TransportMapSection state={state} transport={transportStats(state)} congestion={congestionStats(state)} />);
-    expect(html).toContain('<svg');
+    expect(html).toContain('role="img"');
     expect(html).toContain('data-line="11"');
     expect(html).toContain('data-mode="rail"');
     expect(html).toContain('data-hub="true"');
