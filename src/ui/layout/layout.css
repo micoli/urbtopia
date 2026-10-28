@@ -31,7 +31,9 @@
 .dock .dock-stat,
 .dock .dock-button,
 .dock .city-stats {
-  background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  background: color-mix(in srgb, var(--color-surface) 70%, var(--white-a10));
+  backdrop-filter: var(--surface-blur);
+  border: 1px solid var(--white-a08);
 }
 
 .dock::-webkit-scrollbar {
@@ -102,6 +104,8 @@
   overscroll-behavior: contain;
   touch-action: pan-y;
   background: var(--color-surface);
+  backdrop-filter: var(--surface-blur);
+  border-right: var(--surface-edge);
   color: var(--color-text);
   z-index: 9;
 }
@@ -178,6 +182,8 @@
   overscroll-behavior: contain;
   touch-action: pan-y;
   background: var(--color-surface);
+  backdrop-filter: var(--surface-blur);
+  border-left: var(--surface-edge);
   color: var(--color-text);
   z-index: 9;
 }
