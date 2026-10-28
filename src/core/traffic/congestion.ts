@@ -191,9 +191,10 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     const walkOptions = WALKING.enabled ? workplaces.flatMap((workplace) => {
       if (roadOptionIds.has(workplace.building.id)) return [];
       const target = nearestTarget(walk, workplace.sidewalks);
-      return target !== null && target.cost <= WALKING.workThreshold * WALKING.cyclingFactor ? [{ id: workplace.building.id, path: [] }] : [];
+      return target !== null && target.cost <= WALKING.workThreshold * WALKING.cyclingFactor ? [{ id: workplace.building.id, path: [], distance: target.cost }] : [];
     }) : [];
-    const options = [...roadOptions, ...walkOptions];
+    // With more Jobs than Citizens, a workplace reached on foot only must compete by distance, not queue behind every one reached by Road.
+    const options = [...roadOptions.map((option) => ({ ...option, distance: option.path.length })), ...walkOptions].sort((a, b) => a.distance - b.distance || a.id - b.id);
     if (options.length === 0 && brtOnly) {
       const entry = { ...brtOnlyEntry(covered.homes.has(home.building.id)), walkAccess };
       result.set(home.building.id, entry);
