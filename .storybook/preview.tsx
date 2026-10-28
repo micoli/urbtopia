@@ -1,4 +1,5 @@
 import type { Preview } from '@storybook/react-vite';
+import '@fontsource-variable/inter';
 import './layered.css';
 import type { GameFixtureName } from './fixtures';
 import { withGame, type StoreOverrides } from './withGame';
