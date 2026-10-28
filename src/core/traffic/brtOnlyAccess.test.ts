@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { WALKING } from './walking';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 import { GOODS, SHOP, advance, congestionStats, createBuilding, newGame, transportStats, type GameState, type TransitTile } from '../index';
@@ -37,14 +37,35 @@ function brtDistrict({ withLine = true, roads = false } = {}): GameState {
 }
 
 describe('Home reached only by a BRT corridor', () => {
-  it('has no Commute by car and no Pedestrian path when a station covers it', () => {
+  const walkingWork = WALKING.workThreshold;
+  beforeEach(() => {
+    WALKING.workThreshold = 0;
+  });
+  afterEach(() => {
+    WALKING.workThreshold = walkingWork;
+  });
+
+  it('has no Commute by car and rides public transport when a station covers it', () => {
     const stats = congestionStats(brtDistrict());
     const home = stats.homes.get(4)!;
-    expect(home).toMatchObject({ commuters: 0, walkers: 0, walkAccess: 0, ratio: 0, disconnected: false });
+    expect(home).toMatchObject({ commuters: 0, walkers: 0, ratio: 0, disconnected: false });
     expect(stats.commuters).toBe(0);
     expect(stats.walkers).toBe(0);
     expect(stats.modes.transit).toBeGreaterThan(0);
     expect(stats.disconnectedSections).toEqual([]);
+  });
+
+  it('walks along the BRT corridor to a Shop beside it', () => {
+    const state = { ...brtDistrict(), buildings: [...brtDistrict().buildings, createBuilding(6, 'shop', 4, 1, 0)] };
+    const stats = congestionStats(state);
+    expect(stats.homes.get(4)!.walkAccess).toBeGreaterThan(0);
+    expect(stats.homes.get(4)).toMatchObject({ commuters: 0, disconnected: false });
+    expect(stats.walkingTrips.shop).toBeGreaterThan(0);
+  });
+
+  it('stays disconnected without a station even beside a Shop, as nobody can work within reach', () => {
+    const state = { ...brtDistrict({ withLine: false }), buildings: [...brtDistrict().buildings, createBuilding(6, 'shop', 4, 1, 0)] };
+    expect(congestionStats(state).homes.get(4)).toMatchObject({ disconnected: true });
   });
 
   it('is marked disconnected with maximum Congestion when no station covers it', () => {

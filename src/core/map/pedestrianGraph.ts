@@ -3,7 +3,7 @@ import type { Bridge, Building, GameState } from '../engine/state';
 import type { Coord } from './coord';
 import { DIRECTIONS, frontDirection, neighbour, tileKey, type Direction } from './geometry';
 import { roadExits, roundaboutTiles } from './occupancy';
-import { frontTiles, hasBrtOnlyAccess } from './placement';
+import { frontTiles } from './placement';
 import { bridgeFootprint, bridgeRamps, isPedestrianBridge } from '../water/bridgeGeometry';
 import { footbridgeParts } from '../water/footbridgeGeometry';
 import { footbridgeEndLinks } from './footbridgeAccess';
@@ -158,41 +158,33 @@ function footbridgeTileKeys(state: GameState): ReadonlySet<string> {
   return new Set((state.bridges ?? []).filter(isPedestrianBridge).flatMap(bridgeFootprint).map(tileKey));
 }
 
-function brtOnlyTileKeys(state: GameState): ReadonlySet<string> {
-  const roadKeys = new Set(state.roads.map(tileKey));
-  return new Set((state.brtRoads ?? []).map(tileKey).filter((key) => !roadKeys.has(key)));
-}
-
 export function accessNodes(state: GameState, graph: PedestrianGraph, building: Building): string[] {
-  const brtOnly = brtOnlyTileKeys(state);
   const corridors = footbridgeTileKeys(state);
   const back = OPPOSITE[frontDirection(building.rotation)];
   const nodes: string[] = [];
   for (const tile of frontTiles(building.type, building.x, building.y, building.rotation, building.tier)) {
     for (const node of [sidewalkNode(tile, back), sidewalkNode(tile, 'R'), pedestrianWayNode(tile)]) {
-      if (graph.has(node) && !brtOnly.has(tileKey(tile)) && !corridors.has(tileKey(tile))) nodes.push(node);
+      if (graph.has(node) && !corridors.has(tileKey(tile))) nodes.push(node);
     }
   }
   return nodes;
 }
 
-// Where Citizens walking to work reach a workplace: its front, and any Pedestrian way along it. A workplace served by BRT only keeps its front.
+// Where Citizens walking to work reach a workplace: its front, and any Pedestrian way along it.
 export function workAccessNodes(state: GameState, graph: PedestrianGraph, building: Building): string[] {
   const front = accessNodes(state, graph, building);
-  if (hasBrtOnlyAccess(state, building)) return front;
   const ways = adjacentNodes(state, graph, building).filter((node) => node.endsWith(':P'));
   return [...new Set([...front, ...ways])];
 }
 
 export function adjacentNodes(state: GameState, graph: PedestrianGraph, building: Building): string[] {
-  const brtOnly = brtOnlyTileKeys(state);
   const corridors = footbridgeTileKeys(state);
   const inside = new Set(footprintTiles(building).map(tileKey));
   const nodes = new Set<string>();
   for (const tile of footprintTiles(building)) {
     for (const direction of DIRECTIONS) {
       const outside = neighbour(tile, direction);
-      if (inside.has(tileKey(outside)) || brtOnly.has(tileKey(outside)) || corridors.has(tileKey(outside))) continue;
+      if (inside.has(tileKey(outside)) || corridors.has(tileKey(outside))) continue;
       for (const node of [sidewalkNode(outside, OPPOSITE[direction]), sidewalkNode(outside, 'R'), pedestrianWayNode(outside)]) {
         if (graph.has(node)) nodes.add(node);
       }

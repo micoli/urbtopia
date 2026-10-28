@@ -731,7 +731,7 @@ The side of a building turned towards its access. A building has one Front among
 _Avoid_: Facade, entrance, orientation
 
 **BRT-only access**:
-The state of a building reached by a BRT corridor but not by a Road. It has no Commute by car and no Pedestrian path: its Citizens use public transport, and the Jobs of its workplaces are filled by Riders only. A BRT-only Home with no BRT station covering it is marked disconnected.
+The state of a building reached by a BRT corridor but not by a Road. It has no Commute by car, but the sides of a BRT corridor are Sidewalks: its Citizens use public transport, and also walk along the corridor to Shops, Schools and other destinations in reach. The Jobs of its workplaces are filled by Riders only. A BRT-only Home with no BRT station covering it, and no job in walking range, is marked disconnected.
 _Avoid_: Roadless building, transit-only building
 
 **Transit itinerary**:
