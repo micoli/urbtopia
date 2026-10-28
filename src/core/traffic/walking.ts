@@ -1,6 +1,5 @@
 import { isShopType } from '../economy/shops';
 import type { Building, BuildingType } from '../engine/state';
-import { greenProfileOf, natureModelOf } from '../environment/nature';
 import type { CongestionStats } from './congestion';
 
 export type WalkDestination = 'shop' | 'school' | 'health' | 'culture' | 'casino' | 'park' | 'townHall';
@@ -53,9 +52,9 @@ export function walkDestinationOf(building: Building): WalkDestination | null {
   return null;
 }
 
+// Trees, shrubs, flowers, hives and other decoration are scenery, not somewhere to walk to.
 function isPark(type: BuildingType): boolean {
-  if (natureModelOf(type)?.[2] === 'habitat') return false;
-  return (greenProfileOf(type)?.wellbeing ?? 0) > 0;
+  return type === 'park';
 }
 
 export function walkAccessOf(trips: ReadonlyMap<WalkDestination, number>, citizens: number): number {

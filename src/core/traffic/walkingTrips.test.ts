@@ -57,9 +57,14 @@ describe('walking trips to services', () => {
     expect(stats.pedestrians.get('57,58')).toBeGreaterThanOrEqual(citizensOf(1));
   });
 
-  it('counts a tree as a park destination', () => {
-    const stats = congestionStats(withBuildings(base, [{ type: 'tree', x: 58, y: 59 }, { type: 'home', x: 56, y: 59 }]));
+  it('counts a park as a park destination', () => {
+    const stats = congestionStats(withBuildings(base, [{ type: 'park', x: 58, y: 59 }, { type: 'home', x: 56, y: 59 }]));
     expect(stats.walkingTrips.park).toBe(citizensOf(1) * WALKING.tripsPerCitizen.park);
+  });
+
+  it.each(['tree', 'nature-plant-bush'] as const)('does not count a %s as a park destination', type => {
+    const stats = congestionStats(withBuildings(base, [{ type, x: 58, y: 59 }, { type: 'home', x: 56, y: 59 }]));
+    expect(stats.walkingTrips.park).toBe(0);
   });
 
   it('raises Well-being for Homes that can walk to services, never above the limit', () => {
