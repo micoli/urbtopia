@@ -997,6 +997,7 @@ export const CATALOG = {
   'analytics.flows.origins': ['Main departures', 'Principaux départs'],
   'analytics.flows.destinations': ['Main destinations', 'Principales destinations'],
   'analytics.flows.show': ['Show on map', 'Voir sur la carte'],
+  'dialog.untitled': ['Confirmation', 'Confirmation'],
   'panel.flows': ['Flows', 'Flux'],
   'analytics.building.hint': ['Tap a building to see where its Citizens come from and where they go.', 'Touchez un bâtiment pour voir d\'où viennent ses habitants et où ils vont.'],
   'analytics.building.arrivals': ['Arrivals from', 'Arrivées depuis'],
