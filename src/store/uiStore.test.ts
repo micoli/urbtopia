@@ -350,3 +350,22 @@ describe('move mode', () => {
     expect(uiStore.getState()).toMatchObject({ tool: null, moveMode: false });
   });
 });
+
+describe('editing a transit line', () => {
+  beforeEach(() => {
+    uiStore.getState().cancelTool();
+    uiStore.setState({ statsOpen: false, lineToEdit: null, socialOpen: false, flyout: null });
+  });
+
+  it('opens City management with the line to edit, closing the other panels', () => {
+    uiStore.setState({ flyout: 'build' });
+    uiStore.getState().editTransitLine(12);
+    expect(uiStore.getState()).toMatchObject({ statsOpen: true, lineToEdit: 12, flyout: null });
+  });
+
+  it('forgets the line once the editor took it', () => {
+    uiStore.getState().editTransitLine(12);
+    uiStore.getState().clearLineToEdit();
+    expect(uiStore.getState()).toMatchObject({ statsOpen: true, lineToEdit: null });
+  });
+});

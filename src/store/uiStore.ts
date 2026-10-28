@@ -32,6 +32,9 @@ export interface UiStore {
   flyout: Flyout;
   statsOpen: boolean;
   toggleStats: () => void;
+  lineToEdit: number | null;
+  editTransitLine: (lineId: number) => void;
+  clearLineToEdit: () => void;
   politicsOpen: boolean;
   openPolitics: () => void;
   closePolitics: () => void;
@@ -166,6 +169,12 @@ export const uiStore = createStore<UiStore>((set, get) => {
     selectedBuildingId: null,
     flyout: null,
     statsOpen: false,
+    lineToEdit: null,
+    editTransitLine: (lineId) => {
+      get().cancelTool();
+      set({ statsOpen: true, lineToEdit: lineId, socialOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
+    },
+    clearLineToEdit: () => set({ lineToEdit: null }),
     politicsOpen: false,
     openPolitics: () => {
       get().cancelTool();

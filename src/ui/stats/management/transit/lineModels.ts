@@ -24,6 +24,11 @@ export const HEADWAY_LIMITS = {
 
 export const unlockOf = (mode: TransitMode): number => (mode === 'bus' ? 0 : TRANSIT[mode].unlock);
 
+export function linesServing(state: GameState, stopId: number): number[] {
+  const lines = [...(state.busLines ?? []), ...(state.transitLines ?? [])];
+  return lines.filter(line => line.stops.includes(stopId)).map(line => line.id);
+}
+
 export function findLine(state: GameState, id: number | undefined): EditableLine | undefined {
   if (id === undefined) return undefined;
   const bus = state.busLines?.find(line => line.id === id);

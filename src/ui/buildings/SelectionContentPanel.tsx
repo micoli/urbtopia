@@ -21,6 +21,7 @@ import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { PanelHeader } from '../common/PanelHeader';
 import { CodexLinks } from './CodexLinks';
+import { StopLineButtons } from './StopLineButtons';
 import {RepaintRow} from "./RepaintRow.tsx";
 
 export function SelectionContentPanel() {
@@ -42,6 +43,7 @@ export function SelectionContentPanel() {
       <BuildingAccess building={building} />
       <BuildingJobs building={building} />
       {isTransitStopType(building.type) ? <StopNameField building={building} /> : null}
+      {isTransitStopType(building.type) ? <StopLineButtons building={building} /> : null}
       {isEcologicalBuilding ? <EcologicalBuildingPanel building={building} /> : null}
       {KindPanel ? <KindPanel building={building} /> : null}
       {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}
