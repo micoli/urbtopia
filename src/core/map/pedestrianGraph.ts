@@ -58,6 +58,8 @@ export function buildPedestrianGraph(state: GameState): PedestrianGraph {
     exitsOf.set(tileKey(tile), tile.exits);
   }
   const ways = new Map((state.pedestrianWays ?? []).map((tile) => [tileKey(tile), tile]));
+  const roadKeys = new Set(state.roads.map(tileKey));
+  const brtCorridors = new Set((state.brtRoads ?? []).map(tileKey).filter((key) => !roadKeys.has(key)));
   const link = (a: string, b: string, cost: number, crossing: string | null = null) => {
     if (a === b) return;
     addEdge(edges, a, { to: b, cost, crossing });
@@ -126,6 +128,12 @@ export function buildPedestrianGraph(state: GameState): PedestrianGraph {
     const neighbours = DIRECTIONS.map((direction) => neighbour(way, direction));
     const wayNeighbours = neighbours.filter((tile) => ways.has(tileKey(tile)));
     for (const next of wayNeighbours) link(node, pedestrianWayNode(next), 1);
+    // The side of a BRT corridor is a Sidewalk: a Pedestrian way running along it joins it on every tile, not only at its ends.
+    for (const side of DIRECTIONS) {
+      const key = tileKey(neighbour(way, side));
+      if (!brtCorridors.has(key) || exitsOf.get(key)?.includes(OPPOSITE[side])) continue;
+      link(node, sidewalkNode(roads.get(key)!, OPPOSITE[side]), 1);
+    }
     if (wayNeighbours.length > 1) continue;
     for (const roadSide of DIRECTIONS) {
       const road = roads.get(tileKey(neighbour(way, OPPOSITE[roadSide])));

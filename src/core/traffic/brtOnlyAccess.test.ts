@@ -1,6 +1,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { WALKING } from './walking';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
+import { pedestrianGraph, pedestrianWayNode } from '../map/pedestrianGraph';
 import { GOODS, SHOP, advance, congestionStats, createBuilding, newGame, transportStats, type GameState, type TransitTile } from '../index';
 
 const walkingEnabled = WALKING.enabled;
@@ -86,6 +87,16 @@ describe('Home reached only by a BRT corridor', () => {
   it('is deterministic across calls', () => {
     const state = brtDistrict();
     expect(congestionStats(state, 1000).homes.get(4)).toEqual(congestionStats(state, 1000).homes.get(4));
+  });
+});
+
+describe('a Pedestrian way running along a BRT corridor', () => {
+  it('joins its Sidewalk on every tile, not only at its ends', () => {
+    const district = brtDistrict();
+    const state = { ...district, pedestrianWays: [3, 4, 5].map(x => ({ x, y: 1 })) };
+    const graph = pedestrianGraph(state);
+    const middle = graph.get(pedestrianWayNode({ x: 4, y: 1 })) ?? [];
+    expect(middle.some(edge => edge.to.startsWith('4,0:'))).toBe(true);
   });
 });
 
