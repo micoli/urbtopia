@@ -10,8 +10,8 @@ export function UpdatePrompt() {
 
   return (
     <OverlayBanner variant="reminder" className="update-prompt" role="alert" message={t('update.text')}>
-      <ActionButton onClick={() => window.location.reload()}>{t('update.reload')}</ActionButton>
-      <ActionButton onClick={() => dialogStore.getState().setUpdateReady(false)}>{t('reminder.dismiss')}</ActionButton>
+      <ActionButton size="sm" overlay onClick={() => window.location.reload()}>{t('update.reload')}</ActionButton>
+      <ActionButton size="sm" overlay onClick={() => dialogStore.getState().setUpdateReady(false)}>{t('reminder.dismiss')}</ActionButton>
     </OverlayBanner>
   );
 }

@@ -10,6 +10,6 @@ interface VisitBannerViewProps {
 
 export function VisitBannerView({handle, cityName, onLeave}: VisitBannerViewProps) {
     return <OverlayBanner variant="banner" role="alert" className="visit-banner" message={t('visit.banner').replace('{HANDLE}', handle).replace('{CITY}', cityName)}>
-        <ActionButton variant="primary" onClick={onLeave}>{t('visit.leave')}</ActionButton>
+        <ActionButton size="sm" overlay variant="primary" onClick={onLeave}>{t('visit.leave')}</ActionButton>
     </OverlayBanner>;
 }

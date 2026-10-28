@@ -26,8 +26,8 @@ export function ExportReminder() {
 
   return (
     <OverlayBanner variant="reminder" message={t('reminder.text')}>
-      <ActionButton onClick={exportNow}>{t('settings.export')}</ActionButton>
-      <ActionButton onClick={dismiss}>{t('reminder.dismiss')}</ActionButton>
+      <ActionButton size="sm" overlay onClick={exportNow}>{t('settings.export')}</ActionButton>
+      <ActionButton size="sm" overlay onClick={dismiss}>{t('reminder.dismiss')}</ActionButton>
     </OverlayBanner>
   );
 }

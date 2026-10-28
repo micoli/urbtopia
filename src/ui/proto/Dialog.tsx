@@ -1,6 +1,6 @@
 import * as RadixDialog from '@radix-ui/react-dialog';
 import type { ReactNode } from 'react';
-import './tailwind.css';
+import '../common/tailwind.css';
 
 interface DialogProps {
   open: boolean;

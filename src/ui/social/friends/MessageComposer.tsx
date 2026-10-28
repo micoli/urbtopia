@@ -21,7 +21,7 @@ export function MessageComposer({sending, onSend, onRefresh}: MessageComposerPro
     }}>
         <input type="text" maxLength={MAX_MESSAGE_LENGTH} autoComplete="off" aria-label={t('friends.conversation.placeholder')} placeholder={t('friends.conversation.placeholder')} value={body} onChange={event => setBody(event.target.value)}/>
         <ActionButton type="submit" variant="primary" disabled={empty || sending}>{sending ? t('friends.conversation.sending') : t('friends.conversation.send')}</ActionButton>
-        <ActionButton className="friends-refresh" aria-label={t('friends.conversation.refresh')} title={t('friends.conversation.refresh')} disabled={refreshing || sending}
+        <ActionButton className="friends-refresh px-3 text-[1.1rem]" aria-label={t('friends.conversation.refresh')} title={t('friends.conversation.refresh')} disabled={refreshing || sending}
                       onClick={() => {
                           setRefreshing(true);
                           void onRefresh().finally(() => setRefreshing(false));

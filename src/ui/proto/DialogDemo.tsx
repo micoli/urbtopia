@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { Button } from './Button';
+import { ActionButton } from '../common/ActionButton';
 import { Dialog } from './Dialog';
 
 export function DialogDemo() {
   const [open, setOpen] = useState(true);
   return (
     <>
-      <Button onClick={() => setOpen(true)}>Open dialog</Button>
-      <Dialog open={open} onOpenChange={setOpen} title="Demolish this building?" description="The building and its contents are lost." actions={<><Button onClick={() => setOpen(false)}>Cancel</Button><Button variant="danger" onClick={() => setOpen(false)}>Demolish</Button></>} />
+      <ActionButton onClick={() => setOpen(true)}>Open dialog</ActionButton>
+      <Dialog open={open} onOpenChange={setOpen} title="Demolish this building?" description="The building and its contents are lost." actions={<><ActionButton onClick={() => setOpen(false)}>Cancel</ActionButton><ActionButton variant="danger" onClick={() => setOpen(false)}>Demolish</ActionButton></>} />
     </>
   );
 }

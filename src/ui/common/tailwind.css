@@ -1,7 +1,8 @@
-/* Prototype only: utilities without preflight, so the existing CSS is untouched. The theme maps the game tokens. */
+/* Utilities without preflight, so the legacy CSS is untouched. The theme maps the game tokens. */
+@layer theme, legacy, utilities;
 @import 'tailwindcss/theme' layer(theme);
 @import 'tailwindcss/utilities' layer(utilities) source(none);
-@source './';
+@source '../../';
 
 @theme inline {
   --color-*: initial;

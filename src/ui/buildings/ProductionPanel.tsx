@@ -64,7 +64,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
               <span>{itemName(entry.item)}</span>
               <span>{status}</span>
               {isRunning(entry) ? (
-                <ActionButton className="slot-rush" disabled={state.urbs < rushPrice(entry, now)} onClick={() => send({ type: 'RushProduction', buildingId: building.id })}>
+                <ActionButton className="slot-rush px-2 py-1" disabled={state.urbs < rushPrice(entry, now)} onClick={() => send({ type: 'RushProduction', buildingId: building.id })}>
                   {t('panel.rush')} (<UrbsAmount value={rushPrice(entry, now)} />)
                 </ActionButton>
               ) : null}

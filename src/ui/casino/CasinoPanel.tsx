@@ -30,7 +30,7 @@ export function CasinoPanel({ building }: CasinoPanelProps) {
         {CASINO_GAMES.map(game => {
           const locked = CASINO.gameMinTier[game] > building.tier;
           return (
-            <ActionButton variant="primary" block key={game} disabled={locked || !powered || !PLAYABLE.has(game)} onClick={() => launchCasinoGame(building.id, game, () => select(null))}>
+            <ActionButton variant="primary" size="tile" block key={game} disabled={locked || !powered || !PLAYABLE.has(game)} onClick={() => launchCasinoGame(building.id, game, () => select(null))}>
               <img className="casino-game-icon" src={casinoGameIconUrl(game)} alt="" draggable={false} />
               <span>{t(`casino.${game}`)}{locked ? ` · ${t('home.tier')} ${CASINO.gameMinTier[game]}` : ''}</span>
             </ActionButton>

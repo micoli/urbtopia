@@ -41,7 +41,6 @@
 .exchange-price { color: var(--color-positive); font-weight: var(--font-weight-bold); white-space: nowrap; }
 .exchange-offer-actions { display: flex; gap: var(--space-8); flex-wrap: wrap; }
 
-.friends-composer .friends-refresh { padding-inline: var(--space-12); font-size: 1.1rem; }
 
 .groups-list ul, .groups-members { list-style: none; margin: var(--space-8) 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
 .groups-row-open { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-4) 0.6rem; width: 100%; padding: var(--space-8) var(--space-12); text-align: left; color: inherit; background: var(--white-a08); border: 0; border-radius: var(--radius-lg); cursor: pointer; }
