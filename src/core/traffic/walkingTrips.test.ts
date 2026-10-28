@@ -57,6 +57,29 @@ describe('walking trips to services', () => {
     expect(stats.pedestrians.get('57,58')).toBeGreaterThanOrEqual(citizensOf(1));
   });
 
+  describe('along a Pedestrian way', () => {
+    const along = (specs: { type: BuildingType; x: number; y: number }[], ways: [number, number][]) => {
+      const state = withBuildings({ ...base, buildings: [], roads: [], pedestrianWays: ways.map(([x, y]) => ({ x, y })) }, specs);
+      return { state, stats: congestionStats(state) };
+    };
+    const column = (x: number, from: number, to: number): [number, number][] => Array.from({ length: from - to + 1 }, (_, index) => [x, from - index]);
+
+    it('shares the shopping trips between the shops within walking range', () => {
+      const { state, stats } = along([{ type: 'shop', x: 90, y: 90 }, { type: 'shop', x: 89, y: 93 }, { type: 'home', x: 90, y: 96 }], column(90, 95, 91));
+      const [first, second] = state.buildings.filter(building => building.type === 'shop');
+      const shopping = citizensOf(1) * WALKING.tripsPerCitizen.shop / 2;
+      expect(stats.trips.filter(trip => trip.to === first!.id && trip.count === shopping)).toHaveLength(1);
+      expect(stats.trips.filter(trip => trip.to === second!.id && trip.count === shopping)).toHaveLength(1);
+      expect(stats.walkingTrips.shop).toBe(citizensOf(1) * WALKING.tripsPerCitizen.shop);
+    });
+
+    it('lets Citizens walk to a workplace from a Pedestrian way along its side', () => {
+      const { stats } = along([{ type: 'shop', x: 90, y: 90 }, { type: 'home', x: 90, y: 96 }], [[90, 95], ...column(91, 95, 90)]);
+      expect(stats.jobs).toBeGreaterThan(0);
+      expect(stats.walkers).toBeGreaterThan(0);
+    });
+  });
+
   it('counts a park as a park destination', () => {
     const stats = congestionStats(withBuildings(base, [{ type: 'park', x: 58, y: 59 }, { type: 'home', x: 56, y: 59 }]));
     expect(stats.walkingTrips.park).toBe(citizensOf(1) * WALKING.tripsPerCitizen.park);

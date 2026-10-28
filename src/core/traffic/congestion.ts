@@ -4,7 +4,7 @@ import type { Coord } from '../map/coord';
 import { tileKey } from '../map/geometry';
 import { footprintTiles } from '../buildings/buildingSpecs';
 import { frontAccessModes, frontTiles, hasBrtOnlyAccess } from '../map/placement';
-import { accessNodes, crossingsOnPath, nearestTarget, nodesOnPath, pedestrianGraph, walkFrom, type PedestrianGraph } from '../map/pedestrianGraph';
+import { accessNodes, crossingsOnPath, nearestTarget, nodesOnPath, pedestrianGraph, walkFrom, workAccessNodes, type PedestrianGraph } from '../map/pedestrianGraph';
 import { buildRoadGraph, neighboursOf, type RoadGraph } from '../map/roadGraph';
 import { transportStats } from '../transit/transport';
 import { closedFractionsByTile } from '../water/bridgeOpenings';
@@ -146,7 +146,7 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
   const closed = closedFractionsByTile(state);
   const walkable = pedestrianGraph(state);
   const homes = endpoints(state, graph, walkable, (building) => isHomeType(building.type));
-  const workplaces = endpoints(state, graph, walkable, (building) => workplaceTypes.includes(building.type)).filter((workplace) => workplace.access.length > 0 || workplace.sidewalks.length > 0);
+  const workplaces = endpoints(state, graph, walkable, (building) => workplaceTypes.includes(building.type), workAccessNodes).filter((workplace) => workplace.access.length > 0 || workplace.sidewalks.length > 0);
   const destinations = WALKING.enabled ? walkDestinations(state, walkable) : [];
   const pedestrians = new Map<string, number>();
   const sidewalkLoads = new Map<string, number>();
@@ -402,14 +402,14 @@ function isWorse(candidate: SectionLoad, current: SectionLoad): boolean {
   return candidate.tile.x < current.tile.x;
 }
 
-function endpoints(state: GameState, graph: RoadGraph, walkable: PedestrianGraph, matches: (building: Building) => boolean): Endpoint[] {
+function endpoints(state: GameState, graph: RoadGraph, walkable: PedestrianGraph, matches: (building: Building) => boolean, sidewalksOf = accessNodes): Endpoint[] {
   return state.buildings
     .filter(matches)
     .sort((a, b) => a.id - b.id)
     .map((building) => ({
       building,
       access: frontTiles(building.type, building.x, building.y, building.rotation, building.tier).filter((tile) => graph.has(tileKey(tile))),
-      sidewalks: accessNodes(state, walkable, building),
+      sidewalks: sidewalksOf(state, walkable, building),
     }));
 }
 

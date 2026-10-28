@@ -3,7 +3,7 @@ import type { Bridge, Building, GameState } from '../engine/state';
 import type { Coord } from './coord';
 import { DIRECTIONS, frontDirection, neighbour, tileKey, type Direction } from './geometry';
 import { roadExits, roundaboutTiles } from './occupancy';
-import { frontTiles } from './placement';
+import { frontTiles, hasBrtOnlyAccess } from './placement';
 import { bridgeFootprint, bridgeRamps, isPedestrianBridge } from '../water/bridgeGeometry';
 import { footbridgeParts } from '../water/footbridgeGeometry';
 import { footbridgeEndLinks } from './footbridgeAccess';
@@ -174,6 +174,14 @@ export function accessNodes(state: GameState, graph: PedestrianGraph, building: 
     }
   }
   return nodes;
+}
+
+// Where Citizens walking to work reach a workplace: its front, and any Pedestrian way along it. A workplace served by BRT only keeps its front.
+export function workAccessNodes(state: GameState, graph: PedestrianGraph, building: Building): string[] {
+  const front = accessNodes(state, graph, building);
+  if (hasBrtOnlyAccess(state, building)) return front;
+  const ways = adjacentNodes(state, graph, building).filter((node) => node.endsWith(':P'));
+  return [...new Set([...front, ...ways])];
 }
 
 export function adjacentNodes(state: GameState, graph: PedestrianGraph, building: Building): string[] {
