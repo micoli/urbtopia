@@ -170,6 +170,7 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
   const used = new Map<number, Set<string>>();
   const result = new Map<number, HomeCongestion>();
   const jobsLeft = new Map(workplaces.map((workplace) => [workplace.building.id, jobsOf(workplace.building)]));
+  const reachable = new Set<number>();
   let commutersTotal = 0;
   let walkersTotal = 0;
   let cyclistsTotal = 0;
@@ -195,6 +196,7 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     }) : [];
     // With more Jobs than Citizens, a workplace reached on foot only must compete by distance, not queue behind every one reached by Road.
     const options = [...roadOptions.map((option) => ({ ...option, distance: option.path.length })), ...walkOptions].sort((a, b) => a.distance - b.distance || a.id - b.id);
+    for (const option of options) reachable.add(option.id);
     if (options.length === 0 && brtOnly) {
       const entry = { ...brtOnlyEntry(covered.homes.has(home.building.id)), walkAccess };
       result.set(home.building.id, entry);
@@ -299,7 +301,11 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     slowedLines: [...busSpeeds.values()].filter((speed) => speed.slowed).length,
     modes: { car: commutersTotal, transit: transitTotal, walking: walkersTotal, cycling: cyclistsTotal },
     jobs,
-    filledJobs: new Map([...workplaces.map((workplace): [number, number] => [workplace.building.id, jobsOf(workplace.building) - (jobsLeft.get(workplace.building.id) ?? 0)]), ...brtOnlyFilledJobs(state, covered)]),
+    // A workplace that no Citizen can reach on foot or by Road is staffed by Riders when a station covers it, as a BRT-only one is.
+    filledJobs: new Map([...workplaces.map((workplace): [number, number] => {
+      const staffedByRiders = !reachable.has(workplace.building.id) && covered.activities.has(workplace.building.id);
+      return [workplace.building.id, staffedByRiders ? jobsOf(workplace.building) : jobsOf(workplace.building) - (jobsLeft.get(workplace.building.id) ?? 0)];
+    }), ...brtOnlyFilledJobs(state, covered)]),
     unemployed: unemployedTotal,
     shift: NO_SHIFT,
     worstBottleneck: worstSection(sections),

@@ -89,6 +89,29 @@ describe('Home reached only by a BRT corridor', () => {
   });
 });
 
+describe('a workplace on a Pedestrian way beside a BRT corridor', () => {
+  const walkingWork = WALKING.workThreshold;
+  beforeEach(() => {
+    WALKING.workThreshold = 0;
+  });
+  afterEach(() => {
+    WALKING.workThreshold = walkingWork;
+  });
+  const withShop = (withLine: boolean): GameState => {
+    const district = brtDistrict({ withLine });
+    return { ...district, pedestrianWays: [{ x: 1, y: 1 }], buildings: [...district.buildings, createBuilding(6, 'shop', 1, 2, 0)] };
+  };
+
+  it('is staffed by Riders when no Citizen can reach it and a station covers it', () => {
+    const stats = congestionStats(withShop(true));
+    expect(stats.filledJobs.get(6)).toBeGreaterThan(0);
+  });
+
+  it('stays empty without a station', () => {
+    expect(congestionStats(withShop(false)).filledJobs.get(6)).toBe(0);
+  });
+});
+
 describe('workplaces reached only by a BRT corridor', () => {
   const withBuildings = (state: GameState, replace: (b: GameState['buildings'][number]) => GameState['buildings'][number]): GameState => ({ ...state, buildings: state.buildings.map(replace) });
   const swapWorkshop = (type: 'hospital' | 'shop') => (state: GameState) => withBuildings(state, (b) => (b.id === 5 ? createBuilding(5, type, 18, 1, 0) : b));
