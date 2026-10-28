@@ -3,6 +3,7 @@ import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
 import { NavActionButton } from '../layout/NavActionButton';
 import { AnalyticsFlows } from './AnalyticsFlows';
+import { BuildingFlowsPanel } from './BuildingFlowsPanel';
 import { AnalyticsLegend } from './AnalyticsLegend';
 import type { AnalyticsLayerId, ServiceCategory } from '../../core';
 import { ANALYTICS_ORDER, stepAnalytics } from './analyticsOrder';
@@ -55,6 +56,7 @@ export function AnalyticsHud() {
         <button type="button" className="analytics-step" aria-label={t('analytics.next')} onClick={() => go(1)}>›</button>
       </div>
       <AnalyticsFlows />
+      {layer === 'movement.flows' ? <BuildingFlowsPanel /> : null}
     </div>
   );
 }

@@ -167,6 +167,7 @@ export function probeOf(state: GameState, layer: AnalyticsLayerId, category: Ser
       case 'data.congestion': case 'movement.cars': return roadCauses(state, tile);
       case 'movement.pedestrians': return walkCauses(state, tile);
       case 'movement.all': return [...roadCauses(state, tile), ...walkCauses(state, tile)];
+      case 'movement.flows': return [];
       case 'data.wellbeing': return home ? wellbeingCauses(state, home) : [];
       case 'data.coverage': return home ? coverageCauses(state, home, category) : tileCovered === false ? coverageCauses(state, createBuilding(0, 'home', tile.x, tile.y, 0), category) : [];
       case 'data.landValue': return landCauses(state, tile);

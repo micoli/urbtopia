@@ -80,6 +80,7 @@ export class GameScene {
   private analyticsLayer = new AnalyticsLayer();
   private analyticsLayerId: AnalyticsLayerId | null = null;
   private analyticsCategory: ServiceCategory = 'education';
+  private analyticsBuildingId: number | null = null;
   private coverageFocus: { type: FacilityType; facilityId: number } | null = null;
   private afterHarvest: readonly HarvestedTile[] = [];
   private ecologicalState: GameState | null = null;
@@ -253,10 +254,11 @@ export class GameScene {
     void this.drain();
   }
 
-  setAnalyticsLayer(layer: AnalyticsLayerId | null, category: ServiceCategory): void {
-    if (this.analyticsLayerId === layer && this.analyticsCategory === category) return;
+  setAnalyticsLayer(layer: AnalyticsLayerId | null, category: ServiceCategory, buildingId: number | null = null): void {
+    if (this.analyticsLayerId === layer && this.analyticsCategory === category && this.analyticsBuildingId === buildingId) return;
     this.analyticsLayerId = layer;
     this.analyticsCategory = category;
+    this.analyticsBuildingId = buildingId;
     if (!this.ecologicalState) return;
     this.latest = this.ecologicalState;
     void this.drain();
@@ -373,7 +375,7 @@ export class GameScene {
         this.world.sync(items);
         const focus = serviceType ? null : this.coverageFocus;
         this.serviceCoverageLayer.sync(state, serviceType ?? focus?.type ?? null, focus?.facilityId ?? null);
-        this.analyticsLayer.sync(state, this.analyticsLayerId, this.analyticsCategory);
+        this.analyticsLayer.sync(state, this.analyticsLayerId, this.analyticsCategory, this.analyticsBuildingId);
         await this.scenery.sync(state);
         this.shapeGround(state);
         this.syncParcels(state);

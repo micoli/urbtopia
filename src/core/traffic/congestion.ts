@@ -43,6 +43,18 @@ export interface HomeCongestion {
   disconnected: boolean;
 }
 
+export type TripMode = 'car' | 'walk' | 'cycle';
+
+// Citizens leaving one Home for one building, by mode.
+export interface TripFlow {
+  from: number;
+  to: number;
+  mode: TripMode;
+  count: number;
+  // The tiles of the Road or Sidewalk route taken.
+  path: readonly Coord[];
+}
+
 export interface CongestionStats {
   sections: ReadonlyMap<string, SectionLoad>;
   homes: ReadonlyMap<number, HomeCongestion>;
@@ -58,6 +70,8 @@ export interface CongestionStats {
   carArrivals: ReadonlyMap<number, number>;
   walkArrivals: ReadonlyMap<number, number>;
   walkTripsByHome: ReadonlyMap<number, number>;
+  // Every trip from a Home to a workplace or a service on foot; Riders of public transport have no destination.
+  trips: readonly TripFlow[];
   crossings: ReadonlyMap<string, CrossingLoad>;
   saturatedCrossings: number;
   busSpeeds: ReadonlyMap<number, BusSpeed>;
@@ -139,6 +153,7 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
   const carArrivals = new Map<number, number>();
   const walkArrivals = new Map<number, number>();
   const walkTripsByHome = new Map<number, number>();
+  const trips: TripFlow[] = [];
   const walkingTrips = emptyTrips();
   const cyclingTrips = emptyTrips();
   const workplaceById = new Map(workplaces.map((workplace) => [workplace.building.id, workplace]));
@@ -173,7 +188,7 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     }
     const walk = walkFrom(walkable, WALKING.enabled ? home.sidewalks : [], maxWalkCost());
     const walkedBefore = tripsTotal(walkingTrips);
-    const walkAccess = WALKING.enabled ? walkServices(walk, destinations, citizens, pedestrians, walkingTrips, cyclingTrips, sidewalkLoads, walkArrivals) : 0;
+    const walkAccess = WALKING.enabled ? walkServices(walk, destinations, citizens, pedestrians, walkingTrips, cyclingTrips, sidewalkLoads, walkArrivals, (site, count, nodes) => trips.push({ from: home.building.id, to: site, mode: 'walk', count, path: tilesOfNodes(nodes) })) : 0;
     const walkedServices = tripsTotal(walkingTrips) - walkedBefore;
     const roadOptions = home.access.length === 0 ? [] : reachableWorkplaces(graph, home, workplaces);
     const roadOptionIds = new Set(roadOptions.map((option) => option.id));
@@ -203,11 +218,14 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
           walking += taken;
           walkArrivals.set(option.id, (walkArrivals.get(option.id) ?? 0) + taken);
         } else cycling += taken;
+        const nodes = nodesOnPath(walk, target.node);
+        trips.push({ from: home.building.id, to: option.id, mode: target.cost <= WALKING.workThreshold ? 'walk' : 'cycle', count: taken, path: tilesOfNodes(nodes) });
         for (const crossing of crossingsOnPath(walk, target.node)) pedestrians.set(crossing, (pedestrians.get(crossing) ?? 0) + taken);
-        for (const node of nodesOnPath(walk, target.node)) sidewalkLoads.set(node, (sidewalkLoads.get(node) ?? 0) + taken);
+        for (const node of nodes) sidewalkLoads.set(node, (sidewalkLoads.get(node) ?? 0) + taken);
         continue;
       }
       carArrivals.set(option.id, (carArrivals.get(option.id) ?? 0) + taken);
+      trips.push({ from: home.building.id, to: option.id, mode: 'car', count: taken, path: option.path });
       for (const tile of option.path) {
         const key = tileKey(tile);
         loads.set(key, (loads.get(key) ?? 0) + taken);
@@ -268,6 +286,7 @@ function calculateCongestion(state: GameState, riders: ReadonlyMap<number, numbe
     carArrivals,
     walkArrivals,
     walkTripsByHome,
+    trips,
     crossings,
     saturatedCrossings: [...crossings.values()].filter((crossing) => crossing.saturated).length,
     busSpeeds,
@@ -314,13 +333,14 @@ function noCommute(state: GameState, homes: Endpoint[], jobs: number, covered: T
   const sidewalkLoads = new Map<string, number>();
   const walkArrivals = new Map<number, number>();
   const walkTripsByHome = new Map<number, number>();
+  const trips: TripFlow[] = [];
   const walkingTrips = emptyTrips();
   const cyclingTrips = emptyTrips();
   const entries = homes.map((home): [number, HomeCongestion] => {
     if (isBrtOnly(state, home)) return [home.building.id, brtOnlyEntry(covered.homes.has(home.building.id))];
     const walk = walkFrom(graph, WALKING.enabled ? home.sidewalks : [], maxWalkCost());
     const walkedBefore = tripsTotal(walkingTrips);
-    const walkAccess = WALKING.enabled ? walkServices(walk, destinations, citizensOf(home.building.tier), pedestrians, walkingTrips, cyclingTrips, sidewalkLoads, walkArrivals) : 0;
+    const walkAccess = WALKING.enabled ? walkServices(walk, destinations, citizensOf(home.building.tier), pedestrians, walkingTrips, cyclingTrips, sidewalkLoads, walkArrivals, (site, count, nodes) => trips.push({ from: home.building.id, to: site, mode: 'walk', count, path: tilesOfNodes(nodes) })) : 0;
     walkTripsByHome.set(home.building.id, tripsTotal(walkingTrips) - walkedBefore);
     return [home.building.id, { commuters: 0, walkers: 0, cyclists: 0, walkAccess, unemployed: 0, ratio: 0, disconnected: false }];
   });
@@ -342,6 +362,7 @@ function noCommute(state: GameState, homes: Endpoint[], jobs: number, covered: T
     carArrivals: new Map(),
     walkArrivals,
     walkTripsByHome,
+    trips,
     crossings: new Map([...pedestrians].map(([key, count]) => {
       const cut = crossingCut(count);
       return [key, { tile: parseTile(key), pedestrians: count, cut, saturated: cut >= WALKING.maxCrossingCut }];
@@ -448,6 +469,17 @@ function traceBack(parents: Map<string, string | null>, end: string): Coord[] {
   const path: Coord[] = [];
   for (let key: string | null | undefined = end; key !== null && key !== undefined; key = parents.get(key)) path.push(parseTile(key));
   return path;
+}
+
+// A Sidewalk node reads "x,y:side"; a path lists each tile once in a row.
+function tilesOfNodes(nodes: readonly string[]): Coord[] {
+  const tiles: Coord[] = [];
+  for (const node of nodes) {
+    const tile = parseTile(node.split(':')[0]!);
+    const last = tiles.at(-1);
+    if (last?.x !== tile.x || last.y !== tile.y) tiles.push(tile);
+  }
+  return tiles;
 }
 
 function parseTile(key: string): Coord {

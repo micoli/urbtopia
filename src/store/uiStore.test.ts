@@ -276,6 +276,17 @@ describe('analytics probe', () => {
     expect(uiStore.getState()).toMatchObject({ analyticsProbe: { x: 5, y: 6 }, selectedBuildingId: null });
   });
 
+  it('picks the tapped building in the flows of a building, without reading the tile', () => {
+    uiStore.getState().enterAnalytics('movement.flows');
+    uiStore.getState().tapTile({ x: 5, y: 6 }, 7);
+    expect(uiStore.getState()).toMatchObject({ analyticsBuildingId: 7, analyticsProbe: null, selectedBuildingId: null });
+    uiStore.getState().setPointerKind('mouse');
+    uiStore.getState().hoverTile({ x: 2, y: 3 });
+    expect(uiStore.getState().analyticsProbe).toBeNull();
+    uiStore.getState().exitAnalytics();
+    expect(uiStore.getState().analyticsBuildingId).toBeNull();
+  });
+
   it('follows the mouse, but not a touch', () => {
     uiStore.getState().enterAnalytics('data.odor');
     uiStore.getState().setPointerKind('touch');

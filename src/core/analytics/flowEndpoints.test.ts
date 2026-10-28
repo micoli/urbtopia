@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
 import { citizensOf, congestionStats, createBuilding, newGame, type Building, type GameState } from '../index';
-import { FLOW_ENDPOINTS, flowEndpointsOf } from './flowEndpoints';
+import { FLOW_ENDPOINTS, buildingFlowsOf, flowEndpointsOf } from './flowEndpoints';
 
 const base = newGame({ seed: 'flow-endpoints', now: 0 });
 const withBuildings = (specs: { type: Parameters<typeof createBuilding>[1]; x: number; y: number; tier?: number }[], state: GameState = base): GameState => {
@@ -60,6 +60,40 @@ describe('flow endpoints', () => {
     const walking = flowEndpointsOf(state, 'movement.pedestrians')!;
     const volume = (endpoints: { volume: number }[]) => endpoints.reduce((sum, endpoint) => sum + endpoint.volume, 0);
     expect(volume(all.origins)).toBeGreaterThanOrEqual(Math.max(volume(cars.origins), volume(walking.origins)));
+  });
+
+  it('has no endpoints for the flows of a building', () => {
+    expect(flowEndpointsOf(base, 'movement.flows')).toBeNull();
+  });
+
+  it('lists where the Citizens of a Home go and where those of a shop come from', () => {
+    const state = withBuildings([{ type: 'shop', x: 57, y: 57 }, { type: 'home', x: 56, y: 59 }]);
+    const shop = state.buildings.find(building => building.type === 'shop')!;
+    const home = state.buildings.at(-1)!;
+    const fromHome = buildingFlowsOf(state, home.id)!;
+    const toShop = buildingFlowsOf(state, shop.id)!;
+    expect(fromHome.arrivals).toEqual([]);
+    expect(fromHome.departures.map(flow => flow.id)).toContain(shop.id);
+    expect(toShop.arrivals.map(flow => flow.id)).toContain(home.id);
+    expect(toShop.arrivals.find(flow => flow.id === home.id)!.volume).toBe(fromHome.departures.find(flow => flow.id === shop.id)!.volume);
+  });
+
+  it('splits a flow by mode and sorts the busiest first', () => {
+    const state = withBuildings([{ type: 'shop', x: 57, y: 57 }, { type: 'home', x: 56, y: 59 }]);
+    const { departures } = buildingFlowsOf(state, state.buildings.at(-1)!.id)!;
+    for (const flow of departures) expect(flow.modes.car + flow.modes.walk + flow.modes.cycle).toBeCloseTo(flow.volume, 0);
+    expect(departures.map(flow => flow.volume)).toEqual([...departures.map(flow => flow.volume)].sort((a, b) => b - a));
+  });
+
+  it('gives the tiles each mode goes along', () => {
+    const state = withBuildings([{ type: 'shop', x: 57, y: 57 }, { type: 'home', x: 56, y: 59 }]);
+    const { routes, departures } = buildingFlowsOf(state, state.buildings.at(-1)!.id)!;
+    const used = departures.flatMap(flow => (['car', 'walk', 'cycle'] as const).filter(mode => flow.modes[mode] > 0));
+    for (const mode of used) expect(routes[mode].length).toBeGreaterThan(0);
+  });
+
+  it('has nothing for an unknown building', () => {
+    expect(buildingFlowsOf(base, -1)).toBeNull();
   });
 
   it('is independent of the order of the buildings', () => {

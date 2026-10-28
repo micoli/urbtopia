@@ -11,7 +11,7 @@ describe('layer legends', () => {
     expect(legendsOf('movement.all').map(legend => legend.label)).toEqual(['roads', 'sidewalks', 'crossings']);
   });
 
-  it('has at least one legend for every Layer', () => {
-    expect(ANALYTICS_LAYERS.filter(layer => legendsOf(layer).length === 0)).toEqual([]);
+  it('has at least one legend for every Layer but the flows of a building, which are listed instead', () => {
+    expect(ANALYTICS_LAYERS.filter(layer => legendsOf(layer).length === 0)).toEqual(['movement.flows']);
   });
 });

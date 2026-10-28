@@ -25,7 +25,7 @@ export function walkDestinations(state: GameState, graph: PedestrianGraph): Walk
   return sites.sort((a, b) => a.id - b.id);
 }
 
-export function walkServices(walk: WalkMap, sites: readonly WalkDestinationSite[], citizens: number, pedestrians: Map<string, number>, walkingTotals: WalkingTrips, cyclingTotals: WalkingTrips, sidewalkLoads: Map<string, number> = new Map(), arrivals: Map<number, number> = new Map()): number {
+export function walkServices(walk: WalkMap, sites: readonly WalkDestinationSite[], citizens: number, pedestrians: Map<string, number>, walkingTotals: WalkingTrips, cyclingTotals: WalkingTrips, sidewalkLoads: Map<string, number> = new Map(), arrivals: Map<number, number> = new Map(), onWalk: (site: number, count: number, nodes: string[]) => void = () => undefined): number {
   const trips = new Map<WalkDestination, number>();
   for (const kind of WALK_DESTINATIONS) {
     let best: { node: string; cost: number; site: number } | null = null;
@@ -39,9 +39,13 @@ export function walkServices(walk: WalkMap, sites: readonly WalkDestinationSite[
     const count = citizens * WALKING.tripsPerCitizen[kind];
     trips.set(kind, count);
     (best.cost <= WALKING.thresholds[kind] ? walkingTotals : cyclingTotals)[kind] += count;
-    if (best.cost <= WALKING.thresholds[kind]) arrivals.set(best.site, (arrivals.get(best.site) ?? 0) + count);
+    const nodes = nodesOnPath(walk, best.node);
+    if (best.cost <= WALKING.thresholds[kind]) {
+      arrivals.set(best.site, (arrivals.get(best.site) ?? 0) + count);
+      onWalk(best.site, count, nodes);
+    }
     for (const crossing of crossingsOnPath(walk, best.node)) pedestrians.set(crossing, (pedestrians.get(crossing) ?? 0) + count);
-    for (const node of nodesOnPath(walk, best.node)) sidewalkLoads.set(node, (sidewalkLoads.get(node) ?? 0) + count);
+    for (const node of nodes) sidewalkLoads.set(node, (sidewalkLoads.get(node) ?? 0) + count);
   }
   return walkAccessOf(trips, citizens);
 }
