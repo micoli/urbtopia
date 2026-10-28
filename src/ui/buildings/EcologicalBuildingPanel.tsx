@@ -12,14 +12,12 @@ import {
     type Building, isHomeType } from '../../core';
 import {lineStatusKey} from '../stats/management/transit/lineStatusKey';
 import {t} from '../../i18n/t';
-import {useGame, useUi} from '../common/hooks';
+import {useGame} from '../common/hooks';
 import {factorsAt, productionFactors} from '../../core/environment/energy';
-import { ActionButton } from '../common/ActionButton';
 import { DrawerPanel } from '../common/DrawerPanel';
 
 export function EcologicalBuildingPanel({building}: { building: Building; }) {
     const state = useGame(s => s.state);
-    const toggleStats = useUi(s => s.toggleStats);
     const energy = energyStats(state);
     const transport = transportStats(state);
     const greenProfile = greenProfileOf(building.type, building.tier);
@@ -85,6 +83,5 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
             }
         </DrawerPanel.LabelValue>
         }
-        <ActionButton block onClick={toggleStats}>{t('eco.title')}</ActionButton>
     </DrawerPanel>;
 }
