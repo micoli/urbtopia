@@ -1,6 +1,7 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { WALKING } from './walking';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
+import { pedestrianGraph, pedestrianWayNode } from '../map/pedestrianGraph';
 import { GOODS, SHOP, advance, congestionStats, createBuilding, newGame, transportStats, type GameState, type TransitTile } from '../index';
 
 const walkingEnabled = WALKING.enabled;
@@ -37,14 +38,35 @@ function brtDistrict({ withLine = true, roads = false } = {}): GameState {
 }
 
 describe('Home reached only by a BRT corridor', () => {
-  it('has no Commute by car and no Pedestrian path when a station covers it', () => {
+  const walkingWork = WALKING.workThreshold;
+  beforeEach(() => {
+    WALKING.workThreshold = 0;
+  });
+  afterEach(() => {
+    WALKING.workThreshold = walkingWork;
+  });
+
+  it('has no Commute by car and rides public transport when a station covers it', () => {
     const stats = congestionStats(brtDistrict());
     const home = stats.homes.get(4)!;
-    expect(home).toMatchObject({ commuters: 0, walkers: 0, walkAccess: 0, ratio: 0, disconnected: false });
+    expect(home).toMatchObject({ commuters: 0, walkers: 0, ratio: 0, disconnected: false });
     expect(stats.commuters).toBe(0);
     expect(stats.walkers).toBe(0);
     expect(stats.modes.transit).toBeGreaterThan(0);
     expect(stats.disconnectedSections).toEqual([]);
+  });
+
+  it('walks along the BRT corridor to a Shop beside it', () => {
+    const state = { ...brtDistrict(), buildings: [...brtDistrict().buildings, createBuilding(6, 'shop', 4, 1, 0)] };
+    const stats = congestionStats(state);
+    expect(stats.homes.get(4)!.walkAccess).toBeGreaterThan(0);
+    expect(stats.homes.get(4)).toMatchObject({ commuters: 0, disconnected: false });
+    expect(stats.walkingTrips.shop).toBeGreaterThan(0);
+  });
+
+  it('stays disconnected without a station even beside a Shop, as nobody can work within reach', () => {
+    const state = { ...brtDistrict({ withLine: false }), buildings: [...brtDistrict().buildings, createBuilding(6, 'shop', 4, 1, 0)] };
+    expect(congestionStats(state).homes.get(4)).toMatchObject({ disconnected: true });
   });
 
   it('is marked disconnected with maximum Congestion when no station covers it', () => {
@@ -65,6 +87,39 @@ describe('Home reached only by a BRT corridor', () => {
   it('is deterministic across calls', () => {
     const state = brtDistrict();
     expect(congestionStats(state, 1000).homes.get(4)).toEqual(congestionStats(state, 1000).homes.get(4));
+  });
+});
+
+describe('a Pedestrian way running along a BRT corridor', () => {
+  it('joins its Sidewalk on every tile, not only at its ends', () => {
+    const district = brtDistrict();
+    const state = { ...district, pedestrianWays: [3, 4, 5].map(x => ({ x, y: 1 })) };
+    const graph = pedestrianGraph(state);
+    const middle = graph.get(pedestrianWayNode({ x: 4, y: 1 })) ?? [];
+    expect(middle.some(edge => edge.to.startsWith('4,0:'))).toBe(true);
+  });
+});
+
+describe('a workplace on a Pedestrian way beside a BRT corridor', () => {
+  const walkingWork = WALKING.workThreshold;
+  beforeEach(() => {
+    WALKING.workThreshold = 0;
+  });
+  afterEach(() => {
+    WALKING.workThreshold = walkingWork;
+  });
+  const withShop = (withLine: boolean): GameState => {
+    const district = brtDistrict({ withLine });
+    return { ...district, pedestrianWays: [{ x: 1, y: 1 }], buildings: [...district.buildings, createBuilding(6, 'shop', 1, 2, 0)] };
+  };
+
+  it('is staffed by Riders when no Citizen can reach it and a station covers it', () => {
+    const stats = congestionStats(withShop(true));
+    expect(stats.filledJobs.get(6)).toBeGreaterThan(0);
+  });
+
+  it('stays empty without a station', () => {
+    expect(congestionStats(withShop(false)).filledJobs.get(6)).toBe(0);
   });
 });
 
