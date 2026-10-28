@@ -215,5 +215,6 @@ export type { TileField } from './analytics/tileField';
 export { LAND_VALUE } from './analytics/landValueField';
 export { probeOf } from './analytics/probe';
 export type { Probe, ProbeLine } from './analytics/probe';
-export { FLOW_ENDPOINTS, flowEndpointsOf } from './analytics/flowEndpoints';
-export type { FlowEndpoint, FlowEndpoints } from './analytics/flowEndpoints';
+export { FLOW_ENDPOINTS, buildingFlowsOf, flowEndpointsOf, hasTrips } from './analytics/flowEndpoints';
+export type { BuildingFlow, BuildingFlows, FlowEndpoint, FlowEndpoints, ModeVolumes } from './analytics/flowEndpoints';
+export type { TripMode } from './traffic/congestion';

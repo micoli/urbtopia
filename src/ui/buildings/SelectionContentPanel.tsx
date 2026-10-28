@@ -3,7 +3,7 @@ import { DecorationRotation } from './DecorationRotation';
 import { FrontRotation } from './FrontRotation';
 import { CoalPlantPanel } from './CoalPlantPanel';
 import { StopNameField } from './StopNameField';
-import { GAME_CONFIG, greenProfileOf, natureModelOf, isFacilityType, placementCost, canHaveSolarPanels, isRepaintableType, isUtilityType, isTransitStopType, kindOf } from '../../core';
+import { GAME_CONFIG, greenProfileOf, natureModelOf, isFacilityType, placementCost, canHaveSolarPanels, isRepaintableType, isUtilityType, isTransitStopType, kindOf, hasTrips } from '../../core';
 import { t } from '../../i18n/t';
 import { FacilityPanel } from './FacilityPanel';
 import { TownHallPanel } from '../politics/TownHallPanel';
@@ -28,6 +28,7 @@ export function SelectionContentPanel() {
   const select = useUi((store) => store.select);
   const moveSelected = useUi((store) => store.moveSelected);
   const sellSelected = useUi((store) => store.sellSelected);
+  const showBuildingFlows = useUi((store) => store.showBuildingFlows);
   const debug = useStore(prefsStore, (store) => store.debug);
   if (!building) return null;
 
@@ -55,6 +56,7 @@ export function SelectionContentPanel() {
         <ActionButton onClick={moveSelected}>
           ✥ {t('panel.move')}
         </ActionButton>
+        {hasTrips(building) ? <ActionButton onClick={() => showBuildingFlows(building.id)}>🚶 {t('panel.flows')}</ActionButton> : null}
         <CodexLinks building={building} />
         <ActionButton onClick={sellSelected}>
           ❌ {t('panel.sell')} · +<UrbsAmount value={refund}/>

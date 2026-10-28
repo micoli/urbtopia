@@ -448,7 +448,7 @@ _Avoid_: Heatmap, overlay, dashboard
 One reading of the city shown in the Analytics view. A Movement layer or a Data layer.
 
 **Movement layer**:
-A Layer showing how much Commuters or Pedestrians load the Roads and Sidewalks, as a share of capacity or as a volume: Pedestrians, Cars or All. It shows the city's aggregate load, never individual Vehicles or Pedestrians.
+A Layer showing how much Commuters or Pedestrians load the Roads and Sidewalks, as a share of capacity or as a volume: Pedestrians, Cars or All. It shows the city's aggregate load, never individual Vehicles or Pedestrians. The Building flows layer is the exception: it paints no tile but, for one tapped building, lists and joins the buildings its Citizens come from (arrivals) and go to (departures), by mode. Riders of public transport have no destination and are not counted.
 _Avoid_: Flow layer (Flow factor is a hydro term), traffic animation
 
 **Data layer**:

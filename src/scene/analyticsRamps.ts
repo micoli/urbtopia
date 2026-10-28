@@ -29,4 +29,7 @@ export function rampColor(ramp: RampId, share: number): number {
 }
 
 // Beacons over the Homes trips leave from and over the buildings they go to.
-export const FLOW_COLORS = { origins: '#69db7c', destinations: '#f06595' } as const;
+export const FLOW_COLORS = { origins: '#69db7c', destinations: '#f06595', selected: '#ffd43b' } as const;
+
+// The route of each mode of transport in the flows of a building.
+export const MODE_COLORS = { car: '#ff922b', walk: '#4dabf7', cycle: '#20c997' } as const;

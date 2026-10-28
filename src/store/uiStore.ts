@@ -62,8 +62,10 @@ export interface UiStore {
   lastAnalyticsLayer: AnalyticsLayerId | null;
   analyticsCategory: ServiceCategory;
   analyticsProbe: Coord | null;
+  analyticsBuildingId: number | null;
   enterAnalytics: (layer: AnalyticsLayerId, category?: ServiceCategory) => void;
   exitAnalytics: () => void;
+  showBuildingFlows: (id: number) => void;
   streetView: boolean;
   streetViewPicking: boolean;
   pickStreetView: () => void;
@@ -220,13 +222,18 @@ export const uiStore = createStore<UiStore>((set, get) => {
     lastAnalyticsLayer: readAnalyticsLayer(),
     analyticsCategory: readAnalyticsCategory(),
     analyticsProbe: null,
+    analyticsBuildingId: null,
     enterAnalytics: (layer, category = get().analyticsCategory) => {
       get().cancelTool();
       writeAnalyticsLayer(layer);
       writeAnalyticsCategory(category);
-      set({ analyticsLayer: layer, lastAnalyticsLayer: layer, analyticsCategory: category, analyticsProbe: null, flyout: null, selectedBuildingId: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false });
+      set({ analyticsLayer: layer, lastAnalyticsLayer: layer, analyticsCategory: category, analyticsProbe: null, analyticsBuildingId: null, flyout: null, selectedBuildingId: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false });
     },
-    exitAnalytics: () => set({ analyticsLayer: null, analyticsProbe: null }),
+    showBuildingFlows: (id) => {
+      get().enterAnalytics('movement.flows');
+      set({ analyticsBuildingId: id });
+    },
+    exitAnalytics: () => set({ analyticsLayer: null, analyticsProbe: null, analyticsBuildingId: null }),
     streetView: false,
     streetViewPicking: false,
     pickStreetView: () => {
@@ -321,7 +328,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     },
     hoverTile: (tile) => {
       const { hovered, analyticsLayer, pointerKind } = get();
-      if (analyticsLayer && pointerKind === 'mouse') set({ analyticsProbe: tile });
+      if (analyticsLayer && analyticsLayer !== 'movement.flows' && pointerKind === 'mouse') set({ analyticsProbe: tile });
       if (hovered?.x === tile.x && hovered.y === tile.y) return;
       reevaluate({ hovered: tile });
     },
@@ -344,10 +351,11 @@ export const uiStore = createStore<UiStore>((set, get) => {
       get().confirm(keepTool);
     },
     tapTile: (tile, buildingId = null) => {
-      if (get().analyticsLayer) return set({ analyticsProbe: tile });
-      if (get().tool) return;
       const state = gameStore.getState().state;
       const building = state.buildings.find((candidate) => footprintTiles(candidate).some((t) => t.x === tile.x && t.y === tile.y));
+      if (get().analyticsLayer === 'movement.flows') return set({ analyticsBuildingId: buildingId ?? building?.id ?? null });
+      if (get().analyticsLayer) return set({ analyticsProbe: tile });
+      if (get().tool) return;
       if (get().moveMode) {
         const movedId = buildingId ?? building?.id ?? null;
         if (movedId !== null) return startMove({ kind: 'move', buildingId: movedId }, tile);

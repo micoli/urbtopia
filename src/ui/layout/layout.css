@@ -479,6 +479,14 @@
   font-size: var(--font-size-xs);
 }
 
+.analytics-flow-building {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-sm);
+}
+
 .analytics-flow-list h4 {
   display: flex;
   align-items: center;
@@ -496,6 +504,25 @@
   display: flex;
   justify-content: space-between;
   gap: var(--space-12);
+}
+
+.analytics-flow-list li {
+  flex-wrap: wrap;
+}
+
+.analytics-flow-modes {
+  display: flex;
+  flex-basis: 100%;
+  gap: var(--space-8);
+  opacity: 0.8;
+}
+
+.analytics-flow-modes i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: var(--space-4);
+  border-radius: 50%;
 }
 
 .analytics-flow-list button {

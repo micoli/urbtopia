@@ -12,7 +12,7 @@ export function AnalyticsReadout() {
   const state = useGame(store => store.state);
   const probe = useMemo(() => (layer && tile ? probeOf(state, layer, category, tile) : null), [state, layer, category, tile]);
 
-  if (!layer) return null;
+  if (!layer || layer === 'movement.flows') return null;
   if (!tile) return <p className="analytics-readout analytics-readout-hint">{t('analytics.probe.empty')}</p>;
   return (
     <section className="analytics-readout" aria-label={t('analytics.probe.title')}>
