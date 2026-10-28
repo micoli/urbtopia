@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { Icon } from './Icon';
 
 export interface DropdownOption<T extends string | number> {
     value: T;
@@ -103,7 +104,7 @@ export function Dropdown<T extends string | number>({ label, options, value, pla
                 onKeyDown={onKeyDown}
             >
                 <span>{selected?.label ?? placeholder}</span>
-                <span aria-hidden="true">▾</span>
+                <Icon name="chevronDown" />
             </button>
             {open && (
                 <ul className="dropdown-list" id={`${id}-list`} role="listbox" aria-label={label}>

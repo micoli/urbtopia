@@ -6,6 +6,7 @@ import { useUi } from '../common/hooks';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { useConfirmKeys } from './useConfirmKeys';
 import { IconButton } from '../common/IconButton';
+import { Icon } from '../common/Icon';
 
 const PATH_START_HINT: Record<PathTool['kind'], MessageKey> = { road: 'pad.roadStart', pedestrianWay: 'pad.roadStart', demolishRoad: 'pad.demolishStart', demolishPedestrianWay: 'pad.demolishStart', upgradeRoad: 'pad.upgradeStart', upgradePedestrianWay: 'pad.upgradeStart' };
 
@@ -42,16 +43,16 @@ export function ConfirmPad() {
       </div>
       <div className="confirm-buttons">
         <IconButton size="lg" tone="danger" label={t('pad.cancel')} onClick={cancelTool}>
-          ✗
+          <Icon name="close" />
         </IconButton>
         {isBrush ? null : (
           <IconButton size="lg" tone="light" label={t('pad.rotate')} disabled={!canRotate} onClick={rotate}>
-            ⟳
+            <Icon name="rotateRight" />
           </IconButton>
         )}
         {isBrush ? null : (
           <IconButton size="lg" tone="accent" label={t('pad.confirm')} disabled={!canConfirm} onClick={() => confirm()}>
-            ✓
+            <Icon name="check" />
           </IconButton>
         )}
       </div>

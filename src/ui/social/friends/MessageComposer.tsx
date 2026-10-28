@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { t } from '../../../i18n/t';
 import { MAX_MESSAGE_LENGTH } from '../../../social/limits';
 import { ActionButton } from '../../common/ActionButton';
+import { Icon } from '../../common/Icon';
 
 interface MessageComposerProps {
     sending: boolean;
@@ -25,6 +26,6 @@ export function MessageComposer({sending, onSend, onRefresh}: MessageComposerPro
                       onClick={() => {
                           setRefreshing(true);
                           void onRefresh().finally(() => setRefreshing(false));
-                      }}><span aria-hidden="true">⟳</span></ActionButton>
+                      }}><Icon name="rotateRight" /></ActionButton>
     </form>;
 }

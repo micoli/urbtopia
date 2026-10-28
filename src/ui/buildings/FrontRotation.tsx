@@ -4,6 +4,7 @@ import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { useGame, useUi } from '../common/hooks';
+import { Icon } from '../common/Icon';
 
 export function FrontRotation({ building }: { building: Building }) {
   const state = useGame((store) => store.state);
@@ -13,9 +14,9 @@ export function FrontRotation({ building }: { building: Building }) {
   const canTurn = fronts.some((rotation) => rotation !== building.rotation);
   return (
     <ButtonRow align="stretch" spaced className="side-panel-actions">
-      <ActionButton aria-label={t('panel.rotateLeft')} disabled={!canTurn} onClick={() => turn(-1)}>⟲</ActionButton>
-      <ActionButton aria-label={t('panel.move')} onClick={moveSelected}>✥</ActionButton>
-      <ActionButton aria-label={t('panel.rotateRight')} disabled={!canTurn} onClick={() => turn(1)}>⟳</ActionButton>
+      <ActionButton aria-label={t('panel.rotateLeft')} disabled={!canTurn} onClick={() => turn(-1)}><Icon name="rotateLeft" /></ActionButton>
+      <ActionButton aria-label={t('panel.move')} onClick={moveSelected}><Icon name="move" /></ActionButton>
+      <ActionButton aria-label={t('panel.rotateRight')} disabled={!canTurn} onClick={() => turn(1)}><Icon name="rotateRight" /></ActionButton>
     </ButtonRow>
   );
 }

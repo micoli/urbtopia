@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Icon } from './Icon';
 
 interface AccordionSectionProps {
     id: string;
@@ -22,7 +23,7 @@ export function AccordionSection({ id, title, expanded, onToggle, chevron = fals
             <h3 className={headerAction ? 'accordion-heading-with-action' : undefined}>
                 <button type="button" className={toggleClassName} id={toggleId} aria-expanded={expanded} aria-disabled={lockWhenExpanded && expanded ? true : undefined} aria-controls={id} data-guided={guided} onClick={onToggle}>
                     <span>{title}</span>
-                    {chevron && <span aria-hidden="true">{expanded ? '▾' : '▸'}</span>}
+                    {chevron && <Icon name={expanded ? 'chevronDown' : 'chevronRight'} />}
                 </button>
                 {headerAction}
             </h3>

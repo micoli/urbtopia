@@ -23,6 +23,7 @@ import { PanelHeader } from '../common/PanelHeader';
 import { CodexLinks } from './CodexLinks';
 import { StopLineButtons } from './StopLineButtons';
 import {RepaintRow} from "./RepaintRow.tsx";
+import { Icon } from '../common/Icon';
 
 export function SelectionContentPanel() {
   const building = useSelectedBuilding();
@@ -58,7 +59,7 @@ export function SelectionContentPanel() {
         <CodexLinks building={building} />
         {hasTrips(building) ? <ActionButton onClick={() => showBuildingFlows(building.id)}>🚶 {t('panel.flows')}</ActionButton> : null}
         <ActionButton onClick={sellSelected}>
-          ❌ {t('panel.sell')} +<UrbsAmount value={refund}/>
+          <Icon name="trash" /> {t('panel.sell')} +<UrbsAmount value={refund}/>
         </ActionButton>
       </ButtonRow>
     </>

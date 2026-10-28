@@ -1,6 +1,7 @@
 import {climateStats, cityBenefits, energyStats, modeShares, totalCitizens, transportStats, wasteSituation, type CongestionStats, type GameState} from '../../../core';
 import {t} from '../../../i18n/t';
 import {OverviewTile} from './OverviewTile';
+import { Icon } from '../../common/Icon';
 
 interface CityOverviewProps {
     state: GameState;
@@ -31,7 +32,7 @@ export function CityOverview({state, energy, green, climate, transport, congesti
             <span className="eco-overview-value"><span>{t('eco.wellbeing')}</span><strong>{green.wellbeing.toFixed(0)} <small>/ 100</small></strong></span>
         </button>
         <button type="button" aria-controls="eco-waste" data-warning={waste.required && waste.unprocessed > 0} title={t('waste.overview.title')} onClick={onShowWaste}>
-            <span aria-hidden="true">🗑️</span>
+            <Icon name="trash" />
             <span className="eco-overview-value"><span>{t('waste.section.title')}</span><strong>{waste.processed.toFixed(0)}<small>/ {waste.produced.toFixed(0)}</small></strong></span>
         </button>
         <button type="button" aria-controls="eco-temperature" title={t('eco.temperatureHelp')} onClick={onShowTemperature}>

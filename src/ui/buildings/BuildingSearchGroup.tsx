@@ -1,6 +1,7 @@
 import { maxTierOf, type Building } from '../../core';
 import { ProductionChainBuildingIcon } from '../codex/ProductionChainBuildingIcon';
 import { progressColor } from '../common/progressColor';
+import { Icon } from '../common/Icon';
 
 interface BuildingSearchGroupProps {
   type: Building['type'];
@@ -20,7 +21,7 @@ export function BuildingSearchGroup({ type, name, buildings, expanded, onToggle,
   return (
     <li className="building-search-group">
       <button type="button" className="building-search-branch" aria-expanded={expanded} onClick={onToggle}>
-        <span className="building-search-chevron" aria-hidden="true">{expanded ? '▾' : '▸'}</span>
+        <span className="building-search-chevron" aria-hidden="true"><Icon name={expanded ? 'chevronDown' : 'chevronRight'} /></span>
         <ProductionChainBuildingIcon building={type} />
         <span className="building-search-name">{name}</span>
         <span className="building-search-count">{buildings.length}</span>
