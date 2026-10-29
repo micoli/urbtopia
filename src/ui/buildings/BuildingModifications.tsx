@@ -28,7 +28,7 @@ export function BuildingModifications({ building }: { building: Building }) {
       {isRepaintableType(building.type) ? <RepaintRow building={building} /> : null}
       {canHaveSolarPanels(building.type) ? <SolarPanelsRow building={building} /> : null}
       <UpgradeSection building={building} />
-      <ActionButton onClick={sellSelected}>
+      <ActionButton className="mt-4" onClick={sellSelected}>
         <Icon name="trash" /> {t('panel.sell')} +<UrbsAmount value={refund} />
       </ActionButton>
     </PanelSection>
