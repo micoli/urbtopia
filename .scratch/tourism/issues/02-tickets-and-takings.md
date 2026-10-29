@@ -1,6 +1,6 @@
 # Tickets and Takings for Attractions
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 01
 
@@ -10,6 +10,6 @@ Each Attraction has a Ticket (3 levels). Tourist entries turn into Takings, capp
 
 ## Acceptance criteria
 
-- [ ] Ticket level saved with the building; default is the middle level.
-- [ ] Takings accrue per hour, are capped, and are collected by a Command through the Command gateway.
-- [ ] Tests: Ticket trade-off, cap, collection, catch-up replay.
+- [x] Ticket level saved with the building; default is the middle level.
+- [x] Takings accrue per hour, are capped, and are collected by a Command through the Command gateway.
+- [x] Tests: Ticket trade-off, cap, collection, catch-up replay.

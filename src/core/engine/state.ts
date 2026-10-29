@@ -85,6 +85,12 @@ export interface VenueData {
   cooldownUntil?: number;
 }
 
+// Ticket level of an Attraction (0 lowest) and the Urbs its Tourists have paid and nobody has collected.
+export interface AttractionData {
+  ticket?: number;
+  takings: number;
+}
+
 export interface Building extends Coord {
   id: number;
   type: BuildingType;
@@ -101,6 +107,7 @@ export interface Building extends Coord {
   coalEnabled?: boolean;
   name?: string;
   venue?: VenueData;
+  attraction?: AttractionData;
 }
 
 export interface Storage {

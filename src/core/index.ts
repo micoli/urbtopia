@@ -223,3 +223,4 @@ export type { BuildingFlow, BuildingFlows, FlowEndpoint, FlowEndpoints, ModeVolu
 export type { TripMode } from './traffic/congestion';
 export type { FlowMode } from './analytics/flowEndpoints';
 export { TOURISM, attractionPowerOf, isAttraction, spendingFactor, touristDemand } from './tourism/tourists';
+export { TICKETS, TICKET_DEFAULT, TAKINGS, advanceAttractions, attractionTakingsCapOf, collectAttractionTakings, earningsPerHour, setTicket, takingsOf as attractionTakingsOf, ticketOf, touristsPerDay } from './tourism/takings';
