@@ -1,6 +1,7 @@
-import { greenProfileOf, isFacilityType, isTransitStopType, isUtilityType, kindOf, type Building } from '../../core';
+import { greenProfileOf, isAttraction, isFacilityType, isTransitStopType, isUtilityType, kindOf, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { TownHallPanel } from '../politics/TownHallPanel';
+import { AttractionPanel } from './AttractionPanel';
 import { BuildingAccess } from './BuildingAccess';
 import { BuildingJobs } from './BuildingJobs';
 import { CoalPlantPanel } from './CoalPlantPanel';
@@ -23,6 +24,7 @@ export function BuildingUsage({ building }: { building: Building }) {
       {isTransitStopType(building.type) ? <StopNameField building={building} /> : null}
       {isTransitStopType(building.type) ? <StopLineButtons building={building} /> : null}
       {isEcologicalBuilding ? <EcologicalBuildingPanel building={building} /> : null}
+      {isAttraction(building) ? <AttractionPanel building={building} /> : null}
       {KindPanel ? <KindPanel building={building} /> : null}
       {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}
       {building.type === 'townHall' ? <TownHallPanel building={building} /> : null}
