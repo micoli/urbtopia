@@ -166,10 +166,10 @@ describe('social window', () => {
     uiStore.getState().toggleSocial();
   });
 
-  it('closes when the codex opens', () => {
+  it('stays open under the codex', () => {
     uiStore.getState().toggleSocial();
     uiStore.getState().openCodex();
-    expect(uiStore.getState().socialOpen).toBe(false);
+    expect(uiStore.getState()).toMatchObject({ socialOpen: true, codexOpen: true });
   });
 
   it('opens the codex on a rules page, and on the first entry without one', () => {
@@ -184,32 +184,29 @@ describe('social window', () => {
   });
 });
 
-describe('Codex opened from the Market', () => {
-  it('comes back to the Market when the Codex closes', () => {
-    uiStore.setState({ marketOpen: true });
+describe('Codex as a modal above everything', () => {
+  afterEach(() => uiStore.setState({ codexOpen: false, marketOpen: false, settingsOpen: false, statsOpen: false, flyout: null, selectedBuildingId: null }));
+
+  it('leaves the open windows, the menu and the selected building where they are', () => {
+    uiStore.setState({ marketOpen: true, statsOpen: true, flyout: 'build', selectedBuildingId: 7 });
     uiStore.getState().openCodex(undefined, 'market');
-    expect(uiStore.getState().marketOpen).toBe(false);
-    expect(uiStore.getState().codexPage).toBe('market');
-    uiStore.getState().closeCodex();
-    expect(uiStore.getState().marketOpen).toBe(true);
-    uiStore.setState({ marketOpen: false });
+    expect(uiStore.getState()).toMatchObject({ codexOpen: true, codexPage: 'market', marketOpen: true, statsOpen: true, flyout: 'build', selectedBuildingId: 7 });
   });
 
-  it('leaves the Market closed when it was not open', () => {
-    uiStore.setState({ marketOpen: false });
-    uiStore.getState().openCodex(undefined, 'challenges');
+  it('closes alone, with everything still as it was', () => {
+    uiStore.setState({ settingsOpen: true, selectedBuildingId: 7 });
+    uiStore.getState().openCodex('home');
     uiStore.getState().closeCodex();
-    expect(uiStore.getState().marketOpen).toBe(false);
+    expect(uiStore.getState()).toMatchObject({ codexOpen: false, settingsOpen: true, selectedBuildingId: 7 });
   });
 
-  it('does not bring back what it came from when it is dismissed for another window', () => {
-    uiStore.setState({ marketOpen: true, settingsOpen: false, flyout: null });
-    uiStore.getState().openCodex(undefined, 'market');
-    uiStore.getState().dismissCodex();
-    expect(uiStore.getState()).toMatchObject({ codexOpen: false, marketOpen: false, settingsOpen: false, flyout: null, codexFromMarket: false });
-    uiStore.getState().toggleStats();
-    expect(uiStore.getState()).toMatchObject({ statsOpen: true, marketOpen: false });
-    uiStore.setState({ statsOpen: false });
+  it('opens on the entry or the page it was asked for', () => {
+    uiStore.getState().openCodex();
+    expect(uiStore.getState()).toMatchObject({ codexEntryId: 'home', codexShowDetail: false, codexPage: null });
+    uiStore.getState().openCodex('shop');
+    expect(uiStore.getState()).toMatchObject({ codexEntryId: 'shop', codexShowDetail: true });
+    uiStore.getState().openCodex(undefined, 'waste');
+    expect(uiStore.getState()).toMatchObject({ codexShowDetail: true, codexPage: 'waste' });
   });
 });
 

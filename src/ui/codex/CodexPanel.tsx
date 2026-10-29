@@ -27,16 +27,13 @@ import { AccordionSection } from '../common/AccordionSection';
 
 export function CodexPanel() {
   const close = useUi(store => store.closeCodex);
-  const dismiss = useUi(store => store.dismissCodex);
   const backdrop = useBackdropClose(event => {
+    close();
     const nav = navButtonAt(event.clientX, event.clientY);
-    if (!nav || nav.dataset.action === 'codex') return close();
-    dismiss();
-    nav.click();
+    if (nav && nav.dataset.action !== 'codex') nav.click();
   });
   const initialEntry = useUi(store => store.codexEntryId);
   const initialDetail = useUi(store => store.codexShowDetail);
-  const initialFlyout = useUi(store => store.codexFromFlyout);
   const initialPage = useUi(store => store.codexPage);
   const dialog = useRef<HTMLDialogElement>(null);
   const heading = useId();
@@ -55,7 +52,7 @@ export function CodexPanel() {
 
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
-    const previousEntry = previous?.getAttribute('data-codex-id') ?? previous?.getAttribute('data-codex-label') ?? (initialDetail && initialFlyout ? initialEntry : null);
+    const previousEntry = previous?.getAttribute('data-codex-id') ?? previous?.getAttribute('data-codex-label');
     dialog.current?.showModal();
     return () => {
       requestAnimationFrame(() => {

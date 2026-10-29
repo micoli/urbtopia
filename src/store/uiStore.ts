@@ -76,15 +76,11 @@ export interface UiStore {
   dropStreetView: (tile: Coord) => void;
   exitStreetView: () => void;
   codexOpen: boolean;
-  codexFromSettings: boolean;
-  codexFromMarket: boolean;
-  codexFromFlyout: Flyout;
   codexEntryId: CodexId;
   codexShowDetail: boolean;
   codexPage: CodexPage | null;
   openCodex: (entry?: CodexId, page?: CodexPage) => void;
   closeCodex: () => void;
-  dismissCodex: () => void;
   pendingSaleId: number | null;
   evaluation: Evaluation | null;
   openFlyout: (flyout: Flyout) => void;
@@ -276,18 +272,15 @@ export const uiStore = createStore<UiStore>((set, get) => {
       set({ streetView: false });
     },
     codexOpen: false,
-    codexFromSettings: false,
-    codexFromMarket: false,
-    codexFromFlyout: null,
     codexEntryId: 'home',
     codexShowDetail: false,
     codexPage: null,
+    // The Codex is a modal above everything: it leaves the open windows, the menus and the selection where they are.
     openCodex: (entry, page) => {
       get().cancelTool();
-      set({ codexOpen: true, codexFromSettings: get().settingsOpen, codexFromMarket: get().marketOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined || page !== undefined, codexPage: page ?? null, settingsOpen: false, marketOpen: false, statsOpen: false, socialOpen: false, flyout: null, selectedBuildingId: null });
+      set({ codexOpen: true, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined || page !== undefined, codexPage: page ?? null });
     },
-    dismissCodex: () => set({ codexOpen: false, codexFromSettings: false, codexFromMarket: false, codexFromFlyout: null }),
-    closeCodex: () => set({ codexOpen: false, settingsOpen: get().codexFromSettings, marketOpen: get().codexFromMarket, flyout: get().codexFromFlyout, codexFromSettings: false, codexFromMarket: false, codexFromFlyout: null }),
+    closeCodex: () => set({ codexOpen: false }),
     pendingSaleId: null,
     evaluation: null,
     openFlyout: (flyout) => {
