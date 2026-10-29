@@ -221,6 +221,7 @@
 
 .bottom-bar-button {
   flex: 1;
+  min-width: 0;
   min-height: var(--tap);
   display: flex;
   flex-direction: column;
@@ -232,7 +233,7 @@
   font-size: var(--font-size-2xl);
 }
 
-.bottom-bar-button span:last-child {
+.bottom-bar-label {
   font-size: var(--font-size-2xs);
 }
 
