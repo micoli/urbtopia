@@ -940,6 +940,8 @@ export const CATALOG = {
   'office.due': ['Earned', 'À récupérer'],
   'event.gatheringStarted': ['A Gathering has started.', 'Un rassemblement a commencé.'],
   'event.gatheringEnded': ['A Gathering has ended.', 'Un rassemblement est terminé.'],
+  'show.artist': ['Artist', 'Artiste'],
+  'show.fame': ['Fame {fame}', 'Renommée {fame}'],
   'show.crowd': ['Expected crowd', 'Foule attendue'],
   'show.cost': ['Cost', 'Coût'],
   'show.startsIn': ['Starts in (hours)', 'Début dans (heures)'],

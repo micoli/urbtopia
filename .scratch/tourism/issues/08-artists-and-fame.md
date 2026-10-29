@@ -1,6 +1,6 @@
 # Artists and Fame ceiling
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 04, 05
 
@@ -10,6 +10,6 @@ Ship the 100 Artists of `.scratch/tourism/artists.json` as game data. Fame ceili
 
 ## Acceptance criteria
 
-- [ ] Data moved under assets with a schema; names stay invented.
-- [ ] Draw is deterministic from a seed saved with the Show offer.
-- [ ] Tests: ceiling monotonic in Well-being and population; offer never above ceiling.
+- [x] Data moved under assets with a schema; names stay invented.
+- [x] Draw is deterministic from a seed saved with the Show offer.
+- [x] Tests: ceiling monotonic in Well-being and population; offer never above ceiling.

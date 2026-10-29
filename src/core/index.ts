@@ -230,3 +230,5 @@ export { GATHERING, SHOW_TYPES, advanceGatherings, gatheringBoundaries, gatherin
 export { CROWD_WINDOW_MS, GATHERING_REACH, isCrowdMoving, movingGathering } from './tourism/gatheringWindow';
 export { GATHERING_MALUS, gatheringPenaltyOf } from './tourism/gatheringMalus';
 export { shiftAttractionTimers } from './tourism/gatheringWindow';
+export { ARTISTS, ARTIST_OFFER_SIZE, MAX_FAME, artistById, artistOffer, fameCeiling, feeOfArtist } from './tourism/artists';
+export type { Artist } from './tourism/artistSchema';

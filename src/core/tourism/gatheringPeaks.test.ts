@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { congestionStats, createBuilding, dispatch, homeBenefits, newGame, advance, type Building, type Command, type GameState } from '../index';
 import { CROWD_WINDOW_MS, isCrowdMoving, movingGathering } from './gatheringWindow';
 import { GATHERING_MALUS } from './gatheringMalus';
+import { artistOffer } from './artists';
 import { gatheringBoundaries } from './gatherings';
 import { diagnoseCongestion } from '../traffic/diagnosis';
 
@@ -16,7 +17,8 @@ const send = (state: GameState, command: Command) => {
   if (!result.ok) throw new Error(result.error.key);
   return result.state;
 };
-const scheduled = () => send(base(), { type: 'ScheduleShow', buildingId: 1, startsInHours: 4 });
+const artistFor = (state: GameState) => artistOffer(state, state.buildings[0]!)[0]!.id;
+const scheduled = () => send(base(), { type: 'ScheduleShow', buildingId: 1, startsInHours: 4, artistId: artistFor(base()) });
 const at = (state: GameState, now: number): GameState => ({ ...state, lastSeen: now });
 const load = (state: GameState) => [...congestionStats(state).sections.values()].reduce((sum, section) => sum + section.load, 0);
 const gathering = () => scheduled().buildings[0]!.attraction!.gathering!;
@@ -53,7 +55,7 @@ describe('Gathering transport peaks', () => {
 
   it('never removes Tourists: the crowd is the same however poor the service', () => {
     expect(gathering().tourists).toBeGreaterThan(0);
-    const served = send({ ...base(), buildings: [...base().buildings, building(3, 'railStation', 62, 59)] }, { type: 'ScheduleShow', buildingId: 1, startsInHours: 4 });
+    const served = send({ ...base(), buildings: [...base().buildings, building(3, 'railStation', 62, 59)] }, { type: 'ScheduleShow', buildingId: 1, startsInHours: 4, artistId: artistFor(base()) });
     expect(served.buildings[0]!.attraction!.gathering!.tourists).toBeCloseTo(gathering().tourists);
   });
 

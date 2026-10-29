@@ -5,6 +5,7 @@ import { bridgeInfrastructureSchema, railsInfrastructureSchema, roadsInfrastruct
 import { natureDescriptionsSchema, NATURE_DESCRIPTION_VALUES } from '../src/core/descriptions/descriptionSchemas.ts';
 import { templateProblems } from '../src/core/descriptions/descriptionProblems.ts';
 import { packFormatsSchema } from '../src/core/economy/itemSchemas.ts';
+import { artistsSchema } from '../src/core/tourism/artistSchema.ts';
 
 // Game data held in one file rather than one file per id. Pure: shared by the scripts, the build and the editor.
 
@@ -69,6 +70,21 @@ export const SINGLETONS = {
     schema: natureDescriptionsSchema,
     problems: ({ families }: { families: Record<string, { en: string; fr: string }> }) =>
       Object.entries(families).flatMap(([family, text]) => (['en', 'fr'] as const).flatMap(language => templateProblems(text[language], new Set(NATURE_DESCRIPTION_VALUES), `families.${family}.${language}`))),
+  },
+  artists: {
+    file: 'assets/defs/tourism/artists.json',
+    title: 'Artists',
+    schemaName: 'tourism-artists',
+    schema: artistsSchema,
+    problems: ({ artists }: { artists: { name: string }[] }) => {
+      const seen = new Set<string>();
+      return artists.flatMap(({ name }, index) => {
+        const key = name.toLowerCase();
+        const clash = seen.has(key) ? [{ path: `artists.${index}.name`, message: `duplicate Artist name ${name}` }] : [];
+        seen.add(key);
+        return clash;
+      });
+    },
   },
   packFormats: { file: 'assets/defs/packFormats.json', title: 'Pack formats', schemaName: 'packFormats', schema: packFormatsSchema },
 } satisfies Record<string, SingletonSpec>;

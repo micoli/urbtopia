@@ -4,6 +4,7 @@ import { FIXTURE_ENTRIES, type FixtureCategory } from '../core/venues/fixtures';
 type VenueMessageKey =
   | 'error.unknownFixture'
   | 'error.invalidPrice'
+  | 'error.invalidArtist'
   | 'error.managerRequired'
   | 'error.rankTooLow'
   | 'venue.rank'
@@ -198,6 +199,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.roleEffect.technician': ['Repairs the machines for less, slows the wear', 'Répare les machines à moindre coût, ralentit l’usure'],
   'venue.roleEffect.security': ['Prevents incidents: keeps 10% more Visitors', 'Évite les incidents : garde 10 % de visiteurs en plus'],
   'error.invalidPrice': ['This price is not allowed.', 'Ce prix n’est pas autorisé.'],
+  'error.invalidArtist': ['This Artist is not on offer.', 'Cet artiste n’est pas proposé.'],
   'venue.attractiveness': ['Attractiveness', 'Attractivité'],
   'venue.serviceRate': ['Service speed', 'Rapidité du service'],
   'venue.hint.counterFar': ['Too far from the entrance: the service slows down.', 'Trop loin de l’entrée : le service ralentit.'],

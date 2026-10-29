@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "artists": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^artist-\\d{3}$"
+          },
+          "name": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "solo",
+              "group"
+            ]
+          },
+          "fame": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "fame"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "artists"
+  ],
+  "additionalProperties": false,
+  "title": "Artists",
+  "description": "assets/defs/tourism/artists.json: the invented Artists who play the Concert hall, with their Fame."
+}

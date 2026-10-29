@@ -92,6 +92,8 @@ export interface GatheringData {
   endsAt: number;
   cost: number;
   quality: number;
+  // The Artist who plays a Concert hall Show.
+  artist?: string;
   crowd: number;
   tourists: number;
   citizens: number;
@@ -104,6 +106,8 @@ export interface AttractionData {
   takings: number;
   gathering?: GatheringData;
   cooldownUntil?: number;
+  // Shows scheduled so far: with the building it seeds the Artists offered for the next one.
+  shows?: number;
 }
 
 export interface Building extends Coord {

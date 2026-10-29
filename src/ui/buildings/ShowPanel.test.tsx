@@ -33,6 +33,13 @@ describe('ShowPanel', () => {
     expect(html).toContain(t('show.schedule'));
   });
 
+  it('offers three Artists with their Fame for the Concert hall only', () => {
+    const hall = render(createBuilding(900, 'concertHall', 60, 60, 0));
+    expect(hall).toContain(t('show.artist'));
+    expect(hall.match(/role="radio"/g)).toHaveLength(3);
+    expect(render(createBuilding(900, 'theater', 60, 60, 0))).not.toContain(t('show.artist'));
+  });
+
   it('disables scheduling when the Urbs are short', () => {
     expect(render(createBuilding(900, 'concertHall', 60, 60, 0), 0)).toMatch(/disabled/);
   });
