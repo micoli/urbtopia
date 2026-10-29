@@ -1,0 +1,602 @@
+[
+  {
+    "id": "artist-001",
+    "name": "Ambrose Finch",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-002",
+    "name": "Iron Lilies",
+    "kind": "group",
+    "fame": 3
+  },
+  {
+    "id": "artist-003",
+    "name": "The Midnight Tramway",
+    "kind": "group",
+    "fame": 1
+  },
+  {
+    "id": "artist-004",
+    "name": "Orbit Bakery",
+    "kind": "group",
+    "fame": 4
+  },
+  {
+    "id": "artist-005",
+    "name": "Joaquin Thorne",
+    "kind": "solo",
+    "fame": 2
+  },
+  {
+    "id": "artist-006",
+    "name": "The Sleepy Cartographers",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-007",
+    "name": "Lunar Dockyard",
+    "kind": "group",
+    "fame": 5
+  },
+  {
+    "id": "artist-008",
+    "name": "Dusty Meridian",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-009",
+    "name": "Honey Voltage",
+    "kind": "group",
+    "fame": 4
+  },
+  {
+    "id": "artist-010",
+    "name": "Lenka Voss",
+    "kind": "solo",
+    "fame": 2
+  },
+  {
+    "id": "artist-011",
+    "name": "Cornelius Ray",
+    "kind": "solo",
+    "fame": 2
+  },
+  {
+    "id": "artist-012",
+    "name": "Emil Navarro",
+    "kind": "solo",
+    "fame": 4
+  },
+  {
+    "id": "artist-013",
+    "name": "Gideon Falk",
+    "kind": "solo",
+    "fame": 2
+  },
+  {
+    "id": "artist-014",
+    "name": "Bitter Almond Kings",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-015",
+    "name": "Tangerine Ghost",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-016",
+    "name": "Static Orchard",
+    "kind": "group",
+    "fame": 3
+  },
+  {
+    "id": "artist-017",
+    "name": "Caspian Wren",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-018",
+    "name": "Ignatius Bloom",
+    "kind": "solo",
+    "fame": 1
+  },
+  {
+    "id": "artist-019",
+    "name": "The Candle Thieves",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-020",
+    "name": "Nine Lazy Foxes",
+    "kind": "group",
+    "fame": 3
+  },
+  {
+    "id": "artist-021",
+    "name": "The Distant Anchors",
+    "kind": "group",
+    "fame": 3
+  },
+  {
+    "id": "artist-022",
+    "name": "Philippa Crane",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-023",
+    "name": "The Paper Lanterns",
+    "kind": "group",
+    "fame": 3
+  },
+  {
+    "id": "artist-024",
+    "name": "Dario Quill",
+    "kind": "solo",
+    "fame": 1
+  },
+  {
+    "id": "artist-025",
+    "name": "Ximena Duarte",
+    "kind": "solo",
+    "fame": 1
+  },
+  {
+    "id": "artist-026",
+    "name": "Wilhelmina Fox",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-027",
+    "name": "Copper Tide",
+    "kind": "group",
+    "fame": 1
+  },
+  {
+    "id": "artist-028",
+    "name": "Liora Banks",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-029",
+    "name": "The Amber Ferrymen",
+    "kind": "group",
+    "fame": 1
+  },
+  {
+    "id": "artist-030",
+    "name": "Gravel Angels",
+    "kind": "group",
+    "fame": 3
+  },
+  {
+    "id": "artist-031",
+    "name": "The Silver Moths",
+    "kind": "group",
+    "fame": 4
+  },
+  {
+    "id": "artist-032",
+    "name": "Odette Marlowe",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-033",
+    "name": "Paper Moon Garage",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-034",
+    "name": "Drift Cathedral",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-035",
+    "name": "The Quiet Engines",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-036",
+    "name": "The Glass Pelicans",
+    "kind": "group",
+    "fame": 3
+  },
+  {
+    "id": "artist-037",
+    "name": "Plum Rocket",
+    "kind": "group",
+    "fame": 1
+  },
+  {
+    "id": "artist-038",
+    "name": "Marguerite Lund",
+    "kind": "solo",
+    "fame": 2
+  },
+  {
+    "id": "artist-039",
+    "name": "Delphine Ash",
+    "kind": "solo",
+    "fame": 1
+  },
+  {
+    "id": "artist-040",
+    "name": "Sibyl Navarre",
+    "kind": "solo",
+    "fame": 4
+  },
+  {
+    "id": "artist-041",
+    "name": "Felix Aranda",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-042",
+    "name": "Beatrix Hollis",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-043",
+    "name": "Cosmic Pudding",
+    "kind": "group",
+    "fame": 3
+  },
+  {
+    "id": "artist-044",
+    "name": "Anouk Valmont",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-045",
+    "name": "Marble Thunder",
+    "kind": "group",
+    "fame": 4
+  },
+  {
+    "id": "artist-046",
+    "name": "Blue Cartel Radio",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-047",
+    "name": "Octavio Blythe",
+    "kind": "solo",
+    "fame": 2
+  },
+  {
+    "id": "artist-048",
+    "name": "Dmitri Lowell",
+    "kind": "solo",
+    "fame": 2
+  },
+  {
+    "id": "artist-049",
+    "name": "Nova Ellery",
+    "kind": "solo",
+    "fame": 4
+  },
+  {
+    "id": "artist-050",
+    "name": "The Tin Whistlers",
+    "kind": "group",
+    "fame": 3
+  },
+  {
+    "id": "artist-051",
+    "name": "Cinder Parade",
+    "kind": "group",
+    "fame": 1
+  },
+  {
+    "id": "artist-052",
+    "name": "Zelda Montrose",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-053",
+    "name": "Savannah Rook",
+    "kind": "solo",
+    "fame": 5
+  },
+  {
+    "id": "artist-054",
+    "name": "Leopold Quist",
+    "kind": "solo",
+    "fame": 2
+  },
+  {
+    "id": "artist-055",
+    "name": "The Rooftop Herons",
+    "kind": "group",
+    "fame": 4
+  },
+  {
+    "id": "artist-056",
+    "name": "Esme Tavares",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-057",
+    "name": "Neon Marmots",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-058",
+    "name": "Thalia Reyes",
+    "kind": "solo",
+    "fame": 2
+  },
+  {
+    "id": "artist-059",
+    "name": "The Northern Lamps",
+    "kind": "group",
+    "fame": 3
+  },
+  {
+    "id": "artist-060",
+    "name": "Velvet Harbor",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-061",
+    "name": "Kasimir Bell",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-062",
+    "name": "Electric Quince",
+    "kind": "group",
+    "fame": 4
+  },
+  {
+    "id": "artist-063",
+    "name": "Selma Okonjo",
+    "kind": "solo",
+    "fame": 4
+  },
+  {
+    "id": "artist-064",
+    "name": "Moss & Mirrors",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-065",
+    "name": "Rufus Delacroix",
+    "kind": "solo",
+    "fame": 1
+  },
+  {
+    "id": "artist-066",
+    "name": "Lilac Furnace",
+    "kind": "group",
+    "fame": 4
+  },
+  {
+    "id": "artist-067",
+    "name": "Granite Sparrows",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-068",
+    "name": "Salt & Ember",
+    "kind": "group",
+    "fame": 3
+  },
+  {
+    "id": "artist-069",
+    "name": "Matteo Verne",
+    "kind": "solo",
+    "fame": 1
+  },
+  {
+    "id": "artist-070",
+    "name": "Brass Monsoon",
+    "kind": "group",
+    "fame": 3
+  },
+  {
+    "id": "artist-071",
+    "name": "Pale Comet Club",
+    "kind": "group",
+    "fame": 5
+  },
+  {
+    "id": "artist-072",
+    "name": "Low Tide Riot",
+    "kind": "group",
+    "fame": 1
+  },
+  {
+    "id": "artist-073",
+    "name": "Hollow Pines",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-074",
+    "name": "Wild Kettle",
+    "kind": "group",
+    "fame": 1
+  },
+  {
+    "id": "artist-075",
+    "name": "Amadou Lyle",
+    "kind": "solo",
+    "fame": 2
+  },
+  {
+    "id": "artist-076",
+    "name": "Basil Roark",
+    "kind": "solo",
+    "fame": 1
+  },
+  {
+    "id": "artist-077",
+    "name": "Anselm Drake",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-078",
+    "name": "Polar Jukebox",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-079",
+    "name": "Fable Engine",
+    "kind": "group",
+    "fame": 1
+  },
+  {
+    "id": "artist-080",
+    "name": "Teo Ashgrove",
+    "kind": "solo",
+    "fame": 2
+  },
+  {
+    "id": "artist-081",
+    "name": "Jasper Okafor",
+    "kind": "solo",
+    "fame": 2
+  },
+  {
+    "id": "artist-082",
+    "name": "Isolde March",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-083",
+    "name": "Noor Haverford",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-084",
+    "name": "Calypso Vane",
+    "kind": "solo",
+    "fame": 1
+  },
+  {
+    "id": "artist-085",
+    "name": "Priya Sandoval",
+    "kind": "solo",
+    "fame": 1
+  },
+  {
+    "id": "artist-086",
+    "name": "Tobias Kestrel",
+    "kind": "solo",
+    "fame": 5
+  },
+  {
+    "id": "artist-087",
+    "name": "Saffron Static",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-088",
+    "name": "Rust Garden",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-089",
+    "name": "Tidal Choir",
+    "kind": "group",
+    "fame": 4
+  },
+  {
+    "id": "artist-090",
+    "name": "The Velvet Hounds",
+    "kind": "group",
+    "fame": 2
+  },
+  {
+    "id": "artist-091",
+    "name": "Yuna Castellan",
+    "kind": "solo",
+    "fame": 1
+  },
+  {
+    "id": "artist-092",
+    "name": "Odile Santorini",
+    "kind": "solo",
+    "fame": 4
+  },
+  {
+    "id": "artist-093",
+    "name": "Mira Valdane",
+    "kind": "solo",
+    "fame": 4
+  },
+  {
+    "id": "artist-094",
+    "name": "Lucian Pryce",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-095",
+    "name": "Harlan Moss",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-096",
+    "name": "Kofi Ravel",
+    "kind": "solo",
+    "fame": 3
+  },
+  {
+    "id": "artist-097",
+    "name": "The Borrowed Echoes",
+    "kind": "group",
+    "fame": 1
+  },
+  {
+    "id": "artist-098",
+    "name": "Ronan Aldous",
+    "kind": "solo",
+    "fame": 5
+  },
+  {
+    "id": "artist-099",
+    "name": "Ilse Corvin",
+    "kind": "solo",
+    "fame": 4
+  },
+  {
+    "id": "artist-100",
+    "name": "The Wandering Kilns",
+    "kind": "group",
+    "fame": 1
+  }
+]
