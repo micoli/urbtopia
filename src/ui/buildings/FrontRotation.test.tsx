@@ -7,6 +7,7 @@ import { FrontRotation } from './FrontRotation';
 const context = vi.hoisted(() => ({ state: null as GameState | null }));
 vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
+  useUi: (selector: (store: { moveSelected: () => void }) => unknown) => selector({ moveSelected: () => {} }),
 }));
 vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: () => {} }) } }));
 
@@ -27,7 +28,11 @@ describe('FrontRotation', () => {
     expect(render('halloweenGraveyard', 56, 59)).toContain(`aria-label="${t('panel.rotateRight')}"`);
   });
 
-  it('offers none for an ordinary building with no side that has access', () => {
-    expect(render('workshop', 70, 70)).not.toContain(`aria-label="${t('panel.rotateRight')}"`);
+  it('disables the turns for an ordinary building with no side that has access', () => {
+    expect(render('workshop', 70, 70)).toContain(`aria-label="${t('panel.rotateRight')}" disabled=""`);
+  });
+
+  it('keeps the move button when no turn is possible', () => {
+    expect(render('workshop', 70, 70)).toContain(`aria-label="${t('panel.move')}"`);
   });
 });

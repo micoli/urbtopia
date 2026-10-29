@@ -1,13 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { transportStats } from '../../../../core';
 import { t } from '../../../../i18n/t.ts';
+import { useUi } from '../../../common/hooks.ts';
 import { LineEditor } from './LineEditor.tsx';
 import { LineList, type LineSelection } from './LineList.tsx';
 
 export function TransitLines({ transport }: { transport: ReturnType<typeof transportStats> }) {
-  const [selection, setSelection] = useState<LineSelection>(null);
+  const lineToEdit = useUi(store => store.lineToEdit);
+  const clearLineToEdit = useUi(store => store.clearLineToEdit);
+  const [selection, setSelection] = useState<LineSelection>(lineToEdit);
+  const root = useRef<HTMLDivElement>(null);
   const lineId = typeof selection === 'number' ? selection : undefined;
-  return <div className="transit-lines">
+  useEffect(() => {
+    if (lineToEdit === null) return;
+    root.current?.scrollIntoView({ block: 'start' });
+    clearLineToEdit();
+  }, [lineToEdit, clearLineToEdit]);
+  return <div className="transit-lines" ref={root}>
     <LineList lines={transport.lines} selection={selection} onSelect={setSelection} />
     <div className="transit-editor">
       {selection === null

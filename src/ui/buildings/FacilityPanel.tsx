@@ -27,6 +27,5 @@ export function FacilityPanel({ building }: FacilityPanelProps) {
         {load && <DrawerPanel.LabelValue label={t('facility.inReach')} value={load.citizensInReach}/>}
         {load && load.unservedCitizens > 0 && <DrawerPanel.LabelValue tone="warn" label={t('facility.unserved')} value={`${load.unservedCitizens} (${load.unservedHomes})`}/>}
         {load && load.unservedCitizens > 0 && <BlockedReason reason={t('facility.overloadedHint')} />}
-      <DrawerPanel.Upgrade building={building} />
   </DrawerPanel>
 }

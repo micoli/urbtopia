@@ -1,4 +1,5 @@
 import { JSX, ReactNode } from 'react';
+import { cn } from './cn';
 
 interface DrawerPanelLabelValueProps {
     label: string;
@@ -9,8 +10,8 @@ interface DrawerPanelLabelValueProps {
 
 export function DrawerPanelLabelValue({ label, value, tone, children }: DrawerPanelLabelValueProps) {
     return (
-        <p className={tone && `note note--${tone}`}>
-            <strong>{label}</strong>: {value}{children}
-        </p>
+        <div className={cn('my-[1em]', tone && `note note--${tone}`)}>
+            <strong>{label}</strong>: {value}{children ? <> {children}</> : null}
+        </div>
     );
 }

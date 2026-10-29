@@ -16,6 +16,7 @@ import { DrawerPanel } from '../common/DrawerPanel';
 import { PowerShortageNote } from './PowerShortageNote';
 import { RecipeLabel } from './RecipeLabel';
 import { SalesStacks } from './SalesStacks';
+import { Icon } from '../common/Icon';
 
 interface ProductionPanelProps {
   building: Building;
@@ -86,7 +87,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
               </ActionButton>
             ) : (
               <ActionButton key={item} disabled>
-                🔒 {itemName(item)} ({lockLabel(item)})
+                <Icon name="lock" /> {itemName(item)} ({lockLabel(item)})
               </ActionButton>
             ),
           )}
@@ -103,7 +104,6 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
           {t('panel.collect')}
         </ActionButton>
       ) : null}
-      <DrawerPanel.Upgrade building={building} />
   </DrawerPanel>;
 }
 

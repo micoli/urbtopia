@@ -21,6 +21,5 @@ export function CoalPlantPanel({ building }: { building: Building }) {
     <ActionButton variant="primary" block role="switch" aria-label={t('eco.coalEnabled')} aria-checked={enabled} onClick={() => gameStore.getState().send({ type: 'SetCoalEnabled', buildingId: building.id, enabled: !enabled })}>
       {t(enabled ? 'eco.coalStop' : 'eco.coalStart')}
     </ActionButton>
-    <DrawerPanel.Upgrade building={building} />
   </DrawerPanel>;
 }

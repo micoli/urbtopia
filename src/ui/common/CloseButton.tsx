@@ -1,5 +1,6 @@
 import { t } from '../../i18n/t';
 import { IconButton } from './IconButton';
+import { Icon } from './Icon';
 
 interface CloseButtonProps {
     onClick: () => void;
@@ -9,7 +10,7 @@ interface CloseButtonProps {
 export function CloseButton({ onClick, label = t('panel.close') }: CloseButtonProps) {
     return (
         <IconButton className="panel-close" label={label} onClick={onClick}>
-            ✕
+            <Icon name="close" />
         </IconButton>
     );
 }

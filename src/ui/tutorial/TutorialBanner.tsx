@@ -28,7 +28,7 @@ export function TutorialBanner() {
       onSkip={() => send({ type: 'SkipTutorial' })}
       actions={
         canSkipTime ? (
-          <ActionButton variant="primary" onClick={() => send({ type: 'SkipTutorialStep' })} disabled={challengeRunning} title={challengeRunning ? t('error.challengeInProgress') : undefined}>
+          <ActionButton size="xs" variant="primary" onClick={() => send({ type: 'SkipTutorialStep' })} disabled={challengeRunning} title={challengeRunning ? t('error.challengeInProgress') : undefined}>
             {t('tutorial.timeSkip')}
           </ActionButton>
         ) : undefined

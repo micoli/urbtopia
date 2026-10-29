@@ -24,6 +24,5 @@ export function OfficePanel({ building }: OfficePanelProps) {
           {t('panel.collect')} (+{due})
         </ActionButton>
       ) : null}
-      <DrawerPanel.Upgrade building={building} />
   </DrawerPanel>
 }

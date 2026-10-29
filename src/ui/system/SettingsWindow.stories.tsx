@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { SettingsPanel } from './SettingsPanel';
+import { SettingsWindow } from './SettingsWindow';
 
-const meta = { title: 'System/SettingsPanel', component: SettingsPanel, parameters: { layout: 'fullscreen' } } satisfies Meta<typeof SettingsPanel>;
+const meta = { title: 'System/SettingsWindow', component: SettingsWindow, parameters: { layout: 'fullscreen' } } satisfies Meta<typeof SettingsWindow>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

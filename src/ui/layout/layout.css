@@ -31,7 +31,9 @@
 .dock .dock-stat,
 .dock .dock-button,
 .dock .city-stats {
-  background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  background: color-mix(in srgb, var(--color-surface) 70%, var(--white-a10));
+  backdrop-filter: var(--surface-blur);
+  border: 1px solid var(--white-a08);
 }
 
 .dock::-webkit-scrollbar {
@@ -90,9 +92,9 @@
 
 .flyout {
   position: fixed;
-  left: var(--dock-width);
-  top: 0;
-  bottom: 0;
+  left: calc(var(--dock-width) + var(--space-8));
+  top: var(--space-8);
+  bottom: var(--space-8);
   width: min(220px, 55vw);
   display: flex;
   flex-direction: column;
@@ -102,8 +104,11 @@
   overscroll-behavior: contain;
   touch-action: pan-y;
   background: var(--color-surface);
+  backdrop-filter: var(--surface-blur);
+  border: var(--surface-edge);
+  border-radius: var(--radius-2xl);
   color: var(--color-text);
-  z-index: 9;
+  z-index: 11;
 }
 
 .flyout > * {
@@ -178,6 +183,8 @@
   overscroll-behavior: contain;
   touch-action: pan-y;
   background: var(--color-surface);
+  backdrop-filter: var(--surface-blur);
+  border-left: var(--surface-edge);
   color: var(--color-text);
   z-index: 9;
 }
@@ -215,6 +222,7 @@
 
 .bottom-bar-button {
   flex: 1;
+  min-width: 0;
   min-height: var(--tap);
   display: flex;
   flex-direction: column;
@@ -226,7 +234,7 @@
   font-size: var(--font-size-2xl);
 }
 
-.bottom-bar-button span:last-child {
+.bottom-bar-label {
   font-size: var(--font-size-2xs);
 }
 
@@ -301,6 +309,10 @@
 [data-layout='B'] .camera-buttons {
   top: 12px;
   bottom: auto;
+}
+
+@media (max-width: 600px) {
+  [data-layout='B'] .camera-buttons { top: 56px; }
 }
 @media (max-width: 600px) {
   body:has(.service-coverage-panel) .side-panel { top: 228px; }
@@ -438,7 +450,7 @@
 .analytics-legend-swatch {
   width: 8px;
   height: 8px;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 .analytics-readout {

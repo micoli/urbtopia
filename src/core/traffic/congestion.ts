@@ -99,15 +99,21 @@ interface Endpoint {
 }
 
 const statsCache = new WeakMap<GameState, { now: number; stats: CongestionStats }>();
-const layoutCache = new WeakMap<GameState['roads'], { roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; signature: string; stats: CongestionStats }>();
+// Several variants of a city can share one Roads array (the dashboard also asks for the city without its Casinos): keep a few layouts per Roads array so they never evict each other.
+const LAYOUTS_PER_ROADS = 4;
+const layoutCache = new WeakMap<GameState['roads'], { roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; byLayout: Map<string, CongestionStats> }>();
 
 export function congestionStats(state: GameState, now = state.lastSeen): CongestionStats {
   const cached = statsCache.get(state);
   if (cached?.now === now) return cached.stats;
   const signature = layoutSignature(state, now);
-  const layout = layoutCache.get(state.roads);
-  const stats = layout?.roundabouts === state.roundabouts && layout.pedestrianWays === state.pedestrianWays && layout.signature === signature ? layout.stats : withModalShift(state, now);
-  layoutCache.set(state.roads, { roundabouts: state.roundabouts, pedestrianWays: state.pedestrianWays, signature, stats });
+  const known = layoutCache.get(state.roads);
+  const layout = known?.roundabouts === state.roundabouts && known.pedestrianWays === state.pedestrianWays ? known : { roundabouts: state.roundabouts, pedestrianWays: state.pedestrianWays, byLayout: new Map<string, CongestionStats>() };
+  const stats = layout.byLayout.get(signature) ?? withModalShift(state, now);
+  layout.byLayout.delete(signature);
+  layout.byLayout.set(signature, stats);
+  if (layout.byLayout.size > LAYOUTS_PER_ROADS) layout.byLayout.delete(layout.byLayout.keys().next().value!);
+  layoutCache.set(state.roads, layout);
   statsCache.set(state, { now, stats });
   return stats;
 }

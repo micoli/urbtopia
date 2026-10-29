@@ -5,6 +5,7 @@ import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
 import { Dropdown } from '../common/Dropdown';
 import { useGame } from '../common/hooks';
+import { Icon } from '../common/Icon';
 
 interface VenueShelfStockProps {
   venueId: number;
@@ -39,10 +40,10 @@ export function VenueShelfStock({ venueId, fixture }: VenueShelfStockProps) {
             />
           </div>
           <ActionButton variant="primary" disabled={!fixture.good} onClick={() => fixture.good && send({ type: 'StockShelf', buildingId: venueId, fixtureId: fixture.id, good: fixture.good })}>
-            ↑ {t('venue.stockFill')}
+            <Icon name="arrowUp" /> {t('venue.stockFill')}
           </ActionButton>
           <ActionButton disabled={!fixture.good} onClick={() => send({ type: 'UnstockShelf', buildingId: venueId, fixtureId: fixture.id })}>
-            ↓ {t('venue.stockRemove')}
+            <Icon name="arrowDown" /> {t('venue.stockRemove')}
           </ActionButton>
         </div>
       ) : null}

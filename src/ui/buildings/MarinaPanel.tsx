@@ -8,6 +8,7 @@ import { CasinoBoatRow } from './CasinoBoatRow';
 import { BlockedReason } from '../common/BlockedReason';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { UrbsAmount } from '../common/UrbsAmount';
+import { Icon } from '../common/Icon';
 
 interface MarinaPanelProps {
   building: Building;
@@ -24,7 +25,7 @@ export function MarinaPanel({ building }: MarinaPanelProps) {
   const send = gameStore.getState().send;
   return (
     <DrawerPanel>
-      <p>⚓ {t('marina.boats')}: {boats.length}/{capacity}</p>
+      <p><Icon name="anchor" /> {t('marina.boats')}: {boats.length}/{capacity}</p>
       {costPerHour > 0 ? <p>{t('marina.cost')}: <UrbsAmount value={costPerHour} />/h</p> : null}
       {boats.some((boat) => boat.family === 'fishing') ? (
         <ActionButton disabled={fish === 0} onClick={() => send({ type: 'CollectCatch', marinaId: building.id })}>
@@ -45,7 +46,6 @@ export function MarinaPanel({ building }: MarinaPanelProps) {
           {t('marina.buy')} · {t(`boat.${family}`)} · <UrbsAmount value={BOATS[family].cost} />
         </ActionButton>
       ))}
-      <DrawerPanel.Upgrade building={building} />
     </DrawerPanel>
   );
 }

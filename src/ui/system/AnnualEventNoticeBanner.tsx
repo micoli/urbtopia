@@ -12,8 +12,8 @@ interface AnnualEventNoticeBannerProps {
 export function AnnualEventNoticeBanner({ eventName, endDate, onSee, onDismiss }: AnnualEventNoticeBannerProps) {
   return (
     <OverlayBanner variant="banner" message={t('annualEvent.notice').replace('{event}', eventName).replace('{date}', endDate)}>
-      <ActionButton onClick={onSee}>{t('annualEvent.notice.see')}</ActionButton>
-      <ActionButton onClick={onDismiss}>{t('hint.dismiss')}</ActionButton>
+      <ActionButton size="sm" overlay onClick={onSee}>{t('annualEvent.notice.see')}</ActionButton>
+      <ActionButton size="sm" overlay onClick={onDismiss}>{t('hint.dismiss')}</ActionButton>
     </OverlayBanner>
   );
 }

@@ -4,6 +4,7 @@ import {formatDuration} from '../common/formatDuration';
 import {UrbsAmount} from '../common/UrbsAmount';
 import { ActionButton } from '../common/ActionButton';
 import { DrawerPanel } from '../common/DrawerPanel';
+import { Icon } from '../common/Icon';
 
 interface CropRowProps {
     crop: CropId;
@@ -21,7 +22,7 @@ export function CropRow({crop, unlocked, stock, onPlant, onBuy, onSell}: CropRow
     if (!unlocked) {
         return (
             <li className="crop-row crop-locked">
-                🔒 {t(`item.${crop}`)} ({spec.unlockCitizens} {t('stat.citizens')})
+                <Icon name="lock" /> {t(`item.${crop}`)} ({spec.unlockCitizens} {t('stat.citizens')})
             </li>
         );
     }
@@ -29,7 +30,7 @@ export function CropRow({crop, unlocked, stock, onPlant, onBuy, onSell}: CropRow
         <div className={'crop-row'}>
             <DrawerPanel.LabelValue label={t(`item.${crop}`)} value={stock}/>
             <p>
-                {formatDuration(spec.growthMs)} · 💧{spec.water} · ▦{spec.yield}
+                {formatDuration(spec.growthMs)} · <Icon name="water" />{spec.water} · <Icon name="yield" />{spec.yield}
             </p>
             <div className="crop-actions" style={{gridTemplateColumns: `repeat(${PACK_SIZES.length + 1}, 1fr)`}}>
                 <ActionButton className="crop-plant" onClick={onPlant}>

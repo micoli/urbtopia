@@ -3,6 +3,7 @@ import { t } from '../../i18n/t';
 import { CloseButton } from '../common/CloseButton';
 import { useCloud, useSocial, useUi } from '../common/hooks';
 import { useModalFocus } from '../stats/management/useModalFocus';
+import { useBackdropClose } from '../common/useBackdropClose';
 import { ExchangesTab } from './ExchangesTab';
 import { FriendsTab } from './friends/FriendsTab';
 import { HallOfFameTab } from './hall/HallOfFameTab';
@@ -22,10 +23,9 @@ export function SocialWindow() {
     const account = useCloud(s => s.account);
     const openSettings = useUi(s => s.openSettingsFromSocial);
     const panel = useModalFocus(open, toggle);
+    const backdrop = useBackdropClose(toggle);
     if (!open) return null;
-    return <div className="dialog-backdrop city-management-backdrop" onClick={event => {
-        if (event.target === event.currentTarget) toggle();
-    }}>
+    return <div className="dialog-backdrop window-backdrop city-management-backdrop" {...backdrop}>
         <div className="eco-dashboard social-window" ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="social-heading">
             <header className="eco-header">
                 <img src={`${import.meta.env.BASE_URL}assets/icons/social-network.png`} alt=""/>

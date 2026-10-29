@@ -3,6 +3,7 @@ import type {HeatItem} from '../../../../core';
 import {t} from '../../../../i18n/t';
 import type {MessageKey} from '../../../../i18n/messages';
 import {useUi} from '../../../common/hooks';
+import {ActionButton} from '../../../common/ActionButton';
 import {MODE_LABEL} from '../transit/lineModels';
 
 interface HeatItemRowProps {
@@ -26,7 +27,7 @@ export function HeatItemRow({item}: HeatItemRowProps) {
             {item.kind === 'building' && <BuildingName building={item.building}/>}
             {item.kind === 'line' && <>{t(MODE_LABEL[item.mode])} #{item.lineId}</>}
             {item.kind === 'citizens' && t('eco.heat.citizens')}
-            {target && <button type="button" onClick={() => showBuilding(target.id)}>{t('eco.showOnMap')}</button>}
+            {target && <ActionButton size="xs" onClick={() => showBuilding(target.id)}>{t('eco.showOnMap')}</ActionButton>}
         </th>
         <td>{item.impact.toFixed(2)}</td>
         <td>+{item.degrees.toFixed(2)} °C</td>

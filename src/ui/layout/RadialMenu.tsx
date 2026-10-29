@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { t } from '../../i18n/t';
 import { NavActionButton } from './NavActionButton';
 import { useNavActions, type NavAction } from './useNavActions';
+import { Icon } from '../common/Icon';
 
 const RING_RADII_PX = [200, 120, 50];
 const ITEMS_PER_RINGS = [5, 3 , 1];
@@ -50,7 +51,7 @@ export function RadialMenu({ actions: provided }: RadialMenuProps) {
           })
         : null}
       <button type="button" className="radial-fab" aria-label={t('radial.open')} aria-expanded={open} data-guided={!open && actions.some((action) => action.guided)} onClick={() => setOpen(!open)}>
-        {open ? '✗' : '☰'}
+        <Icon name={open ? 'close' : 'menu'} />
       </button>
     </div>
   );

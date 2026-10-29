@@ -38,7 +38,7 @@ export function EnergySection({state, energy, green, transport}: EnergySectionPr
         return `+${i + 1}h: ${(100 * factors.solar).toFixed(0)}% / ${(100 * factors.wind).toFixed(0)}% / ${(100 * factors.hydro).toFixed(0)}%`;
     });
     return <section id="eco-energy" className="eco-wide">
-        <SectionHeading icon="⚡">{t('eco.energy')}</SectionHeading>
+        <SectionHeading icon="power">{t('eco.energy')}</SectionHeading>
         <LabeledList>
             {rows.map(([key, value]) => <LabeledList.Row key={key} label={t(key)}>
                 {typeof value === 'number' ? value.toFixed(1) : value}

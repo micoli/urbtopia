@@ -14,7 +14,7 @@ export function NatureSection({state, green}: NatureSectionProps) {
         ['eco.cooling', green.cooling], ['eco.biodiversity', green.biodiversity], ['eco.wellbeing', green.wellbeing], ['eco.greenCoverage', green.covered],
     ];
     return <section id="eco-nature">
-        <SectionHeading icon="♧">{t('build.greenSpaces')}</SectionHeading>
+        <SectionHeading icon="nature">{t('build.greenSpaces')}</SectionHeading>
         <p>{t('build.greenSpaces')}: {state.buildings.filter(b => greenProfileOf(b.type)).length}</p>
         <LabeledList>
             {rows.map(([key, value]) => <LabeledList.Row key={key} label={t(key)}>

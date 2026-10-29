@@ -22,7 +22,6 @@
 .codex-body { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 0; flex: 1; }
 .codex-list, .codex-detail { overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: var(--space-16); }
 .codex-list { border-right: 1px solid var(--white-a15); }
-.codex-search { box-sizing: border-box; width: 100%; min-height: var(--tap); margin-bottom: var(--space-12); padding: var(--space-8) var(--space-12); border: 1px solid var(--white-a20); border-radius: var(--radius-md); background: var(--white-a08); color: inherit; font: inherit; }
 .codex-search-empty { margin: var(--space-12) 0; opacity: 0.75; }
 .codex-list section + section { margin-top: var(--space-4); }
 .codex-list h3 { margin: 0; font-size: var(--font-size-base); font-weight: var(--font-weight-bold); }
@@ -81,10 +80,10 @@
 .codex-chain-sold, .codex-chain-warning { flex-basis: 100%; opacity: 0.75; }
 .codex-chain-warning { opacity: 1; }
 .codex-chain-filter { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8) var(--space-16); margin-top: var(--space-12); }
-.codex-chain-filter .codex-search { flex: 1 1 14rem; width: auto; margin-bottom: 0; }
+.codex-chain-filter .search-field { flex: 1 1 14rem; width: auto; margin-bottom: 0; }
 .codex-chain-icon { width: 28px; height: 28px; flex: none; align-self: center; object-fit: contain; }
 .codex-chain-item .item-icon { width: 28px; height: 28px; align-self: center; }
-.codex-chain, .codex-chain-legend { --chain-building: #f2b45a; --chain-material: #7fcf8f; --chain-good: #7fb6f2; --chain-sale: #e58fb8; }
+.codex-chain, .codex-chain-legend { --chain-building: var(--color-chain-building); --chain-material: var(--color-chain-material); --chain-good: var(--color-chain-good); --chain-sale: var(--color-chain-sale); }
 .codex-chain [data-kind='building'], .codex-chain-legend [data-kind='building'] { --chain-color: var(--chain-building); }
 .codex-chain [data-kind='material'], .codex-chain-legend [data-kind='material'] { --chain-color: var(--chain-material); }
 .codex-chain [data-kind='good'], .codex-chain-legend [data-kind='good'] { --chain-color: var(--chain-good); }

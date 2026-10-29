@@ -20,7 +20,7 @@ vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
   useUi: (selector: (store: { statsOpen: boolean; toggleStats: () => void }) => unknown) => selector({ statsOpen: context.statsOpen, toggleStats: () => {} }),
 }));
-vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: vi.fn() }) } }));
+vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: vi.fn(), state: context.state }) } }));
 
 afterEach(() => { context.statsOpen = true; prefsStore.getState().setLanguage('en'); });
 
@@ -119,7 +119,7 @@ describe('city management panel', () => {
     const minimal = renderToStaticMarkup(<MinimalStats />);
     const maximal = renderToStaticMarkup(<CityManagement />);
     expect(minimal).toContain(`aria-label="${label}: ${temperature} °C"`);
-    expect(minimal).toContain('🌡️');
+    expect(minimal).toContain('lucide-thermometer');
     expect(maximal).toContain(`<strong>${temperature} <small>°C</small></strong>`);
     expect(maximal).toContain(label);
     expect(maximal).toContain(language === 'fr' ? 'Optimum : 26 °C' : 'Optimum: 26 °C');
@@ -148,7 +148,7 @@ describe('city management panel', () => {
       const html = renderToStaticMarkup(component);
       expect(html).toContain('class="game-clock"');
       expect(html).toContain('dateTime="18:00"');
-      expect(html).toContain('☀️ 18:00');
+      expect(html).toContain('lucide-sun');
     }
   });
   it.each(['en', 'fr'] as const)('shows the Needs pyramid with its explanation table in %s', language => {

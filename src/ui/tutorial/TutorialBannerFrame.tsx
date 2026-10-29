@@ -61,6 +61,7 @@ export function TutorialBannerFrame({ title, counter, text, skipLabel, skipConfi
         {actions}
         <InlineConfirm
           confirming={confirming}
+          size="xs"
           triggerLabel={skipLabel}
           confirmLabel={skipConfirmLabel}
           onRequest={() => setConfirming(true)}

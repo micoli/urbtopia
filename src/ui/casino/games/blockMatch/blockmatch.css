@@ -1,3 +1,4 @@
+@layer legacy {
 /* Ported from the block-match game. Keyframes are prefixed with bm-. */
 .stars {
   display: inline-flex;
@@ -686,3 +687,4 @@
 }
 
 /* ---------- level loader ---------- */
+}

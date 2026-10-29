@@ -15,7 +15,6 @@ vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: 
 vi.mock('../common/DrawerPanel', () => ({
   DrawerPanel: Object.assign(({ children }: { children?: React.ReactNode }) => <div>{children}</div>, {
     LabelValue: ({ label, value }: { label: string; value: React.ReactNode }) => <p>{label}: {value}</p>,
-    Upgrade: () => <p>upgrade</p>,
   }),
 }));
 
@@ -39,16 +38,6 @@ describe('HomePanel Sanction', () => {
 
   it('shows nothing about a Sanction under Cozy', () => {
     expect(render('cozy')).not.toContain(t('home.sanction'));
-  });
-});
-
-describe('HomePanel actions order', () => {
-  it('puts Collect before Upgrade, like the other production panels', () => {
-    const building = { ...createBuilding(900, 'home', 56, 59, 0), taxCitizenMs: 10 * 3_600_000 };
-    context.state = { ...newGame({ seed: 'home-panel', now: 0 }), adaptationUntil: 0, buildings: [building] };
-    const html = renderToStaticMarkup(<HomePanel building={building} />);
-    expect(html.indexOf(t('panel.collect'))).toBeGreaterThan(-1);
-    expect(html.indexOf(t('panel.collect'))).toBeLessThan(html.indexOf('upgrade'));
   });
 });
 

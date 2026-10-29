@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.stubGlobal('window', { location: { search: '' } });
 const { uiStore } = await import('./uiStore');
@@ -166,10 +166,10 @@ describe('social window', () => {
     uiStore.getState().toggleSocial();
   });
 
-  it('closes when the codex opens', () => {
+  it('stays open under the codex', () => {
     uiStore.getState().toggleSocial();
     uiStore.getState().openCodex();
-    expect(uiStore.getState().socialOpen).toBe(false);
+    expect(uiStore.getState()).toMatchObject({ socialOpen: true, codexOpen: true });
   });
 
   it('opens the codex on a rules page, and on the first entry without one', () => {
@@ -184,22 +184,29 @@ describe('social window', () => {
   });
 });
 
-describe('Codex opened from the Market', () => {
-  it('comes back to the Market when the Codex closes', () => {
-    uiStore.setState({ marketOpen: true });
+describe('Codex as a modal above everything', () => {
+  afterEach(() => uiStore.setState({ codexOpen: false, marketOpen: false, settingsOpen: false, statsOpen: false, flyout: null, selectedBuildingId: null }));
+
+  it('leaves the open windows, the menu and the selected building where they are', () => {
+    uiStore.setState({ marketOpen: true, statsOpen: true, flyout: 'build', selectedBuildingId: 7 });
     uiStore.getState().openCodex(undefined, 'market');
-    expect(uiStore.getState().marketOpen).toBe(false);
-    expect(uiStore.getState().codexPage).toBe('market');
-    uiStore.getState().closeCodex();
-    expect(uiStore.getState().marketOpen).toBe(true);
-    uiStore.setState({ marketOpen: false });
+    expect(uiStore.getState()).toMatchObject({ codexOpen: true, codexPage: 'market', marketOpen: true, statsOpen: true, flyout: 'build', selectedBuildingId: 7 });
   });
 
-  it('leaves the Market closed when it was not open', () => {
-    uiStore.setState({ marketOpen: false });
-    uiStore.getState().openCodex(undefined, 'challenges');
+  it('closes alone, with everything still as it was', () => {
+    uiStore.setState({ settingsOpen: true, selectedBuildingId: 7 });
+    uiStore.getState().openCodex('home');
     uiStore.getState().closeCodex();
-    expect(uiStore.getState().marketOpen).toBe(false);
+    expect(uiStore.getState()).toMatchObject({ codexOpen: false, settingsOpen: true, selectedBuildingId: 7 });
+  });
+
+  it('opens on the entry or the page it was asked for', () => {
+    uiStore.getState().openCodex();
+    expect(uiStore.getState()).toMatchObject({ codexEntryId: 'home', codexShowDetail: false, codexPage: null });
+    uiStore.getState().openCodex('shop');
+    expect(uiStore.getState()).toMatchObject({ codexEntryId: 'shop', codexShowDetail: true });
+    uiStore.getState().openCodex(undefined, 'waste');
+    expect(uiStore.getState()).toMatchObject({ codexShowDetail: true, codexPage: 'waste' });
   });
 });
 
@@ -348,5 +355,125 @@ describe('move mode', () => {
     uiStore.getState().tapTile({ x: 10, y: 10 });
     uiStore.getState().toggleMoveMode();
     expect(uiStore.getState()).toMatchObject({ tool: null, moveMode: false });
+  });
+});
+
+describe('editing a transit line', () => {
+  beforeEach(() => {
+    uiStore.getState().cancelTool();
+    uiStore.setState({ statsOpen: false, lineToEdit: null, socialOpen: false, flyout: null });
+  });
+
+  it('opens City management with the line to edit, closing the other panels', () => {
+    uiStore.setState({ flyout: 'build' });
+    uiStore.getState().editTransitLine(12);
+    expect(uiStore.getState()).toMatchObject({ statsOpen: true, lineToEdit: 12, flyout: null });
+  });
+
+  it('forgets the line once the editor took it', () => {
+    uiStore.getState().editTransitLine(12);
+    uiStore.getState().clearLineToEdit();
+    expect(uiStore.getState()).toMatchObject({ statsOpen: true, lineToEdit: null });
+  });
+});
+
+describe('building search and the flyout menus', () => {
+  beforeEach(() => uiStore.setState({ flyout: null, buildingSearchOpen: false }));
+
+  it('closes the open flyout when the search opens', () => {
+    uiStore.getState().openFlyout('build');
+    uiStore.getState().toggleBuildingSearch();
+    expect(uiStore.getState()).toMatchObject({ buildingSearchOpen: true, flyout: null });
+  });
+
+  it('closes the search when a flyout opens, since both sit in the same place', () => {
+    uiStore.getState().toggleBuildingSearch();
+    uiStore.getState().openFlyout('land');
+    expect(uiStore.getState()).toMatchObject({ buildingSearchOpen: false, flyout: 'land' });
+  });
+
+  it('does not reopen anything when a flyout or the search is closed', () => {
+    uiStore.getState().openFlyout('land');
+    uiStore.getState().openFlyout('land');
+    expect(uiStore.getState()).toMatchObject({ buildingSearchOpen: false, flyout: null });
+    uiStore.getState().toggleBuildingSearch();
+    uiStore.getState().toggleBuildingSearch();
+    expect(uiStore.getState()).toMatchObject({ buildingSearchOpen: false, flyout: null });
+  });
+});
+
+describe('settings window', () => {
+  const everythingOpen = { statsOpen: true, politicsOpen: true, socialOpen: true, marketOpen: true, serviceCoverageOpen: true, buildingSearchOpen: true, flyout: 'build' as const, selectedBuildingId: 1, settingsOpen: false };
+  const allClosed = { statsOpen: false, politicsOpen: false, socialOpen: false, marketOpen: false, serviceCoverageOpen: false, buildingSearchOpen: false, flyout: null, selectedBuildingId: null };
+
+  beforeEach(() => uiStore.setState({ ...allClosed, settingsOpen: false, signInFromSocial: false }));
+
+  it('closes every other window when it opens', () => {
+    uiStore.setState(everythingOpen);
+    uiStore.getState().toggleSettings();
+    expect(uiStore.getState()).toMatchObject({ ...allClosed, settingsOpen: true });
+  });
+
+  it('closes every other window when it opens from the Social window or for the sign-in prompt', () => {
+    uiStore.setState(everythingOpen);
+    uiStore.getState().openSettingsFromSocial(false);
+    expect(uiStore.getState()).toMatchObject({ ...allClosed, settingsOpen: true });
+    uiStore.setState(everythingOpen);
+    uiStore.getState().openSettingsForSignIn();
+    expect(uiStore.getState()).toMatchObject({ ...allClosed, settingsOpen: true, signInFromSocial: true });
+  });
+
+  it('closes alone and leaves the others closed', () => {
+    uiStore.getState().toggleSettings();
+    uiStore.getState().toggleSettings();
+    expect(uiStore.getState()).toMatchObject({ ...allClosed, settingsOpen: false });
+  });
+
+  it('is closed by the other windows', () => {
+    vi.spyOn(gameStore, 'getState').mockReturnValue({ ...gameStore.getState(), state: { ...gameStore.getState().state, marketUnlocked: true } });
+    uiStore.setState({ settingsOpen: true });
+    uiStore.getState().toggleMarket();
+    expect(uiStore.getState()).toMatchObject({ marketOpen: true, settingsOpen: false });
+    uiStore.setState({ settingsOpen: true });
+    uiStore.getState().toggleStats();
+    expect(uiStore.getState()).toMatchObject({ statsOpen: true, settingsOpen: false });
+    vi.restoreAllMocks();
+  });
+});
+
+describe('one window at a time', () => {
+  const none = { statsOpen: false, politicsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false, flyout: null };
+
+  afterEach(() => vi.restoreAllMocks());
+
+  beforeEach(() => {
+    uiStore.setState({ ...none, buildingSearchOpen: false });
+    vi.spyOn(gameStore, 'getState').mockReturnValue({ ...gameStore.getState(), state: { ...gameStore.getState().state, marketUnlocked: true } });
+  });
+
+  it('opens a flyout menu by closing every window', () => {
+    uiStore.setState({ statsOpen: true, socialOpen: true, settingsOpen: true, marketOpen: true, politicsOpen: true });
+    uiStore.getState().openFlyout('build');
+    expect(uiStore.getState()).toMatchObject({ ...none, flyout: 'build' });
+  });
+
+  it.each([
+    ['toggleStats', 'statsOpen'],
+    ['toggleSocial', 'socialOpen'],
+    ['toggleMarket', 'marketOpen'],
+    ['openPolitics', 'politicsOpen'],
+    ['toggleSettings', 'settingsOpen'],
+  ] as const)('%s opens its window and closes the others, the flyout included', (action, flag) => {
+    uiStore.setState({ statsOpen: true, socialOpen: true, settingsOpen: true, marketOpen: true, politicsOpen: true, flyout: 'land', [flag]: false });
+    uiStore.getState()[action]();
+    const windows = ['statsOpen', 'politicsOpen', 'socialOpen', 'marketOpen', 'settingsOpen'] as const;
+    for (const key of windows) expect(uiStore.getState()[key]).toBe(key === flag);
+    expect(uiStore.getState().flyout).toBeNull();
+  });
+
+  it('closes a window by toggling it again, and leaves the others closed', () => {
+    uiStore.getState().toggleSocial();
+    uiStore.getState().toggleSocial();
+    expect(uiStore.getState()).toMatchObject(none);
   });
 });

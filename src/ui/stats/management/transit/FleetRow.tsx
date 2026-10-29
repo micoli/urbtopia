@@ -7,6 +7,7 @@ import { UrbsAmount } from '../../../common/UrbsAmount.tsx';
 import type { LineSummary } from './LineMetrics.tsx';
 import { stopLabel } from './stopLabel.ts';
 import { vehicleStatusKey } from './vehicleStatusKey.ts';
+import { Icon } from '../../../common/Icon';
 
 interface FleetRowProps {
   vehicle: TransitVehicle;
@@ -33,7 +34,7 @@ export function FleetRow({ vehicle, compatibleLines, summary, stopsById }: Fleet
     <td data-label={t('transit.status')}>{t(vehicleStatusKey(vehicle, summary))}</td>
     <td className="transit-sell" data-label={t('transit.sell')}>
       <UrbsAmount value={vehicle.purchasePrice / 2} />
-      <IconButton label={t('transit.sell')} tone="danger" onClick={() => gameStore.getState().send({ type: 'SellTransitVehicle', id: vehicle.id })}>✕</IconButton>
+      <IconButton label={t('transit.sell')} tone="danger" onClick={() => gameStore.getState().send({ type: 'SellTransitVehicle', id: vehicle.id })}><Icon name="close" /></IconButton>
     </td>
   </tr>;
 }

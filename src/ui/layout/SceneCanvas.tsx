@@ -8,6 +8,7 @@ import { uiStore } from '../../store/uiStore';
 import { pointerKindOf } from '../../tools/aim';
 import { FACILITIES, isFacilityType } from '../../core';
 import { selectionGhost } from '../../tools/tools';
+import { selectionFocus } from '../../store/selectionFocus';
 import { readCameraView, writeCameraView, type CameraView } from '../../scene/cameraUrl';
 import { isAlwaysDayRequested, pinnedCycleHourOf } from '../../store/dayCycleFlags';
 import { hideSplash, setSplashProgress } from '../system/splash';
@@ -85,8 +86,10 @@ export function SceneCanvas() {
     scene.setBrushMode(uiStore.getState().tool?.kind === 'brush');
     const showSelection = () => {
       const state = gameStore.getState().state;
+      const focus = selectionFocus(uiStore.getState());
+      const focused = state.buildings.find(building => building.id === focus.buildingId);
+      scene.setSelection(selectionGhost(state, focus.buildingId, prefsStore.getState().showReach && !focus.studyingFlows, focused ? scene.drawnExtentOf(focused) : null));
       const selected = state.buildings.find(building => building.id === uiStore.getState().selectedBuildingId);
-      scene.setSelection(selectionGhost(state, uiStore.getState().selectedBuildingId, prefsStore.getState().showReach, selected ? scene.drawnExtentOf(selected) : null));
       scene.setEcologicalSelection(uiStore.getState().selectedBuildingId);
       scene.setCoverageFocus(selected && prefsStore.getState().showReach && isFacilityType(selected.type) && FACILITIES[selected.type].radius !== null ? { type: selected.type, facilityId: selected.id } : null);
     };
@@ -100,6 +103,7 @@ export function SceneCanvas() {
       if (store.analyticsLayer !== previous.analyticsLayer || store.analyticsBuildingId !== previous.analyticsBuildingId || store.analyticsCategory !== previous.analyticsCategory) {
         showTraffic();
         showAnalytics();
+        showSelection();
       }
       if (store.tool?.kind !== previous.tool?.kind) scene.setBrushMode(store.tool?.kind === 'brush');
       if (store.evaluation !== previous.evaluation) scene.setGhost(store.evaluation?.ghost ?? null);

@@ -12,3 +12,4 @@ export const Shop: Story = { parameters: { stores: { selectBuilding: 'shop' } } 
 export const Farm: Story = { parameters: { stores: { selectBuilding: 'farm' } } };
 export const Casino: Story = { parameters: { stores: { selectBuilding: 'casino' } } };
 export const Hotel: Story = { parameters: { stores: { selectBuilding: 'hotel' } } };
+export const BusStop: Story = { parameters: { game: 'loopLine', stores: { selectBuilding: 'busStop' } } };

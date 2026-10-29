@@ -28,7 +28,7 @@ describe('Settings Time skip', () => {
     context.state = newGame({ seed: 'amber-fox-4821', now: T0 });
     const button = skipButton(renderToStaticMarkup(<SettingsContent />));
     expect(button).not.toBe('');
-    expect(button).not.toContain('disabled');
+    expect(button).not.toContain('disabled=""');
   });
 
   it.each(['en', 'fr'] as const)('disables +12 h with an explanation while a Challenge is accepted, in %s', (language) => {
@@ -37,7 +37,7 @@ describe('Settings Time skip', () => {
     if (!started.ok) throw new Error(started.error.key);
     context.state = started.state;
     const button = skipButton(renderToStaticMarkup(<SettingsContent />));
-    expect(button).toContain('disabled');
+    expect(button).toContain('disabled=""');
     expect(button).toContain(language === 'fr' ? 'Un défi est en cours' : 'A Challenge is in progress');
   });
 });

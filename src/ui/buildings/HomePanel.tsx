@@ -9,6 +9,7 @@ import { ActionButton } from '../common/ActionButton';
 import { BlockedReason } from '../common/BlockedReason';
 import { urbsReason } from '../common/urbsReason';
 import { DrawerPanel } from '../common/DrawerPanel';
+import { Icon } from '../common/Icon';
 
 interface HomePanelProps {
   building: Building;
@@ -39,7 +40,7 @@ export function HomePanel({ building }: HomePanelProps) {
   return <DrawerPanel>
       <DrawerPanel.LabelValue label={t('home.citizens')} value={citizensOf(building.tier)}/>
 
-      <DrawerPanel.LabelValue label={t('home.demand')} value={<>⚡ {homePower(building, energySavingOf(state)).toFixed(1)} · 💧 {spec?.water ?? 0}</>}/>
+      <DrawerPanel.LabelValue label={t('home.demand')} value={<><Icon name="power" /> {homePower(building, energySavingOf(state)).toFixed(1)} · <Icon name="water" /> {spec?.water ?? 0}</>}/>
       <DrawerPanel.LabelValue label={t('home.tax')} value={<>{due}</>}/>
       {sanctioned && <DrawerPanel.LabelValue tone="warn" label={t('home.sanction')} value={<>{t(`needs.factor.${sanctioned.factor}` as MessageKey)} · −{Math.round(100 * (1 - sanctioned.multiplier))}% {t('home.sanction.tax')}</>}/>}
       <DrawerPanel.LabelValue label={t('eco.saved')} value={<>
@@ -66,6 +67,5 @@ export function HomePanel({ building }: HomePanelProps) {
           {t('panel.collect')} (+{due})
         </ActionButton>
       ) : null}
-      <DrawerPanel.Upgrade building={building} />
     </DrawerPanel>
 }

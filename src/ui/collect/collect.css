@@ -6,7 +6,7 @@
   min-height: 40px;
   padding: 0 var(--space-12);
   border: 0;
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   background: var(--color-accent);
   color: var(--color-on-accent);
   font-weight: var(--font-weight-bold);

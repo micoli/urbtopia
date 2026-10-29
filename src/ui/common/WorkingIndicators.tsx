@@ -5,6 +5,7 @@ import { collectBadgeLabel } from '../collect/CollectBadge.tsx';
 import { useGame } from './hooks.ts';
 import { WorkWheel } from './WorkWheel.tsx';
 import { placeProjected, useFrameLoop } from './useProjectedPosition.ts';
+import { Icon } from './Icon';
 
 const ROOF_CLEARANCE = 0.1;
 const RING_RADIUS = 14;
@@ -57,7 +58,7 @@ export function WorkingIndicators() {
                   strokeDashoffset={RING_LENGTH * (1 - (workProgress(building, now) ?? 0))}
                 />
               </svg>
-              <span className="working-gear">⚙</span>
+              <span className="working-gear"><Icon name="settings" /></span>
             </>
           )}
         </span>

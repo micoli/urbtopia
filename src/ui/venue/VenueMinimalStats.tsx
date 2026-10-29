@@ -3,6 +3,7 @@ import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { UrbsSymbol } from '../common/UrbsSymbol';
+import { Icon } from '../common/Icon';
 
 interface VenueMinimalStatsProps {
   venue: Building;
@@ -13,7 +14,7 @@ export function VenueMinimalStats({ venue }: VenueMinimalStatsProps) {
   return (
     <div className="minimal-stats" aria-label={t(`building.${venue.type}`)}>
       <strong>{Math.floor(urbs)}</strong> <UrbsSymbol />
-      {isVenue(venue) ? <> · 💰 <UrbsAmount value={takingsDue(venue.venue)} /></> : null}
+      {isVenue(venue) ? <> · <Icon name="money" /> <UrbsAmount value={takingsDue(venue.venue)} /></> : null}
     </div>
   );
 }

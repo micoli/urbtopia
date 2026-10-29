@@ -8,6 +8,7 @@ import { registerServiceWorker } from './pwa/registerServiceWorker';
 import { gameStore, isSimulation } from './store/gameStore';
 import { installEventEffects } from './store/installEventEffects';
 import { liveCommandGateway } from './store/liveCommandGateway';
+import '@fontsource-variable/inter';
 import './styles.css';
 
 const TICK_INTERVAL_MS = 1000;

@@ -2,6 +2,7 @@ import { useStore } from 'zustand';
 import { FIXTURES } from '../../core';
 import { t } from '../../i18n/t';
 import { venueStore } from '../../store/venueStore';
+import { ActionButton } from '../common/ActionButton';
 
 // A reminder, while an item is being placed and the menu is closed: what to do and how to cancel.
 export function VenuePlacementHint() {
@@ -13,7 +14,7 @@ export function VenuePlacementHint() {
       {selected ? `${t(`venue.fixture.${selected}`)} · ${FIXTURES[selected].price} ` : ''}
       {moving !== null ? t('venue.moveHint') : t('venue.placeHint')}
       {' '}
-      <button type="button" onClick={() => (moving !== null ? venueStore.getState().stopMove() : venueStore.getState().selectFixture(null))}>{t('venue.cancel')}</button>
+      <ActionButton size="xs" onClick={() => (moving !== null ? venueStore.getState().stopMove() : venueStore.getState().selectFixture(null))}>{t('venue.cancel')}</ActionButton>
     </p>
   );
 }

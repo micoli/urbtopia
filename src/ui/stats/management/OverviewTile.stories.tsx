@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { OverviewTile } from './OverviewTile';
 
-const meta = { title: 'Stats/OverviewTile', component: OverviewTile, args: { icon: '⚡', title: 'Power', children: 'Power balance: +12' } } satisfies Meta<typeof OverviewTile>;
+const meta = { title: 'Stats/OverviewTile', component: OverviewTile, args: { icon: 'power', title: 'Power', children: 'Power balance: +12' } } satisfies Meta<typeof OverviewTile>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

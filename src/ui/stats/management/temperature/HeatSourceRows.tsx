@@ -3,6 +3,7 @@ import type {HeatContribution, HeatItem, HeatSource} from '../../../../core';
 import {t} from '../../../../i18n/t';
 import type {MessageKey} from '../../../../i18n/messages';
 import {HeatItemRow} from './HeatItemRow';
+import { Icon } from '../../../common/Icon';
 
 interface HeatSourceRowsProps {
     contribution: HeatContribution;
@@ -21,7 +22,7 @@ export function HeatSourceRows({contribution, items, initiallyOpen}: HeatSourceR
     <tr>
         <th scope="row">
             <button type="button" className="eco-heat-toggle" aria-expanded={open} disabled={items.length === 0} title={t('eco.heat.details')} onClick={() => setOpen(!open)}>
-                <span aria-hidden="true">{open ? '▾' : '▸'}</span>
+                <Icon name={open ? 'chevronDown' : 'chevronRight'} />
                 <i className="eco-heat-swatch" data-source={source} aria-hidden="true"/>{t(HEAT_LABELS[source])}
             </button>
         </th>

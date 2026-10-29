@@ -10,8 +10,12 @@ vi.mock('../common/hooks', () => ({
 describe('CodexLinks', () => {
   it('links the Town hall to the Politics page, besides its own entry', () => {
     const html = renderToStaticMarkup(<CodexLinks building={createBuilding(1, 'townHall', 8, 8, 0)} />);
-    expect(html).toContain('Politics\u00a0?');
+    expect(html).toContain('Politics');
     expect(html).toContain('Town hall');
+    expect(html.match(/lucide-info/g)).toHaveLength(2);
+    expect(html).not.toContain('?');
+    expect(html.match(/class="truncate"/g)).toHaveLength(2);
+    expect(html).toContain('title="Politics"');
   });
 
   it('gives no Politics link to other buildings', () => {

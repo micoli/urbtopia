@@ -43,10 +43,16 @@ describe('preferences', () => {
   });
 
   it('reads stored preferences and falls back on bad values', () => {
-    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'B', traffic: false, confirmSale: false, showReach: false, showProductionPreview: false }))).toEqual({ language: 'fr', layout: 'B', traffic: false, confirmSale: false, showReach: false, showProductionPreview: false, showTaxBadges: true, debug: false, alwaysDay: false, serviceCoverageType: 'school' });
-    expect(parsePrefs(JSON.stringify({ language: 'de', layout: 'Z', traffic: 'yes' }), 'fr-FR')).toEqual({ language: 'fr', layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, serviceCoverageType: 'school' });
-    expect(parsePrefs('not json', 'en-GB')).toEqual({ language: 'en', layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, serviceCoverageType: 'school' });
-    expect(parsePrefs(null)).toEqual({ language: 'en', layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, serviceCoverageType: 'school' });
+    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'B', traffic: false, confirmSale: false, showReach: false, showProductionPreview: false }))).toEqual({ language: 'fr', layout: 'B', traffic: false, confirmSale: false, showReach: false, showProductionPreview: false, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, serviceCoverageType: 'school' });
+    expect(parsePrefs(JSON.stringify({ language: 'de', layout: 'Z', traffic: 'yes' }), 'fr-FR')).toEqual({ language: 'fr', layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, serviceCoverageType: 'school' });
+    expect(parsePrefs('not json', 'en-GB')).toEqual({ language: 'en', layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, serviceCoverageType: 'school' });
+    expect(parsePrefs(null)).toEqual({ language: 'en', layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, serviceCoverageType: 'school' });
+  });
+
+  it('keeps the sign-in prompt on unless the stored value is the boolean false', () => {
+    expect(parsePrefs(JSON.stringify({ signInPrompt: false })).signInPrompt).toBe(false);
+    expect(parsePrefs(JSON.stringify({ signInPrompt: 'no' })).signInPrompt).toBe(true);
+    expect(parsePrefs(null).signInPrompt).toBe(true);
   });
 
   it('shows the reach of public buildings by default', () => {
@@ -54,7 +60,7 @@ describe('preferences', () => {
   });
 
   it('keeps Traffic on for preferences saved before it existed', () => {
-    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'A' }))).toEqual({ language: 'fr', layout: 'A', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, serviceCoverageType: 'school' });
+    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'A' }))).toEqual({ language: 'fr', layout: 'A', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, serviceCoverageType: 'school' });
   });
 
   it('remembers a valid service type and defaults to School for obsolete or invalid choices', () => {

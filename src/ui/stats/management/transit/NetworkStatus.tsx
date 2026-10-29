@@ -3,6 +3,7 @@ import { t } from '../../../../i18n/t.ts';
 import { gameStore } from '../../../../store/gameStore.ts';
 import { ActionButton } from '../../../common/ActionButton.tsx';
 import { useGame } from '../../../common/hooks.ts';
+import { Icon } from '../../../common/Icon';
 
 const NETWORK_MODES = ['brt', 'rail'] as const;
 
@@ -16,7 +17,7 @@ export function NetworkStatus({ transport }: { transport: ReturnType<typeof tran
       const broken = brokenLinkCount(state, mode);
       if (!broken) return null;
       return <div className="transit-error" role="alert" key={mode}>
-        <p>⚠️ {t(`transit.${mode}`)} · {t('transit.broken')} ({broken})</p>
+        <p><Icon name="warning" /> {t(`transit.${mode}`)} · {t('transit.broken')} ({broken})</p>
         <ActionButton variant="primary" onClick={() => gameStore.getState().send({ type: 'RepairTransitNetwork', mode })}>{t('transit.repair')}</ActionButton>
       </div>;
     })}

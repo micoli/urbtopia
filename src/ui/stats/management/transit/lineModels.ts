@@ -1,5 +1,6 @@
 import { TRANSIT, type BuildingType, type GameState, type TransitMode } from '../../../../core';
 import type { MessageKey } from '../../../../i18n/messages.ts';
+import type { IconName } from '../../../common/iconRegistry.ts';
 
 export interface EditableLine {
   id: number;
@@ -13,7 +14,7 @@ export interface EditableLine {
 export const TRANSIT_MODES: readonly TransitMode[] = ['bus', 'brt', 'rail'];
 export const STOP_TYPE: Record<TransitMode, BuildingType> = { bus: 'busStop', brt: 'brtStation', rail: 'railStation' };
 export const MODE_LABEL: Record<TransitMode, MessageKey> = { bus: 'transit.bus', brt: 'transit.brt', rail: 'transit.rail' };
-export const MODE_ICON: Record<TransitMode, string> = { bus: '🚌', brt: '🚍', rail: '🚆' };
+export const MODE_ICON: Record<TransitMode, IconName> = { bus: 'bus', brt: 'brt', rail: 'rail' };
 export const DEFAULT_PEAK_HEADWAY = 5;
 export const DEFAULT_OFF_PEAK_HEADWAY = 12;
 
@@ -23,6 +24,11 @@ export const HEADWAY_LIMITS = {
 } as const;
 
 export const unlockOf = (mode: TransitMode): number => (mode === 'bus' ? 0 : TRANSIT[mode].unlock);
+
+export function linesServing(state: GameState, stopId: number): number[] {
+  const lines = [...(state.busLines ?? []), ...(state.transitLines ?? [])];
+  return lines.filter(line => line.stops.includes(stopId)).map(line => line.id);
+}
 
 export function findLine(state: GameState, id: number | undefined): EditableLine | undefined {
   if (id === undefined) return undefined;

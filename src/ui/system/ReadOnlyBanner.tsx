@@ -11,7 +11,7 @@ export function ReadOnlyBanner() {
 
   return (
     <OverlayBanner variant="banner" role="alert" message={t('tab.readOnly')}>
-      <ActionButton onClick={() => resumeHandle.current()}>{t('tab.resume')}</ActionButton>
+      <ActionButton size="sm" overlay onClick={() => resumeHandle.current()}>{t('tab.resume')}</ActionButton>
     </OverlayBanner>
   );
 }

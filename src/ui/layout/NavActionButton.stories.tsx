@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { NavActionButton } from './NavActionButton';
 import type { NavAction } from './useNavActions';
 
-const action: NavAction = { id: 'social', icon: '👥', label: 'Social', pressed: false, disabled: false, guided: false, badge: 2, onClick: () => {} };
+const action: NavAction = { id: 'social', icon: 'globe', label: 'Social', pressed: false, disabled: false, guided: false, badge: 2, onClick: () => {} };
 
 const meta = {
   title: 'Layout/NavActionButton',

@@ -124,7 +124,7 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--color-te
 }
 .eco-wide { grid-column: 1 / -1; }
 .eco-heat-chart { margin: var(--space-8) 0 var(--space-12); }
-.eco-heat-bar { display: flex; height: 14px; border-radius: 7px; background: var(--white-a12); overflow: hidden; }
+.eco-heat-bar { display: flex; height: 14px; border-radius: var(--radius-pill); background: var(--white-a12); overflow: hidden; }
 .eco-heat-bar > span { display: block; height: 100%; }
 .eco-heat-scale { display: flex; justify-content: space-between; margin-top: var(--space-4); color: var(--color-text-muted); font-size: var(--font-size-xs); }
 .eco-heat-bar > span[data-source='activity'], .eco-heat-swatch[data-source='activity'] { background: var(--color-series-orange); }

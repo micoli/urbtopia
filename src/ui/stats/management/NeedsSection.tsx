@@ -1,3 +1,4 @@
+import {ActionButton} from '../../common/ActionButton';
 import {SANCTIONS, difficultyOf, needsPyramid, totalCitizens, type GameState} from '../../../core';
 import {t} from '../../../i18n/t';
 import type {MessageKey} from '../../../i18n/messages';
@@ -20,13 +21,13 @@ export function NeedsSection({state, onShowSection}: NeedsSectionProps) {
             .replace('{difficulty}', t(`difficulty.${difficulty}` as MessageKey))
             .replace('{floor}', String(Math.round(100 * SANCTIONS[difficulty].taxFloor)));
     return <section id="eco-needs" className="eco-wide">
-        <SectionHeading icon="♧">{t('needs.title')}</SectionHeading>
+        <SectionHeading icon="needs">{t('needs.title')}</SectionHeading>
         <p>{help}</p>
         {totalCitizens(state) === 0 && <p>{t('needs.noCitizens')}</p>}
         <NeedsPyramidDiagram levels={pyramid.levels}/>
         {bottleneck && bottleneck.section && <p>
             {t('needs.bottleneck')}: <strong>{t(`needs.factor.${bottleneck.id}` as MessageKey)}</strong>{' '}
-            <button type="button" onClick={() => onShowSection(bottleneck.section!)}>{t('needs.show')}</button>
+            <ActionButton size="xs" onClick={() => onShowSection(bottleneck.section!)}>{t('needs.show')}</ActionButton>
         </p>}
         <NeedsTable levels={pyramid.levels} onShowSection={onShowSection}/>
     </section>;

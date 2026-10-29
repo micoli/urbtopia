@@ -1,6 +1,7 @@
 import type {WasteSituation} from '../../../../core';
 import {t} from '../../../../i18n/t';
 import {LabeledList} from '../../../common/LabeledList';
+import {ActionButton} from '../../../common/ActionButton';
 
 interface WasteImpactsProps {
     situation: WasteSituation;
@@ -15,6 +16,6 @@ export function WasteImpacts({situation, onShowEmissions}: WasteImpactsProps) {
             <LabeledList.Row label={t('waste.impacts.incinerator')}>{situation.incineratorHomes}</LabeledList.Row>
             <LabeledList.Row label={t('waste.impacts.emissions')}>{situation.incineratorEmissionsPerHour.toFixed(1)}</LabeledList.Row>
         </LabeledList>
-        <button type="button" aria-controls="eco-emissions" onClick={onShowEmissions}>{t('waste.impacts.showEmissions')}</button>
+        <ActionButton size="sm" aria-controls="eco-emissions" onClick={onShowEmissions}>{t('waste.impacts.showEmissions')}</ActionButton>
     </>;
 }

@@ -1,7 +1,6 @@
 import {
     ECOLOGY,
     greenProfileOf,
-    maxTierOf,
     energyStats,
     greenSpaceCoverage,
     homePower,
@@ -12,14 +11,13 @@ import {
     type Building, isHomeType } from '../../core';
 import {lineStatusKey} from '../stats/management/transit/lineStatusKey';
 import {t} from '../../i18n/t';
-import {useGame, useUi} from '../common/hooks';
+import {useGame} from '../common/hooks';
 import {factorsAt, productionFactors} from '../../core/environment/energy';
-import { ActionButton } from '../common/ActionButton';
 import { DrawerPanel } from '../common/DrawerPanel';
+import { Icon } from '../common/Icon';
 
 export function EcologicalBuildingPanel({building}: { building: Building; }) {
     const state = useGame(s => s.state);
-    const toggleStats = useUi(s => s.toggleStats);
     const energy = energyStats(state);
     const transport = transportStats(state);
     const greenProfile = greenProfileOf(building.type, building.tier);
@@ -30,7 +28,7 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
                 label={t('eco.storage')}
                 value={<>{(building.storedEnergy ?? 0).toFixed(1)} / ${ECOLOGY.batteryCapacity}</>}
             >
-                ⚡ {(energy.batteryRates.get(building.id) ?? 0).toFixed(1)} / h
+                <Icon name="power" /> {(energy.batteryRates.get(building.id) ?? 0).toFixed(1)} / h
             </DrawerPanel.LabelValue>
         </>}
 
@@ -42,7 +40,7 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
             label={t('eco.backup')}
             value={<>{ECOLOGY.backupCapacity} / h</>}
         >
-            {t('eco.cost')}: {ECOLOGY.backupCost} / ⚡ · {t('eco.emissions')}: 2 / ⚡
+            {t('eco.cost')}: {ECOLOGY.backupCost} / <Icon name="power" /> · {t('eco.emissions')}: 2 / <Icon name="power" />
         </DrawerPanel.LabelValue>}
 
         {greenProfile && <DrawerPanel.LabelValue
@@ -52,7 +50,6 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
             {t('eco.greenHelp')}
         </DrawerPanel.LabelValue>}
 
-        {greenProfile && maxTierOf(building.type) > 1 && <DrawerPanel.Upgrade building={building} />}
 
         {isTransitStopType(building.type) && <DrawerPanel.LabelValue
             label={`${t('eco.stop')} #${building.id} · (${building.x}, ${building.y})`}
@@ -85,6 +82,5 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
             }
         </DrawerPanel.LabelValue>
         }
-        <ActionButton block onClick={toggleStats}>{t('eco.title')}</ActionButton>
     </DrawerPanel>;
 }

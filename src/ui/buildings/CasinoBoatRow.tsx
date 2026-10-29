@@ -25,7 +25,7 @@ export function CasinoBoatRow({ boat }: CasinoBoatRowProps) {
         {CASINO_GAMES.map((game) => {
           const locked = CASINO.gameMinTier[game] > tier;
           return (
-            <ActionButton variant="primary" block key={game} disabled={locked || !open} onClick={() => launchCasinoGame(boat.id, game, () => select(null))}>
+            <ActionButton variant="primary" size="tile" block key={game} disabled={locked || !open} onClick={() => launchCasinoGame(boat.id, game, () => select(null))}>
               <img className="casino-game-icon" src={casinoGameIconUrl(game)} alt="" draggable={false} />
               <span>{t(`casino.${game}`)}{locked ? ` · ${t('home.tier')} ${CASINO.gameMinTier[game]}` : ''}</span>
             </ActionButton>

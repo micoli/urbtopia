@@ -32,6 +32,9 @@ export interface UiStore {
   flyout: Flyout;
   statsOpen: boolean;
   toggleStats: () => void;
+  lineToEdit: number | null;
+  editTransitLine: (lineId: number) => void;
+  clearLineToEdit: () => void;
   politicsOpen: boolean;
   openPolitics: () => void;
   closePolitics: () => void;
@@ -73,9 +76,6 @@ export interface UiStore {
   dropStreetView: (tile: Coord) => void;
   exitStreetView: () => void;
   codexOpen: boolean;
-  codexFromSettings: boolean;
-  codexFromMarket: boolean;
-  codexFromFlyout: Flyout;
   codexEntryId: CodexId;
   codexShowDetail: boolean;
   codexPage: CodexPage | null;
@@ -129,6 +129,11 @@ function evaluate(tool: Tool | null, tile: Coord, rotation: Rotation | null): Ev
   return evaluateTool(tool, { state: gameStore.getState().state, tile, rotation });
 }
 
+// One window at a time: opening a window, or a flyout menu, closes the others.
+const NO_WINDOW_OPEN = { statsOpen: false, politicsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false } as const;
+// The settings window is modal, so opening it also closes the panels around the map.
+const WINDOWS_CLOSED = { ...NO_WINDOW_OPEN, serviceCoverageOpen: false, buildingSearchOpen: false, flyout: null, selectedBuildingId: null } as const;
+
 export const uiStore = createStore<UiStore>((set, get) => {
   const reevaluate = (patch: Partial<Pick<UiStore, 'tool' | 'rotation' | 'centerTile' | 'pointerKind' | 'hovered' | 'pinnedTile'>> = {}) => {
     const merged = { ...get(), ...patch };
@@ -166,10 +171,16 @@ export const uiStore = createStore<UiStore>((set, get) => {
     selectedBuildingId: null,
     flyout: null,
     statsOpen: false,
+    lineToEdit: null,
+    editTransitLine: (lineId) => {
+      get().cancelTool();
+      set({ ...NO_WINDOW_OPEN, statsOpen: true, lineToEdit: lineId, flyout: null });
+    },
+    clearLineToEdit: () => set({ lineToEdit: null }),
     politicsOpen: false,
     openPolitics: () => {
       get().cancelTool();
-      set({ politicsOpen: true, statsOpen: false, socialOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
+      set({ ...NO_WINDOW_OPEN, politicsOpen: true, flyout: null });
     },
     closePolitics: () => set({ politicsOpen: false }),
     serviceCoverageOpen: false,
@@ -177,11 +188,15 @@ export const uiStore = createStore<UiStore>((set, get) => {
     closeServiceCoverage: () => set({ serviceCoverageOpen: false }),
     locator: null,
     buildingSearchOpen: false,
-    toggleBuildingSearch: () => set({ buildingSearchOpen: !get().buildingSearchOpen }),
+    toggleBuildingSearch: () => {
+      const opening = !get().buildingSearchOpen;
+      set(opening ? { buildingSearchOpen: true, flyout: null } : { buildingSearchOpen: false });
+    },
     closeBuildingSearch: () => set({ buildingSearchOpen: false }),
     toggleStats: () => {
-      if (!get().statsOpen) get().cancelTool();
-      set({ statsOpen: !get().statsOpen, socialOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
+      const opening = !get().statsOpen;
+      if (opening) get().cancelTool();
+      set(opening ? { ...NO_WINDOW_OPEN, statsOpen: true, flyout: null } : { statsOpen: false, flyout: null });
     },
     socialOpen: false,
     socialTab: 'friends',
@@ -189,14 +204,15 @@ export const uiStore = createStore<UiStore>((set, get) => {
       const opening = !get().socialOpen;
       if (opening) get().cancelTool();
       const landing = opening ? { socialTab: defaultSocialTab({ hasEmail: Boolean(cloudStore.getState().account?.email), status: socialStore.getState().status }) } : {};
-      set({ ...landing, socialOpen: opening, statsOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
+      set(opening ? { ...landing, ...NO_WINDOW_OPEN, socialOpen: true, flyout: null } : { socialOpen: false, flyout: null });
     },
     setSocialTab: (socialTab) => set({ socialTab }),
     signInFromSocial: false,
     openSettingsFromSocial: (forSignIn) => {
       leaveParcelMode();
       stopWaitingForSignIn();
-      set({ socialOpen: false, settingsOpen: true, flyout: null, signInFromSocial: forSignIn });
+      get().cancelTool();
+      set({ ...WINDOWS_CLOSED, settingsOpen: true, signInFromSocial: forSignIn });
       if (!forSignIn) return;
       stopWaitingForSignIn = cloudStore.subscribe((store) => {
         if (!store.account?.email) return;
@@ -209,7 +225,8 @@ export const uiStore = createStore<UiStore>((set, get) => {
     openSettingsForSignIn: () => {
       leaveParcelMode();
       stopWaitingForSignIn();
-      set({ socialOpen: false, statsOpen: false, marketOpen: false, settingsOpen: true, flyout: null, signInFromSocial: true });
+      get().cancelTool();
+      set({ ...WINDOWS_CLOSED, settingsOpen: true, signInFromSocial: true });
     },
     tradeWith: null,
     startTrade: (userId) => set({ tradeWith: userId, socialTab: 'exchanges' }),
@@ -255,31 +272,33 @@ export const uiStore = createStore<UiStore>((set, get) => {
       set({ streetView: false });
     },
     codexOpen: false,
-    codexFromSettings: false,
-    codexFromMarket: false,
-    codexFromFlyout: null,
     codexEntryId: 'home',
     codexShowDetail: false,
     codexPage: null,
+    // The Codex is a modal above everything: it leaves the open windows, the menus and the selection where they are.
     openCodex: (entry, page) => {
       get().cancelTool();
-      set({ codexOpen: true, codexFromSettings: get().settingsOpen, codexFromMarket: get().marketOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined || page !== undefined, codexPage: page ?? null, settingsOpen: false, marketOpen: false, statsOpen: false, socialOpen: false, flyout: null, selectedBuildingId: null });
+      set({ codexOpen: true, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined || page !== undefined, codexPage: page ?? null });
     },
-    closeCodex: () => set({ codexOpen: false, settingsOpen: get().codexFromSettings, marketOpen: get().codexFromMarket, flyout: get().codexFromFlyout, codexFromSettings: false, codexFromMarket: false, codexFromFlyout: null }),
+    closeCodex: () => set({ codexOpen: false }),
     pendingSaleId: null,
     evaluation: null,
     openFlyout: (flyout) => {
       leaveParcelMode();
-      set({ flyout: get().flyout === flyout ? null : flyout });
+      const next = get().flyout === flyout ? null : flyout;
+      set(next === null ? { flyout: null } : { ...NO_WINDOW_OPEN, flyout: next, buildingSearchOpen: false });
     },
     toggleSettings: () => {
       leaveParcelMode();
-      set({ settingsOpen: !get().settingsOpen, flyout: null, signInFromSocial: false });
+      const opening = !get().settingsOpen;
+      if (opening) get().cancelTool();
+      set(opening ? { ...WINDOWS_CLOSED, settingsOpen: true, signInFromSocial: false } : { settingsOpen: false, signInFromSocial: false });
     },
     toggleMarket: () => {
       if (!gameStore.getState().state.marketUnlocked) return toastStore.getState().show('error.marketLocked');
       leaveParcelMode();
-      set({ marketOpen: !get().marketOpen, flyout: null });
+      const opening = !get().marketOpen;
+      set(opening ? { ...NO_WINDOW_OPEN, marketOpen: true, flyout: null } : { marketOpen: false, flyout: null });
     },
     chooseTool: (tool) => {
       set({ flyout: null, selectedBuildingId: null });

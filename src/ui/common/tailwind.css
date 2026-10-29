@@ -1,0 +1,27 @@
+/* Utilities without preflight, so the legacy CSS is untouched. The theme maps the game tokens. */
+@layer theme, legacy, utilities;
+@import 'tailwindcss/theme' layer(theme);
+@import 'tailwindcss/utilities' layer(utilities) source(none);
+@source '../../';
+
+@theme inline {
+  --color-*: initial;
+  --color-ui-surface: var(--color-surface);
+  --color-ui-text: var(--color-text);
+  --color-ui-muted: var(--white-a12);
+  --color-ui-muted-hover: var(--white-a18);
+  --color-ui-accent: var(--color-accent);
+  --color-ui-on-accent: var(--color-on-accent);
+  --color-ui-danger: var(--color-danger);
+  --color-ui-on-danger: var(--color-white);
+  --color-ui-focus: var(--color-focus);
+  --color-ui-overlay: var(--black-a50);
+  --color-ui-edge: var(--white-a12);
+  --radius-*: initial;
+  --radius-ui-md: var(--radius-md);
+  --radius-ui-lg: var(--radius-lg);
+  --radius-ui-2xl: var(--radius-2xl);
+  --shadow-*: initial;
+  --shadow-ui-lg: var(--shadow-lg);
+  --spacing: 4px;
+}

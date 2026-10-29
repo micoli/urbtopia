@@ -1,3 +1,4 @@
+import {ActionButton} from '../../common/ActionButton';
 import {useMemo} from 'react';
 import {diagnoseCongestion, transportStats, type CongestionStats, type GameState} from '../../../core';
 import {t} from '../../../i18n/t';
@@ -18,7 +19,7 @@ interface TrafficSectionProps {
 export function TrafficSection({state, congestion, transport, onShowTransport}: TrafficSectionProps) {
     const diagnosis = useMemo(() => diagnoseCongestion(state, congestion, transport), [state, congestion, transport]);
     return <section id="eco-traffic">
-        <SectionHeading icon="🚗">{t('eco.traffic')}</SectionHeading>
+        <SectionHeading icon="car">{t('eco.traffic')}</SectionHeading>
         <ModeMix congestion={congestion}/>
         <p>{t('eco.shiftedRiders')}: {congestion.shift.total.toFixed(0)}</p>
         <p>{t('eco.commutersByCar')}: {congestion.commuters.toFixed(0)} · {t('eco.riders')}: {transport.riders.toFixed(0)}</p>
@@ -30,6 +31,6 @@ export function TrafficSection({state, congestion, transport, onShowTransport}: 
         <p>{t('eco.trafficHelp')}</p>
         <DiagnosisPanel diagnosis={diagnosis}/>
         {congestion.worstBottleneck && <BottleneckButton bottleneck={congestion.worstBottleneck}/>}
-        <button type="button" aria-controls="eco-transport" onClick={onShowTransport}>{t('eco.showTransport')}</button>
+        <ActionButton size="sm" aria-controls="eco-transport" onClick={onShowTransport}>{t('eco.showTransport')}</ActionButton>
     </section>;
 }

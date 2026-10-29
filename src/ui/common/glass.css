@@ -1,0 +1,26 @@
+/* Small floating surfaces share the blur of the panels, so the scene behind them never fights the text. */
+.building-search-panel,
+.service-coverage-panel,
+.reminder,
+.tutorial-banner,
+.toast,
+.analytics-widget,
+.analytics-readout,
+.analytics-flow-list,
+.top-bar,
+.bottom-bar,
+.minimal-stats,
+.casino-header,
+.challenge-success,
+.working-indicator,
+.confirm-info {
+  backdrop-filter: var(--surface-blur);
+}
+
+/* Large modal surfaces stay opaque: blurring a wide area over the animated scene costs a repaint every frame. */
+.eco-dashboard,
+.codex-dialog,
+.dialog,
+.sheet {
+  background: var(--color-surface-solid);
+}

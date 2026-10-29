@@ -6,7 +6,7 @@ const meta = {
   title: 'Common/OverlayBanner',
   component: OverlayBanner,
   parameters: { layout: 'fullscreen' },
-  args: { variant: 'banner', message: 'A new version is available.', children: <ActionButton variant="primary">Reload</ActionButton> },
+  args: { variant: 'banner', message: 'A new version is available.', children: <ActionButton variant="primary" size="sm" overlay>Reload</ActionButton> },
   argTypes: { variant: { control: 'inline-radio', options: ['banner', 'reminder'] } },
 } satisfies Meta<typeof OverlayBanner>;
 

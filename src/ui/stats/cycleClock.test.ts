@@ -4,10 +4,10 @@ import { cycleClockOf } from './cycleClock';
 
 describe('cycleClockOf', () => {
   it('shows the Cycle hour as hh:mm with the icon of the phase', () => {
-    expect(cycleClockOf(timeOfCycleHour(14.5))).toMatchObject({ time: '14:30', phase: 'daytime', icon: '☀️' });
+    expect(cycleClockOf(timeOfCycleHour(14.5))).toMatchObject({ time: '14:30', phase: 'daytime', icon: 'day' });
     expect(cycleClockOf(timeOfCycleHour(5.25))).toMatchObject({ time: '05:15', phase: 'dawn' });
     expect(cycleClockOf(timeOfCycleHour(22))).toMatchObject({ time: '22:00', phase: 'dusk' });
-    expect(cycleClockOf(timeOfCycleHour(2))).toMatchObject({ time: '02:00', phase: 'night', icon: '🌙' });
+    expect(cycleClockOf(timeOfCycleHour(2))).toMatchObject({ time: '02:00', phase: 'night', icon: 'night' });
   });
 
   it('wraps after one Day cycle', () => {

@@ -4,6 +4,7 @@ import {
 import {t} from '../../../i18n/t';
 import {itemName} from '../../../i18n/itemName';
 import {SectionHeading} from '../../common/SectionHeading';
+import {Icon} from '../../common/Icon';
 
 // Lighter industry first: Workshop and Mill, then Factory and Bakery.
 const PRODUCER_ROWS = [...INDUSTRY_TYPES].sort((a, b) => industryWeightOf(a) - industryWeightOf(b));
@@ -19,14 +20,14 @@ export function ProductionSection({state, energy}: ProductionSectionProps) {
     const citizens = totalCitizens(state);
     const adapting = (state.adaptationUntil ?? 0) > state.lastSeen;
     return <section id="eco-production" className="eco-wide">
-        <SectionHeading icon="▦">{t('eco.production')}</SectionHeading>
+        <SectionHeading icon="production">{t('eco.production')}</SectionHeading>
         <div className="eco-counts">
             {COUNT_TYPES.map(type => {
                 const locked = citizens < (ECOLOGY_UNLOCKS[type] ?? 0);
                 return <span key={type} data-locked={locked}>
                     <span>{t(`building.${type}`)}</span>
                     <strong>{state.buildings.filter(b => b.type === type).length}</strong>
-                    {locked && <small>◇ {t('eco.locked')}: {ECOLOGY_UNLOCKS[type]}</small>}
+                    {locked && <small><Icon name="lock" /> {t('eco.locked')}: {ECOLOGY_UNLOCKS[type]}</small>}
                 </span>;
             })}
             <span><span>{t('eco.solarHome')}</span><strong>{state.buildings.filter(b => isHomeType(b.type) && b.solar).length}</strong></span>

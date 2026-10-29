@@ -4,6 +4,8 @@ import { matchesSearch } from '../../codex/matchesSearch';
 import { CODEX_PAGES, type CodexPage } from '../../codex/pages';
 import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
+import { useBackdropClose } from '../common/useBackdropClose';
+import { navButtonAt } from './navButtonAt';
 import { CodexEntryContent } from './CodexEntryContent';
 import { CodexGuideLink } from './CodexGuideLink';
 import { ProductionChainsPage } from './ProductionChainsPage';
@@ -22,12 +24,17 @@ import { useCodexManifest } from './useCodexManifest';
 import { CloseButton } from '../common/CloseButton';
 import { ActionButton } from '../common/ActionButton';
 import { AccordionSection } from '../common/AccordionSection';
+import { SearchField } from '../common/SearchField';
 
 export function CodexPanel() {
   const close = useUi(store => store.closeCodex);
+  const backdrop = useBackdropClose(event => {
+    close();
+    const nav = navButtonAt(event.clientX, event.clientY);
+    if (nav && nav.dataset.action !== 'codex') nav.click();
+  });
   const initialEntry = useUi(store => store.codexEntryId);
   const initialDetail = useUi(store => store.codexShowDetail);
-  const initialFlyout = useUi(store => store.codexFromFlyout);
   const initialPage = useUi(store => store.codexPage);
   const dialog = useRef<HTMLDialogElement>(null);
   const heading = useId();
@@ -46,7 +53,7 @@ export function CodexPanel() {
 
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
-    const previousEntry = previous?.getAttribute('data-codex-id') ?? previous?.getAttribute('data-codex-label') ?? (initialDetail && initialFlyout ? initialEntry : null);
+    const previousEntry = previous?.getAttribute('data-codex-id') ?? previous?.getAttribute('data-codex-label');
     dialog.current?.showModal();
     return () => {
       requestAnimationFrame(() => {
@@ -77,7 +84,7 @@ export function CodexPanel() {
   };
 
   return (
-    <dialog className="codex-dialog" ref={dialog} role="dialog" aria-labelledby={heading} aria-modal="true" onCancel={event => { event.preventDefault(); close(); }} onClick={event => { if (event.target === event.currentTarget) close(); }} onKeyDown={event => event.stopPropagation()}>
+    <dialog className="codex-dialog" ref={dialog} role="dialog" aria-labelledby={heading} aria-modal="true" onCancel={event => { event.preventDefault(); close(); }} {...backdrop} onKeyDown={event => event.stopPropagation()}>
       <header className="codex-header">
         <h2 id={heading}>{t('codex.title')}</h2>
         <div className="codex-header-actions">
@@ -91,14 +98,7 @@ export function CodexPanel() {
       </header>
       <div className="codex-body" data-detail={showDetail}>
         <nav className="codex-list" aria-label={t('codex.title')}>
-          <input
-            className="codex-search"
-            type="search"
-            aria-label={t('codex.search')}
-            placeholder={t('codex.search')}
-            value={search}
-            onChange={event => setSearch(event.target.value)}
-          />
+          <SearchField className="mb-3" label={t('codex.search')} value={search} onChange={setSearch} />
           {!hasResults && <p className="codex-search-empty" role="status">{t('codex.searchEmpty')}</p>}
           {CODEX_SECTIONS.map(section => {
             const sectionEntries = filteredEntries.filter(item => item.section === section);

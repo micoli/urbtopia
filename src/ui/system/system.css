@@ -139,6 +139,12 @@
   width: 100%;
 }
 
+.city-rename .text-field,
+.city-delete .text-field {
+  flex: 1 1 12rem;
+  width: auto;
+}
+
 .shipment-list {
   margin: 0 0 var(--space-12);
   padding: 0;
@@ -154,3 +160,12 @@
 }
 
 .cities > summary, .shipments > summary { cursor: pointer; font-weight: bold; padding: var(--space-6) 0; }
+
+.settings-dialog {
+  box-sizing: border-box;
+  width: min(480px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}

@@ -5,10 +5,11 @@ import { pendingSocialCount } from '../../social/pendingCount';
 import { useChallenges, useGame, useSocial, useUi } from '../common/hooks';
 import { useSanctionedHomes } from '../common/useSanctionedHomes';
 import { guideOf } from '../tutorial/tutorialGuide';
+import type { IconName } from '../common/iconRegistry';
 
 export interface NavAction {
   id: string;
-  icon: string;
+  icon: IconName;
   image?: string;
   label: string;
   pressed: boolean;
@@ -44,13 +45,13 @@ export function useNavActions(): NavAction[] {
   const guidedFlyout = guideOf(useGame((store) => store.state.tutorial)).flyout;
 
   return [
-    { id: 'build', icon: '🏗', image: 'bulldozer.png', label: t('dock.build'), pressed: flyout === 'build', disabled: false, guided: guidedFlyout === 'build', onClick: () => openFlyout('build') },
-    { id: 'roads', icon: '🛣', image: 'infrastructure-networks.png', label: t('dock.networks'), pressed: flyout === 'roads', disabled: false, guided: guidedFlyout === 'roads', onClick: () => openFlyout('roads') },
-    { id: 'parcels', icon: '🗺', image: 'map.png', label: t('dock.parcels'), pressed: flyout === 'land' || tool?.kind === 'parcel' || analyticsLayer !== null, disabled: false, guided: false, onClick: () => openFlyout('land') },
-    { id: 'market', icon: '💱', image: 'market.png', label: t('dock.market'), pressed: marketOpen, disabled: !marketUnlocked, guided: false, badge: newChallenges, badgeLabel: t('challenge.badge'), onClick: toggleMarket },
-    { id: 'stats', icon: '📊', image: 'town-management.png', label: t('eco.title'), pressed: statsOpen, disabled: false, guided: false, badge: sanctionedCount, badgeLabel: t('sanction.alert'), onClick: toggleStats },
-    ...(cloudEnabled ? [{ id: 'social', icon: '🌐', image: 'social-network.png', label: t('social.title'), pressed: socialOpen, disabled: false, guided: false, badge: pendingRequests, onClick: toggleSocial }] : []),
-    { id: 'codex', icon: '📖', image: 'codex.png', label: t('codex.title'), pressed: codexOpen, disabled: false, guided: false, onClick: () => openCodex() },
-    { id: 'settings', icon: '⚙', image: 'settings.png', label: t('dock.settings'), pressed: settingsOpen, disabled: false, guided: false, onClick: toggleSettings },
+    { id: 'build', icon: 'build', image: 'bulldozer.png', label: t('dock.build'), pressed: flyout === 'build', disabled: false, guided: guidedFlyout === 'build', onClick: () => openFlyout('build') },
+    { id: 'roads', icon: 'roads', image: 'infrastructure-networks.png', label: t('dock.networks'), pressed: flyout === 'roads', disabled: false, guided: guidedFlyout === 'roads', onClick: () => openFlyout('roads') },
+    { id: 'parcels', icon: 'map', image: 'map.png', label: t('dock.parcels'), pressed: flyout === 'land' || tool?.kind === 'parcel' || analyticsLayer !== null, disabled: false, guided: false, onClick: () => openFlyout('land') },
+    { id: 'market', icon: 'market', image: 'market.png', label: t('dock.market'), pressed: marketOpen, disabled: !marketUnlocked, guided: false, badge: newChallenges, badgeLabel: t('challenge.badge'), onClick: toggleMarket },
+    { id: 'stats', icon: 'stats', image: 'town-management.png', label: t('eco.title'), pressed: statsOpen, disabled: false, guided: false, badge: sanctionedCount, badgeLabel: t('sanction.alert'), onClick: toggleStats },
+    ...(cloudEnabled ? [{ id: 'social', icon: 'globe' as const, image: 'social-network.png', label: t('social.title'), pressed: socialOpen, disabled: false, guided: false, badge: pendingRequests, onClick: toggleSocial }] : []),
+    { id: 'codex', icon: 'book' as const, image: 'codex.png', label: t('codex.title'), pressed: codexOpen, disabled: false, guided: false, onClick: () => openCodex() },
+    { id: 'settings', icon: 'settings' as const, image: 'settings.png', label: t('dock.settings'), pressed: settingsOpen, disabled: false, guided: false, onClick: toggleSettings },
   ];
 }

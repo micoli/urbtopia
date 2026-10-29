@@ -41,7 +41,7 @@ export function NavActionButton({ action, variant, onClick = action.onClick, sty
             <span aria-hidden="true">
                 <NavIcon action={action} />
             </span>
-            <span>{action.label}</span>
+            <span className="bottom-bar-label">{action.label}</span>
             <NavBadge count={action.badge} label={action.badgeLabel}/>
         </button>
     );

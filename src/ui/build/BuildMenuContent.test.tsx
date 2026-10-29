@@ -152,11 +152,11 @@ describe('build menu sections', () => {
     const demolishLabels = ['tool.demolishRoad', 'tool.demolishPedestrianWay', 'tool.demolishBrt', 'tool.demolishRail', 'water.remove', 'water.removeBridge', 'water.removeBridge'] as const;
     expect(sections).toHaveLength(demolishLabels.length);
     demolishLabels.forEach((key, index) => expect(sections[index]).toContain(`aria-label="${t(key)}"`));
-    expect(sections[0]).toContain('▾');
+    expect(sections[0]).toContain('lucide-chevron-down');
     expect(sections[0]).toContain('aria-expanded="true"');
     for (const section of sections.slice(1)) {
       expect(section).toContain('aria-expanded="false"');
-      expect(section).toContain('▸');
+      expect(section).toContain('lucide-chevron-right');
     }
   });
 
@@ -199,11 +199,11 @@ describe('build menu sections', () => {
     expect(sections[0]).toContain('aria-expanded="true"');
     expect(sections[0]).toContain('aria-disabled="true"');
     expect(sections[0]).not.toContain('hidden=""');
-    expect(sections[0]).toContain('▾');
+    expect(sections[0]).toContain('lucide-chevron-down');
     for (const section of sections.slice(1)) {
       expect(section).toContain('aria-expanded="false"');
       expect(section).toContain('hidden=""');
-      expect(section).toContain('▸');
+      expect(section).toContain('lucide-chevron-right');
     }
   });
 

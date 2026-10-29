@@ -9,6 +9,7 @@ import { useGame } from '../common/hooks';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { VenueShelfStock } from './VenueShelfStock';
 import { useVenuePerformance } from './useVenuePerformance';
+import { Icon } from '../common/Icon';
 
 interface VenueFixtureActionsProps {
   venueId: number;
@@ -45,19 +46,19 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
         <ButtonRow align="stretch" spaced>
           {Math.round(100-conditionOf(fixture)) > 2
               ? <ActionButton variant="primary" onClick={() => send({ type: 'RepairFixture', buildingId: venueId, fixtureId: fixture.id })}>
-                🔧 {t('venue.repair')} <UrbsAmount value={repairCost(fixture)} />
+                <Icon name="repair" /> {t('venue.repair')} <UrbsAmount value={repairCost(fixture)} />
                 </ActionButton>
               : null
           }
-          <ActionButton onClick={() => startMove(fixture.id)}>✥ {t('venue.move')}</ActionButton>
-          <ActionButton onClick={() => send({ type: 'MoveFixture', buildingId: venueId, fixtureId: fixture.id, x: fixture.x, y: fixture.y, rotation: ((fixture.rotation + 1) % 4) as 0 | 1 | 2 | 3 })}>⟳ {t('venue.rotate')}</ActionButton>
+          <ActionButton onClick={() => startMove(fixture.id)}><Icon name="move" /> {t('venue.move')}</ActionButton>
+          <ActionButton onClick={() => send({ type: 'MoveFixture', buildingId: venueId, fixtureId: fixture.id, x: fixture.x, y: fixture.y, rotation: ((fixture.rotation + 1) % 4) as 0 | 1 | 2 | 3 })}><Icon name="rotateRight" /> {t('venue.rotate')}</ActionButton>
           <ActionButton
             onClick={() => {
               send({ type: 'RemoveFixture', buildingId: venueId, fixtureId: fixture.id });
               selectPlaced(null);
             }}
           >
-            ❌ {t('panel.sell')} · +<UrbsAmount value={fixtureRefund(fixture.type)} />
+            <Icon name="trash" /> {t('panel.sell')} · +<UrbsAmount value={fixtureRefund(fixture.type)} />
           </ActionButton>
         </ButtonRow>
       )}

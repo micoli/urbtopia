@@ -20,7 +20,7 @@ export function WasteSection({state, onShowEmissions}: WasteSectionProps) {
     const situation = wasteSituation(state);
     const diagnosis = useMemo(() => diagnoseWaste(state), [state]);
     return <section id="eco-waste">
-        <SectionHeading icon="🗑️">{t('waste.section.title')}</SectionHeading>
+        <SectionHeading icon="trash">{t('waste.section.title')}</SectionHeading>
         <p>{t('waste.section.help')}</p>
         {situation.produced === 0 && <p>{t('waste.section.noHomes')}</p>}
         {!situation.required && <p>{t('waste.section.notRequired')}</p>}
