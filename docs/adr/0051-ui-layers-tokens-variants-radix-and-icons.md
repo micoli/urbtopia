@@ -16,7 +16,7 @@ The interface was plain CSS written by hand, one file per area, with design toke
 
 **Icons go through `<Icon name>` and `lucide-react`.** `iconRegistry.ts` names every icon; props that took an emoji (`SectionHeading`, `StatChip`, `NavAction`, …) now take an `IconName`, so a forgotten emoji fails the typecheck. The art of the casino, the arrows inside sentences, and glyphs that tests read as table values stay as text.
 
-**The look is Glass.** A translucent dark surface with a blur (`--surface-blur`), larger radii, a mint accent and Inter. Every floating surface shares the blur (`glass.css`). Entrances, hover, press and focus feedback use the motion tokens and stop under `prefers-reduced-motion`.
+**The look is Glass.** A translucent dark surface with a blur (`--surface-blur`), larger radii, a mint accent and Inter. The small floating surfaces (bars, banners, toasts, analytics widgets) share the blur (`glass.css`); the large modal surfaces (City management, Codex, dialogs, Market) stay opaque with `--color-surface-solid`, because blurring a wide area over the animated scene is costly. Entrances, hover, press and focus feedback use the motion tokens and stop under `prefers-reduced-motion`.
 
 ## Rejected
 
