@@ -1,6 +1,6 @@
 # Tourist entry points and transport load
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 01
 
@@ -10,6 +10,6 @@ Tourists enter by Railway stations and Transit hubs, else by road, and travel to
 
 ## Acceptance criteria
 
-- [ ] Entry choice and mode split tested on fixture maps with and without a station.
-- [ ] Congestion rises with Tourists by car; a station toward the Attractions lowers it.
-- [ ] Building flows lists Tourists for a tapped Attraction. Nothing Tourist-related is saved.
+- [x] Entry choice and mode split tested on fixture maps with and without a station.
+- [x] Congestion rises with Tourists by car; a station toward the Attractions lowers it.
+- [x] Building flows lists Tourists for a tapped Attraction. Nothing Tourist-related is saved.
