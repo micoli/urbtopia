@@ -413,7 +413,7 @@ The individual players of a Club, each with a position, a rating, a form, a mora
 _Avoid_: Roster, Staff
 
 **Championship**:
-The yearly calendar of a Club's Matches, one game year long, ending with a ranking and a prize in Urbs. Football and baseball each have one; athletics has isolated meetings with no ranking.
+The calendar of a Club's Matches over one year of the Club, ending with a ranking and a prize in Urbs. Football and baseball each have one; athletics has isolated meetings with no ranking.
 _Avoid_: Season (taken by Annual event), league, tournament
 
 **Vehicle**:

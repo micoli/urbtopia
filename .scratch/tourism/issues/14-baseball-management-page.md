@@ -1,6 +1,6 @@
 # Baseball management page
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 12, 13
 
@@ -10,5 +10,9 @@ Management page for the baseball field: Squad, batting order, starting pitcher, 
 
 ## Acceptance criteria
 
-- [ ] Reuses shared pieces; FR and EN.
-- [ ] Playwright test: set a lineup, play a Match.
+- [x] Reuses shared pieces; FR and EN.
+- [x] Playwright test: set a lineup, play a Match.
+
+## Comments
+
+Shared with the football page: the dialog, the summary, the Squad, Recruitment and Championship tabs, the player row, the match clock and buttons (`useLiveMatch`, `ClubMatchBar`). Specific to baseball: the lineup tab, the match tab with its controls and its feed.

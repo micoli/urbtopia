@@ -6,6 +6,8 @@ import { sceneHandle } from '../../store/sceneHandle';
 import { ActionButton } from '../common/ActionButton';
 import { useGame } from '../common/hooks';
 import { Tabs } from '../common/Tabs';
+import { BaseballLineupTab } from './BaseballLineupTab';
+import { BaseballMatchTab } from './BaseballMatchTab';
 import { ClubLineupTab } from './ClubLineupTab';
 import { ClubMarketTab } from './ClubMarketTab';
 import { ClubMatchTab } from './ClubMatchTab';
@@ -43,9 +45,9 @@ export function ClubDialog() {
       <Tabs label={t('club.title')} idPrefix="club-tab" panelId="club-panel" tabs={TABS.map(id => ({ id, label: t(`club.tab.${id}`) }))} selected={tab} onSelect={id => clubStore.getState().select(id)} />
       <div id="club-panel" role="tabpanel" aria-labelledby={`club-tab-${tab}`} className="club-view__panel">
         {tab === 'squad' ? <ClubSquadTab building={building} /> : null}
-        {tab === 'lineup' ? <ClubLineupTab building={building} /> : null}
+        {tab === 'lineup' ? (building.club.sport === 'baseball' ? <BaseballLineupTab building={building} /> : <ClubLineupTab building={building} />) : null}
         {tab === 'market' ? <ClubMarketTab building={building} /> : null}
-        {tab === 'match' ? <ClubMatchTab building={building} /> : null}
+        {tab === 'match' ? (building.club.sport === 'baseball' ? <BaseballMatchTab building={building} /> : <ClubMatchTab building={building} />) : null}
         {tab === 'table' ? <ClubTableTab building={building} /> : null}
       </div>
     </div>

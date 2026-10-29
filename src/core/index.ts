@@ -249,3 +249,4 @@ export { recordMatchDecisions } from './clubs/clubCommands';
 export { effectiveLineup } from './clubs/football/football';
 export { BASEBALL, BASEBALL_RULES, APPROACHES, HITTERS } from './clubs/baseball/baseball';
 export type { BaseballEvent, BaseballState } from './clubs/baseball/baseball';
+export { playUntil as playBaseball, autoStarters as baseballAutoStarters, lineupIssue as baseballLineupIssue, effectiveLineup as baseballLineup } from './clubs/baseball/baseball';

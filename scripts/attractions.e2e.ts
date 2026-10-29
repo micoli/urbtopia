@@ -97,3 +97,40 @@ test.describe('football club', () => {
     expect(errors).toEqual([]);
   });
 });
+
+test.describe('baseball club', () => {
+  test.use({ viewport: { width: 1280, height: 900 } });
+
+  test('the player founds a baseball Club, picks the best lineup and plays a Match', async ({ page }) => {
+    test.setTimeout(90_000);
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+    await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      const { uiStore } = await import('../src/store/uiStore.ts');
+      const { newGame, createBuilding } = await import('../src/core/index.ts');
+      const state = newGame({ seed: 'baseball-e2e', now: Date.now() });
+      gameStore.getState().replaceState({ ...state, urbs: 100_000, buildings: [createBuilding(50, 'baseballField', 64, 64, 0), createBuilding(51, 'home', 56, 64, 0)], nextId: 52 });
+      uiStore.getState().select(50);
+    });
+    await page.getByRole('button', { name: 'Found a Club' }).click();
+    await page.getByRole('button', { name: 'Manage the Club' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Club management' });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole('tab', { name: /Lineup/ }).click();
+    await dialog.getByRole('radio', { name: 'Power' }).click();
+    await expect(dialog.getByRole('radio', { name: 'Power' })).toHaveAttribute('aria-checked', 'true');
+    await dialog.getByRole('button', { name: 'Pick the best lineup' }).click();
+    await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().send({ type: 'SkipTime', hours: 7 }));
+    await dialog.getByRole('tab', { name: /^Match/ }).click();
+    await dialog.getByRole('button', { name: 'Change pitcher' }).first().click();
+    await dialog.getByRole('button', { name: 'Skip to the end' }).click();
+    await expect(dialog.getByText(/^Inning (9|1[0-2])$/)).toBeVisible();
+    await dialog.getByRole('button', { name: 'Record the decisions' }).click();
+    await expect(dialog.getByText('Decisions recorded for the Match.')).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+});
