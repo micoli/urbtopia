@@ -1,5 +1,5 @@
 import {
-  Anchor, ArrowDown, ArrowLeft, ArrowRight, ArrowLeftRight, ArrowUp, BookOpen, Bus, BusFront, Car, ChartColumn, Check, ChevronDown, ChevronRight, ClipboardList,
+  Anchor, ArrowDown, ArrowLeft, ArrowRight, ArrowLeftRight, ArrowUp, BookOpen, Bus, BusFront, Car, ChartColumn, Check, ChevronDown, Circle, ChevronRight, ClipboardList,
   Coins, Droplet, Factory, Footprints, Globe, Hammer, HeartPulse, Lock, Map, Medal, Menu, Move, Moon, RotateCcw, RotateCw, Route,
   Settings, Snail, Sparkles, Store, Sun, Sunrise, Sunset, Thermometer, Trash2, Trees, TrainFront, TrendingUp, TriangleAlert, Trophy,
   Repeat, Undo2, Users, Wheat, Wrench, X, Zap, type LucideIcon,
@@ -13,6 +13,7 @@ export const ICONS = {
   trash: Trash2,
   undo: Undo2,
   check: Check,
+  circle: Circle,
   lock: Lock,
   menu: Menu,
   arrowUp: ArrowUp,

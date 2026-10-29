@@ -21,7 +21,7 @@ export function ObjectivesSection({state, energy, green, transport}: ObjectivesS
     ];
     return <section className="eco-wide eco-objectives">
         <SectionHeading>{t('eco.objectives')}</SectionHeading>
-        {objectives.map(([key, done]) => <p key={key} data-complete={done}>{done ? <Icon name="check" /> : '○'} {t(key)}</p>)}
+        {objectives.map(([key, done]) => <p key={key} data-complete={done}>{done ? <Icon name="check" /> : <Icon name="circle" />} {t(key)}</p>)}
         <ActionButton variant="primary" className="eco-primary" onClick={() => gameStore.getState().send({type: 'DismissEcology'})}>{t('eco.dismiss')}</ActionButton>
     </section>;
 }
