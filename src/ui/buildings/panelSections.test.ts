@@ -10,27 +10,27 @@ function stubStorage(initial: Record<string, string> = {}) {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('panel sections', () => {
-  it('opens Modifications and Usage and closes Help by default', () => {
+  it('opens every section by default', () => {
     stubStorage();
-    expect(readPanelSections()).toEqual({ modifications: true, usage: true, help: false });
+    expect(readPanelSections()).toEqual({ modifications: true, usage: true, help: true });
   });
 
   it('remembers each section on its own', () => {
     stubStorage();
     writePanelSection('usage', false);
-    writePanelSection('help', true);
-    expect(readPanelSections()).toEqual({ modifications: true, usage: false, help: true });
+    writePanelSection('help', false);
+    expect(readPanelSections()).toEqual({ modifications: true, usage: false, help: false });
   });
 
   it('falls back on the default for a value that is not a boolean, and on bad JSON', () => {
     stubStorage({ [PANEL_SECTIONS_KEY]: JSON.stringify({ modifications: 'no', usage: false }) });
-    expect(readPanelSections()).toEqual({ modifications: true, usage: false, help: false });
+    expect(readPanelSections()).toEqual({ modifications: true, usage: false, help: true });
     stubStorage({ [PANEL_SECTIONS_KEY]: 'not json' });
-    expect(readPanelSections()).toEqual({ modifications: true, usage: true, help: false });
+    expect(readPanelSections()).toEqual({ modifications: true, usage: true, help: true });
   });
 
   it('works without a storage', () => {
-    expect(readPanelSections()).toEqual({ modifications: true, usage: true, help: false });
+    expect(readPanelSections()).toEqual({ modifications: true, usage: true, help: true });
     expect(() => writePanelSection('help', true)).not.toThrow();
   });
 });
