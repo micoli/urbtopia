@@ -7,8 +7,8 @@ describe('layer legends', () => {
     expect(legendsOf('data.congestion')).toEqual([expect.objectContaining({ max: 200, suffix: '%' })]);
   });
 
-  it('shows one legend for Roads, one for Sidewalks and one for Crossings in All', () => {
-    expect(legendsOf('movement.all').map(legend => legend.label)).toEqual(['roads', 'sidewalks', 'crossings']);
+  it('shows one legend for Roads, Sidewalks, Crossings, Bus, BRT and Rail in All', () => {
+    expect(legendsOf('movement.all').map(legend => legend.label)).toEqual(['roads', 'sidewalks', 'crossings', 'bus', 'brt', 'rail']);
   });
 
   it('has at least one legend for every Layer but the flows of a building, which are listed instead', () => {

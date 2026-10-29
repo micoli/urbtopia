@@ -448,7 +448,7 @@ _Avoid_: Heatmap, overlay, dashboard
 One reading of the city shown in the Analytics view. A Movement layer or a Data layer.
 
 **Movement layer**:
-A Layer showing how much Commuters or Pedestrians load the Roads and Sidewalks, as a share of capacity or as a volume: Pedestrians, Cars or All. It shows the city's aggregate load, never individual Vehicles or Pedestrians. The Building flows layer is the exception: it paints no tile but, for one tapped building, lists and joins the buildings its Citizens come from (arrivals) and go to (departures), by mode. Riders of public transport have no destination and are not counted.
+A Layer showing how much Commuters or Pedestrians load the Roads and Sidewalks, as a share of capacity or as a volume: Pedestrians, Cars or All. It shows the city's aggregate load, never individual Vehicles or Pedestrians. The Building flows layer is the exception: it paints no tile but, for one tapped building, lists and joins the buildings its Citizens come from (arrivals) and go to (departures), by mode. Riders of public transport appear as a Public transport mode, shared among the activities (industries, shops, workplaces reached by BRT only) within reach of their last stop; their route is marked by the stops they use.
 _Avoid_: Flow layer (Flow factor is a hydro term), traffic animation
 
 **Data layer**:
@@ -717,6 +717,15 @@ _Avoid_: BRT station, Freight terminal
 **Transport map**:
 A read-only schematic of the public transport network in City management: stops and Transit hubs as nodes, Bus, BRT and Railway lines as coloured strokes, and the possible Transfers between stops. The thickness and colour of a line follow its load, and the map can be filtered by mode. It shows the network and its volumes per line, not the car, walking and cycling flows, which stay in Traffic.
 _Avoid_: Network editor, road map, minimap
+
+**Transit layer** (Bus, BRT, Rail):
+A movement Layer per transport mode. It paints the Riders of the lines of that mode on the tiles of their routes, added up where lines share a tile, and marks with a beacon the busiest stops served by the mode. The All layer draws the three modes together, each in its own colour. Its probe reads the Riders of a route tile and the boarding and alighting of a stop. A Transit hub appears in every mode it serves, with all its flow.
+
+**Stop flow**:
+The Riders who board and alight at a Bus stop, BRT station, Railway station or Transit hub, shown in the stop's panel. A Rider who makes a Transfer alights at one stop and boards at another, so counts at both. The Walking leg from a Home to its first stop is not counted.
+
+**Walk flow**:
+The Pedestrians who cross a Crossing or a Footbridge, listed busiest first in the Traffic section of City management. The pedestrian Layers also mark the busiest Crossings, Footbridges and stops with a beacon, and the probe reads the flow of the tapped one.
 
 **Transit hub**:
 A multimodal station that serves as a stop for every public transport network it touches among the Road, the BRT corridor and the Railway, and is reached on foot from the Pedestrian ways and Sidewalks it touches. It is valid as soon as it touches one of these four networks, and is inactive while it touches no vehicle network. Lines of different modes can use it as a stop, and a Transfer between lines that share it needs no walking distance.

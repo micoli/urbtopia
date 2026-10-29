@@ -1,4 +1,4 @@
-export const MOVEMENT_LAYERS = ['pedestrians', 'cars', 'all', 'flows'] as const;
+export const MOVEMENT_LAYERS = ['pedestrians', 'cars', 'bus', 'brt', 'rail', 'all', 'flows'] as const;
 export const DATA_LAYERS = ['coverage', 'wellbeing', 'pollution', 'congestion', 'odor', 'landValue'] as const;
 
 export type MovementLayer = typeof MOVEMENT_LAYERS[number];

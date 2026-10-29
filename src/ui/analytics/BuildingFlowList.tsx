@@ -1,14 +1,12 @@
 import type { ReactNode } from 'react';
-import type { BuildingFlow } from '../../core';
+import { FLOW_MODES, type BuildingFlow } from '../../core';
 import type { MessageKey } from '../../i18n/messages';
 import { t } from '../../i18n/t';
 import { MODE_COLORS } from '../../scene/analyticsRamps';
 import { useUi } from '../common/hooks';
 
-const MODES = ['car', 'walk', 'cycle'] as const;
-
-const sharesOf = (flow: BuildingFlow) => MODES
-  .map(mode => ({ mode, percent: Math.round(100 * flow.modes[mode] / (flow.modes.car + flow.modes.walk + flow.modes.cycle)) }))
+const sharesOf = (flow: BuildingFlow) => FLOW_MODES
+  .map(mode => ({ mode, percent: Math.round(100 * flow.modes[mode] / flow.volume) }))
   .filter(({ percent }) => percent > 0);
 
 interface BuildingFlowListProps {

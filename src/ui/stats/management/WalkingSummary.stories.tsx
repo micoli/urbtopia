@@ -7,5 +7,5 @@ const meta = { title: 'Stats/WalkingSummary', parameters: { game: 'evolved' } } 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Evolved: Story = { render: () => <WithCityStats>{(s) => <WalkingSummary congestion={s.congestion} />}</WithCityStats> };
+export const Evolved: Story = { render: () => <WithCityStats>{(s) => <WalkingSummary state={s.state} congestion={s.congestion} />}</WithCityStats> };
 export const Starter: Story = { ...Evolved, parameters: { game: 'starter' } };

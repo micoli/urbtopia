@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { advance, createBuilding, brokenLinkCount, dispatch, energyStats, extendNetwork, newGame, routeForLine, transportStats, type Command, type GameState, type TransitTile } from '../index';
+import { advance, buildingFlowsOf, layerFieldsOf, passageBeaconsOf, probeOf, createBuilding, brokenLinkCount, dispatch, energyStats, extendNetwork, newGame, routeForLine, transportStats, type Command, type GameState, type TransitTile } from '../index';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 import { validateGameState } from '../../persistence/validate';
 import { restoreDeletion } from '../engine/undo';
@@ -189,6 +189,38 @@ describe('multimodal itineraries', () => {
     expect(stats.transferRiders).toBe(stats.riders);
     expect(stats.lines.map(l => l.riders)).toEqual([stats.riders, stats.riders]);
     expect(transportStats({ ...transferCity(), transitFleet: [] }).riders).toBe(0);
+  });
+  it('lists the riders of an itinerary among the flows of the activity they reach', () => {
+    const state = transferCity();
+    const flows = buildingFlowsOf(state, 2)!;
+    expect(flows.arrivals).toHaveLength(1);
+    expect(flows.arrivals[0]).toMatchObject({ id: 1, modes: { transit: expect.any(Number), car: 0, walk: 0, cycle: 0 } });
+    expect(flows.arrivals[0]!.modes.transit).toBeCloseTo(transportStats(state).riders);
+    expect(buildingFlowsOf(state, 1)!.departures[0]).toMatchObject({ id: 2 });
+    expect(flows.routes.transit.length).toBeGreaterThan(0);
+  });
+  it('paints the riders of each mode on its own route, and marks only the stops of the mode', () => {
+    const state = transferCity();
+    const riders = transportStats(state).riders;
+    const valueAt = (layer: 'movement.bus' | 'movement.brt' | 'movement.rail', x: number, y: number) => {
+      const { field } = layerFieldsOf(state, layer, 'education')[0]!;
+      return field.values[y * field.size + x]!;
+    };
+    expect(valueAt('movement.bus', 5, 0)).toBeCloseTo(riders);
+    expect(valueAt('movement.bus', 20, 0)).toBe(0);
+    expect(valueAt('movement.rail', 20, 0)).toBeCloseTo(riders);
+    expect(valueAt('movement.rail', 5, 0)).toBe(0);
+    expect(valueAt('movement.brt', 5, 0)).toBe(0);
+    expect(passageBeaconsOf(state, 'movement.bus')!.stops).toHaveLength(2);
+    expect(passageBeaconsOf(state, 'movement.bus')!.walks).toEqual([]);
+    expect(probeOf(state, 'movement.rail', 'education', { x: 20, y: 0 })?.lines[0]).toMatchObject({ key: 'analytics.legend.rail' });
+  });
+  it('counts the riders boarding and alighting at each stop of their itinerary', () => {
+    const stats = transportStats(transferCity());
+    expect(stats.stopFlows.get(3)).toEqual({ boarded: stats.riders, alighted: 0 });
+    expect(stats.stopFlows.get(4)).toEqual({ boarded: 0, alighted: stats.riders });
+    expect(stats.stopFlows.get(5)).toEqual({ boarded: stats.riders, alighted: 0 });
+    expect(stats.stopFlows.get(6)).toEqual({ boarded: 0, alighted: stats.riders });
   });
   it('allows two Transfers and rejects an itinerary needing three', () => {
     const xs = [0, 12, 13, 25, 26, 38, 39, 51];

@@ -8,6 +8,9 @@ export const RAMPS: Record<RampId, readonly string[]> = {
   sidewalk: ['#74c0fc', '#4c6ef5', '#9c36b8'],
   saturation: ['#35d07f', '#ffe066', '#e5484d', '#7a1f3d'],
   coverage: ['#e5484d', '#2ec4d6', '#35d07f'],
+  bus: ['#c3fae8', '#38d9a9', '#087f5b'],
+  brt: ['#d0bfff', '#9775fa', '#5f3dc4'],
+  rail: ['#fcc2d7', '#f06595', '#a61e4d'],
   wellbeing: ['#e5484d', '#ffe066', '#35d07f'],
 };
 
@@ -28,8 +31,8 @@ export function rampColor(ramp: RampId, share: number): number {
   return (r! << 16) | (g! << 8) | b!;
 }
 
-// Beacons over the Homes trips leave from and over the buildings they go to.
-export const FLOW_COLORS = { origins: '#69db7c', destinations: '#f06595', selected: '#ffd43b' } as const;
+// Beacons over the Homes trips leave from and over the buildings they go to; `selected` also marks the busiest Crossings and Footbridges, and `stops` the busiest stops.
+export const FLOW_COLORS = { origins: '#69db7c', destinations: '#f06595', selected: '#ffd43b', stops: '#b197fc' } as const;
 
 // The route of each mode of transport in the flows of a building.
-export const MODE_COLORS = { car: '#ff922b', walk: '#4dabf7', cycle: '#20c997' } as const;
+export const MODE_COLORS = { car: '#ff922b', walk: '#4dabf7', cycle: '#20c997', transit: '#845ef7' } as const;

@@ -20,6 +20,7 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
     const state = useGame(s => s.state);
     const energy = energyStats(state);
     const transport = transportStats(state);
+    const stopFlow = transport.stopFlows.get(building.id) ?? {boarded: 0, alighted: 0};
     const greenProfile = greenProfileOf(building.type, building.tier);
     const coveredCitizens = greenProfile ? greenSpaceCoverage(state, building) : 0;
     return <DrawerPanel>
@@ -59,6 +60,7 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
                 .filter(l => l.stops
                     .includes(building.id))
                 .map(l => `#${l.id}`).join(', ') || '—'}
+            <p>{t('eco.stopFlow')}: {stopFlow.boarded.toFixed(0)} {t('eco.stopBoarded')} · {stopFlow.alighted.toFixed(0)} {t('eco.stopAlighted')}</p>
             <p>{t('eco.lineHelp')}</p>
             {transport.lines.filter(l => l.stops
                 .includes(building.id))
