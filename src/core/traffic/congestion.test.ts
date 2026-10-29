@@ -109,6 +109,18 @@ describe('congestionStats', () => {
   });
 });
 
+describe('congestionStats layout cache', () => {
+  it('keeps two variants of a city that share the same roads, so asking for both never recomputes either', () => {
+    const full = withHome(base, 56, 59, 1);
+    const withoutWorkshop: GameState = { ...full, buildings: full.buildings.filter((building) => building.type !== 'workshop') };
+    const fullStats = congestionStats(full);
+    const reducedStats = congestionStats(withoutWorkshop);
+    expect(reducedStats).not.toBe(fullStats);
+    expect(congestionStats({ ...full, lastSeen: full.lastSeen + 1000 })).toBe(fullStats);
+    expect(congestionStats({ ...withoutWorkshop, lastSeen: full.lastSeen + 1000 })).toBe(reducedStats);
+  });
+});
+
 describe('worst bottleneck', () => {
   const busy = (): GameState => {
     const state = withHome({ ...base, buildings: base.buildings.map((building) => ({ ...building, tier: 8 })) }, 56, 59, 7);
