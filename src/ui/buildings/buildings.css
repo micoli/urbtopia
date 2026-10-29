@@ -103,6 +103,15 @@
 @media (max-width: 600px) {
   [data-layout='A'] .building-search-panel { top: 116px; }
 }
+/* Side dock: the search window sits where the Build, Networks and Land menu does. */
+[data-layout='C'] .building-search-panel {
+  top: var(--space-8);
+  bottom: var(--space-8);
+  left: var(--dock-width);
+  max-height: none;
+  border: var(--surface-edge);
+  z-index: 11;
+}
 .stop-name-field { display: flex; flex-direction: column; gap: var(--space-4); margin: var(--space-8) 0; }
 
 .crop-actions {

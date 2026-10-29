@@ -108,7 +108,7 @@
   border: var(--surface-edge);
   border-radius: var(--radius-2xl);
   color: var(--color-text);
-  z-index: 9;
+  z-index: 11;
 }
 
 .flyout > * {
