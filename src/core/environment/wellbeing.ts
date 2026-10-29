@@ -1,3 +1,4 @@
+import { gatheringPenaltyOf } from '../tourism/gatheringMalus';
 import { COAL_CAPACITY } from '../economy/economy';
 import { cityGreenBenefits, distance, ECOLOGY, greenBenefits } from './ecology';
 import { energyStats } from './energy';
@@ -71,11 +72,12 @@ function computeHomeBenefits(state: GameState, home: Building, coalRates: Readon
   const missing = isAdapting(state) ? 0 : missingServices(coverage, home).length + (isWasteMissing(state, home.id) ? 1 : 0);
   const servicePenalty = Math.min(SERVICES.penaltyCap, missing * SERVICES.missingPenalty);
   const congestionPenalty = isAdapting(state) ? 0 : congestionPenaltyOf(congestion.homes.get(home.id)?.ratio ?? 0);
+  const gatheringPenalty = isAdapting(state) ? 0 : gatheringPenaltyOf(state, home, congestion);
   const walkingBonus = Math.max(0, Math.min(WELLBEING_LIMIT - withServices, Math.round(WALKING.wellbeingBonus * (congestion.homes.get(home.id)?.walkAccess ?? 0))));
   const beltBonus = green.wellbeing > 0 ? Math.max(0, Math.min(greenBeltBonusOf(state), WELLBEING_LIMIT - withServices - walkingBonus)) : 0;
-  const withoutSolidarity = withServices + walkingBonus + beltBonus - pollutionPenalty - odorPenalty - servicePenalty - congestionPenalty;
+  const withoutSolidarity = withServices + walkingBonus + beltBonus - pollutionPenalty - odorPenalty - servicePenalty - congestionPenalty - gatheringPenalty;
   const solidarity = Math.min(solidarityBonus(state), WELLBEING_LIMIT - withoutSolidarity);
-  return { ...green, wellbeing: withoutSolidarity + solidarity, serviceBonus: withServices - green.wellbeing, pollutionPenalty, odorPenalty, servicePenalty, congestionPenalty, walkingBonus, solidarityBonus: solidarity };
+  return { ...green, wellbeing: withoutSolidarity + solidarity, serviceBonus: withServices - green.wellbeing, pollutionPenalty, odorPenalty, servicePenalty, congestionPenalty, gatheringPenalty, walkingBonus, solidarityBonus: solidarity };
 }
 
 export function cityBenefits(state: GameState, coalRates: ReadonlyMap<number, number> = energyStats(state).coalRates) {

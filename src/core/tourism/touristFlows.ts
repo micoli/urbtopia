@@ -9,6 +9,7 @@ import { WALKING, maxWalkCost } from '../traffic/walking';
 import { cityAttractiveness } from '../venues/hotel';
 import { isAttraction } from './tourists';
 import { touristsPerDay } from './takings';
+import { movingGathering } from './gatheringWindow';
 
 export type TouristMode = 'car' | 'walk' | 'transit';
 
@@ -70,7 +71,7 @@ function roadPath(graph: RoadGraph, from: Coord, targets: readonly Coord[]): Coo
 }
 
 // How the Tourists of every Attraction reach it: on foot from a station within walking range, by public transport when the Attraction is covered, the rest by car from the gate of the city.
-export function touristFlows(state: GameState, graph: RoadGraph, walkable: PedestrianGraph, coveredActivities: ReadonlySet<number>): TouristFlow[] {
+export function touristFlows(state: GameState, graph: RoadGraph, walkable: PedestrianGraph, coveredActivities: ReadonlySet<number>, now = state.lastSeen): TouristFlow[] {
   const attractions = state.buildings.filter(isAttraction).sort((a, b) => a.id - b.id);
   if (attractions.length === 0) return [];
   const attractiveness = cityAttractiveness(state);
@@ -78,9 +79,11 @@ export function touristFlows(state: GameState, graph: RoadGraph, walkable: Pedes
   const gate = roadGate(graph);
   const flows: TouristFlow[] = [];
   for (const attraction of attractions) {
-    const tourists = touristsPerDay(attraction, attractiveness);
+    const gathering = movingGathering(attraction, now);
+    const tourists = touristsPerDay(attraction, attractiveness) + (gathering?.tourists ?? 0);
     if (tourists <= 0) continue;
     const sidewalks = accessNodes(state, walkable, attraction);
+    if (gathering && gathering.citizens > 0) flows.push({ to: attraction.id, mode: 'walk', count: gathering.citizens, path: [], nodes: sidewalks, crossings: [] });
     const walk = walkFrom(walkable, sidewalks, maxWalkCost());
     const near = gates.flatMap(station => {
       const target = nearestTarget(walk, accessNodes(state, walkable, station));

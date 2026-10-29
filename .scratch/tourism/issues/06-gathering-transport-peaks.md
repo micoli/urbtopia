@@ -1,6 +1,6 @@
 # Gathering transport peaks and Well-being malus
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 03, 05
 
@@ -10,6 +10,6 @@ The crowd arrives in the game hour before and leaves in the hour after. It loads
 
 ## Acceptance criteria
 
-- [ ] Windows tested at the boundaries.
-- [ ] Malus fades after the Gathering; it never lowers Tax below the existing floor.
-- [ ] Congestion diagnosis names the Gathering as a Cause when relevant.
+- [x] Windows tested at the boundaries.
+- [x] Malus fades after the Gathering; it never lowers Tax below the existing floor.
+- [x] Congestion diagnosis names the Gathering as a Cause when relevant.

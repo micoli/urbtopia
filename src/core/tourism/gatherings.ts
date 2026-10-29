@@ -6,6 +6,7 @@ import { centerOf } from '../environment/ecology';
 import { cityBenefits } from '../environment/wellbeing';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { isWithinReach } from '../services/facilities';
+import { CROWD_WINDOW_MS, GATHERING_REACH } from './gatheringWindow';
 import { TICKETS, TAKINGS, takingsOf, ticketOf } from './takings';
 import { TOURISM, spendingFactor } from './tourists';
 import { cityAttractiveness } from '../venues/hotel';
@@ -14,6 +15,8 @@ export const SHOW_TYPES = ['theater', 'concertHall', 'colosseum'] as const;
 
 export const GATHERING = {
   durationMs: 3 * TAKINGS.hourMs,
+  windowMs: CROWD_WINDOW_MS,
+  maxMalus: 5,
   cooldownMs: 12 * TAKINGS.hourMs,
   maxDelayHours: 24,
   costPerSeat: 0.4,
@@ -22,7 +25,7 @@ export const GATHERING = {
   wellbeingFill: 0.2,
   touristShare: 0.5,
   citizenShare: 0.5,
-  reach: 14,
+  reach: GATHERING_REACH,
   defaultQuality: 0.5,
   capacity: { theater: 150, concertHall: 400, colosseum: 1200, stadium: 600, footballStadium: 3000, baseballField: 1200 } as Readonly<Record<string, number>>,
 };
@@ -84,20 +87,21 @@ export function scheduleShow(state: GameState, buildingId: number, startsInHours
   return { state: { ...state, urbs: state.urbs - preview.cost, buildings: state.buildings.map(candidate => (candidate === building ? { ...building, attraction } : candidate)) }, events: [] };
 }
 
-// Times after `after` at which a Gathering starts or ends.
+// Times after `after` at which a Gathering starts or ends, or its crowd starts or stops moving.
 export function gatheringBoundaries(state: GameState, after: number): number[] {
   return state.buildings.flatMap(building => {
     const gathering = building.attraction?.gathering;
-    return gathering ? [gathering.startsAt, gathering.endsAt].filter(time => time > after) : [];
+    if (!gathering) return [];
+    return [gathering.startsAt - GATHERING.windowMs, gathering.startsAt, gathering.endsAt, gathering.endsAt + GATHERING.windowMs].filter(time => time > after);
   });
 }
 
-// A Gathering that has ended pays its Ticket revenue into the Takings and starts the cooldown.
+// A Gathering whose crowd has gone home pays its Ticket revenue into the Takings and starts the cooldown.
 export function advanceGatherings(state: GameState, to: number): GameState {
-  if (!state.buildings.some(building => building.attraction?.gathering && building.attraction.gathering.endsAt <= to)) return state;
+  if (!state.buildings.some(building => building.attraction?.gathering && building.attraction.gathering.endsAt + GATHERING.windowMs <= to)) return state;
   const buildings = state.buildings.map(building => {
     const gathering = building.attraction?.gathering;
-    if (!gathering || gathering.endsAt > to) return building;
+    if (!gathering || gathering.endsAt + GATHERING.windowMs > to) return building;
     const attraction = { ...building.attraction!, takings: takingsOf(building) + gathering.revenue, cooldownUntil: gathering.endsAt + GATHERING.cooldownMs };
     delete attraction.gathering;
     return { ...building, attraction };

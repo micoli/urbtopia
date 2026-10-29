@@ -23,6 +23,10 @@ const texts = {
     '{car}% of trips are by car and only {shifted} Commuters have switched to public transport. Your lines may be full or miss the busy Homes: extend them.',
     '{car} % des trajets se font en voiture et seulement {shifted} navetteurs sont passés aux transports en commun. Vos lignes sont peut-être pleines ou n’atteignent pas les Homes chargés : prolongez-les.',
   ],
+  'diagnosis.congestion.gathering': [
+    'A crowd is on its way to {count} Gathering(s), and about {cars} of those people drive. Serve the Attraction with a station or a Bus line, or give it a second road.',
+    'Une foule se rend à {count} rassemblement(s), et environ {cars} de ces personnes viennent en voiture. Desservez l’attraction par une gare ou une ligne de bus, ou donnez-lui une seconde route.',
+  ],
   'diagnosis.congestion.disconnected': [
     '{homes} Homes are cut off from every workplace by the road network, so their Commuters have no route. Link their roads to a workplace.',
     '{homes} Homes sont coupés de tout lieu de travail par le réseau routier : leurs navetteurs n’ont aucun itinéraire. Reliez leurs routes à un lieu de travail.',
