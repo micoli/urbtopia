@@ -1,7 +1,6 @@
 import {
     ECOLOGY,
     greenProfileOf,
-    maxTierOf,
     energyStats,
     greenSpaceCoverage,
     homePower,
@@ -51,7 +50,6 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
             {t('eco.greenHelp')}
         </DrawerPanel.LabelValue>}
 
-        {greenProfile && maxTierOf(building.type) > 1 && <DrawerPanel.Upgrade building={building} />}
 
         {isTransitStopType(building.type) && <DrawerPanel.LabelValue
             label={`${t('eco.stop')} #${building.id} · (${building.x}, ${building.y})`}

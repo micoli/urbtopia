@@ -46,7 +46,6 @@ export function MarinaPanel({ building }: MarinaPanelProps) {
           {t('marina.buy')} · {t(`boat.${family}`)} · <UrbsAmount value={BOATS[family].cost} />
         </ActionButton>
       ))}
-      <DrawerPanel.Upgrade building={building} />
     </DrawerPanel>
   );
 }

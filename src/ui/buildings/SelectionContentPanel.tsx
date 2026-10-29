@@ -1,65 +1,36 @@
-import { EcologicalBuildingPanel } from './EcologicalBuildingPanel';
-import { DecorationRotation } from './DecorationRotation';
-import { FrontRotation } from './FrontRotation';
-import { CoalPlantPanel } from './CoalPlantPanel';
-import { StopNameField } from './StopNameField';
-import { GAME_CONFIG, greenProfileOf, natureModelOf, isFacilityType, placementCost, canHaveSolarPanels, isRepaintableType, isUtilityType, isTransitStopType, kindOf, hasTrips } from '../../core';
+import { GAME_CONFIG, placementCost } from '../../core';
 import { t } from '../../i18n/t';
-import { FacilityPanel } from './FacilityPanel';
-import { TownHallPanel } from '../politics/TownHallPanel';
-import { BuildingAccess } from './BuildingAccess';
-import { BuildingJobs } from './BuildingJobs';
-import { SolarPanelsRow } from './SolarPanelsRow';
 import { useStore } from 'zustand';
 import { prefsStore } from '../../i18n/prefsStore';
 import { useUi } from '../common/hooks';
-import { PANEL_BY_KIND } from './panelsByKind';
 import { useSelectedBuilding } from './useSelectedBuilding';
-import { UtilityPanel } from './UtilityPanel';
-import {UrbsAmount} from "../common/UrbsAmount.tsx";
+import { UrbsAmount } from '../common/UrbsAmount';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { PanelHeader } from '../common/PanelHeader';
-import { CodexLinks } from './CodexLinks';
-import { StopLineButtons } from './StopLineButtons';
-import {RepaintRow} from "./RepaintRow.tsx";
 import { Icon } from '../common/Icon';
+import { BuildingHelp } from './BuildingHelp';
+import { BuildingModifications } from './BuildingModifications';
+import { BuildingUsage } from './BuildingUsage';
 
 export function SelectionContentPanel() {
   const building = useSelectedBuilding();
   const select = useUi((store) => store.select);
   const sellSelected = useUi((store) => store.sellSelected);
-  const showBuildingFlows = useUi((store) => store.showBuildingFlows);
   const debug = useStore(prefsStore, (store) => store.debug);
   if (!building) return null;
 
-  const kind = kindOf(building.type);
-  const KindPanel = kind ? PANEL_BY_KIND[kind] : undefined;
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
-  const isEcologicalBuilding = greenProfileOf(building.type) || ['solar','battery','backup'].includes(building.type) || isTransitStopType(building.type) || building.solar;
-    return (
+  return (
     <>
       <PanelHeader title={t(`building.${building.type}`)} subtitle={building.tier} onClose={() => select(null)} />
       {debug ? <p className="debug-position">{t('panel.debugPosition')} <code>X {building.x} · Y {building.y}</code></p> : null}
-      <BuildingAccess building={building} />
-      <BuildingJobs building={building} />
-      {isTransitStopType(building.type) ? <StopNameField building={building} /> : null}
-      {isTransitStopType(building.type) ? <StopLineButtons building={building} /> : null}
-      {isEcologicalBuilding ? <EcologicalBuildingPanel building={building} /> : null}
-      {KindPanel ? <KindPanel building={building} /> : null}
-      {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}
-      {building.type === 'townHall' ? <TownHallPanel building={building} /> : null}
-      {isUtilityType(building.type) ? <UtilityPanel building={building} type={building.type} /> : null}
-      {building.type === 'coalPlant' ? <CoalPlantPanel building={building} /> : null}
-      {canHaveSolarPanels(building.type) ? <SolarPanelsRow building={building} /> : null}
-      {natureModelOf(building.type)?.[2] === 'decoration' ? <DecorationRotation building={building} /> : null}
-      <FrontRotation building={building} />
-      {isRepaintableType(building.type) ? <RepaintRow building={building}/> : null}
+      <BuildingModifications building={building} />
+      <BuildingUsage building={building} />
+      <BuildingHelp building={building} />
       <ButtonRow align="stretch" spaced className="side-panel-actions">
-        <CodexLinks building={building} />
-        {hasTrips(building) ? <ActionButton onClick={() => showBuildingFlows(building.id)}><Icon name="walk" /> {t('panel.flows')}</ActionButton> : null}
         <ActionButton onClick={sellSelected}>
-          <Icon name="trash" /> {t('panel.sell')} +<UrbsAmount value={refund}/>
+          <Icon name="trash" /> {t('panel.sell')} +<UrbsAmount value={refund} />
         </ActionButton>
       </ButtonRow>
     </>

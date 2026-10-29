@@ -15,7 +15,6 @@ vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: 
 vi.mock('../common/DrawerPanel', () => ({
   DrawerPanel: Object.assign(({ children }: { children?: React.ReactNode }) => <div>{children}</div>, {
     LabelValue: ({ label, value }: { label: string; value: React.ReactNode }) => <p>{label}: {value}</p>,
-    Upgrade: () => <p>upgrade</p>,
   }),
 }));
 

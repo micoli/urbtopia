@@ -28,6 +28,5 @@ export function ShopPanel({ building }: ShopPanelProps) {
           {t('panel.buySlot')} (<UrbsAmount value={slotPrice} />)
         </ActionButton>
       ) : null}
-      <DrawerPanel.Upgrade building={building} />
   </DrawerPanel>
 }

@@ -67,6 +67,5 @@ export function HomePanel({ building }: HomePanelProps) {
           {t('panel.collect')} (+{due})
         </ActionButton>
       ) : null}
-      <DrawerPanel.Upgrade building={building} />
     </DrawerPanel>
 }

@@ -22,7 +22,7 @@ const casinoCity = (tier: number, extra: Partial<GameState> = {}): { state: Game
 afterEach(() => prefsStore.getState().setLanguage('en'));
 
 describe('Casino panel', () => {
-  it('lists the Minigames, locks those above the Tier and offers the upgrade', () => {
+  it('lists the Minigames and locks those above the Tier', () => {
     const { state, casino } = casinoCity(1, { adaptationUntil: 10 ** 12 });
     context.state = state;
     const html = renderToStaticMarkup(<CasinoPanel building={casino} />);
@@ -30,7 +30,6 @@ describe('Casino panel', () => {
     expect(html).toContain(t('casino.slotMachine'));
     expect(html).toMatch(new RegExp(`disabled=""[^>]*><img[^>]*><span>${t('casino.blackjack')} · ${t('home.tier')} 2`));
     expect(html).toMatch(new RegExp(`disabled=""[^>]*><img[^>]*><span>${t('casino.blockmatch')} · ${t('home.tier')} 3`));
-    expect(html).toContain(`${t('home.upgrade')} → 2`);
   });
 
   it('gives each Minigame button its icon', () => {

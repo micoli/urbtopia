@@ -7,13 +7,12 @@ import { CropRow } from './CropRow';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { BlockedReason } from '../common/BlockedReason';
-import { DrawerPanel } from '../common/DrawerPanel';
 
 interface FarmPanelProps {
   building: Building;
 }
 
-export function FarmPanel({ building }: FarmPanelProps) {
+export function FarmPanel(_props: FarmPanelProps) {
   const state = useGame((store) => store.state);
   const { chooseTool, selectCrop } = uiStore.getState();
   const send = gameStore.getState().send;
@@ -47,7 +46,6 @@ export function FarmPanel({ building }: FarmPanelProps) {
             <ActionButton disabled={state.fields.length >= fieldCap(state)} onClick={() => chooseTool({ kind: 'brush', action: 'layField', tiles: [] })}>{t('farm.layFields')}</ActionButton>
             <ActionButton disabled={state.fields.length === 0} onClick={() => chooseTool({ kind: 'brush', action: 'removeField', tiles: [] })}>{t('farm.removeFields')}</ActionButton>
         </ButtonRow>
-      <DrawerPanel.Upgrade building={building} />
     </section>
   );
 }

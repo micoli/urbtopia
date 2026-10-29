@@ -47,7 +47,6 @@ export function StoragePanel({ building }: StoragePanelProps) {
           </ul>
         </div>
       ))}
-      <DrawerPanel.Upgrade building={building} />
     </DrawerPanel>
   );
 }

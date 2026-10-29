@@ -38,6 +38,5 @@ export function CasinoPanel({ building }: CasinoPanelProps) {
         })}
       </div>
       <Note>{building.tier < MAX_CASINO_TIER ? `${t('casino.unlocksNext')}: ${unlocked.map(game => t(`casino.${game}`)).join(', ')} · ${t('casino.maxStake')} ${maxStake(building.tier + 1)}` : t('casino.maxTier')}</Note>
-      <DrawerPanel.Upgrade building={building} />
   </DrawerPanel>
 }

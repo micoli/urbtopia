@@ -18,7 +18,6 @@ export function VenuePanel({ building }: VenuePanelProps) {
       </ActionButton>
       <VenueTakings building={building} />
       <VenueTutorialReplay building={building} />
-      <DrawerPanel.Upgrade building={building} />
     </DrawerPanel>
   );
 }

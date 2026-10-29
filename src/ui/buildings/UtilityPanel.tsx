@@ -18,6 +18,5 @@ export function UtilityPanel({ building, type }: UtilityPanelProps) {
         {isWater ? <><Icon name="water" /> {t('stat.water')}</> : <><Icon name="power" /> {t('stat.power')}</>}: {value}
       </p>
       {type === 'hydroPlant' && <p>{t('panel.flow').replace('{count}', String(connectedWaterKeys(state, building).size)).replace('{full}', String(ECOLOGY.hydroFullFlowTiles))}</p>}
-      <DrawerPanel.Upgrade building={building} />
   </DrawerPanel>
 }

@@ -104,7 +104,6 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
           {t('panel.collect')}
         </ActionButton>
       ) : null}
-      <DrawerPanel.Upgrade building={building} />
   </DrawerPanel>;
 }
 
