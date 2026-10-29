@@ -24,9 +24,9 @@ function render(type: 'casino' | 'workshop', tier = 1): string {
 }
 
 describe('selected building panel', () => {
-  it('has Modifications, Usage and Help sections, in that order', () => {
+  it('has Usage, Modifications and Help sections, in that order', () => {
     const html = render('casino');
-    const positions = ['modifications', 'usage', 'help'].map((id) => html.indexOf(`id="panel-section-${id}-toggle"`));
+    const positions = ['usage', 'modifications', 'help'].map((id) => html.indexOf(`id="panel-section-${id}-toggle"`));
     expect(positions.every((position) => position >= 0)).toBe(true);
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
     expect(html).toContain(t('panel.section.modifications'));
@@ -34,24 +34,25 @@ describe('selected building panel', () => {
     expect(html).toContain(t('panel.section.help'));
   });
 
-  it('puts rotate, move and the upgrade in Modifications, the Minigames in Usage and the Codex link in Help', () => {
+  it('opens every section by default', () => {
     const html = render('casino');
-    const modifications = html.indexOf('id="panel-section-modifications"');
-    const usage = html.indexOf('id="panel-section-usage"');
-    const help = html.indexOf('id="panel-section-help"');
-    const at = (text: string) => html.indexOf(text);
-    expect(at(t('panel.rotateLeft'))).toBeGreaterThan(modifications);
-    expect(at(t('panel.move'))).toBeLessThan(usage);
-    expect(at(`${t('home.upgrade')} → 2`)).toBeGreaterThan(modifications);
-    expect(at(`${t('home.upgrade')} → 2`)).toBeLessThan(usage);
-    expect(at(t('casino.slotMachine'))).toBeGreaterThan(usage);
-    expect(at(t('casino.slotMachine'))).toBeLessThan(help);
-    expect(at(t('codex.about').replace('{name}', t('building.casino')))).toBeGreaterThan(help);
+    expect(html.match(/aria-expanded="true"/g)).toHaveLength(3);
+    expect(html).not.toContain('aria-expanded="false"');
   });
 
-  it('keeps the Sell button outside the sections, after Help', () => {
+  it('puts the Minigames in Usage, rotate, move, the upgrade and Sell in Modifications, and the Codex link in Help', () => {
     const html = render('casino');
-    expect(html.indexOf(t('panel.sell'))).toBeGreaterThan(html.indexOf('id="panel-section-help"'));
+    const usage = html.indexOf('id="panel-section-usage"');
+    const modifications = html.indexOf('id="panel-section-modifications"');
+    const help = html.indexOf('id="panel-section-help"');
+    const at = (text: string) => html.indexOf(text);
+    expect(at(t('casino.slotMachine'))).toBeGreaterThan(usage);
+    expect(at(t('casino.slotMachine'))).toBeLessThan(modifications);
+    for (const text of [t('panel.rotateLeft'), t('panel.move'), `${t('home.upgrade')} → 2`, t('panel.sell')]) {
+      expect(at(text)).toBeGreaterThan(modifications);
+      expect(at(text)).toBeLessThan(help);
+    }
+    expect(at(t('codex.about').replace('{name}', t('building.casino')))).toBeGreaterThan(help);
   });
 
   it('shows no upgrade once the building is at its top Tier', () => {
