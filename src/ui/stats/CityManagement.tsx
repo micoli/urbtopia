@@ -29,6 +29,7 @@ import {WaterSection} from './management/WaterSection';
 import {WellbeingSection} from './management/WellbeingSection';
 import {scrollToSection} from './management/scrollToSection';
 import {useModalFocus} from './management/useModalFocus';
+import {useBackdropClose} from '../common/useBackdropClose';
 
 type ManagementTab = 'dashboard' | 'cities' | 'shipments';
 
@@ -42,6 +43,7 @@ function CityManagementDialog() {
     const open = useUi(s => s.statsOpen);
     const toggle = useUi(s => s.toggleStats);
     const panel = useModalFocus(open, toggle);
+    const backdrop = useBackdropClose(toggle);
     if (!open) return null;
     const multiCity = (readRegistry(rawSaveStore)?.cities.length ?? 0) > 1;
     const tabs: {id: ManagementTab; label: string}[] = [{id: 'dashboard', label: t('eco.tab.dashboard')}, {id: 'cities', label: t('cities.title')}, ...(multiCity ? [{id: 'shipments' as const, label: t('shipments.title')}] : [])];
@@ -53,9 +55,7 @@ function CityManagementDialog() {
     const congestion = congestionStats(state);
     const temperature = temperatureBreakdown({climate, energy, transport, cooling: green.cooling, adapting: isAdapting(state)});
     const showSection = (id: string) => scrollToSection(panel.current, id);
-    return <div className="dialog-backdrop city-management-backdrop" onClick={event => {
-        if (event.target === event.currentTarget) toggle();
-    }}>
+    return <div className="dialog-backdrop city-management-backdrop" {...backdrop}>
         <div className="eco-dashboard" ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="eco-heading">
             <header className="eco-header">
                 <img src={`${import.meta.env.BASE_URL}assets/icons/town-management.png`} alt=""/>

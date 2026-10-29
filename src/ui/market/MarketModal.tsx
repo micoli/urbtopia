@@ -1,5 +1,6 @@
 import { t } from '../../i18n/t';
 import { useModalFocus } from '../stats/management/useModalFocus';
+import { useBackdropClose } from '../common/useBackdropClose';
 import { pendingChallengesCount } from '../../challenges/pendingCount';
 import { useChallenges, useGame, useUi } from '../common/hooks';
 import { PanelHeader } from '../common/PanelHeader';
@@ -17,14 +18,10 @@ function MarketModalDialog() {
   const seen = useChallenges((store) => store.seen);
   const eventsPending = pendingChallengesCount(state, snapshot, seen);
   const dialog = useModalFocus(open, toggle);
+  const backdrop = useBackdropClose(toggle);
   if (!open) return null;
   return (
-    <div
-      className="dialog-backdrop"
-      onClick={(event) => {
-        if (event.target === event.currentTarget) toggle();
-      }}
-    >
+    <div className="dialog-backdrop" {...backdrop}>
       <div className="dialog market-dialog" ref={dialog} tabIndex={-1} role="dialog" aria-modal="true" aria-label={t('dock.market')}>
         <PanelHeader title={t('dock.market')} onClose={toggle} />
         <MarketTabs tab={tab} eventsPending={tab === 'events' ? 0 : eventsPending} onSelect={setTab} />

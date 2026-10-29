@@ -4,6 +4,7 @@ import { matchesSearch } from '../../codex/matchesSearch';
 import { CODEX_PAGES, type CodexPage } from '../../codex/pages';
 import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
+import { useBackdropClose } from '../common/useBackdropClose';
 import { CodexEntryContent } from './CodexEntryContent';
 import { CodexGuideLink } from './CodexGuideLink';
 import { ProductionChainsPage } from './ProductionChainsPage';
@@ -25,6 +26,7 @@ import { AccordionSection } from '../common/AccordionSection';
 
 export function CodexPanel() {
   const close = useUi(store => store.closeCodex);
+  const backdrop = useBackdropClose(close);
   const initialEntry = useUi(store => store.codexEntryId);
   const initialDetail = useUi(store => store.codexShowDetail);
   const initialFlyout = useUi(store => store.codexFromFlyout);
@@ -77,7 +79,7 @@ export function CodexPanel() {
   };
 
   return (
-    <dialog className="codex-dialog" ref={dialog} role="dialog" aria-labelledby={heading} aria-modal="true" onCancel={event => { event.preventDefault(); close(); }} onClick={event => { if (event.target === event.currentTarget) close(); }} onKeyDown={event => event.stopPropagation()}>
+    <dialog className="codex-dialog" ref={dialog} role="dialog" aria-labelledby={heading} aria-modal="true" onCancel={event => { event.preventDefault(); close(); }} {...backdrop} onKeyDown={event => event.stopPropagation()}>
       <header className="codex-header">
         <h2 id={heading}>{t('codex.title')}</h2>
         <div className="codex-header-actions">
