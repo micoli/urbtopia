@@ -369,3 +369,28 @@ describe('editing a transit line', () => {
     expect(uiStore.getState()).toMatchObject({ statsOpen: true, lineToEdit: null });
   });
 });
+
+describe('building search and the flyout menus', () => {
+  beforeEach(() => uiStore.setState({ flyout: null, buildingSearchOpen: false }));
+
+  it('closes the open flyout when the search opens', () => {
+    uiStore.getState().openFlyout('build');
+    uiStore.getState().toggleBuildingSearch();
+    expect(uiStore.getState()).toMatchObject({ buildingSearchOpen: true, flyout: null });
+  });
+
+  it('closes the search when a flyout opens, since both sit in the same place', () => {
+    uiStore.getState().toggleBuildingSearch();
+    uiStore.getState().openFlyout('land');
+    expect(uiStore.getState()).toMatchObject({ buildingSearchOpen: false, flyout: 'land' });
+  });
+
+  it('does not reopen anything when a flyout or the search is closed', () => {
+    uiStore.getState().openFlyout('land');
+    uiStore.getState().openFlyout('land');
+    expect(uiStore.getState()).toMatchObject({ buildingSearchOpen: false, flyout: null });
+    uiStore.getState().toggleBuildingSearch();
+    uiStore.getState().toggleBuildingSearch();
+    expect(uiStore.getState()).toMatchObject({ buildingSearchOpen: false, flyout: null });
+  });
+});

@@ -186,7 +186,10 @@ export const uiStore = createStore<UiStore>((set, get) => {
     closeServiceCoverage: () => set({ serviceCoverageOpen: false }),
     locator: null,
     buildingSearchOpen: false,
-    toggleBuildingSearch: () => set({ buildingSearchOpen: !get().buildingSearchOpen }),
+    toggleBuildingSearch: () => {
+      const opening = !get().buildingSearchOpen;
+      set(opening ? { buildingSearchOpen: true, flyout: null } : { buildingSearchOpen: false });
+    },
     closeBuildingSearch: () => set({ buildingSearchOpen: false }),
     toggleStats: () => {
       if (!get().statsOpen) get().cancelTool();
@@ -279,7 +282,8 @@ export const uiStore = createStore<UiStore>((set, get) => {
     evaluation: null,
     openFlyout: (flyout) => {
       leaveParcelMode();
-      set({ flyout: get().flyout === flyout ? null : flyout });
+      const next = get().flyout === flyout ? null : flyout;
+      set(next === null ? { flyout: null } : { flyout: next, buildingSearchOpen: false });
     },
     toggleSettings: () => {
       leaveParcelMode();
