@@ -55,7 +55,7 @@ function CityManagementDialog() {
     const congestion = congestionStats(state);
     const temperature = temperatureBreakdown({climate, energy, transport, cooling: green.cooling, adapting: isAdapting(state)});
     const showSection = (id: string) => scrollToSection(panel.current, id);
-    return <div className="dialog-backdrop city-management-backdrop" {...backdrop}>
+    return <div className="dialog-backdrop window-backdrop city-management-backdrop" {...backdrop}>
         <div className="eco-dashboard" ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="eco-heading">
             <header className="eco-header">
                 <img src={`${import.meta.env.BASE_URL}assets/icons/town-management.png`} alt=""/>

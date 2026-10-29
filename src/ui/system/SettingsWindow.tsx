@@ -10,7 +10,7 @@ function SettingsWindowDialog() {
   const dialog = useModalFocus(open, toggle);
   const backdrop = useBackdropClose(toggle);
   return (
-    <div className="dialog-backdrop" {...backdrop}>
+    <div className="dialog-backdrop window-backdrop" {...backdrop}>
       <div className="dialog settings-dialog" ref={dialog} tabIndex={-1} role="dialog" aria-modal="true" aria-label={t('settings.title')}>
         <SettingsContent />
       </div>

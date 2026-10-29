@@ -25,7 +25,7 @@ export function SocialWindow() {
     const panel = useModalFocus(open, toggle);
     const backdrop = useBackdropClose(toggle);
     if (!open) return null;
-    return <div className="dialog-backdrop city-management-backdrop" {...backdrop}>
+    return <div className="dialog-backdrop window-backdrop city-management-backdrop" {...backdrop}>
         <div className="eco-dashboard social-window" ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="social-heading">
             <header className="eco-header">
                 <img src={`${import.meta.env.BASE_URL}assets/icons/social-network.png`} alt=""/>

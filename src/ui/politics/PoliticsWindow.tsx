@@ -21,7 +21,7 @@ function PoliticsWindowDialog() {
   const backdrop = useBackdropClose(close);
   if (!open) return null;
   return (
-    <div className="dialog-backdrop city-management-backdrop" {...backdrop}>
+    <div className="dialog-backdrop window-backdrop city-management-backdrop" {...backdrop}>
       <div className="eco-dashboard politics-window" ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="politics-heading">
         <header className="eco-header">
           <h2 id="politics-heading">{t('politics.title')}</h2>

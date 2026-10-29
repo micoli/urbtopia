@@ -189,4 +189,5 @@
   /* Layout */
   --dock-width: 64px;
   --tap: 48px;
+  --bottom-bar-height: calc(var(--tap) + var(--space-12));
 }
