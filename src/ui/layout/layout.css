@@ -309,6 +309,10 @@
   top: 12px;
   bottom: auto;
 }
+
+@media (max-width: 600px) {
+  [data-layout='B'] .camera-buttons { top: 56px; }
+}
 @media (max-width: 600px) {
   body:has(.service-coverage-panel) .side-panel { top: 228px; }
   [data-layout='A'] body:has(.service-coverage-panel) .side-panel { top: 280px; }
