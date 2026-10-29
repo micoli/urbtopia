@@ -1,8 +1,4 @@
-/* Floating surfaces share the blur of the panels, so the scene behind them never fights the text. */
-.eco-dashboard,
-.codex-dialog,
-.dialog,
-.market-panel,
+/* Small floating surfaces share the blur of the panels, so the scene behind them never fights the text. */
 .building-search-panel,
 .service-coverage-panel,
 .reminder,
@@ -11,7 +7,6 @@
 .analytics-widget,
 .analytics-readout,
 .analytics-flow-list,
-.sheet,
 .top-bar,
 .bottom-bar,
 .minimal-stats,
@@ -20,4 +15,13 @@
 .working-indicator,
 .confirm-info {
   backdrop-filter: var(--surface-blur);
+}
+
+/* Large modal surfaces stay opaque: blurring a wide area over the animated scene costs a repaint every frame. */
+.eco-dashboard,
+.codex-dialog,
+.dialog,
+.market-panel,
+.sheet {
+  background: var(--color-surface-solid);
 }

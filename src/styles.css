@@ -5,7 +5,6 @@
 @import './ui/layout/layout.css' layer(legacy);
 @import './ui/common/common.css' layer(legacy);
 @import './ui/common/motion.css' layer(legacy);
-@import './ui/common/glass.css' layer(legacy);
 @import './ui/build/build.css' layer(legacy);
 @import './ui/venue/venue.css' layer(legacy);
 @import './ui/buildings/buildings.css' layer(legacy);
@@ -21,3 +20,4 @@
 @import './ui/casino/casino.css' layer(legacy);
 @import './ui/politics/politics.css' layer(legacy);
 @import './ui/tutorial/guided.css' layer(legacy);
+@import './ui/common/glass.css' layer(legacy);
