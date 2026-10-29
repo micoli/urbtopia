@@ -26,8 +26,18 @@
   .flyout-item,
   .flyout-info,
   .icon-button,
-  .build-section-toggle {
+  .build-section-toggle,
+  .home-color-picker button,
+  .prefs-group button,
+  .prefs-toggle,
+  .city-stats,
+  .minimal-stats {
     transition: filter var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+  }
+
+  .codex-list button,
+  .codex-guide-link {
+    transition: background-color var(--duration-fast) var(--ease-out);
   }
 }
 
@@ -36,8 +46,21 @@
   .flyout-item:not(:disabled):hover,
   .flyout-info:not(:disabled):hover,
   .icon-button:not(:disabled):hover,
-  .build-section-toggle:hover {
+  .build-section-toggle:hover,
+  .home-color-picker button:not(:disabled):hover,
+  .prefs-group button:not(:disabled):hover,
+  .prefs-toggle:not(:disabled):hover,
+  .city-stats:hover,
+  .minimal-stats:hover {
     filter: brightness(1.15);
+  }
+
+  .codex-list button:not([aria-current='true']):hover {
+    background: var(--white-a12);
+  }
+
+  .codex-guide-link:hover {
+    background: var(--white-a18);
   }
 }
 
@@ -52,7 +75,14 @@
 .flyout-item:focus-visible,
 .flyout-info:focus-visible,
 .icon-button:focus-visible,
-.build-section-toggle:focus-visible {
+.build-section-toggle:focus-visible,
+.home-color-picker button:focus-visible,
+.prefs-group button:focus-visible,
+.prefs-toggle:focus-visible,
+.city-stats:focus-visible,
+.minimal-stats:focus-visible,
+.codex-list button:focus-visible,
+.codex-guide-link:focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
