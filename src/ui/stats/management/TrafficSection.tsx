@@ -1,3 +1,4 @@
+import {ActionButton} from '../../common/ActionButton';
 import {useMemo} from 'react';
 import {diagnoseCongestion, transportStats, type CongestionStats, type GameState} from '../../../core';
 import {t} from '../../../i18n/t';
@@ -30,6 +31,6 @@ export function TrafficSection({state, congestion, transport, onShowTransport}: 
         <p>{t('eco.trafficHelp')}</p>
         <DiagnosisPanel diagnosis={diagnosis}/>
         {congestion.worstBottleneck && <BottleneckButton bottleneck={congestion.worstBottleneck}/>}
-        <button type="button" aria-controls="eco-transport" onClick={onShowTransport}>{t('eco.showTransport')}</button>
+        <ActionButton size="sm" aria-controls="eco-transport" onClick={onShowTransport}>{t('eco.showTransport')}</ActionButton>
     </section>;
 }

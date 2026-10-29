@@ -1,3 +1,4 @@
+import {ActionButton} from '../../common/ActionButton';
 import type {Diagnosis} from '../../../core';
 import {causeText} from '../../../i18n/causeText';
 import {t} from '../../../i18n/t';
@@ -11,7 +12,7 @@ export function DiagnosisPanel({diagnosis}: { diagnosis: Diagnosis }) {
         <ul>
             {diagnosis.causes.map(cause => <li key={cause.key}>
                 {causeText(cause)}
-                {cause.focus[0] && <>{' '}<button type="button" onClick={() => showTile(cause.focus[0]!)}>{t('diagnosis.showOnMap')}</button></>}
+                {cause.focus[0] && <>{' '}<ActionButton size="xs" onClick={() => showTile(cause.focus[0]!)}>{t('diagnosis.showOnMap')}</ActionButton></>}
             </li>)}
         </ul>
     </div>;
