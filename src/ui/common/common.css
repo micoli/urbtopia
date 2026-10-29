@@ -580,7 +580,7 @@
 .count-badge--floating { position: absolute; top: 2px; right: 2px; padding: 0 var(--space-4); }
 
 .progress-bar { width: 100%; accent-color: var(--color-positive); }
-.text-field { padding: 0.4rem var(--space-8); font: inherit; }
+.text-field { box-sizing: border-box; width: 100%; min-height: var(--tap); padding: var(--space-8) var(--space-12); border: 1px solid var(--white-a20); border-radius: var(--radius-md); background: var(--white-a08); color: inherit; font: inherit; }
 .action-button .count-badge { margin-left: var(--space-6); }
 
 /* A navigation window leaves the dock, or the bottom bar, out of its click area so a click there goes straight to its button; the veil is a separate layer that still dims the whole screen. */
@@ -597,4 +597,3 @@
 [data-layout='C'] .window-backdrop { left: calc(var(--dock-width) + var(--space-8)); }
 [data-layout='A'] .window-backdrop { bottom: var(--bottom-bar-height); }
 
-.search-field { box-sizing: border-box; width: 100%; min-height: var(--tap); padding: var(--space-8) var(--space-12); border: 1px solid var(--white-a20); border-radius: var(--radius-md); background: var(--white-a08); color: inherit; font: inherit; }

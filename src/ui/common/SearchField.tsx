@@ -1,4 +1,5 @@
 import { cn } from './cn';
+import { TextField } from './TextField';
 
 interface SearchFieldProps {
   label: string;
@@ -9,5 +10,5 @@ interface SearchFieldProps {
 }
 
 export function SearchField({ label, value, onChange, autoFocus, className }: SearchFieldProps) {
-  return <input type="search" className={cn('search-field', className)} aria-label={label} placeholder={label} value={value} autoFocus={autoFocus} onChange={(event) => onChange(event.target.value)} />;
+  return <TextField type="search" className={cn('search-field', className)} label={label} placeholder={label} value={value} onChange={onChange} autoFocus={autoFocus} />;
 }

@@ -139,6 +139,12 @@
   width: 100%;
 }
 
+.city-rename .text-field,
+.city-delete .text-field {
+  flex: 1 1 12rem;
+  width: auto;
+}
+
 .shipment-list {
   margin: 0 0 var(--space-12);
   padding: 0;
