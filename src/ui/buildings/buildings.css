@@ -107,7 +107,7 @@
 [data-layout='C'] .building-search-panel {
   top: var(--space-8);
   bottom: var(--space-8);
-  left: var(--dock-width);
+  left: calc(var(--dock-width) + var(--space-8));
   max-height: none;
   border: var(--surface-edge);
   z-index: 11;

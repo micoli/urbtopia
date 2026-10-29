@@ -92,7 +92,7 @@
 
 .flyout {
   position: fixed;
-  left: var(--dock-width);
+  left: calc(var(--dock-width) + var(--space-8));
   top: var(--space-8);
   bottom: var(--space-8);
   width: min(220px, 55vw);
