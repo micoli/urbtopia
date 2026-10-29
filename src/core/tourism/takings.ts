@@ -2,7 +2,7 @@ import type { CommandOutcome } from '../engine/commands';
 import type { Building, GameState } from '../engine/state';
 import { CLUB } from '../clubs/club';
 import { cityAttractiveness } from '../venues/hotel';
-import { attractionPowerOf, isAttraction, spendingFactor } from './tourists';
+import { TOURISM, attractionPowerOf, isAttraction, spendingFactor } from './tourists';
 
 export const TICKETS = [
   { price: 4, draw: 1 },
@@ -41,7 +41,9 @@ export function advanceAttractions(state: GameState, from: number, to: number): 
   const buildings = state.buildings.map(building => {
     if (!isAttraction(building)) return building;
     const held = takingsOf(building);
-    const takings = Math.max(held, Math.min(attractionTakingsCapOf(building), held + earningsPerHour(building, attractiveness, spending) * hours));
+    const boosted = Math.max(0, Math.min(to, building.attraction?.boostUntil ?? 0) - from) / (to - from);
+    const rate = earningsPerHour(building, attractiveness, spending) * (1 + (TOURISM.championshipBoost - 1) * boosted);
+    const takings = Math.max(held, Math.min(attractionTakingsCapOf(building), held + rate * hours));
     return { ...building, attraction: { ...building.attraction, takings } };
   });
   return { ...state, buildings };

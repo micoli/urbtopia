@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { advance, createBuilding, dispatch, newGame, type Building, type Command, type GameState } from '../index';
+import { TOURISM, boostOf } from './tourists';
 import { TICKETS, TAKINGS, advanceAttractions, earningsPerHour, attractionTakingsCapOf, takingsOf } from './takings';
 
 const H = TAKINGS.hourMs;
@@ -57,5 +58,16 @@ describe('Attraction Ticket and Takings', () => {
     const once = advance(start, 6 * H).state;
     const stepped = [1, 2, 3, 4, 5, 6].reduce((state, hour) => advance(state, hour * H).state, start);
     expect(takingsOf(stepped.buildings[0]!)).toBeCloseTo(takingsOf(once.buildings[0]!), 5);
+  });
+
+  it('earns more while the Tourist boost of a Championship lasts, and only for the hours it covers', () => {
+    const plain = city(building(1, 'footballStadium'));
+    const boosted = city(building(1, 'footballStadium', { attraction: { takings: 0, boostUntil: 5 * H } }));
+    const earnedBy = (state: GameState, to: number) => takingsOf(advanceAttractions(state, 0, to).buildings[0]!);
+    expect(earnedBy(boosted, 4 * H)).toBeCloseTo(earnedBy(plain, 4 * H) * TOURISM.championshipBoost);
+    expect(earnedBy(boosted, 10 * H)).toBeLessThan(earnedBy(plain, 10 * H) * TOURISM.championshipBoost);
+    expect(earnedBy(boosted, 10 * H)).toBeGreaterThan(earnedBy(plain, 10 * H));
+    expect(boostOf(boosted.buildings[0]!, 4 * H)).toBe(TOURISM.championshipBoost);
+    expect(boostOf(boosted.buildings[0]!, 6 * H)).toBe(1);
   });
 });

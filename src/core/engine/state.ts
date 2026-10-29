@@ -109,6 +109,10 @@ export interface AttractionData {
   cooldownUntil?: number;
   // Shows scheduled so far: with the building it seeds the Artists offered for the next one.
   shows?: number;
+  // Until when a Championship's success draws extra Tourists.
+  boostUntil?: number;
+  // The athletics meeting slot last set, so the same one is not set twice.
+  meetingAt?: number;
 }
 
 export interface Building extends Coord {

@@ -6,7 +6,12 @@ import { cityAttractiveness } from '../venues/hotel';
 export const TOURISM = {
   tierBonus: 0.25,
   hotelSpendingBonus: 0.5,
+  // Tourists drawn after a successful Championship, relative to usual.
+  championshipBoost: 1.5,
 };
+
+// Until `boostUntil` a stadium that did well draws more Tourists.
+export const boostOf = (building: Pick<Building, 'attraction'>, now: number): number => (now < (building.attraction?.boostUntil ?? 0) ? TOURISM.championshipBoost : 1);
 
 export const attractionPowerOf = (building: Pick<Building, 'type' | 'tier'>): number => {
   const power = definitionOf(building.type).attraction;

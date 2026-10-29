@@ -1,6 +1,7 @@
 import type { CommandOutcome } from '../engine/commands';
 import type { Building, GameState } from '../engine/state';
 import { hashSeed } from '../engine/random';
+import { startChampionship } from './championship';
 import { createClub, releasePlayer, signPlayer, advanceClub } from './club';
 import type { ClubData } from './clubTypes';
 import { CLUB_MASCOTS, CLUB_PLACES } from './names';
@@ -22,7 +23,7 @@ export function foundClub(state: GameState, buildingId: number): CommandOutcome 
   const rules = sportRulesOf(building.type);
   if (!rules) return { key: 'error.unknownCommand' };
   if (building.club) return { key: 'error.clubExists' };
-  return { state: withClub(state, building, createClub(rules, clubNameOf(building), `${state.nextId}:${building.id}:${building.type}`)), events: [] };
+  return { state: withClub(state, building, startChampionship(createClub(rules, clubNameOf(building), `${state.nextId}:${building.id}:${building.type}`), state.lastSeen)), events: [] };
 }
 
 function change(state: GameState, buildingId: number, apply: (rules: NonNullable<ReturnType<typeof sportRulesOf>>, club: ClubData) => ReturnType<typeof signPlayer>): CommandOutcome {

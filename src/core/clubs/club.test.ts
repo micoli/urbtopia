@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { CLUB, advanceClub, createClub, marketValueOf, refreshMarket, releasePlayer, severanceOf, signPlayer, signingFeeOf, wageOf, wagesPerDay } from './club';
 import type { ClubData, SportRules } from './clubTypes';
 
-const rules: SportRules = { sport: 'football', squadMin: 4, squadMax: 8, composition: { keeper: 1, defender: 2, striker: 2 }, ratingRange: [30, 90] };
+const rules: SportRules = { sport: 'football', squadMin: 4, squadMax: 8, composition: { keeper: 1, defender: 2, striker: 2 }, ratingRange: [30, 90], draws: true };
 const club = (): ClubData => createClub(rules, 'Harbour Herons', 'seed');
 
 describe('Club', () => {

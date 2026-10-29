@@ -237,3 +237,5 @@ export { advanceClubs, foundClub, releaseClubPlayer, signClubPlayer } from './cl
 export { hasClub, registerSportRules, sportRulesOf, unregisterSportRules } from './clubs/sportRules';
 export { isClubSport } from './clubs/club';
 export type { ClubData, ClubSport, Player, SportRules } from './clubs/clubTypes';
+export { CHAMPIONSHIP, advanceChampionships, championshipBoundaries, clubQuality, nextFixture, clubRankOf, squadStrength, startChampionship } from './clubs/championship';
+export { boostOf } from './tourism/tourists';

@@ -18,6 +18,7 @@ import type { Building, GameState } from './state';
 import { advanceVenues, venueBoundaries } from '../venues/venues';
 import { advanceAttractions } from '../tourism/takings';
 import { advanceClubs } from '../clubs/clubCommands';
+import { advanceChampionships, championshipBoundaries } from '../clubs/championship';
 import { advanceGatherings, gatheringBoundaries } from '../tourism/gatherings';
 import { progressTutorial } from '../progression/tutorial';
 import { progressVenueTutorials } from '../progression/venueTutorial';
@@ -92,6 +93,7 @@ function replay(state: GameState, until: number): AdvanceResult {
     }
     for (const boundary of venueBoundaries(current, now, energy.supplied)) end = Math.min(end, boundary);
     for (const boundary of gatheringBoundaries(current, now)) end = Math.min(end, boundary);
+    for (const boundary of championshipBoundaries(current, now)) end = Math.min(end, boundary);
     const cost = energy.costPerHour + transport.costPerHour + waterStats(current).costPerHour + wasteCostPerHour(current);
     const budgetEnd = cost > 0 ? now + current.urbs / cost * ECOLOGY.hourMs : Infinity;
     end = Math.min(end, budgetEnd);
@@ -114,7 +116,7 @@ function replay(state: GameState, until: number): AdvanceResult {
     events.push(...produced.events);
     const gathered = advanceGatherings(advanceAttractions(advanceVenues(produced.state, now, end, energy.supplied), now, end), now, end);
     events.push(...gathered.events);
-    const withVenues = { ...gathered.state, buildings: advanceClubs(gathered.state, now, end).buildings };
+    const withVenues = { ...gathered.state, buildings: advanceClubs(advanceChampionships(gathered.state, end), now, end).buildings };
     current = {
       ...produced.state, storage: transport.coalPerHour > 0 ? { ...withVenues.storage, materials: { ...withVenues.storage.materials, coal: end === coalEnd ? 0 : remainingCoal(current, transport.coalPerHour, elapsed) } } : withVenues.storage, lastSeen: end, urbs: end === budgetEnd ? 0 : Math.max(0, current.urbs - cost * elapsed / ECOLOGY.hourMs),
       ...(current.solidarityMs === undefined ? {} : { solidarityMs: Math.max(0, current.solidarityMs - elapsed) }),

@@ -18,6 +18,7 @@ export const SHOW_TYPES = ['theater', 'concertHall', 'colosseum'] as const;
 
 export const GATHERING = {
   durationMs: 3 * TAKINGS.hourMs,
+  matchDurationMs: 2 * TAKINGS.hourMs,
   windowMs: CROWD_WINDOW_MS,
   maxMalus: 5,
   cooldownMs: 12 * TAKINGS.hourMs,
@@ -57,8 +58,8 @@ const citizensInReach = (state: GameState, building: Building): number => {
 export type GatheringPreview = Pick<GatheringData, 'cost' | 'crowd' | 'tourists' | 'citizens' | 'revenue'>;
 
 // The crowd a Gathering would draw now: capacity x fill, split between Tourists and the Citizens in reach.
-export function previewGathering(state: GameState, building: Building, artist?: Artist): GatheringPreview {
-  const quality = artist ? qualityOfFame(artist.fame) : GATHERING.defaultQuality;
+export function previewGathering(state: GameState, building: Building, artist?: Artist, qualityOverride?: number): GatheringPreview {
+  const quality = qualityOverride ?? (artist ? qualityOfFame(artist.fame) : GATHERING.defaultQuality);
   const wellbeing = clamp01(cityBenefits(state).wellbeing / 100);
   const fill = clamp01(GATHERING.baseFill + GATHERING.qualityFill * quality + GATHERING.wellbeingFill * wellbeing) * (TICKETS[ticketOf(building)]?.draw ?? 1);
   const crowd = gatheringCapacityOf(building) * fill;
@@ -122,4 +123,12 @@ export function advanceGatherings(state: GameState, from: number, to: number): {
     return { ...building, attraction };
   });
   return { state: { ...state, buildings }, events };
+}
+
+// A Match or meeting set by a calendar: no cost to the player, the crowd drawn like a Show's from the quality given.
+export function setGathering(state: GameState, building: Building, kind: 'match' | 'show', startsAt: number, quality: number): GameState {
+  const preview = previewGathering(state, building, undefined, quality);
+  const gathering: GatheringData = { kind, startsAt, endsAt: startsAt + GATHERING.matchDurationMs, quality, ...preview, cost: 0 };
+  const attraction = { ...building.attraction, takings: takingsOf(building), gathering };
+  return { ...state, buildings: state.buildings.map(candidate => (candidate === building ? { ...building, attraction } : candidate)) };
 }

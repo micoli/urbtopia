@@ -3,7 +3,7 @@ import { advance, createBuilding, dispatch, newGame, registerSportRules, unregis
 import { CLUB, wagesPerDay } from './club';
 import { checkGameState } from '../../persistence/validate';
 
-const rules: SportRules = { sport: 'football', squadMin: 4, squadMax: 8, composition: { keeper: 1, defender: 2, striker: 2 }, ratingRange: [30, 90] };
+const rules: SportRules = { sport: 'football', squadMin: 4, squadMax: 8, composition: { keeper: 1, defender: 2, striker: 2 }, ratingRange: [30, 90], draws: true };
 const H = 3_600_000;
 
 beforeEach(() => registerSportRules('footballStadium', rules));

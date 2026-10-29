@@ -5,3 +5,5 @@ export const LAST_NAMES = ['Arden', 'Bellweather', 'Corvane', 'Dunmore', 'Eskel'
 
 export const CLUB_PLACES = ['Harbour', 'Ridge', 'Marsh', 'Vale', 'Cliff', 'Fen', 'Dale', 'Strand'] as const;
 export const CLUB_MASCOTS = ['Herons', 'Lanterns', 'Foxes', 'Anchors', 'Comets', 'Badgers', 'Falcons', 'Kilns'] as const;
+
+export const OPPONENT_NAMES = ['Northgate Wolves', 'Ironbridge Rams', 'Saltmere Gulls', 'Coldwater Stags', 'Redcliff Miners', 'Oakhollow Owls', 'Stonehaven Giants', 'Lakeside Otters', 'Brightwell Swifts', 'Mossgrove Hares'] as const;

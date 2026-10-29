@@ -88,6 +88,15 @@ function isPlayer(value: unknown): boolean {
   );
 }
 
+function isChampionshipData(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    isNonNegative(value.points) &&
+    isArrayOf(value.opponents, opponent => isRecord(opponent) && typeof opponent.name === 'string' && isInt(opponent.strength, 1, 100) && isNonNegative(opponent.points)) &&
+    isArrayOf(value.fixtures, fixture => isRecord(fixture) && isNumber(fixture.at) && isInt(fixture.opponent, 0) && (fixture.result === undefined || fixture.result === 'win' || fixture.result === 'draw' || fixture.result === 'loss'))
+  );
+}
+
 function isClubData(value: unknown): boolean {
   return (
     isRecord(value) &&
@@ -99,7 +108,8 @@ function isClubData(value: unknown): boolean {
     isInt(value.nextPlayerId, 1) &&
     isNumber(value.rng) &&
     isArrayOf(value.squad, isPlayer) &&
-    isArrayOf(value.market, isPlayer)
+    isArrayOf(value.market, isPlayer) &&
+    (value.championship === undefined || isChampionshipData(value.championship))
   );
 }
 
@@ -109,6 +119,9 @@ function isAttractionData(value: unknown): boolean {
     isNonNegative(value.takings) &&
     (value.ticket === undefined || isInt(value.ticket, 0, TICKETS.length - 1)) &&
     (value.cooldownUntil === undefined || isNumber(value.cooldownUntil)) &&
+    (value.boostUntil === undefined || isNumber(value.boostUntil)) &&
+    (value.meetingAt === undefined || isNumber(value.meetingAt)) &&
+    (value.shows === undefined || isInt(value.shows, 0)) &&
     (value.gathering === undefined || isGatheringData(value.gathering))
   );
 }

@@ -7,7 +7,7 @@ import { neighboursOf, type RoadGraph } from '../map/roadGraph';
 import { GAME_CONFIG } from '../engine/config';
 import { WALKING, maxWalkCost } from '../traffic/walking';
 import { cityAttractiveness } from '../venues/hotel';
-import { isAttraction } from './tourists';
+import { boostOf, isAttraction } from './tourists';
 import { touristsPerDay } from './takings';
 import { movingGathering } from './gatheringWindow';
 
@@ -80,7 +80,7 @@ export function touristFlows(state: GameState, graph: RoadGraph, walkable: Pedes
   const flows: TouristFlow[] = [];
   for (const attraction of attractions) {
     const gathering = movingGathering(attraction, now);
-    const tourists = touristsPerDay(attraction, attractiveness) + (gathering?.tourists ?? 0);
+    const tourists = touristsPerDay(attraction, attractiveness) * boostOf(attraction, now) + (gathering?.tourists ?? 0);
     if (tourists <= 0) continue;
     const sidewalks = accessNodes(state, walkable, attraction);
     if (gathering && gathering.citizens > 0) flows.push({ to: attraction.id, mode: 'walk', count: gathering.citizens, path: [], nodes: sidewalks, crossings: [] });
