@@ -1,0 +1,109 @@
+.club-view {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-16);
+  overflow-y: auto;
+  background: var(--color-venue);
+  color: var(--color-text);
+}
+
+.club-view__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.club-view__header h2 {
+  margin: 0;
+}
+
+.club-view__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.club-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.club-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.club-row__main {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 2fr 1.5fr repeat(4, 1fr);
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-4);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--white-a06);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.club-row--selected .club-row__main {
+  background: var(--color-accent-a28);
+}
+
+.club-table {
+  border-collapse: collapse;
+}
+
+.club-table th,
+.club-table td {
+  padding: var(--space-4) var(--space-8);
+  text-align: left;
+}
+
+.club-table__mine {
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+}
+
+.club-feed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.club-feed__event--goal {
+  color: var(--color-positive);
+  font-weight: var(--font-weight-semibold);
+}
+
+.club-feed__event--red {
+  color: var(--color-danger-text);
+}
+
+.club-feed__event--away {
+  color: var(--color-text-muted);
+}
+
+.club-actions,
+.club-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

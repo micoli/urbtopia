@@ -124,4 +124,20 @@ describe('Football in the Championship', () => {
     const result = dispatch(state, { type: 'SetLineup', buildingId: 1, formation: '4-4-2', starters, tactic: 'balanced' }, 0);
     expect(result.ok).toBe(false);
   });
+
+  it('records the decisions of a Match under way and replays them when it is settled', () => {
+    const state = send(city(), { type: 'FoundClub', buildingId: 1 });
+    const club = state.buildings[0]!.club!;
+    const first = club.championship!.fixtures[0]!.at;
+    const early = dispatch(state, { type: 'PlayMatch', buildingId: 1, decisions: [] }, 0);
+    expect(early.ok ? null : early.error.key).toBe('error.matchNotStarted');
+    const started = { ...state, lastSeen: first + 1 };
+    const side = clubSide(club);
+    const decisions: MatchDecision[] = [{ minute: 5, kind: 'tactic', tactic: 'attacking' }, { minute: 60, kind: 'substitute', out: side.pitch[3]!.id, in: side.bench[0]!.id }];
+    const recorded = send(started, { type: 'PlayMatch', buildingId: 1, decisions });
+    expect(recorded.buildings[0]!.club!.championship!.fixtures[0]!.decisions).toEqual(decisions);
+    const settled = advance(recorded, first + 3 * 3_600_000).state.buildings[0]!.club!.championship!.fixtures[0]!;
+    const expected = playUntil(club, club.championship!.opponents[0]!, fixtureSeedOf(club, 0), decisions).score;
+    expect(settled.score).toEqual(expected);
+  });
 });

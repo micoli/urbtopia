@@ -1,4 +1,4 @@
-import { greenProfileOf, isAttraction, isShowType, isFacilityType, isTransitStopType, isUtilityType, kindOf, type Building } from '../../core';
+import { greenProfileOf, isAttraction, isShowType, sportRulesOf, isFacilityType, isTransitStopType, isUtilityType, kindOf, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { TownHallPanel } from '../politics/TownHallPanel';
 import { AttractionPanel } from './AttractionPanel';
@@ -9,6 +9,7 @@ import { EcologicalBuildingPanel } from './EcologicalBuildingPanel';
 import { FacilityPanel } from './FacilityPanel';
 import { PanelSection } from './PanelSection';
 import { PANEL_BY_KIND } from './panelsByKind';
+import { ClubPanel } from '../club/ClubPanel';
 import { ShowPanel } from './ShowPanel';
 import { StopLineButtons } from './StopLineButtons';
 import { StopNameField } from './StopNameField';
@@ -26,6 +27,7 @@ export function BuildingUsage({ building }: { building: Building }) {
       {isTransitStopType(building.type) ? <StopLineButtons building={building} /> : null}
       {isEcologicalBuilding ? <EcologicalBuildingPanel building={building} /> : null}
       {isAttraction(building) ? <AttractionPanel building={building} /> : null}
+      {sportRulesOf(building.type) ? <ClubPanel building={building} /> : null}
       {isShowType(building.type) ? <ShowPanel building={building} /> : null}
       {KindPanel ? <KindPanel building={building} /> : null}
       {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}

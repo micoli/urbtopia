@@ -245,3 +245,5 @@ export type { Formation, MatchEvent, MatchState, Tactic } from './clubs/football
 export { fixtureSeedOf } from './clubs/championship';
 export { setClubLineup } from './clubs/clubCommands';
 export type { Fixture, Lineup, MatchDecision, MatchReport, Opponent } from './clubs/clubTypes';
+export { recordMatchDecisions } from './clubs/clubCommands';
+export { effectiveLineup } from './clubs/football/football';

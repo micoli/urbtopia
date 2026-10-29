@@ -1,9 +1,9 @@
 import type { CommandOutcome } from '../engine/commands';
 import type { Building, GameState } from '../engine/state';
 import { hashSeed } from '../engine/random';
-import { startChampionship } from './championship';
+import { nextFixture, startChampionship } from './championship';
 import { createClub, releasePlayer, signPlayer, advanceClub } from './club';
-import type { ClubData, Lineup } from './clubTypes';
+import type { ClubData, Lineup, MatchDecision } from './clubTypes';
 import { CLUB_MASCOTS, CLUB_PLACES } from './names';
 import { sportRulesOf } from './sportRules';
 
@@ -45,6 +45,22 @@ export function setClubLineup(state: GameState, buildingId: number, lineup: Line
   if (!building.club) return { key: 'error.noClub' };
   if (rules.lineupIssue?.(building.club, lineup)) return { key: 'error.invalidLineup' };
   return { state: withClub(state, building, { ...building.club, lineup }), events: [] };
+}
+
+const MAX_DECISIONS = 12;
+
+// The player's decisions for the Match under way are kept on its fixture, so the simulation replays them when the Match is settled.
+export function recordMatchDecisions(state: GameState, buildingId: number, decisions: readonly MatchDecision[]): CommandOutcome {
+  const building = state.buildings.find(candidate => candidate.id === buildingId);
+  if (!building) return { key: 'error.unknownBuilding' };
+  if (!building.club?.championship) return { key: 'error.noClub' };
+  const championship = building.club.championship;
+  const fixture = nextFixture(championship);
+  if (!fixture) return { key: 'error.noFixture' };
+  if (state.lastSeen < fixture.at) return { key: 'error.matchNotStarted' };
+  if (decisions.length > MAX_DECISIONS || decisions.some(decision => !Number.isInteger(decision.minute) || decision.minute < 0)) return { key: 'error.invalidLineup' };
+  const fixtures = championship.fixtures.map(candidate => (candidate === fixture ? { ...fixture, decisions: [...decisions] } : candidate));
+  return { state: withClub(state, building, { ...building.club, championship: { ...championship, fixtures } }), events: [] };
 }
 
 export const signClubPlayer = (state: GameState, buildingId: number, playerId: number): CommandOutcome => change(state, buildingId, (rules, club) => signPlayer(rules, club, playerId));

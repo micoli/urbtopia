@@ -1,6 +1,6 @@
 # Football management page
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 10, 11
 
@@ -10,6 +10,10 @@ Dedicated page opened from the stadium panel: Squad, lineup, formation, recruitm
 
 ## Acceptance criteria
 
-- [ ] Built on shared components and tokens; FR and EN.
-- [ ] Playwright test: set a lineup, play a Match.
-- [ ] Guide and Codex entries.
+- [x] Built on shared components and tokens; FR and EN.
+- [x] Playwright test: set a lineup, play a Match.
+- [x] Guide and Codex entries.
+
+## Comments
+
+Decisions made during a Match are recorded with `PlayMatch` and replayed by the simulation at settlement. The lineup at settlement should be the one watched: changing it after recording changes the replay. The Codex was not touched (generated from the building definitions); a Clubs guide article (EN, FR) covers the rules.

@@ -1,5 +1,5 @@
 import { nextRandom } from '../../engine/random';
-import type { ClubData, MatchDecision, MatchReport, MatchResult, Opponent, Player, SportRules } from '../clubTypes';
+import type { ClubData, Lineup, MatchDecision, MatchReport, MatchResult, Opponent, Player, SportRules } from '../clubTypes';
 
 export const FOOTBALL_POSITIONS = ['goalkeeper', 'defender', 'midfielder', 'forward'] as const;
 export type FootballPosition = (typeof FOOTBALL_POSITIONS)[number];
@@ -123,13 +123,19 @@ const average = (players: readonly SimPlayer[], position: string): number => {
   return line.length === 0 ? 0 : line.reduce((total, player) => total + effective(player), 0) / line.length;
 };
 
+// The lineup the Club plays with: the one the player set when it is still valid, otherwise the best eleven.
+export function effectiveLineup(club: ClubData): Lineup {
+  const formation = club.lineup && isFormation(club.lineup.formation) ? club.lineup.formation : FOOTBALL.defaultFormation;
+  const tactic = club.lineup && isTactic(club.lineup.tactic) ? club.lineup.tactic : FOOTBALL.defaultTactic;
+  const valid = club.lineup !== undefined && lineupIssue(club.squad, club.lineup.formation, club.lineup.starters) === null;
+  return { formation, tactic, starters: valid ? club.lineup!.starters : autoStarters(club.squad, formation) };
+}
+
 export function clubSide(club: ClubData): MatchSide {
-  const formation = (club.lineup && isFormation(club.lineup.formation) ? club.lineup.formation : FOOTBALL.defaultFormation);
-  const valid = club.lineup && lineupIssue(club.squad, club.lineup.formation, club.lineup.starters) === null;
-  const starters = valid ? club.lineup!.starters : autoStarters(club.squad, formation);
+  const { starters, tactic: chosen } = effectiveLineup(club);
+  const tactic = isTactic(chosen) ? chosen : FOOTBALL.defaultTactic;
   const pitch = starters.map(id => simPlayer(club.squad.find(player => player.id === id)!));
   const bench = club.squad.filter(player => !starters.includes(player.id) && player.injuredUntil === undefined).sort((a, b) => b.rating - a.rating || a.id - b.id).map(simPlayer);
-  const tactic = club.lineup && isTactic(club.lineup.tactic) ? club.lineup.tactic : FOOTBALL.defaultTactic;
   return { name: club.name, pitch, bench, tactic, substitutions: 0, reds: 0 };
 }
 

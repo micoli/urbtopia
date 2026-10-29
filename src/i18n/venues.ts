@@ -11,6 +11,8 @@ type VenueMessageKey =
   | 'error.squadTooSmall'
   | 'error.noClub'
   | 'error.invalidLineup'
+  | 'error.noFixture'
+  | 'error.matchNotStarted'
   | 'error.clubExists'
   | 'error.managerRequired'
   | 'error.rankTooLow'
@@ -212,6 +214,8 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'error.squadFull': ['The Squad is full.', 'L’effectif est complet.'],
   'error.squadTooSmall': ['The Squad cannot get any smaller.', 'L’effectif ne peut pas être réduit davantage.'],
   'error.invalidLineup': ['This lineup is not valid.', 'Cette composition n’est pas valide.'],
+  'error.noFixture': ['There is no Match left this year.', 'Il ne reste aucun match cette année.'],
+  'error.matchNotStarted': ['The Match has not started yet.', 'Le match n’a pas encore commencé.'],
   'error.noClub': ['This stadium has no Club yet.', 'Ce stade n’a pas encore de club.'],
   'error.clubExists': ['This stadium already has a Club.', 'Ce stade a déjà un club.'],
   'venue.attractiveness': ['Attractiveness', 'Attractivité'],
