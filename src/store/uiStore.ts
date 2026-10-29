@@ -84,6 +84,7 @@ export interface UiStore {
   codexPage: CodexPage | null;
   openCodex: (entry?: CodexId, page?: CodexPage) => void;
   closeCodex: () => void;
+  dismissCodex: () => void;
   pendingSaleId: number | null;
   evaluation: Evaluation | null;
   openFlyout: (flyout: Flyout) => void;
@@ -285,6 +286,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       get().cancelTool();
       set({ codexOpen: true, codexFromSettings: get().settingsOpen, codexFromMarket: get().marketOpen, codexFromFlyout: get().flyout, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined || page !== undefined, codexPage: page ?? null, settingsOpen: false, marketOpen: false, statsOpen: false, socialOpen: false, flyout: null, selectedBuildingId: null });
     },
+    dismissCodex: () => set({ codexOpen: false, codexFromSettings: false, codexFromMarket: false, codexFromFlyout: null }),
     closeCodex: () => set({ codexOpen: false, settingsOpen: get().codexFromSettings, marketOpen: get().codexFromMarket, flyout: get().codexFromFlyout, codexFromSettings: false, codexFromMarket: false, codexFromFlyout: null }),
     pendingSaleId: null,
     evaluation: null,

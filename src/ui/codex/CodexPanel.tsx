@@ -5,6 +5,7 @@ import { CODEX_PAGES, type CodexPage } from '../../codex/pages';
 import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
 import { useBackdropClose } from '../common/useBackdropClose';
+import { navButtonAt } from './navButtonAt';
 import { CodexEntryContent } from './CodexEntryContent';
 import { CodexGuideLink } from './CodexGuideLink';
 import { ProductionChainsPage } from './ProductionChainsPage';
@@ -26,7 +27,13 @@ import { AccordionSection } from '../common/AccordionSection';
 
 export function CodexPanel() {
   const close = useUi(store => store.closeCodex);
-  const backdrop = useBackdropClose(close);
+  const dismiss = useUi(store => store.dismissCodex);
+  const backdrop = useBackdropClose(event => {
+    const nav = navButtonAt(event.clientX, event.clientY);
+    if (!nav || nav.dataset.action === 'codex') return close();
+    dismiss();
+    nav.click();
+  });
   const initialEntry = useUi(store => store.codexEntryId);
   const initialDetail = useUi(store => store.codexShowDetail);
   const initialFlyout = useUi(store => store.codexFromFlyout);

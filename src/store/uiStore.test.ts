@@ -201,6 +201,16 @@ describe('Codex opened from the Market', () => {
     uiStore.getState().closeCodex();
     expect(uiStore.getState().marketOpen).toBe(false);
   });
+
+  it('does not bring back what it came from when it is dismissed for another window', () => {
+    uiStore.setState({ marketOpen: true, settingsOpen: false, flyout: null });
+    uiStore.getState().openCodex(undefined, 'market');
+    uiStore.getState().dismissCodex();
+    expect(uiStore.getState()).toMatchObject({ codexOpen: false, marketOpen: false, settingsOpen: false, flyout: null, codexFromMarket: false });
+    uiStore.getState().toggleStats();
+    expect(uiStore.getState()).toMatchObject({ statsOpen: true, marketOpen: false });
+    uiStore.setState({ statsOpen: false });
+  });
 });
 
 describe('showBuilding', () => {
