@@ -1,4 +1,5 @@
 import type { CommandOutcome } from '../engine/commands';
+import type { GameEvent } from '../engine/events';
 import type { Building, GameState, GatheringData } from '../engine/state';
 import { citizensOf } from '../buildings/city';
 import { definitionOf } from '../buildings/buildingDefinitions';
@@ -96,9 +97,16 @@ export function gatheringBoundaries(state: GameState, after: number): number[] {
   });
 }
 
-// A Gathering whose crowd has gone home pays its Ticket revenue into the Takings and starts the cooldown.
-export function advanceGatherings(state: GameState, to: number): GameState {
-  if (!state.buildings.some(building => building.attraction?.gathering && building.attraction.gathering.endsAt + GATHERING.windowMs <= to)) return state;
+// A Gathering that starts or ends within the step is announced; one whose crowd has gone home pays its Ticket revenue into the Takings and starts the cooldown.
+export function advanceGatherings(state: GameState, from: number, to: number): { state: GameState; events: GameEvent[] } {
+  const events: GameEvent[] = [];
+  for (const building of state.buildings) {
+    const gathering = building.attraction?.gathering;
+    if (!gathering) continue;
+    if (from < gathering.startsAt && gathering.startsAt <= to) events.push({ type: 'GatheringStarted', buildingId: building.id });
+    if (from < gathering.endsAt && gathering.endsAt <= to) events.push({ type: 'GatheringEnded', buildingId: building.id });
+  }
+  if (!state.buildings.some(building => building.attraction?.gathering && building.attraction.gathering.endsAt + GATHERING.windowMs <= to)) return { state, events };
   const buildings = state.buildings.map(building => {
     const gathering = building.attraction?.gathering;
     if (!gathering || gathering.endsAt + GATHERING.windowMs > to) return building;
@@ -106,5 +114,5 @@ export function advanceGatherings(state: GameState, to: number): GameState {
     delete attraction.gathering;
     return { ...building, attraction };
   });
-  return { ...state, buildings };
+  return { state: { ...state, buildings }, events };
 }

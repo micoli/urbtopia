@@ -57,6 +57,22 @@ describe('Gathering: Shows', () => {
     expect(failure({ ...done, lastSeen: gathering.endsAt + H }, { type: 'ScheduleShow', buildingId: 1, startsInHours: 1 })).toBe('error.eventCooldown');
   });
 
+  it('announces its start and its end once each', () => {
+    const scheduled = show(city(), 1);
+    const g = hall(scheduled).attraction!.gathering!;
+    const events = (from: number, to: number) => advance(advance(scheduled, from).state, to).events.map(event => event.type);
+    expect(events(0, g.startsAt + 1)).toContain('GatheringStarted');
+    expect(events(g.startsAt + 1, g.endsAt + 1)).toContain('GatheringEnded');
+    expect(events(g.startsAt + 1, g.endsAt - 1)).not.toContain('GatheringEnded');
+  });
+
+  it('counts the hours of a time skip for a scheduled Show', () => {
+    const scheduled = show(city(), 5);
+    const skipped = send(scheduled, { type: 'SkipTime', hours: 6 });
+    expect(hall(skipped).attraction!.gathering?.startsAt ?? 0).toBeLessThan(hall(scheduled).attraction!.gathering!.startsAt);
+    expect(skipped.buildings.length).toBe(scheduled.buildings.length);
+  });
+
   it('survives a catch-up in one step as in many', () => {
     const scheduled = show(city(), 2);
     const once = advance(scheduled, 10 * H).state;

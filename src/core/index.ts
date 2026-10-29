@@ -229,3 +229,4 @@ export type { TouristFlow, TouristMode } from './tourism/touristFlows';
 export { GATHERING, SHOW_TYPES, advanceGatherings, gatheringBoundaries, gatheringCapacityOf, gatheringCostOf, inGatheringCooldown, isGatheringActive, isShowType, previewGathering, scheduleShow } from './tourism/gatherings';
 export { CROWD_WINDOW_MS, GATHERING_REACH, isCrowdMoving, movingGathering } from './tourism/gatheringWindow';
 export { GATHERING_MALUS, gatheringPenaltyOf } from './tourism/gatheringMalus';
+export { shiftAttractionTimers } from './tourism/gatheringWindow';

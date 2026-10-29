@@ -111,7 +111,9 @@ function replay(state: GameState, until: number): AdvanceResult {
     const homeRatios = new Map(current.buildings.filter(b => isHomeType(b.type)).map(b => [b.id, homeTaxMultiplier(current, b, { energy, coverage, poweredCasinos, congestion })]));
     const produced = advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios, idleShops, congestion.filledJobs);
     events.push(...produced.events);
-    const withVenues = advanceGatherings(advanceAttractions(advanceVenues(produced.state, now, end, energy.supplied), now, end), end);
+    const gathered = advanceGatherings(advanceAttractions(advanceVenues(produced.state, now, end, energy.supplied), now, end), now, end);
+    events.push(...gathered.events);
+    const withVenues = gathered.state;
     current = {
       ...produced.state, storage: transport.coalPerHour > 0 ? { ...withVenues.storage, materials: { ...withVenues.storage.materials, coal: end === coalEnd ? 0 : remainingCoal(current, transport.coalPerHour, elapsed) } } : withVenues.storage, lastSeen: end, urbs: end === budgetEnd ? 0 : Math.max(0, current.urbs - cost * elapsed / ECOLOGY.hourMs),
       ...(current.solidarityMs === undefined ? {} : { solidarityMs: Math.max(0, current.solidarityMs - elapsed) }),

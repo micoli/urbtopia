@@ -1,6 +1,6 @@
 # Show programming UI
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 04, 05
 
@@ -10,6 +10,10 @@ From the panel of a Theater, Concert hall or Colosseum: schedule a Show, see cos
 
 ## Acceptance criteria
 
-- [ ] Uses Dialog and ActionButton; FR and EN texts.
-- [ ] Playwright test: schedule a Show, see the toast.
-- [ ] Cooldown and cost shown before confirming.
+- [x] Uses Dialog and ActionButton; FR and EN texts.
+- [x] Playwright test: schedule a Show, see the toast.
+- [x] Cooldown and cost shown before confirming.
+
+## Comments
+
+No confirmation Dialog: the cost sits on the schedule button and the cooldown replaces the form, so nothing is hidden before the player commits. A time skip now also moves the Gathering and its cooldown.
