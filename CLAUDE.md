@@ -30,5 +30,5 @@ Decisions in `docs/adr/0051-ui-layers-tokens-variants-radix-and-icons.md`.
 - Every game CSS file goes in `@layer legacy` (import it with `layer(legacy)` in `src/styles.css`); Tailwind utilities sit above it.
 - A shared component gets its variants with `cva`, as `ActionButton` does. Never restyle it from another context (`.banner .action-button`): add a prop.
 - Icons are `<Icon name="…" />` from `src/ui/common/Icon.tsx`; add the name to `iconRegistry.ts`. No emoji as an icon.
-- Dialogs use `Dialog` (Radix). Motion uses the `--duration-*` and `--ease-out` tokens and must stop under `prefers-reduced-motion`.
+- Dialogs use `Dialog` and tabs use `Tabs` (both Radix). Motion uses the `--duration-*` and `--ease-out` tokens and must stop under `prefers-reduced-motion`.
 

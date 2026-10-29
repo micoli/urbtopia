@@ -14,6 +14,8 @@ The interface was plain CSS written by hand, one file per area, with design toke
 
 **`Dialog` is built on Radix, and is always open.** The parent mounts it while it applies, and only its own buttons close it: Escape and a click outside are ignored, as before. The backdrop keeps wrapping the box, so the existing selectors and the static-render tests still work (no portal). A dialog with no title gets a hidden one (`dialog.untitled`), which Radix requires for an accessible name.
 
+**`Tabs` is built on Radix too**, for the roving focus, Home and End. The ids and `aria-controls` stay fixed and the panel stays with the caller. A tab is selected on click, not on mouse down: a panel that changes height recentres under the pointer, and the click would land on the backdrop and close the dialog.
+
 **Icons go through `<Icon name>` and `lucide-react`.** `iconRegistry.ts` names every icon; props that took an emoji (`SectionHeading`, `StatChip`, `NavAction`, …) now take an `IconName`, so a forgotten emoji fails the typecheck. The art of the casino, the arrows inside sentences, and glyphs that tests read as table values stay as text.
 
 **The look is Glass.** A translucent dark surface with a blur (`--surface-blur`), larger radii, a mint accent and Inter. The small floating surfaces (bars, banners, toasts, analytics widgets) share the blur (`glass.css`); the large modal surfaces (City management, Codex, dialogs, Market) stay opaque with `--color-surface-solid`, because blurring a wide area over the animated scene is costly. Entrances, hover, press and focus feedback use the motion tokens and stop under `prefers-reduced-motion`.
