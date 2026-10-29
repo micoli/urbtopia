@@ -232,3 +232,8 @@ export { GATHERING_MALUS, gatheringPenaltyOf } from './tourism/gatheringMalus';
 export { shiftAttractionTimers } from './tourism/gatheringWindow';
 export { ARTISTS, ARTIST_OFFER_SIZE, MAX_FAME, artistById, artistOffer, fameCeiling, feeOfArtist } from './tourism/artists';
 export type { Artist } from './tourism/artistSchema';
+export { CLUB, advanceClub, createClub, marketValueOf, refreshMarket, releasePlayer, severanceOf, signPlayer, signingFeeOf, wageOf, wagesPerDay } from './clubs/club';
+export { advanceClubs, foundClub, releaseClubPlayer, signClubPlayer } from './clubs/clubCommands';
+export { hasClub, registerSportRules, sportRulesOf, unregisterSportRules } from './clubs/sportRules';
+export { isClubSport } from './clubs/club';
+export type { ClubData, ClubSport, Player, SportRules } from './clubs/clubTypes';

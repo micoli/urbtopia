@@ -5,6 +5,12 @@ type VenueMessageKey =
   | 'error.unknownFixture'
   | 'error.invalidPrice'
   | 'error.invalidArtist'
+  | 'error.unknownPlayer'
+  | 'error.notEnoughBudget'
+  | 'error.squadFull'
+  | 'error.squadTooSmall'
+  | 'error.noClub'
+  | 'error.clubExists'
   | 'error.managerRequired'
   | 'error.rankTooLow'
   | 'venue.rank'
@@ -200,6 +206,12 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.roleEffect.security': ['Prevents incidents: keeps 10% more Visitors', 'Évite les incidents : garde 10 % de visiteurs en plus'],
   'error.invalidPrice': ['This price is not allowed.', 'Ce prix n’est pas autorisé.'],
   'error.invalidArtist': ['This Artist is not on offer.', 'Cet artiste n’est pas proposé.'],
+  'error.unknownPlayer': ['This player is not available.', 'Ce joueur n’est pas disponible.'],
+  'error.notEnoughBudget': ['The Club budget is too low.', 'Le budget du club est trop bas.'],
+  'error.squadFull': ['The Squad is full.', 'L’effectif est complet.'],
+  'error.squadTooSmall': ['The Squad cannot get any smaller.', 'L’effectif ne peut pas être réduit davantage.'],
+  'error.noClub': ['This stadium has no Club yet.', 'Ce stade n’a pas encore de club.'],
+  'error.clubExists': ['This stadium already has a Club.', 'Ce stade a déjà un club.'],
   'venue.attractiveness': ['Attractiveness', 'Attractivité'],
   'venue.serviceRate': ['Service speed', 'Rapidité du service'],
   'venue.hint.counterFar': ['Too far from the entrance: the service slows down.', 'Trop loin de l’entrée : le service ralentit.'],

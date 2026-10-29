@@ -27,6 +27,7 @@ import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
 import { collectAttractionTakings, setTicket } from '../tourism/takings';
+import { foundClub, releaseClubPlayer, signClubPlayer } from '../clubs/clubCommands';
 import { scheduleShow } from '../tourism/gatherings';
 import { isAttraction } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
@@ -119,6 +120,9 @@ export type Command =
   | { readonly type: 'HireStaff'; readonly buildingId: number; readonly role: StaffRole }
   | { readonly type: 'ReleaseStaff'; readonly buildingId: number; readonly role: StaffRole }
   | { readonly type: 'ScheduleShow'; readonly buildingId: number; readonly startsInHours: number; readonly artistId?: string }
+  | { readonly type: 'FoundClub'; readonly buildingId: number }
+  | { readonly type: 'SignPlayer'; readonly buildingId: number; readonly playerId: number }
+  | { readonly type: 'ReleasePlayer'; readonly buildingId: number; readonly playerId: number }
   | { readonly type: 'SetTicket'; readonly buildingId: number; readonly level: number }
   | { readonly type: 'SetVenuePrice'; readonly buildingId: number; readonly price: number }
   | { readonly type: 'ScheduleEvent'; readonly buildingId: number; readonly startsInHours: number }
@@ -163,6 +167,12 @@ export type ErrorKey =
   | 'error.unknownFixture'
   | 'error.invalidPrice'
   | 'error.invalidArtist'
+  | 'error.unknownPlayer'
+  | 'error.notEnoughBudget'
+  | 'error.squadFull'
+  | 'error.squadTooSmall'
+  | 'error.noClub'
+  | 'error.clubExists'
   | 'error.managerRequired'
   | 'error.rankTooLow'
   | 'error.nothingToRepair'
@@ -383,6 +393,12 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return releaseStaff(state, command.buildingId, command.role);
     case 'ScheduleShow':
       return scheduleShow(state, command.buildingId, command.startsInHours, command.artistId);
+    case 'FoundClub':
+      return foundClub(state, command.buildingId);
+    case 'SignPlayer':
+      return signClubPlayer(state, command.buildingId, command.playerId);
+    case 'ReleasePlayer':
+      return releaseClubPlayer(state, command.buildingId, command.playerId);
     case 'SetTicket':
       return setTicket(state, command.buildingId, command.level);
     case 'SetVenuePrice':

@@ -1,3 +1,4 @@
+import type { ClubData } from '../clubs/clubTypes';
 import type { ChallengeClaim, ChallengeProgress } from '../challenges/types';
 import type { TradeLedgerEntry } from '../trade/types';
 import type { FleetVehicleId } from '../transit/transitVehicleTypes.generated';
@@ -127,6 +128,7 @@ export interface Building extends Coord {
   name?: string;
   venue?: VenueData;
   attraction?: AttractionData;
+  club?: ClubData;
 }
 
 export interface Storage {

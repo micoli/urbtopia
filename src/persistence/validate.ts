@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, isAttractionType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { FIXTURE_IDS, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, isAttractionType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -66,6 +66,43 @@ function isGatheringData(value: unknown): boolean {
   );
 }
 
+function isPlayer(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    isInt(value.id, 1) &&
+    typeof value.name === 'string' &&
+    typeof value.position === 'string' &&
+    isInt(value.rating, 1, 100) &&
+    isNumber(value.form) &&
+    value.form >= 0 &&
+    value.form <= 100 &&
+    isNumber(value.morale) &&
+    value.morale >= 0 &&
+    value.morale <= 100 &&
+    isInt(value.age, 14, 60) &&
+    isRecord(value.contract) &&
+    isInt(value.contract.untilYear, 0) &&
+    isNonNegative(value.contract.wage) &&
+    isArrayOf(value.history, season => isRecord(season) && isInt(season.year, 0) && isInt(season.played, 0)) &&
+    (value.injuredUntil === undefined || isNumber(value.injuredUntil))
+  );
+}
+
+function isClubData(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    isClubSport(value.sport) &&
+    typeof value.name === 'string' &&
+    isNumber(value.budget) &&
+    isInt(value.year, 1) &&
+    isInt(value.fame, 1, 5) &&
+    isInt(value.nextPlayerId, 1) &&
+    isNumber(value.rng) &&
+    isArrayOf(value.squad, isPlayer) &&
+    isArrayOf(value.market, isPlayer)
+  );
+}
+
 function isAttractionData(value: unknown): boolean {
   return (
     isRecord(value) &&
@@ -124,6 +161,7 @@ function isBuilding(value: unknown): boolean {
     (value.solar === undefined || (typeof value.type === 'string' && canHaveSolarPanels(value.type as BuildingType) && typeof value.solar === 'boolean')) &&
     (value.colorVariant === undefined || isColorAccepted(value.type, value.colorVariant)) &&
     (value.venue === undefined || (typeof value.type === 'string' && isVenueType(value.type) && isVenueData(value.venue))) &&
+    (value.club === undefined || (typeof value.type === 'string' && hasClub(value.type) && isClubData(value.club))) &&
     (value.attraction === undefined || (typeof value.type === 'string' && isAttractionType(value.type) && isAttractionData(value.attraction))) &&
     (value.name === undefined || (typeof value.type === 'string' && isTransitStopType(value.type) && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= STOP_NAME_MAX_LENGTH)) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&

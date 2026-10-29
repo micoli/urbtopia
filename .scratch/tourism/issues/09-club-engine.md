@@ -1,6 +1,6 @@
 # Club engine
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 
 ## What to build
@@ -9,6 +9,6 @@ Sport-agnostic Club model per ADR 0052: Squad of individual players (id, age, co
 
 ## Acceptance criteria
 
-- [ ] Pure module under `src/core`, no stadium, Tourist or Urbs flow knowledge beyond a narrow interface.
-- [ ] Save round trip and migration tested.
-- [ ] A Club in debt sells its best players; no bankruptcy.
+- [x] Pure module under `src/core`, no stadium, Tourist or Urbs flow knowledge beyond a narrow interface.
+- [x] Save round trip and migration tested.
+- [x] A Club in debt sells its best players; no bankruptcy.

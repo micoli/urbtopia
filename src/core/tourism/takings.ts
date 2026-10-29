@@ -1,5 +1,6 @@
 import type { CommandOutcome } from '../engine/commands';
 import type { Building, GameState } from '../engine/state';
+import { CLUB } from '../clubs/club';
 import { cityAttractiveness } from '../venues/hotel';
 import { attractionPowerOf, isAttraction, spendingFactor } from './tourists';
 
@@ -59,8 +60,11 @@ export function collectAttractionTakings(state: GameState, building: Building): 
   const due = Math.floor(takingsOf(building));
   if (due === 0) return { key: 'error.nothingToCollect' };
   const attraction = { ...building.attraction, takings: takingsOf(building) - due };
+  // A stadium that hosts a Club gives it a share of what it collects.
+  const toClub = building.club ? Math.floor(due * CLUB.takingsShare) : 0;
+  const club = building.club ? { ...building.club, budget: building.club.budget + toClub } : undefined;
   return {
-    state: { ...state, urbs: state.urbs + due, buildings: state.buildings.map(candidate => (candidate === building ? { ...building, attraction } : candidate)) },
+    state: { ...state, urbs: state.urbs + due - toClub, buildings: state.buildings.map(candidate => (candidate === building ? { ...building, attraction, ...(club ? { club } : {}) } : candidate)) },
     events: [{ type: 'ItemsCollected', buildingId: building.id }],
   };
 }
