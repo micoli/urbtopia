@@ -1,6 +1,6 @@
 # Gathering core and Shows
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 Blocked by: 02
 
@@ -10,6 +10,6 @@ Pure model of a Gathering: cost, cooldown per Attraction, crowd = capacity x fil
 
 ## Acceptance criteria
 
-- [ ] Fill depends on quality, Ticket and mean Well-being; tested.
-- [ ] Cooldown refuses a second Gathering; cost debited through the Command gateway.
-- [ ] A Gathering in progress survives a save and a catch-up.
+- [x] Fill depends on quality, Ticket and mean Well-being; tested.
+- [x] Cooldown refuses a second Gathering; cost debited through the Command gateway.
+- [x] A Gathering in progress survives a save and a catch-up.

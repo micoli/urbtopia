@@ -1,4 +1,5 @@
 import { definitionOf } from '../buildings/buildingDefinitions';
+import type { BuildingId } from '../buildings/buildingTypes.generated';
 import type { Building, GameState } from '../engine/state';
 import { cityAttractiveness } from '../venues/hotel';
 
@@ -12,6 +13,8 @@ export const attractionPowerOf = (building: Pick<Building, 'type' | 'tier'>): nu
   if (!power) return 0;
   return power * (1 + TOURISM.tierBonus * (building.tier - 1));
 };
+
+export const isAttractionType = (type: string): boolean => (definitionOf(type as BuildingId).attraction ?? 0) > 0;
 
 export const isAttraction = (building: Pick<Building, 'type'>): boolean => (definitionOf(building.type).attraction ?? 0) > 0;
 

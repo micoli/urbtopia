@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, isAttractionType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -45,6 +45,34 @@ function isStack(value: unknown): boolean {
     isInt(value.stock, 0) &&
     (value.nextSaleAt === null || isNumber(value.nextSaleAt)) &&
     isNonNegative(value.earned)
+  );
+}
+
+function isGatheringData(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    (value.kind === 'show' || value.kind === 'match') &&
+    isNumber(value.startsAt) &&
+    isNumber(value.endsAt) &&
+    value.endsAt > (value.startsAt as number) &&
+    isNonNegative(value.cost) &&
+    isNonNegative(value.crowd) &&
+    isNonNegative(value.tourists) &&
+    isNonNegative(value.citizens) &&
+    isNonNegative(value.revenue) &&
+    isNumber(value.quality) &&
+    value.quality >= 0 &&
+    value.quality <= 1
+  );
+}
+
+function isAttractionData(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    isNonNegative(value.takings) &&
+    (value.ticket === undefined || isInt(value.ticket, 0, TICKETS.length - 1)) &&
+    (value.cooldownUntil === undefined || isNumber(value.cooldownUntil)) &&
+    (value.gathering === undefined || isGatheringData(value.gathering))
   );
 }
 
@@ -96,6 +124,7 @@ function isBuilding(value: unknown): boolean {
     (value.solar === undefined || (typeof value.type === 'string' && canHaveSolarPanels(value.type as BuildingType) && typeof value.solar === 'boolean')) &&
     (value.colorVariant === undefined || isColorAccepted(value.type, value.colorVariant)) &&
     (value.venue === undefined || (typeof value.type === 'string' && isVenueType(value.type) && isVenueData(value.venue))) &&
+    (value.attraction === undefined || (typeof value.type === 'string' && isAttractionType(value.type) && isAttractionData(value.attraction))) &&
     (value.name === undefined || (typeof value.type === 'string' && isTransitStopType(value.type) && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= STOP_NAME_MAX_LENGTH)) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&
     (value.storedEnergy === undefined || (value.type === 'battery' && isNonNegative(value.storedEnergy) && value.storedEnergy <= 24))

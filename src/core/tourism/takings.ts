@@ -39,7 +39,8 @@ export function advanceAttractions(state: GameState, from: number, to: number): 
   const spending = spendingFactor(state);
   const buildings = state.buildings.map(building => {
     if (!isAttraction(building)) return building;
-    const takings = Math.min(attractionTakingsCapOf(building), takingsOf(building) + earningsPerHour(building, attractiveness, spending) * hours);
+    const held = takingsOf(building);
+    const takings = Math.max(held, Math.min(attractionTakingsCapOf(building), held + earningsPerHour(building, attractiveness, spending) * hours));
     return { ...building, attraction: { ...building.attraction, takings } };
   });
   return { ...state, buildings };

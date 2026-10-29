@@ -85,10 +85,25 @@ export interface VenueData {
   cooldownUntil?: number;
 }
 
-// Ticket level of an Attraction (0 lowest) and the Urbs its Tourists have paid and nobody has collected.
+// A one-day crowd event held in an Attraction: its crowd is fixed when it is scheduled, its Ticket revenue paid when it ends.
+export interface GatheringData {
+  kind: 'show' | 'match';
+  startsAt: number;
+  endsAt: number;
+  cost: number;
+  quality: number;
+  crowd: number;
+  tourists: number;
+  citizens: number;
+  revenue: number;
+}
+
+// Ticket level of an Attraction (0 lowest), the Urbs its Tourists have paid and nobody has collected, and its Gathering.
 export interface AttractionData {
   ticket?: number;
   takings: number;
+  gathering?: GatheringData;
+  cooldownUntil?: number;
 }
 
 export interface Building extends Coord {

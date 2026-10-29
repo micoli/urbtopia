@@ -27,6 +27,7 @@ import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
 import { collectAttractionTakings, setTicket } from '../tourism/takings';
+import { scheduleShow } from '../tourism/gatherings';
 import { isAttraction } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
@@ -117,6 +118,7 @@ export type Command =
   | { readonly type: 'MoveFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'HireStaff'; readonly buildingId: number; readonly role: StaffRole }
   | { readonly type: 'ReleaseStaff'; readonly buildingId: number; readonly role: StaffRole }
+  | { readonly type: 'ScheduleShow'; readonly buildingId: number; readonly startsInHours: number; readonly quality?: number }
   | { readonly type: 'SetTicket'; readonly buildingId: number; readonly level: number }
   | { readonly type: 'SetVenuePrice'; readonly buildingId: number; readonly price: number }
   | { readonly type: 'ScheduleEvent'; readonly buildingId: number; readonly startsInHours: number }
@@ -378,6 +380,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return hireStaff(state, command.buildingId, command.role);
     case 'ReleaseStaff':
       return releaseStaff(state, command.buildingId, command.role);
+    case 'ScheduleShow':
+      return scheduleShow(state, command.buildingId, command.startsInHours, command.quality);
     case 'SetTicket':
       return setTicket(state, command.buildingId, command.level);
     case 'SetVenuePrice':

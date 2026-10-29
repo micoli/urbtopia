@@ -222,7 +222,8 @@ export { FLOW_ENDPOINTS, FLOW_MODES, buildingFlowsOf, flowEndpointsOf, hasTrips,
 export type { BuildingFlow, BuildingFlows, FlowEndpoint, FlowEndpoints, ModeVolumes, PassageBeacon, PassageBeacons } from './analytics/flowEndpoints';
 export type { TripMode } from './traffic/congestion';
 export type { FlowMode } from './analytics/flowEndpoints';
-export { TOURISM, attractionPowerOf, isAttraction, spendingFactor, touristDemand } from './tourism/tourists';
+export { TOURISM, attractionPowerOf, isAttraction, isAttractionType, spendingFactor, touristDemand } from './tourism/tourists';
 export { TICKETS, TICKET_DEFAULT, TAKINGS, advanceAttractions, attractionTakingsCapOf, collectAttractionTakings, earningsPerHour, setTicket, takingsOf as attractionTakingsOf, ticketOf, touristsPerDay } from './tourism/takings';
 export { STATION_SHARE, TOURIST_GATES, roadGate, touristFlows } from './tourism/touristFlows';
 export type { TouristFlow, TouristMode } from './tourism/touristFlows';
+export { GATHERING, SHOW_TYPES, advanceGatherings, gatheringBoundaries, gatheringCapacityOf, gatheringCostOf, inGatheringCooldown, isGatheringActive, isShowType, previewGathering, scheduleShow } from './tourism/gatherings';
