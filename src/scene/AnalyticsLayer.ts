@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { buildingFlowsOf, flowEndpointsOf, isPainted, homeTintsOf, layerFieldsOf, type AnalyticsLayerId, type BuildingFlows, type Coord, type FlowEndpoint, type GameState, type HomeTint, type LayerField, type ServiceCategory } from '../core';
+import { buildingFlowsOf, flowEndpointsOf, passageBeaconsOf, isPainted, homeTintsOf, layerFieldsOf, type AnalyticsLayerId, type BuildingFlows, type Coord, type PassageBeacon, type GameState, type HomeTint, type LayerField, type ServiceCategory } from '../core';
 import { FLOW_COLORS, MODE_COLORS, rampColor } from './analyticsRamps';
 
 const REFRESH_MS = 15000;
@@ -9,7 +9,7 @@ const BEACON_EXTRA_HEIGHT = 2.5;
 const LAYOUT_REFRESH_MS = 500;
 const ROUTE_WIDTH = 0.4;
 const ROUTE_HEIGHT = 0.12;
-const TRIP_MODES = ['walk', 'cycle', 'car'] as const;
+const TRIP_MODES = ['walk', 'cycle', 'car', 'transit'] as const;
 
 export class AnalyticsLayer {
   readonly root = new THREE.Group();
@@ -56,6 +56,12 @@ export class AnalyticsLayer {
       this.addBeacons(flows.destinations, FLOW_COLORS.destinations, `analytics-${layer}-destinations`);
       this.root.visible = true;
     }
+    const passages = passageBeaconsOf(state, layer);
+    if (passages) {
+      this.addBeacons(passages.walks, FLOW_COLORS.selected, `analytics-${layer}-walks`);
+      this.addBeacons(passages.stops, FLOW_COLORS.stops, `analytics-${layer}-stops`);
+      this.root.visible = true;
+    }
     const buildingFlows = layer === 'movement.flows' && buildingId !== null ? buildingFlowsOf(state, buildingId) : null;
     if (buildingFlows) {
       this.addBuildingFlows(buildingFlows, `analytics-${layer}`);
@@ -88,7 +94,7 @@ export class AnalyticsLayer {
   }
 
   // A column over each building, taller for the busier ones.
-  private addBeacons(endpoints: readonly FlowEndpoint[], color: string, name: string): void {
+  private addBeacons(endpoints: readonly PassageBeacon[], color: string, name: string): void {
     if (!endpoints.length) return;
     const busiest = Math.max(1, ...endpoints.map(endpoint => endpoint.volume));
     const mesh = new THREE.InstancedMesh(this.beaconGeometry, this.beaconMaterial, endpoints.length);

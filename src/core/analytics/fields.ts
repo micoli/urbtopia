@@ -5,6 +5,7 @@ import { carsField, congestionField } from './roadFields';
 import { coverageField } from './coverageField';
 import { landValueField } from './landValueField';
 import { odorField } from './odorField';
+import { transitField } from './transitFields';
 import { wellbeingField } from './wellbeingField';
 import { pollutionField } from './pollutionField';
 import { LAYER_SCALES, type RampId } from './scales';
@@ -25,8 +26,11 @@ function fieldsOf(state: GameState, layer: AnalyticsLayerId, category: ServiceCa
     case 'data.landValue': return [landValueField(state)];
     case 'data.congestion': return [congestionField(state)];
     case 'movement.cars': return [carsField(state)];
+    case 'movement.bus': return [transitField(state, 'bus')];
+    case 'movement.brt': return [transitField(state, 'brt')];
+    case 'movement.rail': return [transitField(state, 'rail')];
     case 'movement.pedestrians': return [sidewalkField(state), pedestrianCrossingsField(state)];
-    case 'movement.all': return [carsField(state), sidewalkField(state), pedestrianCrossingsField(state)];
+    case 'movement.all': return [carsField(state), sidewalkField(state), pedestrianCrossingsField(state), transitField(state, 'bus'), transitField(state, 'brt'), transitField(state, 'rail')];
     default: return [];
   }
 }

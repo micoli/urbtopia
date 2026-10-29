@@ -139,6 +139,7 @@ export { temperatureBreakdown, coolingElements } from './environment/temperature
 export type { HeatSource, HeatContribution, CoolingElement } from './environment/temperatureBreakdown';
 export { STOP_NAME_MAX_LENGTH, isTransitStopType } from './transit/stopNames';
 export { transportStats, routeForLine, routeFailure } from './transit/transport';
+export type { StopFlow, TransitTrip } from './transit/transport';
 export type { BusLine } from './engine/state';
 
 export { FLEET_VEHICLES, BUS_MODEL_FILE, TRAFFIC_VEHICLE_ENTRIES, SERVICE_VEHICLE_ENTRIES, TRANSIT_VEHICLE_ENTRIES } from './transit/vehicles';
@@ -185,6 +186,8 @@ export { cityTransportStats } from './traffic/cityTransport';
 export { congestionStats, workplaceTypes } from './traffic/congestion';
 export type { CongestionStats, CrossingLoad, HomeCongestion, SectionLoad } from './traffic/congestion';
 export { footbridgeStops, pedestrianGraph, walkFrom } from './map/pedestrianGraph';
+export { crossingFlows, footbridgeFlowAt, footbridgeFlows } from './traffic/walkFlows';
+export type { CrossingFlow, FootbridgeFlow } from './traffic/walkFlows';
 export { footbridgeOpenSides } from './map/footbridgeAccess';
 export type { WalkMap } from './map/pedestrianGraph';
 export type { PedestrianGraph } from './map/pedestrianGraph';
@@ -215,6 +218,7 @@ export type { TileField } from './analytics/tileField';
 export { LAND_VALUE } from './analytics/landValueField';
 export { probeOf } from './analytics/probe';
 export type { Probe, ProbeLine } from './analytics/probe';
-export { FLOW_ENDPOINTS, buildingFlowsOf, flowEndpointsOf, hasTrips } from './analytics/flowEndpoints';
-export type { BuildingFlow, BuildingFlows, FlowEndpoint, FlowEndpoints, ModeVolumes } from './analytics/flowEndpoints';
+export { FLOW_ENDPOINTS, FLOW_MODES, buildingFlowsOf, flowEndpointsOf, hasTrips, passageBeaconsOf } from './analytics/flowEndpoints';
+export type { BuildingFlow, BuildingFlows, FlowEndpoint, FlowEndpoints, ModeVolumes, PassageBeacon, PassageBeacons } from './analytics/flowEndpoints';
 export type { TripMode } from './traffic/congestion';
+export type { FlowMode } from './analytics/flowEndpoints';
