@@ -24,6 +24,7 @@ import { useCodexManifest } from './useCodexManifest';
 import { CloseButton } from '../common/CloseButton';
 import { ActionButton } from '../common/ActionButton';
 import { AccordionSection } from '../common/AccordionSection';
+import { SearchField } from '../common/SearchField';
 
 export function CodexPanel() {
   const close = useUi(store => store.closeCodex);
@@ -97,14 +98,7 @@ export function CodexPanel() {
       </header>
       <div className="codex-body" data-detail={showDetail}>
         <nav className="codex-list" aria-label={t('codex.title')}>
-          <input
-            className="codex-search"
-            type="search"
-            aria-label={t('codex.search')}
-            placeholder={t('codex.search')}
-            value={search}
-            onChange={event => setSearch(event.target.value)}
-          />
+          <SearchField className="mb-3" label={t('codex.search')} value={search} onChange={setSearch} />
           {!hasResults && <p className="codex-search-empty" role="status">{t('codex.searchEmpty')}</p>}
           {CODEX_SECTIONS.map(section => {
             const sectionEntries = filteredEntries.filter(item => item.section === section);

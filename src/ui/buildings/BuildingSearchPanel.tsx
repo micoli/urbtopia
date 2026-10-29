@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { NATURE_TYPES, type Building } from '../../core';
+import { SearchField } from '../common/SearchField';
 import { t } from '../../i18n/t';
 import { CloseButton } from '../common/CloseButton';
 import { useGame, useUi } from '../common/hooks';
@@ -53,15 +54,7 @@ export function BuildingSearchPanel() {
         <h2 id="building-search-heading">{t('search.title')}</h2>
         <CloseButton onClick={close} label={t('search.close')} />
       </header>
-      <input
-        className="building-search-input"
-        type="search"
-        autoFocus
-        value={query}
-        placeholder={t('search.placeholder')}
-        aria-label={t('search.placeholder')}
-        onChange={(event) => setQuery(event.target.value)}
-      />
+      <SearchField autoFocus label={t('search.placeholder')} value={query} onChange={setQuery} />
       {groups.length === 0 ? <p className="building-search-empty">{t('search.empty')}</p> : null}
       <ul className="building-search-tree">
         {groups.map((group) => (

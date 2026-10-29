@@ -85,7 +85,6 @@
 }
 .building-search-panel header { display: flex; align-items: center; gap: var(--space-8); margin-bottom: var(--space-8); }
 .building-search-panel h2 { flex: 1; margin: 0; font-size: var(--font-size-base); }
-.building-search-input { box-sizing: border-box; width: 100%; padding: var(--space-6) var(--space-8); }
 .building-search-results { overflow-y: auto; list-style: none; padding: 0; margin: var(--space-8) 0 0; }
 .building-search-tree { overflow-y: auto; list-style: none; padding: 0; margin: var(--space-8) 0 0; }
 .building-search-branch { display: flex; align-items: center; gap: var(--space-8); width: 100%; padding: var(--space-6) var(--space-8); border: 0; border-radius: var(--radius-lg); background: none; color: inherit; font: inherit; font-weight: var(--font-weight-semibold); text-align: left; cursor: pointer; }

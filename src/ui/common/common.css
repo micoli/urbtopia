@@ -596,3 +596,5 @@
 .city-management-backdrop.window-backdrop::before { background: var(--black-a55); }
 [data-layout='C'] .window-backdrop { left: calc(var(--dock-width) + var(--space-8)); }
 [data-layout='A'] .window-backdrop { bottom: var(--bottom-bar-height); }
+
+.search-field { box-sizing: border-box; width: 100%; min-height: var(--tap); padding: var(--space-8) var(--space-12); border: 1px solid var(--white-a20); border-radius: var(--radius-md); background: var(--white-a08); color: inherit; font: inherit; }
