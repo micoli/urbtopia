@@ -394,3 +394,42 @@ describe('building search and the flyout menus', () => {
     expect(uiStore.getState()).toMatchObject({ buildingSearchOpen: false, flyout: null });
   });
 });
+
+describe('settings window', () => {
+  const everythingOpen = { statsOpen: true, politicsOpen: true, socialOpen: true, marketOpen: true, serviceCoverageOpen: true, buildingSearchOpen: true, flyout: 'build' as const, selectedBuildingId: 1, settingsOpen: false };
+  const allClosed = { statsOpen: false, politicsOpen: false, socialOpen: false, marketOpen: false, serviceCoverageOpen: false, buildingSearchOpen: false, flyout: null, selectedBuildingId: null };
+
+  beforeEach(() => uiStore.setState({ ...allClosed, settingsOpen: false, signInFromSocial: false }));
+
+  it('closes every other window when it opens', () => {
+    uiStore.setState(everythingOpen);
+    uiStore.getState().toggleSettings();
+    expect(uiStore.getState()).toMatchObject({ ...allClosed, settingsOpen: true });
+  });
+
+  it('closes every other window when it opens from the Social window or for the sign-in prompt', () => {
+    uiStore.setState(everythingOpen);
+    uiStore.getState().openSettingsFromSocial(false);
+    expect(uiStore.getState()).toMatchObject({ ...allClosed, settingsOpen: true });
+    uiStore.setState(everythingOpen);
+    uiStore.getState().openSettingsForSignIn();
+    expect(uiStore.getState()).toMatchObject({ ...allClosed, settingsOpen: true, signInFromSocial: true });
+  });
+
+  it('closes alone and leaves the others closed', () => {
+    uiStore.getState().toggleSettings();
+    uiStore.getState().toggleSettings();
+    expect(uiStore.getState()).toMatchObject({ ...allClosed, settingsOpen: false });
+  });
+
+  it('is closed by the other windows', () => {
+    vi.spyOn(gameStore, 'getState').mockReturnValue({ ...gameStore.getState(), state: { ...gameStore.getState().state, marketUnlocked: true } });
+    uiStore.setState({ settingsOpen: true });
+    uiStore.getState().toggleMarket();
+    expect(uiStore.getState()).toMatchObject({ marketOpen: true, settingsOpen: false });
+    uiStore.setState({ settingsOpen: true });
+    uiStore.getState().toggleStats();
+    expect(uiStore.getState()).toMatchObject({ statsOpen: true, settingsOpen: false });
+    vi.restoreAllMocks();
+  });
+});

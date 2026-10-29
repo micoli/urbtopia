@@ -132,6 +132,9 @@ function evaluate(tool: Tool | null, tile: Coord, rotation: Rotation | null): Ev
   return evaluateTool(tool, { state: gameStore.getState().state, tile, rotation });
 }
 
+// The settings window is modal, so opening it closes every other window.
+const WINDOWS_CLOSED = { statsOpen: false, politicsOpen: false, socialOpen: false, marketOpen: false, serviceCoverageOpen: false, buildingSearchOpen: false, flyout: null, selectedBuildingId: null } as const;
+
 export const uiStore = createStore<UiStore>((set, get) => {
   const reevaluate = (patch: Partial<Pick<UiStore, 'tool' | 'rotation' | 'centerTile' | 'pointerKind' | 'hovered' | 'pinnedTile'>> = {}) => {
     const merged = { ...get(), ...patch };
@@ -208,7 +211,8 @@ export const uiStore = createStore<UiStore>((set, get) => {
     openSettingsFromSocial: (forSignIn) => {
       leaveParcelMode();
       stopWaitingForSignIn();
-      set({ socialOpen: false, settingsOpen: true, flyout: null, signInFromSocial: forSignIn });
+      get().cancelTool();
+      set({ ...WINDOWS_CLOSED, settingsOpen: true, signInFromSocial: forSignIn });
       if (!forSignIn) return;
       stopWaitingForSignIn = cloudStore.subscribe((store) => {
         if (!store.account?.email) return;
@@ -221,7 +225,8 @@ export const uiStore = createStore<UiStore>((set, get) => {
     openSettingsForSignIn: () => {
       leaveParcelMode();
       stopWaitingForSignIn();
-      set({ socialOpen: false, statsOpen: false, marketOpen: false, settingsOpen: true, flyout: null, signInFromSocial: true });
+      get().cancelTool();
+      set({ ...WINDOWS_CLOSED, settingsOpen: true, signInFromSocial: true });
     },
     tradeWith: null,
     startTrade: (userId) => set({ tradeWith: userId, socialTab: 'exchanges' }),
@@ -287,12 +292,15 @@ export const uiStore = createStore<UiStore>((set, get) => {
     },
     toggleSettings: () => {
       leaveParcelMode();
-      set({ settingsOpen: !get().settingsOpen, flyout: null, signInFromSocial: false });
+      const opening = !get().settingsOpen;
+      if (opening) get().cancelTool();
+      set(opening ? { ...WINDOWS_CLOSED, settingsOpen: true, signInFromSocial: false } : { settingsOpen: false, signInFromSocial: false });
     },
     toggleMarket: () => {
       if (!gameStore.getState().state.marketUnlocked) return toastStore.getState().show('error.marketLocked');
       leaveParcelMode();
-      set({ marketOpen: !get().marketOpen, flyout: null });
+      const opening = !get().marketOpen;
+      set(opening ? { marketOpen: true, flyout: null, settingsOpen: false } : { marketOpen: false, flyout: null });
     },
     chooseTool: (tool) => {
       set({ flyout: null, selectedBuildingId: null });

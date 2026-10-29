@@ -7,5 +7,4 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Selection: Story = { parameters: { stores: { selectBuilding: 'home' } } };
-export const Settings: Story = { parameters: { stores: { ui: { settingsOpen: true } } } };
 export const Build: Story = { parameters: { stores: { ui: { flyout: 'build' } } } };

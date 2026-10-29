@@ -27,6 +27,7 @@ import { UpdatePrompt } from '../system/UpdatePrompt';
 import { ServiceCoveragePanel } from '../buildings/ServiceCoveragePanel';
 import { BuildingSearchPanel } from '../buildings/BuildingSearchPanel';
 import { PoliticsWindow } from '../politics/PoliticsWindow';
+import { SettingsWindow } from '../system/SettingsWindow';
 import { useUi } from '../common/hooks';
 import { StreetViewDropHint } from './StreetViewDropHint';
 import { AnalyticsHud } from '../analytics/AnalyticsHud';
@@ -46,6 +47,7 @@ export function Overlays() {
       <CasinoDialog />
       <VenueDialog />
       <MarketModal />
+      <SettingsWindow />
       <ChallengeSuccessOverlay />
       {streetView || analytics ? null : <FloatingBadges />}
       {analytics ? <LocatorArrow /> : null}
