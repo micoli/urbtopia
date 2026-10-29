@@ -1,4 +1,4 @@
-import { nextRandom } from '../engine/random';
+import { hashSeed, nextRandom } from '../engine/random';
 import type { Building, GameState } from '../engine/state';
 import { GATHERING, setGathering } from '../tourism/gatherings';
 import { CLUB, refreshMarket, wageOf } from './club';
@@ -62,6 +62,8 @@ export const startChampionship = (club: ClubData, now: number): ClubData => {
 
 export const nextFixture = (championship: ChampionshipData) => championship.fixtures.find(fixture => fixture.result === undefined);
 
+export const fixtureSeedOf = (club: Pick<ClubData, 'name' | 'year'>, index: number): number => hashSeed(`fixture:${club.name}:${club.year}:${index}`);
+
 function resultOf(rules: SportRules, club: ClubData, opponent: Opponent, rng: number): { result: MatchResult; rng: number } {
   const first = nextRandom(rng);
   const strength = squadStrength(club);
@@ -120,9 +122,10 @@ function resolveDue(rules: SportRules, club: ClubData, now: number): { club: Clu
     const fixture = championship && nextFixture(championship);
     if (!championship || !fixture || fixture.at + GATHERING.matchDurationMs > now) return { club: current, boost };
     const opponent = championship.opponents[fixture.opponent]!;
-    const played = resultOf(rules, current, opponent, current.rng);
+    const report = rules.playMatch?.(current, opponent, fixtureSeedOf(current, championship.fixtures.indexOf(fixture)), fixture.decisions);
+    const played = report ? { ...report, rng: current.rng } : resultOf(rules, current, opponent, current.rng);
     const others = playOthers(rules, championship.opponents, played.rng);
-    const fixtures = championship.fixtures.map(candidate => (candidate === fixture ? { ...fixture, result: played.result } : candidate));
+    const fixtures = championship.fixtures.map(candidate => (candidate === fixture ? { ...fixture, result: played.result, ...(report ? { score: report.score } : {}) } : candidate));
     current = { ...current, rng: others.rng, championship: { ...championship, fixtures, opponents: others.opponents, points: championship.points + pointsOf(played.result) } };
     if (nextFixture(current.championship!)) continue;
     const closed = closeYear(rules, current, fixture.at + GATHERING.matchDurationMs);

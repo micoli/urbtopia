@@ -45,6 +45,28 @@ export interface Fixture {
   at: number;
   opponent: number;
   result?: MatchResult;
+  // Goals, runs or points: the Club's first.
+  score?: readonly [number, number];
+  // What the player decided while playing this Match.
+  decisions?: readonly MatchDecision[];
+}
+
+// What the player decided during a Match, replayed by the simulation at the minute it was taken.
+export type MatchDecision =
+  | { readonly minute: number; readonly kind: 'tactic'; readonly tactic: string }
+  | { readonly minute: number; readonly kind: 'substitute'; readonly out: number; readonly in: number };
+
+// The lineup the player set: sport-specific values kept as plain data.
+export interface Lineup {
+  formation: string;
+  // Player ids, in the order the sport reads them.
+  starters: number[];
+  tactic: string;
+}
+
+export interface MatchReport {
+  result: MatchResult;
+  score: readonly [number, number];
 }
 
 // One game year of Matches: a calendar, the opposing clubs and the points of the Club.
@@ -66,6 +88,7 @@ export interface ClubData {
   nextPlayerId: number;
   rng: number;
   championship?: ChampionshipData;
+  lineup?: Lineup;
 }
 
 // What a sport brings to the Club engine: how many players it fields and the positions it needs.
@@ -78,6 +101,10 @@ export interface SportRules {
   ratingRange: readonly [number, number];
   // Whether a Match can end level.
   draws: boolean;
+  // Plays a Match of the Championship from a seed and what the player decided; without it the result follows the strength of the Squad.
+  // Whether a lineup is valid for the sport, and why not.
+  lineupIssue?: (club: ClubData, lineup: Lineup) => string | null;
+  playMatch?: (club: ClubData, opponent: Opponent, seed: number, decisions?: readonly MatchDecision[]) => MatchReport;
 }
 
 export type ClubError = 'error.unknownPlayer' | 'error.notEnoughBudget' | 'error.squadFull' | 'error.squadTooSmall' | 'error.noClub';

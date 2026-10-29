@@ -10,6 +10,7 @@ type VenueMessageKey =
   | 'error.squadFull'
   | 'error.squadTooSmall'
   | 'error.noClub'
+  | 'error.invalidLineup'
   | 'error.clubExists'
   | 'error.managerRequired'
   | 'error.rankTooLow'
@@ -210,6 +211,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'error.notEnoughBudget': ['The Club budget is too low.', 'Le budget du club est trop bas.'],
   'error.squadFull': ['The Squad is full.', 'L’effectif est complet.'],
   'error.squadTooSmall': ['The Squad cannot get any smaller.', 'L’effectif ne peut pas être réduit davantage.'],
+  'error.invalidLineup': ['This lineup is not valid.', 'Cette composition n’est pas valide.'],
   'error.noClub': ['This stadium has no Club yet.', 'Ce stade n’a pas encore de club.'],
   'error.clubExists': ['This stadium already has a Club.', 'Ce stade a déjà un club.'],
   'venue.attractiveness': ['Attractiveness', 'Attractivité'],

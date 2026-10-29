@@ -27,7 +27,7 @@ import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
 import { collectAttractionTakings, setTicket } from '../tourism/takings';
-import { foundClub, releaseClubPlayer, signClubPlayer } from '../clubs/clubCommands';
+import { foundClub, releaseClubPlayer, setClubLineup, signClubPlayer } from '../clubs/clubCommands';
 import { scheduleShow } from '../tourism/gatherings';
 import { isAttraction } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
@@ -121,6 +121,7 @@ export type Command =
   | { readonly type: 'ReleaseStaff'; readonly buildingId: number; readonly role: StaffRole }
   | { readonly type: 'ScheduleShow'; readonly buildingId: number; readonly startsInHours: number; readonly artistId?: string }
   | { readonly type: 'FoundClub'; readonly buildingId: number }
+  | { readonly type: 'SetLineup'; readonly buildingId: number; readonly formation: string; readonly starters: readonly number[]; readonly tactic: string }
   | { readonly type: 'SignPlayer'; readonly buildingId: number; readonly playerId: number }
   | { readonly type: 'ReleasePlayer'; readonly buildingId: number; readonly playerId: number }
   | { readonly type: 'SetTicket'; readonly buildingId: number; readonly level: number }
@@ -172,6 +173,7 @@ export type ErrorKey =
   | 'error.squadFull'
   | 'error.squadTooSmall'
   | 'error.noClub'
+  | 'error.invalidLineup'
   | 'error.clubExists'
   | 'error.managerRequired'
   | 'error.rankTooLow'
@@ -395,6 +397,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return scheduleShow(state, command.buildingId, command.startsInHours, command.artistId);
     case 'FoundClub':
       return foundClub(state, command.buildingId);
+    case 'SetLineup':
+      return setClubLineup(state, command.buildingId, { formation: command.formation, starters: [...command.starters], tactic: command.tactic });
     case 'SignPlayer':
       return signClubPlayer(state, command.buildingId, command.playerId);
     case 'ReleasePlayer':

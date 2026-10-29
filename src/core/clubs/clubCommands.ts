@@ -3,7 +3,7 @@ import type { Building, GameState } from '../engine/state';
 import { hashSeed } from '../engine/random';
 import { startChampionship } from './championship';
 import { createClub, releasePlayer, signPlayer, advanceClub } from './club';
-import type { ClubData } from './clubTypes';
+import type { ClubData, Lineup } from './clubTypes';
 import { CLUB_MASCOTS, CLUB_PLACES } from './names';
 import { sportRulesOf } from './sportRules';
 
@@ -35,6 +35,16 @@ function change(state: GameState, buildingId: number, apply: (rules: NonNullable
   const outcome = apply(rules, building.club);
   if ('error' in outcome) return { key: outcome.error };
   return { state: withClub(state, building, outcome.club), events: [] };
+}
+
+export function setClubLineup(state: GameState, buildingId: number, lineup: Lineup): CommandOutcome {
+  const building = state.buildings.find(candidate => candidate.id === buildingId);
+  if (!building) return { key: 'error.unknownBuilding' };
+  const rules = sportRulesOf(building.type);
+  if (!rules) return { key: 'error.unknownCommand' };
+  if (!building.club) return { key: 'error.noClub' };
+  if (rules.lineupIssue?.(building.club, lineup)) return { key: 'error.invalidLineup' };
+  return { state: withClub(state, building, { ...building.club, lineup }), events: [] };
 }
 
 export const signClubPlayer = (state: GameState, buildingId: number, playerId: number): CommandOutcome => change(state, buildingId, (rules, club) => signPlayer(rules, club, playerId));
