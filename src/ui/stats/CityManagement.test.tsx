@@ -20,7 +20,7 @@ vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
   useUi: (selector: (store: { statsOpen: boolean; toggleStats: () => void }) => unknown) => selector({ statsOpen: context.statsOpen, toggleStats: () => {} }),
 }));
-vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: vi.fn() }) } }));
+vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: vi.fn(), state: context.state }) } }));
 
 afterEach(() => { context.statsOpen = true; prefsStore.getState().setLanguage('en'); });
 

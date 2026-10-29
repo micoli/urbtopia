@@ -1,7 +1,9 @@
 import {cityBenefits, climateStats, cityTransportStats, congestionStats, energyStats, coolingElements, heatSourceItems, isAdapting, temperatureBreakdown} from '../../core';
 import {t} from '../../i18n/t';
 import {useState} from 'react';
-import {useGame, useUi} from '../common/hooks';
+import {useUi} from '../common/hooks';
+import {gameStore} from '../../store/gameStore';
+import {useThrottledValue} from '../common/useThrottledValue';
 import {Tabs} from '../common/Tabs';
 import {CitiesSection} from '../system/CitiesSection';
 import {ShipmentsSection} from '../shipments/ShipmentsSection';
@@ -30,9 +32,13 @@ import {useModalFocus} from './management/useModalFocus';
 
 type ManagementTab = 'dashboard' | 'cities' | 'shipments';
 
+const DASHBOARD_REFRESH_MS = 4000;
+
+const readState = () => gameStore.getState().state;
+
 function CityManagementDialog() {
     const [tab, setTab] = useState<ManagementTab>('dashboard');
-    const state = useGame(s => s.state);
+    const state = useThrottledValue(readState, DASHBOARD_REFRESH_MS);
     const open = useUi(s => s.statsOpen);
     const toggle = useUi(s => s.toggleStats);
     const panel = useModalFocus(open, toggle);
