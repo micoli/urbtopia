@@ -5,6 +5,10 @@ import { SocialTabs } from './SocialTabs';
 
 const noop = () => {};
 
+function tabTag(html: string, id: string): string {
+  return html.match(new RegExp(`<button[^>]*id="social-tab-${id}"[^>]*>`))![0];
+}
+
 describe('social tabs', () => {
   it('orders the tabs Friends, Groups, Exchanges, Profile', () => {
     const html = renderToStaticMarkup(<SocialTabs tab="exchanges" friendsPending={0} groupsPending={0} exchangesPending={0} onSelect={noop} />);
@@ -13,18 +17,20 @@ describe('social tabs', () => {
     expect(positions.every((position) => position >= 0)).toBe(true);
   });
 
-  it('shows the Groups badge and keeps only the selected tab in the tab order', () => {
+  it('shows the Groups badge on the selected tab and only that tab is active', () => {
     const html = renderToStaticMarkup(<SocialTabs tab="groups" friendsPending={0} groupsPending={4} exchangesPending={0} onSelect={noop} />);
-    expect(html).toMatch(/id="social-tab-groups"[^>]*tabindex="0"[\s\S]*count-badge[^>]*>4</);
-    expect(html).toMatch(/id="social-tab-friends"[^>]*tabindex="-1"/);
+    expect(html).toMatch(/id="social-tab-groups"[\s\S]*count-badge[^>]*>4</);
+    expect(tabTag(html, 'groups')).toContain('data-state="active"');
+    expect(tabTag(html, 'friends')).toContain('data-state="inactive"');
   });
 
   it('lists the activities and marks the selected one', () => {
     const html = renderToStaticMarkup(<SocialTabs tab="exchanges" friendsPending={0} groupsPending={0} exchangesPending={0} onSelect={noop} />);
     expect(html).toContain(t('social.tab.friends'));
     expect(html).toContain(t('social.tab.exchanges'));
-    expect(html).toMatch(/id="social-tab-exchanges"[^>]*aria-selected="true"/);
-    expect(html).toMatch(/id="social-tab-friends"[^>]*aria-selected="false"/);
+    expect(tabTag(html, 'exchanges')).toContain('aria-selected="true"');
+    expect(tabTag(html, 'friends')).toContain('aria-selected="false"');
+    expect(tabTag(html, 'friends')).toContain('aria-controls="social-panel"');
     expect(html).toContain('role="tablist"');
   });
 
