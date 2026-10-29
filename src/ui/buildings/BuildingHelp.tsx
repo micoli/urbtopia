@@ -12,8 +12,8 @@ export function BuildingHelp({ building }: { building: Building }) {
   return (
     <PanelSection id="help" title={t('panel.section.help')}>
       <ButtonRow align="stretch" spaced className="side-panel-actions">
-        <CodexLinks building={building} />
         {hasTrips(building) ? <ActionButton onClick={() => showBuildingFlows(building.id)}><Icon name="walk" /> {t('panel.flows')}</ActionButton> : null}
+        <CodexLinks building={building} />
       </ButtonRow>
     </PanelSection>
   );

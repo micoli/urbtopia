@@ -14,6 +14,8 @@ describe('CodexLinks', () => {
     expect(html).toContain('Town hall');
     expect(html.match(/lucide-info/g)).toHaveLength(2);
     expect(html).not.toContain('?');
+    expect(html.match(/class="truncate"/g)).toHaveLength(2);
+    expect(html).toContain('title="Politics"');
   });
 
   it('gives no Politics link to other buildings', () => {
