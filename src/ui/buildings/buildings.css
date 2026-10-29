@@ -151,20 +151,19 @@
 .panel-section h3 { margin: 0; }
 .panel-section-toggle {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  gap: var(--space-8);
+  gap: var(--space-6);
   width: 100%;
-  min-height: var(--tap);
-  padding: var(--space-8) var(--space-12);
+  padding: var(--space-8) 0;
   border: 0;
-  border-radius: var(--radius-lg);
-  background: var(--white-a08);
-  color: inherit;
+  background: none;
+  color: var(--color-warning-strong);
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
   text-align: left;
   cursor: pointer;
 }
+.panel-section-toggle > span { text-decoration: underline; text-underline-offset: 3px; }
 .panel-section-body { padding: var(--space-4) var(--space-4) 0; }
 .panel-section:has(> .panel-section-body:empty) { display: none; }
