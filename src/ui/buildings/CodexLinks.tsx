@@ -3,6 +3,7 @@ import { solarCodexIdOf, type CodexId } from '../../codex/catalog';
 import { t } from '../../i18n/t';
 import { ActionButton } from '../common/ActionButton';
 import { useUi } from '../common/hooks';
+import { Icon } from '../common/Icon';
 
 const extendsOrUsesTransitReach = ({ type }: Building): boolean =>
   (TRANSIT_REACH_STOP_TYPES as readonly string[]).includes(type) || (isFacilityType(type) && FACILITIES[type].category !== 'waste' && FACILITIES[type].radius !== null);
@@ -15,22 +16,22 @@ export function CodexLinks({ building }: { building: Building }) {
     <>
       {entries.map((id) => (
         <ActionButton key={id} aria-label={t('codex.about').replace('{name}', t(id === building.type ? `building.${building.type}` : 'eco.solarHome'))} onClick={() => openCodex(id)}>
-          {t(id === building.type ? `building.${building.type}` : 'eco.solarHome')}&nbsp;?
+          <Icon name="info" /> {t(id === building.type ? `building.${building.type}` : 'eco.solarHome')}
         </ActionButton>
       ))}
       {building.type === 'townHall' && (
         <ActionButton aria-label={t('codex.about').replace('{name}', t('codex.politics.title'))} onClick={() => openCodex(undefined, 'politics')}>
-          {t('codex.politics.title')}&nbsp;?
+          <Icon name="info" /> {t('codex.politics.title')}
         </ActionButton>
       )}
       {extendsOrUsesTransitReach(building) && (
         <ActionButton aria-label={t('codex.about').replace('{name}', t('codex.transitReach.title'))} onClick={() => openCodex(undefined, 'transitReach')}>
-          {t('codex.transitReach.title')}&nbsp;?
+          <Icon name="info" /> {t('codex.transitReach.title')}
         </ActionButton>
       )}
       {wasteKindOf(building.type) && (
         <ActionButton aria-label={t('codex.about').replace('{name}', t('codex.waste.title'))} onClick={() => openCodex(undefined, 'waste')}>
-          {t('codex.waste.title')}&nbsp;?
+          <Icon name="info" /> {t('codex.waste.title')}
         </ActionButton>
       )}
     </>
