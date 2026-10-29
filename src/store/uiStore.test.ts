@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.stubGlobal('window', { location: { search: '' } });
 const { uiStore } = await import('./uiStore');
@@ -431,5 +431,42 @@ describe('settings window', () => {
     uiStore.getState().toggleStats();
     expect(uiStore.getState()).toMatchObject({ statsOpen: true, settingsOpen: false });
     vi.restoreAllMocks();
+  });
+});
+
+describe('one window at a time', () => {
+  const none = { statsOpen: false, politicsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false, flyout: null };
+
+  afterEach(() => vi.restoreAllMocks());
+
+  beforeEach(() => {
+    uiStore.setState({ ...none, buildingSearchOpen: false });
+    vi.spyOn(gameStore, 'getState').mockReturnValue({ ...gameStore.getState(), state: { ...gameStore.getState().state, marketUnlocked: true } });
+  });
+
+  it('opens a flyout menu by closing every window', () => {
+    uiStore.setState({ statsOpen: true, socialOpen: true, settingsOpen: true, marketOpen: true, politicsOpen: true });
+    uiStore.getState().openFlyout('build');
+    expect(uiStore.getState()).toMatchObject({ ...none, flyout: 'build' });
+  });
+
+  it.each([
+    ['toggleStats', 'statsOpen'],
+    ['toggleSocial', 'socialOpen'],
+    ['toggleMarket', 'marketOpen'],
+    ['openPolitics', 'politicsOpen'],
+    ['toggleSettings', 'settingsOpen'],
+  ] as const)('%s opens its window and closes the others, the flyout included', (action, flag) => {
+    uiStore.setState({ statsOpen: true, socialOpen: true, settingsOpen: true, marketOpen: true, politicsOpen: true, flyout: 'land', [flag]: false });
+    uiStore.getState()[action]();
+    const windows = ['statsOpen', 'politicsOpen', 'socialOpen', 'marketOpen', 'settingsOpen'] as const;
+    for (const key of windows) expect(uiStore.getState()[key]).toBe(key === flag);
+    expect(uiStore.getState().flyout).toBeNull();
+  });
+
+  it('closes a window by toggling it again, and leaves the others closed', () => {
+    uiStore.getState().toggleSocial();
+    uiStore.getState().toggleSocial();
+    expect(uiStore.getState()).toMatchObject(none);
   });
 });

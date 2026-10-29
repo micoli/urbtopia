@@ -132,8 +132,10 @@ function evaluate(tool: Tool | null, tile: Coord, rotation: Rotation | null): Ev
   return evaluateTool(tool, { state: gameStore.getState().state, tile, rotation });
 }
 
-// The settings window is modal, so opening it closes every other window.
-const WINDOWS_CLOSED = { statsOpen: false, politicsOpen: false, socialOpen: false, marketOpen: false, serviceCoverageOpen: false, buildingSearchOpen: false, flyout: null, selectedBuildingId: null } as const;
+// One window at a time: opening a window, or a flyout menu, closes the others.
+const NO_WINDOW_OPEN = { statsOpen: false, politicsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false } as const;
+// The settings window is modal, so opening it also closes the panels around the map.
+const WINDOWS_CLOSED = { ...NO_WINDOW_OPEN, serviceCoverageOpen: false, buildingSearchOpen: false, flyout: null, selectedBuildingId: null } as const;
 
 export const uiStore = createStore<UiStore>((set, get) => {
   const reevaluate = (patch: Partial<Pick<UiStore, 'tool' | 'rotation' | 'centerTile' | 'pointerKind' | 'hovered' | 'pinnedTile'>> = {}) => {
@@ -175,13 +177,13 @@ export const uiStore = createStore<UiStore>((set, get) => {
     lineToEdit: null,
     editTransitLine: (lineId) => {
       get().cancelTool();
-      set({ statsOpen: true, lineToEdit: lineId, socialOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
+      set({ ...NO_WINDOW_OPEN, statsOpen: true, lineToEdit: lineId, flyout: null });
     },
     clearLineToEdit: () => set({ lineToEdit: null }),
     politicsOpen: false,
     openPolitics: () => {
       get().cancelTool();
-      set({ politicsOpen: true, statsOpen: false, socialOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
+      set({ ...NO_WINDOW_OPEN, politicsOpen: true, flyout: null });
     },
     closePolitics: () => set({ politicsOpen: false }),
     serviceCoverageOpen: false,
@@ -195,8 +197,9 @@ export const uiStore = createStore<UiStore>((set, get) => {
     },
     closeBuildingSearch: () => set({ buildingSearchOpen: false }),
     toggleStats: () => {
-      if (!get().statsOpen) get().cancelTool();
-      set({ statsOpen: !get().statsOpen, socialOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
+      const opening = !get().statsOpen;
+      if (opening) get().cancelTool();
+      set(opening ? { ...NO_WINDOW_OPEN, statsOpen: true, flyout: null } : { statsOpen: false, flyout: null });
     },
     socialOpen: false,
     socialTab: 'friends',
@@ -204,7 +207,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       const opening = !get().socialOpen;
       if (opening) get().cancelTool();
       const landing = opening ? { socialTab: defaultSocialTab({ hasEmail: Boolean(cloudStore.getState().account?.email), status: socialStore.getState().status }) } : {};
-      set({ ...landing, socialOpen: opening, statsOpen: false, flyout: null, settingsOpen: false, marketOpen: false });
+      set(opening ? { ...landing, ...NO_WINDOW_OPEN, socialOpen: true, flyout: null } : { socialOpen: false, flyout: null });
     },
     setSocialTab: (socialTab) => set({ socialTab }),
     signInFromSocial: false,
@@ -288,7 +291,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     openFlyout: (flyout) => {
       leaveParcelMode();
       const next = get().flyout === flyout ? null : flyout;
-      set(next === null ? { flyout: null } : { flyout: next, buildingSearchOpen: false });
+      set(next === null ? { flyout: null } : { ...NO_WINDOW_OPEN, flyout: next, buildingSearchOpen: false });
     },
     toggleSettings: () => {
       leaveParcelMode();
@@ -300,7 +303,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       if (!gameStore.getState().state.marketUnlocked) return toastStore.getState().show('error.marketLocked');
       leaveParcelMode();
       const opening = !get().marketOpen;
-      set(opening ? { marketOpen: true, flyout: null, settingsOpen: false } : { marketOpen: false, flyout: null });
+      set(opening ? { ...NO_WINDOW_OPEN, marketOpen: true, flyout: null } : { marketOpen: false, flyout: null });
     },
     chooseTool: (tool) => {
       set({ flyout: null, selectedBuildingId: null });
