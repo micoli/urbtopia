@@ -14,6 +14,7 @@ export interface Prefs {
   showTaxBadges: boolean;
   debug: boolean;
   alwaysDay: boolean;
+  signInPrompt: boolean;
   serviceCoverageType: FacilityType;
 }
 
@@ -27,7 +28,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, serviceCoverageType: 'school' };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, serviceCoverageType: 'school' };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -41,6 +42,7 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       showTaxBadges: typeof parsed.showTaxBadges === 'boolean' ? parsed.showTaxBadges : fallback.showTaxBadges,
       debug: typeof parsed.debug === 'boolean' ? parsed.debug : fallback.debug,
       alwaysDay: typeof parsed.alwaysDay === 'boolean' ? parsed.alwaysDay : fallback.alwaysDay,
+      signInPrompt: typeof parsed.signInPrompt === 'boolean' ? parsed.signInPrompt : fallback.signInPrompt,
       serviceCoverageType: typeof parsed.serviceCoverageType === 'string' && isFacilityType(parsed.serviceCoverageType) ? parsed.serviceCoverageType : fallback.serviceCoverageType,
     };
   } catch {
@@ -56,9 +58,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, serviceCoverageType }: Prefs): void {
+function writeStored({ language, layout, traffic, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, signInPrompt, serviceCoverageType }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, serviceCoverageType }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, signInPrompt, serviceCoverageType }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -74,6 +76,7 @@ export interface PrefsStore extends Prefs {
   setShowTaxBadges: (showTaxBadges: boolean) => void;
   setDebug: (debug: boolean) => void;
   setAlwaysDay: (alwaysDay: boolean) => void;
+  setSignInPrompt: (signInPrompt: boolean) => void;
   setServiceCoverageType: (type: FacilityType) => void;
 }
 
@@ -115,6 +118,10 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   },
   setAlwaysDay: (alwaysDay) => {
     set({ alwaysDay });
+    writeStored(get());
+  },
+  setSignInPrompt: (signInPrompt) => {
+    set({ signInPrompt });
     writeStored(get());
   },
   setServiceCoverageType: (serviceCoverageType) => {

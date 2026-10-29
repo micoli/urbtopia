@@ -7,6 +7,7 @@ const base = {
   account: { userId: 'u', email: null },
   status: { kind: 'synced', at: 0 } as const,
   cloudPaused: false,
+  enabled: true,
   dismissed: false,
   dismissedAt: null,
   now: 1_000_000_000_000,
@@ -15,6 +16,10 @@ const base = {
 describe('shouldPromptSignIn', () => {
   it('prompts an anonymous player from the citizen threshold', () => {
     expect(shouldPromptSignIn(base)).toBe(true);
+  });
+
+  it('does not prompt when the player chose never or the e2e mode keeps it away', () => {
+    expect(shouldPromptSignIn({ ...base, enabled: false })).toBe(false);
   });
 
   it('waits for the threshold', () => {
