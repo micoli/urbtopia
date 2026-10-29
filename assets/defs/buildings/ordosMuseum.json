@@ -14,5 +14,6 @@
   "description": {
     "en": "A louvered copper blob resting on a stone mound.",
     "fr": "Une masse de cuivre à lamelles posée sur un tertre de pierre."
-  }
+  },
+  "attraction": 32
 }

@@ -222,3 +222,4 @@ export { FLOW_ENDPOINTS, FLOW_MODES, buildingFlowsOf, flowEndpointsOf, hasTrips,
 export type { BuildingFlow, BuildingFlows, FlowEndpoint, FlowEndpoints, ModeVolumes, PassageBeacon, PassageBeacons } from './analytics/flowEndpoints';
 export type { TripMode } from './traffic/congestion';
 export type { FlowMode } from './analytics/flowEndpoints';
+export { TOURISM, attractionPowerOf, isAttraction, spendingFactor, touristDemand } from './tourism/tourists';

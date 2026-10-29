@@ -15,6 +15,7 @@
     "fr": "Un équipement culturel pour les citoyens proches. Facultatif : les équipements culturels différents cumulent leur bien-être. {reach, select, city {Couvre toute la ville} other {Portée carrée de {side} cases}}, {limit, select, unlimited {capacité illimitée} other {capacité {tier1Capacity} citoyens, jusqu’à {maxTierCapacity} au niveau {tierCount}}}; consomme {power} d’électricité{hasWater, select, yes { et {water} d’eau} other {}}; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs, sans coût de fonctionnement."
   },
   "radius": 10,
+  "attraction": 15,
   "tiers": [
     {
       "model": "buildings-theater-2x2",

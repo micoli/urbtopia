@@ -17,5 +17,6 @@
     "fr": "Un bâtiment de sport avec une piste de 400 m, une fosse de saut en longueur et un tapis de saut à la perche. Il augmente le bien-être des logements à moins de {side} cases (+{wellbeingBonus}) et ne consomme pas d’électricité. Il occupe {width}×{depth} cases ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs."
   },
   "radius": 10,
-  "wellbeingBonus": 8
+  "wellbeingBonus": 8,
+  "attraction": 30
 }

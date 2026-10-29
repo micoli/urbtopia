@@ -1,6 +1,6 @@
 # Attraction definitions and Tourist demand
 
-Status: ready-for-agent
+Status: resolved
 Spec: ../spec.md
 
 ## What to build
@@ -9,6 +9,6 @@ Add an `attraction` field (drawing power, per Tier) to the building definitions 
 
 ## Acceptance criteria
 
-- [ ] Schema and JSON of all Attractions updated; Hotel declares no `attraction`.
-- [ ] Demand function in `src/core`, no DOM or three import, deterministic.
-- [ ] Tests: no Attraction gives no Tourists; Tier raises demand; Hotel raises spending, not demand.
+- [x] Schema and JSON of all Attractions updated; Hotel declares no `attraction`.
+- [x] Demand function in `src/core`, no DOM or three import, deterministic.
+- [x] Tests: no Attraction gives no Tourists; Tier raises demand; Hotel raises spending, not demand.
