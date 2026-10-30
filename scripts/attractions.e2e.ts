@@ -132,6 +132,11 @@ test.describe('football club', () => {
       gameStore.getState().replaceState({ ...state, urbs: 100_000, buildings: [createBuilding(50, 'footballStadium', 64, 64, 0), createBuilding(51, 'home', 56, 64, 0)], nextId: 52 });
       uiStore.getState().select(50);
     });
+    const reach = page.getByRole('checkbox', { name: 'Show reach' });
+    await expect(reach).toBeChecked();
+    await reach.uncheck();
+    await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('urbtopia-prefs')!).showReach)).toBe(false);
+    await reach.check();
     await page.getByRole('button', { name: 'Found a Club' }).click();
     await page.getByRole('button', { name: 'Manage the Club' }).click();
     const dialog = page.getByRole('dialog', { name: 'Club management' });
