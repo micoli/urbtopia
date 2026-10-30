@@ -153,6 +153,13 @@ test.describe('football club', () => {
     await dialog.getByRole('button', { name: 'Play', exact: true }).click();
     await expect.poll(ballAt).not.toBe(kickOff);
     await pitch.screenshot({ path: process.env.PITCH_SHOT ?? 'test-results/pitch.png' });
+    const speed = dialog.getByRole('slider', { name: 'Match speed' });
+    await expect(speed).toHaveAttribute('aria-valuetext', '×1 · about 1:30');
+    await speed.press('ArrowLeft');
+    await expect(speed).toHaveAttribute('aria-valuetext', '×½ · about 3:00');
+    await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('urbtopia-prefs')!).matchSpeed)).toBe(0.5);
+    await page.waitForTimeout(3_000);
+    await expect(dialog.getByText(/^Minute [1-9]$/)).toBeVisible();
     await dialog.getByRole('button', { name: 'Skip to the end' }).click();
     await expect(dialog.getByText('Minute 90')).toBeVisible();
     await dialog.getByRole('tab', { name: /Championship/ }).click();
@@ -200,6 +207,11 @@ test.describe('baseball club', () => {
     await dialog.getByRole('button', { name: 'Play', exact: true }).click();
     await expect.poll(ballAt, { timeout: 15_000 }).not.toBe(first);
     await field.screenshot({ path: process.env.FIELD_SHOT ?? 'test-results/field.png' });
+    await dialog.getByRole('button', { name: 'Pause', exact: true }).click();
+    await page.waitForTimeout(400);
+    const paused = await ballAt();
+    await page.waitForTimeout(2_500);
+    expect(await ballAt()).toBe(paused);
     await dialog.getByRole('button', { name: 'Change pitcher' }).first().click();
     await dialog.getByRole('button', { name: 'Skip to the end' }).click();
     await expect(dialog.getByText(/^Inning (9|1[0-2])$/)).toBeVisible();

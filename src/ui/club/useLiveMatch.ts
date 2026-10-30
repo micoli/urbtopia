@@ -8,6 +8,7 @@ export function useLiveMatch(buildingId: number, lastStep: number, tickMs: numbe
   const [playing, setPlaying] = useState(false);
   const [decisions, setDecisions] = useState<MatchDecision[]>([]);
   const [recorded, setRecorded] = useState(false);
+  const [skipped, setSkipped] = useState(false);
 
   useEffect(() => {
     if (!playing) return;
@@ -24,9 +25,16 @@ export function useLiveMatch(buildingId: number, lastStep: number, tickMs: numbe
     playing,
     decisions,
     recorded,
+    skipped,
     finished: step >= lastStep,
-    toggle: () => setPlaying(!playing),
-    skip: () => setStep(lastStep),
+    toggle: () => {
+      if (!playing && step === 0) setStep(1);
+      setPlaying(!playing);
+    },
+    skip: () => {
+      setSkipped(true);
+      setStep(lastStep);
+    },
     decide: (decision: MatchDecision) => {
       setRecorded(false);
       setDecisions([...decisions, decision]);

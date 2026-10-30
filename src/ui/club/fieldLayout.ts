@@ -21,6 +21,16 @@ export type Play = Extract<BaseballEvent, { outs: number }>;
 
 export const isPlay = (event: BaseballEvent): event is Play => event.type !== 'change' && event.type !== 'approach';
 
+// An inning is simulated whole, then played out one play at a time: what the player may know once a number of plays have been shown. The last at-bat of a tie has no play, so the final score comes from the state.
+export function replayUpTo(state: Pick<BaseballState, 'events' | 'score' | 'inning'>, shown: number): Pick<BaseballState, 'events' | 'score' | 'inning'> {
+  const plays = state.events.filter(isPlay);
+  if (shown >= plays.length) return state;
+  let seen = 0;
+  const score: [number, number] = [0, 0];
+  for (const play of plays.slice(0, shown)) score[play.side] += play.runs;
+  return { events: state.events.filter(event => !isPlay(event) || ++seen <= shown), score, inning: plays[Math.max(0, shown - 1)]!.inning };
+}
+
 const noise = (seed: number, index: number, salt: number): number => {
   const value = Math.sin(seed * 0.001 + index * 12.9898 + salt * 78.233) * 43758.5453;
   return value - Math.floor(value);

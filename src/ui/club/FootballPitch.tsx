@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { Formation, MatchState } from '../../core';
 import { t } from '../../i18n/t';
 import { PITCH, ballSpot, pitchPlayers } from './pitchLayout';
@@ -6,17 +7,18 @@ interface FootballPitchProps {
   state: MatchState;
   formation: Formation;
   seed: number;
+  minuteMs: number;
 }
 
 const GOAL_DEPTH = 2;
 const BOX = { depth: 16.5, height: 40.3 };
 const CENTRE_RADIUS = 9.15;
 
-export function FootballPitch({ state, formation, seed }: FootballPitchProps) {
+export function FootballPitch({ state, formation, seed, minuteMs }: FootballPitchProps) {
   const ball = ballSpot(state, seed);
   const scoring = state.events.some(event => event.type === 'goal' && event.minute === state.minute);
   return (
-    <svg className="club-pitch" viewBox={`${-GOAL_DEPTH} 0 ${PITCH.width + 2 * GOAL_DEPTH} ${PITCH.height}`} role="img" aria-label={t('club.pitch')}>
+    <svg className="club-pitch" viewBox={`${-GOAL_DEPTH} 0 ${PITCH.width + 2 * GOAL_DEPTH} ${PITCH.height}`} role="img" aria-label={t('club.pitch')} style={{ '--club-minute': `${minuteMs}ms` } as CSSProperties}>
       <rect className="club-pitch__grass" x={-GOAL_DEPTH} y={0} width={PITCH.width + 2 * GOAL_DEPTH} height={PITCH.height} />
       {Array.from({ length: 7 }, (_, index) => <rect key={index} className="club-pitch__stripe" x={(index * 2 * PITCH.width) / 14} y={0} width={PITCH.width / 14} height={PITCH.height} />)}
       <g className="club-pitch__lines">

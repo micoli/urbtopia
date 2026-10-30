@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BASEBALL_RULES, createClub, playBaseball } from '../../core';
-import { BASES, FIELD, HOME, MOUND, ballSpot, fieldersOf, isPlay, runnerSpots, type Play } from './fieldLayout';
+import { BASES, FIELD, HOME, MOUND, ballSpot, fieldersOf, isPlay, replayUpTo, runnerSpots, type Play } from './fieldLayout';
 
 const club = createClub(BASEBALL_RULES, 'Harbour Herons', 'field');
 const opponent = { name: 'Northgate Wolves', strength: 55, points: 0 };
@@ -8,6 +8,32 @@ const state = playBaseball(club, opponent, 4, []);
 const plays = state.events.filter(isPlay);
 const inside = (spot: { x: number; y: number }) => spot.x >= 0 && spot.x <= FIELD && spot.y >= 0 && spot.y <= FIELD;
 const play = (type: Play['type']): Play => plays.find(candidate => candidate.type === type) ?? ({ type, inning: 1, half: 0, side: 0, player: 'A', runs: 0, outs: 0, bases: [false, false, false] } as Play);
+
+describe('replay of an inning', () => {
+  it('tells nothing before the first play', () => {
+    const replay = replayUpTo(state, 0);
+    expect(replay.events.filter(isPlay)).toEqual([]);
+    expect(replay.score).toEqual([0, 0]);
+    expect(replay.inning).toBe(plays[0]!.inning);
+  });
+
+  it('counts only the runs of the plays shown', () => {
+    const scoring = plays.findIndex(candidate => candidate.runs > 0);
+    const before = replayUpTo(state, scoring);
+    const after = replayUpTo(state, scoring + 1);
+    expect(after.score[plays[scoring]!.side]).toBe(before.score[plays[scoring]!.side] + plays[scoring]!.runs);
+    expect(after.events.filter(isPlay)).toHaveLength(scoring + 1);
+  });
+
+  it('ends on the real state once every play is shown', () => {
+    expect(replayUpTo(state, plays.length)).toBe(state);
+  });
+
+  it('keeps the decisions in the feed whatever the plays shown', () => {
+    const change = { inning: 1, half: 0, side: 0, type: 'approach', approach: 'power' } as const;
+    expect(replayUpTo({ ...state, events: [change, ...state.events] }, 0).events).toEqual([change]);
+  });
+});
 
 describe('field', () => {
   it('has the bases in a diamond around the mound, home plate at the bottom', () => {

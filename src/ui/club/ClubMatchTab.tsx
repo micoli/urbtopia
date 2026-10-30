@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
+import { useStore } from 'zustand';
 import { FOOTBALL, effectiveLineup, fixtureSeedOf, isFormation, nextFixture, playUntil, type Building } from '../../core';
+import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { ClubMatchBar } from './ClubMatchBar';
@@ -8,7 +10,7 @@ import { ClubMatchFeed } from './ClubMatchFeed';
 import { FootballPitch } from './FootballPitch';
 import { useLiveMatch } from './useLiveMatch';
 
-const TICK_MS = 120;
+const MINUTE_MS = 1_000;
 
 const formationOf = (club: NonNullable<Building['club']>) => {
   const { formation } = effectiveLineup(club);
@@ -18,7 +20,8 @@ const formationOf = (club: NonNullable<Building['club']>) => {
 export function ClubMatchTab({ building }: { building: Building }) {
   const club = building.club!;
   const now = useGame(store => store.state.lastSeen);
-  const live = useLiveMatch(building.id, FOOTBALL.minutes, TICK_MS);
+  const minuteMs = MINUTE_MS / useStore(prefsStore, store => store.matchSpeed);
+  const live = useLiveMatch(building.id, FOOTBALL.minutes, minuteMs);
   const fixture = club.championship && nextFixture(club.championship);
   const index = fixture ? club.championship!.fixtures.indexOf(fixture) : -1;
   const opponent = fixture ? club.championship!.opponents[fixture.opponent]! : null;
@@ -30,8 +33,8 @@ export function ClubMatchTab({ building }: { building: Building }) {
     <>
       <h3>{state.sides[0].name} {state.score[0]} – {state.score[1]} {opponent.name}</h3>
       <p>{t('club.match.minute').replace('{minute}', `${state.minute}`)}</p>
-      <ClubMatchBar live={live} />
-      <FootballPitch state={state} formation={formationOf(club)} seed={fixtureSeedOf(club, index)} />
+      <ClubMatchBar live={live} durationMs={FOOTBALL.minutes * minuteMs} />
+      <FootballPitch state={state} formation={formationOf(club)} seed={fixtureSeedOf(club, index)} minuteMs={minuteMs} />
       {live.finished ? null : <ClubMatchControls state={state} onDecide={live.decide} />}
       <ClubMatchFeed events={state.events} />
     </>

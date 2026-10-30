@@ -2,18 +2,17 @@ import type { BaseballState } from '../../core';
 import { t } from '../../i18n/t';
 import { baseballEventText } from './BaseballFeed';
 import { BASES, FIELD, HOME, MOUND, ballSpot, fieldersOf, isPlay, runnerSpots } from './fieldLayout';
-import { useEventCursor } from './useEventCursor';
 
 interface BaseballFieldProps {
   state: BaseballState;
   seed: number;
+  shown: number;
 }
 
 const place = ({ x, y }: { x: number; y: number }) => ({ transform: `translate(${x}px, ${y}px)` });
 
-export function BaseballField({ state, seed }: BaseballFieldProps) {
+export function BaseballField({ state, seed, shown }: BaseballFieldProps) {
   const plays = state.events.filter(isPlay);
-  const shown = useEventCursor(plays.length);
   const play = shown > 0 ? plays[shown - 1] : undefined;
   const batting = play?.side ?? 1;
   const defence = state.sides[batting === 0 ? 1 : 0];

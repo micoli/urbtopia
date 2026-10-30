@@ -14,6 +14,7 @@ Attractions draw Tourists who earn Urbs and load the transport network; Gatherin
 - Crowd arrives in the hour before and leaves in the hour after (game hour). Poor transit never loses Tourists: it adds Congestion and a temporary, moderate Well-being malus nearby. Never blocking.
 - Concert hall Shows: 100 invented Artists (`artists.json`), Fame 1 to 5. The Fame ceiling follows mean Well-being and population. The player picks one among 3 offered. Higher Fame: bigger crowd, higher Ticket, higher fee.
 - Clubs: football and baseball. One sport-agnostic engine (Squad of individual players with age and contract, budget fed by stadium Takings, Championship, ranking, prize); sports supply positions, formations and the Match simulation. First version: Squad, lineup, yearly recruitment of 6 players from a market; 7 aggregate opposing clubs with invented names. Full transfer market later, same save format.
+- A Match on the management page plays at a speed the player sets with a slider, about 90 seconds by default, from 6 minutes to 12 seconds; the choice is kept in the preferences. At baseball the score and the feed follow the plays shown on the field.
 - Championship: one game year, about 10 Matches. Prize in Urbs and extra Tourists at the end. No relegation, no bankruptcy: a Club in debt loses its best players.
 - Football: 18 players, 11 starters, 4 formations, Match streamed as a text feed with tactic changes and 3 substitutions. Baseball: 9 starters, starting pitcher chosen per Match, batting order, 9 innings.
 

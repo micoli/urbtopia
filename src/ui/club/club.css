@@ -108,6 +108,24 @@
   list-style: none;
 }
 
+.club-speed {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.club-speed input {
+  flex: 1;
+  min-width: 8rem;
+  max-width: 20rem;
+  accent-color: var(--color-accent);
+}
+
+.club-speed output {
+  font-variant-numeric: tabular-nums;
+}
+
 .club-pitch {
   width: 100%;
   max-width: 56rem;
@@ -130,7 +148,7 @@
 
 .club-pitch__player,
 .club-pitch__ball {
-  transition: transform var(--duration-fast) linear;
+  transition: transform var(--club-minute, var(--duration-fast)) linear;
 }
 
 .club-pitch__player circle {

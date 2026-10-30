@@ -42,6 +42,8 @@ describe('Baseball match tab', () => {
     expect(html).toContain(t('club.match.play'));
     expect(html).toContain(t('club.approach'));
     expect(html).toContain(t('club.match.changesLeft').replace('{count}', '3'));
+    expect(html).toContain(t('club.match.speed'));
+    expect(html).toContain('×1');
   });
 });
 
@@ -59,7 +61,7 @@ describe('Baseball field', () => {
   it('draws the diamond with nine fielders and the ball on the mound before the first play', () => {
     const club = field().club!;
     const state = playBaseball(club, club.championship!.opponents[0]!, 3, [], 0);
-    const html = renderToStaticMarkup(<BaseballField state={state} seed={3} />);
+    const html = renderToStaticMarkup(<BaseballField state={state} seed={3} shown={0} />);
     expect(html).toContain(t('club.field'));
     expect(html).toContain(t('club.field.empty'));
     expect(html.match(/club-field__player /g)).toHaveLength(9);
