@@ -18,6 +18,7 @@ import { ModelLibrary } from './modelLibrary';
 import { facilityFootprint, modelOfBuilding, renderItemsOf, type HarvestedTile } from './renderItems';
 import { ServiceVehicleLayer } from './ServiceVehicleLayer';
 import { CongestionLayer } from './CongestionLayer';
+import { AttractionCrowdLayer } from './AttractionCrowdLayer';
 import { PedestrianLayer } from './PedestrianLayer';
 import { BoatLayer } from './BoatLayer';
 import { BridgeLayer } from './BridgeLayer';
@@ -87,6 +88,7 @@ export class GameScene {
   private congestion = new CongestionLayer();
   private traffic = new TrafficLayer(this.library);
   private pedestrians = new PedestrianLayer();
+  private attractionCrowd = new AttractionCrowdLayer();
   private serviceVehicles = new ServiceVehicleLayer(this.library);
   private boats = new BoatLayer(this.library);
   private bridges = new BridgeLayer(this.library);
@@ -145,7 +147,7 @@ export class GameScene {
     this.scene.environmentIntensity = 0.25;
     const sun = this.sun, sky = this.sky;
     sun.position.set(20, 40, 10);
-    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root, this.analyticsLayer.root);
+    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.attractionCrowd.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root, this.analyticsLayer.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.streetView = new StreetViewController(canvas);
@@ -236,6 +238,7 @@ export class GameScene {
   setTrafficEnabled(enabled: boolean): void {
     this.traffic.setEnabled(enabled);
     this.pedestrians.setEnabled(enabled);
+    this.attractionCrowd.setEnabled(enabled);
     this.serviceVehicles.setEnabled(enabled);
   }
 
@@ -351,6 +354,7 @@ export class GameScene {
     this.congestion.dispose();
     this.traffic.dispose();
     this.pedestrians.dispose();
+    this.attractionCrowd.dispose();
     this.serviceVehicles.dispose();
     this.boats.dispose();
     this.bridges.dispose();
@@ -382,6 +386,7 @@ export class GameScene {
         this.congestion.sync(state);
         this.traffic.sync(state);
     this.pedestrians.sync(state);
+        this.attractionCrowd.sync(state);
         this.serviceVehicles.sync(state);
         this.boats.sync(state);
         this.bridges.sync(state, roadTints);
@@ -598,6 +603,7 @@ export class GameScene {
     this.ecologyLayer.update(delta);
     this.traffic.priorityTiles = this.ecologyLayer.transit.priorityTiles;
     this.pedestrians.update(delta);
+    this.attractionCrowd.update(delta);
     this.bridges.update(delta, this.boats.waiting, this.boats.occupied, [...this.traffic.vehicleList, ...this.serviceVehicles.activeVehicles]);
     this.traffic.stopTiles = new Set([...this.pedestrians.crossingTiles, ...this.bridges.stopTiles]);
     this.serviceVehicles.trafficVehicles = this.traffic.vehicleList;

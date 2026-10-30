@@ -8,7 +8,7 @@ import { isBypassTutorialRequested } from './bypassTutorialFlag';
 import { tutorialEndToast, type CommandGateway } from './commandGateway';
 import { liveCommandGateway } from './liveCommandGateway';
 import { readOnlyStore } from './readOnlyStore';
-import { toastKeyForEvents, toastStore } from './toastStore';
+import { announceEvents, toastStore } from './toastStore';
 
 function announceTutorialEnd(before: GameState, after: GameState) {
   const toast = tutorialEndToast(before, after);
@@ -38,8 +38,7 @@ export function createGameStore(initial: GameState, gateway: CommandGateway = li
       const { state, deletionUndo } = get();
       if (!deletionUndo) return;
       const result = advance(state, Date.now());
-      const toast = toastKeyForEvents(result.events);
-      if (toast) toastStore.getState().show(toast);
+      announceEvents(result.events, result.state);
       set({ state: restoreDeletion(result.state, deletionUndo), deletionUndo: null, lastError: null, lastChange: 'command' });
     },
     lastError: null,
@@ -56,8 +55,7 @@ export function createGameStore(initial: GameState, gateway: CommandGateway = li
     tick: (tickNow) => {
       if (readOnlyStore.getState().readOnly) return;
       const result = advance(get().state, tickNow);
-      const toast = toastKeyForEvents(result.events);
-      if (toast) toastStore.getState().show(toast);
+      announceEvents(result.events, result.state);
       announceTutorialEnd(get().state, result.state);
       set({ state: result.state, lastChange: 'tick' });
     },

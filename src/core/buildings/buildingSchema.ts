@@ -44,13 +44,16 @@ const repeatable = {
   priceFactor: z.number().min(1).optional(),
 };
 
+// How many Tourists a day the building draws at Tier 1; the Tourism rules raise it with the Tier.
+const attractive = { attraction: z.number().positive().optional() };
+
 const placed = { ...common, ...sited, footprint: pairSchema };
 
 // An Annual event item names its event and is sold in the "Annual events" section; it can only be newly built while a window of that event is open.
-const standardBuilding = z.strictObject({ kind: z.literal('standard'), ...placed, annualEvent: filled.optional() });
+const standardBuilding = z.strictObject({ kind: z.literal('standard'), ...placed, ...attractive, annualEvent: filled.optional() });
 
 // A sport venue's only effect is a Well-being radius.
-const sportBuilding = z.strictObject({ kind: z.literal('sport'), ...placed, radius: z.int().min(1), wellbeingBonus: count });
+const sportBuilding = z.strictObject({ kind: z.literal('sport'), ...placed, ...attractive, radius: z.int().min(1), wellbeingBonus: count });
 
 const greenTierShape = { radius: z.int().min(1), cooling: amount, biodiversity: amount, wellbeing: amount, scale: z.number().positive() };
 const greenTierRequired = ['radius', 'cooling', 'biodiversity', 'wellbeing'] as const;
@@ -152,6 +155,7 @@ const facilityBuilding = z.strictObject({
   kind: z.literal('facility'),
   ...identity,
   ...sited,
+  ...attractive,
   ...panelled,
   category: z.enum(SERVICE_CATEGORIES),
   // The awning, overhang or parasol set over the entrance, for models that have none of their own.
@@ -173,6 +177,7 @@ const casinoBuilding = z.strictObject({
   kind: z.literal('casino'),
   ...identity,
   ...sited,
+  ...attractive,
   ...panelled,
   stakeSteps: z.array(z.int().min(1)).min(1),
   gameMinTier: z.strictObject(Object.fromEntries(CASINO_GAMES.map(game => [game, z.int().min(1)])) as Record<(typeof CASINO_GAMES)[number], z.ZodInt>),
@@ -212,6 +217,7 @@ const marinaBuilding = z.strictObject({
   kind: z.literal('marina'),
   ...identity,
   ...sited,
+  ...attractive,
   ...panelled,
   tiers: tiersOf({ ...homeLook, boats: z.int().min(1) }, ['model', 'footprint', 'boats']),
 });

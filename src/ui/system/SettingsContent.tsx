@@ -15,6 +15,8 @@ import { PreferencesContent } from './PreferencesContent';
 import { DifficultySettings } from './DifficultySettings';
 import { PanelHeader } from '../common/PanelHeader';
 
+const TIME_SKIPS = [1, 6, 12] as const;
+
 export function SettingsContent() {
   const toggle = useUi((store) => store.toggleSettings);
   const seed = useGame((store) => store.state.seed);
@@ -45,9 +47,16 @@ export function SettingsContent() {
             {t('settings.install')}
           </ActionButton>
         ) : null}
-          <ActionButton onClick={() => skipTime(12)} disabled={challengeRunning} title={challengeRunning ? t('error.challengeInProgress') : undefined}>
-            {t('settings.skip12')}
+        {TIME_SKIPS.map((hours) => (
+          <ActionButton
+            key={hours}
+            onClick={() => skipTime(hours)}
+            disabled={challengeRunning}
+            title={challengeRunning ? t('error.challengeInProgress') : undefined}
+          >
+            {t(`settings.skip${hours}`)}
           </ActionButton>
+        ))}
         <ActionButton onClick={exportCurrentCity}>
           {t('settings.export')}
         </ActionButton>

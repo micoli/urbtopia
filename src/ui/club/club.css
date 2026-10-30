@@ -1,0 +1,290 @@
+.club-view {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-16);
+  overflow-y: auto;
+  background: var(--color-venue);
+  color: var(--color-text);
+}
+
+.club-view__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.club-view__header h2 {
+  margin: 0;
+}
+
+.club-view__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.club-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.club-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.club-row__main {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 2fr 1.5fr repeat(4, 1fr);
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-4);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--white-a06);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.club-row--selected .club-row__main {
+  background: var(--color-accent-a28);
+}
+
+.club-table {
+  border-collapse: collapse;
+}
+
+.club-table th,
+.club-table td {
+  padding: var(--space-4) var(--space-8);
+  text-align: left;
+}
+
+.club-table__mine {
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+}
+
+.club-feed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.club-feed__event--goal {
+  color: var(--color-positive);
+  font-weight: var(--font-weight-semibold);
+}
+
+.club-feed__event--red {
+  color: var(--color-danger-text);
+}
+
+.club-feed__event--away {
+  color: var(--color-text-muted);
+}
+
+.club-actions,
+.club-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.club-speed {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.club-speed input {
+  flex: 1;
+  min-width: 8rem;
+  max-width: 20rem;
+  accent-color: var(--color-accent);
+}
+
+.club-speed output {
+  font-variant-numeric: tabular-nums;
+}
+
+.club-pitch {
+  width: 100%;
+  max-width: 56rem;
+  border-radius: var(--radius-sm);
+}
+
+.club-pitch__grass {
+  fill: var(--color-pitch);
+}
+
+.club-pitch__stripe {
+  fill: var(--color-pitch-stripe);
+}
+
+.club-pitch__lines {
+  fill: none;
+  stroke: var(--color-pitch-line);
+  stroke-width: 0.3;
+}
+
+.club-pitch__player,
+.club-pitch__ball {
+  transition: transform var(--club-minute, var(--duration-fast)) linear;
+}
+
+.club-pitch__player circle {
+  stroke: var(--color-white);
+  stroke-width: 0.3;
+}
+
+.club-pitch__player--home circle {
+  fill: var(--color-team-home);
+}
+
+.club-pitch__player--away circle {
+  fill: var(--color-team-away);
+}
+
+.club-pitch__player text {
+  fill: var(--color-ink);
+  font-size: 1.8px;
+  font-weight: var(--font-weight-semibold);
+  text-anchor: middle;
+}
+
+.club-pitch__ball {
+  fill: var(--color-white);
+  stroke: var(--color-ink);
+  stroke-width: 0.2;
+}
+
+.club-pitch__ball--goal {
+  fill: var(--color-warning);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .club-pitch__player,
+  .club-pitch__ball {
+    transition: none;
+  }
+}
+
+.club-field {
+  width: 100%;
+  max-width: 36rem;
+  margin: 0;
+}
+
+.club-field svg {
+  width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.club-field__grass {
+  fill: var(--color-pitch);
+}
+
+.club-field__fence {
+  fill: none;
+  stroke: var(--color-pitch-line);
+  stroke-width: 0.6;
+}
+
+.club-field__dirt {
+  fill: var(--color-dirt);
+}
+
+.club-field__infield {
+  fill: var(--color-pitch-stripe);
+  stroke: var(--color-pitch-line);
+  stroke-width: 0.4;
+}
+
+.club-field__mound {
+  fill: var(--color-dirt);
+}
+
+.club-field__base {
+  fill: var(--color-white);
+}
+
+.club-field__base--taken {
+  fill: var(--color-warning);
+}
+
+.club-field__player,
+.club-field__runner,
+.club-field__batter,
+.club-field__ball {
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.club-field__player circle {
+  stroke: var(--color-white);
+  stroke-width: 0.3;
+}
+
+.club-field__player--home circle {
+  fill: var(--color-team-home);
+}
+
+.club-field__player--away circle {
+  fill: var(--color-team-away);
+}
+
+.club-field__player text {
+  fill: var(--color-ink);
+  font-size: 2.2px;
+  font-weight: var(--font-weight-semibold);
+  text-anchor: middle;
+}
+
+.club-field__runner--home {
+  fill: var(--color-team-home);
+  stroke: var(--color-white);
+  stroke-width: 0.3;
+}
+
+.club-field__runner--away {
+  fill: var(--color-team-away);
+  stroke: var(--color-white);
+  stroke-width: 0.3;
+}
+
+.club-field__ball {
+  fill: var(--color-white);
+  stroke: var(--color-ink);
+  stroke-width: 0.25;
+}
+
+.club-field__ball--homer {
+  fill: var(--color-warning);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .club-field__player,
+  .club-field__runner,
+  .club-field__batter,
+  .club-field__ball {
+    transition: none;
+  }
+}

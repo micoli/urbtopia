@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, newGame, type GameState } from '../core';
 import { parseEnvelope, serializeEnvelope } from './envelope';
-import { checkGameState } from './validate';
+import { checkGameState, validateGameState } from './validate';
 
 const T0 = 1_700_000_000_000;
 const state = newGame({ seed: 'amber-fox-4821', now: T0 });
@@ -52,5 +52,24 @@ describe('envelope failure detail', () => {
   it('carries the reason of an invalid state', () => {
     const text = serializeEnvelope({ ...state, urbs: -1 }, T0);
     expect(parseEnvelope(text)).toEqual({ ok: false, reason: 'invalid-state', detail: 'urbs' });
+  });
+});
+
+describe('Attraction data', () => {
+  const museum = () => {
+    const state = newGame({ seed: 'attraction-save', now: 0 });
+    return { ...state, buildings: [{ ...createBuilding(900, 'masMuseum', 60, 60, 0), attraction: { ticket: 2, takings: 12.5, cooldownUntil: 5, gathering: { kind: 'show' as const, startsAt: 1, endsAt: 4, cost: 10, quality: 0.5, crowd: 100, tourists: 40, citizens: 60, revenue: 800 } } }], nextId: 901 };
+  };
+
+  it('keeps the Ticket, Takings and Gathering of an Attraction through a save', () => {
+    expect(validateGameState(JSON.parse(JSON.stringify(museum())))?.buildings[0]?.attraction).toEqual(museum().buildings[0]!.attraction);
+  });
+
+  it('refuses an Attraction field on a building that draws no Tourists, or a Ticket out of range', () => {
+    const home = { ...museum(), buildings: [{ ...createBuilding(900, 'home', 60, 60, 0), attraction: { takings: 0 } }] };
+    expect(validateGameState(home)).toBeNull();
+    const badTicket = museum();
+    badTicket.buildings[0]!.attraction.ticket = 3;
+    expect(validateGameState(badTicket)).toBeNull();
   });
 });

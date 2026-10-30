@@ -1,0 +1,432 @@
+.tourism-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-10);
+}
+
+.tourism-kpis > div {
+  padding: var(--space-8) var(--space-10);
+  border-radius: var(--radius-lg);
+  background: var(--white-a08);
+}
+
+.tourism-kpis > div > span {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.tourism-kpis strong {
+  font-size: var(--font-size-2xl);
+  font-variant-numeric: tabular-nums;
+}
+
+.tourism-label {
+  margin: var(--space-10) 0 var(--space-6);
+  font-weight: var(--font-weight-semibold);
+}
+
+.tourism-help {
+  margin: var(--space-4) 0 var(--space-8);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.35;
+}
+
+.ticket-choice button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-4);
+}
+
+.ticket-choice small {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+}
+
+.ticket-price {
+  font-size: var(--font-size-xl);
+}
+
+.takings-meter,
+.show-forecast,
+.tourist-arrivals {
+  margin-top: var(--space-10);
+}
+
+.takings-meter-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-8);
+  margin-bottom: var(--space-4);
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.takings-meter .progress-bar,
+.show-forecast .progress-bar {
+  display: block;
+  width: 100%;
+}
+
+.mode-bar {
+  display: flex;
+  gap: var(--space-2);
+  height: var(--space-8);
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+}
+
+.mode-bar span {
+  flex-basis: 0;
+}
+
+.mode-bar [data-mode='car'] { background: var(--color-series-orange); }
+.mode-bar [data-mode='walk'] { background: var(--color-series-green); }
+.mode-bar [data-mode='transit'] { background: var(--color-series-blue); }
+
+.mode-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-10);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-size-sm);
+}
+
+.mode-legend [data-mode='car'] svg { color: var(--color-series-orange); }
+.mode-legend [data-mode='walk'] svg { color: var(--color-series-green); }
+.mode-legend [data-mode='transit'] svg { color: var(--color-series-blue); }
+
+.show-section {
+  margin-top: var(--space-12);
+  padding-top: var(--space-12);
+  border-top: 1px solid var(--white-a15);
+}
+
+.show-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  margin: 0 0 var(--space-8);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+.artist-choice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.artist-choice button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-2) var(--space-8);
+  padding: var(--space-8) var(--space-10);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--white-a10);
+  color: inherit;
+  text-align: left;
+}
+
+.artist-choice button[aria-checked='true'] {
+  border-color: var(--color-accent);
+  background: var(--white-a16);
+}
+
+.artist-choice small {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.artist-name {
+  font-weight: var(--font-weight-semibold);
+}
+
+.fame-stars {
+  display: inline-flex;
+  justify-self: end;
+  gap: var(--space-2);
+  color: var(--color-urbs);
+  font-size: var(--font-size-sm);
+}
+
+.fame-stars [data-lit='false'] {
+  opacity: 0.35;
+}
+
+.artist-choice [data-net] {
+  justify-self: end;
+  font-weight: var(--font-weight-semibold);
+}
+
+[data-net='gain'] { color: var(--color-positive); }
+[data-net='loss'] { color: var(--color-danger-text); }
+
+.artist-choice small[data-net='gain'] { color: var(--color-positive); }
+.artist-choice small[data-net='loss'] { color: var(--color-danger-text); }
+
+.show-net {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: var(--space-6) 0;
+  padding: var(--space-8) var(--space-10);
+  border-radius: var(--radius-lg);
+  background: var(--white-a08);
+}
+
+.show-net strong {
+  font-size: var(--font-size-xl);
+}
+
+.show-starts {
+  margin-top: var(--space-10);
+}
+
+.show-starts .choice-chips button {
+  min-width: var(--tap);
+  padding: 0 var(--space-6);
+}
+
+.gathering-status {
+  padding: var(--space-10) var(--space-12);
+  border-radius: var(--radius-lg);
+  background: var(--white-a08);
+}
+
+.gathering-status[data-phase='live'] {
+  background: var(--white-a14);
+  box-shadow: inset 0 0 0 2px var(--color-celebration);
+}
+
+.gathering-status-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  margin: 0 0 var(--space-8);
+  font-size: var(--font-size-lg);
+}
+
+.gathering-status-title svg {
+  color: var(--color-celebration);
+}
+
+.gathering-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: 0 0 var(--space-8);
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-size-2xs);
+  text-align: center;
+}
+
+.gathering-steps li {
+  padding-top: var(--space-6);
+  border-top: 3px solid var(--white-a18);
+  color: var(--color-text-muted);
+}
+
+.gathering-steps [data-state='done'] {
+  border-top-color: var(--color-accent);
+}
+
+.gathering-steps [data-state='current'] {
+  border-top-color: var(--color-celebration);
+  color: var(--color-text);
+  font-weight: var(--font-weight-bold);
+}
+
+.gathering-countdown {
+  margin: 0 0 var(--space-8);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
+}
+
+.gathering-result {
+  display: flex;
+  gap: var(--space-8);
+  margin: var(--space-10) 0 0;
+  padding: var(--space-8) var(--space-10);
+  border-radius: var(--radius-lg);
+  background: var(--white-a06);
+  font-size: var(--font-size-sm);
+}
+
+.gathering-result svg {
+  flex-shrink: 0;
+  color: var(--color-urbs);
+}
+
+.gathering-badge {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: var(--space-16);
+  padding: var(--space-4) var(--space-10);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-solid);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  z-index: 5;
+}
+
+.gathering-badge svg {
+  color: var(--color-celebration);
+}
+
+.gathering-badge small {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.gathering-badge[data-phase='live'] {
+  background: var(--color-celebration);
+  color: var(--color-on-accent);
+  animation: gathering-pulse calc(var(--duration-base) * 7) var(--ease-out) infinite alternate;
+}
+
+.gathering-badge[data-phase='live'] svg,
+.gathering-badge[data-phase='live'] small {
+  color: inherit;
+}
+
+@keyframes gathering-pulse {
+  from { scale: 1; }
+  to { scale: 1.08; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gathering-badge[data-phase='live'] {
+    animation: none;
+  }
+}
+
+.toast-action {
+  margin-left: var(--space-10);
+}
+
+.tourism-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-8);
+  margin: var(--space-12) 0;
+}
+
+.tourism-overview > div {
+  padding: var(--space-10) var(--space-12);
+  border-radius: var(--radius-lg);
+  background: var(--white-a06);
+}
+
+.tourism-overview > div > span {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.tourism-overview strong {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: var(--font-size-2xl);
+  font-variant-numeric: tabular-nums;
+}
+
+.tourism-overview small {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.tourism-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin: var(--space-6) 0 var(--space-12);
+  padding: 0;
+  list-style: none;
+}
+
+.tourism-advice li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-10);
+  border-radius: var(--radius-lg);
+  background: var(--white-a06);
+}
+
+.tourism-advice li > svg {
+  flex-shrink: 0;
+  color: var(--color-urbs);
+}
+
+.tourism-advice li > span {
+  flex: 1;
+}
+
+.tourism-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.6fr) repeat(2, minmax(56px, auto)) minmax(90px, 1fr) auto;
+  align-items: center;
+  gap: var(--space-10);
+  padding: var(--space-8) var(--space-10);
+  border-radius: var(--radius-lg);
+  background: var(--white-a06);
+}
+
+.tourism-row-name {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tourism-row-name small {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+}
+
+.tourism-row-stat {
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tourism-row .progress-bar {
+  display: block;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .tourism-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .tourism-row-name,
+  .tourism-row .progress-bar {
+    grid-column: 1 / -1;
+  }
+}

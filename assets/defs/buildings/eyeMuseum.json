@@ -14,5 +14,6 @@
   "description": {
     "en": "A white faceted shell on the waterfront, with a glass front and a tall billboard tower.",
     "fr": "Une coque blanche à facettes en bord d’eau, avec une façade vitrée et une haute tour-panneau."
-  }
+  },
+  "attraction": 50
 }

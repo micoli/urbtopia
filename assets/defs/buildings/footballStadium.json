@@ -17,5 +17,6 @@
     "fr": "Un bâtiment de sport avec une pelouse rayée, des gradins couverts et des bancs d’entraîneurs. Il augmente le bien-être des logements à moins de {side} cases (+{wellbeingBonus}) et ne consomme pas d’électricité. Il occupe {width}×{depth} cases ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs."
   },
   "radius": 16,
-  "wellbeingBonus": 15
+  "wellbeingBonus": 15,
+  "attraction": 130
 }

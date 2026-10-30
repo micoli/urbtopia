@@ -1,4 +1,5 @@
 import type { MDXContent } from 'mdx/types';
+import { isFlagEnabled, type FlagId } from '../../featureFlags/featureFlags';
 import type { Language } from '../../i18n/prefsStore';
 
 export type ArticleSection = 'gettingStarted' | 'mechanics' | 'glossary';
@@ -7,6 +8,8 @@ export interface ArticleMeta {
   title: string;
   summary: string;
   order: number;
+  // The feature flag the article documents: it is left out of the Guide while the flag is off.
+  flag?: FlagId;
 }
 
 interface ArticleModule {
@@ -43,7 +46,10 @@ export function articlesOf(modules: Record<string, ArticleModule>): Article[] {
   return [...articles.values()].sort((a, b) => a.translations.en!.meta.order - b.translations.en!.meta.order);
 }
 
-export const ARTICLES: readonly Article[] = articlesOf(import.meta.glob<ArticleModule>('./*/*.mdx', { eager: true }));
+export const ARTICLES: readonly Article[] = articlesOf(import.meta.glob<ArticleModule>('./*/*.mdx', { eager: true })).filter(article => {
+  const { flag } = article.translations.en!.meta;
+  return flag === undefined || isFlagEnabled(flag);
+});
 
 export const translationOf = (article: Article, language: Language): ArticleModule => article.translations[language] ?? article.translations.en!;
 

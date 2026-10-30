@@ -1,3 +1,4 @@
+import { shiftAttractionTimers } from '../tourism/gatheringWindow';
 import { shiftCropTimers } from '../farming/growth';
 import { citizensOf } from '../buildings/city';
 import { RUSH, SHOP, TAX } from './economy';
@@ -156,10 +157,10 @@ function shiftBuildingTimers(state: GameState, shiftMs: number): GameState {
   return {
     ...state,
     market,
-    buildings: state.buildings.map((building) => ({
+    buildings: state.buildings.map((building) => shiftAttractionTimers({
       ...building,
       queue: building.queue.map((entry) => (entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + shiftMs })),
       stacks: building.stacks.map((stack) => (stack.nextSaleAt === null ? stack : { ...stack, nextSaleAt: stack.nextSaleAt + shiftMs })),
-    })),
+    }, shiftMs)),
   };
 }

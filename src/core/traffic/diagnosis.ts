@@ -6,6 +6,7 @@ import type { Coord } from '../map/coord';
 import { tileKey } from '../map/geometry';
 import { type CongestionStats, type SectionLoad } from './congestion';
 import { jobsOf, workplaceTypes } from './jobs';
+import { movingGathering } from '../tourism/gatheringWindow';
 
 export const CONGESTION_DIAGNOSIS = {
   minSaturatedSections: 3,
@@ -189,8 +190,18 @@ function disconnected(facts: Facts): Cause | null {
   return { key: 'diagnosis.congestion.disconnected', weight: cutOff / facts.citizens, params: { homes: homes.length }, focus: section ? [section] : [] };
 }
 
+function gatheringCrowd(facts: Facts): Cause | null {
+  if (facts.saturated.length === 0 || facts.citizens === 0) return null;
+  const moving = facts.state.buildings.filter(building => movingGathering(building, facts.state.lastSeen));
+  if (moving.length === 0) return null;
+  const driving = moving.reduce((sum, building) => sum + facts.congestion.touristFlows.filter(flow => flow.to === building.id && flow.mode === 'car').reduce((total, flow) => total + flow.count, 0), 0);
+  if (driving <= 0) return null;
+  const busiest = moving.sort((a, b) => a.id - b.id)[0]!;
+  return { key: 'diagnosis.congestion.gathering', weight: Math.min(1, driving / facts.citizens), params: { count: moving.length, cars: Math.round(driving) }, focus: [{ x: busiest.x, y: busiest.y }] };
+}
+
 export function diagnoseCongestion(state: GameState, congestion: CongestionStats, transport: { lines: readonly unknown[] }): Diagnosis {
   const facts = factsOf(state, congestion, transport.lines.length > 0);
-  const causes = [untouchedTiers, corridor, crossingsChoke, homesFarFromJobs, carHeavy, disconnected].flatMap(rule => rule(facts) ?? []);
+  const causes = [untouchedTiers, corridor, crossingsChoke, homesFarFromJobs, carHeavy, disconnected, gatheringCrowd].flatMap(rule => rule(facts) ?? []);
   return diagnosisOf(causes);
 }

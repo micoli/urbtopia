@@ -1,3 +1,4 @@
+import type { ClubData } from '../clubs/clubTypes';
 import type { ChallengeClaim, ChallengeProgress } from '../challenges/types';
 import type { TradeLedgerEntry } from '../trade/types';
 import type { FleetVehicleId } from '../transit/transitVehicleTypes.generated';
@@ -85,6 +86,46 @@ export interface VenueData {
   cooldownUntil?: number;
 }
 
+// A one-day crowd event held in an Attraction: its crowd is fixed when it is scheduled, its Ticket revenue paid when it ends.
+export interface GatheringData {
+  kind: 'show' | 'match';
+  startsAt: number;
+  endsAt: number;
+  cost: number;
+  quality: number;
+  // The Artist who plays a Concert hall Show.
+  artist?: string;
+  crowd: number;
+  tourists: number;
+  citizens: number;
+  revenue: number;
+}
+
+// What the last Gathering of an Attraction drew and earned, for the player to compare.
+export interface GatheringResult {
+  kind: GatheringData['kind'];
+  at: number;
+  crowd: number;
+  revenue: number;
+  cost: number;
+  artist?: string;
+}
+
+// Ticket level of an Attraction (0 lowest), the Urbs its Tourists have paid and nobody has collected, and its Gathering.
+export interface AttractionData {
+  ticket?: number;
+  takings: number;
+  gathering?: GatheringData;
+  lastGathering?: GatheringResult;
+  cooldownUntil?: number;
+  // Shows scheduled so far: with the building it seeds the Artists offered for the next one.
+  shows?: number;
+  // Until when a Championship's success draws extra Tourists.
+  boostUntil?: number;
+  // The athletics meeting slot last set, so the same one is not set twice.
+  meetingAt?: number;
+}
+
 export interface Building extends Coord {
   id: number;
   type: BuildingType;
@@ -101,6 +142,8 @@ export interface Building extends Coord {
   coalEnabled?: boolean;
   name?: string;
   venue?: VenueData;
+  attraction?: AttractionData;
+  club?: ClubData;
 }
 
 export interface Storage {

@@ -124,6 +124,10 @@
           "minItems": 2,
           "maxItems": 2
         },
+        "attraction": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
         "annualEvent": {
           "type": "string",
           "pattern": "\\S"
@@ -263,6 +267,10 @@
           "items": false,
           "minItems": 2,
           "maxItems": 2
+        },
+        "attraction": {
+          "type": "number",
+          "exclusiveMinimum": 0
         },
         "radius": {
           "type": "integer",
@@ -2528,6 +2536,10 @@
           "minimum": 0,
           "maximum": 9007199254740991
         },
+        "attraction": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
         "solarPanels": {
           "type": "object",
           "properties": {
@@ -2845,6 +2857,10 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "attraction": {
+          "type": "number",
+          "exclusiveMinimum": 0
         },
         "solarPanels": {
           "type": "object",
@@ -4039,6 +4055,10 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "attraction": {
+          "type": "number",
+          "exclusiveMinimum": 0
         },
         "solarPanels": {
           "type": "object",

@@ -310,7 +310,7 @@ _Avoid_: Gambling hall, arcade
 
 **Minigame**:
 A game played in a Casino: the slot machine, blackjack or blockmatch. Each Minigame requires a minimum Casino Tier and a Casino offers all the Minigames of its Tier and below. A Minigame in progress is never saved.
-_Avoid_: Game (already the whole city builder), attraction
+_Avoid_: Game (already the whole city builder), Attraction
 
 **Round**:
 One play of a Minigame, from the moment its Stake is debited to its payout. The slot machine settles at once; blackjack and blockmatch last until the player finishes, and a Round left unfinished loses its Stake.
@@ -371,6 +371,50 @@ _Avoid_: Revenue, income, till
 **Visitor**:
 A simulated customer of a Venue, modelled in aggregate. Arcade and Supermarket draw them from the surrounding Citizens; a Hotel draws them from outside the city, by the city's attractiveness and its Reputation. In a Supermarket they are called Shoppers, in a Hotel guests. Only a visual silhouette is shown, never saved.
 _Avoid_: Customer, guest, Citizen
+
+**Tourist**:
+A person from outside the city drawn by its Attractions. Unlike a Citizen it has no Home; unlike a Visitor it is not tied to one Venue. Besides the Ticket, a Tourist spends on site, so a visit earns about three Tickets. A Tourist who sleeps in a Hotel stays longer and spends more; without a Hotel, Tourists only come for the day. Modelled in aggregate, never saved; the figures around an Attraction on the map are only a picture of them.
+_Avoid_: Visitor (a customer of a Venue), Citizen, guest
+
+**Attraction**:
+A building that draws Tourists: a Museum, the Colosseum, a stadium, the Concert hall, the Theater, a Casino, a Marina and its Boats, or an amusement ride. A Hotel is not an Attraction: it lodges Tourists. Each Attraction has its own drawing power, raised by its Tiers.
+_Avoid_: Landmark, sight, Minigame
+
+**Ticket**:
+The price a Tourist or Citizen pays to enter an Attraction, set by the player at one of three levels. A higher Ticket earns more per entry but draws fewer people. Its proceeds build up as Takings.
+_Avoid_: Admission, fee, Stake
+
+**Gathering**:
+A one-day crowd event the player or the calendar holds in an Attraction: a Show or a Match. It costs Urbs, has a cooldown before the same Attraction can hold another, and brings an extra crowd of Tourists and Citizens. It goes through four phases: scheduled, the crowd arriving (the hour before), under way, the crowd leaving (the hour after), when its Ticket sales are paid into the Takings. A Show can be cancelled before it starts, for half of its cost back. Distinct from an Event (a server Challenge) and an Annual event (a calendar occasion).
+_Avoid_: Event, festival, Annual event
+
+**Show**:
+A Gathering held in a Theater, Concert hall or the Colosseum, programmed by the player.
+_Avoid_: Concert (one kind of Show), performance
+
+**Match**:
+A Gathering held in a stadium, set by a calendar rather than programmed by the player.
+_Avoid_: Game (already the whole city builder), fixture (taken by a Venue item)
+
+**Artist**:
+A performer or group, solo or band, from a fixed list of invented names, who plays a Show in the Concert hall. Each has a Fame. The player picks one among three offered at each Show, drawn from those whose Fame is within what the city's Well-being and population allow.
+_Avoid_: Singer, band, act
+
+**Fame**:
+The standing of an Artist, from 1 to 5. A higher Fame draws a bigger crowd and allows a higher Ticket, but costs a higher fee.
+_Avoid_: Popularity, rating, Reputation (a Hotel's note)
+
+**Club**:
+The team a football stadium or baseball field hosts, run by the player from a dedicated management page. It has a Squad, a budget fed by the stadium's Takings, and takes part in a Championship. Saved with the city.
+_Avoid_: Team, franchise, Venue
+
+**Squad**:
+The individual players of a Club, each with a position, a rating, a form, a morale, an age and a contract. Unlike Staff, they are individuals, not roles.
+_Avoid_: Roster, Staff
+
+**Championship**:
+The calendar of a Club's Matches over one year of the Club, ending with a ranking and a prize in Urbs. Football and baseball each have one; athletics has isolated meetings with no ranking.
+_Avoid_: Season (taken by Annual event), league, tournament
 
 **Vehicle**:
 A visual automobile that drives along the roads. It is a projection of the city's Congestion: its presence follows the Commuters who drive, two Vehicles never overlap, and individual Vehicles are not saved.

@@ -1,6 +1,7 @@
 import { footprintOf } from '../buildings/buildingSpecs';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { congestionStats, workplaceTypes, type TripMode } from '../traffic/congestion';
+import { isAttraction } from '../tourism/tourists';
 import { walkDestinationOf } from '../traffic/walking';
 import { crossingFlows, footbridgeFlows } from '../traffic/walkFlows';
 import { stopsOfMode, transitModeOf } from './transitFields';
@@ -60,7 +61,7 @@ export function flowEndpointsOf(state: GameState, layer: AnalyticsLayerId): Flow
 }
 
 // A Home, a workplace or somewhere to walk to: the buildings Citizens travel to or from.
-export const hasTrips = (building: Building): boolean => isHomeType(building.type) || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null;
+export const hasTrips = (building: Building): boolean => isHomeType(building.type) || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null || isAttraction(building);
 
 export type FlowMode = TripMode | 'transit';
 
@@ -79,6 +80,8 @@ export interface BuildingFlows {
   arrivals: BuildingFlow[];
   // Where the Citizens living in the building go to.
   departures: BuildingFlow[];
+  // The Tourists who come to the building, by mode: they have no Home to come from.
+  tourists: ModeVolumes;
   // The tiles the trips of each mode go along, each listed once.
   routes: Record<FlowMode, Coord[]>;
 }
@@ -116,6 +119,16 @@ export function buildingFlowsOf(state: GameState, buildingId: number): BuildingF
       if (building) routeTiles.transit.set(tileKey(building), { x: building.x, y: building.y });
     }
   }
+  const tourists = noModes();
+  for (const flow of congestionStats(state).touristFlows) {
+    if (flow.to !== buildingId) continue;
+    tourists[flow.mode] += flow.count;
+    for (const tile of flow.path) routeTiles[flow.mode].set(tileKey(tile), tile);
+    for (const node of flow.nodes) {
+      const [x = 0, y = 0] = node.split(':')[0]!.split(',').map(Number);
+      routeTiles[flow.mode].set(`${x},${y}`, { x, y });
+    }
+  }
   const flowsOf = (side: Map<number, ModeVolumes>): BuildingFlow[] => [...side]
     .filter(([id]) => byId.has(id))
     .map(([id, modes]) => ({ ...endpointOf(byId.get(id)!, Math.round(modes.car + modes.walk + modes.cycle + modes.transit)), modes }))
@@ -125,7 +138,7 @@ export function buildingFlowsOf(state: GameState, buildingId: number): BuildingF
   const departures = flowsOf(sides.departures);
   const total = (flows: BuildingFlow[]) => flows.reduce((sum, flow) => sum + flow.volume, 0);
   const routes = { car: [...routeTiles.car.values()], walk: [...routeTiles.walk.values()], cycle: [...routeTiles.cycle.values()], transit: [...routeTiles.transit.values()] };
-  return { building: endpointOf(selected, Math.max(total(arrivals), total(departures))), arrivals, departures, routes };
+  return { building: endpointOf(selected, Math.max(total(arrivals), total(departures))), arrivals, departures, tourists, routes };
 }
 
 export interface PassageBeacon {

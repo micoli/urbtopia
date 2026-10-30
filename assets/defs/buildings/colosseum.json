@@ -14,5 +14,6 @@
   "description": {
     "en": "A ruined arena of stone arches where crowds gather for grand shows.",
     "fr": "Une arène en ruine aux arches de pierre où la foule se presse pour de grands spectacles."
-  }
+  },
+  "attraction": 90
 }

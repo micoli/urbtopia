@@ -6,7 +6,7 @@ import { Icon } from '../../common/Icon';
 import type { IconName } from '../../common/iconRegistry';
 
 const SECTIONS: [string, IconName, MessageKey][] = [
-    ['production', 'production', 'eco.production'], ['energy', 'power', 'eco.energy'],
+    ['production', 'production', 'eco.production'], ['tourism', 'ticket', 'tourism.title'], ['energy', 'power', 'eco.energy'],
     ['needs', 'needs', 'needs.title'], ['nature', 'nature', 'build.greenSpaces'], ['waste', 'trash', 'waste.section.title'], ['services', 'services', 'stats.services'], ['temperature', 'temperature', 'eco.temperatureSection'], ['transport', 'transport', 'eco.transport'], ['transportMap', 'map', 'eco.transportMap'], ['traffic', 'car', 'eco.traffic'],
 ];
 

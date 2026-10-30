@@ -13,7 +13,9 @@ export type GatewayOutcome =
 export interface CommandGatewayDeps {
   isReadOnly: () => boolean;
   now: () => number;
-  toastForEvents: (events: GameEvent[]) => MessageKey | null;
+  // Whether the feature a command belongs to is switched on; a command of a feature that is off is refused.
+  isCommandEnabled?: (command: Command) => boolean;
+  announceEvents: (events: GameEvent[], state: GameState) => void;
   showToast: (key: MessageKey) => void;
 }
 
@@ -39,10 +41,10 @@ export function createCommandGateway(deps: CommandGatewayDeps): CommandGateway {
     },
     apply: (state, command) => {
       if (deps.isReadOnly()) return { kind: 'blocked' };
+      if (deps.isCommandEnabled && !deps.isCommandEnabled(command)) return { kind: 'rejected', error: { key: 'error.unknownCommand' } };
       const result = dispatch(state, command, deps.now());
       if (!result.ok) return { kind: 'rejected', error: result.error };
-      const toast = deps.toastForEvents(result.events);
-      if (toast) deps.showToast(toast);
+      deps.announceEvents(result.events, result.state);
       for (const event of result.events) handlers.get(event.type)?.forEach((handler) => handler(event));
       const tutorialEnd = tutorialEndToast(state, result.state);
       if (tutorialEnd) deps.showToast(tutorialEnd);

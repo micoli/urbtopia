@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { FIXTURE_IDS, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, isAttractionType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -45,6 +45,97 @@ function isStack(value: unknown): boolean {
     isInt(value.stock, 0) &&
     (value.nextSaleAt === null || isNumber(value.nextSaleAt)) &&
     isNonNegative(value.earned)
+  );
+}
+
+function isGatheringData(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    (value.kind === 'show' || value.kind === 'match') &&
+    isNumber(value.startsAt) &&
+    isNumber(value.endsAt) &&
+    value.endsAt > (value.startsAt as number) &&
+    isNonNegative(value.cost) &&
+    isNonNegative(value.crowd) &&
+    isNonNegative(value.tourists) &&
+    isNonNegative(value.citizens) &&
+    isNonNegative(value.revenue) &&
+    isNumber(value.quality) &&
+    value.quality >= 0 &&
+    value.quality <= 1
+  );
+}
+
+function isPlayer(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    isInt(value.id, 1) &&
+    typeof value.name === 'string' &&
+    typeof value.position === 'string' &&
+    isInt(value.rating, 1, 100) &&
+    isNumber(value.form) &&
+    value.form >= 0 &&
+    value.form <= 100 &&
+    isNumber(value.morale) &&
+    value.morale >= 0 &&
+    value.morale <= 100 &&
+    isInt(value.age, 14, 60) &&
+    isRecord(value.contract) &&
+    isInt(value.contract.untilYear, 0) &&
+    isNonNegative(value.contract.wage) &&
+    isArrayOf(value.history, season => isRecord(season) && isInt(season.year, 0) && isInt(season.played, 0)) &&
+    (value.injuredUntil === undefined || isNumber(value.injuredUntil))
+  );
+}
+
+function isChampionshipData(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    isNonNegative(value.points) &&
+    isArrayOf(value.opponents, opponent => isRecord(opponent) && typeof opponent.name === 'string' && isInt(opponent.strength, 1, 100) && isNonNegative(opponent.points)) &&
+    isArrayOf(value.fixtures, fixture => isRecord(fixture) && isNumber(fixture.at) && isInt(fixture.opponent, 0) && (fixture.result === undefined || fixture.result === 'win' || fixture.result === 'draw' || fixture.result === 'loss'))
+  );
+}
+
+function isClubData(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    isClubSport(value.sport) &&
+    typeof value.name === 'string' &&
+    isNumber(value.budget) &&
+    isInt(value.year, 1) &&
+    isInt(value.fame, 1, 5) &&
+    isInt(value.nextPlayerId, 1) &&
+    isNumber(value.rng) &&
+    isArrayOf(value.squad, isPlayer) &&
+    isArrayOf(value.market, isPlayer) &&
+    (value.championship === undefined || isChampionshipData(value.championship))
+  );
+}
+
+function isAttractionData(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    isNonNegative(value.takings) &&
+    (value.ticket === undefined || isInt(value.ticket, 0, TICKETS.length - 1)) &&
+    (value.cooldownUntil === undefined || isNumber(value.cooldownUntil)) &&
+    (value.boostUntil === undefined || isNumber(value.boostUntil)) &&
+    (value.meetingAt === undefined || isNumber(value.meetingAt)) &&
+    (value.shows === undefined || isInt(value.shows, 0)) &&
+    (value.gathering === undefined || isGatheringData(value.gathering)) &&
+    (value.lastGathering === undefined || isGatheringResult(value.lastGathering))
+  );
+}
+
+function isGatheringResult(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    (value.kind === 'show' || value.kind === 'match') &&
+    isNumber(value.at) &&
+    isNonNegative(value.crowd) &&
+    isNonNegative(value.revenue) &&
+    isNonNegative(value.cost) &&
+    (value.artist === undefined || typeof value.artist === 'string')
   );
 }
 
@@ -96,6 +187,8 @@ function isBuilding(value: unknown): boolean {
     (value.solar === undefined || (typeof value.type === 'string' && canHaveSolarPanels(value.type as BuildingType) && typeof value.solar === 'boolean')) &&
     (value.colorVariant === undefined || isColorAccepted(value.type, value.colorVariant)) &&
     (value.venue === undefined || (typeof value.type === 'string' && isVenueType(value.type) && isVenueData(value.venue))) &&
+    (value.club === undefined || (typeof value.type === 'string' && hasClub(value.type) && isClubData(value.club))) &&
+    (value.attraction === undefined || (typeof value.type === 'string' && isAttractionType(value.type) && isAttractionData(value.attraction))) &&
     (value.name === undefined || (typeof value.type === 'string' && isTransitStopType(value.type) && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= STOP_NAME_MAX_LENGTH)) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&
     (value.storedEnergy === undefined || (value.type === 'battery' && isNonNegative(value.storedEnergy) && value.storedEnergy <= 24))

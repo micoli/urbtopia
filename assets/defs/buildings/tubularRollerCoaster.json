@@ -14,6 +14,7 @@
     "fr": "Des montagnes russes tubulaires qui améliorent le bien-être des citoyens proches."
   },
   "radius": 12,
+  "attraction": 35,
   "tiers": [
     {
       "model": "venue-roller-coaster-4x6-7f",

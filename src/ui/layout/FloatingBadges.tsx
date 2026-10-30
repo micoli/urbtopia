@@ -1,4 +1,5 @@
 import { CollectBadges } from '../collect/CollectBadges';
+import { GatheringBadges } from '../tourism/GatheringBadges';
 import { SanctionBadges } from '../sanction/SanctionBadges';
 import { WorkingIndicators } from '../common/WorkingIndicators';
 import { ParcelTags } from '../parcels/ParcelTags';
@@ -13,6 +14,7 @@ export function FloatingBadges() {
   return <>
     <WorkingIndicators />
     <CollectBadges />
+    <GatheringBadges />
     <SanctionBadges />
     <ParcelTags />
     <LocatorArrow />

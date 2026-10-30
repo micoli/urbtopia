@@ -14,6 +14,7 @@
     "fr": "Une grande roue"
   },
   "radius": 10,
+  "attraction": 25,
   "tiers": [
     {
       "model": "buildings-ferris-wheel-3x5-8f",

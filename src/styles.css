@@ -7,6 +7,8 @@
 @import './ui/common/motion.css' layer(legacy);
 @import './ui/build/build.css' layer(legacy);
 @import './ui/venue/venue.css' layer(legacy);
+@import './ui/club/club.css' layer(legacy);
+@import './ui/tourism/tourism.css' layer(legacy);
 @import './ui/buildings/buildings.css' layer(legacy);
 @import './ui/system/system.css' layer(legacy);
 @import './ui/collect/collect.css' layer(legacy);

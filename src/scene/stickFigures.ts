@@ -36,18 +36,24 @@ function colored(geometries: THREE.BufferGeometry[], color: number): THREE.Buffe
   return merged;
 }
 
+function walkerParts(): THREE.BufferGeometry[] {
+  return [
+    ball([0, 0, 0.275], 0.025),
+    bar([0, 0, 0.255], [0, 0, 0.15], 0.006),
+    bar([0, 0, 0.245], [0.04, 0, 0.17], 0.0048),
+    bar([0, 0, 0.245], [-0.04, 0, 0.17], 0.0048),
+    bar([0, 0, 0.15], [0.05, 0, 0], 0.006),
+    bar([0, 0, 0.15], [-0.05, 0, 0], 0.006),
+  ];
+}
+
 export function stickPedestrian(): THREE.BufferGeometry {
-  return colored(
-    [
-      ball([0, 0, 0.275], 0.025),
-      bar([0, 0, 0.255], [0, 0, 0.15], 0.006),
-      bar([0, 0, 0.245], [0.04, 0, 0.17], 0.0048),
-      bar([0, 0, 0.245], [-0.04, 0, 0.17], 0.0048),
-      bar([0, 0, 0.15], [0.05, 0, 0], 0.006),
-      bar([0, 0, 0.15], [-0.05, 0, 0], 0.006),
-    ],
-    PEDESTRIAN_COLOR,
-  );
+  return colored(walkerParts(), PEDESTRIAN_COLOR);
+}
+
+// White, so that each member of a crowd takes its own instance colour; a little thicker, as they are seen in a mass from afar.
+export function stickSpectator(): THREE.BufferGeometry {
+  return colored(walkerParts(), 0xffffff).scale(1.5, 1.5, 1.5);
 }
 
 export function stickCyclist(): THREE.BufferGeometry {
