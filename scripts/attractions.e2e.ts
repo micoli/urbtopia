@@ -21,12 +21,15 @@ test.describe('attractions', () => {
       return gameStore.getState().state.urbs;
     });
     await expect(page.getByRole('radiogroup', { name: 'Ticket' })).toBeVisible();
+    const badge = page.locator('.collect-badge');
+    await expect(badge).toHaveCount(1);
     const collect = page.getByRole('button', { name: /Takings/ });
     await expect(collect).toBeEnabled();
     await collect.click();
     const after = await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().state.urbs);
     expect(after).toBeGreaterThan(before);
     await expect(collect).toBeDisabled();
+    await expect(badge).toHaveCount(0);
     expect(errors).toEqual([]);
   });
 });

@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef } from 'react';
 import { useStore } from 'zustand';
-import { Building, Command, isShopType, isVenue, itemModelOf, taxDue, takingsDue, isHomeType, isOfficeType, officeUrbsDue } from '../../core';
+import { Building, Command, attractionTakingsOf, isAttraction, isShopType, isVenue, itemModelOf, taxDue, takingsDue, isHomeType, isOfficeType, officeUrbsDue } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { gameStore } from '../../store/gameStore';
 import { useProjectedPosition } from '../common/useProjectedPosition';
@@ -34,6 +34,10 @@ export function collectBadgeLabel(building: Building, officeYield = 1): string |
   }
   if (isVenue(building)) {
     const due = takingsDue(building.venue);
+    return due > 0 ? due : null;
+  }
+  if (isAttraction(building)) {
+    const due = Math.floor(attractionTakingsOf(building));
     return due > 0 ? due : null;
   }
   const ready = building.queue.filter((entry) => entry.done).length;
