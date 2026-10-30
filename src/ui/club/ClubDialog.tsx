@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useStore } from 'zustand';
+import { useFeatureFlag } from '../../featureFlags/useFeatureFlag';
 import { t } from '../../i18n/t';
 import { clubStore, type ClubTabId } from '../../store/clubStore';
 import { sceneHandle } from '../../store/sceneHandle';
@@ -21,7 +22,8 @@ export function ClubDialog() {
   const buildingId = useStore(clubStore, store => store.buildingId);
   const tab = useStore(clubStore, store => store.tab);
   const building = useGame(store => (buildingId === null ? undefined : store.state.buildings.find(candidate => candidate.id === buildingId)));
-  const open = building?.club !== undefined;
+  const enabled = useFeatureFlag('clubs');
+  const open = enabled && building?.club !== undefined;
 
   useEffect(() => {
     if (!open) return;
@@ -34,7 +36,7 @@ export function ClubDialog() {
     };
   }, [open]);
 
-  if (!building?.club) return null;
+  if (!open || !building?.club) return null;
   return (
     <div className="club-view" role="dialog" aria-modal="true" aria-label={t('club.title')}>
       <header className="club-view__header">

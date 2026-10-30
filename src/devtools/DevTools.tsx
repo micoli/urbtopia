@@ -9,6 +9,7 @@ import { useForcedAnnualEventDay } from '../ui/common/useForcedAnnualEventDay';
 import { AnnualEventDateButtons } from './AnnualEventDateButtons';
 import { dayOfIsoDate, isoDateOfDay } from './annualEventDate';
 import { clearGoods, clearMaterials, clearWarehouse } from './clearItems';
+import { FeatureFlagSwitches } from './FeatureFlagSwitches';
 import { ItemButtons } from './ItemButtons';
 import { giveItem } from './giveItem';
 import { giveAllItems, MAX_DEV_ITEM_QUANTITY } from './giveAllItems';
@@ -61,6 +62,7 @@ export default function DevTools() {
             <strong id="devtools-title">Outils de développement</strong>
             <button type="button" className="devtools-close" aria-label="Fermer les outils de développement" onClick={() => setOpen(false)}>×</button>
           </header>
+          <FeatureFlagSwitches />
           <p>{Object.keys(MATERIALS).length} matériaux · {Object.keys(GOODS).length} biens</p>
           <label htmlFor="devtools-quantity">Quantité à ajouter par objet</label>
           <input id="devtools-quantity" type="number" min="1" max={MAX_DEV_ITEM_QUANTITY} step="1" value={quantity} onChange={(event) => { setQuantity(event.target.value); setGranted(null); setCleared(null); setGrantedItem(null); }} />

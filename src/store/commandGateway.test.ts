@@ -74,3 +74,20 @@ describe('tutorial end notice', () => {
     expect(tutorialEndToast({ ...state, tutorial: 'tax' }, { ...state, tutorial: 'tax' })).toBeNull();
   });
 });
+
+describe('command gateway and feature flags', () => {
+  const gatewayWith = (enabled: boolean) => createCommandGateway({ isReadOnly: () => false, now: () => NOW, toastForEvents: () => null, showToast: vi.fn(), isCommandEnabled: command => command.type !== 'SellBuilding' || enabled });
+
+  it('refuses a command of a feature that is off, without effects', () => {
+    const handler = vi.fn();
+    const gateway = gatewayWith(false);
+    gateway.onEvent('BuildingSold', handler);
+    expect(gateway.apply(city(), { type: 'SellBuilding', id: 10 })).toEqual({ kind: 'rejected', error: { key: 'error.unknownCommand' } });
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('runs it once the feature is on, and never stops the others', () => {
+    expect(gatewayWith(true).apply(city(), { type: 'SellBuilding', id: 10 }).kind).toBe('applied');
+    expect(gatewayWith(false).apply(city(), { type: 'Collect', buildingId: 10 }).kind).not.toBe('blocked');
+  });
+});

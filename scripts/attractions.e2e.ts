@@ -69,7 +69,10 @@ test.describe('football club', () => {
     test.setTimeout(90_000);
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+    await page.addInitScript(() => {
+      localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
+      localStorage.setItem('urbtopia-flags', JSON.stringify({ clubs: true }));
+    });
     await page.goto('/?e2e');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     await page.evaluate(async () => {
@@ -116,7 +119,10 @@ test.describe('baseball club', () => {
     test.setTimeout(90_000);
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+    await page.addInitScript(() => {
+      localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
+      localStorage.setItem('urbtopia-flags', JSON.stringify({ clubs: true }));
+    });
     await page.goto('/?e2e');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     await page.evaluate(async () => {
@@ -150,6 +156,38 @@ test.describe('baseball club', () => {
     await expect(dialog.getByText(/^Inning (9|1[0-2])$/)).toBeVisible();
     await dialog.getByRole('button', { name: 'Record the decisions' }).click();
     await expect(dialog.getByText('Decisions recorded for the Match.')).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+});
+
+test.describe('feature flags', () => {
+  test.use({ viewport: { width: 1280, height: 900 } });
+
+  test('the Clubs are off until the devtools switch them on', async ({ page }) => {
+    test.setTimeout(90_000);
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+    await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      const { uiStore } = await import('../src/store/uiStore.ts');
+      const { newGame, createBuilding } = await import('../src/core/index.ts');
+      const state = newGame({ seed: 'flag-e2e', now: Date.now() });
+      gameStore.getState().replaceState({ ...state, urbs: 100_000, buildings: [createBuilding(50, 'footballStadium', 64, 64, 0), createBuilding(51, 'home', 56, 64, 0)], nextId: 52 });
+      uiStore.getState().select(50);
+    });
+    await expect(page.getByRole('radiogroup', { name: 'Ticket' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Found a Club' })).toHaveCount(0);
+    await page.getByRole('button', { name: 'DEV' }).click();
+    await page.getByRole('checkbox', { name: 'Gestion des clubs' }).check();
+    await expect(page.getByRole('button', { name: 'Found a Club' })).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem('urbtopia-flags'))).toBe('{"clubs":true}');
+    await page.reload();
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+    await page.getByRole('button', { name: 'DEV' }).click();
+    await expect(page.getByRole('checkbox', { name: 'Gestion des clubs' })).toBeChecked();
     expect(errors).toEqual([]);
   });
 });
