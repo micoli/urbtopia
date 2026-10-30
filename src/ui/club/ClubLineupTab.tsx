@@ -23,8 +23,8 @@ export function ClubLineupTab({ building }: { building: Building }) {
   };
   return (
     <>
-      <RadioChipGroup label={t('club.formation')} options={FORMATION_IDS.map(id => ({ value: id, label: id }))} value={lineup.formation as (typeof FORMATION_IDS)[number]} onChange={formation => send(formation, autoStarters(club.squad, formation), lineup.tactic)} />
-      <RadioChipGroup label={t('club.tactic')} options={TACTICS.map(id => ({ value: id, label: t(`club.tactic.${id}` as MessageKey) }))} value={lineup.tactic as (typeof TACTICS)[number]} onChange={tactic => send(lineup.formation, lineup.starters, tactic)} />
+      <RadioChipGroup className="choice-chips" label={t('club.formation')} options={FORMATION_IDS.map(id => ({ value: id, label: id }))} value={lineup.formation as (typeof FORMATION_IDS)[number]} onChange={formation => send(formation, autoStarters(club.squad, formation), lineup.tactic)} />
+      <RadioChipGroup className="choice-chips" label={t('club.tactic')} options={TACTICS.map(id => ({ value: id, label: t(`club.tactic.${id}` as MessageKey) }))} value={lineup.tactic as (typeof TACTICS)[number]} onChange={tactic => send(lineup.formation, lineup.starters, tactic)} />
       <ActionButton variant="default" onClick={() => send(lineup.formation, autoStarters(club.squad, lineup.formation as (typeof FORMATION_IDS)[number]), lineup.tactic)}>{t('club.bestEleven')}</ActionButton>
       <p className="note note--muted">{t('club.swapHint')}</p>
       <h3>{t('club.starters')}</h3>

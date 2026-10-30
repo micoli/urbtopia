@@ -21,7 +21,7 @@ export function ClubMatchControls({ state, onDecide }: ClubMatchControlsProps) {
   };
   return (
     <div className="club-controls">
-      <RadioChipGroup label={t('club.tactic')} options={TACTICS.map(id => ({ value: id, label: t(`club.tactic.${id}` as MessageKey) }))} value={mine.tactic} onChange={tactic => onDecide({ minute: state.minute, kind: 'tactic', tactic })} />
+      <RadioChipGroup className="choice-chips" label={t('club.tactic')} options={TACTICS.map(id => ({ value: id, label: t(`club.tactic.${id}` as MessageKey) }))} value={mine.tactic} onChange={tactic => onDecide({ minute: state.minute, kind: 'tactic', tactic })} />
       <p>{t('club.match.subsLeft').replace('{count}', `${left}`)}</p>
       <ul className="club-chips" aria-label={t('club.starters')}>
         {mine.pitch.map(player => <li key={player.id}><button type="button" aria-pressed={out === player.id} disabled={left === 0} onClick={() => setOut(out === player.id ? null : player.id)}>{player.name}</button></li>)}

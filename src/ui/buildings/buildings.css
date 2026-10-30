@@ -166,3 +166,31 @@
 .panel-section-toggle > span { text-decoration: underline; text-underline-offset: 3px; }
 .panel-section-body { padding: var(--space-4) var(--space-4) 0; }
 .panel-section:has(> .panel-section-body:empty) { display: none; }
+
+.choice-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.choice-chips button {
+  flex: 1;
+  min-height: var(--tap);
+  padding: 0 var(--space-10);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--white-a10);
+  color: inherit;
+}
+
+.choice-chips button[aria-checked='true'] {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: var(--font-weight-semibold);
+}
+
+.choice-chips button:disabled {
+  opacity: 0.45;
+}

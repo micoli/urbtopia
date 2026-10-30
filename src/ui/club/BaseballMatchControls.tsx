@@ -16,7 +16,7 @@ export function BaseballMatchControls({ state, onDecide }: BaseballMatchControls
   const minute = state.inning;
   return (
     <div className="club-controls">
-      <RadioChipGroup label={t('club.approach')} options={APPROACHES.map(id => ({ value: id, label: t(`club.approach.${id}` as MessageKey) }))} value={mine.approach} onChange={tactic => onDecide({ minute, kind: 'tactic', tactic })} />
+      <RadioChipGroup className="choice-chips" label={t('club.approach')} options={APPROACHES.map(id => ({ value: id, label: t(`club.approach.${id}` as MessageKey) }))} value={mine.approach} onChange={tactic => onDecide({ minute, kind: 'tactic', tactic })} />
       <p>{t('club.match.changesLeft').replace('{count}', `${left}`)}</p>
       <ul className="club-chips" aria-label={t('club.match.bullpen')}>
         {mine.bullpen.map(player => (

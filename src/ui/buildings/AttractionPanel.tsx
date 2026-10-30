@@ -19,7 +19,8 @@ export function AttractionPanel({ building }: AttractionPanelProps) {
   return (
     <DrawerPanel>
       <DrawerPanel.LabelValue label={t('attraction.tourists')} value={Math.round(touristsPerDay(building, attractiveness))} />
-      <RadioChipGroup label={t('attraction.ticket')} options={options} value={ticketOf(building)} onChange={level => gameStore.getState().send({ type: 'SetTicket', buildingId: building.id, level })} />
+      <DrawerPanel.LabelValue label={t('attraction.ticketPrice')} value={<UrbsAmount value={TICKETS[ticketOf(building)]?.price ?? 0} />} />
+      <RadioChipGroup className="choice-chips" label={t('attraction.ticket')} options={options} value={ticketOf(building)} onChange={level => gameStore.getState().send({ type: 'SetTicket', buildingId: building.id, level })} />
       {attractionTakingsOf(building) >= cap ? <p className="note note--warn">{t('attraction.cap')}</p> : null}
       <ActionButton variant="primary" block disabled={due === 0} onClick={() => gameStore.getState().send({ type: 'Collect', buildingId: building.id })}>
         {t('attraction.takings')} · <UrbsAmount value={due} /> / <UrbsAmount value={cap} />

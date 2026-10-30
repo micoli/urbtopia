@@ -30,6 +30,7 @@ export function ShowPanel({ building }: ShowPanelProps) {
     <DrawerPanel>
       {artist ? (
         <RadioChipGroup
+          className="choice-chips"
           label={t('show.artist')}
           options={offer.map(candidate => ({ value: candidate.id, label: <>{candidate.name} · {t('show.fame').replace('{fame}', `${candidate.fame}`)} · <UrbsAmount value={feeOfArtist(candidate)} /></> }))}
           value={artist.id}

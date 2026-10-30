@@ -31,8 +31,16 @@ describe('AttractionPanel', () => {
     const html = render({ ...createBuilding(900, 'masMuseum', 57, 56, 0), attraction: { takings: 42.7 } });
     expect(html).toContain(t('attraction.tourists'));
     expect(html).toContain(t('attraction.ticket'));
+    expect(html).toContain(t('attraction.ticketPrice'));
     expect(html).toContain(t('attraction.takings'));
     expect(html).toMatch(/radiogroup/);
+  });
+
+  it('marks the current Ticket among the three and states its price', () => {
+    const html = render({ ...createBuilding(900, 'masMuseum', 57, 56, 0), attraction: { takings: 0, ticket: 2 } });
+    expect(html.match(/aria-checked="true"/g)).toHaveLength(1);
+    expect(html).toMatch(/aria-checked="true"[^>]*>(?:(?!<button).)*14/);
+    expect(html).toContain('choice-chips');
   });
 
   it('disables the collection while nothing was earned', () => {

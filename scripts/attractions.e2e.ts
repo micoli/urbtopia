@@ -21,6 +21,9 @@ test.describe('attractions', () => {
       return gameStore.getState().state.urbs;
     });
     await expect(page.getByRole('radiogroup', { name: 'Ticket' })).toBeVisible();
+    await page.getByRole('radio').nth(2).click();
+    await expect(page.getByRole('radio').nth(2)).toHaveAttribute('aria-checked', 'true');
+    await page.getByRole('radio').nth(1).click();
     const badge = page.locator('.collect-badge');
     await expect(badge).toHaveCount(1);
     const collect = page.getByRole('button', { name: /Takings/ });

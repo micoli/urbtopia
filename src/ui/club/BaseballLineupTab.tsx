@@ -25,7 +25,7 @@ export function BaseballLineupTab({ building }: { building: Building }) {
   };
   return (
     <>
-      <RadioChipGroup label={t('club.approach')} options={APPROACHES.map(id => ({ value: id, label: t(`club.approach.${id}` as MessageKey) }))} value={lineup.tactic as (typeof APPROACHES)[number]} onChange={tactic => send(lineup.starters, tactic)} />
+      <RadioChipGroup className="choice-chips" label={t('club.approach')} options={APPROACHES.map(id => ({ value: id, label: t(`club.approach.${id}` as MessageKey) }))} value={lineup.tactic as (typeof APPROACHES)[number]} onChange={tactic => send(lineup.starters, tactic)} />
       <ActionButton variant="default" onClick={() => send(baseballAutoStarters(club.squad), lineup.tactic)}>{t('club.bestLineup')}</ActionButton>
       <p className="note note--muted">{t('club.swapHintBaseball')}</p>
       <h3>{t('club.pitcher')}</h3>
