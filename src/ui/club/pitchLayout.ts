@@ -44,8 +44,13 @@ export function ballSpot(state: Pick<MatchState, 'minute' | 'events'>, seed: num
   return { x: clamp(centre.x + 26 * Math.sin(state.minute * 0.9 + noise(seed, 0, 2) * 6), 8, PITCH.width - 8), y: clamp(centre.y + 20 * Math.sin(state.minute * 1.7 + noise(seed, 0, 3) * 6), 6, PITCH.height - 6) };
 }
 
-// How far each player drifts toward the ball: the goalkeeper hardly, the forwards most.
+// How far each player drifts toward the ball, and how far he wanders on his own: the goalkeeper hardly, the forwards most.
 const PULL = [0.04, 0.12, 0.12, 0.12, 0.12, 0.2, 0.2, 0.2, 0.2, 0.26, 0.26];
+const WANDER = [1.2, 2.5, 2.5, 2.5, 2.5, 4, 4, 4, 4, 5, 5];
+
+// A run: now and then a player breaks away toward the ball or the goal he attacks, far beyond his usual drift.
+const RUN_CHANCE = 0.14;
+const RUN_LENGTH = 9;
 
 export interface PitchPlayer extends Spot {
   id: number;
@@ -54,13 +59,33 @@ export interface PitchPlayer extends Spot {
   number: number;
 }
 
+// One player's own movement at a minute: a slow drift of his own, a pull toward the ball that varies from minute to minute, and sometimes a run. All of it comes from the seed, so a replay shows the same Match.
+function movement(seed: number, side: 0 | 1, index: number, minute: number, rest: Spot, ball: Spot): Spot {
+  const who = side * 11 + index + 1;
+  const wander = WANDER[index] ?? 4;
+  const slow = (salt: number) => Math.sin(minute * (0.6 + 1.1 * noise(seed, who, salt)) + 6.28 * noise(seed, who, salt + 1)) * wander;
+  const pull = (PULL[index] ?? 0.2) * (0.4 + 1.2 * noise(seed, minute + who * 101, 11));
+  let x = rest.x + (ball.x - rest.x) * pull + slow(3);
+  let y = rest.y + (ball.y - rest.y) * pull + slow(5);
+  if (index > 0 && noise(seed, minute + who * 53, 17) < RUN_CHANCE) {
+    const goalX = side === 0 ? PITCH.width - 6 : 6;
+    const target = noise(seed, minute + who * 29, 19) < 0.5 ? ball : { x: goalX, y: PITCH.height / 2 + (noise(seed, minute + who, 23) - 0.5) * 24 };
+    const dx = target.x - x;
+    const dy = target.y - y;
+    const distance = Math.hypot(dx, dy) || 1;
+    x += (dx / distance) * Math.min(RUN_LENGTH, distance);
+    y += (dy / distance) * Math.min(RUN_LENGTH, distance);
+  }
+  return { x, y };
+}
+
 export function pitchPlayers(state: MatchState, formation: Formation, seed: number): PitchPlayer[] {
   const ball = ballSpot(state, seed);
   const place = (side: 0 | 1, spots: Spot[]): PitchPlayer[] =>
     state.sides[side].pitch.map((player, index) => {
       const rest = spots[index] ?? spots.at(-1)!;
-      const pull = PULL[index] ?? 0.2;
-      return { id: player.id, name: player.name, side, number: index + 1, x: clamp(rest.x + (ball.x - rest.x) * pull, 1.5, PITCH.width - 1.5), y: clamp(rest.y + (ball.y - rest.y) * pull, 1.5, PITCH.height - 1.5) };
+      const moved = movement(seed, side, index, state.minute, rest, ball);
+      return { id: player.id, name: player.name, side, number: index + 1, x: clamp(moved.x, 1.5, PITCH.width - 1.5), y: clamp(moved.y, 1.5, PITCH.height - 1.5) };
     });
   return [...place(0, formationSpots(formation)), ...place(1, formationSpots('4-4-2').map(mirror))];
 }

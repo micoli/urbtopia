@@ -56,11 +56,40 @@ describe('players on the pitch', () => {
     expect(players.find(player => player.side === 1 && player.number === 1)!.x).toBeGreaterThan(PITCH.width * 0.9);
   });
 
-  it('draws the players toward the ball', () => {
-    const state = playUntil(club, opponent, 3, [], 30);
-    const rest = formationSpots('4-4-2')[10]!;
-    const forward = pitchPlayers(state, '4-4-2', 3).find(player => player.side === 0 && player.number === 11)!;
-    const ball = ballSpot(state, 3);
-    expect(Math.hypot(forward.x - ball.x, forward.y - ball.y)).toBeLessThan(Math.hypot(rest.x - ball.x, rest.y - ball.y));
+  it('draws the players toward the ball on the whole, though no two minutes look alike', () => {
+    const closer = [];
+    for (let minute = 1; minute <= 90; minute++) {
+      const state = playUntil(club, opponent, 3, [], minute);
+      const ball = ballSpot(state, 3);
+      const forwards = pitchPlayers(state, '4-4-2', 3).filter(player => player.side === 0 && player.number >= 10);
+      const rest = formationSpots('4-4-2').slice(9);
+      closer.push(forwards.reduce((sum, player, index) => sum + Math.hypot(rest[index]!.x - ball.x, rest[index]!.y - ball.y) - Math.hypot(player.x - ball.x, player.y - ball.y), 0));
+    }
+    expect(closer.filter(gain => gain > 0).length).toBeGreaterThan(55);
+    expect(closer.some(gain => gain < 0)).toBe(true);
+  });
+
+  it('moves each player on his own: not by the same step, not in the same direction', () => {
+    const at = (minute: number) => pitchPlayers(playUntil(club, opponent, 3, [], minute), '4-4-2', 3).filter(player => player.side === 0);
+    let opposed = 0;
+    for (let minute = 40; minute < 60; minute++) {
+      const [before, after] = [at(minute), at(minute + 1)];
+      const steps = after.map((player, index) => ({ dx: player.x - before[index]!.x, dy: player.y - before[index]!.y }));
+      expect(new Set(steps.map(step => step.dx.toFixed(1))).size).toBeGreaterThan(8);
+      if (steps.some(step => step.dx > 0.3) && steps.some(step => step.dx < -0.3) && steps.some(step => step.dy > 0.3) && steps.some(step => step.dy < -0.3)) opposed += 1;
+    }
+    expect(opposed).toBeGreaterThan(12);
+  });
+
+  it('sends a different player on a run each minute, and the same ones on a replay', () => {
+    const runners = (minute: number) => pitchPlayers(playUntil(club, opponent, 3, [], minute), '4-4-2', 3).filter(player => player.side === 0).map(player => `${player.x.toFixed(2)},${player.y.toFixed(2)}`);
+    expect(runners(40)).toEqual(runners(40));
+    expect(runners(40)).not.toEqual(runners(41));
+  });
+
+  it('keeps the players at their own side of the pitch on the whole', () => {
+    const state = playUntil(club, opponent, 3, [], 60);
+    const away = pitchPlayers(state, '4-4-2', 3).filter(player => player.side === 1 && player.number > 1);
+    expect(away.reduce((sum, player) => sum + player.x, 0) / away.length).toBeGreaterThan(PITCH.width / 2);
   });
 });
