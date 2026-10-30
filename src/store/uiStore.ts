@@ -20,6 +20,7 @@ const LOCATOR_DURATION_MS = 2000;
 export type Flyout = 'build' | 'roads' | 'land' | null;
 export type MarketTab = 'market' | 'events';
 export type SocialTab = 'friends' | 'groups' | 'exchanges' | 'hall' | 'profile';
+export type SettingsTab = 'game' | 'display' | 'saves' | 'app';
 
 export interface UiStore {
   tool: Tool | null;
@@ -52,6 +53,8 @@ export interface UiStore {
   openSettingsForSignIn: () => void;
   toggleSocial: () => void;
   setSocialTab: (tab: SocialTab) => void;
+  settingsTab: SettingsTab;
+  setSettingsTab: (tab: SettingsTab) => void;
   tradeWith: string | null;
   startTrade: (userId: string) => void;
   clearTradeWith: () => void;
@@ -212,7 +215,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       leaveParcelMode();
       stopWaitingForSignIn();
       get().cancelTool();
-      set({ ...WINDOWS_CLOSED, settingsOpen: true, signInFromSocial: forSignIn });
+      set({ ...WINDOWS_CLOSED, settingsOpen: true, settingsTab: 'saves', signInFromSocial: forSignIn });
       if (!forSignIn) return;
       stopWaitingForSignIn = cloudStore.subscribe((store) => {
         if (!store.account?.email) return;
@@ -226,8 +229,10 @@ export const uiStore = createStore<UiStore>((set, get) => {
       leaveParcelMode();
       stopWaitingForSignIn();
       get().cancelTool();
-      set({ ...WINDOWS_CLOSED, settingsOpen: true, signInFromSocial: true });
+      set({ ...WINDOWS_CLOSED, settingsOpen: true, settingsTab: 'saves', signInFromSocial: true });
     },
+    settingsTab: 'game',
+    setSettingsTab: (settingsTab) => set({ settingsTab }),
     tradeWith: null,
     startTrade: (userId) => set({ tradeWith: userId, socialTab: 'exchanges' }),
     clearTradeWith: () => set({ tradeWith: null }),
@@ -292,7 +297,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       leaveParcelMode();
       const opening = !get().settingsOpen;
       if (opening) get().cancelTool();
-      set(opening ? { ...WINDOWS_CLOSED, settingsOpen: true, signInFromSocial: false } : { settingsOpen: false, signInFromSocial: false });
+      set(opening ? { ...WINDOWS_CLOSED, settingsOpen: true, settingsTab: 'game', signInFromSocial: false } : { settingsOpen: false, signInFromSocial: false });
     },
     toggleMarket: () => {
       if (!gameStore.getState().state.marketUnlocked) return toastStore.getState().show('error.marketLocked');

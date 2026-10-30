@@ -1,9 +1,12 @@
 import { List, Root, Trigger } from '@radix-ui/react-tabs';
 import type { MouseEvent, ReactNode } from 'react';
 import { CountBadge } from './CountBadge';
+import { Icon } from './Icon';
+import type { IconName } from './iconRegistry';
 
 export interface TabItem<T extends string> {
     id: T;
+    icon: IconName;
     label: ReactNode;
     count?: number;
 }
@@ -30,7 +33,8 @@ export function Tabs<T extends string>({label, idPrefix, panelId, tabs, selected
                         event.currentTarget.focus({focusVisible: false} as FocusOptions);
                         onSelect(tab.id);
                     }}>
-                        {tab.label}
+                        <Icon name={tab.icon}/>
+                        <span className="tabs-tab__label">{tab.label}</span>
                         <CountBadge count={tab.count ?? 0}/>
                     </Trigger>
                 ))}

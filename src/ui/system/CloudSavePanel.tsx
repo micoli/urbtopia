@@ -5,6 +5,7 @@ import type { CloudAccount, CloudSaveVersion } from '../../persistence/cloud/typ
 import type { EmailCodeActions, EmailCodeState } from '../../store/cloudStore';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
+import { SectionHeading } from '../common/SectionHeading';
 import { CloudAccountSection } from './CloudAccountSection';
 import { CloudStatusLine } from './CloudStatusLine';
 import { CloudVersionList } from './CloudVersionList';
@@ -34,19 +35,23 @@ export function CloudSavePanel({ status, versions, account, emailCode, onSaveNow
   }, [focusAccount]);
   const busy = status.kind === 'syncing' || status.kind === 'conflict';
   return (
-    <section className="cloud-save" ref={section} tabIndex={-1}>
-      <h3>{t('cloud.title')}</h3>
-      <CloudStatusLine status={status} />
-      <CloudAccountSection account={account} emailCode={emailCode} codeActions={codeActions} onSignOut={onSignOut} />
-      <ButtonRow align="stretch" spaced>
-        <ActionButton disabled={busy} onClick={onSaveNow}>
-          {t('cloud.saveNow')}
-        </ActionButton>
-        <ActionButton onClick={onShowVersions}>{t('cloud.versions.show')}</ActionButton>
-        {account?.email ? <ActionButton onClick={onOpenSocial}>{t('cloud.openSocial')}</ActionButton> : null}
-        <DeleteCloudDataButton onDelete={onDelete} />
-      </ButtonRow>
-      {versions ? <CloudVersionList versions={versions} onRestore={onRestore} /> : null}
+    <section className="settings-section" ref={section} tabIndex={-1}>
+      <SectionHeading icon="cloud">{t('cloud.title')}</SectionHeading>
+      <div className="settings-section__card">
+        <div className="settings-section__body">
+          <CloudStatusLine status={status} />
+          <CloudAccountSection account={account} emailCode={emailCode} codeActions={codeActions} onSignOut={onSignOut} />
+          <ButtonRow align="stretch" spaced>
+            <ActionButton disabled={busy} onClick={onSaveNow}>
+              {t('cloud.saveNow')}
+            </ActionButton>
+            <ActionButton onClick={onShowVersions}>{t('cloud.versions.show')}</ActionButton>
+            {account?.email ? <ActionButton onClick={onOpenSocial}>{t('cloud.openSocial')}</ActionButton> : null}
+            <DeleteCloudDataButton onDelete={onDelete} />
+          </ButtonRow>
+          {versions ? <CloudVersionList versions={versions} onRestore={onRestore} /> : null}
+        </div>
+      </div>
     </section>
   );
 }

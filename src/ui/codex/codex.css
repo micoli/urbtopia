@@ -4,6 +4,7 @@
   height: min(800px, calc(100dvh - 24px));
   max-width: none;
   max-height: none;
+  margin-top: max(var(--space-12), env(safe-area-inset-top, 0px));
   padding: 0;
   border: 0;
   border-radius: var(--radius-3xl);
