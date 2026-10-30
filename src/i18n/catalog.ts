@@ -1031,6 +1031,7 @@ export const CATALOG = {
   'club.event.out': ['{player} is out', '{player} est retiré'],
   'club.event.change': ['{player} pitches in place of {replaced}', '{player} lance à la place de {replaced}'],
   'club.event.approach': ['Approach: {approach}', 'Style : {approach}'],
+  'club.pitch': ['Pitch: the players and the ball', 'Terrain : les joueurs et le ballon'],
   'attraction.tourists': ['Tourists per day', 'Touristes par jour'],
   'attraction.ticket': ['Ticket', 'Billet'],
   'attraction.takings': ['Takings', 'Recettes'],

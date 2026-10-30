@@ -90,6 +90,14 @@ test.describe('football club', () => {
     await expect(dialog.getByRole('list', { name: 'Squad' }).locator('li')).toHaveCount(19);
     await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().send({ type: 'SkipTime', hours: 7 }));
     await dialog.getByRole('tab', { name: /^Match/ }).click();
+    const pitch = dialog.getByRole('img', { name: 'Pitch: the players and the ball' });
+    await expect(pitch).toBeVisible();
+    await expect(pitch.locator('.club-pitch__player')).toHaveCount(22);
+    const ballAt = () => pitch.locator('.club-pitch__ball').evaluate(element => getComputedStyle(element).transform);
+    const kickOff = await ballAt();
+    await dialog.getByRole('button', { name: 'Play', exact: true }).click();
+    await expect.poll(ballAt).not.toBe(kickOff);
+    await pitch.screenshot({ path: process.env.PITCH_SHOT ?? 'test-results/pitch.png' });
     await dialog.getByRole('button', { name: 'Skip to the end' }).click();
     await expect(dialog.getByText('Minute 90')).toBeVisible();
     await dialog.getByRole('tab', { name: /Championship/ }).click();

@@ -177,6 +177,13 @@
   --shadow-lg-strong: 0 8px 24px var(--black-a50);
   --shadow-xl: 0 16px 64px var(--black-a45);
 
+  /* Football pitch */
+  --color-pitch: #2f7d3a;
+  --color-pitch-stripe: #358a41;
+  --color-pitch-line: var(--white-a85);
+  --color-team-home: var(--color-accent);
+  --color-team-away: var(--color-danger);
+
   /* Motion */
   --duration-fast: 120ms;
   --duration-base: 200ms;

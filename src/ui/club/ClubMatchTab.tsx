@@ -1,13 +1,19 @@
 import { useMemo } from 'react';
-import { FOOTBALL, fixtureSeedOf, nextFixture, playUntil, type Building } from '../../core';
+import { FOOTBALL, effectiveLineup, fixtureSeedOf, isFormation, nextFixture, playUntil, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { ClubMatchBar } from './ClubMatchBar';
 import { ClubMatchControls } from './ClubMatchControls';
 import { ClubMatchFeed } from './ClubMatchFeed';
+import { FootballPitch } from './FootballPitch';
 import { useLiveMatch } from './useLiveMatch';
 
 const TICK_MS = 120;
+
+const formationOf = (club: NonNullable<Building['club']>) => {
+  const { formation } = effectiveLineup(club);
+  return isFormation(formation) ? formation : FOOTBALL.defaultFormation;
+};
 
 export function ClubMatchTab({ building }: { building: Building }) {
   const club = building.club!;
@@ -25,6 +31,7 @@ export function ClubMatchTab({ building }: { building: Building }) {
       <h3>{state.sides[0].name} {state.score[0]} – {state.score[1]} {opponent.name}</h3>
       <p>{t('club.match.minute').replace('{minute}', `${state.minute}`)}</p>
       <ClubMatchBar live={live} />
+      <FootballPitch state={state} formation={formationOf(club)} seed={fixtureSeedOf(club, index)} />
       {live.finished ? null : <ClubMatchControls state={state} onDecide={live.decide} />}
       <ClubMatchFeed events={state.events} />
     </>
