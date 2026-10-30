@@ -97,7 +97,8 @@ export interface BaseballSide {
 }
 
 export type BaseballEvent =
-  | { inning: number; half: 0 | 1; side: 0 | 1; type: 'single' | 'double' | 'homer' | 'walk' | 'strikeout' | 'out'; player: string; runs: number }
+  // `outs` and `bases` are the state after the play: the outs of the half-inning and the runners on first, second and third.
+  | { inning: number; half: 0 | 1; side: 0 | 1; type: 'single' | 'double' | 'homer' | 'walk' | 'strikeout' | 'out'; player: string; runs: number; outs: number; bases: readonly [boolean, boolean, boolean] }
   | { inning: number; half: 0 | 1; side: 0 | 1; type: 'change'; player: string; replaced: string }
   | { inning: number; half: 0 | 1; side: 0 | 1; type: 'approach'; approach: Approach };
 
@@ -205,7 +206,7 @@ function playHalf(state: BaseballState, half: 0 | 1): BaseballState {
     }
     sides = (batting === 0 ? [{ ...at, next: at.next + 1 }, { ...defence, pitches: defence.pitches + BASEBALL.pitchesPerPlate }] : [{ ...defence, pitches: defence.pitches + BASEBALL.pitchesPerPlate }, { ...at, next: at.next + 1 }]) as [BaseballSide, BaseballSide];
     if (runs > 0) score = batting === 0 ? [score[0] + runs, score[1]] : [score[0], score[1] + runs];
-    events = [...events, { inning, half, side: batting, type, player: batter.name, runs }];
+    events = [...events, { inning, half, side: batting, type, player: batter.name, runs, outs, bases: [...bases] }];
     // A walk-off: the home side takes the lead in the last inning or later.
     if (batting === 0 && inning >= BASEBALL.innings && score[0] > score[1]) return { ...state, sides, score, events, rng, over: true, inning: inning - 1 };
   }

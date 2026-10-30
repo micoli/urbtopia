@@ -96,6 +96,24 @@ describe('Baseball simulation', () => {
   });
 });
 
+describe('Baseball events', () => {
+  it('carry the outs and the runners after each play, consistent with the rules', () => {
+    const club = founded();
+    const { events } = playUntil(club, opponent(55), 6, []);
+    const plays = events.filter(event => event.type !== 'change' && event.type !== 'approach') as Extract<(typeof events)[number], { outs: number }>[];
+    expect(plays.length).toBeGreaterThan(40);
+    for (const play of plays) {
+      expect(play.outs).toBeGreaterThanOrEqual(0);
+      expect(play.outs).toBeLessThanOrEqual(3);
+      if (play.type === 'homer') expect(play.bases).toEqual([false, false, false]);
+      if (play.type === 'single') expect(play.bases[0]).toBe(true);
+      if (play.type === 'double') expect(play.bases[1]).toBe(true);
+    }
+    expect(plays.filter(play => play.outs === 3)).toHaveLength(plays.filter(play => ['out', 'strikeout'].includes(play.type) && play.outs === 3).length);
+    expect(plays.some(play => play.bases.some(Boolean))).toBe(true);
+  });
+});
+
 describe('Baseball in the Championship', () => {
   const city = (): GameState => ({ ...newGame({ seed: 'baseball-city', now: 0 }), nextId: 100, urbs: 10_000, tutorial: null, adaptationUntil: 0, lastSeen: 0, buildings: [createBuilding(1, 'baseballField', 60, 60, 0)] });
   const send = (state: GameState, command: Command) => {

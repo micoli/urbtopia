@@ -4,6 +4,7 @@ import { BASEBALL_RULES, createBuilding, createClub, playBaseball, startChampion
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { BaseballFeed } from './BaseballFeed';
+import { BaseballField } from './BaseballField';
 import { BaseballLineupTab } from './BaseballLineupTab';
 import { BaseballMatchTab } from './BaseballMatchTab';
 
@@ -51,5 +52,18 @@ describe('Baseball feed', () => {
     const html = renderToStaticMarkup(<BaseballFeed events={state.events} />);
     expect(html.match(/<li/g)).toHaveLength(state.events.length);
     expect(html).not.toContain('{player}');
+  });
+});
+
+describe('Baseball field', () => {
+  it('draws the diamond with nine fielders and the ball on the mound before the first play', () => {
+    const club = field().club!;
+    const state = playBaseball(club, club.championship!.opponents[0]!, 3, [], 0);
+    const html = renderToStaticMarkup(<BaseballField state={state} seed={3} />);
+    expect(html).toContain(t('club.field'));
+    expect(html).toContain(t('club.field.empty'));
+    expect(html.match(/club-field__player /g)).toHaveLength(9);
+    expect(html.match(/club-field__base/g)!.length).toBeGreaterThanOrEqual(4);
+    expect(html).toContain('club-field__ball');
   });
 });

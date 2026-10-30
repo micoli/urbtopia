@@ -134,6 +134,14 @@ test.describe('baseball club', () => {
     await dialog.getByRole('button', { name: 'Pick the best lineup' }).click();
     await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().send({ type: 'SkipTime', hours: 7 }));
     await dialog.getByRole('tab', { name: /^Match/ }).click();
+    const field = dialog.getByRole('img', { name: 'Field: the fielders, the runners and the ball' });
+    await expect(field).toBeVisible();
+    await expect(field.locator('.club-field__player')).toHaveCount(9);
+    const ballAt = () => field.locator('.club-field__ball').evaluate(element => getComputedStyle(element).transform);
+    const first = await ballAt();
+    await dialog.getByRole('button', { name: 'Play', exact: true }).click();
+    await expect.poll(ballAt, { timeout: 15_000 }).not.toBe(first);
+    await field.screenshot({ path: process.env.FIELD_SHOT ?? 'test-results/field.png' });
     await dialog.getByRole('button', { name: 'Change pitcher' }).first().click();
     await dialog.getByRole('button', { name: 'Skip to the end' }).click();
     await expect(dialog.getByText(/^Inning (9|1[0-2])$/)).toBeVisible();

@@ -3,6 +3,7 @@ import { BASEBALL, fixtureSeedOf, nextFixture, playBaseball, type Building } fro
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { BaseballFeed } from './BaseballFeed';
+import { BaseballField } from './BaseballField';
 import { BaseballMatchControls } from './BaseballMatchControls';
 import { ClubMatchBar } from './ClubMatchBar';
 import { useLiveMatch } from './useLiveMatch';
@@ -26,6 +27,7 @@ export function BaseballMatchTab({ building }: { building: Building }) {
       <h3>{state.sides[0].name} {state.score[0]} – {state.score[1]} {opponent.name}</h3>
       <p>{t('club.match.inning').replace('{inning}', `${state.inning}`)}</p>
       <ClubMatchBar live={live} finished={state.over} />
+      <BaseballField state={state} seed={fixtureSeedOf(club, index)} />
       {state.over ? null : <BaseballMatchControls state={state} onDecide={live.decide} />}
       <BaseballFeed events={state.events} />
     </>
