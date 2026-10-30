@@ -1,7 +1,7 @@
 import { flagOfCommand, isFlagEnabled } from '../featureFlags/featureFlags';
 import { createCommandGateway } from './commandGateway';
 import { readOnlyStore } from './readOnlyStore';
-import { toastKeyForEvents, toastStore } from './toastStore';
+import { announceEvents, toastStore } from './toastStore';
 
 export const liveCommandGateway = createCommandGateway({
   isReadOnly: () => readOnlyStore.getState().readOnly,
@@ -10,6 +10,6 @@ export const liveCommandGateway = createCommandGateway({
     const flag = flagOfCommand(command.type);
     return flag === undefined || isFlagEnabled(flag);
   },
-  toastForEvents: toastKeyForEvents,
+  announceEvents,
   showToast: (key) => toastStore.getState().show(key),
 });

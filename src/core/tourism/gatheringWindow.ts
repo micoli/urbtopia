@@ -10,6 +10,20 @@ export const movingGathering = (building: Pick<Building, 'attraction'>, now: num
   return gathering && isCrowdMoving(gathering, now) ? gathering : undefined;
 };
 
+export type GatheringPhase = 'planned' | 'arriving' | 'live' | 'leaving';
+
+export const gatheringPhase = (gathering: Pick<GatheringData, 'startsAt' | 'endsAt'>, now: number): GatheringPhase => {
+  if (now < gathering.startsAt - CROWD_WINDOW_MS) return 'planned';
+  if (now < gathering.startsAt) return 'arriving';
+  return now < gathering.endsAt ? 'live' : 'leaving';
+};
+
+export const gatheringPhaseEnd = (gathering: Pick<GatheringData, 'startsAt' | 'endsAt'>, phase: GatheringPhase): number => {
+  if (phase === 'planned') return gathering.startsAt - CROWD_WINDOW_MS;
+  if (phase === 'arriving') return gathering.startsAt;
+  return phase === 'live' ? gathering.endsAt : gathering.endsAt + CROWD_WINDOW_MS;
+};
+
 // How far the neighbours of an Attraction without a reach of its own feel its crowd.
 export const GATHERING_REACH = 14;
 

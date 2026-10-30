@@ -122,7 +122,20 @@ function isAttractionData(value: unknown): boolean {
     (value.boostUntil === undefined || isNumber(value.boostUntil)) &&
     (value.meetingAt === undefined || isNumber(value.meetingAt)) &&
     (value.shows === undefined || isInt(value.shows, 0)) &&
-    (value.gathering === undefined || isGatheringData(value.gathering))
+    (value.gathering === undefined || isGatheringData(value.gathering)) &&
+    (value.lastGathering === undefined || isGatheringResult(value.lastGathering))
+  );
+}
+
+function isGatheringResult(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    (value.kind === 'show' || value.kind === 'match') &&
+    isNumber(value.at) &&
+    isNonNegative(value.crowd) &&
+    isNonNegative(value.revenue) &&
+    isNonNegative(value.cost) &&
+    (value.artist === undefined || typeof value.artist === 'string')
   );
 }
 

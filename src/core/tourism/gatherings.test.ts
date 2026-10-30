@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { advance, createBuilding, dispatch, newGame, type Building, type Command, type GameState } from '../index';
 import { artistOffer } from './artists';
-import { GATHERING, gatheringCapacityOf, gatheringCostOf, isGatheringActive, previewGathering } from './gatherings';
+import { GATHERING, advanceGatherings, cancelShow, gatheringCapacityOf, gatheringCostOf, isGatheringActive, previewGathering, scheduleShow } from './gatherings';
 import { TAKINGS, takingsOf } from './takings';
 
 const H = TAKINGS.hourMs;
@@ -86,5 +86,43 @@ describe('Gathering: Shows', () => {
     const stepped = [2, 4, 6, 8, 10].reduce((state, hour) => advance(state, hour * H).state, scheduled);
     expect(hall(stepped).attraction!.cooldownUntil).toBe(hall(once).attraction!.cooldownUntil);
     expect(takingsOf(hall(stepped))).toBeCloseTo(takingsOf(hall(once)), 5);
+  });
+});
+
+describe('Show cancelling and result', () => {
+  const H = TAKINGS.hourMs;
+  const hall = (extra: Partial<Building> = {}): Building => ({ ...createBuilding(1, 'theater', 10, 10, 0), ...extra });
+  const base = (building: Building, urbs = 10_000): GameState => ({ ...newGame({ seed: 'cancel', now: 0 }), urbs, tutorial: null, adaptationUntil: 0, lastSeen: 0, buildings: [building] });
+  const scheduled = (startsInHours: number) => {
+    const result = scheduleShow(base(hall()), 1, startsInHours);
+    if (!('state' in result)) throw new Error(result.key);
+    return result;
+  };
+
+  it('refunds half of a Show cancelled before it starts and frees the Attraction', () => {
+    const planned = scheduled(3).state;
+    const spent = 10_000 - planned.urbs;
+    const cancelled = cancelShow(planned, 1);
+    if (!('state' in cancelled)) throw new Error(cancelled.key);
+    expect(cancelled.state.urbs).toBe(planned.urbs + Math.floor(spent * GATHERING.cancelRefund));
+    expect(cancelled.state.buildings[0]!.attraction?.gathering).toBeUndefined();
+  });
+
+  it('refuses to cancel a Show under way, or none at all', () => {
+    expect(cancelShow(scheduled(0).state, 1)).toEqual({ key: 'error.eventStarted' });
+    expect(cancelShow(base(hall()), 1)).toEqual({ key: 'error.noEvent' });
+  });
+
+  it('announces a Show that starts at once', () => {
+    expect(scheduled(0).events).toEqual([{ type: 'GatheringStarted', buildingId: 1 }]);
+    expect(scheduled(1).events).toEqual([]);
+  });
+
+  it('settles a Gathering once its crowd has gone, with a result to read', () => {
+    const planned = scheduled(0).state;
+    const gathering = planned.buildings[0]!.attraction!.gathering!;
+    const settled = advanceGatherings(planned, gathering.endsAt, gathering.endsAt + 2 * H);
+    expect(settled.events).toContainEqual({ type: 'GatheringSettled', buildingId: 1, crowd: gathering.crowd, revenue: gathering.revenue });
+    expect(settled.state.buildings[0]!.attraction!.lastGathering).toMatchObject({ kind: 'show', crowd: gathering.crowd, revenue: gathering.revenue, cost: gathering.cost });
   });
 });

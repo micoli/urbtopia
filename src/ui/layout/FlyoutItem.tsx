@@ -6,7 +6,7 @@ import { Icon } from '../common/Icon';
 
 interface FlyoutItemProps {
   label: string;
-  badge?: string;
+  badge?: ReactNode;
   cost?: ReactNode;
   guided?: boolean;
   onChoose: () => void;

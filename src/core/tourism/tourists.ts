@@ -6,6 +6,8 @@ import { cityAttractiveness } from '../venues/hotel';
 export const TOURISM = {
   tierBonus: 0.25,
   hotelSpendingBonus: 0.5,
+  // What a Tourist spends during a visit, in Tickets: the entry, then food and souvenirs on site.
+  spendingPerEntry: 3,
   // Tourists drawn after a successful Championship, relative to usual.
   championshipBoost: 1.5,
 };

@@ -20,15 +20,18 @@ export const HOTEL = {
   reputationRate: 0.05,
   usagePerOccupiedRoom: 10,
   standingComfort: [0, 2, 4] as readonly number[],
-  attractiveBuildings: ['casino', 'marina', 'theater', 'concertHall', 'communityHall', 'baseballField', 'stadium', 'park'] as readonly string[],
+  attractiveBuildings: ['casino', 'marina', 'theater', 'concertHall', 'communityHall', 'baseballField', 'stadium', 'park', 'colosseum', 'footballStadium', 'masMuseum', 'niteroiMuseum', 'eyeMuseum', 'ordosMuseum', 'bilbaoMuseum', 'ferris-wheel', 'tubularRollerCoaster'] as readonly string[],
   attractiveCount: 6,
 };
 
 export const reputationOf = (venue: VenueData): number => venue.reputation ?? HOTEL.reputationStart;
 
+const ATTRACTIVE_TYPES: ReadonlySet<string> = new Set(HOTEL.attractiveBuildings);
+
+export const attractivePlaces = (state: GameState): number => state.buildings.filter(building => ATTRACTIVE_TYPES.has(building.type)).length;
+
 export function cityAttractiveness(state: GameState): number {
-  const count = state.buildings.filter(building => HOTEL.attractiveBuildings.includes(building.type)).length;
-  return 0.6 + 0.4 * Math.min(1, count / HOTEL.attractiveCount);
+  return 0.6 + 0.4 * Math.min(1, attractivePlaces(state) / HOTEL.attractiveCount);
 }
 
 export const priceMultiplier = (price: number): number => HOTEL.priceBase + HOTEL.priceStep * price;

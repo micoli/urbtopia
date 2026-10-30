@@ -21,6 +21,7 @@ import {ObjectivesSection} from './management/ObjectivesSection';
 import {ProductionSection} from './management/ProductionSection';
 import {SectionNavigation} from './management/SectionNavigation';
 import {TemperatureSection} from './management/TemperatureSection';
+import {TourismSection} from './management/TourismSection';
 import {TrafficSection} from './management/TrafficSection';
 import {TransportMapSection} from './management/transportMap/TransportMapSection';
 import {TransportSection} from './management/TransportSection';
@@ -65,11 +66,12 @@ function CityManagementDialog() {
             <Tabs label={t('eco.title')} idPrefix="eco-tab" panelId="eco-panel" tabs={tabs} selected={selected} onSelect={setTab}/>
             <div id="eco-panel" role="tabpanel" aria-labelledby={`eco-tab-${selected}`}>
             {selected === 'cities' ? <CitiesSection/> : selected === 'shipments' ? <ShipmentsSection/> : <>
-            <CityOverview state={state} energy={energy} green={green} climate={climate} transport={transport} congestion={congestion} onShowTransport={() => showSection('eco-transport')} onShowTraffic={() => showSection('eco-traffic')} onShowNeeds={() => showSection('eco-needs')} onShowTemperature={() => showSection('eco-temperature')} onShowWaste={() => showSection('eco-waste')}/>
+            <CityOverview state={state} energy={energy} green={green} climate={climate} transport={transport} congestion={congestion} onShowTransport={() => showSection('eco-transport')} onShowTraffic={() => showSection('eco-traffic')} onShowNeeds={() => showSection('eco-needs')} onShowTemperature={() => showSection('eco-temperature')} onShowWaste={() => showSection('eco-waste')} onShowTourism={() => showSection('eco-tourism')}/>
             <SectionNavigation onSelect={showSection}/>
             <p className="eco-units">{t('eco.units')}</p>
             <div className="eco-sections">
                 <ProductionSection state={state} energy={energy}/>
+                <TourismSection state={state}/>
                 <EnergySection state={state} energy={energy} green={green} transport={transport}/>
                 <WaterSection state={state}/>
                 <ServicesSection state={state}/>

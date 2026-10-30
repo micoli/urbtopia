@@ -13,7 +13,9 @@ function setup(options: { readOnly?: boolean; toast?: string | null } = {}) {
   const gateway = createCommandGateway({
     isReadOnly: () => options.readOnly ?? false,
     now: () => NOW,
-    toastForEvents: () => (options.toast ?? null) as never,
+    announceEvents: () => {
+      if (options.toast) showToast(options.toast);
+    },
     showToast,
   });
   return { gateway, showToast };
@@ -76,7 +78,7 @@ describe('tutorial end notice', () => {
 });
 
 describe('command gateway and feature flags', () => {
-  const gatewayWith = (enabled: boolean) => createCommandGateway({ isReadOnly: () => false, now: () => NOW, toastForEvents: () => null, showToast: vi.fn(), isCommandEnabled: command => command.type !== 'SellBuilding' || enabled });
+  const gatewayWith = (enabled: boolean) => createCommandGateway({ isReadOnly: () => false, now: () => NOW, announceEvents: () => {}, showToast: vi.fn(), isCommandEnabled: command => command.type !== 'SellBuilding' || enabled });
 
   it('refuses a command of a feature that is off, without effects', () => {
     const handler = vi.fn();

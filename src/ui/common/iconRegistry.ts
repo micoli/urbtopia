@@ -2,7 +2,7 @@ import {
   Anchor, ArrowDown, ArrowLeft, ArrowRight, ArrowLeftRight, ArrowUp, BookOpen, Bus, BusFront, Car, ChartColumn, Check, ChevronDown, Circle, ChevronRight, ClipboardList,
   Coins, Droplet, Info, Factory, Footprints, Globe, Hammer, HeartPulse, Lock, Map, Medal, Menu, Move, Moon, RotateCcw, RotateCw, Route,
   Settings, Snail, Sparkles, Store, Sun, Sunrise, Sunset, Thermometer, Trash2, Trees, TrainFront, TrendingUp, TriangleAlert, Trophy,
-  Repeat, Undo2, Users, Wheat, Wrench, X, Zap, type LucideIcon,
+  Repeat, Music, Star, Ticket, Undo2, Users, Wheat, Wrench, X, Zap, type LucideIcon,
 } from 'lucide-react';
 
 export const ICONS = {
@@ -60,6 +60,9 @@ export const ICONS = {
   market: Store,
   stats: ChartColumn,
   globe: Globe,
+  music: Music,
+  star: Star,
+  ticket: Ticket,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

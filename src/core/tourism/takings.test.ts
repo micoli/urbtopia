@@ -71,3 +71,17 @@ describe('Attraction Ticket and Takings', () => {
     expect(boostOf(boosted.buildings[0]!, 6 * H)).toBe(1);
   });
 });
+
+describe('Attraction advance', () => {
+  it('leaves a capped Attraction untouched', () => {
+    const cap = attractionTakingsCapOf(building(1, 'colosseum'));
+    const full = building(1, 'colosseum', { attraction: { takings: cap } });
+    const state = city(full);
+    expect(advanceAttractions(state, 0, H).buildings[0]).toBe(full);
+  });
+
+  it('pays back a mid-sized Attraction within days, not months', () => {
+    const hall = building(1, 'concertHall');
+    expect(2000 / earningsPerHour(hall, 0.8, 1)).toBeLessThan(5 * TAKINGS.hoursPerDay);
+  });
+});

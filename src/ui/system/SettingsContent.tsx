@@ -45,12 +45,12 @@ export function SettingsContent() {
             {t('settings.install')}
           </ActionButton>
         ) : null}
-          <ActionButton onClick={() => skipTime(6)} disabled={challengeRunning} title={challengeRunning ? t('error.challengeInProgress') : undefined}>
-            +6
-          </ActionButton>
-          <ActionButton onClick={() => skipTime(12)} disabled={challengeRunning} title={challengeRunning ? t('error.challengeInProgress') : undefined}>
-            {t('settings.skip12')}
-          </ActionButton>
+          {[1, 6, 12].map(skip =>
+              <ActionButton onClick={() => skipTime(skip)} disabled={challengeRunning}
+                            title={challengeRunning ? t('error.challengeInProgress') : undefined}>
+                  {t(`settings.skip${skip}`)}
+              </ActionButton>
+          )}
         <ActionButton onClick={exportCurrentCity}>
           {t('settings.export')}
         </ActionButton>

@@ -101,11 +101,22 @@ export interface GatheringData {
   revenue: number;
 }
 
+// What the last Gathering of an Attraction drew and earned, for the player to compare.
+export interface GatheringResult {
+  kind: GatheringData['kind'];
+  at: number;
+  crowd: number;
+  revenue: number;
+  cost: number;
+  artist?: string;
+}
+
 // Ticket level of an Attraction (0 lowest), the Urbs its Tourists have paid and nobody has collected, and its Gathering.
 export interface AttractionData {
   ticket?: number;
   takings: number;
   gathering?: GatheringData;
+  lastGathering?: GatheringResult;
   cooldownUntil?: number;
   // Shows scheduled so far: with the building it seeds the Artists offered for the next one.
   shows?: number;

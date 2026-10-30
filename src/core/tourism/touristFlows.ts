@@ -45,27 +45,29 @@ export function roadGate(graph: RoadGraph): Coord | null {
   return best?.tile ?? null;
 }
 
-function roadPath(graph: RoadGraph, from: Coord, targets: readonly Coord[]): Coord[] | null {
-  const wanted = new Set(targets.map(tileKey));
+// Every Road tile reachable from `from`, in visiting order, with the tile it was reached from.
+function roadTree(graph: RoadGraph, from: Coord): Map<string, string | null> {
   const parents = new Map<string, string | null>([[tileKey(from), null]]);
-  const queue = [tileKey(from)];
-  for (let index = 0; index < queue.length; index++) {
-    const key = queue[index]!;
-    if (wanted.has(key)) {
-      const path: Coord[] = [];
-      for (let step: string | null | undefined = key; step !== null && step !== undefined; step = parents.get(step)) {
-        const [x = 0, y = 0] = step.split(',').map(Number);
-        path.push({ x, y });
-      }
-      return path;
-    }
+  for (const key of parents.keys()) {
     const [x = 0, y = 0] = key.split(',').map(Number);
     for (const next of neighboursOf(graph, { x, y })) {
       const nextKey = tileKey(next);
-      if (parents.has(nextKey)) continue;
-      parents.set(nextKey, key);
-      queue.push(nextKey);
+      if (!parents.has(nextKey)) parents.set(nextKey, key);
     }
+  }
+  return parents;
+}
+
+function roadPath(tree: ReadonlyMap<string, string | null>, targets: readonly Coord[]): Coord[] | null {
+  const wanted = new Set(targets.map(tileKey));
+  for (const key of tree.keys()) {
+    if (!wanted.has(key)) continue;
+    const path: Coord[] = [];
+    for (let step: string | null | undefined = key; step !== null && step !== undefined; step = tree.get(step)) {
+      const [x = 0, y = 0] = step.split(',').map(Number);
+      path.push({ x, y });
+    }
+    return path;
   }
   return null;
 }
@@ -77,6 +79,7 @@ export function touristFlows(state: GameState, graph: RoadGraph, walkable: Pedes
   const attractiveness = cityAttractiveness(state);
   const gates = state.buildings.filter(building => (TOURIST_GATES as readonly string[]).includes(building.type));
   const gate = roadGate(graph);
+  const tree = gate && roadTree(graph, gate);
   const flows: TouristFlow[] = [];
   for (const attraction of attractions) {
     const gathering = movingGathering(attraction, now);
@@ -84,13 +87,13 @@ export function touristFlows(state: GameState, graph: RoadGraph, walkable: Pedes
     if (tourists <= 0) continue;
     const sidewalks = accessNodes(state, walkable, attraction);
     if (gathering && gathering.citizens > 0) flows.push({ to: attraction.id, mode: 'walk', count: gathering.citizens, path: [], nodes: sidewalks, crossings: [] });
-    const walk = walkFrom(walkable, sidewalks, maxWalkCost());
-    const near = gates.flatMap(station => {
+    const walk = gates.length > 0 ? walkFrom(walkable, sidewalks, maxWalkCost()) : null;
+    const near = walk && gates.flatMap(station => {
       const target = nearestTarget(walk, accessNodes(state, walkable, station));
       return target !== null && target.cost <= WALKING.thresholds.culture ? [target] : [];
     }).sort((a, b) => a.cost - b.cost)[0];
     let byCar = tourists;
-    if (near) {
+    if (walk && near) {
       const count = tourists * STATION_SHARE;
       flows.push({ to: attraction.id, mode: 'walk', count, path: [], nodes: nodesOnPath(walk, near.node), crossings: crossingsOnPath(walk, near.node) });
       byCar -= count;
@@ -99,8 +102,8 @@ export function touristFlows(state: GameState, graph: RoadGraph, walkable: Pedes
       flows.push({ to: attraction.id, mode: 'transit', count, path: [], nodes: [], crossings: [] });
       byCar -= count;
     }
-    if (byCar <= 0 || gate === null) continue;
-    const path = roadPath(graph, gate, frontTiles(attraction.type, attraction.x, attraction.y, attraction.rotation, attraction.tier).filter(tile => graph.has(tileKey(tile))));
+    if (byCar <= 0 || tree === null) continue;
+    const path = roadPath(tree, frontTiles(attraction.type, attraction.x, attraction.y, attraction.rotation, attraction.tier).filter(tile => graph.has(tileKey(tile))));
     if (path) flows.push({ to: attraction.id, mode: 'car', count: byCar, path, nodes: [], crossings: [] });
   }
   return flows;

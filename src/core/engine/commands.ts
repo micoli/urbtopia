@@ -29,7 +29,7 @@ import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { collectCatch } from '../water/fishing';
 import { collectAttractionTakings, setTicket } from '../tourism/takings';
 import { foundClub, recordMatchDecisions, releaseClubPlayer, setClubLineup, signClubPlayer } from '../clubs/clubCommands';
-import { scheduleShow } from '../tourism/gatherings';
+import { cancelShow, scheduleShow } from '../tourism/gatherings';
 import { isAttraction } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
@@ -121,6 +121,7 @@ export type Command =
   | { readonly type: 'HireStaff'; readonly buildingId: number; readonly role: StaffRole }
   | { readonly type: 'ReleaseStaff'; readonly buildingId: number; readonly role: StaffRole }
   | { readonly type: 'ScheduleShow'; readonly buildingId: number; readonly startsInHours: number; readonly artistId?: string }
+  | { readonly type: 'CancelShow'; readonly buildingId: number }
   | { readonly type: 'FoundClub'; readonly buildingId: number }
   | { readonly type: 'SetLineup'; readonly buildingId: number; readonly formation: string; readonly starters: readonly number[]; readonly tactic: string }
   | { readonly type: 'PlayMatch'; readonly buildingId: number; readonly decisions: readonly MatchDecision[] }
@@ -397,6 +398,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return hireStaff(state, command.buildingId, command.role);
     case 'ReleaseStaff':
       return releaseStaff(state, command.buildingId, command.role);
+    case 'CancelShow':
+      return cancelShow(state, command.buildingId);
     case 'ScheduleShow':
       return scheduleShow(state, command.buildingId, command.startsInHours, command.artistId);
     case 'FoundClub':

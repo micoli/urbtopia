@@ -31,7 +31,7 @@ export const touristsPerDay = (building: Pick<Building, 'type' | 'tier' | 'attra
 
 // Urbs an Attraction earns per hour at its Ticket, before the cap.
 export const earningsPerHour = (building: Pick<Building, 'type' | 'tier' | 'attraction'>, attractiveness: number, spending: number): number =>
-  (touristsPerDay(building, attractiveness) / TAKINGS.hoursPerDay) * tierOf(building).price * spending;
+  (touristsPerDay(building, attractiveness) / TAKINGS.hoursPerDay) * tierOf(building).price * TOURISM.spendingPerEntry * spending;
 
 export function advanceAttractions(state: GameState, from: number, to: number): GameState {
   if (to <= from || !state.buildings.some(isAttraction)) return state;
@@ -44,6 +44,7 @@ export function advanceAttractions(state: GameState, from: number, to: number): 
     const boosted = Math.max(0, Math.min(to, building.attraction?.boostUntil ?? 0) - from) / (to - from);
     const rate = earningsPerHour(building, attractiveness, spending) * (1 + (TOURISM.championshipBoost - 1) * boosted);
     const takings = Math.max(held, Math.min(attractionTakingsCapOf(building), held + rate * hours));
+    if (takings === held && building.attraction) return building;
     return { ...building, attraction: { ...building.attraction, takings } };
   });
   return { ...state, buildings };

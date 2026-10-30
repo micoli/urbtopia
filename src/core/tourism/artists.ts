@@ -2,7 +2,7 @@ import artistData from '../../../assets/defs/tourism/artists.json' with { type: 
 import { citizensOf } from '../buildings/city';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import type { Building, GameState } from '../engine/state';
-import { cityBenefits } from '../environment/wellbeing';
+import { cityWellbeingRatio } from './cityWellbeing';
 import { hashSeed, nextRandom } from '../engine/random';
 import type { Artist } from './artistSchema';
 
@@ -28,7 +28,7 @@ export const artistById = (id: string): Artist | undefined => ARTISTS.find(artis
 // The highest Fame the city draws: the larger and the happier it is, the bigger the names that come.
 export function fameCeiling(state: GameState): number {
   const citizens = state.buildings.reduce((total, building) => total + (isHomeType(building.type) ? citizensOf(building.tier) : 0), 0);
-  const score = 0.5 * clamp01(cityBenefits(state).wellbeing / 100) + 0.5 * clamp01(citizens / ARTIST_RULES.populationForMaxFame);
+  const score = 0.5 * cityWellbeingRatio(state) + 0.5 * clamp01(citizens / ARTIST_RULES.populationForMaxFame);
   return Math.min(MAX_FAME, 1 + Math.floor(score * MAX_FAME));
 }
 

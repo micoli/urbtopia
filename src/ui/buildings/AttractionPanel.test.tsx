@@ -11,6 +11,7 @@ vi.mock('../common/hooks', () => ({
 }));
 
 vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: () => {} }) } }));
+vi.mock('../common/FirstUseHint', () => ({ FirstUseHint: () => null }));
 
 vi.mock('../common/DrawerPanel', () => ({
   DrawerPanel: Object.assign(({ children }: { children?: React.ReactNode }) => <div>{children}</div>, {
@@ -31,9 +32,20 @@ describe('AttractionPanel', () => {
     const html = render({ ...createBuilding(900, 'masMuseum', 57, 56, 0), attraction: { takings: 42.7 } });
     expect(html).toContain(t('attraction.tourists'));
     expect(html).toContain(t('attraction.ticket'));
-    expect(html).toContain(t('attraction.ticketPrice'));
+    expect(html).toContain(t('attraction.earnings'));
     expect(html).toContain(t('attraction.takings'));
     expect(html).toMatch(/radiogroup/);
+  });
+
+  it('compares what each Ticket draws and earns', () => {
+    const html = render(createBuilding(900, 'masMuseum', 57, 56, 0));
+    expect(html.match(/ticket-price/g)).toHaveLength(3);
+    expect(html.match(new RegExp(t('attraction.perHour'), 'g'))?.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('warns when the Takings are full', () => {
+    const museum = createBuilding(900, 'masMuseum', 57, 56, 0);
+    expect(render({ ...museum, attraction: { takings: 100_000 } })).toContain(t('attraction.cap'));
   });
 
   it('marks the current Ticket among the three and states its price', () => {

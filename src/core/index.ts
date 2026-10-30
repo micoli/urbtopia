@@ -226,8 +226,11 @@ export { TOURISM, attractionPowerOf, isAttraction, isAttractionType, spendingFac
 export { TICKETS, TICKET_DEFAULT, TAKINGS, advanceAttractions, attractionTakingsCapOf, collectAttractionTakings, earningsPerHour, setTicket, takingsOf as attractionTakingsOf, ticketOf, touristsPerDay } from './tourism/takings';
 export { STATION_SHARE, TOURIST_GATES, roadGate, touristFlows } from './tourism/touristFlows';
 export type { TouristFlow, TouristMode } from './tourism/touristFlows';
-export { GATHERING, SHOW_TYPES, advanceGatherings, gatheringBoundaries, gatheringCapacityOf, gatheringCostOf, inGatheringCooldown, isGatheringActive, isShowType, previewGathering, scheduleShow } from './tourism/gatherings';
-export { CROWD_WINDOW_MS, GATHERING_REACH, isCrowdMoving, movingGathering } from './tourism/gatheringWindow';
+export { GATHERING, SHOW_TYPES, advanceGatherings, cancelShow, gatheringBoundaries, gatheringCapacityOf, gatheringCostOf, inGatheringCooldown, isGatheringActive, isShowType, previewGathering, scheduleShow } from './tourism/gatherings';
+export { CROWD_WINDOW_MS, GATHERING_REACH, gatheringPhase, gatheringPhaseEnd, isCrowdMoving, movingGathering } from './tourism/gatheringWindow';
+export type { GatheringPhase } from './tourism/gatheringWindow';
+export { attractionRowOf, nextAttractionType, tourismOverview, touristModesOf } from './tourism/overview';
+export type { AttractionRow, TourismAdvice, TourismOverview } from './tourism/overview';
 export { GATHERING_MALUS, gatheringPenaltyOf } from './tourism/gatheringMalus';
 export { shiftAttractionTimers } from './tourism/gatheringWindow';
 export { ARTISTS, ARTIST_OFFER_SIZE, MAX_FAME, artistById, artistOffer, fameCeiling, feeOfArtist } from './tourism/artists';

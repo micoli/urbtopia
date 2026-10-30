@@ -4,9 +4,9 @@ import type { Building, GameState, GatheringData } from '../engine/state';
 import { citizensOf } from '../buildings/city';
 import { definitionOf } from '../buildings/buildingDefinitions';
 import { centerOf } from '../environment/ecology';
-import { cityBenefits } from '../environment/wellbeing';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { isWithinReach } from '../services/facilities';
+import { cityWellbeingRatio } from './cityWellbeing';
 import { artistOffer, feeOfArtist, qualityOfFame, ticketBoostOfFame } from './artists';
 import type { Artist } from './artistSchema';
 import { CROWD_WINDOW_MS, GATHERING_REACH } from './gatheringWindow';
@@ -22,6 +22,7 @@ export const GATHERING = {
   windowMs: CROWD_WINDOW_MS,
   maxMalus: 5,
   cooldownMs: 12 * TAKINGS.hourMs,
+  cancelRefund: 0.5,
   maxDelayHours: 24,
   costPerSeat: 0.4,
   baseFill: 0.3,
@@ -35,6 +36,7 @@ export const GATHERING = {
 };
 
 const clamp01 = (value: number): number => Math.min(1, Math.max(0, value));
+
 
 export const isShowType = (type: string): boolean => (SHOW_TYPES as readonly string[]).includes(type);
 
@@ -60,8 +62,7 @@ export type GatheringPreview = Pick<GatheringData, 'cost' | 'crowd' | 'tourists'
 // The crowd a Gathering would draw now: capacity x fill, split between Tourists and the Citizens in reach.
 export function previewGathering(state: GameState, building: Building, artist?: Artist, qualityOverride?: number): GatheringPreview {
   const quality = qualityOverride ?? (artist ? qualityOfFame(artist.fame) : GATHERING.defaultQuality);
-  const wellbeing = clamp01(cityBenefits(state).wellbeing / 100);
-  const fill = clamp01(GATHERING.baseFill + GATHERING.qualityFill * quality + GATHERING.wellbeingFill * wellbeing) * (TICKETS[ticketOf(building)]?.draw ?? 1);
+  const fill = clamp01(GATHERING.baseFill + GATHERING.qualityFill * quality + GATHERING.wellbeingFill * cityWellbeingRatio(state)) * (TICKETS[ticketOf(building)]?.draw ?? 1);
   const crowd = gatheringCapacityOf(building) * fill;
   const tourists = Math.min(crowd, crowd * GATHERING.touristShare * cityAttractiveness(state));
   const citizens = Math.min(crowd - tourists, citizensInReach(state, building) * GATHERING.citizenShare);
@@ -93,7 +94,20 @@ export function scheduleShow(state: GameState, buildingId: number, startsInHours
   const startsAt = state.lastSeen + startsInHours * TAKINGS.hourMs;
   const gathering: GatheringData = { kind: 'show', startsAt, endsAt: startsAt + GATHERING.durationMs, quality: artist ? qualityOfFame(artist.fame) : GATHERING.defaultQuality, ...(artist ? { artist: artist.id } : {}), ...preview };
   const attraction = { ...building.attraction, takings: takingsOf(building), gathering, shows: (building.attraction?.shows ?? 0) + 1 };
-  return { state: { ...state, urbs: state.urbs - preview.cost, buildings: state.buildings.map(candidate => (candidate === building ? { ...building, attraction } : candidate)) }, events: [] };
+  // A Show that starts at once has no later step to announce it.
+  const events: GameEvent[] = startsInHours === 0 ? [{ type: 'GatheringStarted', buildingId }] : [];
+  return { state: { ...state, urbs: state.urbs - preview.cost, buildings: state.buildings.map(candidate => (candidate === building ? { ...building, attraction } : candidate)) }, events };
+}
+
+export function cancelShow(state: GameState, buildingId: number): CommandOutcome {
+  const building = state.buildings.find(candidate => candidate.id === buildingId);
+  if (!building) return { key: 'error.unknownBuilding' };
+  const gathering = building.attraction?.gathering;
+  if (!gathering || gathering.kind !== 'show') return { key: 'error.noEvent' };
+  if (gathering.startsAt <= state.lastSeen) return { key: 'error.eventStarted' };
+  const attraction = { ...building.attraction!, takings: takingsOf(building) };
+  delete attraction.gathering;
+  return { state: { ...state, urbs: state.urbs + Math.floor(gathering.cost * GATHERING.cancelRefund), buildings: state.buildings.map(candidate => (candidate === building ? { ...building, attraction } : candidate)) }, events: [] };
 }
 
 // Times after `after` at which a Gathering starts or ends, or its crowd starts or stops moving.
@@ -118,8 +132,10 @@ export function advanceGatherings(state: GameState, from: number, to: number): {
   const buildings = state.buildings.map(building => {
     const gathering = building.attraction?.gathering;
     if (!gathering || gathering.endsAt + GATHERING.windowMs > to) return building;
-    const attraction = { ...building.attraction!, takings: takingsOf(building) + gathering.revenue, cooldownUntil: gathering.endsAt + GATHERING.cooldownMs };
+    const lastGathering = { kind: gathering.kind, at: gathering.endsAt, crowd: gathering.crowd, revenue: gathering.revenue, cost: gathering.cost, ...(gathering.artist ? { artist: gathering.artist } : {}) };
+    const attraction = { ...building.attraction!, takings: takingsOf(building) + gathering.revenue, cooldownUntil: gathering.endsAt + GATHERING.cooldownMs, lastGathering };
     delete attraction.gathering;
+    events.push({ type: 'GatheringSettled', buildingId: building.id, crowd: gathering.crowd, revenue: gathering.revenue });
     return { ...building, attraction };
   });
   return { state: { ...state, buildings }, events };

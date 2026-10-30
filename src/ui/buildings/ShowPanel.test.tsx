@@ -10,7 +10,7 @@ vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
 }));
 
-vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: () => {} }) } }));
+vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ state: context.state, send: () => {} }) } }));
 
 vi.mock('../common/DrawerPanel', () => ({
   DrawerPanel: Object.assign(({ children }: { children?: React.ReactNode }) => <div>{children}</div>, {
@@ -36,7 +36,7 @@ describe('ShowPanel', () => {
   it('offers three Artists with their Fame for the Concert hall only', () => {
     const hall = render(createBuilding(900, 'concertHall', 60, 60, 0));
     expect(hall).toContain(t('show.artist'));
-    expect(hall.match(/role="radio"/g)).toHaveLength(3);
+    expect(hall.match(/class="artist-choice"[\s\S]*?class="tourism-help"/)![0].match(/role="radio"/g)).toHaveLength(3);
     expect(render(createBuilding(900, 'theater', 60, 60, 0))).not.toContain(t('show.artist'));
   });
 
@@ -46,12 +46,32 @@ describe('ShowPanel', () => {
 
   it('shows the cooldown instead of the form after a Show', () => {
     const html = render({ ...createBuilding(900, 'concertHall', 60, 60, 0), attraction: { takings: 0, cooldownUntil: 5 * 3_600_000 } });
-    expect(html).toContain(t('show.cooldown').replace('{hours}', '5'));
+    expect(html).toContain(t('show.cooldown').replace('{time}', '5 h'));
     expect(html).not.toContain(t('show.schedule'));
   });
 
-  it('shows the crowd of a Show already scheduled', () => {
-    const gathering = { kind: 'show' as const, startsAt: 1, endsAt: 2, cost: 1, quality: 0.5, crowd: 321.4, tourists: 1, citizens: 1, revenue: 1 };
-    expect(render({ ...createBuilding(900, 'concertHall', 60, 60, 0), attraction: { takings: 0, gathering } })).toContain(t('show.scheduled').replace('{crowd}', '321'));
+  const scheduled = { kind: 'show' as const, startsAt: 5 * 3_600_000, endsAt: 8 * 3_600_000, cost: 40, quality: 0.5, crowd: 321.4, tourists: 1, citizens: 1, revenue: 1 };
+
+  it('follows a Show already scheduled, which can still be cancelled', () => {
+    const html = render({ ...createBuilding(900, 'concertHall', 60, 60, 0), attraction: { takings: 0, gathering: scheduled } });
+    expect(html).toContain('321');
+    expect(html).toContain(t('gathering.phase.planned'));
+    expect(html).toContain(t('show.cancel').replace('{amount}', '20'));
+  });
+
+  it('no longer offers to cancel a Show under way', () => {
+    const html = render({ ...createBuilding(900, 'concertHall', 60, 60, 0), attraction: { takings: 0, gathering: scheduled } }, 10_000, 6 * 3_600_000);
+    expect(html).toContain(t('gathering.until.live').replace('{time}', '2 h'));
+    expect(html).not.toContain(t('show.cancel').replace('{amount}', '20'));
+  });
+
+  it('states the Urbs missing for a Show', () => {
+    expect(render(createBuilding(900, 'theater', 60, 60, 0), 0)).toContain(t('show.missing').split('{amount}')[0]!);
+  });
+
+  it('shows the result of the last Show during the cooldown', () => {
+    const html = render({ ...createBuilding(900, 'theater', 60, 60, 0), attraction: { takings: 0, cooldownUntil: 3_600_000, lastGathering: { kind: 'show', at: 0, crowd: 77, revenue: 500, cost: 60 } } });
+    expect(html).toContain(t('gathering.lastCrowd').replace('{crowd}', '77'));
+    expect(html).toContain('gain');
   });
 });

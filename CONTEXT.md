@@ -373,7 +373,7 @@ A simulated customer of a Venue, modelled in aggregate. Arcade and Supermarket d
 _Avoid_: Customer, guest, Citizen
 
 **Tourist**:
-A person from outside the city drawn by its Attractions. Unlike a Citizen it has no Home; unlike a Visitor it is not tied to one Venue. A Tourist who sleeps in a Hotel stays longer and spends more; without a Hotel, Tourists only come for the day. Modelled in aggregate, never saved.
+A person from outside the city drawn by its Attractions. Unlike a Citizen it has no Home; unlike a Visitor it is not tied to one Venue. Besides the Ticket, a Tourist spends on site, so a visit earns about three Tickets. A Tourist who sleeps in a Hotel stays longer and spends more; without a Hotel, Tourists only come for the day. Modelled in aggregate, never saved; the figures around an Attraction on the map are only a picture of them.
 _Avoid_: Visitor (a customer of a Venue), Citizen, guest
 
 **Attraction**:
@@ -385,7 +385,7 @@ The price a Tourist or Citizen pays to enter an Attraction, set by the player at
 _Avoid_: Admission, fee, Stake
 
 **Gathering**:
-A one-day crowd event the player or the calendar holds in an Attraction: a Show or a Match. It costs Urbs, has a cooldown before the same Attraction can hold another, and brings an extra crowd of Tourists and Citizens. Distinct from an Event (a server Challenge) and an Annual event (a calendar occasion).
+A one-day crowd event the player or the calendar holds in an Attraction: a Show or a Match. It costs Urbs, has a cooldown before the same Attraction can hold another, and brings an extra crowd of Tourists and Citizens. It goes through four phases: scheduled, the crowd arriving (the hour before), under way, the crowd leaving (the hour after), when its Ticket sales are paid into the Takings. A Show can be cancelled before it starts, for half of its cost back. Distinct from an Event (a server Challenge) and an Annual event (a calendar occasion).
 _Avoid_: Event, festival, Annual event
 
 **Show**:

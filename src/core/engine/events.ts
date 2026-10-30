@@ -23,6 +23,7 @@ export type GameEvent =
   | { readonly type: 'BlockmatchSettled'; readonly buildingId: number; readonly stake: number; readonly stars: number; readonly payout: number }
   | { readonly type: 'GatheringStarted'; readonly buildingId: number }
   | { readonly type: 'GatheringEnded'; readonly buildingId: number }
+  | { readonly type: 'GatheringSettled'; readonly buildingId: number; readonly crowd: number; readonly revenue: number }
   | { readonly type: 'PoliticsDigest'; readonly entries: number }
   | { readonly type: 'GrantsClaimed'; readonly amount: number }
   | { readonly type: 'OrdinanceAdopted'; readonly id: string }

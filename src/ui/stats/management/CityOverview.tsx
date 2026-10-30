@@ -1,4 +1,4 @@
-import {climateStats, cityBenefits, energyStats, modeShares, totalCitizens, transportStats, wasteSituation, type CongestionStats, type GameState} from '../../../core';
+import {climateStats, cityAttractiveness, cityBenefits, energyStats, isAttraction, modeShares, touristsPerDay, totalCitizens, transportStats, wasteSituation, type CongestionStats, type GameState} from '../../../core';
 import {t} from '../../../i18n/t';
 import {OverviewTile} from './OverviewTile';
 import { Icon } from '../../common/Icon';
@@ -15,10 +15,13 @@ interface CityOverviewProps {
     onShowNeeds: () => void;
     onShowTemperature: () => void;
     onShowWaste: () => void;
+    onShowTourism: () => void;
 }
 
-export function CityOverview({state, energy, green, climate, transport, congestion, onShowTransport, onShowTraffic, onShowNeeds, onShowTemperature, onShowWaste}: CityOverviewProps) {
+export function CityOverview({state, energy, green, climate, transport, congestion, onShowTransport, onShowTraffic, onShowNeeds, onShowTemperature, onShowWaste, onShowTourism}: CityOverviewProps) {
     const waste = wasteSituation(state);
+    const attractiveness = cityAttractiveness(state);
+    const tourists = state.buildings.filter(isAttraction).reduce((total, building) => total + touristsPerDay(building, attractiveness), 0);
     return <div className="eco-overview">
         <OverviewTile icon="citizens">
             <span>{t('stat.citizens')}</span><strong>{totalCitizens(state)}</strong>
@@ -50,6 +53,10 @@ export function CityOverview({state, energy, green, climate, transport, congesti
         <button type="button" aria-controls="eco-traffic" onClick={onShowTraffic}>
             <Icon name="walk" />
             <span className="eco-overview-value"><span>{t('eco.walkShare')}</span><strong>{(modeShares(congestion).walking * 100).toFixed(0)}<small>%</small></strong></span>
+        </button>
+        <button type="button" aria-controls="eco-tourism" onClick={onShowTourism}>
+            <Icon name="ticket" />
+            <span className="eco-overview-value"><span>{t('attraction.tourists')}</span><strong>{Math.round(tourists)}</strong></span>
         </button>
         <button type="button" aria-controls="eco-transport" onClick={onShowTransport}>
             <Icon name="transport" />

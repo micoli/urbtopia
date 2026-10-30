@@ -10,7 +10,7 @@ const NOW = 1_700_000_000_000;
 function setup(readOnly = false) {
   const showToast = vi.fn();
   const persist = vi.fn();
-  const gateway = createCommandGateway({ isReadOnly: () => readOnly, now: () => NOW, toastForEvents: () => 'event.storageFull', showToast });
+  const gateway = createCommandGateway({ isReadOnly: () => readOnly, now: () => NOW, announceEvents: () => showToast('event.storageFull'), showToast });
   const state: GameState = { ...newGame({ now: NOW, seed: 'port' }), buildings: [createBuilding(10, 'shop', 65, 65, 0)], roads: [], roundabouts: [] };
   const store = createGameStore(state, gateway);
   return { port: createLiveGamePort({ store, gateway, persist }), store, showToast, persist };
