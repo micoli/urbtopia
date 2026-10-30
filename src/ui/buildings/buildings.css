@@ -154,17 +154,19 @@
   align-items: center;
   gap: var(--space-6);
   width: 100%;
-  padding: var(--space-8) 0;
+  min-height: var(--tap);
+  padding: var(--space-4) 0;
   border: 0;
   background: none;
-  color: var(--color-warning-strong);
+  color: var(--color-text-muted);
   font-size: var(--font-size-md);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-semibold);
   text-align: left;
   cursor: pointer;
 }
-.panel-section-toggle > span { text-decoration: underline; text-underline-offset: 3px; }
-.panel-section-body { padding: var(--space-4) var(--space-4) 0; }
+.panel-section-toggle[aria-expanded='true'] { color: var(--color-text); }
+.panel-section-toggle > span { flex: 1; min-width: 0; }
+.panel-section-body { padding-left: var(--space-8); border-left: 2px solid var(--color-accent); }
 .panel-section:has(> .panel-section-body:empty) { display: none; }
 
 .choice-chips {
