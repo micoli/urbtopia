@@ -9,6 +9,8 @@ import { useForcedAnnualEventDay } from '../ui/common/useForcedAnnualEventDay';
 import { AnnualEventDateButtons } from './AnnualEventDateButtons';
 import { dayOfIsoDate, isoDateOfDay } from './annualEventDate';
 import { clearGoods, clearMaterials, clearWarehouse } from './clearItems';
+import { DevToolsSection } from './DevToolsSection';
+import { DevToolsWindow } from './DevToolsWindow';
 import { FeatureFlagSwitches } from './FeatureFlagSwitches';
 import { ItemButtons } from './ItemButtons';
 import { giveItem } from './giveItem';
@@ -57,31 +59,35 @@ export default function DevTools() {
   return (
     <aside className="devtools" aria-label="Outils de développement">
       {open ? (
-        <section id="devtools-panel" className="devtools-panel" aria-labelledby="devtools-title">
-          <header>
-            <strong id="devtools-title">Outils de développement</strong>
-            <button type="button" className="devtools-close" aria-label="Fermer les outils de développement" onClick={() => setOpen(false)}>×</button>
-          </header>
-          <FeatureFlagSwitches />
-          <p>{Object.keys(MATERIALS).length} matériaux · {Object.keys(GOODS).length} biens</p>
-          <label htmlFor="devtools-quantity">Quantité à ajouter par objet</label>
-          <input id="devtools-quantity" type="number" min="1" max={MAX_DEV_ITEM_QUANTITY} step="1" value={quantity} onChange={(event) => { setQuantity(event.target.value); setGranted(null); setCleared(null); setGrantedItem(null); }} />
-          <ActionButton variant="primary" disabled={!valid || readOnly} onClick={grant}>Tout ajouter à l’entrepôt</ActionButton>
-          <small>Inclut les objets verrouillés, sans limite de capacité.</small>
-          <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearWarehouse, 'L’entrepôt a été vidé.')}>Vider l’entrepôt</ActionButton>
-          <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearMaterials, 'Tous les matériaux ont été vidés.')}>Vider tous les matériaux</ActionButton>
-          <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearGoods, 'Tous les biens ont été vidés.')}>Vider tous les biens</ActionButton>
-          <label htmlFor="devtools-annual-event-date">Date des événements annuels</label>
-          <input id="devtools-annual-event-date" type="date" value={forcedDay === undefined ? '' : isoDateOfDay(forcedDay)} onChange={(event) => forceAnnualEventDay(dayOfIsoDate(event.target.value))} />
-          <AnnualEventDateButtons year={new Date().getFullYear()} forcedDay={forcedDay} />
-          <small>{forcedDay === undefined ? 'Date réelle de l’appareil.' : 'Date forcée pour les fenêtres des événements annuels.'}</small>
-          <ActionButton variant="danger" disabled={forcedDay === undefined} onClick={() => forceAnnualEventDay(undefined)}>Revenir à la date réelle</ActionButton>
-          <label htmlFor="devtools-filter">Filtrer les matériaux et biens</label>
-          <input id="devtools-filter" type="search" placeholder="Nom…" value={filter} onChange={(event) => setFilter(event.target.value)} />
-          <ItemButtons title="Matériaux" items={Object.keys(MATERIALS) as ItemId[]} filter={filter} disabled={!valid || readOnly} onGive={grantOne} />
-          <ItemButtons title="Biens" items={Object.keys(GOODS) as ItemId[]} filter={filter} disabled={!valid || readOnly} onGive={grantOne} />
+        <DevToolsWindow onClose={() => setOpen(false)}>
           {readOnly ? <p role="status">Cette partie est en lecture seule.</p> : granted !== null ? <p role="status">+{granted} de chaque matériau et bien ajoutés.</p> : cleared ? <p role="status">{cleared}</p> : grantedItem ? <p role="status">{grantedItem}</p> : null}
-        </section>
+          <DevToolsSection id="flags" title="Fonctionnalités en cours" icon="settings">
+            <FeatureFlagSwitches />
+          </DevToolsSection>
+          <DevToolsSection id="warehouse" title="Entrepôt" icon="production">
+            <p>{Object.keys(MATERIALS).length} matériaux · {Object.keys(GOODS).length} biens</p>
+            <label htmlFor="devtools-quantity">Quantité à ajouter par objet</label>
+            <input id="devtools-quantity" type="number" min="1" max={MAX_DEV_ITEM_QUANTITY} step="1" value={quantity} onChange={(event) => { setQuantity(event.target.value); setGranted(null); setCleared(null); setGrantedItem(null); }} />
+            <ActionButton variant="primary" disabled={!valid || readOnly} onClick={grant}>Tout ajouter à l’entrepôt</ActionButton>
+            <small>Inclut les objets verrouillés, sans limite de capacité.</small>
+            <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearWarehouse, 'L’entrepôt a été vidé.')}>Vider l’entrepôt</ActionButton>
+            <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearMaterials, 'Tous les matériaux ont été vidés.')}>Vider tous les matériaux</ActionButton>
+            <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearGoods, 'Tous les biens ont été vidés.')}>Vider tous les biens</ActionButton>
+          </DevToolsSection>
+          <DevToolsSection id="annualEvents" title="Événements annuels" icon="calendar">
+            <label htmlFor="devtools-annual-event-date">Date des événements annuels</label>
+            <input id="devtools-annual-event-date" type="date" value={forcedDay === undefined ? '' : isoDateOfDay(forcedDay)} onChange={(event) => forceAnnualEventDay(dayOfIsoDate(event.target.value))} />
+            <AnnualEventDateButtons year={new Date().getFullYear()} forcedDay={forcedDay} />
+            <small>{forcedDay === undefined ? 'Date réelle de l’appareil.' : 'Date forcée pour les fenêtres des événements annuels.'}</small>
+            <ActionButton variant="danger" disabled={forcedDay === undefined} onClick={() => forceAnnualEventDay(undefined)}>Revenir à la date réelle</ActionButton>
+          </DevToolsSection>
+          <DevToolsSection id="items" title="Matériaux et biens" icon="market">
+            <label htmlFor="devtools-filter">Filtrer les matériaux et biens</label>
+            <input id="devtools-filter" type="search" placeholder="Nom…" value={filter} onChange={(event) => setFilter(event.target.value)} />
+            <ItemButtons title="Matériaux" items={Object.keys(MATERIALS) as ItemId[]} filter={filter} disabled={!valid || readOnly} onGive={grantOne} />
+            <ItemButtons title="Biens" items={Object.keys(GOODS) as ItemId[]} filter={filter} disabled={!valid || readOnly} onGive={grantOne} />
+          </DevToolsSection>
+        </DevToolsWindow>
       ) : null}
       <button type="button" className="devtools-trigger" aria-expanded={open} aria-controls={open ? 'devtools-panel' : undefined} onClick={() => setOpen(!open)}>DEV</button>
     </aside>

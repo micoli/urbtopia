@@ -5,14 +5,13 @@ import { FLAGS, FLAG_IDS, featureFlagStore } from '../featureFlags/featureFlags'
 export function FeatureFlagSwitches() {
   const enabled = useStore(featureFlagStore, store => store.enabled);
   return (
-    <fieldset className="devtools-flags">
-      <legend>Fonctionnalités en cours</legend>
+    <div className="devtools-flags">
       {FLAG_IDS.map(id => (
         <label key={id} className="devtools-flag" title={FLAGS[id].description}>
           <input type="checkbox" checked={enabled[id]} onChange={event => featureFlagStore.getState().set(id, event.target.checked)} />
           {FLAGS[id].label}
         </label>
       ))}
-    </fieldset>
+    </div>
   );
 }
