@@ -16,7 +16,7 @@ import { WALKING, crossingCut, maxWalkCost, walkDestinationOf } from './walking'
 import { emptyTrips, walkDestinations, walkServices, type WalkingTrips } from './walkingTrips';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { movingGathering } from '../tourism/gatheringWindow';
-import { isAttraction } from '../tourism/tourists';
+import { sellsTickets } from '../tourism/tourists';
 import { ticketOf } from '../tourism/takings';
 import { TOURIST_GATES, touristFlows, type TouristFlow } from '../tourism/touristFlows';
 import { congestionReliefOf } from '../politics/ordinanceEffects';
@@ -127,8 +127,8 @@ export function congestionStats(state: GameState, now = state.lastSeen): Congest
 function layoutSignature(state: GameState, now: number): string {
   const transport = transportStats(state, now);
   const buildings = state.buildings
-    .filter((building) => isHomeType(building.type) || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null || isAttraction(building) || (TOURIST_GATES as readonly string[]).includes(building.type))
-    .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${isAttraction(building) ? ticketOf(building) : ''}:${transport.homeRiders.get(building.id) ?? 0}:${transport.homeLines.has(building.id) ? 1 : 0}${transport.coveredActivities.has(building.id) ? 1 : 0}:${frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier).join('+')}`);
+    .filter((building) => isHomeType(building.type) || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null || sellsTickets(building) || (TOURIST_GATES as readonly string[]).includes(building.type))
+    .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${sellsTickets(building) ? ticketOf(building) : ''}:${transport.homeRiders.get(building.id) ?? 0}:${transport.homeLines.has(building.id) ? 1 : 0}${transport.coveredActivities.has(building.id) ? 1 : 0}:${frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier).join('+')}`);
   const lines = transport.lines.map((line) => `${line.id}:${line.capacity.toFixed(2)}:${line.riders.toFixed(2)}:${line.mode === 'bus' && line.active && line.route ? line.route.map(tileKey).join(';') : ''}`);
   const openings = [...closedFractionsByTile(state)].map(([key, fraction]) => `${key}=${fraction.toFixed(3)}`);
   const pedestrianWays = (state.pedestrianWays ?? []).map(tileKey).sort().join(';');
@@ -190,6 +190,8 @@ function calculateCongestion(state: GameState, now: number, riders: ReadonlyMap<
   let transitTotal = 0;
   let unemployedTotal = 0;
   const brtOnlyDisconnected: Coord[][] = [];
+  const roadSearch = roadSearchOf(graph);
+  const workplaceNodes = workplaces.map((workplace) => ({ id: workplace.building.id, access: nodesOf(roadSearch, workplace.access) }));
   for (const home of homes) {
     const citizens = citizensOf(home.building.tier);
     const homeRiders = Math.min(citizens, riders.get(home.building.id) ?? 0);
@@ -200,15 +202,17 @@ function calculateCongestion(state: GameState, now: number, riders: ReadonlyMap<
     const walkedBefore = tripsTotal(walkingTrips);
     const walkAccess = WALKING.enabled ? walkServices(walk, destinations, citizens, pedestrians, walkingTrips, cyclingTrips, sidewalkLoads, walkArrivals, (site, count, nodes) => trips.push({ from: home.building.id, to: site, mode: 'walk', count, path: tilesOfNodes(nodes) })) : 0;
     const walkedServices = tripsTotal(walkingTrips) - walkedBefore;
-    const roadOptions = home.access.length === 0 ? [] : reachableWorkplaces(graph, home, workplaces);
-    const roadOptionIds = new Set(roadOptions.map((option) => option.id));
-    const walkOptions = WALKING.enabled ? workplaces.flatMap((workplace) => {
-      if (roadOptionIds.has(workplace.building.id)) return [];
-      const target = nearestTarget(walk, workplace.sidewalks);
-      return target !== null && target.cost <= WALKING.workThreshold * WALKING.cyclingFactor ? [{ id: workplace.building.id, path: [], distance: target.cost }] : [];
-    }) : [];
+    const roadOptions = home.access.length === 0 ? [] : reachableWorkplaces(roadSearch, nodesOf(roadSearch, home.access), workplaceNodes);
     // With more Jobs than Citizens, a workplace reached on foot only must compete by distance, not queue behind every one reached by Road.
-    const options = [...roadOptions.map((option) => ({ ...option, distance: option.path.length })), ...walkOptions].sort((a, b) => a.distance - b.distance || a.id - b.id);
+    const options: { id: number; distance: number; end: number | null }[] = roadOptions;
+    if (WALKING.enabled && roadOptions.length < workplaces.length) {
+      const roadOptionIds = new Set(roadOptions.map((option) => option.id));
+      for (const workplace of workplaces) {
+        if (roadOptionIds.has(workplace.building.id)) continue;
+        const target = nearestTarget(walk, workplace.sidewalks);
+        if (target !== null && target.cost <= WALKING.workThreshold * WALKING.cyclingFactor) options.push({ id: workplace.building.id, distance: target.cost, end: null });
+      }
+    }
     for (const option of options) reachable.add(option.id);
     if (options.length === 0 && brtOnly) {
       const entry = { ...brtOnlyEntry(covered.homes.has(home.building.id)), walkAccess };
@@ -226,9 +230,10 @@ function calculateCongestion(state: GameState, now: number, riders: ReadonlyMap<
     let remaining = wanting;
     let walking = 0;
     let cycling = 0;
-    for (const option of options) {
-      const taken = Math.min(remaining, jobsLeft.get(option.id) ?? 0);
-      if (taken <= 0) continue;
+    const open = options.filter((option) => (jobsLeft.get(option.id) ?? 0) > 0);
+    while (remaining > 0 && open.length > 0) {
+      const option = takeNearest(open);
+      const taken = Math.min(remaining, jobsLeft.get(option.id)!);
       jobsLeft.set(option.id, (jobsLeft.get(option.id) ?? 0) - taken);
       remaining -= taken;
       const target = WALKING.enabled ? nearestTarget(walk, workplaceById.get(option.id)?.sidewalks ?? []) : null;
@@ -244,8 +249,9 @@ function calculateCongestion(state: GameState, now: number, riders: ReadonlyMap<
         continue;
       }
       carArrivals.set(option.id, (carArrivals.get(option.id) ?? 0) + taken);
-      trips.push({ from: home.building.id, to: option.id, mode: 'car', count: taken, path: option.path });
-      for (const tile of option.path) {
+      const path = option.end === null ? [] : traceBack(roadSearch, option.end);
+      trips.push({ from: home.building.id, to: option.id, mode: 'car', count: taken, path });
+      for (const tile of path) {
         const key = tileKey(tile);
         loads.set(key, (loads.get(key) ?? 0) + taken);
         tiles.add(key);
@@ -467,37 +473,90 @@ function labelComponents(graph: RoadGraph): { labels: Map<string, number>; membe
   return { labels, members };
 }
 
-function reachableWorkplaces(graph: RoadGraph, home: Endpoint, workplaces: Endpoint[]): { id: number; path: Coord[] }[] {
-  const parents = new Map<string, string | null>();
-  const queue: string[] = [];
-  for (const tile of home.access) {
-    const key = tileKey(tile);
-    if (parents.has(key)) continue;
-    parents.set(key, null);
-    queue.push(key);
-  }
-  for (let index = 0; index < queue.length; index++) {
-    const key = queue[index]!;
-    for (const next of neighboursOf(graph, parseTile(key))) {
-      const nextKey = tileKey(next);
-      if (parents.has(nextKey)) continue;
-      parents.set(nextKey, key);
-      queue.push(nextKey);
-    }
-  }
-  const order = new Map(queue.map((key, index) => [key, index]));
-  const options: { id: number; path: Coord[] }[] = [];
-  for (const workplace of workplaces) {
-    const reached = workplace.access.map(tileKey).filter((key) => parents.has(key)).sort((a, b) => order.get(a)! - order.get(b)!)[0];
-    if (reached === undefined) continue;
-    options.push({ id: workplace.building.id, path: traceBack(parents, reached) });
-  }
-  return options.sort((a, b) => a.path.length - b.path.length || a.id - b.id);
+// The Road graph with integer nodes: every Home searches it once per calculation, and most Cities have far more Homes than a string-keyed search can afford.
+interface RoadSearch {
+  nodes: Map<string, number>;
+  tiles: Coord[];
+  neighbours: number[][];
+  parents: Int32Array;
+  depths: Int32Array;
+  order: Int32Array;
+  queue: Int32Array;
 }
 
-function traceBack(parents: Map<string, string | null>, end: string): Coord[] {
+const UNVISITED = -1;
+const NO_PARENT = -2;
+
+function roadSearchOf(graph: RoadGraph): RoadSearch {
+  const nodes = new Map<string, number>();
+  const tiles: Coord[] = [];
+  const nodeOf = (key: string): number => {
+    const known = nodes.get(key);
+    if (known !== undefined) return known;
+    nodes.set(key, tiles.length);
+    tiles.push(parseTile(key));
+    return tiles.length - 1;
+  };
+  const neighbours: number[][] = [];
+  for (const [key, exits] of graph) neighbours[nodeOf(key)] = exits.map((exit) => nodeOf(tileKey(exit)));
+  for (let node = 0; node < tiles.length; node++) neighbours[node] ??= [];
+  const size = tiles.length;
+  return { nodes, tiles, neighbours, parents: new Int32Array(size), depths: new Int32Array(size), order: new Int32Array(size), queue: new Int32Array(size) };
+}
+
+function nodesOf(search: RoadSearch, tiles: readonly Coord[]): number[] {
+  return tiles.map((tile) => search.nodes.get(tileKey(tile))!);
+}
+
+// The search's arrays hold this Home's result until the next call, so `end` must be traced before then.
+function reachableWorkplaces(search: RoadSearch, access: readonly number[], workplaces: readonly { id: number; access: readonly number[] }[]): { id: number; distance: number; end: number }[] {
+  const { neighbours, parents, depths, order, queue } = search;
+  parents.fill(UNVISITED);
+  let queued = 0;
+  for (const node of access) {
+    if (parents[node] !== UNVISITED) continue;
+    parents[node] = NO_PARENT;
+    depths[node] = 1;
+    order[node] = queued;
+    queue[queued++] = node;
+  }
+  for (let index = 0; index < queued; index++) {
+    const node = queue[index]!;
+    for (const next of neighbours[node]!) {
+      if (parents[next] !== UNVISITED) continue;
+      parents[next] = node;
+      depths[next] = depths[node]! + 1;
+      order[next] = queued;
+      queue[queued++] = next;
+    }
+  }
+  const options: { id: number; distance: number; end: number }[] = [];
+  for (const workplace of workplaces) {
+    let end = UNVISITED;
+    for (const node of workplace.access) {
+      if (parents[node] !== UNVISITED && (end === UNVISITED || order[node]! < order[end]!)) end = node;
+    }
+    if (end !== UNVISITED) options.push({ id: workplace.id, distance: depths[end]!, end });
+  }
+  return options;
+}
+
+// Each option taken either fills a Home or empties a workplace, so across a City this runs about once per Home and workplace: far fewer steps than sorting every option of every Home.
+function takeNearest<T extends { id: number; distance: number }>(options: T[]): T {
+  let nearest = 0;
+  for (let index = 1; index < options.length; index++) {
+    const option = options[index]!, best = options[nearest]!;
+    if (option.distance < best.distance || (option.distance === best.distance && option.id < best.id)) nearest = index;
+  }
+  const taken = options[nearest]!;
+  options[nearest] = options.at(-1)!;
+  options.pop();
+  return taken;
+}
+
+function traceBack(search: RoadSearch, end: number): Coord[] {
   const path: Coord[] = [];
-  for (let key: string | null | undefined = end; key !== null && key !== undefined; key = parents.get(key)) path.push(parseTile(key));
+  for (let node = end; node !== NO_PARENT; node = search.parents[node]!) path.push(search.tiles[node]!);
   return path;
 }
 
@@ -513,6 +572,6 @@ function tilesOfNodes(nodes: readonly string[]): Coord[] {
 }
 
 function parseTile(key: string): Coord {
-  const [x = 0, y = 0] = key.split(',').map(Number);
-  return { x, y };
+  const comma = key.indexOf(',');
+  return { x: Number(key.slice(0, comma)), y: Number(key.slice(comma + 1)) };
 }

@@ -7,7 +7,11 @@ import { chunkKeyOf, type RenderItem, type TextureVariant } from './renderItems'
 interface Chunk {
   signature: string;
   group: THREE.Group;
+  bounds: THREE.Sphere;
 }
+
+const viewProjection = new THREE.Matrix4();
+const frustum = new THREE.Frustum();
 
 export class ChunkedWorld {
   readonly root = new THREE.Group();
@@ -56,7 +60,16 @@ export class ChunkedWorld {
     this.removeChunk(key);
     const group = this.buildChunk(items);
     this.root.add(group);
-    this.chunks.set(key, { signature, group });
+    const bounds = new THREE.Sphere();
+    for (const mesh of group.children) bounds.union((mesh as THREE.InstancedMesh).boundingSphere!);
+    this.chunks.set(key, { signature, group, bounds });
+  }
+
+  // A City has thousands of instanced meshes: hiding a whole chunk spares three.js from testing each of them every frame.
+  cull(camera: THREE.Camera): void {
+    camera.updateMatrixWorld();
+    frustum.setFromProjectionMatrix(viewProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+    for (const { group, bounds } of this.chunks.values()) group.visible = frustum.intersectsSphere(bounds);
   }
 
   private facilityScaleMatrix(item: RenderItem, target: THREE.Matrix4): THREE.Matrix4 {
@@ -119,9 +132,11 @@ export class ChunkedWorld {
           instanced.setMatrixAt(index, combined);
         });
         instanced.computeBoundingSphere();
+        instanced.matrixAutoUpdate = false;
         group.add(instanced);
       });
     }
+    group.matrixAutoUpdate = false;
     return group;
   }
 }

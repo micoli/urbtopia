@@ -373,28 +373,36 @@ A simulated customer of a Venue, modelled in aggregate. Arcade and Supermarket d
 _Avoid_: Customer, guest, Citizen
 
 **Tourist**:
-A person from outside the city drawn by its Attractions. Unlike a Citizen it has no Home; unlike a Visitor it is not tied to one Venue. Besides the Ticket, a Tourist spends on site, so a visit earns about three Tickets. A Tourist who sleeps in a Hotel stays longer and spends more; without a Hotel, Tourists only come for the day. Modelled in aggregate, never saved; the figures around an Attraction on the map are only a picture of them.
+A person from outside the city drawn by its Attractions and the Gatherings of its Arenas. Unlike a Citizen it has no Home; unlike a Visitor it is not tied to one Venue. Besides the Ticket, a Tourist spends on site, so a visit earns about three Tickets. A Tourist who sleeps in a Hotel stays longer and spends more; without a Hotel, Tourists only come for the day. Modelled in aggregate, never saved; the figures around an Attraction on the map are only a picture of them.
 _Avoid_: Visitor (a customer of a Venue), Citizen, guest
 
 **Attraction**:
-A building that draws Tourists: a Museum, the Colosseum, a stadium, the Concert hall, the Theater, a Casino, a Marina and its Boats, or an amusement ride. A Hotel is not an Attraction: it lodges Tourists. Each Attraction has its own drawing power, raised by its Tiers.
+A building that Tourists come to see all day long: a Museum, the Colosseum, a Casino, a Marina and its Boats, or an amusement ride. It holds no Gathering, except the Colosseum. A Hotel is not an Attraction: it lodges Tourists. Each Attraction has its own drawing power, raised by its Tiers.
 _Avoid_: Landmark, sight, Minigame
 
+**Arena**:
+A building that earns only from the Gatherings it holds: the Theater, the Concert hall, a stadium or a Pirate cove. With no Gathering it draws nobody and earns nothing, though it still counts towards the city's attractiveness. Its Takings have no cap. The Colosseum is the only building that is both an Attraction and an Arena: Tourists come to see it all day and it can hold Shows.
+_Avoid_: Venue (run from the inside), stage, hall
+
 **Ticket**:
-The price a Tourist or Citizen pays to enter an Attraction, set by the player at one of three levels. A higher Ticket earns more per entry but draws fewer people. Its proceeds build up as Takings.
+The price a Tourist or Citizen pays to enter an Attraction or an Arena, set by the player at one of three levels. A higher Ticket earns more per entry but draws fewer people. Its proceeds build up as Takings.
 _Avoid_: Admission, fee, Stake
 
 **Gathering**:
-A one-day crowd event the player or the calendar holds in an Attraction: a Show or a Match. It costs Urbs, has a cooldown before the same Attraction can hold another, and brings an extra crowd of Tourists and Citizens. It goes through four phases: scheduled, the crowd arriving (the hour before), under way, the crowd leaving (the hour after), when its Ticket sales are paid into the Takings. A Show can be cancelled before it starts, for half of its cost back. Distinct from an Event (a server Challenge) and an Annual event (a calendar occasion).
+A one-day crowd event the player or the calendar holds in an Arena: a Show, a Match or a Meeting. A Show costs Urbs. A Gathering has a cooldown before the same Arena can hold another, and brings an extra crowd of Tourists and Citizens. It goes through four phases: scheduled, the crowd arriving (the hour before), under way, the crowd leaving (the hour after), when its Ticket sales are paid into the Takings. A Show can be cancelled before it starts, for half of its cost back. Distinct from an Event (a server Challenge) and an Annual event (a calendar occasion).
 _Avoid_: Event, festival, Annual event
 
 **Show**:
-A Gathering held in a Theater, Concert hall or the Colosseum, programmed by the player.
+A Gathering held in a Theater, Concert hall, the Colosseum or a Pirate cove, programmed by the player. Each of these buildings has at most one Show waiting at a time. A Show in a Pirate cove bears a title drawn from a fixed list of invented names, with no effect on its figures.
 _Avoid_: Concert (one kind of Show), performance
 
 **Match**:
-A Gathering held in a stadium, set by a calendar rather than programmed by the player.
+A Gathering held in a stadium that hosts a Club, set by the Club's Championship rather than programmed by the player.
 _Avoid_: Game (already the whole city builder), fixture (taken by a Venue item)
+
+**Meeting**:
+A Gathering held once a day, for free, in a stadium with no Club. It is set by a calendar, has no result and no ranking, and every stadium seats the same crowd for it: only a Match fills the whole stadium.
+_Avoid_: Match, Event, tournament
 
 **Artist**:
 A performer or group, solo or band, from a fixed list of invented names, who plays a Show in the Concert hall. Each has a Fame. The player picks one among three offered at each Show, drawn from those whose Fame is within what the city's Well-being and population allow.
@@ -413,7 +421,7 @@ The individual players of a Club, each with a position, a rating, a form, a mora
 _Avoid_: Roster, Staff
 
 **Championship**:
-The calendar of a Club's Matches over one year of the Club, ending with a ranking and a prize in Urbs. Football and baseball each have one; athletics has isolated meetings with no ranking.
+The calendar of a Club's Matches over one year of the Club, ending with a ranking and a prize in Urbs. Football and baseball each have one; a stadium with no Club holds Meetings, with no ranking.
 _Avoid_: Season (taken by Annual event), league, tournament
 
 **Vehicle**:
@@ -539,8 +547,8 @@ A 1x1 tile laid by the player on free owned land to make it navigable. Boats are
 _Avoid_: Lake, river, sea, pond
 
 **Boat**:
-A persistent object bought with Urbs and placed on a Water tile connected to a Marina. It is saved, and drifts visually over connected Water tiles. A Boat belongs to one family for life: Pleasure boat, Casino boat or Fishing boat.
-_Avoid_: Vehicle (a visual projection, never saved), ship, watercraft
+A persistent object bought with Urbs and placed on a Water tile connected to a Marina or a Pirate cove. It is saved, and drifts visually over connected Water tiles. A Boat belongs to one family for life: Pleasure boat, Casino boat, Fishing boat or Pirate ship.
+_Avoid_: Vehicle (a visual projection, never saved), ship (except a Pirate ship), watercraft
 
 **Pleasure boat**:
 A Boat that is a Leisure building: it raises the Well-being of nearby Homes, has an operating cost in Urbs and is never required. Unlike other workplaces it offers no Jobs. It has no effect when not connected to a Marina, or when its operating cost cannot be paid.
@@ -563,8 +571,28 @@ The Good a Factory makes from Fish, sold in Shops or to the Market.
 _Avoid_: Fish product
 
 **Marina**:
-A building on land touching a Water tile, reached by Road. Boats can only be placed on the Water tiles connected to a Marina's; its Tier sets how many Boats it holds and how many Slots a Fishing boat has. It collects the operating cost of the Pleasure boats and Casino boats connected to it.
+A building on land touching a Water tile, reached by Road. Boats can only be placed on the Water tiles connected to a Marina's; its Tier sets how many Boats it holds and how many Slots a Fishing boat has. It collects the operating cost of the Pleasure boats and Casino boats connected to it. It holds no Pirate ship.
 _Avoid_: Port, harbour, dock
+
+**Pirate cove**:
+An Arena on land touching a Water tile, reached by Road, that holds Shows performed by its Pirate ships in front of its Stands. It holds no other Boat. It is not a Marina. Its Tier caps the seats that count, not its Pirate ships. It cannot be removed while it has Pirate ships or Stands.
+_Avoid_: Pirate marina, Attraction, pirate port
+
+**Pirate ship**:
+A Boat that performs in the Shows of the one Pirate cove it belongs to, and drifts faster than other Boats. A Show needs at least one, and each one adds to its cost and to what each person in the crowd pays. A body of connected Water tiles carries at most one Pirate ship per 12 of its navigable Water tiles, shared between all the Pirate coves on it; other Boats do not count. It cannot be sold from the moment a Show of its Pirate cove is programmed until that Show is settled or cancelled.
+_Avoid_: Galleon, Pirate boat
+
+**Stands**:
+A building on land touching a Water tile connected to a Pirate cove, and belonging to the nearest one when placed. It needs no Road. Their seats set the crowd a Show of that Pirate cove can hold; with no Stands it can hold no Show. They cannot be sold from the moment a Show of their Pirate cove is programmed until that Show is settled or cancelled.
+_Avoid_: Bleachers, tribune, grandstand
+
+**Desert island**:
+A 2x2 piece of scenery laid on Water tiles, which are no longer navigable while it stands. It has no other effect on the city's figures.
+_Avoid_: Islet, atoll
+
+**Sea fort**:
+A piece of scenery of 3x3, 3x4 or 4x4 laid on Water tiles, which are no longer navigable while it stands. It has no other effect on the city's figures.
+_Avoid_: Fortress, castle
 
 **Bridge**:
 A structure carrying a Road, a BRT corridor or pedestrians over an obstacle. A Bridge over Water is a single span of fixed length (1, 2, 3 or 5 tiles), from one bank to the other, aligned with a Road or Crossing at each end; Boats cannot be placed on it but still navigate beneath it, and it opens for them: see Bridge opening. A Bridge over infrastructure has three mandatory parts, a rising Bridge ramp, a Bridge span (1, 2, 3 or 5 tiles) and a descending Bridge ramp, and carries one network, its Carrier. Either kind joins the graph of its Carrier.
@@ -961,7 +989,8 @@ _Avoid_: Docs, documentation, manual, wiki
 - A breakdown of a Fixture is drawn from the Venue's own stream of the game's Seed, so reloading never dodges it.
 - A Venue is simulated in aggregate per game tick, collected by hand like Tax, and replayed by Catch-up.
 - A Pleasure boat is a Leisure building and a Casino boat is a Casino, both hosted by a Boat on a Water tile.
-- Removing a Water tile that carries a Boat or a Bridge, a Marina that holds Boats, or a Water tile that would cut a Boat off its Marina is refused.
+- Removing a Water tile that carries a Boat, a Bridge, a Desert island or a Sea fort, a Marina that holds Boats, or a Water tile that would cut a Boat off its Marina or Pirate cove is refused.
+- Removing a Water tile, or laying a Desert island or a Sea fort, that would cut Stands off their Pirate cove or leave too few navigable Water tiles for the Pirate ships on them is refused.
 - A Bridge is part of the graph of its Carrier: Commute, Congestion and Pedestrian paths use a Road Bridge like any Road. Bridge openings lower the capacity of a Bridge over Water in proportion to the Boats that can reach it.
 - A Bridge over infrastructure does not connect to the networks beneath it. It has no side exit, no stop, station, Crossing or building access on its span or ramps, and its Sidewalks join those of the Road that extends it.
 - A Road Bridge over infrastructure has one Road tier for its three parts, starting at the lower tier of its two ends, upgraded as a whole and capped like a Road. A BRT Bridge has no tier.

@@ -8,12 +8,9 @@ export const TOURISM = {
   hotelSpendingBonus: 0.5,
   // What a Tourist spends during a visit, in Tickets: the entry, then food and souvenirs on site.
   spendingPerEntry: 3,
-  // Tourists drawn after a successful Championship, relative to usual.
+  // Crowd of the Match after a successful Championship, relative to usual.
   championshipBoost: 1.5,
 };
-
-// Until `boostUntil` a stadium that did well draws more Tourists.
-export const boostOf = (building: Pick<Building, 'attraction'>, now: number): number => (now < (building.attraction?.boostUntil ?? 0) ? TOURISM.championshipBoost : 1);
 
 export const attractionPowerOf = (building: Pick<Building, 'type' | 'tier'>): number => {
   const power = definitionOf(building.type).attraction;
@@ -24,6 +21,14 @@ export const attractionPowerOf = (building: Pick<Building, 'type' | 'tier'>): nu
 export const isAttractionType = (type: string): boolean => (definitionOf(type as BuildingId).attraction ?? 0) > 0;
 
 export const isAttraction = (building: Pick<Building, 'type'>): boolean => (definitionOf(building.type).attraction ?? 0) > 0;
+
+export const ARENA_TYPES = ['theater', 'concertHall', 'colosseum', 'stadium', 'footballStadium', 'baseballField'] as const;
+
+export const isArenaType = (type: string): boolean => (ARENA_TYPES as readonly string[]).includes(type);
+
+export const sellsTicketsType = (type: string): boolean => isAttractionType(type) || isArenaType(type);
+
+export const sellsTickets = (building: Pick<Building, 'type'>): boolean => sellsTicketsType(building.type);
 
 // Tourists a day the city's Attractions draw, before any Ticket.
 export const touristDemand = (state: GameState): number => {

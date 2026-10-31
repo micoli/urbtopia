@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { definitionOf } from '../buildings/buildingDefinitions';
 import { advance, createBuilding, dispatch, newGame, type Building, type Command, type GameState } from '../index';
-import { TOURISM, boostOf } from './tourists';
 import { TICKETS, TAKINGS, advanceAttractions, earningsPerHour, attractionTakingsCapOf, takingsOf } from './takings';
 
 const H = TAKINGS.hourMs;
@@ -60,15 +60,21 @@ describe('Attraction Ticket and Takings', () => {
     expect(takingsOf(stepped.buildings[0]!)).toBeCloseTo(takingsOf(once.buildings[0]!), 5);
   });
 
-  it('earns more while the Tourist boost of a Championship lasts, and only for the hours it covers', () => {
-    const plain = city(building(1, 'footballStadium'));
-    const boosted = city(building(1, 'footballStadium', { attraction: { takings: 0, boostUntil: 5 * H } }));
-    const earnedBy = (state: GameState, to: number) => takingsOf(advanceAttractions(state, 0, to).buildings[0]!);
-    expect(earnedBy(boosted, 4 * H)).toBeCloseTo(earnedBy(plain, 4 * H) * TOURISM.championshipBoost);
-    expect(earnedBy(boosted, 10 * H)).toBeLessThan(earnedBy(plain, 10 * H) * TOURISM.championshipBoost);
-    expect(earnedBy(boosted, 10 * H)).toBeGreaterThan(earnedBy(plain, 10 * H));
-    expect(boostOf(boosted.buildings[0]!, 4 * H)).toBe(TOURISM.championshipBoost);
-    expect(boostOf(boosted.buildings[0]!, 6 * H)).toBe(1);
+  it('earns nothing in an Arena with no Gathering, and keeps what it holds', () => {
+    const hall = city(building(1, 'concertHall', { attraction: { takings: 12.6 } }));
+    expect(takingsOf(advanceAttractions(hall, 0, 100 * H).buildings[0]!)).toBe(12.6);
+    expect(earningsPerHour(building(1, 'concertHall'), 1, 1)).toBe(0);
+  });
+
+  it('lets the player collect and set the Ticket of an Arena', () => {
+    const state = city(building(1, 'concertHall', { attraction: { takings: 12.6 } }));
+    expect(takingsOf(send(state, { type: 'Collect', buildingId: 1 }).buildings[0]!)).toBeCloseTo(0.6);
+    expect(send(state, { type: 'SetTicket', buildingId: 1, level: 2 }).buildings[0]!.attraction!.ticket).toBe(2);
+  });
+
+  it('refuses a Ticket on a building that sells none', () => {
+    const state = city(building(1, 'hotel'));
+    expect(() => send(state, { type: 'SetTicket', buildingId: 1, level: 2 })).toThrow('error.unknownCommand');
   });
 });
 
@@ -81,7 +87,7 @@ describe('Attraction advance', () => {
   });
 
   it('pays back a mid-sized Attraction within days, not months', () => {
-    const hall = building(1, 'concertHall');
-    expect(2000 / earningsPerHour(hall, 0.8, 1)).toBeLessThan(5 * TAKINGS.hoursPerDay);
+    const casino = building(1, 'casino');
+    expect(definitionOf('casino').cost! / earningsPerHour(casino, 0.8, 1)).toBeLessThan(6 * TAKINGS.hoursPerDay);
   });
 });

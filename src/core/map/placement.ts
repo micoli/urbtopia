@@ -15,11 +15,20 @@ const UNIQUE_BUILDING_ERRORS: Partial<Record<BuildingType, PlacementIssue>> = {
 
 const ROTATIONS: readonly Rotation[] = [0, 1, 2, 3];
 
-export function frontTiles(type: BuildingType, x: number, y: number, rotation: Rotation, tier = 1): Coord[] {
+const FRONT_CACHE_LIMIT = 50_000;
+const frontCache = new Map<string, readonly Coord[]>();
+
+export function frontTiles(type: BuildingType, x: number, y: number, rotation: Rotation, tier = 1): readonly Coord[] {
+  const key = `${type}|${x}|${y}|${rotation}|${tier}`;
+  const cached = frontCache.get(key);
+  if (cached) return cached;
   const tiles = footprintTiles({ type, x, y, rotation, tier });
   const inside = new Set(tiles.map(tileKey));
   const front = frontDirection(rotation);
-  return tiles.map((tile) => neighbour(tile, front)).filter((tile) => !inside.has(tileKey(tile)));
+  const result = tiles.map((tile) => neighbour(tile, front)).filter((tile) => !inside.has(tileKey(tile)));
+  if (frontCache.size >= FRONT_CACHE_LIMIT) frontCache.clear();
+  frontCache.set(key, result);
+  return result;
 }
 
 const tileKeySets = new WeakMap<readonly Coord[], Set<string>>();
@@ -48,7 +57,7 @@ export function perimeterTiles(type: BuildingType, x: number, y: number, rotatio
   return [...around.values()];
 }
 
-const accessTiles = (type: BuildingType, x: number, y: number, rotation: Rotation, tier: number): Coord[] => (
+const accessTiles = (type: BuildingType, x: number, y: number, rotation: Rotation, tier: number): readonly Coord[] => (
   type === 'transitHub' ? perimeterTiles(type, x, y, rotation, tier) : frontTiles(type, x, y, rotation, tier)
 );
 

@@ -37,10 +37,9 @@ export function useNavActions(): NavAction[] {
   const toggleSettings = useUi((store) => store.toggleSettings);
   const marketUnlocked = useGame((store) => store.state.marketUnlocked);
   const pendingRequests = useSocial(store => pendingSocialCount(store.profile, store.groups));
-  const challengeState = useGame((store) => store.state);
   const challengeSnapshot = useChallenges((store) => store.snapshot);
   const seenChallenges = useChallenges((store) => store.seen);
-  const newChallenges = marketUnlocked ? pendingChallengesCount(challengeState, challengeSnapshot, seenChallenges) : 0;
+  const newChallenges = useGame((store) => (store.state.marketUnlocked ? pendingChallengesCount(store.state, challengeSnapshot, seenChallenges) : 0));
   const sanctionedCount = useSanctionedHomes().length;
   const guidedFlyout = guideOf(useGame((store) => store.state.tutorial)).flyout;
 

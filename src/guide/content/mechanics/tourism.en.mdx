@@ -1,16 +1,24 @@
 export const meta = {
   title: 'Tourism',
-  summary: 'Museums, stadiums and other Attractions draw Tourists who pay a Ticket and load your roads and transit.',
+  summary: 'Museums and other Attractions draw Tourists all day; theaters, concert halls and stadiums earn only from their Gatherings.',
   order: 45,
 };
 
 ## Attractions
 
-The Museums, the Colosseum, the stadiums, the Concert hall, the Theater, the Casino, the Marina, the Ferris wheel and the Roller coaster are **Attractions**. Each draws a number of **Tourists** a day, more at a higher Tier. A Hotel is not an Attraction: it lodges Tourists, who then stay and spend more, but it draws no one by itself.
+The Museums, the Colosseum, the Casino, the Marina, the Ferris wheel and the Roller coaster are **Attractions**. Each draws a number of **Tourists** a day, more at a higher Tier. A Hotel is not an Attraction: it lodges Tourists, who then stay and spend more, but it draws no one by itself.
+
+## Arenas
+
+The Theater, the Concert hall and the stadiums are **Arenas**. Nobody comes just to see them: an Arena earns only from its Shows, Matches and Meetings. With nothing on, it draws no one and earns nothing. The Colosseum alone does both: Tourists come to see it all day and it holds Shows too.
+
+A stadium with no Club holds a free **Meeting** every day, with the same crowd whatever the stadium. Only a Match fills it.
 
 ## Ticket and Takings
 
 Set the **Ticket** of an Attraction at one of three prices from its side panel. A higher Ticket earns more from each Tourist but draws fewer of them, which leaves your roads freer. Compare the three prices in the panel: it gives the Tourists and the Urbs per hour of each. On top of the Ticket, a Tourist spends on site. The Urbs build up as **Takings**, up to a cap that grows with the Tier, and you collect them by hand.
+
+An Arena has a Ticket too: it sets the crowd and the Ticket sales of its next Gathering. Its Takings have no cap. At the Colosseum, the same Ticket applies to visits and Shows.
 
 ## Getting there
 
@@ -18,9 +26,9 @@ Tourists have no Home. They come by car from the edge of the city, or through a 
 
 ## Shows
 
-The Theater, the Concert hall and the Colosseum hold **Shows**. Choose when it starts, now or later: the panel states the crowd, the Ticket sales, the cost and the expected profit. Cancelled before it starts, a Show gives back half of its cost.
+The Theater, the Concert hall and the Colosseum hold **Shows**, one at a time. From the building's panel, the **Schedule a Show** button opens a dedicated window: set the Ticket and choose when it starts, now or later. The window states the crowd, the Ticket sales, the cost and the expected profit. The panel then follows the Show. Cancelled before it starts, a Show gives back half of its cost.
 
-The crowd arrives in the hour before, stays for the Show and leaves in the hour after, when its Takings are paid to you. You can see it on the map, with a badge that gives the step and the time left. While it moves it loads the network and weighs a little on Well-being around the Attraction if most of it drives. You then have to wait before the next Show.
+The crowd arrives in the hour before, stays for the Show and leaves in the hour after, when its Takings are paid to you. You can see it on the map, with a badge that gives the step and the time left. While it moves it loads the network and weighs a little on Well-being around the building if most of it drives. You then have to wait before the next Show.
 
 ## Artists
 
@@ -28,4 +36,4 @@ In the Concert hall, pick one of the three **Artists** on offer. A higher **Fame
 
 ## Tourism at a glance
 
-The **Tourism** section of City management sums up the Tourists, the earnings per hour, the Takings to collect, the events to come and what is best to do next. The more leisure places your city has, the more Tourists it draws.
+The **Tourism** section of City management sums up the Tourists, the earnings per hour, the Takings to collect, the events to come and what is best to do next. Its Tourists a day count visits only. The more leisure places your city has, Arenas included, the more Tourists it draws.

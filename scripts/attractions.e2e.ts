@@ -56,10 +56,16 @@ test.describe('shows', () => {
       gameStore.getState().replaceState({ ...state, urbs: 100_000, buildings: [createBuilding(50, 'concertHall', 64, 64, 0), createBuilding(51, 'home', 60, 64, 0)], nextId: 52 });
       uiStore.getState().select(50);
     });
-    await expect(page.getByRole('radiogroup', { name: 'Artist' }).getByRole('radio')).toHaveCount(3);
-    await expect(page.getByText('Expected profit')).toBeVisible();
-    await page.getByRole('radiogroup', { name: 'Starts' }).getByRole('radio', { name: '+3 h' }).click();
+    const scheduleDialog = page.locator('.show-dialog').getByRole('dialog');
+    await expect(scheduleDialog).toHaveCount(0);
     await page.getByRole('button', { name: /Schedule a Show/ }).click();
+    await expect(scheduleDialog.getByRole('radiogroup', { name: 'Artist' }).getByRole('radio')).toHaveCount(3);
+    await expect(scheduleDialog.getByText('Expected profit')).toBeVisible();
+    await scheduleDialog.getByRole('radiogroup', { name: 'Ticket' }).getByRole('radio').nth(2).click();
+    await expect(scheduleDialog.getByRole('radiogroup', { name: 'Ticket' }).getByRole('radio').nth(2)).toHaveAttribute('aria-checked', 'true');
+    await scheduleDialog.getByRole('radiogroup', { name: 'Starts' }).getByRole('radio', { name: '+3 h' }).click();
+    await scheduleDialog.getByRole('button', { name: /Schedule a Show/ }).click();
+    await expect(scheduleDialog).toHaveCount(0);
     const steps = page.locator('.gathering-steps [data-state="current"]');
     await expect(steps).toHaveText('Scheduled');
     await expect(page.locator('.gathering-badge')).toHaveCount(1);
@@ -69,8 +75,9 @@ test.describe('shows', () => {
     await expect(page.locator('.gathering-badge')).toHaveCount(0);
     const refunded = await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().state.urbs);
     expect(refunded).toBeGreaterThan(urbs);
-    await page.getByRole('radiogroup', { name: 'Starts' }).getByRole('radio', { name: 'Now' }).click();
     await page.getByRole('button', { name: /Schedule a Show/ }).click();
+    await scheduleDialog.getByRole('radiogroup', { name: 'Starts' }).getByRole('radio', { name: 'Now' }).click();
+    await scheduleDialog.getByRole('button', { name: /Schedule a Show/ }).click();
     await expect(page.getByText(/the Show has begun/)).toBeVisible();
     await expect(steps).toHaveText('Under way');
     await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().send({ type: 'SkipTime', hours: 5 }));
@@ -102,11 +109,52 @@ test.describe('shows', () => {
     await expect(section.locator('.tourism-row')).toHaveCount(2);
     await expect(section.getByText(/Build a Hotel/)).toBeVisible();
     await expect(section.getByText(/can hold a Show/)).toBeVisible();
+    await expect(section.getByText('Nothing on')).toBeVisible();
+    await section.getByRole('button', { name: 'Schedule', exact: true }).click();
+    const scheduleDialog = page.locator('.show-dialog').getByRole('dialog');
+    await expect(scheduleDialog.getByText('Expected profit')).toBeVisible();
+    await scheduleDialog.getByRole('button', { name: 'Close', exact: true }).click();
+    await expect(scheduleDialog).toHaveCount(0);
     await section.getByRole('button', { name: /Collect everything/ }).click();
     await expect.poll(() => page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().state.urbs)).toBeGreaterThan(100_000);
     await section.getByRole('button', { name: /Masonry|Harbour museum/ }).click();
     await expect(section).toHaveCount(0);
     await expect(page.getByRole('radiogroup', { name: 'Ticket' })).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+});
+
+test.describe('meetings', () => {
+  test.use({ viewport: { width: 1280, height: 900 } });
+
+  test('a stadium with no Club holds a Meeting and only earns from it', async ({ page }) => {
+    test.setTimeout(90_000);
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+    await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      const { uiStore } = await import('../src/store/uiStore.ts');
+      const { newGame, createBuilding } = await import('../src/core/index.ts');
+      const state = newGame({ seed: 'meeting-e2e', now: Date.now() });
+      gameStore.getState().replaceState({ ...state, urbs: 100_000, buildings: [createBuilding(50, 'footballStadium', 64, 64, 0), createBuilding(51, 'home', 56, 64, 0)], nextId: 52 });
+      uiStore.getState().select(50);
+    });
+    const prices = page.getByRole('radiogroup', { name: 'Ticket' }).getByRole('radio');
+    await expect(prices).toHaveCount(3);
+    const rows = await prices.evaluateAll(items => new Set(items.map(item => Math.round(item.getBoundingClientRect().top))).size);
+    expect(rows).toBe(1);
+    await expect(page.getByText(/Next Meeting in/)).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Collect/ })).toBeDisabled();
+    await expect(page.getByRole('button', { name: /Schedule a Show/ })).toHaveCount(0);
+    await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      gameStore.getState().send({ type: 'SkipTime', hours: 24 });
+      gameStore.getState().send({ type: 'SkipTime', hours: 6 });
+    });
+    await expect(page.getByRole('button', { name: /^Collect/ })).toBeEnabled();
     expect(errors).toEqual([]);
   });
 });

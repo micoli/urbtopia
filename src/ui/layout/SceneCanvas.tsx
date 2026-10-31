@@ -94,9 +94,10 @@ export function SceneCanvas() {
       scene.setCoverageFocus(selected && prefsStore.getState().showReach && isFacilityType(selected.type) && FACILITIES[selected.type].radius !== null ? { type: selected.type, facilityId: selected.id } : null);
     };
     showSelection();
-    const unsubscribeGame = gameStore.subscribe((store) => {
+    const unsubscribeGame = gameStore.subscribe((store, previous) => {
+      if (store.state === previous.state) return;
       scene.setState(store.state);
-      showSelection();
+      if (selectionFocus(uiStore.getState()).buildingId !== null) showSelection();
     });
     const unsubscribeUi = uiStore.subscribe((store, previous) => {
       if (store.serviceCoverageOpen !== previous.serviceCoverageOpen) showServiceCoverage();

@@ -49,7 +49,7 @@ function gatheringToast(events: readonly GameEvent[], state: GameState): { text:
   if (event.type === 'GatheringSettled') return { text: t('toast.gatheringSettled').replace('{building}', name).replace('{crowd}', `${Math.round(event.crowd)}`).replace('{amount}', `${Math.round(event.revenue)}`), target: building.id };
   if (event.type === 'GatheringEnded') return { text: t('toast.gatheringEnded').replace('{building}', name), target: building.id };
   const gathering = building.attraction?.gathering;
-  return { text: t(gathering?.kind === 'match' ? 'toast.matchStarted' : 'toast.showStarted').replace('{building}', name).replace('{crowd}', `${Math.round(gathering?.crowd ?? 0)}`), target: building.id };
+  return { text: t(gathering?.kind === 'show' ? 'toast.showStarted' : gathering?.kind === 'meeting' ? 'toast.meetingStarted' : 'toast.matchStarted').replace('{building}', name).replace('{crowd}', `${Math.round(gathering?.crowd ?? 0)}`), target: building.id };
 }
 
 const GATHERING_TOASTS: readonly (MessageKey | null)[] = ['event.gatheringStarted', 'event.gatheringEnded', 'event.gatheringSettled'];

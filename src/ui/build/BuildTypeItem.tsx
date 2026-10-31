@@ -1,4 +1,5 @@
-import { attractionPowerOf, cityAttractiveness, isAttractionType, isHomeType, isRepeatable, maxCopies, nextCopyCost, ownedCopies, buildLimitReached, type BuildingType, type ColorVariant } from '../../core';
+import type { ReactNode } from 'react';
+import { attractionPowerOf, cityAttractiveness, gatheringCapacityOf, isArenaType, isAttractionType, isHomeType, isRepeatable, maxCopies, nextCopyCost, ownedCopies, buildLimitReached, type BuildingType, type ColorVariant, type GameState } from '../../core';
 import { t } from '../../i18n/t';
 import { Icon } from '../common/Icon';
 import { FlyoutItem } from '../layout/FlyoutItem';
@@ -12,6 +13,13 @@ interface BuildTypeItemProps {
   preview: string | undefined;
 }
 
+function badgeOf(state: GameState, type: BuildingType): ReactNode {
+  if (isRepeatable(type)) return `${ownedCopies(state, type)}/${maxCopies(type)}`;
+  if (isAttractionType(type)) return <span title={t('attraction.tourists')}><Icon name="ticket" /> +{Math.round(attractionPowerOf({ type, tier: 1 }) * cityAttractiveness(state))}</span>;
+  if (isArenaType(type)) return <span title={t('attraction.seats')}><Icon name="ticket" /> {gatheringCapacityOf({ type, tier: 1 })}</span>;
+  return undefined;
+}
+
 export function BuildTypeItem({ type, homeColor, preview }: BuildTypeItemProps) {
   const state = useGame(store => store.state);
   const chooseTool = useUi(store => store.chooseTool);
@@ -20,7 +28,7 @@ export function BuildTypeItem({ type, homeColor, preview }: BuildTypeItemProps) 
   return (
     <FlyoutItem
       label={t(`building.${type}`)}
-      badge={isRepeatable(type) ? `${ownedCopies(state, type)}/${maxCopies(type)}` : isAttractionType(type) ? <span title={t('attraction.tourists')}><Icon name="ticket" /> +{Math.round(attractionPowerOf({ type, tier: 1 }) * cityAttractiveness(state))}</span> : undefined}
+      badge={badgeOf(state, type)}
       disabled={buildLimitReached(state, type)}
       cost={<UrbsAmount value={nextCopyCost(state, type)} />}
       guided={guide.buildings.includes(type)}
