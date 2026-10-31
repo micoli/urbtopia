@@ -89,6 +89,15 @@ describe('Removing what a Pirate ship needs', () => {
     expect(failureKey(state, { type: 'RemoveWater', tiles: [{ x: 62, y: 50 }] })).toBeNull();
   });
 
+  it('lets a Pirate ship move off a removed Water tile and stay attached to its Pirate cove', () => {
+    const state = succeed(cove(24), buyShip(73));
+    const after = succeed(state, { type: 'RemoveWater', tiles: [{ x: 73, y: 50 }] });
+    expect(after.boats).toHaveLength(1);
+    expect(after.boats![0]).toMatchObject({ family: 'pirate', marinaId: 100 });
+    expect(after.boats![0]).toMatchObject({ x: 72, y: 50 });
+    expect(checkGameState(after).ok).toBe(true);
+  });
+
   it('refuses selling or moving a Pirate cove that has a Pirate ship', () => {
     const state = succeed(cove(), buyShip(52));
     expect(failureKey(state, { type: 'SellBuilding', id: 100 })).toBe('error.pirateCoveInUse');

@@ -53,7 +53,7 @@ export function isBoatOperating(state: GameState, boat: Boat): boolean {
   return boat.family !== 'fishing' && state.urbs > FUNDS_EPSILON && marinaOf(state, boat.marinaId) !== undefined;
 }
 
-const hostOf = (state: GameState, family: BoatFamily, hostId: number): Building | undefined => (isCoveBoatFamily(family) ? pirateCoveOf(state, hostId) : marinaOf(state, hostId));
+export const hostOf = (state: GameState, family: BoatFamily, hostId: number): Building | undefined => (isCoveBoatFamily(family) ? pirateCoveOf(state, hostId) : marinaOf(state, hostId));
 
 export function boatsCutOff(state: GameState): boolean {
   return boatsOf(state).some((boat) => {

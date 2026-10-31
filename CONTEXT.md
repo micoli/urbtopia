@@ -995,7 +995,7 @@ _Avoid_: Docs, documentation, manual, wiki
 - A breakdown of a Fixture is drawn from the Venue's own stream of the game's Seed, so reloading never dodges it.
 - A Venue is simulated in aggregate per game tick, collected by hand like Tax, and replayed by Catch-up.
 - A Pleasure boat is a Leisure building and a Casino boat is a Casino, both hosted by a Boat on a Water tile.
-- Removing a Water tile that carries a Boat, a Bridge, a Desert island or a Sea fort, a Marina that holds Boats, or a Water tile that would cut a Boat off its Marina or Pirate cove is refused.
+- Removing a Water tile that carries a Bridge, a Desert island or a Sea fort, a Marina that holds Boats, or a Water tile that would cut a Boat off its Marina or Pirate cove is refused. A Water tile that carries a Boat can be removed: the Boat moves to the nearest free tile of the water of its Marina or Pirate cove and stays attached to it; with no free tile left, the removal is refused.
 - Removing a Water tile, or laying a Desert island or a Sea fort, that would cut Stands off their Pirate cove or leave too few navigable Water tiles for the Pirate ships on them is refused.
 - A Bridge is part of the graph of its Carrier: Commute, Congestion and Pedestrian paths use a Road Bridge like any Road. Bridge openings lower the capacity of a Bridge over Water in proportion to the Boats that can reach it.
 - A Bridge over infrastructure does not connect to the networks beneath it. It has no side exit, no stop, station, Crossing or building access on its span or ramps, and its Sidewalks join those of the Road that extends it.

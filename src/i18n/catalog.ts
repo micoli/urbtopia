@@ -592,7 +592,7 @@ export const CATALOG = {
   'error.pirateCoveInUse': ['This Pirate cove still has Pirate ships or Stands.', 'Cette crique des pirates a encore des navires pirates ou des gradins.'],
   'error.noWaterForPirateShip': ['This water carries one Pirate ship or Navy frigate per 12 Water tiles: lay more Water tiles first.', "Ce plan d'eau porte un navire pirate ou une frégate pour 12 tuiles d'eau : pose d'abord plus de tuiles d'eau."],
   'error.unknownBoat': ['This Boat does not exist.', "Ce bateau n'existe pas."],
-  'error.waterInUse': ['A Boat or a Bridge depends on this Water tile.', "Un bateau ou un pont dépend de cette tuile d'eau."],
+  'error.waterInUse': ['A Bridge, a piece of scenery or a Boat with nowhere else to go depends on this Water tile.', "Un pont, un décor ou un bateau sans autre place dépend de cette tuile d'eau."],
   'error.noSeeds': ['No Seed packs of this species left.', "Plus de sachets de graines de cette espèce."],
   'error.nothingToPlant': ['No empty Field tile to plant.', 'Aucune parcelle de champ vide à planter.'],
   'event.politicsDigest': ['The politics of the city moved while you were away: see the Town hall.', "La politique de la ville a bougé pendant votre absence : voyez la mairie."],

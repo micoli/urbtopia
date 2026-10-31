@@ -128,9 +128,22 @@ describe('Protecting the Marina and the water', () => {
     expect(failureKey(succeed(state, { type: 'SellBoat', id: 200 }), { type: 'SellBuilding', id: 100 })).toBeNull();
   });
 
-  it('refuses to remove the Water tile under a Boat', () => {
+  it('lets the Water tile under a Boat go: the Boat moves to the nearest free tile of its Marina and stays attached to it', () => {
     const state = succeed(harbour(), buy(52));
-    expect(failureKey(state, { type: 'RemoveWater', tiles: [{ x: 52, y: 50 }] })).toBe('error.waterInUse');
+    const after = succeed(state, { type: 'RemoveWater', tiles: [{ x: 52, y: 50 }] });
+    expect(after.waterTiles).not.toContainEqual({ x: 52, y: 50 });
+    expect(after.boats).toEqual([{ id: 200, family: 'pleasure', marinaId: 100, x: 51, y: 50 }]);
+  });
+
+  it('refuses to remove the Water tile under a Boat that has nowhere else to go', () => {
+    const state = succeed(harbour({ waterTiles: row(1) }), buy(50));
+    expect(failureKey(state, { type: 'RemoveWater', tiles: row(1) })).toBe('error.waterInUse');
+  });
+
+  it('does not move a Boat onto a tile that another Boat or a Bridge holds', () => {
+    const state = succeed(succeed(harbour({ waterTiles: row(3) }), buy(51)), buy(52));
+    const after = succeed(state, { type: 'RemoveWater', tiles: [{ x: 52, y: 50 }] });
+    expect(after.boats!.map((boat) => `${boat.x},${boat.y}`).sort()).toEqual(['50,50', '51,50']);
   });
 
   it('refuses to remove a Water tile that would cut a Boat off its Marina', () => {
@@ -141,7 +154,8 @@ describe('Protecting the Marina and the water', () => {
   it('removes the free Water tiles of a drag and keeps the others', () => {
     const state = succeed(harbour(), buy(52));
     const after = succeed(state, { type: 'RemoveWater', tiles: row(6) });
-    expect(after.waterTiles).toEqual([{ x: 50, y: 50 },{ x: 51, y: 50 }, { x: 52, y: 50 }]);
+    expect(after.waterTiles).toEqual([{ x: 50, y: 50 }, { x: 51, y: 50 }]);
+    expect(after.boats).toEqual([{ id: 200, family: 'pleasure', marinaId: 100, x: 51, y: 50 }]);
   });
 });
 
