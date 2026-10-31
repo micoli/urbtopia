@@ -11,7 +11,7 @@ import { artistOffer, feeOfArtist, qualityOfFame, ticketBoostOfFame } from './ar
 import type { Artist } from './artistSchema';
 import { CROWD_WINDOW_MS, GATHERING_REACH } from './gatheringWindow';
 import { TICKETS, TAKINGS, takingsOf, ticketOf } from './takings';
-import { TOURISM, spendingFactor } from './tourists';
+import { TOURISM, isArenaType, spendingFactor } from './tourists';
 import { cityAttractiveness } from '../venues/hotel';
 
 export const SHOW_TYPES = ['theater', 'concertHall', 'colosseum'] as const;
@@ -33,12 +33,16 @@ export const GATHERING = {
   reach: GATHERING_REACH,
   defaultQuality: 0.5,
   capacity: { theater: 150, concertHall: 400, colosseum: 1200, stadium: 600, footballStadium: 3000, baseballField: 1200 } as Readonly<Record<string, number>>,
+  meetingCapacity: 600,
+  meetingQuality: 0.5,
 };
 
 const clamp01 = (value: number): number => Math.min(1, Math.max(0, value));
 
 
 export const isShowType = (type: string): boolean => (SHOW_TYPES as readonly string[]).includes(type);
+
+export const isStadiumType = (type: string): boolean => isArenaType(type) && !isShowType(type);
 
 export const gatheringCapacityOf = (building: Pick<Building, 'type' | 'tier'>): number => {
   const base = GATHERING.capacity[building.type] ?? 0;
@@ -59,11 +63,19 @@ const citizensInReach = (state: GameState, building: Building): number => {
 
 export type GatheringPreview = Pick<GatheringData, 'cost' | 'crowd' | 'tourists' | 'citizens' | 'revenue'>;
 
+export interface GatheringDraw {
+  quality?: number;
+  capacity?: number;
+  crowdBoost?: number;
+}
+
+export const MEETING_DRAW: GatheringDraw = { quality: GATHERING.meetingQuality, capacity: GATHERING.meetingCapacity };
+
 // The crowd a Gathering would draw now: capacity x fill, split between Tourists and the Citizens in reach.
-export function previewGathering(state: GameState, building: Building, artist?: Artist, qualityOverride?: number): GatheringPreview {
-  const quality = qualityOverride ?? (artist ? qualityOfFame(artist.fame) : GATHERING.defaultQuality);
-  const fill = clamp01(GATHERING.baseFill + GATHERING.qualityFill * quality + GATHERING.wellbeingFill * cityWellbeingRatio(state)) * (TICKETS[ticketOf(building)]?.draw ?? 1);
-  const crowd = gatheringCapacityOf(building) * fill;
+export function previewGathering(state: GameState, building: Building, artist?: Artist, draw: GatheringDraw = {}): GatheringPreview {
+  const quality = draw.quality ?? (artist ? qualityOfFame(artist.fame) : GATHERING.defaultQuality);
+  const fill = Math.min(1, clamp01(GATHERING.baseFill + GATHERING.qualityFill * quality + GATHERING.wellbeingFill * cityWellbeingRatio(state)) * (TICKETS[ticketOf(building)]?.draw ?? 1) * (draw.crowdBoost ?? 1));
+  const crowd = (draw.capacity ?? gatheringCapacityOf(building)) * fill;
   const tourists = Math.min(crowd, crowd * GATHERING.touristShare * cityAttractiveness(state));
   const citizens = Math.min(crowd - tourists, citizensInReach(state, building) * GATHERING.citizenShare);
   const present = tourists + citizens;
@@ -141,10 +153,11 @@ export function advanceGatherings(state: GameState, from: number, to: number): {
   return { state: { ...state, buildings }, events };
 }
 
-// A Match or meeting set by a calendar: no cost to the player, the crowd drawn like a Show's from the quality given.
-export function setGathering(state: GameState, building: Building, kind: 'match' | 'show', startsAt: number, quality: number): GameState {
-  const preview = previewGathering(state, building, undefined, quality);
-  const gathering: GatheringData = { kind, startsAt, endsAt: startsAt + GATHERING.matchDurationMs, quality, ...preview, cost: 0 };
+// A Match or Meeting set by a calendar: no cost to the player, the crowd drawn like a Show's. It uses up the boost of a Championship.
+export function setGathering(state: GameState, building: Building, kind: 'match' | 'meeting', startsAt: number, draw: GatheringDraw): GameState {
+  const preview = previewGathering(state, building, undefined, draw);
+  const gathering: GatheringData = { kind, startsAt, endsAt: startsAt + GATHERING.matchDurationMs, quality: draw.quality ?? GATHERING.defaultQuality, ...preview, cost: 0 };
   const attraction = { ...building.attraction, takings: takingsOf(building), gathering };
+  delete attraction.nextMatchBoost;
   return { ...state, buildings: state.buildings.map(candidate => (candidate === building ? { ...building, attraction } : candidate)) };
 }

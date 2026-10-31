@@ -222,11 +222,11 @@ export { FLOW_ENDPOINTS, FLOW_MODES, buildingFlowsOf, flowEndpointsOf, hasTrips,
 export type { BuildingFlow, BuildingFlows, FlowEndpoint, FlowEndpoints, ModeVolumes, PassageBeacon, PassageBeacons } from './analytics/flowEndpoints';
 export type { TripMode } from './traffic/congestion';
 export type { FlowMode } from './analytics/flowEndpoints';
-export { TOURISM, attractionPowerOf, isAttraction, isAttractionType, spendingFactor, touristDemand } from './tourism/tourists';
+export { ARENA_TYPES, TOURISM, attractionPowerOf, isArenaType, isAttraction, isAttractionType, sellsTickets, sellsTicketsType, spendingFactor, touristDemand } from './tourism/tourists';
 export { TICKETS, TICKET_DEFAULT, TAKINGS, advanceAttractions, attractionTakingsCapOf, collectAttractionTakings, earningsPerHour, setTicket, takingsOf as attractionTakingsOf, ticketOf, touristsPerDay } from './tourism/takings';
 export { STATION_SHARE, TOURIST_GATES, roadGate, touristFlows } from './tourism/touristFlows';
 export type { TouristFlow, TouristMode } from './tourism/touristFlows';
-export { GATHERING, SHOW_TYPES, advanceGatherings, cancelShow, gatheringBoundaries, gatheringCapacityOf, gatheringCostOf, inGatheringCooldown, isGatheringActive, isShowType, previewGathering, scheduleShow } from './tourism/gatherings';
+export { GATHERING, SHOW_TYPES, advanceGatherings, cancelShow, gatheringBoundaries, gatheringCapacityOf, gatheringCostOf, inGatheringCooldown, isGatheringActive, isShowType, isStadiumType, previewGathering, scheduleShow } from './tourism/gatherings';
 export { CROWD_WINDOW_MS, GATHERING_REACH, gatheringPhase, gatheringPhaseEnd, isCrowdMoving, movingGathering } from './tourism/gatheringWindow';
 export type { GatheringPhase } from './tourism/gatheringWindow';
 export { attractionRowOf, nextAttractionType, tourismOverview, touristModesOf } from './tourism/overview';
@@ -240,8 +240,7 @@ export { advanceClubs, foundClub, releaseClubPlayer, signClubPlayer } from './cl
 export { hasClub, registerSportRules, sportRulesOf, unregisterSportRules } from './clubs/sportRules';
 export { isClubSport } from './clubs/club';
 export type { ClubData, ClubSport, Player, SportRules } from './clubs/clubTypes';
-export { CHAMPIONSHIP, advanceChampionships, championshipBoundaries, clubQuality, nextFixture, clubRankOf, squadStrength, startChampionship } from './clubs/championship';
-export { boostOf } from './tourism/tourists';
+export { CHAMPIONSHIP, advanceChampionships, championshipBoundaries, clubQuality, nextFixture, nextMeetingSlot, previewNextGathering, clubRankOf, squadStrength, startChampionship } from './clubs/championship';
 import './clubs/sports';
 export { FOOTBALL, FOOTBALL_RULES, FORMATIONS, FORMATION_IDS, TACTICS, autoStarters, lineupIssue, playUntil, resultOfScore, startMatch } from './clubs/football/football';
 export type { Formation, MatchEvent, MatchState, Tactic } from './clubs/football/football';

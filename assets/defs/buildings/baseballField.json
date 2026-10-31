@@ -17,6 +17,5 @@
     "fr": "Un grand bâtiment de sport avec un losange, un champ extérieur et des tribunes. Il augmente le bien-être des logements à moins de {side} cases (+{wellbeingBonus}) et ne consomme pas d’électricité. Il occupe {width}×{depth} cases ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs."
   },
   "radius": 12,
-  "wellbeingBonus": 10,
-  "attraction": 40
+  "wellbeingBonus": 10
 }

@@ -1,7 +1,7 @@
 import { footprintOf } from '../buildings/buildingSpecs';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { congestionStats, workplaceTypes, type TripMode } from '../traffic/congestion';
-import { isAttraction } from '../tourism/tourists';
+import { sellsTickets } from '../tourism/tourists';
 import { walkDestinationOf } from '../traffic/walking';
 import { crossingFlows, footbridgeFlows } from '../traffic/walkFlows';
 import { stopsOfMode, transitModeOf } from './transitFields';
@@ -61,7 +61,7 @@ export function flowEndpointsOf(state: GameState, layer: AnalyticsLayerId): Flow
 }
 
 // A Home, a workplace or somewhere to walk to: the buildings Citizens travel to or from.
-export const hasTrips = (building: Building): boolean => isHomeType(building.type) || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null || isAttraction(building);
+export const hasTrips = (building: Building): boolean => isHomeType(building.type) || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null || sellsTickets(building);
 
 export type FlowMode = TripMode | 'transit';
 

@@ -88,7 +88,7 @@ export interface VenueData {
 
 // A one-day crowd event held in an Attraction: its crowd is fixed when it is scheduled, its Ticket revenue paid when it ends.
 export interface GatheringData {
-  kind: 'show' | 'match';
+  kind: 'show' | 'match' | 'meeting';
   startsAt: number;
   endsAt: number;
   cost: number;
@@ -120,9 +120,9 @@ export interface AttractionData {
   cooldownUntil?: number;
   // Shows scheduled so far: with the building it seeds the Artists offered for the next one.
   shows?: number;
-  // Until when a Championship's success draws extra Tourists.
-  boostUntil?: number;
-  // The athletics meeting slot last set, so the same one is not set twice.
+  // A Championship's success draws a bigger crowd to the next Match.
+  nextMatchBoost?: boolean;
+  // The Meeting slot last set, so the same one is not set twice.
   meetingAt?: number;
 }
 

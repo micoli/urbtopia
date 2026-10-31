@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { cityAttractiveness, footprintOf, isAttraction, isCrowdMoving, touristsPerDay, type Building, type GameState } from '../core';
+import { cityAttractiveness, footprintOf, isCrowdMoving, sellsTickets, touristsPerDay, type Building, type GameState } from '../core';
 import { CROWD, crowdPresence, crowdSlots, gatheringFigures, visitorFigures, type CrowdSlot } from './attractionCrowd';
 import { stickSpectator } from './stickFigures';
 
@@ -65,7 +65,7 @@ export class AttractionCrowdLayer {
   }
 
   sync(state: GameState): void {
-    const attractions = state.buildings.filter(isAttraction);
+    const attractions = state.buildings.filter(sellsTickets);
     const layoutKey = `${state.buildings.length}|${attractions.map(({ id, x, y, rotation, tier }) => `${id},${x},${y},${rotation},${tier}`).join(';')}`;
     if (layoutKey !== this.layoutKey) {
       this.layoutKey = layoutKey;

@@ -191,6 +191,7 @@
 }
 
 .show-starts .choice-chips button {
+  flex: 1 0 auto;
   min-width: var(--tap);
   padding: 0 var(--space-6);
 }
@@ -429,4 +430,19 @@
   .tourism-row .progress-bar {
     grid-column: 1 / -1;
   }
+}
+
+.show-dialog .dialog {
+  width: min(480px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.show-dialog-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin-bottom: var(--space-12);
 }

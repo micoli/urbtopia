@@ -10,7 +10,7 @@ const museum = (id: number, extra: Partial<Building> = {}): Building => ({ ...cr
 describe('tourismOverview', () => {
   it('adds up the Tourists, the earnings and the Takings of the Attractions only', () => {
     const overview = tourismOverview(city(museum(1, { attraction: { takings: 12.8 } }), museum(2, { attraction: { takings: 3 } }), createBuilding(3, 'home', 40, 10, 0)));
-    expect(overview.attractions).toHaveLength(2);
+    expect(overview.rows).toHaveLength(2);
     expect(overview.toCollect).toBe(15);
     expect(overview.touristsPerDay).toBeGreaterThan(0);
     expect(overview.perHour).toBeGreaterThan(0);
@@ -20,11 +20,25 @@ describe('tourismOverview', () => {
     const near = museum(1, { attraction: { takings: 1 } });
     const full = museum(2, { attraction: { takings: attractionTakingsCapOf(museum(2)) } });
     const overview = tourismOverview(city(near, full));
-    expect(overview.attractions[0]!.building.id).toBe(2);
-    expect(overview.attractions[0]!.full).toBe(true);
-    expect(overview.attractions[0]!.hoursToFull).toBeNull();
-    expect(overview.attractions[1]!.hoursToFull).toBeGreaterThan(0);
+    expect(overview.rows[0]!.building.id).toBe(2);
+    expect(overview.rows[0]!.full).toBe(true);
+    expect(overview.rows[0]!.hoursToFull).toBeNull();
+    expect(overview.rows[1]!.hoursToFull).toBeGreaterThan(0);
     expect(overview.advice[0]).toEqual({ kind: 'collect', buildingId: 2, count: 1 });
+  });
+
+  it('lists an Arena with no cap, no Tourists a day and its Takings to collect', () => {
+    const overview = tourismOverview(city(createBuilding(1, 'concertHall', 10, 10, 0), { ...createBuilding(2, 'stadium', 40, 10, 0), attraction: { takings: 5000 } }));
+    expect(overview.rows).toHaveLength(2);
+    expect(overview.touristsPerDay).toBe(0);
+    expect(overview.perHour).toBe(0);
+    expect(overview.rows.every(row => !row.full && row.hoursToFull === null)).toBe(true);
+    expect(overview.advice).toContainEqual({ kind: 'collectArena', buildingId: 2, count: 1 });
+    expect(overview.advice.map(advice => advice.kind)).not.toContain('collect');
+  });
+
+  it('only suggests an Attraction as the next building', () => {
+    expect(['theater', 'concertHall', 'stadium', 'footballStadium', 'baseballField']).not.toContain(nextAttractionType(city()));
   });
 
   it('asks for a Hotel until the city has one', () => {

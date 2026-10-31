@@ -30,7 +30,7 @@ import { collectCatch } from '../water/fishing';
 import { collectAttractionTakings, setTicket } from '../tourism/takings';
 import { foundClub, recordMatchDecisions, releaseClubPlayer, setClubLineup, signClubPlayer } from '../clubs/clubCommands';
 import { cancelShow, scheduleShow } from '../tourism/gatherings';
-import { isAttraction } from '../tourism/tourists';
+import { sellsTickets } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
@@ -833,7 +833,7 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
   if (isHomeType(building.type)) return collectTax(state, building);
   if (isOfficeType(building.type)) return collectOfficeEarnings(state, building);
   if (isVenue(building)) return collectTakings(state, building);
-  if (isAttraction(building)) return collectAttractionTakings(state, building);
+  if (sellsTickets(building)) return collectAttractionTakings(state, building);
   return collectProduction(state, building);
 }
 

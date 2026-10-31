@@ -15,7 +15,6 @@
     "fr": "Un grand équipement culturel. Facultatif : il augmente le bien-être. {reach, select, city {Couvre toute la ville} other {Portée carrée de {side} cases}}, {limit, select, unlimited {capacité illimitée} other {capacité {tier1Capacity} citoyens, jusqu’à {maxTierCapacity} au niveau {tierCount}}}; consomme {power} d’électricité{hasWater, select, yes { et {water} d’eau} other {}}; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs, sans coût de fonctionnement."
   },
   "radius": 14,
-  "attraction": 40,
   "tiers": [
     {
       "model": "buildings-concert-hall-3x3",

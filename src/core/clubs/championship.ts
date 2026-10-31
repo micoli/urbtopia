@@ -1,6 +1,7 @@
 import { hashSeed, nextRandom } from '../engine/random';
 import type { Building, GameState } from '../engine/state';
-import { GATHERING, setGathering } from '../tourism/gatherings';
+import { GATHERING, MEETING_DRAW, isStadiumType, previewGathering, setGathering, type GatheringDraw, type GatheringPreview } from '../tourism/gatherings';
+import { TOURISM } from '../tourism/tourists';
 import { CLUB, refreshMarket, wageOf } from './club';
 import type { ChampionshipData, ClubData, MatchResult, Opponent, SportRules } from './clubTypes';
 import { OPPONENT_NAMES } from './names';
@@ -19,10 +20,8 @@ export const CHAMPIONSHIP = {
   prizes: [4000, 2500, 1500, 800, 400, 0, 0, 0] as readonly number[],
   strengthRange: [30, 80] as readonly [number, number],
   strengthDrift: 5,
-  // The stadium draws more Tourists for a while after a Championship.
-  boostMs: 6 * HOUR_MS,
   drawChance: 0.25,
-  // Athletics: isolated meetings, no ranking.
+  // A stadium with no Club: isolated Meetings, no ranking.
   meetingIntervalMs: 24 * HOUR_MS,
 };
 
@@ -134,51 +133,59 @@ function resolveDue(rules: SportRules, club: ClubData, now: number): { club: Clu
   }
 }
 
-const nextMeetingSlot = (after: number): number => (Math.floor(after / CHAMPIONSHIP.meetingIntervalMs) + 1) * CHAMPIONSHIP.meetingIntervalMs;
+export const nextMeetingSlot = (after: number): number => (Math.floor(after / CHAMPIONSHIP.meetingIntervalMs) + 1) * CHAMPIONSHIP.meetingIntervalMs;
 
 const withAttraction = (building: Building, extra: Partial<NonNullable<Building['attraction']>>): Building => ({ ...building, attraction: { takings: building.attraction?.takings ?? 0, ...building.attraction, ...extra } });
 
 const replace = (state: GameState, from: Building, to: Building): GameState => (from === to ? state : { ...state, buildings: state.buildings.map(building => (building === from ? to : building)) });
 
-// The athletics stadium holds isolated meetings on fixed days, with no Club and no ranking.
+const drawOfStadium = (building: Building): GatheringDraw => {
+  if (!building.club) return MEETING_DRAW;
+  return { quality: clubQuality(building.club), crowdBoost: building.attraction?.nextMatchBoost ? TOURISM.championshipBoost : 1 };
+};
+
+// The crowd the next Match or Meeting of a stadium would draw at its current Ticket.
+export const previewNextGathering = (state: GameState, building: Building): GatheringPreview => previewGathering(state, building, undefined, drawOfStadium(building));
+
+// A stadium with no Club holds isolated Meetings on fixed days, with no ranking.
 function advanceMeeting(state: GameState, building: Building, to: number): GameState {
   const slot = nextMeetingSlot(to);
   if (building.attraction?.gathering || building.attraction?.meetingAt === slot || to < slot - CHAMPIONSHIP.leadMs) return state;
   const planned = withAttraction(building, { meetingAt: slot });
-  return setGathering(replace(state, building, planned), planned, 'match', slot, 0.5);
+  return setGathering(replace(state, building, planned), planned, 'meeting', slot, MEETING_DRAW);
 }
 
 // Sets the next Match of a Club in its stadium when its time comes, and settles those that were played.
 function advanceClubMatches(state: GameState, building: Building, rules: SportRules, to: number): GameState {
   const resolved = resolveDue(rules, building.club!, to);
   let updated: Building = resolved.club === building.club ? building : { ...building, club: resolved.club };
-  if (resolved.boost) updated = withAttraction(updated, { boostUntil: to + CHAMPIONSHIP.boostMs });
+  if (resolved.boost) updated = withAttraction(updated, { nextMatchBoost: true });
   const current = replace(state, building, updated);
   const fixture = nextFixture(updated.club!.championship!);
   if (!fixture || updated.attraction?.gathering || to < fixture.at - CHAMPIONSHIP.leadMs) return current;
-  return setGathering(current, updated, 'match', fixture.at, clubQuality(updated.club!));
+  return setGathering(current, updated, 'match', fixture.at, drawOfStadium(updated));
 }
 
-// Calendars of Matches and meetings: they set their Gatherings in the stadiums and settle the Matches that were played.
+// Calendars of Matches and Meetings: they set their Gatherings in the stadiums and settle the Matches that were played.
 export function advanceChampionships(state: GameState, to: number): GameState {
   let current = state;
   for (const original of state.buildings) {
-    if (original.type !== 'stadium' && !original.club) continue;
+    if (!isStadiumType(original.type)) continue;
     const building = current.buildings.find(candidate => candidate.id === original.id)!;
     const rules = sportRulesOf(building.type);
-    if (building.type === 'stadium' && !building.club) current = advanceMeeting(current, building, to);
+    if (!building.club) current = advanceMeeting(current, building, to);
     else if (rules && building.club?.championship) current = advanceClubMatches(current, building, rules, to);
   }
   return current;
 }
 
-// Times after `after` at which a Match or meeting is set, or a Match is settled.
+// Times after `after` at which a Match or Meeting is set, or a Match is settled.
 export function championshipBoundaries(state: GameState, after: number): number[] {
   return state.buildings.flatMap(building => {
     const times: number[] = [];
     const fixture = building.club?.championship && nextFixture(building.club.championship);
     if (fixture) times.push(fixture.at - CHAMPIONSHIP.leadMs, fixture.at + GATHERING.matchDurationMs);
-    if (building.type === 'stadium' && !building.club) times.push(nextMeetingSlot(after) - CHAMPIONSHIP.leadMs);
+    if (isStadiumType(building.type) && !building.club) times.push(nextMeetingSlot(after) - CHAMPIONSHIP.leadMs);
     return times.filter(time => time > after);
   });
 }
