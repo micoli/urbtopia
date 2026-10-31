@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createBuilding, newGame, type Building, type GameState } from '../../core';
+import { createBuilding, newGame, pirateShowTitleOf, type Building, type GameState } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { ShowForm } from './ShowForm';
@@ -20,6 +20,32 @@ const render = (hall: Building, urbs = 10_000) => {
 };
 
 describe('ShowForm', () => {
+  const coveState = (ships: number): Building => {
+    const cove = createBuilding(900, 'pirateCove', 60, 60, 0);
+    render(cove);
+    context.state = {
+      ...context.state!,
+      waterTiles: Array.from({ length: 24 }, (_, index) => ({ x: 60 + index, y: 63 })),
+      boats: Array.from({ length: ships }, (_, index) => ({ id: 950 + index, family: 'pirate', marinaId: 900, x: 60 + index, y: 63 })),
+      buildings: [...context.state!.buildings, { ...createBuilding(920, 'standsMedium', 60, 64, 0), coveId: 900 }],
+    };
+    return cove;
+  };
+
+  it('states the title and refuses a Pirate cove Show with no Pirate ship', () => {
+    const cove = coveState(0);
+    const html = renderToStaticMarkup(<ShowForm building={cove} />);
+    expect(html).toContain(t(`pirateShow.${pirateShowTitleOf(cove)}`).replace("'", '&#x27;'));
+    expect(html).toContain(t('error.noPirateShip'));
+    expect(html).toContain('disabled=""');
+  });
+
+  it('counts the seats of the Stands of a Pirate cove', () => {
+    const html = renderToStaticMarkup(<ShowForm building={coveState(2)} />);
+    expect(html).toContain('/ 200');
+    expect(html).not.toContain(t('error.noPirateShip'));
+  });
+
   it.each(['en', 'fr'] as const)('states the crowd, the Ticket and the cost of the Show in %s', language => {
     prefsStore.getState().setLanguage(language);
     const html = render(createBuilding(900, 'concertHall', 60, 60, 0));

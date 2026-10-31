@@ -85,7 +85,7 @@ export { BRIDGES, BRIDGE_LENGTHS, bridgeAt, bridgeCost, bridgeDeck, bridgeEnds, 
 export { FISHING, fishingSlots, readyCycles, readyFish } from './water/fishing';
 export { connectedWaterKeys, marinaCapacity, touchesWater } from './water/marina';
 export { isSeaSceneryType, navigableWaterKeys } from './water/waterTiles';
-export { PIRATE_COVE, coveForStands, isCoveLocked, isPirateCoveInUse, isStandsType, pirateCoveOf, pirateShipLimit, pirateShipRoom, pirateShipsOfCove, seatCapOf, seatsOfCove, seatsOfStands, standsOfCove } from './water/pirateCove';
+export { PIRATE_COVE, coveForStands, isCoveLocked, isPirateCoveInUse, isStandsType, pirateCoveOf, pirateShipLimit, pirateShipRoom, pirateShipsOfCove, pirateShowIssue, seatCapOf, seatsOfCove, seatsOfStands, standsOfCove } from './water/pirateCove';
 export { cropReturns, type CropReturns } from './farming/returns';
 export { seedSellPrice, seedStockCapacity, seedStockUsed } from './farming/seeds';
 export { CROPS, CROP_IDS, isCrop } from './farming/crops';
@@ -228,7 +228,7 @@ export { ARENA_TYPES, TOURISM, attractionPowerOf, isArenaType, isAttraction, isA
 export { TICKETS, TICKET_DEFAULT, TAKINGS, advanceAttractions, attractionTakingsCapOf, collectAttractionTakings, earningsPerHour, setTicket, takingsOf as attractionTakingsOf, ticketOf, touristsPerDay } from './tourism/takings';
 export { STATION_SHARE, TOURIST_GATES, roadGate, touristFlows } from './tourism/touristFlows';
 export type { TouristFlow, TouristMode } from './tourism/touristFlows';
-export { GATHERING, SHOW_TYPES, advanceGatherings, cancelShow, gatheringBoundaries, gatheringCapacityOf, gatheringCostOf, inGatheringCooldown, isGatheringActive, isShowType, isStadiumType, previewGathering, scheduleShow } from './tourism/gatherings';
+export { GATHERING, SHOW_TYPES, showCapacityOf, advanceGatherings, cancelShow, gatheringBoundaries, gatheringCapacityOf, gatheringCostOf, inGatheringCooldown, isGatheringActive, isShowType, isStadiumType, previewGathering, scheduleShow } from './tourism/gatherings';
 export { CROWD_WINDOW_MS, GATHERING_REACH, gatheringPhase, gatheringPhaseEnd, isCrowdMoving, movingGathering } from './tourism/gatheringWindow';
 export type { GatheringPhase } from './tourism/gatheringWindow';
 export { attractionRowOf, nextAttractionType, tourismOverview, touristModesOf } from './tourism/overview';

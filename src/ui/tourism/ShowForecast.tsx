@@ -1,4 +1,3 @@
-import { gatheringCapacityOf, type Building } from '../../core';
 import type { GatheringPreview } from '../../core/tourism/gatherings';
 import { t } from '../../i18n/t';
 import { DrawerPanel } from '../common/DrawerPanel';
@@ -6,12 +5,11 @@ import { ProgressBar } from '../common/ProgressBar';
 import { UrbsAmount } from '../common/UrbsAmount';
 
 interface ShowForecastProps {
-  building: Building;
+  capacity: number;
   preview: GatheringPreview;
 }
 
-export function ShowForecast({ building, preview }: ShowForecastProps) {
-  const capacity = gatheringCapacityOf(building);
+export function ShowForecast({ capacity, preview }: ShowForecastProps) {
   const net = preview.revenue - preview.cost;
   return (
     <div className="show-forecast">
@@ -19,7 +17,7 @@ export function ShowForecast({ building, preview }: ShowForecastProps) {
         <span>{t('show.crowd')}</span>
         <span>{Math.round(preview.crowd)} / {capacity}</span>
       </div>
-      <ProgressBar value={preview.crowd} max={capacity} label={t('show.crowd')} />
+      <ProgressBar value={preview.crowd} max={Math.max(1, capacity)} label={t('show.crowd')} />
       <p className="tourism-help">{t('show.crowdSplit').replace('{tourists}', `${Math.round(preview.tourists)}`).replace('{citizens}', `${Math.round(preview.citizens)}`)}</p>
       <DrawerPanel.LabelValue label={t('show.revenue')} value={<UrbsAmount value={preview.revenue} />} />
       <DrawerPanel.LabelValue label={t('show.cost')} value={<UrbsAmount value={preview.cost} />} />

@@ -59,6 +59,11 @@ export function seatsOfCove(state: GameState, cove: Building): number {
   return Math.min(seats, seatCapOf(cove));
 }
 
+export function pirateShowIssue(state: GameState, cove: Building): 'error.noPirateShip' | 'error.noSeats' | null {
+  if (pirateShipsOfCove(state, cove.id).length === 0) return 'error.noPirateShip';
+  return seatsOfCove(state, cove) === 0 ? 'error.noSeats' : null;
+}
+
 type Placed = Pick<Building, 'type' | 'x' | 'y' | 'rotation'>;
 
 const onWaterOf = (state: GameState, stands: Placed, cove: Building): boolean => {

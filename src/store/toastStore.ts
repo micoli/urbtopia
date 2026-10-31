@@ -45,7 +45,8 @@ function gatheringToast(events: readonly GameEvent[], state: GameState): { text:
   if (!event || !('buildingId' in event)) return null;
   const building = state.buildings.find((candidate) => candidate.id === event.buildingId);
   if (!building) return null;
-  const name = t(`building.${building.type}`);
+  const title = building.attraction?.gathering?.title ?? building.attraction?.lastGathering?.title;
+  const name = title ? `${t(`building.${building.type}`)} · ${t(`pirateShow.${title}`)}` : t(`building.${building.type}`);
   if (event.type === 'GatheringSettled') return { text: t('toast.gatheringSettled').replace('{building}', name).replace('{crowd}', `${Math.round(event.crowd)}`).replace('{amount}', `${Math.round(event.revenue)}`), target: building.id };
   if (event.type === 'GatheringEnded') return { text: t('toast.gatheringEnded').replace('{building}', name), target: building.id };
   const gathering = building.attraction?.gathering;

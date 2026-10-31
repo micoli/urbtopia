@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { artistOffer, previewGathering, type Building } from '../../core';
+import { artistOffer, pirateShipsOfCove, pirateShowIssue, pirateShowTitleOf, previewGathering, showCapacityOf, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { showDialogStore } from '../../store/showDialogStore';
@@ -27,6 +27,8 @@ export function ShowForm({ building }: { building: Building }) {
   const preview = previewGathering(forecastState, building, artist);
   const startOptions = START_DELAYS.map(hours => ({ value: hours, label: hours === 0 ? t('show.startNow') : t('show.startIn').replace('{hours}', `${hours}`) }));
   const short = Math.ceil(preview.cost - urbs);
+  const isCove = building.type === 'pirateCove';
+  const issue = isCove ? pirateShowIssue(forecastState, building) : null;
   const close = () => showDialogStore.getState().close();
   const schedule = () => {
     gameStore.getState().send({ type: 'ScheduleShow', buildingId: building.id, startsInHours, ...(artist ? { artistId: artist.id } : {}) });
@@ -38,19 +40,22 @@ export function ShowForm({ building }: { building: Building }) {
       <Dialog.Body>
         <div className="show-dialog-body show-section">
           <p className="tourism-label">{t(`building.${building.type}`)}</p>
+          {isCove ? <p><strong>{t(`pirateShow.${pirateShowTitleOf(building)}`)}</strong></p> : null}
+          {isCove ? <p className="tourism-help">{t('boat.pirate')}: {pirateShipsOfCove(forecastState, building.id).length}</p> : null}
           {artist ? <ArtistChoice state={forecastState} building={building} artist={artist} onChange={setChosen} /> : null}
           <ShowTicketChoice building={building} />
           <div className="show-starts">
             <p className="tourism-label">{t('show.startsIn')}</p>
             <RadioChipGroup className="choice-chips" label={t('show.startsIn')} options={startOptions} value={startsInHours} onChange={setStartsInHours} />
           </div>
-          <ShowForecast building={building} preview={preview} />
+          <ShowForecast capacity={showCapacityOf(forecastState, building)} preview={preview} />
+          {issue ? <BlockedReason reason={t(issue)} /> : null}
           {short > 0 ? <BlockedReason reason={t('show.missing').replace('{amount}', `${short}`)} /> : null}
         </div>
       </Dialog.Body>
       <Dialog.Actions>
         <ActionButton onClick={close}>{t('show.close')}</ActionButton>
-        <ActionButton variant="primary" disabled={short > 0} onClick={schedule}>
+        <ActionButton variant="primary" disabled={short > 0 || issue !== null} onClick={schedule}>
           {t('show.schedule')} · <UrbsAmount value={preview.cost} />
         </ActionButton>
       </Dialog.Actions>

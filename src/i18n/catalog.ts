@@ -561,6 +561,8 @@ export const CATALOG = {
   'boat.fishing': ['Fishing boat', 'Bateau de pêche'],
   'boat.casino': ['Casino boat', 'Bateau casino'],
   'boat.pirate': ['Pirate ship', 'Navire pirate'],
+  'cove.waterLimit': ['{count} at most on this water', '{count} au plus sur ce plan d’eau'],
+  'cove.seatsOverCap': ['{count} seats do not count: upgrade the Pirate cove.', '{count} sièges ne comptent pas : améliore la crique des pirates.'],
   'pirateShow.krakensRevenge': ["The Kraken's Revenge", 'La Revanche du Kraken'],
   'pirateShow.saltGalleon': ['Curse of the Salt Galleon', 'La Malédiction du Galion de Sel'],
   'pirateShow.scarletTide': ['The Scarlet Tide', 'La Marée écarlate'],

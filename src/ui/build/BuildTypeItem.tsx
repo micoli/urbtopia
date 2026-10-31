@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { attractionPowerOf, cityAttractiveness, gatheringCapacityOf, isArenaType, isAttractionType, isHomeType, isRepeatable, maxCopies, nextCopyCost, ownedCopies, buildLimitReached, type BuildingType, type ColorVariant, type GameState } from '../../core';
+import { attractionPowerOf, cityAttractiveness, gatheringCapacityOf, isArenaType, isAttractionType, isHomeType, isRepeatable, isStandsType, maxCopies, nextCopyCost, ownedCopies, buildLimitReached, seatsOfStands, type BuildingType, type ColorVariant, type GameState } from '../../core';
 import { t } from '../../i18n/t';
 import { Icon } from '../common/Icon';
 import { FlyoutItem } from '../layout/FlyoutItem';
@@ -16,6 +16,7 @@ interface BuildTypeItemProps {
 function badgeOf(state: GameState, type: BuildingType): ReactNode {
   if (isRepeatable(type)) return `${ownedCopies(state, type)}/${maxCopies(type)}`;
   if (isAttractionType(type)) return <span title={t('attraction.tourists')}><Icon name="ticket" /> +{Math.round(attractionPowerOf({ type, tier: 1 }) * cityAttractiveness(state))}</span>;
+  if (isStandsType(type)) return <span title={t('attraction.seats')}><Icon name="ticket" /> {seatsOfStands(type)}</span>;
   if (isArenaType(type)) return <span title={t('attraction.seats')}><Icon name="ticket" /> {gatheringCapacityOf({ type, tier: 1 })}</span>;
   return undefined;
 }

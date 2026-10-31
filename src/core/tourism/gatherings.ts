@@ -13,7 +13,7 @@ import { CROWD_WINDOW_MS, GATHERING_REACH } from './gatheringWindow';
 import { TICKETS, TAKINGS, takingsOf, ticketOf } from './takings';
 import { TOURISM, isArenaType, spendingFactor } from './tourists';
 import { cityAttractiveness } from '../venues/hotel';
-import { PIRATE_COVE, pirateShipsOfCove, seatCapOf, seatsOfCove } from '../water/pirateCove';
+import { PIRATE_COVE, pirateShipsOfCove, pirateShowIssue, seatCapOf, seatsOfCove } from '../water/pirateCove';
 import { pirateShowTitleOf } from './pirateShows';
 
 export const SHOW_TYPES = ['theater', 'concertHall', 'colosseum', 'pirateCove'] as const;
@@ -52,6 +52,8 @@ export const gatheringCapacityOf = (building: Pick<Building, 'type' | 'tier'>): 
   const base = GATHERING.capacity[building.type] ?? 0;
   return Math.floor(base * (1 + TOURISM.tierBonus * (building.tier - 1)));
 };
+
+export const showCapacityOf = (state: GameState, building: Building): number => (building.type === 'pirateCove' ? seatsOfCove(state, building) : gatheringCapacityOf(building));
 
 export const gatheringCostOf = (building: Pick<Building, 'type' | 'tier'>): number => Math.ceil(gatheringCapacityOf(building) * GATHERING.costPerSeat);
 
@@ -113,8 +115,8 @@ export function scheduleShow(state: GameState, buildingId: number, startsInHours
   const needsArtist = building.type === 'concertHall';
   const artist = artistId === undefined ? undefined : artistOffer(state, building).find(offered => offered.id === artistId);
   if (needsArtist ? artist === undefined : artistId !== undefined) return { key: 'error.invalidArtist' };
-  if (building.type === 'pirateCove' && pirateShipsOfCove(state, building.id).length === 0) return { key: 'error.noPirateShip' };
-  if (building.type === 'pirateCove' && seatsOfCove(state, building) === 0) return { key: 'error.noSeats' };
+  const pirateIssue = building.type === 'pirateCove' ? pirateShowIssue(state, building) : null;
+  if (pirateIssue) return { key: pirateIssue };
   const preview = previewGathering(state, building, artist);
   if (state.urbs < preview.cost) return { key: 'error.notEnoughUrbs' };
   const startsAt = state.lastSeen + startsInHours * TAKINGS.hourMs;

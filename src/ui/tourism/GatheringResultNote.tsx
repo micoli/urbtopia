@@ -12,7 +12,7 @@ export function GatheringResultNote({ building }: { building: Building }) {
     <p className="gathering-result">
       <Icon name="trophy" />
       <span>
-        {t('gathering.last')}{artist ? ` · ${artist.name}` : ''}<br />
+        {t('gathering.last')}{artist ? ` · ${artist.name}` : ''}{result.title ? ` · ${t(`pirateShow.${result.title}`)}` : ''}<br />
         {t('gathering.lastCrowd').replace('{crowd}', `${Math.round(result.crowd)}`)} · <span data-net={net >= 0 ? 'gain' : 'loss'}>{net >= 0 ? '+' : '−'}<UrbsAmount value={Math.abs(net)} /></span>
       </span>
     </p>
