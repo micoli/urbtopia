@@ -1,7 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { modelFileOf } from '../models/modelFiles';
-import { BOATS, BOAT_MODELS, PIRATE_SHOW_TITLES, boatModelOf, createBuilding, dispatch, frontDirection, newGame, pirateShowTitleOf, previewGathering, seatsOfCove, type Command, type GameState } from '../index';
+import { PIRATE_SHOW_TITLES, createBuilding, dispatch, frontDirection, newGame, pirateShowTitleOf, previewGathering, seatsOfCove, type Command, type GameState } from '../index';
 import { checkGameState } from '../../persistence/validate';
 
 const T0 = 1_700_000_000_000;
@@ -42,6 +41,8 @@ function cove(tiles = 24, overrides: Partial<GameState> = {}): GameState {
     ...overrides,
   };
 }
+
+const withMarinaOnly = (): GameState => cove(24, { buildings: [...cove().buildings, createBuilding(101, 'marina', 54, 48, 0)] });
 
 describe('Buying a Pirate ship', () => {
   it('places it on the water of its Pirate cove for 5,000 Urbs', () => {
@@ -168,11 +169,15 @@ describe('A Pirate ship', () => {
     expect(state.boats).toEqual([]);
   });
 
-  it('takes its model from its family, the fleet taking turns', () => {
-    const fleet = succeed(succeed(cove(), buyShip(52)), buyShip(53));
-    const [first, second] = fleet.boats!;
-    expect(boatModelOf(fleet, first!)).toBe(BOAT_MODELS.pirate);
-    expect(boatModelOf(fleet, second!)).toBe(modelFileOf(BOATS.pirate.altModels?.[0] ?? BOATS.pirate.model));
+  it('has a Navy frigate beside it, bought at a Pirate cove and counted in the same limit', () => {
+    const frigate: Command = { type: 'BuyBoat', family: 'frigate', marinaId: 100, x: 52, y: 50 };
+    const state = succeed(cove(), frigate);
+    expect(state.urbs).toBe(1_000_000 - 9_000);
+    expect(state.boats).toEqual([{ id: 200, family: 'frigate', marinaId: 100, x: 52, y: 50 }]);
+    const full = succeed(state, buyShip(53));
+    expect(failureKey(full, buyShip(54))).toBe('error.noWaterForPirateShip');
+    expect(failureKey(full, { ...frigate, x: 55 })).toBe('error.noWaterForPirateShip');
+    expect(failureKey(withMarinaOnly(), { ...frigate, marinaId: 101, x: 55 })).toBe('error.unknownBuilding');
   });
 
   it('keeps the save valid', () => {
@@ -218,6 +223,18 @@ describe('A Show in a Pirate cove', () => {
 
   it('costs 0.4 Urbs per seat and 150 Urbs per Pirate ship', () => {
     expect(previewGathering(staged(3), coveIn(staged(3))).cost).toBe(160 + 450);
+  });
+
+  it('counts a Navy frigate for 300 Urbs and 30% more per person, the weakest ship adding nothing', () => {
+    const withFrigate = (state: GameState, x = 58): GameState => succeed(state, { type: 'BuyBoat', family: 'frigate', marinaId: 100, x, y: 50 });
+    const one = previewGathering(staged(1), coveIn(staged(1)));
+    const mixed = withFrigate(staged(1));
+    const preview = previewGathering(mixed, coveIn(mixed));
+    expect(preview.crowd).toBe(one.crowd);
+    expect(preview.cost).toBe(160 + 150 + 300);
+    expect(preview.revenue / one.revenue).toBeCloseTo(1.3);
+    const fleet = withFrigate(withFrigate(staged(1)), 59);
+    expect(previewGathering(fleet, coveIn(fleet)).revenue / one.revenue).toBeCloseTo(1.6);
   });
 
   it('bears a title that does not move its figures', () => {

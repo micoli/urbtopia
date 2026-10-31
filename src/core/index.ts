@@ -79,7 +79,7 @@ export { ANNUAL_EVENT_ENTRIES, annualEventById, annualEventWindow, forceAnnualEv
 export { annualEventOf, annualEventsWithItems, isBuildableAt } from './annualEvents/annualEventItems';
 export { civilDateOf, dayNumberOf } from './annualEvents/calendar';
 export { WATER, isWaterTile, waterKeys, waterTilesOf } from './water/waterTiles';
-export { BOATS, BOAT_FAMILIES, MARINA_BOAT_FAMILIES, BOAT_MODELS, BOAT_MODEL_FILES, boatModelOf, boatOperatingCost, casinoOf, boatTier, boatsOf, boatsOfMarina, isBoatOperating, waterStats } from './water/boats';
+export { BOATS, BOAT_FAMILIES, COVE_BOAT_FAMILIES, MARINA_BOAT_FAMILIES, BOAT_MODELS, isCoveBoatFamily, boatOperatingCost, casinoOf, boatTier, boatsOf, boatsOfMarina, isBoatOperating, waterStats } from './water/boats';
 export { BRIDGE_OPENING, boatsUsingBridge, closedFraction, closedFractionsByTile } from './water/bridgeOpenings';
 export { BRIDGES, BRIDGE_LENGTHS, bridgeAt, bridgeCost, bridgeDeck, bridgeEnds, bridgeFootprint, footbridgeParts, isPedestrianBridge, bridgeKeys, bridgeRamps, bridgeRoadKeys, bridgeTiles, bridgesOf, isInfrastructureBridge, waterBridgesOf } from './water/bridges';
 export { FISHING, fishingSlots, readyCycles, readyFish } from './water/fishing';

@@ -13,7 +13,8 @@ import { CROWD_WINDOW_MS, GATHERING_REACH } from './gatheringWindow';
 import { TICKETS, TAKINGS, takingsOf, ticketOf } from './takings';
 import { TOURISM, isArenaType, spendingFactor } from './tourists';
 import { cityAttractiveness } from '../venues/hotel';
-import { PIRATE_COVE, pirateShipsOfCove, pirateShowIssue, seatCapOf, seatsOfCove } from '../water/pirateCove';
+import { BOATS } from '../water/boats';
+import { pirateShipsOfCove, pirateShowIssue, seatCapOf, seatsOfCove } from '../water/pirateCove';
 import { pirateShowTitleOf } from './pirateShows';
 
 export const SHOW_TYPES = ['theater', 'concertHall', 'colosseum', 'pirateCove'] as const;
@@ -78,10 +79,13 @@ export interface GatheringDraw {
 export const MEETING_DRAW: GatheringDraw = { quality: GATHERING.meetingQuality, capacity: GATHERING.meetingCapacity };
 
 // What a Pirate cove can stage now: a Show needs its seats and its Pirate ships, which also raise the sales and the cost.
+// Every ship adds to the cost; all but the weakest raise what each person pays.
 function pirateStaging(state: GameState, building: Building): { capacity: number; cost: number; boost: number } {
-  const ships = pirateShipsOfCove(state, building.id).length;
-  const capacity = ships > 0 ? seatsOfCove(state, building) : 0;
-  return { capacity, cost: Math.ceil(capacity * GATHERING.costPerSeat) + ships * PIRATE_COVE.showCostPerShip, boost: 1 + PIRATE_COVE.boostPerExtraShip * Math.max(0, ships - 1) };
+  const ships = pirateShipsOfCove(state, building.id).map(ship => BOATS[ship.family as 'pirate' | 'frigate']);
+  const capacity = ships.length > 0 ? seatsOfCove(state, building) : 0;
+  const boosts = ships.map(ship => ship.showBoost);
+  const extra = boosts.length === 0 ? 0 : boosts.reduce((total, boost) => total + boost, 0) - Math.min(...boosts);
+  return { capacity, cost: Math.ceil(capacity * GATHERING.costPerSeat) + ships.reduce((total, ship) => total + ship.showCost, 0), boost: 1 + extra };
 }
 
 // The crowd a Gathering would draw now: capacity x fill, split between Tourists and the Citizens in reach.

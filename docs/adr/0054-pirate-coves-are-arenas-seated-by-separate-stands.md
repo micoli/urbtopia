@@ -18,5 +18,5 @@ A Pirate cove looks like an Attraction: it is a themed place on the water that T
 - The save format gains the link from Stands to their Pirate cove, a Pirate ship family and the title of a Show. Older saves hold none of them and stay valid.
 - A Pirate cove with Pirate ships or Stands cannot be removed, and removing water or laying scenery cannot cut Stands off it.
 - A Show's figures are fixed when it is programmed, so its Pirate ships and Stands cannot be sold until it is settled or cancelled.
-- The Pirate ship limit of one per 12 navigable Water tiles belongs to the connected water, not to a Pirate cove: a second Pirate cove on the same water adds no room for ships.
+- The ship limit of one per 12 navigable Water tiles belongs to the connected water, not to a Pirate cove, and Pirate ships and Navy frigates share it: a second Pirate cove on the same water adds no room for ships.
 - The Colosseum remains the only building that is both an Attraction and an Arena.

@@ -547,7 +547,7 @@ A 1x1 tile laid by the player on free owned land to make it navigable. Boats are
 _Avoid_: Lake, river, sea, pond
 
 **Boat**:
-A persistent object bought with Urbs and placed on a Water tile connected to a Marina or a Pirate cove. It is saved, and drifts visually over connected Water tiles. A Boat belongs to one family for life: Pleasure boat, Casino boat, Fishing boat or Pirate ship.
+A persistent object bought with Urbs and placed on a Water tile connected to a Marina or a Pirate cove. It is saved, and drifts visually over connected Water tiles. A Boat belongs to one family for life: Pleasure boat, Casino boat, Fishing boat, Pirate ship or Navy frigate.
 _Avoid_: Vehicle (a visual projection, never saved), ship (except a Pirate ship), watercraft
 
 **Pleasure boat**:
@@ -575,12 +575,18 @@ A building on land touching a Water tile, reached by Road. Boats can only be pla
 _Avoid_: Port, harbour, dock
 
 **Pirate cove**:
-An Arena on land touching a Water tile, reached by Road, that holds Shows performed by its Pirate ships in front of its Stands. It holds no other Boat. It is not a Marina. Its Tier caps the seats that count, not its Pirate ships. It cannot be removed while it has Pirate ships or Stands.
+An Arena on land touching a Water tile, reached by Road, that holds Shows performed by its Pirate ships and Navy frigates in front of its Stands. It holds no other Boat. It is not a Marina. Its Tier caps the seats that count, not its Pirate ships. It cannot be removed while it has Pirate ships or Stands.
 _Avoid_: Pirate marina, Attraction, pirate port
 
 **Pirate ship**:
-A Boat that performs in the Shows of the one Pirate cove it belongs to, and drifts faster than other Boats. A Show needs at least one, and each one adds to its cost and to what each person in the crowd pays. A body of connected Water tiles carries at most one Pirate ship per 12 of its navigable Water tiles, shared between all the Pirate coves on it; other Boats do not count. It cannot be sold from the moment a Show of its Pirate cove is programmed until that Show is settled or cancelled.
+A Boat that performs in the Shows of the one Pirate cove it belongs to, and drifts faster than other Boats. It adds 15% to what each person pays and 150 Urbs to the cost of a Show. A Show needs at least one Pirate ship or Navy frigate. It cannot be sold from the moment a Show of its Pirate cove is programmed until that Show is settled or cancelled.
 _Avoid_: Galleon, Pirate boat
+
+**Navy frigate**:
+A Boat that performs in the Shows of the one Pirate cove it belongs to, as the Pirate ships' opponent. It costs more than a Pirate ship, unlocks later, adds 30% to what each person pays and 300 Urbs to the cost of a Show. It is bought and sold under the same rules as a Pirate ship, and counts in the same limit.
+_Avoid_: Warship, Pirate hunter
+
+In a Show, every ship adds its cost, and every ship but the weakest adds its share to what each person pays. A body of connected Water tiles carries at most one Pirate ship or Navy frigate per 12 of its navigable Water tiles, shared between all the Pirate coves on it; other Boats do not count.
 
 **Stands**:
 A building on land touching a Water tile connected to a Pirate cove, and belonging to the nearest one when placed. It needs no Road. Their seats set the crowd a Show of that Pirate cove can hold; with no Stands it can hold no Show. They cannot be sold from the moment a Show of their Pirate cove is programmed until that Show is settled or cancelled.

@@ -195,7 +195,7 @@ export interface PlantedCrop {
   plantedAt: number;
 }
 
-export type BoatFamily = 'pleasure' | 'fishing' | 'casino' | 'pirate';
+export type BoatFamily = 'pleasure' | 'fishing' | 'casino' | 'pirate' | 'frigate';
 
 export interface Boat extends Coord {
   id: number;

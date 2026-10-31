@@ -331,7 +331,7 @@ test.describe('pirate coves', () => {
       gameStore.getState().send({ type: 'PlaceBuilding', buildingType: 'standsMedium', x: x + 1, y: y + 6 });
       uiStore.getState().select(100);
     });
-    await expect(page.getByText('A Show needs at least one Pirate ship.').first()).toBeVisible();
+    await expect(page.getByText('A Show needs at least one Pirate ship or Navy frigate.').first()).toBeVisible();
     await page.getByRole('button', { name: /^Schedule/ }).first().click();
     const dialog = page.locator('.show-dialog').getByRole('dialog');
     await expect(dialog.getByRole('button', { name: /^Schedule/ })).toBeDisabled();
@@ -343,7 +343,7 @@ test.describe('pirate coves', () => {
       send({ type: 'BuyBoat', family: 'pirate', marinaId: 100, x: water.x, y: water.y });
       send({ type: 'BuyBoat', family: 'pirate', marinaId: 100, x: water.x + 2, y: water.y });
     });
-    await expect(page.getByText('Pirate ship: 2 · 2 at most on this water')).toBeVisible();
+    await expect(page.getByText('Ships: 2 · 2 at most on this water')).toBeVisible();
     await page.getByRole('button', { name: /^Schedule/ }).first().click();
     await expect(dialog.getByText('Expected profit')).toBeVisible();
     await expect(dialog.getByText('/ 200')).toBeVisible();

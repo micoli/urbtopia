@@ -1,13 +1,12 @@
 import { definitionOf, kindOf, tiersOf } from '../buildings/buildingDefinitions';
 import { footprintOf } from '../buildings/buildingSpecs';
 import type { Building, BuildingType, GameState, Rotation } from '../engine/state';
+import { isCoveBoatFamily } from './boatFamilies';
 import { connectedWaterKeys, shoreWaterKeys } from './marina';
 import { tileKey } from '../map/geometry';
 
 export const PIRATE_COVE = {
   waterTilesPerShip: 12,
-  boostPerExtraShip: 0.15,
-  showCostPerShip: 150,
 };
 
 export function seatCapOf(cove: Pick<Building, 'tier'>): number {
@@ -20,7 +19,7 @@ export function pirateCoveOf(state: GameState, id: number): Building | undefined
 }
 
 export function pirateShipsOfCove(state: GameState, coveId: number) {
-  return (state.boats ?? []).filter((boat) => boat.family === 'pirate' && boat.marinaId === coveId);
+  return (state.boats ?? []).filter((boat) => isCoveBoatFamily(boat.family) && boat.marinaId === coveId);
 }
 
 export function pirateShipLimit(state: GameState, cove: Building): number {
@@ -30,7 +29,7 @@ export function pirateShipLimit(state: GameState, cove: Building): number {
 // The limit belongs to the water: every Pirate ship on it counts, whichever Pirate cove it belongs to.
 export function pirateShipRoom(state: GameState, cove: Building): number {
   const water = connectedWaterKeys(state, cove);
-  const onWater = (state.boats ?? []).filter((boat) => boat.family === 'pirate' && water.has(tileKey(boat))).length;
+  const onWater = (state.boats ?? []).filter((boat) => isCoveBoatFamily(boat.family) && water.has(tileKey(boat))).length;
   return pirateShipLimit(state, cove) - onWater;
 }
 

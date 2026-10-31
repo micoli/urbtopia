@@ -41,7 +41,7 @@ export function ShowForm({ building }: { building: Building }) {
         <div className="show-dialog-body show-section">
           <p className="tourism-label">{t(`building.${building.type}`)}</p>
           {isCove ? <p><strong>{t(`pirateShow.${pirateShowTitleOf(building)}`)}</strong></p> : null}
-          {isCove ? <p className="tourism-help">{t('boat.pirate')}: {pirateShipsOfCove(forecastState, building.id).length}</p> : null}
+          {isCove ? <p className="tourism-help">{t('cove.ships')}: {pirateShipsOfCove(forecastState, building.id).length}</p> : null}
           {artist ? <ArtistChoice state={forecastState} building={building} artist={artist} onChange={setChosen} /> : null}
           <ShowTicketChoice building={building} />
           <div className="show-starts">

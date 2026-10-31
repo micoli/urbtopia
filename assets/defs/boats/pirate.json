@@ -9,5 +9,6 @@
     "en": "Pirate ship",
     "fr": "Navire pirate"
   },
-  "altModels": ["vehicles-navy-frigate"]
+  "showBoost": 0.15,
+  "showCost": 150
 }

@@ -19,9 +19,9 @@ export function cannonPuff(shipId: number, side: 1 | -1, gun: number, clock: num
   if (elapsed >= PUFF_SECONDS) return null;
   const progress = elapsed / PUFF_SECONDS;
   return {
-    travel: 0.05 + progress * 0.28,
-    rise: progress * 0.22,
-    size: Math.sin(Math.PI * Math.min(1, progress * 1.15)) * 0.1 + 0.015,
+    travel: 0.1 + progress * 0.56,
+    rise: progress * 0.44,
+    size: Math.sin(Math.PI * Math.min(1, progress * 1.15)) * 0.2 + 0.03,
     flash: progress < FLASH_SHARE,
   };
 }

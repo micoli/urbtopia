@@ -10232,8 +10232,8 @@
     "source": "managed",
     "license": "Own work",
     "fit": {
-      "width": 0.95,
-      "height": 1.1
+      "width": 1.9,
+      "height": 2.2
     }
   },
   "vehicles-pickup": {
@@ -10246,8 +10246,8 @@
     "source": "managed",
     "license": "Own work",
     "fit": {
-      "width": 0.95,
-      "height": 1.1
+      "width": 1.9,
+      "height": 2.2
     }
   },
   "vehicles-police": {

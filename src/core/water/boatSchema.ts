@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { count, filled, localizedText } from '../economy/itemSchemas.ts';
 
+const amount = z.number().min(0);
+
 const common = {
   $schema: z.string().optional(),
   kind: z.literal('boat'),
@@ -20,8 +22,9 @@ export const boatSchema = z
     z.strictObject({ family: z.literal('fishing'), ...common }),
     // A Casino boat follows the Tiers of the Casino.
     z.strictObject({ family: z.literal('casino'), ...common }),
-    // A Pirate ship performs in the Shows of its Pirate cove; the ships of a fleet take turns between its models.
-    z.strictObject({ family: z.literal('pirate'), ...common, altModels: z.array(filled).optional() }),
+    // Pirate ships and Navy frigates perform in the Shows of their Pirate cove: each raises what the crowd pays (all but the weakest) and adds to the cost of the Show.
+    z.strictObject({ family: z.literal('pirate'), ...common, showBoost: amount, showCost: count }),
+    z.strictObject({ family: z.literal('frigate'), ...common, showBoost: amount, showCost: count }),
   ])
   .meta({ title: 'Boat', description: 'A Boat moored at a Marina or a Pirate cove, one file per Boat id in assets/defs/boats.' });
 

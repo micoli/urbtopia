@@ -252,12 +252,14 @@
           "minimum": 0,
           "maximum": 9007199254740991
         },
-        "altModels": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "\\S"
-          }
+        "showBoost": {
+          "type": "number",
+          "minimum": 0
+        },
+        "showCost": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
         }
       },
       "required": [
@@ -266,7 +268,81 @@
         "name",
         "model",
         "cost",
-        "unlockCitizens"
+        "unlockCitizens",
+        "showBoost",
+        "showCost"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "family": {
+          "type": "string",
+          "const": "frigate"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "const": "boat"
+        },
+        "retired": {
+          "type": "boolean",
+          "const": true
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "model": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "cost": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "unlockCitizens": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "showBoost": {
+          "type": "number",
+          "minimum": 0
+        },
+        "showCost": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "family",
+        "kind",
+        "name",
+        "model",
+        "cost",
+        "unlockCitizens",
+        "showBoost",
+        "showCost"
       ],
       "additionalProperties": false
     }

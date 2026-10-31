@@ -22,8 +22,8 @@ describe('cannonPuff', () => {
     expect(puffs.some(puff => !puff.flash)).toBe(true);
     for (const puff of puffs) {
       expect(puff.size).toBeGreaterThan(0);
-      expect(puff.size).toBeLessThan(0.2);
-      expect(puff.travel).toBeLessThan(0.4);
+      expect(puff.size).toBeLessThan(0.4);
+      expect(puff.travel).toBeLessThan(0.8);
     }
   });
 });

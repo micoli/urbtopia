@@ -8,19 +8,26 @@ A new Arena on the shore: Pirate ships perform Shows in front of Stands, on wate
 - It is an Arena: no Show, nobody and no earnings; Takings have no cap, collected by hand. It counts in the city's attractiveness.
 - Show: same rules as the other Shows. Programmed by the player, now or in 1 to 24 hours, at most one waiting, 12-hour cooldown, cancelled before it starts for half of its cost back, same four phases, same 3 Tickets. Tourists and Citizens in reach make the crowd. No Artist.
 - Show title: drawn when programmed from a fixed list of invented names, in English and French (for example "The Kraken's Revenge" / « La Revanche du Kraken »). No real or trademarked name. It has no effect on figures and is saved with the Gathering.
-- A Show needs at least one Pirate ship and one seat, and only the Pirate ships of that Pirate cove and its Stands count.
+- A Show needs at least one Pirate ship or Navy frigate and one seat, and only the ships of that Pirate cove and its Stands count.
 - Capacity: the seats of its Stands, capped by Tier at 400, 800 and 1,200. Seats beyond the cap do not count.
 - Crowd: capacity x fill, as for other Shows, with quality fixed at the default 0.5. Pirate ships do not change the crowd.
-- Revenue: crowd x Ticket x spending x `1 + 0.15 x (Pirate ships - 1)`.
-- Cost of a Show: 0.4 Urbs per seat that counts + 150 Urbs per Pirate ship.
 - Figures are fixed when the Show is programmed. From then until it is settled or cancelled, its Pirate ships and Stands cannot be sold. Pirate ships or Stands added meanwhile, or a Tier upgrade, count from the next Show.
 
-### Pirate ships
+### Pirate ships and Navy frigates
 
-- A new Boat family. It uses the existing `vehicles/pirate-ship` model. Bought and placed like other Boats, it belongs to one Pirate cove for life. No hourly operating cost.
-- At most `floor(navigable connected Water tiles / 12)` Pirate ships per body of connected water, shared between all Pirate coves on it. Other Boats do not count. Pirate cove Tiers do not change this limit.
-- Removing a Water tile is refused if it would leave a body of water under the limit, or cut a Pirate ship off its Pirate cove.
-- It drifts 2.5 times faster than other Boats (0.30 tiles/s) with rests half as long, at all times. This is visual only: in a Bridge opening it weighs like any Boat.
+- Two Boat families, both bound to one Pirate cove for life, bought and placed like other Boats, with no hourly operating cost. Their models are drawn twice as large as before (`fit` in `assets/models.json`).
+
+| | Pirate ship | Navy frigate |
+| --- | --- | --- |
+| Cost | 5,000 Urbs | 9,000 Urbs |
+| Unlock | 800 Citizens | 1,200 Citizens |
+| Adds to what each person pays | 15% | 30% |
+| Adds to the cost of a Show | 150 Urbs | 300 Urbs |
+
+- Revenue: crowd x Ticket x spending x `1 + the boosts of every ship but the weakest`. Cost of a Show: 0.4 Urbs per seat that counts + the cost of every ship.
+- Both count in the same limit: at most `floor(navigable connected Water tiles / 12)` ships per body of connected water, shared between all Pirate coves on it. Other Boats do not count. Pirate cove Tiers do not change this limit.
+- Removing a Water tile is refused if it would leave a body of water under the limit, or cut a ship off its Pirate cove.
+- They drift 2.5 times faster than other Boats (0.30 tiles/s) with rests half as long, at all times. This is visual only: in a Bridge opening they weigh like any Boat. The cannon puffs follow their size.
 
 ### Stands
 
@@ -50,7 +57,7 @@ All at 800 Citizens, in the `build.water` section, editable in `tools/assets-edi
 | --- | --- |
 | Pirate cove | 10,000 Urbs |
 | Tier 2 / Tier 3 | 15,000 / 30,000 Urbs |
-| Pirate ship | 5,000 Urbs |
+| Pirate ship / Navy frigate | 5,000 / 9,000 Urbs |
 | Desert island | 150 Urbs |
 | Sea fort 3x3 / 3x4 / 4x4 | 600 / 800 / 1,100 Urbs |
 
@@ -66,7 +73,7 @@ Target, at Ticket 8, Well-being 50%, no Hotel, full crowd: about 17,000 Urbs for
 
 ## Models
 
-13 new models, made one at a time in Blender with English signs: 3 Pirate cove Tiers, 3 Stands, 3 Desert island Tiers, 3 Sea forts, and a Navy frigate that takes turns with the Pirate ship.
+13 new models, made one at a time in Blender with English signs: 3 Pirate cove Tiers, 3 Stands, 3 Desert island Tiers, 3 Sea forts, and a Navy frigate, a Boat family of its own.
 
 ## Code touched
 

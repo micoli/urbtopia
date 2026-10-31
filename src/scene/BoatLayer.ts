@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { BOAT_MODEL_FILES, boatModelOf, bridgeKeys, hashSeed, isGatheringActive, navigableWaterKeys, nextRandom, pirateCoveOf, type GameState } from '../core';
+import { BOAT_MODELS, bridgeKeys, hashSeed, isCoveBoatFamily, isGatheringActive, navigableWaterKeys, nextRandom, pirateCoveOf, type GameState } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { GUNS_PER_SIDE, cannonPuff } from './cannonFire';
 import { PIRATE_PACE, USUAL_PACE, advanceDrift, driftPosition, keyOf, releaseDrift, startDrift, waitingFor, type DriftBoat } from './boatDrift';
@@ -8,9 +8,9 @@ const BOAT_ELEVATION = 0.04;
 const BOB_HEIGHT = 0.012;
 const BOB_SPEED = 1.4;
 const MAX_PUFFS = 96;
-const GUN_HEIGHT = 0.14;
-const HULL_HALF_WIDTH = 0.16;
-const GUN_SPACING = 0.16;
+const GUN_HEIGHT = 0.28;
+const HULL_HALF_WIDTH = 0.32;
+const GUN_SPACING = 0.32;
 const SMOKE_COLOR = new THREE.Color(0xe8e4dc);
 const FLASH_COLOR = new THREE.Color(0xffa23f);
 
@@ -71,12 +71,12 @@ export class BoatLayer {
     }
     for (const boat of boats) {
       if (this.floating.has(boat.id)) continue;
-      const object = this.library.get(boatModelOf(state, boat)).clone(true);
+      const object = this.library.get(BOAT_MODELS[boat.family]).clone(true);
       this.root.add(object);
-      this.floating.set(boat.id, { drift: startDrift(boat.id, { x: boat.x, y: boat.y }, this.reserved, this.random, boat.family === 'pirate' ? PIRATE_PACE : USUAL_PACE), object });
+      this.floating.set(boat.id, { drift: startDrift(boat.id, { x: boat.x, y: boat.y }, this.reserved, this.random, isCoveBoatFamily(boat.family) ? PIRATE_PACE : USUAL_PACE), object });
     }
     this.firing = new Set(boats.filter((boat) => {
-      const cove = boat.family === 'pirate' ? pirateCoveOf(state, boat.marinaId) : undefined;
+      const cove = isCoveBoatFamily(boat.family) ? pirateCoveOf(state, boat.marinaId) : undefined;
       return cove !== undefined && isGatheringActive(cove, state.lastSeen);
     }).map((boat) => boat.id));
   }
@@ -150,7 +150,7 @@ export class BoatLayer {
   }
 
   private async load(): Promise<void> {
-    await this.library.ensure([...BOAT_MODEL_FILES]);
+    await this.library.ensure(Object.values(BOAT_MODELS));
     this.ready = true;
     const pending = this.pending;
     this.pending = null;
