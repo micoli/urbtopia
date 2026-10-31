@@ -2,7 +2,7 @@ import { DIRECTIONS, neighbour, tileKey } from '../map/geometry';
 import type { Coord } from '../map/coord';
 import type { Bridge, GameState } from '../engine/state';
 import { bridgeTiles, waterBridgesOf } from './bridges';
-import { waterKeys } from './waterTiles';
+import { navigableWaterKeys } from './waterTiles';
 
 export const BRIDGE_OPENING = {
   openingsPerBoatHour: 6,
@@ -28,7 +28,7 @@ function reachableWater(water: ReadonlySet<string>, start: readonly Coord[]): Se
 export function boatsUsingBridge(state: GameState, bridge: Bridge): number {
   const boats = state.boats ?? [];
   if (boats.length === 0) return 0;
-  const reachable = reachableWater(waterKeys(state), bridgeTiles(bridge));
+  const reachable = reachableWater(navigableWaterKeys(state), bridgeTiles(bridge));
   return boats.filter((boat) => reachable.has(tileKey(boat))).length;
 }
 

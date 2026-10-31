@@ -583,6 +583,7 @@ export const CATALOG = {
   'error.showLocksCove': ['A Show is programmed: its Pirate ships and Stands cannot be sold until it is settled or cancelled.', "Un spectacle est programmé : ses navires pirates et ses gradins ne se vendent pas avant son règlement ou son annulation."],
   'error.noPirateShip': ['A Show needs at least one Pirate ship.', 'Un spectacle demande au moins un navire pirate.'],
   'error.noSeats': ['A Show needs Stands to seat its crowd.', 'Un spectacle demande des gradins pour asseoir son public.'],
+  'error.needsWaterTiles': ['This scenery is laid on Water tiles only.', "Ce décor se pose uniquement sur des tuiles d'eau."],
   'error.pirateCoveInUse': ['This Pirate cove still has Pirate ships or Stands.', 'Cette crique des pirates a encore des navires pirates ou des gradins.'],
   'error.noWaterForPirateShip': ['This water carries one Pirate ship per 12 Water tiles: lay more Water tiles first.', "Ce plan d'eau porte un navire pirate pour 12 tuiles d'eau : pose d'abord plus de tuiles d'eau."],
   'error.unknownBoat': ['This Boat does not exist.', "Ce bateau n'existe pas."],

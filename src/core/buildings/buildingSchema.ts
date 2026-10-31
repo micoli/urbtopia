@@ -233,6 +233,9 @@ const pirateCoveBuilding = z.strictObject({
 // Stands: the seats they add to the Shows of their Pirate cove.
 const standsBuilding = z.strictObject({ kind: z.literal('stands'), ...placed, seats: z.int().min(1) });
 
+// A Desert island or Sea fort: scenery laid on Water tiles, with no other rule.
+const seaSceneryBuilding = z.strictObject({ kind: z.literal('seaScenery'), ...placed });
+
 // A stop or station of a transit mode; the BRT and the rail also set what their network costs, how fast it runs and what a vehicle carries.
 const transitStopBuilding = z.strictObject({
   kind: z.literal('transitStop'),
@@ -262,7 +265,7 @@ const venueBuilding = z.strictObject({
 });
 
 export const buildingSchema = z
-  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, greenBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, shopBuilding, officeBuilding, venueBuilding, marinaBuilding, pirateCoveBuilding, standsBuilding, transitStopBuilding])
+  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, greenBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, shopBuilding, officeBuilding, venueBuilding, marinaBuilding, pirateCoveBuilding, standsBuilding, seaSceneryBuilding, transitStopBuilding])
   .refine(building => building.kind === 'nature' || !building.accessModes || building.requiresRoad, { message: 'accessModes needs requiresRoad', path: ['accessModes'] })
   .meta({ title: 'Building', description: 'A building of Urbtopia, one file per building id in assets/defs/buildings.' });
 

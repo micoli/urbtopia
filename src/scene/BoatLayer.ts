@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { BOAT_MODELS, bridgeKeys, hashSeed, nextRandom, waterKeys, type GameState } from '../core';
+import { BOAT_MODELS, bridgeKeys, hashSeed, navigableWaterKeys, nextRandom, type GameState } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { advanceDrift, driftPosition, keyOf, releaseDrift, startDrift, waitingFor, type DriftBoat } from './boatDrift';
 
@@ -42,7 +42,7 @@ export class BoatLayer {
       return;
     }
     if (state.seed !== this.seed) this.reset(state.seed);
-    this.water = waterKeys(state);
+    this.water = navigableWaterKeys(state);
     this.bridges = bridgeKeys(state);
     const boats = state.boats ?? [];
     const ids = new Set(boats.map((boat) => boat.id));

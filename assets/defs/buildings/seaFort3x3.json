@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "seaScenery",
+  "section": "build.water",
+  "model": "nature-rock-largea",
+  "footprint": [3, 3],
+  "cost": 600,
+  "unlockCitizens": 800,
+  "requiresRoad": false,
+  "name": {
+    "en": "Small Sea fort",
+    "fr": "Petit fort marin"
+  },
+  "description": {
+    "en": "A stone fort laid on Water tiles, which are no longer navigable.",
+    "fr": "Un fort de pierre posé sur des tuiles d’eau, qui ne sont plus navigables."
+  }
+}

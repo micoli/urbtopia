@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01, 02
 
 # Desert islands and Sea forts

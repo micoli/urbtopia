@@ -228,6 +228,7 @@ export type ErrorKey =
   | 'error.noPirateShip'
   | 'error.noSeats'
   | 'error.needsPirateCoveWater'
+  | 'error.needsWaterTiles'
   | 'error.noWaterForPirateShip'
   | 'error.unknownBoat'
   | 'error.waterInUse'

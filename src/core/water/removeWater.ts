@@ -5,10 +5,10 @@ import type { GameState } from '../engine/state';
 import { boatsCutOff, boatsOf } from './boats';
 import { bridgeKeys } from './bridges';
 import { pirateShipsOverLimit, standsCutOff } from './pirateCove';
-import { waterTilesOf } from './waterTiles';
+import { sceneryWaterKeys, waterTilesOf } from './waterTiles';
 
 function dependentWaterKeys(state: GameState): ReadonlySet<string> {
-  return new Set([...boatsOf(state).map(tileKey), ...bridgeKeys(state)]);
+  return new Set([...boatsOf(state).map(tileKey), ...bridgeKeys(state), ...sceneryWaterKeys(state)]);
 }
 
 export function removeWater(state: GameState, tiles: readonly Coord[]): CommandOutcome {

@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "seaScenery",
+  "section": "build.water",
+  "model": "nature-rock-largec",
+  "footprint": [4, 4],
+  "cost": 1100,
+  "unlockCitizens": 800,
+  "requiresRoad": false,
+  "name": {
+    "en": "Large Sea fort",
+    "fr": "Grand fort marin"
+  },
+  "description": {
+    "en": "A stone fort laid on Water tiles, which are no longer navigable.",
+    "fr": "Un fort de pierre posé sur des tuiles d’eau, qui ne sont plus navigables."
+  }
+}

@@ -1,9 +1,11 @@
+import { kindOf } from '../buildings/buildingDefinitions';
+import { footprintTiles } from '../buildings/buildingSpecs';
 import { citizenCount } from '../environment/ecology';
 import { isInsideOwnedParcels, occupiedTiles } from '../map/occupancy';
 import { tileKey } from '../map/geometry';
 import type { Coord } from '../map/coord';
 import type { CommandOutcome, ErrorKey } from '../engine/commands';
-import type { GameState } from '../engine/state';
+import type { Building, GameState } from '../engine/state';
 
 export const WATER = {
   tileCost: 10,
@@ -16,6 +18,31 @@ export function waterTilesOf(state: GameState): readonly Coord[] {
 
 export function waterKeys(state: GameState): Set<string> {
   return new Set(waterTilesOf(state).map(tileKey));
+}
+
+export const isSeaSceneryType = (type: string): boolean => kindOf(type) === 'seaScenery';
+
+const sceneryCache = new WeakMap<readonly Building[], { keys: ReadonlySet<string>; signature: string }>();
+
+function sceneryOf(state: GameState): { keys: ReadonlySet<string>; signature: string } {
+  const cached = sceneryCache.get(state.buildings);
+  if (cached) return cached;
+  const keys = new Set(state.buildings.filter((building) => isSeaSceneryType(building.type)).flatMap((building) => footprintTiles(building).map(tileKey)));
+  const scenery = { keys, signature: [...keys].join(';') };
+  sceneryCache.set(state.buildings, scenery);
+  return scenery;
+}
+
+export const sceneryWaterKeys = (state: GameState): ReadonlySet<string> => sceneryOf(state).keys;
+
+// Tells apart states whose scenery differs, for what is cached per list of Water tiles.
+export const scenerySignature = (state: GameState): string => sceneryOf(state).signature;
+
+// The Water tiles Boats can use: those under a Desert island or a Sea fort stay Water tiles but are out of reach.
+export function navigableWaterKeys(state: GameState): Set<string> {
+  const water = waterKeys(state);
+  for (const key of sceneryWaterKeys(state)) water.delete(key);
+  return water;
 }
 
 export function isWaterTile(state: GameState, tile: Coord): boolean {

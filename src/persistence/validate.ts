@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, PIRATE_SHOW_TITLES, isStandsType, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, sellsTicketsType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { FIXTURE_IDS, PIRATE_SHOW_TITLES, footprintTiles, isSeaSceneryType, isStandsType, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, sellsTicketsType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -437,6 +437,7 @@ function invariantFailure(state: GameState): string | null {
       ];
     }),
     ...state.buildings.filter((building) => isStandsType(building.type)).map((stands) => field(`buildings[${stands.id}]: Stands without a Pirate cove`, () => state.buildings.some((b) => b.id === stands.coveId && b.type === 'pirateCove'))),
+    ...state.buildings.filter((building) => isSeaSceneryType(building.type)).map((scenery) => field(`buildings[${scenery.id}]: scenery off the water`, () => footprintTiles(scenery).every((tile) => waterKeys.has(tileKey(tile))))),
     ...(state.boats ?? []).flatMap((boat, index) => [
       field(`boats[${index}]: not on a water tile`, () => waterKeys.has(tileKey(boat))),
       field(`boats[${index}]: its marina or Pirate cove does not exist`, () => state.buildings.some((b) => b.id === boat.marinaId && b.type === (boat.family === 'pirate' ? 'pirateCove' : 'marina'))),

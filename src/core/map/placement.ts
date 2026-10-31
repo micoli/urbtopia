@@ -6,9 +6,11 @@ import { DIRECTIONS, frontDirection, neighbour, tileKey } from './geometry';
 import { isInsideOwnedParcels, isRoadLike, occupiedTiles } from './occupancy';
 import { touchesWater } from '../water/marina';
 import { coveForStands, isStandsType } from '../water/pirateCove';
+import { seaSceneryIssue } from '../water/seaScenery';
+import { isSeaSceneryType } from '../water/waterTiles';
 import type { BuildingType, GameState, Rotation } from '../engine/state';
 
-export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.needsAccess' | 'error.needsWater' | 'error.needsPirateCoveWater' | 'error.buildingLimitReached' | 'error.noFarm' | 'error.townHallExists' | 'error.notEnoughUrbs';
+export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.needsAccess' | 'error.needsWater' | 'error.needsPirateCoveWater' | 'error.needsWaterTiles' | 'error.waterInUse' | 'error.buildingLimitReached' | 'error.noFarm' | 'error.townHallExists' | 'error.notEnoughUrbs';
 
 const UNIQUE_BUILDING_ERRORS: Partial<Record<BuildingType, PlacementIssue>> = {
   townHall: 'error.townHallExists',
@@ -149,8 +151,10 @@ export function placementIssue(
 ): PlacementIssue | null {
   const tiles = footprintTiles({ type, x, y, rotation, tier });
   if (!tiles.every((tile) => isInsideOwnedParcels(state, tile))) return 'error.outsideOwnedParcels';
+  const sceneryIssue = isSeaSceneryType(type) ? seaSceneryIssue(state, type, x, y, rotation) : null;
+  if (sceneryIssue) return sceneryIssue;
   const occupied = occupiedTiles(state, ignoreBuildingId);
-  if (tiles.some((tile) => occupied.has(tileKey(tile)))) return 'error.tilesOccupied';
+  if (!isSeaSceneryType(type) && tiles.some((tile) => occupied.has(tileKey(tile)))) return 'error.tilesOccupied';
   if (BUILDING_SPECS[type].requiresRoad && !frontHasAccess(state, type, x, y, rotation, tier)) {
     if (BUILDING_SPECS[type].accessModes.includes('pedestrianWay')) return 'error.needsAccess';
     return BUILDING_SPECS[type].accessModes.includes('brt') ? 'error.needsRoadOrBrt' : 'error.needsRoad';

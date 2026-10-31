@@ -84,6 +84,7 @@ export { BRIDGE_OPENING, boatsUsingBridge, closedFraction, closedFractionsByTile
 export { BRIDGES, BRIDGE_LENGTHS, bridgeAt, bridgeCost, bridgeDeck, bridgeEnds, bridgeFootprint, footbridgeParts, isPedestrianBridge, bridgeKeys, bridgeRamps, bridgeRoadKeys, bridgeTiles, bridgesOf, isInfrastructureBridge, waterBridgesOf } from './water/bridges';
 export { FISHING, fishingSlots, readyCycles, readyFish } from './water/fishing';
 export { connectedWaterKeys, marinaCapacity, touchesWater } from './water/marina';
+export { isSeaSceneryType, navigableWaterKeys } from './water/waterTiles';
 export { PIRATE_COVE, coveForStands, isCoveLocked, isPirateCoveInUse, isStandsType, pirateCoveOf, pirateShipLimit, pirateShipRoom, pirateShipsOfCove, seatCapOf, seatsOfCove, seatsOfStands, standsOfCove } from './water/pirateCove';
 export { cropReturns, type CropReturns } from './farming/returns';
 export { seedSellPrice, seedStockCapacity, seedStockUsed } from './farming/seeds';

@@ -82,7 +82,7 @@ const extraOf = (kind: BuildingKind, model: string): Record<string, unknown> | u
     backup: { capacity: 1, costPerUnit: 1 },
   })[kind as string]
 
-const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { shop: 'build.shops', office: 'build.offices', venue: 'build.leisure', marina: 'build.water', pirateCove: 'build.water', stands: 'build.water', casino: 'build.leisure', facility: 'build.publicFacilities', home: 'build.housing', sport: 'build.sport', storage: 'build.storage', utility: 'build.utilities', green: 'build.greenSpaces', solar: 'build.utilities', battery: 'build.utilities', backup: 'build.utilities' }
+const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { shop: 'build.shops', office: 'build.offices', venue: 'build.leisure', marina: 'build.water', pirateCove: 'build.water', stands: 'build.water', seaScenery: 'build.water', casino: 'build.leisure', facility: 'build.publicFacilities', home: 'build.housing', sport: 'build.sport', storage: 'build.storage', utility: 'build.utilities', green: 'build.greenSpaces', solar: 'build.utilities', battery: 'build.utilities', backup: 'build.utilities' }
 
 export function blankBuilding(kind: BuildingKind, model: string): FlatBuilding {
   const name = { en: '', fr: '' }
