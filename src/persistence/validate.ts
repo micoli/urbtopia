@@ -433,7 +433,7 @@ function invariantFailure(state: GameState): string | null {
     }),
     ...(state.boats ?? []).flatMap((boat, index) => [
       field(`boats[${index}]: not on a water tile`, () => waterKeys.has(tileKey(boat))),
-      field(`boats[${index}]: its marina does not exist`, () => state.buildings.some((b) => b.id === boat.marinaId && b.type === 'marina')),
+      field(`boats[${index}]: its marina or Pirate cove does not exist`, () => state.buildings.some((b) => b.id === boat.marinaId && b.type === (boat.family === 'pirate' ? 'pirateCove' : 'marina'))),
     ]),
     field('boats: two on one tile', () => !hasDuplicates((state.boats ?? []).map(tileKey))),
     ...(state.busLines ?? []).map((line, index) => field(`busLines[${index}]: a stop is unknown or not a bus stop or hub`, () => line.stops.every((id) => isStopOfKind(state, id, ['busStop', 'transitHub'])))),

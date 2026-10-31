@@ -1,5 +1,3 @@
-Status: ready-for-agent
-
 # Pirate cove
 
 A new Arena on the shore: Pirate ships perform Shows in front of Stands, on water dressed with Desert islands and Sea forts. Vocabulary: see `CONTEXT.md` (Pirate cove, Pirate ship, Stands, Desert island, Sea fort, Arena, Show, Gathering, Ticket, Takings, Water tile, Boat). Decisions: ADR 0053, ADR 0054.

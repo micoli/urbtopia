@@ -11,7 +11,7 @@ const common = {
   unlockCitizens: count,
 };
 
-// A Boat is bought at a Marina; saved Boats keep only their family, the first live Boat of a family is the one sold.
+// A Boat is bought at a Marina or a Pirate cove; saved Boats keep only their family, the first live Boat of a family is the one sold.
 export const boatSchema = z
   .discriminatedUnion('family', [
     // A pleasure Boat adds Well-being to the Homes within its radius, at an operating cost per hour.
@@ -20,7 +20,9 @@ export const boatSchema = z
     z.strictObject({ family: z.literal('fishing'), ...common }),
     // A Casino boat follows the Tiers of the Casino.
     z.strictObject({ family: z.literal('casino'), ...common }),
+    // A Pirate ship performs in the Shows of its Pirate cove.
+    z.strictObject({ family: z.literal('pirate'), ...common }),
   ])
-  .meta({ title: 'Boat', description: 'A Boat moored at a Marina, one file per Boat id in assets/defs/boats.' });
+  .meta({ title: 'Boat', description: 'A Boat moored at a Marina or a Pirate cove, one file per Boat id in assets/defs/boats.' });
 
 export type BoatDefinition = z.infer<typeof boatSchema>;

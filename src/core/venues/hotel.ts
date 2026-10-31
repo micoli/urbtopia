@@ -20,7 +20,7 @@ export const HOTEL = {
   reputationRate: 0.05,
   usagePerOccupiedRoom: 10,
   standingComfort: [0, 2, 4] as readonly number[],
-  attractiveBuildings: ['casino', 'marina', 'theater', 'concertHall', 'communityHall', 'baseballField', 'stadium', 'park', 'colosseum', 'footballStadium', 'masMuseum', 'niteroiMuseum', 'eyeMuseum', 'ordosMuseum', 'bilbaoMuseum', 'ferris-wheel', 'tubularRollerCoaster'] as readonly string[],
+  attractiveBuildings: ['casino', 'marina', 'pirateCove', 'theater', 'concertHall', 'communityHall', 'baseballField', 'stadium', 'park', 'colosseum', 'footballStadium', 'masMuseum', 'niteroiMuseum', 'eyeMuseum', 'ordosMuseum', 'bilbaoMuseum', 'ferris-wheel', 'tubularRollerCoaster'] as readonly string[],
   attractiveCount: 6,
 };
 

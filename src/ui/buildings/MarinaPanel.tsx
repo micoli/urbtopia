@@ -1,4 +1,4 @@
-import { BOATS, BOAT_FAMILIES, boatOperatingCost, boatsOfMarina, isBoatOperating, marinaCapacity, readyFish, totalCitizens, type Building } from '../../core';
+import { BOATS, MARINA_BOAT_FAMILIES, boatOperatingCost, boatsOfMarina, isBoatOperating, marinaCapacity, readyFish, totalCitizens, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { uiStore } from '../../store/uiStore';
@@ -41,7 +41,7 @@ export function MarinaPanel({ building }: MarinaPanelProps) {
           <ActionButton onClick={() => send({ type: 'SellBoat', id: boat.id })}>{t('marina.sell')} · {t(`boat.${boat.family}`)}</ActionButton>
         </div>
       ))}
-      {BOAT_FAMILIES.filter((family) => citizens >= BOATS[family].unlockCitizens).map((family) => (
+      {MARINA_BOAT_FAMILIES.filter((family) => citizens >= BOATS[family].unlockCitizens).map((family) => (
         <ActionButton key={family} disabled={boats.length >= capacity} onClick={() => chooseTool({ kind: 'boat', family, marinaId: building.id })}>
           {t('marina.buy')} · {t(`boat.${family}`)} · <UrbsAmount value={BOATS[family].cost} />
         </ActionButton>

@@ -222,6 +222,14 @@ const marinaBuilding = z.strictObject({
   tiers: tiersOf({ ...homeLook, boats: z.int().min(1) }, ['model', 'footprint', 'boats']),
 });
 
+// The Pirate cove: the seats that count at each Tier.
+const pirateCoveBuilding = z.strictObject({
+  kind: z.literal('pirateCove'),
+  ...identity,
+  ...sited,
+  tiers: tiersOf({ ...homeLook, seatCap: z.int().min(1) }, ['model', 'footprint', 'seatCap']),
+});
+
 // A stop or station of a transit mode; the BRT and the rail also set what their network costs, how fast it runs and what a vehicle carries.
 const transitStopBuilding = z.strictObject({
   kind: z.literal('transitStop'),
@@ -251,7 +259,7 @@ const venueBuilding = z.strictObject({
 });
 
 export const buildingSchema = z
-  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, greenBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, shopBuilding, officeBuilding, venueBuilding, marinaBuilding, transitStopBuilding])
+  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, greenBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, shopBuilding, officeBuilding, venueBuilding, marinaBuilding, pirateCoveBuilding, transitStopBuilding])
   .refine(building => building.kind === 'nature' || !building.accessModes || building.requiresRoad, { message: 'accessModes needs requiresRoad', path: ['accessModes'] })
   .meta({ title: 'Building', description: 'A building of Urbtopia, one file per building id in assets/defs/buildings.' });
 

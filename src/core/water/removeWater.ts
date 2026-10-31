@@ -4,6 +4,7 @@ import type { CommandOutcome } from '../engine/commands';
 import type { GameState } from '../engine/state';
 import { boatsCutOff, boatsOf } from './boats';
 import { bridgeKeys } from './bridges';
+import { pirateShipsOverLimit } from './pirateCove';
 import { waterTilesOf } from './waterTiles';
 
 function dependentWaterKeys(state: GameState): ReadonlySet<string> {
@@ -20,7 +21,7 @@ export function removeWater(state: GameState, tiles: readonly Coord[]): CommandO
   for (const tile of present) {
     if (blocked.has(tileKey(tile))) continue;
     const next: GameState = { ...current, waterTiles: waterTilesOf(current).filter((candidate) => tileKey(candidate) !== tileKey(tile)) };
-    if (boatsCutOff(next)) continue;
+    if (boatsCutOff(next) || pirateShipsOverLimit(next)) continue;
     current = next;
     removed += 1;
   }

@@ -2,4 +2,5 @@
 export type BoatId =
   | 'casino'
   | 'fishing'
+  | 'pirate'
   | 'pleasure';

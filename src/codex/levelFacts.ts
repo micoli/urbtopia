@@ -1,5 +1,5 @@
 import {
-  CASINO_GAMES, COAL_CAPACITY, marinaCapacity, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
+  CASINO_GAMES, COAL_CAPACITY, marinaCapacity, seatCapOf, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
   FIXTURES, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
   type StorageType, type UtilityType, type ProductionType, type ShopType, type BuildingKind, isStorageType, kindOf, BUILDING_SPECS, canHaveSolarPanels, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf, isProductionType, isOfficeType, officeTierOf,
@@ -163,6 +163,7 @@ const FACT_RULES: Record<BuildingKind, (id: BuildingType, level: number) => Leve
   green: greenFacts,
   nature: greenFacts,
   marina: (_id, level) => [numericFact('codex.fact.boats', tier => marinaCapacity({ tier }), level)],
+  pirateCove: (_id, level) => [numericFact('codex.fact.seatCap', tier => seatCapOf({ tier }), level)],
   shop: (id, level) => (isShopType(id) ? shopFacts(id, level) : []),
   office: (id, level) => (isOfficeType(id) ? officeFacts(id, level) : []),
   casino: (_id, level) => casinoFacts(level),

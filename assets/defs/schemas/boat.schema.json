@@ -201,8 +201,69 @@
         "unlockCitizens"
       ],
       "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "family": {
+          "type": "string",
+          "const": "pirate"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "const": "boat"
+        },
+        "retired": {
+          "type": "boolean",
+          "const": true
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "model": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "cost": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "unlockCitizens": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "family",
+        "kind",
+        "name",
+        "model",
+        "cost",
+        "unlockCitizens"
+      ],
+      "additionalProperties": false
     }
   ],
   "title": "Boat",
-  "description": "A Boat moored at a Marina, one file per Boat id in assets/defs/boats."
+  "description": "A Boat moored at a Marina or a Pirate cove, one file per Boat id in assets/defs/boats."
 }

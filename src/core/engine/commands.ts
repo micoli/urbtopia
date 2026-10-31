@@ -26,6 +26,7 @@ import { buySeeds, sellSeeds } from '../farming/seeds';
 import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
+import { isPirateCoveInUse } from '../water/pirateCove';
 import { collectCatch } from '../water/fishing';
 import { collectAttractionTakings, setTicket } from '../tourism/takings';
 import { foundClub, recordMatchDecisions, releaseClubPlayer, setClubLineup, signClubPlayer } from '../clubs/clubCommands';
@@ -222,6 +223,8 @@ export type ErrorKey =
   | 'error.notOnMarinaWater'
   | 'error.marinaFull'
   | 'error.marinaInUse'
+  | 'error.pirateCoveInUse'
+  | 'error.noWaterForPirateShip'
   | 'error.unknownBoat'
   | 'error.waterInUse'
   | 'error.noSeeds'
@@ -741,6 +744,7 @@ function sellBuilding(state: GameState, id: number): CommandOutcome {
   if ((isStorageType(building.type) || isProductionType(building.type)) && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
   if ((building.type === 'powerPlant' || building.type === 'waterTower') && !canLoseUtility(state, building)) return fail('error.utilityInUse');
   if (building.type === 'marina' && boatsOfMarina(state, building.id).length > 0) return fail('error.marinaInUse');
+  if (isPirateCoveInUse(state, building)) return fail('error.pirateCoveInUse');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
   return {
     state: withoutBrokenLines({ ...state, urbs: state.urbs + refund, buildings: state.buildings.filter((candidate) => candidate !== building) }, id, true),
@@ -772,6 +776,7 @@ function moveBuilding(state: GameState, id: number, x: number, y: number, reques
   const building = state.buildings.find((candidate) => candidate.id === id);
   if (!building) return fail('error.unknownBuilding');
   if (building.type === 'marina' && boatsOfMarina(state, building.id).length > 0) return fail('error.marinaInUse');
+  if (isPirateCoveInUse(state, building)) return fail('error.pirateCoveInUse');
   const without: GameState = { ...state, buildings: state.buildings.filter((candidate) => candidate !== building) };
   const rotation = requestedRotation ?? autoRotation(without, building.type, x, y, building.tier);
   const issue = placementIssue(without, building.type, x, y, rotation, { isMove: true, tier: building.tier });

@@ -154,7 +154,7 @@ export function placementIssue(
     if (BUILDING_SPECS[type].accessModes.includes('pedestrianWay')) return 'error.needsAccess';
     return BUILDING_SPECS[type].accessModes.includes('brt') ? 'error.needsRoadOrBrt' : 'error.needsRoad';
   }
-  if ((type === 'marina' || type === 'hydroPlant') && !touchesWater(state, { type, x, y, rotation, tier })) return 'error.needsWater';
+  if ((type === 'marina' || type === 'hydroPlant' || type === 'pirateCove') && !touchesWater(state, { type, x, y, rotation, tier })) return 'error.needsWater';
   if (isMove) return null;
   const existsError = UNIQUE_BUILDING_ERRORS[type];
   if (existsError && state.buildings.some((building) => building.type === type)) return existsError;

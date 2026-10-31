@@ -79,11 +79,12 @@ export { ANNUAL_EVENT_ENTRIES, annualEventById, annualEventWindow, forceAnnualEv
 export { annualEventOf, annualEventsWithItems, isBuildableAt } from './annualEvents/annualEventItems';
 export { civilDateOf, dayNumberOf } from './annualEvents/calendar';
 export { WATER, isWaterTile, waterKeys, waterTilesOf } from './water/waterTiles';
-export { BOATS, BOAT_FAMILIES, BOAT_MODELS, boatOperatingCost, casinoOf, boatTier, boatsOf, boatsOfMarina, isBoatOperating, waterStats } from './water/boats';
+export { BOATS, BOAT_FAMILIES, MARINA_BOAT_FAMILIES, BOAT_MODELS, boatOperatingCost, casinoOf, boatTier, boatsOf, boatsOfMarina, isBoatOperating, waterStats } from './water/boats';
 export { BRIDGE_OPENING, boatsUsingBridge, closedFraction, closedFractionsByTile } from './water/bridgeOpenings';
 export { BRIDGES, BRIDGE_LENGTHS, bridgeAt, bridgeCost, bridgeDeck, bridgeEnds, bridgeFootprint, footbridgeParts, isPedestrianBridge, bridgeKeys, bridgeRamps, bridgeRoadKeys, bridgeTiles, bridgesOf, isInfrastructureBridge, waterBridgesOf } from './water/bridges';
 export { FISHING, fishingSlots, readyCycles, readyFish } from './water/fishing';
 export { connectedWaterKeys, marinaCapacity, touchesWater } from './water/marina';
+export { PIRATE_COVE, isPirateCoveInUse, pirateCoveOf, pirateShipLimit, pirateShipRoom, pirateShipsOfCove, seatCapOf } from './water/pirateCove';
 export { cropReturns, type CropReturns } from './farming/returns';
 export { seedSellPrice, seedStockCapacity, seedStockUsed } from './farming/seeds';
 export { CROPS, CROP_IDS, isCrop } from './farming/crops';

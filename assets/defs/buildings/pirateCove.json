@@ -1,0 +1,37 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "pirateCove",
+  "section": "build.water",
+  "cost": 10000,
+  "unlockCitizens": 800,
+  "requiresRoad": true,
+  "name": {
+    "en": "Pirate cove",
+    "fr": "Crique des pirates"
+  },
+  "description": {
+    "en": "An Arena on the shore where Pirate ships perform Shows in front of Stands. It must touch a Water tile and a road. Its body of water carries one Pirate ship per 12 Water tiles; upgrades raise how many seats count.",
+    "fr": "Une arène sur la rive où les navires pirates donnent des spectacles devant des gradins. Elle doit toucher une tuile d’eau et une route. Son plan d’eau porte un navire pirate pour 12 tuiles d’eau ; ses améliorations augmentent le nombre de sièges qui comptent."
+  },
+  "tiers": [
+    {
+      "model": "buildings-concert-hall-3x3",
+      "footprint": [3, 3],
+      "seatCap": 400
+    },
+    {
+      "seatCap": 800,
+      "upgradeCost": {
+        "urbs": 15000,
+        "goods": {}
+      }
+    },
+    {
+      "seatCap": 1200,
+      "upgradeCost": {
+        "urbs": 30000,
+        "goods": {}
+      }
+    }
+  ]
+}
