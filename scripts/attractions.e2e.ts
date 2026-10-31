@@ -142,7 +142,10 @@ test.describe('meetings', () => {
       gameStore.getState().replaceState({ ...state, urbs: 100_000, buildings: [createBuilding(50, 'footballStadium', 64, 64, 0), createBuilding(51, 'home', 56, 64, 0)], nextId: 52 });
       uiStore.getState().select(50);
     });
-    await expect(page.getByRole('radiogroup', { name: 'Ticket' }).getByRole('radio')).toHaveCount(3);
+    const prices = page.getByRole('radiogroup', { name: 'Ticket' }).getByRole('radio');
+    await expect(prices).toHaveCount(3);
+    const rows = await prices.evaluateAll(items => new Set(items.map(item => Math.round(item.getBoundingClientRect().top))).size);
+    expect(rows).toBe(1);
     await expect(page.getByText(/Next Meeting in/)).toBeVisible();
     await expect(page.getByRole('button', { name: /^Collect/ })).toBeDisabled();
     await expect(page.getByRole('button', { name: /Schedule a Show/ })).toHaveCount(0);
