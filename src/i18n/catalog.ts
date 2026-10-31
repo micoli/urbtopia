@@ -262,6 +262,7 @@ export const CATALOG = {
   "codex.fact.capacity": ["Capacity", "Capacité"],
   "codex.fact.boats": ["Boats held", "Bateaux accueillis"],
   "codex.fact.seatCap": ["Seats that count", "Sièges qui comptent"],
+  "codex.fact.waterCovered": ["Water tiles covered", "Tuiles d'eau recouvertes"],
   "codex.fact.saleSlots": ["Sales slots", "Emplacements de vente"],
   "codex.fact.saleTime": ["Sale time", "Temps de vente"],
   "codex.fact.goodsSold": ["Goods sold", "Produits vendus"],

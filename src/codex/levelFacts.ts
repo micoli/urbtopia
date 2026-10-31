@@ -165,7 +165,7 @@ const FACT_RULES: Record<BuildingKind, (id: BuildingType, level: number) => Leve
   marina: (_id, level) => [numericFact('codex.fact.boats', tier => marinaCapacity({ tier }), level)],
   pirateCove: (_id, level) => [numericFact('codex.fact.seatCap', tier => seatCapOf({ tier }), level)],
   stands: () => [],
-  seaScenery: () => [],
+  seaScenery: (id, level) => [numericFact('codex.fact.waterCovered', tier => { const { width, depth } = footprintOf(id, 0, tier); return width * depth; }, level)],
   shop: (id, level) => (isShopType(id) ? shopFacts(id, level) : []),
   office: (id, level) => (isOfficeType(id) ? officeFacts(id, level) : []),
   casino: (_id, level) => casinoFacts(level),

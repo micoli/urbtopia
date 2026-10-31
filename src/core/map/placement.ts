@@ -157,7 +157,7 @@ export function placementIssue(
 ): PlacementIssue | null {
   const tiles = footprintTiles({ type, x, y, rotation, tier });
   if (!tiles.every((tile) => isInsideOwnedParcels(state, tile))) return 'error.outsideOwnedParcels';
-  const sceneryIssue = isSeaSceneryType(type) ? seaSceneryIssue(state, type, x, y, rotation) : null;
+  const sceneryIssue = isSeaSceneryType(type) ? seaSceneryIssue(state, type, x, y, rotation, tier, ignoreBuildingId) : null;
   if (sceneryIssue) return sceneryIssue;
   const occupied = occupiedTiles(state, ignoreBuildingId);
   if (!isSeaSceneryType(type) && tiles.some((tile) => occupied.has(tileKey(tile)))) return 'error.tilesOccupied';

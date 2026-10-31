@@ -587,7 +587,7 @@ A building on land touching a Water tile connected to a Pirate cove, and belongi
 _Avoid_: Bleachers, tribune, grandstand
 
 **Desert island**:
-A 2x2 piece of scenery laid on Water tiles, which are no longer navigable while it stands. It has no other effect on the city's figures.
+A piece of scenery laid on Water tiles, which are no longer navigable while it stands. Its Tiers make it bigger, from 2x2 to 2x3 then 3x3. It has no other effect on the city's figures.
 _Avoid_: Islet, atoll
 
 **Sea fort**:

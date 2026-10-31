@@ -2,8 +2,6 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "seaScenery",
   "section": "build.water",
-  "model": "events-summer-sand-castle-2x2",
-  "footprint": [2, 2],
   "cost": 150,
   "unlockCitizens": 800,
   "requiresRoad": false,
@@ -14,5 +12,25 @@
   "description": {
     "en": "A lonely island laid on Water tiles, which are no longer navigable.",
     "fr": "Une île isolée posée sur des tuiles d’eau, qui ne sont plus navigables."
-  }
+  },
+  "tiers": [
+    {
+      "model": "events-summer-sand-castle-2x2",
+      "footprint": [2, 2]
+    },
+    {
+      "footprint": [2, 3],
+      "upgradeCost": {
+        "urbs": 400,
+        "goods": {}
+      }
+    },
+    {
+      "footprint": [3, 3],
+      "upgradeCost": {
+        "urbs": 900,
+        "goods": {}
+      }
+    }
+  ]
 }

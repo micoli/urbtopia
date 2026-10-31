@@ -2,8 +2,6 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "seaScenery",
   "section": "build.water",
-  "model": "nature-rock-largeb",
-  "footprint": [3, 4],
   "cost": 800,
   "unlockCitizens": 800,
   "requiresRoad": false,
@@ -14,5 +12,11 @@
   "description": {
     "en": "A stone fort laid on Water tiles, which are no longer navigable.",
     "fr": "Un fort de pierre posé sur des tuiles d’eau, qui ne sont plus navigables."
-  }
+  },
+  "tiers": [
+    {
+      "model": "nature-rock-largeb",
+      "footprint": [3, 4]
+    }
+  ]
 }

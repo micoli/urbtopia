@@ -60,6 +60,7 @@ const TIER_ONE: Partial<Record<BuildingKind, Record<string, unknown>>> = {
   facility: { capacity: 100 },
   marina: { boats: 3 },
   pirateCove: { seatCap: 400 },
+  seaScenery: {},
   green: { radius: 1, cooling: 0, biodiversity: 0, wellbeing: 0 },
   shop: { maxSlots: 3, sells: [], saleIntervalFactor: 1, jobs: 15 },
   office: { jobs: 40, power: 1 },

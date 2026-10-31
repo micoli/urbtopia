@@ -38,7 +38,7 @@ A new Arena on the shore: Pirate ships perform Shows in front of Stands, on wate
 
 ### Desert islands and Sea forts
 
-- Desert island 2x2. Sea forts 3x3, 3x4 and 4x4. Only on Water tiles, inside owned parcels. No effect on the city's figures.
+- Desert island with 3 Tiers: 2x2, then 2x3 for 400 Urbs, then 3x3 for 900 Urbs; growing follows the same refusals as laying. Sea forts 3x3, 3x4 and 4x4, with no Tier. Only on Water tiles, inside owned parcels. No effect on the city's figures.
 - The Water tiles beneath stay Water tiles but are no longer navigable: not counted in the Pirate ship limit or the Flow factor, not used to link water, and Boats do not drift over them. Selling the scenery makes them navigable again; a Water tile under scenery cannot be removed.
 - Laying is refused if any tile is not water, or carries a Boat or a Bridge; if it would cut a Boat or Stands off its building; or if it would leave a body of water under the Pirate ship limit.
 
@@ -66,7 +66,7 @@ Target, at Ticket 8, Well-being 50%, no Hotel, full crowd: about 17,000 Urbs for
 
 ## Models
 
-10 new models, made one at a time in Blender with English signs: 3 Pirate cove Tiers, 3 Stands, 1 Desert island, 3 Sea forts.
+13 new models, made one at a time in Blender with English signs: 3 Pirate cove Tiers, 3 Stands, 3 Desert island Tiers, 3 Sea forts, and a Navy frigate that takes turns with the Pirate ship.
 
 ## Code touched
 

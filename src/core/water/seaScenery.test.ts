@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
 import { checkGameState } from '../../persistence/validate';
-import { connectedWaterKeys, createBuilding, dispatch, navigableWaterKeys, newGame, type Command, type GameState } from '../index';
+import { connectedWaterKeys, createBuilding, dispatch, footprintOf, navigableWaterKeys, newGame, type Command, type GameState } from '../index';
 
 const T0 = 1_700_000_000_000;
 
@@ -108,5 +108,46 @@ describe('Laying a Desert island or a Sea fort', () => {
   it('refuses a Bridge on its tiles', () => {
     const state = succeed(bay({ roads: [...bay().roads, { x: 52, y: 51, kind: 'road' }, { x: 55, y: 51, kind: 'road' }] }), island(53, 51));
     expect(failureKey(state, { type: 'PlaceBridge', x: 53, y: 51, length: 2, axis: 'x' })).toBe('error.bridgeNeedsWater');
+  });
+
+  describe('Growing a Desert island', () => {
+    const grow = (state: GameState, id: number): Command => ({ type: 'UpgradeBuilding', buildingId: id });
+    const tilesOf = (state: GameState, id: number) => footprintOf('desertIsland', 0, state.buildings.find((building) => building.id === id)!.tier);
+
+    it('goes from 2x2 to 2x3 then 3x3 for 400 then 900 Urbs', () => {
+      const laid = succeed(bay(), island(53, 51));
+      const id = laid.buildings.at(-1)!.id;
+      const second = succeed(laid, grow(laid, id));
+      expect(tilesOf(second, id)).toEqual({ width: 2, depth: 3 });
+      expect(second.urbs).toBe(laid.urbs - 400);
+      const third = succeed(second, grow(second, id));
+      expect(tilesOf(third, id)).toEqual({ width: 3, depth: 3 });
+      expect(third.urbs).toBe(second.urbs - 900);
+      expect(navigableWaterKeys(third).size).toBe(23);
+      expect(checkGameState(third).ok).toBe(true);
+    });
+
+    it('shifts when only the other side has free water', () => {
+      const laid = succeed(bay(), island(53, 52));
+      const id = laid.buildings.at(-1)!.id;
+      const second = succeed(laid, grow(laid, id));
+      expect(second.buildings.find((building) => building.id === id)).toMatchObject({ x: 53, y: 51, tier: 2 });
+    });
+
+    it('is refused off the water', () => {
+      const shore = succeed(bay({ waterTiles: lake.filter((tile) => tile.y < 52) }), island(53, 50));
+      expect(failureKey(shore, grow(shore, shore.buildings.at(-1)!.id))).toBe('error.needsWaterTiles');
+    });
+
+    it('is refused when it would leave the water under the Pirate ship limit', () => {
+      const narrow = bay({ waterTiles: Array.from({ length: 16 }, (_, index) => ({ x: 50 + (index % 4), y: 50 + Math.floor(index / 4) })) });
+      const withShip = succeed(succeed(narrow, { type: 'BuyBoat', family: 'pirate', marinaId: 100, x: 50, y: 50 }), island(52, 50));
+      expect(failureKey(withShip, grow(withShip, withShip.buildings.at(-1)!.id))).toBe('error.waterInUse');
+    });
+
+    it('refuses to grow a Sea fort', () => {
+      const laid = succeed(bay(), { type: 'PlaceBuilding', buildingType: 'seaFort3x3', x: 52, y: 50, rotation: 0 });
+      expect(failureKey(laid, grow(laid, laid.buildings.at(-1)!.id))).toBe('error.maxTier');
+    });
   });
 });

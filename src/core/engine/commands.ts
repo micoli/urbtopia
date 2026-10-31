@@ -26,6 +26,7 @@ import { buySeeds, sellSeeds } from '../farming/seeds';
 import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
+import { isSeaSceneryType } from '../water/waterTiles';
 import { coveForStands, isCoveLocked, isPirateCoveInUse, isStandsType, standsCanStayAt } from '../water/pirateCove';
 import { collectCatch } from '../water/fishing';
 import { collectAttractionTakings, setTicket } from '../tourism/takings';
@@ -1071,9 +1072,9 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
   const isHome = isHomeType(building.type);
   if (isHome && missingServicesOf(state, building, nextTier).length > 0) return fail('error.serviceRequired');
   let grown = building;
-  if (isHome || building.type === 'casino') {
+  if (isHome || building.type === 'casino' || isSeaSceneryType(building.type)) {
     const expansion = expandedPlacement(state, building, nextTier);
-    if (expansion.issue === 'error.tilesOccupied') return fail(isHome ? 'error.homeExpansionBlocked' : 'error.casinoExpansionBlocked');
+    if (expansion.issue === 'error.tilesOccupied' && !isSeaSceneryType(building.type)) return fail(isHome ? 'error.homeExpansionBlocked' : 'error.casinoExpansionBlocked');
     if (expansion.issue) return fail(expansion.issue);
     grown = { ...building, x: expansion.x, y: expansion.y };
   }
