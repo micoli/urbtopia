@@ -2,7 +2,7 @@
   /* Surfaces and text */
   --color-surface: rgba(16, 20, 32, 0.72);
   --color-surface-translucent: rgba(16, 20, 32, 0.58);
-  --color-surface-solid: rgba(16, 20, 32, 0.96);
+  --color-surface-solid: rgba(16, 20, 32, 1);
   --color-popover: #1f2636;
   --color-venue: #232838;
   --color-text: #f4f6fb;

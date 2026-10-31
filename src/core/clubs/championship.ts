@@ -163,6 +163,7 @@ function advanceClubMatches(state: GameState, building: Building, rules: SportRu
 export function advanceChampionships(state: GameState, to: number): GameState {
   let current = state;
   for (const original of state.buildings) {
+    if (original.type !== 'stadium' && !original.club) continue;
     const building = current.buildings.find(candidate => candidate.id === original.id)!;
     const rules = sportRulesOf(building.type);
     if (building.type === 'stadium' && !building.club) current = advanceMeeting(current, building, to);
