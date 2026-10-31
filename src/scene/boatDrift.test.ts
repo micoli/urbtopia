@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Coord } from '../core';
-import { DRIFT_SPEED, waitingFor, advanceDrift, driftPosition, keyOf, releaseDrift, startDrift, type DriftBoat } from './boatDrift';
+import { DRIFT_SPEED, PIRATE_PACE, waitingFor, advanceDrift, driftPosition, keyOf, releaseDrift, startDrift, type DriftBoat } from './boatDrift';
 
 function lcg(seed: number) {
   let state = seed;
@@ -105,5 +105,25 @@ describe('boat drift', () => {
     run(boats, { ...context, closedTiles: new Set() }, 1);
     expect(boats[0]!.to).toEqual({ x: 51, y: 50 });
     expect(boats[0]!.want).toBeNull();
+  });
+});
+
+describe('The pace of a Pirate ship', () => {
+  const water = new Set(Array.from({ length: 60 }, (_, index) => `${index},0`));
+  const tilesCrossedIn = (seconds: number, pace?: typeof PIRATE_PACE) => {
+    const reserved = new Map<string, number>();
+    const boat = startDrift(1, { x: 30, y: 0 }, reserved, () => 0.5, pace);
+    let moves = 0;
+    for (let elapsed = 0; elapsed < seconds; elapsed += 0.1) {
+      const from = boat.from;
+      advanceDrift(boat, 0.1, { water, reserved, random: () => 0.5 });
+      if (boat.from !== from) moves += 1;
+    }
+    return moves;
+  };
+
+  it('covers more water than other Boats', () => {
+    expect(PIRATE_PACE.speed).toBeCloseTo(DRIFT_SPEED * 2.5);
+    expect(tilesCrossedIn(120, PIRATE_PACE)).toBeGreaterThan(tilesCrossedIn(120) * 2);
   });
 });

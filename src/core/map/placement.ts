@@ -7,7 +7,7 @@ import { isInsideOwnedParcels, isRoadLike, occupiedTiles } from './occupancy';
 import { touchesWater } from '../water/marina';
 import { coveForStands, isStandsType } from '../water/pirateCove';
 import { seaSceneryIssue } from '../water/seaScenery';
-import { isSeaSceneryType } from '../water/waterTiles';
+import { isSeaSceneryType, navigableWaterKeys } from '../water/waterTiles';
 import type { BuildingType, GameState, Rotation } from '../engine/state';
 
 export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.needsAccess' | 'error.needsWater' | 'error.needsPirateCoveWater' | 'error.needsWaterTiles' | 'error.waterInUse' | 'error.buildingLimitReached' | 'error.noFarm' | 'error.townHallExists' | 'error.notEnoughUrbs';
@@ -128,7 +128,13 @@ export function nextFront(fronts: readonly Rotation[], current: Rotation, step: 
   return beyond ?? ordered[0] ?? current;
 }
 
+function standsFacingWater(state: GameState, type: BuildingType, x: number, y: number, tier: number): Rotation {
+  const water = navigableWaterKeys(state);
+  return ROTATIONS.find((rotation) => frontTiles(type, x, y, rotation, tier).some((tile) => water.has(tileKey(tile)))) ?? 0;
+}
+
 export function autoRotation(state: GameState, type: BuildingType, x: number, y: number, tier = 1): Rotation {
+  if (isStandsType(type)) return standsFacingWater(state, type, x, y, tier);
   if (!BUILDING_SPECS[type].requiresRoad) return 0;
   const onRoad = ROTATIONS.find((rotation) => frontAccessModes(state, type, x, y, rotation, tier).includes('road'));
   const onBrt = ROTATIONS.find((rotation) => frontAccessModes(state, type, x, y, rotation, tier).includes('brt'));

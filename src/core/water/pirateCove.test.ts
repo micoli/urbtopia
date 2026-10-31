@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { PIRATE_SHOW_TITLES, createBuilding, dispatch, newGame, pirateShowTitleOf, previewGathering, seatsOfCove, type Command, type GameState } from '../index';
+import { modelFileOf } from '../models/modelFiles';
+import { BOATS, BOAT_MODELS, PIRATE_SHOW_TITLES, boatModelOf, createBuilding, dispatch, frontDirection, newGame, pirateShowTitleOf, previewGathering, seatsOfCove, type Command, type GameState } from '../index';
 import { checkGameState } from '../../persistence/validate';
 
 const T0 = 1_700_000_000_000;
@@ -102,6 +103,11 @@ describe('Stands', () => {
     expect(state.buildings.at(-1)).toMatchObject({ type: 'standsSmall', coveId: 100 });
   });
 
+  it('face the water when placed', () => {
+    const state = succeed(cove(), { type: 'PlaceBuilding', buildingType: 'standsSmall', x: 52, y: 51 });
+    expect(frontDirection(state.buildings.at(-1)!.rotation)).toBe('N');
+  });
+
   it('are refused with no Pirate cove on that water', () => {
     expect(failureKey(cove(), standsAt(52, 'standsSmall', 60))).toBe('error.needsPirateCoveWater');
     const marinaOnly = cove(24, { buildings: [...cove().buildings.filter((building) => building.id !== 100), createBuilding(101, 'marina', 54, 48, 0)] });
@@ -160,6 +166,13 @@ describe('A Pirate ship', () => {
     const state = succeed(succeed(cove(), buyShip(52)), { type: 'SellBoat', id: 200 });
     expect(state.urbs).toBe(1_000_000 - 1_250);
     expect(state.boats).toEqual([]);
+  });
+
+  it('takes its model from its family, the fleet taking turns', () => {
+    const fleet = succeed(succeed(cove(), buyShip(52)), buyShip(53));
+    const [first, second] = fleet.boats!;
+    expect(boatModelOf(fleet, first!)).toBe(BOAT_MODELS.pirate);
+    expect(boatModelOf(fleet, second!)).toBe(modelFileOf(BOATS.pirate.altModels?.[0] ?? BOATS.pirate.model));
   });
 
   it('keeps the save valid', () => {

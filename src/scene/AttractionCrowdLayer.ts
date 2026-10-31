@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { cityAttractiveness, footprintOf, isCrowdMoving, sellsTickets, touristsPerDay, type Building, type GameState } from '../core';
-import { CROWD, crowdPresence, crowdSlots, gatheringFigures, visitorFigures, type CrowdSlot } from './attractionCrowd';
+import { cityAttractiveness, footprintOf, isCrowdMoving, isStandsType, sellsTickets, standsOfCove, touristsPerDay, type Building, type GameState } from '../core';
+import { CROWD, crowdPresence, crowdSlots, gatheringFigures, standsSeats, visitorFigures, type CrowdSlot } from './attractionCrowd';
 import { stickSpectator } from './stickFigures';
 
 const FIGURE_COLORS = [0xe5484d, 0x4da3ff, 0xffd23f, 0x4be3a2, 0xbba4ff, 0xffa940, 0xf4f6fb].map(color => new THREE.Color(color));
@@ -19,6 +19,12 @@ function beamGeometry(): THREE.BufferGeometry {
   for (let index = 0; index < heights.count; index++) colors.fill(1 - heights.getY(index) / BEAM_HEIGHT, index * 3, index * 3 + 3);
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   return geometry;
+}
+
+// The crowd of a Pirate cove watches from its Stands.
+function slotsOf(state: GameState, building: Building, blocked: ReadonlySet<string>): CrowdSlot[] {
+  const stands = building.type === 'pirateCove' ? standsOfCove(state, building.id) : [];
+  return stands.length > 0 ? standsSeats(stands, SLOTS_PER_SITE, FIGURE_COLORS.length) : crowdSlots(building, blocked, SLOTS_PER_SITE, FIGURE_COLORS.length);
 }
 
 interface Site {
@@ -66,7 +72,8 @@ export class AttractionCrowdLayer {
 
   sync(state: GameState): void {
     const attractions = state.buildings.filter(sellsTickets);
-    const layoutKey = `${state.buildings.length}|${attractions.map(({ id, x, y, rotation, tier }) => `${id},${x},${y},${rotation},${tier}`).join(';')}`;
+    const stands = state.buildings.filter(building => isStandsType(building.type));
+    const layoutKey = `${state.buildings.length}|${[...attractions, ...stands].map(({ id, x, y, rotation, tier }) => `${id},${x},${y},${rotation},${tier}`).join(';')}`;
     if (layoutKey !== this.layoutKey) {
       this.layoutKey = layoutKey;
       this.rebuildSites(state, attractions);
@@ -123,7 +130,7 @@ export class AttractionCrowdLayer {
         centerX: building.x + width / 2,
         centerZ: building.y + depth / 2,
         halfSize: Math.max(width, depth) / 2,
-        slots: crowdSlots(building, blocked, SLOTS_PER_SITE, FIGURE_COLORS.length),
+        slots: slotsOf(state, building, blocked),
         arrival: before?.arrival ?? new Float32Array(SLOTS_PER_SITE),
         active: before?.active ?? 0,
         live: before?.live ?? false,
@@ -140,11 +147,11 @@ export class AttractionCrowdLayer {
       const next = wanted > arrival ? Math.min(wanted, arrival + step) : Math.max(wanted, arrival - step);
       site.arrival[slotIndex] = next;
       if (next <= 0 || index >= this.capacity) return;
-      const drift = this.calm ? 0 : 0.12;
+      const drift = this.calm || slot.seatHeight !== undefined ? 0 : 0.12;
       const x = slot.x + (slot.fromX - slot.x) * (1 - next) + Math.sin(this.time * 0.35 + slot.phase) * drift;
       const z = slot.z + (slot.fromZ - slot.z) * (1 - next) + Math.cos(this.time * 0.27 + slot.phase) * drift;
       const jump = site.live && !this.calm && next === 1 ? Math.abs(Math.sin(this.time * 4 + slot.phase)) * 0.05 : 0;
-      this.placement.position.set(x, GROUND_HEIGHT + jump, z);
+      this.placement.position.set(x, (slot.seatHeight ?? GROUND_HEIGHT) + jump, z);
       this.placement.rotation.set(0, next < 1 ? Math.atan2(slot.x - slot.fromX, slot.z - slot.fromZ) : slot.yaw, 0);
       this.placement.scale.setScalar(Math.min(1, next * 8));
       this.placement.updateMatrix();

@@ -34,6 +34,17 @@ export const BOATS = {
 
 export const BOAT_MODELS: Record<BoatFamily, string> = Object.fromEntries(BOAT_FAMILIES.map(family => [family, modelFileOf(BOATS[family].model)])) as Record<BoatFamily, string>;
 
+// Every model a Boat can have, for what loads them ahead.
+export const BOAT_MODEL_FILES: readonly string[] = [...Object.values(BOAT_MODELS), ...(BOATS.pirate.altModels ?? []).map(modelFileOf)];
+
+// Pirate ships take turns between the models of their family, so that a fleet does not look like one ship repeated.
+export function boatModelOf(state: GameState, boat: Boat): string {
+  if (boat.family !== 'pirate') return BOAT_MODELS[boat.family];
+  const models = [BOATS.pirate.model, ...(BOATS.pirate.altModels ?? [])];
+  const rank = boatsOfMarina(state, boat.marinaId).filter((other) => other.id < boat.id).length;
+  return modelFileOf(models[rank % models.length]!);
+}
+
 const FUNDS_EPSILON = 1e-9;
 
 export function boatsOf(state: GameState): readonly Boat[] {

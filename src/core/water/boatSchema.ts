@@ -20,8 +20,8 @@ export const boatSchema = z
     z.strictObject({ family: z.literal('fishing'), ...common }),
     // A Casino boat follows the Tiers of the Casino.
     z.strictObject({ family: z.literal('casino'), ...common }),
-    // A Pirate ship performs in the Shows of its Pirate cove.
-    z.strictObject({ family: z.literal('pirate'), ...common }),
+    // A Pirate ship performs in the Shows of its Pirate cove; the ships of a fleet take turns between its models.
+    z.strictObject({ family: z.literal('pirate'), ...common, altModels: z.array(filled).optional() }),
   ])
   .meta({ title: 'Boat', description: 'A Boat moored at a Marina or a Pirate cove, one file per Boat id in assets/defs/boats.' });
 
