@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "stands",
   "section": "build.water",
-  "model": "nature-cliff-steps-rock",
+  "model": "buildings-stands-6x3",
   "footprint": [6, 3],
   "cost": 2500,
   "unlockCitizens": 800,

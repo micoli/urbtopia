@@ -8,5 +8,6 @@
   "name": {
     "en": "Pirate ship",
     "fr": "Navire pirate"
-  }
+  },
+  "altModels": ["vehicles-navy-frigate"]
 }

@@ -15,7 +15,7 @@
   },
   "tiers": [
     {
-      "model": "events-summer-sand-castle-2x2",
+      "model": "buildings-desert-island-2x2",
       "footprint": [2, 2]
     },
     {
@@ -23,14 +23,16 @@
       "upgradeCost": {
         "urbs": 400,
         "goods": {}
-      }
+      },
+      "model": "buildings-desert-island-2x3"
     },
     {
       "footprint": [3, 3],
       "upgradeCost": {
         "urbs": 900,
         "goods": {}
-      }
+      },
+      "model": "buildings-desert-island-3x3"
     }
   ]
 }

@@ -15,7 +15,7 @@
   },
   "tiers": [
     {
-      "model": "buildings-concert-hall-3x3",
+      "model": "buildings-pirate-cove-t1",
       "footprint": [3, 3],
       "seatCap": 400
     },
@@ -24,14 +24,16 @@
       "upgradeCost": {
         "urbs": 15000,
         "goods": {}
-      }
+      },
+      "model": "buildings-pirate-cove-t2"
     },
     {
       "seatCap": 1200,
       "upgradeCost": {
         "urbs": 30000,
         "goods": {}
-      }
+      },
+      "model": "buildings-pirate-cove-t3"
     }
   ]
 }

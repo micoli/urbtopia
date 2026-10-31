@@ -15,7 +15,7 @@
   },
   "tiers": [
     {
-      "model": "nature-rock-largea",
+      "model": "buildings-sea-fort-3x3",
       "footprint": [3, 3]
     }
   ]
