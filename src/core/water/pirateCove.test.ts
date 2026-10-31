@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { createBuilding, dispatch, newGame, seatsOfCove, type Command, type GameState } from '../index';
+import { PIRATE_SHOW_TITLES, createBuilding, dispatch, newGame, pirateShowTitleOf, previewGathering, seatsOfCove, type Command, type GameState } from '../index';
 import { checkGameState } from '../../persistence/validate';
 
 const T0 = 1_700_000_000_000;
@@ -170,5 +170,65 @@ describe('A Pirate ship', () => {
     const state = succeed(cove(), buyShip(52));
     const wrong = { ...state, buildings: state.buildings.map((building) => (building.id === 100 ? { ...building, type: 'marina' as const } : building)) };
     expect(checkGameState(wrong).ok).toBe(false);
+  });
+});
+
+describe('A Show in a Pirate cove', () => {
+  const stands = (buildingType: 'standsSmall' | 'standsMedium' | 'standsLarge', x: number): Command => ({ type: 'PlaceBuilding', buildingType, x, y: 51, rotation: 0 });
+  const show: Command = { type: 'ScheduleShow', buildingId: 100, startsInHours: 1 };
+  const coveIn = (state: GameState) => state.buildings.find((building) => building.id === 100)!;
+  const staged = (ships: number, tiles = 48): GameState => {
+    let state = succeed(cove(tiles), stands('standsLarge', 50));
+    for (let index = 0; index < ships; index++) state = succeed(state, buyShip(51 + index));
+    return state;
+  };
+
+  it('needs a Pirate ship and Stands', () => {
+    expect(failureKey(succeed(cove(), stands('standsSmall', 52)), show)).toBe('error.noPirateShip');
+    expect(failureKey(succeed(cove(), buyShip(52)), show)).toBe('error.noSeats');
+  });
+
+  it('seats the crowd of its Stands, up to the Tier', () => {
+    const preview = previewGathering(staged(1), coveIn(staged(1)));
+    const small = succeed(succeed(cove(), stands('standsSmall', 52)), buyShip(53));
+    expect(preview.crowd).toBeGreaterThan(previewGathering(small, coveIn(small)).crowd);
+    expect(preview.crowd).toBeLessThanOrEqual(400);
+    expect(previewGathering(small, coveIn(small)).crowd).toBeLessThanOrEqual(60);
+  });
+
+  it('earns 15% more per person for each Pirate ship beyond the first, for the same crowd', () => {
+    const one = previewGathering(staged(1), coveIn(staged(1)));
+    const four = previewGathering(staged(4), coveIn(staged(4)));
+    expect(four.crowd).toBe(one.crowd);
+    expect(four.revenue / one.revenue).toBeCloseTo(1.45);
+  });
+
+  it('costs 0.4 Urbs per seat and 150 Urbs per Pirate ship', () => {
+    expect(previewGathering(staged(3), coveIn(staged(3))).cost).toBe(160 + 450);
+  });
+
+  it('bears a title that does not move its figures', () => {
+    const state = staged(1);
+    const scheduled = succeed(state, show);
+    const gathering = coveIn(scheduled).attraction!.gathering!;
+    expect(gathering.title).toBe(pirateShowTitleOf(coveIn(state)));
+    expect(PIRATE_SHOW_TITLES).toContain(gathering.title);
+    expect(checkGameState(scheduled).ok).toBe(true);
+  });
+
+  it('locks its Pirate ships and Stands until it is cancelled', () => {
+    const scheduled = succeed(staged(1), show);
+    const shipId = scheduled.boats![0]!.id;
+    const standsId = scheduled.buildings.find((building) => building.type === 'standsLarge')!.id;
+    expect(failureKey(scheduled, { type: 'SellBoat', id: shipId })).toBe('error.showLocksCove');
+    expect(failureKey(scheduled, { type: 'SellBuilding', id: standsId })).toBe('error.showLocksCove');
+    const cancelled = succeed(scheduled, { type: 'CancelShow', buildingId: 100 });
+    expect(failureKey(cancelled, { type: 'SellBoat', id: shipId })).toBeNull();
+  });
+
+  it('keeps its figures when a Pirate ship is added after it is programmed', () => {
+    const scheduled = succeed(staged(1), show);
+    const more = succeed(scheduled, buyShip(55));
+    expect(coveIn(more).attraction!.gathering!.revenue).toBe(coveIn(scheduled).attraction!.gathering!.revenue);
   });
 });

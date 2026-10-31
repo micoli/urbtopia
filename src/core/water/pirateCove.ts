@@ -6,6 +6,8 @@ import { tileKey } from '../map/geometry';
 
 export const PIRATE_COVE = {
   waterTilesPerShip: 12,
+  boostPerExtraShip: 0.15,
+  showCostPerShip: 150,
 };
 
 export function seatCapOf(cove: Pick<Building, 'tier'>): number {
@@ -39,6 +41,9 @@ export function pirateShipsOverLimit(state: GameState): boolean {
 export function isPirateCoveInUse(state: GameState, building: Pick<Building, 'id' | 'type'>): boolean {
   return building.type === 'pirateCove' && (pirateShipsOfCove(state, building.id).length > 0 || standsOfCove(state, building.id).length > 0);
 }
+
+// From the moment a Show is programmed until it is settled or cancelled, its figures hold: what they count on stays.
+export const isCoveLocked = (state: GameState, coveId: number): boolean => pirateCoveOf(state, coveId)?.attraction?.gathering !== undefined;
 
 export const isStandsType = (type: string): boolean => kindOf(type) === 'stands';
 

@@ -22,7 +22,7 @@ export const isAttractionType = (type: string): boolean => (definitionOf(type as
 
 export const isAttraction = (building: Pick<Building, 'type'>): boolean => (definitionOf(building.type).attraction ?? 0) > 0;
 
-export const ARENA_TYPES = ['theater', 'concertHall', 'colosseum', 'stadium', 'footballStadium', 'baseballField'] as const;
+export const ARENA_TYPES = ['theater', 'concertHall', 'colosseum', 'stadium', 'footballStadium', 'baseballField', 'pirateCove'] as const;
 
 export const isArenaType = (type: string): boolean => (ARENA_TYPES as readonly string[]).includes(type);
 

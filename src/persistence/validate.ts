@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, isStandsType, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, sellsTicketsType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { FIXTURE_IDS, PIRATE_SHOW_TITLES, isStandsType, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, sellsTicketsType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -48,6 +48,8 @@ function isStack(value: unknown): boolean {
   );
 }
 
+const isPirateShowTitleOrNone = (value: unknown): boolean => value === undefined || (PIRATE_SHOW_TITLES as readonly unknown[]).includes(value);
+
 function isGatheringData(value: unknown): boolean {
   return (
     isRecord(value) &&
@@ -62,7 +64,8 @@ function isGatheringData(value: unknown): boolean {
     isNonNegative(value.revenue) &&
     isNumber(value.quality) &&
     value.quality >= 0 &&
-    value.quality <= 1
+    value.quality <= 1 &&
+    isPirateShowTitleOrNone(value.title)
   );
 }
 
@@ -135,7 +138,8 @@ function isGatheringResult(value: unknown): boolean {
     isNonNegative(value.crowd) &&
     isNonNegative(value.revenue) &&
     isNonNegative(value.cost) &&
-    (value.artist === undefined || typeof value.artist === 'string')
+    (value.artist === undefined || typeof value.artist === 'string') &&
+    isPirateShowTitleOrNone(value.title)
   );
 }
 

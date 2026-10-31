@@ -26,7 +26,7 @@ import { buySeeds, sellSeeds } from '../farming/seeds';
 import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
-import { coveForStands, isPirateCoveInUse, isStandsType, standsCanStayAt } from '../water/pirateCove';
+import { coveForStands, isCoveLocked, isPirateCoveInUse, isStandsType, standsCanStayAt } from '../water/pirateCove';
 import { collectCatch } from '../water/fishing';
 import { collectAttractionTakings, setTicket } from '../tourism/takings';
 import { foundClub, recordMatchDecisions, releaseClubPlayer, setClubLineup, signClubPlayer } from '../clubs/clubCommands';
@@ -224,6 +224,9 @@ export type ErrorKey =
   | 'error.marinaFull'
   | 'error.marinaInUse'
   | 'error.pirateCoveInUse'
+  | 'error.showLocksCove'
+  | 'error.noPirateShip'
+  | 'error.noSeats'
   | 'error.needsPirateCoveWater'
   | 'error.noWaterForPirateShip'
   | 'error.unknownBoat'
@@ -746,6 +749,7 @@ function sellBuilding(state: GameState, id: number): CommandOutcome {
   if ((building.type === 'powerPlant' || building.type === 'waterTower') && !canLoseUtility(state, building)) return fail('error.utilityInUse');
   if (building.type === 'marina' && boatsOfMarina(state, building.id).length > 0) return fail('error.marinaInUse');
   if (isPirateCoveInUse(state, building)) return fail('error.pirateCoveInUse');
+  if (isStandsType(building.type) && isCoveLocked(state, building.coveId ?? 0)) return fail('error.showLocksCove');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
   return {
     state: withoutBrokenLines({ ...state, urbs: state.urbs + refund, buildings: state.buildings.filter((candidate) => candidate !== building) }, id, true),

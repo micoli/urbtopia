@@ -84,7 +84,7 @@ export { BRIDGE_OPENING, boatsUsingBridge, closedFraction, closedFractionsByTile
 export { BRIDGES, BRIDGE_LENGTHS, bridgeAt, bridgeCost, bridgeDeck, bridgeEnds, bridgeFootprint, footbridgeParts, isPedestrianBridge, bridgeKeys, bridgeRamps, bridgeRoadKeys, bridgeTiles, bridgesOf, isInfrastructureBridge, waterBridgesOf } from './water/bridges';
 export { FISHING, fishingSlots, readyCycles, readyFish } from './water/fishing';
 export { connectedWaterKeys, marinaCapacity, touchesWater } from './water/marina';
-export { PIRATE_COVE, coveForStands, isPirateCoveInUse, isStandsType, pirateCoveOf, pirateShipLimit, pirateShipRoom, pirateShipsOfCove, seatCapOf, seatsOfCove, seatsOfStands, standsOfCove } from './water/pirateCove';
+export { PIRATE_COVE, coveForStands, isCoveLocked, isPirateCoveInUse, isStandsType, pirateCoveOf, pirateShipLimit, pirateShipRoom, pirateShipsOfCove, seatCapOf, seatsOfCove, seatsOfStands, standsOfCove } from './water/pirateCove';
 export { cropReturns, type CropReturns } from './farming/returns';
 export { seedSellPrice, seedStockCapacity, seedStockUsed } from './farming/seeds';
 export { CROPS, CROP_IDS, isCrop } from './farming/crops';
@@ -234,6 +234,7 @@ export { attractionRowOf, nextAttractionType, tourismOverview, touristModesOf } 
 export type { AttractionRow, TourismAdvice, TourismOverview } from './tourism/overview';
 export { GATHERING_MALUS, gatheringPenaltyOf } from './tourism/gatheringMalus';
 export { shiftAttractionTimers } from './tourism/gatheringWindow';
+export { PIRATE_SHOW_TITLES, pirateShowTitleOf, type PirateShowTitle } from './tourism/pirateShows';
 export { ARTISTS, ARTIST_OFFER_SIZE, MAX_FAME, artistById, artistOffer, fameCeiling, feeOfArtist } from './tourism/artists';
 export type { Artist } from './tourism/artistSchema';
 export { CLUB, advanceClub, createClub, marketValueOf, refreshMarket, releasePlayer, severanceOf, signPlayer, signingFeeOf, wageOf, wagesPerDay } from './clubs/club';

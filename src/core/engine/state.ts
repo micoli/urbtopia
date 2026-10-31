@@ -1,3 +1,4 @@
+import type { PirateShowTitle } from '../tourism/pirateShows';
 import type { ClubData } from '../clubs/clubTypes';
 import type { ChallengeClaim, ChallengeProgress } from '../challenges/types';
 import type { TradeLedgerEntry } from '../trade/types';
@@ -95,6 +96,8 @@ export interface GatheringData {
   quality: number;
   // The Artist who plays a Concert hall Show.
   artist?: string;
+  // The title drawn for a Pirate cove Show.
+  title?: PirateShowTitle;
   crowd: number;
   tourists: number;
   citizens: number;
@@ -109,6 +112,7 @@ export interface GatheringResult {
   revenue: number;
   cost: number;
   artist?: string;
+  title?: PirateShowTitle;
 }
 
 // Ticket level of an Attraction (0 lowest), the Urbs its Tourists have paid and nobody has collected, and its Gathering.

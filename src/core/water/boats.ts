@@ -14,7 +14,7 @@ import { bridgeKeys } from './bridges';
 import { CASINO, MAX_CASINO_TIER, casinoPower } from '../leisure/casino';
 import { ECOLOGY } from '../environment/ecology';
 import { connectedWaterKeys, marinaCapacity } from './marina';
-import { pirateCoveOf, pirateShipRoom } from './pirateCove';
+import { isCoveLocked, pirateCoveOf, pirateShipRoom } from './pirateCove';
 
 export { BOAT_FAMILIES, MARINA_BOAT_FAMILIES };
 
@@ -82,6 +82,7 @@ export function buyBoat(state: GameState, family: BoatFamily, marinaId: number, 
 export function sellBoat(state: GameState, id: number): CommandOutcome {
   const boat = boatsOf(state).find((candidate) => candidate.id === id);
   if (!boat) return { key: 'error.unknownBoat' };
+  if (boat.family === 'pirate' && isCoveLocked(state, boat.marinaId)) return { key: 'error.showLocksCove' };
   const refund = Math.floor(BOATS[boat.family].cost * GAME_CONFIG.sellRefundRatio);
   return { state: { ...state, urbs: state.urbs + refund, boats: boatsOf(state).filter((candidate) => candidate !== boat) }, events: [] };
 }
