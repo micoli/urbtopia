@@ -305,3 +305,54 @@ test.describe('feature flags', () => {
     expect(errors).toEqual([]);
   });
 });
+
+test.describe('pirate coves', () => {
+  test.use({ viewport: { width: 1280, height: 900 } });
+
+  test('the player stages a Show with Pirate ships in front of Stands', async ({ page }) => {
+    test.setTimeout(120_000);
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+    await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      const { uiStore } = await import('../src/store/uiStore.ts');
+      const { newGame, createBuilding } = await import('../src/core/index.ts');
+      const state = newGame({ seed: 'pirate-e2e', now: Date.now() });
+      const parcel = state.ownedParcels[0]!;
+      const x = parcel.x * 16 + 2;
+      const y = parcel.y * 16 + 4;
+      const homes = Array.from({ length: 40 }, (_, index) => ({ ...createBuilding(index + 1, 'home', x + (index % 12), y - 3, 0), tier: 6 }));
+      const waterTiles = Array.from({ length: 24 }, (_, index) => ({ x: x + (index % 12), y: y + 4 + Math.floor(index / 12) }));
+      const roads = Array.from({ length: 12 }, (_, index) => ({ x: x + index, y, kind: 'road' as const }));
+      gameStore.getState().replaceState({ ...state, urbs: 200_000, tutorial: null, nextId: 200, roads, waterTiles, buildings: [...homes, createBuilding(100, 'pirateCove', x + 1, y + 1, 0)] });
+      gameStore.getState().send({ type: 'PlaceBuilding', buildingType: 'standsMedium', x: x + 1, y: y + 6 });
+      uiStore.getState().select(100);
+    });
+    await expect(page.getByText('A Show needs at least one Pirate ship.').first()).toBeVisible();
+    await page.getByRole('button', { name: /^Schedule/ }).first().click();
+    const dialog = page.locator('.show-dialog').getByRole('dialog');
+    await expect(dialog.getByRole('button', { name: /^Schedule/ })).toBeDisabled();
+    await dialog.getByRole('button', { name: 'Close', exact: true }).click();
+    await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      const { state, send } = gameStore.getState();
+      const water = state.waterTiles![0]!;
+      send({ type: 'BuyBoat', family: 'pirate', marinaId: 100, x: water.x, y: water.y });
+      send({ type: 'BuyBoat', family: 'pirate', marinaId: 100, x: water.x + 2, y: water.y });
+    });
+    await expect(page.getByText('Pirate ship: 2 · 2 at most on this water')).toBeVisible();
+    await page.getByRole('button', { name: /^Schedule/ }).first().click();
+    await expect(dialog.getByText('Expected profit')).toBeVisible();
+    await expect(dialog.getByText('/ 200')).toBeVisible();
+    await dialog.getByRole('button', { name: /^Schedule/ }).click();
+    await expect(dialog).toHaveCount(0);
+    const gathering = await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().state.buildings.find(building => building.id === 100)!.attraction!.gathering!);
+    expect(gathering.title).toBeTruthy();
+    await expect(page.locator('.gathering-status-title')).not.toHaveText('Show');
+    await expect(page.getByRole('button', { name: /^Sell · Pirate ship/ }).first()).toBeDisabled();
+    expect(errors).toEqual([]);
+  });
+});
