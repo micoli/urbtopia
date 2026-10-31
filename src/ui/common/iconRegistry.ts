@@ -1,8 +1,8 @@
 import {
-  Anchor, ArrowDown, ArrowLeft, ArrowRight, ArrowLeftRight, ArrowUp, BookOpen, Bus, BusFront, Car, ChartColumn, Check, ChevronDown, Circle, ChevronRight, ClipboardList,
-  Coins, Droplet, Info, Factory, Footprints, Globe, Hammer, HeartPulse, Lock, Map, Medal, Menu, Move, Moon, RotateCcw, RotateCw, Route,
-  Settings, Snail, Sparkles, Store, Sun, Sunrise, Sunset, Thermometer, Trash2, Trees, TrainFront, TrendingUp, TriangleAlert, Trophy,
-  Repeat, Music, Star, Ticket, Undo2, Users, Wheat, Wrench, X, Zap, type LucideIcon,
+  Anchor, ArrowDown, ArrowLeft, ArrowRight, ArrowLeftRight, ArrowUp, Bell, BookOpen, Building2, Bus, BusFront, CalendarDays, Car, ChartColumn, Check, ChevronDown, Circle, ChevronRight, ClipboardList, Clock, Cloud,
+  Coins, Droplet, Gamepad2, HardDrive, Info, Factory, Footprints, Globe, Hammer, HeartPulse, Lock, Map, Medal, Menu, Monitor, Move, Moon, RotateCcw, RotateCw, Route, Save,
+  Settings, Shield, Smartphone, Snail, Sparkles, Store, Sun, Sunrise, Sunset, Thermometer, Trash2, Trees, TrainFront, TrendingUp, TriangleAlert, Trophy,
+  Repeat, Music, Star, Ticket, Truck, Undo2, User, UserPlus, Users, UsersRound, Wheat, Wrench, X, Zap, type LucideIcon,
 } from 'lucide-react';
 
 export const ICONS = {
@@ -63,6 +63,21 @@ export const ICONS = {
   music: Music,
   star: Star,
   ticket: Ticket,
+  bell: Bell,
+  clock: Clock,
+  cloud: Cloud,
+  game: Gamepad2,
+  disk: HardDrive,
+  display: Monitor,
+  save: Save,
+  shield: Shield,
+  device: Smartphone,
+  city: Building2,
+  calendar: CalendarDays,
+  shipment: Truck,
+  profile: User,
+  recruit: UserPlus,
+  group: UsersRound,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

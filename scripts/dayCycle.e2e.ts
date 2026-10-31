@@ -63,7 +63,8 @@ test.describe('day cycle', () => {
     await settle(page);
     const night = await lightOf(page);
     await page.getByRole('button', { name: 'Réglages' }).click();
-    await page.getByRole('checkbox', { name: 'Toujours de jour' }).click();
+    await page.getByRole('tab', { name: 'Affichage' }).click();
+    await page.getByRole('switch', { name: 'Toujours de jour' }).click();
     await settle(page);
     expect(await lightOf(page)).toBeGreaterThan(night);
     expect(await lightOf(page)).toBeCloseTo(1.7, 1);

@@ -4,7 +4,7 @@ import {useState} from 'react';
 import {useUi} from '../common/hooks';
 import {gameStore} from '../../store/gameStore';
 import {useThrottledValue} from '../common/useThrottledValue';
-import {Tabs} from '../common/Tabs';
+import {Tabs, type TabItem} from '../common/Tabs';
 import {CitiesSection} from '../system/CitiesSection';
 import {ShipmentsSection} from '../shipments/ShipmentsSection';
 import {readRegistry} from '../../persistence/cities';
@@ -47,7 +47,7 @@ function CityManagementDialog() {
     const backdrop = useBackdropClose(toggle);
     if (!open) return null;
     const multiCity = (readRegistry(rawSaveStore)?.cities.length ?? 0) > 1;
-    const tabs: {id: ManagementTab; label: string}[] = [{id: 'dashboard', label: t('eco.tab.dashboard')}, {id: 'cities', label: t('cities.title')}, ...(multiCity ? [{id: 'shipments' as const, label: t('shipments.title')}] : [])];
+    const tabs: TabItem<ManagementTab>[] = [{id: 'dashboard', icon: 'stats', label: t('eco.tab.dashboard')}, {id: 'cities', icon: 'city', label: t('cities.title')}, ...(multiCity ? [{id: 'shipments' as const, icon: 'shipment' as const, label: t('shipments.title')}] : [])];
     const selected = tabs.some(entry => entry.id === tab) ? tab : 'dashboard';
     const energy = energyStats(state);
     const green = cityBenefits(state, energy.coalRates);

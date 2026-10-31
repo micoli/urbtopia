@@ -149,6 +149,17 @@ describe('social window', () => {
     cloudStore.setState({ account: null });
   });
 
+  it('lands on the Saves tab when coming for the account, and on the Game tab otherwise', () => {
+    uiStore.getState().openSettingsFromSocial(false);
+    expect(uiStore.getState().settingsTab).toBe('saves');
+    uiStore.getState().toggleSettings();
+    uiStore.getState().openSettingsForSignIn();
+    expect(uiStore.getState().settingsTab).toBe('saves');
+    uiStore.getState().toggleSettings();
+    uiStore.getState().toggleSettings();
+    expect(uiStore.getState().settingsTab).toBe('game');
+  });
+
   it('does not reopen Social when Settings was closed before signing in', async () => {
     const { cloudStore } = await import('./cloudStore');
     cloudStore.setState({ account: { userId: 'u', email: null } });

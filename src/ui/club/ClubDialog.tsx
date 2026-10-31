@@ -15,8 +15,15 @@ import { ClubMatchTab } from './ClubMatchTab';
 import { ClubSquadTab } from './ClubSquadTab';
 import { ClubSummary } from './ClubSummary';
 import { ClubTableTab } from './ClubTableTab';
+import type { IconName } from '../common/iconRegistry';
 
-const TABS: ClubTabId[] = ['squad', 'lineup', 'market', 'match', 'table'];
+const TABS: readonly { id: ClubTabId; icon: IconName }[] = [
+  { id: 'squad', icon: 'citizens' },
+  { id: 'lineup', icon: 'needs' },
+  { id: 'market', icon: 'recruit' },
+  { id: 'match', icon: 'medal' },
+  { id: 'table', icon: 'trophy' },
+];
 
 export function ClubDialog() {
   const buildingId = useStore(clubStore, store => store.buildingId);
@@ -44,7 +51,7 @@ export function ClubDialog() {
         <ActionButton variant="default" onClick={() => clubStore.getState().close()}>{t('club.close')}</ActionButton>
       </header>
       <ClubSummary building={building} />
-      <Tabs label={t('club.title')} idPrefix="club-tab" panelId="club-panel" tabs={TABS.map(id => ({ id, label: t(`club.tab.${id}`) }))} selected={tab} onSelect={id => clubStore.getState().select(id)} />
+      <Tabs label={t('club.title')} idPrefix="club-tab" panelId="club-panel" tabs={TABS.map(({ id, icon }) => ({ id, icon, label: t(`club.tab.${id}`) }))} selected={tab} onSelect={id => clubStore.getState().select(id)} />
       <div id="club-panel" role="tabpanel" aria-labelledby={`club-tab-${tab}`} className="club-view__panel">
         {tab === 'squad' ? <ClubSquadTab building={building} /> : null}
         {tab === 'lineup' ? (building.club.sport === 'baseball' ? <BaseballLineupTab building={building} /> : <ClubLineupTab building={building} />) : null}

@@ -1,9 +1,11 @@
 import { ReactNode } from 'react';
 import { Icon } from './Icon';
+import type { IconName } from './iconRegistry';
 
 interface AccordionSectionProps {
     id: string;
     title: string;
+    icon?: IconName;
     expanded: boolean;
     onToggle: () => void;
     chevron?: boolean;
@@ -16,12 +18,13 @@ interface AccordionSectionProps {
     children: ReactNode;
 }
 
-export function AccordionSection({ id, title, expanded, onToggle, chevron = false, lockWhenExpanded = false, guided, className, toggleClassName, contentClassName, headerAction, children }: AccordionSectionProps) {
+export function AccordionSection({ id, title, icon, expanded, onToggle, chevron = false, lockWhenExpanded = false, guided, className, toggleClassName, contentClassName, headerAction, children }: AccordionSectionProps) {
     const toggleId = `${id}-toggle`;
     return (
         <section className={className} aria-label={title}>
             <h3 className={headerAction ? 'accordion-heading-with-action' : undefined}>
                 <button type="button" className={toggleClassName} id={toggleId} aria-expanded={expanded} aria-disabled={lockWhenExpanded && expanded ? true : undefined} aria-controls={id} data-guided={guided} onClick={onToggle}>
+                    {icon && <Icon name={icon} />}
                     <span>{title}</span>
                     {chevron && <Icon name={expanded ? 'chevronDown' : 'chevronRight'} />}
                 </button>

@@ -5,9 +5,9 @@ import { Tabs, type TabItem } from './Tabs';
 type Id = 'friends' | 'groups' | 'profile';
 
 const TABS: TabItem<Id>[] = [
-  { id: 'friends', label: 'Friends', count: 3 },
-  { id: 'groups', label: 'Groups', count: 12 },
-  { id: 'profile', label: 'Profile' },
+  { id: 'friends', icon: 'citizens', label: 'Friends', count: 3 },
+  { id: 'groups', icon: 'group', label: 'Groups', count: 12 },
+  { id: 'profile', icon: 'profile', label: 'Profile' },
 ];
 
 function TabsDemo() {

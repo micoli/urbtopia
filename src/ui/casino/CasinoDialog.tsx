@@ -25,7 +25,7 @@ export function CasinoDialog() {
     close();
   };
   return (
-    <div className="dialog-backdrop" role="dialog" aria-modal="true" aria-label={t(`casino.${game}`)}>
+    <div className="dialog-backdrop dialog-backdrop--top" role="dialog" aria-modal="true" aria-label={t(`casino.${game}`)}>
       <div className="dialog casino-dialog">
         <CasinoCloseContext.Provider value={() => (round ? setConfirmLeave(true) : leave())}>
           <CasinoGameView game={game} casino={casino} />
