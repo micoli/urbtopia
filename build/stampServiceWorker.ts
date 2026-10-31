@@ -2,7 +2,7 @@ import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from '
 import { join, relative } from 'node:path';
 import type { Plugin } from 'vite';
 
-const SPLASH_FILES = ['splash-paysage.jpeg', 'splash-portrait.jpeg'];
+const SPLASH_FILE = /^splash-.+\.jpeg$/;
 const ICON_FOLDER = 'assets';
 
 export function listFiles(directory: string): string[] {
@@ -24,7 +24,7 @@ export function stampServiceWorker(buildId: string): Plugin {
     apply: 'build',
     writeBundle(options) {
       const outDir = options.dir ?? 'dist';
-      const models = [...listFiles(join(outDir, 'models')), ...listFiles(join(outDir, 'codex')), ...SPLASH_FILES.map((file) => join(outDir, file)).filter(existsSync), ...listFiles(join(outDir, ICON_FOLDER)).filter((file) => file.endsWith('.png'))].map((file) => `./${relative(outDir, file).split('\\').join('/')}`);
+      const models = [...listFiles(join(outDir, 'models')), ...listFiles(join(outDir, 'codex')), ...readdirSync(outDir).filter((file) => SPLASH_FILE.test(file)).map((file) => join(outDir, file)), ...listFiles(join(outDir, ICON_FOLDER)).filter((file) => file.endsWith('.png'))].map((file) => `./${relative(outDir, file).split('\\').join('/')}`);
       const target = join(outDir, 'sw.js');
       writeFileSync(target, stampSource(readFileSync(target, 'utf8'), buildId, models));
     },
