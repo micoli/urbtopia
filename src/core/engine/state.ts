@@ -144,6 +144,8 @@ export interface Building extends Coord {
   venue?: VenueData;
   attraction?: AttractionData;
   club?: ClubData;
+  // Stands only: the Pirate cove they belong to.
+  coveId?: number;
 }
 
 export interface Storage {

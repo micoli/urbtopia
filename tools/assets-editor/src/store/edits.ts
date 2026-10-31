@@ -75,13 +75,14 @@ const extraOf = (kind: BuildingKind, model: string): Record<string, unknown> | u
     venue: { rankAt: [0, 0], staffRoles: ['manager'], frontRole: 'manager', fixtureCategories: ['walls'], shell: { floor: model, wall: model, corner: model, cornerX: 0, cornerZ: 0, cornerRotation: 0 }, staffModels: [model] },
     shop: { goodCategory: 'all' },
     sport: { radius: 1, wellbeingBonus: 0 },
+    stands: { seats: 60 },
     transitStop: { mode: 'bus' },
     solar: { output: 1 },
     battery: { storage: 1, rate: 1, radius: 1 },
     backup: { capacity: 1, costPerUnit: 1 },
   })[kind as string]
 
-const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { shop: 'build.shops', office: 'build.offices', venue: 'build.leisure', marina: 'build.water', pirateCove: 'build.water', casino: 'build.leisure', facility: 'build.publicFacilities', home: 'build.housing', sport: 'build.sport', storage: 'build.storage', utility: 'build.utilities', green: 'build.greenSpaces', solar: 'build.utilities', battery: 'build.utilities', backup: 'build.utilities' }
+const SECTIONS: Partial<Record<BuildingKind, BuildSection>> = { shop: 'build.shops', office: 'build.offices', venue: 'build.leisure', marina: 'build.water', pirateCove: 'build.water', stands: 'build.water', casino: 'build.leisure', facility: 'build.publicFacilities', home: 'build.housing', sport: 'build.sport', storage: 'build.storage', utility: 'build.utilities', green: 'build.greenSpaces', solar: 'build.utilities', battery: 'build.utilities', backup: 'build.utilities' }
 
 export function blankBuilding(kind: BuildingKind, model: string): FlatBuilding {
   const name = { en: '', fr: '' }

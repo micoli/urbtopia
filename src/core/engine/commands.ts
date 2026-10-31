@@ -26,7 +26,7 @@ import { buySeeds, sellSeeds } from '../farming/seeds';
 import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
-import { isPirateCoveInUse } from '../water/pirateCove';
+import { coveForStands, isPirateCoveInUse, isStandsType, standsCanStayAt } from '../water/pirateCove';
 import { collectCatch } from '../water/fishing';
 import { collectAttractionTakings, setTicket } from '../tourism/takings';
 import { foundClub, recordMatchDecisions, releaseClubPlayer, setClubLineup, signClubPlayer } from '../clubs/clubCommands';
@@ -224,6 +224,7 @@ export type ErrorKey =
   | 'error.marinaFull'
   | 'error.marinaInUse'
   | 'error.pirateCoveInUse'
+  | 'error.needsPirateCoveWater'
   | 'error.noWaterForPirateShip'
   | 'error.unknownBoat'
   | 'error.waterInUse'
@@ -709,7 +710,7 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
   const issue = placementIssue(state, type, x, y, rotation);
   if (issue) return fail(issue);
   if (state.urbs < nextCopyCost(state, type) + extraCost) return fail('error.notEnoughUrbs');
-  const created = createBuilding(state.nextId, type, x, y, rotation);
+  const created = { ...createBuilding(state.nextId, type, x, y, rotation), ...(isStandsType(type) ? { coveId: coveForStands(state, type, x, y, rotation)!.id } : {}) };
   const orchardQueue = newOrchardQueue(type, state.lastSeen);
   const building = { ...created, ...(orchardQueue ? { queue: orchardQueue } : {}), ...(solar ? { solar: true } : {}), ...(isHomeType(type) && colorVariant ? { colorVariant } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
   const utilityIssue = isHomeType(type) ? utilityIssueFor(state, tierDemand(1)) : isFacilityType(type) ? utilityIssueFor(state, { power: 0, water: FACILITIES[type].water }) : null;
@@ -781,6 +782,7 @@ function moveBuilding(state: GameState, id: number, x: number, y: number, reques
   const rotation = requestedRotation ?? autoRotation(without, building.type, x, y, building.tier);
   const issue = placementIssue(without, building.type, x, y, rotation, { isMove: true, tier: building.tier });
   if (issue) return fail(issue);
+  if (isStandsType(building.type) && !standsCanStayAt(without, building.coveId ?? 0, { type: building.type, x, y, rotation })) return fail('error.needsPirateCoveWater');
   return {
     state: withoutBrokenLines({ ...state, buildings: state.buildings.map((candidate) => (candidate === building ? restartRunningProduction({ ...building, x, y, rotation }, now) : candidate)) }, id, false),
     events: [{ type: 'BuildingMoved', id }],

@@ -5,9 +5,10 @@ import type { Coord } from './coord';
 import { DIRECTIONS, frontDirection, neighbour, tileKey } from './geometry';
 import { isInsideOwnedParcels, isRoadLike, occupiedTiles } from './occupancy';
 import { touchesWater } from '../water/marina';
+import { coveForStands, isStandsType } from '../water/pirateCove';
 import type { BuildingType, GameState, Rotation } from '../engine/state';
 
-export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.needsAccess' | 'error.needsWater' | 'error.buildingLimitReached' | 'error.noFarm' | 'error.townHallExists' | 'error.notEnoughUrbs';
+export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.needsAccess' | 'error.needsWater' | 'error.needsPirateCoveWater' | 'error.buildingLimitReached' | 'error.noFarm' | 'error.townHallExists' | 'error.notEnoughUrbs';
 
 const UNIQUE_BUILDING_ERRORS: Partial<Record<BuildingType, PlacementIssue>> = {
   townHall: 'error.townHallExists',
@@ -155,6 +156,7 @@ export function placementIssue(
     return BUILDING_SPECS[type].accessModes.includes('brt') ? 'error.needsRoadOrBrt' : 'error.needsRoad';
   }
   if ((type === 'marina' || type === 'hydroPlant' || type === 'pirateCove') && !touchesWater(state, { type, x, y, rotation, tier })) return 'error.needsWater';
+  if (isStandsType(type) && !coveForStands(state, type, x, y, rotation)) return 'error.needsPirateCoveWater';
   if (isMove) return null;
   const existsError = UNIQUE_BUILDING_ERRORS[type];
   if (existsError && state.buildings.some((building) => building.type === type)) return existsError;

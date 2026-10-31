@@ -164,6 +164,7 @@ const FACT_RULES: Record<BuildingKind, (id: BuildingType, level: number) => Leve
   nature: greenFacts,
   marina: (_id, level) => [numericFact('codex.fact.boats', tier => marinaCapacity({ tier }), level)],
   pirateCove: (_id, level) => [numericFact('codex.fact.seatCap', tier => seatCapOf({ tier }), level)],
+  stands: () => [],
   shop: (id, level) => (isShopType(id) ? shopFacts(id, level) : []),
   office: (id, level) => (isOfficeType(id) ? officeFacts(id, level) : []),
   casino: (_id, level) => casinoFacts(level),

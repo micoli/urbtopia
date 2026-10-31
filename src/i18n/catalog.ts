@@ -567,6 +567,7 @@ export const CATALOG = {
   'error.notOnMarinaWater': ['A Boat goes on a Water tile connected to its Marina or Pirate cove.', "Un bateau se pose sur une tuile d'eau reliée à sa marina ou à sa crique."],
   'error.marinaFull': ['This Marina cannot hold more Boats.', 'Cette marina ne peut pas accueillir plus de bateaux.'],
   'error.marinaInUse': ['This Marina still holds Boats.', 'Cette marina accueille encore des bateaux.'],
+  'error.needsPirateCoveWater': ['Stands must touch a Water tile connected to their Pirate cove.', "Les gradins doivent toucher une tuile d'eau reliée à leur crique des pirates."],
   'error.pirateCoveInUse': ['This Pirate cove still has Pirate ships or Stands.', 'Cette crique des pirates a encore des navires pirates ou des gradins.'],
   'error.noWaterForPirateShip': ['This water carries one Pirate ship per 12 Water tiles: lay more Water tiles first.', "Ce plan d'eau porte un navire pirate pour 12 tuiles d'eau : pose d'abord plus de tuiles d'eau."],
   'error.unknownBoat': ['This Boat does not exist.', "Ce bateau n'existe pas."],

@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, sellsTicketsType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { FIXTURE_IDS, isStandsType, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, sellsTicketsType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -190,6 +190,7 @@ function isBuilding(value: unknown): boolean {
     (value.club === undefined || (typeof value.type === 'string' && hasClub(value.type) && isClubData(value.club))) &&
     (value.attraction === undefined || (typeof value.type === 'string' && sellsTicketsType(value.type) && isAttractionData(value.attraction))) &&
     (value.name === undefined || (typeof value.type === 'string' && isTransitStopType(value.type) && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= STOP_NAME_MAX_LENGTH)) &&
+    (value.coveId === undefined || (typeof value.type === 'string' && isStandsType(value.type) && isInt(value.coveId, 0))) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&
     (value.storedEnergy === undefined || (value.type === 'battery' && isNonNegative(value.storedEnergy) && value.storedEnergy <= 24))
   );
@@ -431,6 +432,7 @@ function invariantFailure(state: GameState): string | null {
         field(`bridges[${index}]: crosses a tile that is not water`, () => keys.every((key) => waterKeys.has(key))),
       ];
     }),
+    ...state.buildings.filter((building) => isStandsType(building.type)).map((stands) => field(`buildings[${stands.id}]: Stands without a Pirate cove`, () => state.buildings.some((b) => b.id === stands.coveId && b.type === 'pirateCove'))),
     ...(state.boats ?? []).flatMap((boat, index) => [
       field(`boats[${index}]: not on a water tile`, () => waterKeys.has(tileKey(boat))),
       field(`boats[${index}]: its marina or Pirate cove does not exist`, () => state.buildings.some((b) => b.id === boat.marinaId && b.type === (boat.family === 'pirate' ? 'pirateCove' : 'marina'))),
