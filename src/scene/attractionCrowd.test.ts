@@ -59,9 +59,9 @@ describe('standsSeats', () => {
     expect(seats).toEqual(standsSeats([stands], 30, 4));
     for (const seat of seats) {
       expect(seat.x).toBeGreaterThan(10);
-      expect(seat.x).toBeLessThan(12);
+      expect(seat.x).toBeLessThan(14);
       expect(seat.z).toBeGreaterThan(20);
-      expect(seat.z).toBeLessThan(24);
+      expect(seat.z).toBeLessThan(22);
     }
   });
 
@@ -69,8 +69,8 @@ describe('standsSeats', () => {
     const seats = standsSeats([stands], 60, 4);
     const front = frontDirection(stands.rotation);
     expect(front).toBe('N');
-    const nearWater = seats.filter(seat => seat.z < 21);
-    const farFromWater = seats.filter(seat => seat.z > 23);
+    const nearWater = seats.filter(seat => seat.z < 20.5);
+    const farFromWater = seats.filter(seat => seat.z > 21.5);
     expect(Math.max(...nearWater.map(seat => seat.seatHeight!))).toBeLessThan(Math.min(...farFromWater.map(seat => seat.seatHeight!)));
   });
 

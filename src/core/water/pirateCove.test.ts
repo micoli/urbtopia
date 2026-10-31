@@ -118,7 +118,7 @@ describe('Stands', () => {
     const twoCoves = cove(24, { buildings: [...cove().buildings, createBuilding(101, 'pirateCove', 60, 47, 0)] });
     expect(succeed(twoCoves, standsAt(61)).buildings.at(-1)!.coveId).toBe(101);
     expect(succeed(twoCoves, standsAt(51)).buildings.at(-1)!.coveId).toBe(100);
-    expect(succeed(twoCoves, standsAt(56)).buildings.at(-1)!.coveId).toBe(100);
+    expect(succeed(twoCoves, standsAt(55)).buildings.at(-1)!.coveId).toBe(100);
   });
 
   it('do not change Pirate cove when a nearer one is placed', () => {

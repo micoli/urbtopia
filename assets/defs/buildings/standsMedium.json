@@ -3,7 +3,7 @@
   "kind": "stands",
   "section": "build.water",
   "model": "nature-cliff-steps-rock",
-  "footprint": [2, 4],
+  "footprint": [4, 2],
   "cost": 1000,
   "unlockCitizens": 800,
   "requiresRoad": false,
