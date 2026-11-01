@@ -57,9 +57,15 @@ describe('Laying a Desert island or a Sea fort', () => {
     expect(failureKey(bay(), island(57, 51))).toBe('error.needsWaterTiles');
   });
 
-  it('is refused on a Boat, a Bridge or other scenery', () => {
+  it('moves a Boat on its tiles to a free tile of the same water', () => {
     const withShip = succeed(bay(), { type: 'BuyBoat', family: 'pirate', marinaId: 100, x: 53, y: 51 });
-    expect(failureKey(withShip, island(53, 51))).toBe('error.tilesOccupied');
+    const laid = succeed(withShip, island(53, 51));
+    const ship = laid.boats!.find((boat) => boat.family === 'pirate')!;
+    expect(navigableWaterKeys(laid).has(`${ship.x},${ship.y}`)).toBe(true);
+    expect(ship.marinaId).toBe(100);
+  });
+
+  it('is refused on a Bridge or other scenery', () => {
     expect(failureKey(succeed(bay(), island(53, 51)), island(54, 52))).toBe('error.tilesOccupied');
     expect(failureKey(bay({ bridges: [{ x: 53, y: 51, length: 1, axis: 'x' }] }), island(53, 51))).toBe('error.tilesOccupied');
   });

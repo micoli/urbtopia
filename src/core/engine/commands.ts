@@ -27,6 +27,7 @@ import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
 import { isSeaSceneryType } from '../water/waterTiles';
+import { withBoatsMovedOffScenery } from '../water/seaScenery';
 import { coveForStands, isCoveLocked, isPirateCoveInUse, isStandsType, standsCanStayAt } from '../water/pirateCove';
 import { collectCatch } from '../water/fishing';
 import { collectAttractionTakings, setTicket } from '../tourism/takings';
@@ -706,6 +707,11 @@ function strandsBuilding(before: GameState, after: GameState): boolean {
   );
 }
 
+// Scenery laid or grown over a Boat pushes it to a free tile of its water.
+function withScenerySettled(type: BuildingType, state: GameState): GameState {
+  return isSeaSceneryType(type) ? withBoatsMovedOffScenery(state) : state;
+}
+
 function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, now: number, requestedRotation?: Rotation, solar = false, colorVariant?: ColorVariant): CommandOutcome {
   if (isRetired(type) || citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < solarPanelsUnlockCitizens(type))) return fail('error.itemLocked');
   if (!isBuildableAt(type, now)) return fail('error.annualEventClosed');
@@ -721,7 +727,7 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
   const utilityIssue = isHomeType(type) ? utilityIssueFor(state, tierDemand(1)) : isFacilityType(type) ? utilityIssueFor(state, { power: 0, water: FACILITIES[type].water }) : null;
   if (utilityIssue) return fail(utilityIssue);
   return {
-    state: { ...state, urbs: state.urbs - nextCopyCost(state, type) - extraCost, nextId: state.nextId + 1, buildings: [...state.buildings, building] },
+    state: withScenerySettled(type, { ...state, urbs: state.urbs - nextCopyCost(state, type) - extraCost, nextId: state.nextId + 1, buildings: [...state.buildings, building] }),
     events: [{ type: 'BuildingPlaced', id: building.id }],
   };
 }
@@ -790,7 +796,7 @@ function moveBuilding(state: GameState, id: number, x: number, y: number, reques
   if (issue) return fail(issue);
   if (isStandsType(building.type) && !standsCanStayAt(without, building.coveId ?? 0, { type: building.type, x, y, rotation })) return fail('error.needsPirateCoveWater');
   return {
-    state: withoutBrokenLines({ ...state, buildings: state.buildings.map((candidate) => (candidate === building ? restartRunningProduction({ ...building, x, y, rotation }, now) : candidate)) }, id, false),
+    state: withScenerySettled(building.type, withoutBrokenLines({ ...state, buildings: state.buildings.map((candidate) => (candidate === building ? restartRunningProduction({ ...building, x, y, rotation }, now) : candidate)) }, id, false)),
     events: [{ type: 'BuildingMoved', id }],
   };
 }
@@ -1094,12 +1100,12 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
   }
 
   return {
-    state: {
+    state: withScenerySettled(building.type, {
       ...state,
       urbs: state.urbs - cost.urbs,
       storage: { ...state.storage, goods },
       buildings: state.buildings.map((candidate) => (candidate === building ? upgradedTo(grown, nextTier) : candidate)),
-    },
+    }),
     events: [{ type: 'BuildingUpgraded', buildingId, tier: nextTier }],
   };
 }
