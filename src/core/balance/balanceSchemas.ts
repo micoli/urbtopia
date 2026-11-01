@@ -86,6 +86,23 @@ export const wasteBalanceSchema = z
   })
   .meta({ title: 'Waste balance', description: 'assets/defs/balance/waste.json: Waste production, Carrying distance.' });
 
+// What Schooling and Libraries add to the Knowledge of a Home, and what the city's Knowledge gives back.
+export const knowledgeBalanceSchema = z
+  .strictObject({
+    ...schemaField,
+    // Points of Knowledge of each School degree covering a Home, counted once.
+    schooling: z.strictObject({ school: count, middleSchool: count, highSchool: count, university: count }),
+    // Points of Knowledge by Library Tier, the best covering Library counting.
+    library: z.array(count).min(1),
+    // The effect reaches 1 - (1 - Knowledge / 100) ^ curveExponent of its maximum: concave, 70% at Knowledge 50.
+    curveExponent: positive,
+    // Each effect at Knowledge 100: shares of an output, or Well-being points.
+    effects: z.strictObject({ production: share, office: share, tax: share, wellbeing: count, waste: share, power: share }),
+    // Under Hard, a Home below this Knowledge is sanctioned in proportion to the shortfall.
+    requiredKnowledge: z.number().gt(0).max(100),
+  })
+  .meta({ title: 'Knowledge balance', description: 'assets/defs/balance/knowledge.json: what builds Knowledge, and what it gives.' });
+
 // How far fast public transport carries a Public facility's Service coverage; the stops themselves are building definitions.
 export const transitReachBalanceSchema = z
   .strictObject({

@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/balance-knowledge.schema.json",
+  "schooling": {
+    "school": 15,
+    "middleSchool": 15,
+    "highSchool": 20,
+    "university": 20
+  },
+  "library": [6, 12, 18, 24, 30],
+  "curveExponent": 1.737,
+  "effects": {
+    "production": 0.25,
+    "office": 0.25,
+    "tax": 0.05,
+    "wellbeing": 8,
+    "waste": 0.2,
+    "power": 0.1
+  },
+  "requiredKnowledge": 50
+}

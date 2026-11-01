@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schooling": {
+      "type": "object",
+      "properties": {
+        "school": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "middleSchool": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "highSchool": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "university": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "school",
+        "middleSchool",
+        "highSchool",
+        "university"
+      ],
+      "additionalProperties": false
+    },
+    "library": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
+    "curveExponent": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "effects": {
+      "type": "object",
+      "properties": {
+        "production": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "office": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "tax": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "wellbeing": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "waste": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "power": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "production",
+        "office",
+        "tax",
+        "wellbeing",
+        "waste",
+        "power"
+      ],
+      "additionalProperties": false
+    },
+    "requiredKnowledge": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 100
+    }
+  },
+  "required": [
+    "schooling",
+    "library",
+    "curveExponent",
+    "effects",
+    "requiredKnowledge"
+  ],
+  "additionalProperties": false,
+  "title": "Knowledge balance",
+  "description": "assets/defs/balance/knowledge.json: what builds Knowledge, and what it gives."
+}
