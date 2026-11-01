@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const MOVEMENT = ['Piétons', 'Voitures', 'Tous'];
-const DATA = ['Bien-être', 'Pollution', 'Congestion', 'Rayon des odeurs', 'Valeur du terrain'];
+const DATA = ['Bien-être', 'Pollution', 'Congestion', 'Rayon des odeurs', 'Valeur du terrain', 'Savoir'];
 
 async function openLandMenu(page: Page) {
   await page.getByRole('button', { name: 'Pas maintenant', exact: true }).click({ timeout: 500 }).catch(() => {});
