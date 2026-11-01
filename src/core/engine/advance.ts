@@ -23,6 +23,8 @@ import { advanceGatherings, gatheringBoundaries } from '../tourism/gatherings';
 import { progressTutorial } from '../progression/tutorial';
 import { progressVenueTutorials } from '../progression/venueTutorial';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { isIndustryType } from '../economy/productionTypes';
+import { knowledgeEffect } from '../services/knowledge';
 import { newJournalEntries } from '../politics/journal';
 import { advancePolitics, forfeitPoliticsDays, withPolitics } from '../politics/politics';
 
@@ -86,9 +88,10 @@ function replay(state: GameState, until: number): AdvanceResult {
     }
     const adapting = now < (current.adaptationUntil ?? 0);
     const ratio = adapting ? 1 : energy.economicRatio;
+    const industrySpeed = 1 + knowledgeEffect(current, 'production');
     if (ratio > 0) for (const b of current.buildings) {
       const running = b.queue.find(q => !q.done && q.startedAt !== null);
-      if (running?.startedAt != null) end = Math.min(end, now + Math.max(0, running.duration - (now - running.startedAt)) / ratio);
+      if (running?.startedAt != null) end = Math.min(end, now + Math.max(0, running.duration - (now - running.startedAt)) / (isIndustryType(b.type) ? ratio * industrySpeed : ratio));
       if (!idleShops.has(b.id)) for (const stack of b.stacks) if (stack.nextSaleAt !== null && stack.stock > 0) end = Math.min(end, now + Math.max(0, stack.nextSaleAt - now) / ratio);
     }
     for (const boundary of venueBoundaries(current, now, energy.supplied)) end = Math.min(end, boundary);
@@ -112,7 +115,7 @@ function replay(state: GameState, until: number): AdvanceResult {
     const coverage = serviceCoverage(current);
     const congestion = congestionStats(current, now);
     const homeRatios = new Map(current.buildings.filter(b => isHomeType(b.type)).map(b => [b.id, homeTaxMultiplier(current, b, { energy, coverage, poweredCasinos, congestion })]));
-    const produced = advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios, idleShops, congestion.filledJobs);
+    const produced = advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios, idleShops, congestion.filledJobs, industrySpeed);
     events.push(...produced.events);
     const gathered = advanceGatherings(advanceAttractions(advanceVenues(produced.state, now, end, energy.supplied), now, end), now, end);
     events.push(...gathered.events);

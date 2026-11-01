@@ -117,10 +117,11 @@ export function taxDue(building: Building): number {
   return Math.floor((building.taxCitizenMs * TAX.urbsPerCitizenPerHour) / TAX.hourMs);
 }
 
-export function advanceProduction(state: GameState, now: number, elapsedMs: number, economicRatio = 1, homeRatios: ReadonlyMap<number, number> = new Map(), idleShops: ReadonlySet<number> = new Set(), filledJobs: ReadonlyMap<number, number> = new Map()): { state: GameState; events: GameEvent[] } {
+export function advanceProduction(state: GameState, now: number, elapsedMs: number, economicRatio = 1, homeRatios: ReadonlyMap<number, number> = new Map(), idleShops: ReadonlySet<number> = new Set(), filledJobs: ReadonlyMap<number, number> = new Map(), industrySpeed = 1): { state: GameState; events: GameEvent[] } {
   const results = state.buildings.map((building) => {
     const idle = idleShops.has(building.id);
-    const delay = idle ? elapsedMs : elapsedMs * (1 - economicRatio);
+    const ratio = isIndustryType(building.type) ? economicRatio * industrySpeed : economicRatio;
+    const delay = idle ? elapsedMs : elapsedMs * (1 - ratio);
     const slowed = isIndustryType(building.type) || isShopType(building.type) ? {
       ...building,
       queue: building.queue.map(entry => entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + delay }),

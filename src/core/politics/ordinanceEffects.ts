@@ -2,6 +2,7 @@ import type { GameState } from '../engine/state';
 import type { OrdinanceEffect } from './ordinanceSchema';
 import { ordinanceById } from './ordinances';
 import { isPoliticsActive } from './politicsGate';
+import { knowledgeEffect } from '../services/knowledge';
 
 type EffectOfKind<Kind extends OrdinanceEffect['kind']> = Extract<OrdinanceEffect, { kind: Kind }>;
 
@@ -30,6 +31,6 @@ export const congestionReliefOf = (state: GameState): number => combined(effects
 
 export const energySavingOf = (state: GameState): number => combined(effectsOf(state, 'energySaving').map(effect => effect.demandReduction));
 
-export const officeYieldMultiplierOf = (state: GameState): number => product(effectsOf(state, 'officeRelief').map(effect => effect.yieldMultiplier));
+export const officeYieldMultiplierOf = (state: GameState): number => product(effectsOf(state, 'officeRelief').map(effect => effect.yieldMultiplier)) * (1 + knowledgeEffect(state, 'office'));
 
 export const esteemBonusOf = (state: GameState): number => sum(effectsOf(state, 'culturalFestival').map(effect => effect.esteemBonus));
