@@ -1,14 +1,17 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { FACILITIES, citizensOf, facilityCapacity, uncoveredReason, reachLoad, advance, isWithinReach, categoryCoverageRatio, createBuilding, dispatch, homeBenefits, missingServices, newGame, serviceCoverage, type Building, type Command, type GameState } from '../index';
+import { FACILITIES, KNOWLEDGE, citizensOf, facilityCapacity, uncoveredReason, reachLoad, advance, isWithinReach, categoryCoverageRatio, createBuilding, dispatch, homeBenefits, missingServices, newGame, serviceCoverage, type Building, type Command, type GameState } from '../index';
 import { ECOLOGY } from '../environment/ecology';
 
 const walkingEnabled = WALKING.enabled;
+const knowledgeEffects = { ...KNOWLEDGE.effects };
 beforeAll(() => {
   WALKING.enabled = false;
+  Object.assign(KNOWLEDGE.effects, { wellbeing: 0, tax: 0 });
 });
 afterAll(() => {
   WALKING.enabled = walkingEnabled;
+  Object.assign(KNOWLEDGE.effects, knowledgeEffects);
 });
 
 const H = ECOLOGY.hourMs;

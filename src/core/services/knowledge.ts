@@ -38,3 +38,16 @@ export function cityKnowledge(state: GameState): number | null {
   cityCache.set(state, result);
   return result;
 }
+
+// A concave rise: the share of an effect's maximum that a Knowledge from 0 to 100 gives.
+export function knowledgeCurve(value: number): number {
+  return 1 - (1 - Math.max(0, Math.min(100, value)) / 100) ** KNOWLEDGE.curveExponent;
+}
+
+export type KnowledgeEffectId = keyof typeof KNOWLEDGE.effects;
+
+// What the Knowledge of the city currently gives for an effect: its maximum times the curve, nothing in a city without Citizens.
+export function knowledgeEffect(state: GameState, effect: KnowledgeEffectId): number {
+  const knowledge = cityKnowledge(state);
+  return knowledge === null ? 0 : KNOWLEDGE.effects[effect] * knowledgeCurve(knowledge);
+}

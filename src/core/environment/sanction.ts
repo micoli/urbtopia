@@ -10,6 +10,7 @@ import { isHomeType } from '../buildings/buildingDefinitions';
 import { citizensOf } from '../buildings/city';
 import { TAX } from '../economy/economy';
 import { energySavingOf, taxMultiplierOf } from '../politics/ordinanceEffects';
+import { knowledgeEffect } from '../services/knowledge';
 
 export interface HomeSanction {
   factor: SanctionableFactorId | null;
@@ -55,7 +56,7 @@ function powerRatio(state: GameState, home: Building, context: NeedsContext): nu
 export function homeTaxMultiplier(state: GameState, home: Building, context: NeedsContext): number {
   const { energy, coverage, poweredCasinos, congestion } = context;
   const wellbeing = homeBenefits(state, home, energy.coalRates, coverage, poweredCasinos, congestion).wellbeing;
-  const ordinances = taxMultiplierOf(state);
+  const ordinances = taxMultiplierOf(state) * (1 + knowledgeEffect(state, 'tax'));
   if (difficultyOf(state) === 'cozy') return powerRatio(state, home, context) * wellbeingTaxFactor(wellbeing) * ordinances;
   return Math.max(1, wellbeingTaxFactor(wellbeing)) * homeSanction(state, home, context).multiplier * ordinances;
 }

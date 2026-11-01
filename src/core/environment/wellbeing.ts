@@ -14,6 +14,7 @@ import { poweredCasinoIds } from '../leisure/poweredCasinos';
 import type { Building, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { solidarityBonus } from '../economy/solidarity';
+import { knowledgeEffect } from '../services/knowledge';
 import { isWasteMissing } from '../waste/waste';
 import { greenBeltBonusOf } from '../politics/ordinanceEffects';
 import { incineratorPenaltyOf, odorPenaltyOf } from '../waste/wasteNuisance';
@@ -75,9 +76,10 @@ function computeHomeBenefits(state: GameState, home: Building, coalRates: Readon
   const gatheringPenalty = isAdapting(state) ? 0 : gatheringPenaltyOf(state, home, congestion);
   const walkingBonus = Math.max(0, Math.min(WELLBEING_LIMIT - withServices, Math.round(WALKING.wellbeingBonus * (congestion.homes.get(home.id)?.walkAccess ?? 0))));
   const beltBonus = green.wellbeing > 0 ? Math.max(0, Math.min(greenBeltBonusOf(state), WELLBEING_LIMIT - withServices - walkingBonus)) : 0;
-  const withoutSolidarity = withServices + walkingBonus + beltBonus - pollutionPenalty - odorPenalty - servicePenalty - congestionPenalty - gatheringPenalty;
+  const knowledgeBonus = Math.max(0, Math.min(knowledgeEffect(state, 'wellbeing'), WELLBEING_LIMIT - withServices - walkingBonus - beltBonus));
+  const withoutSolidarity = withServices + walkingBonus + beltBonus + knowledgeBonus - pollutionPenalty - odorPenalty - servicePenalty - congestionPenalty - gatheringPenalty;
   const solidarity = Math.min(solidarityBonus(state), WELLBEING_LIMIT - withoutSolidarity);
-  return { ...green, wellbeing: withoutSolidarity + solidarity, serviceBonus: withServices - green.wellbeing, pollutionPenalty, odorPenalty, servicePenalty, congestionPenalty, gatheringPenalty, walkingBonus, solidarityBonus: solidarity };
+  return { ...green, wellbeing: withoutSolidarity + solidarity, serviceBonus: withServices - green.wellbeing, pollutionPenalty, odorPenalty, servicePenalty, congestionPenalty, gatheringPenalty, walkingBonus, knowledgeBonus, solidarityBonus: solidarity };
 }
 
 export function cityBenefits(state: GameState, coalRates: ReadonlyMap<number, number> = energyStats(state).coalRates) {
