@@ -1,7 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
 import { COAL_CAPACITY, SANCTIONS, advance, createBuilding, difficultyOf, homeBenefits, homePower, homeSanction, homeTaxMultiplier, needsContext, newGame, sanctionAlertKey, sanctionedHomes, taxLostPerHour, citizensOf, TAX, wellbeingTaxFactor, type Building, type Difficulty, type GameState } from '../index';
-import { withAllServices } from '../engine/testSupport';
+import { withAllServices, withoutKnowledgeEffects } from '../engine/testSupport';
+
+withoutKnowledgeEffects();
 
 const walkingEnabled = WALKING.enabled;
 beforeAll(() => {

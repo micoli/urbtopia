@@ -23,13 +23,13 @@ const combined = (shares: readonly number[]): number => 1 - product(shares.map(s
 
 export const taxMultiplierOf = (state: GameState): number => product(effectsOf(state, 'taxMultiplier').map(effect => effect.multiplier));
 
-export const wasteReductionOf = (state: GameState): number => combined(effectsOf(state, 'wasteSorting').map(effect => effect.reduction));
+export const wasteReductionOf = (state: GameState): number => combined([...effectsOf(state, 'wasteSorting').map(effect => effect.reduction), knowledgeEffect(state, 'waste')]);
 
 export const greenBeltBonusOf = (state: GameState): number => sum(effectsOf(state, 'greenBelt').map(effect => effect.wellbeingBonus));
 
 export const congestionReliefOf = (state: GameState): number => combined(effectsOf(state, 'transitSubsidy').map(effect => effect.congestionRelief));
 
-export const energySavingOf = (state: GameState): number => combined(effectsOf(state, 'energySaving').map(effect => effect.demandReduction));
+export const energySavingOf = (state: GameState): number => combined([...effectsOf(state, 'energySaving').map(effect => effect.demandReduction), knowledgeEffect(state, 'power')]);
 
 export const officeYieldMultiplierOf = (state: GameState): number => product(effectsOf(state, 'officeRelief').map(effect => effect.yieldMultiplier)) * (1 + knowledgeEffect(state, 'office'));
 

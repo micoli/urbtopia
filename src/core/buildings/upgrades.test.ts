@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, footprintTiles, newGame, totalCitizens, utilityDemand, type Command, type GameState } from '../index';
-import { ALL_FACILITIES_DEMAND, withAllServices } from '../engine/testSupport';
+import { ALL_FACILITIES_DEMAND, withAllServices, withoutKnowledgeEffects } from '../engine/testSupport';
+
+withoutKnowledgeEffects();
 
 const T0 = 1_700_000_000_000;
 
