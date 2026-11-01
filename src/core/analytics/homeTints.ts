@@ -1,6 +1,7 @@
 import { footprintOf } from '../buildings/buildingSpecs';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { homeBenefits } from '../environment/wellbeing';
+import { homeKnowledge } from '../services/knowledge';
 import { serviceCoverage, transitReachLinks } from '../services/services';
 import { facilitiesOfCategory, type ServiceCategory } from '../services/facilities';
 import { isWasteCovered, wasteReport } from '../waste/waste';
@@ -47,5 +48,6 @@ export function homeTintsOf(state: GameState, layer: AnalyticsLayerId, category:
   const homes = state.buildings.filter(building => isHomeType(building.type));
   if (layer === 'data.coverage') return coverageTints(state, category, homes);
   if (layer === 'data.wellbeing') return homes.map(home => tintOf(home, 'wellbeing', Math.min(1, Math.max(0, homeBenefits(state, home).wellbeing / 100))));
+  if (layer === 'data.knowledge') return homes.map(home => tintOf(home, 'value', Math.min(1, Math.max(0, homeKnowledge(state, home) / 100))));
   return [];
 }

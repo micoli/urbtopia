@@ -1,4 +1,4 @@
-import { FACILITIES, citizensOf, facilityCapacity, facilityRadius, reachLoad, serviceCoverage, type Building, type FacilityType, isHomeType } from '../../core';
+import { FACILITIES, cityKnowledge, citizensOf, facilityCapacity, facilityRadius, reachLoad, serviceCoverage, type Building, type FacilityType, isHomeType } from '../../core';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { ReachToggle } from '../common/ReachToggle.tsx';
@@ -18,12 +18,14 @@ export function FacilityPanel({ building }: FacilityPanelProps) {
   const isWaste = FACILITIES[building.type].category === 'waste';
   const served = state.buildings.reduce((total, home) => total + (isHomeType(home.type) && coverage.get(home.id)?.has(building.type) ? citizensOf(home.tier) : 0), 0);
   const load = isWaste ? null : reachLoad(state, building);
+  const knowledge = FACILITIES[building.type].category === 'education' ? cityKnowledge(state) : null;
   return <DrawerPanel>
         <DrawerPanel.LabelValue label={t('facility.reach')} value={radius === null ? t('placement.cityWide') : `${2 * radius} × ${2 * radius}`}/>
         {radius !== null && <ReachToggle />}
         {isWaste
           ? <WasteCapacityRows facilityId={building.id}/>
           : <DrawerPanel.LabelValue label={t('facility.capacity')} value={`${capacity === null ? t('facility.unlimited') : capacity} · ${t('facility.served')}: ${served}`}/>}
+        {knowledge !== null && <DrawerPanel.LabelValue label={t('facility.knowledge')} value={Math.round(knowledge)}/>}
         {load && <DrawerPanel.LabelValue label={t('facility.inReach')} value={load.citizensInReach}/>}
         {load && load.unservedCitizens > 0 && <DrawerPanel.LabelValue tone="warn" label={t('facility.unserved')} value={`${load.unservedCitizens} (${load.unservedHomes})`}/>}
         {load && load.unservedCitizens > 0 && <BlockedReason reason={t('facility.overloadedHint')} />}

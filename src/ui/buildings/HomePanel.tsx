@@ -1,4 +1,4 @@
-import { energySavingOf, ECOLOGY, FACILITY_TYPES, casinosReaching, sportVenuesReaching, isSportVenueType, poweredCasinoIds, homePower, homeBenefits, missingServicesOf, serviceCoverage, transitReachLinks, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, difficultyOf, homeSanction, needsContext, isWasteMissing, isWastePowerReduced, wasteReport, type Building, type FacilityType } from '../../core';
+import { energySavingOf, homeKnowledge, ECOLOGY, FACILITY_TYPES, casinosReaching, sportVenuesReaching, isSportVenueType, poweredCasinoIds, homePower, homeBenefits, missingServicesOf, serviceCoverage, transitReachLinks, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, difficultyOf, homeSanction, needsContext, isWasteMissing, isWastePowerReduced, wasteReport, type Building, type FacilityType } from '../../core';
 import { t } from '../../i18n/t';
 import type { MessageKey } from '../../i18n/messages';
 import { gameStore } from '../../store/gameStore';
@@ -48,6 +48,8 @@ export function HomePanel({ building }: HomePanelProps) {
           <br/>
           {t('eco.wellbeing')}: {benefits.wellbeing.toFixed(1)}
       </>}/>
+
+      <DrawerPanel.LabelValue label={t('home.knowledge')} value={Math.round(homeKnowledge(state, building, coverage))}/>
 
       <DrawerPanel.LabelValue label={t('home.services')} value={<>{covered.length ? covered.map(type => coveredLabel(type)).join(', ') : t('home.servicesNone')}</>}/>
 

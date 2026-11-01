@@ -3,6 +3,7 @@ import type { AnalyticsLayerId } from './layers';
 import { pedestrianCrossingsField, sidewalkField } from './pedestrianFields';
 import { carsField, congestionField } from './roadFields';
 import { coverageField } from './coverageField';
+import { knowledgeField } from './knowledgeField';
 import { landValueField } from './landValueField';
 import { odorField } from './odorField';
 import { transitField } from './transitFields';
@@ -24,6 +25,7 @@ function fieldsOf(state: GameState, layer: AnalyticsLayerId, category: ServiceCa
     case 'data.odor': return [odorField(state)];
     case 'data.wellbeing': return [wellbeingField(state)];
     case 'data.landValue': return [landValueField(state)];
+    case 'data.knowledge': return [knowledgeField(state)];
     case 'data.congestion': return [congestionField(state)];
     case 'movement.cars': return [carsField(state)];
     case 'movement.bus': return [transitField(state, 'bus')];

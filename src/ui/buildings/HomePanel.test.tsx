@@ -88,3 +88,12 @@ describe('HomePanel Transit reach', () => {
     expect(renderTransit()).toContain(t('home.viaStation').replace('{station}', t('building.brtStation')));
   });
 });
+
+describe('HomePanel Knowledge', () => {
+  it.each(['en', 'fr'] as const)('shows the Knowledge of a Home covered by a School in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    const building = createBuilding(900, 'home', 56, 59, 0);
+    context.state = { ...newGame({ seed: 'home-panel', now: 0 }), adaptationUntil: 0, buildings: [building, createBuilding(901, 'school', 60, 59, 0)] };
+    expect(renderToStaticMarkup(<HomePanel building={building} />)).toContain(`${t('home.knowledge')}: 15`);
+  });
+});

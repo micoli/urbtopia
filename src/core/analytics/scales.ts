@@ -19,6 +19,7 @@ export const LAYER_SCALES: Partial<Record<AnalyticsLayerId, readonly LayerScale[
   'data.coverage': [{ ramp: 'coverage', max: 'discrete' }],
   'data.wellbeing': [{ ramp: 'wellbeing', max: 100 }],
   'data.landValue': [{ ramp: 'value', max: 100 }],
+  'data.knowledge': [{ ramp: 'value', max: 100 }],
   'data.pollution': [{ ramp: 'heat', max: ECOLOGY.coalWellbeingCap }],
   'data.odor': [{ ramp: 'odor', max: WASTE_FACILITIES.mound.odor?.malus ?? 1 }],
   'data.congestion': [{ ramp: 'saturation', max: CONGESTION.maxRatio * 100, suffix: '%' }],
