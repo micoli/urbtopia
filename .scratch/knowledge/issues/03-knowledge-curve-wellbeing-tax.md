@@ -1,6 +1,6 @@
 # 03 Effect curve, Well-being bonus and Tax
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 02
 
 Red first: `knowledgeEffect(cityKnowledge, max)` is 0 at 0 and null, `max` at 100, 70% of `max` at 50, monotonic. Then:
@@ -8,3 +8,7 @@ Red first: `knowledgeEffect(cityKnowledge, max)` is 0 at 0 and null, `max` at 10
 - Tax per Home rises up to 5% (check `wellbeingTaxFactor` callers so the Well-being path is not double-counted);
 - no Citizens -> no change.
 Existing wellbeing/tax tests must stay green.
+
+## Answer
+
+Done, see the commit of this ticket in the history (`git log --grep` on its title).

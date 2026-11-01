@@ -1,6 +1,6 @@
 # 02 Knowledge of a Home and of the city
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01
 
 New `src/core/services/knowledge.ts` (or `environment/`) + `assets/defs/balance/knowledge.json` + schema. Red first, table-driven:
@@ -10,3 +10,7 @@ New `src/core/services/knowledge.ts` (or `environment/`) + `assets/defs/balance/
 - a Home served only through Transit reach counts;
 - city Knowledge is Citizen-weighted (a Tier 8 Home weighs more than a Tier 1); no Homes -> null.
 Public interface: `homeKnowledge(state, home, coverage?)`, `cityKnowledge(state)`. Reuse the coverage passed around like `homeBenefits` and cache per state with a `WeakMap` as it does.
+
+## Answer
+
+Done, see the commit of this ticket in the history (`git log --grep` on its title).

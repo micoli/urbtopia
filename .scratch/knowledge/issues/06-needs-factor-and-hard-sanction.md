@@ -1,6 +1,6 @@
 # 06 Knowledge Need factor and Hard Sanction
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 02
 
 Red first:
@@ -9,3 +9,7 @@ Red first:
 - a Hard Home at Knowledge 25 loses Tax in proportion, floored at half; Knowledge >= 50 loses nothing; never removes Citizens;
 - suspended during the Adaptation period, including a Hard save made before this feature (fixture `save-v11.json` style);
 - Petitions/Objectives that read Need factors stay valid (add a Petition cause only if the existing mechanism does it automatically).
+
+## Answer
+
+Done, see the commit of this ticket in the history (`git log --grep` on its title).
