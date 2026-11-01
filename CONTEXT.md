@@ -237,11 +237,11 @@ One of the five stages of the Needs pyramid, from the base up: Vital, Safety, Be
 _Avoid_: Maslow level, layer, tier (already Tier)
 
 **Difficulty**:
-The setting of a city that decides which Need factors cause a Sanction: Cozy (none, the default, and the one of every city saved before Difficulty existed), Easy (Safety and Health services), Medium (Easy plus Pollution and Congestion), Hard (Medium plus Climate). It can be changed at any time.
+The setting of a city that decides which Need factors cause a Sanction: Cozy (none, the default, and the one of every city saved before Difficulty existed), Easy (Safety and Health services), Medium (Easy plus Pollution and Congestion), Hard (Medium plus Climate and Knowledge). It can be changed at any time.
 _Avoid_: Level (already Tier and Need level), mode
 
 **Sanction**:
-The reduction of a Home's Tax caused by its weakest unsatisfied Need factor among those its city's Difficulty makes sanctionable. It grows continuously with the lack of satisfaction, down to a floor of half the Tax, and never takes Citizens away. Computed per Home. Under Hard, Climate sanctions only the Homes without a Green space in reach. The higher Need levels never cause a Sanction: they only add or withdraw a Well-being bonus. Under Cozy there is no Sanction and no warning of one, but a power shortage still lowers the Tax of the Homes it leaves unpowered.
+The reduction of a Home's Tax caused by its weakest unsatisfied Need factor among those its city's Difficulty makes sanctionable. It grows continuously with the lack of satisfaction, down to a floor of half the Tax, and never takes Citizens away. Computed per Home. Under Hard, Climate sanctions only the Homes without a Green space in reach, and Knowledge sanctions only the Homes whose Knowledge is below 50, in proportion to the shortfall; during an Adaptation period the Knowledge Sanction does not apply. The higher Need levels never cause a Sanction: they only add or withdraw a Well-being bonus. Under Cozy there is no Sanction and no warning of one, but a power shortage still lowers the Tax of the Homes it leaves unpowered.
 _Avoid_: Penalty (already used for Well-being malus), fine, malus
 
 **Needs pyramid**:
@@ -251,6 +251,18 @@ _Avoid_: Maslow pyramid, happiness chart
 **Worship place**:
 A Public facility of the Worship Service category (church, synagogue, mosque, Buddhist temple). Optional like Culture: its absence never lowers Well-being or blocks a Tier upgrade, and different Worship places stack their Well-being. It feeds the Worship factor of the Fulfilment Need level.
 _Avoid_: Religious building, temple (one of the four)
+
+**Knowledge**:
+A measure from 0 to 100 of what the Citizens of a Home know, built from its Schooling and from the Libraries that cover it, with diminishing returns. The city's Knowledge is the mean of the Homes' Knowledge weighted by Citizens. It rewards on every Difficulty, and under Hard a Home whose Knowledge is below 50 is sanctioned, the 4 degrees of Schooling being enough to reach it without a Library. The Knowledge factor adds no Well-being malus when low. Modelled per Home in aggregate, never per individual Citizen.
+_Avoid_: Intelligence, IQ, literacy, culture (already a Service category), skill
+
+**Schooling**:
+The share of Knowledge that comes from the Schools covering a Home: each distinct degree (School, Middle school, High school, University) adds its part, and several facilities of the same degree count once.
+_Avoid_: Education level, diploma
+
+**Library**:
+A Public facility of the Education Service category with five Tiers. Never required by itself: its absence never lowers Well-being or blocks a Tier upgrade, and it does not replace the School required for a Home to reach Tier 3. Under Hard, the Knowledge it gives helps a Home escape the Sanction of Knowledge. Its Tier raises its Citizen capacity, its reach and its share of Knowledge, and its footprint grows with its Tier.
+_Avoid_: Media library, bookshop, archive
 
 **Public facility**:
 A building that serves Citizens with a public service in a Service category, at no operating cost except the Waste facilities (Mound, Incinerator, Recycling plant), which charge for the Waste they process. Its Tier raises its Citizen capacity; the Town hall has no Tier.
