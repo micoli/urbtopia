@@ -36,8 +36,8 @@ A new Arena on the shore: Pirate ships perform Shows in front of Stands, on wate
 | Size | Seats | Cost |
 | --- | --- | --- |
 | 3x1 | 60 | 300 Urbs |
-| 4x2 | 200 | 1,000 Urbs |
-| 6x3 | 500 | 2,500 Urbs |
+| 4x1 | 200 | 1,000 Urbs |
+| 5x1 | 500 | 2,500 Urbs |
 
 - Stands belong to the nearest Pirate cove when placed, the lowest id on a tie, and this link is saved. Placing a new Pirate cove never moves them.
 - A Pirate cove with Pirate ships or Stands cannot be removed. Removing a Water tile that would cut Stands off their Pirate cove is refused.

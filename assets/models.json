@@ -4906,24 +4906,24 @@
     "scale": 1,
     "rotationOffset": 180
   },
-  "buildings-stands-4x2": {
-    "file": "buildings/stands-4x2",
+  "buildings-stands-4x1": {
+    "file": "buildings/stands-4x1",
     "source": "managed",
     "license": "Own work",
     "footprint": [
       4,
-      2
+      1
     ],
     "scale": 1,
     "rotationOffset": 180
   },
-  "buildings-stands-6x3": {
-    "file": "buildings/stands-6x3",
+  "buildings-stands-5x1": {
+    "file": "buildings/stands-5x1",
     "source": "managed",
     "license": "Own work",
     "footprint": [
-      6,
-      3
+      5,
+      1
     ],
     "scale": 1,
     "rotationOffset": 180
