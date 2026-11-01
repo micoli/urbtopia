@@ -1,4 +1,4 @@
-import { FACILITIES, citizensOf, facilityCapacity, reachLoad, serviceCoverage, type Building, type FacilityType, isHomeType } from '../../core';
+import { FACILITIES, citizensOf, facilityCapacity, facilityRadius, reachLoad, serviceCoverage, type Building, type FacilityType, isHomeType } from '../../core';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { ReachToggle } from '../common/ReachToggle.tsx';
@@ -12,7 +12,7 @@ interface FacilityPanelProps {
 
 export function FacilityPanel({ building }: FacilityPanelProps) {
   const state = useGame(s => s.state);
-  const { radius } = FACILITIES[building.type];
+  const radius = facilityRadius(building.type, building.tier);
   const capacity = facilityCapacity(building.type, building.tier);
   const coverage = serviceCoverage(state);
   const isWaste = FACILITIES[building.type].category === 'waste';

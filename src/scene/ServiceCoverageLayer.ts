@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { coveredHomeIds, FACILITIES, footprintOf, isHomeInReach, isHomeType, transitReachLinks, wasteReport, type Building, type GameState, type FacilityType } from '../core';
+import { coveredHomeIds, facilityRadius, footprintOf, isHomeInReach, isHomeType, transitReachLinks, wasteReport, type Building, type GameState, type FacilityType } from '../core';
 
 const COLORS = { covered: 0x35d07f, uncovered: 0xe5484d, transit: 0x2ec4d6, facility: 0x4da3ff } as const;
 
@@ -48,10 +48,10 @@ export class ServiceCoverageLayer {
     const coveredIds = coveredHomeIds(state, type);
     const covered: Building[] = [], viaTransit: Building[] = [], uncovered: Building[] = [];
     const focus = facilityId === null ? null : state.buildings.find(building => building.id === facilityId) ?? null;
-    const radius = FACILITIES[type].radius;
+    const focusRadius = focus ? facilityRadius(type, focus.tier) : null;
     for (const home of state.buildings) {
       if (!isHomeType(home.type)) continue;
-      if (focus && radius !== null && !isHomeInReach(focus, home, radius)) continue;
+      if (focus && focusRadius !== null && !isHomeInReach(focus, home, focusRadius)) continue;
       if (!coveredIds.has(home.id)) uncovered.push(home);
       else if (transitStamp.get(home.id)?.has(type)) viaTransit.push(home);
       else covered.push(home);

@@ -155,7 +155,7 @@ export type { SceneryPiece, SceneryDetail } from './environment/wildScenery';
 export { NATURE_FAMILIES, NATURE_MODELS, NATURE_TYPES, natureModelOf, greenProfileOf } from './environment/nature';
 export type { NatureType, NatureFamily } from './environment/nature';
 
-export { FACILITIES, FACILITY_TYPES, facilityCapacity, isWithinReach, SERVICE_CATEGORIES, SERVICES, REQUIRED_SERVICES, facilitiesOfCategory, isFacilityType, requiredServices } from './services/facilities';
+export { FACILITIES, FACILITY_TYPES, facilityCapacity, facilityRadius, isWithinReach, SERVICE_CATEGORIES, SERVICES, REQUIRED_SERVICES, facilitiesOfCategory, isFacilityType, requiredServices } from './services/facilities';
 export type { FacilitySpec, FacilityType, ServiceCategory, ServiceKey } from './services/facilities';
 export { isHomeInReach, categoryCoverageRatio, coveredCategories, coveredHomeIds, homesLackingRequiredServices, isServiceCovered, missingServices, missingServicesOf, previewFacilityCoverage, serviceCoverage, transitReachLinks } from './services/services';
 export { uncoveredReason, reachLoad } from './services/services';

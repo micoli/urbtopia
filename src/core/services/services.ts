@@ -1,7 +1,7 @@
 import { createBuilding } from '../buildings/buildingSpecs';
 import { citizensOf } from '../buildings/city';
 import { centerOf, distance } from '../environment/ecology';
-import { FACILITIES, FACILITY_TYPES, facilityCapacity, SERVICE_CATEGORIES, facilitiesOfCategory, isWithinReach, requiredServices, type FacilityType, type ServiceCategory, type ServiceKey } from './facilities';
+import { FACILITIES, FACILITY_TYPES, facilityCapacity, facilityRadius, SERVICE_CATEGORIES, facilitiesOfCategory, isWithinReach, requiredServices, type FacilityType, type ServiceCategory, type ServiceKey } from './facilities';
 import type { Building, GameState, Rotation } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { isWasteCovered, isWasteMissing, wasteCauseOf, wasteReport, type WasteCause } from '../waste/waste';
@@ -55,22 +55,22 @@ interface TypeCoverage {
 }
 
 function coveredHomes(type: FacilityType, facilities: Building[], homes: Building[], transit: TransitReach | null): TypeCoverage {
-  const { radius } = FACILITIES[type];
+  const reachOf = (facility: Building) => facilityRadius(type, facility.tier)!;
   const covered = new Set<number>();
   const links = new Map<number, TransitLink & { facilityId: number }>();
-  if (radius === null) {
+  if (FACILITIES[type].radius === null) {
     const nearest = new Map(homes.map(home => [home.id, Math.min(...facilities.map(facility => distance(facility, home)))]));
     serve(covered, homes, facilities.reduce((total, facility) => total + capacityOf(facility), 0), nearest);
     return { covered, links };
   }
   const remaining = new Map<Building, number>();
   for (const facility of facilities) {
-    const reachable = homes.filter(home => isHomeInReach(facility, home, radius));
+    const reachable = homes.filter(home => isHomeInReach(facility, home, reachOf(facility)));
     remaining.set(facility, serve(covered, reachable, capacityOf(facility), new Map(reachable.map(home => [home.id, distance(facility, home)]))));
   }
   if (!transit) return { covered, links };
   for (const facility of facilities) {
-    const beyond = homes.filter(home => !covered.has(home.id) && !isHomeInReach(facility, home, radius));
+    const beyond = homes.filter(home => !covered.has(home.id) && !isHomeInReach(facility, home, reachOf(facility)));
     const reached = transit.linksOf(facility, beyond);
     const candidates = beyond.filter(home => reached.has(home.id));
     serve(covered, candidates, remaining.get(facility) ?? 0, new Map(candidates.map(home => [home.id, reached.get(home.id)!.minutes])), home => links.set(home.id, { ...reached.get(home.id)!, facilityId: facility.id }));
@@ -115,8 +115,7 @@ export function uncoveredReason(state: GameState, home: Building, type: ServiceK
   if (type === 'waste') return wasteCauseOf(wasteReport(state), home.id) ?? 'none';
   const facilities = state.buildings.filter(building => building.type === type);
   if (!facilities.length) return 'none';
-  const { radius } = FACILITIES[type];
-  if (radius !== null && !facilities.some(facility => isHomeInReach(facility, home, radius))) return 'outOfReach';
+  if (FACILITIES[type].radius !== null && !facilities.some(facility => isHomeInReach(facility, home, facilityRadius(type, facility.tier)!))) return 'outOfReach';
   return 'capacityFull';
 }
 
@@ -128,7 +127,7 @@ export interface ReachLoad {
 
 // Homes inside the reach of a non-Waste facility, and how many of them no facility of its type serves.
 export function reachLoad(state: GameState, facility: Building): ReachLoad | null {
-  const { radius } = FACILITIES[facility.type as FacilityType];
+  const radius = facilityRadius(facility.type as FacilityType, facility.tier);
   if (radius === null) return null;
   const coverage = serviceCoverage(state);
   const inReach = state.buildings.filter(home => isHomeType(home.type) && isHomeInReach(facility, home, radius));

@@ -167,9 +167,11 @@ const facilityBuilding = z.strictObject({
   water: count,
   // Only one can be built.
   unique: z.literal(true).optional(),
+  // It serves Homes without standing for its Service category: a Home it covers is not covered by the category.
+  supplementary: z.literal(true).optional(),
   // Waste facilities only: the Waste units processed per day replace the Citizen capacity.
   waste: wasteTraits.optional(),
-  tiers: tiersOf({ ...homeLook, capacity: z.int().min(1), power: count }, ['model', 'footprint']),
+  tiers: tiersOf({ ...homeLook, capacity: z.int().min(1), power: count, radius: z.int().min(1) }, ['model', 'footprint']),
 });
 
 // The Casino: Stake steps, the Tier each Minigame opens at, and per Tier its reach, Well-being bonus, highest Stake, power and blockmatch level.

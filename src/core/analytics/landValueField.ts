@@ -2,7 +2,7 @@ import { createBuilding } from '../buildings/buildingSpecs';
 import { ECOLOGY, centerOf, greenBenefits } from '../environment/ecology';
 import { leisureRetention } from '../leisure/leisure';
 import { poweredCasinoIds } from '../leisure/poweredCasinos';
-import { FACILITIES, SERVICE_CATEGORIES, isWithinReach, type FacilityType } from '../services/facilities';
+import { FACILITIES, SERVICE_CATEGORIES, facilityRadius, isWithinReach, type FacilityType } from '../services/facilities';
 import { congestionStats } from '../traffic/congestion';
 import { CONGESTION } from '../traffic/roadTier';
 import type { Building, GameState } from '../engine/state';
@@ -50,7 +50,7 @@ function servicesShare(facilities: ReadonlyMap<string, readonly Building[]>, hom
   for (const category of SERVICE_CATEGORIES) {
     const inCategory = facilities.get(category) ?? [];
     const covers = inCategory.some(facility => {
-      const { radius } = FACILITIES[facility.type as FacilityType];
+      const radius = facilityRadius(facility.type as FacilityType, facility.tier);
       if (radius === null) return true;
       const from = centerOf(facility);
       return isWithinReach(centre.x - from.x, centre.y - from.y, radius);

@@ -15,14 +15,15 @@ export interface FacilitySpec {
   power: number;
   water: number;
   unique?: boolean;
+  supplementary?: boolean;
 }
 
 // Tier 1 of each Public facility; a facility without a radius covers the whole city, one without capacity serves everyone.
 export const FACILITIES = Object.fromEntries(
-  BUILDING_ENTRIES.filter(({ kind }) => kind === 'facility').map(({ id, category, unlockCitizens, cost, radius, footprint, power, water, unique }): [string, FacilitySpec] => {
+  BUILDING_ENTRIES.filter(({ kind }) => kind === 'facility').map(({ id, category, unlockCitizens, cost, radius, footprint, power, water, unique, supplementary }): [string, FacilitySpec] => {
     const [width, depth] = footprint!;
     const capacity = tiersOf(id)[0]?.capacity ?? null;
-    return [id, { category: category!, unlockCitizens: unlockCitizens!, cost: cost!, radius: radius ?? null, capacity, footprint: { width, depth }, power: power!, water: water!, ...(unique ? { unique } : {}) }];
+    return [id, { category: category!, unlockCitizens: unlockCitizens!, cost: cost!, radius: radius ?? null, capacity, footprint: { width, depth }, power: power!, water: water!, ...(unique ? { unique } : {}), ...(supplementary ? { supplementary } : {}) }];
   }),
 ) as Record<FacilityType, FacilitySpec>;
 
@@ -33,7 +34,7 @@ export function isFacilityType(type: string): type is FacilityType {
 }
 
 export function facilitiesOfCategory(category: ServiceCategory): FacilityType[] {
-  return FACILITY_TYPES.filter(type => FACILITIES[type].category === category);
+  return FACILITY_TYPES.filter(type => FACILITIES[type].category === category && !FACILITIES[type].supplementary);
 }
 
 // What a Home can lack: a Public facility, or Waste coverage, which any of the three Waste facilities gives.
@@ -65,4 +66,10 @@ export function isWithinReach(dx: number, dy: number, radius: number): boolean {
 export function facilityCapacity(type: FacilityType, tier: number): number | null {
   const tiers = tiersOf(type);
   return (tiers[tier - 1] ?? tiers[0])?.capacity ?? null;
+}
+
+// The reach of a facility at a Tier: its own when the Tier sets one, else the radius of the building.
+export function facilityRadius(type: FacilityType, tier: number): number | null {
+  const tiers = tiersOf(type);
+  return (tiers[tier - 1] ?? tiers[0])?.radius ?? FACILITIES[type].radius;
 }

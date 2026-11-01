@@ -1,0 +1,64 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "facility",
+  "section": "build.publicFacilities",
+  "cost": 400,
+  "unlockCitizens": 40,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt", "pedestrianWay"],
+  "name": {
+    "en": "Library",
+    "fr": "Bibliothèque"
+  },
+  "description": {
+    "en": "Spreads Knowledge among the nearby Citizens, which makes the whole city work better. It never replaces the School. {reach, select, city {Covers the whole city} other {Square reach of {side} tiles}}, {limit, select, unlimited {unlimited capacity} other {capacity {tier1Capacity} Citizens, up to {maxTierCapacity} at Tier {tierCount}}}; demand {power} power{hasWater, select, yes { and {water} water} other {}}; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs, no operating cost.",
+    "fr": "Diffuse le Savoir parmi les citoyens proches, ce qui fait mieux fonctionner toute la ville. Elle ne remplace jamais l’école. {reach, select, city {Couvre toute la ville} other {Portée carrée de {side} cases}}, {limit, select, unlimited {capacité illimitée} other {capacité {tier1Capacity} citoyens, jusqu’à {maxTierCapacity} au niveau {tierCount}}}; consomme {power} d’électricité{hasWater, select, yes { et {water} d’eau} other {}}; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs, sans coût de fonctionnement."
+  },
+  "radius": 10,
+  "tiers": [
+    {
+      "model": "buildings-school-2x2",
+      "footprint": [2, 2],
+      "capacity": 300,
+      "radius": 10
+    },
+    {
+      "capacity": 500,
+      "radius": 12,
+      "upgradeCost": {
+        "urbs": 240,
+        "goods": {}
+      }
+    },
+    {
+      "footprint": [3, 2],
+      "capacity": 800,
+      "radius": 14,
+      "upgradeCost": {
+        "urbs": 480,
+        "goods": {}
+      }
+    },
+    {
+      "capacity": 1200,
+      "radius": 16,
+      "upgradeCost": {
+        "urbs": 960,
+        "goods": {}
+      }
+    },
+    {
+      "footprint": [4, 2],
+      "capacity": 1800,
+      "radius": 18,
+      "upgradeCost": {
+        "urbs": 1600,
+        "goods": {}
+      }
+    }
+  ],
+  "category": "education",
+  "power": 2,
+  "water": 0,
+  "supplementary": true
+}

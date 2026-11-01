@@ -3,7 +3,7 @@ import { centerOf } from '../environment/ecology';
 import { energyStats } from '../environment/energy';
 import { homeBenefits } from '../environment/wellbeing';
 import { poweredCasinoIds } from '../leisure/poweredCasinos';
-import { FACILITIES, FACILITY_TYPES, isWithinReach, type FacilityType } from '../services/facilities';
+import { FACILITIES, FACILITY_TYPES, facilityRadius, isWithinReach, type FacilityType } from '../services/facilities';
 import { serviceCoverage } from '../services/services';
 import { congestionStats } from '../traffic/congestion';
 import type { Building, GameState } from '../engine/state';
@@ -27,7 +27,7 @@ export function wellbeingField(state: GameState): TileField {
   const reaching = (x: number, y: number): Set<FacilityType> => {
     const types = new Set<FacilityType>();
     for (const facility of facilities) {
-      const { radius } = FACILITIES[facility.type as FacilityType];
+      const radius = facilityRadius(facility.type as FacilityType, facility.tier);
       const from = centerOf(facility as Building);
       if (radius === null || isWithinReach(x + 0.5 - from.x, y + 0.5 - from.y, radius)) types.add(facility.type as FacilityType);
     }

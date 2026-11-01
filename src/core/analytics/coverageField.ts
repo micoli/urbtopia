@@ -1,5 +1,5 @@
 import { centerOf } from '../environment/ecology';
-import { FACILITIES, facilitiesOfCategory, isWithinReach, type ServiceCategory } from '../services/facilities';
+import { facilitiesOfCategory, facilityRadius, isWithinReach, type FacilityType, type ServiceCategory } from '../services/facilities';
 import type { Building, GameState } from '../engine/state';
 import { GAME_CONFIG } from '../engine/config';
 import { MAP_TILES, type TileField } from './tileField';
@@ -20,7 +20,7 @@ export function coverageField(state: GameState, category: ServiceCategory): Tile
   const values = new Float32Array(MAP_TILES * MAP_TILES).fill(NaN);
   const side = GAME_CONFIG.parcelSizeInTiles;
   const reaches = (facility: Building, x: number, y: number) => {
-    const { radius } = FACILITIES[facility.type as keyof typeof FACILITIES];
+    const radius = facilityRadius(facility.type as FacilityType, facility.tier);
     if (radius === null) return true;
     const from = centerOf(facility);
     return isWithinReach(x + 0.5 - from.x, y + 0.5 - from.y, radius);

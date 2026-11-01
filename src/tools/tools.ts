@@ -16,6 +16,7 @@ import {
   validFronts,
   previewCommand,
   FACILITIES,
+  facilityRadius,
   footprintOf,
   footprintTiles,
   frontAccessModes,
@@ -256,7 +257,7 @@ function reachTilesOf(building: Building): Coord[] {
   if (building.type === 'casino') return rangeTiles(building.type, casinoRadius(building.tier), building, building.rotation, building.tier);
   if (isSportVenueType(building.type)) return rangeTiles(building.type, SPORT_VENUES[building.type].radius, building, building.rotation);
   if (!isFacilityType(building.type)) return [];
-  return rangeTiles(building.type, FACILITIES[building.type].radius, building, building.rotation);
+  return rangeTiles(building.type, facilityRadius(building.type, building.tier), building, building.rotation, building.tier);
 }
 
 function rangeTiles(type: BuildingType, radius: number | null, tile: Coord, rotation: Rotation, tier = 1): Coord[] {
