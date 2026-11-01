@@ -1,4 +1,4 @@
-import { FIXTURE_IDS, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, isAttractionType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { FIXTURE_IDS, PIRATE_SHOW_TITLES, isCoveBoatFamily, footprintTiles, isSeaSceneryType, isStandsType, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, sellsTicketsType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -48,10 +48,12 @@ function isStack(value: unknown): boolean {
   );
 }
 
+const isPirateShowTitleOrNone = (value: unknown): boolean => value === undefined || (PIRATE_SHOW_TITLES as readonly unknown[]).includes(value);
+
 function isGatheringData(value: unknown): boolean {
   return (
     isRecord(value) &&
-    (value.kind === 'show' || value.kind === 'match') &&
+    (value.kind === 'show' || value.kind === 'match' || value.kind === 'meeting') &&
     isNumber(value.startsAt) &&
     isNumber(value.endsAt) &&
     value.endsAt > (value.startsAt as number) &&
@@ -62,7 +64,8 @@ function isGatheringData(value: unknown): boolean {
     isNonNegative(value.revenue) &&
     isNumber(value.quality) &&
     value.quality >= 0 &&
-    value.quality <= 1
+    value.quality <= 1 &&
+    isPirateShowTitleOrNone(value.title)
   );
 }
 
@@ -119,7 +122,7 @@ function isAttractionData(value: unknown): boolean {
     isNonNegative(value.takings) &&
     (value.ticket === undefined || isInt(value.ticket, 0, TICKETS.length - 1)) &&
     (value.cooldownUntil === undefined || isNumber(value.cooldownUntil)) &&
-    (value.boostUntil === undefined || isNumber(value.boostUntil)) &&
+    (value.nextMatchBoost === undefined || typeof value.nextMatchBoost === 'boolean') &&
     (value.meetingAt === undefined || isNumber(value.meetingAt)) &&
     (value.shows === undefined || isInt(value.shows, 0)) &&
     (value.gathering === undefined || isGatheringData(value.gathering)) &&
@@ -130,12 +133,13 @@ function isAttractionData(value: unknown): boolean {
 function isGatheringResult(value: unknown): boolean {
   return (
     isRecord(value) &&
-    (value.kind === 'show' || value.kind === 'match') &&
+    (value.kind === 'show' || value.kind === 'match' || value.kind === 'meeting') &&
     isNumber(value.at) &&
     isNonNegative(value.crowd) &&
     isNonNegative(value.revenue) &&
     isNonNegative(value.cost) &&
-    (value.artist === undefined || typeof value.artist === 'string')
+    (value.artist === undefined || typeof value.artist === 'string') &&
+    isPirateShowTitleOrNone(value.title)
   );
 }
 
@@ -188,8 +192,9 @@ function isBuilding(value: unknown): boolean {
     (value.colorVariant === undefined || isColorAccepted(value.type, value.colorVariant)) &&
     (value.venue === undefined || (typeof value.type === 'string' && isVenueType(value.type) && isVenueData(value.venue))) &&
     (value.club === undefined || (typeof value.type === 'string' && hasClub(value.type) && isClubData(value.club))) &&
-    (value.attraction === undefined || (typeof value.type === 'string' && isAttractionType(value.type) && isAttractionData(value.attraction))) &&
+    (value.attraction === undefined || (typeof value.type === 'string' && sellsTicketsType(value.type) && isAttractionData(value.attraction))) &&
     (value.name === undefined || (typeof value.type === 'string' && isTransitStopType(value.type) && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= STOP_NAME_MAX_LENGTH)) &&
+    (value.coveId === undefined || (typeof value.type === 'string' && isStandsType(value.type) && isInt(value.coveId, 0))) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&
     (value.storedEnergy === undefined || (value.type === 'battery' && isNonNegative(value.storedEnergy) && value.storedEnergy <= 24))
   );
@@ -431,9 +436,11 @@ function invariantFailure(state: GameState): string | null {
         field(`bridges[${index}]: crosses a tile that is not water`, () => keys.every((key) => waterKeys.has(key))),
       ];
     }),
+    ...state.buildings.filter((building) => isStandsType(building.type)).map((stands) => field(`buildings[${stands.id}]: Stands without a Pirate cove`, () => state.buildings.some((b) => b.id === stands.coveId && b.type === 'pirateCove'))),
+    ...state.buildings.filter((building) => isSeaSceneryType(building.type)).map((scenery) => field(`buildings[${scenery.id}]: scenery off the water`, () => footprintTiles(scenery).every((tile) => waterKeys.has(tileKey(tile))))),
     ...(state.boats ?? []).flatMap((boat, index) => [
       field(`boats[${index}]: not on a water tile`, () => waterKeys.has(tileKey(boat))),
-      field(`boats[${index}]: its marina does not exist`, () => state.buildings.some((b) => b.id === boat.marinaId && b.type === 'marina')),
+      field(`boats[${index}]: its marina or Pirate cove does not exist`, () => state.buildings.some((b) => b.id === boat.marinaId && b.type === (isCoveBoatFamily(boat.family) ? 'pirateCove' : 'marina'))),
     ]),
     field('boats: two on one tile', () => !hasDuplicates((state.boats ?? []).map(tileKey))),
     ...(state.busLines ?? []).map((line, index) => field(`busLines[${index}]: a stop is unknown or not a bus stop or hub`, () => line.stops.every((id) => isStopOfKind(state, id, ['busStop', 'transitHub'])))),

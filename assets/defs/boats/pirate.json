@@ -1,0 +1,14 @@
+{
+  "$schema": "../schemas/boat.schema.json",
+  "kind": "boat",
+  "family": "pirate",
+  "model": "vehicles-pirate-ship",
+  "cost": 5000,
+  "unlockCitizens": 800,
+  "name": {
+    "en": "Pirate ship",
+    "fr": "Navire pirate"
+  },
+  "showBoost": 0.15,
+  "showCost": 150
+}

@@ -1,5 +1,6 @@
 import { memo, useRef } from 'react';
 import type { GatheringPhase } from '../../core';
+import type { GatheringData } from '../../core/engine/state';
 import { t } from '../../i18n/t';
 import { uiStore } from '../../store/uiStore';
 import { Icon } from '../common/Icon';
@@ -11,7 +12,7 @@ export interface GatheringBadgeSpec {
   id: number;
   worldX: number;
   worldZ: number;
-  kind: 'show' | 'match';
+  kind: GatheringData['kind'];
   phase: GatheringPhase;
   time: string;
 }

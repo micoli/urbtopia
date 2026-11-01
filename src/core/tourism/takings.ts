@@ -2,7 +2,7 @@ import type { CommandOutcome } from '../engine/commands';
 import type { Building, GameState } from '../engine/state';
 import { CLUB } from '../clubs/club';
 import { cityAttractiveness } from '../venues/hotel';
-import { TOURISM, attractionPowerOf, isAttraction, spendingFactor } from './tourists';
+import { TOURISM, attractionPowerOf, isAttraction, sellsTickets, spendingFactor } from './tourists';
 
 export const TICKETS = [
   { price: 4, draw: 1 },
@@ -41,8 +41,7 @@ export function advanceAttractions(state: GameState, from: number, to: number): 
   const buildings = state.buildings.map(building => {
     if (!isAttraction(building)) return building;
     const held = takingsOf(building);
-    const boosted = Math.max(0, Math.min(to, building.attraction?.boostUntil ?? 0) - from) / (to - from);
-    const rate = earningsPerHour(building, attractiveness, spending) * (1 + (TOURISM.championshipBoost - 1) * boosted);
+    const rate = earningsPerHour(building, attractiveness, spending);
     const takings = Math.max(held, Math.min(attractionTakingsCapOf(building), held + rate * hours));
     if (takings === held && building.attraction) return building;
     return { ...building, attraction: { ...building.attraction, takings } };
@@ -53,7 +52,7 @@ export function advanceAttractions(state: GameState, from: number, to: number): 
 export function setTicket(state: GameState, buildingId: number, level: number): CommandOutcome {
   const building = state.buildings.find(candidate => candidate.id === buildingId);
   if (!building) return { key: 'error.unknownBuilding' };
-  if (!isAttraction(building)) return { key: 'error.unknownCommand' };
+  if (!sellsTickets(building)) return { key: 'error.unknownCommand' };
   if (!Number.isInteger(level) || level < 0 || level >= TICKETS.length) return { key: 'error.invalidPrice' };
   const attraction = { takings: takingsOf(building), ...building.attraction, ticket: level };
   return { state: { ...state, buildings: state.buildings.map(candidate => (candidate === building ? { ...building, attraction } : candidate)) }, events: [] };

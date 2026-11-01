@@ -114,7 +114,7 @@ export class GameScene {
   private streetView: StreetViewController;
   private latest: GameState | null = null;
   private currentBuildings: readonly Building[] = [];
-  private modelHeights = new Map<string, number>();
+  private modelBoxes = new Map<string, THREE.Box3>();
   private syncing = false;
   private frameHandle = 0;
   private paused = false;
@@ -284,6 +284,7 @@ export class GameScene {
   }
 
   setEcologicalSelection(id: number | null): void {
+    if (this.selectedId === id) return;
     this.selectedId = id;
     if (this.ecologicalState) this.ecologyLayer.sync(this.ecologicalState,id);
   }
@@ -475,9 +476,7 @@ export class GameScene {
 
   arrowAnchorOf(building: Building): { x: number; y: number; z: number } {
     const model = modelOfBuilding(building);
-    const topY = facilityFootprint(building) === null && this.library.has(model)
-      ? new THREE.Box3().setFromObject(this.library.get(model)).applyMatrix4(fitMatrixOf(model)).max.y
-      : 0;
+    const topY = facilityFootprint(building) === null && this.library.has(model) ? this.fittedBox(model).max.y : 0;
     const tiles = footprintTiles(building);
     return {
       x: tiles.reduce((sum, tile) => sum + tile.x + 0.5, 0) / tiles.length,
@@ -489,7 +488,7 @@ export class GameScene {
   drawnExtentOf(building: Building): DrawnExtent | null {
     const model = modelOfBuilding(building);
     if (facilityFootprint(building) !== null || !this.library.has(model)) return null;
-    const box = new THREE.Box3().setFromObject(this.library.get(model)).applyMatrix4(fitMatrixOf(model));
+    const box = this.fittedBox(model);
     const angle = (building.rotation * Math.PI) / 2;
     const centerX = (box.min.x + box.max.x) / 2;
     const centerZ = (box.min.z + box.max.z) / 2;
@@ -506,17 +505,20 @@ export class GameScene {
     const model = modelOfBuilding(building);
     const footprint = facilityFootprint(building);
     if (footprint === null || !this.library.has(model)) return this.heightOf(model);
-    const box = new THREE.Box3().setFromObject(this.library.get(model)).applyMatrix4(fitMatrixOf(model));
+    const box = this.fittedBox(model);
     return box.max.y * facilityScaleOf(box, footprint).vertical;
   }
 
   private heightOf(model: string): number {
-    const cached = this.modelHeights.get(model);
-    if (cached !== undefined) return cached;
-    if (!this.library.has(model)) return FALLBACK_HEIGHT;
+    return this.library.has(model) ? this.fittedBox(model).max.y : FALLBACK_HEIGHT;
+  }
+
+  private fittedBox(model: string): THREE.Box3 {
+    const cached = this.modelBoxes.get(model);
+    if (cached) return cached;
     const box = new THREE.Box3().setFromObject(this.library.get(model)).applyMatrix4(fitMatrixOf(model));
-    this.modelHeights.set(model, box.max.y);
-    return box.max.y;
+    this.modelBoxes.set(model, box);
+    return box;
   }
 
   private withTileAt(clientX: number, clientY: number, use: (tile: Coord) => void): void {
@@ -613,6 +615,7 @@ export class GameScene {
     this.traffic.update(delta, this.activeCamera);
     this.serviceVehicles.update(delta);
     this.boats.update(delta, this.bridges.closedTiles);
+    this.world.cull(this.activeCamera);
     this.renderer.render(this.scene, this.activeCamera);
     this.frameHandle = requestAnimationFrame(this.frame);
   };

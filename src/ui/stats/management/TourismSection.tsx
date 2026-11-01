@@ -1,5 +1,5 @@
 import {useMemo} from 'react';
-import {nextAttractionType, tourismOverview, totalCitizens, type GameState} from '../../../core';
+import {isAttraction, nextAttractionType, tourismOverview, totalCitizens, type GameState} from '../../../core';
 import {definitionOf} from '../../../core/buildings/buildingDefinitions';
 import {t} from '../../../i18n/t';
 import {gameStore} from '../../../store/gameStore';
@@ -7,6 +7,7 @@ import {ActionButton} from '../../common/ActionButton';
 import {SectionHeading} from '../../common/SectionHeading';
 import {UrbsAmount} from '../../common/UrbsAmount';
 import {TourismAdviceList} from './TourismAdviceList';
+import {TourismArenaRow} from './TourismArenaRow';
 import {TourismAttractionRow} from './TourismAttractionRow';
 import {TourismEventRow} from './TourismEventRow';
 
@@ -22,12 +23,12 @@ function emptyMessage(state: GameState): string | null {
 export function TourismSection({state}: { state: GameState }) {
     const overview = useMemo(() => tourismOverview(state), [state]);
     const collectAll = () => {
-        for (const row of overview.attractions) if (row.takings >= 1) gameStore.getState().send({type: 'Collect', buildingId: row.building.id});
+        for (const row of overview.rows) if (row.takings >= 1) gameStore.getState().send({type: 'Collect', buildingId: row.building.id});
     };
     return <section id="eco-tourism" className="eco-wide">
         <SectionHeading icon="ticket">{t('tourism.title')}</SectionHeading>
         <p>{t('tourism.help')}</p>
-        {overview.attractions.length === 0 ? <p>{emptyMessage(state)}</p> : <>
+        {overview.rows.length === 0 ? <p>{emptyMessage(state)}</p> : <>
             <div className="tourism-overview">
                 <div><span>{t('attraction.tourists')}</span><strong>{Math.round(overview.touristsPerDay)}</strong></div>
                 <div><span>{t('attraction.earnings')}</span><strong><UrbsAmount value={overview.perHour}/></strong></div>
@@ -43,7 +44,7 @@ export function TourismSection({state}: { state: GameState }) {
                 <ul className="tourism-list">{overview.gatherings.map(row => <TourismEventRow key={row.building.id} row={row} now={state.lastSeen}/>)}</ul>
             </>}
             <h4>{t('tourism.attractions')}</h4>
-            <ul className="tourism-list">{overview.attractions.map(row => <TourismAttractionRow key={row.building.id} row={row}/>)}</ul>
+            <ul className="tourism-list">{overview.rows.map(row => isAttraction(row.building) ? <TourismAttractionRow key={row.building.id} row={row}/> : <TourismArenaRow key={row.building.id} row={row}/>)}</ul>
         </>}
     </section>;
 }

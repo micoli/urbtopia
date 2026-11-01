@@ -35,7 +35,7 @@ describe('checkGameState', () => {
     const boat = { id: 11, family: 'pleasure' as const, marinaId: 10, x: 50, y: 50 };
     expect(checkGameState({ ...withMarina(), boats: [boat] }).ok).toBe(true);
     expect(checkGameState({ ...withMarina(), boats: [{ ...boat, x: 60 }] })).toEqual({ ok: false, reason: 'boats[0]: not on a water tile' });
-    expect(checkGameState({ ...withMarina(), boats: [{ ...boat, marinaId: 99 }] })).toEqual({ ok: false, reason: 'boats[0]: its marina does not exist' });
+    expect(checkGameState({ ...withMarina(), boats: [{ ...boat, marinaId: 99 }] })).toEqual({ ok: false, reason: 'boats[0]: its marina or Pirate cove does not exist' });
     expect(checkGameState({ ...withMarina(), buildings: [createBuilding(10, 'marina', 50, 48, 0), createBuilding(10, 'shop', 60, 60, 0)] })).toEqual({ ok: false, reason: 'ids: duplicate' });
     expect(checkGameState({ ...withMarina(), nextId: 10 })).toEqual({ ok: false, reason: 'ids: at or above nextId' });
   });

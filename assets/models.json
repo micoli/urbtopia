@@ -975,6 +975,39 @@
       }
     }
   },
+  "buildings-desert-island-2x2": {
+    "file": "buildings/desert-island-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-desert-island-2x3": {
+    "file": "buildings/desert-island-2x3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-desert-island-3x3": {
+    "file": "buildings/desert-island-3x3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
   "buildings-eye-museum-5x4": {
     "file": "buildings/eye-museum-5x4",
     "source": "managed",
@@ -3718,6 +3751,39 @@
       3
     ]
   },
+  "buildings-pirate-cove-t1": {
+    "file": "buildings/pirate-cove-t1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-pirate-cove-t2": {
+    "file": "buildings/pirate-cove-t2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-pirate-cove-t3": {
+    "file": "buildings/pirate-cove-t3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
   "buildings-police-station-2x2": {
     "file": "buildings/police-station-2x2",
     "source": "managed",
@@ -3864,6 +3930,39 @@
     "footprint": [
       2,
       2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-sea-fort-3x3": {
+    "file": "buildings/sea-fort-3x3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-sea-fort-3x4": {
+    "file": "buildings/sea-fort-3x4",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      4
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-sea-fort-4x4": {
+    "file": "buildings/sea-fort-4x4",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      4,
+      4
     ],
     "scale": 1,
     "rotationOffset": 180
@@ -4795,6 +4894,39 @@
         "color": "#ff9a1f"
       }
     }
+  },
+  "buildings-stands-3x1": {
+    "file": "buildings/stands-3x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-stands-4x2": {
+    "file": "buildings/stands-4x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      4,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-stands-6x3": {
+    "file": "buildings/stands-6x3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      6,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180
   },
   "buildings-station-2x1": {
     "file": "buildings/station-2x1",
@@ -10095,6 +10227,15 @@
       "height": 0.9
     }
   },
+  "vehicles-navy-frigate": {
+    "file": "vehicles/navy-frigate",
+    "source": "managed",
+    "license": "Own work",
+    "fit": {
+      "width": 1.9,
+      "height": 2.2
+    }
+  },
   "vehicles-pickup": {
     "file": "vehicles/pickup",
     "source": "managed",
@@ -10105,8 +10246,8 @@
     "source": "managed",
     "license": "Own work",
     "fit": {
-      "width": 0.95,
-      "height": 1.1
+      "width": 1.9,
+      "height": 2.2
     }
   },
   "vehicles-police": {

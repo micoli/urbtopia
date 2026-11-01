@@ -30,9 +30,15 @@ export function citizenCount(state: GameState): number {
   return state.buildings.reduce((sum, b) => sum + (isHomeType(b.type) ? HOME_TIERS[b.tier - 1]?.citizens ?? 0 : 0), 0);
 }
 
-export function centerOf(b: Building): { x: number; y: number; } {
+const centers = new WeakMap<Building, { readonly x: number; readonly y: number }>();
+
+export function centerOf(b: Building): { readonly x: number; readonly y: number } {
+  const known = centers.get(b);
+  if (known) return known;
   const f = footprintOf(b.type, b.rotation, b.tier);
-  return { x: b.x + f.width / 2, y: b.y + f.depth / 2 };
+  const center = { x: b.x + f.width / 2, y: b.y + f.depth / 2 };
+  centers.set(b, center);
+  return center;
 }
 
 export function distance(a: Building, b: Building): number {

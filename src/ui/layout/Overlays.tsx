@@ -4,6 +4,7 @@ import { CreditsDialog } from '../system/CreditsDialog';
 import { CodexDialog } from '../codex/CodexDialog';
 import { CasinoDialog } from '../casino/CasinoDialog';
 import { ClubDialog } from '../club/ClubDialog';
+import { ShowDialog } from '../tourism/ShowDialog';
 import { VenueDialog } from '../venue/VenueDialog';
 import { MarketModal } from '../market/MarketModal';
 import { ChallengeSuccessOverlay } from '../market/ChallengeSuccessOverlay';
@@ -48,6 +49,7 @@ export function Overlays() {
       <CasinoDialog />
       <VenueDialog />
       <ClubDialog />
+      <ShowDialog />
       <MarketModal />
       <SettingsWindow />
       <ChallengeSuccessOverlay />

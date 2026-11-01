@@ -47,6 +47,34 @@ def arched_window(x, y, z, facing, width=0.15, height=0.2):
     return parts
 
 
+def hull_side(y, beam_k):
+    """Half width of the outer hull at y, for a band of beam factor beam_k."""
+    t = min(max((y + LENGTH / 2) / LENGTH, 0.0), 1.0)
+    for (t0, w0), (t1, w1) in zip(STATIONS, STATIONS[1:]):
+        if t <= t1:
+            return BEAM / 2 * beam_k * (w0 + (w1 - w0) * (t - t0) / (t1 - t0))
+    return BEAM / 2 * beam_k
+
+
+def gun_port(side, x, y, z):
+    """A framed port on the hull side at x, with a gun run out through it."""
+    parts = [
+        lpm.box("port frame", (0.03, 0.2, 0.15), at=(x, y, z - 0.04), color=P["wood_dark"]),
+        lpm.box("port", (0.036, 0.13, 0.09), at=(x, y, z - 0.01), color=P["black"]),
+    ]
+    barrel = lpm.prism("gun", 6, 0.03, 0.15, at=(0, 0, 0), color=P["iron"], radius_top=0.026)
+    muzzle = lpm.prism("muzzle", 6, 0.036, 0.022, at=(0, 0, 0.13), color=P["iron"])
+    for part in (barrel, muzzle):
+        lpm.rotate(part, 90 * side, "Y")
+        parts.append(lpm.move(part, x, y, z + 0.035))
+    return parts
+
+
+# The cloth waves along its length, so what is painted on it has to wave with it.
+def flag_wave(u):
+    return 0.07 * math.sin(2 * math.pi * 1.25 * u) * u
+
+
 def flag_banner(y, z, length=0.7, height=0.42):
     cloth = lpm.grid_box("flag", (length, 0.025, height), color=P["flag"], nx=8, nz=4)
     for v in cloth.data.vertices:
@@ -58,9 +86,10 @@ def flag_banner(y, z, length=0.7, height=0.42):
     lpm.rotate(cloth, 90, "Z")
     parts = [lpm.move(cloth, 0, y + length / 2, z)]
     yc, zc = y + length * 0.42, z + height / 2
+    painted = []
     for side in (-1, 1):
         x = side * 0.02
-        parts += [
+        painted += [
             lpm.box("skull", (0.02, 0.12, 0.1), at=(x, yc, zc - 0.005), color=P["white"]),
             lpm.box("skull jaw", (0.02, 0.07, 0.04), at=(x, yc, zc - 0.04), color=P["white"]),
             lpm.box("eye", (0.022, 0.028, 0.03), at=(x, yc - 0.028, zc + 0.01), color=P["flag"]),
@@ -68,8 +97,12 @@ def flag_banner(y, z, length=0.7, height=0.42):
         ]
         for angle in (35, -35):
             bone = lpm.box("bone", (0.018, 0.24, 0.028), at=(x * 0.85, yc, zc - 0.095), color=P["white"])
-            parts.append(lpm.rotate(bone, angle, "X", about=(x * 0.85, yc, zc - 0.08)))
-    return parts
+            painted.append(lpm.rotate(bone, angle, "X", about=(x * 0.85, yc, zc - 0.08)))
+    for part in painted:
+        for vertex in part.data.vertices:
+            vertex.co.x -= flag_wave((vertex.co.y - y) / length)
+        part.data.update()
+    return parts + painted
 
 
 parts = []
@@ -81,9 +114,6 @@ for i, (beam_k, length_k, colour) in enumerate(BANDS):
 parts.append(lpm.sweep("deck", tk.plan(LENGTH * 0.92, BEAM * 0.8, STATIONS), 0.03, at=(0, 0, DECK - 0.01), color=P["wood_light"], axis="z"))
 for z in (0.3, 0.5, 0.66):
     parts += kit.panel("plank line", P, "wood_dark", -1.7, 1.6, z, z + 0.025, BEAM / 2 * 1.01)
-for z, count, y0, y1, half in ((0.36, 5, -1.5, 1.2, 0.75), (0.55, 4, -1.4, 1.1, 0.745)):
-    parts += tk.window_row(P, "wood_dark", y0, y1, z - 0.03, half, count, height=0.13, gap=0.25)
-    parts += tk.window_row(P, "black", y0, y1, z, half + 0.012, count, height=0.07, gap=0.5)
 
 CASTLE_TOP = [(0.8, 0.04), (0.95, 0.3), (1.55, 0.3), (1.7, 0.55), (2.62, 0.55)]
 CASTLE_Y = [0.8, 0.95, 1.25, 1.55, 1.7, 1.75, 2.0, 2.25, 2.5, 2.62]
@@ -160,9 +190,7 @@ parts.append(castle_loft("fore cap", 0.93, 1.0, 0.035, "wood_dark", FORE_YS, FOR
 RAIL_YS = [-2.42, -2.34, -2.24, -2.12, -1.98, -1.82, -1.66, -1.5, -1.3]
 for side in (-1, 1):
     for y in (-1.8, -1.5):
-        x = side * (hull_half_width(y, 0.3) + 0.002)
-        parts.append(lpm.box("window frame", (0.03, 0.2, 0.16), at=(x, y, DECK + 0.06), color=P["wood_dark"]))
-        parts.append(lpm.box("window port", (0.034, 0.12, 0.09), at=(x + side * 0.008, y, DECK + 0.095), color=P["black"]))
+        parts += gun_port(side, side * (hull_half_width(y, 0.3) + 0.002), y, DECK + 0.11)
     posts = RAIL_YS
     for y in posts:
         parts.append(lpm.box("rail post", (0.035, 0.035, 0.11), at=(side * (hull_half_width(y, 1.0) - 0.04), y, DECK + 0.32), color=P["wood_dark"]))
@@ -211,14 +239,14 @@ for y, h, w in MASTS:
 
 POLE_TOP = DECK + 2.8 + 0.35
 parts.append(tk.mast(P, 0.15, DECK + 2.8, 0.35, radius=0.022, color="wood_dark"))
-parts += flag_banner(0.15, POLE_TOP - 0.48)
 
 parts += rail_along_y(0.58, -1.2, 0.95, DECK + 0.02)
 parts += rail_along_y(-0.58, -1.2, 0.95, DECK + 0.02)
 for side in (-1, 1):
-    for y in (-0.6, -0.1, 0.4):
-        parts.append(lpm.box("cannon", (0.1, 0.2, 0.08), at=(side * 0.48, y, DECK + 0.03), color=P["iron"]))
-        parts.append(lpm.box("cannon wheel", (0.12, 0.07, 0.04), at=(side * 0.48, y + 0.04, DECK), color=P["wood_dark"]))
+    for z, count, y0, y1, beam_k in ((0.36, 5, -1.5, 1.2, 1.0), (0.55, 4, -1.4, 1.1, 0.96)):
+        for index in range(count):
+            y = y0 + (y1 - y0) * index / (count - 1)
+            parts += gun_port(side, side * hull_side(y, beam_k), y, z)
 parts.append(lpm.box("hatch", (0.5, 0.42, 0.08), at=(0, -0.38, DECK), color=P["wood_dark"]))
 parts.append(lpm.box("hatch grating", (0.38, 0.3, 0.02), at=(0, -0.38, DECK + 0.08), color=P["iron"]))
 for x, y in ((-0.38, 0.75), (-0.2, 0.9), (0.38, 0.8)):
@@ -233,4 +261,10 @@ parts.append(lpm.box("anchor arm", (0.2, 0.025, 0.025), at=(0.52, FORE_Y + 0.45,
 parts.append(lpm.box("anchor ring", (0.07, 0.025, 0.025), at=(0.52, FORE_Y + 0.45, DECK + 0.29), color=P["iron"]))
 
 tk.shorten(parts, -1.0, 0.8, 0.6)
-tk.build("PirateShip", parts, COLORS, tk.out_dir(__file__), budget=12000)
+# The flag stays out of shorten, which would slide its pieces apart: it follows the pole, which shorten moves from y = 0.15 to 0.0667.
+parts += flag_banner(0.0667, POLE_TOP - 0.48)
+# Guns and their ports stay sharp: rounding every one of them costs more than the whole budget has left.
+for part in parts:
+    if not part.name.startswith((*tk.PLAIN_PARTS, "gun", "muzzle", "port")):
+        kit.fillet(part, tk.FILLET, segments=1)
+kit.build("PirateShip", parts, COLORS, tk.out_dir(__file__), budget=12000)

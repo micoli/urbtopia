@@ -24,7 +24,7 @@ export function GatheringStatus({ building, gathering, now }: GatheringStatusPro
     <div className="gathering-status" data-phase={phase}>
       <p className="gathering-status-title">
         <Icon name={gathering.kind === 'show' ? 'music' : 'trophy'} />
-        <strong>{artist?.name ?? t(`gathering.kind.${gathering.kind}`)}</strong>
+        <strong>{gathering.title ? t(`pirateShow.${gathering.title}`) : artist?.name ?? t(`gathering.kind.${gathering.kind}`)}</strong>
       </p>
       <ol className="gathering-steps">
         {PHASES.map((step, index) => <li key={step} data-state={index < reached ? 'done' : index === reached ? 'current' : 'next'}>{t(`gathering.phase.${step}`)}</li>)}

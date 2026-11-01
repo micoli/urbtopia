@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "stands",
+  "section": "build.water",
+  "model": "buildings-stands-6x3",
+  "footprint": [6, 3],
+  "cost": 2500,
+  "unlockCitizens": 800,
+  "requiresRoad": false,
+  "name": {
+    "en": "Large Stands",
+    "fr": "Grands gradins"
+  },
+  "description": {
+    "en": "500 seats facing the water. It must touch a Water tile connected to a Pirate cove and belongs to the nearest one. No road needed.",
+    "fr": "500 sièges face à l’eau. Ces gradins doivent toucher une tuile d’eau reliée à une crique des pirates et lui appartiennent. Pas besoin de route."
+  },
+  "seats": 500
+}

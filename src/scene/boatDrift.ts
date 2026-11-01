@@ -8,8 +8,17 @@ const WAIT_FOR_BRIDGE = 0.2;
 
 const DIRECTIONS: readonly Coord[] = [{ x: 0, y: -1 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }];
 
+export interface DriftPace {
+  speed: number;
+  restFactor: number;
+}
+
+export const USUAL_PACE: DriftPace = { speed: DRIFT_SPEED, restFactor: 1 };
+export const PIRATE_PACE: DriftPace = { speed: DRIFT_SPEED * 2.5, restFactor: 0.5 };
+
 export interface DriftBoat {
   id: number;
+  pace: DriftPace;
   anchor: Coord;
   from: Coord;
   to: Coord | null;
@@ -30,9 +39,11 @@ const NO_TILES: ReadonlySet<string> = new Set();
 
 export const keyOf = (tile: Coord) => `${tile.x},${tile.y}`;
 
-export function startDrift(id: number, anchor: Coord, reserved: Map<string, number>, random: () => number): DriftBoat {
+const restOf = (pace: DriftPace, random: () => number): number => (MIN_REST + random() * (MAX_REST - MIN_REST)) * pace.restFactor;
+
+export function startDrift(id: number, anchor: Coord, reserved: Map<string, number>, random: () => number, pace: DriftPace = USUAL_PACE): DriftBoat {
   reserved.set(keyOf(anchor), id);
-  return { id, anchor, from: anchor, to: null, progress: 0, rest: MIN_REST + random() * (MAX_REST - MIN_REST), heading: Math.floor(random() * 4) * (Math.PI / 2), want: null };
+  return { id, pace, anchor, from: anchor, to: null, progress: 0, rest: restOf(pace, random), heading: Math.floor(random() * 4) * (Math.PI / 2), want: null };
 }
 
 export function driftPosition(boat: DriftBoat): { x: number; z: number } {
@@ -61,10 +72,10 @@ export function advanceDrift(boat: DriftBoat, deltaSeconds: number, { water, res
     Object.assign(boat, { to: null, progress: 0 });
   }
   if (boat.to) {
-    boat.progress += DRIFT_SPEED * deltaSeconds;
+    boat.progress += boat.pace.speed * deltaSeconds;
     if (boat.progress < 1) return;
     reserved.delete(keyOf(boat.from));
-    Object.assign(boat, { from: boat.to, to: null, progress: 0, rest: MIN_REST + random() * (MAX_REST - MIN_REST) });
+    Object.assign(boat, { from: boat.to, to: null, progress: 0, rest: restOf(boat.pace, random) });
     return;
   }
   boat.rest -= deltaSeconds;

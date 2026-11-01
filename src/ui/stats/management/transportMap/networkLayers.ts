@@ -46,7 +46,7 @@ export const roadSegments = (state: GameState): MapSegment[] => segmentsBetween(
 export const pedestrianSegments = (state: GameState): MapSegment[] => segmentsBetween(state.pedestrianWays ?? []);
 
 // The tiles around a stop a pedestrian or a vehicle reaches it from: its front for a stop, every side for a Transit hub.
-function reachTiles(stop: Building): Coord[] {
+function reachTiles(stop: Building): readonly Coord[] {
   if (stop.type === 'transitHub') return perimeterTiles(stop.type, stop.x, stop.y, stop.rotation, stop.tier);
   return frontTiles(stop.type, stop.x, stop.y, stop.rotation, stop.tier);
 }

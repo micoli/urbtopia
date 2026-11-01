@@ -26,11 +26,14 @@ import { buySeeds, sellSeeds } from '../farming/seeds';
 import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
+import { isSeaSceneryType } from '../water/waterTiles';
+import { withBoatsMovedOffScenery } from '../water/seaScenery';
+import { coveForStands, isCoveLocked, isPirateCoveInUse, isStandsType, standsCanStayAt } from '../water/pirateCove';
 import { collectCatch } from '../water/fishing';
 import { collectAttractionTakings, setTicket } from '../tourism/takings';
 import { foundClub, recordMatchDecisions, releaseClubPlayer, setClubLineup, signClubPlayer } from '../clubs/clubCommands';
 import { cancelShow, scheduleShow } from '../tourism/gatherings';
-import { isAttraction } from '../tourism/tourists';
+import { sellsTickets } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
@@ -222,6 +225,13 @@ export type ErrorKey =
   | 'error.notOnMarinaWater'
   | 'error.marinaFull'
   | 'error.marinaInUse'
+  | 'error.pirateCoveInUse'
+  | 'error.showLocksCove'
+  | 'error.noPirateShip'
+  | 'error.noSeats'
+  | 'error.needsPirateCoveWater'
+  | 'error.needsWaterTiles'
+  | 'error.noWaterForPirateShip'
   | 'error.unknownBoat'
   | 'error.waterInUse'
   | 'error.noSeeds'
@@ -697,6 +707,11 @@ function strandsBuilding(before: GameState, after: GameState): boolean {
   );
 }
 
+// Scenery laid or grown over a Boat pushes it to a free tile of its water.
+function withScenerySettled(type: BuildingType, state: GameState): GameState {
+  return isSeaSceneryType(type) ? withBoatsMovedOffScenery(state) : state;
+}
+
 function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, now: number, requestedRotation?: Rotation, solar = false, colorVariant?: ColorVariant): CommandOutcome {
   if (isRetired(type) || citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < solarPanelsUnlockCitizens(type))) return fail('error.itemLocked');
   if (!isBuildableAt(type, now)) return fail('error.annualEventClosed');
@@ -706,13 +721,13 @@ function placeBuilding(state: GameState, type: BuildingType, x: number, y: numbe
   const issue = placementIssue(state, type, x, y, rotation);
   if (issue) return fail(issue);
   if (state.urbs < nextCopyCost(state, type) + extraCost) return fail('error.notEnoughUrbs');
-  const created = createBuilding(state.nextId, type, x, y, rotation);
+  const created = { ...createBuilding(state.nextId, type, x, y, rotation), ...(isStandsType(type) ? { coveId: coveForStands(state, type, x, y, rotation)!.id } : {}) };
   const orchardQueue = newOrchardQueue(type, state.lastSeen);
   const building = { ...created, ...(orchardQueue ? { queue: orchardQueue } : {}), ...(solar ? { solar: true } : {}), ...(isHomeType(type) && colorVariant ? { colorVariant } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
   const utilityIssue = isHomeType(type) ? utilityIssueFor(state, tierDemand(1)) : isFacilityType(type) ? utilityIssueFor(state, { power: 0, water: FACILITIES[type].water }) : null;
   if (utilityIssue) return fail(utilityIssue);
   return {
-    state: { ...state, urbs: state.urbs - nextCopyCost(state, type) - extraCost, nextId: state.nextId + 1, buildings: [...state.buildings, building] },
+    state: withScenerySettled(type, { ...state, urbs: state.urbs - nextCopyCost(state, type) - extraCost, nextId: state.nextId + 1, buildings: [...state.buildings, building] }),
     events: [{ type: 'BuildingPlaced', id: building.id }],
   };
 }
@@ -741,6 +756,8 @@ function sellBuilding(state: GameState, id: number): CommandOutcome {
   if ((isStorageType(building.type) || isProductionType(building.type)) && !canRemoveStorage(state, building.id)) return fail('error.storageInUse');
   if ((building.type === 'powerPlant' || building.type === 'waterTower') && !canLoseUtility(state, building)) return fail('error.utilityInUse');
   if (building.type === 'marina' && boatsOfMarina(state, building.id).length > 0) return fail('error.marinaInUse');
+  if (isPirateCoveInUse(state, building)) return fail('error.pirateCoveInUse');
+  if (isStandsType(building.type) && isCoveLocked(state, building.coveId ?? 0)) return fail('error.showLocksCove');
   const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
   return {
     state: withoutBrokenLines({ ...state, urbs: state.urbs + refund, buildings: state.buildings.filter((candidate) => candidate !== building) }, id, true),
@@ -772,12 +789,14 @@ function moveBuilding(state: GameState, id: number, x: number, y: number, reques
   const building = state.buildings.find((candidate) => candidate.id === id);
   if (!building) return fail('error.unknownBuilding');
   if (building.type === 'marina' && boatsOfMarina(state, building.id).length > 0) return fail('error.marinaInUse');
+  if (isPirateCoveInUse(state, building)) return fail('error.pirateCoveInUse');
   const without: GameState = { ...state, buildings: state.buildings.filter((candidate) => candidate !== building) };
   const rotation = requestedRotation ?? autoRotation(without, building.type, x, y, building.tier);
   const issue = placementIssue(without, building.type, x, y, rotation, { isMove: true, tier: building.tier });
   if (issue) return fail(issue);
+  if (isStandsType(building.type) && !standsCanStayAt(without, building.coveId ?? 0, { type: building.type, x, y, rotation })) return fail('error.needsPirateCoveWater');
   return {
-    state: withoutBrokenLines({ ...state, buildings: state.buildings.map((candidate) => (candidate === building ? restartRunningProduction({ ...building, x, y, rotation }, now) : candidate)) }, id, false),
+    state: withScenerySettled(building.type, withoutBrokenLines({ ...state, buildings: state.buildings.map((candidate) => (candidate === building ? restartRunningProduction({ ...building, x, y, rotation }, now) : candidate)) }, id, false)),
     events: [{ type: 'BuildingMoved', id }],
   };
 }
@@ -833,7 +852,7 @@ function collect(state: GameState, buildingId: number): CommandOutcome {
   if (isHomeType(building.type)) return collectTax(state, building);
   if (isOfficeType(building.type)) return collectOfficeEarnings(state, building);
   if (isVenue(building)) return collectTakings(state, building);
-  if (isAttraction(building)) return collectAttractionTakings(state, building);
+  if (sellsTickets(building)) return collectAttractionTakings(state, building);
   return collectProduction(state, building);
 }
 
@@ -1059,9 +1078,9 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
   const isHome = isHomeType(building.type);
   if (isHome && missingServicesOf(state, building, nextTier).length > 0) return fail('error.serviceRequired');
   let grown = building;
-  if (isHome || building.type === 'casino') {
+  if (isHome || building.type === 'casino' || isSeaSceneryType(building.type)) {
     const expansion = expandedPlacement(state, building, nextTier);
-    if (expansion.issue === 'error.tilesOccupied') return fail(isHome ? 'error.homeExpansionBlocked' : 'error.casinoExpansionBlocked');
+    if (expansion.issue === 'error.tilesOccupied' && !isSeaSceneryType(building.type)) return fail(isHome ? 'error.homeExpansionBlocked' : 'error.casinoExpansionBlocked');
     if (expansion.issue) return fail(expansion.issue);
     grown = { ...building, x: expansion.x, y: expansion.y };
   }
@@ -1081,12 +1100,12 @@ function upgradeBuilding(state: GameState, buildingId: number): CommandOutcome {
   }
 
   return {
-    state: {
+    state: withScenerySettled(building.type, {
       ...state,
       urbs: state.urbs - cost.urbs,
       storage: { ...state.storage, goods },
       buildings: state.buildings.map((candidate) => (candidate === building ? upgradedTo(grown, nextTier) : candidate)),
-    },
+    }),
     events: [{ type: 'BuildingUpgraded', buildingId, tier: nextTier }],
   };
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { CROWD_WINDOW_MS, createBuilding } from '../core';
-import { CROWD, crowdPresence, crowdSlots, gatheringFigures, visitorFigures } from './attractionCrowd';
+import { CROWD_WINDOW_MS, createBuilding, frontDirection } from '../core';
+import { CROWD, crowdPresence, crowdSlots, gatheringFigures, standsSeats, visitorFigures } from './attractionCrowd';
 
 const museum = createBuilding(7, 'masMuseum', 10, 20, 0);
 
@@ -47,5 +47,34 @@ describe('crowdSlots', () => {
     for (let x = 0; x < 40; x++) for (let z = 0; z < 40; z++) if (x < 10) blocked.add(`${x},${z}`);
     const slots = crowdSlots(museum, blocked, 40, 5);
     expect(slots.filter(slot => slot.x < 10).length).toBeLessThan(2);
+  });
+});
+
+describe('standsSeats', () => {
+  const stands = { id: 9, type: 'standsMedium', x: 10, y: 20, rotation: 0, tier: 1 } as const;
+
+  it('places figures on the Stands, the same ones each time', () => {
+    const seats = standsSeats([stands], 30, 4);
+    expect(seats).toHaveLength(30);
+    expect(seats).toEqual(standsSeats([stands], 30, 4));
+    for (const seat of seats) {
+      expect(seat.x).toBeGreaterThan(10);
+      expect(seat.x).toBeLessThan(14);
+      expect(seat.z).toBeGreaterThan(20);
+      expect(seat.z).toBeLessThan(22);
+    }
+  });
+
+  it('seats them higher away from the water, facing it', () => {
+    const seats = standsSeats([stands], 60, 4);
+    const front = frontDirection(stands.rotation);
+    expect(front).toBe('N');
+    const nearWater = seats.filter(seat => seat.z < 20.5);
+    const farFromWater = seats.filter(seat => seat.z > 21.5);
+    expect(Math.max(...nearWater.map(seat => seat.seatHeight!))).toBeLessThan(Math.min(...farFromWater.map(seat => seat.seatHeight!)));
+  });
+
+  it('has no seat with no Stands', () => {
+    expect(standsSeats([], 30, 4)).toEqual([]);
   });
 });

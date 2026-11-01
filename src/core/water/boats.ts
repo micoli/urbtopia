@@ -1,7 +1,7 @@
 import { entriesOf } from '../defs/entries';
 import boatOrder from '../../../assets/defs/order/boats.json' with { type: 'json' };
 import { modelFileOf } from '../models/modelFiles';
-import { BOAT_FAMILIES } from './boatFamilies';
+import { BOAT_FAMILIES, COVE_BOAT_FAMILIES, MARINA_BOAT_FAMILIES, isCoveBoatFamily } from './boatFamilies';
 import type { BoatId } from './boatTypes.generated';
 import type { BoatDefinition } from './boatSchema';
 import { citizenCount } from '../environment/ecology';
@@ -14,8 +14,9 @@ import { bridgeKeys } from './bridges';
 import { CASINO, MAX_CASINO_TIER, casinoPower } from '../leisure/casino';
 import { ECOLOGY } from '../environment/ecology';
 import { connectedWaterKeys, marinaCapacity } from './marina';
+import { isCoveLocked, pirateCoveOf, pirateShipRoom } from './pirateCove';
 
-export { BOAT_FAMILIES };
+export { BOAT_FAMILIES, COVE_BOAT_FAMILIES, MARINA_BOAT_FAMILIES, isCoveBoatFamily };
 
 // Checked against their schema by the definitions plugin at dev start and build, and by the tests.
 const files = import.meta.glob<BoatDefinition>('../../../assets/defs/boats/*.json', { eager: true, import: 'default' });
@@ -28,6 +29,8 @@ export const BOATS = {
   pleasure: liveBoat('pleasure'),
   fishing: liveBoat('fishing'),
   casino: liveBoat('casino'),
+  pirate: liveBoat('pirate'),
+  frigate: liveBoat('frigate'),
 };
 
 export const BOAT_MODELS: Record<BoatFamily, string> = Object.fromEntries(BOAT_FAMILIES.map(family => [family, modelFileOf(BOATS[family].model)])) as Record<BoatFamily, string>;
@@ -50,10 +53,12 @@ export function isBoatOperating(state: GameState, boat: Boat): boolean {
   return boat.family !== 'fishing' && state.urbs > FUNDS_EPSILON && marinaOf(state, boat.marinaId) !== undefined;
 }
 
+export const hostOf = (state: GameState, family: BoatFamily, hostId: number): Building | undefined => (isCoveBoatFamily(family) ? pirateCoveOf(state, hostId) : marinaOf(state, hostId));
+
 export function boatsCutOff(state: GameState): boolean {
   return boatsOf(state).some((boat) => {
-    const marina = marinaOf(state, boat.marinaId);
-    return !marina || !connectedWaterKeys(state, marina).has(tileKey(boat));
+    const host = hostOf(state, boat.family, boat.marinaId);
+    return !host || !connectedWaterKeys(state, host).has(tileKey(boat));
   });
 }
 
@@ -61,11 +66,12 @@ export function buyBoat(state: GameState, family: BoatFamily, marinaId: number, 
   if (!BOAT_FAMILIES.includes(family)) return { key: 'error.unknownCommand' };
   const spec = BOATS[family];
   if (citizenCount(state) < spec.unlockCitizens) return { key: 'error.itemLocked' };
-  const marina = marinaOf(state, marinaId);
-  if (!marina) return { key: 'error.unknownBuilding' };
-  if (!connectedWaterKeys(state, marina).has(tileKey(tile))) return { key: 'error.notOnMarinaWater' };
+  const host = hostOf(state, family, marinaId);
+  if (!host) return { key: 'error.unknownBuilding' };
+  if (!connectedWaterKeys(state, host).has(tileKey(tile))) return { key: 'error.notOnMarinaWater' };
   if (boatsOf(state).some((boat) => tileKey(boat) === tileKey(tile)) || bridgeKeys(state).has(tileKey(tile))) return { key: 'error.tilesOccupied' };
-  if (boatsOfMarina(state, marinaId).length >= marinaCapacity(marina)) return { key: 'error.marinaFull' };
+  if (isCoveBoatFamily(family) && pirateShipRoom(state, host) <= 0) return { key: 'error.noWaterForPirateShip' };
+  if (!isCoveBoatFamily(family) && boatsOfMarina(state, marinaId).length >= marinaCapacity(host)) return { key: 'error.marinaFull' };
   if (state.urbs < spec.cost) return { key: 'error.notEnoughUrbs' };
   const boat: Boat = { id: state.nextId, family, marinaId, x: tile.x, y: tile.y, ...(family === 'fishing' ? { catchSince: state.lastSeen } : {}), ...(family === 'casino' ? { tier: 1 } : {}) };
   return {
@@ -77,6 +83,7 @@ export function buyBoat(state: GameState, family: BoatFamily, marinaId: number, 
 export function sellBoat(state: GameState, id: number): CommandOutcome {
   const boat = boatsOf(state).find((candidate) => candidate.id === id);
   if (!boat) return { key: 'error.unknownBoat' };
+  if (isCoveBoatFamily(boat.family) && isCoveLocked(state, boat.marinaId)) return { key: 'error.showLocksCove' };
   const refund = Math.floor(BOATS[boat.family].cost * GAME_CONFIG.sellRefundRatio);
   return { state: { ...state, urbs: state.urbs + refund, boats: boatsOf(state).filter((candidate) => candidate !== boat) }, events: [] };
 }

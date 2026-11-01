@@ -2,12 +2,14 @@ import { tileKey } from '../map/geometry';
 import type { Coord } from '../map/coord';
 import type { CommandOutcome } from '../engine/commands';
 import type { GameState } from '../engine/state';
-import { boatsCutOff, boatsOf } from './boats';
+import { boatsCutOff } from './boats';
+import { withBoatsMovedOff } from './boatRelocation';
 import { bridgeKeys } from './bridges';
-import { waterTilesOf } from './waterTiles';
+import { pirateShipsOverLimit, standsCutOff } from './pirateCove';
+import { sceneryWaterKeys, waterTilesOf } from './waterTiles';
 
 function dependentWaterKeys(state: GameState): ReadonlySet<string> {
-  return new Set([...boatsOf(state).map(tileKey), ...bridgeKeys(state)]);
+  return new Set([...bridgeKeys(state), ...sceneryWaterKeys(state)]);
 }
 
 export function removeWater(state: GameState, tiles: readonly Coord[]): CommandOutcome {
@@ -19,8 +21,10 @@ export function removeWater(state: GameState, tiles: readonly Coord[]): CommandO
   let removed = 0;
   for (const tile of present) {
     if (blocked.has(tileKey(tile))) continue;
-    const next: GameState = { ...current, waterTiles: waterTilesOf(current).filter((candidate) => tileKey(candidate) !== tileKey(tile)) };
-    if (boatsCutOff(next)) continue;
+    const cleared = withBoatsMovedOff(current, new Set([tileKey(tile)]));
+    if (!cleared) continue;
+    const next: GameState = { ...cleared, waterTiles: waterTilesOf(cleared).filter((candidate) => tileKey(candidate) !== tileKey(tile)) };
+    if (boatsCutOff(next) || pirateShipsOverLimit(next) || standsCutOff(next)) continue;
     current = next;
     removed += 1;
   }

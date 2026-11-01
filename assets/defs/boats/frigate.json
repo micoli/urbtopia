@@ -1,0 +1,14 @@
+{
+  "$schema": "../schemas/boat.schema.json",
+  "kind": "boat",
+  "family": "frigate",
+  "model": "vehicles-navy-frigate",
+  "cost": 9000,
+  "unlockCitizens": 1200,
+  "name": {
+    "en": "Navy frigate",
+    "fr": "Frégate de la marine"
+  },
+  "showBoost": 0.3,
+  "showCost": 300
+}

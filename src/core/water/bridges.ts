@@ -5,7 +5,7 @@ import { neighbour, tileKey, type Direction } from '../map/geometry';
 import type { Coord } from '../map/coord';
 import type { CommandOutcome } from '../engine/commands';
 import type { Bridge, GameState } from '../engine/state';
-import { waterKeys } from './waterTiles';
+import { navigableWaterKeys } from './waterTiles';
 import { roadTierOf, roadTierUpgradeCost } from '../traffic/roadTier';
 import { validNetworkCrossings } from '../transit/transitNetwork';
 import { footbridgeEndLinks } from '../map/footbridgeAccess';
@@ -158,7 +158,7 @@ export function placeBridge(state: GameState, bridge: Bridge): CommandOutcome {
   if (price === undefined || !Number.isInteger(bridge.x) || !Number.isInteger(bridge.y) || (bridge.axis !== 'x' && bridge.axis !== 'y')) return { key: 'error.unknownCommand' };
   const tiles = bridgeTiles(bridge);
   if (!tiles.every((tile) => isInsideOwnedParcels(state, tile))) return { key: 'error.outsideOwnedParcels' };
-  const water = waterKeys(state);
+  const water = navigableWaterKeys(state);
   if (!tiles.every((tile) => water.has(tileKey(tile)))) return { key: 'error.bridgeNeedsWater' };
   const taken = new Set([...bridgeKeys(state), ...(state.boats ?? []).map(tileKey)]);
   if (tiles.some((tile) => taken.has(tileKey(tile)))) return { key: 'error.tilesOccupied' };

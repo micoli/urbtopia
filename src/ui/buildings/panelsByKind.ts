@@ -6,8 +6,10 @@ import { FarmPanel } from './FarmPanel';
 import { HomePanel } from './HomePanel';
 import { MarinaPanel } from './MarinaPanel';
 import { OfficePanel } from './OfficePanel';
+import { PirateCovePanel } from './PirateCovePanel';
 import { ProductionPanel } from './ProductionPanel';
 import { ShopPanel } from './ShopPanel';
+import { StandsPanel } from './StandsPanel';
 import { StoragePanel } from './StoragePanel';
 
 // The panel every building of a kind shows. Facility and utility panels need the building's own type, and the other panels depend on flags rather than on the kind.
@@ -16,6 +18,8 @@ export const PANEL_BY_KIND: Partial<Record<BuildingKind, ComponentType<{ buildin
   farm: FarmPanel,
   home: HomePanel,
   marina: MarinaPanel,
+  pirateCove: PirateCovePanel,
+  stands: StandsPanel,
   casino: CasinoPanel,
   venue: VenuePanel,
   shop: ShopPanel,

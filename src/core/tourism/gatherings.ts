@@ -11,10 +11,13 @@ import { artistOffer, feeOfArtist, qualityOfFame, ticketBoostOfFame } from './ar
 import type { Artist } from './artistSchema';
 import { CROWD_WINDOW_MS, GATHERING_REACH } from './gatheringWindow';
 import { TICKETS, TAKINGS, takingsOf, ticketOf } from './takings';
-import { TOURISM, spendingFactor } from './tourists';
+import { TOURISM, isArenaType, spendingFactor } from './tourists';
 import { cityAttractiveness } from '../venues/hotel';
+import { BOATS } from '../water/boats';
+import { pirateShipsOfCove, pirateShowIssue, seatCapOf, seatsOfCove } from '../water/pirateCove';
+import { pirateShowTitleOf } from './pirateShows';
 
-export const SHOW_TYPES = ['theater', 'concertHall', 'colosseum'] as const;
+export const SHOW_TYPES = ['theater', 'concertHall', 'colosseum', 'pirateCove'] as const;
 
 export const GATHERING = {
   durationMs: 3 * TAKINGS.hourMs,
@@ -33,6 +36,8 @@ export const GATHERING = {
   reach: GATHERING_REACH,
   defaultQuality: 0.5,
   capacity: { theater: 150, concertHall: 400, colosseum: 1200, stadium: 600, footballStadium: 3000, baseballField: 1200 } as Readonly<Record<string, number>>,
+  meetingCapacity: 600,
+  meetingQuality: 0.5,
 };
 
 const clamp01 = (value: number): number => Math.min(1, Math.max(0, value));
@@ -40,10 +45,16 @@ const clamp01 = (value: number): number => Math.min(1, Math.max(0, value));
 
 export const isShowType = (type: string): boolean => (SHOW_TYPES as readonly string[]).includes(type);
 
+export const isStadiumType = (type: string): boolean => isArenaType(type) && !isShowType(type);
+
+// For a Pirate cove, the most its Stands can seat at this Tier.
 export const gatheringCapacityOf = (building: Pick<Building, 'type' | 'tier'>): number => {
+  if (building.type === 'pirateCove') return seatCapOf(building);
   const base = GATHERING.capacity[building.type] ?? 0;
   return Math.floor(base * (1 + TOURISM.tierBonus * (building.tier - 1)));
 };
+
+export const showCapacityOf = (state: GameState, building: Building): number => (building.type === 'pirateCove' ? seatsOfCove(state, building) : gatheringCapacityOf(building));
 
 export const gatheringCostOf = (building: Pick<Building, 'type' | 'tier'>): number => Math.ceil(gatheringCapacityOf(building) * GATHERING.costPerSeat);
 
@@ -59,17 +70,36 @@ const citizensInReach = (state: GameState, building: Building): number => {
 
 export type GatheringPreview = Pick<GatheringData, 'cost' | 'crowd' | 'tourists' | 'citizens' | 'revenue'>;
 
+export interface GatheringDraw {
+  quality?: number;
+  capacity?: number;
+  crowdBoost?: number;
+}
+
+export const MEETING_DRAW: GatheringDraw = { quality: GATHERING.meetingQuality, capacity: GATHERING.meetingCapacity };
+
+// What a Pirate cove can stage now: a Show needs its seats and its Pirate ships, which also raise the sales and the cost.
+// Every ship adds to the cost; all but the weakest raise what each person pays.
+function pirateStaging(state: GameState, building: Building): { capacity: number; cost: number; boost: number } {
+  const ships = pirateShipsOfCove(state, building.id).map(ship => BOATS[ship.family as 'pirate' | 'frigate']);
+  const capacity = ships.length > 0 ? seatsOfCove(state, building) : 0;
+  const boosts = ships.map(ship => ship.showBoost);
+  const extra = boosts.length === 0 ? 0 : boosts.reduce((total, boost) => total + boost, 0) - Math.min(...boosts);
+  return { capacity, cost: Math.ceil(capacity * GATHERING.costPerSeat) + ships.reduce((total, ship) => total + ship.showCost, 0), boost: 1 + extra };
+}
+
 // The crowd a Gathering would draw now: capacity x fill, split between Tourists and the Citizens in reach.
-export function previewGathering(state: GameState, building: Building, artist?: Artist, qualityOverride?: number): GatheringPreview {
-  const quality = qualityOverride ?? (artist ? qualityOfFame(artist.fame) : GATHERING.defaultQuality);
-  const fill = clamp01(GATHERING.baseFill + GATHERING.qualityFill * quality + GATHERING.wellbeingFill * cityWellbeingRatio(state)) * (TICKETS[ticketOf(building)]?.draw ?? 1);
-  const crowd = gatheringCapacityOf(building) * fill;
+export function previewGathering(state: GameState, building: Building, artist?: Artist, draw: GatheringDraw = {}): GatheringPreview {
+  const quality = draw.quality ?? (artist ? qualityOfFame(artist.fame) : GATHERING.defaultQuality);
+  const fill = Math.min(1, clamp01(GATHERING.baseFill + GATHERING.qualityFill * quality + GATHERING.wellbeingFill * cityWellbeingRatio(state)) * (TICKETS[ticketOf(building)]?.draw ?? 1) * (draw.crowdBoost ?? 1));
+  const staging = building.type === 'pirateCove' ? pirateStaging(state, building) : null;
+  const crowd = (draw.capacity ?? staging?.capacity ?? gatheringCapacityOf(building)) * fill;
   const tourists = Math.min(crowd, crowd * GATHERING.touristShare * cityAttractiveness(state));
   const citizens = Math.min(crowd - tourists, citizensInReach(state, building) * GATHERING.citizenShare);
   const present = tourists + citizens;
   const price = TICKETS[ticketOf(building)]?.price ?? 0;
-  const boost = artist ? ticketBoostOfFame(artist.fame) : 1;
-  return { cost: gatheringCostOf(building) + (artist ? feeOfArtist(artist) : 0), crowd: present, tourists, citizens, revenue: present * price * boost * spendingFactor(state) };
+  const boost = artist ? ticketBoostOfFame(artist.fame) : staging?.boost ?? 1;
+  return { cost: (staging?.cost ?? gatheringCostOf(building)) + (artist ? feeOfArtist(artist) : 0), crowd: present, tourists, citizens, revenue: present * price * boost * spendingFactor(state) };
 }
 
 export const isGatheringActive = (building: Pick<Building, 'attraction'>, now: number): boolean => {
@@ -89,10 +119,12 @@ export function scheduleShow(state: GameState, buildingId: number, startsInHours
   const needsArtist = building.type === 'concertHall';
   const artist = artistId === undefined ? undefined : artistOffer(state, building).find(offered => offered.id === artistId);
   if (needsArtist ? artist === undefined : artistId !== undefined) return { key: 'error.invalidArtist' };
+  const pirateIssue = building.type === 'pirateCove' ? pirateShowIssue(state, building) : null;
+  if (pirateIssue) return { key: pirateIssue };
   const preview = previewGathering(state, building, artist);
   if (state.urbs < preview.cost) return { key: 'error.notEnoughUrbs' };
   const startsAt = state.lastSeen + startsInHours * TAKINGS.hourMs;
-  const gathering: GatheringData = { kind: 'show', startsAt, endsAt: startsAt + GATHERING.durationMs, quality: artist ? qualityOfFame(artist.fame) : GATHERING.defaultQuality, ...(artist ? { artist: artist.id } : {}), ...preview };
+  const gathering: GatheringData = { kind: 'show', startsAt, endsAt: startsAt + GATHERING.durationMs, quality: artist ? qualityOfFame(artist.fame) : GATHERING.defaultQuality, ...(artist ? { artist: artist.id } : {}), ...(building.type === 'pirateCove' ? { title: pirateShowTitleOf(building) } : {}), ...preview };
   const attraction = { ...building.attraction, takings: takingsOf(building), gathering, shows: (building.attraction?.shows ?? 0) + 1 };
   // A Show that starts at once has no later step to announce it.
   const events: GameEvent[] = startsInHours === 0 ? [{ type: 'GatheringStarted', buildingId }] : [];
@@ -132,7 +164,7 @@ export function advanceGatherings(state: GameState, from: number, to: number): {
   const buildings = state.buildings.map(building => {
     const gathering = building.attraction?.gathering;
     if (!gathering || gathering.endsAt + GATHERING.windowMs > to) return building;
-    const lastGathering = { kind: gathering.kind, at: gathering.endsAt, crowd: gathering.crowd, revenue: gathering.revenue, cost: gathering.cost, ...(gathering.artist ? { artist: gathering.artist } : {}) };
+    const lastGathering = { kind: gathering.kind, at: gathering.endsAt, crowd: gathering.crowd, revenue: gathering.revenue, cost: gathering.cost, ...(gathering.artist ? { artist: gathering.artist } : {}), ...(gathering.title ? { title: gathering.title } : {}) };
     const attraction = { ...building.attraction!, takings: takingsOf(building) + gathering.revenue, cooldownUntil: gathering.endsAt + GATHERING.cooldownMs, lastGathering };
     delete attraction.gathering;
     events.push({ type: 'GatheringSettled', buildingId: building.id, crowd: gathering.crowd, revenue: gathering.revenue });
@@ -141,10 +173,11 @@ export function advanceGatherings(state: GameState, from: number, to: number): {
   return { state: { ...state, buildings }, events };
 }
 
-// A Match or meeting set by a calendar: no cost to the player, the crowd drawn like a Show's from the quality given.
-export function setGathering(state: GameState, building: Building, kind: 'match' | 'show', startsAt: number, quality: number): GameState {
-  const preview = previewGathering(state, building, undefined, quality);
-  const gathering: GatheringData = { kind, startsAt, endsAt: startsAt + GATHERING.matchDurationMs, quality, ...preview, cost: 0 };
+// A Match or Meeting set by a calendar: no cost to the player, the crowd drawn like a Show's. It uses up the boost of a Championship.
+export function setGathering(state: GameState, building: Building, kind: 'match' | 'meeting', startsAt: number, draw: GatheringDraw): GameState {
+  const preview = previewGathering(state, building, undefined, draw);
+  const gathering: GatheringData = { kind, startsAt, endsAt: startsAt + GATHERING.matchDurationMs, quality: draw.quality ?? GATHERING.defaultQuality, ...preview, cost: 0 };
   const attraction = { ...building.attraction, takings: takingsOf(building), gathering };
+  delete attraction.nextMatchBoost;
   return { ...state, buildings: state.buildings.map(candidate => (candidate === building ? { ...building, attraction } : candidate)) };
 }

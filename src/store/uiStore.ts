@@ -439,8 +439,9 @@ export const uiStore = createStore<UiStore>((set, get) => {
   };
 });
 
-gameStore.subscribe(() => {
+gameStore.subscribe((store, previous) => {
   const { tool, centerTile, pointerKind, hovered, pinnedTile, rotation } = uiStore.getState();
+  if (!tool || store.state === previous.state) return;
   uiStore.setState({ evaluation: evaluate(tool, aimTile(pointerKind, hovered, centerTile, pinnedTile), rotation) });
 });
 

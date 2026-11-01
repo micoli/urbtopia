@@ -5,9 +5,12 @@ import type { Coord } from './coord';
 import { DIRECTIONS, frontDirection, neighbour, tileKey } from './geometry';
 import { isInsideOwnedParcels, isRoadLike, occupiedTiles } from './occupancy';
 import { touchesWater } from '../water/marina';
+import { coveForStands, isStandsType } from '../water/pirateCove';
+import { seaSceneryIssue } from '../water/seaScenery';
+import { isSeaSceneryType, navigableWaterKeys } from '../water/waterTiles';
 import type { BuildingType, GameState, Rotation } from '../engine/state';
 
-export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.needsAccess' | 'error.needsWater' | 'error.buildingLimitReached' | 'error.noFarm' | 'error.townHallExists' | 'error.notEnoughUrbs';
+export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.needsAccess' | 'error.needsWater' | 'error.needsPirateCoveWater' | 'error.needsWaterTiles' | 'error.waterInUse' | 'error.buildingLimitReached' | 'error.noFarm' | 'error.townHallExists' | 'error.notEnoughUrbs';
 
 const UNIQUE_BUILDING_ERRORS: Partial<Record<BuildingType, PlacementIssue>> = {
   townHall: 'error.townHallExists',
@@ -15,11 +18,20 @@ const UNIQUE_BUILDING_ERRORS: Partial<Record<BuildingType, PlacementIssue>> = {
 
 const ROTATIONS: readonly Rotation[] = [0, 1, 2, 3];
 
-export function frontTiles(type: BuildingType, x: number, y: number, rotation: Rotation, tier = 1): Coord[] {
+const FRONT_CACHE_LIMIT = 50_000;
+const frontCache = new Map<string, readonly Coord[]>();
+
+export function frontTiles(type: BuildingType, x: number, y: number, rotation: Rotation, tier = 1): readonly Coord[] {
+  const key = `${type}|${x}|${y}|${rotation}|${tier}`;
+  const cached = frontCache.get(key);
+  if (cached) return cached;
   const tiles = footprintTiles({ type, x, y, rotation, tier });
   const inside = new Set(tiles.map(tileKey));
   const front = frontDirection(rotation);
-  return tiles.map((tile) => neighbour(tile, front)).filter((tile) => !inside.has(tileKey(tile)));
+  const result = tiles.map((tile) => neighbour(tile, front)).filter((tile) => !inside.has(tileKey(tile)));
+  if (frontCache.size >= FRONT_CACHE_LIMIT) frontCache.clear();
+  frontCache.set(key, result);
+  return result;
 }
 
 const tileKeySets = new WeakMap<readonly Coord[], Set<string>>();
@@ -48,7 +60,7 @@ export function perimeterTiles(type: BuildingType, x: number, y: number, rotatio
   return [...around.values()];
 }
 
-const accessTiles = (type: BuildingType, x: number, y: number, rotation: Rotation, tier: number): Coord[] => (
+const accessTiles = (type: BuildingType, x: number, y: number, rotation: Rotation, tier: number): readonly Coord[] => (
   type === 'transitHub' ? perimeterTiles(type, x, y, rotation, tier) : frontTiles(type, x, y, rotation, tier)
 );
 
@@ -116,7 +128,13 @@ export function nextFront(fronts: readonly Rotation[], current: Rotation, step: 
   return beyond ?? ordered[0] ?? current;
 }
 
+function standsFacingWater(state: GameState, type: BuildingType, x: number, y: number, tier: number): Rotation {
+  const water = navigableWaterKeys(state);
+  return ROTATIONS.find((rotation) => frontTiles(type, x, y, rotation, tier).some((tile) => water.has(tileKey(tile)))) ?? 0;
+}
+
 export function autoRotation(state: GameState, type: BuildingType, x: number, y: number, tier = 1): Rotation {
+  if (isStandsType(type)) return standsFacingWater(state, type, x, y, tier);
   if (!BUILDING_SPECS[type].requiresRoad) return 0;
   const onRoad = ROTATIONS.find((rotation) => frontAccessModes(state, type, x, y, rotation, tier).includes('road'));
   const onBrt = ROTATIONS.find((rotation) => frontAccessModes(state, type, x, y, rotation, tier).includes('brt'));
@@ -139,13 +157,16 @@ export function placementIssue(
 ): PlacementIssue | null {
   const tiles = footprintTiles({ type, x, y, rotation, tier });
   if (!tiles.every((tile) => isInsideOwnedParcels(state, tile))) return 'error.outsideOwnedParcels';
+  const sceneryIssue = isSeaSceneryType(type) ? seaSceneryIssue(state, type, x, y, rotation, tier, ignoreBuildingId) : null;
+  if (sceneryIssue) return sceneryIssue;
   const occupied = occupiedTiles(state, ignoreBuildingId);
-  if (tiles.some((tile) => occupied.has(tileKey(tile)))) return 'error.tilesOccupied';
+  if (!isSeaSceneryType(type) && tiles.some((tile) => occupied.has(tileKey(tile)))) return 'error.tilesOccupied';
   if (BUILDING_SPECS[type].requiresRoad && !frontHasAccess(state, type, x, y, rotation, tier)) {
     if (BUILDING_SPECS[type].accessModes.includes('pedestrianWay')) return 'error.needsAccess';
     return BUILDING_SPECS[type].accessModes.includes('brt') ? 'error.needsRoadOrBrt' : 'error.needsRoad';
   }
-  if ((type === 'marina' || type === 'hydroPlant') && !touchesWater(state, { type, x, y, rotation, tier })) return 'error.needsWater';
+  if ((type === 'marina' || type === 'hydroPlant' || type === 'pirateCove') && !touchesWater(state, { type, x, y, rotation, tier })) return 'error.needsWater';
+  if (isStandsType(type) && !coveForStands(state, type, x, y, rotation)) return 'error.needsPirateCoveWater';
   if (isMove) return null;
   const existsError = UNIQUE_BUILDING_ERRORS[type];
   if (existsError && state.buildings.some((building) => building.type === type)) return existsError;

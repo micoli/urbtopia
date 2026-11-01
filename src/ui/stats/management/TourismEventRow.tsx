@@ -17,7 +17,7 @@ export function TourismEventRow({row, now}: TourismEventRowProps) {
     return <li className="tourism-row">
         <button type="button" className="tourism-row-name" onClick={() => show(building.id)}>
             <Icon name={gathering.kind === 'show' ? 'music' : 'trophy'}/> {t(`building.${building.type}`)}
-            <small>{artist?.name ?? t(`gathering.kind.${gathering.kind}`)}</small>
+            <small>{gathering.title ? t(`pirateShow.${gathering.title}`) : artist?.name ?? t(`gathering.kind.${gathering.kind}`)}</small>
         </button>
         <span className="tourism-row-stat">{t(`gathering.phase.${phase}`)}</span>
         <span className="tourism-row-stat">{t(`gathering.until.${phase}`).replace('{time}', formatTimeLeft(gatheringPhaseEnd(gathering, phase) - now))}</span>

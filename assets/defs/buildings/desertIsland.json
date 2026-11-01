@@ -1,0 +1,38 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "seaScenery",
+  "section": "build.water",
+  "cost": 150,
+  "unlockCitizens": 800,
+  "requiresRoad": false,
+  "name": {
+    "en": "Desert island",
+    "fr": "Île déserte"
+  },
+  "description": {
+    "en": "A lonely island laid on Water tiles, which are no longer navigable.",
+    "fr": "Une île isolée posée sur des tuiles d’eau, qui ne sont plus navigables."
+  },
+  "tiers": [
+    {
+      "model": "buildings-desert-island-2x2",
+      "footprint": [2, 2]
+    },
+    {
+      "footprint": [2, 3],
+      "upgradeCost": {
+        "urbs": 400,
+        "goods": {}
+      },
+      "model": "buildings-desert-island-2x3"
+    },
+    {
+      "footprint": [3, 3],
+      "upgradeCost": {
+        "urbs": 900,
+        "goods": {}
+      },
+      "model": "buildings-desert-island-3x3"
+    }
+  ]
+}

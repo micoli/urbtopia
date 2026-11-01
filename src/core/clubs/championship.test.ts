@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { advance, createBuilding, dispatch, newGame, registerSportRules, unregisterSportRules, type Building, type Command, type GameState, type SportRules } from '../index';
-import { CHAMPIONSHIP, clubRankOf, nextFixture } from './championship';
+import { CHAMPIONSHIP, clubRankOf, nextFixture, previewNextGathering } from './championship';
+import { GATHERING, gatheringCapacityOf } from '../tourism/gatherings';
+import { earningsPerHour } from '../tourism/takings';
 import { checkGameState } from '../../persistence/validate';
 
 const H = 3_600_000;
@@ -114,14 +116,47 @@ describe('Championship calendar', () => {
   });
 });
 
-describe('Athletics meetings', () => {
-  it('holds isolated meetings with no Club and no ranking', () => {
-    const state = city('stadium');
-    const set = advance(state, CHAMPIONSHIP.meetingIntervalMs - CHAMPIONSHIP.leadMs + 1).state;
-    expect(stadium(set).attraction?.gathering?.kind).toBe('match');
+describe('Meetings', () => {
+  const meetingSet = (state: GameState) => advance(state, CHAMPIONSHIP.meetingIntervalMs - CHAMPIONSHIP.leadMs + 1).state;
+
+  it.each(['stadium', 'footballStadium', 'baseballField'] as const)('holds free isolated Meetings in a %s with no Club and no ranking', type => {
+    const set = meetingSet(city(type));
+    expect(stadium(set).attraction?.gathering).toMatchObject({ kind: 'meeting', cost: 0 });
     expect(stadium(set).club).toBeUndefined();
     const done = advance(set, CHAMPIONSHIP.meetingIntervalMs + 4 * H).state;
     expect(stadium(done).attraction?.gathering).toBeUndefined();
     expect(stadium(done).attraction!.takings).toBeGreaterThan(0);
+  });
+
+  it('seats the same crowd whatever the stadium, so only a Match fills a big one', () => {
+    const crowded = (state: GameState): GameState => ({ ...state, buildings: state.buildings.map(candidate => (candidate.id === 1 ? { ...candidate, attraction: { takings: 0, ticket: 0 } } : candidate)), urbs: 10_000 });
+    const meeting = stadium(meetingSet(crowded(city('footballStadium')))).attraction!.gathering!;
+    expect(meeting.crowd).toBeLessThanOrEqual(GATHERING.meetingCapacity);
+    expect(previewNextGathering(city('footballStadium'), stadium(city('footballStadium'))).crowd).toBeLessThanOrEqual(GATHERING.meetingCapacity);
+  });
+
+  it('forecasts the same crowd as the Meeting it then sets', () => {
+    const state = city('stadium');
+    const set = meetingSet(state);
+    expect(stadium(set).attraction!.gathering!.crowd).toBeCloseTo(previewNextGathering(set, stadium(set)).crowd);
+  });
+});
+
+describe('Championship boost', () => {
+  const firstMatch = (state: GameState) => advance(state, club(state).championship!.fixtures[0]!.at - CHAMPIONSHIP.leadMs + 1).state;
+  const withBoost = (state: GameState): GameState => ({ ...state, buildings: state.buildings.map(candidate => (candidate.id === 1 ? { ...candidate, attraction: { takings: 0, nextMatchBoost: true } } : candidate)) });
+
+  it('draws a bigger crowd to the next Match, then is used up', () => {
+    const plain = stadium(firstMatch(found())).attraction!;
+    const boosted = stadium(firstMatch(withBoost(found()))).attraction!;
+    expect(boosted.gathering!.crowd).toBeGreaterThan(plain.gathering!.crowd);
+    expect(boosted.nextMatchBoost).toBeUndefined();
+  });
+
+  it('never draws more than the stadium seats, and earns nothing by itself', () => {
+    const state = withBoost(found());
+    const boosted = stadium(firstMatch(state)).attraction!.gathering!;
+    expect(boosted.crowd).toBeLessThanOrEqual(gatheringCapacityOf(stadium(state)));
+    expect(earningsPerHour(stadium(state), 1, 1)).toBe(0);
   });
 });

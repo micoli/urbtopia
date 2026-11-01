@@ -3,7 +3,7 @@ import { footprintTiles } from '../buildings/buildingSpecs';
 import { DIRECTIONS, neighbour, tileKey } from '../map/geometry';
 import type { Coord } from '../map/coord';
 import type { Building, GameState } from '../engine/state';
-import { waterKeys } from './waterTiles';
+import { navigableWaterKeys, scenerySignature } from './waterTiles';
 
 export function marinaCapacity(marina: Pick<Building, 'tier'>): number {
   const tiers = tiersOf('marina');
@@ -11,7 +11,7 @@ export function marinaCapacity(marina: Pick<Building, 'tier'>): number {
 }
 
 export function shoreWaterKeys(state: GameState, marina: Pick<Building, 'type' | 'x' | 'y' | 'rotation' | 'tier'>): string[] {
-  const water = waterKeys(state);
+  const water = navigableWaterKeys(state);
   const footprint = footprintTiles(marina);
   const inside = new Set(footprint.map(tileKey));
   const shore = footprint.flatMap((tile) => DIRECTIONS.map((direction) => neighbour(tile, direction)));
@@ -29,7 +29,7 @@ export function connectedWaterKeys(state: GameState, marina: Pick<Building, 'typ
   if (!tiles) return floodFromShore(state, marina);
   const perMarina = connectedCache.get(tiles) ?? new Map<string, Set<string>>();
   connectedCache.set(tiles, perMarina);
-  const key = `${marina.type}:${marina.x},${marina.y},${marina.rotation},${marina.tier}`;
+  const key = `${marina.type}:${marina.x},${marina.y},${marina.rotation},${marina.tier}|${scenerySignature(state)}`;
   const cached = perMarina.get(key);
   if (cached) return cached;
   const reached = floodFromShore(state, marina);
@@ -38,7 +38,7 @@ export function connectedWaterKeys(state: GameState, marina: Pick<Building, 'typ
 }
 
 function floodFromShore(state: GameState, marina: Pick<Building, 'type' | 'x' | 'y' | 'rotation' | 'tier'>): Set<string> {
-  const water = waterKeys(state);
+  const water = navigableWaterKeys(state);
   const reached = new Set(shoreWaterKeys(state, marina));
   const queue = [...reached];
   while (queue.length > 0) {

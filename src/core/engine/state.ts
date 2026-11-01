@@ -1,3 +1,4 @@
+import type { PirateShowTitle } from '../tourism/pirateShows';
 import type { ClubData } from '../clubs/clubTypes';
 import type { ChallengeClaim, ChallengeProgress } from '../challenges/types';
 import type { TradeLedgerEntry } from '../trade/types';
@@ -88,13 +89,15 @@ export interface VenueData {
 
 // A one-day crowd event held in an Attraction: its crowd is fixed when it is scheduled, its Ticket revenue paid when it ends.
 export interface GatheringData {
-  kind: 'show' | 'match';
+  kind: 'show' | 'match' | 'meeting';
   startsAt: number;
   endsAt: number;
   cost: number;
   quality: number;
   // The Artist who plays a Concert hall Show.
   artist?: string;
+  // The title drawn for a Pirate cove Show.
+  title?: PirateShowTitle;
   crowd: number;
   tourists: number;
   citizens: number;
@@ -109,6 +112,7 @@ export interface GatheringResult {
   revenue: number;
   cost: number;
   artist?: string;
+  title?: PirateShowTitle;
 }
 
 // Ticket level of an Attraction (0 lowest), the Urbs its Tourists have paid and nobody has collected, and its Gathering.
@@ -120,9 +124,9 @@ export interface AttractionData {
   cooldownUntil?: number;
   // Shows scheduled so far: with the building it seeds the Artists offered for the next one.
   shows?: number;
-  // Until when a Championship's success draws extra Tourists.
-  boostUntil?: number;
-  // The athletics meeting slot last set, so the same one is not set twice.
+  // A Championship's success draws a bigger crowd to the next Match.
+  nextMatchBoost?: boolean;
+  // The Meeting slot last set, so the same one is not set twice.
   meetingAt?: number;
 }
 
@@ -144,6 +148,8 @@ export interface Building extends Coord {
   venue?: VenueData;
   attraction?: AttractionData;
   club?: ClubData;
+  // Stands only: the Pirate cove they belong to.
+  coveId?: number;
 }
 
 export interface Storage {
@@ -189,7 +195,7 @@ export interface PlantedCrop {
   plantedAt: number;
 }
 
-export type BoatFamily = 'pleasure' | 'fishing' | 'casino';
+export type BoatFamily = 'pleasure' | 'fishing' | 'casino' | 'pirate' | 'frigate';
 
 export interface Boat extends Coord {
   id: number;

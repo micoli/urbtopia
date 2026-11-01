@@ -1,4 +1,5 @@
 import { t } from '../i18n/t';
+import { ArticleLink } from './content/ArticleLink';
 import { EntryLink } from './content/EntryLink';
 import { LiveRules } from './content/LiveRules';
 import { MechanicsLink } from './content/MechanicsLink';
@@ -10,7 +11,7 @@ interface ArticlePageProps {
   article: Article;
 }
 
-const ARTICLE_COMPONENTS = { EntryLink, LiveRules, MechanicsLink };
+const ARTICLE_COMPONENTS = { ArticleLink, EntryLink, LiveRules, MechanicsLink };
 
 export function ArticlePage({ route, article }: ArticlePageProps) {
   const { default: Content, meta } = translationOf(article, route.language);

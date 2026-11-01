@@ -1,4 +1,4 @@
-import { CROWD_WINDOW_MS, footprintOf, hashSeed, nextRandom, type Building } from '../core';
+import { CROWD_WINDOW_MS, DIRECTION_VECTORS, footprintOf, frontDirection, hashSeed, nextRandom, type Building } from '../core';
 import type { GatheringData } from '../core/engine/state';
 
 export const CROWD = {
@@ -22,6 +22,8 @@ export interface CrowdSlot {
   yaw: number;
   phase: number;
   color: number;
+  // A figure on Stands: sits at this height and stays put.
+  seatHeight?: number;
 }
 
 // How much of the crowd is on site, from 0 to 1: it builds up in the hour before and thins out in the hour after.
@@ -71,4 +73,29 @@ export function crowdSlots(building: Pick<Building, 'id' | 'type' | 'x' | 'y' | 
     slots.push({ x, z, fromX: x + outwardX * walk, fromZ: z + outwardZ * walk, yaw: Math.atan2(centerX - x, centerZ - z), phase: random() * Math.PI * 2, color: Math.floor(random() * colors) });
   }
   return slots;
+}
+
+// How high the back row of Stands rises above the water side, in tiles, as modelled.
+const STANDS_RISE = 0.5;
+const STANDS_INSET = 0.14;
+
+// Places on the rows of Stands, higher towards the back, facing the water. The same Stands always get the same ones.
+export function standsSeats(stands: readonly Pick<Building, 'id' | 'type' | 'x' | 'y' | 'rotation' | 'tier'>[], count: number, colors: number): CrowdSlot[] {
+  let rng = hashSeed(`seats:${stands.map(({ id }) => id).join(',')}`);
+  const random = () => {
+    const draw = nextRandom(rng);
+    rng = draw.rngState;
+    return draw.value;
+  };
+  return Array.from({ length: stands.length === 0 ? 0 : count }, (_, index) => {
+    const block = stands[index % stands.length]!;
+    const { width, depth } = footprintOf(block.type, block.rotation, block.tier);
+    const front = DIRECTION_VECTORS[frontDirection(block.rotation)];
+    const x = block.x + STANDS_INSET + random() * (width - 2 * STANDS_INSET);
+    const z = block.y + STANDS_INSET + random() * (depth - 2 * STANDS_INSET);
+    const frontEdge = front.x !== 0 ? (front.x > 0 ? block.x + width : block.x) : front.y > 0 ? block.y + depth : block.y;
+    const fromFront = front.x !== 0 ? Math.abs(frontEdge - x) / width : Math.abs(frontEdge - z) / depth;
+    const walk = 3 + random() * 3;
+    return { x, z, fromX: x - front.x * walk, fromZ: z - front.y * walk, yaw: Math.atan2(front.x, front.y), phase: random() * Math.PI * 2, color: Math.floor(random() * colors), seatHeight: 0.04 + fromFront * STANDS_RISE };
+  });
 }

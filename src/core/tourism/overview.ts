@@ -9,7 +9,7 @@ import { inGatheringCooldown, isShowType, previewGathering } from './gatherings'
 import { artistOffer } from './artists';
 import { attractionTakingsCapOf, earningsPerHour, takingsOf, touristsPerDay } from './takings';
 import type { TouristMode } from './touristFlows';
-import { boostOf, isAttraction, spendingFactor } from './tourists';
+import { isAttraction, sellsTickets, spendingFactor } from './tourists';
 
 export type TouristModes = Record<TouristMode, number>;
 
@@ -30,13 +30,14 @@ export interface AttractionRow {
 
 export type TourismAdvice =
   | { kind: 'collect'; buildingId: number; count: number }
+  | { kind: 'collectArena'; buildingId: number; count: number }
   | { kind: 'show'; buildingId: number; net: number }
   | { kind: 'hotel' }
   | { kind: 'attractiveness'; missing: number }
   | { kind: 'station'; buildingId: number; count: number };
 
 export interface TourismOverview {
-  attractions: AttractionRow[];
+  rows: AttractionRow[];
   touristsPerDay: number;
   perHour: number;
   toCollect: number;
@@ -64,15 +65,14 @@ const cityDrawOf = (state: GameState): CityDraw => ({ attractiveness: cityAttrac
 
 function rowOf(state: GameState, building: Building, modes: TouristModes, { attractiveness, spending }: CityDraw): AttractionRow {
   const now = state.lastSeen;
-  const boost = boostOf(building, now);
-  const perHour = earningsPerHour(building, attractiveness, spending) * boost;
+  const perHour = earningsPerHour(building, attractiveness, spending);
   const takings = takingsOf(building);
   const cap = attractionTakingsCapOf(building);
-  const full = takings >= cap;
+  const full = isAttraction(building) && takings >= cap;
   const gathering = building.attraction?.gathering ?? null;
   return {
     building,
-    tourists: touristsPerDay(building, attractiveness) * boost,
+    tourists: touristsPerDay(building, attractiveness),
     perHour,
     takings,
     cap,
@@ -103,11 +103,13 @@ function adviceOf(state: GameState, rows: readonly AttractionRow[], places: numb
   const advice: TourismAdvice[] = [];
   const full = rows.filter(row => row.full);
   if (full[0]) advice.push({ kind: 'collect', buildingId: full[0].building.id, count: full.length });
+  const arenasDue = rows.filter(row => !isAttraction(row.building) && row.takings >= 1);
+  if (arenasDue[0]) advice.push({ kind: 'collectArena', buildingId: arenasDue[0].building.id, count: arenasDue.length });
   const shows = rows.filter(row => row.canHoldShow).map(row => ({ row, net: bestShowNet(state, row.building) })).filter(show => show.net > 0).sort((a, b) => b.net - a.net);
   if (shows[0]) advice.push({ kind: 'show', buildingId: shows[0].row.building.id, net: shows[0].net });
   if (hotels === 0) advice.push({ kind: 'hotel' });
   if (places < HOTEL.attractiveCount) advice.push({ kind: 'attractiveness', missing: HOTEL.attractiveCount - places });
-  const onlyByCar = rows.filter(row => row.modes.car > 0 && row.modes.walk === 0 && row.modes.transit === 0);
+  const onlyByCar = rows.filter(row => isAttraction(row.building) && row.modes.car > 0 && row.modes.walk === 0 && row.modes.transit === 0);
   if (onlyByCar[0]) advice.push({ kind: 'station', buildingId: onlyByCar[0].building.id, count: onlyByCar.length });
   return advice;
 }
@@ -120,21 +122,21 @@ export function tourismOverview(state: GameState): TourismOverview {
     modesById.set(flow.to, modes);
   }
   const draw = cityDrawOf(state);
-  const attractions = state.buildings.filter(isAttraction).map(building => rowOf(state, building, modesById.get(building.id) ?? { car: 0, walk: 0, transit: 0 }, draw));
+  const rows = state.buildings.filter(sellsTickets).map(building => rowOf(state, building, modesById.get(building.id) ?? { car: 0, walk: 0, transit: 0 }, draw));
   const places = attractivePlaces(state);
   const hotels = state.buildings.filter(building => building.type === 'hotel').length;
   return {
-    attractions: [...attractions].sort((a, b) => b.takings / Math.max(1, b.cap) - a.takings / Math.max(1, a.cap)),
-    touristsPerDay: attractions.reduce((total, row) => total + row.tourists, 0),
-    perHour: attractions.reduce((total, row) => total + row.perHour, 0),
-    toCollect: attractions.reduce((total, row) => total + Math.floor(row.takings), 0),
+    rows: [...rows].sort((a, b) => b.takings / Math.max(1, b.cap) - a.takings / Math.max(1, a.cap)),
+    touristsPerDay: rows.reduce((total, row) => total + row.tourists, 0),
+    perHour: rows.reduce((total, row) => total + row.perHour, 0),
+    toCollect: rows.reduce((total, row) => total + Math.floor(row.takings), 0),
     attractiveness: draw.attractiveness,
     places,
     placesGoal: HOTEL.attractiveCount,
     hotels,
     spending: draw.spending,
-    gatherings: attractions.filter(row => row.gathering).sort((a, b) => a.gathering!.startsAt - b.gathering!.startsAt),
-    advice: attractions.length === 0 ? [] : adviceOf(state, attractions, places, hotels),
+    gatherings: rows.filter(row => row.gathering).sort((a, b) => a.gathering!.startsAt - b.gathering!.startsAt),
+    advice: rows.length === 0 ? [] : adviceOf(state, rows, places, hotels),
   };
 }
 

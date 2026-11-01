@@ -1,10 +1,10 @@
 import { createStore } from 'zustand/vanilla';
 
-export type HintId = 'build' | 'repaint' | 'production' | 'tourism';
+export type HintId = 'build' | 'repaint' | 'production' | 'tourism' | 'arena';
 
 export const HINTS_KEY = 'urbtopia-hints';
 
-const HINT_IDS: readonly HintId[] = ['build', 'repaint', 'production', 'tourism'];
+const HINT_IDS: readonly HintId[] = ['build', 'repaint', 'production', 'tourism', 'arena'];
 
 export function parseSeenHints(raw: string | null): HintId[] {
   if (raw === null) return [];
