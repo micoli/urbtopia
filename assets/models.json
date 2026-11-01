@@ -3103,6 +3103,39 @@
       }
     }
   },
+  "buildings-library-2x2": {
+    "file": "buildings/library-2x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-library-3x2": {
+    "file": "buildings/library-3x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
+  "buildings-library-4x2": {
+    "file": "buildings/library-4x2",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      4,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
   "buildings-livestock-farm-2x2-t1-tone-a": {
     "file": "buildings/livestock-farm-2x2-t1-tone-a",
     "source": "managed",

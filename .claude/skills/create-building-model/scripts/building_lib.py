@@ -47,7 +47,7 @@ FLOOR_HEIGHT = {"house": 0.30, "apartment": 0.28, "office": 0.32}
 FLOOR_RANGE = {"house": (1, 3), "apartment": (3, 12), "office": (4, 20)}
 ROOF_STYLES = ("flat", "gable_half", "gable_third", "hip", "mansard", "shed", "gable_cross", "sawtooth")
 FEATURES = ("sign", "chimney", "antenna", "awning", "balcony", "skylight", "monumental_door",
-            "vent", "solar_panels", "bushes", "clock_tower", "flagpole", "smokestack", "roller_door", "storefront", "penthouse", "portico", "red_cross", "door_hood", "penthouse_terrace", "stair_head", "round_dormer", "round_window", "roof_lantern", "striped_awning", "stall", "material_yard", "marquee", "wall_tools", "bush_at", "industrial_door", "hazard_band", "hardware_display", "roof_reel", "curved_marquee", "pilasters", "crystals", "red_carpet", "roof_tank", "roof_pipes", "loading_dock", "crate_stacks", "side_conveyor", "bulb_row", "stone_accents", "roof_vents", "roof_coin", "poster", "roof_die", "roof_card", "door_at")
+            "vent", "solar_panels", "bushes", "clock_tower", "flagpole", "smokestack", "roller_door", "storefront", "penthouse", "portico", "red_cross", "door_hood", "penthouse_terrace", "stair_head", "round_dormer", "round_window", "roof_lantern", "striped_awning", "stall", "material_yard", "marquee", "wall_tools", "bush_at", "industrial_door", "hazard_band", "hardware_display", "roof_reel", "curved_marquee", "pilasters", "crystals", "red_carpet", "roof_tank", "roof_pipes", "loading_dock", "crate_stacks", "side_conveyor", "bulb_row", "stone_accents", "roof_vents", "roof_coin", "poster", "roof_die", "roof_card", "door_at", "colonnade", "dome", "raised_center", "barrel_wings", "cypresses")
 FRONT_FEATURES = ("sign", "awning", "monumental_door", "bushes", "door_hood", "round_window")
 FACES = ("front", "back", "left", "right")
 
@@ -105,6 +105,7 @@ STYLES["urbtopia"] = {
     "parapet": 0.06, "parapet_width": 0.035,
 }
 
+COLONNADE_PROJECTION = 0.22  # a colonnade stands this far out of the front wall
 PORTICO_PROJECTION = 0.18  # how far a portico stands out of the front wall: the body footprint is smaller by this much
 SAWTOOTH_HEIGHT = 0.16
 SAWTOOTH_TOOTH = 0.5
@@ -1119,6 +1120,101 @@ def add_portico(spec, parts):
         parts.append(wall_box(spec, f"portico_column_{side}", "front", side * (width / 2 - 0.02), 0.02, (0.04, 0.04, top - 0.02), trim, half=front + PORTICO_PROJECTION - 0.04))
 
 
+def add_colonnade(spec, parts, columns=4, text=None, width=None):
+    """A classical front: steps, a row of columns, a frieze (optionally lettered) and a triangular pediment."""
+    floor = spec["floor_height"]
+    length, _ = wall_extent(spec, "front")
+    wall, trim, ink = color_index(spec, "wall"), color_index(spec, "trim"), PALETTE_NAMES.index(spec["cfg"]["ink"])
+    front = wall_half(spec, "front")
+    span = width if width else min(1.1, length * 0.55)
+    reach = COLONNADE_PROJECTION
+    column_height = floor * 1.75
+    frieze = 0.07
+    parts.append(wall_box(spec, "colonnade_step_low", "front", 0, 0, (span + 0.2, reach + 0.1, 0.02), trim))
+    parts.append(wall_box(spec, "colonnade_step_high", "front", 0, 0.02, (span + 0.12, reach + 0.04, 0.02), trim))
+    base = 0.04
+    column_y = -(front + reach - 0.05)
+    for index in range(columns):
+        x = -span / 2 + 0.05 + index * (span - 0.1) / (columns - 1)
+        parts.append(lpm.box(f"column_base_{index}", (0.07, 0.07, 0.02), at=(x, column_y, base), color=trim))
+        parts.append(lpm.prism(f"column_{index}", 8, 0.026, column_height - base - 0.04, at=(x, column_y, base + 0.02), color=wall))
+        parts.append(lpm.box(f"column_capital_{index}", (0.075, 0.075, 0.025), at=(x, column_y, column_height - 0.025), color=trim))
+    parts.append(wall_box(spec, "colonnade_frieze", "front", 0, column_height, (span + 0.08, reach + 0.01, frieze), wall))
+    rise = span * 0.16
+    parts.append(lpm.sweep("pediment", [(-span / 2 - 0.04, 0.0), (span / 2 + 0.04, 0.0), (0.0, rise)], depth=reach + 0.01, at=(0.0, -(front + (reach + 0.01) / 2 - 0.01), column_height + frieze), color=trim))
+    parts.append(lpm.sweep("pediment_face", [(-span / 2 + 0.02, 0.012), (span / 2 - 0.02, 0.012), (0.0, rise - 0.025)], depth=0.012, at=(0.0, -(front + reach + 0.004), column_height + frieze), color=wall))
+    if text:
+        add_vector_sign_text(spec, parts, "front", text, trim, column_height + 0.0, 0.032, half=front + reach - 0.015)
+
+
+def raised_height(spec):
+    return spec["floor_height"] * 0.95
+
+
+def add_raised_center(spec, parts, ratio=0.45):
+    """A taller block over the middle of a flat roof, with a window row on its front and back, so the sides read as wings."""
+    body_width, body_depth = spec["body"]
+    wall, roof = color_index(spec, "wall"), color_index(spec, "roof")
+    width, depth, height = body_width * ratio, body_depth * 0.8, raised_height(spec)
+    base = roof_surface(spec) - 0.005
+    parts.append(rounded_block("raised_center", width, depth, height, wall, spec["cfg"]["corner"], at=(0, 0, base)))
+    parts.append(lpm.box("raised_cornice", (width + 0.05, depth + 0.05, 0.025), at=(0, 0, base + height), color=roof))
+    count = max(3, int(width / 0.32))
+    for face in ("front", "back"):
+        for index in range(count):
+            along = (index - (count - 1) / 2) * (width - 0.16) / count
+            add_window(spec, parts, f"raised_{face}_{index}", face, along, base + height * 0.22, 0.16, height * 0.56, half=depth / 2)
+
+
+def add_barrel_wings(spec, parts, inner=0.45, rise=0.14):
+    """A glazed barrel vault over each side of a flat roof, with ribs, flanking the raised center."""
+    body_width, body_depth = spec["body"]
+    trim, glass = color_index(spec, "trim"), PALETTE_NAMES.index("glass_blue")
+    centre_half = body_width * inner / 2
+    width = (body_width / 2 - centre_half) * 0.75
+    centre_x = centre_half + (body_width / 2 - centre_half) / 2
+    depth = body_depth * 0.7
+    base = roof_surface(spec) - 0.005
+
+    def arch(span, lift):
+        return [(span / 2 * math.cos(math.radians(a)), lift * math.sin(math.radians(a))) for a in range(0, 181, 30)]
+
+    for side in (-1, 1):
+        x = side * centre_x
+        parts.append(lpm.box(f"barrel_plinth_{side}", (width + 0.04, depth + 0.04, 0.03), at=(x, 0, base), color=trim))
+        parts.append(lpm.sweep(f"barrel_vault_{side}", arch(width, rise), depth=depth, at=(x, 0, base + 0.03), color=glass))
+        for index, y in enumerate((-depth / 2, 0.0, depth / 2)):
+            parts.append(lpm.sweep(f"barrel_rib_{side}_{index}", arch(width + 0.025, rise + 0.012), depth=0.022, at=(x, y, base + 0.03), color=trim))
+
+
+def add_cypresses(spec, parts, per_side=3, span=1.0):
+    """Slim dark trees in a row on each side of the entrance steps, inside the footprint of the colonnade."""
+    front = wall_half(spec, "front")
+    leaf = PALETTE_NAMES.index("bush")
+    for side in (-1, 1):
+        for index in range(per_side):
+            x = side * (span / 2 + 0.28 + index * 0.24)
+            parts.append(lpm.prism(f"cypress_{side}_{index}", 6, 0.05, 0.3, at=(x, -(front + 0.12), 0.0), color=leaf, radius_top=0.008))
+
+
+def add_dome(spec, parts, radius=0.3, offset=(0.0, 0.0), drum=0.1, lift=0.0, ring=False):
+    """A round drum under a copper dome with a small lantern, standing on a flat roof."""
+    wall, trim, accent = color_index(spec, "wall"), color_index(spec, "trim"), color_index(spec, "accent")
+    ox, oy = offset
+    base = roof_surface(spec) - 0.005 + lift
+    parts.append(lpm.prism("dome_drum", 12, radius * (0.9 if ring else 1.0), drum, at=(ox, oy, base), color=wall))
+    if ring:
+        for index in range(12):
+            angle = math.radians(index * 30)
+            parts.append(lpm.prism(f"dome_column_{index}", 6, 0.014, drum, at=(ox + radius * 0.97 * math.cos(angle), oy + radius * 0.97 * math.sin(angle), base), color=wall))
+    parts.append(lpm.prism("dome_ring", 12, radius + 0.018, 0.018, at=(ox, oy, base + drum - 0.01), color=trim))
+    top = base + drum + 0.008
+    profile = [(radius * math.cos(math.radians(a)), radius * 0.9 * math.sin(math.radians(a))) for a in (0, 25, 50, 70, 85)] + [(0.0, radius * 0.9)]
+    parts.append(lpm.lathe("dome_shell", profile, segments=12, at=(ox, oy, top), color=accent))
+    parts.append(lpm.prism("dome_lantern", 8, 0.04, 0.07, at=(ox, oy, top + radius * 0.9 - 0.01), color=trim))
+    parts.append(lpm.prism("dome_finial", 6, 0.012, 0.06, at=(ox, oy, top + radius * 0.9 + 0.05), color=accent, radius_top=0.003))
+
+
 def add_door_hood(spec, parts):
     """A small two-slope hood over the front door: a gable pointing out of the wall, closed on all sides."""
     width, height = door_layout(spec)
@@ -1703,6 +1799,16 @@ def add_feature(spec, parts, feature):
         add_penthouse(spec, parts, feature.get("scale", 0.58), tuple(feature.get("offset", (0.0, 0.0))))
     elif kind == "portico":
         add_portico(spec, parts)
+    elif kind == "colonnade":
+        add_colonnade(spec, parts, feature.get("columns", 4), feature.get("text"), feature.get("width"))
+    elif kind == "dome":
+        add_dome(spec, parts, feature.get("radius", 0.3), tuple(feature.get("offset", (0.0, 0.0))), feature.get("drum", 0.1), raised_height(spec) if has_feature(spec, "raised_center") else 0.0, feature.get("ring", False))
+    elif kind == "cypresses":
+        add_cypresses(spec, parts, feature.get("per_side", 3), feature.get("span", 1.0))
+    elif kind == "raised_center":
+        add_raised_center(spec, parts, feature.get("ratio", 0.45))
+    elif kind == "barrel_wings":
+        add_barrel_wings(spec, parts, feature.get("inner", 0.45), feature.get("rise", 0.14))
     elif kind == "striped_awning":
         add_striped_awning(spec, parts, feature.get("along", 0.17), feature.get("width", 0.5), feature.get("rise", 0.84), feature.get("reach", 0.1), feature.get("stripes", 6), feature.get("level", 0))
     elif kind == "crate_stacks":
@@ -4083,7 +4189,7 @@ def build(spec, out_dir):
     for volume in volumes:
         parts += build_volume(specs[volume["role"]], volume, rng, bushes)
     assert_closed(parts)
-    projection = PORTICO_PROJECTION if has_feature(spec, "portico") else 0.0
+    projection = COLONNADE_PROJECTION if has_feature(spec, "colonnade") else PORTICO_PROJECTION if has_feature(spec, "portico") else 0.0
     shift(parts, 0, projection / 2)
 
     extra_volumes = len(volumes) - 1

@@ -17,7 +17,7 @@
   "radius": 10,
   "tiers": [
     {
-      "model": "buildings-school-2x2",
+      "model": "buildings-library-2x2",
       "footprint": [2, 2],
       "capacity": 300,
       "radius": 10
@@ -37,7 +37,8 @@
       "upgradeCost": {
         "urbs": 480,
         "goods": {}
-      }
+      },
+      "model": "buildings-library-3x2"
     },
     {
       "capacity": 1200,
@@ -54,10 +55,12 @@
       "upgradeCost": {
         "urbs": 1600,
         "goods": {}
-      }
+      },
+      "model": "buildings-library-4x2"
     }
   ],
   "category": "education",
+  "drawnToScale": true,
   "power": 2,
   "water": 0,
   "supplementary": true
