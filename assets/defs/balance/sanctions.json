@@ -17,7 +17,7 @@
       "citizenLossSeverity": 0
     },
     "hard": {
-      "factors": ["electricity", "water", "waste", "safety", "health", "pollution", "congestion", "climate"],
+      "factors": ["electricity", "water", "waste", "safety", "health", "pollution", "congestion", "climate", "knowledge"],
       "taxFloor": 0.5,
       "citizenLossSeverity": 0
     }

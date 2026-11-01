@@ -16,6 +16,7 @@ afterAll(() => {
 const NOW = 1_700_000_000_000;
 const HOUR = 3_600_000;
 const SPOT = { x: 56, y: 59 };
+const EDUCATION: readonly string[] = ['school', 'middleSchool', 'highSchool', 'university', 'library'];
 
 interface Setup {
   difficulty?: Difficulty;
@@ -25,13 +26,15 @@ interface Setup {
   coal?: boolean;
   park?: boolean;
   adapting?: boolean;
+  schooling?: readonly string[];
 }
 
-function scenario({ difficulty = 'easy', services = true, water = true, power = 1, coal = false, park = false, adapting = false }: Setup = {}) {
+function scenario({ difficulty = 'easy', services = true, water = true, power = 1, coal = false, park = false, adapting = false, schooling }: Setup = {}) {
   let state: GameState = { ...newGame({ seed: 'sanction', now: NOW }), difficulty, adaptationUntil: adapting ? NOW + 24 * HOUR : 0 };
   const home: Building = { ...createBuilding(state.nextId, 'home', SPOT.x, SPOT.y, 0), tier: 2 };
   state = { ...state, nextId: state.nextId + 1, buildings: [...state.buildings, home] };
   if (services) state = withAllServices(state, SPOT);
+  if (schooling) state = { ...state, buildings: state.buildings.filter(building => !EDUCATION.includes(building.type) || schooling.includes(building.type)) };
   if (water) state = { ...state, buildings: [...state.buildings, { ...createBuilding(state.nextId, 'waterTower', 70, 70, 0), tier: 3 }], nextId: state.nextId + 1 };
   if (park) state = { ...state, buildings: [...state.buildings, createBuilding(state.nextId, 'park', SPOT.x + 2, SPOT.y + 2, 0)], nextId: state.nextId + 1 };
   const plant = coal ? createBuilding(state.nextId, 'coalPlant', SPOT.x + 1, SPOT.y + 1, 0) : null;
@@ -113,6 +116,40 @@ describe('Sanction of a Home', () => {
     expect(sanction.factor).toBe('pollution');
     expect(sanction.multiplier).toBeLessThan(1);
     expect(sanction.multiplier).toBeGreaterThanOrEqual(SANCTIONS.medium.taxFloor);
+  });
+});
+
+describe('Sanction of Knowledge', () => {
+  const unschooled = (difficulty: Difficulty) => scenario({ difficulty, park: true, schooling: [] });
+
+  it('sanctions a Home with no Knowledge under Hard, down to the floor', () => {
+    const { state, home, context } = unschooled('hard');
+    expect(homeSanction(state, home, context)).toMatchObject({ factor: 'knowledge', satisfaction: 0, multiplier: SANCTIONS.hard.taxFloor });
+  });
+
+  it('follows the shortfall below the required Knowledge', () => {
+    const { state, home, context } = scenario({ difficulty: 'hard', park: true, schooling: ['school', 'middleSchool'] });
+    const sanction = homeSanction(state, home, context);
+    expect(sanction.factor).toBe('knowledge');
+    expect(sanction.satisfaction).toBeCloseTo(60);
+    expect(sanction.multiplier).toBeCloseTo(SANCTIONS.hard.taxFloor + (1 - SANCTIONS.hard.taxFloor) * 0.6);
+  });
+
+  it('is satisfied by the four School degrees without a Library', () => {
+    const { state, home, context } = scenario({ difficulty: 'hard', park: true, schooling: ['school', 'middleSchool', 'highSchool', 'university'] });
+    expect(homeSanction(state, home, context)).toMatchObject({ factor: null, multiplier: 1 });
+  });
+
+  it('does not sanction below Hard', () => {
+    for (const difficulty of ['cozy', 'easy', 'medium'] as const) {
+      const { state, home, context } = unschooled(difficulty);
+      expect(homeSanction(state, home, context).factor).toBeNull();
+    }
+  });
+
+  it('is suspended during the Adaptation period', () => {
+    const { state, home, context } = scenario({ difficulty: 'hard', park: true, schooling: [], adapting: true });
+    expect(homeSanction(state, home, context)).toMatchObject({ factor: null, multiplier: 1 });
   });
 });
 

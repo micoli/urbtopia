@@ -9,7 +9,7 @@ const versions = Array.from({ length: CURRENT_VERSION }, (_, index) => index + 1
 
 // Update this snapshot together with CURRENT_VERSION: a schema change needs a migration and a new frozen fixture.
 const SCHEMA_SNAPSHOT = {
-  version: 16,
+  version: 17,
   keys: [
     'adaptationUntil', 'brtRoads', 'buildings', 'busLines', 'casinoRng', 'dayCycleOffset', 'fields', 'lastSeen', 'market', 'marketUnlocked', 'nextId',
     'ownedParcels', 'rails', 'rngState', 'roads', 'roundabouts', 'seed', 'seedStock', 'storage', 'tradeLedger', 'transitFleet', 'transitLines', 'tutorial', 'urbs',
@@ -146,5 +146,22 @@ describe('Waste Adaptation period for a saved city', () => {
     const loaded = withCitizens([8]);
     if (!loaded.ok) throw new Error(loaded.reason);
     expect(loaded.state.adaptationUntil).toBe(v15.state.adaptationUntil);
+  });
+});
+
+describe('Knowledge Adaptation period for a saved city', () => {
+  const v16 = JSON.parse(fixtureText(16));
+  const load = (difficulty?: string) => parseEnvelope(JSON.stringify({ ...v16, state: { ...v16.state, ...(difficulty ? { difficulty } : {}) } }));
+
+  it('starts one for a version-16 city on Hard', () => {
+    const loaded = load('hard');
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.adaptationUntil).toBe(v16.state.lastSeen + 24 * 3_600_000);
+  });
+
+  it.each(['cozy', 'easy', 'medium', undefined])('leaves a version-16 city on %s unchanged', (difficulty) => {
+    const loaded = load(difficulty);
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state.adaptationUntil).toBe(v16.state.adaptationUntil);
   });
 });

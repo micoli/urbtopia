@@ -233,7 +233,7 @@ The escalation of an ignored Petition. It only lowers the Approval and has no ot
 _Avoid_: Riot, strike
 
 **Need level**:
-One of the five stages of the Needs pyramid, from the base up: Vital, Safety, Belonging, Esteem, Fulfilment. Each has a satisfaction from 0 to 100, computed from game data that already exists, weighted by Citizens. The Vital and Safety Need levels also drive the Sanction of a Home; the higher levels only modulate Well-being.
+One of the five stages of the Needs pyramid, from the base up: Vital, Safety, Belonging, Esteem, Fulfilment. Each has a satisfaction from 0 to 100, computed from game data that already exists, weighted by Citizens. The Vital and Safety Need levels also drive the Sanction of a Home; the higher levels only modulate Well-being, apart from Knowledge, sanctioned under Hard.
 _Avoid_: Maslow level, layer, tier (already Tier)
 
 **Difficulty**:
@@ -241,7 +241,7 @@ The setting of a city that decides which Need factors cause a Sanction: Cozy (no
 _Avoid_: Level (already Tier and Need level), mode
 
 **Sanction**:
-The reduction of a Home's Tax caused by its weakest unsatisfied Need factor among those its city's Difficulty makes sanctionable. It grows continuously with the lack of satisfaction, down to a floor of half the Tax, and never takes Citizens away. Computed per Home. Under Hard, Climate sanctions only the Homes without a Green space in reach, and Knowledge sanctions only the Homes whose Knowledge is below 50, in proportion to the shortfall; during an Adaptation period the Knowledge Sanction does not apply. The higher Need levels never cause a Sanction: they only add or withdraw a Well-being bonus. Under Cozy there is no Sanction and no warning of one, but a power shortage still lowers the Tax of the Homes it leaves unpowered.
+The reduction of a Home's Tax caused by its weakest unsatisfied Need factor among those its city's Difficulty makes sanctionable. It grows continuously with the lack of satisfaction, down to a floor of half the Tax, and never takes Citizens away. Computed per Home. Under Hard, Climate sanctions only the Homes without a Green space in reach, and Knowledge sanctions only the Homes whose Knowledge is below 50, in proportion to the shortfall; during an Adaptation period the Knowledge Sanction does not apply. The higher Need levels never cause a Sanction, apart from Knowledge under Hard: they only add or withdraw a Well-being bonus. Under Cozy there is no Sanction and no warning of one, but a power shortage still lowers the Tax of the Homes it leaves unpowered.
 _Avoid_: Penalty (already used for Well-being malus), fine, malus
 
 **Needs pyramid**:

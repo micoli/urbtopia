@@ -22,7 +22,7 @@ describe('Sanctions balance', () => {
   it.each([
     ['easy', ['safety', 'health', 'waste']],
     ['medium', ['safety', 'health', 'waste', 'pollution', 'congestion']],
-    ['hard', ['safety', 'health', 'waste', 'pollution', 'congestion', 'climate']],
+    ['hard', ['safety', 'health', 'waste', 'pollution', 'congestion', 'climate', 'knowledge']],
   ] as const)('sanctions the expected factors under %s', (difficulty, factors) => {
     expect(sanctionedFactors(difficulty)).toEqual(expect.arrayContaining([...factors, 'electricity', 'water']));
     expect(sanctionedFactors(difficulty)).toHaveLength(factors.length + 2);
@@ -42,9 +42,10 @@ describe('Sanctions balance', () => {
     }
   });
 
-  it('only names factors that are Vital or Safety Need factors, and not food', () => {
+  it('only names factors that are Vital or Safety Need factors, or Knowledge, and not food', () => {
     const levels = new Map(needsPyramid(newGame({ seed: 'sanctions', now: 0 })).levels.flatMap(level => level.factors.map(factor => [factor.id, level.id] as const)));
-    for (const factor of SANCTIONABLE_FACTOR_IDS) expect(['vital', 'safety']).toContain(levels.get(factor));
+    for (const factor of SANCTIONABLE_FACTOR_IDS.filter(candidate => candidate !== 'knowledge')) expect(['vital', 'safety']).toContain(levels.get(factor));
+    expect(levels.get('knowledge')).toBe('esteem');
     expect(SANCTIONABLE_FACTOR_IDS).not.toContain('food');
     expect(NEED_FACTOR_IDS).toEqual(expect.arrayContaining([...SANCTIONABLE_FACTOR_IDS]));
   });

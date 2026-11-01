@@ -23,7 +23,8 @@
                   "health",
                   "pollution",
                   "congestion",
-                  "climate"
+                  "climate",
+                  "knowledge"
                 ]
               }
             },
@@ -60,7 +61,8 @@
                   "health",
                   "pollution",
                   "congestion",
-                  "climate"
+                  "climate",
+                  "knowledge"
                 ]
               }
             },
@@ -97,7 +99,8 @@
                   "health",
                   "pollution",
                   "congestion",
-                  "climate"
+                  "climate",
+                  "knowledge"
                 ]
               }
             },
@@ -134,7 +137,8 @@
                   "health",
                   "pollution",
                   "congestion",
-                  "climate"
+                  "climate",
+                  "knowledge"
                 ]
               }
             },

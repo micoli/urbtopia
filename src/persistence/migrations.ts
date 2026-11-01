@@ -51,7 +51,14 @@ function startWasteAdaptation(state: unknown): unknown {
   return { ...value, adaptationUntil: Math.max(value.adaptationUntil ?? 0, value.lastSeen + 24 * 3_600_000) };
 }
 
-export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state, 7: startServiceAdaptation, 8: state => ({ ...(state as object), seedStock: {}, fields: [] }), 9: state => state, 10: startServiceAdaptation, 11: state => state, 12: renameSiloToMaterialDepot, 13: state => ({ ...(state as object), tradeLedger: [] }), 14: finishTutorialsOfPlacedVenues, 15: startWasteAdaptation };
+// A Hard city did not have to know anything: Knowledge is sanctioned from now on, after an Adaptation period.
+function startKnowledgeAdaptation(state: unknown): unknown {
+  const value = state as { lastSeen: number; adaptationUntil?: number; difficulty?: string };
+  if (value.difficulty !== 'hard') return state;
+  return { ...value, adaptationUntil: Math.max(value.adaptationUntil ?? 0, value.lastSeen + 24 * 3_600_000) };
+}
+
+export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state, 7: startServiceAdaptation, 8: state => ({ ...(state as object), seedStock: {}, fields: [] }), 9: state => state, 10: startServiceAdaptation, 11: state => state, 12: renameSiloToMaterialDepot, 13: state => ({ ...(state as object), tradeLedger: [] }), 14: finishTutorialsOfPlacedVenues, 15: startWasteAdaptation, 16: startKnowledgeAdaptation };
 
 export function migrate(state: unknown, fromVersion: number, toVersion: number, steps: Record<number, MigrationStep> = MIGRATIONS): unknown {
   let current = state;

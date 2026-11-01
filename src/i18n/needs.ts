@@ -41,6 +41,7 @@ const texts = {
   'needs.factor.leisure': ['Leisure', 'Loisirs'],
   'needs.factor.walking': ['Walkable services', 'Services accessibles à pied'],
   'needs.factor.education': ['Education', 'Éducation'],
+  'needs.factor.knowledge': ['Knowledge', 'Savoir'],
   'needs.factor.administration': ['Administration', 'Administration'],
   'needs.factor.shops': ['Shops', 'Commerces'],
   'needs.factor.greenSpaces': ['Green spaces', 'Espaces verts'],
@@ -59,6 +60,7 @@ const texts = {
   'needs.by.leisure': ['Casino, sport venues, pleasure boats', 'Casino, équipements sportifs, bateaux de plaisance'],
   'needs.by.walking': ['Pedestrian paths to services', 'Chemins piétons vers les services'],
   'needs.by.education': ['School, middle school, high school, university', 'École, collège, lycée, université'],
+  'needs.by.knowledge': ['Schools and Libraries: half of the required Knowledge is enough for full satisfaction', 'Écoles et bibliothèques : la moitié du savoir requis suffit à la pleine satisfaction'],
   'needs.by.administration': ['Town hall', 'Mairie'],
   'needs.by.shops': ['No rule yet', 'Aucune règle pour l’instant'],
   'needs.by.greenSpaces': ['Parks, trees, gardens nearby', 'Parcs, arbres, jardins à proximité'],
@@ -70,6 +72,7 @@ const texts = {
   'needs.measure.congestion': ['Commute free of Congestion', 'Trajets sans bouchons'],
   'needs.measure.climate': ['Margin from 26 °C to 34 °C', 'Marge entre 26 °C et 34 °C'],
   'needs.measure.leisure': ['Citizens near a Leisure building', 'Habitants proches d’un loisir'],
+  'needs.measure.knowledge': ['Knowledge against the required level', 'Savoir par rapport au niveau requis'],
   'needs.measure.walking': ['Walking access', 'Accès à pied'],
   'needs.measure.green': ['Green benefit', 'Bénéfice vert'],
 } as const satisfies Record<string, readonly [string, string]>;

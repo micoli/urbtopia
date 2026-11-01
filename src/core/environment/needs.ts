@@ -17,6 +17,7 @@ import type { Building, GameState } from '../engine/state';
 import { solidarityBonus } from '../economy/solidarity';
 import { isWasteCovered, wasteReport } from '../waste/waste';
 import { esteemBonusOf } from '../politics/ordinanceEffects';
+import { KNOWLEDGE, homeKnowledge } from '../services/knowledge';
 
 export const NEED_LEVELS = ['vital', 'safety', 'belonging', 'esteem', 'fulfilment'] as const;
 export type NeedLevelId = (typeof NEED_LEVELS)[number];
@@ -67,6 +68,7 @@ const FACTORS: readonly FactorSpec[] = [
   { id: 'walking', level: 'belonging', effects: ['wellbeing'], section: 'eco-traffic' },
   { id: 'solidarity', level: 'belonging', effects: ['wellbeing'], section: null, optional: true },
   { id: 'education', level: 'esteem', effects: ['wellbeing', 'tierUpgrade'], section: 'eco-services' },
+  { id: 'knowledge', level: 'esteem', effects: ['wellbeing'], section: 'eco-services' },
   { id: 'administration', level: 'esteem', effects: ['wellbeing', 'tierUpgrade'], section: 'eco-services' },
   { id: 'shops', level: 'esteem', effects: ['none'], section: null },
   { id: 'worship', level: 'fulfilment', effects: ['wellbeing'], section: 'eco-services' },
@@ -99,6 +101,7 @@ export function homeNeedSatisfactions(state: GameState, home: Building, { energy
   const benefits = homeBenefits(state, home, energy.coalRates, coverage, poweredCasinos, congestion);
   const covered = coveredCategories(coverage, home.id);
   for (const [factor, category] of SERVICE_FACTORS) result.set(factor, covered.includes(category) ? 100 : 0);
+  result.set('knowledge', share(homeKnowledge(state, home, coverage), KNOWLEDGE.requiredKnowledge));
   const waste = wasteReport(state);
   if (waste.required) result.set('waste', isWasteCovered(waste, home.id) ? 100 : 0);
   result.set('pollution', 100 - share(benefits.pollutionPenalty + benefits.odorPenalty, ECOLOGY.coalWellbeingCap));
