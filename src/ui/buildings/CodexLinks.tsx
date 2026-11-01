@@ -19,6 +19,7 @@ export function CodexLinks({ building }: { building: Building }) {
       })}
       {building.type === 'townHall' && <CodexLinkButton title={t('codex.politics.title')} onOpen={() => openCodex(undefined, 'politics')} />}
       {extendsOrUsesTransitReach(building) && <CodexLinkButton title={t('codex.transitReach.title')} onOpen={() => openCodex(undefined, 'transitReach')} />}
+      {isFacilityType(building.type) && FACILITIES[building.type].category === 'education' && <CodexLinkButton title={t('codex.knowledge.title')} onOpen={() => openCodex(undefined, 'knowledge')} />}
       {wasteKindOf(building.type) && <CodexLinkButton title={t('codex.waste.title')} onOpen={() => openCodex(undefined, 'waste')} />}
     </>
   );

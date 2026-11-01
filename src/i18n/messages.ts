@@ -10,6 +10,7 @@ import { sanctionsMessages } from './sanctions';
 import { wasteCodexMessages } from './wasteCodex';
 import { guideMessages } from './guide';
 import { transitReachCodexMessages } from './transitReachCodex';
+import { knowledgeCodexMessages } from './knowledgeCodex';
 import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
 import { annualEventMessages } from './annualEvents';
@@ -37,6 +38,7 @@ export const MESSAGES = {
   ...wasteCodexMessages('en'),
   ...guideMessages('en'),
   ...transitReachCodexMessages('en'),
+  ...knowledgeCodexMessages('en'),
   ...venueMessages('en'),
   ...buildingMessages('en'),
   ...annualEventMessages('en'),

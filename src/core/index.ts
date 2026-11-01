@@ -159,7 +159,10 @@ export { FACILITIES, FACILITY_TYPES, facilityCapacity, facilityRadius, isWithinR
 export type { FacilitySpec, FacilityType, ServiceCategory, ServiceKey } from './services/facilities';
 export { isHomeInReach, categoryCoverageRatio, coveredCategories, coveredHomeIds, homesLackingRequiredServices, isServiceCovered, missingServices, missingServicesOf, previewFacilityCoverage, serviceCoverage, transitReachLinks } from './services/services';
 export { uncoveredReason, reachLoad } from './services/services';
-export { cityKnowledge, homeKnowledge, KNOWLEDGE } from './services/knowledge';
+export { cityKnowledge, homeKnowledge, knowledgeCurve, knowledgeEffect, KNOWLEDGE } from './services/knowledge';
+export { knowledgeCodexFigures } from './services/knowledgeCodexFigures';
+export type { KnowledgeCodexFigures } from './services/knowledgeCodexFigures';
+export type { KnowledgeEffectId } from './services/knowledge';
 export type { ReachLoad, ServiceCoverage, TransitReachLinks, UncoveredReason } from './services/services';
 export { TRANSIT_REACH, TRANSIT_REACH_STOP_TYPES } from './transit/transitReach';
 export { transitReachCodexFigures } from './transit/transitReachCodexFigures';

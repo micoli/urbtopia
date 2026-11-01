@@ -18,6 +18,7 @@ import { StorageRulesPage } from './StorageRulesPage';
 import { SolidarityPage } from './SolidarityPage';
 import { AnalyticsPage } from './AnalyticsPage';
 import { WastePage } from './WastePage';
+import { KnowledgePage } from './KnowledgePage';
 import { TransitReachPage } from './TransitReachPage';
 import { PoliticsPage } from './PoliticsPage';
 import { useCodexManifest } from './useCodexManifest';
@@ -116,7 +117,7 @@ export function CodexPanel() {
             );
           })}
         </nav>
-        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : page === 'energy' ? 'codex.energy.title' : page === 'sanctions' ? 'codex.sanctions.title' : page === 'market' ? 'codex.market.title' : page === 'challenges' ? 'codex.challenges.title' : page === 'solidarity' ? 'codex.solidarity.title' : page === 'waste' ? 'codex.waste.title' : page === 'politics' ? 'codex.politics.title' : page === 'transitReach' ? 'codex.transitReach.title' : page === 'chains' ? 'codex.chains.title' : page === 'analytics' ? 'codex.analytics.title' : entry.name)}>
+        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : page === 'energy' ? 'codex.energy.title' : page === 'sanctions' ? 'codex.sanctions.title' : page === 'market' ? 'codex.market.title' : page === 'challenges' ? 'codex.challenges.title' : page === 'solidarity' ? 'codex.solidarity.title' : page === 'waste' ? 'codex.waste.title' : page === 'knowledge' ? 'codex.knowledge.title' : page === 'politics' ? 'codex.politics.title' : page === 'transitReach' ? 'codex.transitReach.title' : page === 'chains' ? 'codex.chains.title' : page === 'analytics' ? 'codex.analytics.title' : entry.name)}>
           {page === 'economy' && <CropEconomyPage />}
           {page === 'storage' && <StorageRulesPage />}
           {page === 'energy' && <EnergyProductionPage />}
@@ -125,6 +126,7 @@ export function CodexPanel() {
           {page === 'challenges' && <ChallengesPage />}
           {page === 'solidarity' && <SolidarityPage />}
           {page === 'waste' && <WastePage />}
+          {page === 'knowledge' && <KnowledgePage />}
           {page === 'politics' && <PoliticsPage />}
           {page === 'transitReach' && <TransitReachPage />}
           {page === 'chains' && <ProductionChainsPage />}

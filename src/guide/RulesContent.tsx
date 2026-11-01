@@ -11,6 +11,7 @@ import { StorageRules } from '../ui/codex/StorageRules';
 import { TransitReachRules } from '../ui/codex/TransitReachRules';
 import { AnalyticsPage } from '../ui/codex/AnalyticsPage';
 import { WasteRules } from '../ui/codex/WasteRules';
+import { KnowledgeRules } from '../ui/codex/KnowledgeRules';
 import { useReaderState } from './reader/useReaderState';
 
 interface RulesContentProps {
@@ -26,6 +27,7 @@ export function RulesContent({ id }: RulesContentProps) {
   if (id === 'market') return <MarketRules state={state} />;
   if (id === 'challenges') return <ChallengesPage />;
   if (id === 'solidarity') return <SolidarityPage />;
+  if (id === 'knowledge') return <KnowledgeRules state={state} />;
   if (id === 'waste') return <WasteRules state={state} />;
   if (id === 'transitReach') return <TransitReachRules state={state} />;
   if (id === 'chains') return <ProductionChainsRules state={state} />;

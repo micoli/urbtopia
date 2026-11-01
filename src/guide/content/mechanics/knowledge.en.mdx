@@ -1,0 +1,34 @@
+export const meta = {
+  title: 'Knowledge',
+  summary: 'How Schools and Libraries make your Citizens know more, and what a knowledgeable city gives back.',
+  order: 32,
+};
+
+## Knowledge of a Home
+
+Every Home has a **Knowledge** from 0 to 100, built from two things:
+
+- **Schooling**: each degree that covers the Home adds its share, once, however many Schools of that degree you build: <EntryLink id="school" />, <EntryLink id="middleSchool" />, <EntryLink id="highSchool" /> and <EntryLink id="university" />. Together they give up to 70.
+- **The Library**: the best <EntryLink id="library" /> that reaches the Home adds its share, from 6 at Tier 1 to 30 at Tier 5. A higher Tier also reaches farther, serves more Citizens and takes more room.
+
+The two combine so that only both reach 100: a city with every School and no Library tops out at 70, and a Library cannot replace a School. A Library is never required: it does not lower Well-being when it is missing and does not block a Home from reaching a higher Tier. The School stays required for Tier 3.
+
+## What a knowledgeable city gives
+
+The Knowledge of the whole city, the mean of its Homes weighted by their Citizens, brings a lot back, on every Difficulty. Each effect grows quickly at first: half of the maximum Knowledge already gives about 70% of the effect.
+
+- **Industry buildings** work faster, and **Office buildings** earn more Urbs from the Jobs their Commuters fill.
+- Homes pay a little more **Tax** and have a higher **Well-being**.
+- Citizens produce less **Waste** and ask for less power, so there are fewer emissions behind it.
+
+## Under Hard Difficulty
+
+From Hard, Knowledge is also required. A Home whose Knowledge is below 50 pays less Tax, in proportion to the shortfall, down to half of its Tax. It never loses Citizens, and the Sanction is suspended during an Adaptation period. The four School degrees are enough to reach 50; a Library lets you make up for a missing degree.
+
+## Seeing it
+
+The **Knowledge** layer of the Land menu paints the Knowledge a Home would have on each tile and tints the Homes you already have. The panel of a Home shows its Knowledge, and the panel of a School or a Library shows the Knowledge of the city.
+
+## Your city's figures
+
+<LiveRules id="knowledge" />
