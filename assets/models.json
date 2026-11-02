@@ -1370,6 +1370,118 @@
       }
     }
   },
+  "buildings-geothermal-1x1-t4-tone-a": {
+    "file": "buildings/geothermal-1x1-t4-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-geothermal-1x1-t5-tone-a": {
+    "file": "buildings/geothermal-1x1-t5-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-geothermal-1x1-t6-tone-a": {
+    "file": "buildings/geothermal-1x1-t6-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
+  "buildings-geothermal-2x2-large-tone-a": {
+    "file": "buildings/geothermal-2x2-large-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "b": {
+        "name": "tangerine",
+        "color": "#ff9a1f"
+      },
+      "c": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "d": {
+        "name": "brick",
+        "color": "#c2432e"
+      }
+    }
+  },
   "buildings-guggenheim-bilbao-6x5": {
     "file": "buildings/guggenheim-bilbao-6x5",
     "source": "managed",

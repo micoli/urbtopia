@@ -13,12 +13,12 @@ const homes = (count: number) => Array.from({ length: count }, (_, index) => bui
 describe('Hydro and geothermal Capacity', () => {
   it('gives each Tier its Capacity', () => {
     expect(UTILITY_CAPACITY.hydroPlant).toEqual([14, 28, 45]);
-    expect(UTILITY_CAPACITY.geothermalPlant).toEqual([10, 20, 32]);
+    expect(UTILITY_CAPACITY.geothermalPlant).toEqual([10, 20, 32, 64, 128, 256]);
   });
 
   it('opens extra copies by Citizens', () => {
     expect(copyThresholds('hydroPlant')).toEqual([60, 120, 240]);
-    expect(copyThresholds('geothermalPlant')).toEqual([150, 300, 600]);
+    expect(copyThresholds('geothermalPlant')).toEqual([150, 300, 600, 1000, 1500, 2200, 3000, 4000, 5000, 6500]);
   });
 });
 

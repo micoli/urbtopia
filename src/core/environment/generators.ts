@@ -9,7 +9,7 @@ export const PLANT_TYPES = {
   wind: 'powerPlant', hydro: 'hydroPlant', geothermal: 'geothermalPlant', coal: 'coalPlant',
 } as const satisfies Record<Exclude<EnergySourceId, 'solar'>, BuildingType>;
 
-const SOURCE_OF_PLANT = { powerPlant: 'wind', hydroPlant: 'hydro', geothermalPlant: 'geothermal' } as const;
+const SOURCE_OF_PLANT = { powerPlant: 'wind', hydroPlant: 'hydro', geothermalPlant: 'geothermal', largeGeothermalPlant: 'geothermal' } as const;
 
 export type GeneratingPlantType = keyof typeof SOURCE_OF_PLANT;
 

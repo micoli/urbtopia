@@ -65,6 +65,7 @@ export type BuildingId =
   | 'hydroPlant'
   | 'incinerator'
   | 'knitwearFactory'
+  | 'largeGeothermalPlant'
   | 'library'
   | 'livestockFarm'
   | 'marina'

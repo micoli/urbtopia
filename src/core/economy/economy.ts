@@ -71,8 +71,8 @@ export const HOME_TIERS: readonly { citizens: number; power: number; water: numb
 
 const capacitiesOf = (type: BuildingId): readonly number[] => tiersOf(type).map(({ capacity }) => capacity!);
 
-export const UTILITY_CAPACITY: Record<'powerPlant' | 'waterTower' | 'hydroPlant' | 'geothermalPlant', readonly number[]> = {
-  powerPlant: capacitiesOf('powerPlant'), waterTower: capacitiesOf('waterTower'), hydroPlant: capacitiesOf('hydroPlant'), geothermalPlant: capacitiesOf('geothermalPlant'),
+export const UTILITY_CAPACITY: Record<'powerPlant' | 'waterTower' | 'hydroPlant' | 'geothermalPlant' | 'largeGeothermalPlant', readonly number[]> = {
+  powerPlant: capacitiesOf('powerPlant'), waterTower: capacitiesOf('waterTower'), hydroPlant: capacitiesOf('hydroPlant'), geothermalPlant: capacitiesOf('geothermalPlant'), largeGeothermalPlant: capacitiesOf('largeGeothermalPlant'),
 };
 
 export type UtilityType = keyof typeof UTILITY_CAPACITY;

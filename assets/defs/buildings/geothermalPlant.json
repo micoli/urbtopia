@@ -38,7 +38,37 @@
         }
       },
       "model": "buildings-geothermal-1x1-t3-tone-a"
+    },
+    {
+      "capacity": 64,
+      "upgradeCost": {
+        "urbs": 6000,
+        "goods": {
+          "tools": 8
+        }
+      },
+      "model": "buildings-geothermal-1x1-t4-tone-a"
+    },
+    {
+      "capacity": 128,
+      "upgradeCost": {
+        "urbs": 12000,
+        "goods": {
+          "tools": 16
+        }
+      },
+      "model": "buildings-geothermal-1x1-t5-tone-a"
+    },
+    {
+      "capacity": 256,
+      "upgradeCost": {
+        "urbs": 24000,
+        "goods": {
+          "tools": 32
+        }
+      },
+      "model": "buildings-geothermal-1x1-t6-tone-a"
     }
   ],
-  "extraCopyCitizens": [300, 600]
+  "extraCopyCitizens": [300, 600, 1000, 1500, 2200, 3000, 4000, 5000, 6500]
 }

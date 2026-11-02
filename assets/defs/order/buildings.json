@@ -19,6 +19,7 @@
   "hydroPlant",
   "coalPlant",
   "geothermalPlant",
+  "largeGeothermalPlant",
   "waterTower",
   "solar",
   "battery",

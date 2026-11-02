@@ -9,7 +9,7 @@ import {Icon} from '../../common/Icon';
 // Lighter industry first: Workshop and Mill, then Factory and Bakery.
 const PRODUCER_ROWS = [...INDUSTRY_TYPES].sort((a, b) => industryWeightOf(a) - industryWeightOf(b));
 
-const COUNT_TYPES: BuildingType[] = ['home', 'workshop', 'factory', 'mill', 'bakery', 'livestockFarm', 'dairy', 'textileMill', 'knitwearFactory', 'oliveTree', 'appleTree', 'cherryTree', 'mulberryTree', 'hive', 'shop', 'casino', 'powerPlant', 'hydroPlant', 'geothermalPlant', 'coalPlant', 'solar', 'battery', 'backup', 'tree', 'park', 'busStop', 'brtStation', 'railStation'];
+const COUNT_TYPES: BuildingType[] = ['home', 'workshop', 'factory', 'mill', 'bakery', 'livestockFarm', 'dairy', 'textileMill', 'knitwearFactory', 'oliveTree', 'appleTree', 'cherryTree', 'mulberryTree', 'hive', 'shop', 'casino', 'powerPlant', 'hydroPlant', 'geothermalPlant', 'largeGeothermalPlant', 'coalPlant', 'solar', 'battery', 'backup', 'tree', 'park', 'busStop', 'brtStation', 'railStation'];
 
 interface ProductionSectionProps {
     state: GameState;

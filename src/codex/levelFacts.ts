@@ -115,6 +115,7 @@ const UTILITY_FACTS: Partial<Record<BuildingType, (level: number) => LevelFact[]
   waterTower: level => [utilityOutputFact('waterTower', level)],
   powerPlant: level => [utilityOutputFact('powerPlant', level), profileFact('codex.profile.wind', level)],
   geothermalPlant: level => [utilityOutputFact('geothermalPlant', level), profileFact('codex.profile.constant', level)],
+  largeGeothermalPlant: level => [utilityOutputFact('largeGeothermalPlant', level), profileFact('codex.profile.constant', level)],
   hydroPlant: level => [
     utilityOutputFact('hydroPlant', level),
     profileFact('codex.profile.hydro', level),

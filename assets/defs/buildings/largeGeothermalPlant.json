@@ -1,0 +1,24 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "utility",
+  "section": "build.utilities",
+  "cost": 7500,
+  "unlockCitizens": 1500,
+  "requiresRoad": false,
+  "name": {
+    "en": "Large geothermal power plant",
+    "fr": "Grande centrale géothermique"
+  },
+  "description": {
+    "en": "A massive geothermal plant delivering four times the output of a fully upgraded Geothermal power plant, constant day and night. Very costly, and the number of plants is limited.",
+    "fr": "Une immense centrale géothermique qui produit quatre fois plus qu’une centrale géothermique entièrement améliorée, constante jour et nuit. Très coûteuse et en nombre limité."
+  },
+  "tiers": [
+    {
+      "model": "buildings-geothermal-2x2-large-tone-a",
+      "footprint": [2, 2],
+      "capacity": 1024
+    }
+  ],
+  "extraCopyCitizens": [4000, 8000]
+}

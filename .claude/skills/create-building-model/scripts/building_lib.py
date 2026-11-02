@@ -2141,6 +2141,8 @@ def build_turbine(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 GEOTHERMAL_TOWERS = ((0.3, 0.28), (0.3, 0.0), (0.3, -0.28))
+GEOTHERMAL_TOWER_ROW = ((0.3, 0.3), (0.3, 0.0), (0.3, -0.3))
+GEOTHERMAL_TOWER_COUNT = {4: 2, 5: 3, 6: 3}
 
 
 def build_geothermal(spec, out_dir):
@@ -2161,18 +2163,25 @@ def build_geothermal(spec, out_dir):
     parts.append(lpm.box("hall_door", (0.12, 0.014, 0.17), at=(hx - 0.14, front - 0.004, 0.04), color=dark))
     parts.append(lpm.box("hall_window", (0.22, 0.012, 0.09), at=(hx + 0.1, front - 0.003, 0.12), color=glass))
     count = spec["count"]
-    x, y = GEOTHERMAL_TOWERS[0]
-    height = 0.55 + 0.15 * (count - 1)
+    stage = min(count, 3)
+    towers = GEOTHERMAL_TOWERS if count <= 3 else GEOTHERMAL_TOWER_ROW[:GEOTHERMAL_TOWER_COUNT[count]]
+    height = 0.55 + 0.15 * (stage - 1)
     scale = height / 0.55
     profile = [(r, z * scale) for r, z in ((0.0, 0.0), (0.14, 0.0), (0.12, 0.2), (0.095, 0.38), (0.115, 0.52), (0.115, 0.55), (0.0, 0.55))]
-    parts.append(lpm.lathe("tower", profile, segments=12, at=(x, y, 0.04), color=wall))
-    for ring in range(count):
-        level = height - 0.08 - 0.08 * ring
-        radius = next(r0 + (r1 - r0) * (level - z0) / (z1 - z0) for (r0, z0), (r1, z1) in zip(profile, profile[1:]) if z0 <= level <= z1 and z1 > z0)
-        parts.append(lpm.prism(f"tower_ring_{ring}", 12, radius + 0.008, 0.04, at=(x, y, 0.04 + level), color=mint))
-    parts.append(lpm.prism("tower_rim", 12, 0.118, 0.012, at=(x, y, 0.04 + height), color=dark))
     puff = [(0.0, 0.0), (0.06, 0.02), (0.085, 0.08), (0.06, 0.15), (0.0, 0.17)]
-    parts.append(lpm.lathe("steam", puff, segments=8, at=(x, y, 0.04 + height + 0.02), color=white))
+    for number, (x, y) in enumerate(towers[:1] if count <= 3 else towers):
+        parts.append(lpm.lathe(f"tower_{number}", profile, segments=12, at=(x, y, 0.04), color=wall))
+        for ring in range(stage):
+            level = height - 0.08 - 0.08 * ring
+            radius = next(r0 + (r1 - r0) * (level - z0) / (z1 - z0) for (r0, z0), (r1, z1) in zip(profile, profile[1:]) if z0 <= level <= z1 and z1 > z0)
+            parts.append(lpm.prism(f"tower_{number}_ring_{ring}", 12, radius + 0.008, 0.04, at=(x, y, 0.04 + level), color=mint))
+        parts.append(lpm.prism(f"tower_{number}_rim", 12, 0.118, 0.012, at=(x, y, 0.04 + height), color=dark))
+        parts.append(lpm.lathe(f"steam_{number}", puff, segments=8, at=(x, y, 0.04 + height + 0.02), color=white))
+    x, y = towers[0]
+    if count >= 6:
+        parts.append(rounded_block("annex", 0.3, 0.2, 0.2, wall, 0.03 / 0.2, at=(0.0, -0.28, 0.04)))
+        parts.append(rounded_block("annex_band", 0.31, 0.21, 0.02, mint, 0.03 / 0.21, at=(0.0, -0.28, 0.21)))
+        parts.append(rounded_block("annex_roof", 0.34, 0.24, 0.03, slab, 0.03 / 0.24, at=(0.0, -0.28, 0.23)))
     parts.append(lpm.box("hall_link", (0.14, 0.035, 0.035), at=(0.08 + 0.07, y, 0.1), color=trim))
     wx, wy = -0.3, -0.22
     parts.append(lpm.prism("wellhead", 10, 0.05, 0.16, at=(wx, wy, 0.04), color=trim))
@@ -2181,6 +2190,57 @@ def build_geothermal(spec, out_dir):
     parts.append(lpm.box("wellhead_pipe", (0.035, abs(front - wy), 0.035), at=(wx, (front + wy) / 2, 0.11), color=trim))
     ob = lpm.finish(spec["id"], parts, palette, budget=3000, center=False)
     return export_model(ob, spec, out_dir)
+
+def build_large_geothermal(spec, out_dir):
+    """A large geothermal plant on a 2x2 pad: a wide turbine hall with a mint band, four flared cooling towers with steam puffs fed by a manifold, and two wellheads piped to the hall."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    wall, mint, dark, slab, glass, white, trim, frame = (index(n) for n in ("uwall", "uroof", "udark", "uslab", "glass_blue", "white", "utrim", "uframe"))
+    mint = PALETTE_NAMES.index("vtone1")
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = [lpm.box("plant_pad", (1.92, 1.92, 0.04), at=(0, 0, 0), color=slab)]
+    hx, hy, hw, hd = 0.0, -0.2, 1.3, 0.6
+    parts.append(rounded_block("hall", hw, hd, 0.32, wall, 0.03 / hd, at=(hx, hy, 0.04)))
+    parts.append(rounded_block("hall_band", hw + 0.01, hd + 0.01, 0.03, mint, 0.03 / hd, at=(hx, hy, 0.34)))
+    parts.append(rounded_block("hall_roof", hw + 0.05, hd + 0.05, 0.035, slab, 0.03 / hd, at=(hx, hy, 0.37)))
+    front = hy - hd / 2
+    for name, cx, bottom, width, height, sides in (("door", -0.45, 0.04, 0.14, 0.2, ("left", "right", "top")), ("window_a", -0.1, 0.13, 0.24, 0.1, ("left", "right", "top", "bottom")), ("window_b", 0.3, 0.13, 0.24, 0.1, ("left", "right", "top", "bottom"))):
+        parts.append(lpm.box(name, (width, 0.012, height), at=(cx, front - 0.003, bottom), color=dark if name == "door" else glass))
+        thick = 0.012
+        low = thick if "bottom" in sides else 0
+        parts.append(lpm.box(f"{name}_frame_left", (thick, 0.01, height + thick + low), at=(cx - width / 2 - thick / 2, front - 0.004, bottom - low), color=frame))
+        parts.append(lpm.box(f"{name}_frame_right", (thick, 0.01, height + thick + low), at=(cx + width / 2 + thick / 2, front - 0.004, bottom - low), color=frame))
+        parts.append(lpm.box(f"{name}_frame_top", (width + 2 * thick, 0.01, thick), at=(cx, front - 0.004, bottom + height), color=frame))
+        if low:
+            parts.append(lpm.box(f"{name}_frame_bottom", (width + 2 * thick, 0.01, thick), at=(cx, front - 0.004, bottom - thick), color=frame))
+    height = 0.85
+    scale = height / 0.55
+    k = 1.25
+    profile = [(r * k, z * scale) for r, z in ((0.0, 0.0), (0.14, 0.0), (0.12, 0.2), (0.095, 0.38), (0.115, 0.52), (0.115, 0.55), (0.0, 0.55))]
+    puff = [(r * k, z) for r, z in ((0.0, 0.0), (0.06, 0.02), (0.085, 0.08), (0.06, 0.15), (0.0, 0.17))]
+    ty = 0.62
+    for number, tx in enumerate((-0.72, -0.24, 0.24, 0.72)):
+        parts.append(lpm.lathe(f"tower_{number}", profile, segments=14, at=(tx, ty, 0.04), color=wall))
+        for ring in range(3):
+            level = height - 0.08 - 0.08 * ring
+            radius = next(r0 + (r1 - r0) * (level - z0) / (z1 - z0) for (r0, z0), (r1, z1) in zip(profile, profile[1:]) if z0 <= level <= z1 and z1 > z0)
+            parts.append(lpm.prism(f"tower_{number}_ring_{ring}", 14, radius + 0.008, 0.04, at=(tx, ty, 0.04 + level), color=mint))
+        parts.append(lpm.prism(f"tower_{number}_rim", 14, 0.115 * k + 0.003, 0.012, at=(tx, ty, 0.04 + height), color=dark))
+        parts.append(lpm.lathe(f"steam_{number}", puff, segments=8, at=(tx, ty, 0.04 + height + 0.02), color=white))
+        parts.append(lpm.box(f"tower_{number}_link", (0.035, 0.2, 0.035), at=(tx, 0.32, 0.1), color=trim))
+    parts.append(lpm.box("manifold", (1.5, 0.04, 0.04), at=(0, 0.32, 0.1), color=trim))
+    parts.append(lpm.box("manifold_hall_link", (0.04, 0.12, 0.04), at=(0, 0.14, 0.1), color=trim))
+    for number, wx in enumerate((-0.7, 0.7)):
+        wy = -0.78
+        parts.append(lpm.prism(f"wellhead_{number}", 10, 0.055, 0.17, at=(wx, wy, 0.04), color=trim))
+        parts.append(lpm.prism(f"wellhead_{number}_flange", 10, 0.07, 0.025, at=(wx, wy, 0.15), color=mint))
+        parts.append(lpm.prism(f"wellhead_{number}_cap", 10, 0.05, 0.02, at=(wx, wy, 0.21), color=dark))
+        parts.append(lpm.box(f"wellhead_{number}_pipe", (0.035, abs(front - wy) + 0.02, 0.035), at=(wx * 0.9, (front + wy) / 2, 0.11), color=trim))
+    ob = lpm.finish(spec["id"], parts, palette, budget=6000, center=False)
+    return export_model(ob, spec, out_dir)
+
 
 def build_coal(spec, out_dir):
     """A coal plant on a thin pad: a boiler hall, a coal heap fed by a short conveyor, and one slim chimney with a dark smoke plume. The Tier is the chimney height (0.55 to 0.85) and its number of mint rings."""
