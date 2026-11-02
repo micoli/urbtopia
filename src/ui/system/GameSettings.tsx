@@ -10,6 +10,12 @@ import { SettingRow } from './SettingRow';
 import { SettingsSection } from './SettingsSection';
 
 const TIME_SKIPS = [1, 6, 12] as const;
+const CYCLE_SKIPS = [
+  { key: 'dawn', cycleHour: 5 },
+  { key: 'noon', cycleHour: 12 },
+  { key: 'dusk', cycleHour: 22 },
+  { key: 'midnight', cycleHour: 0 },
+] as const;
 
 export function GameSettings() {
   const toggle = useUi((store) => store.toggleSettings);
@@ -18,6 +24,11 @@ export function GameSettings() {
   const confirmSale = useStore(prefsStore, (store) => store.confirmSale);
   const skipTime = (hours: number) => {
     gameStore.getState().send({ type: 'SkipTime', hours });
+    toggle();
+  };
+
+  const skipToCycleHour = (cycleHour: number) => {
+    gameStore.getState().send({ type: 'SkipToCycleHour', cycleHour });
     toggle();
   };
 
@@ -40,6 +51,19 @@ export function GameSettings() {
               title={challengeRunning ? t('error.challengeInProgress') : undefined}
             >
               {t(`settings.skip${hours}`)}
+            </ActionButton>
+          ))}
+        </SettingRow>
+        <SettingRow label={t('settings.cycleSkip.label')} description={t('settings.cycleSkip.description')}>
+          {CYCLE_SKIPS.map(({ key, cycleHour }) => (
+            <ActionButton
+              key={key}
+              size="sm"
+              onClick={() => skipToCycleHour(cycleHour)}
+              disabled={challengeRunning}
+              title={challengeRunning ? t('error.challengeInProgress') : undefined}
+            >
+              {t(`settings.cycleSkip.${key}`)}
             </ActionButton>
           ))}
         </SettingRow>

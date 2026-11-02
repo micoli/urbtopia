@@ -1,6 +1,7 @@
 import type { MatchDecision } from '../clubs/clubTypes';
 import { isBuildableAt } from '../annualEvents/annualEventItems';
 import { TRANSIT, extendNetwork, networkTiles, repairNetwork, validNetworkCrossings } from '../transit/transitNetwork';
+import { DAY_CYCLE, msUntilCycleHour } from '../environment/dayCycle';
 import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
 import { canHaveSolarPanels, solarInstallCostOf, solarPanelsCost, solarPanelsUnlockCitizens } from '../environment/solarPanels';
 import { routeFailure, routeForLine } from '../transit/transport';
@@ -162,6 +163,7 @@ export type Command =
   | { readonly type: 'ChallengeComplete'; readonly id: string; readonly rewardKind: ChallengeRewardKind }
   | { readonly type: 'ChallengeClear' }
   | { readonly type: 'SkipTime'; readonly hours: number }
+  | { readonly type: 'SkipToCycleHour'; readonly cycleHour: number }
   | { readonly type: 'SkipTutorialStep' }
   | { readonly type: 'SkipTutorial' }
   | { readonly type: 'SkipVenueTutorial'; readonly venueType: VenueTutorialType }
@@ -486,6 +488,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return { state: clearChallenge(state), events: [] };
     case 'SkipTime':
       return skipTime(state, command.hours, now);
+    case 'SkipToCycleHour':
+      return skipToCycleHour(state, command.cycleHour, now);
     case 'SkipTutorialStep':
       return skipTutorialStep(state, now);
     case 'SkipTutorial':
@@ -503,6 +507,12 @@ function skipTime(state: GameState, hours: number, now: number): CommandOutcome 
   if (state.challenge) return fail('error.challengeInProgress');
   if (!Number.isFinite(hours) || hours <= 0 || hours * HOUR_MS > Number.MAX_SAFE_INTEGER) return fail('error.invalidQuantity');
   return skipMs(state, hours * HOUR_MS, now);
+}
+
+function skipToCycleHour(state: GameState, cycleHour: number, now: number): CommandOutcome {
+  if (state.challenge) return fail('error.challengeInProgress');
+  if (!Number.isInteger(cycleHour) || cycleHour < 0 || cycleHour >= DAY_CYCLE.cycleHours) return fail('error.invalidQuantity');
+  return skipMs(state, msUntilCycleHour(state, now, cycleHour), now);
 }
 
 function skipTutorialStep(state: GameState, now: number): CommandOutcome {

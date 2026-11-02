@@ -69,3 +69,10 @@ export function nextCycleHourAfter(state: Pick<GameState, 'timeOffset' | 'dayCyc
 export function timeOfCycleHour(cycleHour: number): number {
   return cycleHour * CYCLE_HOUR_MS;
 }
+
+// Real milliseconds from `now` until the Day cycle next shows `cycleHour`; a full cycle when it already does.
+export function msUntilCycleHour(state: Pick<GameState, 'timeOffset' | 'dayCycleOffset'>, now: number, cycleHour: number): number {
+  const wait = timeOfCycleHour(cycleHour) - (cycleTimeOf(state, now) % DAY_CYCLE.durationMs);
+  const wrapped = ((wait % DAY_CYCLE.durationMs) + DAY_CYCLE.durationMs) % DAY_CYCLE.durationMs;
+  return wrapped === 0 ? DAY_CYCLE.durationMs : wrapped;
+}

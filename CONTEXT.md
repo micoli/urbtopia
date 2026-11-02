@@ -682,7 +682,7 @@ The short guided sequence started when the first Venue of a type is placed, teac
 _Avoid_: Onboarding, intro, walkthrough
 
 **Time skip**:
-The player action that advances game time by a set number of hours or up to the end of a Tutorial step.
+The player action that advances game time by a set number of game hours, up to the end of a Tutorial step, or up to the next occurrence of a chosen Cycle hour of the Day cycle (Dawn 05:00, Noon 12:00, Dusk 22:00, Midnight 00:00). A skip to a Cycle hour that is already the current one goes to the next cycle, 2 real hours later. It always advances the economy as well and is refused during a Challenge.
 _Avoid_: Time warp, fast-forward
 
 **Day cycle**:

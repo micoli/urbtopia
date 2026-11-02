@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advance, dispatch, newGame, type Command, type GameState } from '../index';
+import { advance, cycleHourOf, cycleTimeOf, dispatch, newGame, type Command, type GameState } from '../index';
 
 const T0 = 1_700_000_000_000;
 const SECOND = 1000;
@@ -79,5 +79,26 @@ describe('SkipTime', () => {
     const skippedMs = 56_250;
     const skipped = succeed(sellingPlanks, { type: 'SkipTime', hours: skippedMs / 3_600_000 }, T0);
     expect(stackOf(skipped)).toMatchObject({ stock: 4, earned: 14, nextSaleAt: T0 + 90 * SECOND - skippedMs });
+  });
+});
+
+describe('SkipToCycleHour', () => {
+  const hourAfter = (state: GameState, command: Command) => cycleHourOf(cycleTimeOf(succeed(state, command, T0), T0));
+  const CYCLE_MS = 2 * 3_600_000;
+
+  it('moves the Day cycle to the chosen Cycle hour', () => {
+    for (const cycleHour of [0, 5, 12, 22]) {
+      expect(hourAfter(initial, { type: 'SkipToCycleHour', cycleHour })).toBeCloseTo(cycleHour, 5);
+    }
+  });
+
+  it('goes to the next cycle when the Day cycle is already there', () => {
+    const atNoon = succeed(initial, { type: 'SkipToCycleHour', cycleHour: 12 }, T0);
+    const again = succeed(atNoon, { type: 'SkipToCycleHour', cycleHour: 12 }, T0);
+    expect((again.timeOffset ?? 0) - (atNoon.timeOffset ?? 0)).toBe(CYCLE_MS);
+  });
+
+  it('refuses an invalid Cycle hour', () => {
+    expect(dispatch(initial, { type: 'SkipToCycleHour', cycleHour: 24 }, T0).ok).toBe(false);
   });
 });
