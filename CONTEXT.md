@@ -966,7 +966,7 @@ The person who runs the Back office. Not a Player account and never visible to p
 _Avoid_: Moderator, operator
 
 **Command gateway**:
-The single module that applies a Command to the live game and owns all its consequences: the read-only guard, the toast of an error or an event, the effects bound to an event type (harvest, Casino rounds), the end-of-Tutorial notice, the undo of a deletion and the replacement of the game state. The player, a Trade and a Challenge all reach the game through it.
+The single module that applies a Command to the live game and owns all its consequences: the read-only guard, the toast of an error or an event, the effects bound to an event type (harvest, Casino rounds), the end-of-Tutorial notice and the replacement of the game state. The player, a Trade and a Challenge all reach the game through it.
 _Avoid_: Dispatcher, command bus, game service
 
 **Codex**:
@@ -989,7 +989,7 @@ _Avoid_: Docs, documentation, manual, wiki
 - Time skip and Catch-up replay the politics in full: Petitions escalate, Elections take place, Objectives are judged, and a summary is shown on return. An Adaptation period follows its first activation, with no Demonstration and no Approval penalty.
 - The launch Ordinances rest on existing systems only: Tax level (3 levels), Waste sorting, Green belt, subsidised public transit, energy saving, Office relief, Cultural festival. The launch Objectives are a Vital Need level threshold, full Waste coverage, Congestion under a threshold, a Green space share and Citizens milestones.
 - From Easy Difficulty: Council, Ordinances, Objectives and Grants, with Petitions and Support informative only. From Medium: Demonstrations and the Election. On Hard the Approval also weighs on the Grants and on the Council's goodwill.
-- A Command from the player, a Trade or a Challenge reaches the game through the Command gateway: the same read-only guard, toasts and event effects. Only the player's Commands keep a deletion undo.
+- A Command from the player, a Trade or a Challenge reaches the game through the Command gateway: the same read-only guard, toasts and event effects.
 - A Trade offer is sent from the open City and accepted into the City open at the time of acceptance.
 - An accepted Challenge belongs to the City that accepted it.
 - What a Trade offer pays or returns (the payment, a refused or expired Lot or price) goes back to the City it left, claimed when that City is next opened.

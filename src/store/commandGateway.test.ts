@@ -52,7 +52,6 @@ describe('command gateway', () => {
     expect(outcome.kind).toBe('applied');
     if (outcome.kind !== 'applied') return;
     expect(outcome.state.buildings).toEqual([]);
-    expect(outcome.undo).not.toBeNull();
     expect(sold).toEqual([{ type: 'BuildingSold', id: 10 }]);
     expect(other).not.toHaveBeenCalled();
     expect(showToast).toHaveBeenCalledWith('event.storageFull');

@@ -17,11 +17,10 @@ function setup(readOnly = false) {
 }
 
 describe('live game port', () => {
-  it('applies a command through the gateway and replaces the state without an undo', () => {
+  it('applies a command through the gateway and replaces the state', () => {
     const { port, store, showToast } = setup();
     expect(port.apply({ type: 'SellBuilding', id: 10 })).toBeNull();
     expect(store.getState().state.buildings).toEqual([]);
-    expect(store.getState().deletionUndo).toBeNull();
     expect(showToast).toHaveBeenCalledWith('event.storageFull');
   });
 

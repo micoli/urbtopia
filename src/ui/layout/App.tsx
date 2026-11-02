@@ -5,7 +5,6 @@ import { LayoutBottomMenu } from './LayoutBottomMenu.tsx';
 import { LayoutRadial } from './LayoutRadial.tsx';
 import { LayoutLeftMenu } from './LayoutLeftMenu.tsx';
 import { Overlays } from './Overlays';
-import { useUndoKeys } from '../build/useUndoKeys';
 import { SceneCanvas } from './SceneCanvas';
 import { isDevelopmentHost } from '../../devtools/isDevelopmentHost';
 import { uiStore } from '../../store/uiStore';
@@ -14,7 +13,6 @@ import { StreetViewHud } from './StreetViewHud';
 const DevTools = import.meta.env.DEV ? lazy(() => import('../../devtools/DevTools')) : null;
 
 export function App() {
-  useUndoKeys();
   const language = useStore(prefsStore, (store) => store.language);
   const layout = useStore(prefsStore, (store) => store.layout);
   const streetView = useStore(uiStore, (store) => store.streetView);

@@ -1,6 +1,5 @@
 import { createStore } from 'zustand/vanilla';
 import { advance, newGame, type Command, type CommandError, type Difficulty, type GameState } from '../core';
-import { restoreDeletion, type DeletionUndo } from '../core/engine/undo';
 import { saveSession } from '../persistence/instance';
 import type { LoadResult } from '../persistence/saveSession';
 import { isSimulationRequested } from '../sim/simulationFlag';
@@ -20,8 +19,6 @@ export type Change = 'command' | 'tick' | 'reset';
 export interface GameStore {
   state: GameState;
   lastError: CommandError | null;
-  deletionUndo: DeletionUndo | null;
-  undo: () => void;
   lastChange: Change;
   send: (command: Command) => void;
   tick: (now: number) => void;
@@ -32,15 +29,6 @@ export interface GameStore {
 export function createGameStore(initial: GameState, gateway: CommandGateway = liveCommandGateway) {
   return createStore<GameStore>((set, get) => ({
     state: initial,
-    deletionUndo: null,
-    undo: () => {
-      if (readOnlyStore.getState().readOnly) return;
-      const { state, deletionUndo } = get();
-      if (!deletionUndo) return;
-      const result = advance(state, Date.now());
-      announceEvents(result.events, result.state);
-      set({ state: restoreDeletion(result.state, deletionUndo), deletionUndo: null, lastError: null, lastChange: 'command' });
-    },
     lastError: null,
     lastChange: 'reset',
     send: (command) => {
@@ -50,7 +38,7 @@ export function createGameStore(initial: GameState, gateway: CommandGateway = li
         toastStore.getState().show(outcome.error.key);
         return set({ lastError: outcome.error });
       }
-      set({ state: outcome.state, deletionUndo: outcome.undo, lastError: null, lastChange: 'command' });
+      set({ state: outcome.state, lastError: null, lastChange: 'command' });
     },
     tick: (tickNow) => {
       if (readOnlyStore.getState().readOnly) return;
@@ -59,8 +47,8 @@ export function createGameStore(initial: GameState, gateway: CommandGateway = li
       announceTutorialEnd(get().state, result.state);
       set({ state: result.state, lastChange: 'tick' });
     },
-    replaceState: (state, change = 'reset') => set({ state, deletionUndo: null, lastError: null, lastChange: change }),
-    newGame: (now, difficulty) => set({ state: newGame({ now, tutorial: !bypassTutorial, venueTutorials: !bypassTutorial, difficulty }), deletionUndo: null, lastError: null, lastChange: 'reset' }),
+    replaceState: (state, change = 'reset') => set({ state, lastError: null, lastChange: change }),
+    newGame: (now, difficulty) => set({ state: newGame({ now, tutorial: !bypassTutorial, venueTutorials: !bypassTutorial, difficulty }), lastError: null, lastChange: 'reset' }),
   }));
 }
 

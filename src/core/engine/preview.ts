@@ -11,7 +11,7 @@ export interface CommandPreview {
 // Enough to pay for any command without ever running out, small enough to keep fractional Urbs exact.
 const UNLIMITED_URBS = 1_000_000_000;
 
-// Answers "what would this command do" without running the rest of the pipeline: no time advance, no Tutorial step, no unlock, no undo capture.
+// Answers "what would this command do" without running the rest of the pipeline: no time advance, no Tutorial step, no unlock.
 export function previewCommand(state: GameState, command: Command): CommandPreview {
   const outcome = handleCommand(state, command, state.lastSeen);
   if (!isError(outcome)) return { error: null, cost: Math.max(0, state.urbs - outcome.state.urbs) };
