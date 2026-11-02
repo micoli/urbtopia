@@ -2,7 +2,7 @@ import { FIXTURES } from './fixtures';
 import { evaluateArcade } from './arcade';
 import { evaluateHotel, stepReputation } from './hotel';
 import { evaluateSupermarket, nextStockOut, restockShelf, sellStock, stockerRestocks } from './supermarket';
-import { isVenueType, venuePower } from './profiles';
+import { isVenueType } from './profiles';
 import type { Layout } from './layout';
 import { entranceCell, gridSizeOf, takingsCapOf, VENUE as SHARED } from './shared';
 import { EVENT, eventBoundaries, eventBudgetOf, eventMultiplier, inCooldown, isEventActive } from './events';
@@ -12,6 +12,8 @@ import { hiredOf, hireFeeOf, managerYield, postsOf, staffRolesOf, wagesPerHour }
 import { earnedOf, rankOf } from './rank';
 import { isAdapting } from '../environment/adaptation';
 import { energyStats } from '../environment/energy';
+import { economicPower } from '../environment/ecology';
+import { energySavingOf } from '../politics/ordinanceEffects';
 import { isGood, type GoodId } from '../economy/items';
 import type { Evaluation, RuleContext } from './rules';
 import type { CommandOutcome } from '../engine/commands';
@@ -75,7 +77,7 @@ const POWER_EPSILON = 1e-9;
 
 export function isVenuePowered(state: GameState, venue: Building, supplied?: ReadonlyMap<number, number>): boolean {
   if (isAdapting(state)) return true;
-  return ((supplied ?? energyStats(state).supplied).get(venue.id) ?? 0) >= venuePower(venue) - POWER_EPSILON;
+  return ((supplied ?? energyStats(state).supplied).get(venue.id) ?? 0) >= economicPower(venue, energySavingOf(state)) - POWER_EPSILON;
 }
 
 export function venuePerformance(state: GameState, venue: Building & { venue: VenueData }, powered = isVenuePowered(state, venue), at = state.lastSeen): VenuePerformance {

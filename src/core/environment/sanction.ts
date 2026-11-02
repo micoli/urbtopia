@@ -18,12 +18,15 @@ export interface HomeSanction {
   multiplier: number;
 }
 
+const POWER_EPSILON = 1e-6;
+
 const NO_SANCTION: HomeSanction = { factor: null, satisfaction: 100, multiplier: 1 };
 
 function electricitySatisfaction(state: GameState, home: Building, { energy }: NeedsContext): number {
   const need = homePower(home, energySavingOf(state));
-  if (need <= 0) return 100;
-  return Math.max(0, Math.min(100, 100 * (energy.supplied.get(home.id) ?? 0) / need));
+  const supplied = energy.supplied.get(home.id) ?? 0;
+  if (need <= 0 || supplied >= need - POWER_EPSILON) return 100;
+  return Math.max(0, Math.min(100, 100 * supplied / need));
 }
 
 function factorSatisfactions(state: GameState, home: Building, context: NeedsContext, factors: readonly SanctionableFactorId[]): Map<NeedFactorId, number> {
