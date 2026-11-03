@@ -5510,8 +5510,8 @@ def aegean_bougainvillea(parts, c, tag, x, y, z, wall_y):
 
 def build_aegean(spec, out_dir):
     """A whitewashed Aegean house, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
-    Stacked flat-roofed cubes set back from the front so each floor leaves a parapeted terrace, blue doors, shutters and arches, an outside stair from Tier 3,
-    a pergola from Tier 2, bougainvillea, and blue domes from Tier 4 (a chapel from Tier 5, two domes at Tier 8)."""
+    Stacked flat-roofed cubes that shrink floor after floor, flush at the back and on the stair side (each floor is set back from the front and from the left side) so each floor leaves a parapeted terrace, blue doors, shutters and arches, an outside stair from Tier 3,
+    a pergola from Tier 2 on one side of the top roof, bougainvillea, and a blue dome on the other side from Tier 4 (a chapel from Tier 5)."""
     style = spec.get("style", "world")
     entries = palette_for(spec, style)
     index = PALETTE_NAMES.index
@@ -5530,9 +5530,8 @@ def build_aegean(spec, out_dir):
     parts = [lpm.box("plinth", (x1 - x0 + 0.02, y1 - y0 + 0.02, plinth), at=((x0 + x1) / 2, (y0 + y1) / 2, 0), color=c["floor"])]
     plans = []
     for level in range(floors):
-        front = y0 + (0.22 if level else 0.0)
-        left = x0 + (0.2 if level % 2 else 0.0)
-        right = x1 - (0.2 if level and level % 2 == 0 else 0.0)
+        front = y0 + 0.2 * level
+        left, right = x0 + 0.08 * w * level, x1
         plans.append((left, right, front, y1))
         z = plinth + level * fh
         parts.append(lpm.box(f"cube_{level}", (right - left, y1 - front, fh), at=((left + right) / 2, (front + y1) / 2, z), color=c["wall"]))
@@ -5581,8 +5580,6 @@ def build_aegean(spec, out_dir):
         aegean_dome(parts, c, "tiny_dome", top_right - 0.2, top_back - 0.2, roof_z + 0.05, 0.2)
     if tier >= 5:
         aegean_dome(parts, c, "chapel", top_right - 0.25, top_back - 0.25, roof_z + 0.05, 0.3)
-    if tier == 8:
-        aegean_dome(parts, c, "chapel_small", top_left + 0.2, top_back - 0.2, roof_z + 0.05, 0.22)
 
     if spec.get("solar"):
         for row in range(2):
