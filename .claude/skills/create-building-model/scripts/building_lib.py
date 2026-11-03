@@ -113,6 +113,7 @@ WORLD_ENTRIES = URBTOPIA_ENTRIES + [
     ("timber", "#4b3424"), ("plaster", "#efe4cc"), ("whitewash", "#f6f3ec"), ("blackwood", "#2b2724"), ("ochre", "#d9b878"), ("thatch", "#b99a58"), ("tile", "#a85a3c"), ("siena", "#cf8a5a"), ("dustypink", "#d9a89a"),
     ("pine", "#c9955c"), ("darkwood", "#8a5a3a"), ("honey", "#d9a85c"), ("greywood", "#9a9488"), ("shingle", "#5a4636"), ("falured", "#9b3a2a"), ("dalablue", "#6a8aa3"),
     ("tarwood", "#5b4332"), ("earth", "#7b6a4f"), ("turfgreen", "#6f9a4a"),
+    ("aegeanblue", "#2f6fb0"), ("turquoise", "#2aa7b5"), ("pastelpink", "#e8b8b0"),
 ]
 STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
 
@@ -5462,6 +5463,131 @@ def build_turf(spec, out_dir):
             panel = lpm.box(f"solar_panel_{row}", (0.3, (d - 0.4) / count - 0.04, 0.01), at=(cx, y, zc), color=c["solar"])
             lpm.rotate(panel, angle, axis="Y", about=(cx, y, zc))
             parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=8000 + 6000 * floors * max(1, w * d // 2), center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
+    return report
+
+
+def aegean_window(parts, tag, face, wall, u, bottom, width, height, c):
+    """A small square window in an accent-colored frame with two shutters."""
+    face_box(parts, f"{tag}_glass", face, wall, u, width, height, bottom, 0.012, c["glass"])
+    for side in (-1, 1):
+        face_box(parts, f"{tag}_shutter_{side}", face, wall, u + side * (width / 2 + 0.03), 0.05, height, bottom, 0.018, c["accent"])
+    face_box(parts, f"{tag}_head", face, wall, u, width + 0.02, 0.012, bottom + height, 0.02, c["accent"])
+    face_box(parts, f"{tag}_bar", face, wall, u, 0.008, height, bottom, 0.016, c["accent"])
+
+
+def aegean_parapet(parts, tag, x0, x1, y0, y1, z, c):
+    """A low parapet along the four edges of a flat roof."""
+    parts.append(lpm.box(f"{tag}_front", (x1 - x0, 0.035, 0.05), at=((x0 + x1) / 2, y0 + 0.0175, z), color=c["wall"]))
+    parts.append(lpm.box(f"{tag}_back", (x1 - x0, 0.035, 0.05), at=((x0 + x1) / 2, y1 - 0.0175, z), color=c["wall"]))
+    parts.append(lpm.box(f"{tag}_left", (0.035, y1 - y0, 0.05), at=(x0 + 0.0175, (y0 + y1) / 2, z), color=c["wall"]))
+    parts.append(lpm.box(f"{tag}_right", (0.035, y1 - y0, 0.05), at=(x1 - 0.0175, (y0 + y1) / 2, z), color=c["wall"]))
+
+
+def aegean_dome(parts, c, tag, x, y, z, size):
+    """A domed whitewashed chapel: a cube, a ring, a hemisphere and a small cross."""
+    parts.append(lpm.box(f"{tag}_cube", (size, size, size * 0.75), at=(x, y, z), color=c["wall"]))
+    aegean_arch = arch_outline(x, z + 0.02, size * 0.3, size * 0.5)
+    arch_part(parts, f"{tag}_door", "front", y - size / 2, aegean_arch, 0, 0.012, c["accent"])
+    ring = size * 0.5
+    parts.append(lpm.prism(f"{tag}_ring", 12, ring, 0.025, at=(x, y, z + size * 0.75), color=c["wall"]))
+    profile = [(0.0, 0.0), (ring * 0.98, 0.0)] + [(ring * 0.98 * math.cos(math.radians(a)), ring * 0.98 * math.sin(math.radians(a)) * 0.9) for a in range(15, 91, 15)]
+    parts.append(lpm.lathe(f"{tag}_dome", profile, segments=12, at=(x, y, z + size * 0.75 + 0.025), color=c["dome"]))
+
+
+def aegean_bougainvillea(parts, c, tag, x, y, z, wall_y):
+    """A leafy mound dotted with pink blooms, and a vine of leaves and blooms hanging down the wall below it."""
+    parts.append(lpm.prism(f"{tag}_mound", 8, 0.085, 0.07, at=(x, y, z), color=c["leaf"], radius_top=0.05))
+    for number, (dx, dy, dz) in enumerate(((0.06, 0.0, 0.03), (-0.05, 0.04, 0.04), (0.02, -0.06, 0.05), (-0.03, -0.03, 0.075), (0.05, 0.05, 0.05), (0.0, 0.02, 0.085), (-0.07, -0.01, 0.02))):
+        parts.append(lpm.box(f"{tag}_bloom_{number}", (0.03, 0.03, 0.03), at=(x + dx, y + dy, z + dz), color=c["flower"]))
+    parts.append(lpm.box(f"{tag}_vine", (0.1, 0.02, 0.2), at=(x, wall_y - 0.012, z - 0.14), color=c["leaf"]))
+    for number, (dx, dz) in enumerate(((-0.03, -0.02), (0.03, -0.06), (-0.02, -0.1), (0.03, -0.14), (0.0, -0.18))):
+        parts.append(lpm.box(f"{tag}_vine_bloom_{number}", (0.03, 0.025, 0.03), at=(x + dx, wall_y - 0.02, z + dz), color=c["flower"]))
+
+
+def build_aegean(spec, out_dir):
+    """A whitewashed Aegean house, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    Stacked flat-roofed cubes set back from the front so each floor leaves a parapeted terrace, blue doors, shutters and arches, an outside stair from Tier 3,
+    a pergola from Tier 2, bougainvillea, and blue domes from Tier 4 (a chapel from Tier 5, two domes at Tier 8)."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("accent", "vtone2"), ("dome", "vtone3"), ("glass", "glass_blue"), ("floor", "usand"),
+                                              ("flower", "pink"), ("leaf", "bush"), ("frame", "graphite"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors, tier = spec["floors"], spec["tier"]
+    fh, plinth = 0.28, 0.04
+    x0, x1 = -w / 2 + 0.015, w / 2 - 0.015
+    y0, y1 = -d / 2 + 0.05, d / 2 - 0.015
+    stair = tier >= 3
+    if stair:
+        x1 = w / 2 - 0.17
+    parts = [lpm.box("plinth", (x1 - x0 + 0.02, y1 - y0 + 0.02, plinth), at=((x0 + x1) / 2, (y0 + y1) / 2, 0), color=c["floor"])]
+    plans = []
+    for level in range(floors):
+        front = y0 + (0.22 if level else 0.0)
+        left = x0 + (0.2 if level % 2 else 0.0)
+        right = x1 - (0.2 if level and level % 2 == 0 else 0.0)
+        plans.append((left, right, front, y1))
+        z = plinth + level * fh
+        parts.append(lpm.box(f"cube_{level}", (right - left, y1 - front, fh), at=((left + right) / 2, (front + y1) / 2, z), color=c["wall"]))
+        parts.append(lpm.box(f"cube_cap_{level}", (right - left + 0.03, y1 - front + 0.03, 0.02), at=((left + right) / 2, (front + y1) / 2, z + fh - 0.02), color=c["wall"]))
+        aegean_parapet(parts, f"parapet_{level}", left - 0.015, right + 0.015, front - 0.015, y1 + 0.015, z + fh, c)
+        for face, wall, a0, a1 in (("front", front, left, right), ("back", y1, left, right), ("left", left, front, y1), ("right", right, front, y1)):
+            length = a1 - a0
+            count = max(1, round(length / 0.42))
+            panel = length / count
+            for panel_index in range(count):
+                u = a0 + (panel_index + 0.5) * panel
+                if face == "front" and level == 0 and panel_index == count // 2:
+                    continue
+                aegean_window(parts, f"{face}_{level}_{panel_index}", face, wall, u, z + 0.1, 0.1, 0.12, c)
+
+    left0, right0, front0, back0 = plans[0]
+    door_x = (left0 + right0) / 2
+    arch_part(parts, "door_surround", "front", front0, arch_outline(door_x, plinth - 0.005, 0.22, 0.27), 0, 0.014, c["wall"])
+    arch_part(parts, "door", "front", front0, arch_outline(door_x, plinth, 0.16, 0.24), 0, 0.02, c["accent"])
+    parts.append(lpm.box("door_step", (0.26, 0.05, 0.025), at=(door_x, front0 - 0.025, 0), color=c["wall"]))
+
+    if stair:
+        steps = 6
+        for step in range(steps):
+            height = (step + 1) * fh / steps
+            parts.append(lpm.box(f"stair_{step}", (0.14, 0.13, height), at=(w / 2 - 0.085, y0 + 0.1 + step * 0.13, plinth), color=c["wall"]))
+        parts.append(lpm.box("stair_rail", (0.014, 0.13 * steps, 0.014), at=(w / 2 - 0.02, y0 + 0.1 + 0.13 * steps / 2, plinth + fh), color=c["accent"]))
+
+    top_left, top_right, top_front, top_back = plans[-1]
+    roof_z = plinth + floors * fh
+    if tier >= 2:
+        px, pz = top_left + 0.12, roof_z
+        for corner_x in (top_left + 0.1, top_left + 0.1 + 0.3):
+            for corner_y in (top_back - 0.4, top_back - 0.1):
+                parts.append(lpm.box(f"pergola_post_{corner_x:.2f}_{corner_y:.2f}", (0.02, 0.02, 0.2), at=(corner_x, corner_y, pz + 0.05), color=c["accent"]))
+        for slat in range(5):
+            parts.append(lpm.box(f"pergola_slat_{slat}", (0.34, 0.02, 0.016), at=(top_left + 0.25, top_back - 0.4 + slat * 0.075, pz + 0.25), color=c["accent"]))
+        for beam_x in (top_left + 0.1, top_left + 0.4):
+            parts.append(lpm.box(f"pergola_beam_{beam_x:.2f}", (0.02, 0.4, 0.02), at=(beam_x, top_back - 0.25, pz + 0.23), color=c["accent"]))
+        for brace_y in (top_back - 0.4, top_back - 0.1):
+            parts.append(lpm.box(f"pergola_brace_{brace_y:.2f}", (0.32, 0.016, 0.016), at=(top_left + 0.25, brace_y, pz + 0.14), color=c["accent"]))
+    if tier >= 3:
+        for number, (fx, fy) in enumerate(((top_right - 0.12, top_front + 0.1), (top_left + 0.1, top_front + 0.1))):
+            aegean_bougainvillea(parts, c, f"bougainvillea_{number}", fx, fy, roof_z, top_front)
+    if tier == 4:
+        aegean_dome(parts, c, "tiny_dome", top_right - 0.2, top_back - 0.2, roof_z + 0.05, 0.2)
+    if tier >= 5:
+        aegean_dome(parts, c, "chapel", top_right - 0.25, top_back - 0.25, roof_z + 0.05, 0.3)
+    if tier == 8:
+        aegean_dome(parts, c, "chapel_small", top_left + 0.2, top_back - 0.2, roof_z + 0.05, 0.22)
+
+    if spec.get("solar"):
+        for row in range(2):
+            for column in range(2):
+                parts.append(lpm.box(f"solar_panel_{row}_{column}", (0.2, 0.14, 0.012), at=((top_left + top_right) / 2 - 0.1 + column * 0.24 + 0.1, top_front + 0.28 + row * 0.18, roof_z + 0.05), color=c["solar"]))
 
     ob = lpm.finish(spec["id"], parts, palette, budget=8000 + 6000 * floors * max(1, w * d // 2), center=False)
     report = export_model(ob, spec, out_dir)
