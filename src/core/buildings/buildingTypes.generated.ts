@@ -58,6 +58,7 @@ export type BuildingId =
   | 'holidayGingerbreadHouse'
   | 'holidayNutcracker'
   | 'home'
+  | 'home-brownstone'
   | 'home-building'
   | 'home-mansard-1x1'
   | 'home-mansard-1x2'

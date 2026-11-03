@@ -105,6 +105,13 @@ STYLES["urbtopia"] = {
     "parapet": 0.06, "parapet_width": 0.035,
 }
 
+# Palette cells of the world architecture styles (see .scratch/housing-architecture-styles); a style that needs more cells appends them here.
+WORLD_ENTRIES = URBTOPIA_ENTRIES + [
+    ("brownstone", "#8f5a43"), ("brownstone_dark", "#6e4333"), ("brick_dark", "#8e3322"),
+    ("limestone", "#bdb7a6"), ("limestone_dark", "#8f8a7c"), ("yellowbrick", "#d8b45c"), ("yellowbrick_dark", "#b38f3f"),
+]
+STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
+
 COLONNADE_PROJECTION = 0.22  # a colonnade stands this far out of the front wall
 PORTICO_PROJECTION = 0.18  # how far a portico stands out of the front wall: the body footprint is smaller by this much
 SAWTOOTH_HEIGHT = 0.16
@@ -4377,6 +4384,194 @@ def build_colosseum(spec, out_dir):
 
     ob = lpm.finish(spec["id"], parts, palette, budget=9000, center=False)
     return export_model(ob, spec, out_dir)
+
+
+def extrude_z(name, outline, z0, z1, color):
+    """Extrude a closed (x, y) outline, counter-clockwise seen from above, along Z from z0 to z1."""
+    count = len(outline)
+    verts = [(x, y, z0) for x, y in outline] + [(x, y, z1) for x, y in outline]
+    faces = [(i, (i + 1) % count, count + (i + 1) % count, count + i) for i in range(count)]
+    faces.append(tuple(reversed(range(count))))
+    faces.append(tuple(range(count, 2 * count)))
+    return lpm._object(name, _bm(verts, faces), color)
+
+
+BROWNSTONE_WALLS = {"front": -0.80, "back": 0.94, "left": -0.46, "right": 0.46}
+
+
+def face_box(parts, name, face, wall, u, along, height, z, thickness, color, embed=0.004):
+    """A box on a wall plane: centred at `u` along the face, `along` wide, standing out `thickness` minus `embed`."""
+    sign = -1 if face in ("front", "left") else 1
+    offset = sign * (thickness / 2 - embed)
+    if face in ("front", "back"):
+        parts.append(lpm.box(name, (along, thickness, height), at=(u, wall + offset, z), color=color))
+    else:
+        parts.append(lpm.box(name, (thickness, along, height), at=(wall + offset, u, z), color=color))
+
+
+def brownstone_window(parts, tag, face, u, bottom, width, height, c, wall=None, framed=True):
+    """A window with a lintel and a sill in the trim color; framed windows get a dark frame and a glazing bar."""
+    wall = BROWNSTONE_WALLS[face] if wall is None else wall
+    face_box(parts, f"{tag}_glass", face, wall, u, width, height, bottom, 0.012, c["glass"])
+    face_box(parts, f"{tag}_sill", face, wall, u, width + 0.04, 0.012, bottom - 0.012, 0.03, c["trim"])
+    face_box(parts, f"{tag}_lintel", face, wall, u, width + 0.05, 0.02, bottom + height, 0.026, c["trim"])
+    if not framed:
+        return
+    for side in (-1, 1):
+        face_box(parts, f"{tag}_frame_{side}", face, wall, u + side * (width / 2 + 0.005), 0.01, height, bottom, 0.016, c["frame"])
+    face_box(parts, f"{tag}_bar", face, wall, u, width, 0.006, bottom + height / 2, 0.016, c["frame"])
+
+
+def build_brownstone(spec, out_dir):
+    """A brownstone row house on a 1x2 cell, front facing -Y. The Tier is the floor count (1 to 5) and each Tier has its own silhouette:
+    1 a low house with a pediment over the door, 2 a taller one with a door hood and cornice brackets, 3 the raised ground floor with a high stoop, railings and a transom,
+    4 a two-floor bay window and a fire escape at the back, 5 a set-back top floor with a terrace and a roof water tank. The stoop reaches the front of the cell and the cornice its sides."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("dark", "vtone2"), ("trim", "vtone3"), ("glass", "glass_blue"), ("frame", "graphite"),
+                                              ("door", "slate_dark"), ("roof", "uslab"), ("wood", "uwood"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    floors = spec["floors"]
+    plinth = 0.12
+    fh = 0.26
+    levels = min(floors, 4)
+    z0 = plinth
+    top = z0 + levels * fh
+    width = 0.92
+    y0, y1 = BROWNSTONE_WALLS["front"], BROWNSTONE_WALLS["back"]
+    depth = y1 - y0
+    cy = (y0 + y1) / 2
+    door_x = -0.2
+    parts = [lpm.box("plinth", (width + 0.02, depth + 0.02, plinth), at=(0, cy, 0), color=c["dark"]),
+             lpm.box("walls", (width, depth, levels * fh), at=(0, cy, z0), color=c["wall"]),
+             lpm.box("cornice", (width + 0.08, depth + 0.08, 0.035), at=(0, cy, top), color=c["trim"])]
+    if floors > 1:
+        for number in range(6):
+            parts.append(lpm.box(f"bracket_{number}", (0.05, 0.04, 0.045), at=(-0.4 + 0.16 * number, y0 - 0.02, top - 0.045), color=c["trim"]))
+    rim, rim_height, rim_z = 0.03, 0.05, top + 0.035
+    parts.append(lpm.box("parapet_front", (width + 0.06, rim, rim_height), at=(0, y0 - 0.025, rim_z), color=c["wall"]))
+    parts.append(lpm.box("parapet_back", (width + 0.06, rim, rim_height), at=(0, y1 + 0.025, rim_z), color=c["wall"]))
+    for side in (-1, 1):
+        parts.append(lpm.box(f"parapet_{side}", (rim, depth + 0.06, rim_height), at=(side * 0.475, cy, rim_z), color=c["wall"]))
+    parts.append(lpm.box("deck", (width - 0.04, depth + 0.02, 0.006), at=(0, cy, rim_z), color=c["roof"]))
+
+    bay = floors >= 4
+    for level in range(levels):
+        raised = level == 1 and floors >= 3
+        bottom = z0 + level * fh + (0.03 if raised else 0.05)
+        height = 0.2 if raised else 0.16
+        for x in (-0.2, 0.2):
+            if level == 0 and x == door_x:
+                continue
+            if bay and level in (1, 2) and x == 0.2:
+                continue
+            brownstone_window(parts, f"front_{level}_{x}", "front", x, bottom, 0.17, height, c)
+        for x in (-0.2, 0.2):
+            brownstone_window(parts, f"back_{level}_{x}", "back", x, bottom, 0.17, 0.16, c)
+        for face in ("left", "right"):
+            for number, y in enumerate((-0.42, 0.05, 0.52)):
+                brownstone_window(parts, f"{face}_{level}_{number}", face, y, bottom, 0.12, 0.16, c, framed=False)
+
+    brownstone_window(parts, "basement", "front", 0.2, 0.03, 0.15, 0.06, c, wall=y0 - 0.01, framed=False)
+
+    door_height = 0.2
+    face_box(parts, "door", "front", y0, door_x, 0.17, door_height, z0, 0.014, c["door"])
+    parts.append(lpm.box("door_knob", (0.014, 0.014, 0.014), at=(door_x + 0.05, y0 - 0.014, z0 + 0.1), color=c["trim"]))
+    door_frame(parts, "door", door_x, y0, z0, 0.17, door_height, c["trim"], thick=0.014)
+    if floors == 1:
+        peak = z0 + door_height + 0.016
+        parts.append(extrude_y("pediment", [(door_x - 0.13, peak), (door_x + 0.13, peak), (door_x, peak + 0.05)], y0 - 0.025, y0 + 0.004, c["trim"]))
+    elif floors == 2:
+        parts.append(lpm.box("door_hood", (0.25, 0.06, 0.016), at=(door_x, y0 - 0.026, z0 + door_height + 0.014), color=c["trim"]))
+        for side in (-1, 1):
+            parts.append(lpm.box(f"door_hood_bracket_{side}", (0.016, 0.04, 0.03), at=(door_x + side * 0.1, y0 - 0.02, z0 + door_height - 0.016), color=c["trim"]))
+    else:
+        face_box(parts, "transom", "front", y0, door_x, 0.17, 0.035, z0 + door_height + 0.014, 0.012, c["glass"])
+
+    steps = {1: 3, 2: 3}.get(floors, 5)
+    landing, run = 0.06, 0.14 / (steps - 1)
+    stoop_x = door_x
+    parts.append(lpm.box("stoop_landing", (0.32, landing + 0.004, plinth), at=(stoop_x, y0 - landing / 2 + 0.002, 0), color=c["dark"]))
+    for step in range(1, steps):
+        step_height = plinth * (steps - step) / steps
+        parts.append(lpm.box(f"stoop_step_{step}", (0.32, run, step_height), at=(stoop_x, y0 - landing - run * (step - 0.5), 0), color=c["dark"]))
+    low_top = plinth / steps
+    slope = math.degrees(math.atan2(plinth - low_top, 0.13))
+    length = math.hypot(plinth - low_top, 0.13)
+    rail_z = 0.08
+    for side in (-1, 1):
+        x = stoop_x + side * 0.15
+        parts.append(lpm.box(f"rail_post_top_{side}", (0.014, 0.014, rail_z + 0.01), at=(x, y0 - landing, plinth), color=c["frame"]))
+        parts.append(lpm.box(f"rail_post_low_{side}", (0.014, 0.014, rail_z + 0.01), at=(x, y0 - landing - 0.14 + 0.007, low_top), color=c["frame"]))
+        parts.append(lpm.box(f"rail_flat_{side}", (0.012, landing, 0.012), at=(x, y0 - landing / 2, plinth + rail_z), color=c["frame"]))
+        bar = lpm.box(f"rail_slope_{side}", (0.012, length, 0.012), at=(x, y0 - landing - 0.065, (plinth + low_top) / 2 + rail_z), color=c["frame"])
+        lpm.rotate(bar, slope, axis="X", about=(x, y0 - landing - 0.065, (plinth + low_top) / 2 + rail_z))
+        parts.append(bar)
+
+    if bay:
+        bay_x, bay_front, bay_wall = 0.2, y0 - 0.10, y0 + 0.01
+        bottom, ceiling = z0 + fh, z0 + 3 * fh
+        parts.append(extrude_z("bay", [(bay_x - 0.14, bay_front), (bay_x + 0.14, bay_front), (bay_x + 0.2, bay_wall), (bay_x - 0.2, bay_wall)], bottom, ceiling, c["wall"]))
+        wide = [(bay_x - 0.16, bay_front - 0.025), (bay_x + 0.16, bay_front - 0.025), (bay_x + 0.23, bay_wall), (bay_x - 0.23, bay_wall)]
+        parts.append(extrude_z("bay_base", wide, bottom - 0.025, bottom, c["trim"]))
+        parts.append(extrude_z("bay_cap", wide, ceiling, ceiling + 0.025, c["trim"]))
+        for level in (1, 2):
+            brownstone_window(parts, f"bay_{level}", "front", bay_x, z0 + level * fh + (0.03 if level == 1 and floors >= 3 else 0.05), 0.22, 0.17, c, wall=bay_front)
+        for level in range(1, levels):
+            platform_z = z0 + level * fh
+            parts.append(lpm.box(f"escape_platform_{level}", (0.56, 0.06, 0.012), at=(0, y1 + 0.03, platform_z), color=c["frame"]))
+            parts.append(lpm.box(f"escape_rail_{level}", (0.56, 0.008, 0.07), at=(0, y1 + 0.056, platform_z + 0.012), color=c["frame"]))
+            for side in (-1, 1):
+                parts.append(lpm.box(f"escape_rail_{level}_{side}", (0.008, 0.06, 0.07), at=(side * 0.276, y1 + 0.03, platform_z + 0.012), color=c["frame"]))
+            lower_z = z0 if level == 1 else z0 + (level - 1) * fh
+            drop = platform_z - lower_z
+            tilt = math.degrees(math.atan2(drop, 0.05)) * (1 if level % 2 else -1)
+            for side in (-1, 1):
+                x = (0.2 if level % 2 else -0.2) + side * 0.04
+                ladder = lpm.box(f"escape_ladder_{level}_{side}", (0.012, math.hypot(drop, 0.05), 0.012), at=(x, y1 + 0.03, (platform_z + lower_z) / 2), color=c["frame"])
+                lpm.rotate(ladder, tilt, axis="X", about=(x, y1 + 0.03, (platform_z + lower_z) / 2))
+                parts.append(ladder)
+
+    if floors == 5:
+        top_z = top + 0.035
+        front, back = -0.46, 0.86
+        centre = (front + back) / 2
+        parts.append(lpm.box("top_floor", (0.80, back - front, fh), at=(0, centre, top_z), color=c["wall"]))
+        parts.append(lpm.box("top_cornice", (0.88, back - front + 0.08, 0.03), at=(0, centre, top_z + fh), color=c["trim"]))
+        parts.append(lpm.box("top_deck", (0.82, back - front + 0.04, 0.006), at=(0, centre, top_z + fh + 0.03), color=c["roof"]))
+        face_box(parts, "terrace_glass", "front", front, 0.0, 0.62, 0.17, top_z + 0.045, 0.012, c["glass"])
+        for side in (-1, 1):
+            face_box(parts, f"terrace_frame_{side}", "front", front, side * 0.31, 0.012, 0.17, top_z + 0.045, 0.016, c["frame"])
+            face_box(parts, f"terrace_mullion_{side}", "front", front, side * 0.1, 0.008, 0.17, top_z + 0.045, 0.016, c["frame"])
+        face_box(parts, "terrace_head", "front", front, 0.0, 0.66, 0.012, top_z + 0.215, 0.016, c["frame"])
+        for face, wall in (("left", -0.40), ("right", 0.40)):
+            for number, y in enumerate((-0.15, 0.3)):
+                brownstone_window(parts, f"top_{face}_{number}", face, y, top_z + 0.05, 0.12, 0.16, c, wall=wall, framed=False)
+        for x in (-0.2, 0.2):
+            brownstone_window(parts, f"top_back_{x}", "back", x, top_z + 0.05, 0.17, 0.16, c, wall=back)
+
+    roof_z = top_z + fh + 0.036 if floors == 5 else rim_z + 0.006
+    parts.append(lpm.box("roof_hatch", (0.16, 0.16, 0.05), at=(-0.2, 0.45, roof_z), color=c["trim"]))
+    if spec.get("solar"):
+        for column in range(3):
+            for row in range(2):
+                parts.append(lpm.box(f"solar_panel_{column}_{row}", (0.2, 0.24, 0.012), at=(-0.23 + column * 0.23, -0.3 + row * 0.29, roof_z), color=c["solar"]))
+    tank_x, tank_y, tank_z = 0.2, 0.5, roof_z
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            parts.append(lpm.box(f"tank_leg_{sx}_{sy}", (0.014, 0.014, 0.1), at=(tank_x + sx * 0.07, tank_y + sy * 0.07, tank_z), color=c["frame"]))
+    parts.append(lpm.box("tank_floor", (0.18, 0.18, 0.012), at=(tank_x, tank_y, tank_z + 0.1), color=c["frame"]))
+    parts.append(lpm.prism("tank", 10, 0.095, 0.15, at=(tank_x, tank_y, tank_z + 0.112), color=c["wood"]))
+    for number, hoop_z in enumerate((0.15, 0.22)):
+        parts.append(lpm.prism(f"tank_hoop_{number}", 10, 0.1, 0.014, at=(tank_x, tank_y, tank_z + hoop_z), color=c["frame"]))
+    parts.append(lpm.prism("tank_roof", 10, 0.115, 0.06, at=(tank_x, tank_y, tank_z + 0.262), color=c["door"], radius_top=0.01))
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=2500 + 2600 * floors, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = list(spec["footprint"])
+    return report
 
 
 def build(spec, out_dir):

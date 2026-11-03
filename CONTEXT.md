@@ -728,6 +728,10 @@ _Avoid_: Solar Home (that is a Home built with them), Solar installation, Solar 
 A Home sold in three fixed footprints (1×1, 1×2, 2×2) whose five Tiers each add a floor, available in three colors and with solar panels. It shares the population and utility Demand of the first five Tiers of a Home.
 _Avoid_: Mansard house, attic home
 
+**Architecture style**:
+A Home definition drawn after the architecture of a region of the world (for example the Brownstone), sold beside the base Home it reskins. It changes only the models and the names: footprint, Tiers, population, utility Demand, cost and unlock threshold are those of its base Home.
+_Avoid_: Skin, theme, Home variant (a variant is a Solar one)
+
 **Insulation**:
 A paid Home improvement that reduces power Demand independently of solar equipment.
 _Avoid_: Energy generation, Home Tier
