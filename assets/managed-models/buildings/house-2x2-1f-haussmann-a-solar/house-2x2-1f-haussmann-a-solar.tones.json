@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "cream",
+  "color": "#fff1d6"
+ },
+ "b": {
+  "name": "limestone",
+  "color": "#bdb7a6"
+ },
+ "c": {
+  "name": "yellowbrick",
+  "color": "#d8b45c"
+ },
+ "d": {
+  "name": "brownstone",
+  "color": "#8f5a43"
+ }
+}

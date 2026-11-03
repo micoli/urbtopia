@@ -4709,6 +4709,130 @@ def build_dutch(spec, out_dir):
     return report
 
 
+def haussmann_dormer(parts, c, tag, u, z, yaw, pediment):
+    """A dormer window on the steep mansard slope of the front face (-Y); other faces are this one turned by `yaw` degrees about the vertical axis."""
+    group = [lpm.box(f"{tag}_body", (0.17, 0.12, 0.14), at=(u, -0.88, z), color=c["wall"]),
+             lpm.box(f"{tag}_glass", (0.11, 0.012, 0.1), at=(u, -0.946, z + 0.02), color=c["glass"]),
+             lpm.box(f"{tag}_sill", (0.15, 0.03, 0.012), at=(u, -0.95, z + 0.008), color=c["trim"]),
+             lpm.box(f"{tag}_mullion", (0.008, 0.016, 0.1), at=(u, -0.95, z + 0.02), color=c["frame"]),
+             lpm.box(f"{tag}_bar", (0.11, 0.016, 0.008), at=(u, -0.95, z + 0.066), color=c["frame"]),
+             extrude_y(f"{tag}_roof", [(u - 0.1, z + 0.14), (u + 0.1, z + 0.14), (u, z + 0.22 if pediment else z + 0.2)], -0.95, -0.82, c["roof"])]
+    if pediment:
+        group.append(extrude_y(f"{tag}_pediment", [(u - 0.075, z + 0.12), (u + 0.075, z + 0.12), (u, z + 0.17)], -0.955, -0.94, c["trim"]))
+    for part in group:
+        if yaw:
+            lpm.rotate(part, yaw, axis="Z")
+        parts.append(part)
+
+
+def build_haussmann(spec, out_dir):
+    """A Haussmannian apartment block on a 2x2 cell, front facing -Y: a cream stone body with five bays of tall windows, string courses between floors, a ground floor with a central double door,
+    a zinc mansard roof with dormers, chimney stacks and a flat deck. The Tier is the floor count (1 to 5): 1 the ground floor under the roof, 2 the continuous iron balcony of the noble floor,
+    3 balconies on the next floor, 4 corner quoins and a door pediment, 5 a second continuous balcony on the top floor, pedimented dormers and four chimney stacks."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("dark", "vtone2"), ("trim", "vtone3"), ("glass", "glass_blue"), ("frame", "graphite"),
+                                              ("door", "slate_dark"), ("roof", "slate_dark"), ("deck", "uslab"), ("solar", "solar"), ("chimney", "slate"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    floors = spec["floors"]
+    half = 0.96
+    ground, fh = 0.3, 0.26
+    plinth = 0.06
+    z0 = plinth
+    top = z0 + ground + (floors - 1) * fh
+    bays = (-0.76, -0.38, 0.0, 0.38, 0.76)
+    parts = [lpm.box("plinth", (2 * half + 0.04, 2 * half + 0.04, plinth), at=(0, 0, 0), color=c["dark"]),
+             lpm.box("walls", (2 * half, 2 * half, top - z0), at=(0, 0, z0), color=c["wall"]),
+             lpm.box("cornice", (2.0, 2.0, 0.04), at=(0, 0, top), color=c["trim"]),
+             lpm.box("cornice_top", (1.96, 1.96, 0.03), at=(0, 0, top + 0.04), color=c["wall"])]
+    for level in range(floors):
+        line = z0 + ground + (level - 1) * fh if level else z0 + ground
+        if level >= 1:
+            parts.append(lpm.box(f"course_{level}", (1.98, 1.98, 0.014), at=(0, 0, z0 + ground + (level - 1) * fh - 0.007), color=c["trim"]))
+    parts.append(lpm.box("course_ground", (1.98, 1.98, 0.014), at=(0, 0, z0 + ground - 0.007), color=c["trim"]))
+
+    def floor_bottom(level):
+        return z0 if level == 0 else z0 + ground + (level - 1) * fh
+
+    faces = (("front", -half), ("back", half), ("left", -half), ("right", half))
+    for level in range(floors):
+        base = floor_bottom(level)
+        bottom = base + (0.08 if level == 0 else 0.03)
+        height = 0.17 if level == 0 else 0.21
+        for face, wall in faces:
+            for x in bays:
+                if face == "front" and level == 0 and x == 0.0:
+                    continue
+                brownstone_window(parts, f"{face}_{level}_{x}", face, x, bottom, 0.2, height, c, wall=wall)
+                face_box(parts, f"{face}_{level}_{x}_mullion", face, wall, x, 0.008, height, bottom, 0.016, c["frame"])
+
+    door_h = 0.24
+    face_box(parts, "door", "front", -half, 0.0, 0.3, door_h, z0, 0.014, c["door"])
+    face_box(parts, "door_bar", "front", -half, 0.0, 0.012, door_h, z0, 0.02, c["frame"])
+    door_frame(parts, "door", 0.0, -half, z0, 0.3, door_h, c["trim"], thick=0.02)
+    face_box(parts, "door_fanlight", "front", -half, 0.0, 0.3, 0.04, z0 + door_h + 0.02, 0.012, c["glass"])
+    for side in (-1, 1):
+        parts.append(lpm.box(f"door_step_{side}", (0.14, 0.04, 0.03), at=(side * 0.08, -half - 0.02, 0), color=c["dark"]))
+
+    def balcony(face_x0, level, continuous):
+        zb = floor_bottom(level) + 0.012
+        spans = [(-0.95, 0.95)] if continuous else [(x - 0.14, x + 0.14) for x in bays]
+        for number, (a, b) in enumerate(spans):
+            width = b - a
+            mid = (a + b) / 2
+            parts.append(lpm.box(f"balcony_slab_{level}_{number}", (width, 0.07, 0.016), at=(mid, -half - 0.035, zb), color=c["trim"]))
+            parts.append(lpm.box(f"balcony_rail_{level}_{number}", (width, 0.008, 0.012), at=(mid, -half - 0.066, zb + 0.07), color=c["frame"]))
+            parts.append(lpm.box(f"balcony_low_{level}_{number}", (width, 0.008, 0.008), at=(mid, -half - 0.066, zb + 0.018), color=c["frame"]))
+            posts = max(2, int(width / 0.1) + 1)
+            for post in range(posts):
+                x = a + width * post / (posts - 1)
+                parts.append(lpm.box(f"balcony_post_{level}_{number}_{post}", (0.008, 0.008, 0.066), at=(x, -half - 0.066, zb + 0.018), color=c["frame"]))
+
+    if floors >= 2:
+        balcony(None, 1, True)
+    if floors >= 3:
+        balcony(None, 2, False)
+    if floors >= 4:
+        balcony(None, 3, False)
+    if floors == 5:
+        balcony(None, 4, True)
+    if floors >= 4:
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                parts.append(lpm.box(f"quoin_x_{sx}_{sy}", (0.1, 0.03, top - z0), at=(sx * 0.91, sy * (half + 0.01), z0), color=c["trim"]))
+                parts.append(lpm.box(f"quoin_y_{sx}_{sy}", (0.03, 0.1, top - z0), at=(sx * (half + 0.01), sy * 0.91, z0), color=c["trim"]))
+        parts.append(extrude_y("door_pediment", [(-0.2, z0 + door_h + 0.07), (0.2, z0 + door_h + 0.07), (0.0, z0 + door_h + 0.15)], -half - 0.03, -half + 0.01, c["trim"]))
+        parts.append(lpm.box("door_entablature", (0.42, 0.04, 0.03), at=(0, -half - 0.01, z0 + door_h + 0.04), color=c["trim"]))
+
+    roof_z = top + 0.07
+    steep, shallow, rim = 0.22, 0.05, 0.98
+    root2 = math.sqrt(2)
+    parts.append(lpm.prism("mansard", 4, rim * root2, steep, at=(0, 0, roof_z), color=c["roof"], radius_top=0.78 * root2, rotate=45))
+    parts.append(lpm.prism("mansard_top", 4, 0.78 * root2, shallow, at=(0, 0, roof_z + steep), color=c["roof"], radius_top=0.56 * root2, rotate=45))
+    deck_z = roof_z + steep + shallow
+    parts.append(lpm.box("deck", (1.12, 1.12, 0.012), at=(0, 0, deck_z), color=c["deck"]))
+    dormer_xs = bays if floors >= 5 else bays[1:4] if floors >= 3 else (-0.38, 0.38)
+    for yaw in (0, 90, 180, 270):
+        for number, u in enumerate(dormer_xs):
+            haussmann_dormer(parts, c, f"dormer_{yaw}_{number}", u, roof_z + 0.03, yaw, floors == 5)
+    stacks = [(-0.4, 0.3), (0.4, 0.3), (-0.4, -0.3), (0.4, -0.3)] if floors == 5 else [(-0.35, 0.25), (0.35, 0.25)]
+    for number, (x, y) in enumerate(stacks):
+        parts.append(lpm.box(f"stack_{number}", (0.12, 0.12, 0.26), at=(x, y, deck_z), color=c["chimney"]))
+        parts.append(lpm.box(f"stack_cap_{number}", (0.15, 0.15, 0.02), at=(x, y, deck_z + 0.26), color=c["chimney"]))
+        parts.append(lpm.box(f"stack_pot_{number}", (0.05, 0.05, 0.05), at=(x, y, deck_z + 0.28), color=c["roof"]))
+    if spec.get("solar"):
+        for column in range(2):
+            for row in range(2):
+                parts.append(lpm.box(f"solar_panel_{column}_{row}", (0.3, 0.2, 0.012), at=(-0.17 + column * 0.34, -0.2 + row * 0.26, deck_z + 0.012), color=c["solar"]))
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=4000 + 3000 * floors, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = list(spec["footprint"])
+    return report
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")

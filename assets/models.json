@@ -3305,6 +3305,62 @@
       }
     }
   },
+  "buildings-house-2x2-1f-haussmann-a": {
+    "file": "buildings/house-2x2-1f-haussmann-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "d": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      }
+    }
+  },
+  "buildings-house-2x2-1f-haussmann-a-solar": {
+    "file": "buildings/house-2x2-1f-haussmann-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "d": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      }
+    }
+  },
   "buildings-house-2x2-1f-mansard-a": {
     "file": "buildings/house-2x2-1f-mansard-a",
     "source": "managed",
@@ -3350,6 +3406,62 @@
       "d": {
         "name": "greygreen",
         "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-haussmann-a": {
+    "file": "buildings/house-2x2-2f-haussmann-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "d": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-haussmann-a-solar": {
+    "file": "buildings/house-2x2-2f-haussmann-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "d": {
+        "name": "brownstone",
+        "color": "#8f5a43"
       }
     }
   },
@@ -3459,6 +3571,62 @@
       }
     }
   },
+  "buildings-house-2x2-3f-haussmann-a": {
+    "file": "buildings/house-2x2-3f-haussmann-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "d": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-haussmann-a-solar": {
+    "file": "buildings/house-2x2-3f-haussmann-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "d": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      }
+    }
+  },
   "buildings-house-2x2-3f-mansard-a": {
     "file": "buildings/house-2x2-3f-mansard-a",
     "source": "managed",
@@ -3565,6 +3733,62 @@
       }
     }
   },
+  "buildings-house-2x2-4f-haussmann-a": {
+    "file": "buildings/house-2x2-4f-haussmann-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "d": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      }
+    }
+  },
+  "buildings-house-2x2-4f-haussmann-a-solar": {
+    "file": "buildings/house-2x2-4f-haussmann-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "d": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      }
+    }
+  },
   "buildings-house-2x2-4f-mansard-a": {
     "file": "buildings/house-2x2-4f-mansard-a",
     "source": "managed",
@@ -3668,6 +3892,62 @@
       "d": {
         "name": "greygreen",
         "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-haussmann-a": {
+    "file": "buildings/house-2x2-5f-haussmann-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "d": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-haussmann-a-solar": {
+    "file": "buildings/house-2x2-5f-haussmann-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "d": {
+        "name": "brownstone",
+        "color": "#8f5a43"
       }
     }
   },
