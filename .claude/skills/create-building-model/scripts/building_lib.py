@@ -5162,7 +5162,7 @@ def build_chalet(spec, out_dir):
     entries = palette_for(spec, style)
     index = PALETTE_NAMES.index
     c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("stone", "vtone2"), ("roof", "vtone3"), ("glass", "glass_blue"), ("white", "white"), ("shutter", "brick"),
-                                              ("timber", "timber"), ("frame", "graphite"), ("bush", "bush"), ("solar", "solar"))}
+                                              ("timber", "timber"), ("frame", "graphite"), ("bush", "bush"), ("solar", "solar"), ("log", "darkwood"))}
     lpm.reset()
     palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
     w, d = spec["footprint"]
@@ -5174,7 +5174,7 @@ def build_chalet(spec, out_dir):
              lpm.box("walls", (2 * hx, 2 * hy, floors * fh), at=(0, 0, plinth), color=c["wall"]),
              lpm.box("eave_beam", (2 * hx + 0.02, 2 * hy + 0.02, 0.03), at=(0, 0, top - 0.03), color=c["timber"])]
     for line in range(floors * 4):
-        parts.append(lpm.box(f"log_{line}", (2 * hx + 0.012, 2 * hy + 0.012, 0.008), at=(0, 0, plinth + 0.07 * (line + 1) - 0.004), color=c["timber"]))
+        parts.append(lpm.box(f"log_{line}", (2 * hx + 0.012, 2 * hy + 0.012, 0.008), at=(0, 0, plinth + 0.07 * (line + 1) - 0.004), color=c["log"]))
 
     door_x = 0.0
     for level in range(floors):
