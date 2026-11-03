@@ -398,6 +398,7 @@ export const CATALOG = {
   'color.siena': ['Siena', 'Terre de Sienne'],
   'color.dustypink': ['Dusty pink', 'Rose poudré'],
   'color.pine': ['Pine', 'Pin'],
+  'color.tarwood': ['Tarred wood', 'Bois goudronné'],
   'color.falured': ['Falu red', 'Rouge de Falun'],
   'color.dalablue': ['Slate blue', 'Bleu ardoise'],
   'color.darkwood': ['Dark wood', 'Bois sombre'],

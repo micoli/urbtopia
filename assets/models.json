@@ -2089,6 +2089,64 @@
       }
     }
   },
+  "buildings-house-1x1-1f-turf-a": {
+    "file": "buildings/house-1x1-1f-turf-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      }
+    }
+  },
+  "buildings-house-1x1-1f-turf-a-solar": {
+    "file": "buildings/house-1x1-1f-turf-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      }
+    }
+  },
   "buildings-house-1x1-1f-tuscan-a": {
     "file": "buildings/house-1x1-1f-tuscan-a",
     "source": "managed",
@@ -3595,6 +3653,64 @@
       }
     }
   },
+  "buildings-house-2x1-1f-turf-a": {
+    "file": "buildings/house-2x1-1f-turf-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      }
+    }
+  },
+  "buildings-house-2x1-1f-turf-a-solar": {
+    "file": "buildings/house-2x1-1f-turf-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      }
+    }
+  },
   "buildings-house-2x1-1f-tuscan-a": {
     "file": "buildings/house-2x1-1f-tuscan-a",
     "source": "managed",
@@ -4001,6 +4117,64 @@
       }
     }
   },
+  "buildings-house-2x1-2f-third-turf-a": {
+    "file": "buildings/house-2x1-2f-third-turf-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-turf-a-solar": {
+    "file": "buildings/house-2x1-2f-third-turf-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      }
+    }
+  },
   "buildings-house-2x1-2f-third-tuscan-a": {
     "file": "buildings/house-2x1-2f-third-tuscan-a",
     "source": "managed",
@@ -4172,6 +4346,64 @@
       "d": {
         "name": "cream",
         "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-turf-a": {
+    "file": "buildings/house-2x1-2f-turf-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-turf-a-solar": {
+    "file": "buildings/house-2x1-2f-turf-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
       }
     }
   },
@@ -4673,6 +4905,64 @@
       }
     }
   },
+  "buildings-house-2x2-2f-turf-a": {
+    "file": "buildings/house-2x2-2f-turf-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-turf-a-solar": {
+    "file": "buildings/house-2x2-2f-turf-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      }
+    }
+  },
   "buildings-house-2x2-2f-tuscan-a": {
     "file": "buildings/house-2x2-2f-tuscan-a",
     "source": "managed",
@@ -5064,6 +5354,64 @@
       "d": {
         "name": "cream",
         "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-turf-a": {
+    "file": "buildings/house-2x2-3f-turf-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-turf-a-solar": {
+    "file": "buildings/house-2x2-3f-turf-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
       }
     }
   },
@@ -5461,6 +5809,64 @@
       }
     }
   },
+  "buildings-house-2x2-4f-turf-a": {
+    "file": "buildings/house-2x2-4f-turf-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      }
+    }
+  },
+  "buildings-house-2x2-4f-turf-a-solar": {
+    "file": "buildings/house-2x2-4f-turf-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      }
+    }
+  },
   "buildings-house-2x2-4f-tuscan-a": {
     "file": "buildings/house-2x2-4f-tuscan-a",
     "source": "managed",
@@ -5852,6 +6258,64 @@
       "d": {
         "name": "cream",
         "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-turf-a": {
+    "file": "buildings/house-2x2-5f-turf-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-turf-a-solar": {
+    "file": "buildings/house-2x2-5f-turf-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "d": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
       }
     }
   },
