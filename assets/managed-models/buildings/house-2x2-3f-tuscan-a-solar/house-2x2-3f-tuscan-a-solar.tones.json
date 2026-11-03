@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "ochre",
+  "color": "#d9b878"
+ },
+ "b": {
+  "name": "siena",
+  "color": "#cf8a5a"
+ },
+ "c": {
+  "name": "cream",
+  "color": "#fff1d6"
+ },
+ "d": {
+  "name": "dustypink",
+  "color": "#d9a89a"
+ }
+}

@@ -1973,6 +1973,64 @@
       }
     }
   },
+  "buildings-house-1x1-1f-tuscan-a": {
+    "file": "buildings/house-1x1-1f-tuscan-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-1x1-1f-tuscan-a-solar": {
+    "file": "buildings/house-1x1-1f-tuscan-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
+      }
+    }
+  },
   "buildings-house-1x1-2f-dutch-a": {
     "file": "buildings/house-1x1-2f-dutch-a",
     "source": "managed",
@@ -3305,6 +3363,64 @@
       }
     }
   },
+  "buildings-house-2x1-1f-tuscan-a": {
+    "file": "buildings/house-2x1-1f-tuscan-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-2x1-1f-tuscan-a-solar": {
+    "file": "buildings/house-2x1-1f-tuscan-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
+      }
+    }
+  },
   "buildings-house-2x1-2f-third-tone-a": {
     "file": "buildings/house-2x1-2f-third-tone-a",
     "source": "managed",
@@ -3421,6 +3537,64 @@
       }
     }
   },
+  "buildings-house-2x1-2f-third-tuscan-a": {
+    "file": "buildings/house-2x1-2f-third-tuscan-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-tuscan-a-solar": {
+    "file": "buildings/house-2x1-2f-third-tuscan-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
+      }
+    }
+  },
   "buildings-house-2x1-2f-tone-a": {
     "file": "buildings/house-2x1-2f-tone-a",
     "source": "managed",
@@ -3534,6 +3708,64 @@
       "d": {
         "name": "cream",
         "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-tuscan-a": {
+    "file": "buildings/house-2x1-2f-tuscan-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-tuscan-a-solar": {
+    "file": "buildings/house-2x1-2f-tuscan-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
       }
     }
   },
@@ -3861,6 +4093,64 @@
       }
     }
   },
+  "buildings-house-2x2-2f-tuscan-a": {
+    "file": "buildings/house-2x2-2f-tuscan-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-tuscan-a-solar": {
+    "file": "buildings/house-2x2-2f-tuscan-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
+      }
+    }
+  },
   "buildings-house-2x2-3f-haussmann-a": {
     "file": "buildings/house-2x2-3f-haussmann-a",
     "source": "managed",
@@ -4078,6 +4368,64 @@
       "d": {
         "name": "cream",
         "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-tuscan-a": {
+    "file": "buildings/house-2x2-3f-tuscan-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-tuscan-a-solar": {
+    "file": "buildings/house-2x2-3f-tuscan-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
       }
     }
   },
@@ -4301,6 +4649,64 @@
       }
     }
   },
+  "buildings-house-2x2-4f-tuscan-a": {
+    "file": "buildings/house-2x2-4f-tuscan-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-2x2-4f-tuscan-a-solar": {
+    "file": "buildings/house-2x2-4f-tuscan-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
+      }
+    }
+  },
   "buildings-house-2x2-5f-haussmann-a": {
     "file": "buildings/house-2x2-5f-haussmann-a",
     "source": "managed",
@@ -4518,6 +4924,64 @@
       "d": {
         "name": "cream",
         "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-tuscan-a": {
+    "file": "buildings/house-2x2-5f-tuscan-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-tuscan-a-solar": {
+    "file": "buildings/house-2x2-5f-tuscan-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      },
+      "c": {
+        "name": "cream",
+        "color": "#fff1d6"
+      },
+      "d": {
+        "name": "dustypink",
+        "color": "#d9a89a"
       }
     }
   },

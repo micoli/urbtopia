@@ -110,7 +110,7 @@ WORLD_ENTRIES = URBTOPIA_ENTRIES + [
     ("brownstone", "#8f5a43"), ("brownstone_dark", "#6e4333"), ("brick_dark", "#8e3322"),
     ("limestone", "#bdb7a6"), ("limestone_dark", "#8f8a7c"), ("yellowbrick", "#d8b45c"), ("yellowbrick_dark", "#b38f3f"),
     ("shutter_green", "#355e4a"),
-    ("timber", "#4b3424"), ("plaster", "#efe4cc"), ("whitewash", "#f6f3ec"), ("blackwood", "#2b2724"), ("ochre", "#d9b878"), ("thatch", "#b99a58"), ("tile", "#a85a3c"),
+    ("timber", "#4b3424"), ("plaster", "#efe4cc"), ("whitewash", "#f6f3ec"), ("blackwood", "#2b2724"), ("ochre", "#d9b878"), ("thatch", "#b99a58"), ("tile", "#a85a3c"), ("siena", "#cf8a5a"), ("dustypink", "#d9a89a"),
 ]
 STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
 
@@ -4980,6 +4980,155 @@ def build_tudor(spec, out_dir):
             x += 0.3
 
     ob = lpm.finish(spec["id"], parts, palette, budget=6000 + 5000 * floors * max(1, w * d // 2), center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
+    return report
+
+
+def arch_outline(u, bottom, width, height, steps=6):
+    """The (along, z) outline of an arched opening: a rectangle topped by a half circle."""
+    radius = width / 2
+    spring = bottom + height - radius
+    arc = [(u + radius * math.cos(math.pi * k / steps), spring + radius * math.sin(math.pi * k / steps)) for k in range(steps + 1)]
+    return [(u - radius, bottom), (u + radius, bottom)] + arc
+
+
+def arch_part(parts, name, face, wall, outline, inner, outer, color):
+    """An arched slab on a wall plane, from `inner` to `outer` out of the wall."""
+    sign = -1 if face in ("front", "left") else 1
+    a, b = sorted((wall + sign * -0.004, wall + sign * outer))
+    if face in ("front", "back"):
+        parts.append(extrude_y(name, outline, a, b, color))
+    else:
+        parts.append(extrude_x(name, outline, a, b, color))
+
+
+def tuscan_window(parts, tag, face, wall, u, bottom, width, height, c, glass, shutters=True):
+    arch_part(parts, f"{tag}_surround", face, wall, arch_outline(u, bottom - 0.012, width + 0.05, height + 0.04), 0, 0.012, c["stone"])
+    arch_part(parts, f"{tag}_glass", face, wall, arch_outline(u, bottom, width, height), 0, 0.018, glass)
+    face_box(parts, f"{tag}_bar", face, wall, u, 0.008, height - width / 2, bottom, 0.022, c["timber"])
+    for fraction in (0.3, 0.6):
+        face_box(parts, f"{tag}_rail_{fraction}", face, wall, u, width, 0.008, bottom + (height - width / 2) * fraction, 0.022, c["timber"])
+    face_box(parts, f"{tag}_sill", face, wall, u, width + 0.06, 0.014, bottom - 0.02, 0.03, c["stone"])
+    if shutters:
+        for side in (-1, 1):
+            face_box(parts, f"{tag}_shutter_{side}", face, wall, u + side * (width / 2 + 0.04), 0.055, height - 0.02, bottom, 0.02, c["shutter"])
+
+
+def hip_roof(name, bx, by, z, rise, color, cx=0.0, cy=0.0):
+    """A hipped roof over the rectangle (±bx, ±by): a ridge along X, or a pyramid when the plan is square."""
+    rx = bx - by
+    base = [(cx - bx, cy - by, z), (cx + bx, cy - by, z), (cx + bx, cy + by, z), (cx - bx, cy + by, z)]
+    if rx < 0.01:
+        verts = base + [(cx, cy, z + rise)]
+        faces = [(0, 1, 4), (1, 2, 4), (2, 3, 4), (3, 0, 4), (0, 3, 2, 1)]
+    else:
+        verts = base + [(cx - rx, cy, z + rise), (cx + rx, cy, z + rise)]
+        faces = [(0, 1, 5, 4), (1, 2, 5), (2, 3, 4, 5), (3, 0, 4), (0, 3, 2, 1)]
+    return lpm._object(name, _bm(verts, faces), color)
+
+
+def tuscan_tower(parts, c, tag, x, y, size, z, height, flag=False):
+    """A square tower rising out of the roof, an arched opening on each face, a cornice and a small hip roof."""
+    parts.append(lpm.box(f"{tag}_body", (size, size, height), at=(x, y, z), color=c["wall"]))
+    parts.append(lpm.box(f"{tag}_cornice", (size + 0.06, size + 0.06, 0.03), at=(x, y, z + height), color=c["stone"]))
+    parts.append(hip_roof(f"{tag}_roof", (size + 0.06) / 2, (size + 0.06) / 2, z + height + 0.03, 0.14, c["roof"], cx=x, cy=y))
+    opening = size * 0.38
+    bottom = z + height - opening - 0.1
+    for face, wall in (("front", y - size / 2), ("back", y + size / 2)):
+        arch_part(parts, f"{tag}_{face}_hole", face, wall, arch_outline(x, bottom, opening, opening + 0.06), 0, 0.012, c["frame"])
+    for face, wall in (("left", x - size / 2), ("right", x + size / 2)):
+        arch_part(parts, f"{tag}_{face}_hole", face, wall, arch_outline(y, bottom, opening, opening + 0.06), 0, 0.012, c["frame"])
+    if flag:
+        top = z + height + 0.17
+        parts.append(lpm.box(f"{tag}_pole", (0.012, 0.012, 0.18), at=(x, y, top), color=c["frame"]))
+        parts.append(lpm.box(f"{tag}_flag", (0.1, 0.01, 0.06), at=(x + 0.05, y, top + 0.11), color=c["roof"]))
+
+
+def build_tuscan(spec, out_dir):
+    """A Tuscan villa, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    Ochre stucco walls with stone quoins, arched windows with green shutters, an arched door and a bracketed cornice under a low hipped terracotta roof.
+    Tier 3 adds an iron balcony, Tier 4 a dovecote tower, Tiers 5 to 8 a tower that grows with the floors."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("stone", "vtone2"), ("roof", "vtone3"), ("glass", "glass_blue"), ("timber", "timber"),
+                                              ("shutter", "shutter_green"), ("frame", "graphite"), ("bush", "bush"), ("solar", "solar"), ("cypress", "softgreen"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors, tier = spec["floors"], spec["tier"]
+    fh, plinth = 0.28, 0.05
+    hx, hy = w / 2 - 0.05, d / 2 - 0.05
+    top = plinth + floors * fh
+    parts = [lpm.box("plinth", (2 * hx + 0.02, 2 * hy + 0.02, plinth), at=(0, 0, 0), color=c["stone"]),
+             lpm.box("walls", (2 * hx, 2 * hy, floors * fh), at=(0, 0, plinth), color=c["wall"]),
+             lpm.box("cornice", (2 * hx + 0.06, 2 * hy + 0.06, 0.03), at=(0, 0, top), color=c["stone"])]
+    for number in range(int((2 * hx) / 0.12)):
+        x = -hx + 0.06 + number * 0.12
+        parts.append(lpm.box(f"bracket_front_{number}", (0.05, 0.03, 0.04), at=(x, -hy - 0.025, top - 0.04), color=c["timber"]))
+    for corner_x in (-1, 1):
+        for corner_y in (-1, 1):
+            for block in range(floors * 3):
+                z = plinth + block * fh / 3
+                long_ = 0.085 if block % 2 == 0 else 0.055
+                parts.append(lpm.box(f"quoin_x_{corner_x}_{corner_y}_{block}", (long_, 0.016, fh / 3 - 0.012), at=(corner_x * (hx - long_ / 2 + 0.004), corner_y * (hy + 0.006), z + 0.006), color=c["stone"]))
+                parts.append(lpm.box(f"quoin_y_{corner_x}_{corner_y}_{block}", (0.016, 0.085 + 0.055 - long_, fh / 3 - 0.012), at=(corner_x * (hx + 0.006), corner_y * (hy - (0.14 - long_) / 2 + 0.004), z + 0.006), color=c["stone"]))
+
+    door_x = 0.0
+    for level in range(floors):
+        z = plinth + level * fh
+        for face, wall, length in (("front", -hy, 2 * hx), ("back", hy, 2 * hx), ("left", -hx, 2 * hy), ("right", hx, 2 * hy)):
+            count = max(2, round(length / 0.42))
+            panel = length / count
+            origin = -length / 2
+            for panel_index in range(count):
+                u = origin + (panel_index + 0.5) * panel
+                if face == "front" and level == 0 and panel_index == count // 2:
+                    door_x = u
+                    continue
+                tuscan_window(parts, f"{face}_{level}_{panel_index}", face, wall, u, z + 0.07, min(0.15, panel * 0.4), 0.17, c, c["glass"])
+        if level:
+            parts.append(lpm.box(f"string_{level}", (2 * hx + 0.02, 2 * hy + 0.02, 0.014), at=(0, 0, z - 0.007), color=c["stone"]))
+
+    arch_part(parts, "door_surround", "front", -hy, arch_outline(door_x, plinth - 0.01, 0.23, 0.31), 0, 0.016, c["stone"])
+    arch_part(parts, "door", "front", -hy, arch_outline(door_x, plinth, 0.17, 0.26), 0, 0.022, c["timber"])
+    parts.append(lpm.box("door_step", (0.26, 0.05, 0.025), at=(door_x, -hy - 0.025, 0), color=c["stone"]))
+    if tier >= 3:
+        slab_z = plinth + fh + 0.012
+        parts.append(lpm.box("balcony_slab", (0.36, 0.045, 0.016), at=(door_x, -hy - 0.0225, slab_z), color=c["stone"]))
+        parts.append(lpm.box("balcony_rail", (0.36, 0.008, 0.012), at=(door_x, -hy - 0.04, slab_z + 0.07), color=c["frame"]))
+        for post in range(7):
+            parts.append(lpm.box(f"balcony_post_{post}", (0.008, 0.008, 0.066), at=(door_x - 0.18 + post * 0.06, -hy - 0.04, slab_z + 0.018), color=c["frame"]))
+
+    over = 0.04
+    rise = 0.3 * (hy + over) + 0.08
+    parts.append(hip_roof("roof", hx + over, hy + over, top + 0.03, rise, c["roof"]))
+    ridge_len = max(hx - hy, 0)
+    chimney_x = hx * 0.5 if w > 1 else 0.0
+    parts.append(lpm.box("chimney", (0.12, 0.12, rise + 0.1), at=(chimney_x, 0.12, top + 0.03), color=c["wall"]))
+    parts.append(lpm.box("chimney_cap", (0.16, 0.16, 0.025), at=(chimney_x, 0.12, top + 0.03 + rise + 0.1), color=c["stone"]))
+
+    if tier == 4:
+        tuscan_tower(parts, c, "dovecote", hx - 0.3, 0.0, 0.26, top + 0.03, 0.32)
+    if tier >= 5:
+        tuscan_tower(parts, c, "tower", -hx + 0.34, hy - 0.34, 0.42, top + 0.03, 0.3 + 0.07 * (tier - 5), flag=tier == 8)
+
+    if spec.get("solar"):
+        slope = math.degrees(math.atan2(rise, hy + over))
+        y = -(hy + over) * 0.5
+        zc = top + 0.03 + rise * 0.5 + 0.01
+        reach = ridge_len + (hy + over) * 0.5
+        panels = 0
+        x = -reach + 0.14
+        while x <= reach - 0.14 and panels < 4:
+            panel = lpm.box(f"solar_panel_{panels}", (0.22, 0.2, 0.01), at=(x, y, zc), color=c["solar"])
+            lpm.rotate(panel, slope, axis="X", about=(x, y, zc))
+            parts.append(panel)
+            panels += 1
+            x += 0.28
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=8000 + 6000 * floors * max(1, w * d // 2), center=False)
     report = export_model(ob, spec, out_dir)
     report["expected_footprint"] = [w, d]
     return report

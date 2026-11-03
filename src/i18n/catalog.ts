@@ -395,6 +395,8 @@ export const CATALOG = {
   'color.plaster': ['Plaster', 'Plâtre'],
   'color.whitewash': ['Whitewash', 'Blanc chaux'],
   'color.ochre': ['Ochre', 'Ocre'],
+  'color.siena': ['Siena', 'Terre de Sienne'],
+  'color.dustypink': ['Dusty pink', 'Rose poudré'],
   'color.yellowbrick': ['Yellow brick', 'Brique jaune'],
   'color.greygreen': ['Grey green', 'Gris vert'],
   'color.bluegrey': ['Blue grey', 'Gris bleu'],
