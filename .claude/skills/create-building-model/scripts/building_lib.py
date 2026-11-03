@@ -110,6 +110,7 @@ WORLD_ENTRIES = URBTOPIA_ENTRIES + [
     ("brownstone", "#8f5a43"), ("brownstone_dark", "#6e4333"), ("brick_dark", "#8e3322"),
     ("limestone", "#bdb7a6"), ("limestone_dark", "#8f8a7c"), ("yellowbrick", "#d8b45c"), ("yellowbrick_dark", "#b38f3f"),
     ("shutter_green", "#355e4a"),
+    ("timber", "#4b3424"), ("plaster", "#efe4cc"), ("whitewash", "#f6f3ec"), ("blackwood", "#2b2724"), ("ochre", "#d9b878"), ("thatch", "#b99a58"), ("tile", "#a85a3c"),
 ]
 STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
 
@@ -4830,6 +4831,157 @@ def build_haussmann(spec, out_dir):
     ob = lpm.finish(spec["id"], parts, palette, budget=4000 + 3000 * floors, center=False)
     report = export_model(ob, spec, out_dir)
     report["expected_footprint"] = list(spec["footprint"])
+    return report
+
+
+def extrude_x(name, outline, x0, x1, color):
+    """Extrude a closed (y, z) outline along X from x0 to x1."""
+    count = len(outline)
+    verts = [(x0, y, z) for y, z in outline] + [(x1, y, z) for y, z in outline]
+    faces = [(i, (i + 1) % count, count + (i + 1) % count, count + i) for i in range(count)]
+    faces.append(tuple(reversed(range(count))))
+    faces.append(tuple(range(count, 2 * count)))
+    return lpm._object(name, _bm(verts, faces), color)
+
+
+TUDOR_FLOOR = 0.28
+TUDOR_GABLES = {3: (0.45,), 4: (-0.5, 0.5), 5: (-0.5, 0.5), 6: (-0.5, 0.5), 7: (-0.5, 0.5), 8: (-0.55, 0.55)}
+
+
+def tudor_window(parts, tag, face, wall, u, bottom, width, height, c):
+    """A leaded window in a timber frame, with a vertical mullion and a transom."""
+    face_box(parts, f"{tag}_glass", face, wall, u, width, height, bottom, 0.012, c["glass"])
+    for side in (-1, 1):
+        face_box(parts, f"{tag}_frame_{side}", face, wall, u + side * (width / 2 + 0.006), 0.014, height + 0.02, bottom - 0.01, 0.02, c["timber"])
+    face_box(parts, f"{tag}_sill", face, wall, u, width + 0.03, 0.014, bottom - 0.014, 0.024, c["timber"])
+    face_box(parts, f"{tag}_head", face, wall, u, width + 0.03, 0.014, bottom + height, 0.024, c["timber"])
+    face_box(parts, f"{tag}_mullion", face, wall, u, 0.008, height, bottom, 0.018, c["timber"])
+    face_box(parts, f"{tag}_transom", face, wall, u, width, 0.008, bottom + height * 0.6, 0.018, c["timber"])
+
+
+def tudor_brace(parts, tag, face, wall, u, width, z, height, flip, c):
+    """A diagonal timber brace across a panel."""
+    length = math.hypot(width, height)
+    angle = math.degrees(math.atan2(height, width)) * flip
+    sign = -1 if face in ("front", "left") else 1
+    thick = 0.02
+    if face in ("front", "back"):
+        brace = lpm.box(tag, (length, thick, 0.022), at=(u, wall + sign * (thick / 2 - 0.004), z + height / 2 - 0.011), color=c["timber"])
+        lpm.rotate(brace, -angle, axis="Y", about=(u, wall, z + height / 2))
+    else:
+        brace = lpm.box(tag, (thick, length, 0.022), at=(wall + sign * (thick / 2 - 0.004), u, z + height / 2 - 0.011), color=c["timber"])
+        lpm.rotate(brace, angle, axis="X", about=(wall, u, z + height / 2))
+    parts.append(brace)
+
+
+def build_tudor(spec, out_dir):
+    """A Tudor half-timbered house, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    Plaster panels in a dark timber frame (rails, studs, braces) with leaded windows, upper floors jettied by 0.03, a steep tiled roof along X with gable ends, front cross gables from Tier 3,
+    brick chimneys and, at Tier 8, a corner turret."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("timber", "vtone2"), ("roof", "vtone3"), ("glass", "glass_blue"), ("stone", "grey"),
+                                              ("brick", "brick"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors, tier = spec["floors"], spec["tier"]
+    fh, plinth = TUDOR_FLOOR, 0.05
+    inset = {0: 0.04 if floors == 1 else 0.06}
+    half = lambda level: (w / 2 - inset.get(level, 0.03 if floors > 1 else 0.04), d / 2 - inset.get(level, 0.03 if floors > 1 else 0.04))
+    parts = [lpm.box("plinth", (2 * half(0)[0] + 0.02, 2 * half(0)[1] + 0.02, plinth), at=(0, 0, 0), color=c["stone"])]
+    door_x = 0.0
+    for level in range(floors):
+        hx, hy = half(level)
+        z = plinth + level * fh
+        parts.append(lpm.box(f"floor_{level}", (2 * hx, 2 * hy, fh), at=(0, 0, z), color=c["wall"]))
+        if level:
+            parts.append(lpm.box(f"jetty_{level}", (2 * hx + 0.02, 2 * hy + 0.02, 0.035), at=(0, 0, z - 0.012), color=c["timber"]))
+        for face, wall, length in (("front", -hy, 2 * hx), ("back", hy, 2 * hx), ("left", -hx, 2 * hy), ("right", hx, 2 * hy)):
+            count = max(2, round(length / 0.36))
+            panel = length / count
+            origin = -length / 2
+            face_box(parts, f"{face}_{level}_rail_low", face, wall, 0, length, 0.03, z, 0.022, c["timber"])
+            face_box(parts, f"{face}_{level}_rail_high", face, wall, 0, length, 0.03, z + fh - 0.03, 0.022, c["timber"])
+            for stud in range(count + 1):
+                u = origin + stud * panel
+                end = stud in (0, count)
+                face_box(parts, f"{face}_{level}_stud_{stud}", face, wall, u + (0.012 if stud == 0 else -0.012 if stud == count else 0), 0.04 if end else 0.022, fh, z, 0.024, c["timber"])
+            door_panel = count // 2
+            for panel_index in range(count):
+                u = origin + (panel_index + 0.5) * panel
+                if face == "front" and level == 0 and panel_index == door_panel:
+                    door_x = u
+                    continue
+                if (panel_index + level) % 2 == 0:
+                    tudor_window(parts, f"{face}_{level}_{panel_index}", face, wall, u, z + 0.09, min(panel * 0.5, 0.2), 0.14, c)
+                else:
+                    tudor_brace(parts, f"{face}_{level}_{panel_index}_brace", face, wall, u, panel - 0.05, z + 0.03, fh - 0.06, 1 if panel_index % 4 == 1 else -1, c)
+
+    hx0, hy0 = half(0)
+    door_h = 0.24
+    face_box(parts, "door", "front", -hy0, door_x, 0.17, door_h, plinth, 0.016, c["timber"])
+    face_box(parts, "door_head", "front", -hy0, door_x, 0.24, 0.025, plinth + door_h, 0.026, c["timber"])
+    parts.append(lpm.box("door_step", (0.26, 0.06, 0.03), at=(door_x, -hy0 - 0.03, 0), color=c["stone"]))
+
+    hx, hy = half(floors - 1)
+    top = plinth + floors * fh
+    s = d / 2
+    rise = 0.45 if d == 1 else 0.8
+    pitch = rise / s
+    parts.append(extrude_x("roof", [(-s, top), (s, top), (0, top + rise)], -hx, hx, c["roof"]))
+    parts.append(lpm.box("ridge", (2 * hx + 0.02, 0.05, 0.03), at=(0, 0, top + rise - 0.012), color=c["timber"]))
+    for side in (-1, 1):
+        x_in, x_out = (hx - 0.01, w / 2 - 0.02) if side == 1 else (-w / 2 + 0.02, -hx + 0.01)
+        parts.append(extrude_x(f"gable_end_{side}", [(-hy, top), (hy, top), (0, top + pitch * hy)], x_in, x_out, c["wall"]))
+        outer = w / 2 - 0.02 if side == 1 else -w / 2 + 0.02
+        parts.append(lpm.box(f"gable_stud_{side}", (0.022, 0.025, pitch * hy), at=(outer + side * 0.009, 0, top), color=c["timber"]))
+        parts.append(lpm.box(f"gable_rail_{side}", (0.022, 2 * hy, 0.025), at=(outer + side * 0.009, 0, top), color=c["timber"]))
+        parts.append(lpm.box(f"gable_collar_{side}", (0.022, hy, 0.022), at=(outer + side * 0.009, 0, top + pitch * hy * 0.45), color=c["timber"]))
+
+    gable_xs = TUDOR_GABLES.get(tier, ())
+    g = 0.3
+    front_y = -hy
+    for number, gx in enumerate(gable_xs):
+        gh = pitch * (g + 0.03)
+        parts.append(extrude_y(f"cross_roof_{number}", [(gx - g - 0.03, top), (gx + g + 0.03, top), (gx, top + gh)], front_y - 0.03, 0.0, c["roof"]))
+        parts.append(extrude_y(f"cross_wall_{number}", [(gx - g, top), (gx + g, top), (gx, top + pitch * g)], front_y - 0.03, front_y + 0.03, c["wall"]))
+        face_box(parts, f"cross_rail_{number}", "front", front_y - 0.015, gx, 2 * g, 0.025, top, 0.024, c["timber"])
+        face_box(parts, f"cross_stud_{number}", "front", front_y - 0.015, gx, 0.025, pitch * g, top, 0.024, c["timber"])
+        tudor_window(parts, f"cross_window_{number}", "front", front_y - 0.015, gx, top + 0.05, 0.12, 0.1, c)
+
+    stacks = (-hx + 0.28, hx - 0.28) if w >= 2 else (hx - 0.2,)
+    for number, x in enumerate(stacks):
+        parts.append(lpm.box(f"chimney_{number}", (0.13, 0.13, rise + 0.2), at=(x, 0, top), color=c["brick"]))
+        parts.append(lpm.box(f"chimney_cap_{number}", (0.17, 0.17, 0.03), at=(x, 0, top + rise + 0.2), color=c["stone"]))
+        for pot in (-1, 1):
+            parts.append(lpm.box(f"chimney_pot_{number}_{pot}", (0.04, 0.04, 0.06), at=(x + pot * 0.03, 0, top + rise + 0.23), color=c["brick"]))
+
+    if tier == 8:
+        tx, ty, radius = -(w / 2 - 0.2), -(d / 2 - 0.2), 0.2
+        parts.append(lpm.prism("turret", 8, radius, floors * fh + plinth + 0.3, at=(tx, ty, 0), color=c["wall"]))
+        parts.append(lpm.prism("turret_roof", 8, radius + 0.03, 0.4, at=(tx, ty, top + 0.3), color=c["roof"], radius_top=0.01))
+        parts.append(lpm.prism("turret_band", 8, radius + 0.012, 0.025, at=(tx, ty, top + 0.3 - 0.02), color=c["timber"]))
+
+    if spec.get("solar"):
+        slope = math.degrees(math.atan2(rise, s))
+        blocked = [(gx - g - 0.15, gx + g + 0.15) for gx in gable_xs]
+        panels = 0
+        x = -hx + 0.25
+        while x <= hx - 0.25 and panels < 4:
+            if not any(a <= x <= b for a, b in blocked):
+                y = -s * 0.5
+                zc = top + rise * (1 - 0.5) + 0.008
+                panel = lpm.box(f"solar_panel_{panels}", (0.22, 0.2, 0.01), at=(x, y, zc), color=c["solar"])
+                lpm.rotate(panel, slope, axis="X", about=(x, y, zc))
+                parts.append(panel)
+                panels += 1
+            x += 0.3
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=6000 + 5000 * floors * max(1, w * d // 2), center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
     return report
 
 

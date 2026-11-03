@@ -1915,6 +1915,64 @@
       }
     }
   },
+  "buildings-house-1x1-1f-tudor-a": {
+    "file": "buildings/house-1x1-1f-tudor-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-1x1-1f-tudor-a-solar": {
+    "file": "buildings/house-1x1-1f-tudor-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
+      }
+    }
+  },
   "buildings-house-1x1-2f-dutch-a": {
     "file": "buildings/house-1x1-2f-dutch-a",
     "source": "managed",
@@ -3189,6 +3247,64 @@
       }
     }
   },
+  "buildings-house-2x1-1f-tudor-a": {
+    "file": "buildings/house-2x1-1f-tudor-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x1-1f-tudor-a-solar": {
+    "file": "buildings/house-2x1-1f-tudor-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
+      }
+    }
+  },
   "buildings-house-2x1-2f-third-tone-a": {
     "file": "buildings/house-2x1-2f-third-tone-a",
     "source": "managed",
@@ -3247,6 +3363,64 @@
       }
     }
   },
+  "buildings-house-2x1-2f-third-tudor-a": {
+    "file": "buildings/house-2x1-2f-third-tudor-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-tudor-a-solar": {
+    "file": "buildings/house-2x1-2f-third-tudor-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
+      }
+    }
+  },
   "buildings-house-2x1-2f-tone-a": {
     "file": "buildings/house-2x1-2f-tone-a",
     "source": "managed",
@@ -3302,6 +3476,64 @@
       "d": {
         "name": "greygreen",
         "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-tudor-a": {
+    "file": "buildings/house-2x1-2f-tudor-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-tudor-a-solar": {
+    "file": "buildings/house-2x1-2f-tudor-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
       }
     }
   },
@@ -3571,6 +3803,64 @@
       }
     }
   },
+  "buildings-house-2x2-2f-tudor-a": {
+    "file": "buildings/house-2x2-2f-tudor-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-tudor-a-solar": {
+    "file": "buildings/house-2x2-2f-tudor-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
+      }
+    }
+  },
   "buildings-house-2x2-3f-haussmann-a": {
     "file": "buildings/house-2x2-3f-haussmann-a",
     "source": "managed",
@@ -3730,6 +4020,64 @@
       "d": {
         "name": "greygreen",
         "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-tudor-a": {
+    "file": "buildings/house-2x2-3f-tudor-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-tudor-a-solar": {
+    "file": "buildings/house-2x2-3f-tudor-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
       }
     }
   },
@@ -3895,6 +4243,64 @@
       }
     }
   },
+  "buildings-house-2x2-4f-tudor-a": {
+    "file": "buildings/house-2x2-4f-tudor-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x2-4f-tudor-a-solar": {
+    "file": "buildings/house-2x2-4f-tudor-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
+      }
+    }
+  },
   "buildings-house-2x2-5f-haussmann-a": {
     "file": "buildings/house-2x2-5f-haussmann-a",
     "source": "managed",
@@ -4054,6 +4460,64 @@
       "d": {
         "name": "greygreen",
         "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-tudor-a": {
+    "file": "buildings/house-2x2-5f-tudor-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-tudor-a-solar": {
+    "file": "buildings/house-2x2-5f-tudor-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "whitewash",
+        "color": "#f6f3ec"
+      },
+      "c": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "d": {
+        "name": "cream",
+        "color": "#fff1d6"
       }
     }
   },
