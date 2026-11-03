@@ -111,6 +111,7 @@ WORLD_ENTRIES = URBTOPIA_ENTRIES + [
     ("limestone", "#bdb7a6"), ("limestone_dark", "#8f8a7c"), ("yellowbrick", "#d8b45c"), ("yellowbrick_dark", "#b38f3f"),
     ("shutter_green", "#355e4a"),
     ("timber", "#4b3424"), ("plaster", "#efe4cc"), ("whitewash", "#f6f3ec"), ("blackwood", "#2b2724"), ("ochre", "#d9b878"), ("thatch", "#b99a58"), ("tile", "#a85a3c"), ("siena", "#cf8a5a"), ("dustypink", "#d9a89a"),
+    ("pine", "#c9955c"), ("darkwood", "#8a5a3a"), ("honey", "#d9a85c"), ("greywood", "#9a9488"), ("shingle", "#5a4636"),
 ]
 STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
 
@@ -5127,6 +5128,129 @@ def build_tuscan(spec, out_dir):
             parts.append(panel)
             panels += 1
             x += 0.28
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=8000 + 6000 * floors * max(1, w * d // 2), center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
+    return report
+
+
+def chalet_window(parts, tag, face, wall, u, bottom, width, height, c):
+    """A white-framed window with a cross of bars and red shutters."""
+    face_box(parts, f"{tag}_glass", face, wall, u, width, height, bottom, 0.012, c["glass"])
+    for side in (-1, 1):
+        face_box(parts, f"{tag}_frame_{side}", face, wall, u + side * (width / 2 + 0.006), 0.014, height + 0.02, bottom - 0.01, 0.018, c["white"])
+        face_box(parts, f"{tag}_shutter_{side}", face, wall, u + side * (width / 2 + 0.04), 0.05, height, bottom, 0.02, c["shutter"])
+    face_box(parts, f"{tag}_sill", face, wall, u, width + 0.03, 0.014, bottom - 0.014, 0.022, c["white"])
+    face_box(parts, f"{tag}_head", face, wall, u, width + 0.03, 0.014, bottom + height, 0.022, c["white"])
+    face_box(parts, f"{tag}_bar_v", face, wall, u, 0.008, height, bottom, 0.016, c["white"])
+    face_box(parts, f"{tag}_bar_h", face, wall, u, width, 0.008, bottom + height / 2, 0.016, c["white"])
+
+
+def chalet_slope(parts, name, cx, z, length, depth, angle, color, thick=0.03):
+    """A roof slope: a slab `length` long across the slope and `depth` along Y, tilted by `angle` degrees about its centre."""
+    slab = lpm.box(name, (length, depth, thick), at=(cx, 0, z), color=color)
+    lpm.rotate(slab, angle, axis="Y", about=(cx, 0, z + thick / 2))
+    parts.append(slab)
+
+
+def build_chalet(spec, out_dir):
+    """An Alpine chalet, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    A stone base under log walls, one front-gabled shingle roof per metre of width (a thin shell on a gable wall, so the gable stays visible), red-shuttered windows,
+    carved balconies on every upper floor from Tier 3, a stone chimney from Tier 4 and a ridge cupola at Tier 8."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("stone", "vtone2"), ("roof", "vtone3"), ("glass", "glass_blue"), ("white", "white"), ("shutter", "brick"),
+                                              ("timber", "timber"), ("frame", "graphite"), ("bush", "bush"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors, tier = spec["floors"], spec["tier"]
+    fh, plinth = 0.28, 0.1
+    hx, hy = w / 2 - 0.06, d / 2 - 0.07
+    top = plinth + floors * fh
+    parts = [lpm.box("plinth", (2 * hx + 0.03, 2 * hy + 0.03, plinth), at=(0, 0, 0), color=c["stone"]),
+             lpm.box("walls", (2 * hx, 2 * hy, floors * fh), at=(0, 0, plinth), color=c["wall"]),
+             lpm.box("eave_beam", (2 * hx + 0.02, 2 * hy + 0.02, 0.03), at=(0, 0, top - 0.03), color=c["timber"])]
+    for line in range(floors * 4):
+        parts.append(lpm.box(f"log_{line}", (2 * hx + 0.012, 2 * hy + 0.012, 0.008), at=(0, 0, plinth + 0.07 * (line + 1) - 0.004), color=c["timber"]))
+
+    door_x = 0.0
+    for level in range(floors):
+        z = plinth + level * fh
+        for face, wall, length in (("front", -hy, 2 * hx), ("back", hy, 2 * hx), ("left", -hx, 2 * hy), ("right", hx, 2 * hy)):
+            count = max(2, round(length / 0.45))
+            panel = length / count
+            origin = -length / 2
+            for panel_index in range(count):
+                u = origin + (panel_index + 0.5) * panel
+                if face == "front" and level == 0 and panel_index == count // 2:
+                    door_x = u
+                    continue
+                chalet_window(parts, f"{face}_{level}_{panel_index}", face, wall, u, z + 0.08, 0.13, 0.13, c)
+    face_box(parts, "door", "front", -hy, door_x, 0.17, 0.24, plinth, 0.016, c["timber"])
+    face_box(parts, "door_frame_top", "front", -hy, door_x, 0.23, 0.025, plinth + 0.24, 0.024, c["white"])
+    parts.append(lpm.box("door_step", (0.28, 0.05, 0.04), at=(door_x, -hy - 0.025, 0), color=c["stone"]))
+
+    rise, span = 0.28, 0.5
+    angle = math.degrees(math.atan2(rise, span))
+    length = math.hypot(span, rise)
+    centers = [-w / 2 + 0.5 + bay for bay in range(w)]
+    for bay, cx in enumerate(centers):
+        chalet_slope(parts, f"slope_left_{bay}", cx - span / 2, top + rise / 2 - 0.012, length - 0.01, d, -angle, c["roof"])
+        chalet_slope(parts, f"slope_right_{bay}", cx + span / 2, top + rise / 2 - 0.012, length - 0.01, d, angle, c["roof"])
+        parts.append(lpm.box(f"ridge_{bay}", (0.05, d, 0.03), at=(cx, 0, top + rise - 0.002), color=c["timber"]))
+        for face_y, wall in ((-hy, -hy), (hy, hy)):
+            sign = -1 if face_y < 0 else 1
+            parts.append(extrude_y(f"gable_{bay}_{sign}", [(cx - span + 0.03, top - 0.03), (cx + span - 0.03, top - 0.03), (cx, top + rise - 0.025)], min(wall, wall + sign * 0.03), max(wall, wall + sign * 0.03), c["wall"]))
+        parts.append(lpm.box(f"gable_window_post_{bay}", (0.01, 0.014, 0.1), at=(cx, -hy - 0.007, top - 0.02), color=c["white"]))
+        face_box(parts, f"gable_window_{bay}", "front", -hy + 0.03, cx, 0.1, 0.1, top - 0.02, 0.014, c["glass"])
+    for bay, cx in enumerate(centers):
+        for side in (-1, 1):
+            barge_z = top + rise / 2 - 0.012
+            barge = lpm.box(f"barge_{bay}_{side}", (length - 0.01, 0.03, 0.04), at=(cx + side * span / 2, -d / 2 + 0.015, barge_z), color=c["timber"])
+            lpm.rotate(barge, angle * side, axis="Y", about=(cx + side * span / 2, -d / 2 + 0.015, barge_z + 0.02))
+            parts.append(barge)
+
+    if tier >= 3:
+        for level in range(1, floors):
+            zb = plinth + level * fh
+            parts.append(lpm.box(f"balcony_slab_{level}", (2 * hx - 0.02, 0.065, 0.02), at=(0, -hy - 0.0325, zb), color=c["timber"]))
+            parts.append(lpm.box(f"balcony_rail_{level}", (2 * hx - 0.02, 0.014, 0.014), at=(0, -hy - 0.058, zb + 0.09), color=c["timber"]))
+            posts = int((2 * hx - 0.02) / 0.07)
+            for post in range(posts):
+                parts.append(lpm.box(f"balcony_post_{level}_{post}", (0.014, 0.014, 0.08), at=(-hx + 0.03 + post * (2 * hx - 0.06) / (posts - 1), -hy - 0.058, zb + 0.014), color=c["timber"]))
+    else:
+        for window in (-1, 1):
+            if abs(door_x + window * 0.3) > hx - 0.1:
+                continue
+            parts.append(lpm.box(f"planter_{window}", (0.16, 0.04, 0.04), at=(door_x + window * 0.3, -hy - 0.02, plinth + 0.05), color=c["timber"]))
+            parts.append(lpm.box(f"planter_bush_{window}", (0.14, 0.03, 0.03), at=(door_x + window * 0.3, -hy - 0.02, plinth + 0.09), color=c["bush"]))
+
+    chimney_x = centers[-1] + 0.2
+    if tier >= 4:
+        parts.append(lpm.box("chimney", (0.14, 0.14, rise + 0.16), at=(chimney_x, 0.1, top), color=c["stone"]))
+        parts.append(lpm.box("chimney_cap", (0.18, 0.18, 0.025), at=(chimney_x, 0.1, top + rise + 0.16), color=c["timber"]))
+    else:
+        parts.append(lpm.box("stovepipe", (0.05, 0.05, rise + 0.14), at=(chimney_x, 0.1, top), color=c["frame"]))
+    if tier == 8:
+        cx = centers[0]
+        parts.append(lpm.box("cupola", (0.18, 0.18, 0.18), at=(cx, 0, top + rise - 0.002), color=c["wall"]))
+        for face_name, wall_pos in (("front", -0.09), ("back", 0.09)):
+            face_box(parts, f"cupola_{face_name}", face_name, wall_pos, cx, 0.09, 0.1, top + rise + 0.03, 0.014, c["glass"])
+        parts.append(hip_roof("cupola_roof", 0.12, 0.12, top + rise + 0.178, 0.12, c["roof"], cx=cx, cy=0))
+        parts.append(lpm.box("vane", (0.01, 0.01, 0.1), at=(cx, 0, top + rise + 0.298), color=c["frame"]))
+
+    if spec.get("solar"):
+        cx = centers[-1] + span / 2
+        zc = top + rise / 2 + 0.014
+        count = 2 if d == 1 else 4
+        for row in range(count):
+            y = -d / 2 + 0.2 + (d - 0.4) * (row + 0.5) / count
+            panel = lpm.box(f"solar_panel_{row}", (0.3, (d - 0.4) / count - 0.04, 0.01), at=(cx, y, zc), color=c["solar"])
+            lpm.rotate(panel, angle, axis="Y", about=(cx, y, zc))
+            parts.append(panel)
 
     ob = lpm.finish(spec["id"], parts, palette, budget=8000 + 6000 * floors * max(1, w * d // 2), center=False)
     report = export_model(ob, spec, out_dir)

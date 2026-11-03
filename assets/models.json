@@ -1753,6 +1753,64 @@
       }
     }
   },
+  "buildings-house-1x1-1f-chalet-a": {
+    "file": "buildings/house-1x1-1f-chalet-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-1x1-1f-chalet-a-solar": {
+    "file": "buildings/house-1x1-1f-chalet-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
   "buildings-house-1x1-1f-dutch-a": {
     "file": "buildings/house-1x1-1f-dutch-a",
     "source": "managed",
@@ -3247,6 +3305,64 @@
       }
     }
   },
+  "buildings-house-2x1-1f-chalet-a": {
+    "file": "buildings/house-2x1-1f-chalet-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x1-1f-chalet-a-solar": {
+    "file": "buildings/house-2x1-1f-chalet-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
   "buildings-house-2x1-1f-tone-a": {
     "file": "buildings/house-2x1-1f-tone-a",
     "source": "managed",
@@ -3418,6 +3534,122 @@
       "d": {
         "name": "dustypink",
         "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-chalet-a": {
+    "file": "buildings/house-2x1-2f-chalet-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-chalet-a-solar": {
+    "file": "buildings/house-2x1-2f-chalet-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-chalet-a": {
+    "file": "buildings/house-2x1-2f-third-chalet-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-chalet-a-solar": {
+    "file": "buildings/house-2x1-2f-third-chalet-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
       }
     }
   },
@@ -3873,6 +4105,64 @@
       }
     }
   },
+  "buildings-house-2x2-2f-chalet-a": {
+    "file": "buildings/house-2x2-2f-chalet-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-chalet-a-solar": {
+    "file": "buildings/house-2x2-2f-chalet-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
   "buildings-house-2x2-2f-haussmann-a": {
     "file": "buildings/house-2x2-2f-haussmann-a",
     "source": "managed",
@@ -4148,6 +4438,64 @@
       "d": {
         "name": "dustypink",
         "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-chalet-a": {
+    "file": "buildings/house-2x2-3f-chalet-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-chalet-a-solar": {
+    "file": "buildings/house-2x2-3f-chalet-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
       }
     }
   },
@@ -4429,6 +4777,64 @@
       }
     }
   },
+  "buildings-house-2x2-4f-chalet-a": {
+    "file": "buildings/house-2x2-4f-chalet-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x2-4f-chalet-a-solar": {
+    "file": "buildings/house-2x2-4f-chalet-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
   "buildings-house-2x2-4f-haussmann-a": {
     "file": "buildings/house-2x2-4f-haussmann-a",
     "source": "managed",
@@ -4704,6 +5110,64 @@
       "d": {
         "name": "dustypink",
         "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-chalet-a": {
+    "file": "buildings/house-2x2-5f-chalet-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-chalet-a-solar": {
+    "file": "buildings/house-2x2-5f-chalet-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
       }
     }
   },
