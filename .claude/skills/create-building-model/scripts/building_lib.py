@@ -4427,6 +4427,18 @@ def brownstone_window(parts, tag, face, u, bottom, width, height, c, wall=None, 
     face_box(parts, f"{tag}_bar", face, wall, u, width, 0.006, bottom + height / 2, 0.016, c["frame"])
 
 
+def stair_rail(parts, name, x, y_bottom, z_bottom, y_top, z_top, height, color, thick=0.012):
+    """An iron rail along a stair that rises with Y: a bar parallel to the slope and 3 vertical posts (foot, middle, head) standing on the steps."""
+    rise, run = z_top - z_bottom, y_top - y_bottom
+    length = math.hypot(run, rise)
+    centre = ((y_bottom + y_top) / 2, (z_bottom + z_top) / 2 + height)
+    bar = lpm.box(f"{name}_bar", (thick, length, thick), at=(x, centre[0], centre[1]), color=color)
+    lpm.rotate(bar, math.degrees(math.atan2(rise, run)), axis="X", about=(x, centre[0], centre[1]))
+    parts.append(bar)
+    for number, t in enumerate((0.0, 0.5, 1.0)):
+        parts.append(lpm.box(f"{name}_post_{number}", (thick, thick, height + thick), at=(x, y_bottom + t * run, z_bottom + t * rise), color=color))
+
+
 def build_brownstone(spec, out_dir):
     """A brownstone row house on a 1x2 cell, front facing -Y. The Tier is the floor count (1 to 5) and each Tier has its own silhouette:
     1 a low house with a pediment over the door, 2 a taller one with a door hood and cornice brackets, 3 the raised ground floor with a high stoop, railings and a transom,
@@ -4503,17 +4515,11 @@ def build_brownstone(spec, out_dir):
         step_height = plinth * (steps - step) / steps
         parts.append(lpm.box(f"stoop_step_{step}", (0.32, run, step_height), at=(stoop_x, y0 - landing - run * (step - 0.5), 0), color=c["dark"]))
     low_top = plinth / steps
-    slope = math.degrees(math.atan2(plinth - low_top, 0.13))
-    length = math.hypot(plinth - low_top, 0.13)
     rail_z = 0.08
     for side in (-1, 1):
         x = stoop_x + side * 0.15
-        parts.append(lpm.box(f"rail_post_top_{side}", (0.014, 0.014, rail_z + 0.01), at=(x, y0 - landing, plinth), color=c["frame"]))
-        parts.append(lpm.box(f"rail_post_low_{side}", (0.014, 0.014, rail_z + 0.01), at=(x, y0 - landing - 0.14 + 0.007, low_top), color=c["frame"]))
+        stair_rail(parts, f"rail_{side}", x, y0 - landing - 0.13, low_top, y0 - landing, plinth, rail_z, c["frame"])
         parts.append(lpm.box(f"rail_flat_{side}", (0.012, landing, 0.012), at=(x, y0 - landing / 2, plinth + rail_z), color=c["frame"]))
-        bar = lpm.box(f"rail_slope_{side}", (0.012, length, 0.012), at=(x, y0 - landing - 0.065, (plinth + low_top) / 2 + rail_z), color=c["frame"])
-        lpm.rotate(bar, slope, axis="X", about=(x, y0 - landing - 0.065, (plinth + low_top) / 2 + rail_z))
-        parts.append(bar)
 
     if bay:
         bay_x, bay_front, bay_wall = 0.2, y0 - 0.10, y0 + 0.01
@@ -4673,17 +4679,11 @@ def build_dutch(spec, out_dir):
         step_height = plinth * (steps - step) / steps
         parts.append(lpm.box(f"stoop_step_{step}", (0.32, run, step_height), at=(door_x, y0 - landing - run * (step - 0.5), 0), color=c["dark"]))
     low_top = plinth / steps
-    slope = math.degrees(math.atan2(plinth - low_top, 0.13))
-    length = math.hypot(plinth - low_top, 0.13)
     rail_z = 0.08
     for side in (-1, 1):
         x = door_x + side * 0.15
-        parts.append(lpm.box(f"rail_post_top_{side}", (0.014, 0.014, rail_z + 0.01), at=(x, y0 - landing, plinth), color=c["frame"]))
-        parts.append(lpm.box(f"rail_post_low_{side}", (0.014, 0.014, rail_z + 0.01), at=(x, y0 - landing - 0.14 + 0.007, low_top), color=c["frame"]))
+        stair_rail(parts, f"rail_{side}", x, y0 - landing - 0.13, low_top, y0 - landing, plinth, rail_z, c["frame"])
         parts.append(lpm.box(f"rail_flat_{side}", (0.012, landing, 0.012), at=(x, y0 - landing / 2, plinth + rail_z), color=c["frame"]))
-        bar = lpm.box(f"rail_slope_{side}", (0.012, length, 0.012), at=(x, y0 - landing - 0.065, (plinth + low_top) / 2 + rail_z), color=c["frame"])
-        lpm.rotate(bar, slope, axis="X", about=(x, y0 - landing - 0.065, (plinth + low_top) / 2 + rail_z))
-        parts.append(bar)
 
     if floors >= 3:
         beam_z = base_z + gable_top
@@ -5559,7 +5559,7 @@ def build_aegean(spec, out_dir):
         for step in range(steps):
             height = (step + 1) * fh / steps
             parts.append(lpm.box(f"stair_{step}", (0.14, 0.13, height), at=(w / 2 - 0.085, y0 + 0.1 + step * 0.13, plinth), color=c["wall"]))
-        parts.append(lpm.box("stair_rail", (0.014, 0.13 * steps, 0.014), at=(w / 2 - 0.02, y0 + 0.1 + 0.13 * steps / 2, plinth + fh), color=c["accent"]))
+        stair_rail(parts, "stair_rail", w / 2 - 0.02, y0 + 0.1, plinth + fh / steps, y0 + 0.1 + 0.13 * (steps - 1), plinth + fh, 0.08, c["accent"])
 
     top_left, top_right, top_front, top_back = plans[-1]
     roof_z = plinth + floors * fh
