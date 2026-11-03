@@ -111,7 +111,7 @@ WORLD_ENTRIES = URBTOPIA_ENTRIES + [
     ("limestone", "#bdb7a6"), ("limestone_dark", "#8f8a7c"), ("yellowbrick", "#d8b45c"), ("yellowbrick_dark", "#b38f3f"),
     ("shutter_green", "#355e4a"),
     ("timber", "#4b3424"), ("plaster", "#efe4cc"), ("whitewash", "#f6f3ec"), ("blackwood", "#2b2724"), ("ochre", "#d9b878"), ("thatch", "#b99a58"), ("tile", "#a85a3c"), ("siena", "#cf8a5a"), ("dustypink", "#d9a89a"),
-    ("pine", "#c9955c"), ("darkwood", "#8a5a3a"), ("honey", "#d9a85c"), ("greywood", "#9a9488"), ("shingle", "#5a4636"),
+    ("pine", "#c9955c"), ("darkwood", "#8a5a3a"), ("honey", "#d9a85c"), ("greywood", "#9a9488"), ("shingle", "#5a4636"), ("falured", "#9b3a2a"), ("dalablue", "#6a8aa3"),
 ]
 STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
 
@@ -5251,6 +5251,118 @@ def build_chalet(spec, out_dir):
             panel = lpm.box(f"solar_panel_{row}", (0.3, (d - 0.4) / count - 0.04, 0.01), at=(cx, y, zc), color=c["solar"])
             lpm.rotate(panel, angle, axis="Y", about=(cx, y, zc))
             parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=8000 + 6000 * floors * max(1, w * d // 2), center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
+    return report
+
+
+STUGA_DORMERS = {3: (0.0,), 4: (-0.5, 0.5), 5: (-0.5, 0.5), 6: (-0.5, 0.5), 7: (-0.6, 0.0, 0.6), 8: (-0.6, 0.0, 0.6)}
+
+
+def stuga_window(parts, tag, face, wall, u, bottom, width, height, c):
+    """A white-framed window with one vertical and two horizontal bars."""
+    face_box(parts, f"{tag}_glass", face, wall, u, width, height, bottom, 0.012, c["glass"])
+    for side in (-1, 1):
+        face_box(parts, f"{tag}_frame_{side}", face, wall, u + side * (width / 2 + 0.008), 0.016, height + 0.03, bottom - 0.015, 0.02, c["trim"])
+    face_box(parts, f"{tag}_sill", face, wall, u, width + 0.04, 0.016, bottom - 0.016, 0.026, c["trim"])
+    face_box(parts, f"{tag}_head", face, wall, u, width + 0.04, 0.016, bottom + height, 0.024, c["trim"])
+    face_box(parts, f"{tag}_bar_v", face, wall, u, 0.008, height, bottom, 0.017, c["trim"])
+    for fraction in (0.33, 0.66):
+        face_box(parts, f"{tag}_bar_h_{fraction}", face, wall, u, width, 0.008, bottom + height * fraction, 0.017, c["trim"])
+
+
+def build_stuga(spec, out_dir):
+    """A Scandinavian stuga, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    Painted board walls with white corner boards, belts and window frames, a dark gabled roof along X (one ridge per metre of depth) with red gable ends,
+    a door hood on two posts, a white chimney, front dormers from Tier 3 and a ridge cupola at Tier 8."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("trim", "vtone2"), ("roof", "vtone3"), ("glass", "glass_blue"), ("stone", "grey"),
+                                              ("door", "darkwood"), ("frame", "graphite"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors, tier = spec["floors"], spec["tier"]
+    fh, plinth = 0.28, 0.06
+    hx, hy = w / 2 - 0.04, d / 2 - 0.06
+    top = plinth + floors * fh
+    parts = [lpm.box("plinth", (2 * hx + 0.02, 2 * hy + 0.02, plinth), at=(0, 0, 0), color=c["stone"]),
+             lpm.box("walls", (2 * hx, 2 * hy, floors * fh), at=(0, 0, plinth), color=c["wall"]),
+             lpm.box("eave_board", (2 * hx + 0.02, 2 * hy + 0.02, 0.03), at=(0, 0, top - 0.03), color=c["trim"])]
+    for level in range(1, floors):
+        parts.append(lpm.box(f"belt_{level}", (2 * hx + 0.016, 2 * hy + 0.016, 0.02), at=(0, 0, plinth + level * fh - 0.01), color=c["trim"]))
+    for corner_x in (-1, 1):
+        for corner_y in (-1, 1):
+            parts.append(lpm.box(f"corner_{corner_x}_{corner_y}", (0.05, 0.05, floors * fh), at=(corner_x * (hx - 0.02), corner_y * (hy - 0.02), plinth), color=c["trim"]))
+
+    door_x = 0.0
+    for level in range(floors):
+        z = plinth + level * fh
+        for face, wall, length in (("front", -hy, 2 * hx), ("back", hy, 2 * hx), ("left", -hx, 2 * hy), ("right", hx, 2 * hy)):
+            count = max(2, round(length / 0.45))
+            panel = length / count
+            origin = -length / 2
+            for panel_index in range(count):
+                u = origin + (panel_index + 0.5) * panel
+                if face == "front" and level == 0 and panel_index == count // 2:
+                    door_x = u
+                    continue
+                stuga_window(parts, f"{face}_{level}_{panel_index}", face, wall, u, z + 0.08, 0.14, 0.15, c)
+    face_box(parts, "door", "front", -hy, door_x, 0.17, 0.24, plinth, 0.016, c["door"])
+    door_frame(parts, "door", door_x, -hy, plinth, 0.17, 0.24, c["trim"], thick=0.02)
+    parts.append(lpm.box("door_step", (0.28, 0.05, 0.03), at=(door_x, -hy - 0.025, 0), color=c["stone"]))
+    hood_z = plinth + 0.27
+    parts.append(extrude_y("door_hood", [(door_x - 0.19, hood_z), (door_x + 0.19, hood_z), (door_x, hood_z + 0.09)], -hy - 0.07, -hy + 0.01, c["roof"]))
+    for side in (-1, 1):
+        parts.append(lpm.box(f"door_post_{side}", (0.025, 0.025, 0.27), at=(door_x + side * 0.16, -hy - 0.055, plinth - 0.002), color=c["trim"]))
+
+    span, rise = 0.5, 0.29
+    bays = [0.0] if d == 1 else [-0.5, 0.5]
+    for number, cy in enumerate(bays):
+        parts.append(extrude_x(f"roof_{number}", [(cy - span, top), (cy + span, top), (cy, top + rise)], -hx, hx, c["roof"]))
+        parts.append(lpm.box(f"ridge_{number}", (2 * hx + 0.02, 0.04, 0.025), at=(0, cy, top + rise - 0.012), color=c["trim"]))
+        for side in (-1, 1):
+            x_a, x_b = (hx - 0.01, w / 2 - 0.02) if side == 1 else (-w / 2 + 0.02, -hx + 0.01)
+            parts.append(extrude_x(f"gable_{number}_{side}", [(cy - span, top), (cy + span, top), (cy, top + rise)], x_a, x_b, c["wall"]))
+            stuga_window(parts, f"gable_window_{number}_{side}", "right" if side == 1 else "left", side * (w / 2 - 0.02), cy, top + 0.04, 0.1, 0.1, c)
+
+    front_cy = bays[0]
+    for number, x in enumerate(STUGA_DORMERS.get(tier, ())):
+        y_front = front_cy - 0.2
+        z_base = top + rise * 0.6 - 0.03
+        parts.append(lpm.box(f"dormer_{number}", (0.2, 0.2, 0.15), at=(x, front_cy - 0.1, z_base), color=c["wall"]))
+        parts.append(extrude_y(f"dormer_roof_{number}", [(x - 0.13, z_base + 0.15), (x + 0.13, z_base + 0.15), (x, z_base + 0.25)], y_front - 0.03, front_cy + 0.05, c["roof"]))
+        stuga_window(parts, f"dormer_window_{number}", "front", y_front, x, z_base + 0.03, 0.09, 0.09, c)
+
+    for number, x in enumerate((hx * 0.55, -hx * 0.55) if w >= 2 and tier >= 5 else (hx * 0.55 if w >= 2 else 0.0,)):
+        parts.append(lpm.box(f"chimney_{number}", (0.12, 0.12, rise + 0.16), at=(x, front_cy + 0.1, top), color=c["trim"]))
+        parts.append(lpm.box(f"chimney_cap_{number}", (0.15, 0.15, 0.025), at=(x, front_cy + 0.1, top + rise + 0.16), color=c["frame"]))
+
+    if tier == 8:
+        cx, cy = 0.0, bays[-1]
+        parts.append(lpm.box("cupola", (0.18, 0.18, 0.16), at=(cx, cy, top + rise - 0.004), color=c["wall"]))
+        for face_name, wall_pos in (("front", cy - 0.09), ("back", cy + 0.09)):
+            face_box(parts, f"cupola_{face_name}", face_name, wall_pos, cx, 0.08, 0.09, top + rise + 0.03, 0.014, c["glass"])
+        parts.append(hip_roof("cupola_roof", 0.12, 0.12, top + rise + 0.156, 0.11, c["roof"], cx=cx, cy=cy))
+        parts.append(lpm.box("vane", (0.01, 0.01, 0.1), at=(cx, cy, top + rise + 0.266), color=c["frame"]))
+
+    if spec.get("solar"):
+        slope = math.degrees(math.atan2(rise, span))
+        blocked = [x for x in STUGA_DORMERS.get(tier, ())]
+        panels = 0
+        x = -hx + 0.25
+        while x <= hx - 0.25 and panels < 4:
+            if not any(abs(x - b) < 0.24 for b in blocked):
+                y = front_cy - span / 2
+                zc = top + rise / 2 + 0.01
+                panel = lpm.box(f"solar_panel_{panels}", (0.22, 0.2, 0.01), at=(x, y, zc), color=c["solar"])
+                lpm.rotate(panel, slope, axis="X", about=(x, y, zc))
+                parts.append(panel)
+                panels += 1
+            x += 0.3
 
     ob = lpm.finish(spec["id"], parts, palette, budget=8000 + 6000 * floors * max(1, w * d // 2), center=False)
     report = export_model(ob, spec, out_dir)

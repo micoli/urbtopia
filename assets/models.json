@@ -1915,6 +1915,64 @@
       }
     }
   },
+  "buildings-house-1x1-1f-stuga-a": {
+    "file": "buildings/house-1x1-1f-stuga-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-1x1-1f-stuga-a-solar": {
+    "file": "buildings/house-1x1-1f-stuga-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
   "buildings-house-1x1-1f-tone-a": {
     "file": "buildings/house-1x1-1f-tone-a",
     "source": "managed",
@@ -3363,6 +3421,64 @@
       }
     }
   },
+  "buildings-house-2x1-1f-stuga-a": {
+    "file": "buildings/house-2x1-1f-stuga-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x1-1f-stuga-a-solar": {
+    "file": "buildings/house-2x1-1f-stuga-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
   "buildings-house-2x1-1f-tone-a": {
     "file": "buildings/house-2x1-1f-tone-a",
     "source": "managed",
@@ -3595,6 +3711,64 @@
       }
     }
   },
+  "buildings-house-2x1-2f-stuga-a": {
+    "file": "buildings/house-2x1-2f-stuga-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-stuga-a-solar": {
+    "file": "buildings/house-2x1-2f-stuga-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
   "buildings-house-2x1-2f-third-chalet-a": {
     "file": "buildings/house-2x1-2f-third-chalet-a",
     "source": "managed",
@@ -3650,6 +3824,64 @@
       "d": {
         "name": "greywood",
         "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-stuga-a": {
+    "file": "buildings/house-2x1-2f-third-stuga-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-stuga-a-solar": {
+    "file": "buildings/house-2x1-2f-third-stuga-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
       }
     }
   },
@@ -4267,6 +4499,64 @@
       }
     }
   },
+  "buildings-house-2x2-2f-stuga-a": {
+    "file": "buildings/house-2x2-2f-stuga-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-stuga-a-solar": {
+    "file": "buildings/house-2x2-2f-stuga-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
   "buildings-house-2x2-2f-tone-a": {
     "file": "buildings/house-2x2-2f-tone-a",
     "source": "managed",
@@ -4596,6 +4886,64 @@
       "c": {
         "name": "brick",
         "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-stuga-a": {
+    "file": "buildings/house-2x2-3f-stuga-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-stuga-a-solar": {
+    "file": "buildings/house-2x2-3f-stuga-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
       },
       "d": {
         "name": "greygreen",
@@ -4939,6 +5287,64 @@
       }
     }
   },
+  "buildings-house-2x2-4f-stuga-a": {
+    "file": "buildings/house-2x2-4f-stuga-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x2-4f-stuga-a-solar": {
+    "file": "buildings/house-2x2-4f-stuga-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
   "buildings-house-2x2-4f-tone-a": {
     "file": "buildings/house-2x2-4f-tone-a",
     "source": "managed",
@@ -5268,6 +5674,64 @@
       "c": {
         "name": "brick",
         "color": "#c2432e"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-stuga-a": {
+    "file": "buildings/house-2x2-5f-stuga-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-stuga-a-solar": {
+    "file": "buildings/house-2x2-5f-stuga-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "falured",
+        "color": "#9b3a2a"
+      },
+      "b": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "c": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
       },
       "d": {
         "name": "greygreen",
