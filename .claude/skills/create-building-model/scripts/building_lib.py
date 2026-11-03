@@ -109,6 +109,7 @@ STYLES["urbtopia"] = {
 WORLD_ENTRIES = URBTOPIA_ENTRIES + [
     ("brownstone", "#8f5a43"), ("brownstone_dark", "#6e4333"), ("brick_dark", "#8e3322"),
     ("limestone", "#bdb7a6"), ("limestone_dark", "#8f8a7c"), ("yellowbrick", "#d8b45c"), ("yellowbrick_dark", "#b38f3f"),
+    ("shutter_green", "#355e4a"),
 ]
 STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
 
@@ -4567,6 +4568,140 @@ def build_brownstone(spec, out_dir):
     for number, hoop_z in enumerate((0.15, 0.22)):
         parts.append(lpm.prism(f"tank_hoop_{number}", 10, 0.1, 0.014, at=(tank_x, tank_y, tank_z + hoop_z), color=c["frame"]))
     parts.append(lpm.prism("tank_roof", 10, 0.115, 0.06, at=(tank_x, tank_y, tank_z + 0.262), color=c["door"], radius_top=0.01))
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=2500 + 2600 * floors, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = list(spec["footprint"])
+    return report
+
+
+DUTCH_GABLES = {
+    "low_step": [(0.46, 0.0), (0.46, 0.1), (0.34, 0.1), (0.34, 0.17), (0.2, 0.17), (0.2, 0.23), (0.0, 0.23)],
+    "step": [(0.46, 0.0), (0.46, 0.08), (0.36, 0.08), (0.36, 0.15), (0.26, 0.15), (0.26, 0.22), (0.16, 0.22), (0.16, 0.29), (0.0, 0.29)],
+    "neck": [(0.46, 0.0), (0.46, 0.05), (0.34, 0.05), (0.34, 0.09), (0.24, 0.12), (0.2, 0.16), (0.2, 0.31), (0.0, 0.31)],
+    "bell": [(0.46, 0.0), (0.46, 0.04), (0.4, 0.06), (0.33, 0.09), (0.27, 0.14), (0.23, 0.2), (0.21, 0.27), (0.18, 0.33), (0.1, 0.36), (0.0, 0.36)],
+    "grand_bell": [(0.46, 0.0), (0.46, 0.05), (0.42, 0.07), (0.37, 0.07), (0.33, 0.11), (0.3, 0.16), (0.26, 0.2), (0.24, 0.26), (0.2, 0.31), (0.16, 0.35), (0.1, 0.38), (0.0, 0.4)],
+}
+DUTCH_ROOF_RISE = 0.2
+DUTCH_GABLE_HEIGHT = 0.8  # scale of the stepped, neck and bell profiles
+DUTCH_GABLE_BY_FLOORS = {1: "low_step", 2: "step", 3: "neck", 4: "bell", 5: "grand_bell"}
+
+
+def dutch_gable(parts, c, kind, base_z, front):
+    """A gable wall on the front: the (x, z) profile mirrored, trim caps on its horizontal ledges."""
+    stretch = 1.0 if kind == "low_step" else DUTCH_GABLE_HEIGHT
+    half = [(x, z * stretch) for x, z in DUTCH_GABLES[kind]]
+    outline = half + [(-x, z) for x, z in reversed(half[:-1])]
+    parts.append(extrude_y("gable", [(x, base_z + z) for x, z in outline], front - 0.02, front + 0.1, c["wall"]))
+    for number, ((xa, za), (xb, zb)) in enumerate(zip(half, half[1:])):
+        if za != zb or xa - xb < 0.03:
+            continue
+        width = (xa - xb) + 0.02
+        centre = (xa + xb) / 2
+        for side in ((1, -1) if centre else (1,)):
+            parts.append(lpm.box(f"gable_cap_{number}_{side}", (width if centre else 2 * xa + 0.02, 0.14, 0.014), at=(side * centre, front + 0.03, base_z + za), color=c["trim"]))
+    return half[-1][1]
+
+
+def build_dutch(spec, out_dir):
+    """A Dutch canal house on a 1x1 or 1x2 cell, front facing -Y: a brick body with white-framed windows, a gable on the front and a pitched slate roof behind it.
+    The Tier is the floor count (1 to 5) and sets the gable: 1 a low stepped gable, 2 a taller stepped one, 3 neck with a hoisting beam, 4 bell, 5 grand bell with scrolls and a pinnacle. Shutters from Tier 2."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("dark", "vtone2"), ("trim", "vtone3"), ("glass", "glass_blue"), ("frame", "graphite"),
+                                              ("green", "shutter_green"), ("roof", "uslab"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    floors, d = spec["floors"], spec["footprint"][1]
+    plinth, fh = 0.12, 0.26
+    z0 = plinth
+    top = z0 + floors * fh
+    width = 0.92
+    y0, y1 = -d / 2 + 0.2, d / 2 - 0.045
+    depth = y1 - y0
+    cy = (y0 + y1) / 2
+    door_x = -0.2
+    parts = [lpm.box("plinth", (width + 0.02, depth + 0.02, plinth), at=(0, cy, 0), color=c["dark"]),
+             lpm.box("walls", (width, depth, floors * fh), at=(0, cy, z0), color=c["wall"]),
+             lpm.box("cornice", (width + 0.08, depth + 0.08, 0.03), at=(0, cy, top), color=c["trim"])]
+    base_z = top + 0.03
+    gable_top = dutch_gable(parts, c, DUTCH_GABLE_BY_FLOORS[floors], base_z, y0)
+    parts.append(extrude_y("roof", [(-0.5, base_z), (0.5, base_z), (0, base_z + DUTCH_ROOF_RISE)], y0 + 0.1, y1 + 0.04, c["roof"]))
+    parts.append(lpm.box("ridge", (0.03, depth - 0.06, 0.02), at=(0, cy + 0.03, base_z + DUTCH_ROOF_RISE - 0.004), color=c["trim"]))
+    for number, x in enumerate((-0.3, 0.3) if floors == 5 else (-0.3,)):
+        parts.append(lpm.box(f"chimney_{number}", (0.1, 0.1, 0.3), at=(x, cy + 0.2, base_z), color=c["wall"]))
+        parts.append(lpm.box(f"chimney_cap_{number}", (0.13, 0.13, 0.02), at=(x, cy + 0.2, base_z + 0.3), color=c["trim"]))
+
+    ys = (cy,) if d == 1 else (-0.42, 0.05, 0.52)
+    for level in range(floors):
+        tall = level < 2
+        bottom = z0 + level * fh + (0.03 if level == 1 else 0.05)
+        height = 0.2 if tall else 0.17
+        for x in (-0.2, 0.2):
+            if level == 0 and x == door_x:
+                continue
+            brownstone_window(parts, f"front_{level}_{x}", "front", x, bottom, 0.17, height, c, wall=y0)
+            if floors >= 2:
+                for side in (-1, 1):
+                    face_box(parts, f"shutter_{level}_{x}_{side}", "front", y0, x + side * 0.12, 0.05, height, bottom, 0.016, c["green"])
+        for x in (-0.2, 0.2):
+            brownstone_window(parts, f"back_{level}_{x}", "back", x, bottom, 0.17, 0.16, c, wall=y1)
+        for face, wall in (("left", -0.46), ("right", 0.46)):
+            for number, y in enumerate(ys):
+                brownstone_window(parts, f"{face}_{level}_{number}", face, y, bottom, 0.12, 0.16, c, wall=wall, framed=False)
+                face_box(parts, f"{face}_{level}_{number}_bar", face, wall, y, 0.12, 0.006, bottom + 0.077, 0.016, c["frame"])
+    brownstone_window(parts, "basement", "front", 0.2, 0.03, 0.15, 0.06, c, wall=y0 - 0.01, framed=False)
+
+    door_height = 0.2
+    face_box(parts, "door", "front", y0, door_x, 0.17, door_height, z0, 0.014, c["green"])
+    parts.append(lpm.box("door_knob", (0.014, 0.014, 0.014), at=(door_x + 0.05, y0 - 0.014, z0 + 0.1), color=c["trim"]))
+    door_frame(parts, "door", door_x, y0, z0, 0.17, door_height, c["trim"], thick=0.014)
+    if floors >= 3:
+        face_box(parts, "transom", "front", y0, door_x, 0.17, 0.035, z0 + door_height + 0.014, 0.012, c["glass"])
+    else:
+        parts.append(lpm.box("door_hood", (0.25, 0.06, 0.016), at=(door_x, y0 - 0.026, z0 + door_height + 0.014), color=c["trim"]))
+
+    steps = {1: 3, 2: 3}.get(floors, 5)
+    landing, run = 0.06, 0.14 / (steps - 1)
+    parts.append(lpm.box("stoop_landing", (0.32, landing + 0.004, plinth), at=(door_x, y0 - landing / 2 + 0.002, 0), color=c["dark"]))
+    for step in range(1, steps):
+        step_height = plinth * (steps - step) / steps
+        parts.append(lpm.box(f"stoop_step_{step}", (0.32, run, step_height), at=(door_x, y0 - landing - run * (step - 0.5), 0), color=c["dark"]))
+    low_top = plinth / steps
+    slope = math.degrees(math.atan2(plinth - low_top, 0.13))
+    length = math.hypot(plinth - low_top, 0.13)
+    rail_z = 0.08
+    for side in (-1, 1):
+        x = door_x + side * 0.15
+        parts.append(lpm.box(f"rail_post_top_{side}", (0.014, 0.014, rail_z + 0.01), at=(x, y0 - landing, plinth), color=c["frame"]))
+        parts.append(lpm.box(f"rail_post_low_{side}", (0.014, 0.014, rail_z + 0.01), at=(x, y0 - landing - 0.14 + 0.007, low_top), color=c["frame"]))
+        parts.append(lpm.box(f"rail_flat_{side}", (0.012, landing, 0.012), at=(x, y0 - landing / 2, plinth + rail_z), color=c["frame"]))
+        bar = lpm.box(f"rail_slope_{side}", (0.012, length, 0.012), at=(x, y0 - landing - 0.065, (plinth + low_top) / 2 + rail_z), color=c["frame"])
+        lpm.rotate(bar, slope, axis="X", about=(x, y0 - landing - 0.065, (plinth + low_top) / 2 + rail_z))
+        parts.append(bar)
+
+    if floors >= 3:
+        beam_z = base_z + gable_top
+        parts.append(lpm.box("hoist_beam", (0.03, 0.16, 0.03), at=(0, y0 - 0.06, beam_z - 0.01), color=c["frame"]))
+        parts.append(lpm.box("hoist_hook", (0.008, 0.008, 0.08), at=(0, y0 - 0.125, beam_z - 0.09), color=c["frame"]))
+        parts.append(lpm.box("hoist_block", (0.03, 0.03, 0.02), at=(0, y0 - 0.125, beam_z - 0.11), color=c["frame"]))
+    if floors == 5:
+        for side in (-1, 1):
+            parts.append(lpm.box(f"scroll_{side}", (0.05, 0.14, 0.05), at=(side * 0.4, y0 + 0.03, base_z + 0.11), color=c["trim"]))
+        parts.append(lpm.prism("pinnacle", 8, 0.05, 0.06, at=(0, y0 + 0.03, base_z + gable_top), color=c["trim"], radius_top=0.012))
+
+    if spec.get("solar"):
+        pitch = math.degrees(math.atan2(DUTCH_ROOF_RISE, 0.5))
+        count = 2 if d == 1 else 4
+        span = depth - 0.3
+        for row in range(count):
+            y = y0 + 0.2 + span * (row + 0.5) / count
+            for column, x in enumerate((0.15, 0.36)):
+                surface = base_z + DUTCH_ROOF_RISE * (1 - x / 0.5) + 0.01
+                panel = lpm.box(f"solar_panel_{row}_{column}", (0.19, span / count - 0.03, 0.01), at=(x, y, surface), color=c["solar"])
+                lpm.rotate(panel, -pitch, axis="Y", about=(x, y, surface))
+                parts.append(panel)
 
     ob = lpm.finish(spec["id"], parts, palette, budget=2500 + 2600 * floors, center=False)
     report = export_model(ob, spec, out_dir)

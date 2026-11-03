@@ -1753,6 +1753,62 @@
       }
     }
   },
+  "buildings-house-1x1-1f-dutch-a": {
+    "file": "buildings/house-1x1-1f-dutch-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
+  "buildings-house-1x1-1f-dutch-a-solar": {
+    "file": "buildings/house-1x1-1f-dutch-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
   "buildings-house-1x1-1f-mansard-a": {
     "file": "buildings/house-1x1-1f-mansard-a",
     "source": "managed",
@@ -1859,6 +1915,62 @@
       }
     }
   },
+  "buildings-house-1x1-2f-dutch-a": {
+    "file": "buildings/house-1x1-2f-dutch-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
+  "buildings-house-1x1-2f-dutch-a-solar": {
+    "file": "buildings/house-1x1-2f-dutch-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
   "buildings-house-1x1-2f-mansard-a": {
     "file": "buildings/house-1x1-2f-mansard-a",
     "source": "managed",
@@ -1904,6 +2016,62 @@
       "d": {
         "name": "greygreen",
         "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-1x1-3f-dutch-a": {
+    "file": "buildings/house-1x1-3f-dutch-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
+  "buildings-house-1x1-3f-dutch-a-solar": {
+    "file": "buildings/house-1x1-3f-dutch-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
       }
     }
   },
@@ -1955,6 +2123,62 @@
       }
     }
   },
+  "buildings-house-1x1-4f-dutch-a": {
+    "file": "buildings/house-1x1-4f-dutch-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
+  "buildings-house-1x1-4f-dutch-a-solar": {
+    "file": "buildings/house-1x1-4f-dutch-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
   "buildings-house-1x1-4f-mansard-a": {
     "file": "buildings/house-1x1-4f-mansard-a",
     "source": "managed",
@@ -2000,6 +2224,62 @@
       "d": {
         "name": "greygreen",
         "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-1x1-5f-dutch-a": {
+    "file": "buildings/house-1x1-5f-dutch-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
+  "buildings-house-1x1-5f-dutch-a-solar": {
+    "file": "buildings/house-1x1-5f-dutch-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
       }
     }
   },
@@ -2107,6 +2387,62 @@
       }
     }
   },
+  "buildings-house-1x2-1f-dutch-a": {
+    "file": "buildings/house-1x2-1f-dutch-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
+  "buildings-house-1x2-1f-dutch-a-solar": {
+    "file": "buildings/house-1x2-1f-dutch-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
   "buildings-house-1x2-1f-mansard-a": {
     "file": "buildings/house-1x2-1f-mansard-a",
     "source": "managed",
@@ -2208,6 +2544,62 @@
       "d": {
         "name": "yellowbrick",
         "color": "#d8b45c"
+      }
+    }
+  },
+  "buildings-house-1x2-2f-dutch-a": {
+    "file": "buildings/house-1x2-2f-dutch-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
+  "buildings-house-1x2-2f-dutch-a-solar": {
+    "file": "buildings/house-1x2-2f-dutch-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
       }
     }
   },
@@ -2315,6 +2707,62 @@
       }
     }
   },
+  "buildings-house-1x2-3f-dutch-a": {
+    "file": "buildings/house-1x2-3f-dutch-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
+  "buildings-house-1x2-3f-dutch-a-solar": {
+    "file": "buildings/house-1x2-3f-dutch-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
   "buildings-house-1x2-3f-mansard-a": {
     "file": "buildings/house-1x2-3f-mansard-a",
     "source": "managed",
@@ -2419,6 +2867,62 @@
       }
     }
   },
+  "buildings-house-1x2-4f-dutch-a": {
+    "file": "buildings/house-1x2-4f-dutch-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
+  "buildings-house-1x2-4f-dutch-a-solar": {
+    "file": "buildings/house-1x2-4f-dutch-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
   "buildings-house-1x2-4f-mansard-a": {
     "file": "buildings/house-1x2-4f-mansard-a",
     "source": "managed",
@@ -2520,6 +3024,62 @@
       "d": {
         "name": "yellowbrick",
         "color": "#d8b45c"
+      }
+    }
+  },
+  "buildings-house-1x2-5f-dutch-a": {
+    "file": "buildings/house-1x2-5f-dutch-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      }
+    }
+  },
+  "buildings-house-1x2-5f-dutch-a-solar": {
+    "file": "buildings/house-1x2-5f-dutch-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      },
+      "c": {
+        "name": "brownstone",
+        "color": "#8f5a43"
+      },
+      "d": {
+        "name": "limestone",
+        "color": "#bdb7a6"
       }
     }
   },
