@@ -19,7 +19,7 @@ import { facilityFootprint, modelOfBuilding, renderItemsOf, type HarvestedTile }
 import { ServiceVehicleLayer } from './ServiceVehicleLayer';
 import { CongestionLayer } from './CongestionLayer';
 import { AttractionCrowdLayer } from './AttractionCrowdLayer';
-import { PedestrianLayer } from './PedestrianLayer';
+import { PedestrianLayer, UNDERGROUND_WALK } from './PedestrianLayer';
 import { BoatLayer } from './BoatLayer';
 import { BridgeLayer } from './BridgeLayer';
 import { TrafficLayer } from './TrafficLayer';
@@ -30,6 +30,7 @@ import { setWindowGlow, setWindowNight, windowGlowLevel, windowNightClock } from
 import { DAY_BACKGROUND, lightingOf, type DayLighting } from './dayLighting';
 import { ServiceCoverageLayer } from './ServiceCoverageLayer';
 import { LevelFloor } from './LevelFloor';
+import { UndergroundLayer } from './UndergroundLayer';
 import { surfaceDisplayOf } from './levelDisplay';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
@@ -90,6 +91,8 @@ export class GameScene {
   private congestion = new CongestionLayer();
   private traffic = new TrafficLayer(this.library);
   private pedestrians = new PedestrianLayer();
+  private undergroundWalkers = new PedestrianLayer(UNDERGROUND_WALK);
+  private underground = new UndergroundLayer();
   private attractionCrowd = new AttractionCrowdLayer();
   private serviceVehicles = new ServiceVehicleLayer(this.library);
   private boats = new BoatLayer(this.library);
@@ -138,6 +141,7 @@ export class GameScene {
   private levelFloor = new LevelFloor();
   private levelBudget = new FrameBudgetMonitor();
   private slowForLevels = false;
+  private trafficEnabled = true;
   private pinnedCycleHour: number | null = null;
   private lastFrame = performance.now();
   private resizeObserver: ResizeObserver;
@@ -153,7 +157,7 @@ export class GameScene {
     this.scene.environmentIntensity = 0.25;
     const sun = this.sun, sky = this.sky;
     sun.position.set(20, 40, 10);
-    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.attractionCrowd.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root, this.analyticsLayer.root, this.levelFloor.root);
+    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.attractionCrowd.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root, this.analyticsLayer.root, this.levelFloor.root, this.underground.walkwaysRoot, this.underground.accessesRoot, this.undergroundWalkers.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.streetView = new StreetViewController(canvas);
@@ -242,6 +246,8 @@ export class GameScene {
   }
 
   setTrafficEnabled(enabled: boolean): void {
+    this.trafficEnabled = enabled;
+    this.undergroundWalkers.root.visible = this.level === -1 && enabled;
     this.traffic.setEnabled(enabled);
     this.pedestrians.setEnabled(enabled);
     this.attractionCrowd.setEnabled(enabled);
@@ -293,6 +299,8 @@ export class GameScene {
   private applyLevel(): void {
     const onSurface = this.level === SURFACE;
     this.levelFloor.setLevel(this.level);
+    this.underground.setLevel(this.level);
+    this.undergroundWalkers.root.visible = this.level === -1 && this.trafficEnabled;
     for (const root of [this.ground, this.parcels, this.scenery.root, this.ecologyLayer.root, this.congestion.root, this.attractionCrowd.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.serviceCoverageLayer.root, this.analyticsLayer.root]) root.visible = onSurface;
     this.world.setDisplay(surfaceDisplayOf(this.level, this.slowForLevels));
   }
@@ -394,6 +402,8 @@ export class GameScene {
     this.serviceCoverageLayer.dispose();
     this.analyticsLayer.dispose();
     this.levelFloor.dispose();
+    this.underground.dispose();
+    this.undergroundWalkers.dispose();
     this.renderer.dispose();
   }
 
@@ -419,6 +429,8 @@ export class GameScene {
         this.congestion.sync(state);
         this.traffic.sync(state);
     this.pedestrians.sync(state);
+        this.underground.sync(state);
+        this.undergroundWalkers.sync(state);
         this.attractionCrowd.sync(state);
         this.serviceVehicles.sync(state);
         this.boats.sync(state);
@@ -638,6 +650,7 @@ export class GameScene {
     this.ecologyLayer.update(delta);
     this.traffic.priorityTiles = this.ecologyLayer.transit.priorityTiles;
     this.pedestrians.update(delta);
+    if (this.level === -1) this.undergroundWalkers.update(delta);
     this.attractionCrowd.update(delta);
     this.bridges.update(delta, this.boats.waiting, this.boats.occupied, [...this.traffic.vehicleList, ...this.serviceVehicles.activeVehicles]);
     this.traffic.stopTiles = new Set([...this.pedestrians.crossingTiles, ...this.bridges.stopTiles]);

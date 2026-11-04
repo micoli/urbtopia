@@ -58,6 +58,7 @@ import { applyTradeEffect, confirmTradeEffect, rollbackTradeEffect, type TradeRe
 import type { TradeEffect, TradeLine } from '../trade/types';
 import type { ChallengeRewardKind } from '../challenges/types';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
+import { buildPedestrianAccess, buildWalkway, demolishPedestrianAccess, demolishWalkways } from '../underground/walkways';
 import type { BlackjackAction } from '../leisure/blackjack';
 import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, ColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 import { isHomeType } from '../buildings/buildingDefinitions';
@@ -85,6 +86,10 @@ export type Command =
   | { readonly type: 'UpgradePedestrianWays'; readonly tiles: readonly Coord[] }
   | { readonly type: 'DemolishPedestrianWay'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishPedestrianWayPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
+  | { readonly type: 'BuildWalkway'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
+  | { readonly type: 'DemolishWalkwayPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
+  | { readonly type: 'BuildPedestrianAccess'; readonly x: number; readonly y: number }
+  | { readonly type: 'DemolishPedestrianAccess'; readonly x: number; readonly y: number }
   | { readonly type: 'PlaceCrossing'; readonly x: number; readonly y: number }
   | { readonly type: 'RemoveCrossing'; readonly x: number; readonly y: number }
   | { readonly type: 'PlaceRoundabout'; readonly x: number; readonly y: number }
@@ -244,6 +249,8 @@ export type ErrorKey =
   | 'error.notEnoughUrbs'
   | 'error.lastAccessOfBuilding'
   | 'error.noRoadHere'
+  | 'error.noWalkwayHere'
+  | 'error.accessNeedsPath'
   | 'error.invalidCrossing'
   | 'error.maxRoadTier'
   | 'error.networkIntact'
@@ -332,6 +339,14 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return demolishPedestrianWays(state, [{ x: command.x, y: command.y }]);
     case 'DemolishPedestrianWayPath':
       return demolishPedestrianWays(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
+    case 'BuildWalkway':
+      return buildWalkway(state, command.from, command.to, command.horizontalFirst ?? true);
+    case 'DemolishWalkwayPath':
+      return demolishWalkways(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
+    case 'BuildPedestrianAccess':
+      return buildPedestrianAccess(state, { x: command.x, y: command.y });
+    case 'DemolishPedestrianAccess':
+      return demolishPedestrianAccess(state, { x: command.x, y: command.y });
     case 'PlaceCrossing':
       return placeCrossing(state, { x: command.x, y: command.y });
     case 'RemoveCrossing':

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { congestionStats, hashSeed, nextRandom, pedestrianGraph, type GameState, type PedestrianGraph } from '../core';
+import { congestionStats, hashSeed, nextRandom, pedestrianGraph, undergroundWalkGraph, type GameState, type PedestrianGraph } from '../core';
 import { stickCyclist, stickPedestrian } from './stickFigures';
 import { bridgeElevation, type ElevationAt } from './bridgeElevation';
 import { MAX_CYCLISTS, tileOfNode, MAX_PEDESTRIANS, advancePedestrian, crossedTile, isOnGraph, pedestrianPose, startPedestrian, targetPedestrianCount, type Pedestrian } from './pedestrianWalk';
@@ -24,6 +24,26 @@ function createFleet(geometry: THREE.BufferGeometry, material: THREE.Material, c
   return { mesh, figures: [], target: 0, speedFactor };
 }
 
+// What a layer walks on: the graph, and the parts of the state that change it.
+export interface WalkSurface {
+  graphOf: (state: GameState) => PedestrianGraph;
+  changesOf: (state: GameState) => readonly unknown[];
+  share: number;
+}
+
+export const SURFACE_WALK: WalkSurface = {
+  graphOf: pedestrianGraph,
+  changesOf: (state) => [state.roads, state.pedestrianWays, state.brtRoads],
+  share: 1,
+};
+
+// Level -1: the Citizens who take the walkways are a share of those who walk.
+export const UNDERGROUND_WALK: WalkSurface = {
+  graphOf: undergroundWalkGraph,
+  changesOf: (state) => [state.walkways],
+  share: 0.5,
+};
+
 export class PedestrianLayer {
   readonly root = new THREE.Group();
   crossingTiles: ReadonlySet<string> = new Set();
@@ -35,16 +55,14 @@ export class PedestrianLayer {
   private nextId = 1;
   private rngState = 0;
   private seed = '';
-  private roads: GameState['roads'] | null = null;
-  private brtRoads: GameState['brtRoads'] = undefined;
-  private pedestrianWays: GameState['pedestrianWays'] | undefined;
+  private changes: readonly unknown[] = [];
   private enabled = true;
   private bridges: GameState['bridges'] = undefined;
   private elevation: ElevationAt = () => 0;
   private placement = new THREE.Object3D();
   private touch = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
 
-  constructor() {
+  constructor(private walkSurface: WalkSurface = SURFACE_WALK) {
     this.root.add(this.walkers.mesh, this.cyclists.mesh);
   }
 
@@ -59,10 +77,12 @@ export class PedestrianLayer {
       this.bridges = state.bridges;
       this.elevation = bridgeElevation(state.bridges);
     }
-    if (state.roads !== this.roads || state.pedestrianWays !== this.pedestrianWays || state.brtRoads !== this.brtRoads) this.rebuildGraph(state);
+    const changes = this.walkSurface.changesOf(state);
+    if (changes.length !== this.changes.length || changes.some((change, index) => change !== this.changes[index])) this.rebuildGraph(state, changes);
     const stats = congestionStats(state);
-    const walking = stats.walkers + tripsTotal(stats.walkingTrips);
-    const cycling = stats.cyclists + tripsTotal(stats.cyclingTrips);
+    const share = this.walkSurface.share;
+    const walking = (stats.walkers + tripsTotal(stats.walkingTrips)) * share;
+    const cycling = (stats.cyclists + tripsTotal(stats.cyclingTrips)) * share;
     this.walkers.target = targetPedestrianCount({ people: walking, nodes: this.nodes.length, touch: this.touch });
     this.cyclists.target = targetPedestrianCount({ people: cycling, nodes: this.nodes.length, touch: this.touch, max: MAX_CYCLISTS });
   }
@@ -90,11 +110,9 @@ export class PedestrianLayer {
     this.cyclists.figures = [];
   }
 
-  private rebuildGraph(state: GameState): void {
-    this.roads = state.roads;
-    this.brtRoads = state.brtRoads;
-    this.pedestrianWays = state.pedestrianWays;
-    this.graph = pedestrianGraph(state);
+  private rebuildGraph(state: GameState, changes: readonly unknown[]): void {
+    this.changes = changes;
+    this.graph = this.walkSurface.graphOf(state);
     this.nodes = [...this.graph.keys()].sort();
     this.walkers.figures = this.walkers.figures.filter((figure) => isOnGraph(this.graph, figure));
     this.cyclists.figures = this.cyclists.figures.filter((figure) => isOnGraph(this.graph, figure));

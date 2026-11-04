@@ -8,7 +8,7 @@ import { bridgeFootprint, bridgeRamps, isPedestrianBridge } from '../water/bridg
 import { footbridgeParts } from '../water/footbridgeGeometry';
 import { footbridgeEndLinks } from './footbridgeAccess';
 
-export const WALK = { crossingExtraCost: 2 };
+export const WALK = { crossingExtraCost: 2, stairCost: 2 };
 
 export interface PedestrianEdge {
   to: string;
@@ -46,6 +46,71 @@ export function sidewalkNode(tile: Coord, side: Direction | 'R'): string {
 
 export function pedestrianWayNode(tile: Coord): string {
   return `${tileKey(tile)}:P`;
+}
+
+// Level -1: an Underground walkway tile, and the stair that reaches it from the Surface.
+export function walkwayNode(tile: Coord): string {
+  return `${tileKey(tile)}:U`;
+}
+
+export function accessNode(tile: Coord): string {
+  return `${tileKey(tile)}:A`;
+}
+
+const tripGraphCache = new WeakMap<PedestrianGraph, { walkways: GameState['walkways']; accesses: GameState['pedestrianAccesses']; graph: PedestrianGraph }>();
+
+// The graph Citizens walk on to their trips: the Surface graph and, under it, the Underground walkways joined by their active accesses.
+// Street view and the walkers of the Surface keep the Surface graph.
+export function tripGraph(state: GameState): PedestrianGraph {
+  const surface = pedestrianGraph(state);
+  if (!state.walkways?.length) return surface;
+  const cached = tripGraphCache.get(surface);
+  if (cached?.walkways === state.walkways && cached.accesses === state.pedestrianAccesses) return cached.graph;
+  const graph = withWalkways(state, surface);
+  tripGraphCache.set(surface, { walkways: state.walkways, accesses: state.pedestrianAccesses, graph });
+  return graph;
+}
+
+// Only the Underground walkways, for the walkers drawn on Level -1.
+export function undergroundWalkGraph(state: GameState): PedestrianGraph {
+  const edges = new Map<string, PedestrianEdge[]>();
+  const keys = new Set((state.walkways ?? []).map(tileKey));
+  for (const tile of state.walkways ?? []) {
+    const node = walkwayNode(tile);
+    addNode(edges, node);
+    for (const direction of DIRECTIONS) {
+      const next = neighbour(tile, direction);
+      if (keys.has(tileKey(next))) addEdge(edges, node, { to: walkwayNode(next), cost: 1, crossing: null });
+    }
+  }
+  return edges;
+}
+
+function withWalkways(state: GameState, surface: PedestrianGraph): PedestrianGraph {
+  const edges = new Map<string, PedestrianEdge[]>([...surface].map(([node, list]) => [node, [...list]]));
+  const link = (a: string, b: string, cost: number) => {
+    addEdge(edges, a, { to: b, cost, crossing: null });
+    addEdge(edges, b, { to: a, cost, crossing: null });
+  };
+  const walkways = state.walkways ?? [];
+  const keys = new Set(walkways.map(tileKey));
+  for (const tile of walkways) {
+    addNode(edges, walkwayNode(tile));
+    for (const direction of DIRECTIONS) {
+      const next = neighbour(tile, direction);
+      if (keys.has(tileKey(next))) link(walkwayNode(tile), walkwayNode(next), 1);
+    }
+  }
+  for (const tile of (state.pedestrianAccesses ?? []).filter((access) => keys.has(tileKey(access)))) {
+    link(accessNode(tile), walkwayNode(tile), WALK.stairCost);
+    for (const direction of DIRECTIONS) {
+      const next = neighbour(tile, direction);
+      for (const node of [sidewalkNode(next, OPPOSITE[direction]), sidewalkNode(next, 'R'), pedestrianWayNode(next)]) {
+        if (surface.has(node)) link(accessNode(tile), node, 1);
+      }
+    }
+  }
+  return edges;
 }
 
 export function buildPedestrianGraph(state: GameState): PedestrianGraph {

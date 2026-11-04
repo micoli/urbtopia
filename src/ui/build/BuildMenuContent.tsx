@@ -47,7 +47,7 @@ export function BuildMenuContent() {
     return image ? `${import.meta.env.BASE_URL}codex/${image}` : undefined;
   };
   if (!flyout) return null;
-  if (underground) return <Note tone="muted">{t('level.nothingToBuild')}</Note>;
+  if (underground && flyout !== 'roads') return <Note tone="muted">{t('level.nothingToBuild')}</Note>;
 
   if (flyout === 'build') {
     const visibleSections = BUILDING_SECTIONS.map(section => ({

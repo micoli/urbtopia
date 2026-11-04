@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { ROAD_TIER_COSTS, createBuilding, dispatch, frontTiles, newGame, type GameState } from '../core';
-import { confirmTool, evaluateTool, extendBrush, selectionGhost, type Tool } from './tools';
+import { GAME_CONFIG, ROAD_TIER_COSTS, createBuilding, dispatch, frontTiles, newGame, type GameState } from '../core';
+import { confirmTool, evaluateTool, extendBrush, selectionGhost, toolLevel, type Tool } from './tools';
 
 const state: GameState = newGame({ seed: 'amber-fox-4821', now: 0 });
 
@@ -535,5 +535,36 @@ describe('solar Home tool', () => {
     expect(evaluation.valid).toBe(true);
     if (!result.ok) throw new Error('expected the placement to be accepted');
     expect(evaluation.cost).toBe(city.urbs - result.state.urbs);
+  });
+});
+
+describe('underground tools', () => {
+  const crowd = { ...state, buildings: Array.from({ length: 300 }, (_, index) => createBuilding(100 + index, 'home', 0, 0, 0)), nextId: 1000 };
+  const origin = state.ownedParcels[0]!;
+  const size = GAME_CONFIG.parcelSizeInTiles;
+  const corner = { x: origin.x * size + 1, y: origin.y * size + 1 };
+
+  it('builds a walkway on Level -1 and a stair on the Surface', () => {
+    expect(toolLevel({ kind: 'walkway', start: null, horizontalFirst: true })).toBe(-1);
+    expect(toolLevel({ kind: 'demolishWalkway', start: null, horizontalFirst: true })).toBe(-1);
+    expect(toolLevel({ kind: 'pedestrianAccess' })).toBe(0);
+    expect(toolLevel({ kind: 'road', start: null, horizontalFirst: true })).toBe(0);
+  });
+
+  it('picks the start of a walkway, then previews its path and its price', () => {
+    const tool: Tool = { kind: 'walkway', start: null, horizontalFirst: true };
+    const first = evaluateTool(tool, { state: crowd, tile: corner, rotation: null });
+    expect(confirmTool(tool, corner, first).nextTool).toEqual({ ...tool, start: corner });
+    const started: Tool = { ...tool, start: corner };
+    const end = { x: corner.x + 2, y: corner.y };
+    const preview = evaluateTool(started, { state: crowd, tile: end, rotation: null });
+    expect(preview.ghost.tiles).toHaveLength(3);
+    expect(preview.command).toEqual({ type: 'BuildWalkway', from: corner, to: end, horizontalFirst: true });
+    expect(preview.cost).toBeGreaterThan(0);
+  });
+
+  it('explains a locked walkway', () => {
+    const tool: Tool = { kind: 'walkway', start: corner, horizontalFirst: true };
+    expect(evaluateTool(tool, { state, tile: { x: corner.x + 1, y: corner.y }, rotation: null }).issue).toBe('error.itemLocked');
   });
 });

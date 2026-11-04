@@ -28,6 +28,26 @@ beforeEach(() => {
 
 afterEach(() => { prefsStore.getState().setLanguage('en'); context.flyout = 'build'; context.level = 0; vi.unstubAllGlobals(); vi.useRealTimers(); });
 
+describe('build menu on Level -1', () => {
+  it('offers only the walkway tools in the Networks flyout', () => {
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 700 }, (_, id) => ({ ...home, id })) };
+    context.flyout = 'roads';
+    context.level = -1;
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    expect(html).toContain(t('tool.walkway'));
+    expect(html).toContain(`aria-label="${t('tool.demolishWalkway')}"`);
+    expect(html).not.toContain(t('dock.streetView'));
+    expect(html).not.toContain(`aria-label="${t('tool.demolishRoad')}"`);
+  });
+
+  it('offers nothing to build in the Build flyout', () => {
+    context.state = newGame({ seed: 'build-menu', now: 0 });
+    context.level = -1;
+    expect(renderToStaticMarkup(<BuildMenuContent />)).toContain(t('level.nothingToBuild'));
+  });
+});
+
 describe('build menu on an underground Level', () => {
   it('offers nothing to build and no building', () => {
     context.state = newGame({ seed: 'build-menu', now: 0 });
@@ -176,7 +196,7 @@ describe('build menu sections', () => {
     context.state = big;
     context.flyout = 'roads';
     const sections = renderToStaticMarkup(<BuildMenuContent />).match(/<section\b[^>]*>[\s\S]*?<\/section>/g) ?? [];
-    const demolishLabels = ['tool.demolishRoad', 'tool.demolishPedestrianWay', 'tool.demolishBrt', 'tool.demolishRail', 'water.remove', 'water.removeBridge', 'water.removeBridge'] as const;
+    const demolishLabels = ['tool.demolishRoad', 'tool.demolishPedestrianWay', 'tool.demolishBrt', 'tool.demolishRail', 'water.remove', 'water.removeBridge', 'water.removeBridge', 'tool.demolishPedestrianAccess'] as const;
     expect(sections).toHaveLength(demolishLabels.length);
     demolishLabels.forEach((key, index) => expect(sections[index]).toContain(`aria-label="${t(key)}"`));
     expect(sections[0]).toContain('lucide-chevron-down');

@@ -27,6 +27,7 @@ import {
   nextCopyCost,
   roadBuildCost,
   pedestrianWayBuildCost,
+  walkwayBuildCost,
   roadPath,
   solarInstallCostOf,
   roundaboutTiles,
@@ -57,6 +58,10 @@ export type Tool =
   | { kind: 'move'; buildingId: number }
   | { kind: 'road'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'pedestrianWay'; start: Coord | null; horizontalFirst: boolean }
+  | { kind: 'walkway'; start: Coord | null; horizontalFirst: boolean }
+  | { kind: 'demolishWalkway'; start: Coord | null; horizontalFirst: boolean }
+  | { kind: 'pedestrianAccess' }
+  | { kind: 'demolishPedestrianAccess' }
   | { kind: 'crossing' }
   | { kind: 'removeCrossing' }
   | { kind: 'roundabout' }
@@ -71,15 +76,15 @@ export type Tool =
   | { kind: 'moveBridge'; bridge: Bridge | null }
   | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] };
 
-// The Level a tool builds on: every tool works on the Surface until an underground tool says otherwise.
-export function toolLevel(_tool: Tool): Level {
-  return SURFACE;
+// The Level a tool builds on: a walkway is laid on Level -1, everything else on the Surface (a stair is a Surface object).
+export function toolLevel(tool: Tool): Level {
+  return tool.kind === 'walkway' || tool.kind === 'demolishWalkway' ? -1 : SURFACE;
 }
 
-export type PathTool = Extract<Tool, { kind: 'road' | 'demolishRoad' | 'upgradeRoad' | 'pedestrianWay' | 'demolishPedestrianWay' | 'upgradePedestrianWay' }>;
+export type PathTool = Extract<Tool, { kind: 'road' | 'demolishRoad' | 'upgradeRoad' | 'pedestrianWay' | 'demolishPedestrianWay' | 'upgradePedestrianWay' | 'walkway' | 'demolishWalkway' }>;
 
 export function isPathTool(tool: Tool | null): tool is PathTool {
-  return tool?.kind === 'road' || tool?.kind === 'demolishRoad' || tool?.kind === 'upgradeRoad' || tool?.kind === 'pedestrianWay' || tool?.kind === 'demolishPedestrianWay' || tool?.kind === 'upgradePedestrianWay';
+  return tool?.kind === 'road' || tool?.kind === 'demolishRoad' || tool?.kind === 'upgradeRoad' || tool?.kind === 'pedestrianWay' || tool?.kind === 'demolishPedestrianWay' || tool?.kind === 'upgradePedestrianWay' || tool?.kind === 'walkway' || tool?.kind === 'demolishWalkway';
 }
 
 export type BrushAction = 'layField' | 'removeField' | 'plant' | 'layWater' | 'removeWater';
@@ -192,6 +197,14 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
       return evaluateRoad(state, tool, tile);
     case 'pedestrianWay':
       return evaluatePedestrianWay(state, tool, tile);
+    case 'walkway':
+      return evaluateWalkway(state, tool, tile);
+    case 'demolishWalkway':
+      return evaluateDemolishWalkway(state, tool, tile);
+    case 'pedestrianAccess':
+      return evaluation([tile], { type: 'BuildPedestrianAccess', x: tile.x, y: tile.y }, state);
+    case 'demolishPedestrianAccess':
+      return evaluation([tile], { type: 'DemolishPedestrianAccess', x: tile.x, y: tile.y }, state);
     case 'crossing':
       return evaluation([tile], { type: 'PlaceCrossing', x: tile.x, y: tile.y }, state);
     case 'removeCrossing':
@@ -410,6 +423,18 @@ function evaluatePedestrianWay(state: GameState, tool: Extract<Tool, { kind: 'pe
   if (!tool.start) return { ghost: { tiles: [tile], rects: [], valid: true, front: null }, valid: true, issue: null, command: null, cost: null, rotation: null };
   const path = roadPath(tool.start, tile, tool.horizontalFirst);
   return evaluation(path, { type: 'BuildPedestrianWay', from: tool.start, to: tile, horizontalFirst: tool.horizontalFirst }, state, { cost: pedestrianWayBuildCost(state, path) });
+}
+
+function evaluateWalkway(state: GameState, tool: Extract<Tool, { kind: 'walkway' }>, tile: Coord): Evaluation {
+  if (!tool.start) return { ghost: { tiles: [tile], rects: [], valid: true, front: null }, valid: true, issue: null, command: null, cost: null, rotation: null };
+  const path = roadPath(tool.start, tile, tool.horizontalFirst);
+  return evaluation(path, { type: 'BuildWalkway', from: tool.start, to: tile, horizontalFirst: tool.horizontalFirst }, state, { cost: walkwayBuildCost(state, path) });
+}
+
+function evaluateDemolishWalkway(state: GameState, tool: Extract<Tool, { kind: 'demolishWalkway' }>, tile: Coord): Evaluation {
+  if (!tool.start) return evaluation([tile], null, state);
+  const path = roadPath(tool.start, tile, tool.horizontalFirst);
+  return evaluation(path, { type: 'DemolishWalkwayPath', from: tool.start, to: tile, horizontalFirst: tool.horizontalFirst }, state);
 }
 
 function evaluateDemolishPedestrianWay(state: GameState, tool: Extract<Tool, { kind: 'demolishPedestrianWay' }>, tile: Coord): Evaluation {

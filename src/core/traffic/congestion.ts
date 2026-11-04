@@ -4,7 +4,7 @@ import type { Coord } from '../map/coord';
 import { tileKey } from '../map/geometry';
 import { footprintTiles } from '../buildings/buildingSpecs';
 import { frontAccessModes, frontTiles, hasBrtOnlyAccess } from '../map/placement';
-import { accessNodes, crossingsOnPath, nearestTarget, nodesOnPath, pedestrianGraph, walkFrom, workAccessNodes, type PedestrianGraph } from '../map/pedestrianGraph';
+import { accessNodes, crossingsOnPath, nearestTarget, nodesOnPath, tripGraph, walkFrom, workAccessNodes, type PedestrianGraph } from '../map/pedestrianGraph';
 import { buildRoadGraph, neighboursOf, type RoadGraph } from '../map/roadGraph';
 import { transportStats } from '../transit/transport';
 import { closedFractionsByTile } from '../water/bridgeOpenings';
@@ -157,7 +157,7 @@ function calculateCongestion(state: GameState, now: number, riders: ReadonlyMap<
   const graph = buildRoadGraph(state);
   const tiers = new Map(state.roads.map((road) => [tileKey(road), road.tier ?? 1]));
   const closed = closedFractionsByTile(state);
-  const walkable = pedestrianGraph(state);
+  const walkable = tripGraph(state);
   const homes = endpoints(state, graph, walkable, (building) => isHomeType(building.type));
   // A workplace reached by BRT only is staffed by Riders, so the Citizens never walk or drive to it.
   const workplaces = endpoints(state, graph, walkable, (building) => workplaceTypes.includes(building.type) && !hasBrtOnlyAccess(state, building), workAccessNodes).filter((workplace) => workplace.access.length > 0 || workplace.sidewalks.length > 0);
@@ -362,7 +362,7 @@ function brtOnlyEntry(covered: boolean): HomeCongestion {
 }
 
 function noCommute(state: GameState, homes: Endpoint[], jobs: number, covered: TransitCoverage, riders: ReadonlyMap<number, number>): CongestionStats {
-  const graph = pedestrianGraph(state);
+  const graph = tripGraph(state);
   const destinations = WALKING.enabled ? walkDestinations(state, graph) : [];
   const pedestrians = new Map<string, number>();
   const sidewalkLoads = new Map<string, number>();
