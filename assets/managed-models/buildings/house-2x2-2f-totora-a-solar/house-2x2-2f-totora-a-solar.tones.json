@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "mosshatch",
+  "color": "#7f8a54"
+ },
+ "b": {
+  "name": "strawgold",
+  "color": "#d4b060"
+ },
+ "c": {
+  "name": "thatch",
+  "color": "#b99a58"
+ },
+ "d": {
+  "name": "greythatch",
+  "color": "#8e8a78"
+ }
+}
