@@ -6558,6 +6558,112 @@ def build_brutalist(spec, out_dir):
     return report
 
 
+RONDAVEL_HUTS = {  # per Tier: (x, y, wall radius, floors) of each round hut, the first one is the main hut; the cell is the Tier footprint
+    1: [(0.0, 0.05, 0.30, 1)],
+    2: [(-0.4, 0.02, 0.30, 1), (0.45, 0.1, 0.22, 1)],
+    3: [(-0.4, 0.02, 0.30, 2), (0.45, 0.1, 0.22, 1)],
+    4: [(-0.55, 0.0, 0.27, 2), (0.05, 0.05, 0.22, 1), (0.55, 0.0, 0.2, 1)],
+    5: [(0.0, 0.1, 0.38, 2), (-0.6, -0.4, 0.25, 1), (0.6, -0.4, 0.25, 1), (-0.6, 0.6, 0.22, 1)],
+    6: [(0.0, 0.1, 0.4, 3), (-0.6, -0.4, 0.25, 1), (0.6, -0.4, 0.25, 1), (-0.6, 0.6, 0.22, 1)],
+    7: [(0.0, 0.1, 0.42, 4), (-0.6, -0.4, 0.25, 1), (0.6, -0.4, 0.25, 1), (-0.6, 0.6, 0.22, 1), (0.65, 0.6, 0.22, 1)],
+    8: [(0.0, 0.1, 0.44, 5), (-0.6, -0.4, 0.25, 1), (0.6, -0.4, 0.25, 1), (-0.6, 0.6, 0.22, 1), (0.65, 0.6, 0.22, 1)],
+}
+
+
+def rondavel_hut(parts, c, tag, x, y, radius, floors, window):
+    """A round hut: painted cylinder walls, a dark door facing -Y, and one thatched cone per floor, each narrower than the one below; returns the top of the hut and the cone of its roof."""
+    z, r = 0.04, radius
+    for level in range(floors):
+        parts.append(lpm.prism(f"{tag}_wall_{level}", 16, r, 0.26, at=(x, y, z), color=c["wall"], radius_top=r * 0.97))
+        parts.append(lpm.prism(f"{tag}_top_band_{level}", 16, r * 0.97 + 0.006, 0.035, at=(x, y, z + 0.215), color=c["paint"], radius_top=r * 0.97 + 0.006))
+        if level == 0:
+            parts.append(lpm.prism(f"{tag}_band", 16, r + 0.008, 0.07, at=(x, y, z), color=c["paint"], radius_top=r + 0.008))
+            parts.append(lpm.box(f"{tag}_door", (0.13, 0.03, 0.19), at=(x, y - r + 0.005, z), color=c["door"]))
+            parts.append(lpm.box(f"{tag}_door_lintel", (0.17, 0.034, 0.03), at=(x, y - r + 0.005, z + 0.19), color=c["paint"]))
+        elif window:
+            parts.append(lpm.box(f"{tag}_window_{level}", (0.08, 0.03, 0.09), at=(x, y - r * 0.97 + 0.005, z + 0.1), color=c["door"]))
+            parts.append(lpm.box(f"{tag}_window_sill_{level}", (0.11, 0.036, 0.016), at=(x, y - r * 0.97 + 0.005, z + 0.085), color=c["paint"]))
+        z += 0.26
+        if level < floors - 1:
+            parts.append(lpm.lathe(f"{tag}_skirt_{level}", [(r + 0.035, z - 0.02), (r - 0.025, z + 0.03)], segments=16, at=(x, y, 0), color=c["roof"]))
+            z += 0.03
+            r -= 0.035
+    eave = r + 0.05
+    rise = 0.95 * eave + 0.08
+    parts.append(lpm.lathe(f"{tag}_roof", [(eave, z - 0.02), (eave * 0.55, z + rise * 0.55), (0.0, z + rise)], segments=16, at=(x, y, 0), color=c["roof"]))
+    parts.append(lpm.lathe(f"{tag}_roof_eave", [(eave + 0.015, z - 0.03), (eave * 0.8, z + 0.01)], segments=16, at=(x, y, 0), color=c["roof"]))
+    parts.append(lpm.box(f"{tag}_finial", (0.012, 0.012, 0.07), at=(x, y, z + rise - 0.01), color=c["pole"]))
+    return z, eave, rise
+
+
+def build_rondavel(spec, out_dir):
+    """A southern African rondavel homestead, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    Round painted huts under steep thatched cones, a low yard wall with a gate on the front, the main hut growing in stacked floors with a thatch skirt between them (one to five), more huts around it Tier after Tier, from Tier 3 a granary on poles,
+    from 4 an acacia, from 6 a cattle kraal of stakes with a few cows."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("roof", "vtone2"), ("paint", "vtone3"), ("door", "graphite"), ("stone", "earth"), ("grass", "turfgreen"), ("pole", "timber"),
+                                              ("leaf", "bush"), ("cow", "darkwood"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    tier = spec["tier"]
+    x0, x1, y0, y1 = -w / 2 + 0.005, w / 2 - 0.005, -d / 2 + 0.005, d / 2 - 0.005
+    t, h = 0.04, 0.09
+    gate = 0.16
+    parts = [lpm.box("yard_back", (x1 - x0, t, h), at=(0, y1 - t / 2, 0), color=c["stone"]),
+             lpm.box("yard_left", (t, y1 - y0, h), at=(x0 + t / 2, (y0 + y1) / 2, 0), color=c["stone"]),
+             lpm.box("yard_right", (t, y1 - y0, h), at=(x1 - t / 2, (y0 + y1) / 2, 0), color=c["stone"]),
+             lpm.box("yard_front_left", (x1 - x0 - gate - 0.0, t, h), at=((x0 - gate) / 2 + 0.0, y0 + t / 2, 0), color=c["stone"]) if False else lpm.box("yard_front_left", ((x1 - x0) / 2 - gate, t, h), at=(x0 + ((x1 - x0) / 2 - gate) / 2, y0 + t / 2, 0), color=c["stone"]),
+             lpm.box("yard_front_right", ((x1 - x0) / 2 - gate, t, h), at=(x1 - ((x1 - x0) / 2 - gate) / 2, y0 + t / 2, 0), color=c["stone"]),
+             lpm.box("yard_floor", (x1 - x0, y1 - y0, 0.03), at=(0, (y0 + y1) / 2, 0), color=c["grass"])]
+    for side in (-1, 1):
+        parts.append(lpm.box(f"gate_post_{side}", (0.035, 0.05, 0.16), at=(side * gate, y0 + t / 2, 0), color=c["pole"]))
+
+    main = None
+    for number, (hx, hy, radius, floors) in enumerate(RONDAVEL_HUTS[tier]):
+        top, eave, rise = rondavel_hut(parts, c, f"hut_{number}", hx, hy, radius, floors, tier >= 3)
+        if number == 0:
+            main = (hx, hy, top, eave, rise)
+
+    if tier >= 3:
+        gx, gy = (0.7, -0.2) if w >= 2 and d < 2 else ((0.75, 0.2) if w >= 2 else (0.0, 0.0))
+        gx, gy = (0.78, -0.1) if d < 2 else (0.0, -0.78)
+        for number, (lx, ly) in enumerate(((-0.05, -0.05), (0.05, -0.05), (-0.05, 0.05), (0.05, 0.05))):
+            parts.append(lpm.box(f"granary_leg_{number}", (0.014, 0.014, 0.1), at=(gx + lx, gy + ly, 0.03), color=c["pole"]))
+        parts.append(lpm.prism("granary", 10, 0.085, 0.1, at=(gx, gy, 0.13), color=c["wall"], radius_top=0.08))
+        parts.append(lpm.lathe("granary_roof", [(0.11, 0.23), (0.0, 0.33)], segments=10, at=(gx, gy, 0), color=c["roof"]))
+    if tier >= 4:
+        ax, ay = (0.82, 0.3) if d < 2 else (0.75, 0.75)
+        parts.append(lpm.prism("acacia_trunk", 5, 0.02, 0.22, at=(ax, ay, 0.03), color=c["pole"], radius_top=0.014))
+        parts.append(lpm.prism("acacia_crown", 8, 0.16, 0.05, at=(ax, ay, 0.25), color=c["leaf"], radius_top=0.13))
+    if tier >= 6:
+        kx, ky = 0.55, -0.15 if False else 0.15
+        for number in range(12):
+            angle = math.radians(number * 30)
+            parts.append(lpm.box(f"kraal_stake_{number}", (0.016, 0.016, 0.1), at=(kx + 0.17 * math.cos(angle), ky + 0.17 * math.sin(angle), 0.03), color=c["pole"]))
+        for number, (dx, dy) in enumerate(((-0.05, 0.02), (0.06, -0.04))):
+            parts.append(lpm.box(f"cow_{number}", (0.09, 0.05, 0.05), at=(kx + dx, ky + dy, 0.05), color=c["cow"]))
+
+    if spec.get("solar"):
+        hx, hy, top, eave, rise = main
+        angle = math.degrees(math.atan2(rise, eave))
+        fraction = 0.35
+        pz = top - 0.02 + fraction * rise
+        py = hy - eave * (1 - fraction) * 0.55 - 0.0
+        py = hy - eave * 0.55 * (1 - fraction)
+        for number, px in enumerate((hx - 0.1, hx + 0.1) if main[3] > 0.4 else (hx,)):
+            panel = lpm.box(f"solar_panel_{number}", (0.18, 0.2, 0.012), at=(px, py - 0.03, pz + 0.04), color=c["solar"])
+            lpm.rotate(panel, angle * 0.8, axis="X", about=(px, py - 0.03, pz + 0.04))
+            parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=20000 + 8000 * spec["floors"] * max(1, w * d // 2), center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
+    return report
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")

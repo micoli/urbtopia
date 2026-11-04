@@ -72,6 +72,7 @@ export type BuildingId =
   | 'home-mansard-1x2'
   | 'home-mansard-2x2'
   | 'home-riad'
+  | 'home-rondavel'
   | 'home-siheyuan'
   | 'home-stilt'
   | 'home-stuga'
