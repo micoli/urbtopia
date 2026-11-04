@@ -729,7 +729,7 @@ A Home sold in three fixed footprints (1×1, 1×2, 2×2) whose five Tiers each a
 _Avoid_: Mansard house, attic home
 
 **Architecture style**:
-A Home definition drawn after the architecture of a region of the world (for example the Brownstone), sold beside the base Home it reskins. It changes only the models and the names: footprint, Tiers, population, utility Demand, cost and unlock threshold are those of its base Home.
+A Home definition drawn after the architecture of a region of the world (for example the Brownstone), sold beside the base Home it reskins. It changes only the models and the names: footprint, Tiers, population, utility Demand, cost and unlock threshold are those of its base Home. The Housing menu groups the styles by region (Europe, Mediterranean, Asia, Africa, Oceania, Americas) in sub-menus.
 _Avoid_: Skin, theme, Home variant (a variant is a Solar one)
 
 **Insulation**:
