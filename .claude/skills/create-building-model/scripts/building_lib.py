@@ -6781,6 +6781,85 @@ def build_banco(spec, out_dir):
     return report
 
 
+def tata_turret(parts, c, tag, x, y, radius, height, cone):
+    """A round earthen turret under a thatched cone, with a dark slit window and a mud band at the top."""
+    parts.append(lpm.prism(f"{tag}_wall", 12, radius, height, at=(x, y, 0.0), color=c["wall"], radius_top=radius * 0.94))
+    parts.append(lpm.prism(f"{tag}_band", 12, radius * 0.94 + 0.01, 0.03, at=(x, y, height - 0.06), color=c["wall"], radius_top=radius * 0.94 + 0.01))
+    parts.append(lpm.box(f"{tag}_slit", (0.03, 0.03, 0.09), at=(x, y - radius * 0.95, height * 0.55), color=c["dark"]))
+    eave = radius + 0.05
+    parts.append(lpm.lathe(f"{tag}_roof", [(eave, height - 0.02), (eave * 0.5, height + cone * 0.5), (0.0, height + cone)], segments=12, at=(x, y, 0), color=c["roof"]))
+    parts.append(lpm.box(f"{tag}_finial", (0.012, 0.012, 0.06), at=(x, y, height + cone - 0.01), color=c["beam"]))
+
+
+def build_tata(spec, out_dir):
+    """A Tata Somba of Togo and Benin, front facing -Y, on a 2x2 cell with `floors` floors (the Tier): a square earthen fortress house whose flat terrace is ringed by round turrets with thatched cones, a small door under a hood,
+    slit windows and a ladder on the side; a granary on the terrace from Tier 2, four middle turrets at 3, two taller turrets flanking the door at 4, a second granary and clay pots at 5."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("roof", "vtone2"), ("beam", "vtone3"), ("dark", "udark"), ("door", "graphite"), ("pot", "tile"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    floors = spec["floors"]
+    tier = floors
+    fh = 0.27
+    half = 0.9
+    height = floors * fh
+    parts = [lpm.box("block", (2 * half, 2 * half, height), at=(0, 0, 0), color=c["wall"])]
+    for number, (name, size, at) in enumerate((("front", (2 * half, 0.04, 0.06), (0, -half + 0.02)), ("back", (2 * half, 0.04, 0.06), (0, half - 0.02)),
+                                               ("left", (0.04, 2 * half, 0.06), (-half + 0.02, 0)), ("right", (0.04, 2 * half, 0.06), (half - 0.02, 0)))):
+        parts.append(lpm.box(f"parapet_{name}", size, at=(at[0], at[1], height), color=c["wall"]))
+
+    corner = 0.67
+    for number, (cx, cy) in enumerate(((-1, -1), (1, -1), (-1, 1), (1, 1))):
+        tata_turret(parts, c, f"corner_{number}", cx * corner, cy * corner, 0.27, height + 0.12, 0.3)
+    if tier >= 3:
+        for number, (cx, cy) in enumerate(((-0.76, 0.0), (0.76, 0.0), (0.0, 0.76))):
+            tata_turret(parts, c, f"middle_{number}", cx, cy, 0.18, height + 0.06, 0.22)
+    if tier >= 4:
+        for number, cx in enumerate((-0.4, 0.4)):
+            tata_turret(parts, c, f"gate_turret_{number}", cx, -0.74, 0.2, height + 0.2, 0.25)
+
+    door_y = -half
+    face_box(parts, "door", "front", door_y, 0.0, 0.16, 0.22, 0.0, 0.02, c["door"])
+    face_box(parts, "door_lintel", "front", door_y, 0.0, 0.24, 0.03, 0.22, 0.04, c["beam"])
+    parts.append(lpm.box("door_hood", (0.3, 0.08, 0.025), at=(0.0, door_y - 0.04, 0.28), color=c["roof"]))
+    for level in range(floors):
+        z = level * fh + 0.12
+        for number, u in enumerate((-0.45, 0.45)):
+            face_box(parts, f"front_slit_{level}_{number}", "front", door_y, u, 0.04, 0.1, z + 0.05, 0.014, c["dark"])
+            face_box(parts, f"back_slit_{level}_{number}", "back", half, u, 0.04, 0.1, z + 0.05, 0.014, c["dark"])
+            face_box(parts, f"left_slit_{level}_{number}", "left", -half, u, 0.04, 0.1, z + 0.05, 0.014, c["dark"])
+            face_box(parts, f"right_slit_{level}_{number}", "right", half, u, 0.04, 0.1, z + 0.05, 0.014, c["dark"])
+    parts.append(lpm.box("ladder", (0.014, 0.07, height * 0.9), at=(half + 0.007, -0.2, 0.0), color=c["beam"]))
+    for number in range(int(height * 0.9 / 0.1)):
+        parts.append(lpm.box(f"ladder_rung_{number}", (0.03, 0.09, 0.012), at=(half + 0.015, -0.2, 0.06 + number * 0.1), color=c["beam"]))
+
+    if tier >= 2:
+        parts.append(lpm.prism("granary", 10, 0.12, 0.16, at=(0.38, 0.32, height), color=c["wall"], radius_top=0.11))
+        parts.append(lpm.lathe("granary_roof", [(0.16, height + 0.15), (0.0, height + 0.3)], segments=10, at=(0.38, 0.32, 0), color=c["roof"]))
+    if tier >= 5:
+        parts.append(lpm.prism("granary_2", 10, 0.1, 0.14, at=(-0.4, 0.32, height), color=c["wall"], radius_top=0.09))
+        parts.append(lpm.lathe("granary_2_roof", [(0.14, height + 0.13), (0.0, height + 0.26)], segments=10, at=(-0.4, 0.32, 0), color=c["roof"]))
+        for number, (px, py) in enumerate(((-0.2, -0.3), (0.0, -0.4), (0.2, -0.3))):
+            parts.append(lpm.prism(f"pot_{number}", 8, 0.04, 0.06, at=(px, py, height), color=c["pot"], radius_top=0.03))
+
+    if spec.get("solar"):
+        z_panel = height + 0.05
+        for row, y in enumerate((-0.15, -0.45) if tier < 4 else (-0.05, -0.3)):
+            for number, x in enumerate((-0.35, 0.0, 0.35) if row == 0 else (-0.35, 0.0)):
+                if tier >= 3 and abs(x) > 0.4:
+                    continue
+                panel = lpm.box(f"solar_panel_{row}_{number}", (0.22, 0.17, 0.012), at=(x - (0.1 if row else 0.0), y, z_panel), color=c["solar"])
+                lpm.rotate(panel, 20, axis="X", about=(x - (0.1 if row else 0.0), y, z_panel))
+                parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=20000 + 9000 * floors, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = list(spec["footprint"])
+    return report
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")

@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "redclay",
+  "color": "#b5573a"
+ },
+ "b": {
+  "name": "ochre",
+  "color": "#d9b878"
+ },
+ "c": {
+  "name": "sandstone",
+  "color": "#d8c08a"
+ },
+ "d": {
+  "name": "siena",
+  "color": "#cf8a5a"
+ }
+}
