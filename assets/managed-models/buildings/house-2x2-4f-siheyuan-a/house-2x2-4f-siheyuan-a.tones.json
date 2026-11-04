@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "greybrick",
+  "color": "#7d7f84"
+ },
+ "b": {
+  "name": "limestone",
+  "color": "#bdb7a6"
+ },
+ "c": {
+  "name": "sandstone",
+  "color": "#d8c08a"
+ },
+ "d": {
+  "name": "yellowbrick",
+  "color": "#d8b45c"
+ }
+}

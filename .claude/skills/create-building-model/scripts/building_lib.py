@@ -114,7 +114,7 @@ WORLD_ENTRIES = URBTOPIA_ENTRIES + [
     ("pine", "#c9955c"), ("darkwood", "#8a5a3a"), ("honey", "#d9a85c"), ("greywood", "#9a9488"), ("shingle", "#5a4636"), ("falured", "#9b3a2a"), ("dalablue", "#6a8aa3"),
     ("tarwood", "#5b4332"), ("earth", "#7b6a4f"), ("turfgreen", "#6f9a4a"),
     ("aegeanblue", "#2f6fb0"), ("turquoise", "#2aa7b5"), ("pastelpink", "#e8b8b0"),
-    ("strawgold", "#d4b060"), ("greythatch", "#8e8a78"), ("mosshatch", "#7f8a54"), ("clayplaster", "#d3bf94"), ("sandwall", "#d9d0bd"), ("kawara", "#54585f"), ("kawara_blue", "#46566e"), ("kawara_brown", "#5d4b43"), ("bamboo", "#c9b46a"),
+    ("greybrick", "#7d7f84"), ("lacquer", "#a8322a"), ("strawgold", "#d4b060"), ("greythatch", "#8e8a78"), ("mosshatch", "#7f8a54"), ("clayplaster", "#d3bf94"), ("sandwall", "#d9d0bd"), ("kawara", "#54585f"), ("kawara_blue", "#46566e"), ("kawara_brown", "#5d4b43"), ("bamboo", "#c9b46a"),
     ("riadrose", "#c98a6a"), ("sandstone", "#d8c08a"), ("redclay", "#b5573a"), ("zellige", "#2a7f8c"), ("majorelle", "#2e4fbf"), ("tilegreen", "#2f7d4f"),
 ]
 STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
@@ -6019,6 +6019,141 @@ def build_gassho(spec, out_dir):
     ob = lpm.finish(spec["id"], parts, palette, budget=8000 + 6000 * floors, center=False)
     report = export_model(ob, spec, out_dir)
     report["expected_footprint"] = [footprint_w, footprint_d]
+    return report
+
+def build_siheyuan(spec, out_dir):
+    """A Beijing siheyuan on a 2x2 cell, front facing -Y: four grey-brick halls with grey-tiled gable roofs around a paved courtyard, a red lacquered gate with studs and a spirit wall behind it,
+    red columns and lattice windows on the courtyard side. The Tier is the floor count (1 to 5) and the compound grows with it: the main hall at the back rises 1 to 4 floors, the side halls and the front range follow,
+    a tree grows in the courtyard from Tier 2, shrubs from Tier 3, a second tree from Tier 4 and a pavilion on the main hall from Tier 5."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("wood", "vtone2"), ("tile", "vtone3"), ("frame", "graphite"), ("stone", "offwhite"), ("gold", "honey"),
+                                              ("palm", "bush"), ("trunk", "darkwood"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    tier = spec["floors"]
+    plinth, fh, thick = 0.06, 0.26, 0.4
+    outer = 0.925
+    inner = outer - thick
+    rise, half_roof = 0.2, 0.265
+    back_floors = min(tier, 4)
+    side_floors = (1, 1, 2, 2, 3)[tier - 1]
+    front_floors = 1 if tier <= 3 else 2
+    parts = [lpm.box("plinth", (2 * outer + 0.04, 2 * outer + 0.04, plinth), at=(0, 0, 0), color=c["stone"]),
+             lpm.box("courtyard_floor", (2 * inner, 2 * inner, 0.012), at=(0, 0, plinth), color=c["stone"])]
+
+    def roof_height(floors):
+        return plinth + floors * fh
+
+    wings = (("back", 0.0, (inner + outer) / 2, 2 * outer, thick, back_floors, "x"),
+             ("front", 0.0, -(inner + outer) / 2, 2 * outer, thick, front_floors, "x"),
+             ("left", -(inner + outer) / 2, 0.0, 2 * inner, thick, side_floors, "y"),
+             ("right", (inner + outer) / 2, 0.0, 2 * inner, thick, side_floors, "y"))
+    for name, cx, cy, length, depth, floors, axis in wings:
+        zt = roof_height(floors)
+        size = (length, depth, floors * fh) if axis == "x" else (depth, length, floors * fh)
+        parts.append(lpm.box(f"{name}_walls", size, at=(cx, cy, plinth), color=c["wall"]))
+        if axis == "x":
+            outline = [(cy - half_roof, zt - 0.02), (cy + half_roof, zt - 0.02), (cy, zt + rise)]
+            parts.append(extrude_x(f"{name}_roof", outline, -length / 2 - 0.065, length / 2 + 0.065, c["tile"]))
+            parts.append(lpm.box(f"{name}_ridge", (length + 0.13, 0.05, 0.03), at=(0, cy, zt + rise - 0.01), color=c["tile"]))
+        else:
+            outline = [(cx - half_roof, zt - 0.02), (cx + half_roof, zt - 0.02), (cx, zt + rise)]
+            parts.append(extrude_y(f"{name}_roof", outline, -length / 2, length / 2, c["tile"]))
+            parts.append(lpm.box(f"{name}_ridge", (0.05, length, 0.03), at=(cx, 0, zt + rise - 0.01), color=c["tile"]))
+
+    inner_faces = (("back", "front", -inner, 2 * outer, "x", back_floors), ("front", "back", inner, 2 * outer, "x", front_floors),
+                   ("left", "right", -inner, 2 * inner, "y", side_floors), ("right", "left", inner, 2 * inner, "y", side_floors))
+    for _wing, face, plane, length, _axis, floors in inner_faces:
+        main_hall = _wing == "back"
+        count = max(2, round(length / (0.36 if main_hall else 0.4)))
+        if count % 2 == 0:
+            count += 1
+        pitch = length / count
+        for level in range(floors):
+            base = plinth + level * fh
+            for number in range(count):
+                u = -length / 2 + (number + 0.5) * pitch
+                if main_hall and (abs(u) > 0.01 or level != floors - 1 or level == 0):
+                    continue
+                if not main_hall and abs(u) > 0.01 and abs(u) > pitch * 0.6:
+                    continue
+                if main_hall:
+                    machiya_window(parts, f"{face}_{_wing}_{level}_{number}", face, plane, u, base + 0.1, 0.3, 0.15, c)
+                else:
+                    machiya_window(parts, f"{face}_{_wing}_{level}_{number}", face, plane, u, base + (0.1 if level else 0.07), min(0.2, pitch - 0.12), 0.12, c)
+            if level == 0:
+                for number in range(count + 1):
+                    u = -length / 2 + number * pitch
+                    face_box(parts, f"{face}_{_wing}_column_{number}", face, plane, u, 0.03, fh - 0.02, base, 0.05, c["wood"])
+                face_box(parts, f"{face}_{_wing}_beam", face, plane, 0.0, length, 0.025, base + fh - 0.045, 0.05, c["wood"])
+                if main_hall:
+                    face_box(parts, "hall_door", face, plane, 0.0, 0.2, 0.22, base, 0.03, c["frame"])
+                    face_box(parts, "hall_door_frame", face, plane, 0.0, 0.24, 0.02, base + 0.22, 0.04, c["wood"])
+            elif level == floors - 1 or (not main_hall and tier >= 3):
+                balcony_width = (0.3 if main_hall else min(0.2, pitch - 0.12)) + 0.1
+                sign = -1 if face in ("front", "left") else 1
+                place = lambda along, depth: (along, plane + sign * depth) if face in ("front", "back") else (plane + sign * depth, along)
+                size = lambda across, deep: (across, deep) if face in ("front", "back") else (deep, across)
+                px, py = place(0.0, 0.04)
+                parts.append(lpm.box(f"{face}_{_wing}_{level}_slab", (*size(balcony_width, 0.08), 0.02), at=(px, py, base - 0.01), color=c["wood"]))
+                for side in (-1, 1):
+                    px, py = place(side * (balcony_width / 2 - 0.02), 0.07)
+                    parts.append(lpm.box(f"{face}_{_wing}_{level}_support_{side}", (0.016, 0.016, 0.1), at=(px, py, base - 0.11), color=c["wood"]))
+                if tier >= 3:
+                    px, py = place(0.0, 0.075)
+                    parts.append(lpm.box(f"{face}_{_wing}_{level}_rail", (*size(balcony_width, 0.012), 0.012), at=(px, py, base + 0.095), color=c["wood"]))
+                    for number in range(5):
+                        px, py = place((number - 2) * balcony_width / 4 * 0.98, 0.075)
+                        parts.append(lpm.box(f"{face}_{_wing}_{level}_baluster_{number}", (0.012, 0.012, 0.09), at=(px, py, base + 0.01), color=c["wood"]))
+                    for side in (-1, 1):
+                        px, py = place(side * balcony_width / 2 * 0.98, 0.04)
+                        parts.append(lpm.box(f"{face}_{_wing}_{level}_side_rail_{side}", (*size(0.012, 0.075), 0.012), at=(px, py, base + 0.095), color=c["wood"]))
+    for _wing, face, plane, floors in (("back", "back", outer, back_floors), ("left", "left", -outer, side_floors), ("right", "right", outer, side_floors)):
+        machiya_window(parts, f"outer_{_wing}", face, plane, 0.0, plinth + (floors - 1) * fh + 0.08, 0.12, 0.12, c)
+
+    gate_y = -outer
+    face_box(parts, "gate_frame", "front", gate_y, 0.0, 0.4, 0.28, plinth, 0.03, c["stone"])
+    for side in (-1, 1):
+        face_box(parts, f"gate_door_{side}", "front", gate_y, side * 0.088, 0.17, 0.24, plinth, 0.04, c["wood"])
+        for row in range(3):
+            for column in range(3):
+                face_box(parts, f"gate_stud_{side}_{row}_{column}", "front", gate_y, side * 0.088 + (column - 1) * 0.045, 0.016, 0.016, plinth + 0.04 + row * 0.07, 0.055, c["gold"])
+        parts.append(lpm.box(f"gate_drum_{side}", (0.09, 0.07, 0.14), at=(side * 0.27, gate_y - 0.04, plinth), color=c["stone"]))
+    parts.append(extrude_y("gate_hood", [(-0.3, plinth + 0.3), (0.3, plinth + 0.3), (0.0, plinth + 0.46)], gate_y - 0.06, gate_y + 0.08, c["tile"]))
+    parts.append(lpm.box("spirit_wall", (0.4, 0.04, 0.2), at=(0.0, -inner + 0.14, plinth + 0.012), color=c["wall"]))
+    parts.append(lpm.box("spirit_wall_cap", (0.44, 0.06, 0.03), at=(0.0, -inner + 0.14, plinth + 0.212), color=c["tile"]))
+
+    garden = plinth + 0.012
+    if tier >= 2:
+        riad_orange_tree(parts, c, "tree_1", 0.28, 0.12, garden, 0.42)
+    if tier >= 3:
+        for number, (x, y) in enumerate(((-0.4, 0.4), (0.4, 0.4), (-0.4, -0.15))):
+            riad_shrub(parts, c, f"shrub_{number}", x, y, garden, 0.05)
+    if tier >= 4:
+        riad_orange_tree(parts, c, "tree_2", -0.28, 0.2, garden, 0.46)
+    if tier >= 5:
+        zt = roof_height(back_floors)
+        parts.append(lpm.box("pavilion", (0.5, 0.36, 0.22), at=(0, (inner + outer) / 2, zt + rise - 0.02), color=c["wall"]))
+        for side in (-1, 1):
+            face_box(parts, f"pavilion_column_{side}", "front", (inner + outer) / 2 - 0.18, side * 0.2, 0.03, 0.2, zt + rise - 0.02, 0.04, c["wood"])
+        machiya_window(parts, "pavilion_window", "front", (inner + outer) / 2 - 0.18, 0.0, zt + rise + 0.03, 0.22, 0.12, c)
+        parts.append(hip_roof("pavilion_roof", 0.3, 0.22, zt + rise + 0.2, 0.16, c["tile"], cx=0.0, cy=(inner + outer) / 2))
+
+    if spec.get("solar"):
+        angle = math.degrees(math.atan2(rise, half_roof))
+        sine, cosine = math.sin(math.radians(angle)), math.cos(math.radians(angle))
+        zt = roof_height(back_floors)
+        for number, x in enumerate((-0.8, -0.55, 0.55, 0.8)):
+            py, pz = (inner + outer) / 2 - half_roof / 2 - 0.015 * sine, zt - 0.02 + rise / 2 + 0.015 * cosine
+            panel = lpm.box(f"solar_panel_{number}", (0.2, 0.22, 0.012), at=(x, py, pz), color=c["solar"])
+            lpm.rotate(panel, angle, axis="X", about=(x, py, pz))
+            parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=16000 + 4000 * tier, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = list(spec["footprint"])
     return report
 
 

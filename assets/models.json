@@ -5497,6 +5497,64 @@
       }
     }
   },
+  "buildings-house-2x2-1f-siheyuan-a": {
+    "file": "buildings/house-2x2-1f-siheyuan-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "greybrick",
+        "color": "#7d7f84"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      }
+    }
+  },
+  "buildings-house-2x2-1f-siheyuan-a-solar": {
+    "file": "buildings/house-2x2-1f-siheyuan-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "greybrick",
+        "color": "#7d7f84"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      }
+    }
+  },
   "buildings-house-2x2-2f-aegean-a": {
     "file": "buildings/house-2x2-2f-aegean-a",
     "source": "managed",
@@ -5830,6 +5888,64 @@
       "d": {
         "name": "ochre",
         "color": "#d9b878"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-siheyuan-a": {
+    "file": "buildings/house-2x2-2f-siheyuan-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "greybrick",
+        "color": "#7d7f84"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-siheyuan-a-solar": {
+    "file": "buildings/house-2x2-2f-siheyuan-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "greybrick",
+        "color": "#7d7f84"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
       }
     }
   },
@@ -6459,6 +6575,64 @@
       }
     }
   },
+  "buildings-house-2x2-3f-siheyuan-a": {
+    "file": "buildings/house-2x2-3f-siheyuan-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "greybrick",
+        "color": "#7d7f84"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-siheyuan-a-solar": {
+    "file": "buildings/house-2x2-3f-siheyuan-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "greybrick",
+        "color": "#7d7f84"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      }
+    }
+  },
   "buildings-house-2x2-3f-stuga-a": {
     "file": "buildings/house-2x2-3f-stuga-a",
     "source": "managed",
@@ -7085,6 +7259,64 @@
       }
     }
   },
+  "buildings-house-2x2-4f-siheyuan-a": {
+    "file": "buildings/house-2x2-4f-siheyuan-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "greybrick",
+        "color": "#7d7f84"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      }
+    }
+  },
+  "buildings-house-2x2-4f-siheyuan-a-solar": {
+    "file": "buildings/house-2x2-4f-siheyuan-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "greybrick",
+        "color": "#7d7f84"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      }
+    }
+  },
   "buildings-house-2x2-4f-stuga-a": {
     "file": "buildings/house-2x2-4f-stuga-a",
     "source": "managed",
@@ -7708,6 +7940,64 @@
       "d": {
         "name": "ochre",
         "color": "#d9b878"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-siheyuan-a": {
+    "file": "buildings/house-2x2-5f-siheyuan-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "greybrick",
+        "color": "#7d7f84"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-siheyuan-a-solar": {
+    "file": "buildings/house-2x2-5f-siheyuan-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "greybrick",
+        "color": "#7d7f84"
+      },
+      "b": {
+        "name": "limestone",
+        "color": "#bdb7a6"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "yellowbrick",
+        "color": "#d8b45c"
       }
     }
   },

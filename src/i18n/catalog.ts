@@ -421,6 +421,7 @@ export const CATALOG = {
   'color.sandstone': ['Sandstone', 'Grès'],
   'color.redclay': ['Red clay', 'Argile rouge'],
   'color.blackwood': ['Black wood', 'Bois noir'],
+  'color.greybrick': ['Grey brick', 'Brique grise'],
   'color.thatch': ['Golden thatch', 'Chaume doré'],
   'color.strawgold': ['Light straw', 'Paille claire'],
   'color.greythatch': ['Aged thatch', 'Chaume vieilli'],
