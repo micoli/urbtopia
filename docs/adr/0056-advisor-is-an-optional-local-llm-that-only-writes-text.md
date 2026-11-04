@@ -19,7 +19,7 @@ The Mayor can question an Advisor about the city. It runs a small language model
 
 - The Advisor ships behind the `advisor` feature flag: off in production, switched on from the devtools in a development build, like `clubs`. With the flag off nothing of it shows (setting, Town hall button, Explain buttons, Guide article), whatever the stored preference.
 - The core never imports WebLLM (`coreIsolation.test.ts`). The engine sits behind an `AdvisorEngine` interface; tests and E2E use a fake engine, the real model is never loaded in CI.
-- The context sent to the model is a compact summary built by a pure function from city figures (about 1,000 tokens). It holds no text typed by the Player (city name, Handle), against prompt injection and personal data.
+- The context sent to the model is a compact summary built by a pure function from city figures (about 1,000 to 1,500 tokens, to fit the 4,096 the model reads, answer included). It holds no text typed by the Player (city name, Handle), against prompt injection and personal data.
 - The model (0.7 to 2 GB) is downloaded only after an explicit confirmation showing its size, cached by WebLLM in the browser cache (not precached by the PWA), usable offline afterwards, and deletable from the settings.
 - The last 10 questions (never the answers) are kept in this browser's localStorage so the Player can ask them again; they are not part of saves, exports or Cloud sync, and can be cleared.
 - The interaction is guided first (buttons tied to the Diagnosis, an "Explain" button on each displayed Cause), with a free field second, limited to game topics.

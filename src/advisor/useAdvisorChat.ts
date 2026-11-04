@@ -25,7 +25,7 @@ export function useAdvisorChat() {
     questionHistoryStore.getState().record(question);
     const state = gameStore.getState().state;
     const summary = buildAdvisorSummary(state, advisorCauses(state));
-    const messages = buildAdvisorRequest(question, summary, prefsStore.getState().language);
+    const messages = buildAdvisorRequest(question, summary, prefsStore.getState().language, prefsStore.getState().advisorContextLevel);
     setAnswer('');
     setError(null);
     setAsking(true);

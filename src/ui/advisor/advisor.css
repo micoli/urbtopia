@@ -4,6 +4,15 @@
   min-width: min(480px, 100%);
 }
 
+@media (min-width: 601px) {
+  .advisor-dialog .dialog {
+    width: 80vw;
+    max-height: calc(100dvh - var(--space-24));
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+}
+
 .advisor-guided {
   display: flex;
   flex-wrap: wrap;
@@ -97,4 +106,52 @@
 
   .advisor-thinking__dots span:nth-child(2) { animation-delay: calc(var(--duration-base) * 0.6); }
   .advisor-thinking__dots span:nth-child(3) { animation-delay: calc(var(--duration-base) * 1.2); }
+}
+
+.advisor-context-level {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.advisor-context-level__track {
+  position: relative;
+  width: 120px;
+}
+
+.advisor-context-level input {
+  display: block;
+  width: 100%;
+  margin: 0;
+  accent-color: var(--color-accent);
+}
+
+/* The 16px thumb stays inside the track: ticks sit at the thumb centres. */
+.advisor-context-level__ticks {
+  position: relative;
+  height: var(--space-6);
+  margin: 0 var(--space-8);
+  pointer-events: none;
+}
+
+.advisor-context-level__ticks span {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: var(--space-6);
+  margin-left: -1px;
+  background: var(--color-text-muted);
+}
+
+.advisor-context-level__ticks span.is-reached {
+  background: var(--color-accent);
+}
+
+.advisor-context-level__ticks span:nth-child(1) { left: 0; }
+.advisor-context-level__ticks span:nth-child(2) { left: 25%; }
+.advisor-context-level__ticks span:nth-child(3) { left: 50%; }
+.advisor-context-level__ticks span:nth-child(4) { left: 75%; }
+.advisor-context-level__ticks span:nth-child(5) { left: 100%; }
+
+.advisor-context-level small {
+  color: var(--color-text-muted);
 }

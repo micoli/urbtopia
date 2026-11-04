@@ -10,6 +10,7 @@ import { Note } from '../common/Note';
 import { ProgressBar } from '../common/ProgressBar';
 import { advisorErrorKey } from './advisorErrorKey';
 import { AdvisorAnswer } from './AdvisorAnswer';
+import { AdvisorContextLevel } from './AdvisorContextLevel';
 import { AdvisorHistory } from './AdvisorHistory';
 import { AdvisorQuestions } from './AdvisorQuestions';
 import { useAdvisor } from './useAdvisor';
@@ -44,6 +45,7 @@ export function AdvisorDialog() {
           {failure && <Note>{t(advisorErrorKey(failure))}</Note>}
           <AdvisorQuestions language={language} disabled={!ready || asking} onAsk={(question) => void ask(question)} />
           <AdvisorHistory disabled={!ready || asking} onAsk={(question) => void ask(question)} />
+          <AdvisorContextLevel />
           <AdvisorAnswer answer={answer} asking={asking} />
         </div>
       </Dialog.Body>

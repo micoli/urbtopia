@@ -16,7 +16,7 @@ Decisions are in [ADR 0056](../../docs/adr/0056-advisor-is-an-optional-local-llm
 - English and French only, in the language of `prefsStore`. Figures and item names come from the i18n catalogs, not from the model.
 - One fixed compact model (about 1 to 3 billion parameters, 4-bit), picked after a manual test on real game questions (issue 05).
 - Guided first: buttons tied to the Diagnosis, an "Explain" button on each displayed Cause; a free field second, limited to game topics.
-- Context sent to the model: a compact summary built by a pure function from city figures (Citizens, Approval, Needs, top three Causes, Service coverage, Home Tiers), about 1,000 tokens. No text typed by the Player (city name, Handle).
+- Context sent to the model: a compact summary built by a pure function from city figures (Citizens, Approval, Needs, top three Causes, Service coverage, Home Tiers), about 1,500 tokens. No text typed by the Player (city name, Handle).
 - Output is ephemeral: never saved, exported, synced or shown to other Players.
 - Engine behind an `AdvisorEngine` interface in `src/advisor/`, loaded by dynamic import in a Web Worker. Tests and E2E use a fake engine; the real model never loads in CI.
 - Model cached by WebLLM in the browser cache (not precached by the PWA). Deletable from the settings. Works offline once downloaded.
