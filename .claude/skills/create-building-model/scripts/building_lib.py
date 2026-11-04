@@ -7959,6 +7959,374 @@ def build_maloca(spec, out_dir):
     return report
 
 
+def palafito_boat(parts, c, tag, x, y, length):
+    """A small rowing dory along Y: a pointed hull floating on the water with a plank seat."""
+    half = length / 2
+    outline = [(x, y - half), (x + 0.045, y - half + 0.08), (x + 0.045, y + half - 0.08), (x, y + half), (x - 0.045, y + half - 0.08), (x - 0.045, y - half + 0.08)]
+    parts.append(extrude_z(f"{tag}_hull", outline, 0.02, 0.06, c["boat"]))
+    parts.append(lpm.box(f"{tag}_seat", (0.09, 0.025, 0.012), at=(x, y, 0.06), color=c["plank"]))
+
+
+def build_palafito(spec, out_dir):
+    """A Chiloe palafito, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    A timber house clad in coloured wooden shingles on piles standing in the water, a gable corrugated roof with white-framed windows and a coloured door, on a deck on piles;
+    from Tier 2 a brick chimney, 3 a balcony, 4 a boat tied alongside, 5 a roof dormer, 6 a second boat, 7 a net-drying rack on the deck, 8 a small jetty with a lantern."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("trim", "vtone2"), ("roofc", "vtone3"), ("dark", "udark"), ("water", "dalablue"), ("pile", "timber"), ("plank", "darkwood"),
+                                              ("boat", "lacquer"), ("line", "tarwood"), ("brick", "brick_dark"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors, tier = spec["floors"], spec["tier"]
+    fh, pile_h, deck_t = 0.26, 0.16, 0.03
+    z_deck = 0.02 + pile_h
+    z0 = z_deck + deck_t
+    bx, yb0, yb1 = w / 2 - 0.12, -d / 2 + 0.22, d / 2 - 0.08
+    deck_x, deck_y0, deck_y1 = bx + 0.05, yb0 - 0.17, yb1 + 0.03
+    height = floors * fh
+    z_w = z0 + height
+    cy = (yb0 + yb1) / 2
+    parts = [lpm.box("water", (w - 0.01, d - 0.01, 0.02), at=(0, 0, 0), color=c["water"]),
+             lpm.box("deck", (2 * deck_x, deck_y1 - deck_y0, deck_t), at=(0, (deck_y0 + deck_y1) / 2, z_deck), color=c["plank"]),
+             lpm.box("walls", (2 * bx, yb1 - yb0, height), at=(0, cy, z0), color=c["wall"])]
+    count_x = max(2, round(2 * deck_x / 0.4) + 1)
+    rows = (deck_y0 + 0.04, deck_y1 - 0.04) if d < 1.5 else (deck_y0 + 0.04, (deck_y0 + deck_y1) / 2, deck_y1 - 0.04)
+    for row, y in enumerate(rows):
+        for number in range(count_x):
+            parts.append(lpm.box(f"pile_{row}_{number}", (0.04, 0.04, pile_h), at=(-deck_x + 0.04 + number * (2 * deck_x - 0.08) / (count_x - 1), y, 0.02), color=c["pile"]))
+    hr = (yb1 - yb0) / 2 + 0.06
+    rise = min(0.32, hr * 0.65)
+    parts.append(extrude_x("roof", [(cy - hr, z_w - 0.01), (cy + hr, z_w - 0.01), (cy, z_w + rise)], -bx - 0.06, bx + 0.06, c["roofc"]))
+    for sign in (-1, 1):
+        parts.append(extrude_x(f"gable_{sign}", [(cy - hr + 0.08, z_w), (cy + hr - 0.08, z_w), (cy, z_w + rise - 0.09)], *sorted((sign * (bx + 0.056), sign * (bx + 0.066))), c["trim"]))
+
+    faces = (("front", yb0, 2 * bx, 0.0), ("back", yb1, 2 * bx, 0.0), ("left", -bx, yb1 - yb0, cy), ("right", bx, yb1 - yb0, cy))
+    for face, wall, length, centre in faces:
+        for level in range(floors):
+            for k in range(4):
+                face_box(parts, f"{face}_line_{level}_{k}", face, wall, centre, length, 0.006, z0 + level * fh + 0.05 + k * 0.05, 0.006, c["line"])
+    for level in range(floors):
+        z = z0 + level * fh + 0.07
+        for u in ((-0.3, 0.3) if w < 2 else (-0.75, -0.35, 0.35, 0.75)):
+            if level == 0 and abs(u) < 0.2:
+                continue
+            victorian_window(parts, f"front_{level}_{u:.2f}", "front", yb0, u, z, 0.08, 0.14, c)
+        if level >= 1:
+            victorian_window(parts, f"front_{level}_mid", "front", yb0, 0.0, z, 0.08, 0.14, c)
+        for number in range(max(1, round((yb1 - yb0) / 0.5))):
+            y = yb0 + (number + 0.5) * (yb1 - yb0) / max(1, round((yb1 - yb0) / 0.5))
+            for face, wall in (("left", -bx), ("right", bx)):
+                victorian_window(parts, f"{face}_{level}_{number}", face, wall, y, z, 0.08, 0.14, c)
+        for u in (-0.25, 0.25):
+            victorian_window(parts, f"back_{level}_{u:.2f}", "back", yb1, u, z, 0.08, 0.14, c)
+    face_box(parts, "door", "front", yb0, 0.0, 0.16, 0.24, z0, 0.02, c["roofc"])
+    face_box(parts, "door_frame", "front", yb0, 0.0, 0.22, 0.3, z0 - 0.005, 0.012, c["trim"])
+
+    if tier >= 2:
+        parts.append(lpm.box("chimney", (0.08, 0.08, 0.2), at=(-bx * 0.5, cy + 0.08, z_w + 0.05), color=c["brick"]))
+        parts.append(lpm.box("chimney_cap", (0.1, 0.1, 0.02), at=(-bx * 0.5, cy + 0.08, z_w + 0.25), color=c["trim"]))
+    if tier >= 3 and floors >= 2:
+        zb = z0 + fh
+        parts.append(lpm.box("balcony", (0.5, 0.1, 0.02), at=(0, yb0 - 0.05, zb - 0.01), color=c["plank"]))
+        parts.append(lpm.box("balcony_rail", (0.5, 0.012, 0.012), at=(0, yb0 - 0.095, zb + 0.09), color=c["trim"]))
+        for number in range(9):
+            parts.append(lpm.box(f"balcony_baluster_{number}", (0.01, 0.01, 0.09), at=(-0.22 + number * 0.055, yb0 - 0.095, zb + 0.01), color=c["trim"]))
+        for sign in (-1, 1):
+            parts.append(lpm.box(f"balcony_rail_side_{sign}", (0.012, 0.1, 0.012), at=(sign * 0.244, yb0 - 0.05, zb + 0.09), color=c["trim"]))
+            for number in range(3):
+                parts.append(lpm.box(f"balcony_baluster_side_{sign}_{number}", (0.01, 0.01, 0.09), at=(sign * 0.244, yb0 - 0.02 - number * 0.035, zb + 0.01), color=c["trim"]))
+    if tier >= 4:
+        palafito_boat(parts, c, "boat_0", -(w / 2 - 0.1), -d / 2 + 0.35, 0.34)
+    if tier >= 5:
+        parts.append(lpm.box("dormer", (0.2, 0.16, 0.14), at=(0.0, cy - hr * 0.55, z_w + 0.02), color=c["wall"]))
+        parts.append(extrude_x("dormer_roof", [(cy - hr * 0.55 - 0.1, z_w + 0.16), (cy - hr * 0.55 + 0.1, z_w + 0.16), (cy - hr * 0.55, z_w + 0.26)], -0.12, 0.12, c["roofc"]))
+        face_box(parts, "dormer_window", "front", cy - hr * 0.55 - 0.08, 0.0, 0.08, 0.08, z_w + 0.05, 0.012, c["dark"])
+    if tier >= 6:
+        palafito_boat(parts, c, "boat_1", w / 2 - 0.1, -d / 2 + 0.35, 0.3)
+    if tier >= 7:
+        for sign in (-1, 1):
+            parts.append(lpm.box(f"rack_post_{sign}", (0.02, 0.02, 0.2), at=(sign * 0.2 + deck_x * 0.45, deck_y0 + 0.07, z0), color=c["pile"]))
+        parts.append(lpm.box("rack_net", (0.38, 0.01, 0.12), at=(deck_x * 0.45, deck_y0 + 0.07, z0 + 0.07), color=c["line"]))
+    if tier >= 8:
+        parts.append(lpm.box("jetty", (0.14, 0.3, 0.025), at=(deck_x * 0.7, -d / 2 + 0.2, z_deck), color=c["plank"]))
+        parts.append(lpm.box("jetty_post", (0.02, 0.02, 0.2), at=(deck_x * 0.7, -d / 2 + 0.06, z_deck), color=c["pile"]))
+        parts.append(lpm.box("jetty_lantern", (0.04, 0.04, 0.05), at=(deck_x * 0.7, -d / 2 + 0.06, z_deck + 0.2), color=c["trim"]))
+
+    if spec.get("solar"):
+        angle = math.degrees(math.atan2(rise, hr))
+        count_x_p = max(1, int((2 * bx - 0.2) / 0.24))
+        for number in range(count_x_p):
+            px = (number - (count_x_p - 1) / 2) * 0.24
+            fraction = 0.4
+            py, pz = cy + hr * (1 - fraction) + 0.015, z_w + fraction * rise + 0.015
+            panel = lpm.box(f"solar_panel_{number}", (0.2, 0.24, 0.012), at=(px, py, pz), color=c["solar"])
+            lpm.rotate(panel, -angle, axis="X", about=(px, py, pz))
+            parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=30000 + 12000 * floors * max(1, w * d // 2), center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
+    return report
+
+
+TOTORA_LAYOUT = {  # per Tier: huts (x, y), tower (x, y, radius) or None, boats (x, y, length)
+    1: ([(0.0, 0.05)], None, [(0.0, -0.4, 0.3)]),
+    2: ([(-0.5, 0.05)], (0.45, 0.0, 0.2), [(0.0, -0.4, 0.36)]),
+    3: ([(-0.55, 0.1), (-0.05, -0.05)], (0.5, 0.05, 0.2), [(-0.3, -0.41, 0.36)]),
+    4: ([(-0.6, 0.1), (-0.1, 0.1), (0.05, -0.2)], (0.55, 0.05, 0.2), [(-0.35, -0.41, 0.36)]),
+    5: ([(-0.6, 0.55), (-0.6, -0.1), (-0.05, -0.5)], (0.5, 0.45, 0.26), [(0.3, -0.9, 0.4)]),
+    6: ([(-0.6, 0.55), (-0.6, -0.1), (-0.05, -0.5)], (0.5, 0.45, 0.28), [(0.3, -0.9, 0.4), (-0.4, -0.92, 0.36)]),
+    7: ([(-0.6, 0.55), (-0.6, -0.1), (-0.05, -0.5), (0.55, -0.5)], (0.5, 0.45, 0.3), [(0.3, -0.92, 0.4), (-0.4, -0.92, 0.36)]),
+    8: ([(-0.6, 0.55), (-0.6, -0.1), (-0.05, -0.5), (0.55, -0.5)], (0.5, 0.45, 0.32), [(0.3, -0.92, 0.4), (-0.4, -0.92, 0.36), (0.76, -0.5, 0.4)]),
+}
+
+
+def totora_hut(parts, c, tag, x, y):
+    """A Uros reed hut: reed walls, a barrel reed roof, a door with a coloured frame and a window."""
+    parts.append(lpm.box(f"{tag}_walls", (0.3, 0.22, 0.12), at=(x, y, 0.07), color=c["reed"]))
+    section = [(y - 0.13, 0.19), (y - 0.12, 0.25), (y - 0.08, 0.3), (y, 0.33), (y + 0.08, 0.3), (y + 0.12, 0.25), (y + 0.13, 0.19)]
+    parts.append(extrude_x(f"{tag}_roof", section, x - 0.17, x + 0.17, c["reed"]))
+    parts.append(lpm.box(f"{tag}_door", (0.08, 0.02, 0.1), at=(x, y - 0.11, 0.07), color=c["dark"]))
+    for side in (-1, 1):
+        parts.append(lpm.box(f"{tag}_door_post_{side}", (0.02, 0.03, 0.11), at=(x + side * 0.05, y - 0.112, 0.07), color=c["accent"]))
+    parts.append(lpm.box(f"{tag}_door_lintel", (0.12, 0.03, 0.02), at=(x, y - 0.112, 0.17), color=c["accent"]))
+    parts.append(lpm.box(f"{tag}_window", (0.05, 0.02, 0.05), at=(x + 0.1, y - 0.11, 0.1), color=c["dark"]))
+
+
+def totora_boat(parts, c, tag, x, y, length):
+    """A totora reed boat along X: a rounded reed hull with two raised prows."""
+    half = length / 2
+    outline = [(x - half, y), (x - half + 0.06, y - 0.045), (x + half - 0.06, y - 0.045), (x + half, y), (x + half - 0.06, y + 0.045), (x - half + 0.06, y + 0.045)]
+    parts.append(extrude_z(f"{tag}_hull", outline, 0.02, 0.06, c["reed"]))
+    for sign in (-1, 1):
+        prow = lpm.box(f"{tag}_prow_{sign}", (0.07, 0.05, 0.02), at=(x + sign * (half - 0.01), y, 0.06), color=c["reed"])
+        lpm.rotate(prow, -sign * 28, axis="Y", about=(x + sign * (half - 0.01), y, 0.06))
+        parts.append(prow)
+    parts.append(lpm.box(f"{tag}_lash", (0.012, 0.09, 0.012), at=(x, y, 0.06), color=c["lash"]))
+
+
+def build_totora(spec, out_dir):
+    """A Titicaca Uros reed house, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    A floating reed island in the water carrying barrel-roofed reed huts with coloured door frames, reed boats with raised prows, and from Tier 2 a reed watchtower of stacked bundles with lashings, one level per floor, ringed by platforms and capped by a viewing deck under a reed cone."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("reed", "vtone1"), ("accent", "vtone2"), ("lash", "vtone3"), ("dark", "udark"), ("water", "dalablue"), ("wood", "darkwood"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors, tier = spec["floors"], spec["tier"]
+    parts = [lpm.box("water", (w - 0.01, d - 0.01, 0.02), at=(0, 0, 0), color=c["water"]),
+             lpm.box("island", (w - 0.14, d - 0.14, 0.05), at=(0, 0, 0.02), color=c["reed"])]
+    for number in range(int((w - 0.14) / 0.1)):
+        for sign in (-1, 1):
+            parts.append(lpm.box(f"island_roll_{number}_{sign}", (0.09, 0.03, 0.03), at=(-(w - 0.14) / 2 + 0.06 + number * 0.1, sign * ((d - 0.14) / 2 - 0.005), 0.065), color=c["lash"]))
+    huts, tower, boats = TOTORA_LAYOUT[tier]
+    for number, (x, y) in enumerate(huts):
+        totora_hut(parts, c, f"hut_{number}", x, y)
+    for number, (x, y, length) in enumerate(boats):
+        totora_boat(parts, c, f"boat_{number}", x, y, length)
+    top_z, tx, ty, radius = 0.0, 0.0, 0.0, 0.0
+    if tower:
+        tx, ty, radius = tower
+        z = 0.07
+        for level in range(floors):
+            r = radius - 0.03 * level
+            parts.append(lpm.prism(f"tower_{level}", 8, r, 0.24, at=(tx, ty, z), color=c["reed"], radius_top=r * 0.94))
+            for band in range(2):
+                parts.append(lpm.prism(f"tower_{level}_lash_{band}", 8, r + 0.008, 0.02, at=(tx, ty, z + 0.06 + band * 0.1), color=c["lash"], radius_top=r + 0.008))
+            parts.append(lpm.prism(f"tower_{level}_deck", 8, r + 0.05, 0.02, at=(tx, ty, z + 0.24), color=c["wood"], radius_top=r + 0.05))
+            parts.append(lpm.box(f"tower_{level}_door", (0.06, 0.02, 0.1), at=(tx, ty - r + 0.0, z + 0.03), color=c["dark"]))
+            z += 0.26
+        top_r = radius - 0.03 * (floors - 1)
+        for number in range(8):
+            angle = math.radians(number * 45)
+            parts.append(lpm.box(f"tower_post_{number}", (0.02, 0.02, 0.2), at=(tx + (top_r + 0.04) * math.cos(angle), ty + (top_r + 0.04) * math.sin(angle), z), color=c["wood"]))
+        parts.append(lpm.lathe("tower_cone", [(top_r + 0.08, z + 0.2), (0.0, z + 0.4)], segments=8, at=(tx, ty, 0), color=c["reed"]))
+        top_z = z
+
+    if spec.get("solar"):
+        for number, (px, py) in enumerate(((-0.1, -0.02), (0.1, -0.02))):
+            hx, hy = huts[0]
+            panel = lpm.box(f"solar_panel_{number}", (0.12, 0.12, 0.012), at=(hx + px, hy + py, 0.3), color=c["solar"])
+            lpm.rotate(panel, 18, axis="X", about=(hx + px, hy + py, 0.3))
+            parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=40000 + 10000 * floors, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
+    return report
+
+
+def build_valparaiso(spec, out_dir):
+    """A corrugated-iron house of Valparaiso, front facing -Y, on a 1x1 or 1x2 cell; the Tier is the floor count (1 to 5).
+    A tall narrow house whose floors are clad in different bright corrugated panels (the colors alternate floor by floor) with vertical ribs, a front gable corrugated roof, framed windows, a coloured door with a stoop,
+    from Tier 2 a stair-landing rail, 3 a wooden balcony, 4 a roof dormer, 5 a rooftop lookout (mirador)."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("wall2", "vtone2"), ("trim", "vtone3"), ("dark", "udark"), ("roof", "kawara"), ("wood", "darkwood"), ("stone", "greywood"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    d = spec["footprint"][1]
+    floors = spec["floors"]
+    tier = floors
+    fh, plinth = 0.27, 0.04
+    bx, y0, y1 = 0.47, -d / 2 + 0.12, d / 2 - 0.03
+    cy = (y0 + y1) / 2
+    z_w = plinth + floors * fh
+    parts = [lpm.box("plinth", (2 * bx + 0.02, y1 - y0 + 0.02, plinth), at=(0, cy, 0), color=c["stone"]),
+             lpm.box("door_step", (0.5, 0.105, 0.025), at=(0, y0 - 0.0625, 0), color=c["stone"])]
+    for level in range(floors):
+        z = plinth + level * fh
+        parts.append(lpm.box(f"floor_{level}", (2 * bx, y1 - y0, fh), at=(0, cy, z), color=c["wall"] if level % 2 == 0 else c["wall2"]))
+        parts.append(lpm.box(f"floor_band_{level}", (2 * bx + 0.02, y1 - y0 + 0.02, 0.025), at=(0, cy, z + fh - 0.025), color=c["trim"]))
+        for number in range(int(2 * bx / 0.1)):
+            u = -bx + 0.05 + number * 0.1
+            face_box(parts, f"rib_front_{level}_{number}", "front", y0, u, 0.01, fh - 0.06, z + 0.015, 0.008, c["trim"])
+    hr = (y1 - y0) / 2 + 0.04
+    rise = 0.26
+    parts.append(extrude_y("roof", [(-bx - 0.04, z_w - 0.01), (bx + 0.04, z_w - 0.01), (0, z_w + rise)], y0 - 0.04, y1 + 0.02, c["roof"]))
+    parts.append(extrude_y("gable", [(-bx + 0.05, z_w), (bx - 0.05, z_w), (0, z_w + rise - 0.08)], y0 - 0.054, y0 - 0.04, c["wall2"] if floors % 2 == 0 else c["wall"]))
+    for sign in (-1, 1):
+        parts.append(extrude_y(f"bargeboard_{sign}", [(sign * (bx + 0.04), z_w - 0.01), (0, z_w + rise), (0, z_w + rise - 0.05), (sign * (bx + 0.04), z_w - 0.06)], y0 - 0.07, y0 - 0.05, c["trim"]))
+    victorian_window(parts, "gable_window", "front", y0 - 0.054, 0.0, z_w + 0.04, 0.08, 0.1, c)
+    for level in range(floors):
+        z = plinth + level * fh + 0.08
+        for u in (-0.3, 0.3):
+            victorian_window(parts, f"front_{level}_{u:.2f}", "front", y0, u, z, 0.09, 0.13, c)
+        if level >= 1:
+            victorian_window(parts, f"front_{level}_mid", "front", y0, 0.0, z, 0.09, 0.13, c)
+        for number in range(max(1, round((y1 - y0) / 0.55))):
+            y = y0 + (number + 0.5) * (y1 - y0) / max(1, round((y1 - y0) / 0.55))
+            for face, wall in (("left", -bx), ("right", bx)):
+                victorian_window(parts, f"{face}_{level}_{number}", face, wall, y, z, 0.09, 0.13, c)
+        for u in (-0.25, 0.25):
+            victorian_window(parts, f"back_{level}_{u:.2f}", "back", y1, u, z, 0.09, 0.13, c)
+    face_box(parts, "door", "front", y0, 0.0, 0.17, 0.25, plinth, 0.02, c["wood"])
+    face_box(parts, "door_frame", "front", y0, 0.0, 0.23, 0.3, plinth - 0.005, 0.012, c["trim"])
+    if tier >= 2:
+        for sign in (-1, 1):
+            parts.append(lpm.box(f"stoop_post_{sign}", (0.02, 0.02, 0.12), at=(sign * 0.2, y0 - 0.085, 0.02), color=c["trim"]))
+        parts.append(lpm.box("stoop_rail", (0.4, 0.012, 0.012), at=(0, y0 - 0.085, 0.14), color=c["trim"]))
+    if tier >= 3:
+        zb = plinth + fh
+        parts.append(lpm.box("balcony", (0.64, 0.11, 0.025), at=(0, y0 - 0.055, zb - 0.01), color=c["wood"]))
+        parts.append(lpm.box("balcony_rail", (0.64, 0.014, 0.014), at=(0, y0 - 0.108, zb + 0.1), color=c["trim"]))
+        for number in range(12):
+            parts.append(lpm.box(f"balcony_baluster_{number}", (0.01, 0.01, 0.1), at=(-0.29 + number * 0.053, y0 - 0.108, zb + 0.015), color=c["trim"]))
+    if tier >= 4:
+        parts.append(lpm.box("dormer", (0.22, 0.14, 0.13), at=(0.0, y0 + 0.14, z_w - 0.02), color=c["wall"]))
+        parts.append(extrude_y("dormer_roof", [(-0.13, z_w + 0.11), (0.13, z_w + 0.11), (0, z_w + 0.2)], y0 + 0.06, y0 + 0.24, c["roof"]))
+        face_box(parts, "dormer_window", "front", y0 + 0.07, 0.0, 0.09, 0.07, z_w + 0.02, 0.012, c["dark"])
+    if tier >= 5:
+        parts.append(lpm.box("mirador", (0.2, 0.2, 0.16), at=(0.0, cy + 0.15, z_w + 0.12), color=c["wall2"]))
+        parts.append(lpm.box("mirador_roof", (0.26, 0.26, 0.025), at=(0.0, cy + 0.15, z_w + 0.28), color=c["roof"]))
+        for face, wall, u in (("front", cy + 0.05, 0.0), ("back", cy + 0.25, 0.0)):
+            face_box(parts, f"mirador_window_{face}", face, wall, u, 0.12, 0.08, z_w + 0.16, 0.012, c["dark"])
+
+    if spec.get("solar"):
+        angle = math.degrees(math.atan2(rise, bx))
+        count = max(1, int((y1 - y0 - 0.35) / 0.24))
+        for number in range(count):
+            py = (y0 + y1) / 2 + 0.1 + (number - (count - 1) / 2) * 0.24
+            if tier >= 5 and abs(py - cy - 0.15) < 0.2:
+                continue
+            px, pz = bx * 0.5 + 0.015, z_w - 0.01 + 0.5 * (rise + 0.01) + 0.015
+            panel = lpm.box(f"solar_panel_{number}", (0.22, 0.2, 0.012), at=(px, py, pz), color=c["solar"])
+            lpm.rotate(panel, angle, axis="Y", about=(px, py, pz))
+            parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=30000 + 9000 * floors * d, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = list(spec["footprint"])
+    return report
+
+
+def quincha_cajon(parts, c, tag, y0, level_z, width=0.64):
+    """A Lima closed wooden balcony (cajon): a carved wooden box with a slatted lattice front, side lattices, a small roof and corbels."""
+    height, depth = 0.2, 0.12
+    parts.append(lpm.box(f"{tag}_box", (width, depth, height), at=(0, y0 - depth / 2, level_z + 0.05), color=c["wood"]))
+    parts.append(lpm.box(f"{tag}_base", (width + 0.04, depth + 0.02, 0.02), at=(0, y0 - depth / 2 - 0.005, level_z + 0.03), color=c["wood"]))
+    parts.append(lpm.box(f"{tag}_roof", (width + 0.06, depth + 0.04, 0.02), at=(0, y0 - depth / 2 - 0.01, level_z + 0.25), color=c["trim"]))
+    for number in range(int((width - 0.08) / 0.04)):
+        parts.append(lpm.box(f"{tag}_slat_{number}", (0.016, 0.012, height - 0.06), at=(-width / 2 + 0.06 + number * 0.04, y0 - depth - 0.003, level_z + 0.08), color=c["dark"]))
+    for sign in (-1, 1):
+        parts.append(lpm.box(f"{tag}_corbel_{sign}", (0.03, 0.1, 0.05), at=(sign * (width / 2 - 0.05), y0 - 0.05, level_z - 0.025), color=c["wood"]))
+        parts.append(lpm.box(f"{tag}_side_lattice_{sign}", (0.012, 0.07, 0.12), at=(sign * (width / 2 + 0.003), y0 - depth / 2, level_z + 0.09), color=c["dark"]))
+
+
+def build_quincha(spec, out_dir):
+    """A quincha balcony house of Lima, front facing -Y, on a 1x1 or 1x2 cell; the Tier is the floor count (1 to 5).
+    A pastel plastered (quincha) block with a plain cornice and a flat roof behind a parapet, a tall studded double door in a white frame, and a closed carved wooden balcony (cajon) with a slatted lattice on every upper floor;
+    from Tier 4 a cornice of dentils, 5 a roof lantern."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("wood", "vtone2"), ("trim", "vtone3"), ("dark", "udark"), ("stud", "honey"), ("stone", "greywood"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    d = spec["footprint"][1]
+    floors = spec["floors"]
+    tier = floors
+    fh, plinth = 0.29, 0.04
+    bx, y0, y1 = 0.47, -d / 2 + 0.12, d / 2 - 0.03
+    height = floors * fh
+    z_top = plinth + height
+    cy = (y0 + y1) / 2
+    parts = [lpm.box("plinth", (2 * bx + 0.02, y1 - y0 + 0.02, plinth), at=(0, cy, 0), color=c["stone"]),
+             lpm.box("door_step", (0.56, 0.105, 0.025), at=(0, y0 - 0.0625, 0), color=c["stone"]),
+             lpm.box("walls", (2 * bx, y1 - y0, height), at=(0, cy, plinth), color=c["wall"]),
+             lpm.box("cornice", (2 * bx + 0.04, y1 - y0 + 0.04, 0.03), at=(0, cy, z_top - 0.03), color=c["trim"])]
+    for name, size, at in (("front", (2 * bx, 0.03, 0.06), (0, y0 + 0.015)), ("back", (2 * bx, 0.03, 0.06), (0, y1 - 0.015)), ("left", (0.03, y1 - y0, 0.06), (-bx + 0.015, cy)), ("right", (0.03, y1 - y0, 0.06), (bx - 0.015, cy))):
+        parts.append(lpm.box(f"parapet_{name}", size, at=(at[0], at[1], z_top), color=c["wall"]))
+    parts.append(lpm.box("door_leaf", (0.3, 0.02, 0.2), at=(0, y0 - 0.008, plinth), color=c["wood"]))
+    parts.append(lpm.box("door_split", (0.012, 0.03, 0.2), at=(0, y0 - 0.014, plinth), color=c["dark"]))
+    for side in (-1, 1):
+        parts.append(lpm.box(f"door_post_{side}", (0.045, 0.04, 0.23), at=(side * 0.1725, y0 - 0.015, plinth), color=c["trim"]))
+    parts.append(lpm.box("door_lintel", (0.4, 0.045, 0.045), at=(0, y0 - 0.017, plinth + 0.2), color=c["trim"]))
+    for row in range(2):
+        for col in range(4):
+            parts.append(lpm.box(f"stud_{row}_{col}", (0.02, 0.012, 0.02), at=(-0.105 + col * 0.07, y0 - 0.02, plinth + 0.04 + row * 0.07), color=c["stud"]))
+
+    for level in range(floors):
+        z = plinth + level * fh + 0.09
+        for u in (-0.34, 0.34):
+            face_box(parts, f"front_{level}_{u:.2f}_glass", "front", y0, u, 0.1, 0.15, z, 0.012, c["dark"])
+            face_box(parts, f"front_{level}_{u:.2f}_frame", "front", y0, u, 0.15, 0.2, z - 0.025, 0.01, c["trim"])
+        for number in range(max(1, round((y1 - y0) / 0.55))):
+            y = y0 + (number + 0.5) * (y1 - y0) / max(1, round((y1 - y0) / 0.55))
+            for face, wall in (("left", -bx), ("right", bx)):
+                face_box(parts, f"{face}_{level}_{number}_glass", face, wall, y, 0.1, 0.15, z, 0.012, c["dark"])
+                face_box(parts, f"{face}_{level}_{number}_frame", face, wall, y, 0.15, 0.2, z - 0.025, 0.01, c["trim"])
+        for u in (-0.25, 0.25):
+            face_box(parts, f"back_{level}_{u:.2f}_glass", "back", y1, u, 0.1, 0.15, z, 0.012, c["dark"])
+    for level in range(1, floors):
+        quincha_cajon(parts, c, f"cajon_{level}", y0, plinth + level * fh)
+    if tier >= 4:
+        for number in range(int(2 * bx / 0.07)):
+            parts.append(lpm.box(f"dentil_{number}", (0.03, 0.025, 0.025), at=(-bx + 0.04 + number * 0.07, y0 - 0.012, z_top - 0.065), color=c["trim"]))
+    if tier >= 5:
+        parts.append(lpm.box("lantern", (0.2, 0.2, 0.14), at=(0, cy, z_top + 0.07), color=c["wall"]))
+        parts.append(lpm.box("lantern_roof", (0.26, 0.26, 0.025), at=(0, cy, z_top + 0.21), color=c["trim"]))
+        for face, wall in (("front", cy - 0.1), ("back", cy + 0.1)):
+            face_box(parts, f"lantern_window_{face}", face, wall, 0.0, 0.08, 0.08, z_top + 0.1, 0.012, c["dark"])
+
+    if spec.get("solar"):
+        for number, px in enumerate((-0.2, 0.2)):
+            py = y1 - 0.2 if tier < 5 else y1 - 0.1
+            panel = lpm.box(f"solar_panel_{number}", (0.2, 0.16, 0.012), at=(px, py, z_top + 0.08), color=c["solar"])
+            lpm.rotate(panel, 20, axis="X", about=(px, py, z_top + 0.08))
+            parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=30000 + 8000 * floors * d, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = list(spec["footprint"])
+    return report
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")

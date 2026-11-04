@@ -78,6 +78,7 @@ export type BuildingId =
   | 'home-mansard-1x2'
   | 'home-mansard-2x2'
   | 'home-ndebele'
+  | 'home-palafito'
   | 'home-queenslander'
   | 'home-riad'
   | 'home-rondavel'
