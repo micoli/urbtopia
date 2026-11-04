@@ -333,6 +333,15 @@
       }
     }
   },
+  "buildings-basketball-court-2x3": {
+    "file": "buildings/basketball-court-2x3",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      3
+    ]
+  },
   "buildings-battery-1x1": {
     "file": "buildings/battery-1x1",
     "source": "managed",
@@ -1257,6 +1266,15 @@
     ],
     "scale": 1,
     "rotationOffset": 180
+  },
+  "buildings-foot5-2x4": {
+    "file": "buildings/foot5-2x4",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      4
+    ]
   },
   "buildings-football-stadium-12x9-tone-a": {
     "file": "buildings/football-stadium-12x9-tone-a",

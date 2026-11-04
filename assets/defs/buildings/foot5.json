@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "sport",
+  "section": "build.sport",
+  "model": "buildings-foot5-2x4",
+  "footprint": [2, 4],
+  "cost": 600,
+  "unlockCitizens": 80,
+  "requiresRoad": true,
+  "name": {
+    "en": "Five-a-side pitch",
+    "fr": "Foot à 5"
+  },
+  "description": {
+    "en": "A small five-a-side football pitch with two goals and ball-stop nets around it. It raises the Well-being of Homes in a {side}-tile square around it (+{wellbeingBonus}, like a service) and needs no power. It covers {width}×{depth} tiles; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs.",
+    "fr": "Un petit terrain de football à cinq avec deux buts et des filets de protection tout autour. Il augmente le bien-être des logements à moins de {side} cases (+{wellbeingBonus}) et ne consomme pas d’électricité. Il occupe {width}×{depth} cases ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs."
+  },
+  "radius": 6,
+  "wellbeingBonus": 4
+}
