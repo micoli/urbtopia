@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "plaster",
+  "color": "#efe4cc"
+ },
+ "b": {
+  "name": "ochre",
+  "color": "#d9b878"
+ },
+ "c": {
+  "name": "sandstone",
+  "color": "#d8c08a"
+ },
+ "d": {
+  "name": "dustypink",
+  "color": "#d9a89a"
+ }
+}
