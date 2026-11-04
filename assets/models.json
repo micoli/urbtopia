@@ -5771,6 +5771,60 @@
       }
     }
   },
+  "buildings-house-2x2-1f-tulou-a": {
+    "file": "buildings/house-2x2-1f-tulou-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      }
+    }
+  },
+  "buildings-house-2x2-1f-tulou-a-solar": {
+    "file": "buildings/house-2x2-1f-tulou-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      }
+    }
+  },
   "buildings-house-2x2-2f-aegean-a": {
     "file": "buildings/house-2x2-2f-aegean-a",
     "source": "managed",
@@ -6390,6 +6444,60 @@
       "d": {
         "name": "cream",
         "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-tulou-a": {
+    "file": "buildings/house-2x2-2f-tulou-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-tulou-a-solar": {
+    "file": "buildings/house-2x2-2f-tulou-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "siena",
+        "color": "#cf8a5a"
       }
     }
   },
@@ -7131,6 +7239,60 @@
       }
     }
   },
+  "buildings-house-2x2-3f-tulou-a": {
+    "file": "buildings/house-2x2-3f-tulou-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-tulou-a-solar": {
+    "file": "buildings/house-2x2-3f-tulou-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      }
+    }
+  },
   "buildings-house-2x2-3f-turf-a": {
     "file": "buildings/house-2x2-3f-turf-a",
     "source": "managed",
@@ -7869,6 +8031,60 @@
       }
     }
   },
+  "buildings-house-2x2-4f-tulou-a": {
+    "file": "buildings/house-2x2-4f-tulou-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      }
+    }
+  },
+  "buildings-house-2x2-4f-tulou-a-solar": {
+    "file": "buildings/house-2x2-4f-tulou-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      }
+    }
+  },
   "buildings-house-2x2-4f-turf-a": {
     "file": "buildings/house-2x2-4f-turf-a",
     "source": "managed",
@@ -8604,6 +8820,60 @@
       "d": {
         "name": "cream",
         "color": "#fff1d6"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-tulou-a": {
+    "file": "buildings/house-2x2-5f-tulou-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "siena",
+        "color": "#cf8a5a"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-tulou-a-solar": {
+    "file": "buildings/house-2x2-5f-tulou-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "ochre",
+        "color": "#d9b878"
+      },
+      "b": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "c": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "d": {
+        "name": "siena",
+        "color": "#cf8a5a"
       }
     }
   },

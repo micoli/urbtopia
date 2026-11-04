@@ -75,6 +75,7 @@ export type BuildingId =
   | 'home-stilt'
   | 'home-stuga'
   | 'home-tudor'
+  | 'home-tulou'
   | 'home-turf'
   | 'home-tuscan'
   | 'hospital'

@@ -1,0 +1,104 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "home",
+  "section": "build.housing",
+  "cost": 600,
+  "unlockCitizens": 400,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt", "pedestrianWay"],
+  "name": {
+    "en": "Tulou",
+    "fr": "Tulou"
+  },
+  "description": {
+    "en": "A round earthen enclosure from Fujian, with a tiled roof, one gate, wooden galleries around the courtyard and an ancestral hall at its heart. Houses Citizens who generate Tax. Each upgrade adds a floor, with more population and utility Demand. Comes in four colors.",
+    "fr": "Une enceinte ronde en terre du Fujian, avec un toit de tuiles, une seule porte, des galeries en bois autour de la cour et une salle des ancêtres en son centre. Accueille des habitants qui génèrent des impôts. Chaque amélioration ajoute un étage, avec plus d’habitants et de besoins en eau et en électricité. Existe en quatre couleurs."
+  },
+  "tiers": [
+    {
+      "model": "buildings-house-2x2-1f-tulou-a",
+      "footprint": [2, 2],
+      "citizens": 6,
+      "power": 1,
+      "water": 1
+    },
+    {
+      "model": "buildings-house-2x2-2f-tulou-a",
+      "citizens": 15,
+      "power": 2,
+      "water": 2,
+      "upgradeCost": {
+        "urbs": 150,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x2-3f-tulou-a",
+      "citizens": 32,
+      "power": 3,
+      "water": 3,
+      "upgradeCost": {
+        "urbs": 400,
+        "goods": {
+          "bricks": 4,
+          "planks": 2
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x2-4f-tulou-a",
+      "citizens": 60,
+      "power": 6,
+      "water": 6,
+      "upgradeCost": {
+        "urbs": 1000,
+        "goods": {
+          "tiles": 4,
+          "bricks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x2-5f-tulou-a",
+      "citizens": 100,
+      "power": 10,
+      "water": 10,
+      "upgradeCost": {
+        "urbs": 2500,
+        "goods": {
+          "tools": 4,
+          "tiles": 3
+        }
+      }
+    }
+  ],
+  "housingRegion": "asia",
+  "solarPanels": {
+    "cost": 400,
+    "unlockCitizens": 300,
+    "output": 4
+  },
+  "variants": {
+    "solar": {
+      "tiers": [
+        {
+          "model": "buildings-house-2x2-1f-tulou-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-2f-tulou-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-3f-tulou-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-4f-tulou-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-5f-tulou-a-solar"
+        }
+      ]
+    }
+  }
+}

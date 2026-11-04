@@ -6333,6 +6333,142 @@ def build_stilt(spec, out_dir):
     return report
 
 
+TULOU_SEGMENTS = 24
+TULOU_PHASE = math.radians(7.5)
+
+
+def ring_solid(name, profile, color, z=0.0):
+    """A solid of revolution from a closed (radius, z) profile, counter-clockwise seen with the radius to the right, with its vertices offset by half a facet so that a facet is centred on every multiple of 15 degrees."""
+    count = len(profile)
+    verts = [((r * math.cos(TULOU_PHASE + 2 * math.pi * i / TULOU_SEGMENTS)), (r * math.sin(TULOU_PHASE + 2 * math.pi * i / TULOU_SEGMENTS)), z + zz)
+             for r, zz in profile for i in range(TULOU_SEGMENTS)]
+    faces = []
+    for p in range(count):
+        a, b = p * TULOU_SEGMENTS, ((p + 1) % count) * TULOU_SEGMENTS
+        faces += [(a + i, a + (i + 1) % TULOU_SEGMENTS, b + (i + 1) % TULOU_SEGMENTS, b + i) for i in range(TULOU_SEGMENTS)]
+    return lpm._object(name, _bm(verts, faces), color)
+
+
+def polar_box(parts, name, theta, radius, size, z, color, shift=0.0):
+    """A box standing at `radius` on the direction `theta` (degrees, 0 = +X), moved `shift` along the tangent, its X side radial and its Y side tangent."""
+    part = lpm.box(name, size, at=(radius, shift, z), color=color)
+    lpm.rotate(part, theta, axis="Z", about=(0, 0, 0))
+    parts.append(part)
+
+
+def build_tulou(spec, out_dir):
+    """A Fujian tulou, a round earthen enclosure on a 2x2 cell with `floors` floors (the Tier): a thick tapered earth ring with a tiled roof sloping to the outside and to the courtyard, no window on the ground floor, one gate facing -Y under a small hood,
+    wooden galleries along the courtyard on every upper floor, and a central ancestral hall from Tier 2, rails, lanterns and two trees at 3, shrubs at 4, an inner low ring around the hall at 5."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("roof", "vtone2"), ("wood", "vtone3"), ("stone", "greywood"), ("dark", "udark"), ("door", "graphite"),
+                                              ("lantern", "lacquer"), ("leaf", "bush"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    floors = spec["floors"]
+    tier = floors
+    fh, plinth = 0.26, 0.05
+    r_out, r_in = 0.9, 0.58
+    height = floors * fh
+    z_top = plinth + height
+    taper = 0.03
+    outer_at = lambda z: r_out - taper * (z - plinth) / height
+    r_eave, r_ridge, r_inner_eave, rise = 1.0, 0.72, 0.5, 0.2
+    z_eave = z_top - 0.02
+    facet = math.cos(TULOU_PHASE)
+
+    parts = [ring_solid("plinth", [(r_out + 0.03, 0.0), (r_out + 0.03, plinth), (r_in - 0.03, plinth), (r_in - 0.03, 0.0)], c["stone"]),
+             ring_solid("walls", [(r_out, plinth), (r_out - taper, z_top), (r_in, z_top), (r_in, plinth)], c["wall"]),
+             ring_solid("roof", [(r_eave, z_eave), (r_ridge, z_eave + rise), (r_inner_eave, z_eave)], c["roof"]),
+             ring_solid("roof_ridge", [(r_ridge + 0.03, z_eave + rise - 0.01), (r_ridge + 0.015, z_eave + rise + 0.02), (r_ridge - 0.015, z_eave + rise + 0.02), (r_ridge - 0.03, z_eave + rise - 0.01)], c["wood"]),
+             lpm.prism("courtyard", TULOU_SEGMENTS, r_in - 0.01, plinth - 0.005, at=(0, 0, 0), color=c["stone"])]
+
+    gate = -90
+    for level in range(1, floors):
+        z = plinth + level * fh + 0.07
+        for k in range(24):
+            theta = 15 * k
+            if abs((theta - gate + 180) % 360 - 180) < 20:
+                continue
+            r = outer_at(z) * facet
+            polar_box(parts, f"window_{level}_{k}", theta, r - 0.004, (0.014, 0.07, 0.1), z, c["dark"])
+            polar_box(parts, f"window_sill_{level}_{k}", theta, r, (0.024, 0.09, 0.012), z - 0.012, c["wood"])
+    for level in range(floors):
+        z = plinth + level * fh + 0.08
+        for k in range(24):
+            polar_box(parts, f"inner_door_{level}_{k}", 15 * k, r_in * facet - 0.002, (0.012, 0.08, 0.14 if level == 0 else 0.12), z - (0.03 if level == 0 else 0.0), c["dark"])
+
+    gate_parts = []
+    r_gate = outer_at(plinth) * facet
+    for number, (u, along, tall) in enumerate(((0.0, 0.2, 0.3), )):
+        polar_box(gate_parts, "door", 0, r_gate - 0.004, (0.02, along, tall), plinth, c["door"])
+    for side in (-1, 1):
+        polar_box(gate_parts, f"door_post_{side}", 0, r_gate, (0.034, 0.03, 0.33), plinth, c["wood"], shift=side * 0.12)
+    polar_box(gate_parts, "door_lintel", 0, r_gate + 0.005, (0.04, 0.3, 0.03), plinth + 0.3, c["wood"])
+    polar_box(gate_parts, "gate_hood", 0, r_gate + 0.04, (0.12, 0.36, 0.025), plinth + 0.34, c["roof"])
+    polar_box(gate_parts, "gate_hood_ridge", 0, r_gate + 0.03, (0.04, 0.38, 0.03), plinth + 0.365, c["roof"])
+    if tier >= 3:
+        for side in (-1, 1):
+            polar_box(gate_parts, f"lantern_{side}", 0, r_gate + 0.05, (0.04, 0.04, 0.06), plinth + 0.27, c["lantern"], shift=side * 0.17)
+    for part in gate_parts:
+        lpm.rotate(part, gate, axis="Z", about=(0, 0, 0))
+    parts += gate_parts
+
+    r_gallery = r_in - 0.075
+    for level in range(floors):
+        z = plinth + level * fh
+        for k in range(12):
+            angle = TULOU_PHASE + math.radians(30 * k)
+            post = lpm.box(f"gallery_post_{level}_{k}", (0.014, 0.014, fh), at=(r_gallery * math.cos(angle), r_gallery * math.sin(angle), z), color=c["wood"])
+            parts.append(post)
+        if level == 0:
+            continue
+        zs = z - 0.02
+        parts.append(ring_solid(f"gallery_{level}", [(r_in, zs), (r_in, zs + 0.02), (r_gallery, zs + 0.02), (r_gallery, zs)], c["wood"]))
+        if tier >= 3:
+            for rail, up in ((0, 0.11), (1, 0.06)):
+                parts.append(ring_solid(f"gallery_rail_{level}_{rail}", [(r_gallery + 0.006, z + up), (r_gallery + 0.006, z + up + 0.012), (r_gallery - 0.006, z + up + 0.012), (r_gallery - 0.006, z + up)], c["wood"]))
+
+    if tier >= 2:
+        hall = 0.3 if tier < 5 else 0.26
+        hall_h = 0.2 if tier < 4 else 0.3
+        parts.append(lpm.box("hall", (hall, hall, hall_h), at=(0, 0, plinth - 0.005), color=c["wall"]))
+        parts.append(hip_roof("hall_roof", hall / 2 + 0.05, hall / 2 + 0.05, plinth - 0.005 + hall_h, 0.1, c["roof"]))
+        parts.append(lpm.box("hall_door", (0.1, 0.012, 0.14), at=(0, -hall / 2, plinth - 0.005), color=c["door"]))
+        if tier >= 4:
+            parts.append(hip_roof("hall_roof_low", hall / 2 + 0.08, hall / 2 + 0.08, plinth + 0.13, 0.05, c["roof"]))
+    if tier == 3:
+        for number, sign in enumerate((-1, 1)):
+            parts.append(lpm.prism(f"tree_{number}_trunk", 5, 0.014, 0.12, at=(sign * 0.4, 0.0, plinth - 0.005), color=c["wood"]))
+            parts.append(lpm.prism(f"tree_{number}_crown", 6, 0.07, 0.1, at=(sign * 0.4, 0.0, plinth + 0.1), color=c["leaf"], radius_top=0.03))
+    if tier == 4:
+        for number, angle in enumerate((45, 135, 225, 315)):
+            x, y = 0.44 * math.cos(math.radians(angle)), 0.44 * math.sin(math.radians(angle))
+            parts.append(lpm.prism(f"shrub_{number}", 6, 0.06, 0.07, at=(x, y, plinth - 0.005), color=c["leaf"], radius_top=0.03))
+    if tier >= 5:
+        r_a, r_b = 0.46, 0.38
+        parts.append(ring_solid("inner_ring", [(r_a, plinth - 0.005), (r_a, plinth + fh), (r_b, plinth + fh), (r_b, plinth - 0.005)], c["wall"]))
+        parts.append(ring_solid("inner_ring_roof", [(r_a + 0.04, plinth + fh - 0.02), (r_a - 0.04, plinth + fh + 0.08), (r_b - 0.02, plinth + fh - 0.02)], c["roof"]))
+
+    if spec.get("solar"):
+        angle = math.degrees(math.atan2(rise, r_eave - r_ridge))
+        t = 0.5
+        r_panel = r_eave - t * (r_eave - r_ridge)
+        z_panel = z_eave + t * rise
+        sine, cosine = math.sin(math.radians(angle)), math.cos(math.radians(angle))
+        for number, theta in enumerate((-120, -105, -90, -75, -60)):
+            panel = lpm.box(f"solar_panel_{number}", (0.2, 0.16, 0.012), at=(r_panel + 0.015 * sine, 0, z_panel + 0.015 * cosine), color=c["solar"])
+            lpm.rotate(panel, angle, axis="Y", about=(r_panel + 0.015 * sine, 0, z_panel + 0.015 * cosine))
+            lpm.rotate(panel, theta, axis="Z", about=(0, 0, 0))
+            parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=30000 + 12000 * floors, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = list(spec["footprint"])
+    return report
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")
