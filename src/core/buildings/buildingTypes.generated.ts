@@ -59,6 +59,7 @@ export type BuildingId =
   | 'holidayNutcracker'
   | 'home'
   | 'home-aegean'
+  | 'home-banco'
   | 'home-brownstone'
   | 'home-brutalist'
   | 'home-building'

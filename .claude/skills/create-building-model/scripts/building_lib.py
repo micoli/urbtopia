@@ -6664,6 +6664,123 @@ def build_rondavel(spec, out_dir):
     return report
 
 
+def banco_pinnacle(parts, c, tag, x, y, z, size):
+    """A banco pinnacle: a small cone on a short drum, as on the pilasters of Djenne."""
+    parts.append(lpm.prism(f"{tag}_drum", 6, size * 0.55, size * 0.35, at=(x, y, z), color=c["wall"], radius_top=size * 0.45))
+    parts.append(lpm.lathe(f"{tag}_cone", [(size * 0.5, z + size * 0.35), (0.0, z + size * 1.4)], segments=6, at=(x, y, 0), color=c["wall"]))
+
+
+def build_banco(spec, out_dir):
+    """A Sahelian banco (mud-brick) house in the style of Djenne, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    A massive earthen block with vertical pilasters topped by pinnacles on every face, a pointed-arch door, small windows with colored shutters, flat roofs with a parapet, and the upper floors set back in steps from the fourth floor;
+    from Tier 3 rows of protruding toron beams, 4 roof pots and a ladder, 5 a roof tower under a pinnacle, 7 a taller tower, 8 an acacia."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("beam", "vtone2"), ("door", "vtone3"), ("dark", "udark"), ("plinth", "darkwood"), ("leaf", "bush"), ("pot", "tile"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors, tier = spec["floors"], spec["tier"]
+    fh, plinth = 0.27, 0.03
+    bx, by = w / 2 - 0.06, d / 2 - 0.06
+    parts = [lpm.box("plinth", (2 * bx + 0.04, 2 * by + 0.04, plinth), at=(0, 0, 0), color=c["plinth"])]
+
+    inset = lambda level: 0.0 if level < 3 else 0.07 * (level - 2)
+    tops = []
+    for level in range(floors):
+        i = inset(level)
+        z = plinth + level * fh
+        half_x, half_y = bx - i, by - i
+        parts.append(lpm.box(f"block_{level}", (2 * half_x, 2 * half_y, fh), at=(0, 0, z), color=c["wall"]))
+        parts.append(lpm.box(f"parapet_front_{level}", (2 * half_x, 0.03, 0.05), at=(0, -half_y + 0.015, z + fh), color=c["wall"]))
+        parts.append(lpm.box(f"parapet_back_{level}", (2 * half_x, 0.03, 0.05), at=(0, half_y - 0.015, z + fh), color=c["wall"]))
+        parts.append(lpm.box(f"parapet_left_{level}", (0.03, 2 * half_y, 0.05), at=(-half_x + 0.015, 0, z + fh), color=c["wall"]))
+        parts.append(lpm.box(f"parapet_right_{level}", (0.03, 2 * half_y, 0.05), at=(half_x - 0.015, 0, z + fh), color=c["wall"]))
+        tops.append((half_x, half_y, z + fh))
+
+    px_count = max(3, 2 * round(w) + 1) + 1
+    py_count = max(2, round(d / 0.5) + 1)
+    px = [-bx + 0.0 + k * 2 * bx / (px_count - 1) for k in range(px_count)]
+    py = [-by + k * 2 * by / (py_count - 1) for k in range(py_count)]
+    low = min(floors, 3)
+    pil_h = low * fh + 0.1
+    spots = [(x, sign * by) for x in px for sign in (-1, 1)] + [(sign * bx, y) for y in py[1:-1] for sign in (-1, 1)]
+    for number, (x, y) in enumerate(spots):
+        sx = 0.08 if abs(y) == by else 0.07
+        sy = 0.07 if abs(y) == by else 0.1
+        out_x, out_y = (0.0, 0.015 * (1 if y > 0 else -1)) if abs(y) == by else (0.015 * (1 if x > 0 else -1), 0.0)
+        parts.append(lpm.box(f"pilaster_{number}", (sx, sy, pil_h), at=(x + out_x, y + out_y, plinth), color=c["wall"]))
+        banco_pinnacle(parts, c, f"pilaster_{number}_top", x + out_x, y + out_y, plinth + pil_h, 0.075)
+
+    door_x = 0.0
+    for level in range(floors):
+        z = plinth + level * fh
+        i = inset(level)
+        half_y = by - i
+        for bay in range(px_count - 1):
+            u = (px[bay] + px[bay + 1]) / 2
+            if level > 2 or abs(u) > bx - 0.1 - i:
+                continue
+            for face, wall in (("front", -half_y), ("back", half_y)):
+                if face == "front" and level == 0 and abs(u - door_x) < 0.12:
+                    continue
+                face_box(parts, f"{face}_{level}_{bay}", face, wall, u, 0.09, 0.12, z + 0.1, 0.014, c["dark"])
+                for side in (-1, 1):
+                    face_box(parts, f"{face}_{level}_{bay}_shutter_{side}", face, wall, u + side * 0.065, 0.04, 0.12, z + 0.1, 0.018, c["door"])
+        if level <= 2:
+            for bay in range(py_count - 1):
+                u = (py[bay] + py[bay + 1]) / 2
+                for face, wall in (("left", -(bx - i)), ("right", bx - i)):
+                    face_box(parts, f"{face}_{level}_{bay}", face, wall, u, 0.09, 0.12, z + 0.1, 0.014, c["dark"])
+        if tier >= 3 and level <= 2:
+            for face, wall, count, limit in (("front", -by, px_count, bx), ("back", by, px_count, bx)):
+                for bay in range(px_count - 1):
+                    for k in range(3):
+                        u = px[bay] + (k + 1) * (px[bay + 1] - px[bay]) / 4
+                        face_box(parts, f"toron_{face}_{level}_{bay}_{k}", face, wall, u, 0.014, 0.014, z + fh - 0.05, 0.07, c["beam"])
+
+    arch_part(parts, "door_frame", "front", -by, arch_outline(door_x, plinth - 0.005, 0.2, 0.3), 0, 0.016, c["wall"])
+    arch_part(parts, "door", "front", -by, arch_outline(door_x, plinth, 0.15, 0.26), 0, 0.024, c["door"])
+
+    top_x, top_y, top_z = tops[-1]
+    if floors > 3:
+        for number, (cx, cy) in enumerate(((-1, -1), (1, -1), (-1, 1), (1, 1))):
+            banco_pinnacle(parts, c, f"roof_pinnacle_{number}", cx * (top_x - 0.05), cy * (top_y - 0.05), top_z + 0.05, 0.08)
+    if tier >= 4:
+        for number, (dx, dy) in enumerate(((-0.3, 0.12), (-0.15, 0.17))):
+            parts.append(lpm.prism(f"roof_pot_{number}", 8, 0.03, 0.05, at=(dx * min(1, top_x), dy, top_z), color=c["pot"], radius_top=0.022))
+        parts.append(lpm.box("ladder", (0.05, 0.012, 0.24), at=(top_x - 0.2, -top_y - 0.012, plinth + (floors - 1) * fh - 0.05), color=c["beam"]))
+    if tier >= 5:
+        size = 0.26 if tier < 7 else 0.32
+        height = 0.2 if tier < 7 else 0.38
+        parts.append(lpm.box("roof_tower", (size, size, height), at=(-0.05 if w >= 2 else 0.0, 0.0, top_z + 0.01), color=c["wall"]))
+        for number, (cx, cy) in enumerate(((-1, -1), (1, -1), (-1, 1), (1, 1))):
+            banco_pinnacle(parts, c, f"tower_pinnacle_{number}", (-0.05 if w >= 2 else 0.0) + cx * (size / 2 - 0.02), cy * (size / 2 - 0.02), top_z + 0.01 + height, 0.07)
+        face_box(parts, "tower_window", "front", -size / 2, -0.05 if w >= 2 else 0.0, 0.08, 0.1, top_z + 0.01 + height * 0.35, 0.014, c["dark"])
+    if tier >= 8:
+        parts.append(lpm.prism("acacia_trunk", 5, 0.02, 0.2, at=(bx + 0.02 if False else -w / 2 + 0.12, -d / 2 + 0.12, 0), color=c["beam"], radius_top=0.014))
+        parts.append(lpm.prism("acacia_crown", 8, 0.13, 0.05, at=(-w / 2 + 0.12, -d / 2 + 0.12, 0.2), color=c["leaf"], radius_top=0.1))
+
+    if spec.get("solar"):
+        count_x = max(1, int((2 * top_x - 0.3) / 0.26))
+        rows = (0.1,) if d < 2 else (-0.05, 0.25)
+        z_panel = top_z + 0.06
+        for row, y in enumerate(rows):
+            for number in range(count_x):
+                x = (number - (count_x - 1) / 2) * 0.26 + (0.0 if tier < 5 else -0.2 if w >= 2 else 0.0)
+                if tier >= 5 and abs(x + (0.05 if w >= 2 else 0.0)) < 0.2 and abs(y) < 0.2:
+                    continue
+                panel = lpm.box(f"solar_panel_{row}_{number}", (0.22, 0.17, 0.012), at=(x, y, z_panel), color=c["solar"])
+                lpm.rotate(panel, 20, axis="X", about=(x, y, z_panel))
+                parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=20000 + 9000 * floors * max(1, w * d // 2), center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
+    return report
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")
