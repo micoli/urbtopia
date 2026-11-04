@@ -7010,6 +7010,166 @@ def build_ndebele(spec, out_dir):
     return report
 
 
+def fale_hut(parts, c, tag, x, y, z, radius, rails=False):
+    """A Samoan fale: an open round house on a ring of posts under a domed thatched roof, with rolled-up woven blinds between some posts."""
+    parts.append(lpm.prism(f"{tag}_floor", 16, radius + 0.03, 0.025, at=(x, y, z), color=c["stone"]))
+    z += 0.025
+    for number in range(12):
+        angle = math.radians(number * 30)
+        parts.append(lpm.box(f"{tag}_post_{number}", (0.03, 0.03, 0.27), at=(x + radius * math.cos(angle), y + radius * math.sin(angle), z), color=c["wood"]))
+    parts.append(lpm.box(f"{tag}_centre_post", (0.035, 0.035, 0.45), at=(x, y, z), color=c["wood"]))
+    if rails:
+        fale_rails(parts, c, tag, z - 0.025, radius)
+    else:
+        for number in range(6):
+            blind = lpm.box(f"{tag}_blind_{number}", (0.012, 0.15, 0.05), at=(x + radius, y, z + 0.19), color=c["blind"])
+            lpm.rotate(blind, 15 + number * 60, axis="Z", about=(x, y, 0))
+            parts.append(blind)
+    parts.append(lpm.prism(f"{tag}_beam", 16, radius + 0.015, 0.025, at=(x, y, z + 0.27), color=c["wood"]))
+    profile = [(radius + 0.1, z + 0.25), (radius + 0.03, z + 0.32), (radius * 0.72, z + 0.45), (radius * 0.42, z + 0.56), (0.0, z + 0.64)]
+    parts.append(lpm.lathe(f"{tag}_roof", profile, segments=16, at=(x, y, 0), color=c["roof"]))
+    parts.append(lpm.lathe(f"{tag}_roof_eave", [(radius + 0.115, z + 0.24), (radius + 0.04, z + 0.31)], segments=16, at=(x, y, 0), color=c["roof"]))
+    parts.append(lpm.box(f"{tag}_finial", (0.014, 0.014, 0.06), at=(x, y, z + 0.62), color=c["wood"]))
+
+
+def fale_palm(parts, c, tag, x, y, z, height):
+    parts.append(lpm.prism(f"{tag}_trunk", 6, 0.02, height, at=(x, y, z), color=c["trunk"], radius_top=0.013))
+    for number in range(6):
+        frond = lpm.box(f"{tag}_frond_{number}", (0.09, 0.03, 0.012), at=(x + 0.045, y, z + height - 0.02), color=c["palm"])
+        lpm.rotate(frond, -22, axis="Y", about=(x, y, z + height - 0.02))
+        lpm.rotate(frond, number * 60, axis="Z", about=(x, y, z + height - 0.02))
+        parts.append(frond)
+
+
+def fale_oblong(parts, c, tag, z, radius, length):
+    """An oblong fale tele centred on the origin along X: two rounded ends and straight sides on posts, under a thatched barrel roof closed by two half domes, with rolled-up blinds on the long sides."""
+    half = length / 2
+    parts.append(lpm.box(f"{tag}_floor", (length, 2 * radius + 0.06, 0.025), at=(0, 0, z), color=c["stone"]))
+    for sign in (-1, 1):
+        parts.append(lpm.prism(f"{tag}_floor_end_{sign}", 16, radius + 0.03, 0.025, at=(sign * half, 0, z), color=c["stone"]))
+    z += 0.025
+    count = max(2, round(length / 0.2))
+    for sign in (-1, 1):
+        for number in range(count + 1):
+            parts.append(lpm.box(f"{tag}_side_post_{sign}_{number}", (0.03, 0.03, 0.27), at=(-half + number * length / count, sign * radius, z), color=c["wood"]))
+        for number in range(1, 6):
+            angle = math.radians(-90 + number * 30)
+            parts.append(lpm.box(f"{tag}_end_post_{sign}_{number}", (0.03, 0.03, 0.27), at=(sign * (half + radius * math.cos(angle)), radius * math.sin(angle), z), color=c["wood"]))
+        for number in range(1, count, 2):
+            parts.append(lpm.box(f"{tag}_blind_{sign}_{number}", (0.17, 0.012, 0.05), at=(-half + (number + 0.5) * length / count, sign * radius, z + 0.19), color=c["blind"]))
+    for number in range(3):
+        parts.append(lpm.box(f"{tag}_centre_post_{number}", (0.035, 0.035, 0.42), at=(-half * 0.6 + number * half * 0.6, 0, z), color=c["wood"]))
+    parts.append(lpm.box(f"{tag}_beam", (length, 2 * radius, 0.025), at=(0, 0, z + 0.27), color=c["wood"]))
+    for sign in (-1, 1):
+        parts.append(lpm.prism(f"{tag}_beam_end_{sign}", 16, radius + 0.015, 0.025, at=(sign * half, 0, z + 0.27), color=c["wood"]))
+    zb = z + 0.25
+    section = [(-radius - 0.1, zb), (-radius - 0.03, zb + 0.07), (-radius * 0.72, zb + 0.2), (-radius * 0.42, zb + 0.31), (0.0, zb + 0.39),
+               (radius * 0.42, zb + 0.31), (radius * 0.72, zb + 0.2), (radius + 0.03, zb + 0.07), (radius + 0.1, zb)]
+    parts.append(extrude_x(f"{tag}_roof", section, -half, half, c["roof"]))
+    profile = [(radius + 0.1, zb), (radius + 0.03, zb + 0.07), (radius * 0.72, zb + 0.2), (radius * 0.42, zb + 0.31), (0.0, zb + 0.39)]
+    for sign in (-1, 1):
+        parts.append(lpm.lathe(f"{tag}_roof_end_{sign}", profile, segments=16, at=(sign * half, 0, 0), color=c["roof"]))
+
+
+def fale_rails(parts, c, tag, z, radius, door=False):
+    """A half-openwork railing between the twelve posts of a round floor: sections alternate between a solid panel and an open one with three balusters; with `door`, the two sections at the front and the front post are replaced by a doorway."""
+    chord = 2 * radius * math.sin(math.radians(15))
+    rail_r = (radius + 0.004) * math.cos(math.radians(15))
+    for number in range(12):
+        if door and number in (8, 9):
+            continue
+        theta = 15 + number * 30
+        pieces = [(f"{tag}_rail_{number}", (0.016, chord - 0.03, 0.016), 0.125, c["wood"])]
+        if number % 2 == 0:
+            pieces.append((f"{tag}_panel_{number}", (0.012, chord - 0.03, 0.09), 0.04, c["blind"]))
+        else:
+            for baluster in range(3):
+                pieces.append((f"{tag}_baluster_{number}_{baluster}", (0.012, 0.012, 0.09), 0.04, c["wood"]))
+        for name, size, height, color in pieces:
+            along = 0.0 if "baluster" not in name else (int(name.rsplit("_", 1)[1]) - 1) * chord * 0.3
+            part = lpm.box(name, size, at=(rail_r, along, z + 0.025 + height), color=color)
+            lpm.rotate(part, theta, axis="Z", about=(0, 0, 0))
+            parts.append(part)
+    if door:
+        for name, size, height, color, along in (("door", (0.02, 0.2, 0.2), 0.0, c["door"], 0.0), ("door_lintel", (0.03, 0.26, 0.03), 0.2, c["wood"], 0.0),
+                                                 ("door_post_a", (0.03, 0.03, 0.23), 0.0, c["wood"], -0.115), ("door_post_b", (0.03, 0.03, 0.23), 0.0, c["wood"], 0.115)):
+            part = lpm.box(f"{tag}_{name}", size, at=(radius * 0.995, along, z + 0.025 + height), color=color)
+            lpm.rotate(part, -90, axis="Z", about=(0, 0, 0))
+            parts.append(part)
+
+
+def fale_level(parts, c, tag, z, radius, door=False):
+    """An intermediate open floor of a tall fale: a round floor on twelve posts under a ring of thatch; returns the height of the next floor."""
+    parts.append(lpm.prism(f"{tag}_floor", 16, radius + 0.03, 0.025, at=(0, 0, z), color=c["stone"]))
+    for number in range(12):
+        if door and number == 9:
+            continue
+        angle = math.radians(number * 30)
+        parts.append(lpm.box(f"{tag}_post_{number}", (0.03, 0.03, 0.24), at=(radius * math.cos(angle), radius * math.sin(angle), z + 0.025), color=c["wood"]))
+    parts.append(lpm.prism(f"{tag}_beam", 16, radius + 0.015, 0.025, at=(0, 0, z + 0.265), color=c["wood"]))
+    fale_rails(parts, c, tag, z, radius, door)
+    parts.append(lpm.lathe(f"{tag}_skirt", [(radius + 0.1, z + 0.255), (radius + 0.03, z + 0.33)], segments=16, at=(0, 0, 0), color=c["roof"]))
+    return z + 0.3
+
+
+def build_fale(spec, out_dir):
+    """A Samoan fale on a thin grassy mound, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    A thin grass mound with a stone course, and on it an open fale under a domed thatched roof: a round one at Tier 1, a longer oblong fale tele at Tiers 2 to 4, and from Tier 5 a round fale with intermediate open floors under thatch rings, one more per Tier, without raising the mound;
+    coconut palms from Tier 2 (one more at 3, 5 and 7), and small round fales in the front corners from Tier 6 and in all four corners at 8."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("roof", "vtone1"), ("wood", "vtone2"), ("blind", "vtone3"), ("stone", "greywood"), ("grass", "turfgreen"), ("palm", "bush"), ("trunk", "pine"), ("door", "graphite"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors, tier = spec["floors"], spec["tier"]
+    parts = [lpm.box("ground", (w - 0.01, d - 0.01, 0.02), at=(0, 0, 0), color=c["grass"]),
+             lpm.box("mound_course", (w - 0.09, d - 0.09, 0.015), at=(0, 0, 0.02), color=c["stone"]),
+             lpm.box("mound", (w - 0.1, d - 0.1, 0.03), at=(0, 0, 0.02), color=c["grass"])]
+    z_m = 0.05
+    main_radius = 0.3
+    if tier == 1:
+        fale_hut(parts, c, "fale", 0.0, 0.0, z_m, 0.33)
+        main_radius = 0.33
+    elif tier <= 4:
+        main_radius, length = {2: (0.2, 0.8), 3: (0.24, 1.0), 4: (0.28, 1.2)}[tier]
+        fale_oblong(parts, c, "fale", z_m, main_radius, length)
+    else:
+        radius, z = 0.62, z_m
+        for level in range(floors - 1):
+            z = fale_level(parts, c, f"level_{level}", z, radius, door=level == 0)
+            radius -= 0.05
+        fale_hut(parts, c, "fale", 0.0, 0.0, z, radius, rails=True)
+        main_radius = radius
+        if tier >= 6:
+            for number, sx in enumerate((-1, 1)):
+                fale_hut(parts, c, f"corner_front_{number}", sx * 0.72, -0.72, z_m, 0.14)
+        if tier >= 8:
+            for number, sx in enumerate((-1, 1)):
+                fale_hut(parts, c, f"corner_back_{number}", sx * 0.72, 0.72, z_m, 0.14)
+
+    count = sum(tier >= minimum for minimum in (2, 3, 5, 7))
+    spots = ((-1, 1), (1, 1), (-1, -1), (1, -1)) if tier < 6 else ((-1, 0.0), (1, 0.0), (-1, 0.3), (1, 0.3))
+    for number in range(count):
+        sx, sy = spots[number]
+        px, py = (sx * (w / 2 - 0.12), sy * (d / 2 - 0.12)) if tier < 6 else (sx * (w / 2 - 0.1), sy * (d / 2 - 0.12) * 1.0)
+        fale_palm(parts, c, f"palm_{number}", px, py, z_m, 0.45 + 0.05 * number)
+
+    if spec.get("solar"):
+        z_base = z_m if tier <= 4 else z
+        for number, px in enumerate((-0.12, 0.12)):
+            py = -main_radius * 0.5
+            panel = lpm.box(f"solar_panel_{number}", (0.16, 0.12, 0.012), at=(px, py, z_base + 0.025 + 0.53), color=c["solar"])
+            lpm.rotate(panel, 40, axis="X", about=(px, py, z_base + 0.025 + 0.53))
+            parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=30000 + 8000 * floors, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
+    return report
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")
