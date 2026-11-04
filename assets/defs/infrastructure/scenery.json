@@ -12,5 +12,13 @@
     "bend": "buildings-walkway-1x1-bend",
     "intersection": "buildings-walkway-1x1-intersection",
     "crossroad": "buildings-walkway-1x1-crossroad"
+  },
+  "tunnel": {
+    "square": "buildings-tunnel-1x1-square",
+    "end": "buildings-tunnel-1x1-end",
+    "straight": "buildings-tunnel-1x1-straight",
+    "bend": "buildings-tunnel-1x1-bend",
+    "intersection": "buildings-tunnel-1x1-intersection",
+    "crossroad": "buildings-tunnel-1x1-crossroad"
   }
 }

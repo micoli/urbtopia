@@ -2974,6 +2974,107 @@ def build_walkway_piece(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+def half_disc(radius, z, steps=10):
+    """The lower half of a disc as a closed outline (u, z): the round bottom and the flat top at height `z`."""
+    return [(radius * math.cos(math.pi + math.pi * i / steps), z + radius * math.sin(math.pi + math.pi * i / steps)) for i in range(steps + 1)]
+
+
+def half_ring(outer, inner, z, steps=10):
+    """The upper half of a ring as a closed outline (u, z)."""
+    arc = [(math.cos(math.pi * i / steps), math.sin(math.pi * i / steps)) for i in range(steps + 1)]
+    return [(outer * c, z + outer * n) for c, n in arc] + [(inner * c, z + inner * n) for c, n in reversed(arc)]
+
+
+def along_axis(name, outline, horizontal, start, end, lateral, color):
+    """Extrudes a closed outline (u, z) along X (`horizontal`) or Y from `start` to `end`; `lateral` is the position across the axis."""
+    low, high = min(start, end), max(start, end)
+    if horizontal:
+        return extrude_x(name, [(lateral + u, z) for u, z in outline], low, high, color)
+    return lpm.sweep(name, [(lateral + u, z) for u, z in outline], high - low, at=(0, (low + high) / 2, 0), color=color, axis="y")
+
+
+def half_ball(name, center, radius, color, u=12, v=8):
+    """The lower half of a sphere, closed by its flat top: the solid floor of a tube joint."""
+    bm = bmesh.new()
+    bmesh.ops.create_uvsphere(bm, u_segments=u, v_segments=v, radius=radius)
+    cut = bmesh.ops.bisect_plane(bm, geom=list(bm.verts) + list(bm.edges) + list(bm.faces), plane_co=(0, 0, 0), plane_no=(0, 0, 1), clear_outer=True)
+    edges = [edge for edge in bm.edges if len(edge.link_faces) == 1]
+    bmesh.ops.edgeloop_fill(bm, edges=edges)
+    bmesh.ops.translate(bm, verts=bm.verts, vec=Vector(center))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    return lpm._object(name, bm, color)
+
+
+def ring_sector(center, inner, outer, start, end, steps=8):
+    """A flat sector of a ring around `center` as a closed outline (x, y), between two angles in degrees."""
+    angles = [math.radians(start + (end - start) * i / steps) for i in range(steps + 1)]
+    cx, cy = center
+    return [(cx + outer * math.cos(a), cy + outer * math.sin(a)) for a in angles] + [(cx + inner * math.cos(a), cy + inner * math.sin(a)) for a in reversed(angles)]
+
+
+def build_tunnel_piece(spec, out_dir):
+    """A Metro Tunnel tile filling its 1x1 cell edge to edge, as a tube cut open lengthwise: its lower half is solid, with a dark bed and two rails on the flat top, and its upper half is only arches, so the inside shows. `piece` names the open sides as for the road pieces; a mint flange (half disc and arch) closes each open edge so tubes meet flange to flange, a solid half ball with two crossing arches joins tubes that bend, branch or end. In a bend the two rails are continuous and curved: they run straight from each edge to a quarter circle of radius 0.25 around the corner of the cell. Game sides map to the model as E +X, W -X, N +Y, S -Y."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    mint, dark, wall, frame, wood = (index(n) for n in ("uroof", "udark", "uwall", "uframe", "uwood"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    exits = WALKWAY_PIECES[spec["piece"]]
+    vectors = {"E": (1, 0), "W": (-1, 0), "N": (0, 1), "S": (0, -1)}
+    radius, flange_r, axis_z, arch_t, arch_w, gauge = 0.22, 0.245, 0.25, 0.022, 0.03, 0.08
+    straight = len(exits) == 2 and vectors[exits[0]][0] == -vectors[exits[1]][0] and vectors[exits[0]][1] == -vectors[exits[1]][1]
+    bend = spec["piece"] == "bend"
+    parts = []
+
+    def arch(name, horizontal, position, size, color):
+        outline = half_ring(size, size - arch_t, axis_z)
+        parts.append(along_axis(name, outline, horizontal, position - arch_w / 2, position + arch_w / 2, 0.0, color))
+
+    if not straight:
+        parts.append(half_ball("joint", (0, 0, axis_z), radius + 0.015, wall))
+        parts.append(lpm.prism("joint_bed", 12, radius - 0.02, 0.01, at=(0, 0, axis_z), color=dark))
+        arch("joint_arch_x", True, 0.0, radius + 0.015, wall)
+        arch("joint_arch_y", False, 0.0, radius + 0.015, wall)
+    # The straight part of an arm runs from the edge to `inner` (the whole arm outside a bend).
+    inner = 0.25 if bend else 0.0
+    for side in exits:
+        vx, vy = vectors[side]
+        horizontal = bool(vx)
+        sign = vx or vy
+        parts.append(along_axis(f"tube_{side}", half_disc(radius, axis_z), horizontal, 0.0, sign * 0.5, 0.0, wall))
+        length = 0.5 - inner
+        middle = sign * (inner + length / 2)
+        parts.append(lpm.box(f"bed_{side}", (length, 0.4, 0.01) if horizontal else (0.4, length, 0.01), at=(middle, 0, axis_z) if horizontal else (0, middle, axis_z), color=dark))
+        for lane, offset in enumerate((-gauge, gauge)):
+            size = (length, 0.02, 0.026) if horizontal else (0.02, length, 0.026)
+            at = (middle, offset, axis_z + 0.01) if horizontal else (offset, middle, axis_z + 0.01)
+            parts.append(lpm.box(f"rail_{side}_{lane}", size, at=at, color=frame))
+        for number in range(1, 5):
+            t = 0.1 * number
+            if t < inner:
+                continue
+            size = (0.035, 0.22, 0.012) if horizontal else (0.22, 0.035, 0.012)
+            parts.append(lpm.box(f"sleeper_{side}_{number}", size, at=(vx * t, vy * t, axis_z + 0.01), color=wood))
+        arch(f"arch_{side}", horizontal, sign * (0.3 if bend else 0.25), radius + 0.015, wall)
+        parts.append(along_axis(f"flange_{side}", half_disc(flange_r, axis_z), horizontal, sign * 0.46, sign * 0.5, 0.0, mint))
+        parts.append(along_axis(f"flange_arch_{side}", half_ring(flange_r, flange_r - 0.03, axis_z), horizontal, sign * 0.46, sign * 0.5, 0.0, mint))
+    if bend:
+        corner, turn = (-0.25, -0.25), 0.25
+        parts.append(lpm.sweep("bed_curve", ring_sector(corner, turn - 0.2, turn + 0.2, 0, 90), 0.01, at=(0, 0, axis_z), color=dark, axis="z"))
+        for lane, offset in enumerate((-gauge, gauge)):
+            parts.append(lpm.sweep(f"rail_curve_{lane}", ring_sector(corner, turn + offset - 0.01, turn + offset + 0.01, 0, 90), 0.026, at=(0, 0, axis_z + 0.01), color=frame, axis="z"))
+        for number in range(1, 6):
+            angle = math.radians(90 * number / 6)
+            cx, cy = corner[0] + turn * math.cos(angle), corner[1] + turn * math.sin(angle)
+            parts.append(lpm.sweep(f"sleeper_curve_{number}", ring_sector((corner[0], corner[1]), turn - 0.11, turn + 0.11, math.degrees(angle) - 2.5, math.degrees(angle) + 2.5, steps=1), 0.012, at=(0, 0, axis_z + 0.01), color=wood, axis="z"))
+    if straight:
+        vx, vy = vectors[exits[0]]
+        arch("band_arch", bool(vx), 0.0, flange_r, mint)
+    ob = lpm.finish(spec["id"], parts, palette, budget=2500, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def parked_bike(parts, name, x, y, frame_color, tire, metal, scale=1.0):
     """A bicycle seen from the front, standing on the ground with its axis along x: two wheels, a frame, a saddle and handlebars, all scaled by `scale`."""
     k = scale

@@ -1,16 +1,12 @@
 import * as THREE from 'three';
-import { PEDESTRIAN_ACCESS_MODEL, WALKWAY_MODELS } from '../core/infrastructure/infrastructure';
+import { PEDESTRIAN_ACCESS_MODEL, TUNNEL_MODELS, WALKWAY_MODELS } from '../core/infrastructure/infrastructure';
 import { ModelInstances, type Placement } from './ModelInstances';
 import type { ModelLibrary } from './modelLibrary';
-import { DIRECTION_VECTORS, DIRECTIONS, neighbour, pedestrianAccessRotation, roadPiece, SURFACE, disconnectedWalkways, footprintTiles, isMetroStationActive, metroStations, tileKey, type GameState, type Level } from '../core';
+import { DIRECTIONS, neighbour, pedestrianAccessRotation, roadPiece, SURFACE, disconnectedWalkways, footprintTiles, isMetroStationActive, metroStations, tileKey, type GameState, type Level } from '../core';
 
 // A walkway no access reaches is tinted red.
 const DISCONNECTED_TINT = 0xff8a80;
 const MAX_TILES = 4096;
-const MAX_TUNNEL_PIECES = MAX_TILES * 5;
-const TUNNEL_HEIGHT = 0.14;
-const TUNNEL_WIDTH = 0.5;
-const TUNNEL_COLOR = 0x3d4350;
 const PLATFORM_COLOR = 0x4fa3a5;
 const PLATFORM_INACTIVE_COLOR = 0x7a7f86;
 const PLATFORM_HEIGHT = 0.2;
@@ -22,8 +18,7 @@ export class UndergroundLayer {
   readonly tunnelsRoot = new THREE.Group();
   private walkways: Record<string, ModelInstances>;
   private accesses: ModelInstances;
-  private tunnelMaterial = new THREE.MeshLambertMaterial({ color: TUNNEL_COLOR });
-  private tunnels = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), this.tunnelMaterial, MAX_TUNNEL_PIECES);
+  private tunnels: Record<string, ModelInstances>;
   private platformMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
   private platforms = new THREE.InstancedMesh(new THREE.BoxGeometry(0.96, PLATFORM_HEIGHT, 0.96), this.platformMaterial, MAX_TILES);
   private matrix = new THREE.Matrix4();
@@ -36,13 +31,13 @@ export class UndergroundLayer {
   constructor(library: ModelLibrary) {
     this.walkways = Object.fromEntries(Object.entries(WALKWAY_MODELS).map(([piece, model]) => [piece, new ModelInstances(library, model, MAX_TILES)]));
     this.accesses = new ModelInstances(library, PEDESTRIAN_ACCESS_MODEL, MAX_TILES);
-    for (const mesh of [this.tunnels, this.platforms]) {
-      mesh.frustumCulled = false;
-      mesh.count = 0;
-    }
+    this.tunnels = Object.fromEntries(Object.entries(TUNNEL_MODELS).map(([piece, model]) => [piece, new ModelInstances(library, model, MAX_TILES)]));
+    this.platforms.frustumCulled = false;
+    this.platforms.count = 0;
     for (const instances of Object.values(this.walkways)) this.walkwaysRoot.add(instances.root);
     this.accessesRoot.add(this.accesses.root);
-    this.tunnelsRoot.add(this.tunnels, this.platforms);
+    for (const instances of Object.values(this.tunnels)) this.tunnelsRoot.add(instances.root);
+    this.tunnelsRoot.add(this.platforms);
     this.walkwaysRoot.visible = false;
     this.tunnelsRoot.visible = false;
   }
@@ -69,12 +64,11 @@ export class UndergroundLayer {
   }
 
   dispose(): void {
-    for (const instances of [...Object.values(this.walkways), this.accesses]) instances.dispose();
-    for (const mesh of [this.tunnels, this.platforms]) {
+    for (const instances of [...Object.values(this.walkways), ...Object.values(this.tunnels), this.accesses]) instances.dispose();
+    for (const mesh of [this.platforms]) {
       mesh.dispose();
       mesh.geometry.dispose();
     }
-    this.tunnelMaterial.dispose();
     this.platformMaterial.dispose();
   }
 
@@ -97,24 +91,16 @@ export class UndergroundLayer {
     this.accesses.update((state.pedestrianAccesses ?? []).map((tile) => ({ x: tile.x + 0.5, z: tile.y + 0.5, rotation: pedestrianAccessRotation(state, tile) })));
   }
 
-  // One box per tile centre and one per exit, reaching the middle of the edge.
+  // A Tunnel tile takes the piece of the exits it is joined by, as a road tile does.
   private drawTunnels(state: GameState): void {
-    let count = 0;
-    const place = (x: number, z: number, sizeX: number, sizeZ: number) => {
-      if (count >= MAX_TUNNEL_PIECES) return;
-      this.matrix.makeScale(sizeX, TUNNEL_HEIGHT, sizeZ).setPosition(x, TUNNEL_HEIGHT / 2, z);
-      this.tunnels.setMatrixAt(count++, this.matrix);
-    };
+    const byPiece = new Map<string, Placement[]>();
     for (const tile of state.tunnels ?? []) {
-      const x = tile.x + 0.5, z = tile.y + 0.5;
-      place(x, z, TUNNEL_WIDTH, TUNNEL_WIDTH);
-      for (const exit of tile.exits) {
-        const vector = DIRECTION_VECTORS[exit];
-        place(x + vector.x * 0.25, z + vector.y * 0.25, vector.x === 0 ? TUNNEL_WIDTH : 0.5, vector.y === 0 ? TUNNEL_WIDTH : 0.5);
-      }
+      const { piece, rotation } = roadPiece(tile.exits);
+      const list = byPiece.get(piece) ?? [];
+      list.push({ x: tile.x + 0.5, z: tile.y + 0.5, rotation });
+      byPiece.set(piece, list);
     }
-    this.tunnels.count = count;
-    this.tunnels.instanceMatrix.needsUpdate = true;
+    for (const [piece, instances] of Object.entries(this.tunnels)) instances.update(byPiece.get(piece) ?? []);
   }
 
   private drawPlatforms(state: GameState): void {

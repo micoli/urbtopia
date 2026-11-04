@@ -30,7 +30,7 @@ import { setWindowGlow, setWindowNight, windowGlowLevel, windowNightClock } from
 import { DAY_BACKGROUND, lightingOf, type DayLighting } from './dayLighting';
 import { ServiceCoverageLayer } from './ServiceCoverageLayer';
 import { LevelFloor } from './LevelFloor';
-import { PEDESTRIAN_ACCESS_MODEL, WALKWAY_MODELS } from '../core/infrastructure/infrastructure';
+import { PEDESTRIAN_ACCESS_MODEL, TUNNEL_MODELS, WALKWAY_MODELS } from '../core/infrastructure/infrastructure';
 import { UndergroundLayer } from './UndergroundLayer';
 import { surfaceDisplayOf } from './levelDisplay';
 
@@ -419,7 +419,7 @@ export class GameScene {
         const serviceType = this.serviceCoverageType;
         const roadTints = congestionTints(congestionStats(state));
         const items = renderItemsOf(state, this.afterHarvest, roadTints);
-        await this.library.ensure([...items.map((item) => item.model), ...(state.pedestrianAccesses?.length ? [PEDESTRIAN_ACCESS_MODEL] : []), ...(state.walkways?.length ? Object.values(WALKWAY_MODELS) : [])]);
+        await this.library.ensure([...items.map((item) => item.model), ...(state.pedestrianAccesses?.length ? [PEDESTRIAN_ACCESS_MODEL] : []), ...(state.walkways?.length ? Object.values(WALKWAY_MODELS) : []), ...(state.tunnels?.length ? Object.values(TUNNEL_MODELS) : [])]);
         await this.library.ensureTextureVariants(items.flatMap(item => item.textureVariant ? [item.textureVariant] : []));
         this.world.sync(items);
         const focus = serviceType ? null : this.coverageFocus;

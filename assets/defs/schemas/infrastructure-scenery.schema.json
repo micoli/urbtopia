@@ -69,6 +69,50 @@
       ],
       "additionalProperties": false
     },
+    "tunnel": {
+      "type": "object",
+      "properties": {
+        "square": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "end": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "straight": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "bend": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "intersection": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "crossroad": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        }
+      },
+      "required": [
+        "square",
+        "end",
+        "straight",
+        "bend",
+        "intersection",
+        "crossroad"
+      ],
+      "additionalProperties": false
+    },
     "customers": {
       "minItems": 1,
       "type": "array",
@@ -85,6 +129,7 @@
     "groundPanel",
     "pedestrianAccess",
     "walkway",
+    "tunnel",
     "customers"
   ],
   "additionalProperties": false,
