@@ -89,6 +89,30 @@
       }
     }
   ],
+  "solarPanels": {
+    "panels": [
+      {
+        "model": "industrial-solar-panel-landscape",
+        "x": 0.665,
+        "y": -0.222,
+        "z": 0.148,
+        "rotationX": 0,
+        "rotationY": -90,
+        "rotationZ": 0,
+        "scale": 0.8
+      },
+      {
+        "model": "industrial-solar-panel-landscape",
+        "x": -0.64,
+        "y": -0.213,
+        "z": -0.104,
+        "rotationY": 90,
+        "scale": 0.8,
+        "rotationX": 0,
+        "rotationZ": 0
+      }
+    ]
+  },
   "extraCopyCitizens": [1000, 2000, 4000, 4000],
   "priceFactor": 1.25
 }

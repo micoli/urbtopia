@@ -64,5 +64,18 @@
       }
     }
   ],
+  "solarPanels": {
+    "panels": [
+      {
+        "model": "industrial-solar-panel-flat",
+        "x": 0.225,
+        "y": -0.182,
+        "z": 0,
+        "rotationX": 0,
+        "rotationY": 0,
+        "rotationZ": -37.1
+      }
+    ]
+  },
   "goodCategory": "construction"
 }

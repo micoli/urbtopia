@@ -64,6 +64,19 @@
       }
     }
   ],
+  "solarPanels": {
+    "panels": [
+      {
+        "model": "industrial-solar-panel-landscape",
+        "x": 0.135,
+        "y": -0.176,
+        "z": 0,
+        "rotationX": 0,
+        "rotationY": 0,
+        "rotationZ": 0
+      }
+    ]
+  },
   "goodCategory": "all",
   "slotPriceFactor": 2
 }

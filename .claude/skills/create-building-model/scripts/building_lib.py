@@ -4105,6 +4105,164 @@ def build_padel(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+def net_run(parts, name, start, end, height, base, frame, net, post_gap=0.5, gaps=()):
+    """A straight ball-stop net on posts with a top rail, from `start` to `end` (axis-aligned). `gaps` are (from, to) distances along the run left open."""
+    (x0, y0), (x1, y1) = start, end
+    length = abs(x1 - x0) + abs(y1 - y0)
+    along_x = abs(x1 - x0) > 0
+    posts = max(2, math.ceil(length / post_gap) + 1)
+    step = length / (posts - 1)
+
+    def at(distance):
+        return (x0 + (x1 - x0) * distance / length, y0 + (y1 - y0) * distance / length)
+
+    def open_at(distance):
+        return any(a - 1e-6 < distance < b + 1e-6 for a, b in gaps)
+
+    edges = sorted({0.0, length, *[v for gap in gaps for v in gap]})
+    for number in range(posts):
+        distance = number * step
+        if any(a + 1e-6 < distance < b - 1e-6 for a, b in gaps):
+            continue
+        x, y = at(distance)
+        parts.append(lpm.box(f"{name}_post_{number}", (0.014, 0.014, height), at=(x, y, base), color=frame))
+    for number, (a, b) in enumerate(zip(edges, edges[1:])):
+        if open_at((a + b) / 2):
+            continue
+        x, y = at((a + b) / 2)
+        rail = (b - a, 0.012, 0.008) if along_x else (0.012, b - a, 0.008)
+        parts.append(lpm.box(f"{name}_rail_{number}", rail, at=(x, y, base + height - 0.008), color=frame))
+        for level, fraction in enumerate((0.0, 0.33, 0.66)):
+            thread = (b - a, 0.004, 0.004) if along_x else (0.004, b - a, 0.004)
+            parts.append(lpm.box(f"{name}_thread_{number}_{level}", thread, at=(x, y, base + 0.01 + (height - 0.03) * fraction), color=net))
+        strands = max(1, round((b - a) / 0.08))
+        for strand in range(strands + 1):
+            sx, sy = at(a + (b - a) * strand / strands)
+            parts.append(lpm.box(f"{name}_strand_{number}_{strand}", (0.004, 0.004, height - 0.016), at=(sx, sy, base + 0.01), color=net))
+
+
+def arc_line(parts, name, center, radius, start, stop, z, color, width=0.014, step=15.0):
+    """A painted arc from `start` to `stop` degrees (0 = +X, counter-clockwise) made of short flat boxes."""
+    count = max(1, round(abs(stop - start) / step))
+    for number in range(count):
+        a0 = math.radians(start + (stop - start) * number / count)
+        a1 = math.radians(start + (stop - start) * (number + 1) / count)
+        p0 = (radius * math.cos(a0), radius * math.sin(a0))
+        p1 = (radius * math.cos(a1), radius * math.sin(a1))
+        length = math.hypot(p1[0] - p0[0], p1[1] - p0[1]) + width * 0.5
+        piece = lpm.box(f"{name}_{number}", (length, width, 0.004), at=(0, 0, 0), color=color)
+        lpm.rotate(piece, math.degrees(math.atan2(p1[1] - p0[1], p1[0] - p0[0])), "Z")
+        lpm.move(piece, center[0] + (p0[0] + p1[0]) / 2, center[1] + (p0[1] + p1[1]) / 2, z)
+        parts.append(piece)
+
+
+def build_basketball_court(spec, out_dir):
+    """A small street basketball court filling 2x3: an orange surface with white lines, blue keys and a center circle on a grey apron, a hoop on a pole at each end, and ball-stop nets on posts around the court (taller behind the hoops, with a gap on one side)."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    apron, court, white, key, frame, net, rim = (index(n) for n in ("uslab", "tangerine", "white", "cobalt", "graphite", "utrim", "brick"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = []
+    base, half_x, half_y = 0.02, 0.9, 1.4
+    parts.append(lpm.box("apron", (1.98, 2.98, base), at=(0, 0, 0), color=apron))
+    parts.append(lpm.box("surface", (2 * half_x, 2 * half_y, 0.006), at=(0, 0, base), color=court))
+    top = base + 0.006
+    line = 0.014
+    hoop_y = 1.27
+    for end in (-1, 1):
+        parts.append(lpm.box(f"key_{end}", (0.42, 0.62, 0.002), at=(0, end * (half_y - 0.31), top), color=key))
+        parts.append(lpm.box(f"free_throw_{end}", (0.42 + line, line, 0.004), at=(0, end * (half_y - 0.62), top), color=white))
+        for side in (-1, 1):
+            parts.append(lpm.box(f"key_side_{end}_{side}", (line, 0.62, 0.004), at=(side * 0.21, end * (half_y - 0.31), top), color=white))
+        parts.append(lpm.box(f"end_line_{end}", (2 * half_x - 0.02, line, 0.004), at=(0, end * (half_y - line / 2), top), color=white))
+        arc_line(parts, f"free_throw_circle_{end}", (0, end * (half_y - 0.62)), 0.2, *((180, 360) if end == 1 else (0, 180)), top, white)
+        arc_line(parts, f"three_point_{end}", (0, end * hoop_y), 0.7, *((180, 360) if end == 1 else (0, 180)), top, white)
+        for side in (-1, 1):
+            parts.append(lpm.box(f"three_point_side_{end}_{side}", (line, half_y - hoop_y, 0.004), at=(side * 0.7, end * (hoop_y + (half_y - hoop_y) / 2), top), color=white))
+    for side in (-1, 1):
+        parts.append(lpm.box(f"side_line_{side}", (line, 2 * half_y, 0.004), at=(side * (half_x - line / 2), 0, top), color=white))
+    parts.append(lpm.box("half_line", (2 * half_x, line, 0.004), at=(0, 0, top), color=white))
+    arc_line(parts, "center_circle", (0, 0), 0.2, 0, 360, top, white, step=20.0)
+    arc_line(parts, "center_dot", (0, 0), 0.04, 0, 360, top, white, width=0.04, step=45.0)
+
+    pole_y, board_y, rim_y = 1.46, 1.34, 1.27
+    for end in (-1, 1):
+        parts.append(lpm.prism(f"pole_{end}", 6, 0.016, 0.34, at=(0, end * pole_y, base), color=frame))
+        parts.append(lpm.box(f"arm_{end}", (0.02, 0.14, 0.02), at=(0, end * (pole_y - 0.07), base + 0.3), color=frame))
+        parts.append(lpm.box(f"board_{end}", (0.22, 0.008, 0.13), at=(0, end * board_y, base + 0.24), color=white))
+        parts.append(lpm.box(f"board_mark_{end}", (0.08, 0.009, 0.05), at=(0, end * (board_y - end * 0.001), base + 0.265), color=frame))
+        parts.append(lpm.lathe(f"rim_{end}", [(0.04, 0.0), (0.04, 0.006), (0.052, 0.006), (0.052, 0.0)], segments=10, at=(0, end * rim_y, base + 0.255), color=rim))
+        parts.append(lpm.prism(f"hoop_net_{end}", 8, 0.046, 0.05, at=(0, end * rim_y, base + 0.205), color=white, radius_top=0.026))
+
+    fence_x, fence_y = 0.97, 1.47
+    for end in (-1, 1):
+        net_run(parts, f"back_{end}", (-fence_x, end * fence_y), (fence_x, end * fence_y), 0.5, base, frame, net)
+    for side in (-1, 1):
+        gaps = ((1.2, 1.8),) if side == 1 else ()
+        net_run(parts, f"side_{side}", (side * fence_x, -fence_y), (side * fence_x, fence_y), 0.24, base, frame, net, gaps=gaps)
+    ob = lpm.finish(spec["id"], parts, palette, budget=6000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+def build_football_pitch(spec, out_dir):
+    """A small five-a-side football pitch filling 2x4: a two-tone striped lawn with white lines, a center circle and two small penalty areas on a grey apron, a goal with a net at each end, corner flags, and ball-stop nets on posts around the pitch (taller behind the goals, low on the sides, with a gap on one side)."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    apron, grass_a, grass_b, white, frame, net, flag = (index(n) for n in ("uslab", "softgreen", "bush", "white", "graphite", "utrim", "sun"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = []
+    base, half_x, half_y = 0.02, 0.9, 1.9
+    parts.append(lpm.box("apron", (1.98, 3.98, base), at=(0, 0, 0), color=apron))
+    stripes = 8
+    stripe = 2 * half_y / stripes
+    for number in range(stripes):
+        parts.append(lpm.box(f"stripe_{number}", (2 * half_x, stripe, 0.006), at=(0, -half_y + stripe * (number + 0.5), base), color=grass_a if number % 2 == 0 else grass_b))
+    top = base + 0.006
+    line = 0.014
+    for end in (-1, 1):
+        parts.append(lpm.box(f"goal_line_{end}", (2 * half_x - 0.02, line, 0.004), at=(0, end * (half_y - line / 2), top), color=white))
+        area_depth = 0.42
+        parts.append(lpm.box(f"area_front_{end}", (0.96 + line, line, 0.004), at=(0, end * (half_y - area_depth), top), color=white))
+        for side in (-1, 1):
+            parts.append(lpm.box(f"area_side_{end}_{side}", (line, area_depth, 0.004), at=(side * 0.48, end * (half_y - area_depth / 2), top), color=white))
+        parts.append(lpm.box(f"penalty_spot_{end}", (0.03, 0.03, 0.004), at=(0, end * (half_y - 0.62), top), color=white))
+        arc_line(parts, f"area_arc_{end}", (0, end * (half_y - 0.62)), 0.26, *((180, 360) if end == 1 else (0, 180)), top, white, step=20.0)
+    for side in (-1, 1):
+        parts.append(lpm.box(f"touch_line_{side}", (line, 2 * half_y, 0.004), at=(side * (half_x - line / 2), 0, top), color=white))
+    parts.append(lpm.box("half_line", (2 * half_x, line, 0.004), at=(0, 0, top), color=white))
+    arc_line(parts, "center_circle", (0, 0), 0.27, 0, 360, top, white, step=20.0)
+    arc_line(parts, "center_dot", (0, 0), 0.04, 0, 360, top, white, width=0.04, step=45.0)
+
+    goal_half, goal_height, goal_depth = 0.2, 0.13, 0.08
+    for end in (-1, 1):
+        mouth = end * (half_y - 0.02)
+        back = end * (half_y - 0.02 + goal_depth)
+        for side in (-1, 1):
+            parts.append(lpm.box(f"goal_post_{end}_{side}", (0.014, 0.014, goal_height), at=(side * goal_half, mouth, top), color=white))
+            parts.append(lpm.box(f"goal_back_post_{end}_{side}", (0.01, 0.01, goal_height * 0.8), at=(side * goal_half, back, top), color=white))
+            parts.append(lpm.box(f"goal_side_net_{end}_{side}", (0.005, goal_depth, goal_height * 0.9), at=(side * goal_half, (mouth + back) / 2, top), color=net))
+        parts.append(lpm.box(f"goal_bar_{end}", (2 * goal_half + 0.014, 0.014, 0.014), at=(0, mouth, top + goal_height - 0.014), color=white))
+        parts.append(lpm.box(f"goal_back_net_{end}", (2 * goal_half, 0.005, goal_height * 0.8), at=(0, back, top), color=net))
+        parts.append(lpm.box(f"goal_roof_net_{end}", (2 * goal_half, goal_depth, 0.005), at=(0, (mouth + back) / 2, top + goal_height * 0.85), color=net))
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            parts.append(lpm.box(f"flag_pole_{sx}_{sy}", (0.006, 0.006, 0.07), at=(sx * (half_x - 0.01), sy * (half_y - 0.01), top), color=white))
+            parts.append(lpm.box(f"flag_{sx}_{sy}", (0.03, 0.004, 0.02), at=(sx * (half_x - 0.01) - sx * 0.012, sy * (half_y - 0.01), top + 0.05), color=flag))
+
+    fence_x, fence_y = 0.97, 1.97
+    for end in (-1, 1):
+        net_run(parts, f"back_{end}", (-fence_x, end * fence_y), (fence_x, end * fence_y), 0.5, base, frame, net)
+    for side in (-1, 1):
+        gaps = ((1.6, 2.2),) if side == 1 else ()
+        net_run(parts, f"side_{side}", (side * fence_x, -fence_y), (side * fence_x, fence_y), 0.24, base, frame, net, gaps=gaps)
+    ob = lpm.finish(spec["id"], parts, palette, budget=7000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def build_colosseum(spec, out_dir):
     """A ruined colosseum filling 5x5: an elliptical ring of arcaded bays turned 45 degrees, three arch levels and an attic on the tall side, stepping down to broken stumps on the other, with stepped seating, a sand arena with low cellar walls, rubble and bushes."""
     style = spec.get("style", "urbtopia")

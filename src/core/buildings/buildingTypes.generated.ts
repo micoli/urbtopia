@@ -12,6 +12,7 @@ export type BuildingId =
   | 'backup'
   | 'bakery'
   | 'baseballField'
+  | 'basketballCourt'
   | 'battery'
   | 'bilbaoMuseum'
   | 'brtStation'
@@ -36,6 +37,7 @@ export type BuildingId =
   | 'farm'
   | 'ferris-wheel'
   | 'fireStation'
+  | 'foot5'
   | 'footballStadium'
   | 'geothermalPlant'
   | 'grainSilo'
@@ -317,6 +319,8 @@ export type BuildingId =
 
 export type SportVenueType =
   | 'baseballField'
+  | 'basketballCourt'
+  | 'foot5'
   | 'footballStadium'
   | 'padelCourts'
   | 'stadium';

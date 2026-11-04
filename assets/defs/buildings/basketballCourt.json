@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "sport",
+  "section": "build.sport",
+  "model": "buildings-basketball-court-2x3",
+  "footprint": [2, 3],
+  "cost": 400,
+  "unlockCitizens": 50,
+  "requiresRoad": true,
+  "name": {
+    "en": "Basketball court",
+    "fr": "Terrain de basket"
+  },
+  "description": {
+    "en": "A small street basketball court with two hoops and ball-stop nets around it. It raises the Well-being of Homes in a {side}-tile square around it (+{wellbeingBonus}, like a service) and needs no power. It covers {width}×{depth} tiles; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs.",
+    "fr": "Un petit terrain de basket de quartier avec deux paniers et des filets de protection tout autour. Il augmente le bien-être des logements à moins de {side} cases (+{wellbeingBonus}) et ne consomme pas d’électricité. Il occupe {width}×{depth} cases ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs."
+  },
+  "radius": 5,
+  "wellbeingBonus": 3
+}

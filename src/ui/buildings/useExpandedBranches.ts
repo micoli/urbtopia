@@ -27,5 +27,10 @@ export function useExpandedBranches() {
     writeExpanded(next);
     setExpanded(next);
   };
-  return { expanded, toggle };
+  const replace = (branches: Iterable<string>) => {
+    const next = new Set(branches);
+    writeExpanded(next);
+    setExpanded(next);
+  };
+  return { expanded, toggle, replace };
 }
