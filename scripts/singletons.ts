@@ -57,10 +57,11 @@ export const SINGLETONS = {
     title: 'Scenery',
     schemaName: 'infrastructure-scenery',
     schema: sceneryInfrastructureSchema,
-    references: ({ parkTree, roofPanel, groundPanel, customers }: { parkTree: string; roofPanel: string; groundPanel: string; customers: string[] }) => [
+    references: ({ parkTree, roofPanel, groundPanel, pedestrianAccess, customers }: { parkTree: string; roofPanel: string; groundPanel: string; pedestrianAccess: string; customers: string[] }) => [
       model(parkTree, 'parkTree'),
       model(roofPanel, 'roofPanel'),
       model(groundPanel, 'groundPanel'),
+      model(pedestrianAccess, 'pedestrianAccess'),
       ...customers.map((id, index) => model(id, `customers.${index}`)),
     ],
   },

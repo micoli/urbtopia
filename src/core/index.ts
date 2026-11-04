@@ -66,7 +66,7 @@ export { LEVELS, SURFACE, UNDERGROUND_LEVELS, isLevel, isUnderground, levelAbove
 export type { Level } from './map/level';
 export { UNDERGROUND, levelUnlocked, undergroundUnlocked } from './underground/underground';
 export { isMetroStationActive, metroStations, stationStairTiles } from './underground/metro';
-export { PEDESTRIAN_ACCESS_COST, WALKWAY_COST_FACTOR, activeAccesses, disconnectedWalkways, missingWalkwayTiles, pedestrianAccessesOf, touchesWalkingSurface, walkwayBuildCost, walkwayCostPerTile, walkwaysOf } from './underground/walkways';
+export { PEDESTRIAN_ACCESS_COST, WALKWAY_COST_FACTOR, activeAccesses, disconnectedWalkways, pedestrianAccessRotation, missingWalkwayTiles, pedestrianAccessesOf, touchesWalkingSurface, walkwayBuildCost, walkwayCostPerTile, walkwaysOf } from './underground/walkways';
 export type { Layout, LayoutHint, RoomReport, VenuePerformance, FixtureSpec, FixtureCategory } from './venues/venues';
 export type { VenueEvent } from './engine/state';
 export type { StaffRole, FixtureId, VenueType, ArcadeFixtureId, SupermarketFixtureId, HotelFixtureId, VenueData, VenueFixture, Boat, BoatFamily, Bridge, Building, BuildingType, GameState, ColorVariant, ParcelCoord, MarketPrice, QueueEntry, RoadTile, PedestrianWayTile, Rotation, FieldTile, PlantedCrop, SeedStock, ShopStack, Storage } from './engine/state';

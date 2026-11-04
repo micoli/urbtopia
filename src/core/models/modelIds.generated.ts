@@ -723,6 +723,7 @@ export type ModelId =
   | 'buildings-solar-2x2-t3'
   | 'buildings-solar-2x2-t4'
   | 'buildings-stadium-9x5-tone-a'
+  | 'buildings-stair-entrance-1x1'
   | 'buildings-stands-3x1'
   | 'buildings-stands-4x1'
   | 'buildings-stands-5x1'

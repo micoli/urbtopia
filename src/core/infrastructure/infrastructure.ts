@@ -34,4 +34,6 @@ export const ROOF_PANEL_MODEL = modelFileOf(scenery.roofPanel);
 
 export const GROUND_PANEL_MODEL = modelFileOf(scenery.groundPanel);
 
+export const PEDESTRIAN_ACCESS_MODEL = modelFileOf(scenery.pedestrianAccess);
+
 export const VENUE_CUSTOMER_MODELS: readonly string[] = scenery.customers.map(modelFileOf);

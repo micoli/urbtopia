@@ -2874,6 +2874,61 @@ def build_metro_station(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+def build_stair_entrance(spec, out_dir):
+    """A Pedestrian access filling its 1x1 cell: a low stone curb around a small open stairwell, five steps going down to a dark floor with a yellow nosing each, black iron railings on both sides and the back, the front open, and a pole at the front right corner carrying a round sign with a "WALK" bar."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    mint, dark, slab, white, navy, sun = (index(n) for n in ("uroof", "udark", "uslab", "white", "navy", "sun"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = []
+    curb_h, curb_w = 0.05, 0.06
+    hole_w, hole_d, hole_cy = 0.5, 0.5, 0.08
+    hx0, hx1 = -hole_w / 2, hole_w / 2
+    hy0, hy1 = hole_cy - hole_d / 2, hole_cy + hole_d / 2
+    ring = [("left", hx0 - curb_w, hx0, hy0 - curb_w, hy1 + curb_w), ("right", hx1, hx1 + curb_w, hy0 - curb_w, hy1 + curb_w), ("front", hx0, hx1, hy0 - curb_w, hy0), ("back", hx0, hx1, hy1, hy1 + curb_w)]
+    for name, x0, x1, y0, y1 in ring:
+        parts.append(lpm.box(f"curb_{name}", (x1 - x0, y1 - y0, curb_h), at=((x0 + x1) / 2, (y0 + y1) / 2, 0.0), color=slab))
+    parts.append(lpm.box("floor", (hole_w, hole_d, 0.006), at=(0, hole_cy, 0.0), color=dark))
+    steps, run = 5, hole_d / 6
+    for number in range(steps):
+        top = curb_h - 0.006 - 0.008 * number
+        y = hy0 + number * run
+        parts.append(lpm.box(f"step_{number}", (hole_w - 0.02, run, top), at=(0, y + run / 2, 0.0), color=slab))
+        parts.append(lpm.box(f"nosing_{number}", (hole_w - 0.02, 0.012, 0.006), at=(0, y + 0.006, top), color=sun))
+    rail_h, post = 0.15, 0.018
+    def railing(name, x0, y0, x1, y1):
+        length = math.hypot(x1 - x0, y1 - y0)
+        along_x = abs(x1 - x0) >= abs(y1 - y0)
+        count = max(2, round(length / 0.2) + 1)
+        for number in range(count):
+            t = number / (count - 1)
+            parts.append(lpm.box(f"{name}_post_{number}", (post, post, rail_h + 0.02), at=(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, curb_h), color=dark))
+        size = (length, 0.012, 0.012) if along_x else (0.012, length, 0.012)
+        mid = ((x0 + x1) / 2, (y0 + y1) / 2)
+        parts.append(lpm.box(f"{name}_rail_top", size, at=(mid[0], mid[1], curb_h + rail_h), color=dark))
+        parts.append(lpm.box(f"{name}_rail_bottom", size, at=(mid[0], mid[1], curb_h + 0.03), color=dark))
+        bars = max(1, round(length / 0.05))
+        for number in range(bars):
+            t = (number + 0.5) / bars
+            parts.append(lpm.box(f"{name}_bar_{number}", (0.006, 0.006, rail_h - 0.03), at=(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, curb_h + 0.03), color=dark))
+    inset = 0.02
+    railing("rail_left", hx0 - inset, hy0, hx0 - inset, hy1 + inset)
+    railing("rail_right", hx1 + inset, hy0, hx1 + inset, hy1 + inset)
+    railing("rail_back", hx0 - inset, hy1 + inset, hx1 + inset, hy1 + inset)
+    pole_x, pole_y, sign_z = 0.38, -0.42, 0.42
+    parts.append(lpm.prism("pole", 8, 0.012, 0.46, at=(pole_x, pole_y, 0.0), color=dark))
+    radius = 0.09
+    parts.append(disc("roundel", pole_x, pole_y - 0.02, sign_z, radius, 0.01, mint))
+    parts.append(disc("roundel_face", pole_x, pole_y - 0.027, sign_z, radius - 0.024, 0.005, white))
+    parts.append(lpm.box("bar", (0.26, 0.01, 0.04), at=(pole_x, pole_y - 0.032, sign_z - 0.02), color=navy))
+    parts.append(glyph_decal({"cfg": cfg}, "bar_text", "front", "WALK", pole_x, sign_z - 0.02 + 0.006, 0.028, white, -(pole_y - 0.032 - 0.005) + 0.002))
+    ob = lpm.finish(spec["id"], parts, palette, budget=2500, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def parked_bike(parts, name, x, y, frame_color, tire, metal, scale=1.0):
     """A bicycle seen from the front, standing on the ground with its axis along x: two wheels, a frame, a saddle and handlebars, all scaled by `scale`."""
     k = scale

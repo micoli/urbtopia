@@ -2,7 +2,8 @@ import { GAME_CONFIG } from '../engine/config';
 import type { CommandOutcome } from '../engine/commands';
 import type { GameState } from '../engine/state';
 import type { Coord } from '../map/coord';
-import { DIRECTIONS, neighbour, tileKey } from '../map/geometry';
+import { DIRECTIONS, frontDirection, neighbour, tileKey } from '../map/geometry';
+import type { Rotation } from '../engine/state';
 import { isInsideOwnedParcels, isRoadLike, occupiedTiles } from '../map/occupancy';
 import { roadPath } from '../map/roads';
 import { PEDESTRIAN_WAY_COST_FACTOR } from '../map/roadCost';
@@ -47,6 +48,18 @@ export function touchesWalkingSurface(state: GameState, tile: Coord): boolean {
     const next = neighbour(tile, direction);
     return isRoadLike(state, next) || ways.has(tileKey(next)) || corridors.has(tileKey(next));
   });
+}
+
+// The stair turns its open front towards the road, the pedestrian way or the BRT corridor it stands against.
+export function pedestrianAccessRotation(state: GameState, tile: Coord): Rotation {
+  const ways = new Set((state.pedestrianWays ?? []).map(tileKey));
+  const corridors = new Set((state.brtRoads ?? []).map(tileKey));
+  const towards = DIRECTIONS.find((direction) => {
+    const next = neighbour(tile, direction);
+    return isRoadLike(state, next) || ways.has(tileKey(next)) || corridors.has(tileKey(next));
+  });
+  const rotation = ([0, 1, 2, 3] as const).find((candidate) => frontDirection(candidate) === towards);
+  return rotation ?? 0;
 }
 
 // Walkways lying in no walkway group that an active access reaches.

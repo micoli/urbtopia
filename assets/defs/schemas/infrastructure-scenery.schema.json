@@ -20,6 +20,11 @@
       "pattern": "\\S",
       "modelId": true
     },
+    "pedestrianAccess": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    },
     "customers": {
       "minItems": 1,
       "type": "array",
@@ -34,9 +39,10 @@
     "parkTree",
     "roofPanel",
     "groundPanel",
+    "pedestrianAccess",
     "customers"
   ],
   "additionalProperties": false,
   "title": "Scenery",
-  "description": "assets/defs/infrastructure/scenery.json: park trees, solar panels and Venue visitors."
+  "description": "assets/defs/infrastructure/scenery.json: park trees, solar panels, Pedestrian access stairs and Venue visitors."
 }

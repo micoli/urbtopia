@@ -1,13 +1,13 @@
 import * as THREE from 'three';
-import { DIRECTION_VECTORS, SURFACE, activeAccesses, disconnectedWalkways, footprintTiles, isMetroStationActive, metroStations, tileKey, type GameState, type Level } from '../core';
+import { PEDESTRIAN_ACCESS_MODEL } from '../core/infrastructure/infrastructure';
+import { fitMatrixOf } from './modelFit';
+import type { ModelLibrary } from './modelLibrary';
+import { DIRECTION_VECTORS, pedestrianAccessRotation, SURFACE, activeAccesses, disconnectedWalkways, footprintTiles, isMetroStationActive, metroStations, tileKey, type GameState, type Level } from '../core';
 
 const WALKWAY_HEIGHT = 0.1;
-const ACCESS_HEIGHT = 0.3;
 const WALKWAY_COLOR = 0xcfc6b4;
 const ACCESS_WALKWAY_COLOR = 0xe0a030;
 const DISCONNECTED_COLOR = 0xb85450;
-const ACCESS_COLOR = 0xd9a441;
-const ACCESS_HOLE_COLOR = 0x2b2620;
 const MAX_TILES = 4096;
 const MAX_TUNNEL_PIECES = MAX_TILES * 5;
 const TUNNEL_HEIGHT = 0.14;
@@ -24,10 +24,7 @@ export class UndergroundLayer {
   readonly tunnelsRoot = new THREE.Group();
   private walkwayMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
   private walkways = new THREE.InstancedMesh(new THREE.BoxGeometry(0.94, WALKWAY_HEIGHT, 0.94), this.walkwayMaterial, MAX_TILES);
-  private accessMaterial = new THREE.MeshLambertMaterial({ color: ACCESS_COLOR });
-  private holeMaterial = new THREE.MeshBasicMaterial({ color: ACCESS_HOLE_COLOR });
-  private accesses = new THREE.InstancedMesh(new THREE.BoxGeometry(0.8, ACCESS_HEIGHT, 0.8), this.accessMaterial, MAX_TILES);
-  private holes = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.02, 0.5), this.holeMaterial, MAX_TILES);
+  private accessMeshes: { mesh: THREE.InstancedMesh; base: THREE.Matrix4 }[] = [];
   private tunnelMaterial = new THREE.MeshLambertMaterial({ color: TUNNEL_COLOR });
   private tunnels = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), this.tunnelMaterial, MAX_TUNNEL_PIECES);
   private platformMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
@@ -39,13 +36,12 @@ export class UndergroundLayer {
   private tunnelsState: GameState['tunnels'];
   private stationsState: GameState['buildings'] | undefined;
 
-  constructor() {
-    for (const mesh of [this.walkways, this.accesses, this.holes, this.tunnels, this.platforms]) {
+  constructor(private library: ModelLibrary) {
+    for (const mesh of [this.walkways, this.tunnels, this.platforms]) {
       mesh.frustumCulled = false;
       mesh.count = 0;
     }
     this.walkwaysRoot.add(this.walkways);
-    this.accessesRoot.add(this.accesses, this.holes);
     this.tunnelsRoot.add(this.tunnels, this.platforms);
     this.walkwaysRoot.visible = false;
     this.tunnelsRoot.visible = false;
@@ -73,13 +69,14 @@ export class UndergroundLayer {
   }
 
   dispose(): void {
-    for (const mesh of [this.walkways, this.accesses, this.holes, this.tunnels, this.platforms]) {
+    for (const { mesh } of this.accessMeshes) {
+      mesh.dispose();
+    }
+    for (const mesh of [this.walkways, this.tunnels, this.platforms]) {
       mesh.dispose();
       mesh.geometry.dispose();
     }
     this.walkwayMaterial.dispose();
-    this.accessMaterial.dispose();
-    this.holeMaterial.dispose();
     this.tunnelMaterial.dispose();
     this.platformMaterial.dispose();
   }
@@ -135,17 +132,33 @@ export class UndergroundLayer {
     if (this.platforms.instanceColor) this.platforms.instanceColor.needsUpdate = true;
   }
 
+  // The stair model is instanced once per sub-mesh; the layer waits for the library to hold it.
+  private accessInstances(): { mesh: THREE.InstancedMesh; base: THREE.Matrix4 }[] {
+    if (this.accessMeshes.length > 0 || !this.library.has(PEDESTRIAN_ACCESS_MODEL)) return this.accessMeshes;
+    const fit = fitMatrixOf(PEDESTRIAN_ACCESS_MODEL);
+    this.library.get(PEDESTRIAN_ACCESS_MODEL).updateMatrixWorld(true);
+    this.library.get(PEDESTRIAN_ACCESS_MODEL).traverse((node) => {
+      const source = node as THREE.Mesh;
+      if (!source.isMesh) return;
+      const mesh = new THREE.InstancedMesh(source.geometry, source.material, MAX_TILES);
+      mesh.frustumCulled = false;
+      mesh.count = 0;
+      this.accessesRoot.add(mesh);
+      this.accessMeshes.push({ mesh, base: fit.clone().multiply(source.matrixWorld) });
+    });
+    return this.accessMeshes;
+  }
+
   private drawAccesses(state: GameState): void {
     const tiles = (state.pedestrianAccesses ?? []).slice(0, MAX_TILES);
-    tiles.forEach((tile, index) => {
-      this.matrix.makeTranslation(tile.x + 0.5, ACCESS_HEIGHT / 2, tile.y + 0.5);
-      this.accesses.setMatrixAt(index, this.matrix);
-      this.matrix.makeTranslation(tile.x + 0.5, ACCESS_HEIGHT + 0.01, tile.y + 0.5);
-      this.holes.setMatrixAt(index, this.matrix);
-    });
-    this.accesses.count = tiles.length;
-    this.holes.count = tiles.length;
-    this.accesses.instanceMatrix.needsUpdate = true;
-    this.holes.instanceMatrix.needsUpdate = true;
+    const placement = new THREE.Matrix4();
+    for (const { mesh, base } of this.accessInstances()) {
+      tiles.forEach((tile, index) => {
+        placement.makeRotationY((pedestrianAccessRotation(state, tile) * Math.PI) / 2).setPosition(tile.x + 0.5, 0, tile.y + 0.5);
+        mesh.setMatrixAt(index, placement.clone().multiply(base));
+      });
+      mesh.count = tiles.length;
+      mesh.instanceMatrix.needsUpdate = true;
+    }
   }
 }

@@ -34,7 +34,9 @@ export const sceneryInfrastructureSchema = z
     parkTree: modelId,
     roofPanel: modelId,
     groundPanel: modelId,
+    // The stair of a Pedestrian access down to Level -1.
+    pedestrianAccess: modelId,
     // Visitors of every Venue: women and men alternate so neighbours differ.
     customers: z.array(modelId).min(1),
   })
-  .meta({ title: 'Scenery', description: 'assets/defs/infrastructure/scenery.json: park trees, solar panels and Venue visitors.' });
+  .meta({ title: 'Scenery', description: 'assets/defs/infrastructure/scenery.json: park trees, solar panels, Pedestrian access stairs and Venue visitors.' });
