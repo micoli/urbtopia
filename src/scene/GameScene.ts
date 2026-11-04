@@ -1,7 +1,7 @@
 import { EcologyLayer } from './EcologyLayer';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { GAME_CONFIG, SURFACE, WILD_RIM_TILES, congestionStats, footbridgeStops, pedestrianGraph, wildNoiseAt, wildTerrain, type Building, type GameState, type FacilityType, type Level } from '../core';
+import { GAME_CONFIG, SURFACE, footprintOf, WILD_RIM_TILES, congestionStats, footbridgeStops, pedestrianGraph, wildNoiseAt, wildTerrain, type Building, type GameState, type FacilityType, type Level } from '../core';
 import { bridgeElevation } from './bridgeElevation';
 import { CameraController } from './CameraController';
 import { StreetViewController } from './StreetViewController';
@@ -32,6 +32,7 @@ import { ServiceCoverageLayer } from './ServiceCoverageLayer';
 import { LevelFloor } from './LevelFloor';
 import { PEDESTRIAN_ACCESS_MODEL, TUNNEL_MODELS, WALKWAY_MODELS } from '../core/infrastructure/infrastructure';
 import { UndergroundLayer } from './UndergroundLayer';
+import { HighlightLayer, tileRect } from './HighlightLayer';
 import { surfaceDisplayOf } from './levelDisplay';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
@@ -62,6 +63,11 @@ export interface SceneHandlers {
   onBrushEnd: () => void;
   onBrushCancel: () => void;
 }
+
+const footprintDimensions = (building: Building): { width: number; depth: number } => {
+  const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
+  return { width, depth };
+};
 
 export class GameScene {
   private renderer: THREE.WebGLRenderer;
@@ -140,6 +146,12 @@ export class GameScene {
   private frameBudget = new FrameBudgetMonitor();
   private level: Level = SURFACE;
   private levelFloor = new LevelFloor();
+  // What moves on the Surface sits in one group, so an underground Level hides it whatever each layer does with its own visibility.
+  private movers = new THREE.Group();
+  // The Metro stations of the Surface, drawn in full colour on Level -2 where the rest of the Surface is a ghost, and the places to find from below.
+  private stationWorld = new ChunkedWorld(this.library);
+  private stationGlow = new HighlightLayer(0x4fd1b0);
+  private accessGlow = new HighlightLayer(0xffd23f);
   private levelBudget = new FrameBudgetMonitor();
   private slowForLevels = false;
   private trafficEnabled = true;
@@ -158,7 +170,8 @@ export class GameScene {
     this.scene.environmentIntensity = 0.25;
     const sun = this.sun, sky = this.sky;
     sun.position.set(20, 40, 10);
-    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.attractionCrowd.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root, this.analyticsLayer.root, this.levelFloor.root, this.underground.walkwaysRoot, this.underground.accessesRoot, this.underground.tunnelsRoot, this.ecologyLayer.transit.metroRoot, this.undergroundWalkers.root);
+    this.movers.add(this.attractionCrowd.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root);
+    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.movers, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root, this.analyticsLayer.root, this.levelFloor.root, this.stationWorld.root, this.stationGlow.root, this.accessGlow.root, this.underground.walkwaysRoot, this.underground.accessesRoot, this.underground.tunnelsRoot, this.ecologyLayer.transit.metroRoot, this.undergroundWalkers.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.streetView = new StreetViewController(canvas);
@@ -299,11 +312,15 @@ export class GameScene {
 
   private applyLevel(): void {
     const onSurface = this.level === SURFACE;
+    this.movers.visible = onSurface;
+    this.stationWorld.root.visible = this.level === -2;
+    this.stationGlow.setVisible(this.level === -2);
+    this.accessGlow.setVisible(this.level === -1);
     this.levelFloor.setLevel(this.level);
     this.underground.setLevel(this.level);
     this.undergroundWalkers.root.visible = this.level === -1 && this.trafficEnabled;
     this.ecologyLayer.transit.metroRoot.visible = this.level === -2;
-    for (const root of [this.ground, this.parcels, this.scenery.root, this.ecologyLayer.root, this.congestion.root, this.attractionCrowd.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.serviceCoverageLayer.root]) root.visible = onSurface;
+    for (const root of [this.ground, this.parcels, this.scenery.root, this.ecologyLayer.root, this.congestion.root, this.bridges.root, this.serviceCoverageLayer.root]) root.visible = onSurface;
     this.world.setDisplay(surfaceDisplayOf(this.level, this.slowForLevels));
   }
 
@@ -404,6 +421,8 @@ export class GameScene {
     this.serviceCoverageLayer.dispose();
     this.analyticsLayer.dispose();
     this.levelFloor.dispose();
+    this.stationGlow.dispose();
+    this.accessGlow.dispose();
     this.underground.dispose();
     this.undergroundWalkers.dispose();
     this.renderer.dispose();
@@ -422,6 +441,10 @@ export class GameScene {
         await this.library.ensure([...items.map((item) => item.model), ...(state.pedestrianAccesses?.length ? [PEDESTRIAN_ACCESS_MODEL] : []), ...(state.walkways?.length ? Object.values(WALKWAY_MODELS) : []), ...(state.tunnels?.length ? Object.values(TUNNEL_MODELS) : [])]);
         await this.library.ensureTextureVariants(items.flatMap(item => item.textureVariant ? [item.textureVariant] : []));
         this.world.sync(items);
+        const stations = new Set(state.buildings.filter((building) => building.type === 'metroStation').map((building) => building.id));
+        this.stationWorld.sync(items.filter((item) => item.buildingId !== undefined && stations.has(item.buildingId)));
+        this.stationGlow.set(state.buildings.filter((building) => stations.has(building.id)).map((building) => ({ x: building.x, y: building.y, ...footprintDimensions(building) })));
+        this.accessGlow.set((state.pedestrianAccesses ?? []).map(tileRect));
         const focus = serviceType ? null : this.coverageFocus;
         this.serviceCoverageLayer.sync(state, serviceType ?? focus?.type ?? null, focus?.facilityId ?? null);
         this.analyticsLayer.sync(state, this.analyticsLayerId, this.analyticsCategory, this.analyticsBuildingId);
@@ -664,6 +687,9 @@ export class GameScene {
     this.serviceVehicles.update(delta);
     this.boats.update(delta, this.bridges.closedTiles);
     this.world.cull(this.activeCamera);
+    if (this.level === -2) this.stationWorld.cull(this.activeCamera);
+    this.stationGlow.update(delta);
+    this.accessGlow.update(delta);
     this.renderer.render(this.scene, this.activeCamera);
     this.frameHandle = requestAnimationFrame(this.frame);
   };

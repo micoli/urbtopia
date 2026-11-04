@@ -568,3 +568,31 @@ describe('underground tools', () => {
     expect(evaluateTool(tool, { state, tile: { x: corner.x + 1, y: corner.y }, rotation: null }).issue).toBe('error.itemLocked');
   });
 });
+
+describe('Pedestrian access tools', () => {
+  const crowd = { ...state, buildings: Array.from({ length: 300 }, (_, index) => createBuilding(100 + index, 'home', 0, 0, 0)), nextId: 1000 };
+  const origin = state.ownedParcels[0]!;
+  const corner = { x: origin.x * GAME_CONFIG.parcelSizeInTiles + 1, y: origin.y * GAME_CONFIG.parcelSizeInTiles + 1 };
+  const withRoad = { ...crowd, roads: [{ ...corner, kind: 'road' as const }] };
+  const below = { x: corner.x, y: corner.y + 1 };
+
+  it('turn the open front with the rotation key and carry it in the command', () => {
+    const tool: Tool = { kind: 'pedestrianAccess' };
+    const first = evaluateTool(tool, { state: withRoad, tile: below, rotation: null });
+    expect(first.rotation).toBe(0);
+    const turned = evaluateTool(tool, { state: withRoad, tile: below, rotation: 2 });
+    expect(turned.rotation).toBe(2);
+    expect(turned.command).toMatchObject({ type: 'BuildPedestrianAccess', rotation: 2 });
+    expect(turned.ghost.front?.direction).toBe('S');
+  });
+
+  it('move a stair for free and keep its turn until the key is pressed', () => {
+    const built = { ...withRoad, pedestrianAccesses: [{ ...below, rotation: 3 as const }] };
+    const tool: Tool = { kind: 'movePedestrianAccess', from: below };
+    const preview = evaluateTool(tool, { state: built, tile: { x: corner.x, y: corner.y - 1 }, rotation: null });
+    expect(preview.rotation).toBe(3);
+    expect(preview.cost).toBe(0);
+    expect(preview.command).toMatchObject({ type: 'MovePedestrianAccess', from: below, rotation: 3 });
+    expect(confirmTool(tool, below, preview).nextTool).toBeNull();
+  });
+});

@@ -370,7 +370,7 @@ function structureFailure(value: Json): string | null {
     entries('roads', () => value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string) && ((road as Json).tier === undefined || isInt((road as Json).tier, 1, MAX_ROAD_TIER))),
     entries('pedestrianWays', () => value.pedestrianWays, (tile) => isRecord(tile) && isCoord(tile) && (tile.tier === undefined || isInt(tile.tier, 1, MAX_ROAD_TIER)), true),
     entries('walkways', () => value.walkways, (tile) => isRecord(tile) && isCoord(tile), true),
-    entries('pedestrianAccesses', () => value.pedestrianAccesses, (tile) => isRecord(tile) && isCoord(tile), true),
+    entries('pedestrianAccesses', () => value.pedestrianAccesses, (tile) => isRecord(tile) && isCoord(tile) && (tile.rotation === undefined || isInt(tile.rotation, 0, 3)), true),
     entries('tunnels', () => value.tunnels, isTransitTile('rails'), true),
     entries('roundabouts', () => value.roundabouts, (center) => isCoord(center)),
     field('tutorial', () => value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep)),

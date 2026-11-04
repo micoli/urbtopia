@@ -28,6 +28,7 @@ import {
   roadBuildCost,
   pedestrianWayBuildCost,
   walkwayBuildCost,
+  pedestrianAccessRotation,
   roadPath,
   solarInstallCostOf,
   roundaboutTiles,
@@ -62,6 +63,7 @@ export type Tool =
   | { kind: 'walkway'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'demolishWalkway'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'pedestrianAccess' }
+  | { kind: 'movePedestrianAccess'; from: Coord }
   | { kind: 'demolishPedestrianAccess' }
   | { kind: 'crossing' }
   | { kind: 'removeCrossing' }
@@ -205,7 +207,9 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
     case 'demolishWalkway':
       return evaluateDemolishWalkway(state, tool, tile);
     case 'pedestrianAccess':
-      return evaluation([tile], { type: 'BuildPedestrianAccess', x: tile.x, y: tile.y }, state);
+      return evaluateAccess(state, tile, rotation, null);
+    case 'movePedestrianAccess':
+      return evaluateAccess(state, tile, rotation, tool.from);
     case 'demolishPedestrianAccess':
       return evaluation([tile], { type: 'DemolishPedestrianAccess', x: tile.x, y: tile.y }, state);
     case 'crossing':
@@ -428,6 +432,14 @@ function evaluatePedestrianWay(state: GameState, tool: Extract<Tool, { kind: 'pe
   return evaluation(path, { type: 'BuildPedestrianWay', from: tool.start, to: tile, horizontalFirst: tool.horizontalFirst }, state, { cost: pedestrianWayBuildCost(state, path) });
 }
 
+// The open front of a stair turns with the rotation key; moving one keeps its turn until the player changes it.
+function evaluateAccess(state: GameState, tile: Coord, rotation: Rotation | null, from: Coord | null): Evaluation {
+  const turn = rotation ?? pedestrianAccessRotation(state, from ?? tile);
+  const command: Command = from ? { type: 'MovePedestrianAccess', from, x: tile.x, y: tile.y, rotation: turn } : { type: 'BuildPedestrianAccess', x: tile.x, y: tile.y, rotation: turn };
+  const result = evaluation([tile], command, state, { rotation: turn, ...(from ? { cost: 0 } : {}) });
+  return { ...result, ghost: { ...result.ghost, front: { x: tile.x + 0.5, z: tile.y + 0.5, direction: frontDirection(turn) } } };
+}
+
 function evaluateWalkway(state: GameState, tool: Extract<Tool, { kind: 'walkway' }>, tile: Coord): Evaluation {
   if (!tool.start) return { ghost: { tiles: [tile], rects: [], valid: true, front: null }, valid: true, issue: null, command: null, cost: null, rotation: null };
   const path = roadPath(tool.start, tile, tool.horizontalFirst);
@@ -474,6 +486,6 @@ export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTo
   if (pathTool) return { command: current.command, nextTool: { ...tool, start: null } };
   if (tool.kind === 'building') return { command: current.command, nextTool: keepTool || tool.repeat ? tool : null };
   if (tool.kind === 'boat') return { command: current.command, nextTool: keepTool ? tool : null };
-  if (tool.kind === 'move' || tool.kind === 'moveBridge') return { command: current.command, nextTool: null };
+  if (tool.kind === 'move' || tool.kind === 'moveBridge' || tool.kind === 'movePedestrianAccess') return { command: current.command, nextTool: null };
   return { command: current.command, nextTool: tool };
 }

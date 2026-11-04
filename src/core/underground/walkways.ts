@@ -3,7 +3,7 @@ import type { CommandOutcome } from '../engine/commands';
 import type { GameState } from '../engine/state';
 import type { Coord } from '../map/coord';
 import { DIRECTIONS, frontDirection, neighbour, tileKey } from '../map/geometry';
-import type { Rotation } from '../engine/state';
+import type { PedestrianAccess, Rotation } from '../engine/state';
 import { isInsideOwnedParcels, isRoadLike, occupiedTiles } from '../map/occupancy';
 import { roadPath } from '../map/roads';
 import { PEDESTRIAN_WAY_COST_FACTOR } from '../map/roadCost';
@@ -21,7 +21,7 @@ export function walkwaysOf(state: GameState): readonly Coord[] {
   return state.walkways ?? [];
 }
 
-export function pedestrianAccessesOf(state: GameState): readonly Coord[] {
+export function pedestrianAccessesOf(state: GameState): readonly PedestrianAccess[] {
   return state.pedestrianAccesses ?? [];
 }
 
@@ -50,8 +50,10 @@ export function touchesWalkingSurface(state: GameState, tile: Coord): boolean {
   });
 }
 
-// The stair turns its open front towards the road, the pedestrian way or the BRT corridor it stands against.
+// The stair turns its open front as the player chose, or else towards the road, the pedestrian way or the BRT corridor it stands against.
 export function pedestrianAccessRotation(state: GameState, tile: Coord): Rotation {
+  const turned = pedestrianAccessesOf(state).find((access) => tileKey(access) === tileKey(tile))?.rotation;
+  if (turned !== undefined) return turned;
   const ways = new Set((state.pedestrianWays ?? []).map(tileKey));
   const corridors = new Set((state.brtRoads ?? []).map(tileKey));
   const towards = DIRECTIONS.find((direction) => {
@@ -99,14 +101,28 @@ export function demolishWalkways(state: GameState, tiles: readonly Coord[]): Com
   return { state: { ...state, walkways: walkwaysOf(state).filter((tile) => !targets.has(tileKey(tile))) }, events: [] };
 }
 
-export function buildPedestrianAccess(state: GameState, tile: Coord): CommandOutcome {
+export function buildPedestrianAccess(state: GameState, tile: Coord, rotation?: Rotation): CommandOutcome {
   if (!undergroundUnlocked(state)) return { key: 'error.itemLocked' };
   if (!Number.isInteger(tile.x) || !Number.isInteger(tile.y)) return { key: 'error.unknownCommand' };
   if (!isInsideOwnedParcels(state, tile)) return { key: 'error.outsideOwnedParcels' };
   if (occupiedTiles(state).has(tileKey(tile))) return { key: 'error.tilesOccupied' };
   if (!touchesWalkingSurface(state, tile)) return { key: 'error.accessNeedsPath' };
   if (state.urbs < PEDESTRIAN_ACCESS_COST) return { key: 'error.notEnoughUrbs' };
-  return { state: { ...state, urbs: state.urbs - PEDESTRIAN_ACCESS_COST, pedestrianAccesses: [...pedestrianAccessesOf(state), tile] }, events: [] };
+  return { state: { ...state, urbs: state.urbs - PEDESTRIAN_ACCESS_COST, pedestrianAccesses: [...pedestrianAccessesOf(state), accessAt(tile, rotation)] }, events: [] };
+}
+
+const accessAt = (tile: Coord, rotation?: Rotation): PedestrianAccess => ({ x: tile.x, y: tile.y, ...(rotation !== undefined ? { rotation } : {}) });
+
+// Moving or turning a stair costs nothing; the walkway under it stays where it is.
+export function movePedestrianAccess(state: GameState, from: Coord, to: Coord, rotation?: Rotation): CommandOutcome {
+  const key = tileKey(from);
+  if (!pedestrianAccessesOf(state).some((access) => tileKey(access) === key)) return { key: 'error.noWalkwayHere' };
+  if (!Number.isInteger(to.x) || !Number.isInteger(to.y)) return { key: 'error.unknownCommand' };
+  const without = { ...state, pedestrianAccesses: pedestrianAccessesOf(state).filter((access) => tileKey(access) !== key) };
+  if (!isInsideOwnedParcels(without, to)) return { key: 'error.outsideOwnedParcels' };
+  if (occupiedTiles(without).has(tileKey(to))) return { key: 'error.tilesOccupied' };
+  if (!touchesWalkingSurface(without, to)) return { key: 'error.accessNeedsPath' };
+  return { state: { ...state, pedestrianAccesses: [...pedestrianAccessesOf(without), accessAt(to, rotation)] }, events: [] };
 }
 
 export function demolishPedestrianAccess(state: GameState, tile: Coord): CommandOutcome {

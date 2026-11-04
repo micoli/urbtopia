@@ -58,7 +58,7 @@ import { applyTradeEffect, confirmTradeEffect, rollbackTradeEffect, type TradeRe
 import type { TradeEffect, TradeLine } from '../trade/types';
 import type { ChallengeRewardKind } from '../challenges/types';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
-import { buildPedestrianAccess, buildWalkway, demolishPedestrianAccess, demolishWalkways } from '../underground/walkways';
+import { buildPedestrianAccess, buildWalkway, demolishPedestrianAccess, demolishWalkways, movePedestrianAccess } from '../underground/walkways';
 import type { BlackjackAction } from '../leisure/blackjack';
 import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, ColorVariant, NetworkMode, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 import { isHomeType } from '../buildings/buildingDefinitions';
@@ -88,7 +88,8 @@ export type Command =
   | { readonly type: 'DemolishPedestrianWayPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'BuildWalkway'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'DemolishWalkwayPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
-  | { readonly type: 'BuildPedestrianAccess'; readonly x: number; readonly y: number }
+  | { readonly type: 'BuildPedestrianAccess'; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'MovePedestrianAccess'; readonly from: Coord; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'DemolishPedestrianAccess'; readonly x: number; readonly y: number }
   | { readonly type: 'PlaceCrossing'; readonly x: number; readonly y: number }
   | { readonly type: 'RemoveCrossing'; readonly x: number; readonly y: number }
@@ -344,7 +345,9 @@ export function handleCommand(state: GameState, command: Command, now: number): 
     case 'DemolishWalkwayPath':
       return demolishWalkways(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
     case 'BuildPedestrianAccess':
-      return buildPedestrianAccess(state, { x: command.x, y: command.y });
+      return buildPedestrianAccess(state, { x: command.x, y: command.y }, command.rotation);
+    case 'MovePedestrianAccess':
+      return movePedestrianAccess(state, command.from, { x: command.x, y: command.y }, command.rotation);
     case 'DemolishPedestrianAccess':
       return demolishPedestrianAccess(state, { x: command.x, y: command.y });
     case 'PlaceCrossing':

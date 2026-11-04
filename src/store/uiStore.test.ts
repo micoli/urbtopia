@@ -535,3 +535,32 @@ describe('Levels', () => {
     expect(uiStore.getState().selectedBuildingId).toBeNull();
   });
 });
+
+describe('Pedestrian access selection', () => {
+  const access = { x: 20, y: 21 };
+
+  beforeEach(() => {
+    uiStore.setState({ level: 0, tool: null, flyout: null, selectedBuildingId: null, selectedAccess: null, moveMode: false });
+    gameStore.getState().replaceState({ ...gameStore.getState().state, buildings: [], pedestrianAccesses: [{ ...access, rotation: 1 }] });
+  });
+
+  it('picks a stair by tapping it and drops it when something else is picked', () => {
+    uiStore.getState().tapTile(access);
+    expect(uiStore.getState().selectedAccess).toEqual(access);
+    uiStore.getState().select(7);
+    expect(uiStore.getState()).toMatchObject({ selectedAccess: null, selectedBuildingId: 7 });
+  });
+
+  it('taps empty ground to drop the pick', () => {
+    uiStore.getState().tapTile(access);
+    uiStore.getState().tapTile({ x: 1, y: 1 });
+    expect(uiStore.getState().selectedAccess).toBeNull();
+  });
+
+  it('moves the picked stair with the move tool, which closes the pick', () => {
+    uiStore.getState().tapTile(access);
+    uiStore.getState().moveSelectedAccess();
+    expect(uiStore.getState().tool).toEqual({ kind: 'movePedestrianAccess', from: access });
+    expect(uiStore.getState().selectedAccess).toBeNull();
+  });
+});

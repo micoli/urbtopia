@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import { SURFACE, levelOfLayer, bridgeAt, footprintTiles, isInfrastructureBridge, levelAbove, levelBelow, levelUnlocked, nextFront, type AnalyticsLayerId, type Coord, type CropId, type Level, type Rotation, type ServiceCategory } from '../core';
+import { SURFACE, levelOfLayer, pedestrianAccessesOf, bridgeAt, footprintTiles, isInfrastructureBridge, levelAbove, levelBelow, levelUnlocked, nextFront, type AnalyticsLayerId, type Coord, type CropId, type Level, type Rotation, type ServiceCategory } from '../core';
 import { readAnalyticsCategory, readAnalyticsLayer, writeAnalyticsCategory, writeAnalyticsLayer } from '../ui/analytics/analyticsLayerPref';
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
@@ -33,6 +33,9 @@ export interface UiStore {
   hovered: Coord | null;
   pinnedTile: Coord | null;
   selectedBuildingId: number | null;
+  // A Pedestrian access picked on the Surface, to turn, move or demolish.
+  selectedAccess: Coord | null;
+  moveSelectedAccess: () => void;
   flyout: Flyout;
   statsOpen: boolean;
   toggleStats: () => void;
@@ -138,7 +141,7 @@ function evaluate(tool: Tool | null, tile: Coord, rotation: Rotation | null): Ev
 // One window at a time: opening a window, or a flyout menu, closes the others.
 const NO_WINDOW_OPEN = { statsOpen: false, politicsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false } as const;
 // The settings window is modal, so opening it also closes the panels around the map.
-const WINDOWS_CLOSED = { ...NO_WINDOW_OPEN, serviceCoverageOpen: false, buildingSearchOpen: false, flyout: null, selectedBuildingId: null } as const;
+const WINDOWS_CLOSED = { ...NO_WINDOW_OPEN, serviceCoverageOpen: false, buildingSearchOpen: false, flyout: null, selectedBuildingId: null, selectedAccess: null } as const;
 
 export const uiStore = createStore<UiStore>((set, get) => {
   const reevaluate = (patch: Partial<Pick<UiStore, 'tool' | 'rotation' | 'centerTile' | 'pointerKind' | 'hovered' | 'pinnedTile'>> = {}) => {
@@ -159,9 +162,9 @@ export const uiStore = createStore<UiStore>((set, get) => {
     locatorTimer = setTimeout(() => set({ locator: null }), LOCATOR_DURATION_MS);
   };
   let grabOffset: Coord = { x: 0, y: 0 };
-  const startMove = (tool: Extract<Tool, { kind: 'move' | 'moveBridge' }>, tile: Coord) => {
+  const startMove = (tool: Extract<Tool, { kind: 'move' | 'moveBridge' | 'movePedestrianAccess' }>, tile: Coord) => {
     grabOffset = { x: 0, y: 0 };
-    set({ selectedBuildingId: null });
+    set({ selectedBuildingId: null, selectedAccess: null });
     sceneHandle.current?.focusOnTile(tile);
     reevaluate({ tool, rotation: null, centerTile: tile, hovered: null, pinnedTile: null });
   };
@@ -186,6 +189,11 @@ export const uiStore = createStore<UiStore>((set, get) => {
     hovered: null,
     pinnedTile: null,
     selectedBuildingId: null,
+    selectedAccess: null,
+    moveSelectedAccess: () => {
+      const access = get().selectedAccess;
+      if (access) startMove({ kind: 'movePedestrianAccess', from: access }, access);
+    },
     flyout: null,
     statsOpen: false,
     lineToEdit: null,
@@ -324,7 +332,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     },
     chooseTool: (tool) => {
       if (toolLevel(tool) !== get().level) return;
-      set({ flyout: null, selectedBuildingId: null });
+      set({ flyout: null, selectedBuildingId: null, selectedAccess: null });
       reevaluate({ tool, rotation: null, pinnedTile: null });
     },
     cancelTool: () => reevaluate({ tool: null, rotation: null, pinnedTile: null }),
@@ -408,11 +416,14 @@ export const uiStore = createStore<UiStore>((set, get) => {
         if (movedId !== null) return startMove({ kind: 'move', buildingId: movedId }, tile);
         const bridge = bridgeAt(state, tile);
         if (bridge && isInfrastructureBridge(bridge)) return startMove({ kind: 'moveBridge', bridge }, tile);
+        if (pedestrianAccessesOf(state).some((access) => access.x === tile.x && access.y === tile.y)) return startMove({ kind: 'movePedestrianAccess', from: tile }, tile);
         return;
       }
-      set({ selectedBuildingId: buildingId ?? building?.id ?? null, flyout: null });
+      const access = building || buildingId !== null ? undefined : pedestrianAccessesOf(state).find((candidate) => candidate.x === tile.x && candidate.y === tile.y);
+      if (access) return set({ selectedAccess: { x: access.x, y: access.y }, selectedBuildingId: null, flyout: null });
+      set({ selectedBuildingId: buildingId ?? building?.id ?? null, selectedAccess: null, flyout: null });
     },
-    select: (id) => set({ selectedBuildingId: id }),
+    select: (id) => set({ selectedBuildingId: id, selectedAccess: null }),
     sellSelected: () => {
       const id = get().selectedBuildingId;
       if (id === null) return;
@@ -452,7 +463,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     moveMode: false,
     toggleMoveMode: () => {
       const { moveMode, tool } = get();
-      if (moveMode && (tool?.kind === 'move' || tool?.kind === 'moveBridge')) get().cancelTool();
+      if (moveMode && (tool?.kind === 'move' || tool?.kind === 'moveBridge' || tool?.kind === 'movePedestrianAccess')) get().cancelTool();
       set({ moveMode: !moveMode, selectedBuildingId: null, flyout: null });
     },
   };

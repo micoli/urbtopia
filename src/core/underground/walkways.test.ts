@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { GAME_CONFIG, createBuilding, newGame, type GameState } from '..';
 import { handleCommand, isError, type Command } from '../engine/commands';
 import { pedestrianGraph, sidewalkNode, tripGraph, walkFrom, walkwayNode, accessNode } from '../map/pedestrianGraph';
-import { PEDESTRIAN_ACCESS_COST, activeAccesses, disconnectedWalkways, walkwayCostPerTile } from './walkways';
+import { PEDESTRIAN_ACCESS_COST, activeAccesses, disconnectedWalkways, pedestrianAccessRotation, walkwayCostPerTile } from './walkways';
 
 const size = GAME_CONFIG.parcelSizeInTiles;
 const origin = (() => {
@@ -103,6 +103,45 @@ describe('Pedestrian accesses', () => {
     state = send(state, { type: 'BuildWalkway', from: at(1, 1), to: at(1, 2) });
     state = send(state, { type: 'BuildWalkway', from: at(8, 8), to: at(9, 8) });
     expect(disconnectedWalkways(state)).toEqual([at(8, 8), at(9, 8)]);
+  });
+});
+
+describe('Pedestrian accesses turned and moved', () => {
+  const street = (state: GameState): GameState => ({ ...state, roads: [at(0, 0), at(1, 0), at(2, 0), at(3, 0)].map((tile) => ({ ...tile, kind: 'road' as const })) });
+
+  it('face the road by default and keep the turn the player chose', () => {
+    let state = street(unlocked(citizenCity()));
+    state = send(state, { type: 'BuildPedestrianAccess', x: at(1, 1).x, y: at(1, 1).y });
+    expect(state.pedestrianAccesses).toEqual([at(1, 1)]);
+    expect(pedestrianAccessRotation(state, at(1, 1))).toBe(0);
+    state = send(state, { type: 'BuildPedestrianAccess', x: at(2, 1).x, y: at(2, 1).y, rotation: 2 });
+    expect(state.pedestrianAccesses![1]).toEqual({ ...at(2, 1), rotation: 2 });
+    expect(pedestrianAccessRotation(state, at(2, 1))).toBe(2);
+  });
+
+  it('move for free to another tile against a road, turning on the way, the walkway staying put', () => {
+    let state = street(unlocked(citizenCity()));
+    state = send(state, { type: 'BuildPedestrianAccess', x: at(1, 1).x, y: at(1, 1).y });
+    state = send(state, { type: 'BuildWalkway', from: at(1, 1), to: at(1, 3) });
+    const urbs = state.urbs;
+    const moved = send(state, { type: 'MovePedestrianAccess', from: at(1, 1), x: at(2, 1).x, y: at(2, 1).y, rotation: 3 });
+    expect(moved.urbs).toBe(urbs);
+    expect(moved.pedestrianAccesses).toEqual([{ ...at(2, 1), rotation: 3 }]);
+    expect(moved.walkways).toEqual(state.walkways);
+  });
+
+  it('turn in place and refuse a tile that is taken, far from a path or not an access', () => {
+    let state = street(unlocked(citizenCity()));
+    state = send(state, { type: 'BuildPedestrianAccess', x: at(1, 1).x, y: at(1, 1).y });
+    expect(send(state, { type: 'MovePedestrianAccess', from: at(1, 1), x: at(1, 1).x, y: at(1, 1).y, rotation: 1 }).pedestrianAccesses).toEqual([{ ...at(1, 1), rotation: 1 }]);
+    expect(failure(state, { type: 'MovePedestrianAccess', from: at(1, 1), x: at(1, 0).x, y: at(1, 0).y })).toBe('error.tilesOccupied');
+    expect(failure(state, { type: 'MovePedestrianAccess', from: at(1, 1), x: at(1, 5).x, y: at(1, 5).y })).toBe('error.accessNeedsPath');
+    expect(failure(state, { type: 'MovePedestrianAccess', from: at(3, 3), x: at(3, 1).x, y: at(3, 1).y })).toBe('error.noWalkwayHere');
+  });
+
+  it('are saved with their turn', () => {
+    const state = send(street(unlocked(citizenCity())), { type: 'BuildPedestrianAccess', x: at(1, 1).x, y: at(1, 1).y, rotation: 3 });
+    expect(state.pedestrianAccesses).toEqual([{ ...at(1, 1), rotation: 3 }]);
   });
 });
 

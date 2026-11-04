@@ -162,6 +162,11 @@ export interface RoadTile extends Coord {
   tier?: number;
 }
 
+// A stair down to Level -1; its open front turns towards `rotation`, as a building does, or towards the walking surface it stands against.
+export interface PedestrianAccess extends Coord {
+  rotation?: Rotation;
+}
+
 export interface PedestrianWayTile extends Coord {
   tier?: number;
 }
@@ -259,7 +264,7 @@ export interface GameState {
   // Level -1: Underground walkways. They lie under anything on the Surface and never occupy a Surface tile.
   walkways?: Coord[];
   // Surface tiles holding a stair down to Level -1.
-  pedestrianAccesses?: Coord[];
+  pedestrianAccesses?: PedestrianAccess[];
   // Level -2: Tunnels of the Metro, drawn like rails with their exits.
   tunnels?: TransitTile[];
   roundabouts: Coord[];
