@@ -1,9 +1,9 @@
 import { createStore } from 'zustand/vanilla';
-import { bridgeAt, footprintTiles, isInfrastructureBridge, nextFront, type AnalyticsLayerId, type Coord, type CropId, type Rotation, type ServiceCategory } from '../core';
+import { SURFACE, bridgeAt, footprintTiles, isInfrastructureBridge, levelAbove, levelBelow, nextFront, undergroundUnlocked, type AnalyticsLayerId, type Coord, type CropId, type Level, type Rotation, type ServiceCategory } from '../core';
 import { readAnalyticsCategory, readAnalyticsLayer, writeAnalyticsCategory, writeAnalyticsLayer } from '../ui/analytics/analyticsLayerPref';
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
-import { confirmTool, evaluateTool, extendBrush, isPathTool, selectionGhost, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
+import { confirmTool, evaluateTool, extendBrush, isPathTool, selectionGhost, toolLevel, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
 import { defaultSocialTab } from '../social/defaultSocialTab';
 import { cloudStore } from './cloudStore';
 import { gameStore } from './gameStore';
@@ -23,6 +23,9 @@ export type SocialTab = 'friends' | 'groups' | 'exchanges' | 'hall' | 'profile';
 export type SettingsTab = 'game' | 'display' | 'saves' | 'app';
 
 export interface UiStore {
+  level: Level;
+  setLevel: (level: Level) => void;
+  stepLevel: (direction: 1 | -1) => void;
   tool: Tool | null;
   rotation: Rotation | null;
   centerTile: Coord;
@@ -165,6 +168,17 @@ export const uiStore = createStore<UiStore>((set, get) => {
   let stopWaitingForSignIn = () => {};
 
   return {
+    level: SURFACE,
+    setLevel: (level) => {
+      if (level === get().level) return;
+      if (level !== SURFACE && !undergroundUnlocked(gameStore.getState().state)) return;
+      get().cancelTool();
+      set({ level, flyout: null, selectedBuildingId: null, moveMode: false });
+    },
+    stepLevel: (direction) => {
+      const next = direction === 1 ? levelBelow(get().level) : levelAbove(get().level);
+      if (next !== null) get().setLevel(next);
+    },
     tool: null,
     rotation: null,
     centerTile: INITIAL_CENTER,
@@ -247,6 +261,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     analyticsBuildingId: null,
     enterAnalytics: (layer, category = get().analyticsCategory) => {
       get().cancelTool();
+      get().setLevel(SURFACE);
       writeAnalyticsLayer(layer);
       writeAnalyticsCategory(category);
       set({ analyticsLayer: layer, lastAnalyticsLayer: layer, analyticsCategory: category, analyticsProbe: null, analyticsBuildingId: null, flyout: null, selectedBuildingId: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false });
@@ -265,6 +280,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     pickStreetView: () => {
       if (get().streetViewPicking) return get().cancelPickStreetView();
       get().cancelTool();
+      get().setLevel(SURFACE);
       set({ streetViewPicking: true, flyout: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false, selectedBuildingId: null });
     },
     cancelPickStreetView: () => set({ streetViewPicking: false }),
@@ -306,6 +322,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       set(opening ? { ...NO_WINDOW_OPEN, marketOpen: true, flyout: null } : { marketOpen: false, flyout: null });
     },
     chooseTool: (tool) => {
+      if (toolLevel(tool) !== get().level) return;
       set({ flyout: null, selectedBuildingId: null });
       reevaluate({ tool, rotation: null, pinnedTile: null });
     },
@@ -384,6 +401,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       if (get().analyticsLayer === 'movement.flows') return set({ analyticsBuildingId: buildingId ?? building?.id ?? null });
       if (get().analyticsLayer) return set({ analyticsProbe: tile });
       if (get().tool) return;
+      if (get().level !== SURFACE) return;
       if (get().moveMode) {
         const movedId = buildingId ?? building?.id ?? null;
         if (movedId !== null) return startMove({ kind: 'move', buildingId: movedId }, tile);

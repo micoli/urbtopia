@@ -1,5 +1,5 @@
 import { Fragment, useId, useState } from 'react';
-import { BUILDING_SPECS, HOUSING_REGIONS, housingRegionOf, type HousingRegion, type BuildingType, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, annualEventOf, isBuildableAt, isFacilityType, totalCitizens, placementCost, isHomeType, solarInstallCostOf } from '../../core';
+import { SURFACE, BUILDING_SPECS, HOUSING_REGIONS, housingRegionOf, type HousingRegion, type BuildingType, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, annualEventOf, isBuildableAt, isFacilityType, totalCitizens, placementCost, isHomeType, solarInstallCostOf } from '../../core';
 import { t } from '../../i18n/t';
 import { FlyoutItem } from '../layout/FlyoutItem';
 import { BuildSearch } from './BuildSearch';
@@ -29,6 +29,7 @@ const categoryOf = (type: string | undefined) => (type !== undefined && isFacili
 export function BuildMenuContent() {
   const citizens = useGame(store => totalCitizens(store.state));
   const flyout = useUi((store) => store.flyout);
+  const underground = useUi((store) => store.level !== SURFACE);
   const chooseTool = useUi((store) => store.chooseTool);
   const openCodex = useUi(store => store.openCodex);
   const guide = guideOf(useGame((store) => store.state.tutorial));
@@ -46,6 +47,7 @@ export function BuildMenuContent() {
     return image ? `${import.meta.env.BASE_URL}codex/${image}` : undefined;
   };
   if (!flyout) return null;
+  if (underground) return <Note tone="muted">{t('level.nothingToBuild')}</Note>;
 
   if (flyout === 'build') {
     const visibleSections = BUILDING_SECTIONS.map(section => ({

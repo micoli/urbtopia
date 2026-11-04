@@ -48,6 +48,8 @@ import {
   type GameState,
   type ColorVariant,
   type Rotation,
+  type Level,
+  SURFACE,
 } from '../core';
 
 export type Tool =
@@ -68,6 +70,11 @@ export type Tool =
   | { kind: 'removeBridge' }
   | { kind: 'moveBridge'; bridge: Bridge | null }
   | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] };
+
+// The Level a tool builds on: every tool works on the Surface until an underground tool says otherwise.
+export function toolLevel(_tool: Tool): Level {
+  return SURFACE;
+}
 
 export type PathTool = Extract<Tool, { kind: 'road' | 'demolishRoad' | 'upgradeRoad' | 'pedestrianWay' | 'demolishPedestrianWay' | 'upgradePedestrianWay' }>;
 

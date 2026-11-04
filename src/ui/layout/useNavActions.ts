@@ -1,3 +1,4 @@
+import { SURFACE } from '../../core';
 import { t } from '../../i18n/t';
 import { cloudEnabled } from '../../persistence/cloud/cloudConfig';
 import { pendingChallengesCount } from '../../challenges/pendingCount';
@@ -22,6 +23,7 @@ export interface NavAction {
 
 export function useNavActions(): NavAction[] {
   const flyout = useUi((store) => store.flyout);
+  const underground = useUi((store) => store.level !== SURFACE);
   const tool = useUi((store) => store.tool);
   const marketOpen = useUi((store) => store.marketOpen);
   const settingsOpen = useUi((store) => store.settingsOpen);
@@ -44,9 +46,9 @@ export function useNavActions(): NavAction[] {
   const guidedFlyout = guideOf(useGame((store) => store.state.tutorial)).flyout;
 
   return [
-    { id: 'build', icon: 'build', image: 'bulldozer.png', label: t('dock.build'), pressed: flyout === 'build', disabled: false, guided: guidedFlyout === 'build', onClick: () => openFlyout('build') },
+    { id: 'build', icon: 'build', image: 'bulldozer.png', label: t('dock.build'), pressed: flyout === 'build', disabled: underground, guided: guidedFlyout === 'build', onClick: () => openFlyout('build') },
     { id: 'roads', icon: 'roads', image: 'infrastructure-networks.png', label: t('dock.networks'), pressed: flyout === 'roads', disabled: false, guided: guidedFlyout === 'roads', onClick: () => openFlyout('roads') },
-    { id: 'parcels', icon: 'map', image: 'map.png', label: t('dock.parcels'), pressed: flyout === 'land' || tool?.kind === 'parcel' || analyticsLayer !== null, disabled: false, guided: false, onClick: () => openFlyout('land') },
+    { id: 'parcels', icon: 'map', image: 'map.png', label: t('dock.parcels'), pressed: flyout === 'land' || tool?.kind === 'parcel' || analyticsLayer !== null, disabled: underground, guided: false, onClick: () => openFlyout('land') },
     { id: 'market', icon: 'market', image: 'market.png', label: t('dock.market'), pressed: marketOpen, disabled: !marketUnlocked, guided: false, badge: newChallenges, badgeLabel: t('challenge.badge'), onClick: toggleMarket },
     { id: 'stats', icon: 'stats', image: 'town-management.png', label: t('eco.title'), pressed: statsOpen, disabled: false, guided: false, badge: sanctionedCount, badgeLabel: t('sanction.alert'), onClick: toggleStats },
     ...(cloudEnabled ? [{ id: 'social', icon: 'globe' as const, image: 'social-network.png', label: t('social.title'), pressed: socialOpen, disabled: false, guided: false, badge: pendingRequests, onClick: toggleSocial }] : []),

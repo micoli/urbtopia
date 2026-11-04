@@ -6,10 +6,10 @@ import { t } from '../../i18n/t';
 import { BuildMenuContent } from './BuildMenuContent';
 import { BUILD_SECTION_KEY, readBuildSection, writeBuildSection } from './buildMenuSections';
 
-const context = vi.hoisted(() => ({ state: null as GameState | null, flyout: 'build' }));
+const context = vi.hoisted(() => ({ state: null as GameState | null, flyout: 'build', level: 0 }));
 vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
-  useUi: (selector: (store: { flyout: string; chooseTool: () => void; moveMode: boolean; toggleMoveMode: () => void }) => unknown) => selector({ flyout: context.flyout, chooseTool: () => {}, moveMode: false, toggleMoveMode: () => {} }),
+  useUi: (selector: (store: { flyout: string; level: number; chooseTool: () => void; moveMode: boolean; toggleMoveMode: () => void }) => unknown) => selector({ flyout: context.flyout, level: context.level, chooseTool: () => {}, moveMode: false, toggleMoveMode: () => {} }),
   useReadOnly: () => false,
 }));
 
@@ -26,7 +26,17 @@ beforeEach(() => {
   });
 });
 
-afterEach(() => { prefsStore.getState().setLanguage('en'); context.flyout = 'build'; vi.unstubAllGlobals(); vi.useRealTimers(); });
+afterEach(() => { prefsStore.getState().setLanguage('en'); context.flyout = 'build'; context.level = 0; vi.unstubAllGlobals(); vi.useRealTimers(); });
+
+describe('build menu on an underground Level', () => {
+  it('offers nothing to build and no building', () => {
+    context.state = newGame({ seed: 'build-menu', now: 0 });
+    context.level = -1;
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    expect(html).toContain(t('level.nothingToBuild'));
+    expect(html).not.toContain(`aria-label="${t('build.search')}"`);
+  });
+});
 
 describe('build menu discoverability', () => {
   it('offers a search field, the first-use hint and the next building to unlock', () => {

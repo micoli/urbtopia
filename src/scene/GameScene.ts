@@ -1,7 +1,7 @@
 import { EcologyLayer } from './EcologyLayer';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { GAME_CONFIG, WILD_RIM_TILES, congestionStats, footbridgeStops, pedestrianGraph, wildNoiseAt, wildTerrain, type Building, type GameState, type FacilityType } from '../core';
+import { GAME_CONFIG, SURFACE, WILD_RIM_TILES, congestionStats, footbridgeStops, pedestrianGraph, wildNoiseAt, wildTerrain, type Building, type GameState, type FacilityType, type Level } from '../core';
 import { bridgeElevation } from './bridgeElevation';
 import { CameraController } from './CameraController';
 import { StreetViewController } from './StreetViewController';
@@ -29,6 +29,8 @@ import { nightClockOf } from './windowSchedule';
 import { setWindowGlow, setWindowNight, windowGlowLevel, windowNightClock } from './windowGlow';
 import { DAY_BACKGROUND, lightingOf, type DayLighting } from './dayLighting';
 import { ServiceCoverageLayer } from './ServiceCoverageLayer';
+import { LevelFloor } from './LevelFloor';
+import { surfaceDisplayOf } from './levelDisplay';
 
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
 const GROUND_FADE_TILES = 24;
@@ -132,6 +134,10 @@ export class GameScene {
   private alwaysDay = false;
   private windowsEnabled = true;
   private frameBudget = new FrameBudgetMonitor();
+  private level: Level = SURFACE;
+  private levelFloor = new LevelFloor();
+  private levelBudget = new FrameBudgetMonitor();
+  private slowForLevels = false;
   private pinnedCycleHour: number | null = null;
   private lastFrame = performance.now();
   private resizeObserver: ResizeObserver;
@@ -147,7 +153,7 @@ export class GameScene {
     this.scene.environmentIntensity = 0.25;
     const sun = this.sun, sky = this.sky;
     sun.position.set(20, 40, 10);
-    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.attractionCrowd.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root, this.analyticsLayer.root);
+    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.attractionCrowd.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root, this.analyticsLayer.root, this.levelFloor.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.streetView = new StreetViewController(canvas);
@@ -275,6 +281,31 @@ export class GameScene {
     void this.drain();
   }
 
+  // An underground Level hides the Surface scenery and what moves on it, and draws the Surface buildings as a ghost.
+  setLevel(level: Level): void {
+    if (this.level === level) return;
+    this.level = level;
+    this.levelBudget.reset();
+    this.slowForLevels = false;
+    this.applyLevel();
+  }
+
+  private applyLevel(): void {
+    const onSurface = this.level === SURFACE;
+    this.levelFloor.setLevel(this.level);
+    for (const root of [this.ground, this.parcels, this.scenery.root, this.ecologyLayer.root, this.congestion.root, this.attractionCrowd.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.serviceCoverageLayer.root, this.analyticsLayer.root]) root.visible = onSurface;
+    this.world.setDisplay(surfaceDisplayOf(this.level, this.slowForLevels));
+  }
+
+  // The ghost Surface is optional: a device that cannot keep the frame budget loses it until the Level changes.
+  private watchLevelBudget(elapsed: number): void {
+    if (this.level === SURFACE || this.slowForLevels) return;
+    this.levelBudget.push(elapsed);
+    if (!this.levelBudget.isSlow) return;
+    this.slowForLevels = true;
+    this.applyLevel();
+  }
+
   setBrushMode(enabled: boolean): void {
     this.controller.brushMode = enabled;
   }
@@ -362,6 +393,7 @@ export class GameScene {
     this.ecologyLayer.dispose();
     this.serviceCoverageLayer.dispose();
     this.analyticsLayer.dispose();
+    this.levelFloor.dispose();
     this.renderer.dispose();
   }
 
@@ -599,6 +631,7 @@ export class GameScene {
     this.lastFrame = now;
     this.refreshLighting(now);
     this.watchFrameBudget(elapsed);
+    this.watchLevelBudget(elapsed);
     this.controller.update(delta);
     this.streetView.update(delta);
     this.notifyCenterTile();

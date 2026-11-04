@@ -3,6 +3,10 @@ import { facilityScaleOf, fitMatrixOf } from './modelFit';
 import type { ModelLibrary } from './modelLibrary';
 import { isGlowingModel, withWindowGlow } from './windowGlow';
 import { chunkKeyOf, type RenderItem, type TextureVariant } from './renderItems';
+import type { SurfaceDisplay } from './levelDisplay';
+
+// One flat translucent material for the whole Surface seen from an underground Level: no texture, no light, no shadow.
+const GHOST_MATERIAL = new THREE.MeshBasicMaterial({ color: 0x9aa7b4, transparent: true, opacity: 0.22, depthWrite: false });
 
 interface Chunk {
   signature: string;
@@ -19,6 +23,7 @@ export class ChunkedWorld {
   private lastItems: RenderItem[] | null = null;
   private fittedBoxes = new Map<string, THREE.Box3>();
   private unpowered: ReadonlySet<number> = new Set();
+  private display: SurfaceDisplay = 'full';
 
   constructor(private library: ModelLibrary, private chunkSize?: number) {}
 
@@ -26,6 +31,18 @@ export class ChunkedWorld {
   setUnpowered(ids: ReadonlySet<number>): void {
     if (ids.size === this.unpowered.size && [...ids].every(id => this.unpowered.has(id))) return;
     this.unpowered = ids;
+    const items = this.lastItems;
+    this.lastItems = null;
+    if (items) this.sync(items);
+  }
+
+  // Showing the Surface as a ghost rebuilds every chunk once with the flat material, and back.
+  setDisplay(display: SurfaceDisplay): void {
+    if (display === this.display) return;
+    const rebuild = display === 'ghost' || this.display === 'ghost';
+    this.display = display;
+    this.root.visible = display !== 'hidden';
+    if (!rebuild) return;
     const items = this.lastItems;
     this.lastItems = null;
     if (items) this.sync(items);
@@ -52,10 +69,10 @@ export class ChunkedWorld {
   }
 
   private syncChunk(key: string, items: RenderItem[]): void {
-    const signature = items
+    const signature = `${this.display === 'ghost' ? 'ghost:' : ''}${items
       .map((item) => `${item.model}@${item.textureVariant ?? ''}#${item.tint ?? ''}${this.darkKey(item)}:${item.x},${item.z},${item.rotation},${item.elevation ?? 0},${item.roofBase ?? ''},${item.pitch ?? 0},${item.yaw ?? 0},${item.roll ?? 0},${item.lengthScale ?? 1},${item.scale ?? 1},${item.footprint ?? 0}`)
       .sort()
-      .join('|');
+      .join('|')}`;
     if (this.chunks.get(key)?.signature === signature) return;
     this.removeChunk(key);
     const group = this.buildChunk(items);
@@ -123,7 +140,8 @@ export class ChunkedWorld {
         if (!mesh.isMesh) return;
         const textured = variant ? this.library.withTextureVariant(mesh.material, variant as TextureVariant) : mesh.material;
         const tinted = tint ? this.library.withTint(textured, Number(tint)) : textured;
-        const instanced = new THREE.InstancedMesh(mesh.geometry, isGlowingModel(model) && !dark ? withWindowGlow(tinted) : tinted, modelItems.length);
+        const material = this.display === 'ghost' ? GHOST_MATERIAL : isGlowingModel(model) && !dark ? withWindowGlow(tinted) : tinted;
+        const instanced = new THREE.InstancedMesh(mesh.geometry, material, modelItems.length);
         modelItems.forEach((item, index) => {
           const elevation = item.roofBase ? this.fittedBox(item.roofBase).max.y + (item.elevation ?? 0) : item.elevation ?? 0;
           placement.makeRotationY((item.rotation * Math.PI) / 2).setPosition(item.x, elevation, item.z);
