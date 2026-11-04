@@ -115,7 +115,7 @@ WORLD_ENTRIES = URBTOPIA_ENTRIES + [
     ("tarwood", "#5b4332"), ("earth", "#7b6a4f"), ("turfgreen", "#6f9a4a"),
     ("aegeanblue", "#2f6fb0"), ("turquoise", "#2aa7b5"), ("pastelpink", "#e8b8b0"),
     ("greybrick", "#7d7f84"), ("lacquer", "#a8322a"), ("strawgold", "#d4b060"), ("greythatch", "#8e8a78"), ("mosshatch", "#7f8a54"), ("clayplaster", "#d3bf94"), ("sandwall", "#d9d0bd"), ("kawara", "#54585f"), ("kawara_blue", "#46566e"), ("kawara_brown", "#5d4b43"), ("bamboo", "#c9b46a"),
-    ("riadrose", "#c98a6a"), ("sandstone", "#d8c08a"), ("redclay", "#b5573a"), ("zellige", "#2a7f8c"), ("majorelle", "#2e4fbf"), ("tilegreen", "#2f7d4f"),
+    ("concrete", "#a7a7a2"), ("concrete_warm", "#b3a894"), ("concrete_dark", "#7b7b78"), ("concrete_pink", "#b99f98"), ("riadrose", "#c98a6a"), ("sandstone", "#d8c08a"), ("redclay", "#b5573a"), ("zellige", "#2a7f8c"), ("majorelle", "#2e4fbf"), ("tilegreen", "#2f7d4f"),
 ]
 STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
 
@@ -6464,6 +6464,95 @@ def build_tulou(spec, out_dir):
             parts.append(panel)
 
     ob = lpm.finish(spec["id"], parts, palette, budget=30000 + 12000 * floors, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = list(spec["footprint"])
+    return report
+
+
+def build_brutalist(spec, out_dir):
+    """A brutalist concrete tower on a 1x1 cell with `floors` floors (4, 6 or 8, the Tier 1 to 3 of the Home building), front facing -Y.
+    A board-formed concrete slab block on a pilotis ground floor with four columns and a glazed lobby, a taller stair core behind with slit windows and a colored stripe, a front facade of ribbon windows behind a concrete egg-crate of fins and sunshades with a few colored panels,
+    roof slabs with a lift overrun, from Tier 2 the two top floors cantilevered over the front, an entrance canopy and a water tank, at 3 a roof pergola."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("conc", "vtone1"), ("panel", "vtone2"), ("glass", "glass_blue"), ("dark", "udark"), ("tank", "greywood"), ("leaf", "bush"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    floors = spec["floors"]
+    tier = {4: 1, 6: 2, 8: 3}[floors]
+    rng = random.Random(spec["id"])
+    plaza, ground, fh = 0.03, 0.32, 0.285
+    levels = floors - 1
+    z_b = plaza + ground
+    z_roof = z_b + levels * fh
+    half, y_back, y_flat, bays = 0.47, 0.18, -0.30, 6
+    front_of = lambda level: -0.38 if tier >= 2 and level >= levels - 2 else y_flat
+    core_x0, core_top = 0.19, z_roof + 0.16
+    parts = [lpm.box("plaza", (0.99, 0.99, plaza), at=(0, 0, 0), color=c["conc"]),
+             lpm.box("core", (0.49 - core_x0, 0.49 - y_back, core_top - plaza), at=((core_x0 + 0.49) / 2, (y_back + 0.49) / 2, plaza), color=c["conc"]),
+             lpm.box("core_roof", (0.49 - core_x0 + 0.02, 0.49 - y_back + 0.02, 0.03), at=((core_x0 + 0.49) / 2, (y_back + 0.49) / 2, core_top), color=c["conc"]),
+             lpm.box("lift_overrun", (0.16, 0.16, 0.12), at=(0.34, 0.33, core_top + 0.03), color=c["conc"]),
+             lpm.box("core_stripe", (0.012, 0.28, core_top - plaza - 0.02), at=(core_x0 - 0.006, (y_back + 0.49) / 2, plaza + 0.01), color=c["panel"])]
+
+    for number, (cx, cy) in enumerate(((-0.36, -0.2), (0.36, -0.2), (-0.36, 0.08), (0.12, 0.08))):
+        parts.append(lpm.box(f"pilotis_{number}", (0.12, 0.12, ground), at=(cx, cy, plaza), color=c["conc"]))
+    parts.append(lpm.box("lobby", (0.4, 0.2, ground - 0.08), at=(-0.1, -0.12, plaza), color=c["glass"]))
+    parts.append(lpm.box("lobby_door", (0.1, 0.012, 0.2), at=(-0.1, -0.226, plaza), color=c["panel"]))
+
+    rows = []
+    for level in range(levels):
+        z = z_b + level * fh
+        front = front_of(level)
+        depth = y_back - front
+        parts.append(lpm.box(f"block_{level}", (2 * half, depth, fh - 0.03), at=(0, (front + y_back) / 2, z), color=c["conc"]))
+        parts.append(lpm.box(f"slab_{level}", (2 * half + 0.03, depth + 0.03, 0.04), at=(0, (front + y_back) / 2, z + fh - 0.04), color=c["conc"]))
+        pitch = 2 * half / bays
+        accent = rng.randrange(bays) if rng.random() < 0.6 else -1
+        for bay in range(bays):
+            u = -half + (bay + 0.5) * pitch
+            face_box(parts, f"front_{level}_{bay}", "front", front, u, 0.105, 0.15, z + 0.06, 0.012, c["panel"] if bay == accent else c["glass"])
+            parts.append(lpm.box(f"sunshade_{level}_{bay}", (pitch, 0.07, 0.022), at=(u, front - 0.035, z + fh - 0.065), color=c["conc"]))
+        for fin in range(bays + 1):
+            fx = -half + fin * pitch
+            parts.append(lpm.box(f"fin_{level}_{fin}", (0.026, 0.07, fh - 0.06), at=(fx, front - 0.035, z + 0.02), color=c["conc"]))
+        for number, x in enumerate((-0.35, -0.1, 0.1)):
+            face_box(parts, f"back_{level}_{number}", "back", y_back, x, 0.12, 0.1, z + 0.08, 0.012, c["glass"])
+        for face, wall in (("left", -half), ("right", half)):
+            for number, y in enumerate((front + 0.12, (front + y_back) / 2 + 0.04)):
+                face_box(parts, f"{face}_{level}_{number}", face, wall, y, 0.04, 0.14, z + 0.07, 0.012, c["dark"])
+        face_box(parts, f"core_slit_right_{level}", "right", 0.49, 0.33, 0.05, 0.14, z + 0.07, 0.012, c["dark"])
+        face_box(parts, f"core_slit_back_{level}", "back", 0.49, 0.34, 0.05, 0.14, z + 0.07, 0.012, c["dark"])
+
+    top_front = front_of(levels - 1)
+    parts.append(lpm.box("roof_slab", (2 * half + 0.05, y_back - top_front + 0.05, 0.04), at=(0, (top_front + y_back) / 2, z_roof - 0.005), color=c["conc"]))
+    if tier >= 2:
+        parts.append(lpm.box("canopy", (0.5, 0.2, 0.03), at=(-0.1, -0.32, z_b - 0.05), color=c["conc"]))
+        for number, (lx, ly) in enumerate(((-0.02, 0.04), (0.02, 0.04), (-0.02, -0.04), (0.02, -0.04))):
+            parts.append(lpm.box(f"tank_leg_{number}", (0.014, 0.014, 0.1), at=(0.36 + lx * 1.5, 0.42 + ly, core_top + 0.045), color=c["conc"]))
+    if tier >= 2:
+        parts.append(lpm.prism("water_tank", 8, 0.055, 0.1, at=(0.36, 0.42, core_top + 0.145), color=c["tank"]))
+    if tier >= 3:
+        for number, (px, py) in enumerate(((-0.4, -0.1), (0.1, -0.1), (-0.4, 0.12), (0.1, 0.12))):
+            parts.append(lpm.box(f"pergola_post_{number}", (0.022, 0.022, 0.16), at=(px, py, z_roof + 0.035), color=c["conc"]))
+        parts.append(lpm.box("pergola_roof", (0.56, 0.3, 0.025), at=(-0.15, 0.01, z_roof + 0.195), color=c["conc"]))
+        for number, x in enumerate((-0.3, -0.15, 0.0)):
+            parts.append(lpm.prism(f"roof_plant_{number}", 6, 0.04, 0.05, at=(x, 0.01, z_roof + 0.035), color=c["leaf"], radius_top=0.02))
+
+    if spec.get("solar"):
+        base = z_roof + 0.035
+        for row, py in enumerate((-0.12, 0.06)):
+            if tier >= 3:
+                py += 0.0
+            for number in range(3):
+                px = -0.38 + number * 0.24 if tier < 3 else -0.38 + number * 0.24
+                if tier >= 3 and row == 1:
+                    continue
+                panel = lpm.box(f"solar_panel_{row}_{number}", (0.2, 0.16, 0.012), at=(px, py + (0.17 if tier >= 3 else 0.0), base + 0.05), color=c["solar"])
+                lpm.rotate(panel, 20, axis="X", about=(px, py + (0.17 if tier >= 3 else 0.0), base + 0.05))
+                parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=30000 + 8000 * floors, center=False)
     report = export_model(ob, spec, out_dir)
     report["expected_footprint"] = list(spec["footprint"])
     return report

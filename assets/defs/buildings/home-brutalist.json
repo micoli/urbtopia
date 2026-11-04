@@ -1,0 +1,84 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "home",
+  "section": "build.housing",
+  "cost": 1500,
+  "unlockCitizens": 300,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt", "pedestrianWay"],
+  "name": {
+    "en": "Brutalist Tower",
+    "fr": "Tour brutaliste"
+  },
+  "description": {
+    "en": "A tower of raw concrete on pilotis, with a sunshade facade, a stair core and cantilevered top floors. Houses Citizens who generate Tax. Each upgrade adds floors, with more population and utility Demand. Comes in four colors.",
+    "fr": "Une tour de béton brut sur pilotis, avec une façade à brise-soleil, un noyau d’escalier et des derniers étages en porte-à-faux. Accueille des habitants qui génèrent des impôts. Chaque amélioration ajoute des étages, avec plus d’habitants et de besoins en eau et en électricité. Existe en quatre couleurs."
+  },
+  "tiers": [
+    {
+      "model": "buildings-tower-1x1-4f-brutalist-a",
+      "footprint": [1, 1],
+      "citizens": 100,
+      "power": 10,
+      "water": 10
+    },
+    {
+      "model": "buildings-tower-1x1-6f-brutalist-a",
+      "footprint": [1, 1],
+      "citizens": 180,
+      "power": 18,
+      "water": 18,
+      "upgradeCost": {
+        "urbs": 2500,
+        "goods": {
+          "planks": 20
+        }
+      }
+    },
+    {
+      "model": "buildings-tower-1x1-8f-brutalist-a",
+      "citizens": 300,
+      "power": 30,
+      "water": 30,
+      "upgradeCost": {
+        "urbs": 9000,
+        "goods": {
+          "bricks": 15,
+          "planks": 20
+        }
+      }
+    }
+  ],
+  "housingRegion": "americas",
+  "solarPanels": {
+    "panels": [
+      {
+        "model": "industrial-solar-panel-landscape",
+        "x": 0.149,
+        "y": -0.038,
+        "z": 0.16,
+        "rotationX": 0,
+        "rotationY": 0,
+        "rotationZ": 0
+      }
+    ],
+    "cost": 200,
+    "unlockCitizens": 100,
+    "output": 2
+  },
+  "variants": {
+    "solar": {
+      "tiers": [
+        {
+          "model": "buildings-tower-1x1-4f-brutalist-a-solar"
+        },
+        {
+          "model": "buildings-tower-1x1-6f-brutalist-a-solar"
+        },
+        {
+          "model": "buildings-tower-1x1-8f-brutalist-a-solar"
+        }
+      ]
+    }
+  }
+}

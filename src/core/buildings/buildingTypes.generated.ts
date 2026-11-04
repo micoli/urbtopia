@@ -60,6 +60,7 @@ export type BuildingId =
   | 'home'
   | 'home-aegean'
   | 'home-brownstone'
+  | 'home-brutalist'
   | 'home-building'
   | 'home-chalet'
   | 'home-dutch-1x1'

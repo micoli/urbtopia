@@ -11794,6 +11794,60 @@
     "scale": 1,
     "rotationOffset": 180
   },
+  "buildings-tower-1x1-4f-brutalist-a": {
+    "file": "buildings/tower-1x1-4f-brutalist-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "concrete",
+        "color": "#a7a7a2"
+      },
+      "b": {
+        "name": "concrete_warm",
+        "color": "#b3a894"
+      },
+      "c": {
+        "name": "concrete_dark",
+        "color": "#7b7b78"
+      },
+      "d": {
+        "name": "concrete_pink",
+        "color": "#b99f98"
+      }
+    }
+  },
+  "buildings-tower-1x1-4f-brutalist-a-solar": {
+    "file": "buildings/tower-1x1-4f-brutalist-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "concrete",
+        "color": "#a7a7a2"
+      },
+      "b": {
+        "name": "concrete_warm",
+        "color": "#b3a894"
+      },
+      "c": {
+        "name": "concrete_dark",
+        "color": "#7b7b78"
+      },
+      "d": {
+        "name": "concrete_pink",
+        "color": "#b99f98"
+      }
+    }
+  },
   "buildings-tower-1x1-4f-tone-a": {
     "file": "buildings/tower-1x1-4f-tone-a",
     "source": "managed",
@@ -11852,6 +11906,60 @@
       }
     }
   },
+  "buildings-tower-1x1-6f-brutalist-a": {
+    "file": "buildings/tower-1x1-6f-brutalist-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "concrete",
+        "color": "#a7a7a2"
+      },
+      "b": {
+        "name": "concrete_warm",
+        "color": "#b3a894"
+      },
+      "c": {
+        "name": "concrete_dark",
+        "color": "#7b7b78"
+      },
+      "d": {
+        "name": "concrete_pink",
+        "color": "#b99f98"
+      }
+    }
+  },
+  "buildings-tower-1x1-6f-brutalist-a-solar": {
+    "file": "buildings/tower-1x1-6f-brutalist-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "concrete",
+        "color": "#a7a7a2"
+      },
+      "b": {
+        "name": "concrete_warm",
+        "color": "#b3a894"
+      },
+      "c": {
+        "name": "concrete_dark",
+        "color": "#7b7b78"
+      },
+      "d": {
+        "name": "concrete_pink",
+        "color": "#b99f98"
+      }
+    }
+  },
   "buildings-tower-1x1-6f-tone-a": {
     "file": "buildings/tower-1x1-6f-tone-a",
     "source": "managed",
@@ -11907,6 +12015,60 @@
       "d": {
         "name": "greygreen",
         "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-tower-1x1-8f-brutalist-a": {
+    "file": "buildings/tower-1x1-8f-brutalist-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "concrete",
+        "color": "#a7a7a2"
+      },
+      "b": {
+        "name": "concrete_warm",
+        "color": "#b3a894"
+      },
+      "c": {
+        "name": "concrete_dark",
+        "color": "#7b7b78"
+      },
+      "d": {
+        "name": "concrete_pink",
+        "color": "#b99f98"
+      }
+    }
+  },
+  "buildings-tower-1x1-8f-brutalist-a-solar": {
+    "file": "buildings/tower-1x1-8f-brutalist-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "concrete",
+        "color": "#a7a7a2"
+      },
+      "b": {
+        "name": "concrete_warm",
+        "color": "#b3a894"
+      },
+      "c": {
+        "name": "concrete_dark",
+        "color": "#7b7b78"
+      },
+      "d": {
+        "name": "concrete_pink",
+        "color": "#b99f98"
       }
     }
   },
