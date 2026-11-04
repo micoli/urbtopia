@@ -1294,6 +1294,8 @@ export type ModelId =
   | 'vehicles-garbage-truck'
   | 'vehicles-hatchback'
   | 'vehicles-liner'
+  | 'vehicles-metro-train-front'
+  | 'vehicles-metro-train-rear'
   | 'vehicles-navy-frigate'
   | 'vehicles-pickup'
   | 'vehicles-pirate-ship'

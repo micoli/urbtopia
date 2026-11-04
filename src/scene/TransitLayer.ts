@@ -11,7 +11,7 @@ type Service = ReturnType<typeof transitServices>[number];
 // A vehicle is two cars of 0.65 tile times its size, so the vehicles of one line are spread at least this far apart along the route.
 export const VEHICLE_SPACING = 1.65;
 // How much bigger than a bus a vehicle of each mode is drawn, and how far to the side it runs on a shared track.
-export const MODE_LOOK = { rail: { size: 1.8, lane: 0.22 }, brt: { size: 1, lane: 0.16 }, metro: { size: 1.2, lane: 0 } } as const;
+export const MODE_LOOK = { rail: { size: 1.8, lane: 0.22 }, brt: { size: 1, lane: 0.16 }, metro: { size: 0.96, lane: 0 } } as const;
 
 // Distance between the centres of two cars of a vehicle, for a bus-sized one: a car is 0.65 tile long.
 const CAR_PITCH = 0.7;

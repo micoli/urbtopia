@@ -23844,6 +23844,16 @@
       "height": 0.9
     }
   },
+  "vehicles-metro-train-front": {
+    "file": "vehicles/metro-train-front",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-metro-train-rear": {
+    "file": "vehicles/metro-train-rear",
+    "source": "managed",
+    "license": "Own work"
+  },
   "vehicles-navy-frigate": {
     "file": "vehicles/navy-frigate",
     "source": "managed",
