@@ -64,5 +64,18 @@
       }
     }
   ],
+  "solarPanels": {
+    "panels": [
+      {
+        "model": "industrial-solar-panel-landscape",
+        "x": 0.135,
+        "y": -0.177,
+        "z": 0.035,
+        "rotationX": 0,
+        "rotationY": 0,
+        "rotationZ": 0
+      }
+    ]
+  },
   "goodCategory": "food"
 }
