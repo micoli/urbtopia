@@ -14,7 +14,14 @@ interface EnergySectionProps {
     transport: ReturnType<typeof transportStats>;
 }
 
-function casinoRows(state: GameState, green: ReturnType<typeof cityBenefits>): [MessageKey, number | string][] {
+type EnergyRow = [MessageKey, number | string, boolean?];
+interface EnergyGroup {
+    title: MessageKey;
+    kind?: 'production' | 'consumption';
+    rows: EnergyRow[];
+}
+
+function casinoRows(state: GameState, green: ReturnType<typeof cityBenefits>): EnergyRow[] {
     const casinos = state.buildings.filter(b => b.type === 'casino');
     if (!casinos.length) return [];
     const withoutCasinos = cityBenefits({...state, buildings: state.buildings.filter(b => b.type !== 'casino')});
@@ -26,12 +33,16 @@ function casinoRows(state: GameState, green: ReturnType<typeof cityBenefits>): [
 
 export function EnergySection({state, energy, green, transport}: EnergySectionProps) {
     const saved = state.buildings.filter(b => isHomeType(b.type)).reduce((sum, b) => sum + (HOME_TIERS[b.tier - 1]?.power ?? 0) - homePower(b, energySavingOf(state)), 0);
-    const rows: [MessageKey, number | string][] = [
-        ['eco.demand', energy.demand], ['transit.power', energy.transitDemand], ['eco.saved', saved], ['eco.solar', energy.solar], ['eco.wind', energy.wind], ['eco.hydro', energy.hydro], ['eco.geothermal', energy.geothermal],
-        ['eco.coalCapacity', energy.coalCapacity], ['eco.coal', energy.coal], ['eco.coalCost', energy.coalCostPerHour], ['eco.backup', energy.backup],
-        ['eco.unmet', energy.unmet], ['eco.surplus', energy.surplus], ['eco.storage', `${energy.stored.toFixed(1)} / ${energy.storageCapacity}`],
-        ['eco.cost', energy.costPerHour + transport.costPerHour],
-        ...casinoRows(state, green),
+    const renewables = energy.solar + energy.wind + energy.hydro + energy.geothermal;
+    const groups: EnergyGroup[] = [
+        {title: 'eco.group.demand', kind: 'consumption', rows: [['eco.demand', energy.demand, true], ['transit.power', energy.transitDemand], ['eco.saved', saved]]},
+        {title: 'eco.group.renewable', kind: 'production', rows: [['eco.solar', energy.solar], ['eco.wind', energy.wind], ['eco.hydro', energy.hydro], ['eco.geothermal', energy.geothermal], ['eco.subtotal.renewable', renewables, true]]},
+        {title: 'eco.group.coal', kind: 'production', rows: [['eco.coalCapacity', energy.coalCapacity], ['eco.coal', energy.coal, true], ['eco.coalCost', energy.coalCostPerHour]]},
+        {title: 'eco.group.backup', kind: 'production', rows: [['eco.backup', energy.backup, true]]},
+        {title: 'eco.group.supply', rows: [['eco.subtotal.supply', renewables + energy.coal + energy.backup, true], ['eco.unmet', energy.unmet], ['eco.surplus', energy.surplus]]},
+        {title: 'eco.group.storage', rows: [['eco.storage', `${energy.stored.toFixed(1)} / ${energy.storageCapacity}`]]},
+        {title: 'eco.group.cost', kind: 'consumption', rows: [['eco.cost', energy.costPerHour + transport.costPerHour, true]]},
+        ...(casinoRows(state, green).length ? [{title: 'eco.group.casino' as const, rows: casinoRows(state, green)}] : []),
     ];
     const forecast = Array.from({length: FORECAST_HOURS}, (_, i) => {
         const factors = productionFactors(state.lastSeen + (state.timeOffset ?? 0) + (i + 1) * ECOLOGY.hourMs);
@@ -39,11 +50,14 @@ export function EnergySection({state, energy, green, transport}: EnergySectionPr
     });
     return <section id="eco-energy" className="eco-wide">
         <SectionHeading icon="power">{t('eco.energy')}</SectionHeading>
-        <LabeledList>
-            {rows.map(([key, value]) => <LabeledList.Row key={key} label={t(key)}>
-                {typeof value === 'number' ? value.toFixed(1) : value}
-            </LabeledList.Row>)}
-        </LabeledList>
+        {groups.map(group => <div key={group.title} className="eco-energy-group" data-kind={group.kind}>
+            <h4>{t(group.title)}</h4>
+            <LabeledList>
+                {group.rows.map(([key, value, subtotal]) => <LabeledList.Row key={key} label={t(key)} className={subtotal ? 'eco-subtotal' : undefined}>
+                    {typeof value === 'number' ? value.toFixed(1) : value}
+                </LabeledList.Row>)}
+            </LabeledList>
+        </div>)}
         <p>{t('eco.energyHelp')}</p>
         <p>{t('eco.adviceDemand')}</p>
         <p>{t('eco.coalDispatch')}</p>
