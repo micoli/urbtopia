@@ -7310,8 +7310,9 @@ def build_queenslander(spec, out_dir):
     steps = 4
     for step in range(steps):
         parts.append(lpm.box(f"stair_{step}", (0.3, 0.04, (steps - step) * (stump + slab) / (steps + 1)), at=(0.0, deck_y0 - 0.02 - 0.04 * step, 0.02), color=c["trim"]))
+    rise_step = (stump + slab) / (steps + 1)
     for sign in (-1, 1):
-        parts.append(lpm.box(f"stair_string_{sign}", (0.014, 0.16, 0.1), at=(sign * 0.16, deck_y0 - 0.08, 0.02 + (stump + slab) * 0.5), color=c["trim"]))
+        stair_rail(parts, f"stair_rail_{sign}", sign * 0.16, deck_y0 - 0.02 - 0.04 * (steps - 1), 0.02 + rise_step, deck_y0 - 0.02, 0.02 + steps * rise_step, 0.09, c["trim"])
 
     post_count = max(3, round(2 * deck_x / 0.3) + 1)
     post_xs = [-deck_x + 0.025 + k * (2 * deck_x - 0.05) / (post_count - 1) for k in range(post_count)]
@@ -7319,6 +7320,8 @@ def build_queenslander(spec, out_dir):
     side_ys = [deck_y0 + 0.025 + k * (yb1 - deck_y0 - 0.025) / (side_count - 1) for k in range(side_count)]
     for number, x in enumerate(post_xs):
         parts.append(lpm.box(f"post_front_{number}", (0.025, 0.025, height), at=(x, deck_y0 + 0.025, z0), color=c["trim"]))
+    for sign in (-1, 1):
+        parts.append(lpm.box(f"post_back_{sign}", (0.025, 0.025, height), at=(sign * (deck_x - 0.025), deck_y1 - 0.025, z0), color=c["trim"]))
     for number, y in enumerate(side_ys):
         for sign in (-1, 1):
             parts.append(lpm.box(f"post_side_{sign}_{number}", (0.025, 0.025, height), at=(sign * (deck_x - 0.025), y, z0), color=c["trim"]))
@@ -7331,13 +7334,21 @@ def build_queenslander(spec, out_dir):
                 if level > 0 and sign == 1:
                     continue
                 parts.append(lpm.box(f"rail_front_{level}_{rail}_{sign}", (x_to - x_from - 0.04, 0.014, 0.014), at=((x_from + x_to) / 2, deck_y0 + 0.025, z + up), color=c["trim"]))
+            y_end = deck_y1 if level == 0 else yb1
             for sign in (-1, 1):
-                parts.append(lpm.box(f"rail_side_{level}_{rail}_{sign}", (0.014, yb1 - deck_y0 - 0.04, 0.014), at=(sign * (deck_x - 0.025), (deck_y0 + yb1) / 2, z + up), color=c["trim"]))
+                parts.append(lpm.box(f"rail_side_{level}_{rail}_{sign}", (0.014, y_end - deck_y0 - 0.04, 0.014), at=(sign * (deck_x - 0.025), (deck_y0 + y_end) / 2, z + up), color=c["trim"]))
+            if level == 0:
+                parts.append(lpm.box(f"rail_back_{rail}", (2 * deck_x - 0.06, 0.014, 0.014), at=(0, deck_y1 - 0.025, z + up), color=c["trim"]))
+            else:
+                for sign in (-1, 1):
+                    parts.append(lpm.box(f"rail_end_{level}_{rail}_{sign}", (deck_x - bx, 0.014, 0.014), at=(sign * (bx + deck_x) / 2, yb1 - 0.02, z + up), color=c["trim"]))
         for number in range(int((2 * deck_x) / 0.09)):
             bxx = -deck_x + 0.05 + number * 0.09
             if level == 0 and abs(bxx) < 0.18:
                 continue
             parts.append(lpm.box(f"baluster_{level}_{number}", (0.01, 0.01, 0.07), at=(bxx, deck_y0 + 0.025, z + 0.035), color=c["trim"]))
+            if level == 0:
+                parts.append(lpm.box(f"baluster_back_{number}", (0.01, 0.01, 0.07), at=(bxx, deck_y1 - 0.025, z + 0.035), color=c["trim"]))
 
     pitch = 0.42
     count = max(1, round(2 * bx / pitch))

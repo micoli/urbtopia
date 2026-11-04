@@ -2193,6 +2193,60 @@
       }
     }
   },
+  "buildings-house-1x1-1f-queenslander-a": {
+    "file": "buildings/house-1x1-1f-queenslander-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      }
+    }
+  },
+  "buildings-house-1x1-1f-queenslander-a-solar": {
+    "file": "buildings/house-1x1-1f-queenslander-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      }
+    }
+  },
   "buildings-house-1x1-1f-riad-a": {
     "file": "buildings/house-1x1-1f-riad-a",
     "source": "managed",
@@ -4487,6 +4541,60 @@
       }
     }
   },
+  "buildings-house-2x1-1f-queenslander-a": {
+    "file": "buildings/house-2x1-1f-queenslander-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      }
+    }
+  },
+  "buildings-house-2x1-1f-queenslander-a-solar": {
+    "file": "buildings/house-2x1-1f-queenslander-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      }
+    }
+  },
   "buildings-house-2x1-1f-riad-a": {
     "file": "buildings/house-2x1-1f-riad-a",
     "source": "managed",
@@ -5333,6 +5441,60 @@
       }
     }
   },
+  "buildings-house-2x1-2f-queenslander-a": {
+    "file": "buildings/house-2x1-2f-queenslander-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-queenslander-a-solar": {
+    "file": "buildings/house-2x1-2f-queenslander-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      }
+    }
+  },
   "buildings-house-2x1-2f-riad-a": {
     "file": "buildings/house-2x1-2f-riad-a",
     "source": "managed",
@@ -5890,6 +6052,60 @@
       "d": {
         "name": "honey",
         "color": "#d9a85c"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-queenslander-a": {
+    "file": "buildings/house-2x1-2f-third-queenslander-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-queenslander-a-solar": {
+    "file": "buildings/house-2x1-2f-third-queenslander-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
       }
     }
   },
@@ -7399,6 +7615,60 @@
       }
     }
   },
+  "buildings-house-2x2-2f-queenslander-a": {
+    "file": "buildings/house-2x2-2f-queenslander-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-queenslander-a-solar": {
+    "file": "buildings/house-2x2-2f-queenslander-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      }
+    }
+  },
   "buildings-house-2x2-2f-riad-a": {
     "file": "buildings/house-2x2-2f-riad-a",
     "source": "managed",
@@ -8512,6 +8782,60 @@
       "d": {
         "name": "honey",
         "color": "#d9a85c"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-queenslander-a": {
+    "file": "buildings/house-2x2-3f-queenslander-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-queenslander-a-solar": {
+    "file": "buildings/house-2x2-3f-queenslander-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
       }
     }
   },
@@ -9631,6 +9955,60 @@
       }
     }
   },
+  "buildings-house-2x2-4f-queenslander-a": {
+    "file": "buildings/house-2x2-4f-queenslander-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      }
+    }
+  },
+  "buildings-house-2x2-4f-queenslander-a-solar": {
+    "file": "buildings/house-2x2-4f-queenslander-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      }
+    }
+  },
   "buildings-house-2x2-4f-riad-a": {
     "file": "buildings/house-2x2-4f-riad-a",
     "source": "managed",
@@ -10744,6 +11122,60 @@
       "d": {
         "name": "honey",
         "color": "#d9a85c"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-queenslander-a": {
+    "file": "buildings/house-2x2-5f-queenslander-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-queenslander-a-solar": {
+    "file": "buildings/house-2x2-5f-queenslander-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      },
+      "b": {
+        "name": "dalablue",
+        "color": "#6a8aa3"
+      },
+      "c": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "d": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
       }
     }
   },
