@@ -5,6 +5,7 @@ import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
 import { useGame, useUi } from '../common/hooks';
 import { SwitchField } from '../common/SwitchField';
+import { AdvisorSettings } from '../advisor/AdvisorSettings';
 import { DifficultySettings } from './DifficultySettings';
 import { SettingRow } from './SettingRow';
 import { SettingsSection } from './SettingsSection';
@@ -71,6 +72,7 @@ export function GameSettings() {
       <SettingsSection title={t('settings.section.safeguards')} icon="shield">
         <SwitchField label={t('prefs.confirmSale')} checked={confirmSale} onChange={prefsStore.getState().setConfirmSale} />
       </SettingsSection>
+      <AdvisorSettings />
     </>
   );
 }

@@ -530,6 +530,10 @@ _Avoid_: Advice, analysis, report
 One entry of a Diagnosis: a statement with its figures, a weight (the share of the city's Citizens it hurts) and, when it has a place, a spot on the map to show. A Cause is not a Sanction, a Petition or a Need.
 _Avoid_: Reason, problem
 
+**Advisor**:
+An optional voice the Mayor can question about the city ("why do my roads jam?"). It explains and rephrases the Causes of the Diagnosis and the rules of the Codex in plain words; it never invents a Cause, never acts on the city and never votes. Its words are not kept: they are neither saved, exported nor shown to other Players. The game is the same without it.
+_Avoid_: Assistant, chatbot, AI, Diagnosis (the Diagnosis stays computed by plain rules)
+
 **Power plant**:
 A building that supplies power to the city, using wind, water, the heat of the ground or coal. The code name `powerPlant` is the wind one; the others have their own names. Backup generation is a separate service role.
 _Avoid_: Generator, energy station

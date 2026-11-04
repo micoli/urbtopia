@@ -15,6 +15,7 @@ export interface Prefs {
   debug: boolean;
   alwaysDay: boolean;
   signInPrompt: boolean;
+  advisor: boolean;
   serviceCoverageType: FacilityType;
   matchSpeed: MatchSpeed;
 }
@@ -31,7 +32,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, serviceCoverageType: 'school', matchSpeed: 1 };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, advisor: false, serviceCoverageType: 'school', matchSpeed: 1 };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -46,6 +47,7 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       debug: typeof parsed.debug === 'boolean' ? parsed.debug : fallback.debug,
       alwaysDay: typeof parsed.alwaysDay === 'boolean' ? parsed.alwaysDay : fallback.alwaysDay,
       signInPrompt: typeof parsed.signInPrompt === 'boolean' ? parsed.signInPrompt : fallback.signInPrompt,
+      advisor: typeof parsed.advisor === 'boolean' ? parsed.advisor : fallback.advisor,
       serviceCoverageType: typeof parsed.serviceCoverageType === 'string' && isFacilityType(parsed.serviceCoverageType) ? parsed.serviceCoverageType : fallback.serviceCoverageType,
       matchSpeed: MATCH_SPEEDS.includes(parsed.matchSpeed as MatchSpeed) ? (parsed.matchSpeed as MatchSpeed) : fallback.matchSpeed,
     };
@@ -62,9 +64,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, signInPrompt, serviceCoverageType, matchSpeed }: Prefs): void {
+function writeStored({ language, layout, traffic, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, signInPrompt, advisor, serviceCoverageType, matchSpeed }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, signInPrompt, serviceCoverageType, matchSpeed }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, signInPrompt, advisor, serviceCoverageType, matchSpeed }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -81,6 +83,7 @@ export interface PrefsStore extends Prefs {
   setDebug: (debug: boolean) => void;
   setAlwaysDay: (alwaysDay: boolean) => void;
   setSignInPrompt: (signInPrompt: boolean) => void;
+  setAdvisor: (advisor: boolean) => void;
   setServiceCoverageType: (type: FacilityType) => void;
   setMatchSpeed: (matchSpeed: MatchSpeed) => void;
 }
@@ -127,6 +130,10 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   },
   setSignInPrompt: (signInPrompt) => {
     set({ signInPrompt });
+    writeStored(get());
+  },
+  setAdvisor: (advisor) => {
+    set({ advisor });
     writeStored(get());
   },
   setServiceCoverageType: (serviceCoverageType) => {

@@ -3,7 +3,7 @@ import { FLAG_IDS, createFeatureFlagStore, flagOfCommand, offFlags, resolveFlags
 
 describe('feature flags', () => {
   it('ship off', () => {
-    expect(FLAG_IDS).toContain('clubs');
+    expect(FLAG_IDS).toEqual(expect.arrayContaining(['clubs', 'advisor']));
     expect(Object.values(offFlags()).every(value => !value)).toBe(true);
     expect(resolveFlags(null, true).clubs).toBe(false);
   });
@@ -37,14 +37,34 @@ describe('feature flag store', () => {
     expect(store.getState().enabled.clubs).toBe(true);
     store.getState().set('clubs', false);
     expect(store.getState().enabled.clubs).toBe(false);
-    expect(stored).toBe('{"clubs":false}');
+    expect(JSON.parse(stored!)).toMatchObject({ clubs: false });
   });
 
-  it('refuses every switch in production', () => {
+  it('refuses every switch in production until the Player subscribes to the beta', () => {
     let written = false;
     const store = createFeatureFlagStore(false, () => '{"clubs":true}', () => { written = true; });
     store.getState().set('clubs', true);
     expect(store.getState().enabled.clubs).toBe(false);
     expect(written).toBe(false);
+  });
+
+  it('turns the chosen features on once subscribed, and off again when unsubscribed', () => {
+    let stored: string | null = '{"clubs":true}';
+    let beta = false;
+    const store = createFeatureFlagStore(false, () => stored, values => { stored = JSON.stringify(values); }, () => beta, value => { beta = value; });
+    expect(store.getState().enabled.clubs).toBe(false);
+    store.getState().subscribe(true);
+    expect(beta).toBe(true);
+    expect(store.getState().enabled.clubs).toBe(true);
+    store.getState().set('advisor', true);
+    expect(JSON.parse(stored!)).toMatchObject({ clubs: true, advisor: true });
+    store.getState().subscribe(false);
+    expect(store.getState().enabled).toEqual(offFlags());
+    expect(store.getState().chosen.advisor).toBe(true);
+  });
+
+  it('remembers the subscription across reloads', () => {
+    const store = createFeatureFlagStore(false, () => '{"advisor":true}', () => undefined, () => true, () => undefined);
+    expect(store.getState().enabled.advisor).toBe(true);
   });
 });

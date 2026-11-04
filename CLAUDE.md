@@ -20,6 +20,8 @@ Add `?e2e` to the game URL in end-to-end and Playwright tests (`page.goto('/?e2e
 
 And `local-auth` (`page.goto('/?e2e&local-auth=name@example.com')`): in dev against a local Supabase only (ignored otherwise), it signs in without an email code, creating the account if needed, and gives it a Handle slugged from the email (`name-example-com`). It needs `GOTRUE_MAILER_AUTOCONFIRM=true` in the local `docker-compose.yml`.
 
+The Advisor is behind the `advisor` feature flag: a Playwright test sets `localStorage['urbtopia-flags'] = {"advisor":true}` before loading. `?advisor-fake` swaps the Advisor's WebLLM engine for a scripted one (answer `Fake advisor answer.`), so a test never downloads a model; `?advisor-fake=fail` makes the download fail with out-of-memory, `?advisor-fake=unsupported` hides the setting as if WebGPU were missing.
+
 The map also follows a Day cycle (2 real hours, see `CONTEXT.md`). `?e2e` turns on Always day, which lights the map as Daytime at all times; `page.goto('/?always-day')` does it alone. `page.goto('/?e2e&time=23:00')` pins the light to a Cycle hour (it wins over Always day) for tests of the Night. `time` only changes the light, not power or the HUD.
 
 ## UI

@@ -13,6 +13,7 @@ The vocabulary used in code and docs (Urbs, Workshop, Factory, Parcel, Catch-upâ
 - Real-time progress, caught up in one pass when you come back (up to 48 hours).
 - Installable web app (Android and others) that updates itself and works offline.
 - French and English, three interchangeable HUD layouts, touch first (pan, pinch, two-finger rotation).
+- Optional Advisor: a small language model (WebLLM, WebGPU) that runs in the browser, downloaded only after an explicit confirmation, and explains the city's Causes in words. It only writes text.
 - Codex of every constructible, grouped by section, with descriptions, population unlocks and a rendered gallery of every Tier.
 - Local save with automatic backup, JSON export and import, recovery screen, single active tab.
 
