@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "standard",
+  "section": "build.leisure",
+  "model": "buildings-grand-palais-6x6",
+  "footprint": [6, 6],
+  "cost": 26000,
+  "unlockCitizens": 1000,
+  "requiresRoad": true,
+  "name": {
+    "en": "Grand Palais",
+    "fr": "Grand Palais"
+  },
+  "description": {
+    "en": "A colonnaded hall of stone and steel, with a cross of glass vaults under a great glass dome.",
+    "fr": "Un palais à colonnade de pierre et d’acier, avec une croix de verrières sous un grand dôme de verre."
+  },
+  "attraction": 90
+}

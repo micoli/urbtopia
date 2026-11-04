@@ -6,6 +6,7 @@ import math
 import random
 
 import bmesh
+from mathutils import Matrix
 
 import building_lib as bl
 from building_lib import lpm
@@ -16,6 +17,7 @@ MUSEUM_ENTRIES = [
     ("terracotta", "#a24a32", 0.0, 0.8), ("terracotta_dark", "#7d3626", 0.0, 0.8), ("terracotta_light", "#bd5e40", 0.0, 0.8),
     ("water", "#4f8f9a", 0.0, 0.3), ("glass_dark", "#34465a", 0.0, 0.25), ("stone", "#d9d3c4", 0.0, 0.85),
     ("shell_white", "#f4f6fb", 0.0, 0.5), ("shell_shade", "#d7deec", 0.0, 0.5), ("lawn", "#8fbf73", 0.0, 0.9),
+    ("stone_warm", "#cdb98f", 0.0, 0.85), ("zinc", "#6f7a86", 0.2, 0.5), ("steel", "#8d98a3", 0.4, 0.45), ("glass_light", "#a9cbd6", 0.0, 0.2),
 ]
 
 
@@ -200,4 +202,157 @@ def build_eye(spec, out_dir):
     parts.append(bl._decal("billboard", [(2.17, 0.64, 0.5), (1.73, 0.64, 0.5), (1.73, 0.64, 1.28), (2.17, 0.64, 1.28)], navy))
     parts.append(bl._decal("billboard_mark", [(2.07, 0.639, 0.8), (1.83, 0.639, 0.8), (1.83, 0.639, 1.05), (2.07, 0.639, 1.05)], orange))
     ob = lpm.finish(spec["id"], parts, palette, budget=4000, center=False)
+    return bl.export_model(ob, spec, out_dir)
+
+
+def side_decal(name, outline, depth, at, color):
+    """Flat arch standing on a wall that faces +X or -X."""
+    return lpm.rotate(lpm.sweep(name, outline, depth, at=at, color=color, axis="y"), 90, about=(at[0], at[1], 0.0))
+
+
+def lower(parts, dz):
+    for part in parts:
+        part.data.transform(Matrix.Translation((0.0, 0.0, -dz)))
+    return parts
+
+
+def arch_outline(width, height, steps=6):
+    """Closed (x, z) outline of a rectangle topped by a half ellipse, standing on z = 0."""
+    rise = min(width / 2, height)
+    shoulder = height - rise
+    points = [(-width / 2, 0.0), (width / 2, 0.0)]
+    for step in range(steps + 1):
+        angle = math.pi * step / steps
+        points.append((width / 2 * math.cos(angle), shoulder + rise * math.sin(angle)))
+    return points
+
+
+def clock_hand(angle_deg, length, width):
+    """Thin (x, z) quad from the centre of a clock, `angle_deg` clockwise from 12 o'clock."""
+    angle = math.radians(angle_deg)
+    direction = (math.sin(angle), math.cos(angle))
+    side = (direction[1] * width / 2, -direction[0] * width / 2)
+    return [(side[0], side[1]), (direction[0] * length + side[0], direction[1] * length + side[1]), (direction[0] * length - side[0], direction[1] * length - side[1]), (-side[0], -side[1])]
+
+
+def circle_outline(radius, count=16):
+    return [(radius * math.cos(2 * math.pi * k / count), radius * math.sin(2 * math.pi * k / count)) for k in range(count)]
+
+
+def vault_along_x(name, span, rise, length, at, color):
+    """Barrel vault whose axis runs along X; `at` is the centre of its base."""
+    ob = lpm.sweep(name, arch_outline(span, rise, 10), length, at=at, color=color, axis="y")
+    return lpm.rotate(ob, 90, about=(at[0], at[1], 0.0))
+
+
+def build_orsay(spec, out_dir):
+    """Former railway station 5x3: warm stone body with an arcade, a glass barrel vault between two zinc-roofed pavilions with gold clocks showing 10:20 above the front doors, doors on all four sides, a row of trees."""
+    palette, index = _palette(spec)
+    stone, glass, glass_light, zinc, steel, gold, white, graphite, lawn = (index(n) for n in ("stone_warm", "glass_dark", "glass_light", "zinc", "steel", "gold", "white", "graphite", "lawn"))
+    parts = [lpm.box("body", (4.6, 2.05, 0.55), at=(0.0, 0.375, 0.04), color=stone)]
+    parts.append(lpm.box("cornice", (4.7, 2.15, 0.04), at=(0.0, 0.375, 0.59), color=steel))
+    front, back = -0.65, 1.4
+    for number, x in enumerate((-1.24, -0.62, 0.0, 0.62, 1.24)):
+        parts.append(lpm.sweep(f"arch_{number}", arch_outline(0.32, 0.44), 0.012, at=(x, front - 0.004, 0.1), color=glass))
+        parts.append(lpm.sweep(f"back_main_arch_{number}", arch_outline(0.32, 0.44), 0.012, at=(x, back + 0.004, 0.1), color=glass))
+    vault_y, vault_z = 0.375, 0.63
+    parts.append(vault_along_x("vault", 1.9, 0.42, 3.2, (0.0, vault_y, vault_z), glass_light))
+    for number in range(9):
+        x = -1.6 + 0.4 * number
+        parts.append(vault_along_x(f"rib_{number}", 1.93, 0.44, 0.04, (x, vault_y, vault_z - 0.005), steel))
+    for number, (sign, x) in enumerate(((-1, -2.0), (1, 2.0))):
+        parts.append(lpm.box(f"pavilion_{number}", (0.8, 2.05, 1.0), at=(x, 0.375, 0.04), color=stone))
+        parts.append(lpm.box(f"mansard_{number}", (0.9, 2.15, 0.3), at=(x, 0.375, 1.04), color=zinc, taper=(0.75, 0.8)))
+        parts.append(lpm.box(f"crest_{number}", (0.5, 1.7, 0.03), at=(x, 0.375, 1.34), color=steel))
+        parts.append(lpm.sweep(f"clock_ring_{number}", circle_outline(0.14), 0.03, at=(x, front - 0.015, 0.84), color=gold, axis="y"))
+        parts.append(lpm.sweep(f"clock_face_{number}", circle_outline(0.11), 0.04, at=(x, front - 0.015, 0.84), color=white, axis="y"))
+        for hand, (angle, length, width) in enumerate(((310.0, 0.06, 0.018), (120.0, 0.095, 0.012))):
+            parts.append(lpm.sweep(f"clock_hand_{number}_{hand}", clock_hand(angle, length, width), 0.012, at=(x, front - 0.035, 0.84), color=graphite, axis="y"))
+        parts.append(lpm.sweep(f"clock_arch_{number}", arch_outline(0.22, 0.3), 0.012, at=(x, front - 0.004, 0.1), color=glass))
+        parts.append(lpm.sweep(f"back_arch_{number}", arch_outline(0.22, 0.3), 0.012, at=(x, back + 0.004, 0.1), color=glass))
+        end_x = x + sign * 0.4 + sign * 0.004
+        for door, y in enumerate((-0.2, 0.375, 0.95)):
+            parts.append(lpm.rotate(lpm.sweep(f"side_arch_{number}_{door}", arch_outline(0.3, 0.4), 0.012, at=(end_x, y, 0.1), color=glass), 90, about=(end_x, y, 0.0)))
+    for number, x in enumerate((-2.2, -0.9, 0.9, 2.2)):
+        parts.append(bush(f"tree_{number}", x, -0.85, 0.04, 0.09, lawn))
+    ob = lpm.finish(spec["id"], lower(parts, 0.04), palette, budget=4500, center=False)
+    return bl.export_model(ob, spec, out_dir)
+
+
+def build_grand_palais(spec, out_dir):
+    """Glass and stone exhibition hall, 6x6: a front colonnade between two end pavilions, a cross of glass barrel vaults under a central glass dome, a rear block with three zinc cupolas and lawns on both sides."""
+    palette, index = _palette(spec)
+    stone, glass, glass_light, zinc, steel, gold, lawn = (index(n) for n in ("stone", "glass_dark", "glass_light", "zinc", "steel", "gold", "lawn"))
+    parts = []
+    for number, x in enumerate((-2.78, 2.78)):
+        parts.append(lpm.box(f"lawn_{number}", (0.3, 3.2, 0.03), at=(x, -0.35, 0.04), color=lawn))
+        for step, y in enumerate((-1.4, -0.35, 0.7)):
+            parts.append(bush(f"bush_{number}_{step}", x, y, 0.07, 0.07, lawn))
+    parts.append(lpm.box("colonnade_wall", (5.4, 0.7, 0.55), at=(0.0, -2.45, 0.04), color=stone))
+    parts.append(lpm.box("entablature", (5.6, 1.0, 0.06), at=(0.0, -2.45, 0.59), color=steel))
+    for number in range(15):
+        parts.append(lpm.prism(f"column_{number}", 8, 0.045, 0.5, at=(-2.52 + 0.36 * number, -2.88, 0.09), color=stone))
+    wall_face = -2.8
+    for number, x in enumerate((-1.98, -1.62, -1.26, -0.9, 0.9, 1.26, 1.62, 1.98)):
+        parts.append(lpm.sweep(f"tall_window_frame_{number}", arch_outline(0.29, 0.45, 8), 0.014, at=(x, wall_face - 0.003, 0.1), color=steel, axis="y"))
+        parts.append(lpm.sweep(f"tall_window_{number}", arch_outline(0.23, 0.39, 8), 0.02, at=(x, wall_face - 0.005, 0.12), color=glass, axis="y"))
+        parts.append(lpm.box(f"tall_window_bar_{number}", (0.018, 0.02, 0.37), at=(x, wall_face - 0.011, 0.12), color=steel))
+        parts.append(lpm.box(f"tall_window_transom_{number}", (0.23, 0.02, 0.018), at=(x, wall_face - 0.011, 0.3), color=steel))
+    parts.append(lpm.box("entry_pavilion", (1.4, 1.0, 0.8), at=(0.0, -2.45, 0.04), color=stone))
+    parts.append(lpm.box("entry_roof", (1.5, 1.1, 0.06), at=(0.0, -2.45, 0.84), color=zinc))
+    parts.append(lpm.sweep("entry_surround", arch_outline(0.86, 0.7), 0.02, at=(0.0, -2.955, 0.09), color=steel, axis="y"))
+    parts.append(lpm.sweep("entry_arch", arch_outline(0.7, 0.62), 0.02, at=(0.0, -2.96, 0.09), color=glass, axis="y"))
+    for number, x in enumerate((-0.25, 0.0, 0.25)):
+        height = 0.27 + 0.35 * math.sqrt(max(0.0, 1 - (x / 0.35) ** 2)) - 0.03
+        parts.append(lpm.box(f"entry_bar_{number}", (0.024, 0.02, height), at=(x, -2.98, 0.09), color=steel))
+    parts.append(lpm.box("entry_transom", (0.66, 0.02, 0.024), at=(0.0, -2.98, 0.36), color=steel))
+    parts.append(lpm.box("entry_sill", (0.7, 0.02, 0.024), at=(0.0, -2.98, 0.09), color=steel))
+    for number, x in enumerate((-2.55, 2.55)):
+        parts.append(lpm.box(f"corner_pavilion_{number}", (0.6, 1.0, 0.72), at=(x, -2.45, 0.04), color=stone))
+        parts.append(lpm.box(f"corner_roof_{number}", (0.7, 1.1, 0.14), at=(x, -2.45, 0.76), color=zinc, taper=(0.7, 0.7)))
+        parts.append(lpm.prism(f"finial_{number}", 6, 0.04, 0.12, at=(x, -2.45, 0.9), color=gold))
+    hall_y = -0.35
+    parts.append(lpm.box("hall_base", (5.2, 3.2, 0.3), at=(0.0, hall_y, 0.04), color=stone))
+    top = 0.34
+    parts.append(vault_along_x("nave_east_west", 2.1, 0.55, 5.1, (0.0, hall_y, top), glass_light))
+    parts.append(lpm.sweep("nave_north_south", arch_outline(1.7, 0.62, 10), 3.1, at=(0.0, hall_y, top), color=glass_light, axis="y"))
+    for number in range(8):
+        x = -2.4 + 0.69 * number
+        parts.append(vault_along_x(f"rib_ew_{number}", 2.13, 0.57, 0.04, (x, hall_y, top - 0.005), steel))
+    for number in range(7):
+        y = hall_y - 1.4 + 0.47 * number
+        parts.append(lpm.sweep(f"rib_ns_{number}", arch_outline(1.73, 0.64, 10), 0.04, at=(0.0, y, top - 0.005), color=steel, axis="y"))
+    parts.append(lpm.lathe("drum", [(0.0, top), (0.85, top), (0.85, top + 0.2), (0.0, top + 0.2)], segments=20, at=(0.0, hall_y, 0.0), color=steel))
+    parts.append(lpm.lathe("dome", [(0.0, top + 0.2), (0.86, top + 0.2), (0.8, top + 0.45), (0.62, top + 0.7), (0.38, top + 0.88), (0.14, top + 0.96), (0.0, top + 0.98)], segments=20, at=(0.0, hall_y, 0.0), color=glass_light))
+    for number, level in enumerate((0.45, 0.68)):
+        radius = 0.88 - 0.55 * (level - 0.45) / 0.23 * 0.0 - (level - 0.45) * 0.9
+        parts.append(lpm.lathe(f"dome_band_{number}", [(radius, top + level), (radius + 0.015, top + level), (radius + 0.015, top + level + 0.035), (radius, top + level + 0.035)], segments=20, at=(0.0, hall_y, 0.0), color=steel))
+    parts.append(lpm.prism("lantern", 8, 0.08, 0.16, at=(0.0, hall_y, top + 0.98), color=steel))
+    parts.append(lpm.prism("spire", 6, 0.02, 0.2, at=(0.0, hall_y, top + 1.14), color=gold))
+    parts.append(lpm.box("rear_block", (3.6, 1.1, 0.45), at=(0.0, 2.2, 0.04), color=stone))
+    for number, x in enumerate((-1.2, -0.6, 0.0, 0.6, 1.2)):
+        parts.append(lpm.sweep(f"rear_door_frame_{number}", arch_outline(0.36, 0.34), 0.014, at=(x, 2.75 + 0.003, 0.04), color=steel, axis="y"))
+        parts.append(lpm.sweep(f"rear_door_{number}", arch_outline(0.28, 0.3), 0.02, at=(x, 2.75 + 0.005, 0.04), color=glass, axis="y"))
+    for number, x in enumerate((-1.8, 1.8)):
+        outward = 1 if x > 0 else -1
+        parts.append(side_decal(f"rear_side_door_frame_{number}", arch_outline(0.36, 0.34), 0.014, (x + outward * 0.003, 2.2, 0.04), steel))
+        parts.append(side_decal(f"rear_side_door_{number}", arch_outline(0.28, 0.3), 0.02, (x + outward * 0.005, 2.2, 0.04), glass))
+    for number, outward in enumerate((-1, 1)):
+        gable_x = outward * 2.55
+        parts.append(side_decal(f"gable_frame_{number}", arch_outline(2.06, 0.54, 12), 0.016, (gable_x + outward * 0.003, hall_y, top), steel))
+        parts.append(side_decal(f"gable_glass_{number}", arch_outline(1.92, 0.48, 12), 0.022, (gable_x + outward * 0.006, hall_y, top + 0.02), glass))
+        for bar in range(-3, 4):
+            offset = bar * 0.27
+            height = 0.48 * math.sqrt(max(0.0, 1 - (offset / 0.96) ** 2))
+            parts.append(lpm.box(f"gable_bar_{number}_{bar}", (0.03, 0.025, height), at=(gable_x + outward * 0.012, hall_y + offset, top + 0.02), color=steel))
+        parts.append(lpm.box(f"gable_transom_{number}", (0.03, 1.8, 0.025), at=(gable_x + outward * 0.012, hall_y, top + 0.2), color=steel))
+        side_x = outward * 2.6
+        for window in range(6):
+            y = -1.7 + 0.5 * window
+            parts.append(side_decal(f"side_window_frame_{number}_{window}", arch_outline(0.28, 0.23), 0.014, (side_x + outward * 0.003, y, 0.09), steel))
+            parts.append(side_decal(f"side_window_{number}_{window}", arch_outline(0.2, 0.17), 0.02, (side_x + outward * 0.005, y, 0.115), glass))
+    parts.append(lpm.box("rear_roof", (3.7, 1.2, 0.12), at=(0.0, 2.2, 0.49), color=zinc, taper=(0.9, 0.85)))
+    for number, (x, radius) in enumerate(((-1.3, 0.26), (0.0, 0.42), (1.3, 0.26))):
+        parts.append(lpm.lathe(f"cupola_{number}", [(0.0, 0.61), (radius, 0.61), (radius * 0.95, 0.72), (radius * 0.6, 0.84), (radius * 0.25, 0.92), (0.0, 0.95)], segments=14, at=(x, 2.2, 0.0), color=zinc))
+    ob = lpm.finish(spec["id"], lower(parts, 0.04), palette, budget=7000, center=False)
     return bl.export_model(ob, spec, out_dir)
