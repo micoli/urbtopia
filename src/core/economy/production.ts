@@ -113,6 +113,11 @@ function advanceHome(building: Building, elapsedMs: number): Building {
   return { ...building, taxCitizenMs: Math.min(cap, building.taxCitizenMs + citizens * elapsedMs) };
 }
 
+export function taxFillRatio(building: Building): number {
+  const cap = citizensOf(building.tier) * TAX.capHours * TAX.hourMs;
+  return cap > 0 ? building.taxCitizenMs / cap : 0;
+}
+
 export function taxDue(building: Building): number {
   return Math.floor((building.taxCitizenMs * TAX.urbsPerCitizenPerHour) / TAX.hourMs);
 }

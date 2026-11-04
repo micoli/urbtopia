@@ -1493,6 +1493,8 @@ export const CATALOG = {
   'eco.tab.environment': ['Environment', 'Environnement'],
   'eco.tab.transport': ['Transport', 'Transports'],
   'prefs.showTaxBadges': ['Display uncollected tax badges', 'Afficher les badges de taxes non collectées'],
+  'prefs.taxBadgeThreshold': ['Tax badge threshold', 'Seuil des badges de taxes'],
+  'prefs.taxBadgeThreshold.description': ['Shows a tax badge once a building holds this share of its maximum.', "Affiche un badge de taxes quand un bâtiment atteint cette part de son maximum."],
   'prefs.showProductionPreview': ['Display production preview', "Afficher l'aperçu de la production"],
   'lang.en': ['English', 'English'],
   'lang.fr': ['Français', 'Français'],

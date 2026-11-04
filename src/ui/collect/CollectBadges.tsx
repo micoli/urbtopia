@@ -1,6 +1,6 @@
 import { useStoreWithEqualityFn } from 'zustand/traditional';
 import { useStore } from 'zustand';
-import { footprintOf, officeYieldMultiplierOf } from '../../core';
+import { footprintOf, isHomeType, isOfficeType, officeFillRatio, officeYieldMultiplierOf, taxFillRatio } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
@@ -23,11 +23,19 @@ function sameBadges(a: readonly BadgeSpec[], b: readonly BadgeSpec[]): boolean {
   });
 }
 
-function badgeSpecsOf(buildings: readonly Parameters<typeof collectBadgeLabel>[0][], officeYield: number): BadgeSpec[] {
+function taxFillOf(building: Parameters<typeof collectBadgeLabel>[0]): number | null {
+  if (isHomeType(building.type)) return taxFillRatio(building);
+  if (isOfficeType(building.type)) return officeFillRatio(building);
+  return null;
+}
+
+function badgeSpecsOf(buildings: readonly Parameters<typeof collectBadgeLabel>[0][], officeYield: number, taxThreshold: number): BadgeSpec[] {
   const specs: BadgeSpec[] = [];
   for (const building of buildings) {
     const label = collectBadgeLabel(building, officeYield);
     if (!label) continue;
+    const fill = taxFillOf(building);
+    if (fill !== null && fill * 100 < taxThreshold) continue;
     const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
     specs.push({ id: building.id, worldX: building.x + width / 2, worldZ: building.y + depth / 2, label, models: readyItemModels(building) });
   }
@@ -37,7 +45,8 @@ function badgeSpecsOf(buildings: readonly Parameters<typeof collectBadgeLabel>[0
 export function CollectBadges() {
   const officeYield = useGame((store) => officeYieldMultiplierOf(store.state));
   const showTaxBadges = useStore(prefsStore, (store) => store.showTaxBadges);
-  const allBadges = useStoreWithEqualityFn(gameStore, (store) => badgeSpecsOf(store.state.buildings, officeYield), sameBadges);
+  const taxBadgeThreshold = useStore(prefsStore, (store) => store.taxBadgeThreshold);
+  const allBadges = useStoreWithEqualityFn(gameStore, (store) => badgeSpecsOf(store.state.buildings, officeYield, taxBadgeThreshold), sameBadges);
   const badges = showTaxBadges ? allBadges : allBadges.filter((badge) => typeof badge.label !== 'number');
   return (
     <>
