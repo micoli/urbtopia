@@ -1,12 +1,17 @@
 import { createStore } from 'zustand/vanilla';
 import type { Command } from '../core';
 
-// A feature that ships switched off. In production it stays off; a development build can switch it on from the devtools.
+// A feature that ships switched off. A development build can switch it on from the devtools; in production the Player switches it on in the Settings after subscribing to the beta features.
 export const FLAGS = {
   clubs: {
     label: 'Gestion des clubs',
     description: 'Clubs de football et de baseball : effectif, composition, championnat, matchs.',
     commands: ['FoundClub', 'SignPlayer', 'ReleasePlayer', 'SetLineup', 'PlayMatch'] as readonly Command['type'][],
+  },
+  advisor: {
+    label: 'Conseiller',
+    description: 'Assistant local (WebLLM) qui explique les Causes de la ville ; téléchargement du modèle sur demande.',
+    commands: [] as readonly Command['type'][],
   },
 } as const;
 
@@ -51,20 +56,58 @@ const writeStored = (values: FlagValues): void => {
   }
 };
 
+export const BETA_KEY = 'urbtopia-beta';
+
+const readBeta = (): boolean => {
+  try {
+    return localStorage.getItem(BETA_KEY) === 'true';
+  } catch {
+    return false;
+  }
+};
+
+const writeBeta = (subscribed: boolean): void => {
+  try {
+    localStorage.setItem(BETA_KEY, String(subscribed));
+  } catch {
+    // Storage is unavailable: the subscription holds for this page only.
+  }
+};
+
 export interface FeatureFlagStore {
+  // What is switched on right now: nothing, unless the build allows overrides or the Player subscribed to the beta.
   enabled: FlagValues;
-  // Ignored in production, where every flag stays off.
+  subscribed: boolean;
+  // The Player's choices, kept even while unsubscribed so that subscribing again finds them.
+  chosen: FlagValues;
+  // Ignored unless the build allows overrides or the Player subscribed to the beta.
   set: (id: FlagId, value: boolean) => void;
+  subscribe: (subscribed: boolean) => void;
 }
 
-export function createFeatureFlagStore(overridable: boolean, read: () => string | null = readStored, write: (values: FlagValues) => void = writeStored) {
+export function createFeatureFlagStore(
+  devBuild: boolean,
+  read: () => string | null = readStored,
+  write: (values: FlagValues) => void = writeStored,
+  readSubscribed: () => boolean = readBeta,
+  writeSubscribed: (subscribed: boolean) => void = writeBeta,
+) {
+  const effective = (chosen: FlagValues, subscribed: boolean): FlagValues => (devBuild || subscribed ? chosen : offFlags());
+  const chosen = resolveFlags(read(), true);
+  const subscribed = readSubscribed();
   return createStore<FeatureFlagStore>((set, get) => ({
-    enabled: resolveFlags(read(), overridable),
+    enabled: effective(chosen, subscribed),
+    subscribed,
+    chosen,
     set: (id, value) => {
-      if (!overridable) return;
-      const enabled = { ...get().enabled, [id]: value };
-      write(enabled);
-      set({ enabled });
+      if (!devBuild && !get().subscribed) return;
+      const next = { ...get().chosen, [id]: value };
+      write(next);
+      set({ chosen: next, enabled: effective(next, get().subscribed) });
+    },
+    subscribe: (value) => {
+      writeSubscribed(value);
+      set({ subscribed: value, enabled: effective(get().chosen, value) });
     },
   }));
 }

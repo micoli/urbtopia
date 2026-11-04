@@ -1,4 +1,5 @@
 import { approvalOf, difficultyOf, isPoliticsActive, politicsRuleOf, termDaysLeft, type Building } from '../../core';
+import { AdvisorButton } from '../advisor/AdvisorButton';
 import { t } from '../../i18n/t';
 import { ActionButton } from '../common/ActionButton';
 import { DrawerPanel } from '../common/DrawerPanel';
@@ -12,13 +13,14 @@ export function TownHallPanel({ building }: { building: Building }) {
   const approval = approvalOf(state);
   const politics = state.politics;
   if (building.type !== 'townHall') return null;
-  if (!isPoliticsActive(state) || approval === null || !politics) return <Note tone="muted">{t('politics.inactive')}</Note>;
+  if (!isPoliticsActive(state) || approval === null || !politics) return <><Note tone="muted">{t('politics.inactive')}</Note><AdvisorButton /></>;
   const election = politicsRuleOf(difficultyOf(state)).election;
   return (
     <DrawerPanel>
       <DrawerPanel.LabelValue label={t('politics.approval')} value={Math.round(approval)} />
       {election && <DrawerPanel.LabelValue label={t('politics.term').replace('{number}', String(politics.term.number))} value={t('politics.termLeft').replace('{duration}', formatDays(termDaysLeft(politics, politics.day)))} />}
       <ActionButton variant="primary" block onClick={openPolitics}>{t('townHall.politics')}</ActionButton>
+      <AdvisorButton />
     </DrawerPanel>
   );
 }

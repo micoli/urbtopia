@@ -6,6 +6,7 @@ import { useInstallPrompt } from '../../pwa/useInstallPrompt';
 import { dialogStore } from '../../store/dialogStore';
 import { ActionButton } from '../common/ActionButton';
 import { SwitchField } from '../common/SwitchField';
+import { BetaSettings } from './BetaSettings';
 import { SettingRow } from './SettingRow';
 import { SettingsSection } from './SettingsSection';
 
@@ -36,6 +37,7 @@ export function AppSettings() {
           <code className="setting-row__value">{__RELEASE_NAME__}</code>
         </SettingRow>
       </SettingsSection>
+      <BetaSettings />
       <SettingsSection title={t('settings.section.advanced')} icon="repair">
         <SwitchField label={t('prefs.debug')} description={t('prefs.debug.description')} checked={debug} onChange={prefsStore.getState().setDebug} />
       </SettingsSection>

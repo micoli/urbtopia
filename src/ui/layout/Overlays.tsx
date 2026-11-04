@@ -8,6 +8,8 @@ import { ShowDialog } from '../tourism/ShowDialog';
 import { VenueDialog } from '../venue/VenueDialog';
 import { MarketModal } from '../market/MarketModal';
 import { ChallengeSuccessOverlay } from '../market/ChallengeSuccessOverlay';
+import { AdvisorDownloadConfirm } from '../advisor/AdvisorDownloadConfirm';
+import { AdvisorWindow } from '../advisor/AdvisorWindow';
 import { StaticButtons } from './StaticButtons.tsx';
 import { FloatingBadges } from './FloatingBadges';
 import { LocatorArrow } from '../buildings/LocatorArrow';
@@ -52,6 +54,8 @@ export function Overlays() {
       <ShowDialog />
       <MarketModal />
       <SettingsWindow />
+      <AdvisorWindow />
+      <AdvisorDownloadConfirm />
       <ChallengeSuccessOverlay />
       {streetView || analytics ? null : <FloatingBadges />}
       {analytics ? <LocatorArrow /> : null}

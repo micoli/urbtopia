@@ -6,6 +6,7 @@ import { readOnlyStore } from '../store/readOnlyStore';
 import { ActionButton } from '../ui/common/ActionButton';
 import { useReadOnly } from '../ui/common/hooks';
 import { useForcedAnnualEventDay } from '../ui/common/useForcedAnnualEventDay';
+import { AdvisorContextSection } from './AdvisorContextSection';
 import { AnnualEventDateButtons } from './AnnualEventDateButtons';
 import { dayOfIsoDate, isoDateOfDay } from './annualEventDate';
 import { clearGoods, clearMaterials, clearWarehouse } from './clearItems';
@@ -64,6 +65,7 @@ export default function DevTools() {
           <DevToolsSection id="flags" title="Fonctionnalités en cours" icon="settings">
             <FeatureFlagSwitches />
           </DevToolsSection>
+          <AdvisorContextSection />
           <DevToolsSection id="warehouse" title="Entrepôt" icon="production">
             <p>{Object.keys(MATERIALS).length} matériaux · {Object.keys(GOODS).length} biens</p>
             <label htmlFor="devtools-quantity">Quantité à ajouter par objet</label>

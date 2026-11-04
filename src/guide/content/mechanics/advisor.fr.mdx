@@ -1,0 +1,26 @@
+export const meta = {
+  title: 'Le Conseiller',
+  summary: 'Un assistant optionnel, qui tourne sur votre appareil et explique pourquoi votre ville a des problèmes.',
+  order: 50,
+  flag: 'advisor',
+};
+
+## Ce qu’il fait
+
+Le **Conseiller** est une voix optionnelle que vous pouvez interroger sur votre ville, par exemple « pourquoi mes routes sont-elles bouchées ? ». Il explique en mots simples les Causes que le jeu a déjà trouvées et les règles du Codex. Il ne construit rien, ne vote pas et ne change rien : il parle seulement, et c’est vous qui décidez.
+
+## L’activer
+
+Il est désactivé par défaut. Activez-le dans les **Réglages**, onglet Partie, avec l’interrupteur **Conseiller**. Le jeu propose alors de télécharger un modèle de langage d’environ 1 000 Mo, une seule fois. Le modèle est conservé dans votre navigateur, tourne sur votre appareil et fonctionne ensuite hors ligne. Votre ville ne quitte jamais votre appareil.
+
+Il faut un navigateur récent avec WebGPU et assez de mémoire graphique. Sans WebGPU, l’interrupteur n’apparaît pas. Si le téléchargement ou le démarrage échoue, un message en donne la raison et l’interrupteur revient sur désactivé. Le jeu se joue de la même façon sans le Conseiller.
+
+**Supprimer le modèle du Conseiller**, au même endroit, libère de nouveau la place.
+
+## Poser une question
+
+Ouvrez-le depuis la **Mairie**, ou appuyez sur **Expliquer** à côté d’une Cause dans la fenêtre de gestion de la ville. Choisissez l’une des questions proposées, ou écrivez la vôtre sur votre ville. Une réponse n’est pas conservée : elle disparaît quand vous fermez la fenêtre. Vos 10 dernières questions sont gardées dans ce navigateur, seulement pour les reposer ; vous pouvez les effacer depuis la fenêtre.
+
+## À savoir
+
+Un petit modèle peut se tromper ou rester vague. Les chiffres qu’il cite viennent de votre ville, mais prenez ses conseils comme une piste. Le Diagnostic de la fenêtre de gestion de la ville reste la référence.

@@ -1,0 +1,26 @@
+export const meta = {
+  title: 'The Advisor',
+  summary: 'An optional assistant that runs on your device and explains why your city has trouble.',
+  order: 50,
+  flag: 'advisor',
+};
+
+## What it does
+
+The **Advisor** is an optional voice you can question about your city, for example “why are my roads jammed?”. It explains the Causes the game already found and the rules of the Codex, in plain words. It never builds, votes or changes anything: it only talks, and you decide what to do.
+
+## Turning it on
+
+It is off by default. Turn it on in **Settings**, on the Game tab, with the **Advisor** switch. The game then asks to download a language model of about 1,000 MB, once. The model is kept in your browser, runs on your device and works offline afterwards. Your city never leaves your device.
+
+It needs a recent browser with WebGPU and enough graphics memory. When WebGPU is missing, the switch is not shown. If the download or the start fails, a message says why and the switch goes back off. The game plays the same without the Advisor.
+
+**Delete the Advisor model** in the same place frees the space again.
+
+## Asking
+
+Open it from the **Town hall**, or press **Explain** next to a Cause in the City management window. Pick one of the suggested questions, or write your own about your city. An answer is not saved: it disappears when you close the window. Your last 10 questions are kept in this browser, only to ask them again; you can clear them from the window.
+
+## Good to know
+
+A small model can be wrong or vague. The figures it quotes come from your city, but treat its advice as a hint. The Diagnosis of the City management window stays the reference.

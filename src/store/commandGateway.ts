@@ -1,5 +1,4 @@
 import { dispatch, type Command, type CommandError, type GameEvent, type GameState } from '../core';
-import type { DeletionUndo } from '../core/engine/undo';
 import type { MessageKey } from '../i18n/messages';
 
 type EventType = GameEvent['type'];
@@ -8,7 +7,7 @@ export type EventHandler<T extends EventType> = (event: Extract<GameEvent, { typ
 export type GatewayOutcome =
   | { kind: 'blocked' }
   | { kind: 'rejected'; error: CommandError }
-  | { kind: 'applied'; state: GameState; undo: DeletionUndo | null };
+  | { kind: 'applied'; state: GameState };
 
 export interface CommandGatewayDeps {
   isReadOnly: () => boolean;
@@ -48,7 +47,7 @@ export function createCommandGateway(deps: CommandGatewayDeps): CommandGateway {
       for (const event of result.events) handlers.get(event.type)?.forEach((handler) => handler(event));
       const tutorialEnd = tutorialEndToast(state, result.state);
       if (tutorialEnd) deps.showToast(tutorialEnd);
-      return { kind: 'applied', state: result.state, undo: result.undo };
+      return { kind: 'applied', state: result.state };
     },
   };
 }

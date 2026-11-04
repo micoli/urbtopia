@@ -217,7 +217,6 @@ export const CATALOG = {
   'eco.locked': ['Required Citizens', 'Habitants requis'],
   'eco.nextUnlock': ['Next Unlock', 'Next Unlock'],
 
-  'action.undo': ['Undo deletion', 'Annuler la suppression'],
   'stat.urbs': ['Urbs', 'Urbs'],
   'dock.build': ['Build', 'Construire'],
   "codex.title": ["Codex", "Codex"],

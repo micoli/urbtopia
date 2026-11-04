@@ -1,5 +1,7 @@
 import { facilityMessages } from './facilities';
 import { diagnosisMessages } from './diagnosis';
+import { advisorMessages } from './advisor';
+import { betaMessages } from './beta';
 import { congestionDiagnosisMessages } from './congestionDiagnosis';
 import { wasteDiagnosisMessages } from './wasteDiagnosis';
 import { casinoMessages } from './casino';
@@ -46,6 +48,8 @@ export const MESSAGES = {
   ...sportVenueMessages('en'),
   ...facilityMessages('en'),
   ...diagnosisMessages('en'),
+  ...advisorMessages('en'),
+  ...betaMessages('en'),
   ...congestionDiagnosisMessages('en'),
   ...wasteDiagnosisMessages('en'),
 };

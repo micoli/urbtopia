@@ -1,0 +1,157 @@
+.advisor-body {
+  display: grid;
+  gap: var(--space-12);
+  min-width: min(480px, 100%);
+}
+
+@media (min-width: 601px) {
+  .advisor-dialog .dialog {
+    width: 80vw;
+    max-height: calc(100dvh - var(--space-24));
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+}
+
+.advisor-guided {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+}
+
+.advisor-free {
+  display: flex;
+  gap: var(--space-8);
+  margin-top: var(--space-8);
+}
+
+.advisor-free .text-field {
+  flex: 1;
+}
+
+.advisor-answer {
+  margin: 0;
+  max-height: 40vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  white-space: pre-wrap;
+}
+
+.advisor-history h3 {
+  margin: 0 0 var(--space-6);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.advisor-history ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  margin: 0 0 var(--space-6);
+  padding: 0;
+  list-style: none;
+}
+
+.advisor-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.advisor-guided[hidden] {
+  display: none;
+}
+
+.advisor-guided {
+  margin-top: var(--space-6);
+}
+
+.advisor-thinking {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.advisor-thinking__dots {
+  display: inline-flex;
+  gap: var(--space-4);
+}
+
+.advisor-thinking__dots span {
+  width: var(--space-6);
+  height: var(--space-6);
+  border-radius: var(--radius-round);
+  background: currentColor;
+  opacity: 0.6;
+}
+
+@keyframes advisor-dot {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(calc(var(--space-4) * -1)); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .advisor-thinking__dots span {
+    animation: advisor-dot calc(var(--duration-base) * 5) ease-in-out infinite;
+  }
+
+  .advisor-thinking__dots span:nth-child(2) { animation-delay: calc(var(--duration-base) * 0.6); }
+  .advisor-thinking__dots span:nth-child(3) { animation-delay: calc(var(--duration-base) * 1.2); }
+}
+
+.advisor-context-level {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.advisor-context-level__track {
+  position: relative;
+  width: 120px;
+}
+
+.advisor-context-level input {
+  display: block;
+  width: 100%;
+  margin: 0;
+  accent-color: var(--color-accent);
+}
+
+/* The 16px thumb stays inside the track: ticks sit at the thumb centres. */
+.advisor-context-level__ticks {
+  position: relative;
+  height: var(--space-6);
+  margin: 0 var(--space-8);
+  pointer-events: none;
+}
+
+.advisor-context-level__ticks span {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: var(--space-6);
+  margin-left: -1px;
+  background: var(--color-text-muted);
+}
+
+.advisor-context-level__ticks span.is-reached {
+  background: var(--color-accent);
+}
+
+.advisor-context-level__ticks span:nth-child(1) { left: 0; }
+.advisor-context-level__ticks span:nth-child(2) { left: 25%; }
+.advisor-context-level__ticks span:nth-child(3) { left: 50%; }
+.advisor-context-level__ticks span:nth-child(4) { left: 75%; }
+.advisor-context-level__ticks span:nth-child(5) { left: 100%; }
+
+.advisor-context-level small {
+  color: var(--color-text-muted);
+}

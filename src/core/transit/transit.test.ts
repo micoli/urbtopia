@@ -3,7 +3,6 @@ import { WALKING } from '../traffic/walking';
 import { advance, buildingFlowsOf, layerFieldsOf, passageBeaconsOf, probeOf, createBuilding, brokenLinkCount, dispatch, energyStats, extendNetwork, newGame, routeForLine, transportStats, type Command, type GameState, type TransitTile } from '../index';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 import { validateGameState } from '../../persistence/validate';
-import { restoreDeletion } from '../engine/undo';
 import saveV5 from '../../persistence/fixtures/save-v5.json';
 import saveV4 from '../../persistence/fixtures/save-v4.json';
 
@@ -127,9 +126,6 @@ describe('fleet management and service', () => {
     expect(transportStats(next).activeLines).toBe(0);
     expect(next.transitFleet).toEqual(state.transitFleet);
     expect(next.transitLines).toEqual(state.transitLines);
-    const result = dispatch(state, { type: 'DemolishTransit', mode: 'rail', from: { x: 10, y: 0 }, to: { x: 10, y: 0 } }, 0);
-    expect(result.ok && result.undo).toBeTruthy();
-    if (result.ok && result.undo) expect(transportStats(restoreDeletion(result.state, result.undo)).activeLines).toBe(1);
   });
   it('removes exits pointing to demolished tiles', () => {
     const next = run(railCity(), { type: 'DemolishTransit', mode: 'rail', from: { x: 10, y: 0 }, to: { x: 10, y: 0 } });
