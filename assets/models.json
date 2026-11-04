@@ -16586,6 +16586,16 @@
       3
     ]
   },
+  "buildings-metro-station-2x1": {
+    "file": "buildings/metro-station-2x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180
+  },
   "buildings-middle-school-2x2": {
     "file": "buildings/middle-school-2x2",
     "source": "managed",

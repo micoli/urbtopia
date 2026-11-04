@@ -2,7 +2,7 @@
   "$schema": "../schemas/building.schema.json",
   "kind": "transitStop",
   "section": "build.transport",
-  "model": "buildings-station-2x1",
+  "model": "buildings-metro-station-2x1",
   "footprint": [2, 1],
   "cost": 900,
   "unlockCitizens": 800,

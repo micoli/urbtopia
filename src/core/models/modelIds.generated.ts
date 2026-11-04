@@ -641,6 +641,7 @@ export type ModelId =
   | 'buildings-marina-captaincy'
   | 'buildings-marina-captaincy-narrow'
   | 'buildings-mas-museum-3x3'
+  | 'buildings-metro-station-2x1'
   | 'buildings-middle-school-2x2'
   | 'buildings-middle-school-2x2-3f'
   | 'buildings-middle-school-2x2-4f'

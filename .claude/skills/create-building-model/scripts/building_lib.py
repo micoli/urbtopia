@@ -2806,6 +2806,74 @@ def build_station(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+def build_metro_station(spec, out_dir):
+    """A Metro station filling its 2x1 cell, as a street stair entrance: a low stone curb around an open stairwell, six steps going down to a dark floor with a yellow nosing each, black iron railings (posts, rails and balusters) along both sides and the back of the opening, the front left open, and a pole at each front corner carrying a round sign with a "METRO" bar and, on the left pole, an "ENTRANCE" plate."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    mint, dark, slab, frame, white, navy, sun, wood = (index(n) for n in ("uroof", "udark", "uslab", "uframe", "white", "navy", "sun", "uwood"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = []
+    pad_h = 0.05
+    pad_d, cy = 0.96, 0.0
+    hole_w, hole_d, hole_cy = 1.0, 0.6, 0.06
+    hx0, hx1 = -hole_w / 2, hole_w / 2
+    hy0, hy1 = hole_cy - hole_d / 2, hole_cy + hole_d / 2
+    py0, py1 = cy - pad_d / 2, cy + pad_d / 2
+    curb_w = 0.07
+    ring = [("left", hx0 - curb_w, hx0, hy0 - curb_w, hy1 + curb_w), ("right", hx1, hx1 + curb_w, hy0 - curb_w, hy1 + curb_w), ("front", hx0, hx1, hy0 - curb_w, hy0), ("back", hx0, hx1, hy1, hy1 + curb_w)]
+    for name, x0, x1, y0, y1 in ring:
+        parts.append(lpm.box(f"curb_{name}", (x1 - x0, y1 - y0, pad_h), at=((x0 + x1) / 2, (y0 + y1) / 2, 0.0), color=slab))
+    parts.append(lpm.box("floor", (hole_w, hole_d, 0.006), at=(0, hole_cy, 0.0), color=dark))
+    steps, run = 6, hole_d / 7
+    for number in range(steps):
+        top = pad_h - 0.006 - 0.0075 * number
+        y = hy0 + number * run
+        parts.append(lpm.box(f"step_{number}", (hole_w - 0.02, run, top), at=(0, y + run / 2, 0.0), color=slab))
+        parts.append(lpm.box(f"nosing_{number}", (hole_w - 0.02, 0.014, 0.006), at=(0, y + 0.007, top), color=sun))
+    rail_h, post = 0.17, 0.02
+    top_z = pad_h
+    def railing(name, x0, y0, x1, y1):
+        length = math.hypot(x1 - x0, y1 - y0)
+        along_x = abs(x1 - x0) >= abs(y1 - y0)
+        count = max(2, round(length / 0.22) + 1)
+        for number in range(count):
+            t = number / (count - 1)
+            px, py = x0 + (x1 - x0) * t, y0 + (y1 - y0) * t
+            parts.append(lpm.box(f"{name}_post_{number}", (post, post, rail_h + 0.02), at=(px, py, top_z), color=dark))
+        mid_x, mid_y = (x0 + x1) / 2, (y0 + y1) / 2
+        size = (length, 0.014, 0.014) if along_x else (0.014, length, 0.014)
+        parts.append(lpm.box(f"{name}_rail_top", size, at=(mid_x, mid_y, top_z + rail_h), color=dark))
+        parts.append(lpm.box(f"{name}_rail_bottom", size, at=(mid_x, mid_y, top_z + 0.03), color=dark))
+        bars = max(1, round(length / 0.05))
+        for number in range(bars):
+            t = (number + 0.5) / bars
+            bx, by = x0 + (x1 - x0) * t, y0 + (y1 - y0) * t
+            parts.append(lpm.box(f"{name}_bar_{number}", (0.006, 0.006, rail_h - 0.03), at=(bx, by, top_z + 0.03), color=dark))
+    inset = 0.02
+    railing("rail_left", hx0 - inset, hy0, hx0 - inset, hy1 + inset)
+    railing("rail_right", hx1 + inset, hy0, hx1 + inset, hy1 + inset)
+    railing("rail_back", hx0 - inset, hy1 + inset, hx1 + inset, hy1 + inset)
+    board_x, board_y = hx0 - inset - 0.02, hy0 + 0.1
+    parts.append(lpm.box("board", (0.014, 0.16, 0.2), at=(board_x, board_y, top_z + 0.02), color=wood))
+    for number, side in enumerate((-1, 1)):
+        pole_x, pole_y = side * (hole_w / 2 + 0.3), py0 + 0.04
+        parts.append(lpm.prism(f"pole_{number}", 8, 0.014, 0.58 + pad_h, at=(pole_x, pole_y, 0.0), color=dark))
+        radius = 0.115
+        sign_z = top_z + 0.5
+        parts.append(disc(f"roundel_{number}", pole_x, pole_y - 0.025, sign_z, radius, 0.012, mint))
+        parts.append(disc(f"roundel_{number}_face", pole_x, pole_y - 0.033, sign_z, radius - 0.03, 0.006, white))
+        parts.append(lpm.box(f"bar_{number}", (0.34, 0.012, 0.05), at=(pole_x, pole_y - 0.04, sign_z - 0.025), color=navy))
+        parts.append(glyph_decal({"cfg": cfg}, f"bar_{number}_text", "front", "METRO", pole_x, sign_z - 0.025 + 0.0075, 0.035, white, -(pole_y - 0.04 - 0.006) + 0.003))
+    plate_x, plate_y = -(hole_w / 2 + 0.3), py0 + 0.04
+    parts.append(lpm.box("plate", (0.3, 0.012, 0.07), at=(plate_x, plate_y - 0.03, top_z + 0.3), color=dark))
+    parts.append(glyph_decal({"cfg": cfg}, "plate_text", "front", "ENTRANCE", plate_x, top_z + 0.3 + 0.0175, 0.035, white, -(plate_y - 0.03 - 0.006) + 0.003))
+    ob = lpm.finish(spec["id"], parts, palette, budget=4000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def parked_bike(parts, name, x, y, frame_color, tire, metal, scale=1.0):
     """A bicycle seen from the front, standing on the ground with its axis along x: two wheels, a frame, a saddle and handlebars, all scaled by `scale`."""
     k = scale
