@@ -2849,6 +2849,64 @@
       }
     }
   },
+  "buildings-house-1x2-1f-machiya-a": {
+    "file": "buildings/house-1x2-1f-machiya-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "d": {
+        "name": "blackwood",
+        "color": "#2b2724"
+      }
+    }
+  },
+  "buildings-house-1x2-1f-machiya-a-solar": {
+    "file": "buildings/house-1x2-1f-machiya-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "d": {
+        "name": "blackwood",
+        "color": "#2b2724"
+      }
+    }
+  },
   "buildings-house-1x2-1f-mansard-a": {
     "file": "buildings/house-1x2-1f-mansard-a",
     "source": "managed",
@@ -3006,6 +3064,64 @@
       "d": {
         "name": "limestone",
         "color": "#bdb7a6"
+      }
+    }
+  },
+  "buildings-house-1x2-2f-machiya-a": {
+    "file": "buildings/house-1x2-2f-machiya-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "d": {
+        "name": "blackwood",
+        "color": "#2b2724"
+      }
+    }
+  },
+  "buildings-house-1x2-2f-machiya-a-solar": {
+    "file": "buildings/house-1x2-2f-machiya-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "d": {
+        "name": "blackwood",
+        "color": "#2b2724"
       }
     }
   },
@@ -3169,6 +3285,64 @@
       }
     }
   },
+  "buildings-house-1x2-3f-machiya-a": {
+    "file": "buildings/house-1x2-3f-machiya-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "d": {
+        "name": "blackwood",
+        "color": "#2b2724"
+      }
+    }
+  },
+  "buildings-house-1x2-3f-machiya-a-solar": {
+    "file": "buildings/house-1x2-3f-machiya-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "d": {
+        "name": "blackwood",
+        "color": "#2b2724"
+      }
+    }
+  },
   "buildings-house-1x2-3f-mansard-a": {
     "file": "buildings/house-1x2-3f-mansard-a",
     "source": "managed",
@@ -3329,6 +3503,64 @@
       }
     }
   },
+  "buildings-house-1x2-4f-machiya-a": {
+    "file": "buildings/house-1x2-4f-machiya-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "d": {
+        "name": "blackwood",
+        "color": "#2b2724"
+      }
+    }
+  },
+  "buildings-house-1x2-4f-machiya-a-solar": {
+    "file": "buildings/house-1x2-4f-machiya-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "d": {
+        "name": "blackwood",
+        "color": "#2b2724"
+      }
+    }
+  },
   "buildings-house-1x2-4f-mansard-a": {
     "file": "buildings/house-1x2-4f-mansard-a",
     "source": "managed",
@@ -3486,6 +3718,64 @@
       "d": {
         "name": "limestone",
         "color": "#bdb7a6"
+      }
+    }
+  },
+  "buildings-house-1x2-5f-machiya-a": {
+    "file": "buildings/house-1x2-5f-machiya-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "d": {
+        "name": "blackwood",
+        "color": "#2b2724"
+      }
+    }
+  },
+  "buildings-house-1x2-5f-machiya-a-solar": {
+    "file": "buildings/house-1x2-5f-machiya-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "b": {
+        "name": "greywood",
+        "color": "#9a9488"
+      },
+      "c": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "d": {
+        "name": "blackwood",
+        "color": "#2b2724"
       }
     }
   },

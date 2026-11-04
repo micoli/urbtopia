@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "tarwood",
+  "color": "#5b4332"
+ },
+ "b": {
+  "name": "greywood",
+  "color": "#9a9488"
+ },
+ "c": {
+  "name": "darkwood",
+  "color": "#8a5a3a"
+ },
+ "d": {
+  "name": "blackwood",
+  "color": "#2b2724"
+ }
+}

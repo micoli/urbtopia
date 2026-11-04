@@ -114,6 +114,7 @@ WORLD_ENTRIES = URBTOPIA_ENTRIES + [
     ("pine", "#c9955c"), ("darkwood", "#8a5a3a"), ("honey", "#d9a85c"), ("greywood", "#9a9488"), ("shingle", "#5a4636"), ("falured", "#9b3a2a"), ("dalablue", "#6a8aa3"),
     ("tarwood", "#5b4332"), ("earth", "#7b6a4f"), ("turfgreen", "#6f9a4a"),
     ("aegeanblue", "#2f6fb0"), ("turquoise", "#2aa7b5"), ("pastelpink", "#e8b8b0"),
+    ("clayplaster", "#d3bf94"), ("sandwall", "#d9d0bd"), ("kawara", "#54585f"), ("kawara_blue", "#46566e"), ("kawara_brown", "#5d4b43"), ("bamboo", "#c9b46a"),
     ("riadrose", "#c98a6a"), ("sandstone", "#d8c08a"), ("redclay", "#b5573a"), ("zellige", "#2a7f8c"), ("majorelle", "#2e4fbf"), ("tilegreen", "#2f7d4f"),
 ]
 STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
@@ -5787,6 +5788,113 @@ def build_riad(spec, out_dir):
     ob = lpm.finish(spec["id"], parts, palette, budget=9000 + 7000 * floors * max(1, w * d // 2), center=False)
     report = export_model(ob, spec, out_dir)
     report["expected_footprint"] = [w, d]
+    return report
+
+
+def machiya_window(parts, tag, face, wall, u, bottom, width, height, c):
+    """A mushiko window: a dark opening behind a row of vertical wooden bars with a rail above and below."""
+    face_box(parts, f"{tag}_glass", face, wall, u, width, height, bottom, 0.012, c["frame"])
+    face_box(parts, f"{tag}_rail_top", face, wall, u, width + 0.03, 0.014, bottom + height, 0.026, c["wood"])
+    face_box(parts, f"{tag}_rail_bottom", face, wall, u, width + 0.03, 0.014, bottom - 0.014, 0.026, c["wood"])
+    for number in range(5):
+        face_box(parts, f"{tag}_bar_{number}", face, wall, u + (number - 2) * width / 4, 0.012, height, bottom, 0.022, c["wood"])
+
+
+def build_machiya(spec, out_dir):
+    """A Kyoto machiya on a 1x2 cell, front facing -Y: a narrow deep townhouse of timber and plaster with a lattice front, a noren curtain at the entrance, a bamboo fence,
+    a short tiled skirt roof (hisashi) over the ground floor only, and a tiled gable roof whose eave ends curve up like a pagoda, with ridge ornaments. The Tier is the floor count (1 to 5): 1 a single floor, 2 mushiko windows on the second floor,
+    3 a third floor and a hanging sign, 4 paper lanterns under the ground eave, 5 a third lantern."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("plaster", "vtone2"), ("tile", "vtone3"), ("frame", "graphite"), ("wood", "timber"), ("stone", "offwhite"),
+                                              ("noren", "navy"), ("bamboo", "bamboo"), ("lantern", "falured"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    floors = spec["floors"]
+    z0, ground, fh = 0.08, 0.3, 0.26
+    y0, y1 = BROWNSTONE_WALLS["front"], BROWNSTONE_WALLS["back"]
+    depth = y1 - y0
+    cy = (y0 + y1) / 2
+    top = z0 + ground + (floors - 1) * fh
+    parts = [lpm.box("plinth", (0.94, depth + 0.02, z0), at=(0, cy, 0), color=c["stone"]),
+             lpm.box("walls_ground", (0.92, depth, ground), at=(0, cy, z0), color=c["wall"])]
+    for level in range(1, floors):
+        base = z0 + ground + (level - 1) * fh
+        parts.append(lpm.box(f"walls_{level}", (0.92, depth, fh), at=(0, cy, base), color=c["plaster"]))
+        parts.append(lpm.box(f"band_{level}", (0.94, depth + 0.02, 0.014), at=(0, cy, base - 0.007), color=c["wood"]))
+
+    eaves = range(1)
+    for level in eaves:
+        zt = z0 + ground + level * fh
+        parts.append(extrude_x(f"hisashi_{level}", [(y0 - 0.12, zt - 0.07), (y0, zt - 0.015), (y0, zt + 0.015), (y0 - 0.12, zt - 0.05)], -0.5, 0.5, c["tile"]))
+
+    door_x = -0.28
+    face_box(parts, "door_opening", "front", y0, door_x, 0.2, 0.2, z0, 0.012, c["frame"])
+    for side in (-1, 1):
+        face_box(parts, f"door_post_{side}", "front", y0, door_x + side * 0.11, 0.02, 0.22, z0, 0.026, c["wood"])
+        face_box(parts, f"noren_{side}", "front", y0, door_x + side * 0.046, 0.085, 0.1, z0 + 0.1, 0.03, c["noren"])
+    face_box(parts, "door_lintel", "front", y0, door_x, 0.24, 0.02, z0 + 0.2, 0.026, c["wood"])
+    parts.append(lpm.box("entry_step", (0.26, 0.1, 0.03), at=(door_x, y0 - 0.05, 0), color=c["stone"]))
+
+    lattice_x, lattice_bottom, lattice_height = 0.17, z0 + 0.04, 0.17
+    face_box(parts, "koshi_back", "front", y0, lattice_x, 0.5, lattice_height, lattice_bottom, 0.012, c["frame"])
+    for number in range(13):
+        face_box(parts, f"koshi_bar_{number}", "front", y0, lattice_x - 0.24 + number * 0.04, 0.012, lattice_height, lattice_bottom, 0.03, c["wood"])
+    for name, bottom in (("koshi_top", lattice_bottom + lattice_height), ("koshi_bottom", lattice_bottom - 0.014)):
+        face_box(parts, name, "front", y0, lattice_x, 0.52, 0.014, bottom, 0.034, c["wood"])
+    for number in range(7):
+        parts.append(lpm.box(f"fence_post_{number}", (0.022, 0.022, 0.14), at=(-0.04 + number * 0.08, y0 - 0.1, 0), color=c["bamboo"]))
+    for number, rail_z in enumerate((0.04, 0.1)):
+        parts.append(lpm.box(f"fence_rail_{number}", (0.5, 0.016, 0.014), at=(0.2, y0 - 0.1, rail_z), color=c["bamboo"]))
+
+    for level in range(1, floors):
+        base = z0 + ground + (level - 1) * fh
+        for x in (-0.2, 0.2):
+            machiya_window(parts, f"front_{level}_{x}", "front", y0, x, base + 0.07, 0.24, 0.1, c)
+        for x in (-0.2, 0.2):
+            machiya_window(parts, f"back_{level}_{x}", "back", y1, x, base + 0.07, 0.24, 0.1, c)
+        for face, wall in (("left", -0.46), ("right", 0.46)):
+            for number, y in enumerate((-0.3, 0.3)):
+                machiya_window(parts, f"{face}_{level}_{number}", face, wall, y, base + 0.07, 0.24, 0.1, c)
+    for face, wall in (("left", -0.46), ("right", 0.46)):
+        for number, y in enumerate((-0.3, 0.3)):
+            machiya_window(parts, f"{face}_0_{number}", face, wall, y, z0 + 0.1, 0.24, 0.1, c)
+    for x in (-0.2, 0.2):
+        machiya_window(parts, f"back_0_{x}", "back", y1, x, z0 + 0.1, 0.24, 0.1, c)
+
+    half, rise, tip = 0.46, 0.28, 0.505
+    front_edge, back_edge = y0 - 0.18, y1 + 0.05
+    parts.append(extrude_y("gable_wall", [(-half, top), (half, top), (0, top + rise)], y0, y1, c["plaster"]))
+    for side in (-1, 1):
+        outline = [(side * tip, top + 0.04), (side * half, top), (0, top + rise), (0, top + rise + 0.035), (side * half, top + 0.035), (side * tip, top + 0.08)]
+        parts.append(extrude_y(f"roof_slope_{side}", outline, front_edge, back_edge, c["tile"]))
+    parts.append(lpm.box("ridge", (0.06, back_edge - front_edge, 0.03), at=(0, (front_edge + back_edge) / 2, top + rise + 0.03), color=c["tile"]))
+    for name, y in (("front", front_edge + 0.03), ("back", back_edge - 0.03)):
+        parts.append(lpm.box(f"onigawara_{name}", (0.07, 0.05, 0.08 + 0.01 * floors), at=(0, y, top + rise + 0.03), color=c["tile"]))
+    machiya_window(parts, "attic", "front", y0, 0.0, top + 0.05, 0.14, 0.08, c)
+
+    if floors >= 3:
+        parts.append(lpm.box("sign_arm", (0.02, 0.1, 0.014), at=(0.42, y0 - 0.05, z0 + 0.25), color=c["wood"]))
+        parts.append(lpm.box("sign", (0.016, 0.07, 0.14), at=(0.42, y0 - 0.1, z0 + 0.11), color=c["plaster"]))
+    if floors >= 4:
+        zt = z0 + ground
+        for x in (-0.12, 0.38) + ((0.12,) if floors >= 5 else ()):
+            parts.append(lpm.prism(f"lantern_{x}", 8, 0.03, 0.06, at=(x, y0 - 0.1, zt - 0.13), color=c["lantern"]))
+
+    if spec.get("solar"):
+        slope = math.degrees(math.atan2(rise, half))
+        for row in range(5):
+            y = -0.55 + row * 0.3
+            px = 0.23
+            pz = top + rise * (1 - px / half) + 0.035 + 0.008
+            panel = lpm.box(f"solar_panel_{row}", (0.2, 0.26, 0.012), at=(px, y, pz), color=c["solar"])
+            lpm.rotate(panel, slope, axis="Y", about=(px, y, pz))
+            parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=4000 + 3500 * floors, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = list(spec["footprint"])
     return report
 
 

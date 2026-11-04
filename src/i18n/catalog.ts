@@ -414,6 +414,7 @@ export const CATALOG = {
   'color.riadrose': ['Rose clay', 'Terre rosée'],
   'color.sandstone': ['Sandstone', 'Grès'],
   'color.redclay': ['Red clay', 'Argile rouge'],
+  'color.blackwood': ['Black wood', 'Bois noir'],
   'color.tarwood': ['Tarred wood', 'Bois goudronné'],
   'color.falured': ['Falu red', 'Rouge de Falun'],
   'color.dalablue': ['Slate blue', 'Bleu ardoise'],
