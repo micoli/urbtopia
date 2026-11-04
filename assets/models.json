@@ -1977,6 +1977,60 @@
       }
     }
   },
+  "buildings-house-1x1-1f-colonial-a": {
+    "file": "buildings/house-1x1-1f-colonial-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
+  "buildings-house-1x1-1f-colonial-a-solar": {
+    "file": "buildings/house-1x1-1f-colonial-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
   "buildings-house-1x1-1f-dutch-a": {
     "file": "buildings/house-1x1-1f-dutch-a",
     "source": "managed",
@@ -2865,6 +2919,60 @@
       }
     }
   },
+  "buildings-house-1x1-2f-colonial-a": {
+    "file": "buildings/house-1x1-2f-colonial-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
+  "buildings-house-1x1-2f-colonial-a-solar": {
+    "file": "buildings/house-1x1-2f-colonial-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
   "buildings-house-1x1-2f-dutch-a": {
     "file": "buildings/house-1x1-2f-dutch-a",
     "source": "managed",
@@ -3020,6 +3128,60 @@
       "d": {
         "name": "dustypink",
         "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-1x1-3f-colonial-a": {
+    "file": "buildings/house-1x1-3f-colonial-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
+  "buildings-house-1x1-3f-colonial-a-solar": {
+    "file": "buildings/house-1x1-3f-colonial-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
       }
     }
   },
@@ -3181,6 +3343,60 @@
       }
     }
   },
+  "buildings-house-1x1-4f-colonial-a": {
+    "file": "buildings/house-1x1-4f-colonial-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
+  "buildings-house-1x1-4f-colonial-a-solar": {
+    "file": "buildings/house-1x1-4f-colonial-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
   "buildings-house-1x1-4f-dutch-a": {
     "file": "buildings/house-1x1-4f-dutch-a",
     "source": "managed",
@@ -3336,6 +3552,60 @@
       "d": {
         "name": "dustypink",
         "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-1x1-5f-colonial-a": {
+    "file": "buildings/house-1x1-5f-colonial-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
+  "buildings-house-1x1-5f-colonial-a-solar": {
+    "file": "buildings/house-1x1-5f-colonial-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
       }
     }
   },
@@ -3550,6 +3820,60 @@
       "d": {
         "name": "yellowbrick",
         "color": "#d8b45c"
+      }
+    }
+  },
+  "buildings-house-1x2-1f-colonial-a": {
+    "file": "buildings/house-1x2-1f-colonial-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
+  "buildings-house-1x2-1f-colonial-a-solar": {
+    "file": "buildings/house-1x2-1f-colonial-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
       }
     }
   },
@@ -3825,6 +4149,60 @@
       }
     }
   },
+  "buildings-house-1x2-2f-colonial-a": {
+    "file": "buildings/house-1x2-2f-colonial-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
+  "buildings-house-1x2-2f-colonial-a-solar": {
+    "file": "buildings/house-1x2-2f-colonial-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
   "buildings-house-1x2-2f-dutch-a": {
     "file": "buildings/house-1x2-2f-dutch-a",
     "source": "managed",
@@ -4094,6 +4472,60 @@
       "d": {
         "name": "yellowbrick",
         "color": "#d8b45c"
+      }
+    }
+  },
+  "buildings-house-1x2-3f-colonial-a": {
+    "file": "buildings/house-1x2-3f-colonial-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
+  "buildings-house-1x2-3f-colonial-a-solar": {
+    "file": "buildings/house-1x2-3f-colonial-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
       }
     }
   },
@@ -4369,6 +4801,60 @@
       }
     }
   },
+  "buildings-house-1x2-4f-colonial-a": {
+    "file": "buildings/house-1x2-4f-colonial-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
+  "buildings-house-1x2-4f-colonial-a-solar": {
+    "file": "buildings/house-1x2-4f-colonial-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
   "buildings-house-1x2-4f-dutch-a": {
     "file": "buildings/house-1x2-4f-dutch-a",
     "source": "managed",
@@ -4638,6 +5124,60 @@
       "d": {
         "name": "yellowbrick",
         "color": "#d8b45c"
+      }
+    }
+  },
+  "buildings-house-1x2-5f-colonial-a": {
+    "file": "buildings/house-1x2-5f-colonial-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
+      }
+    }
+  },
+  "buildings-house-1x2-5f-colonial-a-solar": {
+    "file": "buildings/house-1x2-5f-colonial-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "honey",
+        "color": "#d9a85c"
+      },
+      "b": {
+        "name": "pastelpink",
+        "color": "#e8b8b0"
+      },
+      "c": {
+        "name": "turquoise",
+        "color": "#2aa7b5"
+      },
+      "d": {
+        "name": "plaster",
+        "color": "#efe4cc"
       }
     }
   },

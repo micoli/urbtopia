@@ -65,6 +65,8 @@ export type BuildingId =
   | 'home-brutalist'
   | 'home-building'
   | 'home-chalet'
+  | 'home-colonial-1x1'
+  | 'home-colonial-1x2'
   | 'home-dutch-1x1'
   | 'home-dutch-1x2'
   | 'home-fale'
