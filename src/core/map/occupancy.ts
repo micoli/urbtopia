@@ -25,6 +25,7 @@ export function occupiedTiles(state: GameState, ignoreBuildingId?: number): Set<
   for (const water of state.waterTiles ?? []) occupied.add(tileKey(water));
   for (const road of state.roads) occupied.add(tileKey(road));
   for (const tile of state.pedestrianWays ?? []) occupied.add(tileKey(tile));
+  for (const tile of state.pedestrianAccesses ?? []) occupied.add(tileKey(tile));
   for (const bridge of state.bridges ?? []) if (isInfrastructureBridge(bridge)) for (const tile of isPedestrianBridge(bridge) ? bridgeFootprint(bridge) : bridgeTiles(bridge)) occupied.add(tileKey(tile));
   for (const center of state.roundabouts) {
     for (const tile of roundaboutTiles(center)) occupied.add(tileKey(tile));

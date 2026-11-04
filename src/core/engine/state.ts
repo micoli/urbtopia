@@ -254,6 +254,12 @@ export interface GameState {
   market: Partial<Record<GoodId, MarketPrice>>;
   roads: RoadTile[];
   pedestrianWays?: PedestrianWayTile[];
+  // Level -1: Underground walkways. They lie under anything on the Surface and never occupy a Surface tile.
+  walkways?: Coord[];
+  // Surface tiles holding a stair down to Level -1.
+  pedestrianAccesses?: Coord[];
+  // Level -2: Tunnels of the Metro, drawn like rails with their exits.
+  tunnels?: TransitTile[];
   roundabouts: Coord[];
   tutorial: TutorialStep | null;
   // Absent: not started. null: finished or skipped.

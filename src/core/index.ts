@@ -62,6 +62,8 @@ export type { ObjectiveId } from './politics/objectives';
 export { OBJECTIVE_METRICS, OBJECTIVE_METRICS_AT_MOST } from './politics/objectiveSchema';
 export type { ObjectiveDefinition, ObjectiveMetric } from './politics/objectiveSchema';
 export type { Coord } from './map/coord';
+export { LEVELS, SURFACE, UNDERGROUND_LEVELS, isLevel, isUnderground, levelAbove, levelBelow } from './map/level';
+export type { Level } from './map/level';
 export type { Layout, LayoutHint, RoomReport, VenuePerformance, FixtureSpec, FixtureCategory } from './venues/venues';
 export type { VenueEvent } from './engine/state';
 export type { StaffRole, FixtureId, VenueType, ArcadeFixtureId, SupermarketFixtureId, HotelFixtureId, VenueData, VenueFixture, Boat, BoatFamily, Bridge, Building, BuildingType, GameState, ColorVariant, ParcelCoord, MarketPrice, QueueEntry, RoadTile, PedestrianWayTile, Rotation, FieldTile, PlantedCrop, SeedStock, ShopStack, Storage } from './engine/state';

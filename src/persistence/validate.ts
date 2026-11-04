@@ -369,6 +369,9 @@ function structureFailure(value: Json): string | null {
     field('market', () => isMarket(value.market)),
     entries('roads', () => value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string) && ((road as Json).tier === undefined || isInt((road as Json).tier, 1, MAX_ROAD_TIER))),
     entries('pedestrianWays', () => value.pedestrianWays, (tile) => isRecord(tile) && isCoord(tile) && (tile.tier === undefined || isInt(tile.tier, 1, MAX_ROAD_TIER)), true),
+    entries('walkways', () => value.walkways, (tile) => isRecord(tile) && isCoord(tile), true),
+    entries('pedestrianAccesses', () => value.pedestrianAccesses, (tile) => isRecord(tile) && isCoord(tile), true),
+    entries('tunnels', () => value.tunnels, isTransitTile('rails'), true),
     entries('roundabouts', () => value.roundabouts, (center) => isCoord(center)),
     field('tutorial', () => value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep)),
     entries('tradeLedger', () => value.tradeLedger, isTradeLedgerEntry),
@@ -419,6 +422,10 @@ function invariantFailure(state: GameState): string | null {
     field('ids: at or above nextId', () => ids.every((id) => id < state.nextId)),
     field('pedestrianWays: duplicate tile', () => !hasDuplicates(pedestrianWays)),
     field('pedestrianWays: overlaps a road', () => pedestrianWays.every((key) => !roadKeys.has(key))),
+    field('walkways: duplicate tile', () => !hasDuplicates((state.walkways ?? []).map(tileKey))),
+    field('tunnels: duplicate tile', () => !hasDuplicates((state.tunnels ?? []).map(tileKey))),
+    field('pedestrianAccesses: duplicate tile', () => !hasDuplicates((state.pedestrianAccesses ?? []).map(tileKey))),
+    field('pedestrianAccesses: overlaps something on the Surface', () => (state.pedestrianAccesses ?? []).every((tile) => !roadKeys.has(tileKey(tile)) && !pedestrianWays.includes(tileKey(tile)) && !waterKeys.has(tileKey(tile)))),
     ...(state.bridges ?? []).flatMap((bridge, index) => {
       const keys = bridgeFootprint(bridge).map(tileKey);
       const overlapping = keys.some((key) => bridged.has(key));
