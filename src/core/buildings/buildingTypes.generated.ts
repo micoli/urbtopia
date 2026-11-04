@@ -80,6 +80,8 @@ export type BuildingId =
   | 'home-ndebele'
   | 'home-palafito'
   | 'home-queenslander'
+  | 'home-quincha-1x1'
+  | 'home-quincha-1x2'
   | 'home-riad'
   | 'home-rondavel'
   | 'home-siheyuan'
