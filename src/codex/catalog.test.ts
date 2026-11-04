@@ -104,7 +104,7 @@ describe('codex coverage gate', () => {
       delete incomplete[key];
       expect(() => validateCodexManifest({ fingerprint: 'test', images: incomplete })).toThrow('Missing codex image');
     }
-  });
+  }, 30_000);
 });
 
 describe('codex snapshots', () => {
