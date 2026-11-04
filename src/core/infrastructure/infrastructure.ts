@@ -36,4 +36,6 @@ export const GROUND_PANEL_MODEL = modelFileOf(scenery.groundPanel);
 
 export const PEDESTRIAN_ACCESS_MODEL = modelFileOf(scenery.pedestrianAccess);
 
+export const WALKWAY_MODELS = Object.fromEntries(Object.entries(scenery.walkway).map(([piece, id]) => [piece, modelFileOf(id)])) as Record<RoadPieceName, string>;
+
 export const VENUE_CUSTOMER_MODELS: readonly string[] = scenery.customers.map(modelFileOf);

@@ -36,6 +36,8 @@ export const sceneryInfrastructureSchema = z
     groundPanel: modelId,
     // The stair of a Pedestrian access down to Level -1.
     pedestrianAccess: modelId,
+    // The pieces of an Underground walkway, as the pieces of road: the model of each shape of tile.
+    walkway: z.strictObject({ square: modelId, end: modelId, straight: modelId, bend: modelId, intersection: modelId, crossroad: modelId }),
     // Visitors of every Venue: women and men alternate so neighbours differ.
     customers: z.array(modelId).min(1),
   })

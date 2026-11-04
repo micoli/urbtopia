@@ -2929,6 +2929,51 @@ def build_stair_entrance(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+WALKWAY_PIECES = {"square": (), "end": ("E",), "straight": ("W", "E"), "bend": ("W", "S"), "intersection": ("W", "E", "S"), "crossroad": ("N", "E", "S", "W")}
+
+
+def build_walkway_piece(spec, out_dir):
+    """An Underground walkway tile filling its 1x1 cell edge to edge, seen from above with the ceiling cut away: a pale tiled floor with a mint runner towards each open side (`piece` names the sides, as the road pieces do: square, end, straight, bend, intersection, crossroad; the base exits are E, W-E, W-S, W-E-S and all four), a low wall with a mint cap on every closed side, a post at each corner next to a wall and a lamp on the middle of each wall. Game sides map to the model as E +X, W -X, N +Y, S -Y."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    mint, dark, slab, trim, white = (index(n) for n in ("uroof", "udark", "uslab", "utrim", "white"))
+    floor_color = index("uwall")
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    exits = WALKWAY_PIECES[spec["piece"]]
+    vectors = {"E": (1, 0), "W": (-1, 0), "N": (0, 1), "S": (0, -1)}
+    half, wall_t, wall_h, floor_h = 0.5, 0.06, 0.16, 0.04
+    parts = [lpm.box("floor", (1.0, 1.0, floor_h), at=(0, 0, 0.0), color=floor_color)]
+    for number in (-1, 1):
+        parts.append(lpm.box(f"floor_line_x_{number}", (1.0, 0.012, 0.006), at=(0, number * 0.25, floor_h), color=slab))
+        parts.append(lpm.box(f"floor_line_y_{number}", (0.012, 1.0, 0.006), at=(number * 0.25, 0, floor_h), color=slab))
+    runner = 0.2
+    parts.append(lpm.box("runner_center", (runner, runner, 0.008), at=(0, 0, floor_h), color=mint))
+    for side in exits:
+        vx, vy = vectors[side]
+        length = half - runner / 2
+        parts.append(lpm.box(f"runner_{side}", (length if vx else runner, length if vy else runner, 0.008), at=(vx * (runner / 2 + length / 2), vy * (runner / 2 + length / 2), floor_h), color=mint))
+    closed = [side for side in vectors if side not in exits]
+    for side in closed:
+        vx, vy = vectors[side]
+        wx, wy = vx * (half - wall_t / 2), vy * (half - wall_t / 2)
+        size = (wall_t, 1.0, wall_h) if vx else (1.0, wall_t, wall_h)
+        parts.append(lpm.box(f"wall_{side}", size, at=(wx, wy, floor_h), color=trim))
+        cap = (wall_t, 1.0, 0.014) if vx else (1.0, wall_t, 0.014)
+        parts.append(lpm.box(f"wall_{side}_cap", cap, at=(wx, wy, floor_h + wall_h), color=mint))
+        lamp = (0.016, 0.1, 0.02) if vx else (0.1, 0.016, 0.02)
+        parts.append(lpm.box(f"lamp_{side}", lamp, at=(vx * (half - wall_t - 0.01), vy * (half - wall_t - 0.01), floor_h + wall_h * 0.55), color=white))
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            beside = [side for side in closed if (vectors[side][0] == sx) or (vectors[side][1] == sy)]
+            if not beside:
+                continue
+            parts.append(lpm.box(f"post_{sx}_{sy}", (0.08, 0.08, wall_h + 0.03), at=(sx * (half - 0.04), sy * (half - 0.04), floor_h), color=dark))
+    ob = lpm.finish(spec["id"], parts, palette, budget=900, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def parked_bike(parts, name, x, y, frame_color, tire, metal, scale=1.0):
     """A bicycle seen from the front, standing on the ground with its axis along x: two wheels, a frame, a saddle and handlebars, all scaled by `scale`."""
     k = scale

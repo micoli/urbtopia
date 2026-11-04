@@ -19466,6 +19466,66 @@
       }
     }
   },
+  "buildings-walkway-1x1-bend": {
+    "file": "buildings/walkway-1x1-bend",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-walkway-1x1-crossroad": {
+    "file": "buildings/walkway-1x1-crossroad",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-walkway-1x1-end": {
+    "file": "buildings/walkway-1x1-end",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-walkway-1x1-intersection": {
+    "file": "buildings/walkway-1x1-intersection",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-walkway-1x1-square": {
+    "file": "buildings/walkway-1x1-square",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-walkway-1x1-straight": {
+    "file": "buildings/walkway-1x1-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "buildings-watertower-1x1-t1-tone-a": {
     "file": "buildings/watertower-1x1-t1-tone-a",
     "source": "managed",
