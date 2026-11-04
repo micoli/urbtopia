@@ -7728,6 +7728,130 @@ def build_colonial(spec, out_dir):
     return report
 
 
+def victorian_window(parts, tag, face, wall, u, bottom, width, height, c):
+    """A tall sash window: dark glass, a white frame, a mid bar and a head cap."""
+    face_box(parts, f"{tag}_frame", face, wall, u, width + 0.04, height + 0.04, bottom - 0.02, 0.012, c["trim"])
+    face_box(parts, f"{tag}_glass", face, wall, u, width, height, bottom, 0.016, c["dark"])
+    face_box(parts, f"{tag}_bar", face, wall, u, width, 0.012, bottom + height / 2, 0.02, c["trim"])
+    face_box(parts, f"{tag}_cap", face, wall, u, width + 0.07, 0.022, bottom + height + 0.02, 0.026, c["trim"])
+
+
+def build_victorian(spec, out_dir):
+    """A painted Victorian house of San Francisco, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    A tall timber house in one color with cream trim and a contrasting accent, one steep front gable per cell of width with an accent gable panel and cream bargeboards, polygonal bay windows, tall sash windows, a stoop with steps and a rail, on a grassy plot;
+    from Tier 2 bays on the first floor, 3 eave brackets, 4 fish-scale shingles in the gable, 5 a round turret with a conical roof, 6 a chimney, 7 an iron ridge crest, 8 a second turret."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("trim", "vtone2"), ("accent", "vtone3"), ("dark", "udark"), ("roof", "shingle"), ("grass", "turfgreen"), ("stone", "greywood"),
+                                              ("brick", "brick_dark"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors, tier = spec["floors"], spec["tier"]
+    fh, z0 = 0.26, 0.02
+    bx, yb0, yb1 = w / 2 - 0.1, -d / 2 + 0.3, d / 2 - 0.06
+    height = floors * fh
+    z_w = z0 + height
+    cy = (yb0 + yb1) / 2
+    reach = 0.5 - 0.03
+    rise = 0.42
+    y0r, y1r = yb0 - 0.04, d / 2 - 0.02
+    parts = [lpm.box("ground", (w - 0.01, d - 0.01, z0), at=(0, 0, 0), color=c["grass"]),
+             lpm.box("plinth", (2 * bx + 0.02, yb1 - yb0 + 0.02, 0.03), at=(0, cy, z0), color=c["stone"]),
+             lpm.box("walls", (2 * bx, yb1 - yb0, height), at=(0, cy, z0 + 0.03 - 0.03), color=c["wall"])]
+    for level in range(1, floors):
+        parts.append(lpm.box(f"belt_{level}", (2 * bx + 0.02, yb1 - yb0 + 0.02, 0.02), at=(0, cy, z0 + level * fh - 0.01), color=c["trim"]))
+    centres = [-w / 2 + 0.5 + m for m in range(w)]
+    for m, xm in enumerate(centres):
+        parts.append(extrude_y(f"roof_{m}", [(xm - reach, z_w - 0.01), (xm + reach, z_w - 0.01), (xm, z_w + rise)], y0r, y1r, c["roof"]))
+        parts.append(extrude_y(f"gable_{m}", [(xm - reach + 0.08, z_w), (xm + reach - 0.08, z_w), (xm, z_w + rise - 0.12)], y0r - 0.014, y0r, c["accent"]))
+        for sign in (-1, 1):
+            parts.append(extrude_y(f"bargeboard_{m}_{sign}", [(xm + sign * reach, z_w - 0.01), (xm, z_w + rise), (xm, z_w + rise - 0.07), (xm + sign * reach, z_w - 0.08)], y0r - 0.03, y0r - 0.008, c["trim"]))
+        victorian_window(parts, f"gable_window_{m}", "front", y0r - 0.014, xm, z_w + 0.08, 0.08, 0.1, c)
+        if tier >= 4:
+            for row in range(2):
+                for number in range(5 - row * 2):
+                    face_box(parts, f"scale_{m}_{row}_{number}", "front", y0r - 0.014, xm + (number - (4 - row * 2) / 2) * 0.055, 0.045, 0.03, z_w + 0.2 + row * 0.04, 0.01, c["trim"])
+        if tier >= 7:
+            parts.append(lpm.box(f"crest_{m}", (0.012, 0.012, 0.1), at=(xm, y0r + 0.02, z_w + rise - 0.02), color=c["dark"]))
+            parts.append(lpm.prism(f"crest_{m}_tip", 4, 0.012, 0.03, at=(xm, y0r + 0.02, z_w + rise + 0.07), color=c["dark"], radius_top=0.002))
+
+    def bay(tag, xm, level):
+        zb = z0 + level * fh + 0.02
+        height_b = fh - 0.05
+        plan = [(xm - 0.19, yb0), (xm + 0.19, yb0), (xm + 0.11, yb0 - 0.1), (xm - 0.11, yb0 - 0.1)]
+        parts.append(extrude_z(f"{tag}_bay", plan, zb, zb + height_b, c["wall"]))
+        parts.append(extrude_z(f"{tag}_bay_roof", [(xm - 0.21, yb0 + 0.01), (xm + 0.21, yb0 + 0.01), (xm + 0.13, yb0 - 0.115), (xm - 0.13, yb0 - 0.115)], zb + height_b, zb + height_b + 0.025, c["trim"]))
+        parts.append(extrude_z(f"{tag}_bay_base", [(xm - 0.2, yb0 + 0.01), (xm + 0.2, yb0 + 0.01), (xm + 0.12, yb0 - 0.108), (xm - 0.12, yb0 - 0.108)], zb - 0.015, zb + 0.02, c["trim"]))
+        face_box(parts, f"{tag}_bay_glass", "front", yb0 - 0.1, xm, 0.13, 0.13, zb + 0.05, 0.014, c["dark"])
+        face_box(parts, f"{tag}_bay_frame", "front", yb0 - 0.1, xm, 0.17, 0.17, zb + 0.03, 0.01, c["trim"])
+
+    for level in range(floors):
+        z = z0 + level * fh + 0.07
+        for m, xm in enumerate(centres):
+            has_bay = (level == 0 and m > 0) or (level == 1 and tier >= 2)
+            if has_bay:
+                bay(f"bay_{level}_{m}", xm, level)
+            elif level == 0 and m == 0:
+                pass
+            else:
+                for dx in (-0.17, 0.17):
+                    victorian_window(parts, f"front_{level}_{m}_{dx}", "front", yb0, xm + dx, z, 0.08, 0.15, c)
+        for number in range(max(1, round((yb1 - yb0) / 0.5))):
+            y = yb0 + (number + 0.5) * (yb1 - yb0) / max(1, round((yb1 - yb0) / 0.5))
+            for face, wall in (("left", -bx), ("right", bx)):
+                victorian_window(parts, f"{face}_{level}_{number}", face, wall, y, z, 0.08, 0.15, c)
+        for xm in centres:
+            victorian_window(parts, f"back_{level}_{xm}", "back", yb1, xm, z, 0.09, 0.15, c)
+
+    x0m = centres[0]
+    face_box(parts, "door", "front", yb0, x0m, 0.17, 0.25, z0 + 0.04, 0.02, c["accent"])
+    face_box(parts, "door_frame", "front", yb0, x0m, 0.23, 0.31, z0 + 0.01, 0.012, c["trim"])
+    face_box(parts, "door_transom", "front", yb0, x0m, 0.17, 0.05, z0 + 0.3, 0.016, c["dark"])
+    parts.append(lpm.box("stoop", (0.4, 0.13, 0.04), at=(x0m, yb0 - 0.065, z0), color=c["stone"]))
+    for step in range(2):
+        parts.append(lpm.box(f"step_{step}", (0.3, 0.04, 0.03 - step * 0.012), at=(x0m, yb0 - 0.15 - step * 0.04, z0), color=c["stone"]))
+    for sign in (-1, 1):
+        parts.append(lpm.box(f"stoop_post_{sign}", (0.02, 0.02, 0.11), at=(x0m + sign * 0.185, yb0 - 0.12, z0 + 0.04), color=c["trim"]))
+    parts.append(lpm.box("stoop_rail_back", (0.36, 0.012, 0.012), at=(x0m, yb0 - 0.12, z0 + 0.13), color=c["trim"]))
+    if tier >= 3:
+        for number in range(int(2 * bx / 0.09)):
+            parts.append(lpm.box(f"bracket_{number}", (0.03, 0.04, 0.045), at=(-bx + 0.05 + number * 0.09, yb0 - 0.02, z_w - 0.06), color=c["trim"]))
+    if tier >= 5:
+        radius = 0.14
+        for tag, sx in (("turret", 1),) + ((("turret_2", -1),) if tier >= 8 else ()):
+            tx, ty = sx * (bx - 0.1), yb0 - 0.05
+            parts.append(lpm.prism(f"{tag}_body", 8, radius, height, at=(tx, ty, z0), color=c["wall"], radius_top=radius))
+            parts.append(lpm.prism(f"{tag}_belt", 8, radius + 0.012, 0.025, at=(tx, ty, z0 + fh - 0.01), color=c["trim"], radius_top=radius + 0.012))
+            for level in range(floors):
+                face_box(parts, f"{tag}_window_{level}", "front", ty - radius * 0.93, tx, 0.07, 0.13, z0 + level * fh + 0.08, 0.014, c["dark"])
+            parts.append(lpm.lathe(f"{tag}_roof", [(radius + 0.05, z_w - 0.03), (radius * 0.5, z_w + 0.12), (0.0, z_w + 0.4)], segments=8, at=(tx, ty, 0), color=c["roof"]))
+            parts.append(lpm.box(f"{tag}_finial", (0.012, 0.012, 0.06), at=(tx, ty, z_w + 0.39), color=c["dark"]))
+    if tier >= 6:
+        parts.append(lpm.box("chimney", (0.09, 0.09, 0.22), at=(-bx + 0.2, cy + 0.12, z_w + 0.05), color=c["brick"]))
+        parts.append(lpm.box("chimney_cap", (0.11, 0.11, 0.02), at=(-bx + 0.2, cy + 0.12, z_w + 0.27), color=c["trim"]))
+
+    if spec.get("solar"):
+        angle = math.degrees(math.atan2(rise, reach))
+        for m, xm in enumerate(centres):
+            if tier >= 5 and m == w - 1:
+                continue
+            fraction = 0.4
+            px, pz = xm + reach * (1 - fraction) + 0.015, z_w - 0.01 + fraction * (rise + 0.01) + 0.015
+            count_y = max(1, int((y1r - y0r - 0.3) / 0.24))
+            for number in range(count_y):
+                py = (y0r + y1r) / 2 + 0.05 + (number - (count_y - 1) / 2) * 0.24
+                panel = lpm.box(f"solar_panel_{m}_{number}", (0.2, 0.2, 0.012), at=(px, py, pz), color=c["solar"])
+                lpm.rotate(panel, angle, axis="Y", about=(px, py, pz))
+                parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=30000 + 10000 * floors * w, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
+    return report
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")

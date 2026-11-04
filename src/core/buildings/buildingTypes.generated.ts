@@ -90,6 +90,7 @@ export type BuildingId =
   | 'home-tulou'
   | 'home-turf'
   | 'home-tuscan'
+  | 'home-victorian'
   | 'home-whare'
   | 'hospital'
   | 'hotel'
