@@ -845,6 +845,30 @@ _Avoid_: Roadless building, transit-only building
 A public transport journey linking a Home to an activity through one or more lines, with at most two Transfers.
 _Avoid_: Infrastructure route, Individual Citizen simulation
 
+**Level**:
+One of the three planes stacked over the same map: the Surface, Level -1 and Level -2. A tile exists on every Level, and what stands on one Level never occupies the tile on another, except at an access. Only one Level is edited at a time.
+_Avoid_: Floor, layer (a Layer is an Analytics view reading), depth
+
+**Underground walkway**:
+A player-built tile of Level -1 reserved for pedestrians and cyclists, joined to the surface by an access. It belongs to the Pedestrian path network, loads no Crossing and has no pedestrian capacity limit. It lies under anything on the Surface, Water included, and gives no access to a Building.
+_Avoid_: Underpass (Footbridge avoids it too), tunnel, subway
+
+**Pedestrian access**:
+A player-built stair on a free Surface tile touching a Sidewalk or a Pedestrian way, opening onto the Underground walkway below it. A Metro station also serves as one when an Underground walkway touches it. It is inactive while no Underground walkway lies under it.
+_Avoid_: Entrance, stairwell, exit
+
+**Metro**:
+A fourth public transport mode, on Level -2, independent of the Road, the BRT corridor and the Railway. Its vehicles are bought by the city into the Transit fleet and are never slowed by Congestion.
+_Avoid_: Underground railway, Subway, Railway
+
+**Tunnel**:
+A player-built tile of Level -2 on which Metro vehicles run. It lies under anything on the Surface, Water included.
+_Avoid_: Underground walkway, Railway
+
+**Metro station**:
+A stop served by Metro vehicles on a Tunnel.
+_Avoid_: Railway station, Subway stop
+
 **Player account**:
 The anonymous identity that owns up to three Cities and their Cloud saves, created silently on first play and bound to the device. The player can later attach an email to it to recover their Cities on another device. Its Handle, Avatar, Friends, Groups and Medals are shared by all its Cities.
 _Avoid_: User, profile, login
