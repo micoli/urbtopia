@@ -64,7 +64,8 @@ export type { ObjectiveDefinition, ObjectiveMetric } from './politics/objectiveS
 export type { Coord } from './map/coord';
 export { LEVELS, SURFACE, UNDERGROUND_LEVELS, isLevel, isUnderground, levelAbove, levelBelow } from './map/level';
 export type { Level } from './map/level';
-export { UNDERGROUND, undergroundUnlocked } from './underground/underground';
+export { UNDERGROUND, levelUnlocked, undergroundUnlocked } from './underground/underground';
+export { isMetroStationActive, metroStations, stationStairTiles } from './underground/metro';
 export { PEDESTRIAN_ACCESS_COST, WALKWAY_COST_FACTOR, activeAccesses, disconnectedWalkways, missingWalkwayTiles, pedestrianAccessesOf, touchesWalkingSurface, walkwayBuildCost, walkwayCostPerTile, walkwaysOf } from './underground/walkways';
 export type { Layout, LayoutHint, RoomReport, VenuePerformance, FixtureSpec, FixtureCategory } from './venues/venues';
 export type { VenueEvent } from './engine/state';
@@ -151,7 +152,7 @@ export type { BusLine } from './engine/state';
 
 export { FLEET_VEHICLES, BUS_MODEL_FILE, TRAFFIC_VEHICLE_ENTRIES, SERVICE_VEHICLE_ENTRIES, TRANSIT_VEHICLE_ENTRIES } from './transit/vehicles';
 export { TRANSIT, networkTiles, networkNeighbours, validNetworkCrossings, extendNetwork, brokenLinkCount, buildNetworkGraph } from './transit/transitNetwork';
-export type { TransitLine, TransitMode, TransitTile, TransitVehicle, TransitVehicleKind } from './engine/state';
+export type { NetworkMode, TransitLine, TransitMode, TransitTile, TransitVehicle, TransitVehicleKind } from './engine/state';
 
 export { wildScenery, wildNoiseAt, WILD_RIM_TILES, SCENERY_MODELS } from './environment/wildScenery';
 export { wildTerrain, cellTriangles, vertexPosition, TERRAIN_FIRST_LINE, TERRAIN_LAST_LINE } from './environment/wildTerrain';

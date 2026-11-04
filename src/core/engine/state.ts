@@ -172,7 +172,9 @@ export interface BusLine {
   loop?: boolean;
 }
 
-export type TransitMode = 'bus' | 'brt' | 'rail';
+// The modes that run on a network of their own: BRT corridor, Railway, and the Tunnels of Level -2 for the Metro.
+export type NetworkMode = 'brt' | 'rail' | 'metro';
+export type TransitMode = 'bus' | NetworkMode;
 export type TransitVehicleKind = FleetVehicleId;
 export interface TransitVehicle {
   id: number;
@@ -181,7 +183,7 @@ export interface TransitVehicle {
   lineId?: number;
 }
 export interface TransitLine extends BusLine {
-  mode: 'brt' | 'rail';
+  mode: NetworkMode;
   peakHeadway: number;
   offPeakHeadway: number;
 }

@@ -110,6 +110,11 @@ function withWalkways(state: GameState, surface: PedestrianGraph): PedestrianGra
       }
     }
   }
+  for (const station of state.buildings.filter((building) => building.type === 'metroStation')) {
+    const stairs = footprintTiles(station).filter((tile) => keys.has(tileKey(tile)));
+    const outside = adjacentNodes(state, surface, station);
+    for (const tile of stairs) for (const node of outside) link(walkwayNode(tile), node, WALK.stairCost);
+  }
   return edges;
 }
 

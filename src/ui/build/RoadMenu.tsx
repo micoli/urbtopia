@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { BRIDGES, PEDESTRIAN_ACCESS_COST, ROAD_TIER_COSTS, SURFACE, TRANSIT, WATER, totalCitizens, undergroundUnlocked, walkwayCostPerTile } from '../../core';
+import { BRIDGES, PEDESTRIAN_ACCESS_COST, type NetworkMode, ROAD_TIER_COSTS, SURFACE, TRANSIT, WATER, totalCitizens, undergroundUnlocked, walkwayCostPerTile } from '../../core';
 import { t } from '../../i18n/t';
 import type { Tool } from '../../tools/tools';
 import type { MessageKey } from '../../i18n/messages';
@@ -35,7 +35,7 @@ const SECTION_TITLES: Record<RoadSection, MessageKey> = {
   underground: 'roads.section.underground',
 };
 
-const demolishRoad = (mode?: 'brt' | 'rail'): Tool => ({ kind: 'demolishRoad', ...(mode ? { mode } : {}), start: null, horizontalFirst: true });
+const demolishRoad = (mode?: NetworkMode): Tool => ({ kind: 'demolishRoad', ...(mode ? { mode } : {}), start: null, horizontalFirst: true });
 
 const constructionItem = (id: 'pedestrianWay' | 'brt' | 'rail'): RoadItem => {
   const construction = ROAD_CONSTRUCTIONS.find(item => item.id === id)!;
@@ -84,10 +84,14 @@ export function RoadMenu() {
   ];
   const undergroundItems: RoadItem[] = level === SURFACE
     ? [{ label: t('tool.pedestrianAccess'), cost: <UrbsAmount value={PEDESTRIAN_ACCESS_COST} />, tool: { kind: 'pedestrianAccess' } }]
-    : [{ label: t('tool.walkway'), cost: `${walkwayCostPerTile()} ${t('tool.perTile')}`, tool: { kind: 'walkway', start: null, horizontalFirst: true } }];
+    : level === -1
+      ? [{ label: t('tool.walkway'), cost: `${walkwayCostPerTile()} ${t('tool.perTile')}`, tool: { kind: 'walkway', start: null, horizontalFirst: true } }]
+      : [{ label: t('tool.metro'), cost: `${TRANSIT.metro.tileCost} ${t('tool.perTile')}`, tool: { kind: 'road', mode: 'metro', start: null, horizontalFirst: true } }];
   const undergroundDemolish = level === SURFACE
     ? { label: t('tool.demolishPedestrianAccess'), tool: { kind: 'demolishPedestrianAccess' } as Tool }
-    : { label: t('tool.demolishWalkway'), tool: { kind: 'demolishWalkway', start: null, horizontalFirst: true } as Tool };
+    : level === -1
+      ? { label: t('tool.demolishWalkway'), tool: { kind: 'demolishWalkway', start: null, horizontalFirst: true } as Tool }
+      : { label: t('tool.demolishMetro'), tool: demolishRoad('metro') };
   const undergroundSection = undergroundOpen ? [{ id: 'underground' as const, items: undergroundItems, demolish: undergroundDemolish }] : [];
   const visibleSections: typeof sections = level === SURFACE ? [...sections, ...undergroundSection] : undergroundSection;
   const activeSection = openSection === null || visibleSections.some(section => section.id === openSection) ? openSection : visibleSections[0]?.id ?? null;

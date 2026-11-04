@@ -4,12 +4,15 @@ import { roundaboutTiles } from '../map/occupancy';
 import { frontTiles, perimeterTiles } from '../map/placement';
 import { networkNeighbours, networkTiles, TRANSIT } from './transitNetwork';
 import type { Coord } from '../map/coord';
-import type { BusLine, GameState, TransitLine, TransitMode } from '../engine/state';
+import { footprintTiles } from '../buildings/buildingSpecs';
+import type { BuildingType, BusLine, GameState, TransitLine, TransitMode } from '../engine/state';
 
 type Route = { route: Coord[]; offsets: number[] };
 export type LineStatus = 'active' | 'disconnected' | 'noFunds' | 'noVehicle' | 'noEnergy';
 export type RouteFailure = 'invalid' | 'stopNotOnNetwork' | 'notConnected';
 type Resolution = Route | { failure: RouteFailure };
+
+const STOP_OF_MODE = { bus: 'busStop', brt: 'brtStation', rail: 'railStation', metro: 'metroStation' } as const satisfies Record<TransitMode, BuildingType>;
 
 const routeCache = new WeakMap<GameState, Map<BusLine, Resolution>>();
 
@@ -41,10 +44,11 @@ function resolveRoute(state: GameState, line: BusLine | TransitLine): Resolution
   const keys = mode === 'bus' ? roads : new Set(tiles.map(tileKey));
   const endpoints: Coord[] = [];
   for (const id of line.stops) {
-    const stopType = mode === 'bus' ? 'busStop' : mode === 'brt' ? 'brtStation' : 'railStation';
-    const stop = state.buildings.find(b => b.id === id && (b.type === stopType || b.type === 'transitHub'));
+    const stopType = STOP_OF_MODE[mode];
+    const stop = state.buildings.find(b => b.id === id && (b.type === stopType || (mode !== 'metro' && b.type === 'transitHub')));
     if (!stop) return { failure: 'invalid' };
-    const reach = stop.type === 'transitHub' ? perimeterTiles(stop.type, stop.x, stop.y, stop.rotation, stop.tier) : frontTiles(stop.type, stop.x, stop.y, stop.rotation);
+    // A Metro station's platform lies under it: it is on the network where a Tunnel runs under its footprint.
+    const reach = mode === 'metro' ? footprintTiles(stop) : stop.type === 'transitHub' ? perimeterTiles(stop.type, stop.x, stop.y, stop.rotation, stop.tier) : frontTiles(stop.type, stop.x, stop.y, stop.rotation);
     const endpoint = reach.find(p => keys.has(tileKey(p)));
     if (!endpoint) return { failure: 'stopNotOnNetwork' };
     endpoints.push(endpoint);

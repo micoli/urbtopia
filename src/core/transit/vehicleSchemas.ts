@@ -5,13 +5,13 @@ const common = { $schema: z.string().optional(), name: localizedText };
 
 const positive = z.number().positive();
 
-// The bus only needs its model; the BRT and the trains are bought, powered and paid per hour.
+// The bus only needs its model; the BRT, the trains and the Metro are bought, powered and paid per hour.
 export const transitVehicleSchema = z
   .discriminatedUnion('mode', [
     z.strictObject({ kind: z.literal('transitVehicle'), mode: z.literal('bus'), ...common, model: filled }),
     z.strictObject({
       kind: z.literal('transitVehicle'),
-      mode: z.enum(['brt', 'rail']),
+      mode: z.enum(['brt', 'rail', 'metro']),
       ...common,
       propulsion: z.enum(['electric', 'coal']),
       price: count,

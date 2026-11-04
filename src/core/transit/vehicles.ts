@@ -5,6 +5,7 @@ import serviceOrder from '../../../assets/defs/order/serviceVehicles.json' with 
 import { modelFileOf } from '../models/modelFiles';
 import type { ServiceVehicleId } from './serviceVehicleTypes.generated';
 import type { TrafficVehicleId } from './trafficVehicleTypes.generated';
+import type { NetworkMode } from '../engine/state';
 import type { FleetVehicleId, TransitVehicleId } from './transitVehicleTypes.generated';
 import type { ServiceVehicleDefinition, TrafficVehicleDefinition, TransitVehicleDefinition } from './vehicleSchemas';
 
@@ -15,7 +16,7 @@ const serviceFiles = import.meta.glob<ServiceVehicleDefinition>('../../../assets
 
 export const TRANSIT_VEHICLE_ENTRIES = entriesOf<TransitVehicleDefinition, TransitVehicleId>(transitFiles, transitOrder);
 
-export type FleetVehicleEntry = Extract<(typeof TRANSIT_VEHICLE_ENTRIES)[number], { mode: 'brt' | 'rail' }> & { id: FleetVehicleId };
+export type FleetVehicleEntry = Extract<(typeof TRANSIT_VEHICLE_ENTRIES)[number], { mode: NetworkMode }> & { id: FleetVehicleId };
 
 export const FLEET_VEHICLES = TRANSIT_VEHICLE_ENTRIES.filter((entry): entry is FleetVehicleEntry => entry.mode !== 'bus');
 

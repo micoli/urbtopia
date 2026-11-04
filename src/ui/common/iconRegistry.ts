@@ -1,7 +1,7 @@
 import {
   Anchor, ArrowDown, ArrowLeft, ArrowRight, ArrowLeftRight, ArrowUp, Bell, BookOpen, Building2, Bus, BusFront, CalendarDays, Car, ChartColumn, Check, ChevronDown, Circle, ChevronRight, ClipboardList, Clock, Cloud,
   Coins, Droplet, Gamepad2, HardDrive, Info, Factory, Footprints, Globe, Hammer, HeartPulse, Lock, Map, Medal, Menu, Monitor, Move, Moon, RotateCcw, RotateCw, Route, Save,
-  Settings, Shield, Smartphone, Snail, Sparkles, Store, Sun, Sunrise, Sunset, Thermometer, Trash2, Trees, TrainFront, TrendingUp, TriangleAlert, Trophy,
+  Settings, Shield, Smartphone, Snail, Sparkles, Store, Sun, Sunrise, Sunset, Thermometer, Trash2, Trees, TrainFront, TramFront, TrendingUp, TriangleAlert, Trophy,
   Repeat, Music, Star, Ticket, Truck, Undo2, User, UserPlus, Users, UsersRound, Wheat, Wrench, X, Zap, type LucideIcon,
 } from 'lucide-react';
 
@@ -40,6 +40,7 @@ export const ICONS = {
   bus: Bus,
   brt: BusFront,
   rail: TrainFront,
+  metro: TramFront,
   money: Coins,
   trophy: Trophy,
   medal: Medal,

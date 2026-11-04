@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import { SURFACE, bridgeAt, footprintTiles, isInfrastructureBridge, levelAbove, levelBelow, nextFront, undergroundUnlocked, type AnalyticsLayerId, type Coord, type CropId, type Level, type Rotation, type ServiceCategory } from '../core';
+import { SURFACE, bridgeAt, footprintTiles, isInfrastructureBridge, levelAbove, levelBelow, levelUnlocked, nextFront, type AnalyticsLayerId, type Coord, type CropId, type Level, type Rotation, type ServiceCategory } from '../core';
 import { readAnalyticsCategory, readAnalyticsLayer, writeAnalyticsCategory, writeAnalyticsLayer } from '../ui/analytics/analyticsLayerPref';
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
@@ -171,7 +171,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     level: SURFACE,
     setLevel: (level) => {
       if (level === get().level) return;
-      if (level !== SURFACE && !undergroundUnlocked(gameStore.getState().state)) return;
+      if (!levelUnlocked(gameStore.getState().state, level)) return;
       get().cancelTool();
       set({ level, flyout: null, selectedBuildingId: null, moveMode: false });
     },

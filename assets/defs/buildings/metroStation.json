@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "transitStop",
+  "section": "build.transport",
+  "model": "buildings-station-2x1",
+  "footprint": [2, 1],
+  "cost": 900,
+  "unlockCitizens": 800,
+  "requiresRoad": true,
+  "accessModes": ["road", "pedestrianWay"],
+  "name": {
+    "en": "Metro station",
+    "fr": "Station de métro"
+  },
+  "description": {
+    "en": "A stop served by Metro vehicles. It stands against a road or a pedestrian way, with its platform on Level -2: it serves no line until a Tunnel lies under it. Create a connected line and assign purchased Metro trains in City management.",
+    "fr": "Un arrêt desservi par des rames de métro. Elle se pose contre une route ou une voie piétonne, avec son quai au niveau -2 : elle ne dessert aucune ligne tant qu’un tunnel ne passe pas dessous. Créez une ligne connectée et affectez-y des rames de métro achetées dans la gestion de la ville."
+  },
+  "mode": "metro",
+  "network": {
+    "tileCost": 40,
+    "speed": 6,
+    "capacity": 600
+  }
+}

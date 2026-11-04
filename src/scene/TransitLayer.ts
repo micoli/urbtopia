@@ -3,7 +3,7 @@ import type { ModelLibrary } from './modelLibrary';
 import { TRAIN_MODELS } from './renderItems';
 import * as THREE from 'three';
 import { modelFileOf } from '../core/models/modelFiles';
-import { FLEET_VEHICLES, tileKey, type GameState, type TransitVehicleKind } from '../core';
+import { FLEET_VEHICLES, tileKey, type GameState, type NetworkMode, type TransitVehicleKind } from '../core';
 import type { transitServices } from '../core/transit/transitService';
 
 type Service = ReturnType<typeof transitServices>[number];
@@ -11,7 +11,7 @@ type Service = ReturnType<typeof transitServices>[number];
 // A vehicle is two cars of 0.65 tile times its size, so the vehicles of one line are spread at least this far apart along the route.
 export const VEHICLE_SPACING = 1.65;
 // How much bigger than a bus a vehicle of each mode is drawn, and how far to the side it runs on a shared track.
-export const MODE_LOOK = { rail: { size: 1.8, lane: 0.22 }, brt: { size: 1, lane: 0.16 } } as const;
+export const MODE_LOOK = { rail: { size: 1.8, lane: 0.22 }, brt: { size: 1, lane: 0.16 }, metro: { size: 1.8, lane: 0.2 } } as const;
 
 // Distance between the centres of two cars of a vehicle, for a bus-sized one: a car is 0.65 tile long.
 const CAR_PITCH = 0.7;
@@ -19,7 +19,7 @@ const CAR_PITCH = 0.7;
 const VEHICLE_MODELS = Object.fromEntries(FLEET_VEHICLES.map(({ id, models }) => [id, models.map(modelFileOf)])) as Record<TransitVehicleKind, string[]>;
 
 // Vehicles of one line are evenly spread along it; the ones that do not fit at the minimum spacing stay out of the picture.
-export function slotOf(service: Pick<Service, 'route' | 'loop' | 'operatingVehicleIds'> & { mode: 'rail' | 'brt' }, vehicleId: number): { phase: number; hidden: boolean } {
+export function slotOf(service: Pick<Service, 'route' | 'loop' | 'operatingVehicleIds'> & { mode: NetworkMode }, vehicleId: number): { phase: number; hidden: boolean } {
   const cycle = (service.loop ? 1 : 2) * Math.max(0, (service.route?.length ?? 0) - 1);
   const slots = Math.max(1, Math.min(service.operatingVehicleIds.length, Math.floor(cycle / (VEHICLE_SPACING * MODE_LOOK[service.mode].size))));
   const order = Math.max(0, service.operatingVehicleIds.indexOf(vehicleId));
@@ -97,8 +97,8 @@ export class TransitLayer {
       if (!service?.active || !service.route || !service.operatingVehicleIds.includes(vehicle.id)) continue;
       const mesh = new THREE.Group();
       mesh.add(this.makeVehicle(vehicle.kind));
-      const look = MODE_LOOK[service.mode as 'rail' | 'brt'];
-      const { phase, hidden } = slotOf({ ...service, mode: service.mode as 'rail' | 'brt' }, vehicle.id);
+      const look = MODE_LOOK[service.mode as NetworkMode];
+      const { phase, hidden } = slotOf({ ...service, mode: service.mode as NetworkMode }, vehicle.id);
       mesh.visible = !hidden;
       this.vehicles.add(mesh);
       this.moving.push({ mesh, route: service.route, loop: !!service.loop, phase, hidden, speed: service.mode === 'rail' ? 2 : 1.5, brt: service.mode === 'brt', kind: vehicle.kind, lane: look.lane, pitch: CAR_PITCH * look.size });

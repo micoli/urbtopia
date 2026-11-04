@@ -11,16 +11,17 @@ export interface EditableLine {
   offPeakHeadway: number;
 }
 
-export const TRANSIT_MODES: readonly TransitMode[] = ['bus', 'brt', 'rail'];
-export const STOP_TYPE: Record<TransitMode, BuildingType> = { bus: 'busStop', brt: 'brtStation', rail: 'railStation' };
-export const MODE_LABEL: Record<TransitMode, MessageKey> = { bus: 'transit.bus', brt: 'transit.brt', rail: 'transit.rail' };
-export const MODE_ICON: Record<TransitMode, IconName> = { bus: 'bus', brt: 'brt', rail: 'rail' };
+export const TRANSIT_MODES: readonly TransitMode[] = ['bus', 'brt', 'rail', 'metro'];
+export const STOP_TYPE: Record<TransitMode, BuildingType> = { bus: 'busStop', brt: 'brtStation', rail: 'railStation', metro: 'metroStation' };
+export const MODE_LABEL: Record<TransitMode, MessageKey> = { bus: 'transit.bus', brt: 'transit.brt', rail: 'transit.rail', metro: 'transit.metro' };
+export const MODE_ICON: Record<TransitMode, IconName> = { bus: 'bus', brt: 'brt', rail: 'rail', metro: 'metro' };
 export const DEFAULT_PEAK_HEADWAY = 5;
 export const DEFAULT_OFF_PEAK_HEADWAY = 12;
 
 export const HEADWAY_LIMITS = {
   brt: { peak: [5, 10], offPeak: [10, 15] },
   rail: { peak: [1, 60], offPeak: [1, 60] },
+  metro: { peak: [2, 10], offPeak: [3, 15] },
 } as const;
 
 export const unlockOf = (mode: TransitMode): number => (mode === 'bus' ? 0 : TRANSIT[mode].unlock);

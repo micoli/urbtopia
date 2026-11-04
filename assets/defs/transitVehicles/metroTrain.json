@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/transit-vehicle.schema.json",
+  "kind": "transitVehicle",
+  "mode": "metro",
+  "propulsion": "electric",
+  "price": 3200,
+  "power": 10,
+  "coal": 0,
+  "cost": 12,
+  "emissions": 0,
+  "models": ["vehicles-electric-train", "vehicles-electric-wagon"],
+  "name": {
+    "en": "Metro train",
+    "fr": "Rame de métro"
+  }
+}

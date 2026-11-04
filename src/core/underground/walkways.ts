@@ -6,6 +6,7 @@ import { DIRECTIONS, neighbour, tileKey } from '../map/geometry';
 import { isInsideOwnedParcels, isRoadLike, occupiedTiles } from '../map/occupancy';
 import { roadPath } from '../map/roads';
 import { PEDESTRIAN_WAY_COST_FACTOR } from '../map/roadCost';
+import { stationStairTiles } from './metro';
 import { undergroundUnlocked } from './underground';
 
 export const WALKWAY_COST_FACTOR = 2;
@@ -32,10 +33,10 @@ export function walkwayBuildCost(state: GameState, path: readonly Coord[]): numb
   return missingWalkwayTiles(state, path).length * walkwayCostPerTile();
 }
 
-// An access is active only while a walkway lies right under it.
+// An access is active only while a walkway lies right under it. A Metro station with a walkway under it is one as well.
 export function activeAccesses(state: GameState): Coord[] {
   const walkways = new Set(walkwaysOf(state).map(tileKey));
-  return pedestrianAccessesOf(state).filter((tile) => walkways.has(tileKey(tile)));
+  return [...pedestrianAccessesOf(state).filter((tile) => walkways.has(tileKey(tile))), ...stationStairTiles(state)];
 }
 
 // A stair opens onto a Sidewalk or a Pedestrian way, so it stands against a road, a roundabout, a BRT corridor or a Pedestrian way.

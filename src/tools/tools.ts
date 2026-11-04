@@ -50,13 +50,14 @@ import {
   type ColorVariant,
   type Rotation,
   type Level,
+  type NetworkMode,
   SURFACE,
 } from '../core';
 
 export type Tool =
   | { kind: 'building'; buildingType: BuildingType; solar?: boolean; colorVariant?: ColorVariant; repeat?: boolean }
   | { kind: 'move'; buildingId: number }
-  | { kind: 'road'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
+  | { kind: 'road'; mode?: NetworkMode; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'pedestrianWay'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'walkway'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'demolishWalkway'; start: Coord | null; horizontalFirst: boolean }
@@ -65,7 +66,7 @@ export type Tool =
   | { kind: 'crossing' }
   | { kind: 'removeCrossing' }
   | { kind: 'roundabout' }
-  | { kind: 'demolishRoad'; mode?: 'brt' | 'rail'; start: Coord | null; horizontalFirst: boolean }
+  | { kind: 'demolishRoad'; mode?: NetworkMode; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'upgradeRoad'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'demolishPedestrianWay'; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'upgradePedestrianWay'; start: Coord | null; horizontalFirst: boolean }
@@ -76,9 +77,11 @@ export type Tool =
   | { kind: 'moveBridge'; bridge: Bridge | null }
   | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] };
 
-// The Level a tool builds on: a walkway is laid on Level -1, everything else on the Surface (a stair is a Surface object).
+// The Level a tool builds on: a walkway is laid on Level -1, a Tunnel on Level -2, everything else on the Surface (a stair and a Metro station are Surface objects).
 export function toolLevel(tool: Tool): Level {
-  return tool.kind === 'walkway' || tool.kind === 'demolishWalkway' ? -1 : SURFACE;
+  if (tool.kind === 'walkway' || tool.kind === 'demolishWalkway') return -1;
+  if ((tool.kind === 'road' || tool.kind === 'demolishRoad') && tool.mode === 'metro') return -2;
+  return SURFACE;
 }
 
 export type PathTool = Extract<Tool, { kind: 'road' | 'demolishRoad' | 'upgradeRoad' | 'pedestrianWay' | 'demolishPedestrianWay' | 'upgradePedestrianWay' | 'walkway' | 'demolishWalkway' }>;

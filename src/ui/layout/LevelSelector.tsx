@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { LEVELS, undergroundUnlocked, type Level } from '../../core';
+import { LEVELS, levelUnlocked, undergroundUnlocked, type Level } from '../../core';
 import { t } from '../../i18n/t';
 import type { MessageKey } from '../../i18n/messages';
 import { FirstUseHint } from '../common/FirstUseHint';
@@ -18,6 +18,7 @@ const LEVEL_LABELS: Record<Level, string> = { 0: '0', '-1': '-1', '-2': '-2' };
 
 export function LevelSelector() {
   const unlocked = useGame(store => undergroundUnlocked(store.state));
+  const metroUnlocked = useGame(store => levelUnlocked(store.state, -2));
   const level = useUi(store => store.level);
   const setLevel = useUi(store => store.setLevel);
 
@@ -35,7 +36,7 @@ export function LevelSelector() {
   if (!unlocked) return null;
   return (
     <div className="level-selector" role="group" aria-label={t('level.selector')}>
-      {LEVELS.map(candidate => (
+      {LEVELS.filter(candidate => candidate !== -2 || metroUnlocked).map(candidate => (
         <IconButton
           key={candidate}
           size="md"
