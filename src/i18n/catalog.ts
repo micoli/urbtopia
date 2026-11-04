@@ -10,6 +10,8 @@ export const CATALOG = {
   'search.title': ['Find a building', 'Trouver un bâtiment'],
   'search.placeholder': ['Building name', 'Nom du bâtiment'],
   'search.empty': ['No building found', 'Aucun bâtiment trouvé'],
+  'search.expandAll': ['Expand all', 'Tout déployer'],
+  'search.collapseAll': ['Collapse all', 'Tout replier'],
   'search.close': ['Close building search', 'Fermer la recherche de bâtiments'],
   'coverage.open': ['Show service coverage', 'Voir la couverture des services'],
   'coverage.title': ['Service coverage', 'Couverture des services'],
