@@ -15,6 +15,7 @@ import {useGame} from '../common/hooks';
 import {factorsAt, productionFactors} from '../../core/environment/energy';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { Icon } from '../common/Icon';
+import { ReachToggle } from '../common/ReachToggle';
 
 export function EcologicalBuildingPanel({building}: { building: Building; }) {
     const state = useGame(s => s.state);
@@ -50,6 +51,7 @@ export function EcologicalBuildingPanel({building}: { building: Building; }) {
         >
             {t('eco.greenHelp')}
         </DrawerPanel.LabelValue>}
+        {greenProfile && <ReachToggle />}
 
 
         {isTransitStopType(building.type) && <DrawerPanel.LabelValue

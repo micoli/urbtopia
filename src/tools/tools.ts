@@ -37,6 +37,7 @@ import {
   SPORT_VENUES,
   WASTE_FACILITIES,
   isSportVenueType,
+  greenProfileOf,
   type Command,
   type Coord,
   type Direction,
@@ -236,6 +237,8 @@ function evaluateBuilding(
   const result = evaluation(tiles, command, state, { cost, rotation, ...(fronts.length ? { fronts } : {}) });
   if (BUILDING_SPECS[type].requiresRoad) result.ghost.front = frontMarker(reference, type, origin, rotation, tier);
   if (isFacilityType(type)) addCoveragePreview(result, reference, type, origin, rotation);
+  const greenRadius = greenProfileOf(type, tier)?.radius;
+  if (greenRadius !== undefined) result.ghost.range = greenRangeTiles(type, greenRadius, origin, rotation, tier);
   return result;
 }
 
@@ -256,8 +259,25 @@ function addCoveragePreview(result: Evaluation, state: GameState, type: Facility
 function reachTilesOf(building: Building): Coord[] {
   if (building.type === 'casino') return rangeTiles(building.type, casinoRadius(building.tier), building, building.rotation, building.tier);
   if (isSportVenueType(building.type)) return rangeTiles(building.type, SPORT_VENUES[building.type].radius, building, building.rotation);
+  const greenRadius = greenProfileOf(building.type, building.tier)?.radius;
+  if (greenRadius !== undefined) return greenRangeTiles(building.type, greenRadius, building, building.rotation, building.tier);
   if (!isFacilityType(building.type)) return [];
   return rangeTiles(building.type, facilityRadius(building.type, building.tier), building, building.rotation, building.tier);
+}
+
+// Green spaces reach Homes by Manhattan distance between centres, so their reach is a diamond.
+function greenRangeTiles(type: BuildingType, radius: number, tile: Coord, rotation: Rotation, tier: number): Coord[] {
+  const { width, depth } = footprintOf(type, rotation, tier);
+  const center = { x: tile.x + width / 2, y: tile.y + depth / 2 };
+  const reach = Math.ceil(radius);
+  const range: Coord[] = [];
+  for (let dy = -reach - depth; dy <= reach + depth; dy++) {
+    for (let dx = -reach - width; dx <= reach + width; dx++) {
+      const candidate = { x: Math.floor(center.x) + dx, y: Math.floor(center.y) + dy };
+      if (Math.abs(candidate.x + 0.5 - center.x) + Math.abs(candidate.y + 0.5 - center.y) <= radius) range.push(candidate);
+    }
+  }
+  return range;
 }
 
 function rangeTiles(type: BuildingType, radius: number | null, tile: Coord, rotation: Rotation, tier = 1): Coord[] {
