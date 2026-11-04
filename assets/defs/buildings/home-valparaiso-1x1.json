@@ -1,0 +1,104 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "home",
+  "section": "build.housing",
+  "cost": 200,
+  "unlockCitizens": 50,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt", "pedestrianWay"],
+  "name": {
+    "en": "Corrugated-Iron House",
+    "fr": "Maison de tôle ondulée"
+  },
+  "description": {
+    "en": "A narrow Valparaiso house clad in bright corrugated panels that change color floor by floor, with a gable roof, a stoop and a balcony. Houses Citizens who generate Tax. Each upgrade adds a floor, with more population and utility Demand. Comes in four colors.",
+    "fr": "Une maison étroite de Valparaíso habillée de panneaux de tôle ondulée dont la couleur change à chaque étage, avec un toit à pignon, un perron et un balcon. Accueille des habitants qui génèrent des impôts. Chaque amélioration ajoute un étage, avec plus d’habitants et de besoins en eau et en électricité. Existe en quatre couleurs."
+  },
+  "tiers": [
+    {
+      "model": "buildings-house-1x1-1f-valparaiso-a",
+      "footprint": [1, 1],
+      "citizens": 6,
+      "power": 1,
+      "water": 1
+    },
+    {
+      "model": "buildings-house-1x1-2f-valparaiso-a",
+      "citizens": 15,
+      "power": 2,
+      "water": 2,
+      "upgradeCost": {
+        "urbs": 150,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-1x1-3f-valparaiso-a",
+      "citizens": 32,
+      "power": 3,
+      "water": 3,
+      "upgradeCost": {
+        "urbs": 400,
+        "goods": {
+          "bricks": 4,
+          "planks": 2
+        }
+      }
+    },
+    {
+      "model": "buildings-house-1x1-4f-valparaiso-a",
+      "citizens": 60,
+      "power": 6,
+      "water": 6,
+      "upgradeCost": {
+        "urbs": 1000,
+        "goods": {
+          "tiles": 4,
+          "bricks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-1x1-5f-valparaiso-a",
+      "citizens": 100,
+      "power": 10,
+      "water": 10,
+      "upgradeCost": {
+        "urbs": 2500,
+        "goods": {
+          "tools": 4,
+          "tiles": 3
+        }
+      }
+    }
+  ],
+  "housingRegion": "americas",
+  "solarPanels": {
+    "cost": 300,
+    "unlockCitizens": 200,
+    "output": 2.5
+  },
+  "variants": {
+    "solar": {
+      "tiers": [
+        {
+          "model": "buildings-house-1x1-1f-valparaiso-a-solar"
+        },
+        {
+          "model": "buildings-house-1x1-2f-valparaiso-a-solar"
+        },
+        {
+          "model": "buildings-house-1x1-3f-valparaiso-a-solar"
+        },
+        {
+          "model": "buildings-house-1x1-4f-valparaiso-a-solar"
+        },
+        {
+          "model": "buildings-house-1x1-5f-valparaiso-a-solar"
+        }
+      ]
+    }
+  }
+}

@@ -93,6 +93,8 @@ export type BuildingId =
   | 'home-tulou'
   | 'home-turf'
   | 'home-tuscan'
+  | 'home-valparaiso-1x1'
+  | 'home-valparaiso-1x2'
   | 'home-victorian'
   | 'home-whare'
   | 'hospital'
