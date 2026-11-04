@@ -84,6 +84,7 @@ export type BuildingId =
   | 'home-tulou'
   | 'home-turf'
   | 'home-tuscan'
+  | 'home-whare'
   | 'hospital'
   | 'hotel'
   | 'hydroPlant'

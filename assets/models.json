@@ -2649,6 +2649,60 @@
       }
     }
   },
+  "buildings-house-1x1-1f-whare-a": {
+    "file": "buildings/house-1x1-1f-whare-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-1x1-1f-whare-a-solar": {
+    "file": "buildings/house-1x1-1f-whare-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
   "buildings-house-1x1-2f-dutch-a": {
     "file": "buildings/house-1x1-2f-dutch-a",
     "source": "managed",
@@ -4889,6 +4943,60 @@
       }
     }
   },
+  "buildings-house-2x1-1f-whare-a": {
+    "file": "buildings/house-2x1-1f-whare-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x1-1f-whare-a-solar": {
+    "file": "buildings/house-2x1-1f-whare-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
   "buildings-house-2x1-2f-aegean-a": {
     "file": "buildings/house-2x1-2f-aegean-a",
     "source": "managed",
@@ -6241,6 +6349,60 @@
       }
     }
   },
+  "buildings-house-2x1-2f-third-whare-a": {
+    "file": "buildings/house-2x1-2f-third-whare-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-whare-a-solar": {
+    "file": "buildings/house-2x1-2f-third-whare-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
   "buildings-house-2x1-2f-tone-a": {
     "file": "buildings/house-2x1-2f-tone-a",
     "source": "managed",
@@ -6470,6 +6632,60 @@
       "d": {
         "name": "dustypink",
         "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-whare-a": {
+    "file": "buildings/house-2x1-2f-whare-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-whare-a-solar": {
+    "file": "buildings/house-2x1-2f-whare-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
       }
     }
   },
@@ -7805,6 +8021,60 @@
       }
     }
   },
+  "buildings-house-2x2-2f-whare-a": {
+    "file": "buildings/house-2x2-2f-whare-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-whare-a-solar": {
+    "file": "buildings/house-2x2-2f-whare-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
   "buildings-house-2x2-3f-aegean-a": {
     "file": "buildings/house-2x2-3f-aegean-a",
     "source": "managed",
@@ -8864,6 +9134,60 @@
       "d": {
         "name": "dustypink",
         "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-whare-a": {
+    "file": "buildings/house-2x2-3f-whare-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-whare-a-solar": {
+    "file": "buildings/house-2x2-3f-whare-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
       }
     }
   },
@@ -9929,6 +10253,60 @@
       }
     }
   },
+  "buildings-house-2x2-4f-whare-a": {
+    "file": "buildings/house-2x2-4f-whare-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x2-4f-whare-a-solar": {
+    "file": "buildings/house-2x2-4f-whare-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
   "buildings-house-2x2-5f-aegean-a": {
     "file": "buildings/house-2x2-5f-aegean-a",
     "source": "managed",
@@ -10988,6 +11366,60 @@
       "d": {
         "name": "dustypink",
         "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-whare-a": {
+    "file": "buildings/house-2x2-5f-whare-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-whare-a-solar": {
+    "file": "buildings/house-2x2-5f-whare-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "tones": {
+      "a": {
+        "name": "pine",
+        "color": "#c9955c"
+      },
+      "b": {
+        "name": "darkwood",
+        "color": "#8a5a3a"
+      },
+      "c": {
+        "name": "tarwood",
+        "color": "#5b4332"
+      },
+      "d": {
+        "name": "greywood",
+        "color": "#9a9488"
       }
     }
   },
