@@ -21,6 +21,7 @@ export function LevelSelector() {
   const metroUnlocked = useGame(store => levelUnlocked(store.state, -2));
   const level = useUi(store => store.level);
   const setLevel = useUi(store => store.setLevel);
+  const analytics = useUi(store => store.analyticsLayer !== null);
 
   useEffect(() => {
     if (!unlocked) return;
@@ -33,7 +34,7 @@ export function LevelSelector() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [unlocked]);
 
-  if (!unlocked) return null;
+  if (!unlocked || analytics) return null;
   return (
     <div className="level-selector" role="group" aria-label={t('level.selector')}>
       {LEVELS.filter(candidate => candidate !== -2 || metroUnlocked).map(candidate => (

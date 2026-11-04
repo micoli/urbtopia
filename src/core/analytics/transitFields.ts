@@ -3,7 +3,7 @@ import type { GameState } from '../engine/state';
 import { transportStats } from '../transit/transport';
 import { MAP_TILES, type TileField } from './tileField';
 
-export type TransitMode = 'bus' | 'brt' | 'rail';
+export type TransitMode = 'bus' | 'brt' | 'rail' | 'metro';
 
 const cache = new WeakMap<GameState, Map<TransitMode, TileField>>();
 
@@ -33,5 +33,5 @@ export function stopsOfMode(state: GameState, mode: TransitMode): ReadonlySet<nu
 }
 
 export function transitModeOf(layer: string): TransitMode | null {
-  return layer === 'movement.bus' ? 'bus' : layer === 'movement.brt' ? 'brt' : layer === 'movement.rail' ? 'rail' : null;
+  return layer === 'movement.bus' ? 'bus' : layer === 'movement.brt' ? 'brt' : layer === 'movement.rail' ? 'rail' : layer === 'movement.metro' ? 'metro' : null;
 }

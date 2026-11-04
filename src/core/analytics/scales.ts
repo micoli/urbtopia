@@ -3,8 +3,8 @@ import { CONGESTION } from '../traffic/roadTier';
 import { WASTE_FACILITIES } from '../waste/wasteBalance';
 import type { AnalyticsLayerId } from './layers';
 
-export type RampId = 'value' | 'heat' | 'odor' | 'road' | 'sidewalk' | 'saturation' | 'coverage' | 'wellbeing' | 'bus' | 'brt' | 'rail';
-export type ScaleLabel = 'roads' | 'sidewalks' | 'crossings' | 'bus' | 'brt' | 'rail';
+export type RampId = 'value' | 'heat' | 'odor' | 'road' | 'sidewalk' | 'saturation' | 'coverage' | 'wellbeing' | 'bus' | 'brt' | 'rail' | 'metro' | 'walkway';
+export type ScaleLabel = 'roads' | 'sidewalks' | 'crossings' | 'bus' | 'brt' | 'rail' | 'metro' | 'walkways';
 
 export interface LayerScale {
   ramp: RampId;
@@ -27,6 +27,8 @@ export const LAYER_SCALES: Partial<Record<AnalyticsLayerId, readonly LayerScale[
   'movement.bus': [{ ramp: 'bus', max: 'relative', label: 'bus' }],
   'movement.brt': [{ ramp: 'brt', max: 'relative', label: 'brt' }],
   'movement.rail': [{ ramp: 'rail', max: 'relative', label: 'rail' }],
+  'movement.metro': [{ ramp: 'metro', max: 'relative', label: 'metro' }],
+  'movement.walkways': [{ ramp: 'walkway', max: 'relative', label: 'walkways' }],
   'movement.pedestrians': [{ ramp: 'sidewalk', max: 'relative', label: 'sidewalks' }, { ramp: 'saturation', max: 100, suffix: '%', label: 'crossings' }],
-  'movement.all': [{ ramp: 'road', max: 'relative', label: 'roads' }, { ramp: 'sidewalk', max: 'relative', label: 'sidewalks' }, { ramp: 'saturation', max: 100, suffix: '%', label: 'crossings' }, { ramp: 'bus', max: 'relative', label: 'bus' }, { ramp: 'brt', max: 'relative', label: 'brt' }, { ramp: 'rail', max: 'relative', label: 'rail' }],
+  'movement.all': [{ ramp: 'road', max: 'relative', label: 'roads' }, { ramp: 'sidewalk', max: 'relative', label: 'sidewalks' }, { ramp: 'saturation', max: 100, suffix: '%', label: 'crossings' }, { ramp: 'bus', max: 'relative', label: 'bus' }, { ramp: 'brt', max: 'relative', label: 'brt' }, { ramp: 'rail', max: 'relative', label: 'rail' }, { ramp: 'metro', max: 'relative', label: 'metro' }],
 };

@@ -5,6 +5,7 @@ import { MAP_TILES, type TileField } from './tileField';
 
 const sidewalkCache = new WeakMap<GameState, TileField>();
 const crossingCache = new WeakMap<GameState, TileField>();
+const walkwayCache = new WeakMap<GameState, TileField>();
 
 const isOnMap = (x: number, y: number) => x >= 0 && y >= 0 && x < MAP_TILES && y < MAP_TILES;
 
@@ -19,11 +20,30 @@ export function sidewalkField(state: GameState): TileField {
   if (cached) return cached;
   const values = new Float32Array(MAP_TILES * MAP_TILES);
   for (const [node, load] of congestionStats(state).sidewalkLoads) {
+    if (isUnderground(node)) continue;
     const { x, y } = tileOfNode(node);
     if (isOnMap(x, y)) values[y * MAP_TILES + x] = (values[y * MAP_TILES + x] ?? 0) + load;
   }
   const field = { size: MAP_TILES, values, max: Math.max(1, ...values) };
   sidewalkCache.set(state, field);
+  return field;
+}
+
+// A walkway node reads "x,y:U" and a stair "x,y:A": they lie under the Surface and never count on its Sidewalks.
+const isUnderground = (node: string): boolean => node.endsWith(':U') || node.endsWith(':A');
+
+// Walking trips passing along the Underground walkways of each tile, on a scale relative to the busiest tile.
+export function walkwayField(state: GameState): TileField {
+  const cached = walkwayCache.get(state);
+  if (cached) return cached;
+  const values = new Float32Array(MAP_TILES * MAP_TILES);
+  for (const [node, load] of congestionStats(state).sidewalkLoads) {
+    if (!node.endsWith(':U')) continue;
+    const { x, y } = tileOfNode(node);
+    if (isOnMap(x, y)) values[y * MAP_TILES + x] = (values[y * MAP_TILES + x] ?? 0) + load;
+  }
+  const field = { size: MAP_TILES, values, max: Math.max(1, ...values) };
+  walkwayCache.set(state, field);
   return field;
 }
 

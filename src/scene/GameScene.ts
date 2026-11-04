@@ -302,7 +302,7 @@ export class GameScene {
     this.underground.setLevel(this.level);
     this.undergroundWalkers.root.visible = this.level === -1 && this.trafficEnabled;
     this.ecologyLayer.transit.metroRoot.visible = this.level === -2;
-    for (const root of [this.ground, this.parcels, this.scenery.root, this.ecologyLayer.root, this.congestion.root, this.attractionCrowd.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.serviceCoverageLayer.root, this.analyticsLayer.root]) root.visible = onSurface;
+    for (const root of [this.ground, this.parcels, this.scenery.root, this.ecologyLayer.root, this.congestion.root, this.attractionCrowd.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root, this.bridges.root, this.serviceCoverageLayer.root]) root.visible = onSurface;
     this.world.setDisplay(surfaceDisplayOf(this.level, this.slowForLevels));
   }
 

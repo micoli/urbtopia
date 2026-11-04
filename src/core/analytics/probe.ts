@@ -9,7 +9,7 @@ import { homeKnowledge } from '../services/knowledge';
 import { facilitiesOfCategory, type ServiceCategory } from '../services/facilities';
 import { serviceCoverage, uncoveredReason } from '../services/services';
 import { congestionStats } from '../traffic/congestion';
-import { footbridgeFlowAt } from '../traffic/walkFlows';
+import { accessFlowAt, footbridgeFlowAt } from '../traffic/walkFlows';
 import { transitModeOf } from './transitFields';
 import { transportStats } from '../transit/transport';
 import { isTransitStopType } from '../transit/stopNames';
@@ -146,11 +146,13 @@ function passageLines(state: GameState, tile: Coord, walks: boolean): ProbeLine[
   const congestion = congestionStats(state);
   const crossing = congestion.crossings.get(tileKey(tile));
   const footbridge = footbridgeFlowAt(state, congestion, tile);
+  const access = accessFlowAt(state, congestion, tile);
   const stop = state.buildings.find(building => isTransitStopType(building.type) && footprintTiles(building).some(t => t.x === tile.x && t.y === tile.y));
   const flow = stop ? transportStats(state).stopFlows.get(stop.id) : undefined;
   return [
     ...(walks && crossing ? [{ key: 'analytics.flow.crossing', value: Math.round(crossing.pedestrians) }] : []),
     ...(walks && footbridge !== null ? [{ key: 'analytics.flow.footbridge', value: Math.round(footbridge) }] : []),
+    ...(access !== null ? [{ key: 'analytics.flow.access', value: Math.round(access) }] : []),
     ...(stop ? [{ key: 'analytics.flow.boarded', value: Math.round(flow?.boarded ?? 0) }, { key: 'analytics.flow.alighted', value: Math.round(flow?.alighted ?? 0) }] : []),
   ];
 }
@@ -179,7 +181,7 @@ export function probeOf(state: GameState, layer: AnalyticsLayerId, category: Ser
     if (layer === 'data.wellbeing') lines.splice(0, lines.length, { key: 'analytics.layer.data.wellbeing', value: round(homeBenefits(state, home).wellbeing) });
     if (layer === 'data.coverage') lines.splice(0, lines.length, { key: homeTints.share === COVERAGE_SHARE.covered ? 'analytics.legend.covered' : homeTints.share === COVERAGE_SHARE.viaTransit ? 'analytics.legend.viaTransit' : 'analytics.legend.uncovered', value: null });
   }
-  if (layer === 'movement.pedestrians' || layer === 'movement.all' || transitModeOf(layer)) lines.push(...passageLines(state, tile, !transitModeOf(layer)));
+  if (layer === 'movement.pedestrians' || layer === 'movement.walkways' || layer === 'movement.all' || transitModeOf(layer)) lines.push(...passageLines(state, tile, !transitModeOf(layer)));
   if (lines.length === 0) return null;
   const causes = (() => {
     switch (layer) {
@@ -188,7 +190,7 @@ export function probeOf(state: GameState, layer: AnalyticsLayerId, category: Ser
       case 'data.congestion': case 'movement.cars': return roadCauses(state, tile);
       case 'movement.pedestrians': return walkCauses(state, tile);
       case 'movement.all': return [...roadCauses(state, tile), ...walkCauses(state, tile)];
-      case 'movement.flows': case 'movement.bus': case 'movement.brt': case 'movement.rail': return [];
+      case 'movement.flows': case 'movement.bus': case 'movement.brt': case 'movement.rail': case 'movement.metro': case 'movement.walkways': return [];
       case 'data.wellbeing': return home ? wellbeingCauses(state, home) : [];
       case 'data.coverage': return home ? coverageCauses(state, home, category) : tileCovered === false ? coverageCauses(state, createBuilding(0, 'home', tile.x, tile.y, 0), category) : [];
       case 'data.landValue': return landCauses(state, tile);

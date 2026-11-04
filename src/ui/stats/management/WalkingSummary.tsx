@@ -1,5 +1,5 @@
 import {useMemo} from 'react';
-import {WALK_DESTINATIONS, crossingFlows, footbridgeFlows, type CongestionStats, type GameState} from '../../../core';
+import {WALK_DESTINATIONS, accessFlows, crossingFlows, footbridgeFlows, type CongestionStats, type GameState} from '../../../core';
 import {t} from '../../../i18n/t';
 import {WalkFlowList} from './WalkFlowList';
 
@@ -11,6 +11,7 @@ interface WalkingSummaryProps {
 export function WalkingSummary({state, congestion}: WalkingSummaryProps) {
     const crossings = useMemo(() => crossingFlows(congestion), [congestion]);
     const footbridges = useMemo(() => footbridgeFlows(state, congestion), [state, congestion]);
+    const accesses = useMemo(() => accessFlows(state, congestion), [state, congestion]);
     const trips = WALK_DESTINATIONS.map(kind => `${t(`eco.walk.${kind}`)} ${congestion.walkingTrips[kind].toFixed(0)}`).join(' · ');
     const rides = WALK_DESTINATIONS.map(kind => `${t(`eco.walk.${kind}`)} ${congestion.cyclingTrips[kind].toFixed(0)}`).join(' · ');
     return <>
@@ -19,6 +20,7 @@ export function WalkingSummary({state, congestion}: WalkingSummaryProps) {
         <p>{t('eco.cyclingTrips')}: {rides}</p>
         <WalkFlowList title={t('eco.crossingFlows')} flows={crossings}/>
         <WalkFlowList title={t('eco.footbridgeFlows')} flows={footbridges}/>
+        <WalkFlowList title={t('eco.accessFlows')} flows={accesses}/>
         <p>{t('eco.walkHelp')}</p>
     </>;
 }

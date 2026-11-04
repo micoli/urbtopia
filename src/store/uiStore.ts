@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import { SURFACE, bridgeAt, footprintTiles, isInfrastructureBridge, levelAbove, levelBelow, levelUnlocked, nextFront, type AnalyticsLayerId, type Coord, type CropId, type Level, type Rotation, type ServiceCategory } from '../core';
+import { SURFACE, levelOfLayer, bridgeAt, footprintTiles, isInfrastructureBridge, levelAbove, levelBelow, levelUnlocked, nextFront, type AnalyticsLayerId, type Coord, type CropId, type Level, type Rotation, type ServiceCategory } from '../core';
 import { readAnalyticsCategory, readAnalyticsLayer, writeAnalyticsCategory, writeAnalyticsLayer } from '../ui/analytics/analyticsLayerPref';
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
@@ -261,7 +261,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     analyticsBuildingId: null,
     enterAnalytics: (layer, category = get().analyticsCategory) => {
       get().cancelTool();
-      get().setLevel(SURFACE);
+      get().setLevel(levelOfLayer(layer));
       writeAnalyticsLayer(layer);
       writeAnalyticsCategory(category);
       set({ analyticsLayer: layer, lastAnalyticsLayer: layer, analyticsCategory: category, analyticsProbe: null, analyticsBuildingId: null, flyout: null, selectedBuildingId: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false });
@@ -273,6 +273,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     exitAnalytics: () => {
       const { analyticsLayer, analyticsBuildingId } = get();
       const kept = analyticsLayer === 'movement.flows' && gameStore.getState().state.buildings.some((building) => building.id === analyticsBuildingId) ? analyticsBuildingId : null;
+      get().setLevel(SURFACE);
       set({ analyticsLayer: null, analyticsProbe: null, analyticsBuildingId: null, selectedBuildingId: kept });
     },
     streetView: false,
