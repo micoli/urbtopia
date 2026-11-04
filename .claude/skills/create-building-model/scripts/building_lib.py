@@ -114,7 +114,7 @@ WORLD_ENTRIES = URBTOPIA_ENTRIES + [
     ("pine", "#c9955c"), ("darkwood", "#8a5a3a"), ("honey", "#d9a85c"), ("greywood", "#9a9488"), ("shingle", "#5a4636"), ("falured", "#9b3a2a"), ("dalablue", "#6a8aa3"),
     ("tarwood", "#5b4332"), ("earth", "#7b6a4f"), ("turfgreen", "#6f9a4a"),
     ("aegeanblue", "#2f6fb0"), ("turquoise", "#2aa7b5"), ("pastelpink", "#e8b8b0"),
-    ("clayplaster", "#d3bf94"), ("sandwall", "#d9d0bd"), ("kawara", "#54585f"), ("kawara_blue", "#46566e"), ("kawara_brown", "#5d4b43"), ("bamboo", "#c9b46a"),
+    ("strawgold", "#d4b060"), ("greythatch", "#8e8a78"), ("mosshatch", "#7f8a54"), ("clayplaster", "#d3bf94"), ("sandwall", "#d9d0bd"), ("kawara", "#54585f"), ("kawara_blue", "#46566e"), ("kawara_brown", "#5d4b43"), ("bamboo", "#c9b46a"),
     ("riadrose", "#c98a6a"), ("sandstone", "#d8c08a"), ("redclay", "#b5573a"), ("zellige", "#2a7f8c"), ("majorelle", "#2e4fbf"), ("tilegreen", "#2f7d4f"),
 ]
 STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
@@ -5895,6 +5895,130 @@ def build_machiya(spec, out_dir):
     ob = lpm.finish(spec["id"], parts, palette, budget=4000 + 3500 * floors, center=False)
     report = export_model(ob, spec, out_dir)
     report["expected_footprint"] = list(spec["footprint"])
+    return report
+
+def gassho_shoji(parts, tag, face, wall, u, bottom, width, height, c):
+    """A paper screen window: a pale pane in a timber grid of two posts, a middle bar and two rails."""
+    face_box(parts, f"{tag}_paper", face, wall, u, width, height, bottom, 0.012, c["paper"])
+    for number, side in enumerate((-1, 1)):
+        face_box(parts, f"{tag}_post_{number}", face, wall, u + side * width / 2, 0.016, height + 0.016, bottom - 0.008, 0.02, c["wood"])
+    face_box(parts, f"{tag}_rail_top", face, wall, u, width, 0.014, bottom + height, 0.02, c["wood"])
+    face_box(parts, f"{tag}_rail_bottom", face, wall, u, width, 0.014, bottom - 0.014, 0.02, c["wood"])
+    face_box(parts, f"{tag}_mid_v", face, wall, u, 0.01, height, bottom, 0.02, c["wood"])
+    face_box(parts, f"{tag}_mid_h", face, wall, u, width, 0.01, bottom + height / 2, 0.02, c["wood"])
+
+
+def gassho_dormer(parts, tag, x, sign, zc, hr, zw, rise, c):
+    """A small dormer on a roof slope: a timber box with a paper window under a thatched pyramid."""
+    y = sign * hr * (1 - (zc - zw) / rise)
+    parts.append(lpm.box(f"{tag}_box", (0.16, 0.16, 0.14), at=(x, y, zc - 0.07), color=c["wall"]))
+    gassho_shoji(parts, f"{tag}_window", "back" if sign > 0 else "front", y + sign * 0.08, x, zc - 0.05, 0.1, 0.08, c)
+    parts.append(hip_roof(f"{tag}_roof", 0.11, 0.11, zc + 0.07, 0.1, c["thatch"], cx=x, cy=y))
+
+
+def build_gassho(spec, out_dir):
+    """A Shirakawa-go gassho-zukuri farmhouse, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 9, the ladder skips 2) picks the look.
+    A timber house under a very steep thatched A-frame roof with the ridge along Y, so that the timber-framed gables with paper windows face front and back, and the wide dark entrance centered on the front gable wall, under a balcony from Tier 3. It is modeled with the ridge along X and the cell swapped, then turned 90 degrees. Tier 2 adds a smoke vent on the ridge,
+    3 a second wall floor with a balcony, 4 attic windows and a dormer, 5 two dormers on the 2x2 cell, 6 dormers on both slopes and a woodpile, 7 a porch hood, 8 larger gable windows and dormers."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("thatch", "vtone1"), ("wall", "vtone2"), ("infill", "vtone3"), ("paper", "offwhite"), ("wood", "timber"), ("stone", "greywood"),
+                                              ("frame", "graphite"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    footprint_w, footprint_d = spec["footprint"]
+    w, d = footprint_d, footprint_w
+    floors, tier = spec["floors"], spec["tier"]
+    plinth, fh = 0.06, 0.26
+    walls = 1 if tier <= 2 else 2
+    hxw, hyw = w / 2 - 0.07, d / 2 - 0.1
+    hr, x_end = d / 2 - 0.005, w / 2 - 0.02
+    zw = plinth + walls * fh
+    rise = hr * (1.2 if w >= d else 0.9)
+    parts = [lpm.box("plinth", (2 * hxw + 0.04, 2 * hyw + 0.04, plinth), at=(0, 0, 0), color=c["stone"]),
+             lpm.box("walls", (2 * hxw, 2 * hyw, walls * fh), at=(0, 0, plinth), color=c["wall"]),
+             extrude_x("thatch", [(-hr, zw - 0.04), (hr, zw - 0.04), (0, zw + rise)], -x_end, x_end, c["thatch"]),
+             lpm.box("ridge", (2 * x_end, 0.06, 0.04), at=(0, 0, zw + rise - 0.02), color=c["thatch"])]
+
+    base_z, apex_z, half = zw + 0.02, zw + rise - 0.13, hr - 0.12
+    half_at = lambda z: half * (1 - (z - base_z) / (apex_z - base_z))
+    for sign, face in ((-1, "left"), (1, "right")):
+        plane = sign * (x_end + 0.015)
+        x0, x1 = sorted((sign * (x_end - 0.003), plane))
+        parts.append(extrude_x(f"gable_{face}", [(-half, base_z), (half, base_z), (0, apex_z)], x0, x1, c["infill"]))
+        rows = {4: [0.1], 5: [0.12], 6: [0.12, 0.42], 7: [0.12, 0.42, 0.72], 8: [0.12, 0.42, 0.72, 0.98], 9: [0.12, 0.42, 0.72, 1.02, 1.32]}.get(tier, [])
+        for number, offset in enumerate(rows):
+            z = zw + offset
+            width = min(0.2 if tier < 8 else 0.26, half_at(z + 0.12) * 1.5)
+            count = 2 if offset < 0.2 and d >= 2 else 1
+            for slot in range(count):
+                gassho_shoji(parts, f"gable_{face}_win_{number}_{slot}", face, plane - sign * 0.006, (slot - (count - 1) / 2) * 0.5, z, width, 0.12, c)
+        for boards in (-1, 1):
+            board = lpm.box(f"chigi_{face}_{boards}", (0.014, 0.02, 0.2), at=(sign * (x_end - 0.01), 0, zw + rise - 0.02), color=c["wood"])
+            lpm.rotate(board, boards * 38, axis="X", about=(sign * (x_end - 0.01), 0, zw + rise - 0.02))
+            parts.append(board)
+
+    face_box(parts, "door", "left", -hxw, 0.0, 0.28, 0.22, plinth, 0.014, c["frame"])
+    for side in (-1, 1):
+        face_box(parts, f"door_post_{side}", "left", -hxw, side * 0.15, 0.025, 0.24, plinth, 0.026, c["wood"])
+    face_box(parts, "door_lintel", "left", -hxw, 0.0, 0.33, 0.025, plinth + 0.22, 0.026, c["wood"])
+    count = max(1, round(2 * hxw / 0.5))
+    pitch = 2 * hxw / count
+    for level in range(walls):
+        bottom = plinth + level * fh + 0.06
+        for number in range(count):
+            u = -hxw + (number + 0.5) * pitch
+            for face, wall in (("front", -hyw), ("back", hyw)):
+                gassho_shoji(parts, f"{face}_{level}_{number}", face, wall, u, bottom, min(0.26, pitch - 0.16), 0.14, c)
+        for face, wall in (("left", -hxw), ("right", hxw)):
+            for number, y in enumerate((-hyw * 0.5, hyw * 0.5) if d >= 2 else (0.0,)):
+                if face == "left" and level == 0 and abs(y) < 0.3:
+                    continue
+                gassho_shoji(parts, f"{face}_{level}_{number}", face, wall, y, bottom, 0.2, 0.14, c)
+
+    if walls == 2:
+        deck_z = plinth + fh - 0.015
+        parts.append(lpm.box("balcony", (0.06, 2 * hyw, 0.02), at=(-hxw - 0.03, 0, deck_z), color=c["wood"]))
+        parts.append(lpm.box("balcony_rail", (0.012, 2 * hyw, 0.012), at=(-hxw - 0.055, 0, deck_z + 0.1), color=c["wood"]))
+        posts = int(2 * hyw / 0.3)
+        for number in range(posts + 1):
+            parts.append(lpm.box(f"balcony_post_{number}", (0.014, 0.014, 0.1), at=(-hxw - 0.055, -hyw + 0.01 + number * (2 * hyw - 0.02) / posts, deck_z + 0.02), color=c["wood"]))
+
+    if tier >= 2:
+        parts.append(lpm.box("smoke_vent", (0.1, 0.1, 0.08), at=(0, 0, zw + rise - 0.1), color=c["wall"]))
+        parts.append(hip_roof("smoke_vent_roof", 0.07, 0.07, zw + rise - 0.02, 0.07, c["thatch"], cx=0.0, cy=0.0))
+    front_dormers = {4: [0.0], 5: [-0.5, 0.5], 6: [-0.5, 0.5], 7: [-0.6, 0.0, 0.6], 8: [-0.6, 0.0, 0.6], 9: [-1.0, 0.0, 1.0]}.get(tier, [])
+    back_dormers = {6: [-0.5, 0.5], 7: [-0.5, 0.5], 8: [-0.6, 0.0, 0.6], 9: [-1.0, 0.0, 1.0]}.get(tier, [])
+    for number, x in enumerate(front_dormers):
+        gassho_dormer(parts, f"dormer_front_{number}", x, -1, zw + 0.28 * min(1, rise / 0.6), hr, zw, rise, c)
+    for number, x in enumerate(back_dormers):
+        gassho_dormer(parts, f"dormer_back_{number}", x, 1, zw + 0.28 * min(1, rise / 0.6), hr, zw, rise, c)
+    if tier >= 6:
+        parts.append(lpm.box("woodpile", (0.34, 0.09, 0.15), at=(hxw - 0.3, -hyw - 0.055, plinth), color=c["wood"]))
+        parts.append(lpm.box("woodpile_top", (0.3, 0.07, 0.04), at=(hxw - 0.3, -hyw - 0.055, plinth + 0.15), color=c["stone"]))
+    if tier >= 7:
+        for side in (-1, 1):
+            parts.append(lpm.box(f"porch_post_{side}", (0.016, 0.016, 0.2), at=(-hxw - 0.05, side * 0.18, plinth), color=c["wood"]))
+        parts.append(lpm.box("porch_hood", (0.06, 0.4, 0.03), at=(-hxw - 0.03, 0, plinth + 0.24), color=c["thatch"]))
+
+    if spec.get("solar"):
+        angle = math.degrees(math.atan2(rise, hr))
+        sine, cosine = math.sin(math.radians(angle)), math.cos(math.radians(angle))
+        count_x = max(1, int((2 * hxw - 0.2) / 0.24))
+        for row, fraction in enumerate((0.45,) if d < 2 else (0.55, 0.8)):
+            for number in range(count_x):
+                px = (number - (count_x - 1) / 2) * 0.24
+                py, pz = hr * (1 - fraction) + 0.015 * sine, zw + fraction * rise + 0.015 * cosine
+                panel = lpm.box(f"solar_panel_{row}_{number}", (0.2, 0.26, 0.012), at=(px, py, pz), color=c["solar"])
+                lpm.rotate(panel, -angle, axis="X", about=(px, py, pz))
+                parts.append(panel)
+
+    for part in parts:
+        lpm.rotate(part, 90, axis="Z", about=(0, 0, 0))
+    ob = lpm.finish(spec["id"], parts, palette, budget=8000 + 6000 * floors, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [footprint_w, footprint_d]
     return report
 
 

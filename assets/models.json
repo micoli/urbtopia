@@ -1925,6 +1925,64 @@
       }
     }
   },
+  "buildings-house-1x1-1f-gassho-a": {
+    "file": "buildings/house-1x1-1f-gassho-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
+      }
+    }
+  },
+  "buildings-house-1x1-1f-gassho-a-solar": {
+    "file": "buildings/house-1x1-1f-gassho-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
+      }
+    }
+  },
   "buildings-house-1x1-1f-mansard-a": {
     "file": "buildings/house-1x1-1f-mansard-a",
     "source": "managed",
@@ -4407,6 +4465,64 @@
       }
     }
   },
+  "buildings-house-2x1-2f-gassho-a": {
+    "file": "buildings/house-2x1-2f-gassho-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-gassho-a-solar": {
+    "file": "buildings/house-2x1-2f-gassho-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
+      }
+    }
+  },
   "buildings-house-2x1-2f-riad-a": {
     "file": "buildings/house-2x1-2f-riad-a",
     "source": "managed",
@@ -4636,6 +4752,64 @@
       "d": {
         "name": "greywood",
         "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-gassho-a": {
+    "file": "buildings/house-2x1-2f-third-gassho-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-gassho-a-solar": {
+    "file": "buildings/house-2x1-2f-third-gassho-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
       }
     }
   },
@@ -5439,6 +5613,64 @@
       }
     }
   },
+  "buildings-house-2x2-2f-gassho-a": {
+    "file": "buildings/house-2x2-2f-gassho-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-gassho-a-solar": {
+    "file": "buildings/house-2x2-2f-gassho-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
+      }
+    }
+  },
   "buildings-house-2x2-2f-haussmann-a": {
     "file": "buildings/house-2x2-2f-haussmann-a",
     "source": "managed",
@@ -6004,6 +6236,64 @@
       "d": {
         "name": "greywood",
         "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-gassho-a": {
+    "file": "buildings/house-2x2-3f-gassho-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-gassho-a-solar": {
+    "file": "buildings/house-2x2-3f-gassho-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
       }
     }
   },
@@ -6575,6 +6865,64 @@
       }
     }
   },
+  "buildings-house-2x2-4f-gassho-a": {
+    "file": "buildings/house-2x2-4f-gassho-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
+      }
+    }
+  },
+  "buildings-house-2x2-4f-gassho-a-solar": {
+    "file": "buildings/house-2x2-4f-gassho-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
+      }
+    }
+  },
   "buildings-house-2x2-4f-haussmann-a": {
     "file": "buildings/house-2x2-4f-haussmann-a",
     "source": "managed",
@@ -7143,6 +7491,64 @@
       }
     }
   },
+  "buildings-house-2x2-5f-gassho-a": {
+    "file": "buildings/house-2x2-5f-gassho-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-gassho-a-solar": {
+    "file": "buildings/house-2x2-5f-gassho-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
+      }
+    }
+  },
   "buildings-house-2x2-5f-haussmann-a": {
     "file": "buildings/house-2x2-5f-haussmann-a",
     "source": "managed",
@@ -7592,6 +7998,64 @@
       "d": {
         "name": "dustypink",
         "color": "#d9a89a"
+      }
+    }
+  },
+  "buildings-house-3x3-3f-gassho-a": {
+    "file": "buildings/house-3x3-3f-gassho-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
+      }
+    }
+  },
+  "buildings-house-3x3-3f-gassho-a-solar": {
+    "file": "buildings/house-3x3-3f-gassho-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      3,
+      3
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "thatch",
+        "color": "#b99a58"
+      },
+      "b": {
+        "name": "strawgold",
+        "color": "#d4b060"
+      },
+      "c": {
+        "name": "greythatch",
+        "color": "#8e8a78"
+      },
+      "d": {
+        "name": "mosshatch",
+        "color": "#7f8a54"
       }
     }
   },
