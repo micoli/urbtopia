@@ -7856,6 +7856,109 @@ def build_victorian(spec, out_dir):
     return report
 
 
+def maloca_hut(parts, c, tag, x, y, radius):
+    """A small round hut: palm posts, a dark door facing -Y and a thatched cone."""
+    parts.append(lpm.prism(f"{tag}_wall", 10, radius, 0.14, at=(x, y, 0.02), color=c["post"], radius_top=radius))
+    parts.append(lpm.box(f"{tag}_door", (0.07, 0.02, 0.1), at=(x, y - radius + 0.005, 0.02), color=c["dark"]))
+    for side in (-1, 1):
+        parts.append(lpm.box(f"{tag}_door_post_{side}", (0.02, 0.03, 0.115), at=(x + side * 0.045, y - radius + 0.002, 0.02), color=c["frame"]))
+    parts.append(lpm.box(f"{tag}_door_lintel", (0.11, 0.03, 0.02), at=(x, y - radius + 0.002, 0.12), color=c["frame"]))
+    parts.append(lpm.lathe(f"{tag}_roof", [(radius + 0.05, 0.14), (radius * 0.5, 0.2), (0.0, 0.3)], segments=10, at=(x, y, 0), color=c["roof"]))
+
+
+def stadium_path(half, radius, steps=12):
+    """The closed outline of an oblong plan: straight sides along X between -half and half, closed by two half circles of `radius`, counter-clockwise."""
+    points = [(-half, -radius), (half, -radius)]
+    points += [(half + radius * math.cos(math.radians(-90 + 180 * k / steps)), radius * math.sin(math.radians(-90 + 180 * k / steps))) for k in range(1, steps)]
+    points += [(half, radius), (-half, radius)]
+    points += [(-half - radius * math.cos(math.radians(-90 + 180 * k / steps)), -radius * math.sin(math.radians(-90 + 180 * k / steps))) for k in range(1, steps)]
+    return points
+
+
+def stadium_wall(name, half, r_out, r_in, z0, z1, color, steps=12):
+    """A continuous low wall following an oblong plan: the straight sides and the rounded ends are one closed ring."""
+    outer, inner = stadium_path(half, r_out, steps), stadium_path(half, r_in, steps)
+    count = len(outer)
+    verts = [(x, y, z0) for x, y in outer] + [(x, y, z1) for x, y in outer] + [(x, y, z0) for x, y in inner] + [(x, y, z1) for x, y in inner]
+    faces = []
+    for i in range(count):
+        j = (i + 1) % count
+        faces.append((i, j, count + j, count + i))
+        faces.append((2 * count + j, 2 * count + i, 3 * count + i, 3 * count + j))
+        faces.append((count + i, count + j, 3 * count + j, 3 * count + i))
+    return lpm._object(name, _bm(verts, faces), color)
+
+
+def build_maloca(spec, out_dir):
+    """An Amazonian maloca on a 2x2 cell with `floors` floors (the Tier): a big oblong communal house under a palm-thatch roof that comes down almost to the ground, closed by two half domes, taller at every Tier, with a dark entrance in the front end and a pole screen,
+    on a grassy plot; from Tier 2 coconut palms, 3 a crest of poles along the ridge and a small round hut, 4 a second hut and palms, 5 a third hut, a dugout canoe and a fire pit."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("roof", "vtone1"), ("post", "vtone2"), ("accent", "vtone3"), ("dark", "udark"), ("frame", "darkwood"), ("grass", "turfgreen"), ("stone", "greywood"), ("palm", "bush"), ("trunk", "pine"),
+                                              ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors = spec["floors"]
+    tier = floors
+    radius, length = {1: (0.36, 0.9), 2: (0.4, 1.0), 3: (0.44, 0.9), 4: (0.48, 0.86), 5: (0.52, 0.8)}[tier]
+    half, wide = length / 2, radius + 0.05
+    wall_h = 0.16
+    z_e = 0.02 + wall_h + 0.03
+    roof_h = 0.45 + 0.22 * floors
+    parts = [lpm.box("ground", (w - 0.01, d - 0.01, 0.02), at=(0, 0, 0), color=c["grass"])]
+    section = [(-wide, z_e), (-wide * 0.8, z_e + 0.25 * roof_h), (-wide * 0.5, z_e + 0.58 * roof_h), (-wide * 0.2, z_e + 0.88 * roof_h), (0.0, z_e + roof_h),
+               (wide * 0.2, z_e + 0.88 * roof_h), (wide * 0.5, z_e + 0.58 * roof_h), (wide * 0.8, z_e + 0.25 * roof_h), (wide, z_e)]
+    parts.append(extrude_x("roof", section, -half, half, c["roof"]))
+    profile = [(wide, z_e), (wide * 0.8, z_e + 0.25 * roof_h), (wide * 0.5, z_e + 0.58 * roof_h), (wide * 0.2, z_e + 0.88 * roof_h), (0.0, z_e + roof_h)]
+    for sign in (-1, 1):
+        parts.append(lpm.lathe(f"roof_end_{sign}", profile, segments=16, at=(sign * half, 0, 0), color=c["roof"]))
+    for number in range(floors):
+        z = z_e + (number + 1) * roof_h / (floors + 1)
+        width_at = wide * (1 - (z - z_e) / roof_h) ** 0.9
+        for sign in (-1, 1):
+            parts.append(lpm.box(f"band_{number}_{sign}", (length, 0.012, 0.025), at=(0, sign * (width_at + 0.004), z), color=c["post"]))
+    parts.append(stadium_wall("wall", half, radius, radius - 0.045, 0.02, 0.02 + wall_h, c["post"]))
+    doors = {1: (0.0,), 2: (0.0,), 3: (-0.22, 0.22), 4: (-0.22, 0.22), 5: (-0.28, 0.0, 0.28)}[tier]
+    for number, dx in enumerate(doors):
+        parts.append(lpm.box(f"door_{number}", (0.15, 0.02, 0.13), at=(dx, -radius - 0.006, 0.02), color=c["dark"]))
+        for side in (-1, 1):
+            parts.append(lpm.box(f"door_post_{number}_{side}", (0.04, 0.045, 0.16), at=(dx + side * 0.095, -radius - 0.012, 0.02), color=c["frame"]))
+        parts.append(lpm.box(f"door_lintel_{number}", (0.23, 0.045, 0.035), at=(dx, -radius - 0.012, 0.02 + 0.13), color=c["frame"]))
+        parts.append(lpm.box(f"door_sill_{number}", (0.19, 0.05, 0.015), at=(dx, -radius - 0.014, 0.02), color=c["frame"]))
+
+    if tier >= 2:
+        for number, (px, py) in enumerate(((-0.86, 0.8), (0.86, 0.8), (-0.86, -0.8), (0.86, -0.8))[: 2 if tier < 4 else 4]):
+            fale_palm(parts, c, f"palm_{number}", px, py, 0.02, 0.5 + 0.04 * number)
+    if tier >= 3:
+        for number in range(5):
+            parts.append(lpm.box(f"crest_{number}", (0.012, 0.012, 0.1 + 0.02 * (number % 2)), at=(-half + number * length / 4, 0.0, z_e + roof_h - 0.02), color=c["accent"]))
+        maloca_hut(parts, c, "hut_0", -0.55, -0.8, 0.12)
+    if tier >= 4:
+        maloca_hut(parts, c, "hut_1", 0.1, -0.8, 0.1)
+    if tier >= 5:
+        maloca_hut(parts, c, "hut_2", 0.55, -0.8, 0.12)
+        outline = [(0.0, -0.18), (0.04, -0.1), (0.04, 0.1), (0.0, 0.18), (-0.04, 0.1), (-0.04, -0.1)]
+        parts.append(extrude_z("canoe", [(x + 0.8, y + 0.7) for x, y in outline], 0.02, 0.07, c["post"]))
+        for number in range(6):
+            angle = math.radians(number * 60)
+            parts.append(lpm.box(f"fire_stone_{number}", (0.03, 0.03, 0.03), at=(-0.75 + 0.06 * math.cos(angle), 0.78 + 0.06 * math.sin(angle), 0.02), color=c["stone"]))
+
+    if spec.get("solar"):
+        angle = math.degrees(math.atan2(0.3 * roof_h, 0.3 * wide))
+        py, pz = -wide * 0.5, z_e + 0.58 * roof_h + 0.015
+        for number, px in enumerate((-0.22, 0.0, 0.22)):
+            panel = lpm.box(f"solar_panel_{number}", (0.18, 0.2, 0.012), at=(px, py, pz), color=c["solar"])
+            lpm.rotate(panel, angle, axis="X", about=(px, py, pz))
+            parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=30000 + 8000 * floors, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = list(spec["footprint"])
+    return report
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")

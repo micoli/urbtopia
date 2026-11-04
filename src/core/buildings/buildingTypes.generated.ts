@@ -73,6 +73,7 @@ export type BuildingId =
   | 'home-gassho'
   | 'home-haussmann'
   | 'home-machiya'
+  | 'home-maloca'
   | 'home-mansard-1x1'
   | 'home-mansard-1x2'
   | 'home-mansard-2x2'
