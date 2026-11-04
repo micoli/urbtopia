@@ -17,7 +17,7 @@ export function OfficePanel({ building }: OfficePanelProps) {
   const due = officeUrbsDue(building, yieldMultiplier);
   return <DrawerPanel>
       <PowerShortageNote />
-      <DrawerPanel.LabelValue label={t('office.income')} value={`${filled * OFFICE.urbsPerJobPerHour * yieldMultiplier} / h`} />
+      <DrawerPanel.LabelValue label={t('office.income')} value={`${Math.round(filled * OFFICE.urbsPerJobPerHour * yieldMultiplier * 10) / 10} / h`} />
       <DrawerPanel.LabelValue label={t('office.due')} value={due} />
       {due > 0 ? (
         <ActionButton variant="primary" block onClick={() => gameStore.getState().send({ type: 'Collect', buildingId: building.id })}>

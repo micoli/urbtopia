@@ -66,7 +66,7 @@ function CityManagementDialog() {
             <Tabs label={t('eco.title')} idPrefix="eco-tab" panelId="eco-panel" tabs={tabs} selected={selected} onSelect={setTab}/>
             <div id="eco-panel" role="tabpanel" aria-labelledby={`eco-tab-${selected}`}>
             {selected === 'cities' ? <CitiesSection/> : selected === 'shipments' ? <ShipmentsSection/> : <>
-            <CityOverview state={state} energy={energy} green={green} climate={climate} transport={transport} congestion={congestion} onShowTransport={() => showSection('eco-transport')} onShowTraffic={() => showSection('eco-traffic')} onShowNeeds={() => showSection('eco-needs')} onShowTemperature={() => showSection('eco-temperature')} onShowWaste={() => showSection('eco-waste')} onShowTourism={() => showSection('eco-tourism')}/>
+            <CityOverview state={state} energy={energy} green={green} climate={climate} transport={transport} congestion={congestion} onShowTransport={() => showSection('eco-transport')} onShowTraffic={() => showSection('eco-traffic')} onShowEnergy={() => showSection('eco-energy')} onShowNeeds={() => showSection('eco-needs')} onShowTemperature={() => showSection('eco-temperature')} onShowWaste={() => showSection('eco-waste')} onShowTourism={() => showSection('eco-tourism')}/>
             <SectionNavigation onSelect={showSection}/>
             <p className="eco-units">{t('eco.units')}</p>
             <div className="eco-sections">

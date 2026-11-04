@@ -6,6 +6,14 @@ const state: GameState = newGame({ seed: 'amber-fox-4821', now: 0 });
 
 const shopTool: Tool = { kind: 'building', buildingType: 'shopConstruction' };
 
+describe('green space reach', () => {
+  it('previews a diamond reach for a park, matching the Manhattan distance of its coverage', () => {
+    const range = evaluateTool({ kind: 'building', buildingType: 'park' }, { state, tile: { x: 56, y: 57 }, rotation: null }).ghost.range ?? [];
+    expect(range.length).toBeGreaterThan(0);
+    expect(range.every(({ x, y }) => Math.abs(x + 0.5 - 57) + Math.abs(y + 0.5 - 58) <= 6)).toBe(true);
+  });
+});
+
 describe('building tool', () => {
   it('shows a valid ghost turned toward the adjacent road and the placement command', () => {
     const evaluation = evaluateTool(shopTool, { state, tile: { x: 56, y: 57 }, rotation: null });

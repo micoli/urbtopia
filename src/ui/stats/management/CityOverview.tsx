@@ -2,6 +2,8 @@ import {climateStats, cityAttractiveness, cityBenefits, energyStats, isAttractio
 import {t} from '../../../i18n/t';
 import {OverviewTile} from './OverviewTile';
 import { Icon } from '../../common/Icon';
+import { CountBadge } from '../../common/CountBadge';
+import { useSanctionedHomes } from '../../common/useSanctionedHomes';
 
 interface CityOverviewProps {
     state: GameState;
@@ -12,27 +14,35 @@ interface CityOverviewProps {
     congestion: CongestionStats;
     onShowTransport: () => void;
     onShowTraffic: () => void;
+    onShowEnergy: () => void;
     onShowNeeds: () => void;
     onShowTemperature: () => void;
     onShowWaste: () => void;
     onShowTourism: () => void;
 }
 
-export function CityOverview({state, energy, green, climate, transport, congestion, onShowTransport, onShowTraffic, onShowNeeds, onShowTemperature, onShowWaste, onShowTourism}: CityOverviewProps) {
+export function CityOverview({state, energy, green, climate, transport, congestion, onShowTransport, onShowTraffic, onShowEnergy, onShowNeeds, onShowTemperature, onShowWaste, onShowTourism}: CityOverviewProps) {
+    const sanctionedCount = useSanctionedHomes().length;
     const waste = wasteSituation(state);
     const attractiveness = cityAttractiveness(state);
     const tourists = state.buildings.filter(isAttraction).reduce((total, building) => total + touristsPerDay(building, attractiveness), 0);
+    const produced = energy.solar + energy.wind + energy.hydro + energy.geothermal + energy.coal + energy.backup;
     return <div className="eco-overview">
         <OverviewTile icon="citizens">
             <span>{t('stat.citizens')}</span><strong>{totalCitizens(state)}</strong>
         </OverviewTile>
-        <OverviewTile icon="power" warning={energy.unmet > 0}>
-            <span>{t('eco.energy')}</span>
-            <strong>{Math.max(0, energy.demand - energy.unmet).toFixed(1)}<small>/ {energy.demand.toFixed(1)}</small></strong>
-        </OverviewTile>
+        <button type="button" aria-controls="eco-energy" data-warning={energy.unmet > 0} onClick={onShowEnergy}>
+            <Icon name="power" />
+            <span className="eco-overview-value">
+                <span>{t('eco.energy')}</span>
+                <strong>{Math.max(0, energy.demand - energy.unmet).toFixed(1)}<small>/ {energy.demand.toFixed(1)}</small></strong>
+                <small>{t('eco.produced')} {produced.toFixed(1)} · {energy.unmet > 0 ? `${t('eco.unmet')} ${energy.unmet.toFixed(1)}` : `${t('eco.surplus')} ${energy.surplus.toFixed(1)}`}</small>
+            </span>
+        </button>
         <button type="button" aria-controls="eco-needs" onClick={onShowNeeds}>
             <Icon name="nature" />
             <span className="eco-overview-value"><span>{t('eco.wellbeing')}</span><strong>{green.wellbeing.toFixed(0)} <small>/ 100</small></strong></span>
+            <CountBadge count={sanctionedCount} label={t('sanction.alert')}/>
         </button>
         <button type="button" aria-controls="eco-waste" data-warning={waste.required && waste.unprocessed > 0} title={t('waste.overview.title')} onClick={onShowWaste}>
             <Icon name="trash" />

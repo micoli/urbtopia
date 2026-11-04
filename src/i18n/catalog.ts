@@ -140,6 +140,8 @@ export const CATALOG = {
   'eco.unmet': ['Unmet demand', 'Besoin non couvert'],
   'eco.storage': ['Stored energy', 'Énergie stockée'],
   'eco.surplus': ['Unused surplus', 'Surplus inutilisé'],
+  'eco.produced': ['Produced', 'Produit'],
+  'eco.energyServed': ['Served', 'Couvert'],
   'eco.transfers': ['Local transfers', 'Échanges locaux'],
   'eco.forecast': ['Next six hours: solar / wind / hydro factors', 'Six prochaines heures : facteurs solaire / vent / hydraulique'],
   'eco.energyHelp': ['Save energy first. Solar varies with daylight; wind is predictable. Batteries shift renewable surplus into deficits. Homes get priority; shortages slow economic activity.', 'Économise d’abord l’énergie. Le solaire varie avec le jour ; le vent est prévisible. Les batteries reportent les surplus vers les déficits. Les logements sont prioritaires ; les pénuries ralentissent l’activité.'],
