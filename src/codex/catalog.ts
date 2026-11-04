@@ -106,7 +106,9 @@ export function codexImageKey(id: CodexId, level: number, colorVariant?: ColorVa
 
 export function validateCodex(entries: readonly CodexEntry[] = CODEX_ENTRIES): void {
   const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...Object.keys(BUILDING_SPECS).filter(type => isHomeType(type) && type !== 'home').map(type => solarCodexIdOf(type as BuildingType)), ...ROAD_CONSTRUCTIONS.map(item => item.id), ...WATER_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
-  if (entries.length !== expected.length || expected.some(id => entries.filter(entry => entry.id === id).length !== 1)) {
+  const counts = new Map<string, number>();
+  for (const entry of entries) counts.set(entry.id, (counts.get(entry.id) ?? 0) + 1);
+  if (entries.length !== expected.length || expected.some(id => counts.get(id) !== 1)) {
     throw new Error('Every constructible must have exactly one codex entry');
   }
   for (const entry of entries) {
