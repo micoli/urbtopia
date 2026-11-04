@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "concrete",
+  "color": "#a7a7a2"
+ },
+ "b": {
+  "name": "concrete_warm",
+  "color": "#b3a894"
+ },
+ "c": {
+  "name": "concrete_dark",
+  "color": "#7b7b78"
+ },
+ "d": {
+  "name": "concrete_pink",
+  "color": "#b99f98"
+ }
+}

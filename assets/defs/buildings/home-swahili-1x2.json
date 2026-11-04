@@ -1,0 +1,104 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "home",
+  "section": "build.housing",
+  "cost": 350,
+  "unlockCitizens": 150,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt", "pedestrianWay"],
+  "name": {
+    "en": "Swahili Stone Duplex",
+    "fr": "Duplex de pierre swahilie"
+  },
+  "description": {
+    "en": "A whitewashed coral-stone house of Zanzibar with a flat roof, a big carved and studded wooden door, shuttered windows and a wooden balcony. Houses Citizens who generate Tax. Each upgrade adds a floor, with more population and utility Demand. Comes in four colors.",
+    "fr": "Une maison de pierre de corail blanchie de Zanzibar, avec un toit plat, une grande porte de bois sculptée et cloutée, des fenêtres à volets et un balcon de bois. Accueille des habitants qui génèrent des impôts. Chaque amélioration ajoute un étage, avec plus d’habitants et de besoins en eau et en électricité. Existe en quatre couleurs."
+  },
+  "tiers": [
+    {
+      "model": "buildings-house-1x2-1f-swahili-a",
+      "footprint": [1, 2],
+      "citizens": 6,
+      "power": 1,
+      "water": 1
+    },
+    {
+      "model": "buildings-house-1x2-2f-swahili-a",
+      "citizens": 15,
+      "power": 2,
+      "water": 2,
+      "upgradeCost": {
+        "urbs": 150,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-1x2-3f-swahili-a",
+      "citizens": 32,
+      "power": 3,
+      "water": 3,
+      "upgradeCost": {
+        "urbs": 400,
+        "goods": {
+          "bricks": 4,
+          "planks": 2
+        }
+      }
+    },
+    {
+      "model": "buildings-house-1x2-4f-swahili-a",
+      "citizens": 60,
+      "power": 6,
+      "water": 6,
+      "upgradeCost": {
+        "urbs": 1000,
+        "goods": {
+          "tiles": 4,
+          "bricks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-1x2-5f-swahili-a",
+      "citizens": 100,
+      "power": 10,
+      "water": 10,
+      "upgradeCost": {
+        "urbs": 2500,
+        "goods": {
+          "tools": 4,
+          "tiles": 3
+        }
+      }
+    }
+  ],
+  "housingRegion": "africa",
+  "solarPanels": {
+    "cost": 400,
+    "unlockCitizens": 300,
+    "output": 3
+  },
+  "variants": {
+    "solar": {
+      "tiers": [
+        {
+          "model": "buildings-house-1x2-1f-swahili-a-solar"
+        },
+        {
+          "model": "buildings-house-1x2-2f-swahili-a-solar"
+        },
+        {
+          "model": "buildings-house-1x2-3f-swahili-a-solar"
+        },
+        {
+          "model": "buildings-house-1x2-4f-swahili-a-solar"
+        },
+        {
+          "model": "buildings-house-1x2-5f-swahili-a-solar"
+        }
+      ]
+    }
+  }
+}

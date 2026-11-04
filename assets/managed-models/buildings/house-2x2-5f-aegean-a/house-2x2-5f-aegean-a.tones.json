@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "whitewash",
+  "color": "#f6f3ec"
+ },
+ "b": {
+  "name": "paleblue",
+  "color": "#b6d0ea"
+ },
+ "c": {
+  "name": "cream",
+  "color": "#fff1d6"
+ },
+ "d": {
+  "name": "pastelpink",
+  "color": "#e8b8b0"
+ }
+}

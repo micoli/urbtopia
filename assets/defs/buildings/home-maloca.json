@@ -1,0 +1,104 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "home",
+  "section": "build.housing",
+  "cost": 600,
+  "unlockCitizens": 400,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt", "pedestrianWay"],
+  "name": {
+    "en": "Maloca",
+    "fr": "Maloca"
+  },
+  "description": {
+    "en": "An Amazonian communal house under a huge palm-thatch roof that comes down to a low wall, with doors on the front and small round huts around it. Houses Citizens who generate Tax. Each upgrade makes the roof taller, with more population and utility Demand. Comes in four colors.",
+    "fr": "Une maison communautaire amazonienne sous un immense toit de palme qui descend jusqu’à un muret, avec des portes en façade et de petites huttes rondes autour. Accueille des habitants qui génèrent des impôts. Chaque amélioration élève le toit, avec plus d’habitants et de besoins en eau et en électricité. Existe en quatre couleurs."
+  },
+  "tiers": [
+    {
+      "model": "buildings-house-2x2-1f-maloca-a",
+      "footprint": [2, 2],
+      "citizens": 6,
+      "power": 1,
+      "water": 1
+    },
+    {
+      "model": "buildings-house-2x2-2f-maloca-a",
+      "citizens": 15,
+      "power": 2,
+      "water": 2,
+      "upgradeCost": {
+        "urbs": 150,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x2-3f-maloca-a",
+      "citizens": 32,
+      "power": 3,
+      "water": 3,
+      "upgradeCost": {
+        "urbs": 400,
+        "goods": {
+          "bricks": 4,
+          "planks": 2
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x2-4f-maloca-a",
+      "citizens": 60,
+      "power": 6,
+      "water": 6,
+      "upgradeCost": {
+        "urbs": 1000,
+        "goods": {
+          "tiles": 4,
+          "bricks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x2-5f-maloca-a",
+      "citizens": 100,
+      "power": 10,
+      "water": 10,
+      "upgradeCost": {
+        "urbs": 2500,
+        "goods": {
+          "tools": 4,
+          "tiles": 3
+        }
+      }
+    }
+  ],
+  "housingRegion": "americas",
+  "solarPanels": {
+    "cost": 400,
+    "unlockCitizens": 300,
+    "output": 4
+  },
+  "variants": {
+    "solar": {
+      "tiers": [
+        {
+          "model": "buildings-house-2x2-1f-maloca-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-2f-maloca-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-3f-maloca-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-4f-maloca-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-5f-maloca-a-solar"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "home",
+  "section": "build.housing",
+  "cost": 600,
+  "unlockCitizens": 400,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt", "pedestrianWay"],
+  "name": {
+    "en": "Haussmann Block",
+    "fr": "Immeuble haussmannien"
+  },
+  "description": {
+    "en": "A Parisian apartment block of cream stone with iron balconies and a zinc mansard roof. Houses Citizens who generate Tax. Each upgrade adds a floor, with more population and utility Demand. Comes in four colors.",
+    "fr": "Un immeuble parisien en pierre crème, avec balcons en fer forgé et toit mansardé en zinc. Accueille des habitants qui génèrent des impôts. Chaque amélioration ajoute un étage, avec plus d’habitants et de besoins en eau et en électricité. Existe en quatre couleurs."
+  },
+  "tiers": [
+    {
+      "model": "buildings-house-2x2-1f-haussmann-a",
+      "footprint": [2, 2],
+      "citizens": 6,
+      "power": 1,
+      "water": 1
+    },
+    {
+      "model": "buildings-house-2x2-2f-haussmann-a",
+      "citizens": 15,
+      "power": 2,
+      "water": 2,
+      "upgradeCost": {
+        "urbs": 150,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x2-3f-haussmann-a",
+      "citizens": 32,
+      "power": 3,
+      "water": 3,
+      "upgradeCost": {
+        "urbs": 400,
+        "goods": {
+          "bricks": 4,
+          "planks": 2
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x2-4f-haussmann-a",
+      "citizens": 60,
+      "power": 6,
+      "water": 6,
+      "upgradeCost": {
+        "urbs": 1000,
+        "goods": {
+          "tiles": 4,
+          "bricks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x2-5f-haussmann-a",
+      "citizens": 100,
+      "power": 10,
+      "water": 10,
+      "upgradeCost": {
+        "urbs": 2500,
+        "goods": {
+          "tools": 4,
+          "tiles": 3
+        }
+      }
+    }
+  ],
+  "housingRegion": "europe",
+  "solarPanels": {
+    "cost": 400,
+    "unlockCitizens": 300,
+    "output": 4
+  },
+  "variants": {
+    "solar": {
+      "tiers": [
+        {
+          "model": "buildings-house-2x2-1f-haussmann-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-2f-haussmann-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-3f-haussmann-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-4f-haussmann-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-5f-haussmann-a-solar"
+        }
+      ]
+    }
+  }
+}

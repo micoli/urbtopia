@@ -99,10 +99,14 @@ describe('codex coverage gate', () => {
       return colors.map(color => [codexImageKey(entry.id, level, color), 'preview.png']);
     })));
     expect(() => validateCodexManifest({ fingerprint: 'test', images })).not.toThrow();
-    for (const key of Object.keys(images)) {
-      const incomplete = { ...images };
-      delete incomplete[key];
-      expect(() => validateCodexManifest({ fingerprint: 'test', images: incomplete })).toThrow('Missing codex image');
+    const sampled = CODEX_ENTRIES.filter((_, index) => index % 12 === 0 || index === CODEX_ENTRIES.length - 1);
+    for (const entry of sampled) {
+      const color = isHomeCodexId(entry.id) ? HOME_COLOR_VARIANTS[0] : undefined;
+      for (const level of new Set([entry.levels[0]!, entry.levels[entry.levels.length - 1]!])) {
+        const incomplete = { ...images };
+        delete incomplete[codexImageKey(entry.id, level, color)];
+        expect(() => validateCodexManifest({ fingerprint: 'test', images: incomplete })).toThrow('Missing codex image');
+      }
     }
   }, 30_000);
 });

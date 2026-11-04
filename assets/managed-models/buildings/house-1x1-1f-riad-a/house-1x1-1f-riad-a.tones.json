@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "riadrose",
+  "color": "#c98a6a"
+ },
+ "b": {
+  "name": "sandstone",
+  "color": "#d8c08a"
+ },
+ "c": {
+  "name": "redclay",
+  "color": "#b5573a"
+ },
+ "d": {
+  "name": "ochre",
+  "color": "#d9b878"
+ }
+}

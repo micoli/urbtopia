@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "honey",
+  "color": "#d9a85c"
+ },
+ "b": {
+  "name": "pastelpink",
+  "color": "#e8b8b0"
+ },
+ "c": {
+  "name": "turquoise",
+  "color": "#2aa7b5"
+ },
+ "d": {
+  "name": "plaster",
+  "color": "#efe4cc"
+ }
+}

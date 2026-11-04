@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "strawgold",
+  "color": "#d4b060"
+ },
+ "b": {
+  "name": "thatch",
+  "color": "#b99a58"
+ },
+ "c": {
+  "name": "greythatch",
+  "color": "#8e8a78"
+ },
+ "d": {
+  "name": "honey",
+  "color": "#d9a85c"
+ }
+}

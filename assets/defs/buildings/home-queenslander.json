@@ -1,0 +1,153 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "home",
+  "section": "build.housing",
+  "cost": 150,
+  "unlockCitizens": 0,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt", "pedestrianWay"],
+  "name": {
+    "en": "Queenslander",
+    "fr": "Queenslander"
+  },
+  "description": {
+    "en": "An Australian timber house raised on stumps, with a veranda wrapped around every floor, a front stair and a corrugated iron roof. Houses Citizens who generate Tax. Each upgrade grows the house, with more population and utility Demand. Comes in four colors.",
+    "fr": "Une maison de bois australienne surélevée sur pilotis, avec une véranda tout autour de chaque étage, un escalier de face et un toit de tôle ondulée. Accueille des habitants qui génèrent des impôts. Chaque amélioration agrandit la maison, avec plus d’habitants et de besoins en eau et en électricité. Existe en quatre couleurs."
+  },
+  "tiers": [
+    {
+      "model": "buildings-house-1x1-1f-queenslander-a",
+      "footprint": [1, 1],
+      "citizens": 6,
+      "power": 1,
+      "water": 1
+    },
+    {
+      "model": "buildings-house-2x1-1f-queenslander-a",
+      "footprint": [2, 1],
+      "citizens": 15,
+      "power": 2,
+      "water": 2,
+      "upgradeCost": {
+        "urbs": 150,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x1-2f-queenslander-a",
+      "citizens": 32,
+      "power": 3,
+      "water": 3,
+      "upgradeCost": {
+        "urbs": 400,
+        "goods": {
+          "bricks": 4,
+          "planks": 2
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x1-2f-third-queenslander-a",
+      "citizens": 60,
+      "power": 6,
+      "water": 6,
+      "upgradeCost": {
+        "urbs": 1000,
+        "goods": {
+          "tiles": 4,
+          "bricks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x2-2f-queenslander-a",
+      "footprint": [2, 2],
+      "citizens": 100,
+      "power": 10,
+      "water": 10,
+      "upgradeCost": {
+        "urbs": 2500,
+        "goods": {
+          "tools": 4,
+          "tiles": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x2-3f-queenslander-a",
+      "citizens": 160,
+      "power": 16,
+      "water": 16,
+      "upgradeCost": {
+        "urbs": 6000,
+        "goods": {
+          "glass": 4,
+          "circuits": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x2-4f-queenslander-a",
+      "citizens": 250,
+      "power": 25,
+      "water": 25,
+      "upgradeCost": {
+        "urbs": 15000,
+        "goods": {
+          "steel": 4,
+          "cement": 4
+        }
+      }
+    },
+    {
+      "model": "buildings-house-2x2-5f-queenslander-a",
+      "citizens": 400,
+      "power": 40,
+      "water": 40,
+      "upgradeCost": {
+        "urbs": 40000,
+        "goods": {
+          "crystal": 3,
+          "jewelry": 3
+        }
+      }
+    }
+  ],
+  "housingRegion": "oceania",
+  "solarPanels": {
+    "cost": 200,
+    "unlockCitizens": 100
+  },
+  "variants": {
+    "solar": {
+      "tiers": [
+        {
+          "model": "buildings-house-1x1-1f-queenslander-a-solar"
+        },
+        {
+          "model": "buildings-house-2x1-1f-queenslander-a-solar"
+        },
+        {
+          "model": "buildings-house-2x1-2f-queenslander-a-solar"
+        },
+        {
+          "model": "buildings-house-2x1-2f-third-queenslander-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-2f-queenslander-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-3f-queenslander-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-4f-queenslander-a-solar"
+        },
+        {
+          "model": "buildings-house-2x2-5f-queenslander-a-solar"
+        }
+      ]
+    }
+  }
+}

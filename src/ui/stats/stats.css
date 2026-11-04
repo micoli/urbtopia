@@ -123,6 +123,17 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--color-te
   scroll-margin-top: 72px;
 }
 .eco-wide { grid-column: 1 / -1; }
+.eco-energy-group { margin-bottom: var(--space-12); }
+.eco-energy-group > h4 { margin: var(--space-8) 0 var(--space-4); color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.eco-energy-group[data-kind] { padding-left: var(--space-8); border-left: 3px solid var(--color-text-muted); }
+.eco-energy-group[data-kind='production'] { border-left-color: var(--color-series-green); }
+.eco-energy-group[data-kind='production'] > h4 { color: var(--color-series-green); }
+.eco-energy-group[data-kind='consumption'] { border-left-color: var(--color-series-orange); }
+.eco-energy-group[data-kind='consumption'] > h4 { color: var(--color-series-orange); }
+.eco-subtotal { font-weight: var(--font-weight-bold); }
+.eco-energy-group dl div { padding: var(--space-4) var(--space-8); border-bottom: 1px dotted var(--white-a15); }
+.eco-energy-group dl div:hover { background: var(--white-a06); }
+.eco-energy-group dl .eco-subtotal { background: var(--white-a06); border-bottom-style: solid; }
 .eco-heat-chart { margin: var(--space-8) 0 var(--space-12); }
 .eco-heat-bar { display: flex; height: 14px; border-radius: var(--radius-pill); background: var(--white-a12); overflow: hidden; }
 .eco-heat-bar > span { display: block; height: 100%; }

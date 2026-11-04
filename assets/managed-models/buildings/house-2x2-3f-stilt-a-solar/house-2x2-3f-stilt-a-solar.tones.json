@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "thatch",
+  "color": "#b99a58"
+ },
+ "b": {
+  "name": "redclay",
+  "color": "#b5573a"
+ },
+ "c": {
+  "name": "greythatch",
+  "color": "#8e8a78"
+ },
+ "d": {
+  "name": "mosshatch",
+  "color": "#7f8a54"
+ }
+}

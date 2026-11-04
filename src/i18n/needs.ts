@@ -52,7 +52,7 @@ const texts = {
   'needs.by.food': ['No rule yet', 'Aucune règle pour l’instant'],
   'needs.by.safety': ['Fire station, police station', 'Caserne de pompiers, commissariat'],
   'needs.by.health': ['Hospital', 'Hôpital'],
-  'needs.by.pollution': ['Distance from running coal plants', 'Éloignement des centrales à charbon en marche'],
+  'needs.by.pollution': ['Distance from running coal plants and Incinerators, and from Mounds (Odor)', 'Éloignement des centrales à charbon en marche, des incinérateurs et des décharges (odeurs)'],
   'needs.by.congestion': ['Road capacity, public transport', 'Capacité des routes, transports en commun'],
   'needs.by.climate': ['Green spaces cooling, fewer emissions', 'Fraîcheur des espaces verts, moins d’émissions'],
   'needs.by.culture': ['Theater, concert hall, community hall', 'Théâtre, salle de concert, salle communale'],

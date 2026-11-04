@@ -1,0 +1,104 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "home",
+  "section": "build.housing",
+  "cost": 200,
+  "unlockCitizens": 50,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt", "pedestrianWay"],
+  "name": {
+    "en": "Colonial Pastel House",
+    "fr": "Maison coloniale pastel"
+  },
+  "description": {
+    "en": "A brightly painted colonial house of Cartagena, with a tile roof, a tall arched door, shuttered windows and long wooden balconies with flowers. Houses Citizens who generate Tax. Each upgrade adds a floor, with more population and utility Demand. Comes in four colors.",
+    "fr": "Une maison coloniale de Carthagène aux couleurs vives, avec un toit de tuiles, une grande porte en arc, des fenêtres à volets et de longs balcons de bois fleuris. Accueille des habitants qui génèrent des impôts. Chaque amélioration ajoute un étage, avec plus d’habitants et de besoins en eau et en électricité. Existe en quatre couleurs."
+  },
+  "tiers": [
+    {
+      "model": "buildings-house-1x1-1f-colonial-a",
+      "footprint": [1, 1],
+      "citizens": 6,
+      "power": 1,
+      "water": 1
+    },
+    {
+      "model": "buildings-house-1x1-2f-colonial-a",
+      "citizens": 15,
+      "power": 2,
+      "water": 2,
+      "upgradeCost": {
+        "urbs": 150,
+        "goods": {
+          "planks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-1x1-3f-colonial-a",
+      "citizens": 32,
+      "power": 3,
+      "water": 3,
+      "upgradeCost": {
+        "urbs": 400,
+        "goods": {
+          "bricks": 4,
+          "planks": 2
+        }
+      }
+    },
+    {
+      "model": "buildings-house-1x1-4f-colonial-a",
+      "citizens": 60,
+      "power": 6,
+      "water": 6,
+      "upgradeCost": {
+        "urbs": 1000,
+        "goods": {
+          "tiles": 4,
+          "bricks": 3
+        }
+      }
+    },
+    {
+      "model": "buildings-house-1x1-5f-colonial-a",
+      "citizens": 100,
+      "power": 10,
+      "water": 10,
+      "upgradeCost": {
+        "urbs": 2500,
+        "goods": {
+          "tools": 4,
+          "tiles": 3
+        }
+      }
+    }
+  ],
+  "housingRegion": "americas",
+  "solarPanels": {
+    "cost": 300,
+    "unlockCitizens": 200,
+    "output": 2.5
+  },
+  "variants": {
+    "solar": {
+      "tiers": [
+        {
+          "model": "buildings-house-1x1-1f-colonial-a-solar"
+        },
+        {
+          "model": "buildings-house-1x1-2f-colonial-a-solar"
+        },
+        {
+          "model": "buildings-house-1x1-3f-colonial-a-solar"
+        },
+        {
+          "model": "buildings-house-1x1-4f-colonial-a-solar"
+        },
+        {
+          "model": "buildings-house-1x1-5f-colonial-a-solar"
+        }
+      ]
+    }
+  }
+}

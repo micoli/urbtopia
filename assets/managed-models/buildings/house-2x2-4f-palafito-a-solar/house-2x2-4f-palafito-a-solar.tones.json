@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "honey",
+  "color": "#d9a85c"
+ },
+ "b": {
+  "name": "dalablue",
+  "color": "#6a8aa3"
+ },
+ "c": {
+  "name": "redclay",
+  "color": "#b5573a"
+ },
+ "d": {
+  "name": "turquoise",
+  "color": "#2aa7b5"
+ }
+}

@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "plaster",
+  "color": "#efe4cc"
+ },
+ "b": {
+  "name": "whitewash",
+  "color": "#f6f3ec"
+ },
+ "c": {
+  "name": "ochre",
+  "color": "#d9b878"
+ },
+ "d": {
+  "name": "cream",
+  "color": "#fff1d6"
+ }
+}
