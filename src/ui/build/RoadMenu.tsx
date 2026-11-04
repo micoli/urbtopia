@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { BRIDGES, ROAD_TIER_COSTS, TRANSIT, WATER, totalCitizens } from '../../core';
+import { BRIDGES, PEDESTRIAN_ACCESS_COST, type NetworkMode, ROAD_TIER_COSTS, SURFACE, TRANSIT, WATER, totalCitizens, undergroundUnlocked, walkwayCostPerTile } from '../../core';
 import { t } from '../../i18n/t';
 import type { Tool } from '../../tools/tools';
 import type { MessageKey } from '../../i18n/messages';
@@ -15,7 +15,7 @@ import { BridgeTools } from './BridgeTools';
 import { SectionDemolishButton } from './SectionDemolishButton';
 import { WaterTools } from './WaterTools';
 
-type RoadSection = 'road' | 'pedestrian' | 'brt' | 'rail' | 'water' | 'maritimeBridges' | 'roadBridges';
+type RoadSection = 'road' | 'pedestrian' | 'brt' | 'rail' | 'water' | 'maritimeBridges' | 'roadBridges' | 'underground';
 
 interface RoadItem {
   label: string;
@@ -32,9 +32,10 @@ const SECTION_TITLES: Record<RoadSection, MessageKey> = {
   water: 'roads.section.water',
   maritimeBridges: 'roads.section.maritimeBridges',
   roadBridges: 'roads.section.roadBridges',
+  underground: 'roads.section.underground',
 };
 
-const demolishRoad = (mode?: 'brt' | 'rail'): Tool => ({ kind: 'demolishRoad', ...(mode ? { mode } : {}), start: null, horizontalFirst: true });
+const demolishRoad = (mode?: NetworkMode): Tool => ({ kind: 'demolishRoad', ...(mode ? { mode } : {}), start: null, horizontalFirst: true });
 
 const constructionItem = (id: 'pedestrianWay' | 'brt' | 'rail'): RoadItem => {
   const construction = ROAD_CONSTRUCTIONS.find(item => item.id === id)!;
@@ -45,6 +46,8 @@ export function RoadMenu() {
   const citizens = useGame(store => totalCitizens(store.state));
   const hasWater = useGame(store => (store.state.waterTiles ?? []).length > 0);
   const hasBridge = useGame(store => (store.state.bridges ?? []).length > 0);
+  const undergroundOpen = useGame(store => undergroundUnlocked(store.state));
+  const level = useUi(store => store.level);
   const chooseTool = useUi(store => store.chooseTool);
   const openCodex = useUi(store => store.openCodex);
   const pickStreetView = useUi(store => store.pickStreetView);
@@ -79,12 +82,24 @@ export function RoadMenu() {
       { id: 'roadBridges' as const, content: <BridgeTools variant="road" />, demolish: removeBridge },
     ] : []),
   ];
-  const activeSection = openSection === null || sections.some(section => section.id === openSection) ? openSection : 'road';
+  const undergroundItems: RoadItem[] = level === SURFACE
+    ? [{ label: t('tool.pedestrianAccess'), cost: <UrbsAmount value={PEDESTRIAN_ACCESS_COST} />, tool: { kind: 'pedestrianAccess' } }]
+    : level === -1
+      ? [{ label: t('tool.walkway'), cost: `${walkwayCostPerTile()} ${t('tool.perTile')}`, tool: { kind: 'walkway', start: null, horizontalFirst: true } }]
+      : [{ label: t('tool.metro'), cost: `${TRANSIT.metro.tileCost} ${t('tool.perTile')}`, tool: { kind: 'road', mode: 'metro', start: null, horizontalFirst: true } }];
+  const undergroundDemolish = level === SURFACE
+    ? { label: t('tool.demolishPedestrianAccess'), tool: { kind: 'demolishPedestrianAccess' } as Tool }
+    : level === -1
+      ? { label: t('tool.demolishWalkway'), tool: { kind: 'demolishWalkway', start: null, horizontalFirst: true } as Tool }
+      : { label: t('tool.demolishMetro'), tool: demolishRoad('metro') };
+  const undergroundSection = undergroundOpen ? [{ id: 'underground' as const, items: undergroundItems, demolish: undergroundDemolish }] : [];
+  const visibleSections: typeof sections = level === SURFACE ? [...sections, ...undergroundSection] : undergroundSection;
+  const activeSection = openSection === null || visibleSections.some(section => section.id === openSection) ? openSection : visibleSections[0]?.id ?? null;
 
   return (
     <>
-      <FlyoutItem label={t('dock.streetView')} icon="street-view.svg" onChoose={pickStreetView} />
-      {sections.map(({ id, items, content, demolish }) => (
+      {level === SURFACE ? <FlyoutItem label={t('dock.streetView')} icon="street-view.svg" onChoose={pickStreetView} /> : null}
+      {visibleSections.map(({ id, items, content, demolish }) => (
         <AccordionSection
           key={id}
           id={`roads-${id}`}

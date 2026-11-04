@@ -162,6 +162,11 @@ export interface RoadTile extends Coord {
   tier?: number;
 }
 
+// A stair down to Level -1; its open front turns towards `rotation`, as a building does, or towards the walking surface it stands against.
+export interface PedestrianAccess extends Coord {
+  rotation?: Rotation;
+}
+
 export interface PedestrianWayTile extends Coord {
   tier?: number;
 }
@@ -172,7 +177,9 @@ export interface BusLine {
   loop?: boolean;
 }
 
-export type TransitMode = 'bus' | 'brt' | 'rail';
+// The modes that run on a network of their own: BRT corridor, Railway, and the Tunnels of Level -2 for the Metro.
+export type NetworkMode = 'brt' | 'rail' | 'metro';
+export type TransitMode = 'bus' | NetworkMode;
 export type TransitVehicleKind = FleetVehicleId;
 export interface TransitVehicle {
   id: number;
@@ -181,7 +188,7 @@ export interface TransitVehicle {
   lineId?: number;
 }
 export interface TransitLine extends BusLine {
-  mode: 'brt' | 'rail';
+  mode: NetworkMode;
   peakHeadway: number;
   offPeakHeadway: number;
 }
@@ -254,6 +261,12 @@ export interface GameState {
   market: Partial<Record<GoodId, MarketPrice>>;
   roads: RoadTile[];
   pedestrianWays?: PedestrianWayTile[];
+  // Level -1: Underground walkways. They lie under anything on the Surface and never occupy a Surface tile.
+  walkways?: Coord[];
+  // Surface tiles holding a stair down to Level -1.
+  pedestrianAccesses?: PedestrianAccess[];
+  // Level -2: Tunnels of the Metro, drawn like rails with their exits.
+  tunnels?: TransitTile[];
   roundabouts: Coord[];
   tutorial: TutorialStep | null;
   // Absent: not started. null: finished or skipped.

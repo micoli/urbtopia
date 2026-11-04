@@ -12,7 +12,7 @@ const MAX_TRANSFER_WALK = 2;
 const STOP_DWELL_MINUTES = 0.5;
 
 // The stops that extend reach; ordinary Bus stops never do.
-export const TRANSIT_REACH_STOP_TYPES = ['brtStation', 'railStation', 'transitHub'] as const;
+export const TRANSIT_REACH_STOP_TYPES = ['brtStation', 'railStation', 'metroStation', 'transitHub'] as const;
 
 export interface TransitLink {
   facilityStopId: number;

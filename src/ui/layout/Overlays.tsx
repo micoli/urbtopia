@@ -40,6 +40,7 @@ import { AnalyticsReadout } from '../analytics/AnalyticsReadout';
 export function Overlays() {
   const streetView = useUi((store) => store.streetView);
   const analytics = useUi((store) => store.analyticsLayer !== null);
+  const underground = useUi((store) => store.level !== 0);
   return (
     <>
       <CityManagement />
@@ -57,7 +58,7 @@ export function Overlays() {
       <AdvisorWindow />
       <AdvisorDownloadConfirm />
       <ChallengeSuccessOverlay />
-      {streetView || analytics ? null : <FloatingBadges />}
+      {streetView || analytics || underground ? null : <FloatingBadges />}
       {analytics ? <LocatorArrow /> : null}
       <ConfirmPad />
       <ReadOnlyBanner />

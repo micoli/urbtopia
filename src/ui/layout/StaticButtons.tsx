@@ -2,10 +2,12 @@ import { t } from '../../i18n/t';
 import { sceneHandle } from '../../store/sceneHandle';
 import { IconButton } from '../common/IconButton';
 import { Icon } from '../common/Icon';
+import { LevelSelector } from './LevelSelector';
 
 export function StaticButtons() {
   return (
     <div className="camera-buttons">
+      <LevelSelector />
       <IconButton size="md" tone="light" label={t('camera.rotateLeft')} onClick={() => sceneHandle.current?.camera.rotate(-1)}>
         <Icon name="rotateLeft" />
       </IconButton>

@@ -1,9 +1,9 @@
 import { createStore } from 'zustand/vanilla';
-import { bridgeAt, footprintTiles, isInfrastructureBridge, nextFront, type AnalyticsLayerId, type Coord, type CropId, type Rotation, type ServiceCategory } from '../core';
+import { SURFACE, levelOfLayer, pedestrianAccessesOf, bridgeAt, footprintTiles, isInfrastructureBridge, levelAbove, levelBelow, levelUnlocked, nextFront, type AnalyticsLayerId, type Coord, type CropId, type Level, type Rotation, type ServiceCategory } from '../core';
 import { readAnalyticsCategory, readAnalyticsLayer, writeAnalyticsCategory, writeAnalyticsLayer } from '../ui/analytics/analyticsLayerPref';
 import { prefsStore } from '../i18n/prefsStore';
 import { aimTile, type PointerKind } from '../tools/aim';
-import { confirmTool, evaluateTool, extendBrush, isPathTool, selectionGhost, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
+import { confirmTool, evaluateTool, extendBrush, isPathTool, selectionGhost, toolLevel, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
 import { defaultSocialTab } from '../social/defaultSocialTab';
 import { cloudStore } from './cloudStore';
 import { gameStore } from './gameStore';
@@ -23,6 +23,9 @@ export type SocialTab = 'friends' | 'groups' | 'exchanges' | 'hall' | 'profile';
 export type SettingsTab = 'game' | 'display' | 'saves' | 'app';
 
 export interface UiStore {
+  level: Level;
+  setLevel: (level: Level) => void;
+  stepLevel: (direction: 1 | -1) => void;
   tool: Tool | null;
   rotation: Rotation | null;
   centerTile: Coord;
@@ -30,6 +33,9 @@ export interface UiStore {
   hovered: Coord | null;
   pinnedTile: Coord | null;
   selectedBuildingId: number | null;
+  // A Pedestrian access picked on the Surface, to turn, move or demolish.
+  selectedAccess: Coord | null;
+  moveSelectedAccess: () => void;
   flyout: Flyout;
   statsOpen: boolean;
   toggleStats: () => void;
@@ -135,7 +141,7 @@ function evaluate(tool: Tool | null, tile: Coord, rotation: Rotation | null): Ev
 // One window at a time: opening a window, or a flyout menu, closes the others.
 const NO_WINDOW_OPEN = { statsOpen: false, politicsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false } as const;
 // The settings window is modal, so opening it also closes the panels around the map.
-const WINDOWS_CLOSED = { ...NO_WINDOW_OPEN, serviceCoverageOpen: false, buildingSearchOpen: false, flyout: null, selectedBuildingId: null } as const;
+const WINDOWS_CLOSED = { ...NO_WINDOW_OPEN, serviceCoverageOpen: false, buildingSearchOpen: false, flyout: null, selectedBuildingId: null, selectedAccess: null } as const;
 
 export const uiStore = createStore<UiStore>((set, get) => {
   const reevaluate = (patch: Partial<Pick<UiStore, 'tool' | 'rotation' | 'centerTile' | 'pointerKind' | 'hovered' | 'pinnedTile'>> = {}) => {
@@ -156,15 +162,26 @@ export const uiStore = createStore<UiStore>((set, get) => {
     locatorTimer = setTimeout(() => set({ locator: null }), LOCATOR_DURATION_MS);
   };
   let grabOffset: Coord = { x: 0, y: 0 };
-  const startMove = (tool: Extract<Tool, { kind: 'move' | 'moveBridge' }>, tile: Coord) => {
+  const startMove = (tool: Extract<Tool, { kind: 'move' | 'moveBridge' | 'movePedestrianAccess' }>, tile: Coord) => {
     grabOffset = { x: 0, y: 0 };
-    set({ selectedBuildingId: null });
+    set({ selectedBuildingId: null, selectedAccess: null });
     sceneHandle.current?.focusOnTile(tile);
     reevaluate({ tool, rotation: null, centerTile: tile, hovered: null, pinnedTile: null });
   };
   let stopWaitingForSignIn = () => {};
 
   return {
+    level: SURFACE,
+    setLevel: (level) => {
+      if (level === get().level) return;
+      if (!levelUnlocked(gameStore.getState().state, level)) return;
+      get().cancelTool();
+      set({ level, flyout: null, selectedBuildingId: null, moveMode: false });
+    },
+    stepLevel: (direction) => {
+      const next = direction === 1 ? levelBelow(get().level) : levelAbove(get().level);
+      if (next !== null) get().setLevel(next);
+    },
     tool: null,
     rotation: null,
     centerTile: INITIAL_CENTER,
@@ -172,6 +189,11 @@ export const uiStore = createStore<UiStore>((set, get) => {
     hovered: null,
     pinnedTile: null,
     selectedBuildingId: null,
+    selectedAccess: null,
+    moveSelectedAccess: () => {
+      const access = get().selectedAccess;
+      if (access) startMove({ kind: 'movePedestrianAccess', from: access }, access);
+    },
     flyout: null,
     statsOpen: false,
     lineToEdit: null,
@@ -247,6 +269,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     analyticsBuildingId: null,
     enterAnalytics: (layer, category = get().analyticsCategory) => {
       get().cancelTool();
+      get().setLevel(levelOfLayer(layer));
       writeAnalyticsLayer(layer);
       writeAnalyticsCategory(category);
       set({ analyticsLayer: layer, lastAnalyticsLayer: layer, analyticsCategory: category, analyticsProbe: null, analyticsBuildingId: null, flyout: null, selectedBuildingId: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false });
@@ -258,6 +281,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     exitAnalytics: () => {
       const { analyticsLayer, analyticsBuildingId } = get();
       const kept = analyticsLayer === 'movement.flows' && gameStore.getState().state.buildings.some((building) => building.id === analyticsBuildingId) ? analyticsBuildingId : null;
+      get().setLevel(SURFACE);
       set({ analyticsLayer: null, analyticsProbe: null, analyticsBuildingId: null, selectedBuildingId: kept });
     },
     streetView: false,
@@ -265,6 +289,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     pickStreetView: () => {
       if (get().streetViewPicking) return get().cancelPickStreetView();
       get().cancelTool();
+      get().setLevel(SURFACE);
       set({ streetViewPicking: true, flyout: null, statsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false, selectedBuildingId: null });
     },
     cancelPickStreetView: () => set({ streetViewPicking: false }),
@@ -306,7 +331,8 @@ export const uiStore = createStore<UiStore>((set, get) => {
       set(opening ? { ...NO_WINDOW_OPEN, marketOpen: true, flyout: null } : { marketOpen: false, flyout: null });
     },
     chooseTool: (tool) => {
-      set({ flyout: null, selectedBuildingId: null });
+      if (toolLevel(tool) !== get().level) return;
+      set({ flyout: null, selectedBuildingId: null, selectedAccess: null });
       reevaluate({ tool, rotation: null, pinnedTile: null });
     },
     cancelTool: () => reevaluate({ tool: null, rotation: null, pinnedTile: null }),
@@ -384,16 +410,20 @@ export const uiStore = createStore<UiStore>((set, get) => {
       if (get().analyticsLayer === 'movement.flows') return set({ analyticsBuildingId: buildingId ?? building?.id ?? null });
       if (get().analyticsLayer) return set({ analyticsProbe: tile });
       if (get().tool) return;
+      if (get().level !== SURFACE) return;
       if (get().moveMode) {
         const movedId = buildingId ?? building?.id ?? null;
         if (movedId !== null) return startMove({ kind: 'move', buildingId: movedId }, tile);
         const bridge = bridgeAt(state, tile);
         if (bridge && isInfrastructureBridge(bridge)) return startMove({ kind: 'moveBridge', bridge }, tile);
+        if (pedestrianAccessesOf(state).some((access) => access.x === tile.x && access.y === tile.y)) return startMove({ kind: 'movePedestrianAccess', from: tile }, tile);
         return;
       }
-      set({ selectedBuildingId: buildingId ?? building?.id ?? null, flyout: null });
+      const access = building || buildingId !== null ? undefined : pedestrianAccessesOf(state).find((candidate) => candidate.x === tile.x && candidate.y === tile.y);
+      if (access) return set({ selectedAccess: { x: access.x, y: access.y }, selectedBuildingId: null, flyout: null });
+      set({ selectedBuildingId: buildingId ?? building?.id ?? null, selectedAccess: null, flyout: null });
     },
-    select: (id) => set({ selectedBuildingId: id }),
+    select: (id) => set({ selectedBuildingId: id, selectedAccess: null }),
     sellSelected: () => {
       const id = get().selectedBuildingId;
       if (id === null) return;
@@ -433,7 +463,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     moveMode: false,
     toggleMoveMode: () => {
       const { moveMode, tool } = get();
-      if (moveMode && (tool?.kind === 'move' || tool?.kind === 'moveBridge')) get().cancelTool();
+      if (moveMode && (tool?.kind === 'move' || tool?.kind === 'moveBridge' || tool?.kind === 'movePedestrianAccess')) get().cancelTool();
       set({ moveMode: !moveMode, selectedBuildingId: null, flyout: null });
     },
   };

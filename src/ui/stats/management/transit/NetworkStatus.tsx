@@ -5,7 +5,7 @@ import { ActionButton } from '../../../common/ActionButton.tsx';
 import { useGame } from '../../../common/hooks.ts';
 import { Icon } from '../../../common/Icon';
 
-const NETWORK_MODES = ['brt', 'rail'] as const;
+const NETWORK_MODES = ['brt', 'rail', 'metro'] as const;
 
 export function NetworkStatus({ transport }: { transport: ReturnType<typeof transportStats> }) {
   const state = useGame(s => s.state);

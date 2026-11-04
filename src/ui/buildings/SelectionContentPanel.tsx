@@ -8,11 +8,15 @@ import { BuildingHelp } from './BuildingHelp';
 import { BuildingIcon } from './BuildingIcon';
 import { BuildingModifications } from './BuildingModifications';
 import { BuildingUsage } from './BuildingUsage';
+import { AccessPanel } from './AccessPanel';
+import { useSelectedAccess } from './useSelectedAccess';
 
 export function SelectionContentPanel() {
   const building = useSelectedBuilding();
   const select = useUi((store) => store.select);
   const debug = useStore(prefsStore, (store) => store.debug);
+  const access = useSelectedAccess();
+  if (!building && access) return <AccessPanel />;
   if (!building) return null;
 
   return (

@@ -3,7 +3,7 @@ import type { ModelLibrary } from './modelLibrary';
 import { TRAIN_MODELS } from './renderItems';
 import * as THREE from 'three';
 import { modelFileOf } from '../core/models/modelFiles';
-import { FLEET_VEHICLES, tileKey, type GameState, type TransitVehicleKind } from '../core';
+import { FLEET_VEHICLES, tileKey, type GameState, type NetworkMode, type TransitVehicleKind } from '../core';
 import type { transitServices } from '../core/transit/transitService';
 
 type Service = ReturnType<typeof transitServices>[number];
@@ -11,15 +11,17 @@ type Service = ReturnType<typeof transitServices>[number];
 // A vehicle is two cars of 0.65 tile times its size, so the vehicles of one line are spread at least this far apart along the route.
 export const VEHICLE_SPACING = 1.65;
 // How much bigger than a bus a vehicle of each mode is drawn, and how far to the side it runs on a shared track.
-export const MODE_LOOK = { rail: { size: 1.8, lane: 0.22 }, brt: { size: 1, lane: 0.16 } } as const;
+export const MODE_LOOK = { rail: { size: 1.8, lane: 0.22 }, brt: { size: 1, lane: 0.16 }, metro: { size: 0.96, lane: 0 } } as const;
 
 // Distance between the centres of two cars of a vehicle, for a bus-sized one: a car is 0.65 tile long.
 const CAR_PITCH = 0.7;
+// A Metro car runs on the rails of its Tunnel, on the flat top of the lower half of the tube.
+const METRO_DECK = 0.27;
 
 const VEHICLE_MODELS = Object.fromEntries(FLEET_VEHICLES.map(({ id, models }) => [id, models.map(modelFileOf)])) as Record<TransitVehicleKind, string[]>;
 
 // Vehicles of one line are evenly spread along it; the ones that do not fit at the minimum spacing stay out of the picture.
-export function slotOf(service: Pick<Service, 'route' | 'loop' | 'operatingVehicleIds'> & { mode: 'rail' | 'brt' }, vehicleId: number): { phase: number; hidden: boolean } {
+export function slotOf(service: Pick<Service, 'route' | 'loop' | 'operatingVehicleIds'> & { mode: NetworkMode }, vehicleId: number): { phase: number; hidden: boolean } {
   const cycle = (service.loop ? 1 : 2) * Math.max(0, (service.route?.length ?? 0) - 1);
   const slots = Math.max(1, Math.min(service.operatingVehicleIds.length, Math.floor(cycle / (VEHICLE_SPACING * MODE_LOOK[service.mode].size))));
   const order = Math.max(0, service.operatingVehicleIds.indexOf(vehicleId));
@@ -61,10 +63,12 @@ export class TransitLayer {
   readonly priorityTiles = new Set<string>();
   private tracks = new THREE.Group();
   private vehicles = new THREE.Group();
+  // Metro vehicles run under the Surface: they are drawn on Level -2 only, so they sit apart from the root that Surface Levels hide.
+  readonly metroRoot = new THREE.Group();
   private trackInputs: { brtRoads: GameState['brtRoads']; rails: GameState['rails']; roads: GameState['roads'] } | null = null;
   private trackSignature = '';
   private fleetSignature = '';
-  private moving: { mesh: THREE.Group; route: { x: number; y: number }[]; loop: boolean; phase: number; speed: number; brt: boolean; kind: TransitVehicleKind; hidden: boolean; lane: number; pitch: number }[] = [];
+  private moving: { mesh: THREE.Group; route: { x: number; y: number }[]; loop: boolean; phase: number; speed: number; brt: boolean; metro: boolean; kind: TransitVehicleKind; hidden: boolean; lane: number; pitch: number }[] = [];
   private disposed = false;
   private modelsReady = false;
   private crossings = new Set<string>();
@@ -91,17 +95,17 @@ export class TransitLayer {
     this.trackInputs = { brtRoads: state.brtRoads, rails: state.rails, roads: state.roads };
     const fleetSignature = JSON.stringify([state.transitFleet, services.filter(l => l.mode !== 'bus').map(l => [l.id, l.active, l.loop, l.route, l.operatingVehicleIds])]);
     if (fleetSignature === this.fleetSignature) return;
-    this.fleetSignature = fleetSignature; this.clear(this.vehicles); this.moving = []; this.priorityTiles.clear();
+    this.fleetSignature = fleetSignature; this.clear(this.vehicles); this.clear(this.metroRoot); this.moving = []; this.priorityTiles.clear();
     for (const vehicle of state.transitFleet ?? []) {
       const service = services.find(l => l.id === vehicle.lineId);
       if (!service?.active || !service.route || !service.operatingVehicleIds.includes(vehicle.id)) continue;
       const mesh = new THREE.Group();
       mesh.add(this.makeVehicle(vehicle.kind));
-      const look = MODE_LOOK[service.mode as 'rail' | 'brt'];
-      const { phase, hidden } = slotOf({ ...service, mode: service.mode as 'rail' | 'brt' }, vehicle.id);
+      const look = MODE_LOOK[service.mode as NetworkMode];
+      const { phase, hidden } = slotOf({ ...service, mode: service.mode as NetworkMode }, vehicle.id);
       mesh.visible = !hidden;
-      this.vehicles.add(mesh);
-      this.moving.push({ mesh, route: service.route, loop: !!service.loop, phase, hidden, speed: service.mode === 'rail' ? 2 : 1.5, brt: service.mode === 'brt', kind: vehicle.kind, lane: look.lane, pitch: CAR_PITCH * look.size });
+      (service.mode === 'metro' ? this.metroRoot : this.vehicles).add(mesh);
+      this.moving.push({ mesh, route: service.route, loop: !!service.loop, phase, hidden, speed: service.mode === 'rail' || service.mode === 'metro' ? 2 : 1.5, brt: service.mode === 'brt', metro: service.mode === 'metro', kind: vehicle.kind, lane: look.lane, pitch: CAR_PITCH * look.size });
     }
     this.update(0);
   }
@@ -122,7 +126,7 @@ export class TransitLayer {
         const pose = poseAlong(vehicle.route, vehicle.loop, vehicle.phase + vehicle.pitch * (0.5 - index));
         const car = cars[index];
         if (car) {
-          car.position.set(pose.x + Math.cos(pose.yaw) * side, .12 + this.elevation(pose.x, pose.z, pose.from, pose.to), pose.z - Math.sin(pose.yaw) * side);
+          car.position.set(pose.x + Math.cos(pose.yaw) * side, (vehicle.metro ? METRO_DECK : .12) + this.elevation(pose.x, pose.z, pose.from, pose.to), pose.z - Math.sin(pose.yaw) * side);
           car.rotation.order = 'YXZ';
           car.rotation.set(bridgePitch(this.elevation, pose.x, pose.z, pose.yaw, pose.from, pose.to), pose.yaw, 0);
         }
@@ -131,7 +135,7 @@ export class TransitLayer {
     }
   }
 
-  dispose() { this.disposed = true; this.clear(this.tracks); this.clear(this.vehicles); this.priorityTiles.clear(); }
+  dispose() { this.disposed = true; this.clear(this.tracks); this.clear(this.vehicles); this.clear(this.metroRoot); this.priorityTiles.clear(); }
 
   private compactTracks() {
     const groups = new Map<string, THREE.Mesh[]>();

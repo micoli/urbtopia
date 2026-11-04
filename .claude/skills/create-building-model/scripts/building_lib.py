@@ -2806,6 +2806,275 @@ def build_station(spec, out_dir):
     return export_model(ob, spec, out_dir)
 
 
+def build_metro_station(spec, out_dir):
+    """A Metro station filling its 2x1 cell, as a street stair entrance: a low stone curb around an open stairwell, six steps going down to a dark floor with a yellow nosing each, black iron railings (posts, rails and balusters) along both sides and the back of the opening, the front left open, and a pole at each front corner carrying a round sign with a "METRO" bar and, on the left pole, an "ENTRANCE" plate."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    mint, dark, slab, frame, white, navy, sun, wood = (index(n) for n in ("uroof", "udark", "uslab", "uframe", "white", "navy", "sun", "uwood"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = []
+    pad_h = 0.05
+    pad_d, cy = 0.96, 0.0
+    hole_w, hole_d, hole_cy = 1.0, 0.6, 0.06
+    hx0, hx1 = -hole_w / 2, hole_w / 2
+    hy0, hy1 = hole_cy - hole_d / 2, hole_cy + hole_d / 2
+    py0, py1 = cy - pad_d / 2, cy + pad_d / 2
+    curb_w = 0.07
+    ring = [("left", hx0 - curb_w, hx0, hy0 - curb_w, hy1 + curb_w), ("right", hx1, hx1 + curb_w, hy0 - curb_w, hy1 + curb_w), ("front", hx0, hx1, hy0 - curb_w, hy0), ("back", hx0, hx1, hy1, hy1 + curb_w)]
+    for name, x0, x1, y0, y1 in ring:
+        parts.append(lpm.box(f"curb_{name}", (x1 - x0, y1 - y0, pad_h), at=((x0 + x1) / 2, (y0 + y1) / 2, 0.0), color=slab))
+    parts.append(lpm.box("floor", (hole_w, hole_d, 0.006), at=(0, hole_cy, 0.0), color=dark))
+    steps, run = 6, hole_d / 7
+    for number in range(steps):
+        top = pad_h - 0.006 - 0.0075 * number
+        y = hy0 + number * run
+        parts.append(lpm.box(f"step_{number}", (hole_w - 0.02, run, top), at=(0, y + run / 2, 0.0), color=slab))
+        parts.append(lpm.box(f"nosing_{number}", (hole_w - 0.02, 0.014, 0.006), at=(0, y + 0.007, top), color=sun))
+    rail_h, post = 0.17, 0.02
+    top_z = pad_h
+    def railing(name, x0, y0, x1, y1):
+        length = math.hypot(x1 - x0, y1 - y0)
+        along_x = abs(x1 - x0) >= abs(y1 - y0)
+        count = max(2, round(length / 0.22) + 1)
+        for number in range(count):
+            t = number / (count - 1)
+            px, py = x0 + (x1 - x0) * t, y0 + (y1 - y0) * t
+            parts.append(lpm.box(f"{name}_post_{number}", (post, post, rail_h + 0.02), at=(px, py, top_z), color=dark))
+        mid_x, mid_y = (x0 + x1) / 2, (y0 + y1) / 2
+        size = (length, 0.014, 0.014) if along_x else (0.014, length, 0.014)
+        parts.append(lpm.box(f"{name}_rail_top", size, at=(mid_x, mid_y, top_z + rail_h), color=dark))
+        parts.append(lpm.box(f"{name}_rail_bottom", size, at=(mid_x, mid_y, top_z + 0.03), color=dark))
+        bars = max(1, round(length / 0.05))
+        for number in range(bars):
+            t = (number + 0.5) / bars
+            bx, by = x0 + (x1 - x0) * t, y0 + (y1 - y0) * t
+            parts.append(lpm.box(f"{name}_bar_{number}", (0.006, 0.006, rail_h - 0.03), at=(bx, by, top_z + 0.03), color=dark))
+    inset = 0.02
+    railing("rail_left", hx0 - inset, hy0, hx0 - inset, hy1 + inset)
+    railing("rail_right", hx1 + inset, hy0, hx1 + inset, hy1 + inset)
+    railing("rail_back", hx0 - inset, hy1 + inset, hx1 + inset, hy1 + inset)
+    board_x, board_y = hx0 - inset - 0.02, hy0 + 0.1
+    parts.append(lpm.box("board", (0.014, 0.16, 0.2), at=(board_x, board_y, top_z + 0.02), color=wood))
+    for number, side in enumerate((-1, 1)):
+        pole_x, pole_y = side * (hole_w / 2 + 0.3), py0 + 0.04
+        parts.append(lpm.prism(f"pole_{number}", 8, 0.014, 0.58 + pad_h, at=(pole_x, pole_y, 0.0), color=dark))
+        radius = 0.115
+        sign_z = top_z + 0.5
+        parts.append(disc(f"roundel_{number}", pole_x, pole_y - 0.025, sign_z, radius, 0.012, mint))
+        parts.append(disc(f"roundel_{number}_face", pole_x, pole_y - 0.033, sign_z, radius - 0.03, 0.006, white))
+        parts.append(lpm.box(f"bar_{number}", (0.34, 0.012, 0.05), at=(pole_x, pole_y - 0.04, sign_z - 0.025), color=navy))
+        parts.append(glyph_decal({"cfg": cfg}, f"bar_{number}_text", "front", "METRO", pole_x, sign_z - 0.025 + 0.0075, 0.035, white, -(pole_y - 0.04 - 0.006) + 0.003))
+    plate_x, plate_y = -(hole_w / 2 + 0.3), py0 + 0.04
+    parts.append(lpm.box("plate", (0.3, 0.012, 0.07), at=(plate_x, plate_y - 0.03, top_z + 0.3), color=dark))
+    parts.append(glyph_decal({"cfg": cfg}, "plate_text", "front", "ENTRANCE", plate_x, top_z + 0.3 + 0.0175, 0.035, white, -(plate_y - 0.03 - 0.006) + 0.003))
+    ob = lpm.finish(spec["id"], parts, palette, budget=4000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+def build_stair_entrance(spec, out_dir):
+    """A Pedestrian access filling its 1x1 cell: a low stone curb around a small open stairwell, five steps going down to a dark floor with a yellow nosing each, black iron railings on both sides and the back, the front open, and a pole at the front right corner carrying a round sign with a "WALK" bar."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    cfg = STYLES[style]
+    index = PALETTE_NAMES.index
+    mint, dark, slab, white, navy, sun = (index(n) for n in ("uroof", "udark", "uslab", "white", "navy", "sun"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = []
+    curb_h, curb_w = 0.05, 0.06
+    hole_w, hole_d, hole_cy = 0.5, 0.5, 0.08
+    hx0, hx1 = -hole_w / 2, hole_w / 2
+    hy0, hy1 = hole_cy - hole_d / 2, hole_cy + hole_d / 2
+    ring = [("left", hx0 - curb_w, hx0, hy0 - curb_w, hy1 + curb_w), ("right", hx1, hx1 + curb_w, hy0 - curb_w, hy1 + curb_w), ("front", hx0, hx1, hy0 - curb_w, hy0), ("back", hx0, hx1, hy1, hy1 + curb_w)]
+    for name, x0, x1, y0, y1 in ring:
+        parts.append(lpm.box(f"curb_{name}", (x1 - x0, y1 - y0, curb_h), at=((x0 + x1) / 2, (y0 + y1) / 2, 0.0), color=slab))
+    parts.append(lpm.box("floor", (hole_w, hole_d, 0.006), at=(0, hole_cy, 0.0), color=dark))
+    steps, run = 5, hole_d / 6
+    for number in range(steps):
+        top = curb_h - 0.006 - 0.008 * number
+        y = hy0 + number * run
+        parts.append(lpm.box(f"step_{number}", (hole_w - 0.02, run, top), at=(0, y + run / 2, 0.0), color=slab))
+        parts.append(lpm.box(f"nosing_{number}", (hole_w - 0.02, 0.012, 0.006), at=(0, y + 0.006, top), color=sun))
+    rail_h, post = 0.15, 0.018
+    def railing(name, x0, y0, x1, y1):
+        length = math.hypot(x1 - x0, y1 - y0)
+        along_x = abs(x1 - x0) >= abs(y1 - y0)
+        count = max(2, round(length / 0.2) + 1)
+        for number in range(count):
+            t = number / (count - 1)
+            parts.append(lpm.box(f"{name}_post_{number}", (post, post, rail_h + 0.02), at=(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, curb_h), color=dark))
+        size = (length, 0.012, 0.012) if along_x else (0.012, length, 0.012)
+        mid = ((x0 + x1) / 2, (y0 + y1) / 2)
+        parts.append(lpm.box(f"{name}_rail_top", size, at=(mid[0], mid[1], curb_h + rail_h), color=dark))
+        parts.append(lpm.box(f"{name}_rail_bottom", size, at=(mid[0], mid[1], curb_h + 0.03), color=dark))
+        bars = max(1, round(length / 0.05))
+        for number in range(bars):
+            t = (number + 0.5) / bars
+            parts.append(lpm.box(f"{name}_bar_{number}", (0.006, 0.006, rail_h - 0.03), at=(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, curb_h + 0.03), color=dark))
+    inset = 0.02
+    railing("rail_left", hx0 - inset, hy0, hx0 - inset, hy1 + inset)
+    railing("rail_right", hx1 + inset, hy0, hx1 + inset, hy1 + inset)
+    railing("rail_back", hx0 - inset, hy1 + inset, hx1 + inset, hy1 + inset)
+    pole_x, pole_y, sign_z = 0.38, -0.42, 0.42
+    parts.append(lpm.prism("pole", 8, 0.012, 0.46, at=(pole_x, pole_y, 0.0), color=dark))
+    radius = 0.09
+    parts.append(disc("roundel", pole_x, pole_y - 0.02, sign_z, radius, 0.01, mint))
+    parts.append(disc("roundel_face", pole_x, pole_y - 0.027, sign_z, radius - 0.024, 0.005, white))
+    parts.append(lpm.box("bar", (0.26, 0.01, 0.04), at=(pole_x, pole_y - 0.032, sign_z - 0.02), color=navy))
+    parts.append(glyph_decal({"cfg": cfg}, "bar_text", "front", "WALK", pole_x, sign_z - 0.02 + 0.006, 0.028, white, -(pole_y - 0.032 - 0.005) + 0.002))
+    ob = lpm.finish(spec["id"], parts, palette, budget=2500, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+WALKWAY_PIECES = {"square": (), "end": ("E",), "straight": ("W", "E"), "bend": ("W", "S"), "intersection": ("W", "E", "S"), "crossroad": ("N", "E", "S", "W")}
+
+
+def build_walkway_piece(spec, out_dir):
+    """An Underground walkway tile filling its 1x1 cell edge to edge, seen from above with the ceiling cut away: a pale tiled floor with a mint runner towards each open side (`piece` names the sides, as the road pieces do: square, end, straight, bend, intersection, crossroad; the base exits are E, W-E, W-S, W-E-S and all four), a low wall with a mint cap on every closed side, a post at each corner next to a wall and a lamp on the middle of each wall. Game sides map to the model as E +X, W -X, N +Y, S -Y."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    mint, dark, slab, trim, white = (index(n) for n in ("uroof", "udark", "uslab", "utrim", "white"))
+    floor_color = index("uwall")
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    exits = WALKWAY_PIECES[spec["piece"]]
+    vectors = {"E": (1, 0), "W": (-1, 0), "N": (0, 1), "S": (0, -1)}
+    half, wall_t, wall_h, floor_h = 0.5, 0.06, 0.16, 0.04
+    parts = [lpm.box("floor", (1.0, 1.0, floor_h), at=(0, 0, 0.0), color=floor_color)]
+    for number in (-1, 1):
+        parts.append(lpm.box(f"floor_line_x_{number}", (1.0, 0.012, 0.006), at=(0, number * 0.25, floor_h), color=slab))
+        parts.append(lpm.box(f"floor_line_y_{number}", (0.012, 1.0, 0.006), at=(number * 0.25, 0, floor_h), color=slab))
+    runner = 0.2
+    parts.append(lpm.box("runner_center", (runner, runner, 0.008), at=(0, 0, floor_h), color=mint))
+    for side in exits:
+        vx, vy = vectors[side]
+        length = half - runner / 2
+        parts.append(lpm.box(f"runner_{side}", (length if vx else runner, length if vy else runner, 0.008), at=(vx * (runner / 2 + length / 2), vy * (runner / 2 + length / 2), floor_h), color=mint))
+    closed = [side for side in vectors if side not in exits]
+    for side in closed:
+        vx, vy = vectors[side]
+        wx, wy = vx * (half - wall_t / 2), vy * (half - wall_t / 2)
+        size = (wall_t, 1.0, wall_h) if vx else (1.0, wall_t, wall_h)
+        parts.append(lpm.box(f"wall_{side}", size, at=(wx, wy, floor_h), color=trim))
+        cap = (wall_t, 1.0, 0.014) if vx else (1.0, wall_t, 0.014)
+        parts.append(lpm.box(f"wall_{side}_cap", cap, at=(wx, wy, floor_h + wall_h), color=mint))
+        lamp = (0.016, 0.1, 0.02) if vx else (0.1, 0.016, 0.02)
+        parts.append(lpm.box(f"lamp_{side}", lamp, at=(vx * (half - wall_t - 0.01), vy * (half - wall_t - 0.01), floor_h + wall_h * 0.55), color=white))
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            beside = [side for side in closed if (vectors[side][0] == sx) or (vectors[side][1] == sy)]
+            if not beside:
+                continue
+            parts.append(lpm.box(f"post_{sx}_{sy}", (0.08, 0.08, wall_h + 0.03), at=(sx * (half - 0.04), sy * (half - 0.04), floor_h), color=dark))
+    ob = lpm.finish(spec["id"], parts, palette, budget=900, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+def half_disc(radius, z, steps=10):
+    """The lower half of a disc as a closed outline (u, z): the round bottom and the flat top at height `z`."""
+    return [(radius * math.cos(math.pi + math.pi * i / steps), z + radius * math.sin(math.pi + math.pi * i / steps)) for i in range(steps + 1)]
+
+
+def half_ring(outer, inner, z, steps=10):
+    """The upper half of a ring as a closed outline (u, z)."""
+    arc = [(math.cos(math.pi * i / steps), math.sin(math.pi * i / steps)) for i in range(steps + 1)]
+    return [(outer * c, z + outer * n) for c, n in arc] + [(inner * c, z + inner * n) for c, n in reversed(arc)]
+
+
+def along_axis(name, outline, horizontal, start, end, lateral, color):
+    """Extrudes a closed outline (u, z) along X (`horizontal`) or Y from `start` to `end`; `lateral` is the position across the axis."""
+    low, high = min(start, end), max(start, end)
+    if horizontal:
+        return extrude_x(name, [(lateral + u, z) for u, z in outline], low, high, color)
+    return lpm.sweep(name, [(lateral + u, z) for u, z in outline], high - low, at=(0, (low + high) / 2, 0), color=color, axis="y")
+
+
+def half_ball(name, center, radius, color, u=12, v=8):
+    """The lower half of a sphere, closed by its flat top: the solid floor of a tube joint."""
+    bm = bmesh.new()
+    bmesh.ops.create_uvsphere(bm, u_segments=u, v_segments=v, radius=radius)
+    cut = bmesh.ops.bisect_plane(bm, geom=list(bm.verts) + list(bm.edges) + list(bm.faces), plane_co=(0, 0, 0), plane_no=(0, 0, 1), clear_outer=True)
+    edges = [edge for edge in bm.edges if len(edge.link_faces) == 1]
+    bmesh.ops.edgeloop_fill(bm, edges=edges)
+    bmesh.ops.translate(bm, verts=bm.verts, vec=Vector(center))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    return lpm._object(name, bm, color)
+
+
+def ring_sector(center, inner, outer, start, end, steps=8):
+    """A flat sector of a ring around `center` as a closed outline (x, y), between two angles in degrees."""
+    angles = [math.radians(start + (end - start) * i / steps) for i in range(steps + 1)]
+    cx, cy = center
+    return [(cx + outer * math.cos(a), cy + outer * math.sin(a)) for a in angles] + [(cx + inner * math.cos(a), cy + inner * math.sin(a)) for a in reversed(angles)]
+
+
+def build_tunnel_piece(spec, out_dir):
+    """A Metro Tunnel tile filling its 1x1 cell edge to edge, as a tube cut open lengthwise: its lower half is solid, with a dark bed and two rails on the flat top, and its upper half is only arches, so the inside shows. `piece` names the open sides as for the road pieces; a mint flange (half disc and arch) closes each open edge so tubes meet flange to flange, a solid half ball with two crossing arches joins tubes that bend, branch or end. In a bend the two rails are continuous and curved: they run straight from each edge to a quarter circle of radius 0.25 around the corner of the cell. Game sides map to the model as E +X, W -X, N +Y, S -Y."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    mint, dark, wall, frame, wood = (index(n) for n in ("uroof", "udark", "uwall", "uframe", "uwood"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    exits = WALKWAY_PIECES[spec["piece"]]
+    vectors = {"E": (1, 0), "W": (-1, 0), "N": (0, 1), "S": (0, -1)}
+    radius, flange_r, axis_z, arch_t, arch_w, gauge = 0.22, 0.245, 0.25, 0.022, 0.03, 0.08
+    straight = len(exits) == 2 and vectors[exits[0]][0] == -vectors[exits[1]][0] and vectors[exits[0]][1] == -vectors[exits[1]][1]
+    bend = spec["piece"] == "bend"
+    parts = []
+
+    def arch(name, horizontal, position, size, color):
+        outline = half_ring(size, size - arch_t, axis_z)
+        parts.append(along_axis(name, outline, horizontal, position - arch_w / 2, position + arch_w / 2, 0.0, color))
+
+    if not straight:
+        parts.append(half_ball("joint", (0, 0, axis_z), radius + 0.015, wall))
+        parts.append(lpm.prism("joint_bed", 12, radius - 0.02, 0.01, at=(0, 0, axis_z), color=dark))
+        arch("joint_arch_x", True, 0.0, radius + 0.015, wall)
+        arch("joint_arch_y", False, 0.0, radius + 0.015, wall)
+    # The straight part of an arm runs from the edge to `inner` (the whole arm outside a bend).
+    inner = 0.25 if bend else 0.0
+    for side in exits:
+        vx, vy = vectors[side]
+        horizontal = bool(vx)
+        sign = vx or vy
+        parts.append(along_axis(f"tube_{side}", half_disc(radius, axis_z), horizontal, 0.0, sign * 0.5, 0.0, wall))
+        length = 0.5 - inner
+        middle = sign * (inner + length / 2)
+        parts.append(lpm.box(f"bed_{side}", (length, 0.4, 0.01) if horizontal else (0.4, length, 0.01), at=(middle, 0, axis_z) if horizontal else (0, middle, axis_z), color=dark))
+        for lane, offset in enumerate((-gauge, gauge)):
+            size = (length, 0.02, 0.026) if horizontal else (0.02, length, 0.026)
+            at = (middle, offset, axis_z + 0.01) if horizontal else (offset, middle, axis_z + 0.01)
+            parts.append(lpm.box(f"rail_{side}_{lane}", size, at=at, color=frame))
+        for number in range(1, 5):
+            t = 0.1 * number
+            if t < inner:
+                continue
+            size = (0.035, 0.22, 0.012) if horizontal else (0.22, 0.035, 0.012)
+            parts.append(lpm.box(f"sleeper_{side}_{number}", size, at=(vx * t, vy * t, axis_z + 0.01), color=wood))
+        arch(f"arch_{side}", horizontal, sign * (0.3 if bend else 0.25), radius + 0.015, wall)
+        parts.append(along_axis(f"flange_{side}", half_disc(flange_r, axis_z), horizontal, sign * 0.46, sign * 0.5, 0.0, mint))
+        parts.append(along_axis(f"flange_arch_{side}", half_ring(flange_r, flange_r - 0.03, axis_z), horizontal, sign * 0.46, sign * 0.5, 0.0, mint))
+    if bend:
+        corner, turn = (-0.25, -0.25), 0.25
+        parts.append(lpm.sweep("bed_curve", ring_sector(corner, turn - 0.2, turn + 0.2, 0, 90), 0.01, at=(0, 0, axis_z), color=dark, axis="z"))
+        for lane, offset in enumerate((-gauge, gauge)):
+            parts.append(lpm.sweep(f"rail_curve_{lane}", ring_sector(corner, turn + offset - 0.01, turn + offset + 0.01, 0, 90), 0.026, at=(0, 0, axis_z + 0.01), color=frame, axis="z"))
+        for number in range(1, 6):
+            angle = math.radians(90 * number / 6)
+            cx, cy = corner[0] + turn * math.cos(angle), corner[1] + turn * math.sin(angle)
+            parts.append(lpm.sweep(f"sleeper_curve_{number}", ring_sector((corner[0], corner[1]), turn - 0.11, turn + 0.11, math.degrees(angle) - 2.5, math.degrees(angle) + 2.5, steps=1), 0.012, at=(0, 0, axis_z + 0.01), color=wood, axis="z"))
+    if straight:
+        vx, vy = vectors[exits[0]]
+        arch("band_arch", bool(vx), 0.0, flange_r, mint)
+    ob = lpm.finish(spec["id"], parts, palette, budget=2500, center=False)
+    return export_model(ob, spec, out_dir)
+
+
 def parked_bike(parts, name, x, y, frame_color, tire, metal, scale=1.0):
     """A bicycle seen from the front, standing on the ground with its axis along x: two wheels, a frame, a saddle and handlebars, all scaled by `scale`."""
     k = scale

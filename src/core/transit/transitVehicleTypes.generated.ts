@@ -2,10 +2,12 @@
 export type TransitVehicleId =
   | 'brtElectric'
   | 'bus'
+  | 'metroTrain'
   | 'trainCoal'
   | 'trainElectric';
 
 export type FleetVehicleId =
   | 'brtElectric'
+  | 'metroTrain'
   | 'trainCoal'
   | 'trainElectric';

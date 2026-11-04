@@ -35,7 +35,7 @@ export class AnalyticsLayer {
       this.root.visible = false;
       return;
     }
-    const layout = `${state.buildings.length}:${state.roads.length}:${state.pedestrianWays?.length ?? 0}`;
+    const layout = `${state.buildings.length}:${state.roads.length}:${state.pedestrianWays?.length ?? 0}:${state.walkways?.length ?? 0}:${state.tunnels?.length ?? 0}`;
     const elapsed = now - this.builtAt;
     const sameView = this.layer === layer && this.category === category && this.buildingId === buildingId;
     if (sameView && (elapsed < LAYOUT_REFRESH_MS || (layout === this.layout && elapsed < REFRESH_MS))) return;

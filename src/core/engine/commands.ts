@@ -1,6 +1,6 @@
 import type { MatchDecision } from '../clubs/clubTypes';
 import { isBuildableAt } from '../annualEvents/annualEventItems';
-import { TRANSIT, extendNetwork, networkTiles, repairNetwork, validNetworkCrossings } from '../transit/transitNetwork';
+import { NETWORK_KEY, TRANSIT, extendNetwork, networkTiles, repairNetwork, validNetworkCrossings } from '../transit/transitNetwork';
 import { DAY_CYCLE, msUntilCycleHour } from '../environment/dayCycle';
 import { ECOLOGY, ECOLOGY_UNLOCKS, citizenCount } from '../environment/ecology';
 import { canHaveSolarPanels, solarInstallCostOf, solarPanelsCost, solarPanelsUnlockCitizens } from '../environment/solarPanels';
@@ -58,8 +58,9 @@ import { applyTradeEffect, confirmTradeEffect, rollbackTradeEffect, type TradeRe
 import type { TradeEffect, TradeLine } from '../trade/types';
 import type { ChallengeRewardKind } from '../challenges/types';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
+import { buildPedestrianAccess, buildWalkway, demolishPedestrianAccess, demolishWalkways, movePedestrianAccess } from '../underground/walkways';
 import type { BlackjackAction } from '../leisure/blackjack';
-import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, ColorVariant, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
+import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, ColorVariant, NetworkMode, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { colorVariantsOf, isRepaintableType } from '../buildings/paint';
 import { STOP_NAME_MAX_LENGTH, isTransitStopType } from '../transit/stopNames';
@@ -71,10 +72,10 @@ import { officeYieldMultiplierOf } from '../politics/ordinanceEffects';
 const HOUR_MS = 60 * 60 * 1000;
 
 export type Command =
-  | { readonly type: 'BuildTransit'; readonly mode: 'brt' | 'rail'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
-  | { readonly type: 'DemolishTransit'; readonly mode: 'brt' | 'rail'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
-  | { readonly type: 'RepairTransitNetwork'; readonly mode: 'brt' | 'rail' }
-  | { readonly type: 'SetTransitLine'; readonly id?: number; readonly mode: 'brt' | 'rail'; readonly stops: number[]; readonly loop?: boolean; readonly peakHeadway: number; readonly offPeakHeadway: number }
+  | { readonly type: 'BuildTransit'; readonly mode: NetworkMode; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
+  | { readonly type: 'DemolishTransit'; readonly mode: NetworkMode; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
+  | { readonly type: 'RepairTransitNetwork'; readonly mode: NetworkMode }
+  | { readonly type: 'SetTransitLine'; readonly id?: number; readonly mode: NetworkMode; readonly stops: number[]; readonly loop?: boolean; readonly peakHeadway: number; readonly offPeakHeadway: number }
   | { readonly type: 'DeleteTransitLine'; readonly id: number }
   | { readonly type: 'BuyTransitVehicle'; readonly kind: TransitVehicleKind }
   | { readonly type: 'SellTransitVehicle'; readonly id: number }
@@ -85,6 +86,11 @@ export type Command =
   | { readonly type: 'UpgradePedestrianWays'; readonly tiles: readonly Coord[] }
   | { readonly type: 'DemolishPedestrianWay'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishPedestrianWayPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
+  | { readonly type: 'BuildWalkway'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
+  | { readonly type: 'DemolishWalkwayPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
+  | { readonly type: 'BuildPedestrianAccess'; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'MovePedestrianAccess'; readonly from: Coord; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'DemolishPedestrianAccess'; readonly x: number; readonly y: number }
   | { readonly type: 'PlaceCrossing'; readonly x: number; readonly y: number }
   | { readonly type: 'RemoveCrossing'; readonly x: number; readonly y: number }
   | { readonly type: 'PlaceRoundabout'; readonly x: number; readonly y: number }
@@ -244,6 +250,8 @@ export type ErrorKey =
   | 'error.notEnoughUrbs'
   | 'error.lastAccessOfBuilding'
   | 'error.noRoadHere'
+  | 'error.noWalkwayHere'
+  | 'error.accessNeedsPath'
   | 'error.invalidCrossing'
   | 'error.maxRoadTier'
   | 'error.networkIntact'
@@ -332,6 +340,16 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return demolishPedestrianWays(state, [{ x: command.x, y: command.y }]);
     case 'DemolishPedestrianWayPath':
       return demolishPedestrianWays(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
+    case 'BuildWalkway':
+      return buildWalkway(state, command.from, command.to, command.horizontalFirst ?? true);
+    case 'DemolishWalkwayPath':
+      return demolishWalkways(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
+    case 'BuildPedestrianAccess':
+      return buildPedestrianAccess(state, { x: command.x, y: command.y }, command.rotation);
+    case 'MovePedestrianAccess':
+      return movePedestrianAccess(state, command.from, { x: command.x, y: command.y }, command.rotation);
+    case 'DemolishPedestrianAccess':
+      return demolishPedestrianAccess(state, { x: command.x, y: command.y });
     case 'PlaceCrossing':
       return placeCrossing(state, { x: command.x, y: command.y });
     case 'RemoveCrossing':
@@ -713,7 +731,7 @@ function removeBridge(state: GameState, tile: Coord): CommandOutcome {
 function strandsBuilding(before: GameState, after: GameState): boolean {
   const hasAccess = (state: GameState, building: Building) => frontHasAccess(state, building.type, building.x, building.y, building.rotation, building.tier);
   return before.buildings.some(
-    (building) => !['busStop', 'brtStation', 'railStation'].includes(building.type) && BUILDING_SPECS[building.type].requiresRoad && hasAccess(before, building) && !hasAccess(after, building),
+    (building) => !['busStop', 'brtStation', 'railStation', 'metroStation'].includes(building.type) && BUILDING_SPECS[building.type].requiresRoad && hasAccess(before, building) && !hasAccess(after, building),
   );
 }
 
@@ -1186,7 +1204,7 @@ function transitCommand(state: GameState, command: Extract<Command, { type: 'Bui
     const result = extendNetwork(state, command.mode, command.from, command.to, command.horizontalFirst ?? true);
     if ('key' in result) return result;
     if (state.urbs < result.cost) return fail('error.notEnoughUrbs');
-    return { state: { ...state, urbs: state.urbs - result.cost, [command.mode === 'brt' ? 'brtRoads' : 'rails']: result.tiles }, events: [] };
+    return { state: { ...state, urbs: state.urbs - result.cost, [NETWORK_KEY[command.mode]]: result.tiles }, events: [] };
   }
   if (command.type === 'DemolishTransit') {
     if (![command.from.x, command.from.y, command.to.x, command.to.y].every(n => Number.isSafeInteger(n) && n >= 0) || !isInsideOwnedParcels(state, command.from) || !isInsideOwnedParcels(state, command.to)) return fail('error.outsideOwnedParcels');
@@ -1195,7 +1213,7 @@ function transitCommand(state: GameState, command: Extract<Command, { type: 'Bui
     if (kept.length === networkTiles(state, command.mode).length) return fail('error.noRoadHere');
     if (bridgesOf(state).some(bridge => bridgeRamps(bridge).some(ramp => command.mode === (bridge.carrier ?? 'water') && targets.has(tileKey(ramp))))) return fail('error.bridgeTile');
     const tiles = withoutDanglingExits(kept);
-    const next = { ...state, [command.mode === 'brt' ? 'brtRoads' : 'rails']: tiles };
+    const next = { ...state, [NETWORK_KEY[command.mode]]: tiles };
     if (strandsBuilding(state, next)) return fail('error.lastAccessOfBuilding');
     if (bridgeLosesCrossing(next)) return fail('error.bridgeLastCrossing');
     return { state: next, events: [] };
@@ -1203,7 +1221,7 @@ function transitCommand(state: GameState, command: Extract<Command, { type: 'Bui
   if (command.type === 'RepairTransitNetwork') {
     const tiles = repairNetwork(state, command.mode);
     if (!tiles) return fail('error.networkIntact');
-    return { state: { ...state, [command.mode === 'brt' ? 'brtRoads' : 'rails']: tiles }, events: [] };
+    return { state: { ...state, [NETWORK_KEY[command.mode]]: tiles }, events: [] };
   }
   if (command.type === 'DeleteTransitLine') return { state: { ...state, transitLines: lines.filter(l => l.id !== command.id), transitFleet: fleet.map(v => v.lineId === command.id ? { ...v, lineId: undefined } : v) }, events: [] };
   if (command.type === 'SetTransitLine') {

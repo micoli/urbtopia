@@ -1,6 +1,6 @@
 import type { GameState } from '../engine/state';
 import type { AnalyticsLayerId } from './layers';
-import { pedestrianCrossingsField, sidewalkField } from './pedestrianFields';
+import { pedestrianCrossingsField, sidewalkField, walkwayField } from './pedestrianFields';
 import { carsField, congestionField } from './roadFields';
 import { coverageField } from './coverageField';
 import { knowledgeField } from './knowledgeField';
@@ -31,8 +31,10 @@ function fieldsOf(state: GameState, layer: AnalyticsLayerId, category: ServiceCa
     case 'movement.bus': return [transitField(state, 'bus')];
     case 'movement.brt': return [transitField(state, 'brt')];
     case 'movement.rail': return [transitField(state, 'rail')];
+    case 'movement.metro': return [transitField(state, 'metro')];
+    case 'movement.walkways': return [walkwayField(state)];
     case 'movement.pedestrians': return [sidewalkField(state), pedestrianCrossingsField(state)];
-    case 'movement.all': return [carsField(state), sidewalkField(state), pedestrianCrossingsField(state), transitField(state, 'bus'), transitField(state, 'brt'), transitField(state, 'rail')];
+    case 'movement.all': return [carsField(state), sidewalkField(state), pedestrianCrossingsField(state), transitField(state, 'bus'), transitField(state, 'brt'), transitField(state, 'rail'), transitField(state, 'metro')];
     default: return [];
   }
 }

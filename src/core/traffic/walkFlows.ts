@@ -1,6 +1,8 @@
 import type { GameState } from '../engine/state';
 import type { Coord } from '../map/coord';
-import { pedestrianWayNode } from '../map/pedestrianGraph';
+import { accessNode, pedestrianWayNode } from '../map/pedestrianGraph';
+import { tileKey } from '../map/geometry';
+import { pedestrianAccessesOf, walkwaysOf } from '../underground/walkways';
 import { isPedestrianBridge } from '../water/bridgeGeometry';
 import { footbridgeParts } from '../water/footbridgeGeometry';
 import type { CongestionStats } from './congestion';
@@ -13,6 +15,24 @@ export interface CrossingFlow {
 export interface FootbridgeFlow {
   tile: Coord;
   pedestrians: number;
+}
+
+export interface AccessFlow {
+  tile: Coord;
+  pedestrians: number;
+}
+
+// The Pedestrians going down or up each Pedestrian access that a walkway lies under, busiest first.
+export function accessFlows(state: GameState, congestion: CongestionStats): AccessFlow[] {
+  const walkways = new Set(walkwaysOf(state).map(tileKey));
+  return pedestrianAccessesOf(state)
+    .filter((tile) => walkways.has(tileKey(tile)))
+    .map((tile) => ({ tile, pedestrians: congestion.sidewalkLoads.get(accessNode(tile)) ?? 0 }))
+    .sort((a, b) => b.pedestrians - a.pedestrians || a.tile.y - b.tile.y || a.tile.x - b.tile.x);
+}
+
+export function accessFlowAt(state: GameState, congestion: CongestionStats, tile: Coord): number | null {
+  return accessFlows(state, congestion).find((flow) => flow.tile.x === tile.x && flow.tile.y === tile.y)?.pedestrians ?? null;
 }
 
 export function crossingFlows(congestion: CongestionStats): CrossingFlow[] {

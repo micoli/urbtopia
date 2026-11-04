@@ -111,6 +111,7 @@ export type BuildingId =
   | 'marina'
   | 'masMuseum'
   | 'materialDepot'
+  | 'metroStation'
   | 'middleSchool'
   | 'midsummerArch'
   | 'midsummerBanquetTable'

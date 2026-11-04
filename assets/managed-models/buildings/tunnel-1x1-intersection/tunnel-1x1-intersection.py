@@ -1,0 +1,11 @@
+import os
+import sys
+
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+sys.path.insert(0, os.path.join(REPO, ".claude/skills/create-building-model/scripts"))
+import building_lib  # noqa: E402
+
+SPEC = {"id": "tunnel-1x1-intersection", "style": "urbtopia", "footprint": (1, 1), "piece": "intersection"}
+
+out_dir = os.path.dirname(os.path.abspath(__file__))
+building_lib.build_tunnel_piece(SPEC, out_dir)

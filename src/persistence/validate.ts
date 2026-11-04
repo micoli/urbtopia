@@ -267,7 +267,7 @@ function isBusLine(line: unknown): boolean {
 
 function isTransitLine(line: unknown): boolean {
   return (
-    isRecord(line) && isInt(line.id, 1) && ['brt', 'rail'].includes(line.mode as string) &&
+    isRecord(line) && isInt(line.id, 1) && ['brt', 'rail', 'metro'].includes(line.mode as string) &&
     isArrayOf(line.stops, (id) => isInt(id, 0)) && (line.stops as number[]).length >= 2 && isUnique(line.stops as number[]) && isValidLoop(line) &&
     isNumber(line.peakHeadway) && isNumber(line.offPeakHeadway) && line.peakHeadway > 0 && line.offPeakHeadway > 0 && line.peakHeadway <= 60 && line.offPeakHeadway <= 60 &&
     (line.mode !== 'brt' || (line.peakHeadway >= 5 && line.peakHeadway <= 10 && line.offPeakHeadway >= 10 && line.offPeakHeadway <= 15))
@@ -369,6 +369,9 @@ function structureFailure(value: Json): string | null {
     field('market', () => isMarket(value.market)),
     entries('roads', () => value.roads, (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string) && ((road as Json).tier === undefined || isInt((road as Json).tier, 1, MAX_ROAD_TIER))),
     entries('pedestrianWays', () => value.pedestrianWays, (tile) => isRecord(tile) && isCoord(tile) && (tile.tier === undefined || isInt(tile.tier, 1, MAX_ROAD_TIER)), true),
+    entries('walkways', () => value.walkways, (tile) => isRecord(tile) && isCoord(tile), true),
+    entries('pedestrianAccesses', () => value.pedestrianAccesses, (tile) => isRecord(tile) && isCoord(tile) && (tile.rotation === undefined || isInt(tile.rotation, 0, 3)), true),
+    entries('tunnels', () => value.tunnels, isTransitTile('rails'), true),
     entries('roundabouts', () => value.roundabouts, (center) => isCoord(center)),
     field('tutorial', () => value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep)),
     entries('tradeLedger', () => value.tradeLedger, isTradeLedgerEntry),
@@ -419,6 +422,10 @@ function invariantFailure(state: GameState): string | null {
     field('ids: at or above nextId', () => ids.every((id) => id < state.nextId)),
     field('pedestrianWays: duplicate tile', () => !hasDuplicates(pedestrianWays)),
     field('pedestrianWays: overlaps a road', () => pedestrianWays.every((key) => !roadKeys.has(key))),
+    field('walkways: duplicate tile', () => !hasDuplicates((state.walkways ?? []).map(tileKey))),
+    field('tunnels: duplicate tile', () => !hasDuplicates((state.tunnels ?? []).map(tileKey))),
+    field('pedestrianAccesses: duplicate tile', () => !hasDuplicates((state.pedestrianAccesses ?? []).map(tileKey))),
+    field('pedestrianAccesses: overlaps something on the Surface', () => (state.pedestrianAccesses ?? []).every((tile) => !roadKeys.has(tileKey(tile)) && !pedestrianWays.includes(tileKey(tile)) && !waterKeys.has(tileKey(tile)))),
     ...(state.bridges ?? []).flatMap((bridge, index) => {
       const keys = bridgeFootprint(bridge).map(tileKey);
       const overlapping = keys.some((key) => bridged.has(key));
@@ -445,8 +452,9 @@ function invariantFailure(state: GameState): string | null {
     field('boats: two on one tile', () => !hasDuplicates((state.boats ?? []).map(tileKey))),
     ...(state.busLines ?? []).map((line, index) => field(`busLines[${index}]: a stop is unknown or not a bus stop or hub`, () => line.stops.every((id) => isStopOfKind(state, id, ['busStop', 'transitHub'])))),
     ...(state.transitLines ?? []).map((line, index) => {
-      const station = line.mode === 'brt' ? 'brtStation' : 'railStation';
-      return field(`transitLines[${index}]: a stop is unknown or not a ${station} or hub`, () => line.stops.every((id) => isStopOfKind(state, id, [station, 'transitHub'])));
+      const station = line.mode === 'brt' ? 'brtStation' : line.mode === 'rail' ? 'railStation' : 'metroStation';
+      const allowed: BuildingType[] = line.mode === 'metro' ? [station] : [station, 'transitHub'];
+      return field(`transitLines[${index}]: a stop is unknown or not a ${station}${line.mode === 'metro' ? '' : ' or hub'}`, () => line.stops.every((id) => isStopOfKind(state, id, allowed)));
     }),
     ...(state.transitFleet ?? []).map((vehicle, index) =>
       field(`transitFleet[${index}]: its line is missing or of another mode`, () => {

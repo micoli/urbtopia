@@ -84,6 +84,7 @@ export function SceneCanvas() {
     const showDayCycle = () => scene.setDayCycleOverride(prefsStore.getState().alwaysDay || isAlwaysDayRequested(window.location.search), pinnedCycleHourOf(window.location.search));
     showDayCycle();
     scene.setBrushMode(uiStore.getState().tool?.kind === 'brush');
+    scene.setLevel(uiStore.getState().level);
     const showSelection = () => {
       const state = gameStore.getState().state;
       const focus = selectionFocus(uiStore.getState());
@@ -106,6 +107,7 @@ export function SceneCanvas() {
         showAnalytics();
         showSelection();
       }
+      if (store.level !== previous.level) scene.setLevel(store.level);
       if (store.tool?.kind !== previous.tool?.kind) scene.setBrushMode(store.tool?.kind === 'brush');
       if (store.evaluation !== previous.evaluation) scene.setGhost(store.evaluation?.ghost ?? null);
       if (store.selectedBuildingId !== previous.selectedBuildingId) showSelection();

@@ -10,5 +10,5 @@ export const LEVEL_COLORS: Record<LoadLevel, string> = { free: '#69db7c', loaded
 export const INACTIVE_COLOR = '#868e96';
 
 // Stroke widths in pixels: they do not scale with the zoom, and the load adds up to LOAD_WIDTH.
-export const BASE_WIDTH: Record<TransitMode, number> = { bus: 2, rail: 3, brt: 4 };
+export const BASE_WIDTH: Record<TransitMode, number> = { bus: 2, rail: 3, brt: 4, metro: 4 };
 export const LOAD_WIDTH = 5;

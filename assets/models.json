@@ -16586,6 +16586,16 @@
       3
     ]
   },
+  "buildings-metro-station-2x1": {
+    "file": "buildings/metro-station-2x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180
+  },
   "buildings-middle-school-2x2": {
     "file": "buildings/middle-school-2x2",
     "source": "managed",
@@ -18210,6 +18220,16 @@
       }
     }
   },
+  "buildings-stair-entrance-1x1": {
+    "file": "buildings/stair-entrance-1x1",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180
+  },
   "buildings-stands-3x1": {
     "file": "buildings/stands-3x1",
     "source": "managed",
@@ -19223,6 +19243,66 @@
     "scale": 1,
     "rotationOffset": 180
   },
+  "buildings-tunnel-1x1-bend": {
+    "file": "buildings/tunnel-1x1-bend",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-tunnel-1x1-crossroad": {
+    "file": "buildings/tunnel-1x1-crossroad",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-tunnel-1x1-end": {
+    "file": "buildings/tunnel-1x1-end",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-tunnel-1x1-intersection": {
+    "file": "buildings/tunnel-1x1-intersection",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-tunnel-1x1-square": {
+    "file": "buildings/tunnel-1x1-square",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-tunnel-1x1-straight": {
+    "file": "buildings/tunnel-1x1-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "buildings-university-3x3": {
     "file": "buildings/university-3x3",
     "source": "managed",
@@ -19445,6 +19525,66 @@
         "color": "#c2432e"
       }
     }
+  },
+  "buildings-walkway-1x1-bend": {
+    "file": "buildings/walkway-1x1-bend",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-walkway-1x1-crossroad": {
+    "file": "buildings/walkway-1x1-crossroad",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-walkway-1x1-end": {
+    "file": "buildings/walkway-1x1-end",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-walkway-1x1-intersection": {
+    "file": "buildings/walkway-1x1-intersection",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-walkway-1x1-square": {
+    "file": "buildings/walkway-1x1-square",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "buildings-walkway-1x1-straight": {
+    "file": "buildings/walkway-1x1-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
   },
   "buildings-watertower-1x1-t1-tone-a": {
     "file": "buildings/watertower-1x1-t1-tone-a",
@@ -23703,6 +23843,16 @@
       "width": 0.95,
       "height": 0.9
     }
+  },
+  "vehicles-metro-train-front": {
+    "file": "vehicles/metro-train-front",
+    "source": "managed",
+    "license": "Own work"
+  },
+  "vehicles-metro-train-rear": {
+    "file": "vehicles/metro-train-rear",
+    "source": "managed",
+    "license": "Own work"
   },
   "vehicles-navy-frigate": {
     "file": "vehicles/navy-frigate",

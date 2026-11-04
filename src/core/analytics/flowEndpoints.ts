@@ -3,7 +3,7 @@ import { isHomeType } from '../buildings/buildingDefinitions';
 import { congestionStats, workplaceTypes, type TripMode } from '../traffic/congestion';
 import { sellsTickets } from '../tourism/tourists';
 import { walkDestinationOf } from '../traffic/walking';
-import { crossingFlows, footbridgeFlows } from '../traffic/walkFlows';
+import { accessFlows, crossingFlows, footbridgeFlows } from '../traffic/walkFlows';
 import { stopsOfMode, transitModeOf } from './transitFields';
 import { transportStats } from '../transit/transport';
 import { isTransitStopType } from '../transit/stopNames';
@@ -50,7 +50,7 @@ function summed(...maps: ReadonlyMap<number, number>[]): Map<number, number> {
 
 // The Homes the trips of a Movement layer leave from, and the buildings they go to, the busiest first.
 export function flowEndpointsOf(state: GameState, layer: AnalyticsLayerId): FlowEndpoints | null {
-  if (!layer.startsWith('movement.') || layer === 'movement.flows' || transitModeOf(layer)) return null;
+  if (!layer.startsWith('movement.') || layer === 'movement.flows' || layer === 'movement.walkways' || transitModeOf(layer)) return null;
   const stats = congestionStats(state);
   // A Home with no way to its workplaces wants to commute but no trip takes place.
   const cars = new Map([...stats.homes].map(([id, home]) => [id, home.disconnected ? 0 : home.commuters]));
@@ -159,12 +159,13 @@ export interface PassageBeacons {
 // What the pedestrian Layers mark on the map: where the most Pedestrians cross, and where the most Riders board and alight.
 export function passageBeaconsOf(state: GameState, layer: AnalyticsLayerId): PassageBeacons | null {
   const mode = transitModeOf(layer);
-  if (layer !== 'movement.pedestrians' && layer !== 'movement.all' && !mode) return null;
+  if (layer !== 'movement.pedestrians' && layer !== 'movement.walkways' && layer !== 'movement.all' && !mode) return null;
   const congestion = congestionStats(state);
   const served = mode ? stopsOfMode(state, mode) : null;
   const crossings = crossingFlows(congestion).map(({ tile, pedestrians }) => ({ x: tile.x, y: tile.y, width: 1, depth: 1, volume: Math.round(pedestrians) }));
   const footbridges = footbridgeFlows(state, congestion).map(({ tile, pedestrians }) => ({ x: tile.x, y: tile.y, width: 1, depth: 1, volume: Math.round(pedestrians) }));
-  const walks = mode ? [] : [...crossings, ...footbridges].filter(beacon => beacon.volume > 0).sort((a, b) => b.volume - a.volume || a.y - b.y || a.x - b.x).slice(0, FLOW_ENDPOINTS.count);
+  const accesses = accessFlows(state, congestion).map(({ tile, pedestrians }) => ({ x: tile.x, y: tile.y, width: 1, depth: 1, volume: Math.round(pedestrians) }));
+  const walks = mode ? [] : (layer === 'movement.walkways' ? accesses : [...crossings, ...footbridges, ...accesses]).filter(beacon => beacon.volume > 0).sort((a, b) => b.volume - a.volume || a.y - b.y || a.x - b.x).slice(0, FLOW_ENDPOINTS.count);
   const stops = state.buildings
     .filter(building => isTransitStopType(building.type) && (served === null || served.has(building.id)))
     .map(building => {

@@ -23,7 +23,7 @@ export const LAND_VALUE = {
   roadShare: 0.5,
 };
 
-const STOP_TYPES = ['busStop', 'brtStation', 'railStation', 'transitHub'];
+const STOP_TYPES = ['busStop', 'brtStation', 'railStation', 'metroStation', 'transitHub'];
 
 const cache = new WeakMap<GameState, TileField>();
 

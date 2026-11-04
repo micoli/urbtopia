@@ -488,3 +488,79 @@ describe('one window at a time', () => {
     expect(uiStore.getState()).toMatchObject(none);
   });
 });
+
+describe('Levels', () => {
+  const homes = (count: number) => Array.from({ length: count }, (_, index) => createBuilding(index + 1, 'home', index * 4, 0, 0));
+  const city = (citizens: number) => ({ ...gameStore.getState().state, buildings: homes(citizens) });
+
+  beforeEach(() => {
+    uiStore.setState({ level: 0, tool: null, flyout: null });
+  });
+
+  it('stays on the Surface while the underground is locked', () => {
+    gameStore.getState().replaceState({ ...gameStore.getState().state, buildings: [] });
+    uiStore.getState().setLevel(-1);
+    expect(uiStore.getState().level).toBe(0);
+  });
+
+  it('refuses a Surface tool on an underground Level and drops the tool when the Level changes', () => {
+    gameStore.getState().replaceState(city(400));
+    uiStore.getState().chooseTool(shop);
+    uiStore.getState().setLevel(-1);
+    expect(uiStore.getState()).toMatchObject({ level: -1, tool: null });
+    uiStore.getState().chooseTool(shop);
+    expect(uiStore.getState().tool).toBeNull();
+    uiStore.getState().setLevel(0);
+    uiStore.getState().chooseTool(shop);
+    expect(uiStore.getState().tool).toEqual(shop);
+  });
+
+  it('steps down and up the stack and stops at both ends', () => {
+    gameStore.getState().replaceState(city(400));
+    uiStore.getState().stepLevel(-1);
+    expect(uiStore.getState().level).toBe(0);
+    uiStore.getState().stepLevel(1);
+    uiStore.getState().stepLevel(1);
+    uiStore.getState().stepLevel(1);
+    expect(uiStore.getState().level).toBe(-2);
+    uiStore.getState().stepLevel(-1);
+    expect(uiStore.getState().level).toBe(-1);
+  });
+
+  it('selects no Surface building while on an underground Level', () => {
+    const state = city(400);
+    gameStore.getState().replaceState(state);
+    uiStore.getState().setLevel(-1);
+    uiStore.getState().tapTile({ x: 0, y: 0 }, 1);
+    expect(uiStore.getState().selectedBuildingId).toBeNull();
+  });
+});
+
+describe('Pedestrian access selection', () => {
+  const access = { x: 20, y: 21 };
+
+  beforeEach(() => {
+    uiStore.setState({ level: 0, tool: null, flyout: null, selectedBuildingId: null, selectedAccess: null, moveMode: false });
+    gameStore.getState().replaceState({ ...gameStore.getState().state, buildings: [], pedestrianAccesses: [{ ...access, rotation: 1 }] });
+  });
+
+  it('picks a stair by tapping it and drops it when something else is picked', () => {
+    uiStore.getState().tapTile(access);
+    expect(uiStore.getState().selectedAccess).toEqual(access);
+    uiStore.getState().select(7);
+    expect(uiStore.getState()).toMatchObject({ selectedAccess: null, selectedBuildingId: 7 });
+  });
+
+  it('taps empty ground to drop the pick', () => {
+    uiStore.getState().tapTile(access);
+    uiStore.getState().tapTile({ x: 1, y: 1 });
+    expect(uiStore.getState().selectedAccess).toBeNull();
+  });
+
+  it('moves the picked stair with the move tool, which closes the pick', () => {
+    uiStore.getState().tapTile(access);
+    uiStore.getState().moveSelectedAccess();
+    expect(uiStore.getState().tool).toEqual({ kind: 'movePedestrianAccess', from: access });
+    expect(uiStore.getState().selectedAccess).toBeNull();
+  });
+});

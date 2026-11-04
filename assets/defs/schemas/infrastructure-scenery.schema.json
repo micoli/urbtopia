@@ -20,6 +20,99 @@
       "pattern": "\\S",
       "modelId": true
     },
+    "pedestrianAccess": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    },
+    "walkway": {
+      "type": "object",
+      "properties": {
+        "square": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "end": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "straight": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "bend": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "intersection": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "crossroad": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        }
+      },
+      "required": [
+        "square",
+        "end",
+        "straight",
+        "bend",
+        "intersection",
+        "crossroad"
+      ],
+      "additionalProperties": false
+    },
+    "tunnel": {
+      "type": "object",
+      "properties": {
+        "square": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "end": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "straight": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "bend": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "intersection": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        },
+        "crossroad": {
+          "type": "string",
+          "pattern": "\\S",
+          "modelId": true
+        }
+      },
+      "required": [
+        "square",
+        "end",
+        "straight",
+        "bend",
+        "intersection",
+        "crossroad"
+      ],
+      "additionalProperties": false
+    },
     "customers": {
       "minItems": 1,
       "type": "array",
@@ -34,9 +127,12 @@
     "parkTree",
     "roofPanel",
     "groundPanel",
+    "pedestrianAccess",
+    "walkway",
+    "tunnel",
     "customers"
   ],
   "additionalProperties": false,
   "title": "Scenery",
-  "description": "assets/defs/infrastructure/scenery.json: park trees, solar panels and Venue visitors."
+  "description": "assets/defs/infrastructure/scenery.json: park trees, solar panels, Pedestrian access stairs and Venue visitors."
 }

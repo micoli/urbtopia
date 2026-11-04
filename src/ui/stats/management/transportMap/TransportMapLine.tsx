@@ -46,6 +46,7 @@ export function TransportMapLine({ line, nodes, unit, dimmed, selected, onSelect
     {line.active && <path d={path} fill="none" stroke={LEVEL_COLORS[line.level]} strokeWidth={width + 4} strokeLinejoin="round" vectorEffect="non-scaling-stroke" opacity={0.6} />}
     <path d={path} fill="none" stroke={color} strokeWidth={width} strokeLinejoin="round" strokeDasharray={line.active ? undefined : '6 5'} vectorEffect="non-scaling-stroke" />
     {line.active && line.mode === 'rail' && <path d={path} fill="none" stroke="#fff" strokeWidth={width} strokeDasharray="2 8" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />}
+    {line.active && line.mode === 'metro' && <path d={path} fill="none" stroke="#fff" strokeWidth={width - 1} strokeDasharray="0.1 7" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />}
     {line.active && line.mode === 'brt' && <path d={path} fill="none" stroke="#fff" strokeWidth={1.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" opacity={0.8} />}
     {line.loop && segments.map(([from, to], index) => <polygon key={index} className="transport-map-arrow" points={arrowPoints(from, to, unit)} fill="#fff" stroke={color} strokeWidth={1} vectorEffect="non-scaling-stroke" />)}
   </g>;

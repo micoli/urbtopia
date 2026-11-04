@@ -6,10 +6,10 @@ import { t } from '../../i18n/t';
 import { BuildMenuContent } from './BuildMenuContent';
 import { BUILD_SECTION_KEY, readBuildSection, writeBuildSection } from './buildMenuSections';
 
-const context = vi.hoisted(() => ({ state: null as GameState | null, flyout: 'build' }));
+const context = vi.hoisted(() => ({ state: null as GameState | null, flyout: 'build', level: 0 }));
 vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
-  useUi: (selector: (store: { flyout: string; chooseTool: () => void; moveMode: boolean; toggleMoveMode: () => void }) => unknown) => selector({ flyout: context.flyout, chooseTool: () => {}, moveMode: false, toggleMoveMode: () => {} }),
+  useUi: (selector: (store: { flyout: string; level: number; chooseTool: () => void; moveMode: boolean; toggleMoveMode: () => void }) => unknown) => selector({ flyout: context.flyout, level: context.level, chooseTool: () => {}, moveMode: false, toggleMoveMode: () => {} }),
   useReadOnly: () => false,
 }));
 
@@ -26,7 +26,37 @@ beforeEach(() => {
   });
 });
 
-afterEach(() => { prefsStore.getState().setLanguage('en'); context.flyout = 'build'; vi.unstubAllGlobals(); vi.useRealTimers(); });
+afterEach(() => { prefsStore.getState().setLanguage('en'); context.flyout = 'build'; context.level = 0; vi.unstubAllGlobals(); vi.useRealTimers(); });
+
+describe('build menu on Level -1', () => {
+  it('offers only the walkway tools in the Networks flyout', () => {
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 700 }, (_, id) => ({ ...home, id })) };
+    context.flyout = 'roads';
+    context.level = -1;
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    expect(html).toContain(t('tool.walkway'));
+    expect(html).toContain(`aria-label="${t('tool.demolishWalkway')}"`);
+    expect(html).not.toContain(t('dock.streetView'));
+    expect(html).not.toContain(`aria-label="${t('tool.demolishRoad')}"`);
+  });
+
+  it('offers nothing to build in the Build flyout', () => {
+    context.state = newGame({ seed: 'build-menu', now: 0 });
+    context.level = -1;
+    expect(renderToStaticMarkup(<BuildMenuContent />)).toContain(t('level.nothingToBuild'));
+  });
+});
+
+describe('build menu on an underground Level', () => {
+  it('offers nothing to build and no building', () => {
+    context.state = newGame({ seed: 'build-menu', now: 0 });
+    context.level = -1;
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    expect(html).toContain(t('level.nothingToBuild'));
+    expect(html).not.toContain(`aria-label="${t('build.search')}"`);
+  });
+});
 
 describe('build menu discoverability', () => {
   it('offers a search field, the first-use hint and the next building to unlock', () => {
@@ -166,7 +196,7 @@ describe('build menu sections', () => {
     context.state = big;
     context.flyout = 'roads';
     const sections = renderToStaticMarkup(<BuildMenuContent />).match(/<section\b[^>]*>[\s\S]*?<\/section>/g) ?? [];
-    const demolishLabels = ['tool.demolishRoad', 'tool.demolishPedestrianWay', 'tool.demolishBrt', 'tool.demolishRail', 'water.remove', 'water.removeBridge', 'water.removeBridge'] as const;
+    const demolishLabels = ['tool.demolishRoad', 'tool.demolishPedestrianWay', 'tool.demolishBrt', 'tool.demolishRail', 'water.remove', 'water.removeBridge', 'water.removeBridge', 'tool.demolishPedestrianAccess'] as const;
     expect(sections).toHaveLength(demolishLabels.length);
     demolishLabels.forEach((key, index) => expect(sections[index]).toContain(`aria-label="${t(key)}"`));
     expect(sections[0]).toContain('lucide-chevron-down');

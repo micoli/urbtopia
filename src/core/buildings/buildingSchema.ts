@@ -244,7 +244,7 @@ const seaSceneryBuilding = z.strictObject({ kind: z.literal('seaScenery'), ...id
 const transitStopBuilding = z.strictObject({
   kind: z.literal('transitStop'),
   ...placed,
-  mode: z.enum(['bus', 'brt', 'rail', 'hub']),
+  mode: z.enum(['bus', 'brt', 'rail', 'metro', 'hub']),
   network: z.strictObject({ tileCost: count, speed: positive, capacity: z.int().min(1) }).optional(),
 });
 

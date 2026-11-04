@@ -4831,6 +4831,7 @@
             "bus",
             "brt",
             "rail",
+            "metro",
             "hub"
           ]
         },
