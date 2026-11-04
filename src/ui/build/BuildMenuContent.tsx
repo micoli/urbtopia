@@ -32,7 +32,7 @@ export function BuildMenuContent() {
   const chooseTool = useUi((store) => store.chooseTool);
   const openCodex = useUi(store => store.openCodex);
   const guide = guideOf(useGame((store) => store.state.tutorial));
-  const [openSection, setOpenSection] = useState<BuildSection>(readBuildSection);
+  const [openSection, setOpenSection] = useState<BuildSection | null>(readBuildSection);
   const [query, setQuery] = useState('');
   const [homeColor, setHomeColor] = useState<ColorVariant>(readHomeColor);
   const menuId = useId();
@@ -51,11 +51,11 @@ export function BuildMenuContent() {
       ...section,
       types: section.types.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0) && isBuildableAt(type, now)),
     })).filter(section => section.types.length);
-    const activeSection = visibleSections.some(section => section.title === openSection) ? openSection : visibleSections[0]?.title;
+    const activeSection = openSection === null || visibleSections.some(section => section.title === openSection) ? openSection : visibleSections[0]?.title;
     const selectSection = (section: BuildSection) => {
-      if (activeSection === section) return;
-      setOpenSection(section);
-      writeBuildSection(section);
+      const next = activeSection === section ? null : section;
+      setOpenSection(next);
+      writeBuildSection(next);
     };
     const needle = query.trim().toLowerCase();
     const results = needle ? visibleSections.flatMap(section => section.types).filter(type => t(`building.${type}`).toLowerCase().includes(needle)) : [];
@@ -83,7 +83,6 @@ export function BuildMenuContent() {
                   title={t(section.title)}
                   expanded={expanded}
                   chevron
-                  lockWhenExpanded
                   guided={section.types.some(type => guide.buildings.includes(type))}
                   className="build-section"
                   toggleClassName="build-section-toggle"

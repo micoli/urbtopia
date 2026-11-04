@@ -197,7 +197,6 @@ describe('build menu sections', () => {
     const html = renderToStaticMarkup(<BuildMenuContent />);
     const sections = html.match(/<section\b[^>]*>[\s\S]*?<\/section>/g) ?? [];
     expect(sections[0]).toContain('aria-expanded="true"');
-    expect(sections[0]).toContain('aria-disabled="true"');
     expect(sections[0]).not.toContain('hidden=""');
     expect(sections[0]).toContain('lucide-chevron-down');
     for (const section of sections.slice(1)) {
@@ -205,6 +204,13 @@ describe('build menu sections', () => {
       expect(section).toContain('hidden=""');
       expect(section).toContain('lucide-chevron-right');
     }
+  });
+
+  it('restores the all-closed state on a new render', () => {
+    context.state = newGame({ seed: 'build-menu', now: 0 });
+    writeBuildSection(null);
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    expect(html).not.toContain('aria-expanded="true"');
   });
 
   it('restores the last opened section on a new render', () => {

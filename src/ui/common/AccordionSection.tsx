@@ -9,7 +9,6 @@ interface AccordionSectionProps {
     expanded: boolean;
     onToggle: () => void;
     chevron?: boolean;
-    lockWhenExpanded?: boolean;
     guided?: boolean;
     className?: string;
     toggleClassName?: string;
@@ -18,12 +17,12 @@ interface AccordionSectionProps {
     children: ReactNode;
 }
 
-export function AccordionSection({ id, title, icon, expanded, onToggle, chevron = false, lockWhenExpanded = false, guided, className, toggleClassName, contentClassName, headerAction, children }: AccordionSectionProps) {
+export function AccordionSection({ id, title, icon, expanded, onToggle, chevron = false, guided, className, toggleClassName, contentClassName, headerAction, children }: AccordionSectionProps) {
     const toggleId = `${id}-toggle`;
     return (
         <section className={className} aria-label={title}>
             <h3 className={headerAction ? 'accordion-heading-with-action' : undefined}>
-                <button type="button" className={toggleClassName} id={toggleId} aria-expanded={expanded} aria-disabled={lockWhenExpanded && expanded ? true : undefined} aria-controls={id} data-guided={guided} onClick={onToggle}>
+                <button type="button" className={toggleClassName} id={toggleId} aria-expanded={expanded} aria-controls={id} data-guided={guided} onClick={onToggle}>
                     {icon && <Icon name={icon} />}
                     <span>{title}</span>
                     {chevron && <Icon name={expanded ? 'chevronDown' : 'chevronRight'} />}

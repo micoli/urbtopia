@@ -15,14 +15,14 @@ export function LandMenu() {
   const enterAnalytics = useUi(store => store.enterAnalytics);
   const lastLayer = useUi(store => store.lastAnalyticsLayer);
   const lastCategory = useUi(store => store.analyticsCategory);
-  const [openSection, setOpenSection] = useState<LandSection>(sectionOf(lastLayer));
+  const [openSection, setOpenSection] = useState<LandSection | null>(sectionOf(lastLayer));
 
   const layerItems = (layers: readonly AnalyticsLayerId[]) => layers.map(layer => (
     <FlyoutItem key={layer} label={t(`analytics.layer.${layer}`)} selected={layer === lastLayer} onChoose={() => enterAnalytics(layer)} />
   ));
 
   const section = (id: LandSection, title: string, items: ReactNode) => (
-    <AccordionSection id={`land-${id}`} title={title} expanded={openSection === id} chevron lockWhenExpanded className="land-section build-section" toggleClassName="build-section-toggle" contentClassName="build-section-items" onToggle={() => setOpenSection(id)}>
+    <AccordionSection id={`land-${id}`} title={title} expanded={openSection === id} chevron className="land-section build-section" toggleClassName="build-section-toggle" contentClassName="build-section-items" onToggle={() => setOpenSection(openSection === id ? null : id)}>
       {items}
     </AccordionSection>
   );

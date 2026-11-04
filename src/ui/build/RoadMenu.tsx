@@ -49,7 +49,7 @@ export function RoadMenu() {
   const openCodex = useUi(store => store.openCodex);
   const pickStreetView = useUi(store => store.pickStreetView);
   const guide = guideOf(useGame(store => store.state.tutorial));
-  const [openSection, setOpenSection] = useState<RoadSection>('road');
+  const [openSection, setOpenSection] = useState<RoadSection | null>('road');
   const { manifest } = useCodexManifest();
   const previewOf = (id: CodexId) => {
     const image = manifest?.images[codexImageKey(id, 1, undefined)];
@@ -79,7 +79,7 @@ export function RoadMenu() {
       { id: 'roadBridges' as const, content: <BridgeTools variant="road" />, demolish: removeBridge },
     ] : []),
   ];
-  const activeSection = sections.some(section => section.id === openSection) ? openSection : 'road';
+  const activeSection = openSection === null || sections.some(section => section.id === openSection) ? openSection : 'road';
 
   return (
     <>
@@ -91,11 +91,10 @@ export function RoadMenu() {
           title={t(SECTION_TITLES[id])}
           expanded={activeSection === id}
           chevron
-          lockWhenExpanded
           className="road-section build-section"
           toggleClassName="build-section-toggle"
           contentClassName="build-section-items"
-          onToggle={() => setOpenSection(id)}
+          onToggle={() => setOpenSection(activeSection === id ? null : id)}
           headerAction={demolish ? <SectionDemolishButton label={demolish.label} onChoose={() => chooseTool(demolish.tool)} /> : undefined}
         >
           {items?.map(item => (
