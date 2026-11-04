@@ -7,8 +7,8 @@
   "requiresRoad": true,
   "accessModes": ["road", "brt", "pedestrianWay"],
   "name": {
-    "en": "Swahili Stone House",
-    "fr": "Maison de pierre swahilie"
+    "en": "Swahili Stone Duplex",
+    "fr": "Duplex de pierre swahilie"
   },
   "description": {
     "en": "A whitewashed coral-stone house of Zanzibar with a flat roof, a big carved and studded wooden door, shuttered windows and a wooden balcony. Houses Citizens who generate Tax. Each upgrade adds a floor, with more population and utility Demand. Comes in four colors.",

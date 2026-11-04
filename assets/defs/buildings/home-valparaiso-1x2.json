@@ -7,8 +7,8 @@
   "requiresRoad": true,
   "accessModes": ["road", "brt", "pedestrianWay"],
   "name": {
-    "en": "Corrugated-Iron House",
-    "fr": "Maison de tôle ondulée"
+    "en": "Corrugated-Iron Duplex",
+    "fr": "Duplex de tôle ondulée"
   },
   "description": {
     "en": "A narrow Valparaiso house clad in bright corrugated panels that change color floor by floor, with a gable roof, a stoop and a balcony. Houses Citizens who generate Tax. Each upgrade adds a floor, with more population and utility Demand. Comes in four colors.",

@@ -7,8 +7,8 @@
   "requiresRoad": true,
   "accessModes": ["road", "brt", "pedestrianWay"],
   "name": {
-    "en": "Colonial Pastel House",
-    "fr": "Maison coloniale pastel"
+    "en": "Colonial Pastel Duplex",
+    "fr": "Duplex colonial pastel"
   },
   "description": {
     "en": "A brightly painted colonial house of Cartagena, with a tile roof, a tall arched door, shuttered windows and long wooden balconies with flowers. Houses Citizens who generate Tax. Each upgrade adds a floor, with more population and utility Demand. Comes in four colors.",
