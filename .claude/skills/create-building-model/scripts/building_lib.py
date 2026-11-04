@@ -7787,17 +7787,21 @@ def build_victorian(spec, out_dir):
         face_box(parts, f"{tag}_bay_glass", "front", yb0 - 0.1, xm, 0.13, 0.13, zb + 0.05, 0.014, c["dark"])
         face_box(parts, f"{tag}_bay_frame", "front", yb0 - 0.1, xm, 0.17, 0.17, zb + 0.03, 0.01, c["trim"])
 
+    turret_side = ({w - 1: 1} if tier >= 5 else {})
+    if tier >= 8:
+        turret_side[0] = -1
     for level in range(floors):
         z = z0 + level * fh + 0.07
         for m, xm in enumerate(centres):
+            shift = -0.1 * turret_side.get(m, 0)
             has_bay = (level == 0 and m > 0) or (level == 1 and tier >= 2)
             if has_bay:
-                bay(f"bay_{level}_{m}", xm, level)
+                bay(f"bay_{level}_{m}", xm + shift, level)
             elif level == 0 and m == 0:
                 pass
             else:
-                for dx in (-0.17, 0.17):
-                    victorian_window(parts, f"front_{level}_{m}_{dx}", "front", yb0, xm + dx, z, 0.08, 0.15, c)
+                for dx in ((-0.13, 0.13) if shift else (-0.17, 0.17)):
+                    victorian_window(parts, f"front_{level}_{m}_{dx}", "front", yb0, xm + shift + dx, z, 0.08, 0.15, c)
         for number in range(max(1, round((yb1 - yb0) / 0.5))):
             y = yb0 + (number + 0.5) * (yb1 - yb0) / max(1, round((yb1 - yb0) / 0.5))
             for face, wall in (("left", -bx), ("right", bx)):
