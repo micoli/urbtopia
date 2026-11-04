@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { GOOD_CATEGORIES } from '../economy/itemSchemas.ts';
 import { NATURE_FAMILIES, type NatureFamily } from '../environment/natureFamilies.ts';
 import { BUILD_SECTION_TITLES } from './buildSections.ts';
+import { HOUSING_REGIONS } from './housingRegions.ts';
 import { CASINO_GAMES } from '../leisure/casinoGames.ts';
 import { SERVICE_CATEGORIES } from '../services/serviceCategories.ts';
 import { FIXTURE_CATEGORIES_ALL, STAFF_ROLES_ALL } from '../venues/venueVocabulary.ts';
@@ -68,6 +69,7 @@ const homeBuilding = z.strictObject({
   kind: z.literal('home'),
   ...identity,
   ...sited,
+  housingRegion: z.enum(HOUSING_REGIONS).optional(),
   ...panelled,
   tiers: tiersOf({ ...homeLook, citizens: count, power: count, water: count }, ['model', 'footprint', 'citizens', 'power', 'water']),
   variants: variantsOf(homeLook).optional(),

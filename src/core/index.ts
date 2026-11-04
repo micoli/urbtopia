@@ -99,7 +99,8 @@ export { FARM_CROP_CAPACITY, isUtilityType, MARKET, MAX_SLOTS, SHOP, SLOT_PRICES
 export type { StorageTier, StorageType, UtilityType } from './economy/economy';
 export { canRemoveStorage, compartmentOf, hasStorage, isStorageEmpty, isStorageType, storageCapacity, storageUsed } from './economy/storage';
 export { createBuilding, stacksOf } from './buildings/buildingSpecs';
-export { isHomeType, kindOf } from './buildings/buildingDefinitions';
+export { housingRegionOf, isHomeType, kindOf } from './buildings/buildingDefinitions';
+export { HOUSING_REGIONS, type HousingRegion } from './buildings/housingRegions';
 export type { BuildingKind } from './buildings/buildingDefinition';
 export type { ProductionType, ShopType } from './buildings/buildingTypes.generated';
 export { colorVariantsOf, colorVariantsOfKit, colorVariantsOfType, isRepaintableType, mayCarryLegacyColor, paintKitAt, paintKitOf, toneLabelOf, type PaintKit, type ToneLabel } from './buildings/paint';

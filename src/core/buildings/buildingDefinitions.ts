@@ -2,6 +2,7 @@ import { entriesOf } from '../defs/entries.ts';
 import buildingOrder from '../../../assets/defs/order/buildings.json' with { type: 'json' };
 import type { BuildingKind, FlatBuilding, FlatTier } from './buildingDefinition.ts';
 import type { BuildingId, NatureType, SportVenueType } from './buildingTypes.generated.ts';
+import type { HousingRegion } from './housingRegions.ts';
 import { resolveTiers, resolveVariant } from './tiers.ts';
 
 type Tier = FlatTier;
@@ -28,6 +29,8 @@ export const definitionOf = (id: BuildingId): BuildingEntry => entriesById.get(i
 export const kindOf = (type: string): BuildingKind | undefined => entriesById.get(type)?.kind;
 
 export const isHomeType = (type: string): boolean => kindOf(type) === 'home';
+
+export const housingRegionOf = (type: string): HousingRegion | undefined => entriesById.get(type)?.housingRegion;
 
 export const isRetired = (id: BuildingId): boolean => entriesById.get(id)?.retired === true;
 

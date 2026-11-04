@@ -115,6 +115,7 @@
       }
     }
   ],
+  "housingRegion": "mediterranean",
   "solarPanels": {
     "cost": 200,
     "unlockCitizens": 100

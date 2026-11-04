@@ -1,5 +1,5 @@
 import { Fragment, useId, useState } from 'react';
-import { BUILDING_SPECS, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, annualEventOf, isBuildableAt, isFacilityType, totalCitizens, placementCost, isHomeType, solarInstallCostOf } from '../../core';
+import { BUILDING_SPECS, HOUSING_REGIONS, housingRegionOf, type HousingRegion, type BuildingType, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, annualEventOf, isBuildableAt, isFacilityType, totalCitizens, placementCost, isHomeType, solarInstallCostOf } from '../../core';
 import { t } from '../../i18n/t';
 import { FlyoutItem } from '../layout/FlyoutItem';
 import { BuildSearch } from './BuildSearch';
@@ -33,6 +33,7 @@ export function BuildMenuContent() {
   const openCodex = useUi(store => store.openCodex);
   const guide = guideOf(useGame((store) => store.state.tutorial));
   const [openSection, setOpenSection] = useState<BuildSection | null>(readBuildSection);
+  const [openRegion, setOpenRegion] = useState<HousingRegion | null>(null);
   const [query, setQuery] = useState('');
   const [homeColor, setHomeColor] = useState<ColorVariant>(readHomeColor);
   const menuId = useId();
@@ -57,6 +58,26 @@ export function BuildMenuContent() {
       setOpenSection(next);
       writeBuildSection(next);
     };
+    const isVariantHome = (type: string) => isHomeType(type) && type !== 'home';
+    const looseTypes = (section: { title: string; types: readonly BuildingType[] }) => (section.title === 'build.housing' ? section.types.filter(type => !housingRegionOf(type)) : section.types);
+    const regionsOf = (section: { types: readonly BuildingType[] }) => HOUSING_REGIONS.map(region => ({ region, types: section.types.filter(type => housingRegionOf(type) === region) })).filter(({ types }) => types.length);
+    const solarItem = (type: BuildingType) => (
+        <FlyoutItem
+            key={`${type}-solar`}
+            label={t(`building.solar-${type}`)}
+            badge={undefined/*BUILDING_SPECS[type].accessModes.includes('brt') ? t('build.brtCompatible') : undefined*/}
+            cost={<UrbsAmount value={placementCost(type) + solarInstallCostOf(type)}/>}
+            onChoose={() => chooseTool({
+              kind: 'building',
+              buildingType: type,
+              solar: true,
+              colorVariant: homeColor
+            })}
+            codexId={solarCodexIdOf(type)}
+            preview={previewOf(solarCodexIdOf(type))}
+            onInfo={() => openCodex(solarCodexIdOf(type))}
+        />
+    );
     const needle = query.trim().toLowerCase();
     const results = needle ? visibleSections.flatMap(section => section.types).filter(type => t(`building.${type}`).toLowerCase().includes(needle)) : [];
     const searching = needle !== '';
@@ -104,11 +125,11 @@ export function BuildMenuContent() {
                       writeHomeColor(variant);
                     }}
                 />}
-                {section.types.map((type, index) => (
+                {looseTypes(section).map((type, index, types) => (
                     <Fragment key={type}>
-                      {isFacilityType(type) && FACILITIES[type].category !== categoryOf(section.types[index - 1]) &&
+                      {isFacilityType(type) && FACILITIES[type].category !== categoryOf(types[index - 1]) &&
                           <h4 className="build-category">{t(`service.${FACILITIES[type].category}`)}</h4>}
-                      {section.title === 'build.annualEvents' && (index === 0 || annualEventOf(type) !== annualEventOf(section.types[index - 1]!)) &&
+                      {section.title === 'build.annualEvents' && (index === 0 || annualEventOf(type) !== annualEventOf(types[index - 1]!)) &&
                           <h4 className="build-category">{t(`annualEvent.${annualEventOf(type)!}`)}</h4>}
                       <BuildTypeItem type={type} homeColor={homeColor} preview={previewOf(type)} />
                     </Fragment>
@@ -128,23 +149,28 @@ export function BuildMenuContent() {
                     preview={previewOf('solarHome')}
                     onInfo={() => openCodex('solarHome')}
                 />}
-                {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && section.types.filter(type => isHomeType(type) && type !== 'home').map(type => (
-                    <FlyoutItem
-                        key={`${type}-solar`}
-                        label={t(`building.solar-${type}`)}
-                        badge={undefined/*BUILDING_SPECS[type].accessModes.includes('brt') ? t('build.brtCompatible') : undefined*/}
-                        cost={<UrbsAmount value={placementCost(type) + solarInstallCostOf(type)}/>}
-                        onChoose={() => chooseTool({
-                          kind: 'building',
-                          buildingType: type,
-                          solar: true,
-                          colorVariant: homeColor
-                        })}
-                        codexId={solarCodexIdOf(type)}
-                        preview={previewOf(solarCodexIdOf(type))}
-                        onInfo={() => openCodex(solarCodexIdOf(type))}
-                    />
-                ))}
+                {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && looseTypes(section).filter(isVariantHome).map(solarItem)}
+                {section.title === 'build.housing' && regionsOf(section).map(({ region, types }) => {
+                  const regionId = `${sectionId}-${region}`;
+                  return (
+                    <AccordionSection
+                        key={region}
+                        id={regionId}
+                        title={t(`build.region.${region}`)}
+                        expanded={openRegion === region}
+                        chevron
+                        nested
+                        guided={types.some(type => guide.buildings.includes(type))}
+                        className="build-region"
+                        toggleClassName="build-region-toggle"
+                        contentClassName="build-section-items"
+                        onToggle={() => setOpenRegion(openRegion === region ? null : region)}
+                    >
+                      {types.map(type => <BuildTypeItem key={type} type={type} homeColor={homeColor} preview={previewOf(type)} />)}
+                      {citizens >= ECOLOGY.solarUnlockCitizens && types.filter(isVariantHome).map(solarItem)}
+                    </AccordionSection>
+                  );
+                })}
               </AccordionSection>
           );
         })}

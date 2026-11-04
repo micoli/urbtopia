@@ -74,6 +74,7 @@
       }
     }
   ],
+  "housingRegion": "asia",
   "solarPanels": {
     "cost": 400,
     "unlockCitizens": 300,

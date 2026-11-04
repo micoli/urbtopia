@@ -45,6 +45,23 @@ describe('build menu discoverability', () => {
   });
 });
 
+describe('build menu housing regions', () => {
+  it.each(['en', 'fr'] as const)('groups the Architecture styles of Housing under one collapsed group per region in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 600 }, (_, id) => ({ ...home, id })) };
+    const html = renderToStaticMarkup(<BuildMenuContent />).replaceAll('&#x27;', "'");
+    const housing = (html.match(/<section\b[^>]*>[\s\S]*?<\/section>/g) ?? [])[0]!;
+    const groups = housing.match(/<div class="build-region"[^>]*>/g) ?? [];
+    expect(groups.length).toBeGreaterThanOrEqual(4);
+    for (const region of ['europe', 'mediterranean', 'asia', 'americas'] as const) expect(housing).toContain(`<span>${t(`build.region.${region}`)}</span>`);
+    expect(housing).toMatch(/aria-expanded="false"[^>]*aria-controls="[^"]*-europe"/);
+    const europe = housing.slice(housing.indexOf('-europe"'));
+    expect(europe).toContain(t('building.home-haussmann'));
+    expect(housing.slice(0, housing.indexOf('class="build-region"'))).toContain(t('building.home'));
+  });
+});
+
 describe('build menu sections', () => {
   it.each(['en', 'fr'] as const)('groups every building once and keeps solar Homes with housing in %s', language => {
     prefsStore.getState().setLanguage(language);
@@ -197,7 +214,7 @@ describe('build menu sections', () => {
     const html = renderToStaticMarkup(<BuildMenuContent />);
     const sections = html.match(/<section\b[^>]*>[\s\S]*?<\/section>/g) ?? [];
     expect(sections[0]).toContain('aria-expanded="true"');
-    expect(sections[0]).not.toContain('hidden=""');
+    expect(sections[0]!.replace(/<div class="build-region"[\s\S]*$/, '')).not.toContain('hidden=""');
     expect(sections[0]).toContain('lucide-chevron-down');
     for (const section of sections.slice(1)) {
       expect(section).toContain('aria-expanded="false"');

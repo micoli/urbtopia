@@ -115,6 +115,7 @@
       }
     }
   ],
+  "housingRegion": "europe",
   "solarPanels": {
     "cost": 200,
     "unlockCitizens": 100
