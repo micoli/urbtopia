@@ -7530,6 +7530,113 @@ def build_andean(spec, out_dir):
     return report
 
 
+def swahili_window(parts, tag, face, wall, u, bottom, c):
+    """A small dark window with a wooden frame and two colored shutters."""
+    face_box(parts, f"{tag}_glass", face, wall, u, 0.09, 0.13, bottom, 0.012, c["dark"])
+    face_box(parts, f"{tag}_head", face, wall, u, 0.15, 0.025, bottom + 0.13, 0.02, c["wood"])
+    face_box(parts, f"{tag}_sill", face, wall, u, 0.13, 0.02, bottom - 0.02, 0.026, c["wood"])
+    for side in (-1, 1):
+        face_box(parts, f"{tag}_shutter_{side}", face, wall, u + side * 0.065, 0.045, 0.13, bottom, 0.018, c["shutter"])
+
+
+def build_swahili(spec, out_dir):
+    """A Swahili stone house of Zanzibar, front facing -Y, on a 1x1 or 1x2 cell; the Tier is the floor count (1 to 5).
+    A whitewashed coral-stone block with a flat roof behind a parapet and a cornice, a big carved wooden door with a studded leaf, posts and a carved lintel, small shuttered windows, and a wooden balcony over the door from two floors up;
+    from Tier 2 stone benches (baraza) either side of the door, 3 a row of dentils under the cornice, 4 corner finials and a second balcony, 5 a roof pavilion."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("wood", "vtone2"), ("shutter", "vtone3"), ("dark", "udark"), ("stud", "honey"), ("stone", "greywood"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    d = spec["footprint"][1]
+    floors = spec["floors"]
+    tier = floors
+    fh, plinth = 0.29, 0.04
+    bx, y0, y1 = 0.47, -d / 2 + 0.12, d / 2 - 0.03
+    height = floors * fh
+    z_top = plinth + height
+    cy = (y0 + y1) / 2
+    parts = [lpm.box("plinth", (2 * bx + 0.02, y1 - y0 + 0.02, plinth), at=(0, cy, 0), color=c["stone"]),
+             lpm.box("door_step", (0.56, 0.105, 0.025), at=(0, y0 - 0.0625, 0), color=c["stone"]),
+             lpm.box("walls", (2 * bx, y1 - y0, height), at=(0, cy, plinth), color=c["wall"]),
+             lpm.box("cornice", (2 * bx + 0.04, y1 - y0 + 0.04, 0.03), at=(0, cy, z_top - 0.03), color=c["wall"])]
+    for name, size, at in (("front", (2 * bx, 0.03, 0.07), (0, y0 + 0.015)), ("back", (2 * bx, 0.03, 0.07), (0, y1 - 0.015)), ("left", (0.03, y1 - y0, 0.07), (-bx + 0.015, cy)), ("right", (0.03, y1 - y0, 0.07), (bx - 0.015, cy))):
+        parts.append(lpm.box(f"parapet_{name}", size, at=(at[0], at[1], z_top), color=c["wall"]))
+
+    door_w, door_h = 0.24, 0.17
+    parts.append(lpm.box("door_leaf", (door_w, 0.02, door_h), at=(0, y0 - 0.008, plinth), color=c["wood"]))
+    for side in (-1, 1):
+        parts.append(lpm.box(f"door_post_{side}", (0.045, 0.04, door_h + 0.03), at=(side * (door_w / 2 + 0.0225), y0 - 0.015, plinth), color=c["wood"]))
+    parts.append(lpm.box("door_lintel", (door_w + 0.14, 0.045, 0.05), at=(0, y0 - 0.017, plinth + door_h), color=c["wood"]))
+    for number in range(5):
+        parts.append(lpm.box(f"lintel_carving_{number}", (0.022, 0.012, 0.022), at=(-0.1 + number * 0.05, y0 - 0.043, plinth + door_h + 0.014), color=c["stud"]))
+    for row in range(3):
+        for col in range(3):
+            parts.append(lpm.box(f"stud_{row}_{col}", (0.02, 0.012, 0.02), at=(-0.07 + col * 0.07, y0 - 0.02, plinth + 0.025 + row * 0.05), color=c["stud"]))
+
+    for level in range(floors):
+        z = plinth + level * fh + 0.09
+        for u in (-0.33, 0.33):
+            if level == 0 or level >= 1:
+                swahili_window(parts, f"front_{level}_{u:.2f}", "front", y0, u, z, c)
+        if level >= 1:
+            swahili_window(parts, f"front_{level}_mid", "front", y0, 0.0, z, c)
+        for number in range(max(1, round((y1 - y0) / 0.55))):
+            y = y0 + (number + 0.5) * (y1 - y0) / max(1, round((y1 - y0) / 0.55))
+            for face, wall in (("left", -bx), ("right", bx)):
+                swahili_window(parts, f"{face}_{level}_{number}", face, wall, y, z, c)
+        for u in (-0.25, 0.25):
+            swahili_window(parts, f"back_{level}_{u:.2f}", "back", y1, u, z, c)
+
+    def balcony(level):
+        zb = plinth + level * fh
+        width = 0.6
+        parts.append(lpm.box(f"balcony_{level}", (width, 0.11, 0.025), at=(0, y0 - 0.055, zb - 0.01), color=c["wood"]))
+        for sign in (-1, 1):
+            parts.append(lpm.box(f"balcony_{level}_bracket_{sign}", (0.03, 0.09, 0.045), at=(sign * (width / 2 - 0.04), y0 - 0.045, zb - 0.055), color=c["wood"]))
+            parts.append(lpm.box(f"balcony_{level}_rail_side_{sign}", (0.014, 0.1, 0.014), at=(sign * (width / 2 - 0.007), y0 - 0.055, zb + 0.1), color=c["wood"]))
+        parts.append(lpm.box(f"balcony_{level}_rail", (width, 0.014, 0.014), at=(0, y0 - 0.108, zb + 0.1), color=c["wood"]))
+        for number in range(int(width / 0.05)):
+            parts.append(lpm.box(f"balcony_{level}_baluster_{number}", (0.01, 0.01, 0.1), at=(-width / 2 + 0.025 + number * 0.05, y0 - 0.108, zb + 0.015), color=c["wood"]))
+    if floors >= 2:
+        balcony(1)
+    if floors >= 4:
+        balcony(3)
+    if tier >= 2:
+        for number, sign in enumerate((-1, 1)):
+            parts.append(lpm.box(f"baraza_{number}", (0.28, 0.07, 0.08), at=(sign * 0.33, y0 - 0.035, plinth), color=c["wall"]))
+            parts.append(lpm.box(f"baraza_{number}_seat", (0.3, 0.09, 0.02), at=(sign * 0.33, y0 - 0.045, plinth + 0.08), color=c["stone"]))
+    if tier >= 3:
+        for number in range(int(2 * bx / 0.07)):
+            parts.append(lpm.box(f"dentil_{number}", (0.03, 0.025, 0.025), at=(-bx + 0.04 + number * 0.07, y0 - 0.012, z_top - 0.055), color=c["wall"]))
+    if tier >= 4:
+        for number, (cx, cy_) in enumerate(((-1, y0), (1, y0), (-1, y1), (1, y1))):
+            parts.append(lpm.box(f"finial_{number}", (0.05, 0.05, 0.07), at=(cx * (bx - 0.03), cy_ + (0.03 if cy_ == y0 else -0.03), z_top + 0.07), color=c["wall"]))
+            parts.append(lpm.prism(f"finial_{number}_cap", 4, 0.03, 0.04, at=(cx * (bx - 0.03), cy_ + (0.03 if cy_ == y0 else -0.03), z_top + 0.14), color=c["wall"], radius_top=0.005))
+    if tier >= 5:
+        for number, (px, py) in enumerate(((-0.15, cy + 0.0), (0.15, cy + 0.0))):
+            for sy in (-0.12, 0.12):
+                parts.append(lpm.box(f"pavilion_post_{number}_{sy}", (0.025, 0.025, 0.2), at=(px, cy + sy, z_top + 0.07), color=c["wood"]))
+        parts.append(lpm.box("pavilion_roof", (0.36, 0.3, 0.025), at=(0, cy, z_top + 0.27), color=c["wall"]))
+        parts.append(lpm.box("pavilion_rail", (0.3, 0.012, 0.012), at=(0, cy - 0.12, z_top + 0.14), color=c["wood"]))
+
+    if spec.get("solar"):
+        base = z_top + 0.07
+        for row, py in enumerate((y1 - 0.12,) if d < 2 else (y1 - 0.12, y1 - 0.34)):
+            for number, px in enumerate((-0.2, 0.2) if tier < 5 or row == 0 else (-0.2, 0.2)):
+                if tier >= 5 and abs(py - cy) < 0.2:
+                    continue
+                panel = lpm.box(f"solar_panel_{row}_{number}", (0.2, 0.16, 0.012), at=(px, py, base + 0.04), color=c["solar"])
+                lpm.rotate(panel, 20, axis="X", about=(px, py, base + 0.04))
+                parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=30000 + 8000 * floors * d, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = list(spec["footprint"])
+    return report
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")
