@@ -1973,6 +1973,64 @@
       }
     }
   },
+  "buildings-house-1x1-1f-riad-a": {
+    "file": "buildings/house-1x1-1f-riad-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
+      }
+    }
+  },
+  "buildings-house-1x1-1f-riad-a-solar": {
+    "file": "buildings/house-1x1-1f-riad-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
+      }
+    }
+  },
   "buildings-house-1x1-1f-stuga-a": {
     "file": "buildings/house-1x1-1f-stuga-a",
     "source": "managed",
@@ -3595,6 +3653,64 @@
       }
     }
   },
+  "buildings-house-2x1-1f-riad-a": {
+    "file": "buildings/house-2x1-1f-riad-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
+      }
+    }
+  },
+  "buildings-house-2x1-1f-riad-a-solar": {
+    "file": "buildings/house-2x1-1f-riad-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
+      }
+    }
+  },
   "buildings-house-2x1-1f-stuga-a": {
     "file": "buildings/house-2x1-1f-stuga-a",
     "source": "managed",
@@ -4001,6 +4117,64 @@
       }
     }
   },
+  "buildings-house-2x1-2f-riad-a": {
+    "file": "buildings/house-2x1-2f-riad-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-riad-a-solar": {
+    "file": "buildings/house-2x1-2f-riad-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
+      }
+    }
+  },
   "buildings-house-2x1-2f-stuga-a": {
     "file": "buildings/house-2x1-2f-stuga-a",
     "source": "managed",
@@ -4172,6 +4346,64 @@
       "d": {
         "name": "greywood",
         "color": "#9a9488"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-riad-a": {
+    "file": "buildings/house-2x1-2f-third-riad-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
+      }
+    }
+  },
+  "buildings-house-2x1-2f-third-riad-a-solar": {
+    "file": "buildings/house-2x1-2f-third-riad-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
       }
     }
   },
@@ -5021,6 +5253,64 @@
       }
     }
   },
+  "buildings-house-2x2-2f-riad-a": {
+    "file": "buildings/house-2x2-2f-riad-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
+      }
+    }
+  },
+  "buildings-house-2x2-2f-riad-a-solar": {
+    "file": "buildings/house-2x2-2f-riad-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
+      }
+    }
+  },
   "buildings-house-2x2-2f-stuga-a": {
     "file": "buildings/house-2x2-2f-stuga-a",
     "source": "managed",
@@ -5528,6 +5818,64 @@
       "d": {
         "name": "greygreen",
         "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-riad-a": {
+    "file": "buildings/house-2x2-3f-riad-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
+      }
+    }
+  },
+  "buildings-house-2x2-3f-riad-a-solar": {
+    "file": "buildings/house-2x2-3f-riad-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
       }
     }
   },
@@ -6041,6 +6389,64 @@
       }
     }
   },
+  "buildings-house-2x2-4f-riad-a": {
+    "file": "buildings/house-2x2-4f-riad-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
+      }
+    }
+  },
+  "buildings-house-2x2-4f-riad-a-solar": {
+    "file": "buildings/house-2x2-4f-riad-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
+      }
+    }
+  },
   "buildings-house-2x2-4f-stuga-a": {
     "file": "buildings/house-2x2-4f-stuga-a",
     "source": "managed",
@@ -6548,6 +6954,64 @@
       "d": {
         "name": "greygreen",
         "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-riad-a": {
+    "file": "buildings/house-2x2-5f-riad-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
+      }
+    }
+  },
+  "buildings-house-2x2-5f-riad-a-solar": {
+    "file": "buildings/house-2x2-5f-riad-a-solar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "riadrose",
+        "color": "#c98a6a"
+      },
+      "b": {
+        "name": "sandstone",
+        "color": "#d8c08a"
+      },
+      "c": {
+        "name": "redclay",
+        "color": "#b5573a"
+      },
+      "d": {
+        "name": "ochre",
+        "color": "#d9b878"
       }
     }
   },

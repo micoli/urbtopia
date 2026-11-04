@@ -114,6 +114,7 @@ WORLD_ENTRIES = URBTOPIA_ENTRIES + [
     ("pine", "#c9955c"), ("darkwood", "#8a5a3a"), ("honey", "#d9a85c"), ("greywood", "#9a9488"), ("shingle", "#5a4636"), ("falured", "#9b3a2a"), ("dalablue", "#6a8aa3"),
     ("tarwood", "#5b4332"), ("earth", "#7b6a4f"), ("turfgreen", "#6f9a4a"),
     ("aegeanblue", "#2f6fb0"), ("turquoise", "#2aa7b5"), ("pastelpink", "#e8b8b0"),
+    ("riadrose", "#c98a6a"), ("sandstone", "#d8c08a"), ("redclay", "#b5573a"), ("zellige", "#2a7f8c"), ("majorelle", "#2e4fbf"), ("tilegreen", "#2f7d4f"),
 ]
 STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
 
@@ -5587,6 +5588,203 @@ def build_aegean(spec, out_dir):
                 parts.append(lpm.box(f"solar_panel_{row}_{column}", (0.2, 0.14, 0.012), at=((top_left + top_right) / 2 - 0.1 + column * 0.24 + 0.1, top_front + 0.28 + row * 0.18, roof_z + 0.05), color=c["solar"]))
 
     ob = lpm.finish(spec["id"], parts, palette, budget=8000 + 6000 * floors * max(1, w * d // 2), center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
+    return report
+
+
+def riad_screen(parts, tag, face, wall, u, bottom, width, height, c):
+    """A small window behind a wooden lattice: a dark opening, a frame and vertical bars."""
+    face_box(parts, f"{tag}_glass", face, wall, u, width, height, bottom, 0.012, c["frame"])
+    face_box(parts, f"{tag}_frame_top", face, wall, u, width + 0.03, 0.014, bottom + height, 0.02, c["wood"])
+    face_box(parts, f"{tag}_frame_bottom", face, wall, u, width + 0.03, 0.014, bottom - 0.014, 0.02, c["wood"])
+    for number in range(3):
+        face_box(parts, f"{tag}_bar_{number}", face, wall, u + (number - 1) * width / 3, 0.012, height, bottom, 0.02, c["wood"])
+    face_box(parts, f"{tag}_bar_h", face, wall, u, width, 0.01, bottom + height / 2, 0.02, c["wood"])
+
+
+def riad_palm(parts, c, tag, x, y, z, height):
+    """A palm: a slim trunk and a crown of six fronds."""
+    parts.append(lpm.prism(f"{tag}_trunk", 6, 0.022, height, at=(x, y, z), color=c["wood"], radius_top=0.014))
+    for number in range(6):
+        angle = number * 60
+        frond = lpm.box(f"{tag}_frond_{number}", (0.2, 0.035, 0.012), at=(x + 0.09, y, z + height - 0.02), color=c["palm"])
+        lpm.rotate(frond, -22, axis="Y", about=(x, y, z + height - 0.02))
+        lpm.rotate(frond, angle, axis="Z", about=(x, y, z + height - 0.02))
+        parts.append(frond)
+
+
+def riad_shrub(parts, c, tag, x, y, z, radius):
+    """A shrub in a small stone planter."""
+    parts.append(lpm.box(f"{tag}_planter", (2 * radius, 2 * radius, 0.035), at=(x, y, z), color=c["stone"]))
+    parts.append(lpm.prism(f"{tag}_leaves", 6, radius * 0.95, radius * 1.6, at=(x, y, z + 0.035), color=c["palm"], radius_top=radius * 0.45))
+
+
+def riad_orange_tree(parts, c, tag, x, y, z, height):
+    """A small orange tree: a trunk in a planter under a round crown."""
+    parts.append(lpm.box(f"{tag}_planter", (0.1, 0.1, 0.035), at=(x, y, z), color=c["stone"]))
+    parts.append(lpm.prism(f"{tag}_trunk", 5, 0.012, height * 0.5, at=(x, y, z + 0.035), color=c["wood"]))
+    parts.append(lpm.prism(f"{tag}_crown", 6, height * 0.26, height * 0.5, at=(x, y, z + 0.035 + height * 0.4), color=c["palm"], radius_top=height * 0.12))
+
+
+def riad_windcatcher(parts, c, tag, x, y, z, size, height):
+    """A badgir: a square tower with vertical slots between pale fins and a projecting cornice."""
+    parts.append(lpm.box(f"{tag}_base", (size + 0.04, size + 0.04, 0.03), at=(x, y, z), color=c["trim"]))
+    z += 0.03
+    parts.append(lpm.box(f"{tag}_body", (size, size, height), at=(x, y, z), color=c["wall"]))
+    parts.append(lpm.box(f"{tag}_cornice", (size + 0.05, size + 0.05, 0.03), at=(x, y, z + height), color=c["trim"]))
+    parts.append(lpm.box(f"{tag}_cap", (size + 0.02, size + 0.02, 0.02), at=(x, y, z + height + 0.03), color=c["wall"]))
+    pitch = size / 4.5
+    slot_bottom, slot_height = z + height * 0.3, height * 0.6
+    for face, wall, centre in (("front", y - size / 2, x), ("back", y + size / 2, x), ("left", x - size / 2, y), ("right", x + size / 2, y)):
+        for number in range(4):
+            u = centre + (number - 1.5) * pitch
+            face_box(parts, f"{tag}_{face}_slot_{number}", face, wall, u, pitch * 0.55, slot_height, slot_bottom, 0.012, c["frame"])
+        for number in range(3):
+            u = centre + (number - 1) * pitch
+            face_box(parts, f"{tag}_{face}_fin_{number}", face, wall, u, pitch * 0.2, slot_height, slot_bottom, 0.02, c["trim"])
+        face_box(parts, f"{tag}_{face}_band", face, wall, centre, size * 0.95, 0.02, z + height * 0.22, 0.02, c["accent"])
+
+
+def build_riad(spec, out_dir):
+    """A Moroccan riad, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    A ring of clay-colored walls around an open courtyard with a tiled floor, a fountain and an arcade, a horseshoe-arched door framed in zellige, small lattice windows,
+    battlements on the roof, galleries on the courtyard from Tier 3, a palm from Tier 4 and a corner tower with a green-tiled roof from Tier 5."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("accent", "vtone2"), ("tile", "vtone3"), ("glass", "glass_blue"), ("trim", "cream"),
+                                              ("wood", "darkwood"), ("frame", "graphite"), ("stone", "offwhite"), ("palm", "bush"), ("solar", "solar"), ("water", "aqua"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors, tier = spec["floors"], spec["tier"]
+    fh, plinth, thick = 0.28, 0.05, 0.3
+    hx, hy = w / 2 - 0.025, d / 2 - 0.025
+    cwx, cwy = hx - thick, hy - thick
+    height = floors * fh
+    top = plinth + height
+    parts = [lpm.box("plinth", (2 * hx + 0.02, 2 * hy + 0.02, plinth), at=(0, 0, 0), color=c["stone"]),
+             lpm.box("ring_front", (2 * hx, thick, height), at=(0, -hy + thick / 2, plinth), color=c["wall"]),
+             lpm.box("ring_back", (2 * hx, thick, height), at=(0, hy - thick / 2, plinth), color=c["wall"]),
+             lpm.box("ring_left", (thick, 2 * hy - 2 * thick, height), at=(-hx + thick / 2, 0, plinth), color=c["wall"]),
+             lpm.box("ring_right", (thick, 2 * hy - 2 * thick, height), at=(hx - thick / 2, 0, plinth), color=c["wall"]),
+             lpm.box("courtyard_floor", (2 * cwx, 2 * cwy, 0.012), at=(0, 0, plinth), color=c["accent"]),
+             lpm.box("courtyard_rug", (2 * cwx - 0.1, 2 * cwy - 0.1, 0.004), at=(0, 0, plinth + 0.012), color=c["palm"])]
+    for strip, (sx, sy, lx, ly) in enumerate(((0, -hy + thick / 2, 2 * hx + 0.03, thick + 0.03), (0, hy - thick / 2, 2 * hx + 0.03, thick + 0.03),
+                                              (-hx + thick / 2, 0, thick + 0.03, 2 * hy - 2 * thick), (hx - thick / 2, 0, thick + 0.03, 2 * hy - 2 * thick))):
+        parts.append(lpm.box(f"cornice_{strip}", (lx, ly, 0.03), at=(sx, sy, top), color=c["trim"]))
+    for number in range(int(2 * hx / 0.12)):
+        x = -hx + 0.06 + number * 0.12
+        for sign in (-1, 1):
+            parts.append(lpm.box(f"merlon_x_{number}_{sign}", (0.06, 0.05, 0.06), at=(x, sign * (hy - 0.025), top + 0.03), color=c["wall"]))
+    for number in range(int((2 * hy - 0.1) / 0.12)):
+        y = -hy + 0.17 + number * 0.12
+        for sign in (-1, 1):
+            parts.append(lpm.box(f"merlon_y_{number}_{sign}", (0.05, 0.06, 0.06), at=(sign * (hx - 0.025), y, top + 0.03), color=c["wall"]))
+
+    door_h = 0.3
+    arch_part(parts, "door_zellige", "front", -hy, arch_outline(0.0, plinth - 0.005, 0.32, door_h + 0.06), 0, 0.018, c["accent"])
+    arch_part(parts, "door_trim", "front", -hy, arch_outline(0.0, plinth, 0.26, door_h), 0, 0.022, c["trim"])
+    arch_part(parts, "door", "front", -hy, arch_outline(0.0, plinth, 0.22, door_h - 0.04), 0, 0.028, c["wood"])
+    for number, (dx, dz) in enumerate(((-0.05, 0.1), (0.05, 0.1), (-0.05, 0.18), (0.05, 0.18))):
+        parts.append(lpm.box(f"door_stud_{number}", (0.02, 0.02, 0.02), at=(dx, -hy - 0.03, plinth + dz), color=c["trim"]))
+
+    for level in range(floors):
+        z = plinth + level * fh
+        for face, wall, length in (("front", -hy, 2 * hx), ("back", hy, 2 * hx), ("left", -hx, 2 * hy), ("right", hx, 2 * hy)):
+            count = max(1, round(length / 0.55))
+            panel = length / count
+            for panel_index in range(count):
+                u = -length / 2 + (panel_index + 0.5) * panel
+                if face == "front" and level == 0 and abs(u) < 0.25:
+                    continue
+                if level == 0:
+                    riad_screen(parts, f"{face}_{level}_{panel_index}", face, wall, u, z + 0.16, 0.08, 0.09, c)
+                else:
+                    riad_screen(parts, f"{face}_{level}_{panel_index}", face, wall, u, z + 0.08, 0.1, 0.13, c)
+
+    inner = (("back", -cwy, 2 * cwx, "x"), ("front", cwy, 2 * cwx, "x"), ("right", -cwx, 2 * cwy, "y"), ("left", cwx, 2 * cwy, "y"))
+    for level in range(floors):
+        z = plinth + level * fh
+        if level and tier < 3:
+            break
+        for face, wall, length, _axis in inner:
+            count = max(1, round(length / 0.36))
+            panel = length / count
+            for panel_index in range(count):
+                u = -length / 2 + (panel_index + 0.5) * panel
+                arch_part(parts, f"arcade_{face}_{level}_{panel_index}_surround", face, wall, arch_outline(u, z + 0.01, 0.17, 0.24), 0, 0.012, c["accent"])
+                arch_part(parts, f"arcade_{face}_{level}_{panel_index}", face, wall, arch_outline(u, z + 0.02, 0.13, 0.21), 0, 0.016, c["frame"])
+        if level:
+            ledge = 0.09
+            for side, (lx, ly, sx_, sy_) in enumerate(((0, -cwy + ledge / 2, 2 * cwx, ledge), (0, cwy - ledge / 2, 2 * cwx, ledge),
+                                                       (-cwx + ledge / 2, 0, ledge, 2 * cwy - 2 * ledge), (cwx - ledge / 2, 0, ledge, 2 * cwy - 2 * ledge))):
+                parts.append(lpm.box(f"terrace_{level}_{side}", (sx_, sy_, 0.02), at=(lx, ly, z - 0.02), color=c["stone"]))
+                spots = max(1, int((sx_ if side < 2 else sy_) / 0.22))
+                for spot in range(spots):
+                    offset = -(sx_ if side < 2 else sy_) / 2 + ((sx_ if side < 2 else sy_) / spots) * (spot + 0.5)
+                    px, py = (offset, ly) if side < 2 else (lx, offset)
+                    riad_shrub(parts, c, f"terrace_{level}_{side}_{spot}", px, py, z, 0.035)
+
+    parts.append(lpm.prism("fountain_basin", 8, 0.1, 0.045, at=(0, 0, plinth + 0.012), color=c["stone"]))
+    parts.append(lpm.prism("fountain_water", 8, 0.085, 0.046, at=(0, 0, plinth + 0.012), color=c["water"]))
+    parts.append(lpm.prism("fountain_column", 8, 0.018, 0.12, at=(0, 0, plinth + 0.012), color=c["stone"]))
+    parts.append(lpm.prism("fountain_bowl", 8, 0.045, 0.02, at=(0, 0, plinth + 0.1), color=c["stone"], radius_top=0.055))
+    garden_z = plinth + 0.012
+    palm_corners = []
+    if tier >= 4:
+        palm_corners.append((1, 1))
+        riad_palm(parts, c, "palm", cwx - 0.12, cwy - 0.12, garden_z, 0.4)
+    if tier >= 6:
+        palm_corners.append((-1, -1))
+        riad_palm(parts, c, "palm_2", -(cwx - 0.12), -(cwy - 0.12), garden_z, 0.45)
+    for sx, sy in ((-1, -1), (-1, 1), (1, -1), (1, 1)):
+        if (sx, sy) in palm_corners:
+            continue
+        riad_shrub(parts, c, f"shrub_{sx}_{sy}", sx * (cwx - 0.06), sy * (cwy - 0.06), garden_z, 0.05)
+    if tier >= 2:
+        tree_spots = [(sx * cwx * 0.62, 0) for sx in (-1, 1)]
+        if cwy > 0.4:
+            tree_spots += [(0, sy * cwy * 0.62) for sy in (-1, 1)]
+        for number, (tx_, ty_) in enumerate(tree_spots):
+            riad_orange_tree(parts, c, f"orange_{number}", tx_, ty_, garden_z, 0.3 + 0.1 * min(floors, 3))
+    if tier >= 3:
+        hedge_length = 2 * cwx - 0.4
+        for sy in (-1, 1):
+            parts.append(lpm.box(f"hedge_{sy}", (hedge_length, 0.05, 0.05), at=(0, sy * (cwy - 0.04), garden_z), color=c["palm"]))
+    if tier >= 6:
+        for sx in (-1, 1):
+            parts.append(lpm.box(f"hedge_side_{sx}", (0.05, 2 * cwy - 0.4, 0.05), at=(sx * (cwx - 0.04), 0, garden_z), color=c["palm"]))
+
+    catcher_size = 0.16 if w == 1 else 0.2
+    catcher_h = 0.2 + 0.03 * floors
+    riad_windcatcher(parts, c, "windcatcher_1", hx - thick / 2, 0, top + 0.03, catcher_size, catcher_h)
+    if tier >= 5:
+        riad_windcatcher(parts, c, "windcatcher_2", -hx + thick / 2, 0.3, top + 0.03, catcher_size, catcher_h)
+    if tier >= 7:
+        riad_windcatcher(parts, c, "windcatcher_3", hx - thick / 2, hy * 0.7, top + 0.03, catcher_size, catcher_h)
+
+    if tier >= 5:
+        tx, ty, size = -hx + thick / 2 + 0.02, -hy + thick / 2 + 0.02, 0.26
+        tower_h = 0.28 + 0.05 * (tier - 5)
+        parts.append(lpm.box("tower", (size, size, tower_h), at=(tx, ty, top + 0.03), color=c["wall"]))
+        parts.append(lpm.box("tower_band", (size + 0.03, size + 0.03, 0.02), at=(tx, ty, top + 0.03 + tower_h * 0.6), color=c["accent"]))
+        parts.append(lpm.box("tower_cornice", (size + 0.05, size + 0.05, 0.025), at=(tx, ty, top + 0.03 + tower_h), color=c["trim"]))
+        parts.append(hip_roof("tower_roof", (size + 0.05) / 2, (size + 0.05) / 2, top + 0.055 + tower_h, 0.15, c["tile"], cx=tx, cy=ty))
+        for face, wall in (("front", ty - size / 2), ("back", ty + size / 2)):
+            arch_part(parts, f"tower_{face}", face, wall, arch_outline(tx, top + 0.03 + tower_h * 0.7 - 0.04, 0.08, 0.12), 0, 0.012, c["frame"])
+        for face, wall in (("left", tx - size / 2), ("right", tx + size / 2)):
+            arch_part(parts, f"tower_{face}", face, wall, arch_outline(ty, top + 0.03 + tower_h * 0.7 - 0.04, 0.08, 0.12), 0, 0.012, c["frame"])
+
+    if spec.get("solar"):
+        for number in range(4):
+            x = -0.6 + number * 0.4 if w >= 2 else -0.1 + number * 0.2
+            if abs(x) > hx - 0.2:
+                continue
+            parts.append(lpm.box(f"solar_panel_{number}", (0.2, 0.16, 0.012), at=(x, hy - thick / 2, top + 0.03), color=c["solar"]))
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=9000 + 7000 * floors * max(1, w * d // 2), center=False)
     report = export_model(ob, spec, out_dir)
     report["expected_footprint"] = [w, d]
     return report
