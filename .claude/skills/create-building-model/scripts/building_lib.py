@@ -6860,6 +6860,156 @@ def build_tata(spec, out_dir):
     return report
 
 
+def ndebele_motif(parts, tag, face, wall, u, z, size, kind, c, first, second):
+    """A big painted Ndebele motif on a wall: a stepped crest, a cross or a stepped pyramid made of colored rectangles, each outlined in white then black, with a small inner panel."""
+    s = size
+    if kind == 0:
+        rects = [(0.0, 0.0, s, 0.4 * s, first), (0.0, 0.4 * s, 0.66 * s, 0.3 * s, first), (0.0, 0.7 * s, 0.34 * s, 0.3 * s, first)]
+        inner = (0.0, 0.05 * s, 0.4 * s, 0.22 * s, second)
+    elif kind == 1:
+        rects = [(0.0, 0.34 * s, s, 0.3 * s, first), (0.0, 0.0, 0.3 * s, s, first)]
+        inner = (0.0, 0.41 * s, 0.2 * s, 0.16 * s, second)
+    else:
+        rects = [(0.0, 0.0, s, 0.28 * s, first), (0.0, 0.28 * s, 0.66 * s, 0.28 * s, first), (0.0, 0.56 * s, 0.33 * s, 0.28 * s, first)]
+        inner = (0.0, 0.07 * s, 0.34 * s, 0.14 * s, second)
+    for layer, (pad, color, thick) in enumerate(((0.014, "black", 0.008), (0.007, "white", 0.01), (0.0, None, 0.012))):
+        for number, (du, dz, a, h, col) in enumerate(rects):
+            face_box(parts, f"{tag}_{layer}_{number}", face, wall, u + du, a + 2 * pad, h + 2 * pad, z + dz - pad, thick, c[color] if color else col)
+    du, dz, a, h, col = inner
+    face_box(parts, f"{tag}_inner", face, wall, u + du, a, h, z + dz, 0.014, col)
+
+
+def ndebele_window(parts, tag, face, wall, u, bottom, c):
+    """A small dark window in a painted surround: black, white, then a colored frame."""
+    face_box(parts, f"{tag}_black", face, wall, u, 0.17, 0.19, bottom - 0.03, 0.008, c["black"])
+    face_box(parts, f"{tag}_white", face, wall, u, 0.15, 0.17, bottom - 0.02, 0.01, c["white"])
+    face_box(parts, f"{tag}_frame", face, wall, u, 0.125, 0.145, bottom - 0.008, 0.012, c["accent"])
+    face_box(parts, f"{tag}_glass", face, wall, u, 0.09, 0.11, bottom + 0.01, 0.016, c["dark"])
+
+
+def ndebele_triangles(parts, tag, face, wall, x_from, x_to, z, c):
+    """A band of colored triangles on a low wall seen from the front or the back, on a black stripe, in pink, blue, yellow and the accent colors."""
+    sign = -1 if face == "front" else 1
+    colors = (c["pink"], c["accent"], c["trim"])
+    count = max(1, round((x_to - x_from) / 0.11))
+    pitch = (x_to - x_from) / count
+    y0, y1 = sorted((wall - sign * 0.004, wall + sign * 0.006))
+    for number in range(count):
+        centre = x_from + (number + 0.5) * pitch
+        up = number % 2 == 0
+        outline = [(centre - pitch / 2 + 0.006, z), (centre + pitch / 2 - 0.006, z), (centre, z + 0.05)] if up else [(centre - pitch / 2 + 0.006, z + 0.05), (centre, z), (centre + pitch / 2 - 0.006, z + 0.05)]
+        parts.append(extrude_y(f"{tag}_tri_{number}", outline if face == "front" else outline[::-1], y0, y1, colors[number % 3]))
+
+
+def build_ndebele(spec, out_dir):
+    """A South African Ndebele homestead, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    A low house under a shallow gable tin roof, its walls painted with bold geometric motifs (stepped triangles, zigzags, checkers) between colored bands and corner stripes, an arched door and windows in thick painted surrounds, inside a painted low yard wall with a gate and a grass yard;
+    from Tier 2 a porch roof on two posts, 5 an acacia, 6 a water tank on legs, 7 painted gate pillars, 8 a second yard motif row."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("wall", "vtone1"), ("accent", "vtone2"), ("trim", "vtone3"), ("roof", "greythatch"), ("dark", "udark"), ("door", "graphite"), ("grass", "turfgreen"), ("white", "whitewash"), ("black", "graphite"), ("pink", "pink"),
+                                              ("pole", "timber"), ("leaf", "bush"), ("tank", "greywood"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors, tier = spec["floors"], spec["tier"]
+    fh, z0 = 0.26, 0.03
+    x0, x1, y0, y1 = -w / 2 + 0.005, w / 2 - 0.005, -d / 2 + 0.005, d / 2 - 0.005
+    t, h, gate = 0.04, 0.1, 0.16
+    side = (x1 - x0) / 2 - gate
+    parts = [lpm.box("yard_floor", (x1 - x0, y1 - y0, z0), at=(0, (y0 + y1) / 2, 0), color=c["grass"]),
+             lpm.box("yard_back", (x1 - x0, t, h), at=(0, y1 - t / 2, 0), color=c["white"]),
+             lpm.box("yard_left", (t, y1 - y0, h), at=(x0 + t / 2, (y0 + y1) / 2, 0), color=c["white"]),
+             lpm.box("yard_right", (t, y1 - y0, h), at=(x1 - t / 2, (y0 + y1) / 2, 0), color=c["white"]),
+             lpm.box("yard_front_left", (side, t, h), at=(x0 + side / 2, y0 + t / 2, 0), color=c["white"]),
+             lpm.box("yard_front_right", (side, t, h), at=(x1 - side / 2, y0 + t / 2, 0), color=c["white"])]
+    parts.append(lpm.box("yard_stripe_front_left", (side, t + 0.004, 0.025), at=(x0 + side / 2, y0 + t / 2, 0.0), color=c["black"]))
+    parts.append(lpm.box("yard_stripe_front_right", (side, t + 0.004, 0.025), at=(x1 - side / 2, y0 + t / 2, 0.0), color=c["black"]))
+    parts.append(lpm.box("yard_stripe_back", (x1 - x0, t + 0.004, 0.025), at=(0, y1 - t / 2, 0.0), color=c["black"]))
+    ndebele_triangles(parts, "yard_front_left", "front", y0, x0 + 0.02, x0 + side - 0.02, 0.035, c)
+    ndebele_triangles(parts, "yard_front_right", "front", y0, x1 - side + 0.02, x1 - 0.02, 0.035, c)
+    ndebele_triangles(parts, "yard_back", "back", y1, x0 + 0.04, x1 - 0.04, 0.035, c)
+    for number, (bx_, by_, lx, ly) in enumerate(((0, y1 - t / 2, x1 - x0, t), (x0 + t / 2, (y0 + y1) / 2, t, y1 - y0), (x1 - t / 2, (y0 + y1) / 2, t, y1 - y0),
+                                                  (x0 + side / 2, y0 + t / 2, side, t), (x1 - side / 2, y0 + t / 2, side, t))):
+        parts.append(lpm.box(f"yard_cap_{number}", (lx + 0.004, ly + 0.004, 0.015), at=(bx_, by_, h), color=c["black"]))
+    for sign in (-1, 1):
+        parts.append(lpm.box(f"gate_post_{sign}", (0.05, 0.06, 0.16 if tier < 7 else 0.2), at=(sign * gate, y0 + t / 2, 0), color=c["white"]))
+
+    bx, yb0, yb1 = w / 2 - 0.13, -d / 2 + 0.16, d / 2 - 0.08
+    height = floors * fh
+    z_w = z0 + height
+    cy = (yb0 + yb1) / 2
+    hr = (yb1 - yb0) / 2 + 0.05
+    rise = min(0.3, hr * 0.55)
+    parts.append(lpm.box("walls", (2 * bx, yb1 - yb0, height), at=(0, cy, z0), color=c["wall"]))
+    parts.append(extrude_x("roof", [(cy - hr, z_w - 0.01), (cy + hr, z_w - 0.01), (cy, z_w + rise)], -bx - 0.05, bx + 0.05, c["roof"]))
+    for sign in (-1, 1):
+        parts.append(extrude_x(f"gable_{sign}", [(cy - hr + 0.07, z_w - 0.005), (cy + hr - 0.07, z_w - 0.005), (cy, z_w + rise - 0.08)], *sorted((sign * (bx + 0.045), sign * (bx + 0.056))), c["trim"]))
+
+    faces = (("front", yb0, 2 * bx), ("back", yb1, 2 * bx), ("left", -bx, yb1 - yb0), ("right", bx, yb1 - yb0))
+    for face, wall, length in faces:
+        centre = 0.0 if face in ("front", "back") else cy
+        for level in range(floors):
+            z = z0 + level * fh
+            face_box(parts, f"{face}_stripe_top_{level}", face, wall, centre, length, 0.04, z + fh - 0.05, 0.01, c["white"])
+            face_box(parts, f"{face}_stripe_low_{level}", face, wall, centre, length, 0.03, z, 0.01, c["black"])
+        for sign in (-1, 1):
+            face_box(parts, f"{face}_corner_{sign}", face, wall, centre + sign * (length / 2 - 0.035), 0.07, height, z0, 0.012, c["white"])
+            for step in range(int(height / 0.09)):
+                face_box(parts, f"{face}_corner_{sign}_dot_{step}", face, wall, centre + sign * (length / 2 - 0.035), 0.04, 0.05, z0 + 0.04 + step * 0.09, 0.016, (c["accent"], c["trim"], c["pink"])[step % 3])
+        count = max(1, round(length / 0.5))
+        pitch = length / count
+        for level in range(floors):
+            z = z0 + level * fh
+            for bay in range(count):
+                u = centre - length / 2 + (bay + 0.5) * pitch
+                if face == "front" and level == 0 and abs(u) < 0.2:
+                    continue
+                if (bay + level) % 2 == 0:
+                    ndebele_window(parts, f"{face}_{level}_{bay}_win", face, wall, u, z + 0.1, c)
+                else:
+                    ndebele_motif(parts, f"{face}_{level}_{bay}_motif", face, wall, u, z + 0.05, min(0.17, pitch - 0.14), (bay + level + len(face)) % 3, c, (c["accent"], c["trim"], c["pink"])[(bay + 2 * level) % 3], (c["trim"], c["pink"], c["accent"])[(bay + level) % 3])
+        if face == "front" and count % 2 == 1 and count > 1:
+            pass
+    arch_part(parts, "door_surround", "front", yb0, arch_outline(0.0, z0 - 0.005, 0.24, 0.3), 0, 0.014, c["accent"])
+    arch_part(parts, "door", "front", yb0, arch_outline(0.0, z0, 0.17, 0.26), 0, 0.022, c["door"])
+    for step in range(3):
+        parts.append(lpm.box(f"door_step_{step}", (0.34, 0.04, (3 - step) * 0.015), at=(0.0, yb0 - 0.02 - step * 0.04, z0), color=c["white"]))
+    if tier >= 2:
+        for sign in (-1, 1):
+            parts.append(lpm.box(f"porch_post_{sign}", (0.02, 0.02, 0.28), at=(sign * 0.17, yb0 - 0.09, z0), color=c["trim"]))
+        parts.append(lpm.box("porch_roof", (0.44, 0.13, 0.025), at=(0.0, yb0 - 0.06, z0 + 0.3), color=c["roof"]))
+    if tier >= 5:
+        parts.append(lpm.prism("acacia_trunk", 5, 0.02, 0.2, at=(x1 - 0.14, y0 + 0.16, z0), color=c["pole"], radius_top=0.014))
+        parts.append(lpm.prism("acacia_crown", 8, 0.13, 0.05, at=(x1 - 0.14, y0 + 0.16, z0 + 0.2), color=c["leaf"], radius_top=0.1))
+    if tier >= 6:
+        tx, ty = x0 + 0.14, y1 - 0.14
+        for number, (lx, ly) in enumerate(((-0.04, -0.04), (0.04, -0.04), (-0.04, 0.04), (0.04, 0.04))):
+            parts.append(lpm.box(f"tank_leg_{number}", (0.014, 0.014, 0.12), at=(tx + lx, ty + ly, z0), color=c["pole"]))
+        parts.append(lpm.prism("tank", 8, 0.06, 0.1, at=(tx, ty, z0 + 0.12), color=c["tank"]))
+    if tier >= 8:
+        for number, u in enumerate((-0.6 * (x1 - x0) / 2, 0.6 * (x1 - x0) / 2)):
+            ndebele_motif(parts, f"yard_motif_{number}", "back", y1, u, 0.03, 0.06, number % 3, c, c["accent"], c["trim"])
+
+    if spec.get("solar"):
+        angle = math.degrees(math.atan2(rise, hr))
+        sine, cosine = math.sin(math.radians(angle)), math.cos(math.radians(angle))
+        count_x = max(1, int((2 * bx - 0.2) / 0.24))
+        for row, fraction in enumerate((0.45,) if d < 2 else (0.35, 0.65)):
+            for number in range(count_x):
+                px = (number - (count_x - 1) / 2) * 0.24
+                py, pz = cy + hr * (1 - fraction) + 0.015 * sine, z_w + fraction * rise + 0.015 * cosine
+                panel = lpm.box(f"solar_panel_{row}_{number}", (0.2, 0.26, 0.012), at=(px, py, pz), color=c["solar"])
+                lpm.rotate(panel, -angle, axis="X", about=(px, py, pz))
+                parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=30000 + 12000 * floors * max(1, w * d // 2), center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
+    return report
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")
