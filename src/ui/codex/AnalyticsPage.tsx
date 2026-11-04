@@ -6,6 +6,7 @@ const WEIGHTS = ['green', 'services', 'leisure', 'access'] as const;
 
 export function AnalyticsPage() {
   const { odor } = WASTE_FACILITIES.mound;
+  const { pollution: incinerator } = WASTE_FACILITIES.incinerator;
   return (
     <>
       <h3 className="codex-entry-name">{t('codex.analytics.title')}</h3>
@@ -24,6 +25,18 @@ export function AnalyticsPage() {
         <LabeledList.Row label={t('codex.analytics.odorMalus')}>{odor?.malus ?? 0}</LabeledList.Row>
         <LabeledList.Row label={t('codex.analytics.congestionMax')}>{CONGESTION.maxRatio * 100}</LabeledList.Row>
       </LabeledList>
+      <h4>{t('codex.analytics.cleanAir')}</h4>
+      <p>{t('codex.analytics.cleanAirHelp').replace('{cap}', String(ECOLOGY.coalWellbeingCap))}</p>
+      <LabeledList>
+        <LabeledList.Row label={t('codex.analytics.cleanAir.coalMalus')}>{ECOLOGY.coalWellbeingPenalty}</LabeledList.Row>
+        <LabeledList.Row label={t('codex.analytics.cleanAir.coalRadius')}>{ECOLOGY.coalPollutionRadius}</LabeledList.Row>
+        <LabeledList.Row label={t('codex.analytics.cleanAir.incineratorMalus')}>{incinerator?.malus ?? 0}</LabeledList.Row>
+        <LabeledList.Row label={t('codex.analytics.cleanAir.incineratorRadius')}>{incinerator?.radius ?? 0}</LabeledList.Row>
+        <LabeledList.Row label={t('codex.analytics.cleanAir.moundMalus')}>{odor?.malus ?? 0}</LabeledList.Row>
+        <LabeledList.Row label={t('codex.analytics.cleanAir.moundRadius')}>{odor?.radius ?? 0}</LabeledList.Row>
+        <LabeledList.Row label={t('codex.analytics.cleanAir.cap')}>{ECOLOGY.coalWellbeingCap}</LabeledList.Row>
+      </LabeledList>
+      <p>{t('codex.analytics.cleanAirSanction')}</p>
       <h4>{t('codex.analytics.landValue')}</h4>
       <p>{t('codex.analytics.landValueHelp').replace('{cut}', String(Math.round(LAND_VALUE.maxNuisanceCut * 100)))}</p>
       <LabeledList>
