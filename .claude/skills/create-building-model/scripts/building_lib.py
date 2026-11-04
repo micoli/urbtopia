@@ -6157,6 +6157,182 @@ def build_siheyuan(spec, out_dir):
     return report
 
 
+def stilt_window(parts, tag, face, wall, u, bottom, width, height, c):
+    """A small dark opening with a head board, a sill and an open shutter on each side."""
+    face_box(parts, f"{tag}_glass", face, wall, u, width, height, bottom, 0.012, c["glass"])
+    face_box(parts, f"{tag}_head", face, wall, u, width + 0.04, 0.014, bottom + height, 0.02, c["trim"])
+    face_box(parts, f"{tag}_sill", face, wall, u, width + 0.03, 0.012, bottom - 0.012, 0.024, c["trim"])
+    for side in (-1, 1):
+        face_box(parts, f"{tag}_shutter_{side}", face, wall, u + side * (width / 2 + 0.03), 0.045, height, bottom, 0.018, c["trim"])
+
+
+def stilt_planter(parts, c, tag, x, y, z):
+    """A terracotta pot on a rail with a bushy clump of leaves, a random handful of blooms in pink, white or honey, and often a vine hanging down the front; size and layout vary per pot."""
+    rng = random.Random(tag)
+    scale = rng.uniform(0.85, 1.25)
+    x += rng.uniform(-0.05, 0.05)
+    parts.append(lpm.prism(f"{tag}_pot", 8, 0.03 * scale, 0.04 * scale, at=(x, y, z), color=c["pot"], radius_top=0.036 * scale))
+    parts.append(lpm.prism(f"{tag}_clump", 6, 0.04 * scale, rng.uniform(0.04, 0.07), at=(x, y, z + 0.04 * scale), color=c["palm"], radius_top=0.02))
+    top = z + 0.075 * scale
+    for number in range(rng.randint(4, 7)):
+        leaf = lpm.box(f"{tag}_leaf_{number}", (rng.uniform(0.04, 0.065), 0.016, 0.01), at=(x + 0.03, y, top + rng.uniform(-0.01, 0.015)), color=c["palm"])
+        lpm.rotate(leaf, rng.uniform(10, 45), axis="Y", about=(x, y, top))
+        lpm.rotate(leaf, rng.uniform(0, 360), axis="Z", about=(x, y, top))
+        parts.append(leaf)
+    for number in range(rng.randint(1, 5)):
+        angle, reach = rng.uniform(0, 2 * math.pi), rng.uniform(0.0, 0.035)
+        size = rng.uniform(0.012, 0.02)
+        parts.append(lpm.box(f"{tag}_bloom_{number}", (size, size, size), at=(x + reach * math.cos(angle), y + reach * math.sin(angle), top + rng.uniform(0.0, 0.035)),
+                             color=c[rng.choice(("flower", "flower", "flower_white", "flower_honey"))]))
+    if rng.random() < 0.7:
+        length = rng.uniform(0.05, 0.13)
+        parts.append(lpm.box(f"{tag}_vine", (rng.uniform(0.02, 0.035), 0.01, length), at=(x + rng.uniform(-0.015, 0.015), y - 0.034, z - length / 2 - 0.01), color=c["palm"]))
+        if rng.random() < 0.6:
+            parts.append(lpm.box(f"{tag}_vine_bloom", (0.014, 0.012, 0.014), at=(x, y - 0.04, z - length), color=c[rng.choice(("flower", "flower_white", "flower_honey"))]))
+
+
+def stilt_palm(parts, c, tag, x, y, height):
+    """A coconut palm: a slim trunk and a crown of six drooping fronds."""
+    parts.append(lpm.prism(f"{tag}_trunk", 6, 0.02, height, at=(x, y, 0), color=c["trunk"], radius_top=0.013))
+    for number in range(6):
+        frond = lpm.box(f"{tag}_frond_{number}", (0.13, 0.03, 0.012), at=(x + 0.06, y, height - 0.02), color=c["palm"])
+        lpm.rotate(frond, -22, axis="Y", about=(x, y, height - 0.02))
+        lpm.rotate(frond, number * 60, axis="Z", about=(x, y, height - 0.02))
+        parts.append(frond)
+
+
+def stilt_longboat(parts, c, tag, x, y, length, canopy):
+    """A narrow longboat pulled up along Y, with a small thatched canopy on two posts when asked."""
+    half, tip = length / 2, 0.08
+    outline = [(x, y - half), (x + 0.04, y - half + tip), (x + 0.04, y + half - tip), (x, y + half), (x - 0.04, y + half - tip), (x - 0.04, y - half + tip)]
+    parts.append(extrude_z(f"{tag}_hull", outline, 0.0, 0.05, c["trim"]))
+    if not canopy:
+        return
+    for number, offset in enumerate((-0.08, 0.08)):
+        parts.append(lpm.box(f"{tag}_post_{number}", (0.012, 0.012, 0.1), at=(x, y + offset, 0.05), color=c["trim"]))
+    parts.append(lpm.box(f"{tag}_canopy", (0.1, 0.24, 0.02), at=(x, y, 0.15), color=c["roof"]))
+
+
+def build_stilt(spec, out_dir):
+    """A Southeast Asian stilt house, front facing -Y, on a (w, d) cell with `floors` floors; spec 'tier' (1 to 8) picks the ladder of the suburban Home.
+    A plank house on a grid of piles under a steep thatched gable roof with the ridge along X and crossed ridge boards, a front veranda with posts, a steep side stair to a small landing beside the veranda and a door,
+    from Tier 2 a veranda rail with plants, 3 a gable window and a balcony per upper floor, 4 a longboat on the ground, 5 a palm, 6 a second palm, 7 a water tank on legs, 8 a second boat under a canopy."""
+    style = spec.get("style", "world")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    c = {name: index(cell) for name, cell in (("roof", "vtone1"), ("wall", "vtone2"), ("trim", "vtone3"), ("pile", "timber"), ("glass", "udark"), ("door", "graphite"),
+                                              ("palm", "bush"), ("pot", "tile"), ("flower", "pink"), ("flower_white", "offwhite"), ("flower_honey", "honey"), ("trunk", "pine"), ("tank", "greywood"), ("solar", "solar"))}
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    w, d = spec["footprint"]
+    floors, tier = spec["floors"], spec["tier"]
+    pile_h, fh = 0.2, 0.26
+    bx_d, bx = w / 2 - 0.18, w / 2 - 0.2
+    deck_y0, deck_y1 = -d / 2 + 0.04, d / 2 - 0.06
+    y_f, y_b = -d / 2 + 0.32, d / 2 - 0.08
+    z0 = pile_h + 0.03
+    z_w = z0 + floors * fh
+    hr, x_end = d / 2 - 0.005, w / 2 - 0.005
+    rise = min(0.62, 0.7 * hr)
+    parts = [lpm.box("deck", (2 * bx_d, deck_y1 - deck_y0, 0.03), at=(0, (deck_y0 + deck_y1) / 2, pile_h), color=c["trim"]),
+             lpm.box("walls", (2 * bx, y_b - y_f, floors * fh), at=(0, (y_f + y_b) / 2, z0), color=c["wall"]),
+             extrude_x("roof", [(-hr, z_w - 0.02), (hr, z_w - 0.02), (0, z_w + rise)], -x_end, x_end, c["roof"]),
+             lpm.box("ridge", (2 * x_end, 0.06, 0.04), at=(0, 0, z_w + rise - 0.02), color=c["roof"])]
+
+    pile_xs = [-bx_d + 0.03 + number * (2 * bx_d - 0.06) / max(1, round((2 * bx_d - 0.06) / 0.45)) for number in range(max(1, round((2 * bx_d - 0.06) / 0.45)) + 1)]
+    pile_ys = [deck_y0 + 0.04, deck_y1 - 0.04] if d < 1.5 else [deck_y0 + 0.04, (deck_y0 + deck_y1) / 2, deck_y1 - 0.04]
+    for row, y in enumerate(pile_ys):
+        for number, x in enumerate(pile_xs):
+            parts.append(lpm.box(f"pile_{row}_{number}", (0.04, 0.04, pile_h), at=(x, y, 0), color=c["pile"]))
+        parts.append(lpm.box(f"pile_beam_{row}", (2 * bx_d - 0.04, 0.025, 0.025), at=(0, y, pile_h - 0.03), color=c["pile"]))
+        parts.append(lpm.box(f"pile_brace_{row}", (2 * bx_d - 0.04, 0.02, 0.02), at=(0, y, 0.07), color=c["pile"]))
+
+    for sign, face in ((-1, "left"), (1, "right")):
+        plane = sign * (x_end + 0.012)
+        x0, x1 = sorted((sign * (x_end - 0.003), plane))
+        parts.append(extrude_x(f"gable_{face}", [(-hr + 0.12, z_w - 0.01), (hr - 0.12, z_w - 0.01), (0, z_w + rise - 0.13)], x0, x1, c["wall"]))
+        if tier >= 3:
+            face_box(parts, f"gable_{face}_window", face, plane - sign * 0.006, 0.0, 0.14, 0.12, z_w + 0.05, 0.012, c["glass"])
+        for boards in (-1, 1):
+            board = lpm.box(f"kalae_{face}_{boards}", (0.014, 0.02, 0.2), at=(sign * (x_end - 0.01), 0, z_w + rise - 0.02), color=c["trim"])
+            lpm.rotate(board, boards * 38, axis="X", about=(sign * (x_end - 0.01), 0, z_w + rise - 0.02))
+            parts.append(board)
+
+    post_count = max(2, round(2 * bx_d / 0.6) + 1)
+    post_xs = [-bx_d + 0.03 + number * (2 * bx_d - 0.06) / (post_count - 1) for number in range(post_count)]
+    for number, x in enumerate(post_xs):
+        parts.append(lpm.box(f"veranda_post_{number}", (0.03, 0.03, floors * fh), at=(x, deck_y0 + 0.03, z0), color=c["trim"]))
+    for level in range(floors):
+        if level > 0:
+            parts.append(lpm.box(f"balcony_{level}", (2 * bx_d, y_f - deck_y0, 0.025), at=(0, (deck_y0 + y_f) / 2, z0 + level * fh - 0.025), color=c["trim"]))
+        if tier >= 2 or level > 0:
+            parts.append(lpm.box(f"rail_{level}", (2 * bx_d - 0.06, 0.014, 0.014), at=(0, deck_y0 + 0.03, z0 + level * fh + 0.1), color=c["trim"]))
+            parts.append(lpm.box(f"rail_low_{level}", (2 * bx_d - 0.06, 0.012, 0.012), at=(0, deck_y0 + 0.03, z0 + level * fh + 0.04), color=c["trim"]))
+        if tier >= 2:
+            for number in range(post_count - 1):
+                stilt_planter(parts, c, f"plant_{level}_{number}", (post_xs[number] + post_xs[number + 1]) / 2, deck_y0 + 0.03, z0 + level * fh + 0.107)
+        base = z0 + level * fh + 0.07
+        pitch = 0.45
+        count = max(1, round(2 * bx / pitch))
+        for number in range(count):
+            u = -bx + (number + 0.5) * 2 * bx / count
+            if not (level == 0 and abs(u - 0.12) < 0.18):
+                stilt_window(parts, f"front_{level}_{number}", "front", y_f, u, base, 0.12, 0.14, c)
+            stilt_window(parts, f"back_{level}_{number}", "back", y_b, u, base, 0.12, 0.14, c)
+        side_count = max(1, round((y_b - y_f) / pitch))
+        for number in range(side_count):
+            y = y_f + (number + 0.5) * (y_b - y_f) / side_count
+            for face, wall in (("left", -bx), ("right", bx)):
+                stilt_window(parts, f"{face}_{level}_{number}", face, wall, y, base, 0.12, 0.14, c)
+
+    face_box(parts, "door", "front", y_f, 0.12, 0.16, 0.22, z0, 0.016, c["door"])
+    face_box(parts, "door_lintel", "front", y_f, 0.12, 0.22, 0.02, z0 + 0.22, 0.024, c["trim"])
+    steps, stair_x = 4, -bx_d - 0.08
+    stair_y0 = deck_y0 + 0.04
+    for step in range(steps):
+        parts.append(lpm.box(f"ladder_step_{step}", (0.14, 0.05, (step + 1) * z0 / (steps + 1)), at=(stair_x, stair_y0 + step * 0.05, 0), color=c["trim"]))
+    stair_rail(parts, "ladder_rail", stair_x - 0.07, stair_y0, z0 / (steps + 1), stair_y0 + 0.05 * (steps - 1), z0 * steps / (steps + 1), 0.08, c["trim"])
+    landing_y0, landing_y1 = stair_y0 + steps * 0.05 - 0.025, y_f + 0.1
+    landing_y = (landing_y0 + landing_y1) / 2
+    parts.append(lpm.box("landing", (0.15, landing_y1 - landing_y0, 0.03), at=(-bx_d - 0.075, landing_y, pile_h), color=c["trim"]))
+    parts.append(lpm.box("landing_post", (0.03, 0.03, pile_h), at=(-bx_d - 0.135, landing_y1 - 0.02, 0), color=c["pile"]))
+    parts.append(lpm.box("landing_rail_side", (0.012, landing_y1 - landing_y0, 0.012), at=(-bx_d - 0.144, landing_y, z0 + 0.09), color=c["trim"]))
+    parts.append(lpm.box("landing_rail_end", (0.15, 0.012, 0.012), at=(-bx_d - 0.075, landing_y1 - 0.006, z0 + 0.09), color=c["trim"]))
+    for number, (px, py) in enumerate(((-bx_d - 0.144, landing_y0 + 0.01), (-bx_d - 0.144, landing_y1 - 0.01), (-bx_d - 0.01, landing_y1 - 0.01))):
+        parts.append(lpm.box(f"landing_rail_post_{number}", (0.016, 0.016, 0.1), at=(px, py, z0), color=c["trim"]))
+
+    right_free = bx_d + 0.09
+    if tier >= 4:
+        stilt_longboat(parts, c, "boat", right_free, -d / 2 + 0.35, 0.4, False)
+    if tier >= 5:
+        stilt_palm(parts, c, "palm_0", right_free - 0.04, d / 2 - 0.15, 0.5)
+    if tier >= 6:
+        stilt_palm(parts, c, "palm_1", -right_free + 0.04, d / 2 - 0.15, 0.42)
+    if tier >= 7:
+        for number, (lx, ly) in enumerate(((-0.04, -0.04), (0.04, -0.04), (-0.04, 0.04), (0.04, 0.04))):
+            parts.append(lpm.box(f"tank_leg_{number}", (0.014, 0.014, 0.12), at=(right_free + lx, 0.1 + ly, 0), color=c["pile"]))
+        parts.append(lpm.prism("tank", 8, 0.06, 0.1, at=(right_free, 0.1, 0.12), color=c["tank"]))
+    if tier >= 8:
+        stilt_longboat(parts, c, "boat_1", right_free, -d / 2 + 0.95, 0.4, True)
+
+    if spec.get("solar"):
+        angle = math.degrees(math.atan2(rise, hr))
+        sine, cosine = math.sin(math.radians(angle)), math.cos(math.radians(angle))
+        count_x = max(1, int((2 * bx - 0.1) / 0.24))
+        for row, fraction in enumerate((0.45,) if d < 2 else (0.35, 0.65)):
+            for number in range(count_x):
+                px = (number - (count_x - 1) / 2) * 0.24
+                py, pz = hr * (1 - fraction) + 0.015 * sine, z_w + fraction * rise + 0.015 * cosine
+                panel = lpm.box(f"solar_panel_{row}_{number}", (0.2, 0.26, 0.012), at=(px, py, pz), color=c["solar"])
+                lpm.rotate(panel, -angle, axis="X", about=(px, py, pz))
+                parts.append(panel)
+
+    ob = lpm.finish(spec["id"], parts, palette, budget=10000 + 8000 * floors, center=False)
+    report = export_model(ob, spec, out_dir)
+    report["expected_footprint"] = [w, d]
+    return report
+
+
 def build(spec, out_dir):
     """Build, check, export <out_dir>/<id>.blend + <id>.glb. Returns the lpm report."""
     style = spec.get("style", "kenney")
