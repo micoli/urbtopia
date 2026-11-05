@@ -4,7 +4,12 @@ import { Icon } from '../../common/Icon';
 import type { IconName } from '../../common/iconRegistry';
 
 const SECTIONS: [string, IconName, MessageKey][] = [
-    ['production', 'production', 'eco.production'], ['nature', 'nature', 'build.greenSpaces'], ['services', 'services', 'stats.services'], ['transportMap', 'map', 'eco.transportMap'],
+    ['production', 'production', 'eco.production'],
+    ['nature', 'nature', 'build.greenSpaces'],
+    ['services', 'services', 'stats.services'],
+    ['traffic', 'transport', 'eco.traffic'],
+    ['transportMap', 'map', 'eco.transportMap'],
+    ['tourism', 'tourism', 'tourism.title'],
 ];
 
 interface SectionNavigationProps {

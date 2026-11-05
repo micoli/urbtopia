@@ -72,7 +72,6 @@ function CityManagementDialog() {
             <p className="eco-units">{t('eco.units')}</p>
             <div className="eco-sections">
                 <ProductionSection state={state} energy={energy}/>
-                <TourismSection state={state}/>
                 <EnergySection state={state} energy={energy} green={green} transport={transport}/>
                 <WaterSection state={state}/>
                 <ServicesSection state={state}/>
@@ -82,10 +81,11 @@ function CityManagementDialog() {
                 <WellbeingSection green={green}/>
                 <EmissionsSection climate={climate} energy={energy} transport={transport}/>
                 <TemperatureSection breakdown={temperature} elements={coolingElements(state)} items={heatSourceItems(state, {climate, energy, transport, cooling: green.cooling})}/>
-                <TransportSection transport={transport}/>
-                <TransportMapSection state={state} transport={transport} congestion={congestion}/>
                 <TrafficSection state={state} congestion={congestion} transport={transport} onShowTransport={() => showSection('eco-transport')}/>
                 <RailMetroSection state={state} transport={transport}/>
+                <TransportSection transport={transport}/>
+                <TransportMapSection state={state} transport={transport} congestion={congestion}/>
+                <TourismSection state={state}/>
                 <ObjectivesSection state={state} energy={energy} green={green} transport={transport}/>
                 <NextUnlockSection/>
             </div>

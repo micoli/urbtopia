@@ -26,7 +26,7 @@ export function TourismSection({state}: { state: GameState }) {
         for (const row of overview.rows) if (row.takings >= 1) gameStore.getState().send({type: 'Collect', buildingId: row.building.id});
     };
     return <section id="eco-tourism" className="eco-wide">
-        <SectionHeading icon="ticket">{t('tourism.title')}</SectionHeading>
+        <SectionHeading icon="tourism">{t('tourism.title')}</SectionHeading>
         <p>{t('tourism.help')}</p>
         {overview.rows.length === 0 ? <p>{emptyMessage(state)}</p> : <>
             <div className="tourism-overview">
