@@ -110,7 +110,7 @@ export { HOUSING_REGIONS, type HousingRegion } from './buildings/housingRegions'
 export type { BuildingKind } from './buildings/buildingDefinition';
 export type { ProductionType, ShopType } from './buildings/buildingTypes.generated';
 export { colorVariantsOf, colorVariantsOfKit, colorVariantsOfType, isRepaintableType, mayCarryLegacyColor, paintKitAt, paintKitOf, toneLabelOf, type PaintKit, type ToneLabel } from './buildings/paint';
-export { citizensOf, totalCitizens, utilityCapacity, utilityDemand } from './buildings/city';
+export { citizensOf, totalCitizens, utilityCapacity, utilityDemand, waterDemandSplit } from './buildings/city';
 export type { UtilityTotals } from './buildings/city';
 export { FARM_TIERS, PRODUCTION_UPGRADE_COSTS, HOME_FOOTPRINTS, HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, TAX, UTILITY_CAPACITY, COAL_CAPACITY } from './economy/economy';
 export { SHOP_TYPES, canSell, goodCategoryOf, hasCounter, newGoodsAtNextTier, isShopType, sellsGoods, stackCountOf, saleIntervalOf, sellableGoodsOf, shopTierOf, slotPriceOf } from './economy/shops';

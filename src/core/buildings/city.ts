@@ -48,6 +48,21 @@ export function utilityDemand(state: GameState): UtilityTotals {
   return demand;
 }
 
+export interface WaterDemandSplit {
+  citizens: number;
+  agriculture: number;
+}
+
+// Citizens: Homes and the public facilities that serve them. Agriculture: growing Crops and Orchards.
+export function waterDemandSplit(state: GameState): WaterDemandSplit {
+  const citizens = state.buildings.reduce((total, building) => {
+    if (isHomeType(building.type)) return total + (HOME_TIERS[building.tier - 1]?.water ?? 0);
+    return total + (isFacilityType(building.type) ? FACILITIES[building.type].water : 0);
+  }, 0);
+  const orchards = state.buildings.reduce((total, building) => total + orchardWaterDemandOf(building.type), 0);
+  return { citizens, agriculture: cropWaterDemand(state) + orchards };
+}
+
 function computeUtilityDemand(state: GameState): UtilityTotals {
   const saving = energySavingOf(state);
   const buildings = state.buildings.reduce<UtilityTotals>(

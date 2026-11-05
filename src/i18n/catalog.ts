@@ -1076,6 +1076,8 @@ export const CATALOG = {
   'error.utilityInUse': ['The city still needs this Capacity.', 'La ville a encore besoin de cette capacité.'],
   'stat.citizens': ['Citizens', 'Habitants'],
   'stat.power': ['Power', 'Électricité'],
+  'water.citizens': ['Citizens (Homes and public facilities)', 'Citoyens (logements et équipements publics)'],
+  'water.agriculture': ['Agriculture (Crops and Orchards)', 'Agriculture (cultures et vergers)'],
   'stat.water': ['Water', 'Eau'],
   'stat.time': ['Time of day', 'Heure du jour'],
   'home.tier': ['Tier', 'Niveau'],
