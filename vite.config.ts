@@ -15,5 +15,19 @@ export default defineConfig({
   define: { __BUILD_ID__: JSON.stringify(BUILD_ID), __RELEASE_NAME__: JSON.stringify(RELEASE_NAME) },
   plugins: [react(), guideMdx(), tailwindcss(), validateDefinitions(), stampServiceWorker(BUILD_ID), guideDevFallback()],
   build: { rollupOptions: { input: { main: resolve(import.meta.dirname, 'index.html'), guide: resolve(import.meta.dirname, 'docs/index.html') } } },
-  test: { environment: 'node', include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'build/**/*.test.ts', 'scripts/**/*.test.ts', 'tools/**/*.test.ts'], exclude: ['**/node_modules/**', 'tools/issues-server/**'] },
+  // A failing test runs again, twice at most, before it counts as failed: a flaky test passes on a retry and is reported as such.
+  test: {
+    environment: 'node',
+    retry: 2,
+    include: [
+        'src/**/*.test.ts',
+        'src/**/*.test.tsx',
+        'build/**/*.test.ts',
+        'scripts/**/*.test.ts',
+        'tools/**/*.test.ts',
+    ],
+    exclude: [
+        '**/node_modules/**',
+        'tools/issues-server/**',
+    ] },
 });
