@@ -4,11 +4,14 @@ import { isFacilityType, type FacilityType } from '../core/services/facilities';
 
 export type Language = 'en' | 'fr';
 export type Layout = 'C' | 'A' | 'B';
+// How the pedestrians of the map are drawn: as stick figures, or as the avatars of the players.
+export type PedestrianModel = 'stickman' | 'avatar';
 
 export interface Prefs {
   language: Language;
   layout: Layout;
   traffic: boolean;
+  pedestrianModel: PedestrianModel;
   confirmSale: boolean;
   showReach: boolean;
   showProductionPreview: boolean;
@@ -27,6 +30,7 @@ export const PREFS_KEY = 'urbtopia-prefs';
 
 const LANGUAGES: Language[] = ['en', 'fr'];
 const LAYOUTS: Layout[] = ['C', 'A', 'B'];
+const PEDESTRIAN_MODELS: PedestrianModel[] = ['stickman', 'avatar'];
 export const MATCH_SPEEDS = [0.25, 0.5, 1, 2, 4, 8] as const;
 export type MatchSpeed = (typeof MATCH_SPEEDS)[number];
 
@@ -35,7 +39,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1 };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1 };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -43,6 +47,7 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       language: LANGUAGES.includes(parsed.language as Language) ? (parsed.language as Language) : fallback.language,
       layout: LAYOUTS.includes(parsed.layout as Layout) ? (parsed.layout as Layout) : fallback.layout,
       traffic: typeof parsed.traffic === 'boolean' ? parsed.traffic : fallback.traffic,
+      pedestrianModel: PEDESTRIAN_MODELS.includes(parsed.pedestrianModel as PedestrianModel) ? (parsed.pedestrianModel as PedestrianModel) : fallback.pedestrianModel,
       confirmSale: typeof parsed.confirmSale === 'boolean' ? parsed.confirmSale : fallback.confirmSale,
       showReach: typeof parsed.showReach === 'boolean' ? parsed.showReach : fallback.showReach,
       showProductionPreview: typeof parsed.showProductionPreview === 'boolean' ? parsed.showProductionPreview : fallback.showProductionPreview,
@@ -69,9 +74,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }: Prefs): void {
+function writeStored({ language, layout, traffic, pedestrianModel, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrianModel, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -81,6 +86,7 @@ export interface PrefsStore extends Prefs {
   setLanguage: (language: Language) => void;
   setLayout: (layout: Layout) => void;
   setTraffic: (traffic: boolean) => void;
+  setPedestrianModel: (model: PedestrianModel) => void;
   setConfirmSale: (confirmSale: boolean) => void;
   setShowReach: (showReach: boolean) => void;
   setShowProductionPreview: (showProductionPreview: boolean) => void;
@@ -109,6 +115,10 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   },
   setTraffic: (traffic) => {
     set({ traffic });
+    writeStored(get());
+  },
+  setPedestrianModel: (pedestrianModel) => {
+    set({ pedestrianModel });
     writeStored(get());
   },
   setConfirmSale: (confirmSale) => {

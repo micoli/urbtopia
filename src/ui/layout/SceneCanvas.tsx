@@ -84,6 +84,7 @@ export function SceneCanvas() {
     const showDayCycle = () => scene.setDayCycleOverride(prefsStore.getState().alwaysDay || isAlwaysDayRequested(window.location.search), pinnedCycleHourOf(window.location.search));
     showDayCycle();
     scene.setBrushMode(uiStore.getState().tool?.kind === 'brush');
+    void scene.setPedestrianModel(prefsStore.getState().pedestrianModel);
     scene.setLevel(uiStore.getState().level);
     const showSelection = () => {
       const state = gameStore.getState().state;
@@ -120,6 +121,7 @@ export function SceneCanvas() {
       if (prefs.serviceCoverageType !== previous.serviceCoverageType) showServiceCoverage();
       showTraffic();
       if (prefs.alwaysDay !== previous.alwaysDay) showDayCycle();
+      if (prefs.pedestrianModel !== previous.pedestrianModel) void scene.setPedestrianModel(prefs.pedestrianModel);
       if (prefs.showReach !== previous.showReach) showSelection();
     });
     return () => {

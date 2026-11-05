@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { cityAttractiveness, footprintOf, isCrowdMoving, isStandsType, sellsTickets, standsOfCove, touristsPerDay, type Building, type GameState } from '../core';
 import { CROWD, crowdPresence, crowdSlots, gatheringFigures, standsSeats, visitorFigures, type CrowdSlot } from './attractionCrowd';
+import type { PedestrianModel } from '../i18n/prefsStore';
+import { AVATAR_HEIGHT, avatarScale, avatarsReady } from './avatarModels';
+import { AvatarActors, type Actor } from './AvatarActors';
+import type { ModelLibrary } from './modelLibrary';
 import { stickSpectator } from './stickFigures';
 
 const FIGURE_COLORS = [0xe5484d, 0x4da3ff, 0xffd23f, 0x4be3a2, 0xbba4ff, 0xffa940, 0xf4f6fb].map(color => new THREE.Color(color));
@@ -53,8 +57,14 @@ export class AttractionCrowdLayer {
   private enabled = true;
   private time = 0;
   private placement = new THREE.Object3D();
+  private avatars: AvatarActors | null = null;
+  private model: PedestrianModel = 'stickman';
+  private avatarSize = 1;
+  private actors: Actor[] = [];
 
-  constructor() {
+  constructor(private library?: ModelLibrary) {
+    this.avatars = library ? new AvatarActors(library, this.capacity) : null;
+    if (this.avatars) this.root.add(this.avatars.root);
     this.figures.frustumCulled = false;
     this.figures.count = 0;
     this.beams.frustumCulled = false;
@@ -63,6 +73,21 @@ export class AttractionCrowdLayer {
     this.figures.setColorAt(0, FIGURE_COLORS[0]!);
     this.beams.setColorAt(0, BEAM_COLORS[0]!);
     this.root.add(this.figures, this.beams);
+  }
+
+  // The crowd is stick figures, or the avatars of the players once their models are in the library.
+  setModel(model: PedestrianModel): void {
+    this.model = model;
+    this.applyModel();
+  }
+
+  private showsAvatars(): boolean {
+    return this.model === 'avatar' && avatarsReady(this.library);
+  }
+
+  private applyModel(): void {
+    this.figures.visible = !this.showsAvatars();
+    if (this.avatars) this.avatars.root.visible = this.showsAvatars();
   }
 
   setEnabled(enabled: boolean): void {
@@ -98,15 +123,20 @@ export class AttractionCrowdLayer {
   update(deltaSeconds: number): void {
     if (!this.enabled) return;
     this.time += deltaSeconds;
+    this.applyModel();
+    if (this.showsAvatars() && this.avatarSize === 1 && this.library) this.avatarSize = avatarScale(this.library, AVATAR_HEIGHT);
+    this.actors = [];
     let drawn = 0;
     for (const site of this.sites) drawn = this.drawSite(site, deltaSeconds, drawn);
     this.figures.count = drawn;
+    if (this.showsAvatars()) this.avatars?.update(this.actors, deltaSeconds);
     this.figures.instanceMatrix.needsUpdate = true;
     if (this.figures.instanceColor) this.figures.instanceColor.needsUpdate = true;
     this.drawBeams();
   }
 
   dispose(): void {
+    this.avatars?.dispose();
     this.figures.dispose();
     this.figures.geometry.dispose();
     this.material.dispose();
@@ -155,8 +185,13 @@ export class AttractionCrowdLayer {
       this.placement.rotation.set(0, next < 1 ? Math.atan2(slot.x - slot.fromX, slot.z - slot.fromZ) : slot.yaw, 0);
       this.placement.scale.setScalar(Math.min(1, next * 8));
       this.placement.updateMatrix();
-      this.figures.setMatrixAt(index, this.placement.matrix);
-      this.figures.setColorAt(index, FIGURE_COLORS[slot.color]!);
+      if (this.showsAvatars()) {
+        // A tourist keeps its avatar from one frame to the next: it follows the seat, not the order of drawing. It walks in, then stands or sits.
+        this.actors.push({ id: site.id * SLOTS_PER_SITE + slotIndex, x, z, y: this.placement.position.y, yaw: this.placement.rotation.y, scale: this.avatarSize * this.placement.scale.x, walking: next < 1 || (slot.seatHeight === undefined && drift > 0), pace: next < 1 ? 1 : 0.35 });
+      } else {
+        this.figures.setMatrixAt(index, this.placement.matrix);
+        this.figures.setColorAt(index, FIGURE_COLORS[slot.color]!);
+      }
       index++;
     });
     return index;

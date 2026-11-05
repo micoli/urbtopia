@@ -19,7 +19,9 @@ import { facilityFootprint, modelOfBuilding, renderItemsOf, type HarvestedTile }
 import { ServiceVehicleLayer } from './ServiceVehicleLayer';
 import { CongestionLayer } from './CongestionLayer';
 import { AttractionCrowdLayer } from './AttractionCrowdLayer';
-import { PedestrianLayer, UNDERGROUND_WALK } from './PedestrianLayer';
+import { PedestrianLayer, SURFACE_WALK, UNDERGROUND_WALK } from './PedestrianLayer';
+import type { PedestrianModel } from '../i18n/prefsStore';
+import { AVATAR_ASSETS } from './avatarModels';
 import { BoatLayer } from './BoatLayer';
 import { BridgeLayer } from './BridgeLayer';
 import { TrafficLayer } from './TrafficLayer';
@@ -97,10 +99,10 @@ export class GameScene {
   private ecologicalState: GameState | null = null;
   private congestion = new CongestionLayer();
   private traffic = new TrafficLayer(this.library);
-  private pedestrians = new PedestrianLayer();
-  private undergroundWalkers = new PedestrianLayer(UNDERGROUND_WALK);
+  private pedestrians = new PedestrianLayer(SURFACE_WALK, this.library);
+  private undergroundWalkers = new PedestrianLayer(UNDERGROUND_WALK, this.library);
   private underground = new UndergroundLayer(this.library);
-  private attractionCrowd = new AttractionCrowdLayer();
+  private attractionCrowd = new AttractionCrowdLayer(this.library);
   private serviceVehicles = new ServiceVehicleLayer(this.library);
   private boats = new BoatLayer(this.library);
   private bridges = new BridgeLayer(this.library);
@@ -267,6 +269,14 @@ export class GameScene {
     this.pedestrians.setEnabled(enabled);
     this.attractionCrowd.setEnabled(enabled);
     this.serviceVehicles.setEnabled(enabled);
+  }
+
+  // The avatars are loaded when asked for; until they are in, the pedestrians stay stick figures.
+  async setPedestrianModel(model: PedestrianModel): Promise<void> {
+    if (model === 'avatar') await this.library.ensure(AVATAR_ASSETS);
+    this.pedestrians.setModel(model);
+    this.undergroundWalkers.setModel(model);
+    this.attractionCrowd.setModel(model);
   }
 
   setAfterHarvest(tiles: readonly HarvestedTile[]): void {

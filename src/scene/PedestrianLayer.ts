@@ -1,5 +1,9 @@
 import * as THREE from 'three';
 import { congestionStats, hashSeed, nextRandom, pedestrianGraph, undergroundWalkGraph, type GameState, type PedestrianGraph } from '../core';
+import { AVATAR_HEIGHT, avatarScale, avatarsReady } from './avatarModels';
+import type { PedestrianModel } from '../i18n/prefsStore';
+import { AvatarActors, type Actor } from './AvatarActors';
+import type { ModelLibrary } from './modelLibrary';
 import { stickCyclist, stickPedestrian } from './stickFigures';
 import { bridgeElevation, type ElevationAt } from './bridgeElevation';
 import { MAX_CYCLISTS, tileOfNode, MAX_PEDESTRIANS, advancePedestrian, crossedTile, isOnGraph, pedestrianPose, startPedestrian, targetPedestrianCount, type Pedestrian } from './pedestrianWalk';
@@ -9,6 +13,8 @@ const BASE_SPEED = 0.35;
 const CYCLING_SPEED_FACTOR = 2.5;
 const SPEED_VARIATION = 0.25;
 const SPAWN_ATTEMPTS = 8;
+// Walkers and cyclists number their figures apart: an avatar keeps its skin whatever the other fleet does.
+const CYCLIST_ID_OFFSET = 1_000_000;
 
 interface Fleet {
   mesh: THREE.InstancedMesh;
@@ -62,8 +68,26 @@ export class PedestrianLayer {
   private placement = new THREE.Object3D();
   private touch = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
 
-  constructor(private walkSurface: WalkSurface = SURFACE_WALK) {
+  private avatars: AvatarActors | null = null;
+  private model: PedestrianModel = 'stickman';
+  private avatarScale = 1;
+
+  constructor(private walkSurface: WalkSurface = SURFACE_WALK, private library?: ModelLibrary) {
     this.root.add(this.walkers.mesh, this.cyclists.mesh);
+    this.avatars = library ? new AvatarActors(library, MAX_PEDESTRIANS + MAX_CYCLISTS) : null;
+    if (this.avatars) this.root.add(this.avatars.root);
+  }
+
+  // The walkers and the cyclists are stick figures, or the avatars of the players, the cyclists on a bicycle, once their models are in the library.
+  setModel(model: PedestrianModel): void {
+    this.model = model;
+    this.walkers.mesh.visible = !this.showsAvatars();
+    this.cyclists.mesh.visible = !this.showsAvatars();
+    if (this.avatars) this.avatars.root.visible = this.showsAvatars();
+  }
+
+  private showsAvatars(): boolean {
+    return this.model === 'avatar' && avatarsReady(this.library);
   }
 
   setEnabled(enabled: boolean): void {
@@ -93,6 +117,8 @@ export class PedestrianLayer {
     fleets.forEach((fleet) => this.advance(fleet, deltaSeconds));
     this.crossingTiles = new Set(fleets.flatMap((fleet) => fleet.figures.map((figure) => crossedTile(this.graph, figure)).filter((tile): tile is string => tile !== null)));
     fleets.forEach((fleet) => this.draw(fleet));
+    this.setModel(this.model);
+    if (this.showsAvatars()) this.drawAvatars(deltaSeconds);
   }
 
   dispose(): void {
@@ -101,6 +127,7 @@ export class PedestrianLayer {
       fleet.mesh.geometry.dispose();
     });
     this.material.dispose();
+    this.avatars?.dispose();
   }
 
   private reset(seed: string): void {
@@ -138,6 +165,21 @@ export class PedestrianLayer {
     if (!figure) return;
     this.nextId++;
     fleet.figures.push(figure);
+  }
+
+  private drawAvatars(deltaSeconds: number): void {
+    if (this.avatarScale === 1 && this.library) this.avatarScale = avatarScale(this.library, AVATAR_HEIGHT);
+    const actors: Actor[] = this.walkers.figures.map((figure) => {
+      const pose = pedestrianPose(figure);
+      const y = SIDEWALK_HEIGHT + this.elevation(pose.x, pose.z, tileOfNode(figure.from), tileOfNode(figure.to));
+      return { id: figure.id, x: pose.x, y, z: pose.z, yaw: pose.yaw, scale: this.avatarScale, walking: true, pace: figure.speed / BASE_SPEED };
+    });
+    const riders: Actor[] = this.cyclists.figures.map((figure) => {
+      const pose = pedestrianPose(figure);
+      const y = SIDEWALK_HEIGHT + this.elevation(pose.x, pose.z, tileOfNode(figure.from), tileOfNode(figure.to));
+      return { id: CYCLIST_ID_OFFSET + figure.id, x: pose.x, y, z: pose.z, yaw: pose.yaw, scale: this.avatarScale, walking: true, cyclist: true, pace: (0.7 * figure.speed) / (BASE_SPEED * CYCLING_SPEED_FACTOR) };
+    });
+    this.avatars?.update([...actors, ...riders], deltaSeconds);
   }
 
   private draw(fleet: Fleet): void {
