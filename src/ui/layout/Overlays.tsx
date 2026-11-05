@@ -36,6 +36,7 @@ import { useUi } from '../common/hooks';
 import { StreetViewDropHint } from './StreetViewDropHint';
 import { AnalyticsHud } from '../analytics/AnalyticsHud';
 import { AnalyticsReadout } from '../analytics/AnalyticsReadout';
+import { PickDotMarker } from '../system/PickDotMarker';
 
 export function Overlays() {
   const streetView = useUi((store) => store.streetView);
@@ -80,6 +81,7 @@ export function Overlays() {
       <StreetViewDropHint />
       <AnalyticsHud />
       <AnalyticsReadout />
+      <PickDotMarker />
     </>
   );
 }

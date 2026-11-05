@@ -150,6 +150,8 @@ export class GameScene {
   private levelFloor = new LevelFloor();
   // What moves on the Surface sits in one group, so an underground Level hides it whatever each layer does with its own visibility.
   private movers = new THREE.Group();
+  private pickOffset = { x: 0, y: 0 };
+  private reportPick: ((x: number, y: number) => void) | null = null;
   // The Metro stations of the Surface, drawn in full colour on Level -2 where the rest of the Surface is a ghost, and the places to find from below.
   private stationWorld = new ChunkedWorld(this.library);
   private stationGlow = new HighlightLayer(0x4fd1b0);
@@ -178,8 +180,10 @@ export class GameScene {
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.streetView = new StreetViewController(canvas);
     this.scene.add(this.streetView.markers);
-    this.controller.onTap = (clientX, clientY, shiftKey) =>
+    this.controller.onTap = (clientX, clientY, shiftKey) => {
+      if (this.pickOffset.x !== 0 || this.pickOffset.y !== 0) this.reportPick?.(clientX + this.pickOffset.x, clientY + this.pickOffset.y);
       this.withTileAt(clientX, clientY, (tile) => this.handlers.onTap(tile, shiftKey, this.buildingOnTile(tile)));
+    };
     this.controller.onLongPress = (clientX, clientY) => {
       let handled = false;
       this.withTileAt(clientX, clientY, (tile) => {
@@ -601,9 +605,19 @@ export class GameScene {
     return box;
   }
 
+  // Told where a click really picks, in screen pixels, while the offset moves it.
+  onPick(report: (x: number, y: number) => void): void {
+    this.reportPick = report;
+  }
+
+  // The debug mode moves the point a click or a touch picks, in pixels, to adjust the selection of buildings.
+  setPickOffset(x: number, y: number): void {
+    this.pickOffset = { x, y };
+  }
+
   private withTileAt(clientX: number, clientY: number, use: (tile: Coord) => void): void {
     const rect = this.canvas.getBoundingClientRect();
-    const pointer = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+    const pointer = new THREE.Vector2(((clientX + this.pickOffset.x - rect.left) / rect.width) * 2 - 1, -((clientY + this.pickOffset.y - rect.top) / rect.height) * 2 + 1);
     this.raycaster.setFromCamera(pointer, this.controller.camera);
     const hit = this.raycaster.ray.intersectPlane(this.groundPlane, new THREE.Vector3());
     if (!hit) return;

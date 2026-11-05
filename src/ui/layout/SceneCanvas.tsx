@@ -3,6 +3,7 @@ import { GameScene } from '../../scene/GameScene';
 import { prefsStore } from '../../i18n/prefsStore';
 import { gameStore } from '../../store/gameStore';
 import { harvestEffects } from '../../store/harvestEffects';
+import { pickDotStore } from '../../store/pickDotStore';
 import { sceneHandle } from '../../store/sceneHandle';
 import { uiStore } from '../../store/uiStore';
 import { pointerKindOf } from '../../tools/aim';
@@ -84,6 +85,12 @@ export function SceneCanvas() {
     const showDayCycle = () => scene.setDayCycleOverride(prefsStore.getState().alwaysDay || isAlwaysDayRequested(window.location.search), pinnedCycleHourOf(window.location.search));
     showDayCycle();
     scene.setBrushMode(uiStore.getState().tool?.kind === 'brush');
+    const showPickOffset = () => {
+      const { debug, debugOffsetX, debugOffsetY } = prefsStore.getState();
+      scene.setPickOffset(debug ? debugOffsetX : 0, debug ? debugOffsetY : 0);
+    };
+    showPickOffset();
+    scene.onPick((x, y) => pickDotStore.getState().show(x, y));
     void scene.setPedestrianModel(prefsStore.getState().pedestrianModel);
     scene.setLevel(uiStore.getState().level);
     const showSelection = () => {
@@ -120,6 +127,7 @@ export function SceneCanvas() {
     const unsubscribePrefs = prefsStore.subscribe((prefs, previous) => {
       if (prefs.serviceCoverageType !== previous.serviceCoverageType) showServiceCoverage();
       showTraffic();
+      if (prefs.debug !== previous.debug || prefs.debugOffsetX !== previous.debugOffsetX || prefs.debugOffsetY !== previous.debugOffsetY) showPickOffset();
       if (prefs.alwaysDay !== previous.alwaysDay) showDayCycle();
       if (prefs.pedestrianModel !== previous.pedestrianModel) void scene.setPedestrianModel(prefs.pedestrianModel);
       if (prefs.showReach !== previous.showReach) showSelection();

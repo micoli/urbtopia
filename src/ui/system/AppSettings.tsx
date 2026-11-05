@@ -7,6 +7,7 @@ import { dialogStore } from '../../store/dialogStore';
 import { ActionButton } from '../common/ActionButton';
 import { SwitchField } from '../common/SwitchField';
 import { BetaSettings } from './BetaSettings';
+import { PickOffsetSlider } from './PickOffsetSlider';
 import { SettingRow } from './SettingRow';
 import { SettingsSection } from './SettingsSection';
 
@@ -40,6 +41,13 @@ export function AppSettings() {
       <BetaSettings />
       <SettingsSection title={t('settings.section.advanced')} icon="repair">
         <SwitchField label={t('prefs.debug')} description={t('prefs.debug.description')} checked={debug} onChange={prefsStore.getState().setDebug} />
+        {debug ? (
+          <div className="setting-indented">
+            <small className="setting-text__description">{t('prefs.debugOffset.hint')}</small>
+            <PickOffsetSlider axis="x" />
+            <PickOffsetSlider axis="y" />
+          </div>
+        ) : null}
       </SettingsSection>
     </>
   );

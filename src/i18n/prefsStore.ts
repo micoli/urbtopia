@@ -17,6 +17,9 @@ export interface Prefs {
   showProductionPreview: boolean;
   showTaxBadges: boolean;
   debug: boolean;
+  // With the debug mode: how many pixels a click or a touch is moved before it picks a tile, to adjust the selection of buildings.
+  debugOffsetX: number;
+  debugOffsetY: number;
   alwaysDay: boolean;
   signInPrompt: boolean;
   advisor: boolean;
@@ -31,6 +34,7 @@ export const PREFS_KEY = 'urbtopia-prefs';
 const LANGUAGES: Language[] = ['en', 'fr'];
 const LAYOUTS: Layout[] = ['C', 'A', 'B'];
 const PEDESTRIAN_MODELS: PedestrianModel[] = ['stickman', 'avatar'];
+export const DEBUG_OFFSET_LIMIT = 60;
 export const MATCH_SPEEDS = [0.25, 0.5, 1, 2, 4, 8] as const;
 export type MatchSpeed = (typeof MATCH_SPEEDS)[number];
 
@@ -39,7 +43,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1 };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1 };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -53,6 +57,8 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       showProductionPreview: typeof parsed.showProductionPreview === 'boolean' ? parsed.showProductionPreview : fallback.showProductionPreview,
       showTaxBadges: typeof parsed.showTaxBadges === 'boolean' ? parsed.showTaxBadges : fallback.showTaxBadges,
       debug: typeof parsed.debug === 'boolean' ? parsed.debug : fallback.debug,
+      debugOffsetX: offsetOf(parsed.debugOffsetX),
+      debugOffsetY: offsetOf(parsed.debugOffsetY),
       alwaysDay: typeof parsed.alwaysDay === 'boolean' ? parsed.alwaysDay : fallback.alwaysDay,
       signInPrompt: typeof parsed.signInPrompt === 'boolean' ? parsed.signInPrompt : fallback.signInPrompt,
       advisor: typeof parsed.advisor === 'boolean' ? parsed.advisor : fallback.advisor,
@@ -66,6 +72,10 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
   }
 }
 
+function offsetOf(value: unknown): number {
+  return typeof value === 'number' && Number.isInteger(value) ? Math.max(-DEBUG_OFFSET_LIMIT, Math.min(DEBUG_OFFSET_LIMIT, value)) : 0;
+}
+
 function readStored(): string | null {
   try {
     return localStorage.getItem(PREFS_KEY);
@@ -74,9 +84,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, pedestrianModel, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }: Prefs): void {
+function writeStored({ language, layout, traffic, pedestrianModel, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, debugOffsetX, debugOffsetY, alwaysDay, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrianModel, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, alwaysDay, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrianModel, confirmSale, showReach, showProductionPreview, showTaxBadges, debug, debugOffsetX, debugOffsetY, alwaysDay, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -92,6 +102,7 @@ export interface PrefsStore extends Prefs {
   setShowProductionPreview: (showProductionPreview: boolean) => void;
   setShowTaxBadges: (showTaxBadges: boolean) => void;
   setDebug: (debug: boolean) => void;
+  setDebugOffset: (axis: 'x' | 'y', pixels: number) => void;
   setAlwaysDay: (alwaysDay: boolean) => void;
   setSignInPrompt: (signInPrompt: boolean) => void;
   setAdvisor: (advisor: boolean) => void;
@@ -139,6 +150,10 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   },
   setDebug: (debug) => {
     set({ debug });
+    writeStored(get());
+  },
+  setDebugOffset: (axis, pixels) => {
+    set(axis === 'x' ? { debugOffsetX: offsetOf(pixels) } : { debugOffsetY: offsetOf(pixels) });
     writeStored(get());
   },
   setAlwaysDay: (alwaysDay) => {

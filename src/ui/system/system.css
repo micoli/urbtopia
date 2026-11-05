@@ -208,3 +208,84 @@
   width: min(600px, calc(100vw - 24px));
   height: min(640px, calc(100dvh - 24px));
 }
+
+.pick-offset {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-16);
+}
+
+.pick-offset__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-12);
+}
+
+.pick-offset__track {
+  position: relative;
+  flex: 1;
+  max-width: 260px;
+}
+
+.pick-offset input {
+  display: block;
+  width: 100%;
+  margin: 0;
+  accent-color: var(--color-accent);
+}
+
+/* The 16px thumb stays inside the track: ticks sit at the thumb centres, one every 5 pixels. */
+.pick-offset__ticks {
+  position: relative;
+  height: var(--space-8);
+  margin: 0 var(--space-8);
+  pointer-events: none;
+}
+
+.pick-offset__ticks span {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: var(--space-6);
+  margin-left: -1px;
+  background: var(--color-text-muted);
+}
+
+/* A thicker tick every 10 pixels, and a circle at zero. */
+.pick-offset__ticks span.is-ten {
+  width: 4px;
+  margin-left: -2px;
+}
+
+.pick-offset__ticks span.is-zero {
+  width: var(--space-8);
+  height: var(--space-8);
+  margin-left: calc(var(--space-8) / -2);
+  border-radius: var(--radius-round);
+  background: var(--color-accent);
+}
+
+/* Lines that belong to the setting above them stand under its text: the padding of a switch. */
+.setting-indented {
+  padding: 0 var(--space-12) var(--space-12);
+}
+
+.pick-dot {
+  position: fixed;
+  z-index: 300;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: var(--radius-round);
+  background: var(--color-danger);
+  box-shadow: 0 0 0 1px var(--black-a35);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pick-dot { animation: pick-dot-blink 0.3s steps(2, start) infinite; }
+}
+
+@keyframes pick-dot-blink {
+  50% { opacity: 0; }
+}

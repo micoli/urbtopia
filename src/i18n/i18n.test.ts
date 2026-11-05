@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { FR } from './fr';
 import { MESSAGES } from './messages';
-import { defaultLanguage, parsePrefs, PREFS_KEY, prefsStore } from './prefsStore';
+import { DEBUG_OFFSET_LIMIT, defaultLanguage, parsePrefs, PREFS_KEY, prefsStore } from './prefsStore';
 
 describe('catalogs', () => {
   it('translate every message key in French, and nothing more', () => {
@@ -43,10 +43,10 @@ describe('preferences', () => {
   });
 
   it('reads stored preferences and falls back on bad values', () => {
-    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'B', traffic: false, confirmSale: false, showReach: false, showProductionPreview: false }))).toEqual({ language: 'fr', layout: 'B', traffic: false, pedestrianModel: 'stickman', confirmSale: false, showReach: false, showProductionPreview: false, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
-    expect(parsePrefs(JSON.stringify({ language: 'de', layout: 'Z', traffic: 'yes' }), 'fr-FR')).toEqual({ language: 'fr', layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
-    expect(parsePrefs('not json', 'en-GB')).toEqual({ language: 'en', layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
-    expect(parsePrefs(null)).toEqual({ language: 'en', layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
+    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'B', traffic: false, confirmSale: false, showReach: false, showProductionPreview: false }))).toEqual({ language: 'fr', layout: 'B', traffic: false, pedestrianModel: 'stickman', confirmSale: false, showReach: false, showProductionPreview: false, showTaxBadges: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
+    expect(parsePrefs(JSON.stringify({ language: 'de', layout: 'Z', traffic: 'yes' }), 'fr-FR')).toEqual({ language: 'fr', layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
+    expect(parsePrefs('not json', 'en-GB')).toEqual({ language: 'en', layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
+    expect(parsePrefs(null)).toEqual({ language: 'en', layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
   });
 
   it('keeps a stored Match speed only when it is one of the speeds on offer', () => {
@@ -84,7 +84,7 @@ describe('preferences', () => {
   });
 
   it('keeps Traffic on for preferences saved before it existed', () => {
-    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'A' }))).toEqual({ language: 'fr', layout: 'A', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
+    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'A' }))).toEqual({ language: 'fr', layout: 'A', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
   });
 
   it('remembers a valid service type and defaults to School for obsolete or invalid choices', () => {
@@ -124,6 +124,26 @@ describe('pedestrian model preference', () => {
     expect(JSON.parse(storage.get(PREFS_KEY)!).pedestrianModel).toBe('avatar');
     prefsStore.getState().setPedestrianModel('stickman');
     expect(JSON.parse(storage.get(PREFS_KEY)!).pedestrianModel).toBe('stickman');
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('debug pick offset preference', () => {
+  it('is zero by default and stays within the limits', () => {
+    expect(parsePrefs(null)).toMatchObject({ debugOffsetX: 0, debugOffsetY: 0 });
+    expect(parsePrefs(JSON.stringify({ debugOffsetX: 12, debugOffsetY: -7 }))).toMatchObject({ debugOffsetX: 12, debugOffsetY: -7 });
+    expect(parsePrefs(JSON.stringify({ debugOffsetX: 999, debugOffsetY: -999 }))).toMatchObject({ debugOffsetX: DEBUG_OFFSET_LIMIT, debugOffsetY: -DEBUG_OFFSET_LIMIT });
+    expect(parsePrefs(JSON.stringify({ debugOffsetX: 'a', debugOffsetY: 1.5 }))).toMatchObject({ debugOffsetX: 0, debugOffsetY: 0 });
+  });
+
+  it('is saved in the local storage', () => {
+    const storage = new Map<string, string>();
+    vi.stubGlobal('localStorage', { getItem: (key: string) => storage.get(key) ?? null, setItem: (key: string, value: string) => storage.set(key, value) });
+    prefsStore.getState().setDebugOffset('x', 8);
+    prefsStore.getState().setDebugOffset('y', -999);
+    expect(JSON.parse(storage.get(PREFS_KEY)!)).toMatchObject({ debugOffsetX: 8, debugOffsetY: -DEBUG_OFFSET_LIMIT });
+    prefsStore.getState().setDebugOffset('x', 0);
+    prefsStore.getState().setDebugOffset('y', 0);
     vi.unstubAllGlobals();
   });
 });
