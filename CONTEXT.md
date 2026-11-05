@@ -137,7 +137,7 @@ A Production building that employs people and draws on the city's economic activ
 _Avoid_: Industrial building, craft building
 
 **Office building**:
-A workplace with Tiers that offers many Jobs and produces only Urbs, in proportion to the Jobs its Commuters fill. The Urbs build up in the building up to a cap set by its Tier and are collected by hand. It uses no Materials or Goods, has no Slots, and is neither a Production building nor an Industry building. Several can be built, up to its Build limit.
+A workplace with Tiers that offers many Jobs and produces only Urbs, in proportion to the Jobs its Citizens fill. The Urbs build up in the building up to a cap set by its Tier and are collected by hand. It uses no Materials or Goods, has no Slots, and is neither a Production building nor an Industry building. Several can be built, up to its Build limit.
 _Avoid_: Tertiary building, company, Venue
 
 **Storehouse**:
@@ -453,20 +453,28 @@ The set of Vehicles on the roads, whose size follows Commuters who drive instead
 _Avoid_: Flow, cars
 
 **Commute**:
-The daily journey of a Home's Citizens who do not use public transport, from the Home to the workplaces (Workshop, Factory, Office building, Shop, Public facility, Leisure building) by the shortest road path. Commuters fill the nearest workplaces first, up to their Jobs; those who find none do not drive, and those whose workplace is within walking distance walk instead of driving. Modelled per Home in aggregate, never per individual Citizen.
+The daily journey of a Home's Citizens to their Jobs, by walking, cycling, public transport or car. Walkers are served first city-wide, then Cyclists, then the others, who take public transport or the car, whichever has the shorter Travel time; within each group the nearest Job by Travel time is filled first. Citizens who find no Job within reach are Unemployed. Modelled per Home in aggregate, never per individual Citizen.
 _Avoid_: Individual Citizen journey, Transit itinerary
 
 **Job**:
-A place at a workplace that one Commuter can fill. A workplace offers a number of Jobs set by its type and Tier.
+A place at a workplace that one Citizen can fill, whatever the way they get there. A workplace offers a number of Jobs set by its type and Tier.
 _Avoid_: Position, vacancy, employment
 
-**Modal shift**:
-The move of Commuters from car to public transport when their road is saturated: a share of a Home's Commuters becomes Riders, even beyond the usual 70% of Citizens, within the spare capacity of the Bus lines or other lines that serve the Home. Recomputed from the current Congestion each time, with no memory.
-_Avoid_: Mode switch, migration, individual journey
+**Unemployed**:
+A Citizen who finds no Job within reach on their Commute. It is a statistic only: it changes neither Tax, Well-being, Needs nor Sanction.
+_Avoid_: Jobless, out of work
+
+**Travel time**:
+The minutes a Citizen needs to get from a Home to a workplace by a given mode. By car it follows the length of the road path and the speed of each Road section, which Congestion slows; by public transport it adds the walk to the stop, the wait, the ride, the Transfers and the walk from the last stop. It is what makes a Citizen choose between the car and public transport.
+_Avoid_: Distance, journey length
+
+**Mode choice**:
+The choice, for the Citizens who neither walk nor cycle to their Job, of public transport or the car, whichever has the shorter Travel time, a tie going to public transport. A line with no spare capacity cannot take more Riders, so the Citizen drives. It replaces the fixed share of Riders and the Modal shift.
+_Avoid_: Mode switch, Modal shift, migration
 
 **Commuter**:
 A Citizen who drives on a Commute.
-_Avoid_: Driver, rider (a rider uses public transport)
+_Avoid_: Driver, rider (a rider uses public transport), Modal shift (retired: see Mode choice)
 
 **Pedestrian path**:
 The route on foot between a Building and a destination, over the sidewalks of roads and built Pedestrian ways. Sidewalks are implicit on every Road tile and have two sides; a road is crossed only at a Crossing or around a dead end. Its length counts tiles walked plus a cost per Crossing crossed.
@@ -842,7 +850,7 @@ The side of a building turned towards its access. A building has one Front among
 _Avoid_: Facade, entrance, orientation
 
 **BRT-only access**:
-The state of a building reached by a BRT corridor but not by a Road. It has no Commute by car, but the sides of a BRT corridor are Sidewalks: its Citizens use public transport, and also walk along the corridor to Shops, Schools and other destinations in reach. The Jobs of its workplaces are filled by Riders only. A BRT-only Home with no BRT station covering it, and no job in walking range, is marked disconnected.
+The state of a building reached by a BRT corridor but not by a Road. It has no Commute by car, but the sides of a BRT corridor are Sidewalks: its Citizens use public transport, and also walk along the corridor to Shops, Schools and other destinations in reach. Its Citizens reach their Jobs by public transport, or on foot or by bicycle when a Job is within range. A BRT-only Home with no BRT station covering it, and no job in walking range, is marked disconnected.
 _Avoid_: Roadless building, transit-only building
 
 **Transit itinerary**:

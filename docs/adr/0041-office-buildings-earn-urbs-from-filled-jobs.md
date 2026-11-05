@@ -13,3 +13,5 @@ An Office building is a workplace that produces only Urbs, in proportion to the 
 **Not a Production building.** An Office has no Slots, no Materials and no Goods, so it does not enter the Industry weight or the economic activity. Giving it a Production building's queue to unify the families was rejected: it would carry empty Slot machinery into a building that only accrues Urbs.
 
 Rates, cap (8 hours, same at every Tier), Jobs per Tier, price and Build limit thresholds are data, not code (ADR-0021). Filled Jobs are also shown on every workplace, not only Offices.
+
+**Amendment.** The Jobs filled by Riders were stated here but not counted by the Commute, except for a workplace reached by BRT only, so an Office could earn nothing while its city rode the Metro. [ADR 0059](0059-every-citizen-looks-for-a-job-and-picks-the-mode-by-travel-time.md) makes every Citizen look for a Job, whatever the mode. Unemployment stays a statistic.
