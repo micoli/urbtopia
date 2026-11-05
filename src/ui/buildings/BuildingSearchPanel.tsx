@@ -3,6 +3,7 @@ import { NATURE_TYPES, type Building } from '../../core';
 import { ActionButton } from '../common/ActionButton';
 import { SearchField } from '../common/SearchField';
 import { t } from '../../i18n/t';
+import { matchesSearch } from '../../codex/matchesSearch';
 import { CloseButton } from '../common/CloseButton';
 import { useGame, useUi } from '../common/hooks';
 import { BuildingSearchGroup } from './BuildingSearchGroup';
@@ -16,11 +17,11 @@ interface Group {
   buildings: Building[];
 }
 
-function groupByType(buildings: Building[], needle: string): Group[] {
+function groupByType(buildings: Building[], query: string): Group[] {
   const groups = new Map<Building['type'], Group>();
   for (const building of [...buildings].sort((a, b) => a.id - b.id)) {
     const name = t(`building.${building.type}`);
-    if (!`${name} ${building.name ?? ''}`.toLowerCase().includes(needle)) continue;
+    if (!matchesSearch(`${name} ${building.name ?? ''}`, query)) continue;
     const group = groups.get(building.type) ?? { type: building.type, name, buildings: [] };
     group.buildings.push(building);
     groups.set(building.type, group);
@@ -38,8 +39,8 @@ export function BuildingSearchPanel() {
   const [query, setQuery] = useState('');
   if (!open) return null;
 
-  const needle = query.trim().toLowerCase();
-  const groups = groupByType(buildings, needle);
+  const searching = query.trim() !== '';
+  const groups = groupByType(buildings, query);
   const allExpanded = groups.length > 0 && groups.every((group) => expanded.has(group.type));
   const toggleAll = () => replace(allExpanded ? [] : groups.map((group) => group.type));
   const choose = (building: Building) => {
@@ -54,7 +55,7 @@ export function BuildingSearchPanel() {
         <CloseButton onClick={close} label={t('search.close')} />
       </header>
       <SearchField autoFocus label={t('search.placeholder')} value={query} onChange={setQuery} />
-      {groups.length > 0 && needle === '' ? (
+      {groups.length > 0 && !searching ? (
         <ActionButton size="xs" block onClick={toggleAll}>{t(allExpanded ? 'search.collapseAll' : 'search.expandAll')}</ActionButton>
       ) : null}
       {groups.length === 0 ? <p className="building-search-empty">{t('search.empty')}</p> : null}
@@ -63,7 +64,7 @@ export function BuildingSearchPanel() {
           <BuildingSearchGroup
             key={group.type}
             {...group}
-            expanded={needle !== '' || expanded.has(group.type)}
+            expanded={searching || expanded.has(group.type)}
             onToggle={() => toggle(group.type)}
             onChoose={choose}
           />

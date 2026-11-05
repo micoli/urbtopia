@@ -3,6 +3,7 @@ import { t } from '../i18n/t';
 import { GuideHeader } from './GuideHeader';
 import { GuideNav } from './GuideNav';
 import { GuideRouteContext } from './guideRouteContext';
+import { GuideRulesState } from './reader/GuideRulesState';
 import { ReaderSettingsBar } from './reader/ReaderSettingsBar';
 import { restoreReaderSettings } from './reader/readerSettingsStore';
 import { sectionOf, type GuideRoute } from './routes';
@@ -41,6 +42,7 @@ export function GuideLayout({ route, children }: GuideLayoutProps) {
 
   return (
     <GuideRouteContext value={route}>
+    <GuideRulesState>
     <div className="min-h-screen bg-surface text-ink">
       <GuideHeader route={route} onOpenMenu={() => setMenuOpen(true)} onOpenSearch={() => setSearchOpen(true)} />
       {searchOpen && <SearchDialog route={route} onClose={() => setSearchOpen(false)} />}
@@ -62,6 +64,7 @@ export function GuideLayout({ route, children }: GuideLayoutProps) {
         </main>
       </div>
     </div>
+    </GuideRulesState>
     </GuideRouteContext>
   );
 }

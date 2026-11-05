@@ -1,6 +1,5 @@
-import { useGuideRoute } from '../guideRouteContext';
-import { articlePathOf, hrefOf } from '../routes';
 import { ARTICLES, translationOf } from './articles';
+import { useArticleLinker } from './articleLinker';
 
 interface ArticleLinkProps {
   slug: string;
@@ -8,9 +7,9 @@ interface ArticleLinkProps {
 }
 
 export function ArticleLink({ slug, children }: ArticleLinkProps) {
-  const route = useGuideRoute();
+  const linker = useArticleLinker();
   const article = ARTICLES.find(candidate => candidate.section === 'mechanics' && candidate.slug === slug);
-  const label = children ?? (article ? translationOf(article, route.language).meta.title : slug);
+  const label = children ?? (article ? translationOf(article, linker.language).meta.title : slug);
   if (!article) return <>{label}</>;
-  return <a href={hrefOf(route, articlePathOf(route.language, article))}>{label}</a>;
+  return <a {...linker.article(article)}>{label}</a>;
 }

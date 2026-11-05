@@ -1,32 +1,27 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexId, type CodexSection } from '../../codex/catalog';
+import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexId } from '../../codex/catalog';
 import { matchesSearch } from '../../codex/matchesSearch';
 import { CODEX_PAGES, type CodexPage } from '../../codex/pages';
+import { ARTICLES, translationOf, type Article } from '../../guide/content/articles';
+import type { ArticleLinker } from '../../guide/content/articleLinker';
+import { articleOfRules, isRulesWrittenUp } from '../../guide/routes';
+import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
 import { useBackdropClose } from '../common/useBackdropClose';
 import { navButtonAt } from './navButtonAt';
 import { CodexEntryContent } from './CodexEntryContent';
+import { CodexArticle } from './CodexArticle';
+import { ARTICLE_GROUPS, CodexArticleNav } from './CodexArticleNav';
 import { CodexGuideLink } from './CodexGuideLink';
-import { ProductionChainsPage } from './ProductionChainsPage';
-import { CropEconomyPage } from './CropEconomyPage';
-import { ChallengesPage } from './ChallengesPage';
-import { EnergyProductionPage } from './EnergyProductionPage';
-import { MarketRulesPage } from './MarketRulesPage';
-import { SanctionsPage } from './SanctionsPage';
-import { StorageRulesPage } from './StorageRulesPage';
-import { SolidarityPage } from './SolidarityPage';
-import { AnalyticsPage } from './AnalyticsPage';
-import { WastePage } from './WastePage';
-import { KnowledgePage } from './KnowledgePage';
-import { TransitReachPage } from './TransitReachPage';
-import { PoliticsPage } from './PoliticsPage';
-import { RecurringCostsPage } from './RecurringCostsPage';
+import { CODEX_PAGE_COMPONENTS } from './codexPageComponents';
 import { useCodexManifest } from './useCodexManifest';
 import { CloseButton } from '../common/CloseButton';
 import { ActionButton } from '../common/ActionButton';
 import { AccordionSection } from '../common/AccordionSection';
 import { SearchField } from '../common/SearchField';
+
+const groupTitleOf = ({ section }: Article): string => ARTICLE_GROUPS.find(group => group.id === section)!.title;
 
 export function CodexPanel() {
   const close = useUi(store => store.closeCodex);
@@ -40,18 +35,25 @@ export function CodexPanel() {
   const initialPage = useUi(store => store.codexPage);
   const dialog = useRef<HTMLDialogElement>(null);
   const heading = useId();
+  const initialArticle = initialPage ? articleOfRules(initialPage) ?? null : null;
+  const language = prefsStore.getState().language;
   const [selected, setSelected] = useState<CodexId>(initialEntry);
   const [showDetail, setShowDetail] = useState(initialDetail);
-  const [page, setPage] = useState<CodexPage | null>(initialPage);
+  const [page, setPage] = useState<CodexPage | null>(initialArticle ? null : initialPage);
+  const [article, setArticle] = useState<Article | null>(initialArticle);
   const [search, setSearch] = useState('');
-  const pageOpen = page !== null;
-  const [openSection, setOpenSection] = useState<CodexSection>(CODEX_PAGES.find(item => item.id === initialPage)?.section ?? CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
+  const searching = search.trim() !== '';
+  const pageOpen = page !== null || article !== null;
+  const [openSection, setOpenSection] = useState<string>(initialArticle ? groupTitleOf(initialArticle) : CODEX_PAGES.find(item => item.id === initialPage)?.section ?? CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
   const { manifest, failed, retry } = useCodexManifest();
   const entry = CODEX_ENTRIES.find(entry => entry.id === selected)!;
   const detail = useRef<HTMLElement>(null);
   const filteredEntries = CODEX_ENTRIES.filter(item => matchesSearch(`${t(item.name)} ${t(item.description)} ${t(item.section)}`, search));
-  const filteredPages = CODEX_PAGES.filter(item => matchesSearch(`${t(item.title)} ${t(item.description)} ${t(item.section)}`, search));
-  const hasResults = search.trim() === '' || filteredEntries.length > 0 || filteredPages.length > 0;
+  const filteredPages = CODEX_PAGES.filter(item => !isRulesWrittenUp(item.id) && matchesSearch(`${t(item.title)} ${t(item.description)} ${t(item.section)}`, search));
+  const filteredArticles = ARTICLES.filter(item => matchesSearch(`${translationOf(item, language).meta.title} ${translationOf(item, language).meta.summary}`, search));
+  const hasResults = !searching || filteredEntries.length > 0 || filteredPages.length > 0 || filteredArticles.length > 0;
+  const Page = page ? CODEX_PAGE_COMPONENTS[page] : null;
+  const pageTitle = article ? translationOf(article, language).meta.title : page ? t(CODEX_PAGES.find(item => item.id === page)!.title) : t(entry.name);
 
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
@@ -80,9 +82,32 @@ export function CodexPanel() {
 
   const select = (id: CodexId) => {
     setPage(null);
+    setArticle(null);
     setSelected(id);
     setOpenSection(CODEX_ENTRIES.find(entry => entry.id === id)!.section);
     setShowDetail(true);
+  };
+
+  const openArticle = (target: Article) => {
+    setPage(null);
+    setArticle(target);
+    setOpenSection(groupTitleOf(target));
+    setShowDetail(true);
+  };
+
+  const openPage = (id: CodexPage) => {
+    const written = articleOfRules(id);
+    if (written) return openArticle(written);
+    setArticle(null);
+    setPage(id);
+    setShowDetail(true);
+  };
+
+  const linker: ArticleLinker = {
+    language,
+    entry: id => ({ href: '#', onClick: event => { event.preventDefault(); select(id); } }),
+    rules: id => ({ href: '#', onClick: event => { event.preventDefault(); openPage(id); } }),
+    article: target => ({ href: '#', onClick: event => { event.preventDefault(); openArticle(target); } }),
   };
 
   return (
@@ -90,7 +115,7 @@ export function CodexPanel() {
       <header className="codex-header">
         <h2 id={heading}>{t('codex.title')}</h2>
         <div className="codex-header-actions">
-          <CodexGuideLink entry={entry} page={page} />
+          <CodexGuideLink entry={entry} page={page} article={article} />
           {showDetail && <button type="button" className="codex-back" onClick={() => {
             setShowDetail(false);
             requestAnimationFrame(() => dialog.current?.querySelector<HTMLButtonElement>('.codex-list [aria-current="true"]')?.focus());
@@ -102,15 +127,16 @@ export function CodexPanel() {
         <nav className="codex-list" aria-label={t('codex.title')}>
           <SearchField className="mb-3" label={t('codex.search')} value={search} onChange={setSearch} />
           {!hasResults && <p className="codex-search-empty" role="status">{t('codex.searchEmpty')}</p>}
+          <CodexArticleNav idPrefix={heading} articles={filteredArticles} language={language} current={article} forceOpen={searching} openGroup={openSection} onToggle={setOpenSection} onChoose={openArticle} />
           {CODEX_SECTIONS.map(section => {
             const sectionEntries = filteredEntries.filter(item => item.section === section);
             const sectionPages = filteredPages.filter(item => item.section === section);
-            if (search.trim() && sectionEntries.length === 0 && sectionPages.length === 0) return null;
-            const expanded = search.trim() !== '' || openSection === section;
+            if (searching && sectionEntries.length === 0 && sectionPages.length === 0) return null;
+            const expanded = searching || openSection === section;
             const panelId = `${heading}-${section}`;
             return (
-              <AccordionSection key={section} id={panelId} title={t(section)} expanded={expanded} chevron toggleClassName="codex-section-toggle" onToggle={() => setOpenSection(expanded ? ('' as CodexSection) : section)}>
-                {sectionPages.map(item => <button key={item.id} type="button" aria-current={page === item.id ? 'true' : undefined} onClick={() => { setPage(item.id); setShowDetail(true); }}>{t(item.title)}</button>)}
+              <AccordionSection key={section} id={panelId} title={t(section)} expanded={expanded} chevron toggleClassName="codex-section-toggle" onToggle={() => setOpenSection(expanded ? '' : section)}>
+                {sectionPages.map(item => <button key={item.id} type="button" aria-current={page === item.id ? 'true' : undefined} onClick={() => openPage(item.id)}>{t(item.title)}</button>)}
                 {sectionEntries.map(entry => (
                   <button type="button" key={entry.id} aria-current={!pageOpen && selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
                 ))}
@@ -118,21 +144,9 @@ export function CodexPanel() {
             );
           })}
         </nav>
-        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={t(page === 'economy' ? 'codex.economy.title' : page === 'storage' ? 'codex.storage.title' : page === 'energy' ? 'codex.energy.title' : page === 'sanctions' ? 'codex.sanctions.title' : page === 'market' ? 'codex.market.title' : page === 'challenges' ? 'codex.challenges.title' : page === 'solidarity' ? 'codex.solidarity.title' : page === 'waste' ? 'codex.waste.title' : page === 'knowledge' ? 'codex.knowledge.title' : page === 'politics' ? 'codex.politics.title' : page === 'transitReach' ? 'codex.transitReach.title' : page === 'chains' ? 'codex.chains.title' : page === 'analytics' ? 'codex.analytics.title' : page === 'costs' ? 'codex.costs.title' : entry.name)}>
-          {page === 'economy' && <CropEconomyPage />}
-          {page === 'storage' && <StorageRulesPage />}
-          {page === 'energy' && <EnergyProductionPage />}
-          {page === 'sanctions' && <SanctionsPage />}
-          {page === 'market' && <MarketRulesPage />}
-          {page === 'challenges' && <ChallengesPage />}
-          {page === 'solidarity' && <SolidarityPage />}
-          {page === 'waste' && <WastePage />}
-          {page === 'knowledge' && <KnowledgePage />}
-          {page === 'politics' && <PoliticsPage />}
-          {page === 'transitReach' && <TransitReachPage />}
-          {page === 'chains' && <ProductionChainsPage />}
-          {page === 'analytics' && <AnalyticsPage />}
-          {page === 'costs' && <RecurringCostsPage />}
+        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={pageTitle}>
+          {Page && <Page />}
+          {article && <CodexArticle article={article} linker={linker} />}
           {!pageOpen && <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />}
           {!pageOpen && !manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}
         </article>

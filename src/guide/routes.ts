@@ -37,7 +37,9 @@ export const GUIDE_SECTIONS: readonly { id: GuideSection; title: MessageKey }[] 
 export const articlePathOf = (language: Language, { section, slug }: Article): string => `${language}/${ARTICLE_DIRECTORIES[section]}/${slug === 'index' ? '' : `${slug}/`}`;
 
 // A Mechanics article with the slug of a rule page replaces it and embeds its figures.
-export const isRulesWrittenUp = (id: CodexPage): boolean => ARTICLES.some(article => article.section === 'mechanics' && article.slug === rulesSlugOf(id));
+export const articleOfRules = (id: CodexPage): Article | undefined => ARTICLES.find(article => article.section === 'mechanics' && article.slug === rulesSlugOf(id));
+
+export const isRulesWrittenUp = (id: CodexPage): boolean => articleOfRules(id) !== undefined;
 
 export const codexEntryOf = (id: CodexId): CodexEntry => CODEX_ENTRIES.find(entry => entry.id === id)!;
 
