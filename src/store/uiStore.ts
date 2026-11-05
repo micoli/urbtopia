@@ -331,6 +331,8 @@ export const uiStore = createStore<UiStore>((set, get) => {
       set(opening ? { ...NO_WINDOW_OPEN, marketOpen: true, flyout: null } : { marketOpen: false, flyout: null });
     },
     chooseTool: (tool) => {
+      // A tool of another Level takes the player to that Level first.
+      if (toolLevel(tool) !== get().level) get().setLevel(toolLevel(tool));
       if (toolLevel(tool) !== get().level) return;
       set({ flyout: null, selectedBuildingId: null, selectedAccess: null });
       reevaluate({ tool, rotation: null, pinnedTile: null });

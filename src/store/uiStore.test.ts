@@ -503,16 +503,16 @@ describe('Levels', () => {
     expect(uiStore.getState().level).toBe(0);
   });
 
-  it('refuses a Surface tool on an underground Level and drops the tool when the Level changes', () => {
+  it('takes the player to the Level of a tool, and drops the tool when the Level changes', () => {
     gameStore.getState().replaceState(city(400));
     uiStore.getState().chooseTool(shop);
     uiStore.getState().setLevel(-1);
     expect(uiStore.getState()).toMatchObject({ level: -1, tool: null });
     uiStore.getState().chooseTool(shop);
-    expect(uiStore.getState().tool).toBeNull();
-    uiStore.getState().setLevel(0);
-    uiStore.getState().chooseTool(shop);
-    expect(uiStore.getState().tool).toEqual(shop);
+    expect(uiStore.getState()).toMatchObject({ level: 0, tool: shop });
+    const walkway = { kind: 'walkway', start: null, horizontalFirst: true } as const;
+    uiStore.getState().chooseTool(walkway);
+    expect(uiStore.getState()).toMatchObject({ level: -1, tool: walkway });
   });
 
   it('steps down and up the stack and stops at both ends', () => {

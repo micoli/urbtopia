@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
-import { BRIDGES, PEDESTRIAN_ACCESS_COST, type NetworkMode, ROAD_TIER_COSTS, SURFACE, TRANSIT, WATER, totalCitizens, undergroundUnlocked, walkwayCostPerTile } from '../../core';
+import { BRIDGES, PEDESTRIAN_ACCESS_COST, type NetworkMode, ROAD_TIER_COSTS, SURFACE, levelUnlocked, TRANSIT, WATER, totalCitizens, undergroundUnlocked, walkwayCostPerTile } from '../../core';
 import { t } from '../../i18n/t';
-import type { Tool } from '../../tools/tools';
+import { toolLevel, type Tool } from '../../tools/tools';
 import type { MessageKey } from '../../i18n/messages';
 import { ROAD_CONSTRUCTIONS } from '../../codex/construction';
 import { codexImageKey, type CodexId } from '../../codex/catalog';
@@ -69,6 +69,7 @@ export function RoadMenu() {
     roadItem(ROAD_CONSTRUCTIONS.find(item => item.id === 'crossing')!),
     { label: t('tool.removeCrossing'), tool: { kind: 'removeCrossing' } },
     constructionItem('pedestrianWay'),
+    ...(undergroundOpen ? [{ label: t('tool.pedestrianAccess'), cost: <UrbsAmount value={PEDESTRIAN_ACCESS_COST} />, tool: { kind: 'pedestrianAccess' } } as RoadItem] : []),
     { label: t('tool.upgradePedestrianWay'), cost: `${Math.round(ROAD_TIER_COSTS[1]! * 0.9)}–${Math.round(ROAD_TIER_COSTS[2]! * 0.9)} ${t('tool.perTile')}`, tool: { kind: 'upgradePedestrianWay', start: null, horizontalFirst: true } },
   ];
   const sections: { id: RoadSection; items?: RoadItem[]; content?: ReactNode; demolish?: { label: string; tool: Tool } }[] = [
@@ -82,17 +83,15 @@ export function RoadMenu() {
       { id: 'roadBridges' as const, content: <BridgeTools variant="road" />, demolish: removeBridge },
     ] : []),
   ];
-  const undergroundItems: RoadItem[] = level === SURFACE
-    ? [{ label: t('tool.pedestrianAccess'), cost: <UrbsAmount value={PEDESTRIAN_ACCESS_COST} />, tool: { kind: 'pedestrianAccess' } }]
-    : level === -1
-      ? [{ label: t('tool.walkway'), cost: `${walkwayCostPerTile()} ${t('tool.perTile')}`, tool: { kind: 'walkway', start: null, horizontalFirst: true } }]
-      : [{ label: t('tool.metro'), cost: `${TRANSIT.metro.tileCost} ${t('tool.perTile')}`, tool: { kind: 'road', mode: 'metro', start: null, horizontalFirst: true } }];
-  const undergroundDemolish = level === SURFACE
-    ? { label: t('tool.demolishPedestrianAccess'), tool: { kind: 'demolishPedestrianAccess' } as Tool }
-    : level === -1
-      ? { label: t('tool.demolishWalkway'), tool: { kind: 'demolishWalkway', start: null, horizontalFirst: true } as Tool }
-      : { label: t('tool.demolishMetro'), tool: demolishRoad('metro') };
-  const undergroundSection = undergroundOpen ? [{ id: 'underground' as const, items: undergroundItems, demolish: undergroundDemolish }] : [];
+  const metroOpen = useGame(store => levelUnlocked(store.state, -2));
+  // The two underground networks, each built on its own Level: an item is available on that Level only.
+  const undergroundItems: RoadItem[] = [
+    { label: t('tool.walkway'), cost: `${walkwayCostPerTile()} ${t('tool.perTile')}`, tool: { kind: 'walkway', start: null, horizontalFirst: true } },
+    ...(metroOpen ? [{ label: t('tool.metro'), cost: `${TRANSIT.metro.tileCost} ${t('tool.perTile')}`, tool: { kind: 'road', mode: 'metro', start: null, horizontalFirst: true } } as RoadItem] : []),
+    { label: t('tool.demolishWalkway'), tool: { kind: 'demolishWalkway', start: null, horizontalFirst: true } },
+    ...(metroOpen ? [{ label: t('tool.demolishMetro'), tool: demolishRoad('metro') } as RoadItem] : []),
+  ];
+  const undergroundSection = undergroundOpen ? [{ id: 'underground' as const, items: undergroundItems }] : [];
   const visibleSections: typeof sections = level === SURFACE ? [...sections, ...undergroundSection] : undergroundSection;
   const activeSection = openSection === null || visibleSections.some(section => section.id === openSection) ? openSection : visibleSections[0]?.id ?? null;
 
@@ -113,7 +112,7 @@ export function RoadMenu() {
           headerAction={demolish ? <SectionDemolishButton label={demolish.label} onChoose={() => chooseTool(demolish.tool)} /> : undefined}
         >
           {items?.map(item => (
-            <FlyoutItem key={item.label} label={item.label} cost={item.cost} guided={guide.road && item.tool.kind === 'road'} onChoose={() => chooseTool(item.tool)} codexId={item.codexId} preview={item.codexId ? previewOf(item.codexId) : undefined} onInfo={item.codexId ? () => openCodex(item.codexId!) : undefined} />
+            <FlyoutItem key={item.label} label={item.label} cost={item.cost} guided={guide.road && item.tool.kind === 'road'} disabled={toolLevel(item.tool) !== level} onChoose={() => chooseTool(item.tool)} codexId={item.codexId} preview={item.codexId ? previewOf(item.codexId) : undefined} onInfo={item.codexId ? () => openCodex(item.codexId!) : undefined} />
           ))}
           {content}
         </AccordionSection>

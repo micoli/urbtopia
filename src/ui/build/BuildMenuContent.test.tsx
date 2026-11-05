@@ -28,15 +28,43 @@ beforeEach(() => {
 
 afterEach(() => { prefsStore.getState().setLanguage('en'); context.flyout = 'build'; context.level = 0; vi.unstubAllGlobals(); vi.useRealTimers(); });
 
+describe('underground items by Level', () => {
+  const rich = () => {
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 700 }, (_, id) => ({ ...home, id })) };
+    context.flyout = 'roads';
+  };
+  const itemOf = (html: string, label: string): string => html.match(new RegExp(`<button[^>]*class="flyout-item"[^>]*>\\s*<span>${label}</span>`))?.[0] ?? '';
+
+  it.each([[-1, 'tool.walkway', 'tool.metro'], [-2, 'tool.metro', 'tool.walkway']] as const)('enable on Level %i only the item of that Level', (level, enabled, disabled) => {
+    rich();
+    context.level = level;
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    expect(itemOf(html, t(enabled))).not.toBe('');
+    expect(itemOf(html, t(enabled))).not.toContain('disabled');
+    expect(itemOf(html, t(disabled))).toContain('disabled');
+  });
+
+  it('disable both on the Surface, where only the stairs are built', () => {
+    rich();
+    const html = renderToStaticMarkup(<BuildMenuContent />);
+    expect(itemOf(html, t('tool.walkway'))).toContain('disabled');
+    expect(itemOf(html, t('tool.metro'))).toContain('disabled');
+    expect(itemOf(html, t('tool.pedestrianAccess'))).not.toContain('disabled');
+  });
+});
+
 describe('build menu on Level -1', () => {
-  it('offers only the walkway tools in the Networks flyout', () => {
+  it('offers only the two underground networks in the Networks flyout', () => {
     const home = createBuilding(1, 'home', 55, 57, 0);
     context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 700 }, (_, id) => ({ ...home, id })) };
     context.flyout = 'roads';
     context.level = -1;
     const html = renderToStaticMarkup(<BuildMenuContent />);
     expect(html).toContain(t('tool.walkway'));
-    expect(html).toContain(`aria-label="${t('tool.demolishWalkway')}"`);
+    expect(html).toContain(t('tool.metro'));
+    expect(html).toContain(t('tool.demolishWalkway'));
+    expect(html).toContain(t('tool.demolishMetro'));
     expect(html).not.toContain(t('dock.streetView'));
     expect(html).not.toContain(`aria-label="${t('tool.demolishRoad')}"`);
   });
@@ -196,9 +224,11 @@ describe('build menu sections', () => {
     context.state = big;
     context.flyout = 'roads';
     const sections = renderToStaticMarkup(<BuildMenuContent />).match(/<section\b[^>]*>[\s\S]*?<\/section>/g) ?? [];
-    const demolishLabels = ['tool.demolishRoad', 'tool.demolishPedestrianWay', 'tool.demolishBrt', 'tool.demolishRail', 'water.remove', 'water.removeBridge', 'water.removeBridge', 'tool.demolishPedestrianAccess'] as const;
-    expect(sections).toHaveLength(demolishLabels.length);
+    const demolishLabels = ['tool.demolishRoad', 'tool.demolishPedestrianWay', 'tool.demolishBrt', 'tool.demolishRail', 'water.remove', 'water.removeBridge', 'water.removeBridge'] as const;
+    expect(sections).toHaveLength(demolishLabels.length + 1);
     demolishLabels.forEach((key, index) => expect(sections[index]).toContain(`aria-label="${t(key)}"`));
+    expect(sections.at(-1)).toContain(t('tool.walkway'));
+    expect(sections.at(-1)).toContain(t('tool.metro'));
     expect(sections[0]).toContain('lucide-chevron-down');
     expect(sections[0]).toContain('aria-expanded="true"');
     for (const section of sections.slice(1)) {
