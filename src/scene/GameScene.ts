@@ -201,6 +201,7 @@ export class GameScene {
     this.controller.onBrushCancel = () => this.handlers.onBrushCancel();
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
+    this.applyLevel();
     this.resize();
     this.stopWatchingHidden = watchPageHidden((hidden) => {
       this.hidden = hidden;

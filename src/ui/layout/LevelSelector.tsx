@@ -3,6 +3,7 @@ import { LEVELS, levelUnlocked, undergroundUnlocked, type Level } from '../../co
 import { t } from '../../i18n/t';
 import type { MessageKey } from '../../i18n/messages';
 import { FirstUseHint } from '../common/FirstUseHint';
+import { Icon } from '../common/Icon';
 import { IconButton } from '../common/IconButton';
 import { useGame, useUi } from '../common/hooks';
 import { uiStore } from '../../store/uiStore';
@@ -54,25 +55,19 @@ export function LevelSelector() {
     setLevel(candidate);
     setOpen(false);
   };
-  // Closed, the selector is one button showing the Level; open, it lists the Levels to pick from.
+  // The button always shows the current Level; open, the other Levels to pick from appear above it.
+  const others = levels.filter(candidate => candidate !== level);
   return (
     <div className="level-selector" role="group" aria-label={t('level.selector')}>
-      {open ? levels.map(candidate => (
-        <IconButton
-          key={candidate}
-          size="md"
-          tone={candidate === level ? 'accent' : 'light'}
-          label={t(LEVEL_NAMES[candidate])}
-          aria-pressed={candidate === level}
-          onClick={() => choose(candidate)}
-        >
+      {open ? others.map(candidate => (
+        <IconButton key={candidate} size="md" tone="light" label={t(LEVEL_NAMES[candidate])} onClick={() => choose(candidate)}>
           {LEVEL_LABELS[candidate]}
         </IconButton>
-      )) : (
-        <IconButton size="md" tone={level === 0 ? 'light' : 'accent'} label={t('level.change')} aria-expanded={false} onClick={() => setOpen(true)}>
-          {LEVEL_LABELS[level]}
-        </IconButton>
-      )}
+      )) : null}
+      <IconButton size="md" tone={level === 0 ? 'light' : 'accent'} label={t('level.change')} aria-expanded={open} className="level-selector__button" onClick={() => setOpen(!open)}>
+        <span>{LEVEL_LABELS[level]}</span>
+        <Icon name={open ? 'chevronUp' : 'chevronDown'} />
+      </IconButton>
       <FirstUseHint id="levels">{t('hint.levels')}</FirstUseHint>
     </div>
   );
