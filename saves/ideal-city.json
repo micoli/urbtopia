@@ -1,0 +1,3091 @@
+{
+  "format": "urbtopia-save",
+  "version": 17,
+  "savedAt": 1790000000000,
+  "state": {
+    "brtRoads": [],
+    "rails": [],
+    "transitLines": [],
+    "transitFleet": [],
+    "busLines": [],
+    "adaptationUntil": 1790086400000,
+    "seed": "green-heron-2000",
+    "rngState": 2839452520,
+    "urbs": 48250,
+    "lastSeen": 1790000000000,
+    "dayCycleOffset": 1000000,
+    "nextId": 154,
+    "ownedParcels": [
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 4
+      }
+    ],
+    "buildings": [
+      {
+        "id": 3,
+        "type": "waterTower",
+        "x": 50,
+        "y": 73,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 4,
+        "type": "waterTower",
+        "x": 51,
+        "y": 73,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 5,
+        "type": "waterTower",
+        "x": 52,
+        "y": 73,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 6,
+        "type": "waterTower",
+        "x": 53,
+        "y": 73,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 7,
+        "type": "waterTower",
+        "x": 54,
+        "y": 73,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 8,
+        "type": "waterTower",
+        "x": 55,
+        "y": 73,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 9,
+        "type": "powerPlant",
+        "x": 50,
+        "y": 75,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 10,
+        "type": "powerPlant",
+        "x": 51,
+        "y": 75,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 14,
+        "type": "home",
+        "x": 51,
+        "y": 57,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0,
+        "insulated": true,
+        "solar": true
+      },
+      {
+        "id": 15,
+        "type": "home",
+        "x": 54,
+        "y": 57,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 6,
+        "taxCitizenMs": 0,
+        "insulated": true,
+        "solar": true
+      },
+      {
+        "id": 16,
+        "type": "home",
+        "x": 57,
+        "y": 57,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 7,
+        "taxCitizenMs": 0,
+        "insulated": true,
+        "solar": true
+      },
+      {
+        "id": 17,
+        "type": "home",
+        "x": 60,
+        "y": 57,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 7,
+        "taxCitizenMs": 0,
+        "insulated": true,
+        "solar": true
+      },
+      {
+        "id": 18,
+        "type": "home",
+        "x": 66,
+        "y": 57,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 7,
+        "taxCitizenMs": 0,
+        "insulated": true,
+        "solar": true
+      },
+      {
+        "id": 19,
+        "type": "home",
+        "x": 69,
+        "y": 57,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 7,
+        "taxCitizenMs": 0,
+        "insulated": true,
+        "solar": true
+      },
+      {
+        "id": 20,
+        "type": "home",
+        "x": 72,
+        "y": 57,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 6,
+        "taxCitizenMs": 0,
+        "insulated": true,
+        "solar": true
+      },
+      {
+        "id": 21,
+        "type": "home",
+        "x": 75,
+        "y": 57,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0,
+        "insulated": true,
+        "solar": true
+      },
+      {
+        "id": 22,
+        "type": "home",
+        "x": 51,
+        "y": 63,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 6,
+        "taxCitizenMs": 0,
+        "insulated": true,
+        "solar": true
+      },
+      {
+        "id": 23,
+        "type": "home",
+        "x": 54,
+        "y": 63,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 6,
+        "taxCitizenMs": 0,
+        "insulated": true,
+        "solar": true
+      },
+      {
+        "id": 24,
+        "type": "home",
+        "x": 57,
+        "y": 63,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0,
+        "insulated": true,
+        "solar": true
+      },
+      {
+        "id": 25,
+        "type": "home",
+        "x": 60,
+        "y": 63,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 4,
+        "taxCitizenMs": 0,
+        "insulated": true,
+        "solar": true
+      },
+      {
+        "id": 26,
+        "type": "library",
+        "x": 66,
+        "y": 60,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 27,
+        "type": "hospital",
+        "x": 69,
+        "y": 59,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 28,
+        "type": "communityHall",
+        "x": 72,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 29,
+        "type": "school",
+        "x": 74,
+        "y": 60,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 30,
+        "type": "middleSchool",
+        "x": 66,
+        "y": 66,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 31,
+        "type": "policeStation",
+        "x": 69,
+        "y": 66,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 32,
+        "type": "fireStation",
+        "x": 72,
+        "y": 66,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 33,
+        "type": "townHall",
+        "x": 75,
+        "y": 66,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 34,
+        "type": "middleSchool",
+        "x": 52,
+        "y": 54,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 35,
+        "type": "school",
+        "x": 50,
+        "y": 69,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 36,
+        "type": "hospital",
+        "x": 52,
+        "y": 69,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 37,
+        "type": "library",
+        "x": 55,
+        "y": 69,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 38,
+        "type": "communityHall",
+        "x": 58,
+        "y": 69,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 39,
+        "type": "communityHall",
+        "x": 59,
+        "y": 69,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 40,
+        "type": "recyclingPlant",
+        "x": 60,
+        "y": 69,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 41,
+        "type": "bakery",
+        "x": 66,
+        "y": 63,
+        "rotation": 0,
+        "slotCount": 2,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 42,
+        "type": "supermarket",
+        "x": 69,
+        "y": 63,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0,
+        "venue": {
+          "fixtures": [],
+          "nextFixtureId": 1,
+          "takings": 0
+        }
+      },
+      {
+        "id": 43,
+        "type": "shop",
+        "x": 72,
+        "y": 63,
+        "rotation": 0,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 2,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 44,
+        "type": "shop",
+        "x": 73,
+        "y": 63,
+        "rotation": 0,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 2,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 45,
+        "type": "office",
+        "x": 75,
+        "y": 63,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 2,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 46,
+        "type": "theater",
+        "x": 59,
+        "y": 66,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 47,
+        "type": "park",
+        "x": 51,
+        "y": 59,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 48,
+        "type": "park",
+        "x": 54,
+        "y": 59,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 49,
+        "type": "park",
+        "x": 57,
+        "y": 59,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 50,
+        "type": "park",
+        "x": 60,
+        "y": 59,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 51,
+        "type": "park",
+        "x": 51,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 52,
+        "type": "park",
+        "x": 54,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 53,
+        "type": "shop",
+        "x": 50,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 54,
+        "type": "shop",
+        "x": 51,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 55,
+        "type": "shop",
+        "x": 52,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 56,
+        "type": "shop",
+        "x": 53,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 57,
+        "type": "shop",
+        "x": 54,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 58,
+        "type": "shop",
+        "x": 55,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 59,
+        "type": "shop",
+        "x": 56,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 60,
+        "type": "shop",
+        "x": 57,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 61,
+        "type": "shop",
+        "x": 58,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 62,
+        "type": "shop",
+        "x": 59,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 63,
+        "type": "shop",
+        "x": 60,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 64,
+        "type": "shop",
+        "x": 61,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 65,
+        "type": "shop",
+        "x": 62,
+        "y": 61,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 66,
+        "type": "tree",
+        "x": 50,
+        "y": 67,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 67,
+        "type": "tree",
+        "x": 51,
+        "y": 67,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 68,
+        "type": "tree",
+        "x": 52,
+        "y": 67,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 69,
+        "type": "tree",
+        "x": 53,
+        "y": 67,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 70,
+        "type": "tree",
+        "x": 54,
+        "y": 67,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 71,
+        "type": "tree",
+        "x": 55,
+        "y": 67,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 72,
+        "type": "tree",
+        "x": 56,
+        "y": 67,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 73,
+        "type": "tree",
+        "x": 57,
+        "y": 67,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 74,
+        "type": "tree",
+        "x": 57,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 75,
+        "type": "tree",
+        "x": 62,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 76,
+        "type": "office",
+        "x": 55,
+        "y": 54,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 77,
+        "type": "office",
+        "x": 58,
+        "y": 54,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 78,
+        "type": "shop",
+        "x": 54,
+        "y": 55,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 79,
+        "type": "shop",
+        "x": 57,
+        "y": 55,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 80,
+        "type": "shop",
+        "x": 68,
+        "y": 55,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 81,
+        "type": "shop",
+        "x": 69,
+        "y": 55,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 82,
+        "type": "shop",
+        "x": 70,
+        "y": 55,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 83,
+        "type": "shop",
+        "x": 71,
+        "y": 55,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 84,
+        "type": "shop",
+        "x": 72,
+        "y": 55,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 85,
+        "type": "shop",
+        "x": 73,
+        "y": 55,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 86,
+        "type": "shop",
+        "x": 74,
+        "y": 55,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 87,
+        "type": "shop",
+        "x": 75,
+        "y": 55,
+        "rotation": 2,
+        "slotCount": 3,
+        "queue": [],
+        "stacks": [
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          },
+          {
+            "good": null,
+            "stock": 0,
+            "nextSaleAt": null,
+            "earned": 0
+          }
+        ],
+        "tier": 4,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 88,
+        "type": "synagogue",
+        "x": 60,
+        "y": 54,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 89,
+        "type": "mosque",
+        "x": 62,
+        "y": 54,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 90,
+        "type": "catholicChurch",
+        "x": 66,
+        "y": 54,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 91,
+        "type": "buddhistTemple",
+        "x": 76,
+        "y": 54,
+        "rotation": 2,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 92,
+        "type": "park",
+        "x": 55,
+        "y": 52,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 93,
+        "type": "park",
+        "x": 58,
+        "y": 52,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 94,
+        "type": "park",
+        "x": 61,
+        "y": 52,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 95,
+        "type": "park",
+        "x": 66,
+        "y": 52,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 96,
+        "type": "park",
+        "x": 69,
+        "y": 52,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 97,
+        "type": "park",
+        "x": 72,
+        "y": 52,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 98,
+        "type": "park",
+        "x": 75,
+        "y": 52,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 5,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 99,
+        "type": "tree",
+        "x": 50,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 100,
+        "type": "tree",
+        "x": 51,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 101,
+        "type": "tree",
+        "x": 52,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 102,
+        "type": "tree",
+        "x": 53,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 103,
+        "type": "tree",
+        "x": 54,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 104,
+        "type": "tree",
+        "x": 55,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 105,
+        "type": "tree",
+        "x": 56,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 106,
+        "type": "tree",
+        "x": 57,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 107,
+        "type": "tree",
+        "x": 58,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 108,
+        "type": "tree",
+        "x": 59,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 109,
+        "type": "tree",
+        "x": 60,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 110,
+        "type": "tree",
+        "x": 61,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 111,
+        "type": "tree",
+        "x": 62,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 112,
+        "type": "tree",
+        "x": 63,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 113,
+        "type": "tree",
+        "x": 64,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 114,
+        "type": "tree",
+        "x": 65,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 115,
+        "type": "tree",
+        "x": 66,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 116,
+        "type": "tree",
+        "x": 67,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 117,
+        "type": "tree",
+        "x": 68,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 118,
+        "type": "tree",
+        "x": 69,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 119,
+        "type": "tree",
+        "x": 70,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 120,
+        "type": "tree",
+        "x": 71,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 121,
+        "type": "tree",
+        "x": 72,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 122,
+        "type": "tree",
+        "x": 73,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 123,
+        "type": "tree",
+        "x": 74,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 124,
+        "type": "tree",
+        "x": 75,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 125,
+        "type": "tree",
+        "x": 76,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 126,
+        "type": "tree",
+        "x": 77,
+        "y": 51,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 127,
+        "type": "tree",
+        "x": 65,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 128,
+        "type": "tree",
+        "x": 66,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 129,
+        "type": "tree",
+        "x": 67,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 130,
+        "type": "tree",
+        "x": 68,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 131,
+        "type": "tree",
+        "x": 69,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 132,
+        "type": "tree",
+        "x": 70,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 133,
+        "type": "tree",
+        "x": 71,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 134,
+        "type": "tree",
+        "x": 72,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 135,
+        "type": "tree",
+        "x": 73,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 136,
+        "type": "tree",
+        "x": 74,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 137,
+        "type": "tree",
+        "x": 75,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 138,
+        "type": "tree",
+        "x": 76,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 139,
+        "type": "tree",
+        "x": 77,
+        "y": 65,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 140,
+        "type": "appleTree",
+        "x": 66,
+        "y": 49,
+        "rotation": 0,
+        "slotCount": 1,
+        "queue": [
+          {
+            "item": "apple",
+            "duration": 1200000,
+            "startedAt": 1790000000000,
+            "done": false,
+            "quantity": 1
+          }
+        ],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 141,
+        "type": "appleTree",
+        "x": 67,
+        "y": 49,
+        "rotation": 0,
+        "slotCount": 1,
+        "queue": [
+          {
+            "item": "apple",
+            "duration": 1200000,
+            "startedAt": 1790000000000,
+            "done": false,
+            "quantity": 1
+          }
+        ],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 142,
+        "type": "appleTree",
+        "x": 68,
+        "y": 49,
+        "rotation": 0,
+        "slotCount": 1,
+        "queue": [
+          {
+            "item": "apple",
+            "duration": 1200000,
+            "startedAt": 1790000000000,
+            "done": false,
+            "quantity": 1
+          }
+        ],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 143,
+        "type": "appleTree",
+        "x": 69,
+        "y": 49,
+        "rotation": 0,
+        "slotCount": 1,
+        "queue": [
+          {
+            "item": "apple",
+            "duration": 1200000,
+            "startedAt": 1790000000000,
+            "done": false,
+            "quantity": 1
+          }
+        ],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 144,
+        "type": "appleTree",
+        "x": 70,
+        "y": 49,
+        "rotation": 0,
+        "slotCount": 1,
+        "queue": [
+          {
+            "item": "apple",
+            "duration": 1200000,
+            "startedAt": 1790000000000,
+            "done": false,
+            "quantity": 1
+          }
+        ],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 145,
+        "type": "appleTree",
+        "x": 71,
+        "y": 49,
+        "rotation": 0,
+        "slotCount": 1,
+        "queue": [
+          {
+            "item": "apple",
+            "duration": 1200000,
+            "startedAt": 1790000000000,
+            "done": false,
+            "quantity": 1
+          }
+        ],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 146,
+        "type": "appleTree",
+        "x": 72,
+        "y": 49,
+        "rotation": 0,
+        "slotCount": 1,
+        "queue": [
+          {
+            "item": "apple",
+            "duration": 1200000,
+            "startedAt": 1790000000000,
+            "done": false,
+            "quantity": 1
+          }
+        ],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 147,
+        "type": "appleTree",
+        "x": 73,
+        "y": 49,
+        "rotation": 0,
+        "slotCount": 1,
+        "queue": [
+          {
+            "item": "apple",
+            "duration": 1200000,
+            "startedAt": 1790000000000,
+            "done": false,
+            "quantity": 1
+          }
+        ],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 148,
+        "type": "theater",
+        "x": 66,
+        "y": 69,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 3,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 149,
+        "type": "solar",
+        "x": 66,
+        "y": 73,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 150,
+        "type": "solar",
+        "x": 69,
+        "y": 73,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 151,
+        "type": "solar",
+        "x": 72,
+        "y": 73,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0
+      },
+      {
+        "id": 152,
+        "type": "battery",
+        "x": 75,
+        "y": 73,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 1,
+        "taxCitizenMs": 0,
+        "storedEnergy": 0
+      },
+      {
+        "id": 153,
+        "type": "geothermalPlant",
+        "x": 57,
+        "y": 73,
+        "rotation": 0,
+        "slotCount": 0,
+        "queue": [],
+        "stacks": [],
+        "tier": 6,
+        "taxCitizenMs": 0
+      }
+    ],
+    "seedStock": {},
+    "fields": [],
+    "storage": {
+      "materials": {},
+      "goods": {
+        "planks": 20,
+        "bricks": 20,
+        "tiles": 20,
+        "tools": 20,
+        "glass": 20,
+        "circuits": 20,
+        "steel": 20,
+        "cement": 20,
+        "jewelry": 20,
+        "crystal": 20
+      }
+    },
+    "marketUnlocked": true,
+    "market": {},
+    "roads": [
+      {
+        "x": 49,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 50,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 51,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 52,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 53,
+        "y": 56,
+        "kind": "crossing",
+        "tier": 3
+      },
+      {
+        "x": 54,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 55,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 56,
+        "y": 56,
+        "kind": "crossing",
+        "tier": 3
+      },
+      {
+        "x": 57,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 58,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 59,
+        "y": 56,
+        "kind": "crossing",
+        "tier": 3
+      },
+      {
+        "x": 60,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 61,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 62,
+        "y": 56,
+        "kind": "crossing",
+        "tier": 3
+      },
+      {
+        "x": 63,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 64,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 65,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 66,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 67,
+        "y": 56,
+        "kind": "crossing",
+        "tier": 3
+      },
+      {
+        "x": 68,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 69,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 70,
+        "y": 56,
+        "kind": "crossing",
+        "tier": 3
+      },
+      {
+        "x": 71,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 72,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 73,
+        "y": 56,
+        "kind": "crossing",
+        "tier": 3
+      },
+      {
+        "x": 74,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 75,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 76,
+        "y": 56,
+        "kind": "crossing",
+        "tier": 3
+      },
+      {
+        "x": 77,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 78,
+        "y": 56,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 49,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 50,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 51,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 52,
+        "y": 62,
+        "kind": "crossing",
+        "tier": 3
+      },
+      {
+        "x": 53,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 54,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 55,
+        "y": 62,
+        "kind": "crossing",
+        "tier": 3
+      },
+      {
+        "x": 56,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 57,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 58,
+        "y": 62,
+        "kind": "crossing",
+        "tier": 3
+      },
+      {
+        "x": 59,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 60,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 61,
+        "y": 62,
+        "kind": "crossing",
+        "tier": 3
+      },
+      {
+        "x": 62,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 63,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 64,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 65,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 66,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 67,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 68,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 69,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 70,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 71,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 72,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 73,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 74,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 75,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 76,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 77,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 78,
+        "y": 62,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 49,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 50,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 51,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 52,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 53,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 54,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 55,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 56,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 57,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 58,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 59,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 60,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 61,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 62,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 63,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 64,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 65,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 66,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 67,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 68,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 69,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 70,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 71,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 72,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 73,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 74,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 75,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 76,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 77,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 78,
+        "y": 68,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 49,
+        "y": 57,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 49,
+        "y": 58,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 49,
+        "y": 59,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 49,
+        "y": 60,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 49,
+        "y": 61,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 49,
+        "y": 63,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 49,
+        "y": 64,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 49,
+        "y": 65,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 49,
+        "y": 66,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 49,
+        "y": 67,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 64,
+        "y": 57,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 64,
+        "y": 58,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 64,
+        "y": 59,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 64,
+        "y": 60,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 64,
+        "y": 61,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 64,
+        "y": 63,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 64,
+        "y": 64,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 64,
+        "y": 65,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 64,
+        "y": 66,
+        "kind": "road",
+        "tier": 3
+      },
+      {
+        "x": 64,
+        "y": 67,
+        "kind": "road",
+        "tier": 3
+      }
+    ],
+    "roundabouts": [],
+    "tutorial": null,
+    "tradeLedger": [],
+    "venueTutorials": {
+      "supermarket": "checkout"
+    },
+    "bridges": []
+  }
+}
