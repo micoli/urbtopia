@@ -15,7 +15,7 @@ Amends [ADR 0011](0011-congestion-as-core-model-with-visual-vehicles.md) and mak
 **Priority by mode, city-wide, then nearest first.** Jobs are given in three passes over all the Homes of the city, so the result never depends on the order the Homes are visited in:
 
 1. **Walkers**: Citizens whose workplace is within walking distance on the Pedestrian path network take it first.
-2. **Cyclists**: then those within cycling distance, three times the walking distance (ADR 0038).
+2. **Cyclists**: then those within cycling distance. To a Job it is twice the walking distance (20 tiles at the usual threshold), narrower than the three times of ADR 0038 that still apply to Services and to the way to a station: with three times, Citizens of compact cities cycled to every Job and the lines carried nobody (Maenia, 30 Riders; TheQueen, 903).
 3. **Everyone else** picks between public transport and the car, whichever has the shorter travel time.
 
 Inside a pass, the shortest travel time is served first; ties break by Home id, then workplace id. A Walker is never displaced by a Rider or a driver, and a Cyclist is never displaced by a Rider or a driver.

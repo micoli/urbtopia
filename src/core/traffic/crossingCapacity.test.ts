@@ -5,6 +5,7 @@ import { WALKING, crossingCut } from './walking';
 const base = newGame({ seed: 'crossing-capacity', now: 0 });
 const defaultWork = WALKING.workThreshold;
 const defaultCyclingFactor = WALKING.cyclingFactor;
+const defaultWorkCyclingFactor = WALKING.workCyclingFactor;
 const defaultShop = WALKING.thresholds.shop;
 const CROSSING = '57,58';
 
@@ -20,10 +21,12 @@ function city(crossing: boolean, homes: { x: number; tier: number }[] = [{ x: 58
 
 beforeEach(() => {
   WALKING.cyclingFactor = 1;
+  WALKING.workCyclingFactor = 1;
 });
 
 afterEach(() => {
   WALKING.cyclingFactor = defaultCyclingFactor;
+  WALKING.workCyclingFactor = defaultWorkCyclingFactor;
   WALKING.workThreshold = defaultWork;
   WALKING.thresholds.shop = defaultShop;
   WALKING.enabled = true;

@@ -3,7 +3,7 @@ import { citizensOf, congestionStats, createBuilding, newGame, type Building, ty
 import { WALKING, modeShares } from './walking';
 
 const base = newGame({ seed: 'walking', now: 0 });
-const defaults = { work: WALKING.workThreshold, shop: WALKING.thresholds.shop, factor: WALKING.cyclingFactor };
+const defaults = { work: WALKING.workThreshold, shop: WALKING.thresholds.shop, factor: WALKING.cyclingFactor, workFactor: WALKING.workCyclingFactor };
 
 function withHome(state: GameState, x: number, y: number, tier: number): GameState {
   const home: Building = { ...createBuilding(state.nextId, 'home', x, y, 0), tier };
@@ -16,10 +16,11 @@ afterEach(() => {
   WALKING.workThreshold = defaults.work;
   WALKING.thresholds.shop = defaults.shop;
   WALKING.cyclingFactor = defaults.factor;
+  WALKING.workCyclingFactor = defaults.workFactor;
 });
 
 describe('cycling commute', () => {
-  it('cycles to a workplace out of walking range but within three times it, off the road', () => {
+  it('cycles to a workplace out of walking range but within twice it, off the road', () => {
     WALKING.workThreshold = 3;
     const state = withHome(base, 56, 59, 1);
     const stats = congestionStats(state);
@@ -34,6 +35,7 @@ describe('cycling commute', () => {
   it('drives beyond cycling range', () => {
     WALKING.workThreshold = 3;
     WALKING.cyclingFactor = 1;
+    WALKING.workCyclingFactor = 1;
     const state = withHome(base, 56, 59, 1);
     const home = congestionStats(state).homes.get(homeIdOf(state))!;
     expect(home.cyclists).toBe(0);

@@ -453,7 +453,7 @@ The set of Vehicles on the roads, whose size follows Commuters who drive instead
 _Avoid_: Flow, cars
 
 **Commute**:
-The daily journey of a Home's Citizens to their Jobs, by walking, cycling, public transport or car. Walkers are served first city-wide, then Cyclists, then the others, who take public transport or the car, whichever has the shorter Travel time; within each group the nearest Job by Travel time is filled first. Citizens who find no Job within reach are Unemployed. Modelled per Home in aggregate, never per individual Citizen.
+The daily journey of a Home's Citizens to their Jobs, by walking, cycling, public transport or car. Walkers are served first city-wide, then Cyclists (within twice the walking distance of a Job), then the others, who take public transport or the car, whichever has the shorter Travel time; within each group the nearest Job by Travel time is filled first. Citizens who find no Job within reach are Unemployed. Modelled per Home in aggregate, never per individual Citizen.
 _Avoid_: Individual Citizen journey, Transit itinerary
 
 **Job**:

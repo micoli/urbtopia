@@ -5,6 +5,7 @@ import { WALKING, modeShares } from './walking';
 const base = newGame({ seed: 'walking', now: 0 });
 const defaultThreshold = WALKING.workThreshold;
 const defaultCyclingFactor = WALKING.cyclingFactor;
+const defaultWorkCyclingFactor = WALKING.workCyclingFactor;
 
 function withHome(state: GameState, x: number, y: number, tier: number): GameState {
   const home: Building = { ...createBuilding(state.nextId, 'home', x, y, 0), tier };
@@ -17,11 +18,13 @@ function homeIdOf(state: GameState): number {
 
 beforeEach(() => {
   WALKING.cyclingFactor = 1;
+  WALKING.workCyclingFactor = 1;
 });
 
 afterEach(() => {
   WALKING.workThreshold = defaultThreshold;
   WALKING.cyclingFactor = defaultCyclingFactor;
+  WALKING.workCyclingFactor = defaultWorkCyclingFactor;
 });
 
 describe('walking commute', () => {

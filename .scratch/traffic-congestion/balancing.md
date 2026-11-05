@@ -130,3 +130,32 @@ Replayed with the final rule, including the exemption of Homes with no Road from
 - **Maenia sensitivity** (cycling factor / walking threshold): x3/10 gives 30 Riders and 0 cars; x2/10, 140 Riders and 193 cars; x3/6, 360 Riders and 71 cars. Narrowing the range brings the lines back and also brings cars, saturated sections and emissions back.
 - **TheQueen** takes 286 ms, 1.5 times the old 191 ms; the result is cached while the layout stays the same.
 
+### Applied: cycling range to a Job of 20 tiles (`WALKING.workCyclingFactor` = 2)
+
+The cycling factor of 3 stays for trips to Services and for the way to a station. Only the way to a Job narrows, from 30 to 20 tiles at the usual walking threshold of 10. Measured with the final value; Before is the commit before ADR 0059, Current the rule with a range of 30 tiles.
+
+| City | | Jobs filled / offered | Unemployed | Walking | Cycling | Public transport | Car | Congestion | Saturated sections | Emissions | Temperature (°C) |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Robbart (1,000) | Before | 300 / 951 | 0 | 260 | 40 | 700 | 0 | 0 | 0 | 0 | 26.14 |
+| | Current | 951 / 951 | 49 | 741 | 210 | 0 | 0 | 0 | 0 | 0 | 26.14 |
+| | **Applied** | 951 / 951 | 49 | 741 | 210 | 0 | 0 | 0 | 0 | 0 | 26.14 |
+| Maenia (3,222) | Before | 1,593 / 4,120 | 0 | 1,427 | 166 | 1,629 | 0 | 0 | 3 | 1.5 | 26.83 |
+| | Current | 3,222 / 4,310 | 0 | 2,113 | 1,079 | 30 | 0 | 0 | 3 | 1.5 | 26.83 |
+| | **Applied** | 3,222 / 4,310 | 0 | 2,113 | 776 | **262** | 71 | 0.05 | 5 | 8.6 | 26.91 |
+| TheQueen (7,163) | Before | 6,352 / 7,336 | 145 | 1,221 | 2,782 | 1,469 | 148 | 0.011 | 0 | 14.8 | 27.58 |
+| | Current | 6,163 / 7,359 | 0 | 3,364 | 1,895 | 903 | 1 | 0 | 0 | 0.1 | 27.39 |
+| | **Applied** | 5,932 / 7,359 | 0 | 3,364 | 1,291 | **1,261** | 16 | 0 | 0 | 1.6 | 27.41 |
+| `idealCity` (2,000, no line) | Before | n/m / 2,383 | 0 | 1,070 | 733 | 0 | 197 | 0.15 | 0 | 19.7 | 26.23 |
+| | Current | 2,000 / 2,383 | 0 | 1,526 | 440 | 0 | 34 | 0.02 | 0 | 3.4 | 26.06 |
+| | **Applied** | 2,000 / 2,383 | 0 | 1,526 | 308 | 0 | 166 | 0.16 | 0 | 16.6 | 26.20 |
+| `evolvedCity` (1,752, no line) | Before | n/m / 1,567 | 185 | 80 | 308 | 0 | 1,179 | 1.79 | 53 | 117.9 | 40.00 |
+| | Current | 1,567 / 1,567 | 185 | 198 | 687 | 0 | 682 | 1.09 | 22 | 68.2 | 39.62 |
+| | **Applied** | 1,567 / 1,567 | 185 | 198 | 567 | 0 | 802 | 1.11 | 22 | 80.2 | 40.00 |
+
+Why this value and not another, from the experiments:
+
+- **Narrowing the range everywhere** (jobs, services and the way to a station) gave Maenia 242 Riders and 91 cars; narrowing it only for Jobs gives 262 Riders and 71 cars, because a Citizen still cycles to a station from 18 tiles.
+- **A car access time** (2, 3 or 5 minutes) removed only 14 to 54 of Maenia's 91 drivers: the others have no line within reach or find it full. Not adopted.
+- **Narrower still** (16 tiles) gives Maenia 553 Riders but TheQueen 147 cars; 12 tiles, 191 and 159 cars. Not adopted.
+- **The cost**: in a city with no public transport line, the Citizens who lose the Job within 30 tiles by bicycle drive (`idealCity` 34 to 166 cars, `evolvedCity` 682 to 802, which reaches the 40 °C ceiling). The value serves the cities that have lines and penalises those that have none.
+

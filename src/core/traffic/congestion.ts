@@ -232,9 +232,9 @@ function calculateCongestion(state: GameState, now: number, network: TransitNetw
     if (WALKING.enabled) {
       for (const workplace of workplaces) {
         const target = nearestTarget(walk, workplace.sidewalks);
-        if (target === null || target.cost > WALKING.workThreshold * WALKING.cyclingFactor) continue;
+        if (target === null || target.cost > WALKING.workThreshold * WALKING.workCyclingFactor) continue;
         const walking = target.cost <= WALKING.workThreshold;
-        candidates.push({ home: homeId, workplace: workplace.building.id, mode: walking ? 'walk' : 'cycle', minutes: walking ? target.cost : target.cost / WALKING.cyclingFactor, detail: { nodes: nodesOnPath(walk, target.node), crossings: crossingsOnPath(walk, target.node) } });
+        candidates.push({ home: homeId, workplace: workplace.building.id, mode: walking ? 'walk' : 'cycle', minutes: walking ? target.cost : target.cost / WALKING.workCyclingFactor, detail: { nodes: nodesOnPath(walk, target.node), crossings: crossingsOnPath(walk, target.node) } });
       }
     }
     for (const option of network.homeOptions.get(homeId) ?? []) {

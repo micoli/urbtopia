@@ -9,7 +9,7 @@ export const meta = {
 Chaque habitant d’un logement cherche un emploi. Le jeu calcule les trajets de chaque logement dans son ensemble, jamais ceux de chaque habitant, et le chemin du travail suit un ordre fixe :
 
 1. **À pied**, le long des trottoirs de chaque <EntryLink id="road">route</EntryLink> et des <EntryLink id="pedestrianWay">voies piétonnes</EntryLink> que vous construisez, vers un lieu de travail à portée de marche. La marche donne du bien-être et ne charge aucune route. Les marcheurs choisissent en premier, dans toute la ville.
-2. **À vélo**, jusqu’à trois fois plus loin qu’à pied, sur les mêmes chemins. Rien à acheter ni à construire. Les cyclistes choisissent juste après les marcheurs.
+2. **À vélo**, jusqu’à deux fois plus loin qu’à pied pour aller travailler (trois fois pour les commerces et les services), sur les mêmes chemins. Rien à acheter ni à construire. Les cyclistes choisissent juste après les marcheurs.
 3. **En transports en commun ou en voiture** pour tous les autres, selon le **temps de trajet** le plus court. Les transports en commun regroupent les lignes de bus entre les <EntryLink id="busStop">arrêts de bus</EntryLink>, le <EntryLink id="brt">BRT</EntryLink> sur son couloir et les trains sur la <EntryLink id="rail">voie ferrée</EntryLink> ; un trajet compte au plus deux correspondances. Une ligne sans place libre renvoie ses derniers habitants sur la route.
 
 Dans chaque groupe, un habitant prend l’emploi qu’il atteint le plus vite. Personne ne prend la place d’un marcheur ou d’un cycliste.
