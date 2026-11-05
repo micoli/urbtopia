@@ -1,11 +1,13 @@
 import {
-    ECOLOGY, HOME_TIERS, cityBenefits, economicPower, energySavingOf, energyStats, homePower, productionFactors, transportStats, type GameState, isHomeType } from '../../../core';
+    ECOLOGY, HOME_TIERS, cityBenefits, economicPower, energySavingOf, energyStats, homePower, transportStats, type GameState, isHomeType } from '../../../core';
 import {t} from '../../../i18n/t';
 import type {MessageKey} from '../../../i18n/messages';
 import {SectionHeading} from '../../common/SectionHeading';
 import {LabeledList} from '../../common/LabeledList';
+import {EnergyForecastChart} from '../../codex/EnergyForecastChart';
 
 const FORECAST_HOURS = 6;
+const FORECAST_SOURCES = ['solar', 'wind', 'hydro'] as const;
 
 interface EnergySectionProps {
     state: GameState;
@@ -44,10 +46,6 @@ export function EnergySection({state, energy, green, transport}: EnergySectionPr
         {title: 'eco.group.cost', kind: 'consumption', rows: [['eco.cost', energy.costPerHour + transport.costPerHour, true]]},
         ...(casinoRows(state, green).length ? [{title: 'eco.group.casino' as const, rows: casinoRows(state, green)}] : []),
     ];
-    const forecast = Array.from({length: FORECAST_HOURS}, (_, i) => {
-        const factors = productionFactors(state.lastSeen + (state.timeOffset ?? 0) + (i + 1) * ECOLOGY.hourMs);
-        return `+${i + 1}h: ${(100 * factors.solar).toFixed(0)}% / ${(100 * factors.wind).toFixed(0)}% / ${(100 * factors.hydro).toFixed(0)}%`;
-    });
     return <section id="eco-energy" className="eco-wide">
         <SectionHeading icon="power">{t('eco.energy')}</SectionHeading>
         {groups.map(group => <div key={group.title} className="eco-energy-group" data-kind={group.kind}>
@@ -66,8 +64,8 @@ export function EnergySection({state, energy, green, transport}: EnergySectionPr
             <p>{t('eco.adaptationHelp')}</p>
         </aside>}
         <h4>{t('eco.forecast')}</h4>
-        <p>{forecast.join(' · ')}</p>
+        <div className="eco-forecast"><EnergyForecastChart state={state} hours={FORECAST_HOURS} sources={FORECAST_SOURCES}/></div>
         <h4>{t('eco.transfers')}</h4>
-        {energy.transfers.map(x => <p key={`${x.from}-${x.to}`}>#{x.from} → #{x.to}: {x.amount.toFixed(2)}</p>)}
+        {energy.transfers.map(n => <p key={`${n.from}-${n.to}`}>#{n.from} → #{n.to}: {n.amount.toFixed(2)}</p>)}
     </section>;
 }
