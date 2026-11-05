@@ -23,6 +23,7 @@ import {SectionNavigation} from './management/SectionNavigation';
 import {TemperatureSection} from './management/TemperatureSection';
 import {TourismSection} from './management/TourismSection';
 import {TrafficSection} from './management/TrafficSection';
+import {RailMetroSection} from './management/railMetro/RailMetroSection';
 import {TransportMapSection} from './management/transportMap/TransportMapSection';
 import {TransportSection} from './management/TransportSection';
 import {WasteSection} from './management/WasteSection';
@@ -84,6 +85,7 @@ function CityManagementDialog() {
                 <TransportSection transport={transport}/>
                 <TransportMapSection state={state} transport={transport} congestion={congestion}/>
                 <TrafficSection state={state} congestion={congestion} transport={transport} onShowTransport={() => showSection('eco-transport')}/>
+                <RailMetroSection state={state} transport={transport}/>
                 <ObjectivesSection state={state} energy={energy} green={green} transport={transport}/>
                 <NextUnlockSection/>
             </div>
