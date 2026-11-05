@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { citizensOf, congestionStats, createBuilding, newGame, type Building, type BuildingType, type GameState } from '../index';
 import { homeBenefits } from '../environment/wellbeing';
+import { placementIssue } from '../map/placement';
 import { WALKING } from './walking';
 
 const base = newGame({ seed: 'walking-trips', now: 0 });
@@ -80,6 +81,26 @@ describe('walking trips to services', () => {
     });
   });
 
+  describe('sport courts beside a Pedestrian way only', () => {
+    const only = (type: 'basketballCourt' | 'foot5') => {
+      const ways = Array.from({ length: 7 }, (_, index): { x: number; y: number } => ({ x: 90, y: 95 - index }));
+      const state = withBuildings({ ...base, buildings: [], roads: [], pedestrianWays: ways }, [{ type, x: 91, y: 90 }, { type: 'home', x: 90, y: 96 }]);
+      return state;
+    };
+
+    it.each(['basketballCourt', 'foot5'] as const)('accepts a %s with that access', (type) => {
+      const state = only(type);
+      const court = state.buildings.find((building) => building.type === type)!;
+      expect(placementIssue({ ...state, buildings: state.buildings.filter((building) => building !== court) }, type, court.x, court.y, court.rotation)).not.toBe('error.needsAccess');
+    });
+
+    it.each(['basketballCourt', 'foot5'] as const)('sends Citizens to a %s', (type) => {
+      const state = only(type);
+      const court = state.buildings.find((building) => building.type === type)!;
+      expect(congestionStats(state).walkArrivals.get(court.id)).toBeGreaterThan(0);
+    });
+  });
+
   it('counts a park as a park destination', () => {
     const stats = congestionStats(withBuildings(base, [{ type: 'park', x: 58, y: 59 }, { type: 'home', x: 56, y: 59 }]));
     expect(stats.walkingTrips.park).toBe(citizensOf(1) * WALKING.tripsPerCitizen.park);
@@ -104,5 +125,22 @@ describe('walking trips to services', () => {
 
   it('is deterministic', () => {
     expect(congestionStats({ ...city() }).walkingTrips).toEqual(congestionStats(city()).walkingTrips);
+  });
+});
+
+describe('walking trips to sport courts', () => {
+  const city = (type: BuildingType) => withBuildings(base, [{ type, x: 57, y: type === 'foot5' ? 54 : 55 }, { type: 'home', x: 56, y: 59 }]);
+
+  it.each(['basketballCourt', 'foot5'] as const)('sends Citizens to a %s and counts its visitors', (type) => {
+    const state = city(type);
+    const stats = congestionStats(state);
+    const court = state.buildings.find((building) => building.type === type)!;
+    expect(stats.walkingTrips.sport).toBe(citizensOf(1) * WALKING.tripsPerCitizen.sport);
+    expect(stats.walkArrivals.get(court.id)).toBe(stats.walkingTrips.sport);
+  });
+
+  it('leaves a court beyond the threshold with no visitor', () => {
+    WALKING.thresholds.sport = 3;
+    expect(congestionStats(city('foot5')).walkingTrips.sport).toBe(0);
   });
 });

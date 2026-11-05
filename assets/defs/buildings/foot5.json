@@ -7,6 +7,7 @@
   "cost": 600,
   "unlockCitizens": 80,
   "requiresRoad": true,
+  "accessModes": ["road", "pedestrianWay"],
   "name": {
     "en": "Five-a-side pitch",
     "fr": "Foot à 5"

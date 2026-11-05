@@ -6,6 +6,7 @@ import { ArenaPanel } from './ArenaPanel';
 import { AttractionPanel } from './AttractionPanel';
 import { BuildingAccess } from './BuildingAccess';
 import { BuildingJobs } from './BuildingJobs';
+import { SportCourtVisitors } from './SportCourtVisitors';
 import { CoalPlantPanel } from './CoalPlantPanel';
 import { EcologicalBuildingPanel } from './EcologicalBuildingPanel';
 import { FacilityPanel } from './FacilityPanel';
@@ -31,6 +32,7 @@ export function BuildingUsage({ building }: { building: Building }) {
       {isTransitStopType(building.type) ? <StopNameField building={building} /> : null}
       {isTransitStopType(building.type) ? <StopLineButtons building={building} /> : null}
       {isEcologicalBuilding ? <EcologicalBuildingPanel building={building} /> : null}
+      <SportCourtVisitors building={building} />
       {isSportVenueType(building.type) ? <ReachToggle /> : null}
       {isAttraction(building) ? <AttractionPanel building={building} /> : null}
       {isArenaType(building.type) && !isAttraction(building) ? <ArenaPanel building={building} /> : null}

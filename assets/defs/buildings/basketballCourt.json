@@ -7,6 +7,7 @@
   "cost": 400,
   "unlockCitizens": 50,
   "requiresRoad": true,
+  "accessModes": ["road", "pedestrianWay"],
   "name": {
     "en": "Basketball court",
     "fr": "Terrain de basket"

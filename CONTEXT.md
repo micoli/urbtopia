@@ -1047,7 +1047,7 @@ _Avoid_: Docs, documentation, manual, wiki
 - A Footbridge joins the Pedestrian path network only. Each corridor reaches a Sidewalk or a Pedestrian way next to it along the Footbridge axis, never sideways; the walk from one corridor to the other costs span + 3 and counts no Crossing. Neither the corridors, the stairs nor the deck give access to a building.
 - A Bridge over infrastructure can be moved or turned for free: it is lifted and placed again with its own length, Carrier and tier, under the same rules as a new Bridge. A Bridge over Water cannot be moved.
 - Demolishing the last infrastructure tile under a Bridge span (under the deck, for a Footbridge) is refused. A new network may be built under an existing Bridge span only across it.
-- A Pedestrian way joins the Pedestrian path network but not the Road or BRT networks. Homes, Schools, Shops and the Town hall can use it as their only access; other buildings still require their existing access modes.
+- A Pedestrian way joins the Pedestrian path network but not the Road or BRT networks. Homes, Schools, Shops, the Town hall, Basketball courts and Five-a-side pitches can use it as their only access; other buildings still require their existing access modes.
 - A Pedestrian path uses the shortest route through the combined Sidewalk and Pedestrian way network. It crosses Roads only at a Crossing or around a dead end, and only the Crossings it uses reduce Road capacity.
 - A building touching both a Road and a BRT corridor keeps the Road as its primary access, and its front faces the Road.
 - Removing the last access of a building, Road or BRT corridor, is refused.
