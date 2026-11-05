@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { WALKING } from '../../core/traffic/walking';
 import { climateStats, createBuilding, newGame, type GameState } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
@@ -22,10 +22,11 @@ vi.mock('../common/hooks', () => ({
 }));
 vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: vi.fn(), state: context.state }) } }));
 
-afterEach(() => { context.statsOpen = true; prefsStore.getState().setLanguage('en'); Object.assign(prefsStore.getInitialState(), { managementTabs: false }); });
+afterEach(() => { context.statsOpen = true; prefsStore.getState().setLanguage('en'); Object.assign(prefsStore.getInitialState(), { managementTabs: true }); });
+beforeEach(() => { Object.assign(prefsStore.getInitialState(), { managementTabs: false }); });
 
 describe('city management panel', () => {
-  it('shows one page of sections by default and only the overview once the tabs are on', () => {
+  it('shows one page of sections when the tabs are off and sub-tabs once they are on', () => {
     context.state = newGame({ seed: 'tabs', now: 0 });
     const plain = renderToStaticMarkup(<CityManagement />);
     expect(plain).toContain('id="eco-traffic"');
