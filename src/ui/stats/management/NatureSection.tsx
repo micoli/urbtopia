@@ -18,7 +18,7 @@ export function NatureSection({state, green}: NatureSectionProps) {
         <p>{t('build.greenSpaces')}: {state.buildings.filter(b => greenProfileOf(b.type)).length}</p>
         <LabeledList>
             {rows.map(([key, value]) => <LabeledList.Row key={key} label={t(key)}>
-                {value.toFixed(1)}{key === 'eco.greenCoverage' ? '' : ' / 100'}
+                {value.toFixed(1)}{key === 'eco.greenCoverage' ? ` / ${totalCitizens(state)}` : ' / 100'}
             </LabeledList.Row>)}
         </LabeledList>
         <p>{t('eco.greenHelp')}</p>
