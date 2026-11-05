@@ -37,7 +37,7 @@
 .codex-unlock strong[data-available='true'] { color: var(--color-positive); }
 .codex-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-16); }
 .codex-gallery figure { margin: 0; border-radius: var(--radius-xl); overflow: hidden; background: var(--white-a08); }
-.codex-gallery img { display: block; width: 100%; height: auto; }
+.codex-gallery img { display: block; width: 100%; max-width: 256px; height: auto; margin-inline: auto; }
 .codex-gallery figcaption { padding: var(--space-8) var(--space-12) var(--space-12); font-weight: var(--font-weight-bold); text-align: center; }
 .codex-level-facts { margin: 0; padding: 0 var(--space-12) var(--space-12); font-size: var(--font-size-md); }
 .codex-level-facts div { display: flex; justify-content: space-between; gap: var(--space-8); padding: var(--space-2) 0; }

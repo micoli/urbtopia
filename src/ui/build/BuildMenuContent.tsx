@@ -1,5 +1,5 @@
 import { Fragment, useId, useState } from 'react';
-import { SURFACE, BUILDING_SPECS, HOUSING_REGIONS, housingRegionOf, type HousingRegion, type BuildingType, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, annualEventOf, isBuildableAt, isFacilityType, totalCitizens, placementCost, isHomeType, solarInstallCostOf } from '../../core';
+import { SURFACE, BUILDING_SPECS, HOUSING_REGIONS, housingRegionOf, type HousingRegion, type BuildingType, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, annualEventOf, isBuildableAt, isFacilityType, totalCitizens, placementCost, isHomeType, solarInstallCostOf, PEDESTRIAN_ACCESS_COST, undergroundUnlocked } from '../../core';
 import { t } from '../../i18n/t';
 import { FlyoutItem } from '../layout/FlyoutItem';
 import { BuildSearch } from './BuildSearch';
@@ -30,6 +30,7 @@ export function BuildMenuContent() {
   const citizens = useGame(store => totalCitizens(store.state));
   const flyout = useUi((store) => store.flyout);
   const underground = useUi((store) => store.level !== SURFACE);
+  const undergroundOpen = useGame(store => undergroundUnlocked(store.state));
   const chooseTool = useUi((store) => store.chooseTool);
   const openCodex = useUi(store => store.openCodex);
   const guide = guideOf(useGame((store) => store.state.tutorial));
@@ -137,6 +138,14 @@ export function BuildMenuContent() {
                     </Fragment>
                 ))}
                 {section.title === 'build.production' && <FieldTools/>}
+                {section.title === 'build.transport' && undergroundOpen && <FlyoutItem
+                    label={t('tool.pedestrianAccess')}
+                    cost={<UrbsAmount value={PEDESTRIAN_ACCESS_COST}/>}
+                    onChoose={() => chooseTool({ kind: 'pedestrianAccess' })}
+                    codexId="pedestrianAccess"
+                    preview={previewOf('pedestrianAccess')}
+                    onInfo={() => openCodex('pedestrianAccess')}
+                />}
                 {section.title === 'build.housing' && citizens >= ECOLOGY.solarUnlockCitizens && <FlyoutItem
                     label={t('eco.solarHome')}
                     badge={BUILDING_SPECS.home.accessModes.includes('brt') ? t('build.brtCompatible') : undefined}

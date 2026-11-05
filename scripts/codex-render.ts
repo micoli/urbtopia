@@ -1,16 +1,19 @@
 import * as THREE from 'three';
+import { PEDESTRIAN_ACCESS_MODEL } from '../src/core/infrastructure/infrastructure';
+import { SURFACE } from '../src/core';
 import { CODEX_ENTRIES, codexImageKey, HOME_COLOR_VARIANTS, isHomeCodexId, validateCodex } from '../src/codex/catalog';
 import { codexSnapshot } from '../src/codex/snapshot';
 import { BridgeLayer } from '../src/scene/BridgeLayer';
 import { ChunkedWorld } from '../src/scene/ChunkedWorld';
 import { EcologyLayer } from '../src/scene/EcologyLayer';
+import { UndergroundLayer } from '../src/scene/UndergroundLayer';
 import { ModelLibrary } from '../src/scene/modelLibrary';
 import { renderItemsOf } from '../src/scene/renderItems';
 
 validateCodex();
 const library = new ModelLibrary();
 const canvas = document.querySelector('canvas')!;
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, preserveDrawingBuffer: true });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
 renderer.setSize(256, 256, false);
 renderer.setPixelRatio(1);
 renderer.setClearColor(0x000000, 0);
@@ -20,8 +23,10 @@ sun.position.set(20, 40, 10);
 const world = new ChunkedWorld(library);
 const ecology = new EcologyLayer(library);
 const bridges = new BridgeLayer(library);
+const underground = new UndergroundLayer(library);
+underground.setLevel(SURFACE);
 const objects = new THREE.Group();
-objects.add(world.root, ecology.root, bridges.root);
+objects.add(world.root, ecology.root, bridges.root, underground.accessesRoot);
 scene.add(objects, sun, new THREE.AmbientLight(0xffffff, 1.2));
 const camera = new THREE.OrthographicCamera(-3, 3, 3, -3, 0.01, 1000);
 
@@ -30,7 +35,7 @@ const variants = CODEX_ENTRIES.flatMap(entry => entry.levels.flatMap(level => {
   return colors.map(colorVariant => {
   const state = codexSnapshot(entry.id, level, colorVariant);
   const signature = JSON.stringify([
-    renderItemsOf(state), state.brtRoads, state.bridges,
+    renderItemsOf(state), state.brtRoads, state.bridges, state.pedestrianAccesses,
     state.buildings.map(b => ({ type: b.type, x: b.x, y: b.y, rotation: b.rotation })),
   ]);
   return { id: entry.id, level, colorVariant, key: codexImageKey(entry.id, level, colorVariant), signature };
@@ -42,11 +47,12 @@ async function render(key: string): Promise<string> {
   if (!variant) throw new Error(`Unknown codex variant: ${key}`);
   const state = codexSnapshot(variant.id, variant.level, variant.colorVariant);
   const items = renderItemsOf(state);
-  await library.ensure([...new Set(items.map(item => item.model))]);
+  await library.ensure([...new Set([...items.map(item => item.model), ...(state.pedestrianAccesses?.length ? [PEDESTRIAN_ACCESS_MODEL] : [])])]);
   await library.ensureTextureVariants(items.flatMap(item => item.textureVariant ? [item.textureVariant] : []));
   world.sync(items);
   ecology.sync(state, null);
   bridges.sync(state);
+  underground.sync(state);
   objects.updateMatrixWorld(true);
   const bounds = new THREE.Box3().setFromObject(objects);
   if (bounds.isEmpty()) throw new Error(`Empty codex model: ${key}`);

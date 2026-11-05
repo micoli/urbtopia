@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { BRIDGES, PEDESTRIAN_ACCESS_COST, type NetworkMode, ROAD_TIER_COSTS, SURFACE, levelUnlocked, TRANSIT, WATER, totalCitizens, undergroundUnlocked, walkwayCostPerTile } from '../../core';
+import { BRIDGES, type NetworkMode, ROAD_TIER_COSTS, SURFACE, levelUnlocked, TRANSIT, WATER, totalCitizens, undergroundUnlocked, walkwayCostPerTile } from '../../core';
 import { t } from '../../i18n/t';
 import { toolLevel, type Tool } from '../../tools/tools';
 import type { MessageKey } from '../../i18n/messages';
@@ -61,7 +61,7 @@ export function RoadMenu() {
 
   const roadItem = (item: (typeof ROAD_CONSTRUCTIONS)[number]): RoadItem => ({ label: t(item.name), cost: item.perTile ? `${item.cost} ${t('tool.perTile')}` : <UrbsAmount value={item.cost} />, tool: item.tool, codexId: item.id });
   const roadItems: RoadItem[] = [
-    ...ROAD_CONSTRUCTIONS.filter(item => item.unlockCitizens === 0 && item.id !== 'pedestrianWay' && item.id !== 'crossing').map(roadItem),
+    ...ROAD_CONSTRUCTIONS.filter(item => item.unlockCitizens === 0 && item.id !== 'pedestrianWay' && item.id !== 'crossing' && item.id !== 'pedestrianAccess').map(roadItem),
     { label: t('tool.upgradeRoad'), cost: `${ROAD_TIER_COSTS[1]!}–${ROAD_TIER_COSTS[2]!} ${t('tool.perTile')}`, tool: { kind: 'upgradeRoad', start: null, horizontalFirst: true } },
   ];
   const removeBridge = hasBridge ? { label: t('water.removeBridge'), tool: { kind: 'removeBridge' } as Tool } : undefined;
@@ -69,7 +69,7 @@ export function RoadMenu() {
     roadItem(ROAD_CONSTRUCTIONS.find(item => item.id === 'crossing')!),
     { label: t('tool.removeCrossing'), tool: { kind: 'removeCrossing' } },
     constructionItem('pedestrianWay'),
-    ...(undergroundOpen ? [{ label: t('tool.pedestrianAccess'), cost: <UrbsAmount value={PEDESTRIAN_ACCESS_COST} />, tool: { kind: 'pedestrianAccess' } } as RoadItem] : []),
+    ...(undergroundOpen ? [roadItem(ROAD_CONSTRUCTIONS.find(item => item.id === 'pedestrianAccess')!)] : []),
     { label: t('tool.upgradePedestrianWay'), cost: `${Math.round(ROAD_TIER_COSTS[1]! * 0.9)}–${Math.round(ROAD_TIER_COSTS[2]! * 0.9)} ${t('tool.perTile')}`, tool: { kind: 'upgradePedestrianWay', start: null, horizontalFirst: true } },
   ];
   const sections: { id: RoadSection; items?: RoadItem[]; content?: ReactNode; demolish?: { label: string; tool: Tool } }[] = [

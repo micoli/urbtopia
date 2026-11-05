@@ -20,6 +20,7 @@ const DESCRIPTIONS = {
   road: 'codex.description.road',
   crossing: 'codex.description.crossing',
   pedestrianWay: 'codex.description.pedestrianWay',
+  pedestrianAccess: 'codex.description.pedestrianAccess',
   roundabout: 'codex.description.roundabout',
   brt: 'codex.description.brt',
   rail: 'codex.description.rail',

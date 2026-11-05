@@ -46,6 +46,11 @@ export function codexSnapshot(id: CodexId, tier: number, colorVariant: ColorVari
     state.roads = tiles.map(tile => ({ ...tile, kind: id === 'crossing' && tile.x === 1 ? 'crossing' : 'road' }));
     return state;
   }
+  if (id === 'pedestrianAccess') {
+    state.pedestrianWays = tiles;
+    state.pedestrianAccesses = [{ x: 1, y: 1 }];
+    return state;
+  }
   if (id === 'pedestrianWay') {
     state.pedestrianWays = tiles;
     return state;
