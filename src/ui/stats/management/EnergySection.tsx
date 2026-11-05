@@ -4,6 +4,7 @@ import {t} from '../../../i18n/t';
 import type {MessageKey} from '../../../i18n/messages';
 import {SectionHeading} from '../../common/SectionHeading';
 import {LabeledList} from '../../common/LabeledList';
+import {BuildingReference} from './BuildingReference';
 import {EnergyForecastChart} from '../../codex/EnergyForecastChart';
 
 const FORECAST_HOURS = 6;
@@ -35,6 +36,7 @@ function casinoRows(state: GameState, green: ReturnType<typeof cityBenefits>): E
 
 export function EnergySection({state, energy, green, transport}: EnergySectionProps) {
     const saved = state.buildings.filter(b => isHomeType(b.type)).reduce((sum, b) => sum + (HOME_TIERS[b.tier - 1]?.power ?? 0) - homePower(b, energySavingOf(state)), 0);
+    const buildingsById = new Map(state.buildings.map(b => [b.id, b]));
     const renewables = energy.solar + energy.wind + energy.hydro + energy.geothermal;
     const groups: EnergyGroup[] = [
         {title: 'eco.group.demand', kind: 'consumption', rows: [['eco.demand', energy.demand, true], ['transit.power', energy.transitDemand], ['eco.saved', saved]]},
@@ -66,6 +68,8 @@ export function EnergySection({state, energy, green, transport}: EnergySectionPr
         <h4>{t('eco.forecast')}</h4>
         <div className="eco-forecast"><EnergyForecastChart state={state} hours={FORECAST_HOURS} sources={FORECAST_SOURCES}/></div>
         <h4>{t('eco.transfers')}</h4>
-        {energy.transfers.map(n => <p key={`${n.from}-${n.to}`}>#{n.from} → #{n.to}: {n.amount.toFixed(2)}</p>)}
+        {energy.transfers.map(n => <p key={`${n.from}-${n.to}`}>
+            <BuildingReference building={buildingsById.get(n.from)} id={n.from}/> → <BuildingReference building={buildingsById.get(n.to)} id={n.to}/>: {n.amount.toFixed(2)}
+        </p>)}
     </section>;
 }
