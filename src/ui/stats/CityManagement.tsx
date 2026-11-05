@@ -1,6 +1,6 @@
 import {cityBenefits, climateStats, cityTransportStats, congestionStats, energyStats, coolingElements, heatSourceItems, isAdapting, temperatureBreakdown} from '../../core';
 import {t} from '../../i18n/t';
-import {useEffect, useState, type ReactNode} from 'react';
+import {useEffect, useRef, type ReactNode} from 'react';
 import {useStore} from 'zustand';
 import {prefsStore} from '../../i18n/prefsStore';
 import {useUi} from '../common/hooks';
@@ -34,37 +34,43 @@ import {WellbeingSection} from './management/WellbeingSection';
 import {scrollToSection} from './management/scrollToSection';
 import {useModalFocus} from './management/useModalFocus';
 import {useBackdropClose} from '../common/useBackdropClose';
+import {groupOfSection} from './management/managementSections';
+import type {ManagementGroup, ManagementTab} from '../../store/uiStore';
 
-type DashboardGroup = 'overview' | 'production' | 'city' | 'environment' | 'transport' | 'transit' | 'tourism';
-type ManagementTab = 'dashboard' | 'cities' | 'shipments';
+type DashboardGroup = ManagementGroup;
 
-const GROUP_OF_SECTION: Record<string, DashboardGroup> = {
-    'eco-production': 'production', 'eco-energy': 'production', 'eco-water': 'production',
-    'eco-services': 'city', 'eco-nature': 'city', 'eco-needs': 'city',
-    'eco-waste': 'environment', 'eco-emissions': 'environment', 'eco-temperature': 'environment',
-    'eco-traffic': 'transport', 'eco-railMetro': 'transport', 'eco-transport': 'transit', 'eco-transportMap': 'transport',
-    'eco-tourism': 'tourism',
-};
 
 const DASHBOARD_REFRESH_MS = 4000;
 
 const readState = () => gameStore.getState().state;
 
 function CityManagementDialog() {
-    const [tab, setTab] = useState<ManagementTab>('dashboard');
-    const [group, setGroup] = useState<DashboardGroup>('overview');
+    const {tab, group, scroll} = useUi(s => s.managementView);
+    const setManagementView = useUi(s => s.setManagementView);
+    const setTab = (next: ManagementTab) => setManagementView({tab: next});
+    const setGroup = (next: DashboardGroup) => setManagementView({group: next});
     const state = useThrottledValue(readState, DASHBOARD_REFRESH_MS);
     const tabbed = useStore(prefsStore, store => store.managementTabs);
-    const lineToEdit = useUi(s => s.lineToEdit);
     const open = useUi(s => s.statsOpen);
     const toggle = useUi(s => s.toggleStats);
     const panel = useModalFocus(open, toggle);
     const backdrop = useBackdropClose(toggle);
+    const section = useUi(s => s.managementSection);
+    const clearSection = useUi(s => s.clearManagementSection);
     useEffect(() => {
-        if (lineToEdit === null) return;
-        setTab('dashboard');
-        setGroup('transit');
-    }, [lineToEdit]);
+        if (section === null) return;
+        const frame = requestAnimationFrame(() => {
+            scrollToSection(panel.current, section);
+            clearSection();
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [section, clearSection, panel]);
+    const scrollTop = useRef(scroll);
+    useEffect(() => {
+        if (panel.current) panel.current.scrollTop = scroll;
+        return () => setManagementView({scroll: scrollTop.current});
+        // Restored once when the window opens, saved once when it closes.
+    }, []);
     if (!open) return null;
     const multiCity = (readRegistry(rawSaveStore)?.cities.length ?? 0) > 1;
     const tabs: TabItem<ManagementTab>[] = [{id: 'dashboard', icon: 'stats', label: t('eco.tab.dashboard')}, {id: 'cities', icon: 'city', label: t('cities.title')}, ...(multiCity ? [{id: 'shipments' as const, icon: 'shipment' as const, label: t('shipments.title')}] : [])];
@@ -77,7 +83,7 @@ function CityManagementDialog() {
     const congestion = congestionStats(state);
     const temperature = temperatureBreakdown({climate, energy, transport, cooling: green.cooling, adapting: isAdapting(state)});
     const showSection = (id: string) => {
-        const target = GROUP_OF_SECTION[id];
+        const target = groupOfSection(id);
         if (!tabbed || !target || group === target) return scrollToSection(panel.current, id);
         setGroup(target);
         requestAnimationFrame(() => scrollToSection(panel.current, id));
@@ -143,7 +149,7 @@ function CityManagementDialog() {
         ...sections.tourism,
     ];
     return <div className="dialog-backdrop window-backdrop city-management-backdrop" {...backdrop}>
-        <div className="eco-dashboard" ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="eco-heading">
+        <div className="eco-dashboard" ref={panel} onScroll={event => { scrollTop.current = event.currentTarget.scrollTop; }} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="eco-heading">
             <header className="eco-header">
                 <img src={`${import.meta.env.BASE_URL}assets/icons/town-management.png`} alt=""/>
                 <h2 id="eco-heading">{t('eco.title')}</h2>

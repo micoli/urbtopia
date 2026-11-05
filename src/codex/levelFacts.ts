@@ -2,11 +2,12 @@ import {
   CASINO_GAMES, COAL_CAPACITY, marinaCapacity, seatCapOf, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
   FIXTURES, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
-  type StorageType, type UtilityType, type ProductionType, type ShopType, type BuildingKind, isStorageType, kindOf, BUILDING_SPECS, canHaveSolarPanels, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf, isProductionType, isOfficeType, officeTierOf,
+  type StorageType, type UtilityType, type ProductionType, type ShopType, type BuildingKind, isStorageType, kindOf, BUILDING_SPECS, canHaveSolarPanels, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf, isProductionType, isOfficeType, officeTierOf, industryEmissionsOf,
 } from '../core';
 import { t } from '../i18n/t';
 import type { MessageKey } from '../i18n/messages';
 import { isHomeCodexId, solarBaseOf, type CodexId } from './catalog';
+import { runningCostFactsOf } from './runningCostFacts';
 
 export interface LevelFact {
   label: MessageKey;
@@ -82,7 +83,7 @@ function venueFacts(type: VenueType, level: number): LevelFact[] {
 }
 
 export function levelFactsOf(id: CodexId, level: number): LevelFact[] {
-  const facts = tierFactsOf(id, level);
+  const facts = [...tierFactsOf(id, level), ...runningCostFactsOf(id, level)];
   if (isHomeCodexId(id) || !(id in BUILDING_SPECS) || !canHaveSolarPanels(id as BuildingType)) return facts;
   return [...facts, textFact('codex.fact.solarPanels', () => t('codex.solarPanels.possible'), level)];
 }
@@ -96,11 +97,18 @@ function homeFacts(id: CodexId, level: number): LevelFact[] {
   ];
 }
 
+function impactFact(perTier: number, level: number): LevelFact {
+  const fact = numericFact('codex.fact.emissions', tier => perTier * tier, level);
+  return { ...fact, value: t('codex.impact.perHour').replace('{amount}', fact.value) };
+}
+
 function productionFacts(id: ProductionType, level: number): LevelFact[] {
+  const emissions = industryEmissionsOf(id);
   return [
     numericFact('codex.fact.craftTime', tier => productionTierOf({ type: id, tier }).durationFactor, level, percent),
     numericFact('codex.fact.slots', tier => productionTierOf({ type: id, tier }).maxSlots, level),
     numericFact('codex.fact.yield', tier => productionTierOf({ type: id, tier }).yield, level),
+    ...(emissions > 0 ? [impactFact(emissions, level)] : []),
   ];
 }
 

@@ -24,7 +24,7 @@ describe('Waste section', () => {
     expect(html).toContain('id="eco-waste"');
     expect(html).toContain(language === 'fr' ? 'Bilan du jour' : 'Balance of the day');
     expect(html).toContain(language === 'fr' ? 'Usine de recyclage' : 'Recycling plant');
-    expect(html).toContain(language === 'fr' ? 'Hors de portée' : 'Out of reach');
+    expect(html).toContain(language === 'fr' ? 'Sans lien routier' : 'No road link');
     expect(html).toContain(language === 'fr' ? 'Homes sous une zone d’odeur' : 'Homes under an Odor radius');
     expect(html).toContain(language === 'fr' ? 'Quartiers piétons' : 'Pedestrian districts');
     expect(html).toContain(language === 'fr' ? 'Voir le pire goulot' : 'Show the worst bottleneck');

@@ -6,7 +6,7 @@ const meta = {
   component: ActionButton,
   args: { children: 'Build' },
   argTypes: {
-    variant: { control: 'inline-radio', options: ['default', 'primary', 'danger'] },
+    variant: { control: 'inline-radio', options: ['default', 'primary', 'info', 'success', 'danger'] },
     size: { control: 'inline-radio', options: ['md', 'sm', 'xs', 'tile'] },
   },
 } satisfies Meta<typeof ActionButton>;
@@ -16,6 +16,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 export const Primary: Story = { args: { variant: 'primary' } };
+export const Info: Story = { args: { variant: 'info', children: 'City management' } };
+export const Success: Story = { args: { variant: 'success', children: 'Flows' } };
 export const Danger: Story = { args: { variant: 'danger', children: 'Demolish' } };
 export const Block: Story = { args: { block: true }, decorators: [(Story) => <div style={{ width: 240 }}><Story /></div>] };
 export const Disabled: Story = { args: { disabled: true } };
@@ -24,7 +26,7 @@ export const ExtraSmall: Story = { args: { size: 'xs' } };
 export const Tile: Story = { args: { size: 'tile', variant: 'primary' } };
 export const OnOverlay: Story = { args: { overlay: true } };
 
-const VARIANTS = ['default', 'primary', 'danger'] as const;
+const VARIANTS = ['default', 'primary', 'info', 'success', 'danger'] as const;
 const SIZES = ['md', 'sm', 'xs', 'tile'] as const;
 
 export const Matrix: Story = {

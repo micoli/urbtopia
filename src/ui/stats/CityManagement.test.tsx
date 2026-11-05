@@ -15,14 +15,15 @@ afterAll(() => {
   WALKING.enabled = walkingEnabled;
 });
 
-const context = vi.hoisted(() => ({ state: null as GameState | null, statsOpen: true }));
+const context = vi.hoisted(() => ({ state: null as GameState | null, statsOpen: true, view: { tab: 'dashboard', group: 'overview', scroll: 0 } }));
 vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
-  useUi: (selector: (store: { statsOpen: boolean; toggleStats: () => void }) => unknown) => selector({ statsOpen: context.statsOpen, toggleStats: () => {} }),
+  useUi: (selector: (store: { statsOpen: boolean; toggleStats: () => void; managementView: { tab: string; group: string; scroll: number }; setManagementView: () => void }) => unknown) =>
+    selector({ statsOpen: context.statsOpen, toggleStats: () => {}, managementView: context.view, setManagementView: () => {} }),
 }));
 vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: vi.fn(), state: context.state }) } }));
 
-afterEach(() => { context.statsOpen = true; prefsStore.getState().setLanguage('en'); Object.assign(prefsStore.getInitialState(), { managementTabs: true }); });
+afterEach(() => { context.statsOpen = true; context.view = { tab: 'dashboard', group: 'overview', scroll: 0 }; prefsStore.getState().setLanguage('en'); Object.assign(prefsStore.getInitialState(), { managementTabs: true }); });
 beforeEach(() => { Object.assign(prefsStore.getInitialState(), { managementTabs: false }); });
 
 describe('city management panel', () => {
@@ -36,6 +37,14 @@ describe('city management panel', () => {
     const tabbed = renderToStaticMarkup(<CityManagement />);
     expect(tabbed).toContain('id="eco-group-production"');
     expect(tabbed).not.toContain('id="eco-traffic"');
+  });
+  it('opens back on the group it was left on', () => {
+    context.state = newGame({ seed: 'tabs', now: 0 });
+    Object.assign(prefsStore.getInitialState(), { managementTabs: true });
+    context.view = { tab: 'dashboard', group: 'environment', scroll: 120 };
+    const html = renderToStaticMarkup(<CityManagement />);
+    expect(html).toContain('id="eco-waste"');
+    expect(html).not.toContain('id="eco-traffic"');
   });
   it.each(['en', 'fr'] as const)('renders explained energy, ecology and transport in %s', language => {
     prefsStore.getState().setLanguage(language);

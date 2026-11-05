@@ -13,6 +13,7 @@ const sectionOf = (layer: AnalyticsLayerId | null): LandSection => (layer === 'd
 export function LandMenu() {
   const chooseTool = useUi(store => store.chooseTool);
   const enterAnalytics = useUi(store => store.enterAnalytics);
+  const openServiceCoverage = useUi(store => store.openServiceCoverage);
   const lastLayer = useUi(store => store.lastAnalyticsLayer);
   const lastCategory = useUi(store => store.analyticsCategory);
   const [openSection, setOpenSection] = useState<LandSection | null>(sectionOf(lastLayer));
@@ -32,9 +33,12 @@ export function LandMenu() {
       <FlyoutItem label={t('land.parcels')} icon="map.png" onChoose={() => chooseTool({ kind: 'parcel' })} />
       {section('movement', t('analytics.movement'), layerItems(movementLayers))}
       {section('data', t('analytics.data'), layerItems(dataLayers))}
-      {section('coverage', t('analytics.layer.data.coverage'), SERVICE_CATEGORIES.map(category => (
-        <FlyoutItem key={category} label={t(`service.${category}`)} selected={lastLayer === 'data.coverage' && category === lastCategory} onChoose={() => enterAnalytics('data.coverage', category)} />
-      )))}
+      {section('coverage', t('analytics.layer.data.coverage'), [
+        ...SERVICE_CATEGORIES.map(category => (
+          <FlyoutItem key={category} label={t(`service.${category}`)} selected={lastLayer === 'data.coverage' && category === lastCategory} onChoose={() => enterAnalytics('data.coverage', category)} />
+        )),
+        <FlyoutItem key="by-facility" label={t('land.coverageByFacility')} onChoose={openServiceCoverage} />,
+      ])}
     </>
   );
 }

@@ -48,7 +48,7 @@ describe('HomePanel Waste cause', () => {
     context.state = { ...newGame({ seed: 'home-panel', now: 0 }), adaptationUntil: 0, buildings: [building, ...[1, 2, 3].map(index => ({ ...createBuilding(900 + index, 'home', 56 + 4 * index, 59, 0), tier: 7 }))] };
     const html = renderToStaticMarkup(<HomePanel building={building} />).replaceAll('&#x27;', "'");
     expect(html).toContain(t('service.waste'));
-    expect(html).toContain(t('home.reason.outOfReach'));
+    expect(html).toContain(t('home.reason.noFacility'));
   });
 });
 

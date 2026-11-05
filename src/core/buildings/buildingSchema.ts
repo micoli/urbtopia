@@ -144,6 +144,8 @@ const backupBuilding = z.strictObject({ kind: z.literal('backup'), ...placed, ca
 
 // What sets a Waste facility apart: the Urbs it charges per unit processed, the nuisance it gives nearby Homes (Odor of a Mound, smoke of an Incinerator) and the emissions per unit burnt per hour.
 const wasteTraits = z.strictObject({
+  // The longest route, in tiles, from the facility to a Home it collects.
+  collectionDistance: z.int().min(1),
   tariff: positive,
   odorRadius: z.int().min(1).optional(),
   odorMalus: positive.optional(),

@@ -40,7 +40,7 @@ export class HighlightLayer {
       beam.position.set(x + width / 2, BEAM_HEIGHT / 2, y + depth / 2);
       return [pad, beam];
     });
-    this.root.add(...this.meshes);
+    if (this.meshes.length > 0) this.root.add(...this.meshes);
   }
 
   setVisible(visible: boolean): void {

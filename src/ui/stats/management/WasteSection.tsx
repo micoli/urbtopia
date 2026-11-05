@@ -10,6 +10,8 @@ import {WasteCoverage} from './waste/WasteCoverage';
 import {WasteFamilies} from './waste/WasteFamilies';
 import {WasteImpacts} from './waste/WasteImpacts';
 import {WastePedestrian} from './waste/WastePedestrian';
+import {WasteRoutes} from './waste/WasteRoutes';
+import {MANAGEMENT_SECTIONS} from './managementSections';
 
 interface WasteSectionProps {
     state: GameState;
@@ -20,7 +22,7 @@ export function WasteSection({state, onShowEmissions}: WasteSectionProps) {
     const situation = wasteSituation(state);
     const diagnosis = useMemo(() => diagnoseWaste(state), [state]);
     return <section id="eco-waste">
-        <SectionHeading icon="trash">{t('waste.section.title')}</SectionHeading>
+        <SectionHeading icon={MANAGEMENT_SECTIONS['eco-waste'].icon}>{t('waste.section.title')}</SectionHeading>
         <p>{t('waste.section.help')}</p>
         {situation.produced === 0 && <p>{t('waste.section.noHomes')}</p>}
         {!situation.required && <p>{t('waste.section.notRequired')}</p>}
@@ -29,6 +31,7 @@ export function WasteSection({state, onShowEmissions}: WasteSectionProps) {
         <WasteFamilies families={situation.families}/>
         <WasteCoverage situation={situation}/>
         <WasteImpacts situation={situation} onShowEmissions={onShowEmissions}/>
+        <WasteRoutes situation={situation}/>
         <WastePedestrian situation={situation}/>
         <DiagnosisPanel diagnosis={diagnosis}/>
         {situation.bottleneck && <BottleneckButton bottleneck={{tile: situation.bottleneck}}/>}

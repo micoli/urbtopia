@@ -2658,6 +2658,11 @@
         "waste": {
           "type": "object",
           "properties": {
+            "collectionDistance": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
             "tariff": {
               "type": "number",
               "exclusiveMinimum": 0
@@ -2686,6 +2691,7 @@
             }
           },
           "required": [
+            "collectionDistance",
             "tariff"
           ],
           "additionalProperties": false

@@ -32,16 +32,16 @@ describe('Waste building definitions', () => {
     expect([1, 2, 3, 4].map(tier => wasteCapacity('recyclingPlant', tier))).toEqual([400, 800, 1400, 2200]);
   });
 
-  it('keeps the Odor radius larger than the collection reach, and only the Mound smells', () => {
-    expect(WASTE_FACILITIES.mound.odor!.radius).toBeGreaterThan(WASTE_FACILITIES.mound.reach);
+  it('keeps the Odor radius smaller than the Collection distance, and only the Mound smells', () => {
+    expect(WASTE_FACILITIES.mound.odor!.radius).toBeLessThan(WASTE_FACILITIES.mound.collectionDistance);
     expect(WASTE_FACILITIES.incinerator.odor).toBeNull();
     expect(WASTE_FACILITIES.recyclingPlant.odor).toBeNull();
     expect(WASTE_FACILITIES.recyclingPlant.pollution).toBeNull();
   });
 
-  it('collects farther with the Recycling plant than with the Incinerator, and farther with the Incinerator than with the Mound', () => {
-    expect(WASTE_FACILITIES.recyclingPlant.reach).toBeGreaterThan(WASTE_FACILITIES.incinerator.reach);
-    expect(WASTE_FACILITIES.incinerator.reach).toBeGreaterThan(WASTE_FACILITIES.mound.reach);
+  it('collects over a longer route with the Recycling plant than with the Incinerator, and farther with the Incinerator than with the Mound', () => {
+    expect(WASTE_FACILITIES.recyclingPlant.collectionDistance).toBeGreaterThan(WASTE_FACILITIES.incinerator.collectionDistance);
+    expect(WASTE_FACILITIES.incinerator.collectionDistance).toBeGreaterThan(WASTE_FACILITIES.mound.collectionDistance);
   });
 
   it('only lets the Mound reach a Pedestrian way', () => {
@@ -94,13 +94,11 @@ describe('Mound Odor', () => {
   const mounds = (...positions: [number, number][]) => positions.map(([x, y], index) => place(index + 1, 'mound', x, y));
   const smelling = (state: GameState) => odorPenaltyOf(state, state.buildings.find(building => building.id === 10)!);
 
-  it('reaches Homes beyond the collection reach, within the Odor radius', () => {
-    const { reach, odor } = WASTE_FACILITIES.mound;
-    const x = 64 + reach + 2;
-    expect(odor!.radius).toBeGreaterThanOrEqual(reach + 2);
-    expect(smelling(city([target, ...mounds([x, 50])]))).toBe(0);
-    expect(smelling(city([target, home(12, x + 1, 48, 2), ...mounds([x, 50])]))).toBe(odor!.malus);
-    expect(smelling(city([target, home(12, 64 + odor!.radius + 4, 48, 2), ...mounds([64 + odor!.radius + 3, 50])]))).toBe(0);
+  it('reaches Homes within the Odor radius, once the Mound processes Waste', () => {
+    const { odor } = WASTE_FACILITIES.mound;
+    expect(smelling(city([target, ...mounds([64 + odor!.radius - 3, 50])]))).toBe(odor!.malus);
+    expect(smelling(city([target, ...mounds([64 + odor!.radius + 2, 50])]))).toBe(0);
+    expect(smelling(city([target]))).toBe(0);
   });
 
   it('is the worst Mound around a Home, never summed', () => {
@@ -188,10 +186,13 @@ describe('Waste usage-cost calibration', () => {
     expect(costPerCitizen / taxPerCitizenPerDay).toBeLessThanOrEqual(0.2);
   });
 
-  it('charges the real Urbs through the report, 1:3:6 across the facilities', () => {
-    const cost = (type: 'mound' | 'incinerator' | 'recyclingPlant') => wasteReport(city([place(1, type, 66, type === 'mound' ? 50 : 47), target, ...grid()])).costPerDay;
-    const unit = cost('mound');
-    expect([cost('incinerator') / unit, cost('recyclingPlant') / unit]).toEqual([3, 6]);
+  it('charges the real Urbs through the report, 1:3:6 across the facilities once the route is set aside', () => {
+    const base = (type: 'mound' | 'incinerator' | 'recyclingPlant') => {
+      const waste = wasteReport(city([place(1, type, 66, type === 'mound' ? 50 : 47), target, ...grid()])).homes.get(target.id)!;
+      return waste.cost / (1 + waste.distance! / WASTE_FACILITIES[type].collectionDistance);
+    };
+    const unit = base('mound');
+    expect([base('incinerator') / unit, base('recyclingPlant') / unit].map(ratio => Math.round(ratio * 1e6) / 1e6)).toEqual([3, 6]);
   });
 });
 

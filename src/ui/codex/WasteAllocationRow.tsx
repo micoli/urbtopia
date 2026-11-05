@@ -9,6 +9,7 @@ export function WasteAllocationRow({ figures }: { figures: WasteKindFigures }) {
       <td>{figures.buildings}</td>
       <td>{figures.capacity < figures.nominalCapacity ? `${figures.capacity.toFixed(0)} / ${figures.nominalCapacity}` : figures.capacity}</td>
       <td>{figures.processed.toFixed(1)}</td>
+      <td>{figures.averageRoute === null ? '–' : figures.averageRoute.toFixed(1)}</td>
       <td>{figures.cost.toFixed(1)}</td>
       <td>{state}</td>
     </tr>

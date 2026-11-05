@@ -7,7 +7,7 @@ import { pickDotStore } from '../../store/pickDotStore';
 import { sceneHandle } from '../../store/sceneHandle';
 import { uiStore } from '../../store/uiStore';
 import { pointerKindOf } from '../../tools/aim';
-import { FACILITIES, isFacilityType } from '../../core';
+import { FACILITIES, isFacilityType, wasteKindOf } from '../../core';
 import { selectionGhost } from '../../tools/tools';
 import { selectionFocus } from '../../store/selectionFocus';
 import { readCameraView, writeCameraView, type CameraView } from '../../scene/cameraUrl';
@@ -103,7 +103,7 @@ export function SceneCanvas() {
       scene.setSelection(access ? { tiles: [access], rects: [], valid: true, front: null } : selectionGhost(state, focus.buildingId, prefsStore.getState().showReach && !focus.studyingFlows, focused ? scene.drawnExtentOf(focused) : null));
       const selected = state.buildings.find(building => building.id === uiStore.getState().selectedBuildingId);
       scene.setEcologicalSelection(uiStore.getState().selectedBuildingId);
-      scene.setCoverageFocus(selected && prefsStore.getState().showReach && isFacilityType(selected.type) && FACILITIES[selected.type].radius !== null ? { type: selected.type, facilityId: selected.id } : null);
+      scene.setCoverageFocus(selected && prefsStore.getState().showReach && isFacilityType(selected.type) && (FACILITIES[selected.type].radius !== null || wasteKindOf(selected.type) !== null) ? { type: selected.type, facilityId: selected.id } : null);
     };
     showSelection();
     const unsubscribeGame = gameStore.subscribe((store, previous) => {

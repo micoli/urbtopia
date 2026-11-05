@@ -5,6 +5,7 @@ import {LabeledList} from '../../common/LabeledList';
 import {CoolingTable} from './temperature/CoolingTable';
 import {HeatSourcesTable} from './temperature/HeatSourcesTable';
 import type {MessageKey} from '../../../i18n/messages';
+import {MANAGEMENT_SECTIONS} from './managementSections';
 
 interface TemperatureSectionProps {
     breakdown: ReturnType<typeof temperatureBreakdown>;
@@ -18,7 +19,7 @@ const TIPS: Record<HeatSource, MessageKey> = {
 
 export function TemperatureSection({breakdown, elements, items}: TemperatureSectionProps) {
     return <section id="eco-temperature" className="eco-wide">
-        <SectionHeading icon="temperature">{t('eco.temperatureSection')}</SectionHeading>
+        <SectionHeading icon={MANAGEMENT_SECTIONS['eco-temperature'].icon}>{t('eco.temperatureSection')}</SectionHeading>
         <p>{t('eco.temperatureHelp')}</p>
         <h4>{t('eco.heatSources')}</h4>
         <HeatSourcesTable sources={breakdown.sources} items={items} temperature={breakdown.temperature}/>

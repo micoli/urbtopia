@@ -4,7 +4,7 @@ import { WasteCausesTable } from './WasteCausesTable';
 const meta = {
   title: 'Codex/WasteCausesTable',
   component: WasteCausesTable,
-  args: { causes: { outOfReach: 4, capacityFull: 2, noRoadLink: 1, beyondCarryingDistance: 3, facilityStopped: 0 } },
+  args: { causes: { noFacility: 0, capacityFull: 2, beyondMaxDistance: 4, noRoadLink: 1, beyondCarryingDistance: 3, facilityStopped: 0 } },
   argTypes: { causes: { control: 'object' } },
 } satisfies Meta<typeof WasteCausesTable>;
 

@@ -5,6 +5,7 @@ import {t} from '../../../i18n/t';
 import {itemName} from '../../../i18n/itemName';
 import {SectionHeading} from '../../common/SectionHeading';
 import {Icon} from '../../common/Icon';
+import {MANAGEMENT_SECTIONS} from './managementSections';
 
 // Lighter industry first: Workshop and Mill, then Factory and Bakery.
 const PRODUCER_ROWS = [...INDUSTRY_TYPES].sort((a, b) => industryWeightOf(a) - industryWeightOf(b));
@@ -20,7 +21,7 @@ export function ProductionSection({state, energy}: ProductionSectionProps) {
     const citizens = totalCitizens(state);
     const adapting = (state.adaptationUntil ?? 0) > state.lastSeen;
     return <section id="eco-production" className="eco-wide">
-        <SectionHeading icon="production">{t('eco.production')}</SectionHeading>
+        <SectionHeading icon={MANAGEMENT_SECTIONS['eco-production'].icon}>{t('eco.production')}</SectionHeading>
         <div className="eco-counts">
             {COUNT_TYPES.map(type => {
                 const locked = citizens < (ECOLOGY_UNLOCKS[type] ?? 0);

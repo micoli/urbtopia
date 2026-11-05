@@ -20,12 +20,12 @@ const texts = {
     '{count} usines de recyclage manquent d’électricité et ne traitent rien : {citizens} habitants perdent leur couverture. Ajoutez de l’énergie.',
   ],
   'diagnosis.waste.noRoadLink': [
-    '{homes} Homes ({citizens} Citizens) have no road link to any Waste facility in their reach. Join their roads to a facility, or build one on their Road network.',
-    '{homes} Homes ({citizens} habitants) n’ont aucun lien routier avec un équipement de traitement à leur portée. Reliez leurs routes à un équipement, ou construisez-en un sur leur réseau.',
+    '{homes} Homes ({citizens} Citizens) have no road link to any Waste facility. Join their roads to a facility, or build one on their Road network.',
+    '{homes} Homes ({citizens} habitants) n’ont aucun lien routier avec un équipement de traitement. Reliez leurs routes à un équipement, ou construisez-en un sur leur réseau.',
   ],
   'diagnosis.waste.farFromFacilities': [
-    '{homes} Homes ({citizens} Citizens) are out of reach of every Waste facility, or too far along the Pedestrian paths from its road. Build a facility nearby (a Recycling plant reaches farthest).',
-    '{homes} Homes ({citizens} habitants) sont hors de portée de tout équipement de traitement, ou trop loin par les chemins piétons de sa route. Construisez un équipement à proximité (l’usine de recyclage porte le plus loin).',
+    '{homes} Homes ({citizens} Citizens) are farther than the Collection distance of every Waste facility, or too far along the Pedestrian paths from its road. Build a facility nearby or shorten the route (a Recycling plant goes farthest).',
+    '{homes} Homes ({citizens} habitants) sont au-delà de la distance de collecte de tout équipement de traitement, ou trop loin par les chemins piétons de sa route. Construisez un équipement à proximité ou raccourcissez le trajet (l’usine de recyclage va le plus loin).',
   ],
   'diagnosis.waste.carriedSurcharge': [
     '{homes} Homes reached only by Pedestrian ways cost {extra} Urbs a day more to collect. Give them a Road.',

@@ -35,7 +35,7 @@ describe('wasteCodexFigures', () => {
     const state = city([place(1, 'mound', 60, 50), home(10, 62, 50, 4), home(11, 20, 50, 4)]);
     const summary = wasteCodexFigures(state);
     expect(summary.uncoveredHomes).toBe(1);
-    expect(summary.causes.outOfReach).toBe(1);
+    expect(summary.causes.noRoadLink).toBe(1);
     expect(Object.values(summary.causes).reduce((sum, count) => sum + count, 0)).toBe(summary.uncoveredHomes);
   });
 

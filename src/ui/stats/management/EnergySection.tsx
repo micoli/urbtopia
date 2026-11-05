@@ -6,6 +6,7 @@ import {SectionHeading} from '../../common/SectionHeading';
 import {LabeledList} from '../../common/LabeledList';
 import {BuildingReference} from './BuildingReference';
 import {EnergyForecastChart} from '../../codex/EnergyForecastChart';
+import {MANAGEMENT_SECTIONS} from './managementSections';
 
 const FORECAST_HOURS = 6;
 const FORECAST_SOURCES = ['solar', 'wind', 'hydro'] as const;
@@ -49,7 +50,7 @@ export function EnergySection({state, energy, green, transport}: EnergySectionPr
         ...(casinoRows(state, green).length ? [{title: 'eco.group.casino' as const, rows: casinoRows(state, green)}] : []),
     ];
     return <section id="eco-energy" className="eco-wide">
-        <SectionHeading icon="power">{t('eco.energy')}</SectionHeading>
+        <SectionHeading icon={MANAGEMENT_SECTIONS['eco-energy'].icon}>{t('eco.energy')}</SectionHeading>
         {groups.map(group => <div key={group.title} className="eco-energy-group" data-kind={group.kind}>
             <h4>{t(group.title)}</h4>
             <LabeledList>

@@ -12,6 +12,7 @@
   --color-ui-muted-hover: var(--white-a18);
   --color-ui-accent: var(--color-accent);
   --color-ui-on-accent: var(--color-on-accent);
+  --color-ui-info: var(--color-info);
   --color-ui-danger: var(--color-danger);
   --color-ui-on-danger: var(--color-white);
   --color-ui-focus: var(--color-focus);

@@ -12,6 +12,7 @@ import { sanctionsMessages } from './sanctions';
 import { wasteCodexMessages } from './wasteCodex';
 import { guideMessages } from './guide';
 import { transitReachCodexMessages } from './transitReachCodex';
+import { recurringCostsCodexMessages } from './recurringCostsCodex';
 import { knowledgeCodexMessages } from './knowledgeCodex';
 import { venueMessages } from './venues';
 import { sportVenueMessages } from './sportVenues';
@@ -41,6 +42,7 @@ export const FR: Record<MessageKey, string> = {
   ...wasteCodexMessages('fr'),
   ...guideMessages('fr'),
   ...transitReachCodexMessages('fr'),
+  ...recurringCostsCodexMessages('fr'),
   ...knowledgeCodexMessages('fr'),
   ...venueMessages('fr'),
   ...buildingMessages('fr'),

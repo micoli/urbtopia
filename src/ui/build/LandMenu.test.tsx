@@ -5,8 +5,8 @@ import { t } from '../../i18n/t';
 import { LandMenu } from './LandMenu';
 
 vi.mock('../common/hooks', () => ({
-  useUi: (selector: (store: { chooseTool: () => void; enterAnalytics: () => void; lastAnalyticsLayer: string | null }) => unknown) =>
-    selector({ chooseTool: () => {}, enterAnalytics: () => {}, lastAnalyticsLayer: 'data.pollution' }),
+  useUi: (selector: (store: { chooseTool: () => void; enterAnalytics: () => void; openServiceCoverage: () => void; lastAnalyticsLayer: string | null }) => unknown) =>
+    selector({ chooseTool: () => {}, enterAnalytics: () => {}, openServiceCoverage: () => {}, lastAnalyticsLayer: 'data.pollution' }),
 }));
 
 describe('Land menu', () => {
@@ -22,6 +22,10 @@ describe('Land menu', () => {
     expect(html).toContain('id="land-coverage"');
     expect(html).toContain(t('service.health'));
     expect(html).not.toContain('flyout-sub');
+  });
+
+  it('ends Service coverage with a link to the panel by type of facility', () => {
+    expect(html).toContain(t('land.coverageByFacility'));
   });
 
   it('lists every Layer, with the remembered one selected', () => {

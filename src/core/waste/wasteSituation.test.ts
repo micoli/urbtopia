@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { WASTE, createBuilding, homeWasteProduction, newGame, wasteCitizensServedBy, wasteReport, wasteSituation, type Building, type GameState } from '../index';
+import { WASTE, WASTE_FACILITIES, createBuilding, homeWasteProduction, newGame, wasteCitizensServedBy, wasteReport, wasteSituation, type Building, type GameState } from '../index';
 
 const home = (id: number, x: number, y: number, tier = 1): Building => ({ ...createBuilding(id, 'home', x, y, 0), tier });
 const place = (id: number, type: 'mound' | 'incinerator' | 'recyclingPlant', x: number, y: number, tier = 1): Building => ({ ...createBuilding(id, type, x, y, 0), tier });
@@ -50,9 +50,9 @@ describe('wasteSituation', () => {
   it('groups the uncovered Homes by cause with their Citizens', () => {
     const state = city([place(1, 'mound', 60, 50), home(10, 62, 50, 4), home(11, 20, 50, 4), home(12, 21, 50, 2)]);
     const situation = wasteSituation(state);
-    const outOfReach = situation.causes.find(({ cause }) => cause === 'outOfReach')!;
-    expect(outOfReach.homes).toBe(2);
-    expect(outOfReach.citizens).toBe(homeWasteProduction(4) + homeWasteProduction(2));
+    const unlinked = situation.causes.find(({ cause }) => cause === 'noRoadLink')!;
+    expect(unlinked.homes).toBe(2);
+    expect(unlinked.citizens).toBe(homeWasteProduction(4) + homeWasteProduction(2));
     expect(situation.uncoveredHomes).toBe(2);
     expect(situation.coveredHomes).toBe(1);
   });
@@ -92,5 +92,24 @@ describe('wasteSituation', () => {
     expect(servedHomes.length).toBeGreaterThan(0);
     expect(wasteCitizensServedBy(state, 1)).toBeGreaterThan(0);
     expect(wasteCitizensServedBy(state, 999)).toBe(0);
+  });
+
+  it('gives each family its Collection distance and the average route of the Homes it serves', () => {
+    const state = city([place(1, 'mound', 60, 50), home(10, 62, 50, 2), home(11, 66, 50, 2)]);
+    const [recycling, , mound] = wasteSituation(state).families;
+    expect(recycling!.averageRoute).toBeNull();
+    expect(mound!.collectionDistance).toBe(WASTE_FACILITIES.mound.collectionDistance);
+    const routes = [10, 11].map(id => wasteReport(state).homes.get(id)!.distance!);
+    expect(mound!.averageRoute).toBeCloseTo((routes[0]! + routes[1]!) / 2, 9);
+  });
+
+  it('adds up what the routes add to the cost, apart from the Pedestrian surcharge', () => {
+    const state = city([place(1, 'mound', 60, 50), home(10, 62, 50, 2), home(11, 70, 50, 2)]);
+    const situation = wasteSituation(state);
+    const { tariff, collectionDistance } = WASTE_FACILITIES.mound;
+    const unit = homeWasteProduction(2) * tariff;
+    const expected = [10, 11].reduce((sum, id) => sum + unit * (wasteReport(state).homes.get(id)!.distance! / collectionDistance), 0);
+    expect(situation.distanceSurcharge).toBeCloseTo(expected, 9);
+    expect(wasteSituation(city([home(10, 62, 50, 2)])).distanceSurcharge).toBe(0);
   });
 });

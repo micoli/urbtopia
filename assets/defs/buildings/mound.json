@@ -11,10 +11,9 @@
     "fr": "Décharge"
   },
   "description": {
-    "en": "Takes the Waste of nearby Homes and never fills up: square reach of {side} tiles, {tier1Capacity} Waste units a day, up to {maxTierCapacity} at Tier {tierCount}. The cheapest way to process Waste ({tariff} Urbs per unit), but it smells: Homes within {odorRadius} tiles lose well-being, the worst Mound around a Home counting alone. A Home needs a road link to be collected; demand {power} power; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs to build.",
-    "fr": "Reçoit les déchets des logements proches et ne se remplit jamais : portée carrée de {side} cases, {tier1Capacity} unités de déchets par jour, jusqu’à {maxTierCapacity} au niveau {tierCount}. La façon la moins chère de traiter les déchets ({tariff} Urbs par unité), mais elle sent : les logements à moins de {odorRadius} cases perdent du bien-être, seule la pire décharge autour d’un logement compte. Un logement doit être relié par la route pour être collecté ; consomme {power} d’électricité ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs à construire."
+    "en": "Takes the Waste of nearby Homes and never fills up: a route of up to {collectionDistance} tiles, {tier1Capacity} Waste units a day, up to {maxTierCapacity} at Tier {tierCount}. The cheapest way to process Waste ({tariff} Urbs per unit), but it smells: Homes within {odorRadius} tiles lose well-being, the worst Mound around a Home counting alone. A Home needs a road link to be collected; demand {power} power; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs to build.",
+    "fr": "Reçoit les déchets des logements proches et ne se remplit jamais : un trajet de {collectionDistance} cases au plus, {tier1Capacity} unités de déchets par jour, jusqu’à {maxTierCapacity} au niveau {tierCount}. La façon la moins chère de traiter les déchets ({tariff} Urbs par unité), mais elle sent : les logements à moins de {odorRadius} cases perdent du bien-être, seule la pire décharge autour d’un logement compte. Un logement doit être relié par la route pour être collecté ; consomme {power} d’électricité ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs à construire."
   },
-  "radius": 8,
   "tiers": [
     {
       "model": "buildings-mound-1x1-t1",
@@ -43,6 +42,7 @@
   "power": 0,
   "water": 0,
   "waste": {
+    "collectionDistance": 16,
     "tariff": 1,
     "odorRadius": 12,
     "odorMalus": 8

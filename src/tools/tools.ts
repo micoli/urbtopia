@@ -186,7 +186,8 @@ export function selectionGhost(state: GameState, buildingId: number | null, show
   const centerY = building.y + depth / 2 + (drawn ? Math.max(-(depth - sideD) / 2, Math.min((depth - sideD) / 2, drawn.offsetY)) : 0);
   const rect: GhostRect = { x: centerX - sideW / 2 - SELECTION_MARGIN, y: centerY - sideD / 2 - SELECTION_MARGIN, width: sideW + 2 * SELECTION_MARGIN, depth: sideD + 2 * SELECTION_MARGIN, tone: 'target' };
   const range = showReach ? reachTilesOf(building) : [];
-  return { tiles: [], rects: [rect], valid: true, front: null, ...(range.length ? { range } : {}) };
+  const odorRange = showReach ? nuisanceTilesOf(building) : [];
+  return { tiles: [], rects: [rect], valid: true, front: null, ...(range.length ? { range } : {}), ...(odorRange.length ? { odorRange } : {}) };
 }
 
 export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext): Evaluation {
@@ -272,15 +273,28 @@ function evaluateBuilding(
 function addCoveragePreview(result: Evaluation, state: GameState, type: FacilityType, tile: Coord, rotation: Rotation): void {
   const { radius } = FACILITIES[type];
   const covered = previewFacilityCoverage(state, type, tile.x, tile.y, rotation);
-  result.coverage = { cityWide: radius === null, homes: covered.length };
+  result.coverage = { cityWide: radius === null && FACILITIES[type].category !== 'waste', homes: covered.length };
   result.ghost.rects = covered.map((home) => {
     const { width, depth } = footprintOf(home.type, home.rotation, home.tier);
     return { x: home.x, y: home.y, width, depth, tone: 'hint' as const };
   });
-  const odorRadius = WASTE_FACILITIES.mound.odor?.radius;
-  if (type === 'mound' && odorRadius) result.ghost.odorRange = rangeTiles(type, odorRadius, tile, rotation);
+  const nuisanceRadius = nuisanceRadiusOf(type);
+  if (nuisanceRadius) result.ghost.odorRange = rangeTiles(type, nuisanceRadius, tile, rotation);
   if (radius === null) return;
   result.ghost.range = rangeTiles(type, radius, tile, rotation);
+}
+
+// The distance within which a Waste facility lowers the Well-being of Homes: the Mound's odor, the Incinerator's pollution.
+function nuisanceRadiusOf(type: BuildingType): number | null {
+  if (type === 'mound') return WASTE_FACILITIES.mound.odor?.radius ?? null;
+  if (type === 'incinerator') return WASTE_FACILITIES.incinerator.pollution?.radius ?? null;
+  return null;
+}
+
+function nuisanceTilesOf(building: Building): Coord[] {
+  const radius = nuisanceRadiusOf(building.type);
+  if (!radius) return [];
+  return rangeTiles(building.type, radius, building, building.rotation, building.tier);
 }
 
 function reachTilesOf(building: Building): Coord[] {

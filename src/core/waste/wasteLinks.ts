@@ -30,6 +30,12 @@ export function outsideNeighbours(tiles: readonly Coord[]): Coord[] {
 
 // Road tiles joined by the Road network share a component number. For Waste a BRT corridor joins the Road tiles it touches or crosses, so a Home beside a corridor is linked to the Roads the corridor meets.
 export function roadComponents(state: GameState): RoadComponents {
+  return componentsOf(roadLinks(state));
+}
+
+export type RoadLinks = ReadonlyMap<string, readonly string[]>;
+
+export function roadLinks(state: GameState): RoadLinks {
   const graph = buildRoadGraph(state);
   const links = new Map<string, string[]>();
   const link = (a: string, b: string) => {
@@ -41,7 +47,7 @@ export function roadComponents(state: GameState): RoadComponents {
     for (const other of next) link(key, tileKey(other));
   }
   const brtKeys = new Set((state.brtRoads ?? []).map(tileKey));
-  const nodes = new Set([...graph.keys(), ...brtKeys]);
+  for (const key of brtKeys) links.set(key, links.get(key) ?? []);
   for (const tile of state.brtRoads ?? []) {
     const key = tileKey(tile);
     for (const direction of DIRECTIONS) {
@@ -49,9 +55,13 @@ export function roadComponents(state: GameState): RoadComponents {
       if (graph.has(next) || (tile.exits.includes(direction) && brtKeys.has(next))) link(key, next);
     }
   }
+  return links;
+}
+
+export function componentsOf(links: RoadLinks): RoadComponents {
   const components = new Map<string, number>();
   let count = 0;
-  for (const start of nodes) {
+  for (const start of links.keys()) {
     if (components.has(start)) continue;
     const pending = [start];
     components.set(start, count);
@@ -100,4 +110,46 @@ export function pedestrianDistances(state: GameState, components: RoadComponents
     frontier = next;
   }
   return reached;
+}
+
+// For each Road tile the Pedestrian ways touching the tiles lead to, the shortest walk to it, ending on its sidewalk. A walk longer than maxDistance is not followed.
+export function pedestrianTileDistances(state: GameState, tiles: readonly Coord[], maxDistance: number, roadTiles: ReadonlySet<string>): Map<string, number> {
+  const graph = pedestrianGraph(state);
+  const distances = new Map<string, number>();
+  let frontier = outsideNeighbours(tiles).map(pedestrianWayNode).filter(node => graph.has(node));
+  for (const node of frontier) distances.set(node, 0);
+  const reached = new Map<string, number>();
+  for (let distance = 0; frontier.length > 0 && distance < maxDistance; distance++) {
+    const next: string[] = [];
+    for (const node of frontier) {
+      for (const { to } of graph.get(node) ?? []) {
+        if (!to.endsWith(':P')) {
+          const key = to.slice(0, to.lastIndexOf(':'));
+          if (roadTiles.has(key) && !reached.has(key)) reached.set(key, distance + 1);
+          continue;
+        }
+        if (distances.has(to)) continue;
+        distances.set(to, distance + 1);
+        next.push(to);
+      }
+    }
+    frontier = next;
+  }
+  return reached;
+}
+
+// The length of the shortest route from the sources to every Road tile within maxDistance; a source starts at its own length, a tile costs one.
+export function routeDistances(links: RoadLinks, sources: ReadonlyMap<string, number>, maxDistance: number): Map<string, number> {
+  const distances = new Map<string, number>();
+  const buckets: string[][] = Array.from({ length: maxDistance + 1 }, () => []);
+  for (const [key, length] of sources) if (length <= maxDistance && links.has(key)) buckets[length]!.push(key);
+  for (let length = 0; length <= maxDistance; length++) {
+    for (const key of buckets[length]!) {
+      if (distances.has(key)) continue;
+      distances.set(key, length);
+      if (length === maxDistance) continue;
+      for (const next of links.get(key) ?? []) if (!distances.has(next)) buckets[length + 1]!.push(next);
+    }
+  }
+  return distances;
 }

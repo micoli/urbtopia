@@ -9,6 +9,7 @@ import { SanctionsRules } from '../ui/codex/SanctionsRules';
 import { SolidarityPage } from '../ui/codex/SolidarityPage';
 import { StorageRules } from '../ui/codex/StorageRules';
 import { TransitReachRules } from '../ui/codex/TransitReachRules';
+import { RecurringCostsRules } from '../ui/codex/RecurringCostsRules';
 import { AnalyticsPage } from '../ui/codex/AnalyticsPage';
 import { WasteRules } from '../ui/codex/WasteRules';
 import { KnowledgeRules } from '../ui/codex/KnowledgeRules';
@@ -32,5 +33,6 @@ export function RulesContent({ id }: RulesContentProps) {
   if (id === 'transitReach') return <TransitReachRules state={state} />;
   if (id === 'chains') return <ProductionChainsRules state={state} />;
   if (id === 'analytics') return <AnalyticsPage />;
+  if (id === 'costs') return <RecurringCostsRules />;
   return <PoliticsRules state={state} />;
 }

@@ -285,12 +285,16 @@ What the Citizens of a Home throw away each day, in proportion to their number. 
 _Avoid_: Garbage, trash, rubbish
 
 **Waste coverage**:
-The Service coverage of the Waste category. Unlike other categories it also needs a road link: a Home is covered only if a Waste facility reaches it, has capacity left, and is joined to it by the Road network, where a BRT corridor joins the Roads it touches or crosses. A Home reached only by Pedestrian ways is joined when its Pedestrian path network touches a Road linked to the facility within the Carrying distance. When it is not covered, the Home says which cause applies: out of reach, capacity full, or no road link.
-_Avoid_: Collection range
+The Service coverage of the Waste category. Unlike other categories it has no reach square: a Home is covered when a Waste facility has capacity left and is joined to it by a route, along the Road network (where a BRT corridor joins the Roads it touches or crosses) no longer than the facility's Collection distance. A Home reached only by Pedestrian ways is joined when its Pedestrian path network touches a Road linked to the facility within the Carrying distance. When it is not covered, the Home says which cause applies: capacity full, beyond the Collection distance, beyond the Carrying distance or no road link.
+_Avoid_: Collection range, Waste reach
 
 **Carrying distance**:
 The longest walk, along the Pedestrian path network, between a Home and the nearest Road a Waste facility is linked to. Shorter than a Walking trip to a service. Beyond it the Home is not covered, and within it a Home served this way costs more to collect.
 _Avoid_: Walking distance (that is for Walking trips)
+
+**Collection distance**:
+The longest route, counted in tiles of Road, BRT corridor and Pedestrian way, between a Waste facility and a Home it covers. Each Waste facility has its own, fixed per facility and not per Tier. The usage cost per unit rises with the route, from the tariff next to the facility to twice the tariff at the Collection distance. Nearest Homes by route are served first.
+_Avoid_: Reach, radius, range (those are for Public facilities and the Odor radius)
 
 **Waste processing**:
 The daily handling of Waste by a Waste facility, within its capacity and against a cost in Urbs per unit processed. A facility whose cost cannot be paid stops processing, and its Homes lose their Waste coverage. Facilities are used from the cleanest to the dirtiest: Recycling plant, Incinerator, then Mound.
@@ -301,7 +305,7 @@ A 1×1 Waste facility with three Tiers, the building block of a landfill. One Mo
 _Avoid_: Landfill (a landfill is only the player's cluster of Mounds, not an object), dump, heap
 
 **Odor radius**:
-The distance around a Mound within which the Well-being of Homes is lowered. Larger than the Mound's collection reach, and never added up: a Home bears the worst of the Mounds around it.
+The distance around a Mound within which the Well-being of Homes is lowered. Never added up: a Home bears the worst of the Mounds around it.
 _Avoid_: Smell zone, malus zone
 
 **Incinerator**:
@@ -309,7 +313,7 @@ A Waste facility with a large capacity in a small footprint. It burns Waste, whi
 _Avoid_: Furnace, burner
 
 **Recycling plant**:
-A clean Waste facility that consumes power. It has no Well-being malus, no Odor radius and no Climate emissions, and costs the most per unit of Waste. Its collection reach is the largest of the Waste facilities, larger than the Incinerator's, itself larger than the Mound's.
+A clean Waste facility that consumes power. It has no Well-being malus, no Odor radius and no Climate emissions, and costs the most per unit of Waste. Its Collection distance is the largest of the Waste facilities, larger than the Incinerator's, itself larger than the Mound's.
 _Avoid_: Sorting centre
 
 **Leisure building**:
@@ -1054,7 +1058,7 @@ _Avoid_: Docs, documentation, manual, wiki
 - Service vehicles stay on the network of their facility and never switch between Road and BRT corridor.
 - Waste is a Service category: missing Waste coverage lowers Well-being, can block Home Tier upgrades, feeds the Vital Need level and is sanctioned from Easy Difficulty. A city already past 1000 Citizens gets an Adaptation period before Waste counts.
 - A Mound works if it or a Mound adjacent to it touches a Road, or if their group touches a Pedestrian path network that reaches a Road. Incinerator and Recycling plant need their own Road.
-- A Mound has two distances: the collection reach, like any Public facility, and the larger Odor radius.
+- A Mound has two distances: the Collection distance along the route to the Homes it serves, and the Odor radius around it.
 - A Casino is shed first when electricity falls short, before Homes, except during an Adaptation period. A Casino boat is never shed: it uses no power.
 - A Minigame round of chance draws from the game's Seed; its outcome is fixed when the Stake is debited.
 - A blockmatch round pays by stars on top of the returned Stake: none loses the Stake, 1 star wins 25% of it, 2 stars 50%, 3 stars 100%.

@@ -10,7 +10,7 @@ export const WASTE_KINDS = ['recyclingPlant', 'incinerator', 'mound'] as const;
 export type WasteKind = (typeof WASTE_KINDS)[number];
 
 export interface WasteFacilitySpec {
-  reach: number;
+  collectionDistance: number;
   tariff: number;
   unlockCitizens: number;
   odor: { radius: number; malus: number } | null;
@@ -19,10 +19,10 @@ export interface WasteFacilitySpec {
 }
 
 function specOf(kind: WasteKind): WasteFacilitySpec {
-  const { radius, unlockCitizens, waste: traits } = definitionOf(kind);
-  const { tariff, odorRadius, odorMalus, pollutionRadius, pollutionMalus, emissionsPerUnit } = traits!;
+  const { unlockCitizens, waste: traits } = definitionOf(kind);
+  const { collectionDistance, tariff, odorRadius, odorMalus, pollutionRadius, pollutionMalus, emissionsPerUnit } = traits!;
   return {
-    reach: radius!,
+    collectionDistance,
     tariff,
     unlockCitizens: unlockCitizens!,
     odor: odorRadius && odorMalus ? { radius: odorRadius, malus: odorMalus } : null,

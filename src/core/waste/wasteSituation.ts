@@ -2,11 +2,11 @@ import { isHomeType } from '../buildings/buildingDefinitions';
 import { citizensOf } from '../buildings/city';
 import type { GameState } from '../engine/state';
 import type { Coord } from '../map/coord';
-import { wasteReport, type WasteCause } from './waste';
-import { WASTE, WASTE_KINDS, wasteKindOf, type WasteKind } from './wasteBalance';
+import { wasteReport, type FacilityWaste, type HomeWaste, type WasteCause } from './waste';
+import { WASTE, WASTE_FACILITIES, WASTE_KINDS, wasteKindOf, type WasteKind } from './wasteBalance';
 import { incineratorPenaltyOf, odorPenaltyOf, wasteEmissions } from './wasteNuisance';
 
-export const WASTE_CAUSES: readonly WasteCause[] = ['outOfReach', 'capacityFull', 'noRoadLink', 'beyondCarryingDistance', 'facilityStopped'];
+export const WASTE_CAUSES: readonly WasteCause[] = ['noFacility', 'capacityFull', 'beyondMaxDistance', 'noRoadLink', 'beyondCarryingDistance', 'facilityStopped'];
 
 export interface WasteFamilySituation {
   kind: WasteKind;
@@ -19,6 +19,9 @@ export interface WasteFamilySituation {
   stoppedNoRoad: number;
   stoppedPowerShortage: number;
   reducedByPower: number;
+  collectionDistance: number;
+  // The mean route, in tiles, of the Homes this family serves.
+  averageRoute: number | null;
 }
 
 export interface WasteCauseSituation {
@@ -44,6 +47,7 @@ export interface WasteSituation {
   incineratorEmissionsPerHour: number;
   pedestrianHomes: number;
   pedestrianSurcharge: number;
+  distanceSurcharge: number;
   bottleneck: Coord | null;
 }
 
@@ -68,6 +72,19 @@ function bottleneckOf(state: GameState, causes: readonly WasteCauseSituation[]):
   return stoppedFacilities(state)[0]?.tile ?? null;
 }
 
+function averageRouteOf(homes: ReadonlyMap<number, HomeWaste>, facilityIds: readonly number[]): number | null {
+  const routes = [...homes.values()].flatMap(home => (home.facilityId !== null && home.distance !== null && facilityIds.includes(home.facilityId) ? [home.distance] : []));
+  return routes.length > 0 ? routes.reduce((sum, route) => sum + route, 0) / routes.length : null;
+}
+
+// What the route adds to the cost of a Home, apart from the Pedestrian surcharge.
+function distanceSurchargeOf(home: HomeWaste, facilities: ReadonlyMap<number, FacilityWaste>): number {
+  const kind = home.facilityId === null ? null : facilities.get(home.facilityId)?.kind;
+  if (!kind || home.distance === null) return 0;
+  const factor = 1 + home.distance / WASTE_FACILITIES[kind].collectionDistance;
+  return home.cost * (1 - 1 / factor);
+}
+
 export function wasteSituation(state: GameState): WasteSituation {
   const report = wasteReport(state);
   const homes = state.buildings.filter(building => isHomeType(building.type));
@@ -87,6 +104,8 @@ export function wasteSituation(state: GameState): WasteSituation {
       stoppedNoRoad: paying ? own.filter(([, served]) => !served.linked).length : 0,
       stoppedPowerShortage: paying ? own.filter(([, served]) => served.linked && served.powerRatio === 0).length : 0,
       reducedByPower: paying ? own.filter(([, served]) => served.powerRatio > 0 && served.powerRatio < 1).length : 0,
+      collectionDistance: WASTE_FACILITIES[kind].collectionDistance,
+      averageRoute: averageRouteOf(report.homes, own.map(([id]) => id)),
     };
   });
   const causes = WASTE_CAUSES.map((cause): WasteCauseSituation => {
@@ -94,6 +113,7 @@ export function wasteSituation(state: GameState): WasteSituation {
     return { cause, homes: concerned.length, citizens: concerned.reduce((sum, building) => sum + citizensOf(building.tier), 0) };
   });
   const carried = [...report.homes.values()].filter(home => home.carried);
+  const distanceSurcharge = [...report.homes.values()].reduce((sum, home) => sum + distanceSurchargeOf(home, report.facilities), 0);
   return {
     required: report.required,
     produced: report.produced,
@@ -111,6 +131,7 @@ export function wasteSituation(state: GameState): WasteSituation {
     incineratorEmissionsPerHour: wasteEmissions(state),
     pedestrianHomes: carried.length,
     pedestrianSurcharge: carried.reduce((sum, home) => sum + home.cost * (1 - 1 / WASTE.carriedSurcharge), 0),
+    distanceSurcharge,
     bottleneck: bottleneckOf(state, causes),
   };
 }

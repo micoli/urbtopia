@@ -10,10 +10,9 @@
     "fr": "Incinérateur"
   },
   "description": {
-    "en": "Burns the Waste of nearby Homes: square reach of {side} tiles, {tier1Capacity} Waste units a day, up to {maxTierCapacity} at Tier {tierCount}. Costs {tariff} Urbs per unit. Homes within {pollutionRadius} tiles lose some well-being, less than next to a coal plant, and burning creates emissions in proportion to the Waste burnt. Needs its own road; demand {power} power; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs to build.",
-    "fr": "Brûle les déchets des logements proches : portée carrée de {side} cases, {tier1Capacity} unités de déchets par jour, jusqu’à {maxTierCapacity} au niveau {tierCount}. Coûte {tariff} Urbs par unité. Les logements à moins de {pollutionRadius} cases perdent un peu de bien-être, moins qu’à côté d’une centrale à charbon, et la combustion génère des émissions proportionnelles aux déchets brûlés. Nécessite sa propre route; consomme {power} d’électricité ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs à construire."
+    "en": "Burns the Waste of nearby Homes: a route of up to {collectionDistance} tiles, {tier1Capacity} Waste units a day, up to {maxTierCapacity} at Tier {tierCount}. Costs {tariff} Urbs per unit, up to twice as much at the end of the route. Homes within {pollutionRadius} tiles lose some well-being, less than next to a coal plant, and burning creates emissions in proportion to the Waste burnt. Needs its own road; demand {power} power; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs to build.",
+    "fr": "Brûle les déchets des logements proches : un trajet de {collectionDistance} cases au plus, {tier1Capacity} unités de déchets par jour, jusqu’à {maxTierCapacity} au niveau {tierCount}. Coûte {tariff} Urbs par unité, jusqu’au double au bout du trajet. Les logements à moins de {pollutionRadius} cases perdent un peu de bien-être, moins qu’à côté d’une centrale à charbon, et la combustion génère des émissions proportionnelles aux déchets brûlés. Nécessite sa propre route; consomme {power} d’électricité ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs à construire."
   },
-  "radius": 14,
   "tiers": [
     {
       "model": "buildings-incinerator-2x2-t1",
@@ -50,6 +49,7 @@
   "power": 0,
   "water": 0,
   "waste": {
+    "collectionDistance": 28,
     "tariff": 3,
     "pollutionRadius": 4,
     "pollutionMalus": 5,

@@ -9,6 +9,7 @@ import type { MapSelection } from './selection.ts';
 import { TransportMapCanvas } from './TransportMapCanvas.tsx';
 import { TransportMapCard } from './TransportMapCard.tsx';
 import { buildTransportMap, visibleLines } from './transportMapModel.ts';
+import {MANAGEMENT_SECTIONS} from '../managementSections';
 
 interface TransportMapSectionProps {
   state: GameState;
@@ -30,7 +31,7 @@ export function TransportMapSection({ state, transport, congestion }: TransportM
     return next;
   });
   return <section id="eco-transportMap" className="eco-wide">
-    <SectionHeading icon="map">{t('eco.transportMap')}</SectionHeading>
+    <SectionHeading icon={MANAGEMENT_SECTIONS['eco-transportMap'].icon}>{t('eco.transportMap')}</SectionHeading>
     <p>{t('transportMap.help')}</p>
     <ModeMix congestion={congestion} />
     {model.lines.length === 0

@@ -9,6 +9,7 @@ import { cloudStore } from './cloudStore';
 import { gameStore } from './gameStore';
 import { sceneHandle } from './sceneHandle';
 import { socialStore } from './socialStore';
+import { groupOfSection } from '../ui/stats/management/managementSections';
 import { toastStore } from './toastStore';
 import type { CodexId } from '../codex/catalog';
 import type { CodexPage } from '../codex/pages';
@@ -39,6 +40,13 @@ export interface UiStore {
   flyout: Flyout;
   statsOpen: boolean;
   toggleStats: () => void;
+  // Where City management was left, so a menu opens it back there.
+  managementView: ManagementView;
+  setManagementView: (view: Partial<ManagementView>) => void;
+  // The section City management scrolls to once open, set by a link to it.
+  managementSection: string | null;
+  showManagementSection: (id: string) => void;
+  clearManagementSection: () => void;
   lineToEdit: number | null;
   editTransitLine: (lineId: number) => void;
   clearLineToEdit: () => void;
@@ -139,6 +147,16 @@ function evaluate(tool: Tool | null, tile: Coord, rotation: Rotation | null): Ev
 }
 
 // One window at a time: opening a window, or a flyout menu, closes the others.
+export type ManagementGroup = 'overview' | 'production' | 'city' | 'environment' | 'transport' | 'transit' | 'tourism';
+export type ManagementTab = 'dashboard' | 'cities' | 'shipments';
+export interface ManagementView {
+  tab: ManagementTab;
+  group: ManagementGroup;
+  scroll: number;
+}
+
+const INITIAL_MANAGEMENT_VIEW: ManagementView = { tab: 'dashboard', group: 'overview', scroll: 0 };
+
 const NO_WINDOW_OPEN = { statsOpen: false, politicsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false } as const;
 // The settings window is modal, so opening it also closes the panels around the map.
 const WINDOWS_CLOSED = { ...NO_WINDOW_OPEN, serviceCoverageOpen: false, buildingSearchOpen: false, flyout: null, selectedBuildingId: null, selectedAccess: null } as const;
@@ -196,10 +214,18 @@ export const uiStore = createStore<UiStore>((set, get) => {
     },
     flyout: null,
     statsOpen: false,
+    managementView: INITIAL_MANAGEMENT_VIEW,
+    setManagementView: (view) => set({ managementView: { ...get().managementView, ...view } }),
+    managementSection: null,
+    showManagementSection: (id) => {
+      get().cancelTool();
+      set({ ...NO_WINDOW_OPEN, statsOpen: true, flyout: null, selectedBuildingId: null, managementSection: id, managementView: { tab: 'dashboard', group: groupOfSection(id) ?? get().managementView.group, scroll: 0 } });
+    },
+    clearManagementSection: () => set({ managementSection: null }),
     lineToEdit: null,
     editTransitLine: (lineId) => {
       get().cancelTool();
-      set({ ...NO_WINDOW_OPEN, statsOpen: true, lineToEdit: lineId, flyout: null });
+      set({ ...NO_WINDOW_OPEN, statsOpen: true, lineToEdit: lineId, flyout: null, managementView: { tab: 'dashboard', group: 'transit', scroll: 0 } });
     },
     clearLineToEdit: () => set({ lineToEdit: null }),
     politicsOpen: false,
@@ -209,7 +235,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     },
     closePolitics: () => set({ politicsOpen: false }),
     serviceCoverageOpen: false,
-    openServiceCoverage: () => set({ serviceCoverageOpen: true, statsOpen: false }),
+    openServiceCoverage: () => set({ serviceCoverageOpen: true, statsOpen: false, flyout: null }),
     closeServiceCoverage: () => set({ serviceCoverageOpen: false }),
     locator: null,
     buildingSearchOpen: false,
