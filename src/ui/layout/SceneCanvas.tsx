@@ -89,7 +89,10 @@ export function SceneCanvas() {
       const state = gameStore.getState().state;
       const focus = selectionFocus(uiStore.getState());
       const focused = state.buildings.find(building => building.id === focus.buildingId);
-      scene.setSelection(selectionGhost(state, focus.buildingId, prefsStore.getState().showReach && !focus.studyingFlows, focused ? scene.drawnExtentOf(focused) : null));
+      const picked = uiStore.getState().selectedAccess;
+      const access = picked && (state.pedestrianAccesses ?? []).some(candidate => candidate.x === picked.x && candidate.y === picked.y) ? picked : null;
+      // A picked Pedestrian access gets the blue footprint of a selected building.
+      scene.setSelection(access ? { tiles: [access], rects: [], valid: true, front: null } : selectionGhost(state, focus.buildingId, prefsStore.getState().showReach && !focus.studyingFlows, focused ? scene.drawnExtentOf(focused) : null));
       const selected = state.buildings.find(building => building.id === uiStore.getState().selectedBuildingId);
       scene.setEcologicalSelection(uiStore.getState().selectedBuildingId);
       scene.setCoverageFocus(selected && prefsStore.getState().showReach && isFacilityType(selected.type) && FACILITIES[selected.type].radius !== null ? { type: selected.type, facilityId: selected.id } : null);
@@ -98,7 +101,7 @@ export function SceneCanvas() {
     const unsubscribeGame = gameStore.subscribe((store, previous) => {
       if (store.state === previous.state) return;
       scene.setState(store.state);
-      if (selectionFocus(uiStore.getState()).buildingId !== null) showSelection();
+      if (selectionFocus(uiStore.getState()).buildingId !== null || uiStore.getState().selectedAccess !== null) showSelection();
     });
     const unsubscribeUi = uiStore.subscribe((store, previous) => {
       if (store.serviceCoverageOpen !== previous.serviceCoverageOpen) showServiceCoverage();
@@ -110,7 +113,7 @@ export function SceneCanvas() {
       if (store.level !== previous.level) scene.setLevel(store.level);
       if (store.tool?.kind !== previous.tool?.kind) scene.setBrushMode(store.tool?.kind === 'brush');
       if (store.evaluation !== previous.evaluation) scene.setGhost(store.evaluation?.ghost ?? null);
-      if (store.selectedBuildingId !== previous.selectedBuildingId) showSelection();
+      if (store.selectedBuildingId !== previous.selectedBuildingId || store.selectedAccess !== previous.selectedAccess) showSelection();
     });
     const unsubscribeHarvest = harvestEffects.subscribe((effects) => scene.setAfterHarvest(effects.tiles));
     const unsubscribePrefs = prefsStore.subscribe((prefs, previous) => {
