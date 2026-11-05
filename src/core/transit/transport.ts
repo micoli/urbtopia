@@ -1,6 +1,6 @@
 import { isIndustryType } from '../economy/productionTypes';
 import { isShopType } from '../economy/shops';
-import { ECOLOGY, citizenCount, distance } from '../environment/ecology';
+import { ECOLOGY, distance } from '../environment/ecology';
 import { HOME_TIERS } from '../economy/economy';
 import { energyStats } from '../environment/energy';
 import { workplaceTypes } from '../traffic/jobs';
@@ -158,5 +158,5 @@ function calculateTransport(state: GameState, now: number, speedFactors?: SpeedF
   }
   return { lines, covered, riders, homeRiders, homeLines, stopFlows, trips, coveredActivities, transferRiders, activeLines: lines.filter(l => l.active).length,
     costPerHour: lines.reduce((n, l) => n + l.costPerHour, 0), coalPerHour: lines.reduce((n, l) => n + l.coalPerHour, 0),
-    emissions: Math.max(0, citizenCount(state) - riders) / 10 + lines.reduce((n, l) => n + l.emissions, 0) };
+    emissions: lines.reduce((n, l) => n + l.emissions, 0) };
 }

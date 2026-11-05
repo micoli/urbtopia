@@ -121,7 +121,7 @@ describe('Mound Odor', () => {
     const base = city([target]);
     const withMound = city([target, ...mounds([66, 50])]);
     expect(wasteEmissions(withMound)).toBe(0);
-    expect(climateStats(withMound).emissions).toBe(climateStats(base).emissions);
+    expect(climateStats(withMound).activityEmissions).toBe(climateStats(base).activityEmissions);
   });
 });
 

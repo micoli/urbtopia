@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { WALKING } from '../traffic/walking';
 import { cityBenefits, cityTransportStats, climateStats, createBuilding, energyStats, heatSourceItems, newGame, type Building, type GameState } from '../index';
 
 const city = (buildings: Building[]): GameState => ({
@@ -28,8 +29,24 @@ describe('heat source items', () => {
     expect(sum(items.transport)).toBeCloseTo(cityTransportStats(state).emissions);
   });
 
-  it('reports citizens outside public transport as a transport item', () => {
+  it('reports no transport item for Citizens who have nowhere to drive', () => {
     const items = itemsOf(city([createBuilding(1, 'home', 0, 0, 0)])).transport;
-    expect(items.some(item => item.kind === 'citizens')).toBe(true);
+    expect(items).toEqual([]);
+  });
+
+  describe('Citizens who drive to work', () => {
+    const walkingEnabled = WALKING.enabled;
+    beforeAll(() => { WALKING.enabled = false; });
+    afterAll(() => { WALKING.enabled = walkingEnabled; });
+
+    const start = newGame({ seed: 'heat-items', now: 0 });
+    const withHome = (tier: number): GameState => ({ ...start, buildings: [...start.buildings, { ...createBuilding(start.nextId, 'home', 56, 59, 0), tier }] });
+
+    it('are a transport item, in proportion to the drivers', () => {
+      const items = itemsOf(withHome(1)).transport;
+      expect(items.some(item => item.kind === 'citizens')).toBe(true);
+      const more = itemsOf(withHome(3)).transport.find(item => item.kind === 'citizens')!;
+      expect(more.impact).toBeGreaterThan(items.find(item => item.kind === 'citizens')!.impact);
+    });
   });
 });
