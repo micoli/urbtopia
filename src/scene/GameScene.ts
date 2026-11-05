@@ -558,6 +558,10 @@ export class GameScene {
     return building?.id ?? null;
   }
 
+  arrowAnchorOfTile(tile: Coord): { x: number; y: number; z: number } {
+    return { x: tile.x + 0.5, y: ARROW_MIN_HEIGHT, z: tile.y + 0.5 };
+  }
+
   arrowAnchorOf(building: Building): { x: number; y: number; z: number } {
     const model = modelOfBuilding(building);
     const topY = facilityFootprint(building) === null && this.library.has(model) ? this.fittedBox(model).max.y : 0;

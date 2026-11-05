@@ -12,7 +12,7 @@ import {
   DEFAULT_OFF_PEAK_HEADWAY, DEFAULT_PEAK_HEADWAY, HEADWAY_LIMITS, MODE_LABEL, STOP_TYPE, TRANSIT_MODES, findLine, unlockOf,
 } from './lineModels.ts';
 import { LineMetrics, type LineSummary } from './LineMetrics.tsx';
-import { stopLabel } from './stopLabel.ts';
+import { stopLabel, stopTitle } from './stopLabel.ts';
 import { StopList } from './StopList.tsx';
 import { routeFailureKey } from './routeFailureKey.ts';
 import { Icon } from '../../../common/Icon';
@@ -83,7 +83,7 @@ export function LineEditor({ lineId, summary, onSaved, onDeleted, onCancel }: Li
       }))}
     />
     <p>{t('eco.lineHelp')}</p>
-    <StopList stops={stops} labelOf={labelOf} onChange={setStops} />
+    <StopList stops={stops} titleOf={id => stopTitle(stopsById.get(id), id)} buildingOf={id => stopsById.get(id)} onChange={setStops} />
     <Dropdown
       className="dropdown--fill"
       label={t('transit.addStop')}

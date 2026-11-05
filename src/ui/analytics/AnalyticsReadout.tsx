@@ -3,6 +3,7 @@ import { probeOf } from '../../core';
 import { causeText } from '../../i18n/causeText';
 import type { MessageKey } from '../../i18n/messages';
 import { t } from '../../i18n/t';
+import { CoordinatesLink } from '../common/CoordinatesLink';
 import { useGame, useUi } from '../common/hooks';
 
 export function AnalyticsReadout() {
@@ -16,7 +17,7 @@ export function AnalyticsReadout() {
   if (!tile) return <p className="analytics-readout analytics-readout-hint">{t('analytics.probe.empty')}</p>;
   return (
     <section className="analytics-readout" aria-label={t('analytics.probe.title')}>
-      <h4>{t('analytics.probe.title')} ({tile.x}, {tile.y})</h4>
+      <h4>{t('analytics.probe.title')} <CoordinatesLink x={tile.x} y={tile.y} /></h4>
       {probe === null ? <p>–</p> : (
         <>
           <ul>

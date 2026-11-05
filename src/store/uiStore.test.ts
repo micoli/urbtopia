@@ -79,10 +79,12 @@ describe('showTile', () => {
 
   it('closes City Management and focuses the camera on the tile', () => {
     const focusOnTile = vi.fn();
-    sceneHandle.current = { focusOnTile } as never;
+    const flash = vi.fn();
+    sceneHandle.current = { focusOnTile, flash, arrowAnchorOfTile: (tile: { x: number; y: number }) => ({ x: tile.x + 0.5, y: 1.5, z: tile.y + 0.5 }) } as never;
     uiStore.getState().showTile({ x: 57, y: 58 });
     expect(uiStore.getState().statsOpen).toBe(false);
     expect(focusOnTile).toHaveBeenCalledWith({ x: 57, y: 58 });
+    expect(flash).toHaveBeenCalledWith(expect.objectContaining({ tiles: [{ x: 57, y: 58 }] }));
     sceneHandle.current = null;
   });
 

@@ -3,6 +3,7 @@ import { buildingFlowsOf } from '../../core';
 import type { MessageKey } from '../../i18n/messages';
 import { t } from '../../i18n/t';
 import { FLOW_COLORS } from '../../scene/analyticsRamps';
+import { CoordinatesLink } from '../common/CoordinatesLink';
 import { useGame, useUi } from '../common/hooks';
 import { BuildingFlowList } from './BuildingFlowList';
 
@@ -14,7 +15,7 @@ export function BuildingFlowsPanel() {
   const { building, arrivals, departures } = flows;
   const heading = (
     <h3 className="analytics-flow-building">
-      <span className="analytics-legend-swatch" aria-hidden="true" style={{ background: FLOW_COLORS.selected }} />{t(`building.${building.type}` as MessageKey)} ({building.x}, {building.y})
+      <span className="analytics-legend-swatch" aria-hidden="true" style={{ background: FLOW_COLORS.selected }} />{t(`building.${building.type}` as MessageKey)} <CoordinatesLink x={building.x} y={building.y} />
     </h3>
   );
   if (arrivals.length === 0 && departures.length === 0) {

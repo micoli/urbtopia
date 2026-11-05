@@ -1,10 +1,15 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createBuilding, newGame, transportStats } from '../../../../core';
 import { prefsStore } from '../../../../i18n/prefsStore';
 import { transportMapCity } from '../transportMap/transportMapFixture.ts';
 import { modeUsage } from './modeUsage.ts';
 import { RailMetroSection } from './RailMetroSection.tsx';
+
+vi.mock('../../../common/hooks', () => ({
+  useGame: (selector: (store: { state: object }) => unknown) => selector({ state: { buildings: [] } }),
+  useUi: (selector: (store: Record<string, () => void>) => unknown) => selector({ showBuilding: () => {}, showTile: () => {} }),
+}));
 
 describe('Rail and Metro section', () => {
   it('counts the stations, the track and the line of the Railway', () => {
@@ -42,6 +47,13 @@ describe('Rail and Metro section', () => {
     expect(html).toContain('data-mode="metro"');
     expect(html).not.toContain('NaN');
     expect(html).not.toContain('undefined');
+  });
+
+  it('links the coordinates of each station to the map', () => {
+    const state = transportMapCity();
+    const html = renderToStaticMarkup(<RailMetroSection state={state} transport={transportStats(state)} />);
+    expect(html).toContain('class="coordinates-link"');
+    expect(html).toContain('(30, 1)');
   });
 
   it('renders on an empty city', () => {

@@ -443,7 +443,11 @@ export const uiStore = createStore<UiStore>((set, get) => {
     cancelSale: () => set({ pendingSaleId: null }),
     showTile: (tile) => {
       set({ statsOpen: false });
-      sceneHandle.current?.focusOnTile(tile);
+      const scene = sceneHandle.current;
+      if (!scene) return;
+      scene.focusOnTile(tile);
+      scene.flash({ tiles: [tile], rects: [], valid: true, front: null });
+      showLocator(scene.arrowAnchorOfTile(tile));
     },
     showBuilding: (id) => {
       const state = gameStore.getState().state;

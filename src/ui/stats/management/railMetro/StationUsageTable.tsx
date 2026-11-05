@@ -1,5 +1,6 @@
 import { t } from '../../../../i18n/t.ts';
-import { stopLabel } from '../transit/stopLabel.ts';
+import { CoordinatesLink } from '../../../common/CoordinatesLink.tsx';
+import { stopTitle } from '../transit/stopLabel.ts';
 import type { StationUsage } from './modeUsage.ts';
 
 export function StationUsageTable({ stations }: { stations: StationUsage[] }) {
@@ -15,7 +16,7 @@ export function StationUsageTable({ stations }: { stations: StationUsage[] }) {
     </thead>
     <tbody>
       {stations.map(({ building, lineIds, boarded, alighted }) => <tr key={building.id}>
-        <td data-label={t('railMetro.station')}>{stopLabel(building, building.id)}</td>
+        <td data-label={t('railMetro.station')}>{stopTitle(building, building.id)} <CoordinatesLink x={building.x} y={building.y} /></td>
         <td data-label={t('railMetro.linesServing')}>{lineIds.length ? lineIds.map(id => `#${id}`).join(', ') : t('railMetro.unserved')}</td>
         <td data-label={t('railMetro.boarded')}>{boarded.toFixed(1)}</td>
         <td data-label={t('railMetro.alighted')}>{alighted.toFixed(1)}</td>
