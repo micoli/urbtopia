@@ -389,10 +389,28 @@ describe('editing a transit line', () => {
     expect(uiStore.getState()).toMatchObject({ statsOpen: true, lineToEdit: 12, flyout: null });
   });
 
+  it('points City management at the transit group, whatever it was left on', () => {
+    uiStore.setState({ managementView: { tab: 'cities', group: 'tourism', scroll: 300 } });
+    uiStore.getState().editTransitLine(12);
+    expect(uiStore.getState().managementView).toEqual({ tab: 'dashboard', group: 'transit', scroll: 0 });
+  });
+
   it('forgets the line once the editor took it', () => {
     uiStore.getState().editTransitLine(12);
     uiStore.getState().clearLineToEdit();
     expect(uiStore.getState()).toMatchObject({ statsOpen: true, lineToEdit: null });
+  });
+});
+
+describe('City management view', () => {
+  it('keeps where it was left across closing and opening from the menu', () => {
+    uiStore.setState({ statsOpen: false, managementView: { tab: 'dashboard', group: 'overview', scroll: 0 } });
+    uiStore.getState().toggleStats();
+    uiStore.getState().setManagementView({ group: 'environment' });
+    uiStore.getState().setManagementView({ scroll: 240 });
+    uiStore.getState().toggleStats();
+    uiStore.getState().toggleStats();
+    expect(uiStore.getState().managementView).toEqual({ tab: 'dashboard', group: 'environment', scroll: 240 });
   });
 });
 
