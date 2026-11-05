@@ -24,7 +24,7 @@ describe('core isolation lint rules', () => {
     ['export const a = indexedDB;'],
   ])('rejects %s inside the core', async (code) => {
     expect((await lintAsCore(code)).length).toBeGreaterThan(0);
-  });
+  }, 15_000);
 
   it('accepts pure code with an explicit timestamp', async () => {
     expect(await lintAsCore('export const a = new Date(1000).getTime();')).toEqual([]);

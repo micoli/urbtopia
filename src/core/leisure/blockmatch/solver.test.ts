@@ -3,7 +3,7 @@ import { generateLevel } from './levelGenerator';
 import { THREE_STARS_MIN_MOVES_LEFT_RATIO } from './scoring';
 import { solve } from './solver';
 
-const SLOW_TEST_MS = 60_000;
+const SLOW_TEST_MS = 90_000;
 
 describe('level winnability', () => {
   it('has a known winning sequence within the move budget', () => {

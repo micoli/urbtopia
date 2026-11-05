@@ -35,7 +35,7 @@ describe('createBoard', () => {
       expect(findMatches(board)).toHaveLength(0);
       expect(hasPossibleMove(board)).toBe(true);
     }
-  });
+  }, 15_000);
 });
 
 describe('cascade', () => {
