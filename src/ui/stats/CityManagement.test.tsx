@@ -22,9 +22,20 @@ vi.mock('../common/hooks', () => ({
 }));
 vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: vi.fn(), state: context.state }) } }));
 
-afterEach(() => { context.statsOpen = true; prefsStore.getState().setLanguage('en'); });
+afterEach(() => { context.statsOpen = true; prefsStore.getState().setLanguage('en'); Object.assign(prefsStore.getInitialState(), { managementTabs: false }); });
 
 describe('city management panel', () => {
+  it('shows one page of sections by default and only the overview once the tabs are on', () => {
+    context.state = newGame({ seed: 'tabs', now: 0 });
+    const plain = renderToStaticMarkup(<CityManagement />);
+    expect(plain).toContain('id="eco-traffic"');
+    expect(plain).not.toContain('id="eco-group-production"');
+    // Server rendering reads the initial state of the store.
+    Object.assign(prefsStore.getInitialState(), { managementTabs: true });
+    const tabbed = renderToStaticMarkup(<CityManagement />);
+    expect(tabbed).toContain('id="eco-group-production"');
+    expect(tabbed).not.toContain('id="eco-traffic"');
+  });
   it.each(['en', 'fr'] as const)('renders explained energy, ecology and transport in %s', language => {
     prefsStore.getState().setLanguage(language);
     context.state = { ...newGame({ seed: 'dashboard', now: 0 }), buildings: [createBuilding(1, 'home', 55, 57, 0)] };

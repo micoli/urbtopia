@@ -19,7 +19,8 @@ export function DisplaySettings() {
   const showReach = useStore(prefsStore, (store) => store.showReach);
   const showProductionPreview = useStore(prefsStore, (store) => store.showProductionPreview);
   const showTaxBadges = useStore(prefsStore, (store) => store.showTaxBadges);
-  const { setLanguage, setLayout, setTraffic, setPedestrianModel, setAlwaysDay, setShowReach, setShowProductionPreview, setShowTaxBadges } = prefsStore.getState();
+  const managementTabs = useStore(prefsStore, (store) => store.managementTabs);
+  const { setManagementTabs, setLanguage, setLayout, setTraffic, setPedestrianModel, setAlwaysDay, setShowReach, setShowProductionPreview, setShowTaxBadges } = prefsStore.getState();
 
   return (
     <>
@@ -30,6 +31,7 @@ export function DisplaySettings() {
         <SettingRow stacked label={t('prefs.layout')}>
           <RadioChipGroup className="prefs-group" label={t('prefs.layout')} options={LAYOUTS.map(code => ({ value: code, label: t(`prefs.layout.${code}`) }))} value={layout} onChange={setLayout} />
         </SettingRow>
+        <SwitchField label={t('prefs.managementTabs')} description={t('prefs.managementTabs.description')} checked={managementTabs} onChange={setManagementTabs} />
       </SettingsSection>
       <SettingsSection title={t('settings.section.map')} icon="map">
         <SwitchField label={t('prefs.traffic')} description={t('prefs.traffic.description')} checked={traffic} onChange={setTraffic} />
