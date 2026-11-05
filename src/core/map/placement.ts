@@ -72,8 +72,10 @@ export function frontAccessModes(state: GameState, type: BuildingType, x: number
   )));
 }
 
-// A Transit hub serves no line, and covers no Home, until a Road, a BRT corridor or a Railway touches it.
+// A Transit hub serves no line, and covers no Home, until a Road, a BRT corridor or a Railway touches it, or a Tunnel runs under it.
 export function isHubActive(state: GameState, hub: { type: BuildingType; x: number; y: number; rotation: Rotation; tier?: number }): boolean {
+  const tunnels = tileKeysOf(state.tunnels);
+  if (footprintTiles(hub).some((tile) => tunnels.has(tileKey(tile)))) return true;
   return frontAccessModes(state, hub.type, hub.x, hub.y, hub.rotation, hub.tier).some((mode) => mode !== 'pedestrianWay');
 }
 

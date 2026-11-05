@@ -44,7 +44,7 @@ export function modeUsage(state: GameState, transport: ReturnType<typeof transpo
   });
   const servedByMode = new Set(lines.flatMap(({ line }) => line.stops));
   const stations = state.buildings
-    .filter(b => b.type === STOP_TYPE[mode] || (mode === 'rail' && b.type === 'transitHub' && servedByMode.has(b.id)))
+    .filter(b => b.type === STOP_TYPE[mode] || (b.type === 'transitHub' && servedByMode.has(b.id)))
     .map(building => ({
       building,
       lineIds: lines.filter(({ line }) => line.stops.includes(building.id)).map(({ line }) => line.id),

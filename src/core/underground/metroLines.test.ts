@@ -53,7 +53,18 @@ describe('Metro lines', () => {
     expect(failure(cut, line(cut))).toBe('error.networkNotConnected');
   });
 
-  it('take a hub and a station of another mode for no stop', () => {
+  it('take a Transit hub with a Tunnel under it as a stop', () => {
+    let state = twoStations(false);
+    state = send(state, { type: 'PlaceBuilding', buildingType: 'transitHub', x: at(3, 1).x, y: at(3, 1).y });
+    const hub = state.buildings.find((building) => building.type === 'transitHub')!;
+    const stops = [stationIds(state)[0]!, hub.id];
+    const line = { id: 1, mode: 'metro' as const, stops, peakHeadway: 4, offPeakHeadway: 8 };
+    expect(routeFailure(state, line)).toBe('stopNotOnNetwork');
+    state = send(state, { type: 'BuildTransit', mode: 'metro', from: at(0, 1), to: at(8, 1) });
+    expect(routeFailure(state, line)).toBeNull();
+  });
+
+  it('take a station of another mode for no stop', () => {
     const state = twoStations();
     expect(routeFailure(state, { id: 1, mode: 'metro', stops: [stationIds(state)[0]!, 9999], peakHeadway: 4, offPeakHeadway: 8 })).toBe('invalid');
   });

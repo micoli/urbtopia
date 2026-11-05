@@ -826,7 +826,7 @@ The Riders who board and alight at a Bus stop, BRT station, Railway station or T
 The Pedestrians who cross a Crossing or a Footbridge, listed busiest first in the Traffic section of City management. The pedestrian Layers also mark the busiest Crossings, Footbridges and stops with a beacon, and the probe reads the flow of the tapped one.
 
 **Transit hub**:
-A multimodal station that serves as a stop for every public transport network it touches among the Road, the BRT corridor and the Railway, and is reached on foot from the Pedestrian ways and Sidewalks it touches. It is valid as soon as it touches one of these four networks, and is inactive while it touches no vehicle network. Lines of different modes can use it as a stop, and a Transfer between lines that share it needs no walking distance.
+A multimodal station that serves as a stop for every public transport network it touches among the Road, the BRT corridor and the Railway, and as a Metro station where a Tunnel runs under it, and is reached on foot from the Pedestrian ways and Sidewalks it touches. It is valid as soon as it touches one of these four networks, and is inactive while it touches no vehicle network. Lines of different modes can use it as a stop, and a Transfer between lines that share it needs no walking distance.
 _Avoid_: Interchange, terminal, Bus stop
 
 **Access mode**:
@@ -866,7 +866,7 @@ A player-built tile of Level -2 on which Metro vehicles run. It lies under anyth
 _Avoid_: Underground walkway, Railway
 
 **Metro station**:
-A stop served by Metro vehicles on a Tunnel.
+A stop served by Metro vehicles on a Tunnel. A Transit hub is one too where a Tunnel runs under it.
 _Avoid_: Railway station, Subway stop
 
 **Player account**:

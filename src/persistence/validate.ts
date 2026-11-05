@@ -453,8 +453,8 @@ function invariantFailure(state: GameState): string | null {
     ...(state.busLines ?? []).map((line, index) => field(`busLines[${index}]: a stop is unknown or not a bus stop or hub`, () => line.stops.every((id) => isStopOfKind(state, id, ['busStop', 'transitHub'])))),
     ...(state.transitLines ?? []).map((line, index) => {
       const station = line.mode === 'brt' ? 'brtStation' : line.mode === 'rail' ? 'railStation' : 'metroStation';
-      const allowed: BuildingType[] = line.mode === 'metro' ? [station] : [station, 'transitHub'];
-      return field(`transitLines[${index}]: a stop is unknown or not a ${station}${line.mode === 'metro' ? '' : ' or hub'}`, () => line.stops.every((id) => isStopOfKind(state, id, allowed)));
+      const allowed: BuildingType[] = [station, 'transitHub'];
+      return field(`transitLines[${index}]: a stop is unknown or not a ${station} or hub`, () => line.stops.every((id) => isStopOfKind(state, id, allowed)));
     }),
     ...(state.transitFleet ?? []).map((vehicle, index) =>
       field(`transitFleet[${index}]: its line is missing or of another mode`, () => {

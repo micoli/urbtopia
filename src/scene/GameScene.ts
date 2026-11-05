@@ -5,7 +5,7 @@ import { GAME_CONFIG, SURFACE, footprintOf, WILD_RIM_TILES, congestionStats, foo
 import { bridgeElevation } from './bridgeElevation';
 import { CameraController } from './CameraController';
 import { StreetViewController } from './StreetViewController';
-import { cycleTimeOf, daylightOf, timeOfCycleHour, unpoweredBuildingIds, footprintTiles, type AnalyticsLayerId, type Coord, type ServiceCategory } from '../core';
+import { cycleTimeOf, daylightOf, timeOfCycleHour, unpoweredBuildingIds, footprintTiles, metroStops, type AnalyticsLayerId, type Coord, type ServiceCategory } from '../core';
 import { congestionTints } from './congestionMarkers';
 import type { DrawnExtent, GhostSpec } from '../tools/tools';
 import { ChunkedWorld } from './ChunkedWorld';
@@ -456,7 +456,7 @@ export class GameScene {
         await this.library.ensure([...items.map((item) => item.model), ...(state.pedestrianAccesses?.length ? [PEDESTRIAN_ACCESS_MODEL] : []), ...(state.walkways?.length ? Object.values(WALKWAY_MODELS) : []), ...(state.tunnels?.length ? Object.values(TUNNEL_MODELS) : [])]);
         await this.library.ensureTextureVariants(items.flatMap(item => item.textureVariant ? [item.textureVariant] : []));
         this.world.sync(items);
-        const stations = new Set(state.buildings.filter((building) => building.type === 'metroStation').map((building) => building.id));
+        const stations = new Set(metroStops(state).map((building) => building.id));
         this.stationWorld.sync(items.filter((item) => item.buildingId !== undefined && stations.has(item.buildingId)));
         this.stationGlow.set(state.buildings.filter((building) => stations.has(building.id)).map((building) => ({ x: building.x, y: building.y, ...footprintDimensions(building) })));
         this.accessGlow.set((state.pedestrianAccesses ?? []).map(tileRect));

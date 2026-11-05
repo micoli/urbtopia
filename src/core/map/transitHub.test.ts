@@ -33,6 +33,12 @@ describe('Transit hub placement', () => {
     expect(isHubActive({ ...empty(), rails: [tile(4, 5)] }, hub)).toBe(true);
   });
 
+  it('is active when a Tunnel runs under it', () => {
+    const hub = createBuilding(1, 'transitHub', 5, 5, 0);
+    expect(isHubActive({ ...empty(), tunnels: [tile(5, 5)] }, hub)).toBe(true);
+    expect(isHubActive({ ...empty(), tunnels: [tile(9, 9)] }, hub)).toBe(false);
+  });
+
   it('keeps refusing to remove the last access, whichever the mode', () => {
     const hub = createBuilding(1, 'transitHub', 5, 5, 0);
     const state = { ...empty(), buildings: [hub], nextId: 10, rails: [{ x: 4, y: 5, exits: ['E' as const] }] };

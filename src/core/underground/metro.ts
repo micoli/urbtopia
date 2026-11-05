@@ -7,6 +7,11 @@ export function metroStations(state: GameState): Building[] {
   return state.buildings.filter((building) => building.type === 'metroStation');
 }
 
+// A Transit hub is a Metro station as well: its platform lies under it where a Tunnel runs under its footprint.
+export function metroStops(state: GameState): Building[] {
+  return state.buildings.filter((building) => building.type === 'metroStation' || (building.type === 'transitHub' && isMetroStationActive(state, building)));
+}
+
 // A Metro station serves no line until a Tunnel runs under it.
 export function isMetroStationActive(state: GameState, station: Building): boolean {
   const tunnels = new Set((state.tunnels ?? []).map(tileKey));
@@ -17,5 +22,5 @@ export function isMetroStationActive(state: GameState, station: Building): boole
 export function stationStairTiles(state: GameState): Coord[] {
   const walkways = new Set((state.walkways ?? []).map(tileKey));
   if (walkways.size === 0) return [];
-  return metroStations(state).flatMap((station) => footprintTiles(station).filter((tile) => walkways.has(tileKey(tile))));
+  return state.buildings.filter((building) => building.type === 'metroStation' || building.type === 'transitHub').flatMap((station) => footprintTiles(station).filter((tile) => walkways.has(tileKey(tile))));
 }

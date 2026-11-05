@@ -45,7 +45,7 @@ function resolveRoute(state: GameState, line: BusLine | TransitLine): Resolution
   const endpoints: Coord[] = [];
   for (const id of line.stops) {
     const stopType = STOP_OF_MODE[mode];
-    const stop = state.buildings.find(b => b.id === id && (b.type === stopType || (mode !== 'metro' && b.type === 'transitHub')));
+    const stop = state.buildings.find(b => b.id === id && (b.type === stopType || b.type === 'transitHub'));
     if (!stop) return { failure: 'invalid' };
     // A Metro station's platform lies under it: it is on the network where a Tunnel runs under its footprint.
     const reach = mode === 'metro' ? footprintTiles(stop) : stop.type === 'transitHub' ? perimeterTiles(stop.type, stop.x, stop.y, stop.rotation, stop.tier) : frontTiles(stop.type, stop.x, stop.y, stop.rotation);

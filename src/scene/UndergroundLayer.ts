@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { PEDESTRIAN_ACCESS_MODEL, TUNNEL_MODELS, WALKWAY_MODELS } from '../core/infrastructure/infrastructure';
 import { ModelInstances, type Placement } from './ModelInstances';
 import type { ModelLibrary } from './modelLibrary';
-import { DIRECTIONS, neighbour, pedestrianAccessRotation, roadPiece, SURFACE, disconnectedWalkways, footprintTiles, isMetroStationActive, metroStations, tileKey, type GameState, type Level } from '../core';
+import { DIRECTIONS, neighbour, pedestrianAccessRotation, roadPiece, SURFACE, disconnectedWalkways, footprintTiles, isMetroStationActive, metroStops, tileKey, type GameState, type Level } from '../core';
 
 // A walkway no access reaches is tinted red.
 const DISCONNECTED_TINT = 0xff8a80;
@@ -105,7 +105,7 @@ export class UndergroundLayer {
 
   private drawPlatforms(state: GameState): void {
     let count = 0;
-    for (const station of metroStations(state)) {
+    for (const station of metroStops(state)) {
       const color = isMetroStationActive(state, station) ? PLATFORM_COLOR : PLATFORM_INACTIVE_COLOR;
       for (const tile of footprintTiles(station)) {
         if (count >= MAX_TILES) break;
