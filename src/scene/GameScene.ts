@@ -542,7 +542,7 @@ export class GameScene {
     }
     const size = GAME_CONFIG.parcelSizeInTiles;
     for (const parcel of state.ownedParcels) {
-      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size - 0.1, size - 0.1), this.tendedMaterial);
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size, size), this.tendedMaterial);
       mesh.rotation.x = -Math.PI / 2;
       mesh.position.set(parcel.x * size + size / 2, -0.01, parcel.y * size + size / 2);
       this.parcels.add(mesh);
