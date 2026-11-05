@@ -125,6 +125,11 @@ export function validateCodex(entries: readonly CodexEntry[] = CODEX_ENTRIES): v
 
 export function validateCodexManifest(manifest: CodexManifest): void {
   validateCodex();
+  validateCodexImages(manifest);
+}
+
+// Every level of every entry has its image, one per color for the Homes.
+export function validateCodexImages(manifest: CodexManifest): void {
   if (!manifest.fingerprint || !manifest.images) throw new Error('Invalid codex manifest');
   for (const entry of CODEX_ENTRIES) {
     for (const level of entry.levels) {

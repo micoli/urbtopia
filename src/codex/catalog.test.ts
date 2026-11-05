@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BUILDING_SPECS, CROPS, CROP_IDS, FACILITIES, FACILITY_TYPES, ECOLOGY, ECOLOGY_UNLOCKS, TRANSIT, WATER, BRIDGES, isHomeType, maxTierOf, type BuildingType } from '../core';
-import { CODEX_ENTRIES, codexImageKey, isHomeCodexId, solarBaseOf, solarCodexIdOf, HOME_COLOR_VARIANTS, validateCodex, validateCodexManifest } from './catalog';
+import { CODEX_ENTRIES, codexImageKey, isHomeCodexId, solarBaseOf, solarCodexIdOf, HOME_COLOR_VARIANTS, validateCodex, validateCodexImages, validateCodexManifest } from './catalog';
 import { ROAD_CONSTRUCTIONS } from './construction';
 import { WATER_CONSTRUCTIONS } from './waterConstructions';
 import { codexSnapshot } from './snapshot';
@@ -92,23 +92,23 @@ describe('codex coverage gate', () => {
     expect(CODEX_ENTRIES.find(entry => entry.id === 'brt')?.unlockCitizens).toBe(TRANSIT.brt.unlock);
     expect(CODEX_ENTRIES.find(entry => entry.id === 'rail')?.unlockCitizens).toBe(TRANSIT.rail.unlock);
   });
+});
 
-  it('blocks a manifest when any level image is missing', () => {
-    const images = Object.fromEntries(CODEX_ENTRIES.flatMap(entry => entry.levels.flatMap(level => {
-      const colors = isHomeCodexId(entry.id) ? HOME_COLOR_VARIANTS : [undefined];
-      return colors.map(color => [codexImageKey(entry.id, level, color), 'preview.png']);
-    })));
+// One test per image, so that the whole manifest is checked without one long test: each case removes one image from a complete manifest.
+describe('blocks a manifest when any level image is missing', () => {
+  const colorsOf = (id: string) => (isHomeCodexId(id) ? HOME_COLOR_VARIANTS : [undefined]);
+  const images = Object.fromEntries(CODEX_ENTRIES.flatMap(entry => entry.levels.flatMap(level => colorsOf(entry.id).map(color => [codexImageKey(entry.id, level, color), 'preview.png']))));
+  const cases = CODEX_ENTRIES.flatMap(entry => entry.levels.flatMap(level => colorsOf(entry.id).map(color => ({ label: `${entry.id}, level ${level}, color ${color ?? 'default'}`, key: codexImageKey(entry.id, level, color) }))));
+
+  it('accepts a complete manifest', () => {
     expect(() => validateCodexManifest({ fingerprint: 'test', images })).not.toThrow();
-    const sampled = CODEX_ENTRIES.filter((_, index) => index % 12 === 0 || index === CODEX_ENTRIES.length - 1);
-    for (const entry of sampled) {
-      const color = isHomeCodexId(entry.id) ? HOME_COLOR_VARIANTS[0] : undefined;
-      for (const level of new Set([entry.levels[0]!, entry.levels[entry.levels.length - 1]!])) {
-        const incomplete = { ...images };
-        delete incomplete[codexImageKey(entry.id, level, color)];
-        expect(() => validateCodexManifest({ fingerprint: 'test', images: incomplete })).toThrow('Missing codex image');
-      }
-    }
-  }, 30_000);
+  });
+
+  it.each(cases.map(({ label, key }) => [label, key] as const))('refuses it without %s', (_label, key) => {
+    const incomplete = { ...images };
+    delete incomplete[key];
+    expect(() => validateCodexImages({ fingerprint: 'test', images: incomplete })).toThrow('Missing codex image');
+  });
 });
 
 describe('codex snapshots', () => {
