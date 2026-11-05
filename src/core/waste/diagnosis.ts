@@ -4,9 +4,7 @@ import { diagnosisOf, type Cause, type Diagnosis } from '../diagnosis/diagnosis'
 import type { Building, GameState } from '../engine/state';
 import { isAdapting } from '../environment/adaptation';
 import { wasteReport, type WasteCause, type WasteReport } from './waste';
-import { centerOf } from '../environment/ecology';
-import { isWithinReach } from '../services/facilities';
-import { WASTE_FACILITIES, wasteKindOf } from './wasteBalance';
+import { wasteKindOf } from './wasteBalance';
 import { incineratorPenaltyOf, odorPenaltyOf } from './wasteNuisance';
 import { wasteSituation, type WasteSituation } from './wasteSituation';
 
@@ -67,19 +65,13 @@ function facilitiesStopped(facts: Facts): Cause | null {
   const count = (reason: string) => stopped.filter(entry => entry.reason === reason).length;
   const reason = reasons.reduce((best, candidate) => (count(candidate) > count(best) ? candidate : best));
   const first = stopped.find(entry => entry.reason === reason)!.building;
-  const left = facts.homes.filter(home => facts.report.homes.get(home.id)?.cause && stopped.some(({ building }) => reaches(building, home)));
+  const left = homesWith(facts, 'facilityStopped', 'noRoadLink');
   return {
     key: `diagnosis.waste.stopped.${reason}`,
     weight: citizensIn(left) / facts.citizens,
     params: { count: count(reason), citizens: citizensIn(left) },
     focus: [tileOf(first)],
   };
-}
-
-function reaches(facility: Building, home: Building): boolean {
-  const from = centerOf(facility);
-  const to = centerOf(home);
-  return isWithinReach(to.x - from.x, to.y - from.y, WASTE_FACILITIES[wasteKindOf(facility.type)!].reach);
 }
 
 function homesCause(facts: Facts, key: string, ...causes: WasteCause[]): Cause | null {
@@ -118,7 +110,7 @@ export function diagnoseWaste(state: GameState): Diagnosis {
     capacityShort(facts),
     facilitiesStopped(facts),
     homesCause(facts, 'diagnosis.waste.noRoadLink', 'noRoadLink'),
-    homesCause(facts, 'diagnosis.waste.farFromFacilities', 'outOfReach', 'beyondCarryingDistance'),
+    homesCause(facts, 'diagnosis.waste.farFromFacilities', 'beyondMaxDistance', 'beyondCarryingDistance'),
     carriedSurcharge(facts),
     nuisance(facts, 'diagnosis.waste.odor', odorPenaltyOf),
     nuisance(facts, 'diagnosis.waste.incinerator', incineratorPenaltyOf),

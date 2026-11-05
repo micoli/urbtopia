@@ -473,15 +473,31 @@ describe('front marker of a BRT compatible building', () => {
 describe('Waste facility tool', () => {
   const homes = [createBuilding(10, 'home', 56, 59, 0)];
   const served: GameState = { ...state, nextId: 20, buildings: [...state.buildings, ...homes] };
-  const evaluate = (buildingType: 'mound' | 'incinerator') => evaluateTool({ kind: 'building', buildingType }, { state: served, tile: { x: 56, y: 57 }, rotation: null });
+  const evaluate = (buildingType: 'mound' | 'incinerator' | 'recyclingPlant') => evaluateTool({ kind: 'building', buildingType }, { state: served, tile: { x: 56, y: 57 }, rotation: null });
 
-  it('shows the Odor circle of a Mound next to a smaller collection reach', () => {
+  it('shows the Odor circle of a Mound and no collection contour', () => {
     const evaluation = evaluate('mound');
-    expect(evaluation.ghost.odorRange!.length).toBeGreaterThan(evaluation.ghost.range!.length);
+    expect(evaluation.ghost.odorRange!.length).toBeGreaterThan(0);
+    expect(evaluation.ghost.range).toBeUndefined();
   });
 
-  it('shows no Odor circle for a facility that does not smell', () => {
-    expect(evaluate('incinerator').ghost.odorRange).toBeUndefined();
+  it('shows the pollution circle of an Incinerator and no collection contour', () => {
+    const evaluation = evaluate('incinerator');
+    expect(evaluation.ghost.odorRange!.length).toBeGreaterThan(0);
+    expect(evaluation.ghost.range).toBeUndefined();
+  });
+
+  it('shows no nuisance circle for a facility that does not bother its neighbours', () => {
+    expect(evaluate('recyclingPlant').ghost.odorRange).toBeUndefined();
+  });
+
+  it('keeps the nuisance circle on a selected Waste facility', () => {
+    const mound = createBuilding(20, 'mound', 56, 57, 0);
+    const recycling = createBuilding(21, 'recyclingPlant', 70, 57, 0);
+    const withFacilities: GameState = { ...served, nextId: 30, buildings: [...served.buildings, mound, recycling] };
+    expect(selectionGhost(withFacilities, 20)?.odorRange?.length).toBeGreaterThan(0);
+    expect(selectionGhost(withFacilities, 21)?.odorRange).toBeUndefined();
+    expect(selectionGhost(withFacilities, 20)?.range).toBeUndefined();
   });
 
   it('counts the Homes the facility would collect', () => {

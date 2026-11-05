@@ -12,6 +12,7 @@ export function WasteAllocationTable({ kinds }: { kinds: readonly WasteKindFigur
             <th scope="col">{t('codex.waste.buildings')}</th>
             <th scope="col">{t('codex.waste.capacity')}</th>
             <th scope="col">{t('codex.waste.usage')}</th>
+            <th scope="col">{t('codex.waste.averageRoute')}</th>
             <th scope="col">{t('codex.waste.cost')}</th>
             <th scope="col">{t('codex.waste.state')}</th>
           </tr>

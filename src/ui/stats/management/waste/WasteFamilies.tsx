@@ -13,6 +13,8 @@ export function WasteFamilies({families}: {families: WasteSituation['families']}
                     <th>{t('waste.families.buildings')}</th>
                     <th>{t('waste.families.capacity')}</th>
                     <th>{t('waste.families.processed')}</th>
+                    <th>{t('waste.families.collectionDistance')}</th>
+                    <th>{t('waste.families.averageRoute')}</th>
                     <th>{t('waste.families.cost')}</th>
                     <th/>
                 </tr>
@@ -23,6 +25,8 @@ export function WasteFamilies({families}: {families: WasteSituation['families']}
                     <td>{family.buildings}</td>
                     <td>{family.capacity < family.nominalCapacity ? `${family.capacity.toFixed(0)} / ${family.nominalCapacity}` : family.capacity}</td>
                     <td>{family.processed.toFixed(0)}</td>
+                    <td>{family.collectionDistance}</td>
+                    <td>{family.averageRoute === null ? '–' : family.averageRoute.toFixed(1)}</td>
                     <td><UrbsAmount value={family.costPerDay}/></td>
                     <td>
                         {family.stoppedNoUrbs > 0 && <span data-warning="true">{t('waste.families.stoppedNoUrbs').replace('{count}', String(family.stoppedNoUrbs))}</span>}

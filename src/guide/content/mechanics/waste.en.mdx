@@ -14,15 +14,17 @@ Waste is a Service, like education or health: a Home whose Waste is not processe
 
 | Facility | Capacity | Drawbacks | Cost per unit |
 | --- | --- | --- | --- |
-| <EntryLink id="recyclingPlant" /> | Medium, widest reach | Needs power | Highest |
+| <EntryLink id="recyclingPlant" /> | Medium, longest route | Needs power | Highest |
 | <EntryLink id="incinerator" /> | Large, in a small footprint | Lowers nearby Well-being, adds emissions | Medium |
-| <EntryLink id="mound" /> | Small: build many side by side | Its odor lowers Well-being farther than it collects | Lowest |
+| <EntryLink id="mound" /> | Small: build many side by side | Its odor lowers Well-being around it | Lowest |
 
 A Mound never fills up: it handles a daily amount, forever. The odor of several Mounds never adds up; a Home bears the worst one around it, so a landfill is a matter of where you put it.
 
-## Collection needs a road
+## Collection follows the route
 
-A Home is covered when a Waste facility **reaches** it, has **capacity** left, and is **joined to it by road**, since trucks have to get there. A BRT corridor counts as a road for this link: a Home beside one is joined to the roads the corridor touches or crosses. A Home reached only by Pedestrian ways is joined when its paths touch a linked road close enough, at a higher cost. When a Home is not covered, its panel says why: out of reach, capacity full, or no road link.
+A Home is covered when a Waste facility has **capacity** left and a **route** joins them that is no longer than the facility's **Collection distance**, since trucks have to drive there. There is no circle around a facility: only the road counts. Each tile of road, BRT corridor or Pedestrian way adds one to the route. A BRT corridor counts as a road for this link: a Home beside one is joined to the roads the corridor touches or crosses. A Home reached only by Pedestrian ways is joined when its paths touch a linked road close enough, at a higher cost.
+
+The Collection distance is 16 tiles for a Mound, 28 for an Incinerator and 50 for a Recycling plant. The longer the route, the more each unit costs: from the tariff next to the facility to twice the tariff at the Collection distance. The nearest Homes by route are served first. When a Home is not covered, its panel says why: capacity full, beyond the Collection distance, beyond the Carrying distance or no road link.
 
 ## Processing order
 
@@ -35,8 +37,8 @@ When Homes lack Waste coverage, the Waste section of the City management window 
 - **No facility** at all: build one, and a Road to it.
 - **Capacity short**: the city produces more than its facilities can process. Add facilities.
 - **Facility stopped**: no Urbs left to pay it, no road link, or no power for a Recycling plant.
-- **No road link**: Homes in reach of a facility but joined to it by no road.
-- **Out of reach**: Homes too far from every facility, or too far from its road along the Pedestrian paths.
+- **No road link**: Homes joined to a facility by no road.
+- **Beyond the Collection distance**: Homes whose route to every facility is too long, or too far from its road along the Pedestrian paths.
 - **Pedestrian surcharge**: Homes served only by Pedestrian ways cost more to collect. Give them a Road.
 - **Odor and smoke**: Mounds and Incinerators lower the Well-being of the Homes around them.
 

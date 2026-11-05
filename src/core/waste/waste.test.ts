@@ -42,11 +42,31 @@ describe('Waste allocation', () => {
     expect(wasteReport(state).facilities.get(1)?.processed).toBe(2 * homeWasteProduction(3));
   });
 
-  it('charges the relative tariffs 1:3:6 per unit processed', () => {
-    const cost = (kind: 'mound' | 'incinerator' | 'recyclingPlant') => wasteReport(city([facility(1, kind, 66, kind === 'mound' ? 50 : 47), home(10, 60, 48, 2), ...grid()])).costPerDay;
-    const unit = homeWasteProduction(2);
-    expect([cost('mound'), cost('incinerator'), cost('recyclingPlant')]).toEqual([unit, 3 * unit, 6 * unit]);
-    expect(wasteReport(city([facility(1, 'mound', 66, 50), home(10, 60, 48, 2)])).costPerHour).toBe(unit / WASTE.dayHours);
+  it('charges the relative tariffs 1:3:6 per unit processed, before the route is counted', () => {
+    const perUnit = (kind: 'mound' | 'incinerator' | 'recyclingPlant') => {
+      const waste = wasteReport(city([facility(1, kind, 66, kind === 'mound' ? 50 : 47), home(10, 60, 48, 2), ...grid()])).homes.get(10)!;
+      return waste.cost / homeWasteProduction(2) / (1 + waste.distance! / WASTE_FACILITIES[kind].collectionDistance);
+    };
+    expect([perUnit('mound'), perUnit('incinerator'), perUnit('recyclingPlant')].map(value => Math.round(value * 1e6) / 1e6)).toEqual([1, 3, 6]);
+    const report = wasteReport(city([facility(1, 'mound', 66, 50), home(10, 60, 48, 2)]));
+    expect(report.costPerHour).toBe(report.costPerDay / WASTE.dayHours);
+  });
+
+  it('makes a Home cost more the longer its route, up to twice the tariff at the Collection distance', () => {
+    const { tariff, collectionDistance } = WASTE_FACILITIES.mound;
+    const state = city([facility(1, 'mound', 50, 50), home(10, 52, 48), home(11, 60, 48)]);
+    const near = wasteReport(state).homes.get(10)!;
+    const far = wasteReport(state).homes.get(11)!;
+    expect(far.distance!).toBeGreaterThan(near.distance!);
+    expect(far.cost).toBeGreaterThan(near.cost);
+    expect(far.cost).toBeCloseTo(homeWasteProduction(1) * tariff * (1 + far.distance! / collectionDistance), 9);
+    expect(far.cost).toBeLessThanOrEqual(homeWasteProduction(1) * tariff * 2);
+  });
+
+  it('serves the nearest Homes by route first when the capacity runs short', () => {
+    const state = city([facility(1, 'mound', 50, 50), home(10, 62, 48, 3), home(11, 54, 48, 3), home(12, 58, 48, 3)]);
+    expect(served(state, 1)).toEqual([11, 12]);
+    expect(wasteCauseOf(wasteReport(state), 10)).toBe('capacityFull');
   });
 
   it('stops every facility when the Urbs cannot pay, without debt', () => {
@@ -66,10 +86,19 @@ describe('Waste coverage and its causes', () => {
     expect(isWasteCovered(wasteReport(state), 10)).toBe(true);
   });
 
-  it('says out of reach when no facility reaches the Home', () => {
+  it('says beyond the Collection distance when the route to every facility is longer', () => {
     const state = city([facility(1, 'mound', 42, 50), home(10, 70, 48)]);
-    expect(wasteCauseOf(wasteReport(state), 10)).toBe('outOfReach');
-    expect(wasteCauseOf(wasteReport(city([home(10, 70, 48)])), 10)).toBe('outOfReach');
+    expect(wasteCauseOf(wasteReport(state), 10)).toBe('beyondMaxDistance');
+    expect(wasteReport(city([facility(1, 'recyclingPlant', 42, 47), home(10, 70, 48), ...grid()])).homes.get(10)?.cause).toBeNull();
+  });
+
+  it('covers a Home however far in a straight line, as long as the route is short enough', () => {
+    const state = city([facility(1, 'mound', 56, 50), home(10, 56, 46)], { roads: [...roadRow(40, 80, 49), ...Array.from({ length: 3 }, (_, index) => ({ x: 56, y: 47 + index, kind: 'road' as const }))] });
+    expect(isWasteCovered(wasteReport(state), 10)).toBe(true);
+  });
+
+  it('says no facility when the city has none at all', () => {
+    expect(wasteCauseOf(wasteReport(city([home(10, 70, 48)])), 10)).toBe('noFacility');
   });
 
   it('says no road link for a Home on a Road the facility does not join, and for a Home without any Road', () => {
@@ -108,14 +137,14 @@ describe('Waste through a Pedestrian path network', () => {
     const waste = wasteReport(state).homes.get(10);
     expect(waste?.cause).toBeNull();
     expect(waste?.carried).toBe(true);
-    expect(waste?.cost).toBe(homeWasteProduction(1) * WASTE_FACILITIES.incinerator.tariff * WASTE.carriedSurcharge);
+    expect(waste?.cost).toBeCloseTo(homeWasteProduction(1) * WASTE_FACILITIES.incinerator.tariff * (1 + waste!.distance! / WASTE_FACILITIES.incinerator.collectionDistance) * WASTE.carriedSurcharge, 9);
   });
 
   it('charges a Home on a Road the plain tariff', () => {
     const state = city([facility(1, 'incinerator', 66, 47), home(10, 70, 48)]);
     const waste = wasteReport(state).homes.get(10);
     expect(waste?.carried).toBe(false);
-    expect(waste?.cost).toBe(homeWasteProduction(1) * WASTE_FACILITIES.incinerator.tariff);
+    expect(waste?.cost).toBeCloseTo(homeWasteProduction(1) * WASTE_FACILITIES.incinerator.tariff * (1 + waste!.distance! / WASTE_FACILITIES.incinerator.collectionDistance), 9);
   });
 
   it('leaves a Home beyond the Carrying distance uncovered', () => {

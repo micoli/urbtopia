@@ -22,6 +22,12 @@ describe('service coverage', () => {
     expect(uiStore.getState()).toMatchObject({ serviceCoverageOpen: true, statsOpen: false });
   });
 
+  it('closes the Land menu when opened from it', () => {
+    uiStore.setState({ flyout: 'land' });
+    uiStore.getState().openServiceCoverage();
+    expect(uiStore.getState()).toMatchObject({ serviceCoverageOpen: true, flyout: null });
+  });
+
   it('stays active during selection, construction, cancellation and reopening management', () => {
     uiStore.getState().openServiceCoverage();
     uiStore.getState().select(1);

@@ -1,4 +1,4 @@
-import { ECOLOGY, WASTE, WASTE_REQUIRED_FROM_CITIZENS, difficultyOf, isAdapting, totalCitizens, wasteCodexFigures, type GameState } from '../../core';
+import { ECOLOGY, WASTE, WASTE_FACILITIES, WASTE_KINDS, WASTE_REQUIRED_FROM_CITIZENS, difficultyOf, isAdapting, totalCitizens, wasteCodexFigures, type GameState } from '../../core';
 import { t } from '../../i18n/t';
 import { LabeledList } from '../common/LabeledList';
 import { WasteAllocationTable } from './WasteAllocationTable';
@@ -33,6 +33,11 @@ export function WasteRules({ state }: WasteRulesProps) {
       <h4>{t('codex.waste.coverage')}</h4>
       <p>{t('codex.waste.covered').replace('{covered}', String(figures.homes - figures.uncoveredHomes)).replace('{homes}', String(figures.homes))}</p>
       {figures.uncoveredHomes === 0 ? <p>{t('codex.waste.noUncovered')}</p> : <WasteCausesTable causes={figures.causes} />}
+      <h4>{t('codex.waste.collection')}</h4>
+      <p>{t('codex.waste.collectionHelp')}</p>
+      <LabeledList>
+        {WASTE_KINDS.map(kind => <LabeledList.Row key={kind} label={`${t(`building.${kind}`)}: ${t('codex.waste.collectionTiles')}`}>{WASTE_FACILITIES[kind].collectionDistance}</LabeledList.Row>)}
+      </LabeledList>
       <h4>{t('codex.waste.pedestrian')}</h4>
       <p>{t('codex.waste.pedestrianHelp')}</p>
       <LabeledList>
@@ -59,6 +64,7 @@ export function WasteRules({ state }: WasteRulesProps) {
       <h4>{t('codex.waste.total')}</h4>
       <LabeledList>
         <LabeledList.Row label={t('codex.waste.totalPerDay')}>{figures.costPerDay.toFixed(1)}</LabeledList.Row>
+        <LabeledList.Row label={t('codex.waste.distanceCost')}>{figures.distanceSurchargePerDay.toFixed(1)}</LabeledList.Row>
         <LabeledList.Row label={t('codex.waste.surchargeCost')}>{figures.surchargeCostPerDay.toFixed(1)}</LabeledList.Row>
         <LabeledList.Row label={t('codex.waste.surchargeShare')}>{percent(figures.surchargeShare)}</LabeledList.Row>
       </LabeledList>

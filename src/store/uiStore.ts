@@ -209,7 +209,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     },
     closePolitics: () => set({ politicsOpen: false }),
     serviceCoverageOpen: false,
-    openServiceCoverage: () => set({ serviceCoverageOpen: true, statsOpen: false }),
+    openServiceCoverage: () => set({ serviceCoverageOpen: true, statsOpen: false, flyout: null }),
     closeServiceCoverage: () => set({ serviceCoverageOpen: false }),
     locator: null,
     buildingSearchOpen: false,

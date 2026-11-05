@@ -1,4 +1,4 @@
-import { FACILITIES, cityKnowledge, citizensOf, facilityCapacity, facilityRadius, reachLoad, serviceCoverage, type Building, type FacilityType, isHomeType } from '../../core';
+import { FACILITIES, WASTE_FACILITIES, cityKnowledge, citizensOf, facilityCapacity, facilityRadius, reachLoad, serviceCoverage, wasteKindOf, type Building, type FacilityType, isHomeType } from '../../core';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { ReachToggle } from '../common/ReachToggle.tsx';
@@ -16,12 +16,16 @@ export function FacilityPanel({ building }: FacilityPanelProps) {
   const capacity = facilityCapacity(building.type, building.tier);
   const coverage = serviceCoverage(state);
   const isWaste = FACILITIES[building.type].category === 'waste';
+  const wasteKind = wasteKindOf(building.type);
+  const hasNuisance = wasteKind !== null && (WASTE_FACILITIES[wasteKind].odor !== null || WASTE_FACILITIES[wasteKind].pollution !== null);
   const served = state.buildings.reduce((total, home) => total + (isHomeType(home.type) && coverage.get(home.id)?.has(building.type) ? citizensOf(home.tier) : 0), 0);
   const load = isWaste ? null : reachLoad(state, building);
   const knowledge = FACILITIES[building.type].category === 'education' ? cityKnowledge(state) : null;
   return <DrawerPanel>
-        <DrawerPanel.LabelValue label={t('facility.reach')} value={radius === null ? t('placement.cityWide') : `${2 * radius} × ${2 * radius}`}/>
-        {radius !== null && <ReachToggle />}
+        {wasteKind
+          ? <DrawerPanel.LabelValue label={t('facility.collectionDistance')} value={WASTE_FACILITIES[wasteKind].collectionDistance}/>
+          : <DrawerPanel.LabelValue label={t('facility.reach')} value={radius === null ? t('placement.cityWide') : `${2 * radius} × ${2 * radius}`}/>}
+        {(radius !== null || hasNuisance) && <ReachToggle />}
         {isWaste
           ? <WasteCapacityRows facilityId={building.id}/>
           : <DrawerPanel.LabelValue label={t('facility.capacity')} value={`${capacity === null ? t('facility.unlimited') : capacity} · ${t('facility.served')}: ${served}`}/>}

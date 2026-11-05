@@ -14,15 +14,17 @@ Les déchets sont un service, comme l’éducation ou la santé : un logement do
 
 | Installation | Capacité | Inconvénients | Coût par unité |
 | --- | --- | --- | --- |
-| <EntryLink id="recyclingPlant" /> | Moyenne, la plus grande portée | Consomme de l’électricité | Le plus élevé |
+| <EntryLink id="recyclingPlant" /> | Moyenne, le trajet le plus long | Consomme de l’électricité | Le plus élevé |
 | <EntryLink id="incinerator" /> | Grande, sur peu de place | Baisse le bien-être alentour, ajoute des émissions | Moyen |
-| <EntryLink id="mound" /> | Petite : à construire en nombre côte à côte | Son odeur baisse le bien-être plus loin qu’elle ne collecte | Le plus bas |
+| <EntryLink id="mound" /> | Petite : à construire en nombre côte à côte | Son odeur baisse le bien-être autour d’elle | Le plus bas |
 
 Une décharge ne se remplit jamais : elle traite une quantité par jour, pour toujours. L’odeur de plusieurs décharges ne s’additionne pas ; un logement subit la pire autour de lui, si bien qu’une décharge est surtout une question d’emplacement.
 
-## La collecte passe par la route
+## La collecte suit le trajet
 
-Un logement est couvert quand une installation de traitement le **couvre**, a encore de la **capacité**, et lui est **reliée par la route**, car les camions doivent y arriver. Un couloir BHNS compte comme une route pour ce lien : un logement qui le longe est relié aux routes que le couloir touche ou croise. Un logement desservi seulement par des voies piétonnes est relié quand ses chemins touchent une route reliée assez proche, pour un coût plus élevé. Quand un logement n’est pas couvert, son panneau dit pourquoi : hors de portée, capacité pleine, ou pas de liaison routière.
+Un logement est couvert quand une installation de traitement a encore de la **capacité** et qu’un **trajet** les relie sans dépasser la **distance de collecte** de l’installation, car les camions doivent y rouler. Il n’y a pas de cercle autour d’une installation : seule la route compte. Chaque case de route, de couloir BHNS ou de voie piétonne ajoute un au trajet. Un couloir BHNS compte comme une route pour ce lien : un logement qui le longe est relié aux routes que le couloir touche ou croise. Un logement desservi seulement par des voies piétonnes est relié quand ses chemins touchent une route reliée assez proche, pour un coût plus élevé.
+
+La distance de collecte est de 16 cases pour une décharge, 28 pour un incinérateur et 50 pour une usine de recyclage. Plus le trajet est long, plus chaque unité coûte : du tarif à côté de l’installation au double du tarif à la distance de collecte. Les logements les plus proches par le trajet sont servis en premier. Quand un logement n’est pas couvert, son panneau dit pourquoi : capacité pleine, au-delà de la distance de collecte, au-delà de la distance de portage ou pas de liaison routière.
 
 ## L’ordre de traitement
 
@@ -35,8 +37,8 @@ Quand des Homes manquent de couverture en déchets, la section Déchets de la fe
 - **Aucun équipement** : construisez-en un, et une route jusqu’à lui.
 - **Capacité insuffisante** : la ville produit plus que ses équipements ne peuvent traiter. Ajoutez des équipements.
 - **Équipement arrêté** : plus d’Urbs pour le payer, aucun lien routier, ou pas d’électricité pour une usine de recyclage.
-- **Aucun lien routier** : des Homes à portée d’un équipement mais qui n’y sont reliés par aucune route.
-- **Hors de portée** : des Homes trop loin de tout équipement, ou trop loin de sa route par les chemins piétons.
+- **Aucun lien routier** : des Homes qui ne sont reliés à un équipement par aucune route.
+- **Au-delà de la distance de collecte** : des Homes dont le trajet vers tout équipement est trop long, ou trop loin de sa route par les chemins piétons.
 - **Surcoût piéton** : les Homes desservis seulement par des voies piétonnes coûtent plus cher à desservir. Donnez-leur une route.
 - **Odeur et fumée** : les Mounds et les incinérateurs font baisser le bien-être des Homes autour.
 

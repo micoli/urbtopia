@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BUILDING_SPECS, CROPS, CROP_IDS, FACILITIES, FACILITY_TYPES, ECOLOGY, ECOLOGY_UNLOCKS, TRANSIT, WATER, BRIDGES, isHomeType, maxTierOf, type BuildingType } from '../core';
+import { BUILDING_SPECS, CROPS, CROP_IDS, FACILITIES, FACILITY_TYPES, ECOLOGY, ECOLOGY_UNLOCKS, TRANSIT, WATER, BRIDGES, WASTE_FACILITIES, wasteKindOf, isHomeType, maxTierOf, type BuildingType } from '../core';
 import { CODEX_ENTRIES, codexImageKey, isHomeCodexId, solarBaseOf, solarCodexIdOf, HOME_COLOR_VARIANTS, validateCodex, validateCodexImages, validateCodexManifest } from './catalog';
 import { ROAD_CONSTRUCTIONS } from './construction';
 import { WATER_CONSTRUCTIONS } from './waterConstructions';
@@ -49,7 +49,8 @@ describe('codex coverage gate', () => {
       const spec = FACILITIES[type];
       const entry = CODEX_ENTRIES.find(item => item.id === type)!;
       const english = MESSAGES[entry.description];
-      expect(english).toContain(spec.radius === null ? 'whole city' : `${2 * spec.radius} tiles`);
+      const wasteKind = wasteKindOf(type);
+      expect(english).toContain(wasteKind ? `${WASTE_FACILITIES[wasteKind].collectionDistance} tiles` : spec.radius === null ? 'whole city' : `${2 * spec.radius} tiles`);
       expect(english).toContain(`${spec.unlockCitizens} Citizens`);
       expect(english).toContain(`${spec.cost} Urbs`);
       expect(english).toContain(spec.capacity === null ? 'unlimited' : `Tier ${tiersOf(type).length}`);

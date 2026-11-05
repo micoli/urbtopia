@@ -51,7 +51,7 @@ describe('WastePage', () => {
 
   it('names the cause of the uncovered Homes', () => {
     const html = render(served);
-    expect(html).toContain(t('home.reason.outOfReach'));
+    expect(html).toContain(t('home.reason.noFacility'));
   });
 
   it('says so when every Home is covered', () => {

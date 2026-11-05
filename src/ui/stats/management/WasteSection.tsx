@@ -10,6 +10,7 @@ import {WasteCoverage} from './waste/WasteCoverage';
 import {WasteFamilies} from './waste/WasteFamilies';
 import {WasteImpacts} from './waste/WasteImpacts';
 import {WastePedestrian} from './waste/WastePedestrian';
+import {WasteRoutes} from './waste/WasteRoutes';
 
 interface WasteSectionProps {
     state: GameState;
@@ -29,6 +30,7 @@ export function WasteSection({state, onShowEmissions}: WasteSectionProps) {
         <WasteFamilies families={situation.families}/>
         <WasteCoverage situation={situation}/>
         <WasteImpacts situation={situation} onShowEmissions={onShowEmissions}/>
+        <WasteRoutes situation={situation}/>
         <WastePedestrian situation={situation}/>
         <DiagnosisPanel diagnosis={diagnosis}/>
         {situation.bottleneck && <BottleneckButton bottleneck={{tile: situation.bottleneck}}/>}
