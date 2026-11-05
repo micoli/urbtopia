@@ -1,6 +1,6 @@
 # 10: Rebalance after the new Commute
 
-Status: ready-for-human
+Status: done
 Blocked by: 06, 07
 
 **What to build:** Play the new rule on `idealCity`, `evolvedCity` and the Robbart save, and retune what it moved.
@@ -12,4 +12,6 @@ Blocked by: 06, 07
 
 ## Comments
 
-- Measurements and findings are in `.scratch/traffic-congestion/balancing.md`. The retuning is not done and needs play: public transport carries nobody in the three sample cities (walking and cycling take every Job first, and a car beats a bus or a Metro under about 15 tiles). Levers listed there.
+- Done: the car speeds went from 2 / 2.5 / 3 to 1.5 / 2 / 2.5 tiles per minute (`assets/defs/balance/traffic.json`) so that a bus beats a car on a long trip over a tier 1 road. Measurements, the before and after of the three cities and the synthetic table are in `.scratch/traffic-congestion/balancing.md`.
+- The earlier finding that public transport carries nobody was an artefact: `idealCity` and `evolvedCity` have no line, and Robbart's jobs are all within cycling range.
+- Not measured: BRT (fixture inactive), Metro, large cities with several lines. No value of the Well-being penalty, objectives or Sanctions was changed.

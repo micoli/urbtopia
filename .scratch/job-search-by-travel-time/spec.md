@@ -1,6 +1,6 @@
 # Job search by travel time
 
-Status: implemented, balancing open (ticket 10)
+Status: implemented
 
 Follow-up to [traffic-congestion](../traffic-congestion/spec.md) and [traffic-congestion-followups](../traffic-congestion-followups/spec.md). The decision is [ADR 0059](../../docs/adr/0059-every-citizen-looks-for-a-job-and-picks-the-mode-by-travel-time.md), which amends [ADR 0011](../../docs/adr/0011-congestion-as-core-model-with-visual-vehicles.md) and [ADR 0041](../../docs/adr/0041-office-buildings-earn-urbs-from-filled-jobs.md). Vocabulary (**Commute**, **Job**, **Unemployed**, **Travel time**, **Mode choice**, **Rider**, **Commuter**, **Adaptation period**) is in `CONTEXT.md`.
 
