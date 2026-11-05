@@ -306,12 +306,14 @@ function calculateCongestion(state: GameState, now: number, network: TransitNetw
       result.set(homeId, { commuters: citizensOf(home.building.tier), walkers: 0, cyclists: 0, riders: 0, walkAccess, unemployed: 0, ratio: CONGESTION.maxRatio, disconnected: true });
       continue;
     }
+    // A Home with no Road (BRT or Pedestrian way only) is not blamed for a Job it cannot reach: its Citizens are not counted Unemployed.
+    const jobless = home.access.length === 0 ? 0 : unemployed.get(homeId) ?? 0;
     commutersTotal += share.car;
     walkersTotal += share.walking;
     cyclistsTotal += share.cycling;
     transitTotal += share.riders;
-    unemployedTotal += unemployed.get(homeId) ?? 0;
-    result.set(homeId, { commuters: share.car, walkers: share.walking, cyclists: share.cycling, riders: share.riders, walkAccess, unemployed: unemployed.get(homeId) ?? 0, ratio: 0, disconnected: false });
+    unemployedTotal += jobless;
+    result.set(homeId, { commuters: share.car, walkers: share.walking, cyclists: share.cycling, riders: share.riders, walkAccess, unemployed: jobless, ratio: 0, disconnected: false });
   }
 
   const touristTrips = touristFlows(state, graph, walkable, network.coveredActivities, now);

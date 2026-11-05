@@ -111,3 +111,22 @@ The BRT could not be measured: the fixture's BRT line stayed inactive (no energy
 
 - No measurement of a large city with many vehicles on several line types: the autoplayer does not build lines.
 - BRT, Metro and Transit hub in the synthetic city.
+
+### Three saved cities (final values)
+
+Replayed with the final rule, including the exemption of Homes with no Road from the Unemployed count. Before is the commit before the rule (`047d2f23`).
+
+| City | | Citizens | Jobs | Jobs filled | Unemployed | Walking | Cycling | Public transport | Car | Congestion index | Emissions | Empty workplaces | ms |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Robbart (r354) | before | 1000 | 951 | 300 | 0 | 260 | 40 | 700 | 0 | 0 | 0 | 12 of 19 | 1 |
+| | after | 1000 | 951 | 951 | 49 | 741 | 210 | 0 | 0 | 0 | 0 | 0 of 19 | 24 |
+| Maenia (r1502) | before | 3222 | 4120 | 1593 | 0 | 1427 | 166 | 1629 | 0 | 0 | 1.5 | 26 of 47 | 71 |
+| | after | 3222 | 4310 | 3222 | 0 | 2113 | 1079 | 30 | 0 | 0 | 1.5 | 12 of 47 | 59 |
+| TheQueen (r1305) | before | 7163 | 7336 | 6352 | 145 | 1221 | 2782 | 1469 | 148 | 0.011 | 14.8 | 10 of 93 | 191 |
+| | after | 7163 | 7359 | 6163 | 0 | 3364 | 1895 | 903 | 1 | 0 | 0.1 | 11 of 93 | 286 |
+
+- **Homes with no Road and the Unemployed count.** Without the exemption, TheQueen showed 1,000 Unemployed (13 Homes reached only by BRT or Pedestrian ways, 604 and 396 Citizens) while Jobs outnumbered Citizens. The exemption brings it back to 0; ADR 0059 records it.
+- **Robbart and Maenia are compact**: every Job is within the cycling range, so public transport carries almost nobody (0 and 30) and Maenia's nine lines sit idle. TheQueen is large enough for trips beyond that range, and its sixteen lines keep 903 Riders.
+- **Maenia sensitivity** (cycling factor / walking threshold): x3/10 gives 30 Riders and 0 cars; x2/10, 140 Riders and 193 cars; x3/6, 360 Riders and 71 cars. Narrowing the range brings the lines back and also brings cars, saturated sections and emissions back.
+- **TheQueen** takes 286 ms, 1.5 times the old 191 ms; the result is cached while the layout stays the same.
+

@@ -145,6 +145,8 @@ describe('workplaces reached only by a BRT corridor', () => {
     const stats = congestionStats(swapWorkshop('hospital')(brtDistrict({ roads: true })));
     expect(stats.commuters).toBe(0);
     expect(stats.homes.get(4)!.riders).toBe(stats.filledJobs.get(5));
+    expect(stats.homes.get(4)!.unemployed).toBe(0);
+    expect(stats.unemployed).toBe(0);
   });
 
   it('makes a covered BRT-only facility a destination for Riders', () => {

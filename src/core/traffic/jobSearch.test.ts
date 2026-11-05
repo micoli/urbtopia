@@ -29,7 +29,7 @@ function city(homeCount: number, lineCount: number, buildings: Building[] = work
 
 describe('every Citizen looks for a Job', () => {
   it('counts every Citizen once: in a Job or Unemployed', () => {
-    for (const state of [city(2, 0), city(3, 4), city(6, 8)]) {
+    for (const state of [city(2, 0), city(3, 4), city(4, 8)]) {
       const stats = congestionStats(state);
       const citizens = sum(state.buildings.filter((building) => building.type === 'home').map((home) => citizensOf(home.tier)));
       expect(sum(stats.filledJobs.values()) + stats.unemployed).toBeCloseTo(citizens);
@@ -43,6 +43,12 @@ describe('every Citizen looks for a Job', () => {
     expect(stats.jobs).toBe(sum(workplaces.map(jobsOf)));
     expect(stats.unemployed).toBeCloseTo(4 * citizensOf(HOME_TIER) - stats.jobs);
     expect(stats.unemployed).toBeGreaterThan(0);
+  });
+
+  it('does not count as Unemployed the Citizens of a Home with no Road who reach no Job', () => {
+    const roadless = city(1, 0).buildings.map((building) => (building.type === 'home' ? { ...building, x: 90, y: 90 } : building));
+    const stats = congestionStats({ ...city(1, 0), buildings: roadless });
+    expect(stats.unemployed).toBe(0);
   });
 
   it('gives the same result whatever the order of the buildings', () => {

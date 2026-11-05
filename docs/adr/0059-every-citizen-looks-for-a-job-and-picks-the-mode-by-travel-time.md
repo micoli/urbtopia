@@ -10,6 +10,8 @@ Amends [ADR 0011](0011-congestion-as-core-model-with-visual-vehicles.md) and mak
 
 **Every Citizen of a Home looks for a Job.** The mode no longer decides who works. A Citizen who finds no Job within reach is Unemployed. Unemployment stays a statistic, as ADR 0041 decided: no effect on Tax, Well-being, Needs, Sanction or Urbs.
 
+**Homes with no Road are not blamed.** A Home reached only by a BRT corridor or by Pedestrian ways has no way to drive, and may be cut off from every Job whatever the city offers. Its Citizens who find no Job are not counted Unemployed, as before this decision. Measured on a city of 7,163 Citizens, counting them gave 1,000 Unemployed in 13 such Homes while Jobs outnumbered Citizens; the figure reflected the layout of a few streets, not the city.
+
 **Priority by mode, city-wide, then nearest first.** Jobs are given in three passes over all the Homes of the city, so the result never depends on the order the Homes are visited in:
 
 1. **Walkers**: Citizens whose workplace is within walking distance on the Pedestrian path network take it first.

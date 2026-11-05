@@ -461,7 +461,7 @@ A place at a workplace that one Citizen can fill, whatever the way they get ther
 _Avoid_: Position, vacancy, employment
 
 **Unemployed**:
-A Citizen who finds no Job within reach on their Commute. It is a statistic only: it changes neither Tax, Well-being, Needs nor Sanction.
+A Citizen who finds no Job within reach on their Commute. It is a statistic only: it changes neither Tax, Well-being, Needs nor Sanction. A Citizen of a Home with no Road, reached only by a BRT corridor or Pedestrian ways, is never counted Unemployed.
 _Avoid_: Jobless, out of work
 
 **Travel time**:
