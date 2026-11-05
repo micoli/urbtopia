@@ -309,3 +309,9 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--color-te
 .eco-dashboard .transport-map-line:focus, .eco-dashboard .transport-map-node:focus { outline: none; }
 .eco-dashboard .transport-map-node:focus-visible circle:first-of-type { stroke: var(--color-highlight); stroke-width: 3px; }
 .eco-dashboard .transport-map-line:focus-visible path:nth-of-type(2) { stroke: var(--color-highlight); }
+.pie-chart { display: flex; align-items: center; gap: var(--space-16); margin: var(--space-8) 0; }
+.pie-chart > svg { flex: none; width: 120px; height: 120px; transform: rotate(-90deg); }
+.pie-chart__track, .pie-chart__slice { fill: none; stroke-width: 9; }
+.pie-chart__track { stroke: var(--white-a12); }
+.pie-chart__legend { margin: 0; padding: 0; list-style: none; font-variant-numeric: tabular-nums; }
+.pie-chart__swatch { display: inline-block; width: 10px; height: 10px; margin-right: var(--space-8); border-radius: var(--radius-xs); }

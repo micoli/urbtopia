@@ -522,6 +522,7 @@ export const CATALOG = {
   'eco.unemployed': ['Commuters without a job', 'Actifs sans emploi'],
   'eco.shiftedRiders': ['Riders won from congestion', 'Voyageurs gagnés grâce aux bouchons'],
   'eco.showBottleneck': ['Show the worst bottleneck', 'Voir le pire goulot'],
+  'eco.modeMix': ['Travel mode mix', 'Répartition des modes de déplacement'],
   'eco.carShare': ['By car', 'En voiture'],
   'eco.transitShare': ['By public transport', 'En transports en commun'],
   'eco.commutersByCar': ['Commuters by car', 'Trajets en voiture'],

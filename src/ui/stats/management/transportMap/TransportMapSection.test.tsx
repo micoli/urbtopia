@@ -16,7 +16,7 @@ describe('Transport map section', () => {
     expect(html).toContain('id="eco-transportMap"');
     expect(html).toContain(language === 'fr' ? 'Carte des transports' : 'Transport map');
     expect(html).toContain(language === 'fr' ? 'Aucune ligne de transport' : 'No transport line yet');
-    expect(html).not.toContain('role="img"');
+    expect(html).not.toContain('data-line=');
   });
 
   it('draws the lines, the loop arrows, the hub and the bicycle stops', () => {
