@@ -25,6 +25,11 @@
       "pattern": "\\S",
       "modelId": true
     },
+    "bicycle": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    },
     "walkway": {
       "type": "object",
       "properties": {
@@ -128,6 +133,7 @@
     "roofPanel",
     "groundPanel",
     "pedestrianAccess",
+    "bicycle",
     "walkway",
     "tunnel",
     "customers"

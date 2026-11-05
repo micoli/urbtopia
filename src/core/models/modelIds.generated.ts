@@ -1277,6 +1277,7 @@ export type ModelId =
   | 'trains-railroad-corner-small'
   | 'trains-railroad-straight'
   | 'vehicles-ambulance'
+  | 'vehicles-bicycle'
   | 'vehicles-bus-articulated'
   | 'vehicles-bus-articulated-front'
   | 'vehicles-bus-articulated-rear'

@@ -36,6 +36,8 @@ export const sceneryInfrastructureSchema = z
     groundPanel: modelId,
     // The stair of a Pedestrian access down to Level -1.
     pedestrianAccess: modelId,
+    // The bicycle under the avatar of a cyclist.
+    bicycle: modelId,
     // The pieces of an Underground walkway, as the pieces of road: the model of each shape of tile.
     walkway: z.strictObject({ square: modelId, end: modelId, straight: modelId, bend: modelId, intersection: modelId, crossroad: modelId }),
     // The pieces of a Metro Tunnel, the same shapes of tile.

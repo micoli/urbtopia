@@ -20,5 +20,6 @@
     "bend": "buildings-tunnel-1x1-bend",
     "intersection": "buildings-tunnel-1x1-intersection",
     "crossroad": "buildings-tunnel-1x1-crossroad"
-  }
+  },
+  "bicycle": "vehicles-bicycle"
 }

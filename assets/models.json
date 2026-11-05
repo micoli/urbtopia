@@ -23747,6 +23747,11 @@
     "source": "managed",
     "license": "Own work"
   },
+  "vehicles-bicycle": {
+    "file": "vehicles/bicycle",
+    "source": "managed",
+    "license": "Own work"
+  },
   "vehicles-bus-articulated": {
     "file": "vehicles/bus-articulated",
     "source": "managed",
