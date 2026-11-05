@@ -354,7 +354,7 @@ export class CameraController {
     this.lastPinchDistance = distance;
     this.lastPinchAngle = angle;
     if (Math.abs(this.twist) < TWIST_SNAP) return;
-    this.rotate(this.twist > 0 ? -1 : 1);
+    this.rotate(this.twist > 0 ? 1 : -1);
     this.twist = 0;
   }
 }
