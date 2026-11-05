@@ -15,6 +15,12 @@ const LEVEL_NAMES: Record<Level, MessageKey> = {
   '-2': 'level.minus2',
 };
 
+const LEVEL_SHORT_NAMES: Record<Level, MessageKey> = {
+  0: 'level.short.surface',
+  '-1': 'level.short.pedestrian',
+  '-2': 'level.short.metro',
+};
+
 const LEVEL_LABELS: Record<Level, string> = { 0: '0', '-1': '-1', '-2': '-2' };
 
 export function LevelSelector() {
@@ -60,8 +66,9 @@ export function LevelSelector() {
   return (
     <div className="level-selector" role="group" aria-label={t('level.selector')}>
       {open ? others.map(candidate => (
-        <IconButton key={candidate} size="md" tone="light" label={t(LEVEL_NAMES[candidate])} onClick={() => choose(candidate)}>
-          {LEVEL_LABELS[candidate]}
+        <IconButton key={candidate} size="md" tone="light" className="level-selector__option" label={t(LEVEL_NAMES[candidate])} onClick={() => choose(candidate)}>
+          <span>{LEVEL_LABELS[candidate]}</span>
+          <small className="level-selector__name">{t(LEVEL_SHORT_NAMES[candidate])}</small>
         </IconButton>
       )) : null}
       <IconButton size="md" tone={level === 0 ? 'light' : 'accent'} label={t('level.change')} aria-expanded={open} className="level-selector__button" onClick={() => setOpen(!open)}>
