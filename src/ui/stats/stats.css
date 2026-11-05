@@ -315,3 +315,5 @@ button.city-stats, button.minimal-stats { cursor: pointer; color: var(--color-te
 .pie-chart__track { stroke: var(--white-a12); }
 .pie-chart__legend { margin: 0; padding: 0; list-style: none; font-variant-numeric: tabular-nums; }
 .pie-chart__swatch { display: inline-block; width: 10px; height: 10px; margin-right: var(--space-8); border-radius: var(--radius-xs); }
+.eco-unfilled-jobs { display: grid; gap: var(--space-6); margin: var(--space-8) 0; padding: 0; list-style: none; }
+.eco-unfilled-jobs li { display: flex; align-items: center; justify-content: space-between; gap: var(--space-8); }

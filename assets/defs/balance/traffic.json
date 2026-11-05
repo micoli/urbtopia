@@ -1,4 +1,13 @@
 {
   "$schema": "../schemas/balance-traffic.schema.json",
-  "roadTierCosts": [0, 8, 20]
+  "roadTierCosts": [
+    0,
+    8,
+    20
+  ],
+  "roadSpeeds": [
+    1.5,
+    2,
+    2.5
+  ]
 }

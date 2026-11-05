@@ -5,6 +5,7 @@ import { BuildingJobs } from './BuildingJobs';
 
 const filled = vi.hoisted(() => ({ value: 0 }));
 vi.mock('./useFilledJobs', () => ({ useFilledJobs: () => filled.value }));
+vi.mock('./useJobModes', () => ({ useJobModes: () => undefined }));
 vi.mock('../common/DrawerPanel', () => ({
   DrawerPanel: Object.assign(({ children }: { children?: React.ReactNode }) => <div>{children}</div>, {
     LabelValue: ({ value }: { value: React.ReactNode }) => <p>{value}</p>,

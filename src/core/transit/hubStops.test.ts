@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { createBuilding, newGame, routeFailure, transportStats, type GameState, type TransitTile } from '../index';
+import { createBuilding, newGame, routeFailure, transportStats, type GameState, type TransitTile, JOBS } from '../index';
 import { validateGameState } from '../../persistence/validate';
 
 const strip = (x: number, y: number, length: number): TransitTile[] => Array.from({ length }, (_, i) => ({ x: x + i, y, exits: i === 0 ? ['E'] : i === length - 1 ? ['W'] : ['W', 'E'] }));
@@ -29,7 +29,7 @@ describe('Transit hub as a stop', () => {
 
   it('links the two lines through a Transfer at the hub', () => {
     const stats = transportStats(hubCity());
-    expect(stats.riders).toBeCloseTo(32 * .7);
+    expect(stats.riders).toBe(JOBS.factoryPerTier);
     expect(stats.transferRiders).toBe(stats.riders);
     expect(stats.lines.map(l => l.riders)).toEqual([stats.riders, stats.riders]);
   });

@@ -17,7 +17,6 @@ export const CONGESTION_DIAGNOSIS = {
   farDistance: 8,
   farSpanShare: 0.25,
   carShare: 0.5,
-  minShiftShare: 0.02,
 };
 
 interface Facts {
@@ -169,15 +168,15 @@ function homesFarFromJobs(facts: Facts): Cause | null {
 }
 
 function carHeavy(facts: Facts): Cause | null {
-  const { modes, shift } = facts.congestion;
+  const { modes } = facts.congestion;
   const trips = modes.car + modes.transit + modes.walking + modes.cycling;
   if (facts.saturated.length === 0 || trips === 0) return null;
   const share = modes.car / trips;
-  if (share < CONGESTION_DIAGNOSIS.carShare || shift.total > CONGESTION_DIAGNOSIS.minShiftShare * modes.car) return null;
+  if (share < CONGESTION_DIAGNOSIS.carShare) return null;
   return {
     key: facts.hasTransitLines ? 'diagnosis.congestion.carHeavy' : 'diagnosis.congestion.noTransit',
     weight: facts.congestedShare,
-    params: { car: Math.round(share * 100), shifted: Math.round(shift.total) },
+    params: { car: Math.round(share * 100), riders: Math.round(modes.transit) },
     focus: [],
   };
 }

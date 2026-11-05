@@ -15,6 +15,8 @@ export const WALKING = {
   crossingCutPerPedestrian: 0.015,
   maxCrossingCut: 0.6,
   cyclingFactor: 3,
+  // How many times farther than on foot a Citizen cycles to a Job (20 tiles at the usual threshold); trips to services and the way to a station keep `cyclingFactor`.
+  workCyclingFactor: 2,
 };
 
 export function crossingCut(pedestrians: number): number {

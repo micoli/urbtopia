@@ -147,7 +147,8 @@ export type { HeatItem } from './environment/heatSourceItems';
 export { temperatureBreakdown, coolingElements } from './environment/temperatureBreakdown';
 export type { HeatSource, HeatContribution, CoolingElement } from './environment/temperatureBreakdown';
 export { STOP_NAME_MAX_LENGTH, isTransitStopType } from './transit/stopNames';
-export { transportStats, routeForLine, routeFailure } from './transit/transport';
+export { routeForLine, routeFailure } from './transit/transport';
+export { transportStats } from './traffic/cityTransport';
 export type { StopFlow, TransitTrip } from './transit/transport';
 export type { BusLine } from './engine/state';
 
@@ -193,11 +194,11 @@ export { SPORT_VENUES, SPORT_VENUE_TYPES, isSportVenueType, type SportVenueType 
 
 export { CONGESTION, ROAD_TIER_COSTS, MAX_ROAD_TIER, laneCapacity, roadTierOf, roadTierUpgradeCost } from './traffic/roadTier';
 export { JOBS, jobsOf } from './traffic/jobs';
+export { unfilledWorkplaces, type UnfilledWorkplace } from './traffic/unfilledJobs';
 export { BUS_TRAFFIC } from './traffic/busTraffic';
-export { SHIFT } from './traffic/modalShift';
 export { cityTransportStats } from './traffic/cityTransport';
 export { congestionStats, workplaceTypes } from './traffic/congestion';
-export type { CongestionStats, CrossingLoad, HomeCongestion, SectionLoad } from './traffic/congestion';
+export type { CongestionStats, CrossingLoad, HomeCongestion, JobModes, SectionLoad } from './traffic/congestion';
 export { footbridgeStops, pedestrianGraph, tripGraph, undergroundWalkGraph, walkFrom } from './map/pedestrianGraph';
 export { accessFlows, accessFlowAt, crossingFlows, footbridgeFlowAt, footbridgeFlows } from './traffic/walkFlows';
 export type { CrossingFlow, FootbridgeFlow } from './traffic/walkFlows';

@@ -97,3 +97,21 @@
 .codex-chain-name { color: var(--chain-color); }
 .codex-chain-building, .codex-chain-root > summary strong { color: var(--chain-building); }
 .codex-chain-sold { color: var(--chain-sale); }
+
+.codex-article { max-width: 70ch; line-height: 1.55; }
+.codex-article h1 { margin: 0 0 var(--space-8); font-size: var(--font-size-4xl); }
+.codex-article h2 { margin: var(--space-24) 0 var(--space-8); font-size: var(--font-size-2xl); }
+.codex-article h3 { margin: var(--space-16) 0 var(--space-8); font-size: var(--font-size-xl); }
+.codex-article .guide-summary { opacity: 0.75; }
+.codex-article .guide-not-translated { padding: var(--space-8) var(--space-12); border-radius: var(--radius-md); background: var(--white-a10); }
+.codex-article a { color: var(--color-accent); }
+.codex-article ul, .codex-article ol { padding-left: var(--space-24); }
+.codex-article li { margin: var(--space-4) 0; }
+.codex-article table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; font-size: var(--font-size-base); }
+.codex-article th, .codex-article td { padding: var(--space-8) var(--space-10); text-align: left; border-bottom: 1px solid var(--white-a12); }
+.codex-article .guide-glossary { display: block; }
+.codex-article .guide-glossary dt { margin-top: var(--space-16); font-weight: var(--font-weight-bold); }
+.codex-article .guide-glossary dd { margin: var(--space-4) 0 0; opacity: 0.8; }
+.codex-article .guide-live-rules { margin: var(--space-24) 0; padding: var(--space-12) var(--space-16); border: 1px solid var(--white-a15); border-radius: var(--radius-xl); }
+.codex-article .guide-live-rules > .codex-entry-name:first-child,
+.codex-article .guide-live-rules > .codex-entry-name:first-child + p { display: none; }

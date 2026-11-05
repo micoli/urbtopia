@@ -6,7 +6,7 @@ import { energyStats } from '../environment/energy';
 import { poweredCasinoIds } from '../leisure/poweredCasinos';
 import { serviceCoverage } from '../services/services';
 import { hasBrtOnlyAccess } from '../map/placement';
-import { transportStats } from '../transit/transport';
+import { transportStats } from '../traffic/cityTransport';
 import { waterStats } from '../water/boats';
 import { wasteCostPerHour } from '../waste/waste';
 import { nextCycleHourAfter } from '../environment/dayCycle';

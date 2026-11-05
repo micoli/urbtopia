@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { cityTransportStats, congestionStats, createBuilding, newGame, transportStats, type Building, type GameState } from '../index';
 import { ECOLOGY } from '../environment/ecology';
+import { transitNetwork } from '../transit/transport';
 import { WALKING } from './walking';
 
 const walkingEnabled = WALKING.enabled;
@@ -37,10 +38,10 @@ describe('bus lines slowed by traffic', () => {
     expect(line!.capacity).toBeCloseTo(ECOLOGY.lineCapacity * factor);
   });
 
-  it('carry fewer Riders than the same line on a free road', () => {
-    const state = city(3, 1);
-    const nominal = transportStats(state).riders;
-    expect(cityTransportStats(state).riders - cityTransportStats(state).shiftedRiders).toBeLessThan(nominal);
+  it('carry no more Riders than their reduced capacity', () => {
+    const [line] = cityTransportStats(city(3, 1)).lines;
+    expect(line!.capacity).toBeLessThan(ECOLOGY.lineCapacity);
+    expect(line!.riders).toBeLessThanOrEqual(line!.capacity + 1e-9);
   });
 
   it('keep their nominal capacity and speed when the road is free', () => {
@@ -54,8 +55,8 @@ describe('bus lines slowed by traffic', () => {
   it('lengthen the itinerary time of their line', () => {
     const state = city(3, 1);
     const factors = congestionStats(state).speedFactors;
-    const slow = transportStats(state, state.lastSeen, factors).lines[0]!;
-    const free = transportStats(state).lines[0]!;
+    const slow = transitNetwork(state, state.lastSeen, factors).services[0]!;
+    const free = transitNetwork(state).services[0]!;
     expect(slow.speed).toBeLessThan(free.speed);
   });
 

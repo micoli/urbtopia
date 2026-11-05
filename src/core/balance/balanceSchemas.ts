@@ -45,10 +45,10 @@ export const venuesBalanceSchema = z
   })
   .meta({ title: 'Venues balance', description: 'assets/defs/balance/venues.json: Staff wages and yields, shared Venue constants, events.' });
 
-// What building a road costs per tile, by road Tier.
+// What building a road costs per tile, and how fast a car drives on it, by road Tier.
 export const trafficBalanceSchema = z
-  .strictObject({ ...schemaField, roadTierCosts: z.array(count).min(1) })
-  .meta({ title: 'Traffic balance', description: 'assets/defs/balance/traffic.json: the cost of a road tile by Tier.' });
+  .strictObject({ ...schemaField, roadTierCosts: z.array(count).min(1), roadSpeeds: z.array(positive).min(1) })
+  .meta({ title: 'Traffic balance', description: 'assets/defs/balance/traffic.json: the cost of a road tile and the free-flow speed of a car, in tiles per minute, by Tier.' });
 
 const DIFFICULTY_IDS = ['cozy', 'easy', 'medium', 'hard'] as const;
 

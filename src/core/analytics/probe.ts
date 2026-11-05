@@ -11,7 +11,7 @@ import { serviceCoverage, uncoveredReason } from '../services/services';
 import { congestionStats } from '../traffic/congestion';
 import { accessFlowAt, footbridgeFlowAt } from '../traffic/walkFlows';
 import { transitModeOf } from './transitFields';
-import { transportStats } from '../transit/transport';
+import { transportStats } from '../traffic/cityTransport';
 import { isTransitStopType } from '../transit/stopNames';
 import { MAX_ROAD_TIER } from '../traffic/roadTier';
 import { WALKING } from '../traffic/walking';

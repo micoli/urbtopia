@@ -1,6 +1,7 @@
 import { Fragment, useId, useState } from 'react';
 import { SURFACE, BUILDING_SPECS, HOUSING_REGIONS, housingRegionOf, type HousingRegion, type BuildingType, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, annualEventOf, isBuildableAt, isFacilityType, totalCitizens, placementCost, isHomeType, solarInstallCostOf, PEDESTRIAN_ACCESS_COST, undergroundUnlocked } from '../../core';
 import { t } from '../../i18n/t';
+import { matchesSearch } from '../../codex/matchesSearch';
 import { FlyoutItem } from '../layout/FlyoutItem';
 import { BuildSearch } from './BuildSearch';
 import { MoveModeItem } from './MoveModeItem';
@@ -81,9 +82,8 @@ export function BuildMenuContent() {
             onInfo={() => openCodex(solarCodexIdOf(type))}
         />
     );
-    const needle = query.trim().toLowerCase();
-    const results = needle ? visibleSections.flatMap(section => section.types).filter(type => t(`building.${type}`).toLowerCase().includes(needle)) : [];
-    const searching = needle !== '';
+    const searching = query.trim() !== '';
+    const results = searching ? visibleSections.flatMap(section => section.types).filter(type => matchesSearch(t(`building.${type}`), query)) : [];
     return (
       <>
         <FirstUseHint id="build">{t('hint.build')}</FirstUseHint>

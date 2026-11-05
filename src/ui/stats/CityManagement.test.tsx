@@ -73,7 +73,7 @@ describe('city management panel', () => {
   it.each(['en', 'fr'] as const)('explains why the roads jam, and stays silent on a quiet city, in %s', language => {
     prefsStore.getState().setLanguage(language);
     const start = newGame({ seed: 'diagnosis-panel', now: 0 });
-    const homes = [53, 55, 57, 59, 61].map((x, index) => ({ ...createBuilding(40 + index, 'home', x, 59, 0), tier: 7 }));
+    const homes = [57, 58, 59, 60].map((x, index) => ({ ...createBuilding(40 + index, 'home', x, 59, 0), tier: 7 }));
     context.state = { ...start, adaptationUntil: 0, roads: [...start.roads], nextId: 100, buildings: [...start.buildings.map(building => ({ ...building, tier: 8 })), ...homes] };
     const jammed = renderToStaticMarkup(<CityManagement />);
     expect(jammed).toContain(language === 'fr' ? 'Pourquoi ?' : 'Why?');

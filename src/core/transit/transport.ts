@@ -15,7 +15,8 @@ export { routeForLine, routeFailure } from './transitService';
 
 type Service = ReturnType<typeof transitServices>[number];
 interface RideLeg { board: number; alight: number; }
-interface Itinerary { lines: number[]; minutes: number; bike: boolean; legs: RideLeg[]; targets: number[]; }
+export interface TransitOption { lines: number[]; minutes: number; bike: boolean; legs: RideLeg[]; targets: number[]; }
+type Itinerary = TransitOption;
 
 export interface TransitTrip { from: number; to: number; count: number; stops: number[]; }
 
@@ -23,8 +24,6 @@ export interface StopFlow { boarded: number; alighted: number; }
 
 const carriesBikes = (line: Service) => line.mode !== 'bus';
 const bikeRadius = () => ECOLOGY.stopRadius * WALKING.cyclingFactor;
-
-export const TRANSIT_ELIGIBLE_SHARE = 0.7;
 
 // A cyclist takes the bicycle aboard, so every line of its itinerary must carry bikes; the walking itineraries are those of bikeMode off.
 function itineraries(first: Service, firstStop: number, lines: Service[], stops: Map<number, Building>, activities: Building[], bikeMode = false, homeBike = false): Itinerary[] {
@@ -74,46 +73,52 @@ function flowAt(flows: Map<number, StopFlow>, stop: number): StopFlow {
   return flow;
 }
 
-type TransportStats = ReturnType<typeof calculateTransport>;
+export type TransitNetwork = ReturnType<typeof calculateNetwork>;
+export type TransportStats = ReturnType<typeof transportStatsOf>;
 
-const statsCache = new WeakMap<GameState, { now: number; stats: TransportStats }>();
-const slowedCache = new WeakMap<SpeedFactors, { state: GameState; now: number; stats: TransportStats }>();
+// A Rider the Commute sent along one itinerary to one workplace.
+export interface RiderAllocation { home: number; workplace: number; option: TransitOption; count: number; }
 
-export function transportStats(state: GameState, now = state.lastSeen, speedFactors?: SpeedFactors): TransportStats {
+const networkCache = new WeakMap<GameState, { now: number; network: TransitNetwork }>();
+const slowedCache = new WeakMap<SpeedFactors, { state: GameState; now: number; network: TransitNetwork }>();
+
+// The lines and the itineraries from each Home to every workplace they serve; who rides is decided by the Commute.
+export function transitNetwork(state: GameState, now = state.lastSeen, speedFactors?: SpeedFactors): TransitNetwork {
   if (speedFactors) {
     const slowed = slowedCache.get(speedFactors);
-    if (slowed?.state === state && slowed.now === now) return slowed.stats;
-    const stats = calculateTransport(state, now, speedFactors); slowedCache.set(speedFactors, { state, now, stats });
-    return stats;
+    if (slowed?.state === state && slowed.now === now) return slowed.network;
+    const network = calculateNetwork(state, now, speedFactors); slowedCache.set(speedFactors, { state, now, network });
+    return network;
   }
-  const cached = statsCache.get(state);
-  if (cached?.now === now) return cached.stats;
-  const stats = calculateTransport(state, now); statsCache.set(state, { now, stats });
-  return stats;
+  const cached = networkCache.get(state);
+  if (cached?.now === now) return cached.network;
+  const network = calculateNetwork(state, now); networkCache.set(state, { now, network });
+  return network;
 }
 
-function calculateTransport(state: GameState, now: number, speedFactors?: SpeedFactors) {
+function calculateNetwork(state: GameState, now: number, speedFactors?: SpeedFactors) {
   const energy = energyStats(state, now);
   const services = transitServices(state, now, energy.transitRatio, speedFactors);
-  const lines = services.map(line => ({ ...line, riders: 0, cyclists: 0, homeIds: [] as number[], covered: 0 }));
-  const byId = new Map(lines.map(l => [l.id, l]));
   const homes = state.buildings.filter(b => isHomeType(b.type)).sort((a, b) => a.id - b.id);
+  const workplaces = state.buildings.filter(b => workplaceTypes.includes(b.type));
   const activities = state.buildings.filter(b => isIndustryType(b.type) || isShopType(b.type) || (workplaceTypes.includes(b.type) && hasBrtOnlyAccess(state, b)));
   const stops = new Map(state.buildings.filter(b => isTransitStopType(b.type)).map(b => [b.id, b]));
   const optionsByStop = new Map<string, Itinerary[]>();
-  const homeRiders = new Map<number, number>();
-  const homeLines = new Map<number, number[][]>();
-  const stopFlows = new Map<number, StopFlow>();
-  const trips: TransitTrip[] = [];
+  const homeOptions = new Map<number, TransitOption[]>();
+  const homeCitizens = new Map<number, number>();
   const coveredActivities = new Set<number>();
-  for (const line of lines) {
+  const coveredWorkplaces = new Set<number>();
+  for (const line of services) {
     if (!line.active) continue;
-    for (const stop of line.stops.flatMap(id => stops.get(id) ?? [])) for (const activity of activities) if (distance(activity, stop) <= ECOLOGY.stopRadius) coveredActivities.add(activity.id);
+    for (const stop of line.stops.flatMap(id => stops.get(id) ?? [])) {
+      for (const activity of activities) if (distance(activity, stop) <= ECOLOGY.stopRadius) coveredActivities.add(activity.id);
+      for (const workplace of workplaces) if (distance(workplace, stop) <= ECOLOGY.stopRadius) coveredWorkplaces.add(workplace.id);
+    }
   }
-  let riders = 0, covered = 0, transferRiders = 0;
+  let covered = 0;
   for (const home of homes) {
     const options: Itinerary[] = [];
-    for (const line of lines) {
+    for (const line of services) {
       if (!line.active) continue;
       for (let i = 0; i < line.stops.length; i++) {
         const stop = stops.get(line.stops[i]!);
@@ -122,41 +127,53 @@ function calculateTransport(state: GameState, now: number, speedFactors?: SpeedF
         if (gap <= ECOLOGY.stopRadius) {
           const key = `${line.id}:${i}`;
           let paths = optionsByStop.get(key);
-          if (!paths) { paths = itineraries(line, i, lines, stops, activities); optionsByStop.set(key, paths); }
+          if (!paths) { paths = itineraries(line, i, services, stops, workplaces); optionsByStop.set(key, paths); }
           options.push(...paths.map(path => ({ ...path, minutes: path.minutes + gap })));
         }
         if (!carriesBikes(line) || gap > bikeRadius()) continue;
         const homeBike = gap > ECOLOGY.stopRadius;
         const bikeKey = `${line.id}:${i}:${homeBike ? 'far' : 'near'}`;
         let rides = optionsByStop.get(bikeKey);
-        if (!rides) { rides = itineraries(line, i, lines, stops, activities, true, homeBike); optionsByStop.set(bikeKey, rides); }
+        if (!rides) { rides = itineraries(line, i, services, stops, workplaces, true, homeBike); optionsByStop.set(bikeKey, rides); }
         options.push(...rides.map(path => ({ ...path, minutes: path.minutes + gap / WALKING.cyclingFactor })));
       }
     }
     options.sort((a, b) => a.minutes - b.minutes || a.lines.join(':').localeCompare(b.lines.join(':')));
     const citizens = HOME_TIERS[home.tier - 1]?.citizens ?? 0;
-    if (options.length) covered += citizens;
-    let remaining = citizens * TRANSIT_ELIGIBLE_SHARE;
-    if (options.length) homeLines.set(home.id, options.map(option => option.lines));
-    for (const option of options) {
-      const used = option.lines.map(id => byId.get(id)!);
-      const places = option.bike ? 2 : 1;
-      const allocated = Math.max(0, Math.min(remaining, ...used.map(l => (l.capacity - l.riders - l.cyclists) / places)));
-      if (allocated <= 0) continue;
-      for (const line of used) { line.riders += allocated; if (option.bike) line.cyclists += allocated; if (!line.homeIds.includes(home.id)) { line.homeIds.push(home.id); line.covered += citizens; } }
-      riders += allocated; remaining -= allocated;
-      homeRiders.set(home.id, (homeRiders.get(home.id) ?? 0) + allocated);
-      // The Riders of an itinerary share its destinations: the activities within reach of its last stop.
-      for (const target of option.targets) trips.push({ from: home.id, to: target, count: allocated / option.targets.length, stops: option.legs.flatMap(leg => [leg.board, leg.alight]) });
-      for (const leg of option.legs) {
-        flowAt(stopFlows, leg.board).boarded += allocated;
-        flowAt(stopFlows, leg.alight).alighted += allocated;
-      }
-      if (used.length > 1) transferRiders += allocated;
-      if (remaining <= 1e-9) break;
-    }
+    homeCitizens.set(home.id, citizens);
+    if (options.length) { covered += citizens; homeOptions.set(home.id, options); }
   }
-  return { lines, covered, riders, homeRiders, homeLines, stopFlows, trips, coveredActivities, transferRiders, activeLines: lines.filter(l => l.active).length,
-    costPerHour: lines.reduce((n, l) => n + l.costPerHour, 0), coalPerHour: lines.reduce((n, l) => n + l.coalPerHour, 0),
-    emissions: lines.reduce((n, l) => n + l.emissions, 0) };
+  return { services, homeOptions, homeCitizens, covered, coveredActivities, coveredWorkplaces,
+    activeLines: services.filter(l => l.active).length,
+    costPerHour: services.reduce((n, l) => n + l.costPerHour, 0), coalPerHour: services.reduce((n, l) => n + l.coalPerHour, 0),
+    emissions: services.reduce((n, l) => n + l.emissions, 0) };
+}
+
+// The lines with the Riders the Commute allocated, and where they board and alight.
+export function transportStatsOf(network: TransitNetwork, allocations: readonly RiderAllocation[]) {
+  const lines = network.services.map(l => ({ ...l, riders: 0, cyclists: 0, homeIds: [] as number[], covered: 0 }));
+  const byId = new Map(lines.map(l => [l.id, l]));
+  const homeRiders = new Map<number, number>();
+  const stopFlows = new Map<number, StopFlow>();
+  const trips: TransitTrip[] = [];
+  let riders = 0, transferRiders = 0;
+  for (const { home, workplace, option, count } of allocations) {
+    for (const id of option.lines) {
+      const line = byId.get(id)!;
+      line.riders += count;
+      if (option.bike) line.cyclists += count;
+      if (!line.homeIds.includes(home)) { line.homeIds.push(home); line.covered += network.homeCitizens.get(home) ?? 0; }
+    }
+    riders += count;
+    homeRiders.set(home, (homeRiders.get(home) ?? 0) + count);
+    trips.push({ from: home, to: workplace, count, stops: option.legs.flatMap(leg => [leg.board, leg.alight]) });
+    for (const leg of option.legs) {
+      flowAt(stopFlows, leg.board).boarded += count;
+      flowAt(stopFlows, leg.alight).alighted += count;
+    }
+    if (option.lines.length > 1) transferRiders += count;
+  }
+  const homeLines = new Map([...network.homeOptions].map(([home, options]) => [home, options.map(option => option.lines)]));
+  return { lines, covered: network.covered, riders, homeRiders, homeLines, stopFlows, trips, coveredActivities: network.coveredActivities, transferRiders, activeLines: network.activeLines,
+    costPerHour: network.costPerHour, coalPerHour: network.coalPerHour, emissions: network.emissions };
 }

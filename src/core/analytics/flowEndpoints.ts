@@ -5,7 +5,7 @@ import { sellsTickets } from '../tourism/tourists';
 import { walkDestinationOf } from '../traffic/walking';
 import { accessFlows, crossingFlows, footbridgeFlows } from '../traffic/walkFlows';
 import { stopsOfMode, transitModeOf } from './transitFields';
-import { transportStats } from '../transit/transport';
+import { transportStats } from '../traffic/cityTransport';
 import { isTransitStopType } from '../transit/stopNames';
 import type { Building, BuildingType, GameState } from '../engine/state';
 import type { Coord } from '../map/coord';

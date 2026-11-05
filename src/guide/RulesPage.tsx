@@ -1,5 +1,5 @@
 import type { CodexPage } from '../codex/pages';
-import { RulesContent } from './RulesContent';
+import { RulesContent } from '../ui/codex/RulesContent';
 
 interface RulesPageProps {
   id: CodexPage;

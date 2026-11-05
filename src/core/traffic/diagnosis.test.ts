@@ -14,7 +14,7 @@ afterAll(() => {
 const seed = newGame({ seed: 'traffic', now: 0 });
 const base: GameState = { ...seed, buildings: seed.buildings.map(building => ({ ...building, tier: 8 })) };
 const noTransit = { lines: [] };
-const jam: [number, number][] = [54, 55, 56, 57, 58, 59, 60, 61, 62].map(x => [x, 59]);
+const jam: [number, number][] = [57, 58, 59, 60].map(x => [x, 59]);
 
 function withHomes(state: GameState, spots: readonly [number, number][], tier: number): GameState {
   const homes = spots.map(([x, y], index): Building => ({ ...createBuilding(state.nextId + index, 'home', x, y, 0), tier }));
@@ -67,7 +67,7 @@ describe('diagnoseCongestion', () => {
 describe('diagnoseCongestion on crafted figures', () => {
   const state = withHomes(base, [[56, 59]], 6);
   const home = state.buildings.at(-1)!;
-  const congestedHome: HomeCongestion = { commuters: 100, walkers: 0, cyclists: 0, walkAccess: 0, unemployed: 0, ratio: 2, disconnected: false };
+  const congestedHome: HomeCongestion = { commuters: 100, walkers: 0, cyclists: 0, riders: 0, walkAccess: 0, unemployed: 0, ratio: 2, disconnected: false };
   const section = (x: number, y: number, load: number, capacity = 100): SectionLoad => ({ tile: { x, y }, load, capacity, ratio: load / capacity });
   const figures = (sections: SectionLoad[], overrides: Partial<CongestionStats> = {}): CongestionStats => ({
     ...congestionStats(base),

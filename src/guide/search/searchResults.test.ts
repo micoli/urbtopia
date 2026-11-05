@@ -10,6 +10,13 @@ describe('searchResults', () => {
     expect(searchResults(items, 'electricite').map(result => result.title)).toEqual(['Électricité', 'Bakery']);
   });
 
+  it('forgives typos and puts exact matches first', () => {
+    const items = [item('Boulangerie'), item('Bakery', 'The boulanger sells bread')];
+    expect(searchResults(items, 'boulangrie').map(result => result.title)).toEqual(['Boulangerie']);
+    expect(searchResults(items, 'bakary').map(result => result.title)).toEqual(['Bakery']);
+    expect(searchResults(items, 'boulanger').map(result => result.title)).toEqual(['Boulangerie', 'Bakery']);
+  });
+
   it('shows nothing for an empty query and at most twenty results', () => {
     const items = Array.from({ length: 30 }, (_, index) => item(`Home ${index}`));
     expect(searchResults(items, '  ')).toEqual([]);

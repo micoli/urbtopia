@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, newGame, transportStats, type GameState, type TransitTile } from '../index';
+import { createBuilding, newGame, transportStats, type GameState, type TransitTile, JOBS } from '../index';
 
 const strip = (x: number, y: number, length: number): TransitTile[] => Array.from({ length }, (_, i) => ({ x: x + i, y, exits: i === 0 ? ['E'] : i === length - 1 ? ['W'] : ['W', 'E'] }));
 const roads = (length: number) => Array.from({ length }, (_, x) => ({ x, y: 0, kind: 'road' as const }));
@@ -19,7 +19,7 @@ function railCity(homeTier = 3): GameState {
 describe('Cyclist Riders', () => {
   it('reach a rail station twelve tiles away and an activity twelve tiles from the other', () => {
     const stats = transportStats(railCity());
-    expect(stats.riders).toBeCloseTo(32 * .7);
+    expect(stats.riders).toBe(JOBS.factoryPerTier);
     expect(stats.lines[0]!.cyclists).toBeCloseTo(stats.riders);
   });
 
