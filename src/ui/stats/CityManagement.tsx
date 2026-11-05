@@ -70,7 +70,6 @@ function CityManagementDialog() {
         if (panel.current) panel.current.scrollTop = scroll;
         return () => setManagementView({scroll: scrollTop.current});
         // Restored once when the window opens, saved once when it closes.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     if (!open) return null;
     const multiCity = (readRegistry(rawSaveStore)?.cities.length ?? 0) > 1;
