@@ -5,6 +5,7 @@ import type {MessageKey} from '../../../i18n/messages';
 import {SectionHeading} from '../../common/SectionHeading';
 import {NeedsPyramidDiagram} from './needs/NeedsPyramidDiagram';
 import {NeedsTable} from './needs/NeedsTable';
+import {MANAGEMENT_SECTIONS} from './managementSections';
 
 interface NeedsSectionProps {
     state: GameState;
@@ -21,7 +22,7 @@ export function NeedsSection({state, onShowSection}: NeedsSectionProps) {
             .replace('{difficulty}', t(`difficulty.${difficulty}` as MessageKey))
             .replace('{floor}', String(Math.round(100 * SANCTIONS[difficulty].taxFloor)));
     return <section id="eco-needs" className="eco-wide">
-        <SectionHeading icon="needs">{t('needs.title')}</SectionHeading>
+        <SectionHeading icon={MANAGEMENT_SECTIONS['eco-needs'].icon}>{t('needs.title')}</SectionHeading>
         <p>{help}</p>
         {totalCitizens(state) === 0 && <p>{t('needs.noCitizens')}</p>}
         <NeedsPyramidDiagram levels={pyramid.levels}/>

@@ -414,6 +414,16 @@ describe('City management view', () => {
   });
 });
 
+describe('Link to a City management section', () => {
+  it('opens City management on the group of the section, and asks it to scroll there', () => {
+    uiStore.setState({ statsOpen: false, flyout: 'build', managementView: { tab: 'cities', group: 'tourism', scroll: 300 }, managementSection: null });
+    uiStore.getState().showManagementSection('eco-waste');
+    expect(uiStore.getState()).toMatchObject({ statsOpen: true, flyout: null, managementSection: 'eco-waste', managementView: { tab: 'dashboard', group: 'environment', scroll: 0 } });
+    uiStore.getState().clearManagementSection();
+    expect(uiStore.getState().managementSection).toBeNull();
+  });
+});
+
 describe('building search and the flyout menus', () => {
   beforeEach(() => uiStore.setState({ flyout: null, buildingSearchOpen: false }));
 

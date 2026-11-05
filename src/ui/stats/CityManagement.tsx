@@ -34,17 +34,11 @@ import {WellbeingSection} from './management/WellbeingSection';
 import {scrollToSection} from './management/scrollToSection';
 import {useModalFocus} from './management/useModalFocus';
 import {useBackdropClose} from '../common/useBackdropClose';
+import {groupOfSection} from './management/managementSections';
 import type {ManagementGroup, ManagementTab} from '../../store/uiStore';
 
 type DashboardGroup = ManagementGroup;
 
-const GROUP_OF_SECTION: Record<string, DashboardGroup> = {
-    'eco-production': 'production', 'eco-energy': 'production', 'eco-water': 'production',
-    'eco-services': 'city', 'eco-nature': 'city', 'eco-needs': 'city',
-    'eco-waste': 'environment', 'eco-emissions': 'environment', 'eco-temperature': 'environment',
-    'eco-traffic': 'transport', 'eco-railMetro': 'transport', 'eco-transport': 'transit', 'eco-transportMap': 'transport',
-    'eco-tourism': 'tourism',
-};
 
 const DASHBOARD_REFRESH_MS = 4000;
 
@@ -61,6 +55,16 @@ function CityManagementDialog() {
     const toggle = useUi(s => s.toggleStats);
     const panel = useModalFocus(open, toggle);
     const backdrop = useBackdropClose(toggle);
+    const section = useUi(s => s.managementSection);
+    const clearSection = useUi(s => s.clearManagementSection);
+    useEffect(() => {
+        if (section === null) return;
+        const frame = requestAnimationFrame(() => {
+            scrollToSection(panel.current, section);
+            clearSection();
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [section, clearSection, panel]);
     const scrollTop = useRef(scroll);
     useEffect(() => {
         if (panel.current) panel.current.scrollTop = scroll;
@@ -80,7 +84,7 @@ function CityManagementDialog() {
     const congestion = congestionStats(state);
     const temperature = temperatureBreakdown({climate, energy, transport, cooling: green.cooling, adapting: isAdapting(state)});
     const showSection = (id: string) => {
-        const target = GROUP_OF_SECTION[id];
+        const target = groupOfSection(id);
         if (!tabbed || !target || group === target) return scrollToSection(panel.current, id);
         setGroup(target);
         requestAnimationFrame(() => scrollToSection(panel.current, id));

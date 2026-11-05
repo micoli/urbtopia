@@ -11,6 +11,8 @@ const actionButton = cva(
       variant: {
         default: '[font-weight:inherit]',
         primary: 'bg-ui-accent font-bold text-ui-on-accent disabled:bg-ui-muted disabled:text-inherit',
+        info: 'text-ui-info [font-weight:inherit]',
+        success: 'text-ui-accent [font-weight:inherit]',
         danger: 'bg-ui-danger text-ui-on-danger [font-weight:inherit]',
       },
       size: {

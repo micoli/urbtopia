@@ -10,6 +10,7 @@ import {TourismAdviceList} from './TourismAdviceList';
 import {TourismArenaRow} from './TourismArenaRow';
 import {TourismAttractionRow} from './TourismAttractionRow';
 import {TourismEventRow} from './TourismEventRow';
+import {MANAGEMENT_SECTIONS} from './managementSections';
 
 function emptyMessage(state: GameState): string | null {
     const next = nextAttractionType(state);
@@ -26,7 +27,7 @@ export function TourismSection({state}: { state: GameState }) {
         for (const row of overview.rows) if (row.takings >= 1) gameStore.getState().send({type: 'Collect', buildingId: row.building.id});
     };
     return <section id="eco-tourism" className="eco-wide">
-        <SectionHeading icon="tourism">{t('tourism.title')}</SectionHeading>
+        <SectionHeading icon={MANAGEMENT_SECTIONS['eco-tourism'].icon}>{t('tourism.title')}</SectionHeading>
         <p>{t('tourism.help')}</p>
         {overview.rows.length === 0 ? <p>{emptyMessage(state)}</p> : <>
             <div className="tourism-overview">

@@ -6,6 +6,7 @@ import { LabeledList } from '../common/LabeledList';
 import { ActionButton } from '../common/ActionButton';
 import { useUi } from '../common/hooks';
 import { WasteStatsLine } from './WasteStatsLine';
+import {MANAGEMENT_SECTIONS} from '../stats/management/managementSections';
 
 interface ServicesSectionProps {
   state: GameState;
@@ -17,7 +18,7 @@ export function ServicesSection({ state }: ServicesSectionProps) {
   const lacking = [...new Set<ServiceKey>(homesLackingRequiredServices(state).flatMap(home => missingServicesOf(state, home, home.tier, coverage)))];
   return (
     <section id="eco-services">
-      <SectionHeading icon="services">{t('stats.services')}</SectionHeading>
+      <SectionHeading icon={MANAGEMENT_SECTIONS['eco-services'].icon}>{t('stats.services')}</SectionHeading>
       <LabeledList>
         {SERVICE_CATEGORIES.map(category => (
           <LabeledList.Row key={category} label={t(`service.${category}`)}>{(100 * categoryCoverageRatio(state, category)).toFixed(0)} %</LabeledList.Row>

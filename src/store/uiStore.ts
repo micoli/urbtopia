@@ -9,6 +9,7 @@ import { cloudStore } from './cloudStore';
 import { gameStore } from './gameStore';
 import { sceneHandle } from './sceneHandle';
 import { socialStore } from './socialStore';
+import { groupOfSection } from '../ui/stats/management/managementSections';
 import { toastStore } from './toastStore';
 import type { CodexId } from '../codex/catalog';
 import type { CodexPage } from '../codex/pages';
@@ -42,6 +43,10 @@ export interface UiStore {
   // Where City management was left, so a menu opens it back there.
   managementView: ManagementView;
   setManagementView: (view: Partial<ManagementView>) => void;
+  // The section City management scrolls to once open, set by a link to it.
+  managementSection: string | null;
+  showManagementSection: (id: string) => void;
+  clearManagementSection: () => void;
   lineToEdit: number | null;
   editTransitLine: (lineId: number) => void;
   clearLineToEdit: () => void;
@@ -211,6 +216,12 @@ export const uiStore = createStore<UiStore>((set, get) => {
     statsOpen: false,
     managementView: INITIAL_MANAGEMENT_VIEW,
     setManagementView: (view) => set({ managementView: { ...get().managementView, ...view } }),
+    managementSection: null,
+    showManagementSection: (id) => {
+      get().cancelTool();
+      set({ ...NO_WINDOW_OPEN, statsOpen: true, flyout: null, selectedBuildingId: null, managementSection: id, managementView: { tab: 'dashboard', group: groupOfSection(id) ?? get().managementView.group, scroll: 0 } });
+    },
+    clearManagementSection: () => set({ managementSection: null }),
     lineToEdit: null,
     editTransitLine: (lineId) => {
       get().cancelTool();
