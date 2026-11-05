@@ -6,24 +6,31 @@ export const meta = {
 
 ## Se déplacer
 
-Chaque jour, les habitants vont à leur travail et à leurs activités : commerces, écoles, santé, culture, parcs. Quatre moyens s’offrent à eux, et le jeu décide pour chaque logement dans son ensemble, jamais pour chaque habitant :
+Chaque habitant d’un logement cherche un emploi. Le jeu calcule les trajets de chaque logement dans son ensemble, jamais ceux de chaque habitant, et le chemin du travail suit un ordre fixe :
 
-- **À pied**, quand la destination est proche, le long des trottoirs de chaque <EntryLink id="road">route</EntryLink> et des <EntryLink id="pedestrianWay">voies piétonnes</EntryLink> que vous construisez. La marche donne du bien-être et ne charge aucune route.
-- **À vélo**, jusqu’à trois fois plus loin qu’à pied, sur les mêmes chemins. Rien à acheter ni à construire.
-- **En transports en commun** : les lignes de bus entre les <EntryLink id="busStop">arrêts de bus</EntryLink>, le <EntryLink id="brt">BRT</EntryLink> sur son couloir, et les trains sur la <EntryLink id="rail">voie ferrée</EntryLink>. Un trajet compte au plus deux correspondances.
-- **En voiture**, pour tous les autres : les navetteurs.
+1. **À pied**, le long des trottoirs de chaque <EntryLink id="road">route</EntryLink> et des <EntryLink id="pedestrianWay">voies piétonnes</EntryLink> que vous construisez, vers un lieu de travail à portée de marche. La marche donne du bien-être et ne charge aucune route. Les marcheurs choisissent en premier, dans toute la ville.
+2. **À vélo**, jusqu’à trois fois plus loin qu’à pied, sur les mêmes chemins. Rien à acheter ni à construire. Les cyclistes choisissent juste après les marcheurs.
+3. **En transports en commun ou en voiture** pour tous les autres, selon le **temps de trajet** le plus court. Les transports en commun regroupent les lignes de bus entre les <EntryLink id="busStop">arrêts de bus</EntryLink>, le <EntryLink id="brt">BRT</EntryLink> sur son couloir et les trains sur la <EntryLink id="rail">voie ferrée</EntryLink> ; un trajet compte au plus deux correspondances. Une ligne sans place libre renvoie ses derniers habitants sur la route.
+
+Dans chaque groupe, un habitant prend l’emploi qu’il atteint le plus vite. Personne ne prend la place d’un marcheur ou d’un cycliste.
+
+## Temps de trajet
+
+En voiture, le temps de trajet est la longueur du chemin sur la route divisée par la vitesse de chaque tronçon : plus rapide sur un niveau plus élevé, plus lente là où la route est saturée, jusqu’à la moitié. En transports en commun, il ajoute la marche jusqu’à l’arrêt, la moitié du temps entre deux véhicules, le trajet, les correspondances et la marche depuis le dernier arrêt. Une ligne rapide bat la route sur un long trajet ; sur un court, l’attente rend la voiture plus rapide.
+
+Les habitants qui ne trouvent aucun emploi à portée sont **sans emploi**. C’est un chiffre à surveiller, pas une pénalité : il ne change ni vos impôts ni le bien-être. La section Trafic liste les lieux de travail dont le plus d’emplois ne sont pas pourvus, chacun avec un bouton pour le voir sur la carte.
 
 ## Trajets et congestion
 
-Les navetteurs remplissent d’abord les lieux de travail les plus proches et s’y rendent par la route la plus courte. Chaque tronçon a une **capacité** fixée par son niveau : 1, 2 ou 3 voies par sens. Quand plus de navetteurs l’empruntent qu’il ne peut en porter, il est saturé, et le tronçon le plus étroit d’un trajet décide de sa gravité. La congestion fait baisser le bien-être des logements dont elle ralentit le trajet, jusqu’à un plafond.
+Les habitants qui conduisent chargent les routes. Chaque tronçon a une **capacité** fixée par son niveau : 1, 2 ou 3 voies par sens. Quand plus de voitures l’empruntent qu’il ne peut en porter, il est saturé, et le tronçon le plus étroit d’un trajet décide de sa gravité. La congestion fait baisser le bien-être des logements dont elle ralentit le trajet, jusqu’à un plafond.
 
 Un ensemble de routes qui ne relie des logements à aucun lieu de travail, ou des lieux de travail à aucun logement, est **déconnecté** : il est marqué d’une croix rouge, et ses logements subissent la pire congestion.
 
 Pour sortir d’un embouteillage :
 
 - **Élargir la route** : monter le goulot d’étranglement d’un niveau.
-- **Rapprocher le travail**, pour que les navetteurs marchent au lieu de conduire.
-- **Proposer des transports en commun** : quand une route est saturée, une partie de ses navetteurs passe aux lignes qui desservent leur logement, tant qu’elles ont de la place.
+- **Rapprocher le travail**, pour que les habitants marchent ou roulent à vélo au lieu de conduire.
+- **Proposer des transports en commun** : une route saturée ralentit les voitures, donc une ligne plus rapide que la route attire les habitants, tant qu’elle a de la place.
 
 ## Comprendre un embouteillage
 

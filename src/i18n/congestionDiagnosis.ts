@@ -20,8 +20,8 @@ const texts = {
     '{car} % des trajets se font en voiture et la ville n’a aucune ligne de transport en commun. Construisez des arrêts et une ligne de bus, ou un BRT, pour sortir des navetteurs de la route.',
   ],
   'diagnosis.congestion.carHeavy': [
-    '{car}% of trips are by car and only {shifted} Commuters have switched to public transport. Your lines may be full or miss the busy Homes: extend them.',
-    '{car} % des trajets se font en voiture et seulement {shifted} navetteurs sont passés aux transports en commun. Vos lignes sont peut-être pleines ou n’atteignent pas les Homes chargés : prolongez-les.',
+    '{car}% of trips are by car and only {riders} Citizens take public transport. Your lines may be full, slow or miss the busy Homes: extend them.',
+    '{car} % des trajets se font en voiture et seulement {riders} habitants prennent les transports en commun. Vos lignes sont peut-être pleines ou n’atteignent pas les Homes chargés : prolongez-les.',
   ],
   'diagnosis.congestion.gathering': [
     'A crowd is on its way to {count} Gathering(s), and about {cars} of those people drive. Serve the Attraction with a station or a Bus line, or give it a second road.',

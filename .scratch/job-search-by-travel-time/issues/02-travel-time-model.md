@@ -1,6 +1,6 @@
 # 02: Travel time by walk, bicycle, car and public transport
 
-Status: ready-for-agent
+Status: done
 Blocked by: 01
 
 **What to build:** Pure functions that give the Travel time in minutes from a Home to a workplace for each mode, in `src/core/traffic/`, and the data they need. Not yet used by the Commute.
@@ -12,3 +12,5 @@ Blocked by: 01
 - [ ] Vitest: each mode on a small grid; a Roundabout and a Crossing do not break the car time; no route returns `null`, never `Infinity`.
 
 ## Comments
+
+- Travel time is computed where the paths are: road minutes per tile from `roadSpeed` (`assets/defs/balance/traffic.json`, `roadSpeeds`) and Congestion factors in `congestion.ts`; walking, cycling and transit minutes come from the path cost and the itinerary. No separate pure module.

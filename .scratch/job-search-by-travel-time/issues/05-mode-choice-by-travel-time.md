@@ -1,6 +1,6 @@
 # 05: Public transport or car, whichever is faster
 
-Status: ready-for-agent
+Status: done
 Blocked by: 04
 
 **What to build:** For the third pass, each Citizen compares the car and public transport Travel time; the shorter wins, a tie goes to public transport, a line without spare capacity sends the Citizen to the car, a mode that does not exist for the Home leaves the other. The fixed 70% Rider share goes.
@@ -13,3 +13,5 @@ Blocked by: 04
 - [ ] Transport, climate and Traffic figures read the new Riders without a second source.
 
 ## Comments
+
+- Mode choice is in the third pass of `assignJobs`; `TRANSIT_ELIGIBLE_SHARE` is gone. Riders' trips are the Jobs they fill, so their Service trips are the shops they work in.

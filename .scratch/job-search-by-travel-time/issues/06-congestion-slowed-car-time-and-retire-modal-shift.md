@@ -1,6 +1,6 @@
 # 06: Congestion slows the car, Modal shift is retired
 
-Status: ready-for-agent
+Status: done
 Blocked by: 05
 
 **What to build:** Car Travel time uses the speed each Road section reaches under Congestion, in two passes (free-flow, then with the first pass's speeds), as bus speeds already do. The Modal shift step is removed.
@@ -12,3 +12,5 @@ Blocked by: 05
 - [ ] Glossary: `CONTEXT.md` no longer names the Modal shift as a live term.
 
 ## Comments
+
+- Two passes (free-flow, then slowed) in `withCongestionFeedback`; `modalShift.ts` and `SHIFT` removed, along with the Traffic section line. The diagnosis `carHeavy` reads the Rider count instead of the shift.

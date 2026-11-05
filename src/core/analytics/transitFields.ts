@@ -1,6 +1,6 @@
 import { tileKey } from '../map/geometry';
 import type { GameState } from '../engine/state';
-import { transportStats } from '../transit/transport';
+import { transportStats } from '../traffic/cityTransport';
 import { MAP_TILES, type TileField } from './tileField';
 
 export type TransitMode = 'bus' | 'brt' | 'rail' | 'metro';

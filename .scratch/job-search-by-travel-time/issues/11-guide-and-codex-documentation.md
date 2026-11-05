@@ -1,6 +1,6 @@
 # 11: Document how Jobs are filled
 
-Status: ready-for-agent
+Status: done
 Blocked by: 06
 
 **What to build:** The Guide and the Codex explain the new rule, in both languages, with figures read from the game data.
@@ -11,3 +11,5 @@ Blocked by: 06
 - [ ] `CONTEXT.md` matches the final behaviour; the ADR 0059 consequences are revised if play changed them.
 
 ## Comments
+
+- Guide article Mobility and congestion rewritten in English and French, glossary entries added (Job, Unemployed, Travel time). Not added: a live figures block for the Road tier speeds.

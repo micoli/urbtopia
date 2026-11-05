@@ -1,6 +1,6 @@
 # 10: Rebalance after the new Commute
 
-Status: ready-for-agent
+Status: ready-for-human
 Blocked by: 06, 07
 
 **What to build:** Play the new rule on `idealCity`, `evolvedCity` and the Robbart save, and retune what it moved.
@@ -11,3 +11,5 @@ Blocked by: 06, 07
 - [ ] Time on `transportStats` and `congestionStats` on a 1,000-Citizen and a 5,000-Citizen city.
 
 ## Comments
+
+- Measurements and findings are in `.scratch/traffic-congestion/balancing.md`. The retuning is not done and needs play: public transport carries nobody in the three sample cities (walking and cycling take every Job first, and a car beats a bus or a Metro under about 15 tiles). Levers listed there.

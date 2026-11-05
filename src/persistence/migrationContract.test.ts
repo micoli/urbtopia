@@ -2,14 +2,14 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { newGame } from '../core';
 import { CURRENT_VERSION, parseEnvelope, serializeEnvelope } from './envelope';
-import { MIGRATIONS } from './migrations';
+import { MIGRATIONS, migrate } from './migrations';
 
 const fixtureText = (version: number) => readFileSync(new URL(`./fixtures/save-v${version}.json`, import.meta.url), 'utf8');
 const versions = Array.from({ length: CURRENT_VERSION }, (_, index) => index + 1);
 
 // Update this snapshot together with CURRENT_VERSION: a schema change needs a migration and a new frozen fixture.
 const SCHEMA_SNAPSHOT = {
-  version: 17,
+  version: 18,
   keys: [
     'adaptationUntil', 'brtRoads', 'buildings', 'busLines', 'casinoRng', 'dayCycleOffset', 'fields', 'lastSeen', 'market', 'marketUnlocked', 'nextId',
     'ownedParcels', 'rails', 'rngState', 'roads', 'roundabouts', 'seed', 'seedStock', 'storage', 'tradeLedger', 'transitFleet', 'transitLines', 'tutorial', 'urbs',
@@ -30,6 +30,13 @@ describe('save migration contract', () => {
     expect(loaded.state.roads).toEqual(v10.state.roads);
   });
 
+  it('gives a version-17 city an Adaptation period for the new Commute and changes nothing else', () => {
+    const v17 = JSON.parse(fixtureText(17));
+    const loaded = parseEnvelope(JSON.stringify(v17));
+    if (!loaded.ok) throw new Error(loaded.reason);
+    expect(loaded.state).toEqual({ ...v17.state, adaptationUntil: v17.state.lastSeen + 24 * 3_600_000 });
+  });
+
   it('turns the Silo of a version-12 city into a Material depot', () => {
     const v12 = JSON.parse(fixtureText(12));
     v12.state.buildings.push({ ...v12.state.buildings[0], id: 9, type: 'silo', x: 50, y: 53 });
@@ -41,9 +48,7 @@ describe('save migration contract', () => {
 
   it('gives a version-13 city an empty trade ledger and changes nothing else', () => {
     const v13 = JSON.parse(fixtureText(13));
-    const loaded = parseEnvelope(JSON.stringify(v13));
-    if (!loaded.ok) throw new Error(loaded.reason);
-    expect(loaded.state).toEqual({ ...v13.state, tradeLedger: [] });
+    expect(migrate(v13.state, 13, 14)).toEqual({ ...v13.state, tradeLedger: [] });
   });
 
   it('marks the Venue tutorial of a Venue already placed in a version-14 city as finished, and adds none otherwise', () => {
@@ -142,10 +147,10 @@ describe('Waste Adaptation period for a saved city', () => {
     expect(loaded.state.adaptationUntil).toBe(v15.state.lastSeen + 24 * 3_600_000);
   });
 
-  it('leaves a smaller version-15 city unchanged', () => {
-    const loaded = withCitizens([8]);
-    if (!loaded.ok) throw new Error(loaded.reason);
-    expect(loaded.state.adaptationUntil).toBe(v15.state.adaptationUntil);
+  it('leaves a smaller version-15 city unchanged by that step', () => {
+    const homes = [{ ...v15.state.buildings[0], id: 20, x: 70, y: 70, tier: 8 }];
+    const migrated = migrate({ ...v15.state, nextId: 100, buildings: [...v15.state.buildings, ...homes] }, 15, 16) as { adaptationUntil: number };
+    expect(migrated.adaptationUntil).toBe(v15.state.adaptationUntil);
   });
 });
 
@@ -159,9 +164,8 @@ describe('Knowledge Adaptation period for a saved city', () => {
     expect(loaded.state.adaptationUntil).toBe(v16.state.lastSeen + 24 * 3_600_000);
   });
 
-  it.each(['cozy', 'easy', 'medium', undefined])('leaves a version-16 city on %s unchanged', (difficulty) => {
-    const loaded = load(difficulty);
-    if (!loaded.ok) throw new Error(loaded.reason);
-    expect(loaded.state.adaptationUntil).toBe(v16.state.adaptationUntil);
+  it.each(['cozy', 'easy', 'medium', undefined])('leaves a version-16 city on %s unchanged by that step', (difficulty) => {
+    const migrated = migrate({ ...v16.state, ...(difficulty ? { difficulty } : {}) }, 16, 17) as { adaptationUntil: number };
+    expect(migrated.adaptationUntil).toBe(v16.state.adaptationUntil);
   });
 });

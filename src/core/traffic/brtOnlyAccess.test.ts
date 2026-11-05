@@ -124,20 +124,27 @@ describe('a workplace on a Pedestrian way beside a BRT corridor', () => {
 });
 
 describe('workplaces reached only by a BRT corridor', () => {
+  const defaultWork = WALKING.workThreshold;
+  beforeEach(() => {
+    WALKING.workThreshold = 0;
+  });
+  afterEach(() => {
+    WALKING.workThreshold = defaultWork;
+  });
   const withBuildings = (state: GameState, replace: (b: GameState['buildings'][number]) => GameState['buildings'][number]): GameState => ({ ...state, buildings: state.buildings.map(replace) });
   const swapWorkshop = (type: 'hospital' | 'shop') => (state: GameState) => withBuildings(state, (b) => (b.id === 5 ? createBuilding(5, type, 18, 1, 0) : b));
 
-  it('counts the Jobs of a covered BRT-only facility, and not those of an uncovered one', () => {
+  it('fills the Jobs of a covered BRT-only facility with Riders, and none of an uncovered one', () => {
     const covered = swapWorkshop('hospital')(brtDistrict());
     const uncovered = swapWorkshop('hospital')(brtDistrict({ withLine: false }));
-    expect(congestionStats(covered).jobs).toBeGreaterThan(0);
-    expect(congestionStats(uncovered).jobs).toBe(0);
+    expect(congestionStats(covered).filledJobs.get(5)).toBeGreaterThan(0);
+    expect(congestionStats(uncovered).filledJobs.get(5) ?? 0).toBe(0);
   });
 
   it('never sends Commuters by car to a BRT-only workplace', () => {
     const stats = congestionStats(swapWorkshop('hospital')(brtDistrict({ roads: true })));
     expect(stats.commuters).toBe(0);
-    expect(stats.homes.get(4)!.unemployed).toBe(0);
+    expect(stats.homes.get(4)!.riders).toBe(stats.filledJobs.get(5));
   });
 
   it('makes a covered BRT-only facility a destination for Riders', () => {

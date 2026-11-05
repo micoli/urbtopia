@@ -6,24 +6,31 @@ export const meta = {
 
 ## Getting around
 
-Citizens go every day to their workplaces and their activities: shops, schools, health, culture, parks. Four ways are open to them, and the game picks for each Home, as a whole, never for each Citizen:
+Every Citizen of a Home looks for a Job. The game works out the journeys of each Home as a whole, never of each Citizen, and the way to work follows a fixed order:
 
-- **On foot**, when the destination is close, along the sidewalks of every <EntryLink id="road" /> and the <EntryLink id="pedestrianWay">Pedestrian ways</EntryLink> you build. Walking gives Well-being and loads no road.
-- **By bicycle**, up to three times as far as on foot, over the same paths. Nothing to buy and nothing to build.
-- **By public transport**: bus lines between <EntryLink id="busStop">Bus stops</EntryLink>, the <EntryLink id="brt">BRT</EntryLink> on its own corridor, and trains on the <EntryLink id="rail">Railway</EntryLink>. A journey may change lines at most twice.
-- **By car**, for everyone else: the Commuters.
+1. **On foot**, along the sidewalks of every <EntryLink id="road" /> and the <EntryLink id="pedestrianWay">Pedestrian ways</EntryLink> you build, to a workplace within walking distance. Walking gives Well-being and loads no road. Walkers choose first, across the whole city.
+2. **By bicycle**, up to three times as far as on foot, over the same paths. Nothing to buy and nothing to build. Cyclists choose right after the walkers.
+3. **By public transport or by car** for everyone else, whichever has the shorter **Travel time**. Public transport covers bus lines between <EntryLink id="busStop">Bus stops</EntryLink>, the <EntryLink id="brt">BRT</EntryLink> on its own corridor, and trains on the <EntryLink id="rail">Railway</EntryLink>; a journey may change lines at most twice. A line with no seat left sends its last Citizens back to the road.
+
+Inside each group, a Citizen takes the Job they reach fastest. Nobody takes the place of a walker or a cyclist.
+
+## Travel time
+
+By car, the Travel time is the length of the road path divided by the speed of each road section: faster on a higher Tier, and slower where the road is saturated, down to half. By public transport it adds the walk to the stop, half the time between two vehicles, the ride, the Transfers and the walk from the last stop. A fast line beats the road on a long trip; on a short one, the wait makes the car faster.
+
+Citizens who find no Job within reach are **unemployed**. It is a figure to watch, not a penalty: it changes neither your Tax nor Well-being. The Traffic section lists the workplaces with the most Jobs nobody fills, each with a button to show it on the map.
 
 ## Commutes and congestion
 
-Commuters fill the nearest workplaces first and drive there by the shortest road. Each road section has a **Lane capacity** set by its Tier: 1, 2 or 3 lanes per direction. When more Commuters use a section than it can carry, it is congested, and the narrowest section of a Commute decides how bad it is. Congestion lowers the Well-being of the Homes whose Commute it slows, up to a cap.
+The Citizens who drive load the roads. Each road section has a **Lane capacity** set by its Tier: 1, 2 or 3 lanes per direction. When more cars use a section than it can carry, it is congested, and the narrowest section of a journey decides how bad it is. Congestion lowers the Well-being of the Homes whose journey it slows, up to a cap.
 
 A set of roads that links Homes to no workplace, or workplaces to no Home, is **disconnected**: it is marked with a red cross, and its Homes suffer the worst congestion.
 
 Ways out of a jam:
 
 - **Widen the road**: upgrade the bottleneck to a higher Tier.
-- **Bring work closer**, so that Commuters walk instead of driving.
-- **Offer public transport**: when a road is saturated, part of its Commuters switch to the lines that serve their Home, as long as the lines have room.
+- **Bring work closer**, so that Citizens walk or cycle instead of driving.
+- **Offer public transport**: a jammed road slows the cars, so a line that runs faster than the road attracts Citizens, as long as it has room.
 
 ## Understanding a jam
 
@@ -33,7 +40,7 @@ The Traffic section of the City management window explains the jam in a few line
 - **One busy road**: a long run of tiles carries the same flow of Commuters. Widen it or offer another route.
 - **Crossings**: pedestrians on busy roads take capacity from them. Move the <EntryLink id="crossing">Crossings</EntryLink>, replace them with a Footbridge or use a <EntryLink id="roundabout" />.
 - **Homes far from Jobs**: the Homes are on one side of the city and the workplaces on the other. Build workplaces and services near the Homes, or a line between the two.
-- **Too many cars**: most trips are by car. Build a line if the city has none, or extend the ones it has.
+- **Too many cars**: most trips are by car. Build a faster line if the city has none, or extend the ones it has.
 - **Cut off**: some Homes have no road to any workplace.
 
 ## Crossings, Footbridges and roundabouts

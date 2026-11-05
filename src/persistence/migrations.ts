@@ -1,5 +1,6 @@
 import { isHomeType } from '../core/buildings/buildingDefinitions';
 import { citizensOf } from '../core/buildings/city';
+import { workplaceTypes } from '../core/traffic/jobs';
 import { WASTE } from '../core/waste/wasteBalance';
 
 export type MigrationStep = (state: unknown) => unknown;
@@ -58,7 +59,15 @@ function startKnowledgeAdaptation(state: unknown): unknown {
   return { ...value, adaptationUntil: Math.max(value.adaptationUntil ?? 0, value.lastSeen + 24 * 3_600_000) };
 }
 
-export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state, 7: startServiceAdaptation, 8: state => ({ ...(state as object), seedStock: {}, fields: [] }), 9: state => state, 10: startServiceAdaptation, 11: state => state, 12: renameSiloToMaterialDepot, 13: state => ({ ...(state as object), tradeLedger: [] }), 14: finishTutorialsOfPlacedVenues, 15: startWasteAdaptation, 16: startKnowledgeAdaptation };
+// Every Citizen now looks for a Job and picks the mode by travel time: the mix of modes of a saved city can change a lot, so its Congestion costs nothing for an Adaptation period.
+function startJobSearchAdaptation(state: unknown): unknown {
+  const value = state as { lastSeen: number; adaptationUntil?: number; buildings: { type: string }[] };
+  const commutes = value.buildings.some((building) => isHomeType(building.type)) && value.buildings.some((building) => (workplaceTypes as readonly string[]).includes(building.type));
+  if (!commutes) return state;
+  return { ...value, adaptationUntil: Math.max(value.adaptationUntil ?? 0, value.lastSeen + 24 * 3_600_000) };
+}
+
+export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state, 7: startServiceAdaptation, 8: state => ({ ...(state as object), seedStock: {}, fields: [] }), 9: state => state, 10: startServiceAdaptation, 11: state => state, 12: renameSiloToMaterialDepot, 13: state => ({ ...(state as object), tradeLedger: [] }), 14: finishTutorialsOfPlacedVenues, 15: startWasteAdaptation, 16: startKnowledgeAdaptation, 17: startJobSearchAdaptation };
 
 export function migrate(state: unknown, fromVersion: number, toVersion: number, steps: Record<number, MigrationStep> = MIGRATIONS): unknown {
   let current = state;

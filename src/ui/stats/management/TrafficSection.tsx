@@ -1,12 +1,13 @@
 import {ActionButton} from '../../common/ActionButton';
 import {useMemo} from 'react';
-import {diagnoseCongestion, transportStats, type CongestionStats, type GameState} from '../../../core';
+import {diagnoseCongestion, transportStats, unfilledWorkplaces, type CongestionStats, type GameState} from '../../../core';
 import {t} from '../../../i18n/t';
 import {SectionHeading} from '../../common/SectionHeading';
 import {BottleneckButton} from './BottleneckButton';
 import {DiagnosisPanel} from './DiagnosisPanel';
 import {ModeMix} from './ModeMix';
 import {SlowedLines} from './SlowedLines';
+import {UnfilledJobsList} from './UnfilledJobsList';
 import {WalkingSummary} from './WalkingSummary';
 import {MANAGEMENT_SECTIONS} from './managementSections';
 
@@ -22,11 +23,12 @@ export function TrafficSection({state, congestion, transport, onShowTransport}: 
     return <section id="eco-traffic">
         <SectionHeading icon={MANAGEMENT_SECTIONS['eco-traffic'].icon}>{t('eco.traffic')}</SectionHeading>
         <ModeMix congestion={congestion}/>
-        <p>{t('eco.shiftedRiders')}: {congestion.shift.total.toFixed(0)}</p>
         <p>{t('eco.commutersByCar')}: {congestion.commuters.toFixed(0)} · {t('eco.riders')}: {transport.riders.toFixed(0)}</p>
         <WalkingSummary state={state} congestion={congestion}/>
         <SlowedLines count={congestion.slowedLines}/>
-        <p>{t('eco.jobs')}: {congestion.jobs.toFixed(0)} · {t('eco.unemployed')}: {congestion.unemployed.toFixed(0)}</p>
+        <p>{t('eco.jobs')}: {congestion.jobs.toFixed(0)} · {t('eco.filledJobs')}: {[...congestion.filledJobs.values()].reduce((sum, count) => sum + count, 0).toFixed(0)} · {t('eco.unemployed')}: {congestion.unemployed.toFixed(0)}</p>
+        <p>{t('eco.unemployedHelp')}</p>
+        <UnfilledJobsList workplaces={unfilledWorkplaces(state, congestion)}/>
         <p>{t('eco.congestion')}: {(congestion.index * 100).toFixed(0)}% · {t('eco.saturatedSections')}: {congestion.saturatedSections} · {t('eco.disconnectedSections')}: {congestion.disconnectedSections.length}</p>
         <p>{t('eco.congestionHelp')}</p>
         <p>{t('eco.trafficHelp')}</p>

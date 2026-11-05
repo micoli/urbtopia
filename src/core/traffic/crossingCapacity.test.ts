@@ -8,7 +8,7 @@ const defaultCyclingFactor = WALKING.cyclingFactor;
 const defaultShop = WALKING.thresholds.shop;
 const CROSSING = '57,58';
 
-function city(crossing: boolean, homes: { x: number; tier: number }[] = [{ x: 56, tier: 3 }, { x: 59, tier: 3 }]): GameState {
+function city(crossing: boolean, homes: { x: number; tier: number }[] = [{ x: 58, tier: 3 }, { x: 59, tier: 3 }]): GameState {
   let nextId = base.nextId;
   const added: Building[] = [
     { ...createBuilding(nextId++, 'shop', 57, 57, 0), tier: 1 },
@@ -45,7 +45,7 @@ describe('Crossing capacity', () => {
 
   it('never cuts more than the maximum', () => {
     WALKING.workThreshold = 0;
-    const stats = congestionStats(city(true, [{ x: 56, tier: 3 }, { x: 59, tier: 3 }, { x: 61, tier: 3 }]));
+    const stats = congestionStats(city(true, [{ x: 58, tier: 3 }, { x: 59, tier: 3 }, { x: 61, tier: 3 }]));
     expect(stats.sections.get(CROSSING)!.capacity).toBeCloseTo(laneCapacity(1) * (1 - WALKING.maxCrossingCut));
     expect(stats.crossings.get(CROSSING)).toMatchObject({ saturated: true, cut: WALKING.maxCrossingCut });
     expect(stats.saturatedCrossings).toBe(1);
@@ -63,8 +63,9 @@ describe('Crossing capacity', () => {
 
   it('lets the player see the trade-off: more pedestrians, fewer cars on the road', () => {
     WALKING.workThreshold = 5;
-    const without = congestionStats(city(false));
-    const crossed = congestionStats(city(true));
+    const homes = [{ x: 56, tier: 3 }, { x: 59, tier: 3 }];
+    const without = congestionStats(city(false, homes));
+    const crossed = congestionStats(city(true, homes));
     expect(crossed.walkers).toBeGreaterThan(without.walkers);
     expect(crossed.commuters).toBeLessThan(without.commuters);
   });

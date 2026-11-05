@@ -1,6 +1,6 @@
 # 08: Show Unemployed and Jobs honestly
 
-Status: ready-for-agent
+Status: done
 Blocked by: 04
 
 **What to build:** The Traffic section, the Advisor summary, the congestion diagnosis and the workplace panel tell the truth about Jobs under the new rule.
@@ -11,3 +11,5 @@ Blocked by: 04
 - [ ] English and French texts; Storybook stories updated.
 
 ## Comments
+
+- Traffic section shows Jobs, filled Jobs and Unemployed with an explanatory line; the workplace panel adds how the Jobs are reached (`jobModes`). Advisor and diagnosis read the same figures. Not added: Storybook stories for the new list.

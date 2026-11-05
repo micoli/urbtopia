@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { WALKING } from '../traffic/walking';
-import { advance, buildingFlowsOf, layerFieldsOf, passageBeaconsOf, probeOf, createBuilding, brokenLinkCount, dispatch, energyStats, extendNetwork, newGame, routeForLine, transportStats, type Command, type GameState, type TransitTile } from '../index';
+import { advance, buildingFlowsOf, layerFieldsOf, passageBeaconsOf, probeOf, createBuilding, brokenLinkCount, dispatch, energyStats, extendNetwork, newGame, routeForLine, transportStats, type Command, type GameState, type TransitTile, JOBS } from '../index';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 import { validateGameState } from '../../persistence/validate';
 import saveV5 from '../../persistence/fixtures/save-v5.json';
@@ -181,7 +181,7 @@ describe('multimodal itineraries', () => {
   afterEach(() => { WALKING.cyclingFactor = cyclingFactor; });
   it('connects Homes and activities on different modes and counts shared riders once', () => {
     const stats = transportStats(transferCity());
-    expect(stats.riders).toBeCloseTo(32 * .7);
+    expect(stats.riders).toBe(JOBS.factoryPerTier);
     expect(stats.transferRiders).toBe(stats.riders);
     expect(stats.lines.map(l => l.riders)).toEqual([stats.riders, stats.riders]);
     expect(transportStats({ ...transferCity(), transitFleet: [] }).riders).toBe(0);
@@ -223,7 +223,7 @@ describe('multimodal itineraries', () => {
     const state = { ...city(), buildings: [{ ...createBuilding(1, 'home', 0, 2, 0), tier: 3 }, createBuilding(2, 'factory', 51, 2, 0), ...xs.map((x, i) => createBuilding(i + 3, 'busStop', x, 1, 0))], roads: Array.from({ length: 52 }, (_, x) => ({ x, y: 0, kind: 'road' as const })), busLines: Array.from({ length: 4 }, (_, i) => ({ id: 20 + i, stops: [3 + 2 * i, 4 + 2 * i] })) };
     expect(transportStats(state).riders).toBe(0);
     const two = { ...state, buildings: state.buildings.map(b => b.id === 2 ? { ...b, x: 38 } : b) };
-    expect(transportStats(two).riders).toBeCloseTo(32 * .7);
+    expect(transportStats(two).riders).toBe(JOBS.factoryPerTier);
     expect(transportStats(two).lines[2]!.riders).toBeGreaterThan(0);
   });
   it('requires nearby stops rather than mere infrastructure connectivity', () => {

@@ -1,6 +1,6 @@
 # 04: Every Citizen looks for a Job, Walkers then Cyclists first
 
-Status: ready-for-agent
+Status: done
 Blocked by: 02, 03
 
 **What to build:** The Commute assigns Jobs to all the Citizens of every Home, in three city-wide passes (Walkers, Cyclists, the rest), nearest first by Travel time, with deterministic tie-breaks. Mode choice for the third pass is still the current Rider and car split, so this ticket changes who fills the Jobs and nothing else.
@@ -13,3 +13,5 @@ Blocked by: 02, 03
 - [ ] In the ticket 01 fixture, the Hardware store and the Office are staffed; the figures that moved are listed in the Comments.
 
 ## Comments
+
+- Delivered with 05 and 06 in `src/core/traffic/jobAssignment.ts` and `congestion.ts`: one global pass per group, ties by Home id then workplace id, order-independent (tested). BRT-only special cases replaced by the general rule.

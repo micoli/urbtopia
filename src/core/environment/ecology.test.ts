@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { advance, createBuilding, dispatch, ECOLOGY, energyStats, solarPanelsCost, greenSpaceCoverage, greenBenefits, dayCycleOffsetAt, newGame, transportStats, type Building, type GameState } from '../index';
+import { advance, createBuilding, dispatch, ECOLOGY, energyStats, solarPanelsCost, greenSpaceCoverage, greenBenefits, dayCycleOffsetAt, newGame, transportStats, type Building, type GameState, JOBS } from '../index';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 import currentSave from '../../persistence/fixtures/save-v4.json';
 import oldSave from '../../persistence/fixtures/save-v3.json';
@@ -258,7 +258,7 @@ describe('public transport', () => {
   const transportCity = () => ({ ...city([b(1, 'home', 0, 2, { tier: 3 }), b(2, 'factory', 15, 2), b(3, 'busStop', 0, 1, { rotation: 0 }), b(4, 'busStop', 15, 1, { rotation: 0 })]), roads: Array.from({ length: 16 }, (_, x) => ({ x, y: 0, kind: 'road' as const })), busLines: [{ id: 20, stops: [3, 4] }, { id: 21, stops: [3, 4] }] });
   it('deduplicates riders across useful overlapping lines and keeps operating costs', () => {
     const s = transportCity(), stats = transportStats(s);
-    expect(stats.riders).toBeCloseTo(32 * 0.7);
+    expect(stats.riders).toBe(JOBS.factoryPerTier);
     expect(stats.lines[1]!.riders).toBe(0);
     expect(stats.costPerHour).toBe(4);
     expect(transportStats({ ...s, urbs: 0 }).riders).toBe(0);
