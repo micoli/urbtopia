@@ -61,7 +61,7 @@ export function AccountPanel({ client, account, gameUrl, onChanged }: Props) {
               cities={detail.detail.cities}
               handle={account.handle}
               accountId={account.id}
-              onOpen={save => setLaunch(previous => ({ id: (previous?.id ?? 0) + 1, save: { handle: account.handle, revision: save.revision, envelope: save.envelope } }))}
+              onOpen={save => setLaunch(previous => ({ id: (previous?.id ?? 0) + 1, payload: { kind: 'save', save: { handle: account.handle, revision: save.revision, envelope: save.envelope } } }))}
             />
           )}
         </section>

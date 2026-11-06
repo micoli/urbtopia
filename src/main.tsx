@@ -4,12 +4,15 @@ import { installFpsOverlay, isFpsOverlayRequested } from './ui/system/fpsOverlay
 import { blockPageZoom } from './ui/system/blockPageZoom';
 import { hideSplashAfterFailsafe } from './ui/system/splash';
 import { installPersistence } from './persistence/install';
+import { installErrorRecorder } from './bugReports/recentErrors';
 import { registerServiceWorker } from './pwa/registerServiceWorker';
 import { gameStore, isSimulation } from './store/gameStore';
 import { installEventEffects } from './store/installEventEffects';
 import { liveCommandGateway } from './store/liveCommandGateway';
 import '@fontsource-variable/inter';
 import './styles.css';
+
+installErrorRecorder();
 
 const TICK_INTERVAL_MS = 1000;
 installEventEffects(liveCommandGateway);

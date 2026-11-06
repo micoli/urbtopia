@@ -1,0 +1,10 @@
+export const MAX_DESCRIPTION_LENGTH = 4000;
+export const MAX_REPLY_LENGTH = 500;
+export const MAX_REPORTS_PER_DAY = 5;
+export const INLINE_CITY_MAX_BYTES = 1_000_000;
+export const COMPRESSED_CITY_MAX_BYTES = 2_000_000;
+export const SCREENSHOT_MAX_CHARS = 400_000;
+export const SCREENSHOT_MAX_WIDTH = 1280;
+export const SCREENSHOT_QUALITY = 0.7;
+export const RECENT_ERRORS_KEPT = 10;
+export const ERROR_MAX_LENGTH = 300;

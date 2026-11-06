@@ -11,3 +11,4 @@ Each Supabase project is a profile: a name, a color, its URL, its `service_role`
 
 - Accounts: search, filter, ban/unban, edit or reset the Handle (each asks to type the Handle to confirm).
 - Cloud saves: the 10 revisions with stats, JSON download, and **Open in game**, which opens the game dev server with `?bypass-tutorial&from-back-office` and posts the save to it. The game backs up the local city first and turns the Cloud save off for that session.
+- Bug reports: the reports of players with an attached email, filtered by status (`new`, `seen`, `resolved`). Opening one marks it `seen`; it shows the description, capture, Camera pose, technical context and the thread. The Admin can reply (500 characters) until the report is `resolved`, change its status, and **Open in game**: the City of the report loads read-only in the game (nothing is saved) with the Camera pose applied.

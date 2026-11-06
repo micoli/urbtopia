@@ -1,6 +1,6 @@
 import {
-  Anchor, ArrowDown, ArrowLeft, ArrowRight, ArrowLeftRight, ArrowUp, Bell, BookOpen, Building2, Bus, BusFront, CalendarDays, Car, ChartColumn, Check, ChevronDown, ChevronUp, Circle, ChevronRight, ClipboardList, Clock, Cloud,
-  Coins, Droplet, Gamepad2, HardDrive, Info, Factory, Footprints, Globe, Hammer, HeartPulse, Lock, Luggage, Map, Medal, Menu, Monitor, Move, Moon, RotateCcw, RotateCw, Route, Save,
+  Anchor, ArrowDown, ArrowLeft, ArrowRight, ArrowLeftRight, ArrowUp, Bell, BookOpen, Bug, Building2, Bus, BusFront, CalendarDays, Car, ChartColumn, Check, ChevronDown, ChevronUp, Circle, ChevronRight, ClipboardList, Clock, Cloud,
+  Coins, Droplet, Gamepad2, HardDrive, Info, Factory, Footprints, Globe, Hammer, HeartPulse, Lock, Luggage, Map, Medal, Menu, MessageSquare, Monitor, Move, Moon, RotateCcw, RotateCw, Route, Save,
   Settings, Shield, Smartphone, Snail, Sparkles, Store, Sun, Sunrise, Sunset, Thermometer, Trash2, Trees, TrainFront, TramFront, TrendingUp, TriangleAlert, Trophy,
   Repeat, Music, Star, Ticket, Truck, Undo2, User, UserPlus, Users, UsersRound, Wheat, Wrench, X, Zap, type LucideIcon,
 } from 'lucide-react';
@@ -15,6 +15,8 @@ export const ICONS = {
   check: Check,
   circle: Circle,
   info: Info,
+  bug: Bug,
+  messages: MessageSquare,
   lock: Lock,
   menu: Menu,
   arrowUp: ArrowUp,

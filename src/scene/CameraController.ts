@@ -74,6 +74,16 @@ export class CameraController {
     return this.yawTarget + Math.PI;
   }
 
+  get orientation(): number {
+    return this.yawTarget;
+  }
+
+  setOrientation(yaw: number): void {
+    this.yaw = yaw;
+    this.yawTarget = yaw;
+    this.apply();
+  }
+
   get view(): CameraView {
     return { x: this.focus.x, z: this.focus.z, zoom: this.zoom };
   }

@@ -220,6 +220,12 @@ export class GameScene {
     return this.controller;
   }
 
+  // The canvas keeps no drawing buffer: the frame must be drawn again and read in the same task.
+  renderedCanvas(): HTMLCanvasElement {
+    this.renderer.render(this.scene, this.activeCamera);
+    return this.renderer.domElement;
+  }
+
   get inStreetView(): boolean {
     return this.streetView.active;
   }

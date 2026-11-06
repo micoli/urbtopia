@@ -837,6 +837,7 @@ export const CATALOG = {
   'settings.tab.display': ['Display', 'Affichage'],
   'settings.tab.saves': ['Saves', 'Sauvegardes'],
   'settings.tab.app': ['App', 'Application'],
+  'settings.tab.reports': ['Reports', 'Signalements'],
   'settings.section.city': ['City', 'Ville'],
   'settings.section.time': ['Time', 'Temps'],
   'settings.section.safeguards': ['Safeguards', 'Garde-fous'],

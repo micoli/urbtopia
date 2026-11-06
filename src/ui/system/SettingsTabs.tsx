@@ -3,19 +3,16 @@ import type { SettingsTab } from '../../store/uiStore';
 import type { IconName } from '../common/iconRegistry';
 import { Tabs } from '../common/Tabs';
 
-const TABS: readonly { id: SettingsTab; icon: IconName }[] = [
-  { id: 'game', icon: 'game' },
-  { id: 'display', icon: 'display' },
-  { id: 'saves', icon: 'save' },
-  { id: 'app', icon: 'info' },
-];
+const ICONS: Record<SettingsTab, IconName> = { game: 'game', display: 'display', saves: 'save', app: 'info', reports: 'messages' };
 
 interface SettingsTabsProps {
   tab: SettingsTab;
+  visible: readonly SettingsTab[];
+  unreadReports: number;
   onSelect: (tab: SettingsTab) => void;
 }
 
-export function SettingsTabs({ tab, onSelect }: SettingsTabsProps) {
-  const tabs = TABS.map(({ id, icon }) => ({ id, icon, label: t(`settings.tab.${id}`) }));
+export function SettingsTabs({ tab, visible, unreadReports, onSelect }: SettingsTabsProps) {
+  const tabs = visible.map((id) => ({ id, icon: ICONS[id], label: t(`settings.tab.${id}`), count: id === 'reports' ? unreadReports : 0 }));
   return <Tabs label={t('settings.title')} idPrefix="settings-tab" panelId="settings-panel" tabs={tabs} selected={tab} onSelect={onSelect} />;
 }

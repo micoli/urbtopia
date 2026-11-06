@@ -2,6 +2,7 @@ import { facilityMessages } from './facilities';
 import { diagnosisMessages } from './diagnosis';
 import { advisorMessages } from './advisor';
 import { betaMessages } from './beta';
+import { bugReportMessages } from './bugReport';
 import { congestionDiagnosisMessages } from './congestionDiagnosis';
 import { wasteDiagnosisMessages } from './wasteDiagnosis';
 import { casinoMessages } from './casino';
@@ -54,6 +55,7 @@ export const MESSAGES = {
   ...diagnosisMessages('en'),
   ...advisorMessages('en'),
   ...betaMessages('en'),
+  ...bugReportMessages('en'),
   ...congestionDiagnosisMessages('en'),
   ...wasteDiagnosisMessages('en'),
 };

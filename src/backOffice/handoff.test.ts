@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isBackOfficeSessionRequested, readSaveMessage, SAVE_MESSAGE } from './handoff';
+import { isBackOfficeSessionRequested, readReportMessage, readSaveMessage, REPORT_MESSAGE, SAVE_MESSAGE } from './handoff';
 
 const ORIGIN = 'http://localhost:5180';
 const message = { type: SAVE_MESSAGE, handle: 'ada', revision: 3, envelope: '{}' };
@@ -33,5 +33,25 @@ describe('readSaveMessage', () => {
     expect(readSaveMessage(ORIGIN, { ...message, type: 'other' })).toBeNull();
     expect(readSaveMessage(ORIGIN, { ...message, envelope: 12 })).toBeNull();
     expect(readSaveMessage(ORIGIN, { ...message, revision: 1.5 })).toBeNull();
+  });
+});
+
+describe('readReportMessage', () => {
+  const report = { type: REPORT_MESSAGE, reportId: 7, envelope: '{}', camera: { x: 1 } };
+
+  it('accepts a report message from the Back office origin', () => {
+    expect(readReportMessage(ORIGIN, report)).toEqual({ reportId: 7, envelope: '{}', camera: { x: 1 } });
+  });
+
+  it('keeps a missing camera as null', () => {
+    expect(readReportMessage(ORIGIN, { ...report, camera: undefined })?.camera).toBeNull();
+  });
+
+  it('refuses another origin, a save message and a malformed message', () => {
+    expect(readReportMessage('https://evil.example', report)).toBeNull();
+    expect(readReportMessage(ORIGIN, { ...report, type: SAVE_MESSAGE })).toBeNull();
+    expect(readReportMessage(ORIGIN, { ...report, reportId: 'x' })).toBeNull();
+    expect(readReportMessage(ORIGIN, { ...report, envelope: 3 })).toBeNull();
+    expect(readSaveMessage(ORIGIN, report)).toBeNull();
   });
 });
