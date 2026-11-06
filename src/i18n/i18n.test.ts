@@ -40,13 +40,15 @@ describe('preferences', () => {
     expect(parsePrefs(JSON.stringify({ alwaysDay: true })).alwaysDay).toBe(true);
     expect(parsePrefs(JSON.stringify({ alwaysDay: 'yes' })).alwaysDay).toBe(false);
     expect(parsePrefs(null).alwaysDay).toBe(false);
+    expect(parsePrefs(JSON.stringify({ fineRotation: true })).fineRotation).toBe(true);
+    expect(parsePrefs(JSON.stringify({ fineRotation: 1 })).fineRotation).toBe(false);
   });
 
   it('reads stored preferences and falls back on bad values', () => {
-    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'B', traffic: false, confirmSale: false, showReach: false, showProductionPreview: false }))).toEqual({ language: 'fr', layout: 'B', traffic: false, pedestrianModel: 'stickman', confirmSale: false, showReach: false, showProductionPreview: false, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
-    expect(parsePrefs(JSON.stringify({ language: 'de', layout: 'Z', traffic: 'yes' }), 'fr-FR')).toEqual({ language: 'fr', layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
-    expect(parsePrefs('not json', 'en-GB')).toEqual({ language: 'en', layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
-    expect(parsePrefs(null)).toEqual({ language: 'en', layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
+    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'B', traffic: false, confirmSale: false, showReach: false, showProductionPreview: false }))).toEqual({ language: 'fr', layout: 'B', traffic: false, pedestrianModel: 'stickman', confirmSale: false, showReach: false, showProductionPreview: false, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
+    expect(parsePrefs(JSON.stringify({ language: 'de', layout: 'Z', traffic: 'yes' }), 'fr-FR')).toEqual({ language: 'fr', layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
+    expect(parsePrefs('not json', 'en-GB')).toEqual({ language: 'en', layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
+    expect(parsePrefs(null)).toEqual({ language: 'en', layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
   });
 
   it('keeps a stored Match speed only when it is one of the speeds on offer', () => {
@@ -84,7 +86,7 @@ describe('preferences', () => {
   });
 
   it('keeps Traffic on for preferences saved before it existed', () => {
-    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'A' }))).toEqual({ language: 'fr', layout: 'A', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
+    expect(parsePrefs(JSON.stringify({ language: 'fr', layout: 'A' }))).toEqual({ language: 'fr', layout: 'A', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: 3, serviceCoverageType: 'school', matchSpeed: 1 });
   });
 
   it('remembers a valid service type and defaults to School for obsolete or invalid choices', () => {

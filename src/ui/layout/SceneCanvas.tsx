@@ -92,6 +92,7 @@ export function SceneCanvas() {
     showPickOffset();
     scene.onPick((x, y) => pickDotStore.getState().show(x, y));
     void scene.setPedestrianModel(prefsStore.getState().pedestrianModel);
+    scene.camera.setFineRotation(prefsStore.getState().fineRotation);
     scene.setLevel(uiStore.getState().level);
     const showSelection = () => {
       const state = gameStore.getState().state;
@@ -129,6 +130,7 @@ export function SceneCanvas() {
       showTraffic();
       if (prefs.debug !== previous.debug || prefs.debugOffsetX !== previous.debugOffsetX || prefs.debugOffsetY !== previous.debugOffsetY) showPickOffset();
       if (prefs.alwaysDay !== previous.alwaysDay) showDayCycle();
+      if (prefs.fineRotation !== previous.fineRotation) scene.camera.setFineRotation(prefs.fineRotation);
       if (prefs.pedestrianModel !== previous.pedestrianModel) void scene.setPedestrianModel(prefs.pedestrianModel);
       if (prefs.showReach !== previous.showReach) showSelection();
     });
