@@ -1517,6 +1517,8 @@ export const CATALOG = {
   'eco.tab.city': ['City', 'Ville'],
   'eco.tab.environment': ['Environment', 'Environnement'],
   'eco.tab.transport': ['Transport', 'Transports'],
+  'prefs.showAutoProductionBadge': ['Display automatic production badges', 'Afficher les badges des productions automatiques'],
+  'prefs.showAutoProductionBadge.description': ['Fruit trees and hives restart on their own and make a single item.', 'Les arbres fruitiers et les ruches se relancent seuls et ne produisent qu\'un seul objet.'],
   'prefs.showTaxBadges': ['Display uncollected tax badges', 'Afficher les badges de taxes non collectées'],
   'prefs.taxBadgeThreshold': ['Tax badge threshold', 'Seuil des badges de taxes'],
   'prefs.taxBadgeThreshold.description': ['Shows a tax badge once a building holds this share of its maximum.', "Affiche un badge de taxes quand un bâtiment atteint cette part de son maximum."],

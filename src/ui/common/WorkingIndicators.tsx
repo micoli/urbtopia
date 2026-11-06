@@ -1,5 +1,7 @@
 import { useMemo, useRef } from 'react';
-import { footprintOf, isWorking, saleIntervalOf, sellsGoods, workProgress } from '../../core';
+import { useStore } from 'zustand';
+import { footprintOf, isOrchard, isWorking, saleIntervalOf, sellsGoods, workProgress } from '../../core';
+import { prefsStore } from '../../i18n/prefsStore';
 import { sceneHandle } from '../../store/sceneHandle.ts';
 import { collectBadgeLabel } from '../collect/CollectBadge.tsx';
 import { useGame } from './hooks.ts';
@@ -16,7 +18,8 @@ const BELOW_BADGE_HEIGHT = 0.9;
 export function WorkingIndicators() {
   const buildings = useGame((store) => store.state.buildings);
   const now = useGame((store) => store.state.lastSeen);
-  const working = useMemo(() => buildings.filter(isWorking), [buildings]);
+  const showAutoBadge = useStore(prefsStore, (store) => store.showAutoProductionBadge);
+  const working = useMemo(() => buildings.filter((building) => isWorking(building) && (showAutoBadge || !isOrchard(building.type))), [buildings, showAutoBadge]);
   const elements = useRef(new Map<number, HTMLSpanElement>());
 
   useFrameLoop(() => {

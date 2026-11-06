@@ -114,7 +114,7 @@ export { citizensOf, totalCitizens, utilityCapacity, utilityDemand, waterDemandS
 export type { UtilityTotals } from './buildings/city';
 export { FARM_TIERS, PRODUCTION_UPGRADE_COSTS, HOME_FOOTPRINTS, HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, TAX, UTILITY_CAPACITY, COAL_CAPACITY } from './economy/economy';
 export { SHOP_TYPES, canSell, goodCategoryOf, hasCounter, newGoodsAtNextTier, isShopType, sellsGoods, stackCountOf, saleIntervalOf, sellableGoodsOf, shopTierOf, slotPriceOf } from './economy/shops';
-export { ORCHARD_BUILDINGS } from './economy/orchards';
+export { ORCHARD_BUILDINGS, isOrchard } from './economy/orchards';
 export { ANIMAL_MODEL_FILES, penAnimalsOf, type PenAnimal } from './economy/pens';
 export { OFFICE, OFFICE_TYPES, isOfficeType, officeFillRatio, officeTierOf, officeUrbsDue } from './economy/offices';
 export type { ShopTier } from './economy/shops';

@@ -23,10 +23,11 @@ export function DisplaySettings() {
   const showReach = useStore(prefsStore, (store) => store.showReach);
   const showProductionPreview = useStore(prefsStore, (store) => store.showProductionPreview);
   const showRecipeStock = useStore(prefsStore, (store) => store.showRecipeStock);
+  const showAutoProductionBadge = useStore(prefsStore, (store) => store.showAutoProductionBadge);
   const showTaxBadges = useStore(prefsStore, (store) => store.showTaxBadges);
   const managementTabs = useStore(prefsStore, (store) => store.managementTabs);
   const taxBadgeThreshold = useStore(prefsStore, (store) => store.taxBadgeThreshold);
-  const { setManagementTabs, setTaxBadgeThreshold, setLanguage, setLayout, setTraffic, setPedestrians, setPedestrianModel, setTrafficDensity, setPedestrianDensity, setAlwaysDay, setFineRotation, setShowReach, setShowProductionPreview, setShowRecipeStock, setShowTaxBadges } = prefsStore.getState();
+  const { setManagementTabs, setTaxBadgeThreshold, setLanguage, setLayout, setTraffic, setPedestrians, setPedestrianModel, setTrafficDensity, setPedestrianDensity, setAlwaysDay, setFineRotation, setShowReach, setShowProductionPreview, setShowRecipeStock, setShowAutoProductionBadge, setShowTaxBadges } = prefsStore.getState();
 
   return (
     <>
@@ -56,6 +57,7 @@ export function DisplaySettings() {
         <SwitchField label={t('prefs.showReach')} checked={showReach} onChange={setShowReach} />
         <SwitchField label={t('prefs.showProductionPreview')} checked={showProductionPreview} onChange={setShowProductionPreview} />
         <SwitchField label={t('prefs.showRecipeStock')} description={t('prefs.showRecipeStock.description')} checked={showRecipeStock} onChange={setShowRecipeStock} />
+        <SwitchField label={t('prefs.showAutoProductionBadge')} description={t('prefs.showAutoProductionBadge.description')} checked={showAutoProductionBadge} onChange={setShowAutoProductionBadge} />
         <SwitchField label={t('prefs.showTaxBadges')} checked={showTaxBadges} onChange={setShowTaxBadges} />
         {showTaxBadges && (
           <SettingRow stacked label={t('prefs.taxBadgeThreshold')}>

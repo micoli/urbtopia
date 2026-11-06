@@ -20,6 +20,9 @@ const ORCHARDS: Partial<Record<BuildingType, Orchard>> = {
 
 export const orchardOf = (type: BuildingType): Orchard | undefined => ORCHARDS[type];
 
+// Trees and Hives restart on their own and make a single item.
+export const isOrchard = (type: BuildingType): boolean => ORCHARDS[type] !== undefined;
+
 export const orchardWaterDemandOf = (type: BuildingType): number => (ORCHARDS[type]?.water ? 1 : 0);
 
 export const newOrchardQueue = (type: BuildingType, startedAt: number) => {
