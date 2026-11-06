@@ -1473,6 +1473,8 @@ export const CATALOG = {
   'prefs.pedestrianModel.stickman': ['Stick figures', 'Bonshommes'],
   'prefs.pedestrianModel.avatar': ['Avatars', 'Avatars'],
   'prefs.traffic.description': ['Shows the vehicles on the roads.', 'Affiche les véhicules sur les routes.'],
+  'prefs.fineRotation': ['Rotate by 45°', 'Pivoter par 45°'],
+  'prefs.fineRotation.description': ['Turns the camera by 45° instead of 90° with the buttons and the touch twist.', 'Fait pivoter la caméra par 45° au lieu de 90° avec les boutons et le geste tactile.'],
   'prefs.alwaysDay.description': ['Lights the map as Daytime at all times.', 'Éclaire la carte comme en plein jour en permanence.'],
   'prefs.signInPrompt.description': ['Reminds you to keep your city safe online.', 'Rappelle de protéger votre ville en ligne.'],
   'panel.debugPosition': ['Position', 'Position'],

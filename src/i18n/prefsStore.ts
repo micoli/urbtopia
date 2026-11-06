@@ -22,6 +22,7 @@ export interface Prefs {
   debugOffsetX: number;
   debugOffsetY: number;
   alwaysDay: boolean;
+  fineRotation: boolean;
   signInPrompt: boolean;
   advisor: boolean;
   advisorSuggestionsOpen: boolean;
@@ -44,7 +45,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1 };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1 };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -62,6 +63,7 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       debugOffsetX: offsetOf(parsed.debugOffsetX),
       debugOffsetY: offsetOf(parsed.debugOffsetY),
       alwaysDay: typeof parsed.alwaysDay === 'boolean' ? parsed.alwaysDay : fallback.alwaysDay,
+      fineRotation: typeof parsed.fineRotation === 'boolean' ? parsed.fineRotation : fallback.fineRotation,
       signInPrompt: typeof parsed.signInPrompt === 'boolean' ? parsed.signInPrompt : fallback.signInPrompt,
       advisor: typeof parsed.advisor === 'boolean' ? parsed.advisor : fallback.advisor,
       advisorSuggestionsOpen: typeof parsed.advisorSuggestionsOpen === 'boolean' ? parsed.advisorSuggestionsOpen : fallback.advisorSuggestionsOpen,
@@ -86,9 +88,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, pedestrianModel, confirmSale, showReach, showProductionPreview, showTaxBadges, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }: Prefs): void {
+function writeStored({ language, layout, traffic, pedestrianModel, confirmSale, showReach, showProductionPreview, showTaxBadges, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrianModel, confirmSale, showReach, showProductionPreview, showTaxBadges, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrianModel, confirmSale, showReach, showProductionPreview, showTaxBadges, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -107,6 +109,7 @@ export interface PrefsStore extends Prefs {
   setDebug: (debug: boolean) => void;
   setDebugOffset: (axis: 'x' | 'y', pixels: number) => void;
   setAlwaysDay: (alwaysDay: boolean) => void;
+  setFineRotation: (fineRotation: boolean) => void;
   setSignInPrompt: (signInPrompt: boolean) => void;
   setAdvisor: (advisor: boolean) => void;
   setAdvisorSuggestionsOpen: (open: boolean) => void;
@@ -165,6 +168,10 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   },
   setAlwaysDay: (alwaysDay) => {
     set({ alwaysDay });
+    writeStored(get());
+  },
+  setFineRotation: (fineRotation) => {
+    set({ fineRotation });
     writeStored(get());
   },
   setSignInPrompt: (signInPrompt) => {

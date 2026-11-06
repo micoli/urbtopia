@@ -34,6 +34,7 @@ export class CameraController {
   private lastPinchDistance = 0;
   private lastPinchAngle = 0;
   private twist = 0;
+  private rotationStep = Math.PI / 2;
   private keys = new Map<string, number>();
   private gesture = { startX: 0, startY: 0, startTime: 0, moved: false, multiTouch: false };
   private pendingTap: { x: number; y: number; shiftKey: boolean } | null = null;
@@ -101,8 +102,12 @@ export class CameraController {
     this.apply();
   }
 
-  rotate(quarterTurns: number): void {
-    this.yawTarget += (quarterTurns * Math.PI) / 2;
+  setFineRotation(fine: boolean): void {
+    this.rotationStep = fine ? Math.PI / 4 : Math.PI / 2;
+  }
+
+  rotate(direction: number): void {
+    this.yawTarget += direction * this.rotationStep;
   }
 
   setEnabled(enabled: boolean): void {
