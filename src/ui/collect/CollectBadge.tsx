@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef } from 'react';
 import { useStore } from 'zustand';
-import { Building, Command, attractionTakingsOf, isShopType, sellsTickets, isVenue, itemModelOf, taxDue, takingsDue, isHomeType, isOfficeType, officeUrbsDue } from '../../core';
+import { CROPS, Building, Command, type CropId, attractionTakingsOf, isShopType, sellsTickets, isVenue, itemModelOf, taxDue, takingsDue, isHomeType, isOfficeType, officeUrbsDue } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { gameStore } from '../../store/gameStore';
 import { useProjectedPosition } from '../common/useProjectedPosition';
@@ -52,6 +52,12 @@ export function readyItemModels(building: Building): string[] {
     return model ? [model] : [];
   });
   return models.slice(0, MAX_PREVIEWS);
+}
+
+// One icon per unit the tile produced, as many as its yield.
+export function readyFieldModels(species: CropId): string[] {
+  const model = itemModelOf(species);
+  return model === null ? [] : Array<string>(CROPS[species].yield).fill(model);
 }
 
 function sameBadgeProps(a: CollectBadgeProps, b: CollectBadgeProps): boolean {

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createBuilding } from '../../core';
-import { collectBadgeLabel } from './CollectBadge';
+import { CROPS, createBuilding } from '../../core';
+import { collectBadgeLabel, readyFieldModels } from './CollectBadge';
 
 vi.mock('../../i18n/prefsStore', () => ({ prefsStore: {} }));
 vi.mock('../../store/gameStore', () => ({ gameStore: {} }));
@@ -23,5 +23,16 @@ describe('collectBadgeLabel for Attractions', () => {
 
   it('is a number, so the tax badge setting hides it with the other Urbs badges', () => {
     expect(typeof collectBadgeLabel(attraction('masMuseum', 10))).toBe('number');
+  });
+});
+
+describe('readyFieldModels', () => {
+  it('shows one icon per unit the tile produced', () => {
+    expect(readyFieldModels('wheat')).toHaveLength(CROPS.wheat.yield);
+    expect(readyFieldModels('apple')).toHaveLength(CROPS.apple.yield);
+  });
+
+  it('repeats the same item icon', () => {
+    expect(new Set(readyFieldModels('wheat')).size).toBe(1);
   });
 });

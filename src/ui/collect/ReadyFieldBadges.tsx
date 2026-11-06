@@ -1,6 +1,6 @@
-import { isCropReady, itemModelOf } from '../../core';
+import { isCropReady } from '../../core';
 import { useGame } from '../common/hooks';
-import { CollectBadge } from './CollectBadge';
+import { CollectBadge, readyFieldModels } from './CollectBadge';
 
 export function ReadyFieldBadges() {
   const fields = useGame((store) => store.state.fields);
@@ -14,7 +14,7 @@ export function ReadyFieldBadges() {
             worldX={field.x + 0.5}
             worldZ={field.y + 0.5}
             label="✓"
-            models={[itemModelOf(field.crop.species)].filter((model) => model !== null)}
+            models={readyFieldModels(field.crop.species)}
             command={{ type: 'Harvest', tiles: [{ x: field.x, y: field.y }] }}
           />
         ) : null,
