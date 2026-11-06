@@ -59,7 +59,8 @@
           "tools": 4
         }
       },
-      "model": "buildings-textile-mill-2x2-t5-tone-a"
+      "model": "buildings-textile-mill-2x2-t5-tone-a",
+      "durationFactor": 0.5
     }
   ]
 }

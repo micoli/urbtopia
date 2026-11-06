@@ -59,7 +59,8 @@
           "tools": 4
         }
       },
-      "model": "buildings-bakery-2x2-t5-tone-a"
+      "model": "buildings-bakery-2x2-t5-tone-a",
+      "durationFactor": 0.5
     }
   ],
   "counter": {

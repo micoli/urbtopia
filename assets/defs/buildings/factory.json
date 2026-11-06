@@ -59,7 +59,8 @@
         "goods": {
           "tools": 4
         }
-      }
+      },
+      "durationFactor": 0.5
     }
   ],
   "solarPanels": {
