@@ -1,6 +1,11 @@
 import { Suspense, type ReactNode } from 'react';
+import { OnDemandErrorBoundary } from './OnDemandErrorBoundary';
 
 export function OnDemand({ when, children }: { when: boolean; children: ReactNode }) {
   if (!when) return null;
-  return <Suspense fallback={null}>{children}</Suspense>;
+  return (
+    <OnDemandErrorBoundary>
+      <Suspense fallback={null}>{children}</Suspense>
+    </OnDemandErrorBoundary>
+  );
 }
