@@ -334,3 +334,42 @@
   .club-row--from-below { animation: club-row-from-below calc(var(--duration-base) * 2) var(--ease-out); }
   .club-row--from-above { animation: club-row-from-above calc(var(--duration-base) * 2) var(--ease-out); }
 }
+
+.club-subs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+}
+
+.club-subs__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.club-subs__player {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr;
+  gap: var(--space-8);
+  width: 100%;
+  padding: var(--space-6) var(--space-4);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--white-a06);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.club-subs__player[aria-pressed='true'] {
+  background: var(--color-accent-a28);
+}
+
+.club-subs__player:disabled {
+  cursor: default;
+  opacity: 0.5;
+}

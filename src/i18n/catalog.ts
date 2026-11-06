@@ -1244,6 +1244,7 @@ export const CATALOG = {
   'club.match.speed': ['Match speed', 'Vitesse du match'],
   'club.match.speedValue': ['×{speed} · about {duration}', '×{speed} · environ {duration}'],
   'club.match.substitute': ['Substitute', 'Remplacer'],
+  'club.match.noEligible': ['No bench player can take this position.', 'Aucun remplaçant disponible à ce poste.'],
   'club.match.subsLeft': ['Substitutions left: {count}', 'Remplacements restants : {count}'],
   'club.match.record': ['Record the decisions', 'Enregistrer les décisions'],
   'club.match.recorded': ['Decisions recorded for the Match.', 'Décisions enregistrées pour le match.'],
