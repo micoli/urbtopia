@@ -15,11 +15,11 @@ export function BugReportSettings() {
   return (
     <>
       <SettingRow label={t('bugReport.title')} description={hasEmail ? t('bugReport.settings.description') : t('bugReport.settings.needEmail')}>
-        <ActionButton size="sm" disabled={!hasEmail} onClick={requestBugReport}>{t('bugReport.title')}</ActionButton>
+        <ActionButton size="sm" disabled={!hasEmail} onClick={() => void requestBugReport()}>{t('bugReport.title')}</ActionButton>
       </SettingRow>
       {hasEmail ? (
         <SettingRow label={t('bugReport.inbox.title')}>
-          <ActionButton size="sm" onClick={openBugReportInbox}>
+          <ActionButton size="sm" onClick={() => void openBugReportInbox()}>
             {t('bugReport.inbox.view')}
             <CountBadge count={unread} label={t('bugReport.inbox.new')} />
           </ActionButton>

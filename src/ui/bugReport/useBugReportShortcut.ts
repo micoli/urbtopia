@@ -8,7 +8,7 @@ export function useBugReportShortcut(): void {
     const onKeyDown = (event: KeyboardEvent) => {
       if (!isBugReportShortcut(event) || isTypingTarget(event.target)) return;
       event.preventDefault();
-      requestBugReport();
+      void requestBugReport();
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
