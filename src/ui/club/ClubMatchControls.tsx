@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { FOOTBALL, TACTICS, type MatchDecision, type MatchState } from '../../core';
 import { t } from '../../i18n/t';
 import type { MessageKey } from '../../i18n/messages';
+import type { Jerseys } from './jerseyNumbers';
 import { RadioChipGroup } from '../common/RadioChipGroup';
 
 interface ClubMatchControlsProps {
   state: MatchState;
+  jerseys: Jerseys;
   onDecide: (decision: MatchDecision) => void;
 }
 
-export function ClubMatchControls({ state, onDecide }: ClubMatchControlsProps) {
+export function ClubMatchControls({ state, jerseys, onDecide }: ClubMatchControlsProps) {
   const [out, setOut] = useState<number | null>(null);
   const [mine] = state.sides;
   const left = FOOTBALL.maxSubstitutions - mine.substitutions;
@@ -24,11 +26,13 @@ export function ClubMatchControls({ state, onDecide }: ClubMatchControlsProps) {
     <div className="club-controls">
       <RadioChipGroup className="choice-chips" label={t('club.tactic')} options={TACTICS.map(id => ({ value: id, label: t(`club.tactic.${id}` as MessageKey) }))} value={mine.tactic} onChange={tactic => onDecide({ minute: state.minute, kind: 'tactic', tactic })} />
       <p>{t('club.match.subsLeft').replace('{count}', `${left}`)}</p>
+      {left > 0 && <p className="note note--muted">{t(out === null ? 'club.match.pickStarter' : 'club.match.pickReplacement')}</p>}
       <div className="club-subs">
         <ul className="club-subs__list" aria-label={t('club.starters')}>
           {mine.pitch.map(player => (
             <li key={player.id}>
               <button type="button" className="club-subs__player" aria-pressed={out === player.id} disabled={left === 0} onClick={() => setOut(out === player.id ? null : player.id)}>
+                <span className="club-subs__number">{jerseys.get(player.id)}</span>
                 <span>{player.name}</span>
                 <span>{t(`club.position.${player.position}` as MessageKey)}</span>
                 <span title={t('club.player.rating')}>{player.rating}</span>
@@ -41,6 +45,7 @@ export function ClubMatchControls({ state, onDecide }: ClubMatchControlsProps) {
           {eligible.map(player => (
             <li key={player.id}>
               <button type="button" className="club-subs__player" disabled={out === null || left === 0} onClick={() => substitute(player.id)}>
+                <span className="club-subs__number">{jerseys.get(player.id)}</span>
                 <span>{player.name}</span>
                 <span>{t(`club.position.${player.position}` as MessageKey)}</span>
                 <span title={t('club.player.rating')}>{player.rating}</span>

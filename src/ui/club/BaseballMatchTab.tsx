@@ -7,7 +7,10 @@ import { useGame } from '../common/hooks';
 import { BaseballFeed } from './BaseballFeed';
 import { BaseballField } from './BaseballField';
 import { BaseballMatchControls } from './BaseballMatchControls';
-import { ClubMatchBar } from './ClubMatchBar';
+import { ClubMatchPlayback } from './ClubMatchPlayback';
+import { ClubMatchRecord } from './ClubMatchRecord';
+import { MatchGuide, type MatchPhase } from './MatchGuide';
+import { MatchStep } from './MatchStep';
 import { isPlay, replayUpTo } from './fieldLayout';
 import { useEventCursor } from './useEventCursor';
 import { useLiveMatch } from './useLiveMatch';
@@ -33,13 +36,23 @@ export function BaseballMatchTab({ building }: { building: Building }) {
   if (!fixture || !opponent || !state) return <p className="note note--muted">{t('club.match.none')}</p>;
   if (now < fixture.at) return <p className="note note--muted">{t('club.match.next').replace('{opponent}', opponent.name).replace('{hours}', `${Math.ceil((fixture.at - now) / 3_600_000)}`)}</p>;
   const replay = replayUpTo(state, shown);
+  const over = state.over && shown >= total;
+  const phase: MatchPhase = over ? 'finished' : live.playing ? 'playing' : live.step > 0 ? 'paused' : 'ready';
   return (
     <>
+      <MatchGuide phase={phase} sport="baseball" recorded={live.recorded} />
       <h3>{state.sides[0].name} {replay.score[0]} – {replay.score[1]} {opponent.name}</h3>
       <p>{t('club.match.inning').replace('{inning}', `${replay.inning}`)}</p>
-      <ClubMatchBar live={live} durationMs={BASEBALL.innings * inningMs} finished={state.over && shown >= total} />
       <BaseballField state={state} seed={fixtureSeedOf(club, index)} shown={shown} />
-      {state.over ? null : <BaseballMatchControls state={state} onDecide={live.decide} />}
+      <MatchStep number={1} title={t('club.step.watch')}>
+        <ClubMatchPlayback live={live} durationMs={BASEBALL.innings * inningMs} finished={over} />
+      </MatchStep>
+      <MatchStep number={2} title={t('club.step.decide')} hint={t(state.over ? 'club.match.decideClosed' : 'club.match.decideHintBaseball')}>
+        {state.over ? null : <BaseballMatchControls state={state} onDecide={live.decide} />}
+      </MatchStep>
+      <MatchStep number={3} title={t('club.step.record')} hint={t('club.match.recordHint')}>
+        <ClubMatchRecord live={live} />
+      </MatchStep>
       <BaseballFeed events={replay.events} />
     </>
   );

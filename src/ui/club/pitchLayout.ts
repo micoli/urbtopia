@@ -56,6 +56,8 @@ export interface PitchPlayer extends Spot {
   id: number;
   name: string;
   side: 0 | 1;
+  // The place in the lineup: it stays when a substitute takes over, so the player moves on without a jump.
+  slot: number;
   number: number;
 }
 
@@ -79,13 +81,13 @@ function movement(seed: number, side: 0 | 1, index: number, minute: number, rest
   return { x, y };
 }
 
-export function pitchPlayers(state: MatchState, formation: Formation, seed: number): PitchPlayer[] {
+export function pitchPlayers(state: MatchState, formation: Formation, seed: number, jerseys?: ReadonlyMap<number, number>): PitchPlayer[] {
   const ball = ballSpot(state, seed);
   const place = (side: 0 | 1, spots: Spot[]): PitchPlayer[] =>
     state.sides[side].pitch.map((player, index) => {
       const rest = spots[index] ?? spots.at(-1)!;
       const moved = movement(seed, side, index, state.minute, rest, ball);
-      return { id: player.id, name: player.name, side, number: index + 1, x: clamp(moved.x, 1.5, PITCH.width - 1.5), y: clamp(moved.y, 1.5, PITCH.height - 1.5) };
+      return { id: player.id, name: player.name, side, slot: index, number: (side === 0 && jerseys?.get(player.id)) || index + 1, x: clamp(moved.x, 1.5, PITCH.width - 1.5), y: clamp(moved.y, 1.5, PITCH.height - 1.5) };
     });
   return [...place(0, formationSpots(formation)), ...place(1, formationSpots('4-4-2').map(mirror))];
 }
