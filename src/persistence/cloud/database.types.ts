@@ -3,6 +3,115 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      urb_bug_report_attachments: {
+        Row: {
+          city_gzip: string | null;
+          city_json: Json | null;
+          report_id: number;
+          screenshot: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          city_gzip?: string | null;
+          city_json?: Json | null;
+          report_id: number;
+          screenshot?: string | null;
+        };
+        Update: {
+          city_gzip?: string | null;
+          city_json?: Json | null;
+          report_id?: number;
+          screenshot?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_bug_report_attachments_report_id_fkey";
+            columns: ["report_id"];
+            isOneToOne: true;
+            referencedRelation: "urb_bug_reports";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      urb_bug_report_replies: {
+        Row: {
+          body: string;
+          created_at: string;
+          from_admin: boolean;
+          id: number;
+          report_id: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          body: string;
+          created_at?: string;
+          from_admin: boolean;
+          id?: never;
+          report_id: number;
+        };
+        Update: {
+          body?: string;
+          created_at?: string;
+          from_admin?: boolean;
+          id?: never;
+          report_id?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "urb_bug_report_replies_report_id_fkey";
+            columns: ["report_id"];
+            isOneToOne: false;
+            referencedRelation: "urb_bug_reports";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      urb_bug_reports: {
+        Row: {
+          admin_unread: boolean;
+          author_id: string;
+          author_unread: boolean;
+          camera: Json | null;
+          city_id: string | null;
+          city_seed: string | null;
+          context: NonNullable<Json>;
+          created_at: string;
+          description: string;
+          id: number;
+          resolved_at: string | null;
+          status: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          admin_unread?: boolean;
+          author_id: string;
+          author_unread?: boolean;
+          camera?: Json | null;
+          city_id?: string | null;
+          city_seed?: string | null;
+          context?: NonNullable<Json>;
+          created_at?: string;
+          description: string;
+          id?: never;
+          resolved_at?: string | null;
+          status?: string;
+        };
+        Update: {
+          admin_unread?: boolean;
+          author_id?: string;
+          author_unread?: boolean;
+          camera?: Json | null;
+          city_id?: string | null;
+          city_seed?: string | null;
+          context?: NonNullable<Json>;
+          created_at?: string;
+          description?: string;
+          id?: never;
+          resolved_at?: string | null;
+          status?: string;
+        };
+        Relationships: [];
+      };
       urb_challenge_acceptances: {
         Row: {
           accepted_at: string;
@@ -726,6 +835,7 @@ export type Database = {
       urb_expire_offers: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_friend_count: { Args: { p_user: string }; Returns: number };
       urb_generate_daily_challenges: { Args: Record<PropertyKey, never>; Returns: undefined };
+      urb_get_bug_report: { Args: { p_id: number }; Returns: Json };
       urb_get_showcase: { Args: { p_city: string; p_user: string }; Returns: Json };
       urb_group_add: {
         Args: { p_creator: string; p_group: string; p_members: string[] };
@@ -737,6 +847,7 @@ export type Database = {
       urb_hall_of_fame: { Args: Record<PropertyKey, never>; Returns: Json };
       urb_has_blocked: { Args: { p_blocked: string; p_blocker: string }; Returns: boolean };
       urb_leave_group: { Args: { p_group: string }; Returns: undefined };
+      urb_list_bug_reports: { Args: Record<PropertyKey, never>; Returns: Json };
       urb_list_challenges: { Args: { p_city: string }; Returns: Json };
       urb_list_cities: {
         Args: Record<PropertyKey, never>;
@@ -777,6 +888,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      urb_purge_bug_reports: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_purge_inactive_anonymous_users: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_purge_old_messages: { Args: Record<PropertyKey, never>; Returns: undefined };
       urb_purge_settled_shipments: { Args: Record<PropertyKey, never>; Returns: undefined };
@@ -796,7 +908,22 @@ export type Database = {
       urb_remove_friend: { Args: { p_user: string }; Returns: undefined };
       urb_remove_group_member: { Args: { p_group: string; p_user: string }; Returns: undefined };
       urb_rename_group: { Args: { p_group: string; p_name: string }; Returns: undefined };
+      urb_reply_to_bug_report: { Args: { p_body: string; p_id: number }; Returns: number };
+      urb_report_member: { Args: Record<PropertyKey, never>; Returns: string };
       urb_restore_save: { Args: { p_city_id: string; p_revision: number }; Returns: number };
+      urb_send_bug_report: {
+        Args: {
+          p_camera: Json;
+          p_city_gzip: string;
+          p_city_id: string;
+          p_city_json: Json;
+          p_city_seed: string;
+          p_context: Json;
+          p_description: string;
+          p_screenshot: string;
+        };
+        Returns: number;
+      };
       urb_send_friend_request_by_email: { Args: { p_email: string }; Returns: undefined };
       urb_send_group_message: { Args: { p_body: string; p_group: string }; Returns: number };
       urb_send_message: { Args: { p_body: string; p_to: string }; Returns: number };
