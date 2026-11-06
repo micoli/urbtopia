@@ -1,6 +1,6 @@
 # 05 - My reports and replies
 
-Status: ready-for-agent
+Status: done
 Blocked by: 02, 04
 
 Spec: [spec.md](../spec.md)

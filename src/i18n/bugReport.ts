@@ -26,6 +26,21 @@ const texts = {
   'bugReport.error.invalid': ['The report was refused. Shorten the text or remove the attachments.', "Le signalement a été refusé. Raccourcissez le texte ou retirez les pièces jointes."],
   'bugReport.error.account': ['Attach an email to your account to report a bug.', 'Attachez un e-mail à votre compte pour signaler un bug.'],
   'bugReport.error.unknown': ['Something went wrong. Retry in a moment.', "Un problème est survenu. Réessayez dans un instant."],
+  'bugReport.inbox.view': ['View', 'Voir'],
+  'bugReport.inbox.title': ['My reports', 'Mes signalements'],
+  'bugReport.inbox.empty': ['You have not sent any report.', "Vous n'avez envoyé aucun signalement."],
+  'bugReport.inbox.new': ['New reply', 'Nouvelle réponse'],
+  'bugReport.inbox.close': ['Close', 'Fermer'],
+  'bugReport.inbox.back': ['Back', 'Retour'],
+  'bugReport.status.new': ['Sent', 'Envoyé'],
+  'bugReport.status.seen': ['Seen', 'Vu'],
+  'bugReport.status.resolved': ['Resolved', 'Résolu'],
+  'bugReport.thread.you': ['You', 'Vous'],
+  'bugReport.thread.team': ['Team', 'Équipe'],
+  'bugReport.reply.placeholder': ['Write a reply', 'Écrire une réponse'],
+  'bugReport.reply.send': ['Reply', 'Répondre'],
+  'bugReport.reply.closed': ['This report is resolved. Send a new report if the problem comes back.', 'Ce signalement est résolu. Envoyez-en un nouveau si le problème revient.'],
+  'bugReport.error.closed': ['This report is resolved: it takes no more replies.', "Ce signalement est résolu : il n'accepte plus de réponses."],
 } as const;
 
 export type BugReportMessageKey = keyof typeof texts;
