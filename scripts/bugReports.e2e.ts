@@ -24,7 +24,7 @@ const sent = (page: Page) => page.evaluate(() => (window as unknown as { fakeRep
 test('sends a report with the map capture, the City and the camera pose', async ({ page }) => {
   await openGame(page);
   await openForm(page);
-  const form = page.getByRole('dialog', { name: 'Report a bug' });
+  const form = page.getByRole('dialog', { name: 'Report an issue' });
   await expect(form).toBeVisible({ timeout: 30_000 });
   await expect(form.getByRole('radio', { name: 'Map only' })).toHaveAttribute('aria-checked', 'true');
   await form.getByRole('textbox', { name: 'What happened?' }).fill('Roads vanish near the lake');
@@ -40,7 +40,7 @@ test('sends a report with the map capture, the City and the camera pose', async 
 test('sends no image and no City when the player unchecks them', async ({ page }) => {
   await openGame(page);
   await openForm(page);
-  const form = page.getByRole('dialog', { name: 'Report a bug' });
+  const form = page.getByRole('dialog', { name: 'Report an issue' });
   await expect(form).toBeVisible({ timeout: 30_000 });
   await form.getByRole('radio', { name: 'No image' }).click();
   await form.getByRole('checkbox', { name: 'Attach my city' }).click();
@@ -54,7 +54,7 @@ test('sends no image and no City when the player unchecks them', async ({ page }
 test('offers the whole screen with a warning about other players', async ({ page }) => {
   await openGame(page);
   await openForm(page);
-  const form = page.getByRole('dialog', { name: 'Report a bug' });
+  const form = page.getByRole('dialog', { name: 'Report an issue' });
   await expect(form).toBeVisible({ timeout: 30_000 });
   const whole = form.getByRole('radio', { name: 'Whole screen' });
   await expect(whole).toBeEnabled({ timeout: 10_000 });
@@ -66,7 +66,7 @@ test('offers the whole screen with a warning about other players', async ({ page
 test('disables the City when it is too large to be attached', async ({ page }) => {
   await openGame(page);
   await openForm(page);
-  const form = page.getByRole('dialog', { name: 'Report a bug' });
+  const form = page.getByRole('dialog', { name: 'Report an issue' });
   await expect(form).toBeVisible({ timeout: 30_000 });
   await form.getByRole('button', { name: 'Cancel' }).click();
   await page.evaluate(async () => {
@@ -81,7 +81,7 @@ test('disables the City when it is too large to be attached', async ({ page }) =
 test('keeps the form open after a failed send and sends it on retry', async ({ page }) => {
   await openGame(page);
   await openForm(page);
-  const form = page.getByRole('dialog', { name: 'Report a bug' });
+  const form = page.getByRole('dialog', { name: 'Report an issue' });
   await expect(form).toBeVisible({ timeout: 30_000 });
   await form.getByRole('textbox', { name: 'What happened?' }).fill('Offline report');
   await page.evaluate(async () => {
@@ -132,28 +132,28 @@ test('an account without an email gets a notice instead of the form', async ({ p
   await page.evaluate(async () => (await import('../src/store/cloudStore.ts')).cloudStore.setState({ account: { userId: 'u1', email: null } as never }));
   await openForm(page);
   await expect(page.getByText('Attach an email to your account to report a bug.')).toBeVisible();
-  await expect(page.getByRole('dialog', { name: 'Report a bug' })).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: 'Report an issue' })).toHaveCount(0);
 });
 
 test('the report features are absent until the Player joins the beta', async ({ page }) => {
   await openGame(page, false);
   await openForm(page);
-  await expect(page.getByRole('dialog', { name: 'Report a bug' })).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: 'Report an issue' })).toHaveCount(0);
   await expect(page.getByText('Attach an email to your account to report a bug.')).toHaveCount(0);
   await page.evaluate(async () => (await import('../src/store/uiStore.ts')).uiStore.getState().toggleSettings());
   const settings = page.getByRole('dialog', { name: 'Settings' });
   await expect(settings.getByRole('tab', { name: 'Game' })).toBeVisible();
   await expect(settings.getByRole('tab', { name: /Reports/ })).toHaveCount(0);
-  await expect(settings.getByRole('button', { name: 'Report a bug' })).toHaveCount(0);
+  await expect(settings.getByRole('button', { name: 'Report an issue' })).toHaveCount(0);
 });
 
 test('Report a bug sits between City and Difficulty in the Game tab', async ({ page }) => {
   await openGame(page);
   await page.evaluate(async () => (await import('../src/store/uiStore.ts')).uiStore.getState().toggleSettings());
   const settings = page.getByRole('dialog', { name: 'Settings' });
-  await expect(settings.getByRole('heading', { name: 'Report a bug' })).toBeVisible();
+  await expect(settings.getByRole('heading', { name: 'Report an issue' })).toBeVisible();
   const headings = await settings.locator('.settings-section h3').allTextContents();
   const order = headings.map((text) => text.trim());
-  expect(order.indexOf('Report a bug')).toBe(order.indexOf('City') + 1);
-  expect(order.indexOf('Difficulty')).toBe(order.indexOf('Report a bug') + 1);
+  expect(order.indexOf('Report an issue')).toBe(order.indexOf('City') + 1);
+  expect(order.indexOf('Difficulty')).toBe(order.indexOf('Report an issue') + 1);
 });
