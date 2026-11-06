@@ -6,6 +6,7 @@ import { useInstallPrompt } from '../../pwa/useInstallPrompt';
 import { dialogStore } from '../../store/dialogStore';
 import { ActionButton } from '../common/ActionButton';
 import { SwitchField } from '../common/SwitchField';
+import { BugReportSettings } from '../bugReport/BugReportSettings';
 import { BetaSettings } from './BetaSettings';
 import { PickOffsetSlider } from './PickOffsetSlider';
 import { SettingRow } from './SettingRow';
@@ -31,6 +32,7 @@ export function AppSettings() {
         <SettingRow label={t('settings.credits')} description={t('settings.credits.description')}>
           <ActionButton size="sm" onClick={() => dialogStore.getState().setCreditsOpen(true)}>{t('settings.credits.action')}</ActionButton>
         </SettingRow>
+        <BugReportSettings />
         <SettingRow label={t('settings.version')}>
           <code className="setting-row__value">{__BUILD_ID__}</code>
         </SettingRow>

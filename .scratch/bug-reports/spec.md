@@ -18,7 +18,7 @@ Decisions are in [ADR 0058](../../docs/adr/0058-bug-reports-keep-attachments-in-
 
 ### The form
 
-- Opening the form freezes everything that will be sent: the captures, the copy of the City (with its id and Seed), the Camera pose and the technical context. The simulation is paused while the form is open and resumes on close. Changing City while typing changes nothing of what is sent.
+- Opening the form freezes everything that will be sent: the captures, the copy of the City (with its id and Seed), the Camera pose and the technical context. The game keeps running behind the form (the clock catches up on real time, so a pause would need a new engine mechanism): nothing needs one, since everything sent is already frozen at opening. Changing City while typing changes nothing of what is sent.
 - The captures are taken **before** the dialog opens, or it would hide the map: the map alone (WebGL canvas) and the whole screen (canvas composed with the rendered DOM, e.g. `html-to-image`). If the DOM rendering fails, only the map alone is offered; the send is never blocked.
 - The player chooses the image: map alone, whole screen, or none, with a preview. A warning next to the whole screen says it can show other players' Handles and messages.
 - "Attach my City" is checked by default and can be unchecked. The description is the only required field.
@@ -42,7 +42,6 @@ Decisions are in [ADR 0058](../../docs/adr/0058-bug-reports-keep-attachments-in-
 
 ## Facts to check
 
-- `Dialog` does not pause the simulation and no pause mechanism was found in `src/ui/common` or `src/store`: the pause during the form is to build or to locate.
 - The WebGL renderer has no `preserveDrawingBuffer`: the map capture must render then read the canvas in the same frame.
 - `CameraController` (`src/scene/CameraController.ts`) holds the pose; it needs a read and a write of position, zoom, rotation and Level.
 - Reuse `exportEnvelope` (`src/persistence/transfer`) for the copy of the City.

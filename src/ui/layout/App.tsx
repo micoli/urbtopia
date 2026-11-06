@@ -9,10 +9,12 @@ import { SceneCanvas } from './SceneCanvas';
 import { isDevelopmentHost } from '../../devtools/isDevelopmentHost';
 import { uiStore } from '../../store/uiStore';
 import { StreetViewHud } from './StreetViewHud';
+import { useBugReportShortcut } from '../bugReport/useBugReportShortcut';
 
 const DevTools = import.meta.env.DEV ? lazy(() => import('../../devtools/DevTools')) : null;
 
 export function App() {
+  useBugReportShortcut();
   const language = useStore(prefsStore, (store) => store.language);
   const layout = useStore(prefsStore, (store) => store.layout);
   const streetView = useStore(uiStore, (store) => store.streetView);

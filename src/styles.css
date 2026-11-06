@@ -22,5 +22,6 @@
 @import './ui/casino/casino.css' layer(legacy);
 @import './ui/politics/politics.css' layer(legacy);
 @import './ui/advisor/advisor.css' layer(legacy);
+@import './ui/bugReport/bugReport.css' layer(legacy);
 @import './ui/tutorial/guided.css' layer(legacy);
 @import './ui/common/glass.css' layer(legacy);
