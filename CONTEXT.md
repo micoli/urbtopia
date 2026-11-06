@@ -1005,6 +1005,22 @@ _Avoid_: Spectate, preview, load
 The local tool, never deployed, with which an Admin lists Player accounts, moderates them and inspects their Cloud saves. It runs only on the Admin's machine and acts with the service key of the Supabase project it is pointed at.
 _Avoid_: Admin panel, dashboard, console
 
+**Bug report**:
+A message from a Player account with an attached email to the Admin, signalling a defect of the game. It carries a description, optional Report attachments and the technical context of the moment (game version, device, recent errors). At most five a day per Player account.
+_Avoid_: Ticket, feedback, issue
+
+**Report reply**:
+A plain-text note, 500 characters at most, added to a Bug report by its author or by the Admin, read in the game under the player's reports. Replies are open until the Bug report is marked resolved, and do not count in the daily limit of Bug reports.
+_Avoid_: Answer, comment
+
+**Report attachment**:
+A capture of the screen (the map alone or the whole screen with the interface), a copy of the open City, or both, that the player chooses to join to a Bug report after seeing what will be sent.
+_Avoid_: File, upload
+
+**Camera pose**:
+The position, zoom, rotation and Level of the view on the map. A Bug report records it so the Admin can open the reported City at the same place.
+_Avoid_: Viewport, view state
+
 **Admin**:
 The person who runs the Back office. Not a Player account and never visible to players.
 _Avoid_: Moderator, operator
