@@ -26,7 +26,7 @@ describe('Baseball lineup tab', () => {
     prefsStore.getState().setLanguage(language);
     const html = renderToStaticMarkup(<BaseballLineupTab building={field()} />);
     for (const key of ['club.approach', 'club.pitcher', 'club.battingOrder', 'club.bench', 'club.bestLineup'] as const) expect(html).toContain(t(key));
-    expect(html.match(/<li class="club-row/g)).toHaveLength(20);
+    expect(html.match(/<li class="club-row(?! club-row--header)/g)).toHaveLength(20);
   });
 });
 

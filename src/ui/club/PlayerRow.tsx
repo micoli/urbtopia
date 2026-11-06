@@ -8,9 +8,12 @@ interface PlayerRowProps {
   action?: React.ReactNode;
   selected?: boolean;
   onSelect?: () => void;
+  // Plays the swap animation: the row comes in from the list it left.
+  swapped?: 'from-above' | 'from-below';
+  onSwapEnd?: () => void;
 }
 
-export function PlayerRow({ player, action, selected = false, onSelect }: PlayerRowProps) {
+export function PlayerRow({ player, action, selected = false, onSelect, swapped, onSwapEnd }: PlayerRowProps) {
   const cells = (
     <>
       <span className="club-row__name">{player.name}</span>
@@ -22,9 +25,9 @@ export function PlayerRow({ player, action, selected = false, onSelect }: Player
     </>
   );
   return (
-    <li className={selected ? 'club-row club-row--selected' : 'club-row'}>
+    <li className={`club-row${selected ? ' club-row--selected' : ''}${swapped ? ` club-row--${swapped}` : ''}`} onAnimationEnd={onSwapEnd}>
       {onSelect ? <button type="button" className="club-row__main" aria-pressed={selected} onClick={onSelect}>{cells}</button> : <div className="club-row__main">{cells}</div>}
-      {action}
+      {action && <span className="club-row__action">{action}</span>}
     </li>
   );
 }
