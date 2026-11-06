@@ -6,7 +6,7 @@ import { gameStore } from '../../store/gameStore';
 import { useProjectedPosition } from '../common/useProjectedPosition';
 import { ItemThumbnail } from './ItemThumbnail';
 import { registerCollector, startSweep } from './collectSweep';
-import { radialBadgeSize, radialOffsets } from './radialLayout';
+import { BADGE_SIZE, radialIconSize, radialOffsets } from './radialLayout';
 import {UrbsAmount} from "../common/UrbsAmount.tsx";
 
 const BADGE_HEIGHT = 1.8;
@@ -69,7 +69,7 @@ export const CollectBadge = memo(function CollectBadge({ worldX, worldZ, label, 
   const previewEnabled = useStore(prefsStore, (store) => store.showProductionPreview);
   const showPreview = previewEnabled && models.length > 0;
   const offsets = radialOffsets(models.length);
-  const size = radialBadgeSize(models.length);
+  const iconSize = radialIconSize(models.length);
 
   useProjectedPosition(ref, worldX, BADGE_HEIGHT, worldZ, 'above');
 
@@ -82,7 +82,7 @@ export const CollectBadge = memo(function CollectBadge({ worldX, worldZ, label, 
       ref={ref}
       type="button"
       className={showPreview ? 'collect-badge collect-badge-radial' : 'collect-badge'}
-      style={showPreview ? { width: size, height: size } : undefined}
+      style={showPreview ? { width: BADGE_SIZE, height: BADGE_SIZE } : undefined}
       onPointerDown={(event) => {
         event.currentTarget.releasePointerCapture(event.pointerId);
         startSweep();
@@ -96,7 +96,8 @@ export const CollectBadge = memo(function CollectBadge({ worldX, worldZ, label, 
           ? models.map((model, index) => <ItemThumbnail
               key={index}
               model={model}
-              offset={offsets[index]!}/>)
+              offset={offsets[index]!}
+              size={iconSize}/>)
           : (typeof label === "number"
                   ? <UrbsAmount value={label}/>
                   : label

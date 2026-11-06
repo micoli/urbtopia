@@ -24,10 +24,6 @@
 
 .collect-badge-preview {
   position: absolute;
-  left: calc(50% - 16px);
-  top: calc(50% - 16px);
-  width: 32px;
-  height: 32px;
   pointer-events: none;
 }
 

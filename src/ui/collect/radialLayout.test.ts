@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PREVIEW_SIZE, radialBadgeSize, radialOffsets } from './radialLayout';
+import { BADGE_SIZE, PREVIEW_SIZE, radialIconSize, radialOffsets } from './radialLayout';
 
 describe('radial layout of ready items', () => {
   it('centres a single item', () => {
@@ -19,11 +19,19 @@ describe('radial layout of ready items', () => {
   it('keeps neighbours distinct yet packed', () => {
     const [first, second] = radialOffsets(6);
     const gap = Math.hypot(first!.x - second!.x, first!.y - second!.y);
-    expect(gap).toBeGreaterThan(PREVIEW_SIZE * 0.5);
-    expect(gap).toBeLessThan(PREVIEW_SIZE * 0.8);
+    expect(gap).toBeGreaterThan(radialIconSize(6) * 0.5);
+    expect(gap).toBeLessThan(radialIconSize(6) * 0.8);
   });
 
-  it('grows the badge with the item count', () => {
-    expect(radialBadgeSize(6)).toBeGreaterThan(radialBadgeSize(2));
+  it('keeps a single icon at full size', () => {
+    expect(radialIconSize(1)).toBe(PREVIEW_SIZE);
+  });
+
+  it('shrinks the icons as they multiply and keeps them inside the badge', () => {
+    expect(radialIconSize(6)).toBeLessThan(radialIconSize(2));
+    for (const count of [2, 3, 4, 6, 8]) {
+      const reach = Math.max(...radialOffsets(count).map(({ x, y }) => Math.hypot(x, y))) + radialIconSize(count) / 2;
+      expect(reach).toBeLessThanOrEqual(BADGE_SIZE / 2);
+    }
   });
 });
