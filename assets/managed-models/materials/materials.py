@@ -140,9 +140,11 @@ def stick(name, start, end, radius, body):
     return part
 
 
-def leaf(name, at, yaw, length, width, body):
+def leaf(name, at, yaw, length, width, body, tilt=0):
     outline = [(0, 0), (length * 0.4, width / 2), (length, 0), (length * 0.4, -width / 2)]
     part = lpm.sweep(name, outline, 0.004, at=at, color=color(body), axis="z")
+    if tilt:
+        lpm.rotate(part, -tilt, "Y", about=at)
     lpm.rotate(part, yaw, "Z", about=at)
     return part
 
@@ -176,15 +178,16 @@ def cherry():
 
 
 def olive():
-    nodes = [(-0.20, 0.0, 0.05), (-0.10, 0.02, 0.07), (0.0, 0.03, 0.09), (0.10, 0.02, 0.10), (0.20, 0.0, 0.12)]
-    parts = [stick(f"twig{i}", a, b, 0.012 - 0.002 * i, "wood_dark") for i, (a, b) in enumerate(zip(nodes, nodes[1:]))]
+    nodes = [(-0.16, 0.0, 0.06), (-0.08, 0.02, 0.08), (0.0, 0.03, 0.10), (0.08, 0.02, 0.11), (0.16, 0.0, 0.13)]
+    parts = [stick(f"twig{i}", a, b, 0.016 - 0.002 * i, "wood_dark") for i, (a, b) in enumerate(zip(nodes, nodes[1:]))]
     for i, node in enumerate(nodes[1:], start=1):
         for side in (-1, 1):
-            parts.append(leaf(f"leaf{i}_{side}", node, 90 + side * 50, 0.11, 0.028, "leaf_silver"))
-    for i, (node, body) in enumerate(((nodes[1], "olive_green"), (nodes[2], "olive_black"), (nodes[3], "olive_green"))):
-        hang = (node[0], node[1] + 0.01, node[2] - 0.07)
-        parts.append(stick(f"olive_stem{i}", node, hang, 0.005, "stem_green"))
-        parts.append(lpm.lathe(f"olive{i}", [(0, -0.05), (0.03, -0.03), (0.034, 0.0), (0.028, 0.03), (0, 0.045)], segments=6, at=(hang[0], hang[1], hang[2] - 0.045), color=color(body)))
+            parts.append(leaf(f"leaf{i}_{side}", node, 90 + side * 45, 0.15, 0.05, "leaf_silver", tilt=25))
+    for i, (node, body) in enumerate(((nodes[0], "olive_green"), (nodes[2], "olive_black"), (nodes[4], "olive_green"))):
+        hang = (node[0], node[1] + 0.01, node[2] - 0.045)
+        parts.append(stick(f"olive_stem{i}", node, hang, 0.007, "stem_green"))
+        fruit_part = lpm.lathe(f"olive{i}", [(0, -0.085), (0.05, -0.05), (0.06, 0.0), (0.05, 0.05), (0, 0.075)], segments=7, at=(hang[0], hang[1], hang[2] - 0.075), color=color(body))
+        parts.append(fruit_part)
     return parts
 
 
