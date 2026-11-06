@@ -126,6 +126,10 @@
 .recipe-missing {
   color: var(--color-text-disabled);
 }
+
+.stock-count {
+  color: var(--color-positive);
+}
 .eco-heat-item th i.home-color-swatch { display: inline-block; width: 10px; height: 10px; margin-right: var(--space-4); vertical-align: middle; }
 
 .locator-arrow {

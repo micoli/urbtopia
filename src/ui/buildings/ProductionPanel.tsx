@@ -1,9 +1,11 @@
-import { SLOT_PRICES, hasCounter, isItemUnlocked, minTierOf, producibleItems, productionDurationOf, productionTierOf, recipeMultiplierOf, recipeOf, rushPrice, unlockCitizensOf, type Building, type ItemId, type MaterialId, type QueueEntry } from '../../core';
+import { SLOT_PRICES, hasCounter, isItemUnlocked, isMaterial, minTierOf, producibleItems, productionDurationOf, productionTierOf, recipeMultiplierOf, recipeOf, rushPrice, unlockCitizensOf, type Building, type ItemId, type MaterialId, type QueueEntry } from '../../core';
 import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
 import { formatDuration } from '../common/formatDuration';
 import { useGame } from '../common/hooks';
 import { gameStore } from '../../store/gameStore';
+import { useStore } from 'zustand';
+import { prefsStore } from '../../i18n/prefsStore';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { ActionButton } from '../common/ActionButton';
 import { BlockedReason } from '../common/BlockedReason';
@@ -16,6 +18,7 @@ import { PowerShortageNote } from './PowerShortageNote';
 import { useOnlyCraftable } from './useOnlyCraftable';
 import { RecipeLabel } from './RecipeLabel';
 import { SalesStacks } from './SalesStacks';
+import { StockCount } from './StockCount';
 import { Icon } from '../common/Icon';
 
 interface ProductionPanelProps {
@@ -24,6 +27,7 @@ interface ProductionPanelProps {
 
 export function ProductionPanel({ building }: ProductionPanelProps) {
   const state = useGame((store) => store.state);
+  const showRecipeStock = useStore(prefsStore, (store) => store.showRecipeStock);
   const now = state.lastSeen;
   const items = [...producibleItems(building.type)];
   const [onlyCraftable, setOnlyCraftable] = useOnlyCraftable();
@@ -41,6 +45,11 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
     return conditions.join(' · ');
   }
 
+  const stockOf = (item: ItemId): number => (isMaterial(item) ? state.storage.materials[item] : state.storage.goods[item]) ?? 0;
+  const inStockLabel = (count: number) => {
+    const [before, after] = t('panel.inStock').split('{count}');
+    return <>{before}<StockCount>{count}</StockCount>{after}</>;
+  };
   const multiplier = recipeMultiplierOf(building);
   const isAvailable = (item: ItemId) => isItemUnlocked(state, item) && building.tier >= minTierOf(item);
   const lacksMaterials = (item: ItemId) => Object.entries(recipeOf(item)).some(([material, amount]) => (state.storage.materials[material as MaterialId] ?? 0) < amount * multiplier);
@@ -74,6 +83,9 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
         })}
       </SlotList>
       {!hasFreeSlot && <BlockedReason reason={t('blocked.slotsFull')} />}
+      {hasFreeSlot ? (
+        <CheckboxField label={t('prefs.showRecipeStock')} checked={showRecipeStock} onChange={prefsStore.getState().setShowRecipeStock} />
+      ) : null}
       {hasFreeSlot && canFilter ? (
         <CheckboxField label={t('panel.onlyCraftable')} checked={onlyCraftable} onChange={setOnlyCraftable} />
       ) : null}
@@ -83,7 +95,8 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
             isAvailable(item) ? (
               <ActionButton key={item} aria-disabled={lacksMaterials(item) || undefined} onClick={() => !lacksMaterials(item) && send({ type: 'QueueProduction', buildingId: building.id, item })}>
                 {itemName(item)}
-                <RecipeLabel item={item} materials={state.storage.materials} multiplier={multiplier} /> · {formatDuration(productionDurationOf(building, item))}
+                {showRecipeStock ? <> · {inStockLabel(stockOf(item))}</> : null}
+                <RecipeLabel item={item} materials={state.storage.materials} multiplier={multiplier} showStock={showRecipeStock} /> · {formatDuration(productionDurationOf(building, item))}
               </ActionButton>
             ) : (
               <ActionButton key={item} disabled>

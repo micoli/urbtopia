@@ -22,10 +22,11 @@ export function DisplaySettings() {
   const fineRotation = useStore(prefsStore, (store) => store.fineRotation);
   const showReach = useStore(prefsStore, (store) => store.showReach);
   const showProductionPreview = useStore(prefsStore, (store) => store.showProductionPreview);
+  const showRecipeStock = useStore(prefsStore, (store) => store.showRecipeStock);
   const showTaxBadges = useStore(prefsStore, (store) => store.showTaxBadges);
   const managementTabs = useStore(prefsStore, (store) => store.managementTabs);
   const taxBadgeThreshold = useStore(prefsStore, (store) => store.taxBadgeThreshold);
-  const { setManagementTabs, setTaxBadgeThreshold, setLanguage, setLayout, setTraffic, setPedestrians, setPedestrianModel, setTrafficDensity, setPedestrianDensity, setAlwaysDay, setFineRotation, setShowReach, setShowProductionPreview, setShowTaxBadges } = prefsStore.getState();
+  const { setManagementTabs, setTaxBadgeThreshold, setLanguage, setLayout, setTraffic, setPedestrians, setPedestrianModel, setTrafficDensity, setPedestrianDensity, setAlwaysDay, setFineRotation, setShowReach, setShowProductionPreview, setShowRecipeStock, setShowTaxBadges } = prefsStore.getState();
 
   return (
     <>
@@ -54,6 +55,7 @@ export function DisplaySettings() {
         <SwitchField label={t('prefs.fineRotation')} description={t('prefs.fineRotation.description')} checked={fineRotation} onChange={setFineRotation} />
         <SwitchField label={t('prefs.showReach')} checked={showReach} onChange={setShowReach} />
         <SwitchField label={t('prefs.showProductionPreview')} checked={showProductionPreview} onChange={setShowProductionPreview} />
+        <SwitchField label={t('prefs.showRecipeStock')} description={t('prefs.showRecipeStock.description')} checked={showRecipeStock} onChange={setShowRecipeStock} />
         <SwitchField label={t('prefs.showTaxBadges')} checked={showTaxBadges} onChange={setShowTaxBadges} />
         {showTaxBadges && (
           <SettingRow stacked label={t('prefs.taxBadgeThreshold')}>

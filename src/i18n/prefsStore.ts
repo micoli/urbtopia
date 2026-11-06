@@ -21,6 +21,7 @@ export interface Prefs {
   confirmSale: boolean;
   showReach: boolean;
   showProductionPreview: boolean;
+  showRecipeStock: boolean;
   showTaxBadges: boolean;
   managementTabs: boolean;
   taxBadgeThreshold: TaxBadgeThreshold;
@@ -56,7 +57,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrians: true, pedestrianModel: 'stickman', trafficDensity: 'normal', pedestrianDensity: 'normal', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, taxBadgeThreshold: 20, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1 };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrians: true, pedestrianModel: 'stickman', trafficDensity: 'normal', pedestrianDensity: 'normal', confirmSale: true, showReach: true, showProductionPreview: true, showRecipeStock: false, showTaxBadges: true, taxBadgeThreshold: 20, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1 };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -71,6 +72,7 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       confirmSale: typeof parsed.confirmSale === 'boolean' ? parsed.confirmSale : fallback.confirmSale,
       showReach: typeof parsed.showReach === 'boolean' ? parsed.showReach : fallback.showReach,
       showProductionPreview: typeof parsed.showProductionPreview === 'boolean' ? parsed.showProductionPreview : fallback.showProductionPreview,
+      showRecipeStock: typeof parsed.showRecipeStock === 'boolean' ? parsed.showRecipeStock : fallback.showRecipeStock,
       showTaxBadges: typeof parsed.showTaxBadges === 'boolean' ? parsed.showTaxBadges : fallback.showTaxBadges,
       managementTabs: typeof parsed.managementTabs === 'boolean' ? parsed.managementTabs : fallback.managementTabs,
       taxBadgeThreshold: TAX_BADGE_THRESHOLDS.includes(parsed.taxBadgeThreshold as TaxBadgeThreshold) ? (parsed.taxBadgeThreshold as TaxBadgeThreshold) : fallback.taxBadgeThreshold,
@@ -103,9 +105,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showTaxBadges, taxBadgeThreshold, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }: Prefs): void {
+function writeStored({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showRecipeStock, showTaxBadges, taxBadgeThreshold, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showTaxBadges, taxBadgeThreshold, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showRecipeStock, showTaxBadges, taxBadgeThreshold, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -122,6 +124,7 @@ export interface PrefsStore extends Prefs {
   setConfirmSale: (confirmSale: boolean) => void;
   setShowReach: (showReach: boolean) => void;
   setShowProductionPreview: (showProductionPreview: boolean) => void;
+  setShowRecipeStock: (showRecipeStock: boolean) => void;
   setShowTaxBadges: (showTaxBadges: boolean) => void;
   setManagementTabs: (managementTabs: boolean) => void;
   setTaxBadgeThreshold: (taxBadgeThreshold: TaxBadgeThreshold) => void;
@@ -179,6 +182,10 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   },
   setShowProductionPreview: (showProductionPreview) => {
     set({ showProductionPreview });
+    writeStored(get());
+  },
+  setShowRecipeStock: (showRecipeStock) => {
+    set({ showRecipeStock });
     writeStored(get());
   },
   setShowTaxBadges: (showTaxBadges) => {
